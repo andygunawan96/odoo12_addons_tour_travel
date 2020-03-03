@@ -114,31 +114,191 @@ class TtSplitReservationWizard(models.TransientModel):
                 }
             line_env.sudo().create(line_vals)
 
-    def action_create_ledger(self, booking_id, issued_uid, amount):
-        res_model = booking_id._name
-        res_id = booking_id.id
-        name = 'Split Reservation ' + booking_id.name
-        ref = booking_id.name
-        date = datetime.now()
-        currency_id = booking_id.currency_id.id
-        ledger_issued_uid = issued_uid.id
-        agent_id = booking_id.agent_id.id
-        customer_parent_id = False
-        description = 'Split Ledger for ' + str(booking_id.name)
-        ledger_type = 2
-        debit = 0
-        credit = amount
-        additional_vals = {
-            'pnr': booking_id.pnr,
-            'display_provider_name': booking_id.provider_name,
-            'provider_type_id': booking_id.provider_type_id.id,
+    def round_service_charge(self, book_obj, new_book_obj):
+        # hitung total dari pricing, lalu bandingkan dg total sale price
+        total_pricing = 0
+        for provider in book_obj.provider_booking_ids:
+            for scs in provider.cost_service_charge_ids:
+                if scs.charge_type == 'FARE':
+                    print(scs.to_dict())
+                    total_pricing += scs.total
+        if total_pricing < book_obj.total:
+            pricing_diff = book_obj.total - total_pricing
+            for scs in book_obj.provider_booking_ids[0].cost_service_charge_ids:
+                if scs.charge_type == 'FARE':
+                    scs.amount += pricing_diff
+                    scs.total += pricing_diff
+                    break
+        elif total_pricing > book_obj.total:
+            pricing_diff = total_pricing - book_obj.total
+            for scs in book_obj.provider_booking_ids[0].cost_service_charge_ids:
+                if scs.charge_type == 'FARE':
+                    scs.amount -= pricing_diff
+                    scs.total -= pricing_diff
+
+        total_commission = []
+        for provider in book_obj.provider_booking_ids:
+            for scs in provider.cost_service_charge_ids:
+                if scs.charge_type == 'RAC':
+                    if not any(d['id'] == scs.commission_agent_id.id for d in total_commission):
+                        # if scs.commission_agent_id.id not in total_commission:
+                        total_commission.append({
+                            'id': scs.commission_agent_id.id,
+                            'amount': scs.amount
+                        })
+                    else:
+                        comm_dict = next(
+                            (item for item in total_commission if item['id'] == scs.commission_agent_id.id), None)
+                        comm_dict['amount'] += scs.amount
+
+        book_obj._get_agent_commission()
+        book_obj._get_agent_price()
+
+        for comm in total_commission:
+            if comm['id'] == book_obj.agent_id.id:
+                # Bandingkan amount komisi agent dg agent commission yang ada di book obj
+                agent_diff = book_obj.agent_commission - comm['amount']
+                for scs in book_obj.provider_booking_ids[0].cost_service_charge_ids:
+                    if scs.commission_agent_id.id == comm['id']:
+                        if agent_diff > 0:
+                            scs.amount -= agent_diff
+                            scs.total -= agent_diff
+                            book_obj.agent_commission = comm['amount']
+                        elif agent_diff < 0:
+                            scs.amount += agent_diff
+                            scs.total += agent_diff
+                            book_obj.agent_commission = comm['amount']
+                        break
+            elif comm['id'] == self.env.ref('tt_base.rodex_ho').id:
+                # Bandingkan amount komisi HO dg HO commission yang ada di book obj
+                ho_diff = book_obj.ho_commission - comm['amount']
+                for scs in book_obj.provider_booking_ids[0].cost_service_charge_ids:
+                    if scs.commission_agent_id.id == comm['id']:
+                        if scs.charge_code != 'hoc' and scs.amount != 0:
+                            if ho_diff > 0:
+                                scs.amount -= ho_diff
+                                scs.total -= ho_diff
+                                book_obj.ho_commission = comm['amount']
+                            elif ho_diff < 0:
+                                scs.amount += ho_diff
+                                scs.total += ho_diff
+                                book_obj.ho_commission = comm['amount']
+                            break
+            else:
+                # Bandingkan amount komisi parent dg parent commission yang ada di book obj
+                parent_diff = book_obj.parent_agent_commission - comm['amount']
+                for scs in book_obj.provider_booking_ids[0].cost_service_charge_ids:
+                    if scs.commission_agent_id.id == comm['id']:
+                        if parent_diff > 0:
+                            scs.amount -= parent_diff
+                            scs.total -= parent_diff
+                            book_obj.parent_agent_commission = comm['amount']
+                        elif parent_diff < 0:
+                            scs.amount += parent_diff
+                            scs.total += parent_diff
+                            book_obj.parent_agent_commission = comm['amount']
+                        break
+
+        print('===============================================================================')
+        for provider in book_obj.provider_booking_ids:
+            for scs in provider.cost_service_charge_ids:
+                if scs.charge_type == 'FARE':
+                    print(scs.to_dict())
+
+        total_pricing_new = 0
+        for provider in new_book_obj.provider_booking_ids:
+            for scs in provider.cost_service_charge_ids:
+                if scs.charge_type != 'RAC':
+                    total_pricing_new += scs.total
+        if total_pricing_new > new_book_obj.total:
+            pricing_diff = new_book_obj.total - total_pricing
+            new_book_obj.provider_booking_ids[0].cost_service_charge_ids[0].amount += pricing_diff
+            new_book_obj.provider_booking_ids[0].cost_service_charge_ids[0].total += pricing_diff
+        elif total_pricing_new > new_book_obj.total:
+            pricing_diff = total_pricing_new - new_book_obj.total
+            new_book_obj.provider_booking_ids[0].cost_service_charge_ids[0].amount -= pricing_diff
+            new_book_obj.provider_booking_ids[0].cost_service_charge_ids[0].total -= pricing_diff
+
+        total_commission = []
+        for provider in new_book_obj.provider_booking_ids:
+            for scs in provider.cost_service_charge_ids:
+                if scs.charge_type == 'RAC':
+                    if not any(d['id'] == scs.commission_agent_id.id for d in total_commission):
+                        # if scs.commission_agent_id.id not in total_commission:
+                        total_commission.append({
+                            'id': scs.commission_agent_id.id,
+                            'amount': scs.amount
+                        })
+                    else:
+                        comm_dict = next(
+                            (item for item in total_commission if item['id'] == scs.commission_agent_id.id), None)
+                        comm_dict['amount'] += scs.amount
+
+        new_book_obj._get_agent_commission()
+        new_book_obj._get_agent_price()
+
+        for comm in total_commission:
+            if comm['id'] == new_book_obj.agent_id.id:
+                agent_diff = new_book_obj.agent_commission - comm['amount']
+                for provider in new_book_obj.provider_booking_ids:
+                    for scs in provider.cost_service_charge_ids:
+                        if scs.commission_agent_id.id == comm['id']:
+                            if agent_diff > 0:
+                                scs.amount -= agent_diff
+                                scs.total -= agent_diff
+                            elif agent_diff < 0:
+                                scs.amount += agent_diff
+                                scs.total += agent_diff
+                            break
+            elif comm['id'] == self.env.ref('tt_base.rodex_ho').id:
+                ho_diff = new_book_obj.ho_commission - comm['amount']
+                for provider in new_book_obj.provider_booking_ids:
+                    for scs in provider.cost_service_charge_ids:
+                        if scs.commission_agent_id.id == comm['id']:
+                            if scs.charge_code == 'hoc':
+                                if ho_diff > 0:
+                                    scs.amount -= ho_diff
+                                    scs.total -= ho_diff
+                                elif ho_diff < 0:
+                                    scs.amount += ho_diff
+                                    scs.total += ho_diff
+                                break
+            else:
+                parent_diff = new_book_obj.parent_agent_commission - comm['amount']
+                for provider in new_book_obj.provider_booking_ids:
+                    for scs in provider.cost_service_charge_ids:
+                        if scs.commission_agent_id.id == comm['id']:
+                            if parent_diff > 0:
+                                scs.amount -= parent_diff
+                                scs.total -= parent_diff
+                            elif parent_diff < 0:
+                                scs.amount += parent_diff
+                                scs.total += parent_diff
+                            break
+
+    def get_service_charge_value(self, charge_code, charge_type, pax_type, currency_id, amount, total, provider_id,
+                                 sequence, foreign_amount, description, pax_count, passenger_ids,
+                                 commission_agent_id=False):
+        vals = {
+            'charge_code': charge_code,
+            'charge_type': charge_type,
+            'pax_type': pax_type,
+            'currency_id': currency_id,
+            'amount': amount,
+            'provider_offline_booking_id': provider_id,
+            'sequence': sequence,
+            'description': description,
+            'pax_count': pax_count,
+            'total': total,
+            'passenger_offline_ids': passenger_ids,
         }
+        if commission_agent_id:
+            vals.update({
+                'commission_agent_id': commission_agent_id
+            })
+        return vals
 
-        return self.env['tt.ledger'].create_ledger_vanilla(res_model, res_id, name, ref, date, ledger_type,
-                                                    currency_id, ledger_issued_uid, agent_id, customer_parent_id, debit,
-                                                    credit, description, **additional_vals)
-
-    def create_service_charge_split_offline(self, provider, pax_list, provider_list, passengers, book_obj):
+    def create_service_charge_split_offline(self, provider, pax_list, provider_list, passengers, book_obj, type):
         if book_obj.offline_provider_type != 'other':
             provider_type_id = self.env['tt.provider.type'].search(
                 [('code', '=', book_obj.offline_provider_type)], limit=1)
@@ -146,83 +306,174 @@ class TtSplitReservationWizard(models.TransientModel):
             provider_type_id = self.env['tt.provider.type'].search(
                 [('code', '=', self.env.ref('tt_reservation_offline.tt_provider_type_offline').code)], limit=1)
         scs_list = []
-        scs_list_2 = []
         pricing_obj = self.env['tt.pricing.agent'].sudo()
+
         div = 0
         for prov in book_obj.provider_booking_ids:
-            if prov.id not in provider_list:
-                div += len(book_obj.passenger_ids)
-            else:
-                div += len(book_obj.passenger_ids) - len(pax_list)
+            for psg in book_obj.passenger_ids:
+                if type == 'old':
+                    if prov in self.provider_ids and psg in self.passenger_ids:
+                        pass
+                    else:
+                        div += 1
+                elif type == 'new':
+                    div += 1
 
-        for pax in passengers:
-            if pax.id not in pax_list or provider.id not in provider_list:
-                cost_val_fare = {
-                    'charge_code': 'fare',
-                    'charge_type': 'FARE',
-                    'pax_type': pax.pax_type,
-                    'currency_id': provider.currency_id.id,
-                    'amount': book_obj.total/div,
-                    # 'foreign_currency_id': provider.foreign_currency_id and provider.foreign_currency_id.id or False,
-                    'provider_offline_booking_id': provider.id,
-                    'foreign_amount': 0,
-                    'sequence': provider.sequence,
-                    'description': book_obj.name,
-                    'pax_count': 1,
-                    'total': book_obj.total/div,
-                    'passenger_offline_ids': [],
-                }
-                cost_val_fare['passenger_offline_ids'].append(pax.id)
-                scs_list.append(cost_val_fare)
+        real_comm = book_obj.total_commission_amount
+        fee_amount_val = book_obj.get_fee_amount(book_obj.agent_id, provider_type_id, book_obj.total_commission_amount)
 
-                commission_list = pricing_obj.get_commission(
-                    book_obj.total_commission_amount / div,
-                    book_obj.agent_id, provider_type_id)
+        """ Hitung fee amount """
+        if book_obj.offline_provider_type in ['airline', 'train']:
+            """ airline, train """
+            real_comm -= fee_amount_val['amount'] * (len(book_obj.provider_booking_ids) * len(book_obj.passenger_ids))
+            if type == 'old':
+                real_comm += fee_amount_val['amount'] * (len(self.provider_ids) * len(self.passenger_ids))
 
-                for comm in commission_list:
-                    if comm['amount'] > 0:
-                        vals2 = cost_val_fare.copy()
-                        vals2.update({
-                            'commission_agent_id': comm['commission_agent_id'],
-                            'total': comm['amount'] * -1,
-                            'amount': comm['amount'] * -1,
-                            'charge_code': comm['code'],
-                            'charge_type': 'RAC',
-                            'passenger_offline_ids': [],
-                        })
-                        vals2['passenger_offline_ids'].append(pax.id)
-                        scs_list.append(vals2)
+            for line in book_obj.line_ids:
+                if line.pnr == provider.pnr:
+                    """ get fee amount per pax """
+                    for psg in book_obj.passenger_ids:
+                        if type == 'old':
+                            if psg in self.passenger_ids and provider in self.provider_ids:
+                                pass
+                            else:
+                                fee_amount_vals = book_obj.sudo().get_fee_amount(book_obj.agent_id, provider_type_id,
+                                                                                 book_obj.total_commission_amount, psg)
+                                fee_amount_vals['provider_offline_booking_id'] = provider.id
+                                scs_list.append(fee_amount_vals)
+                        else:
+                            fee_amount_vals = book_obj.sudo().get_fee_amount(book_obj.agent_id, provider_type_id,
+                                                                             book_obj.total_commission_amount, psg)
+                            fee_amount_vals['provider_offline_booking_id'] = provider.id
+                            scs_list.append(fee_amount_vals)
+                    break
+        elif book_obj.offline_provider_type == 'hotel':
+            """ hotel """
+            real_comm -= fee_amount_val['amount'] * len(book_obj.provider_booking_ids)
 
-        # Gather pricing based on pax type
-        # for scs in scs_list:
-        #     # compare with ssc_list
-        #     scs_same = False
-        #     for scs_2 in scs_list_2:
-        #         if scs['charge_code'] == scs_2['charge_code']:
-        #             if scs['pax_type'] == scs_2['pax_type']:
-        #                 scs_same = True
-        #                 # update ssc_final
-        #                 scs_2['pax_count'] = scs_2['pax_count'] + 1,
-        #                 scs_2['total'] += scs.get('amount')
-        #                 scs_2['pax_count'] = scs_2['pax_count'][0]
-        #                 scs_2['passenger_offline_ids'].append(scs['passenger_offline_ids'][0])
-        #                 break
-        #     if scs_same is False:
-        #         vals = {
-        #             'commission_agent_id': scs.get(
-        #                 'commission_agent_id') if 'commission_agent_id' in scs else '',
-        #             'amount': scs['amount'],
-        #             'charge_code': scs['charge_code'],
-        #             'charge_type': scs['charge_type'],
-        #             'description': scs['description'],
-        #             'pax_type': scs['pax_type'],
-        #             'currency_id': scs['currency_id'],
-        #             'passenger_offline_ids': scs['passenger_offline_ids'],
-        #             'provider_offline_booking_id': scs['provider_offline_booking_id'],
+            fee_amount_vals = book_obj.sudo().get_fee_amount(book_obj.agent_id, provider_type_id,
+                                                             book_obj.total_commission_amount)
+            fee_amount_vals['provider_offline_booking_id'] = provider.id
+            scs_list.append(fee_amount_vals)
+        else:
+            """ else """
+            real_comm -= fee_amount_val['amount'] * (len(book_obj.provider_booking_ids) * len(book_obj.passenger_ids))
+
+            """ get fee amount per pax """
+            for psg in book_obj.passenger_ids:
+                fee_amount_vals = book_obj.sudo().get_fee_amount(book_obj.agent_id, provider_type_id,
+                                                                 book_obj.total_commission_amount, psg)
+                fee_amount_vals['provider_offline_booking_id'] = provider.id
+                scs_list.append(fee_amount_vals)
+
+        if book_obj.offline_provider_type != 'hotel':
+            for psg in book_obj.passenger_ids:
+                if type == 'old':
+                    if provider in self.provider_ids and psg in self.passenger_ids:
+                        pass
+                    else:
+                        vals = self.get_service_charge_value('fare', 'FARE', psg.pax_type, provider.currency_id.id,
+                                                             book_obj.total/div, book_obj.total/div, provider.id,
+                                                             provider.sequence, 0, book_obj.name, 1, [], False)
+                        vals['passenger_offline_ids'].append(psg.id)
+                        scs_list.append(vals)
+                elif type == 'new':
+                    vals = self.get_service_charge_value('fare', 'FARE', psg.pax_type, provider.currency_id.id,
+                                                         book_obj.total/div, book_obj.total/div, provider.id,
+                                                         provider.sequence, 0, book_obj.name, 1, [], False)
+                    vals['passenger_offline_ids'].append(psg.id)
+                    scs_list.append(vals)
+        else:
+            for line in book_obj.line_ids:
+                vals = self.get_service_charge_value('fare', 'FARE', 'ADT', provider.currency_id.id,
+                                                     book_obj.total / div, book_obj.total / div, provider.id,
+                                                     provider.sequence, 0, book_obj.name, 1, [], False)
+                for psg in book_obj.passenger_ids:
+                    vals['passenger_offline_ids'].append(psg.id)
+                scs_list.append(vals)
+        commission_list = pricing_obj.get_commission(real_comm / div, book_obj.agent_id, provider_type_id)
+
+        # HOC / Hidden Commission
+        # for comm in commission_list:
+        #     if comm['code'] == 'hoc':
+        #         vals = self.get_service_charge_value(comm['code'], comm['type'], 'ADT', provider.currency_id.id,
+        #                                              comm['amount'], comm['amount'], provider.id, provider.sequence, 0,
+        #                                              book_obj.name, 1, [], comm['commission_agent_id'])
+        #         scs_list.append(vals)
+
+        for psg in book_obj.passenger_ids:
+            for comm in commission_list:
+                if comm['code'] != 'hoc':
+                    if type == 'old':
+                        if provider in self.provider_ids and psg in self.passenger_ids:
+                            pass
+                        else:
+                            vals = self.get_service_charge_value(comm['code'], comm['type'], psg.pax_type,
+                                                                 provider.currency_id.id, comm['amount'],
+                                                                 comm['amount'], provider.id, provider.sequence, 0,
+                                                                 book_obj.name, 1, [], comm['commission_agent_id'])
+                            # vals = {
+                            #     'commission_agent_id': comm['commission_agent_id'],
+                            #     'charge_code': comm['code'],
+                            #     'charge_type': comm['type'],
+                            #     'pax_type': psg.pax_type,
+                            #     'currency_id': provider.currency_id.id,
+                            #     'amount': comm['amount']/len(book_obj.passenger_ids),
+                            #     'provider_offline_booking_id': provider.id,
+                            #     'sequence': provider.sequence,
+                            #     'description': book_obj.name,
+                            #     'pax_count': 1,
+                            #     'total': comm['amount']/len(book_obj.passenger_ids),
+                            #     'passenger_offline_ids': [],
+                            # }
+                            # /len(book_obj.passenger_ids)
+                            vals['passenger_offline_ids'].append(psg.id)
+                            scs_list.append(vals)
+                    elif type == 'new':
+                        vals = self.get_service_charge_value(comm['code'], comm['type'], psg.pax_type,
+                                                             provider.currency_id.id, comm['amount'], comm['amount'],
+                                                             provider.id, provider.sequence, 0, book_obj.name, 1, [],
+                                                             comm['commission_agent_id'])
+                        vals['passenger_offline_ids'].append(psg.id)
+                        scs_list.append(vals)
+
+        # for pax in passengers:
+        #     if pax.id not in pax_list or provider.id not in provider_list:
+        #         cost_val_fare = {
+        #             'charge_code': 'fare',
+        #             'charge_type': 'FARE',
+        #             'pax_type': pax.pax_type,
+        #             'currency_id': provider.currency_id.id,
+        #             'amount': book_obj.total/div,
+        #             # 'foreign_currency_id': provider.foreign_currency_id and provider.foreign_currency_id.id or False,
+        #             'provider_offline_booking_id': provider.id,
+        #             'foreign_amount': 0,
+        #             'sequence': provider.sequence,
+        #             'description': book_obj.name,
         #             'pax_count': 1,
-        #             'total': scs['total'],
+        #             'total': book_obj.total/div,
+        #             'passenger_offline_ids': [],
         #         }
-        #         scs_list_2.append(vals)
+        #         cost_val_fare['passenger_offline_ids'].append(pax.id)
+        #         scs_list.append(cost_val_fare)
+        #
+        #         commission_list = pricing_obj.get_commission(
+        #             book_obj.total_commission_amount / div,
+        #             book_obj.agent_id, provider_type_id)
+        #
+        #         for comm in commission_list:
+        #             if comm['amount'] > 0:
+        #                 vals2 = cost_val_fare.copy()
+        #                 vals2.update({
+        #                     'commission_agent_id': comm['commission_agent_id'],
+        #                     'total': comm['amount'] * -1,
+        #                     'amount': comm['amount'] * -1,
+        #                     'charge_code': comm['code'],
+        #                     'charge_type': 'RAC',
+        #                     'passenger_offline_ids': [],
+        #                 })
+        #                 vals2['passenger_offline_ids'].append(pax.id)
+        #                 scs_list.append(vals2)
 
         service_chg_obj = provider.env['tt.service.charge']
         for scs in scs_list:
@@ -284,7 +535,6 @@ class TtSplitReservationWizard(models.TransientModel):
 
         # Prepare new booking vals
         new_vals = {
-            'split_from_resv_id': book_obj.id,
             'pnr': book_obj.pnr,
             'agent_id': book_obj.agent_id and book_obj.agent_id.id or False,
             'customer_parent_id': book_obj.customer_parent_id and book_obj.customer_parent_id.id or False,
@@ -323,9 +573,13 @@ class TtSplitReservationWizard(models.TransientModel):
             'state_offline': book_obj.state_offline
         }
         new_book_obj = self.env['tt.reservation.offline'].sudo().create(new_vals)
+        print(book_obj.split_to_resv_ids)
         new_book_obj.update({
             'total': self.total_price,
             'total_commission_amount': self.new_commission
+        })
+        new_book_obj.update({
+            'split_from_resv_id': book_obj.id
         })
         book_obj.update({
             'vendor_amount': book_obj.vendor_amount - self.vendor_amount,
@@ -370,153 +624,26 @@ class TtSplitReservationWizard(models.TransientModel):
             for provider in book_obj.provider_booking_ids:
                 # provider.create_service_charge()
                 self.create_service_charge_split_offline(provider, pax_list, provider_list, book_obj.passenger_ids,
-                                                         book_obj)
+                                                         book_obj, 'old')
             for provider in new_book_obj.provider_booking_ids:
                 # provider.create_service_charge()
                 self.create_service_charge_split_offline(provider, pax_list, provider_list, new_book_obj.passenger_ids,
-                                                         new_book_obj)
+                                                         new_book_obj, 'new')
 
-            # hitung total dari pricing, lalu bandingkan dg total sale price
-            total_pricing = 0
-            for provider in book_obj.provider_booking_ids:
-                for scs in provider.cost_service_charge_ids:
-                    if scs.charge_type != 'RAC':
-                        total_pricing += scs.total
-            if total_pricing < book_obj.total:
-                pricing_diff = book_obj.total - total_pricing
-                book_obj.provider_booking_ids[0].cost_service_charge_ids[0].amount += pricing_diff
-                book_obj.provider_booking_ids[0].cost_service_charge_ids[0].total += pricing_diff
-            elif total_pricing > book_obj.total:
-                pricing_diff = total_pricing - book_obj.total
-                book_obj.provider_booking_ids[0].cost_service_charge_ids[0].amount -= pricing_diff
-                book_obj.provider_booking_ids[0].cost_service_charge_ids[0].total -= pricing_diff
-
-            total_commission = []
-            for provider in book_obj.provider_booking_ids:
-                for scs in provider.cost_service_charge_ids:
-                    if scs.charge_type == 'RAC':
-                        if not any(d['id'] == scs.commission_agent_id.id for d in total_commission):
-                            # if scs.commission_agent_id.id not in total_commission:
-                            total_commission.append({
-                                'id': scs.commission_agent_id.id,
-                                'amount': scs.amount
-                            })
-                        else:
-                            comm_dict = next((item for item in total_commission if item['id'] == scs.commission_agent_id.id), None)
-                            comm_dict['amount'] += scs.amount
-
-            for comm in total_commission:
-                if comm['id'] == book_obj.agent_id.id:
-                    agent_diff = book_obj.agent_commission + comm['amount']
-                    for provider in book_obj.provider_booking_ids:
-                        for scs in provider.cost_service_charge_ids:
-                            if scs.commission_agent_id.id == comm['id']:
-                                if agent_diff > 0:
-                                    scs.amount += agent_diff
-                                    scs.total += agent_diff
-                                elif agent_diff < 0:
-                                    scs.amount -= agent_diff
-                                    scs.total -= agent_diff
-                                break
-                elif comm['id'] == self.env.ref('tt_base.rodex_ho').id:
-                    ho_diff = book_obj.ho_commission + comm['amount']
-                    for provider in book_obj.provider_booking_ids:
-                        for scs in provider.cost_service_charge_ids:
-                            if scs.commission_agent_id.id == comm['id']:
-                                if ho_diff > 0:
-                                    scs.amount += ho_diff
-                                    scs.total += ho_diff
-                                elif ho_diff < 0:
-                                    scs.amount -= ho_diff
-                                    scs.total -= ho_diff
-                                break
-                else:
-                    parent_diff = book_obj.parent_agent_commission + comm['amount']
-                    for provider in book_obj.provider_booking_ids:
-                        for scs in provider.cost_service_charge_ids:
-                            if scs.commission_agent_id.id == comm['id']:
-                                if parent_diff > 0:
-                                    scs.amount += parent_diff
-                                    scs.total += parent_diff
-                                elif parent_diff < 0:
-                                    scs.amount -= parent_diff
-                                    scs.total -= parent_diff
-                                break
-
-            total_pricing_new = 0
-            for provider in new_book_obj.provider_booking_ids:
-                for scs in provider.cost_service_charge_ids:
-                    if scs.charge_type != 'RAC':
-                        total_pricing_new += scs.total
-            if total_pricing_new > new_book_obj.total:
-                pricing_diff = new_book_obj.total - total_pricing
-                new_book_obj.provider_booking_ids[0].cost_service_charge_ids[0].amount += pricing_diff
-                new_book_obj.provider_booking_ids[0].cost_service_charge_ids[0].total += pricing_diff
-            elif total_pricing_new < new_book_obj.total:
-                pricing_diff = total_pricing - new_book_obj.total
-                new_book_obj.provider_booking_ids[0].cost_service_charge_ids[0].amount -= pricing_diff
-                new_book_obj.provider_booking_ids[0].cost_service_charge_ids[0].total -= pricing_diff
-
-            total_commission = []
-            for provider in new_book_obj.provider_booking_ids:
-                for scs in provider.cost_service_charge_ids:
-                    if scs.charge_type == 'RAC':
-                        if not any(d['id'] == scs.commission_agent_id.id for d in total_commission):
-                            # if scs.commission_agent_id.id not in total_commission:
-                            total_commission.append({
-                                'id': scs.commission_agent_id.id,
-                                'amount': scs.amount
-                            })
-                        else:
-                            comm_dict = next(
-                                (item for item in total_commission if item['id'] == scs.commission_agent_id.id), None)
-                            comm_dict['amount'] += scs.amount
-
-            for comm in total_commission:
-                if comm['id'] == new_book_obj.agent_id.id:
-                    agent_diff = new_book_obj.agent_commission + comm['amount']
-                    for provider in new_book_obj.provider_booking_ids:
-                        for scs in provider.cost_service_charge_ids:
-                            if scs.commission_agent_id.id == comm['id']:
-                                if agent_diff > 0:
-                                    scs.amount += agent_diff
-                                    scs.total += agent_diff
-                                elif agent_diff < 0:
-                                    scs.amount -= agent_diff
-                                    scs.total -= agent_diff
-                                break
-                elif comm['id'] == self.env.ref('tt_base.rodex_ho').id:
-                    ho_diff = new_book_obj.ho_commission + comm['amount']
-                    for provider in new_book_obj.provider_booking_ids:
-                        for scs in provider.cost_service_charge_ids:
-                            if scs.commission_agent_id.id == comm['id']:
-                                if ho_diff > 0:
-                                    scs.amount += ho_diff
-                                    scs.total += ho_diff
-                                elif ho_diff < 0:
-                                    scs.amount -= ho_diff
-                                    scs.total -= ho_diff
-                                break
-                else:
-                    parent_diff = new_book_obj.parent_agent_commission + comm['amount']
-                    for provider in new_book_obj.provider_booking_ids:
-                        for scs in provider.cost_service_charge_ids:
-                            if scs.commission_agent_id.id == comm['id']:
-                                if parent_diff > 0:
-                                    scs.amount += parent_diff
-                                    scs.total += parent_diff
-                                elif parent_diff < 0:
-                                    scs.amount -= parent_diff
-                                    scs.total -= parent_diff
-                                break
+            self.round_service_charge(book_obj, new_book_obj)
 
             book_obj.calculate_service_charge()
             new_book_obj.calculate_service_charge()
 
             book_obj.get_provider_name_from_provider()
             book_obj.get_pnr_list_from_provider()
+            book_obj.get_carrier_name()
             new_book_obj.get_provider_name_from_provider()
             new_book_obj.get_pnr_list_from_provider()
+            new_book_obj.get_carrier_name()
+
+            book_obj._get_agent_commission()
+            new_book_obj._get_agent_commission()
 
             if book_obj.ledger_ids:
                 for led in book_obj.ledger_ids:
@@ -526,8 +653,6 @@ class TtSplitReservationWizard(models.TransientModel):
                     prov.action_create_ledger(book_obj.issued_uid.id)
                 for prov in new_book_obj.provider_booking_ids:
                     prov.action_create_ledger(new_book_obj.issued_uid.id)
-                # self.action_create_ledger(book_obj, book_obj.issued_uid, book_obj.total)
-                # self.action_create_ledger(new_book_obj, book_obj.issued_uid, self.total_price)
 
         # jika pax only
         elif len(provider_list) <= 0:
@@ -550,8 +675,17 @@ class TtSplitReservationWizard(models.TransientModel):
                             line.pnr = new_pnr
 
             if line_list:
-                for idx, line in enumerate(line_list):
-                    self.input_new_line(line, new_pnr_list[idx], new_book_obj.offline_provider_type, new_book_obj)
+                if book_obj.offline_provider_type in ['airline', 'train']:
+                    last_pnr = ''
+                    for idx, line in enumerate(line_list):
+                        if last_pnr == line.pnr:
+                            self.input_new_line(line, last_pnr, new_book_obj.offline_provider_type, new_book_obj)
+                        else:
+                            self.input_new_line(line, new_pnr_list[idx], new_book_obj.offline_provider_type, new_book_obj)
+                            last_pnr = line.pnr
+                else:
+                    for idx, line in enumerate(line_list):
+                        self.input_new_line(line, new_pnr_list[idx], new_book_obj.offline_provider_type, new_book_obj)
 
             # Pindahkan pax yang dipilih dari wizard ke booking baru
             for prov_pax in book_obj.passenger_ids:
@@ -595,159 +729,23 @@ class TtSplitReservationWizard(models.TransientModel):
             for provider in book_obj.provider_booking_ids:
                 # provider.create_service_charge()
                 self.create_service_charge_split_offline(provider, pax_list, provider_list, book_obj.passenger_ids,
-                                                         book_obj)
+                                                         book_obj, 'old')
             for provider in new_book_obj.provider_booking_ids:
                 # provider.create_service_charge()
                 self.create_service_charge_split_offline(provider, pax_list, provider_list, new_book_obj.passenger_ids,
-                                                         new_book_obj)
+                                                         new_book_obj, 'new')
 
-            # hitung total dari pricing, lalu bandingkan dg total sale price
-            total_pricing = 0
-            for provider in book_obj.provider_booking_ids:
-                for scs in provider.cost_service_charge_ids:
-                    if scs.charge_type != 'RAC':
-                        total_pricing += scs.total
-            if total_pricing < book_obj.total:
-                pricing_diff = book_obj.total - total_pricing
-                book_obj.provider_booking_ids[0].cost_service_charge_ids[0].amount += pricing_diff
-                book_obj.provider_booking_ids[0].cost_service_charge_ids[0].total += pricing_diff
-            elif total_pricing > book_obj.total:
-                pricing_diff = total_pricing - book_obj.total
-                book_obj.provider_booking_ids[0].cost_service_charge_ids[0].amount -= pricing_diff
-                book_obj.provider_booking_ids[0].cost_service_charge_ids[0].total -= pricing_diff
-
-            total_commission = []
-            for provider in book_obj.provider_booking_ids:
-                for scs in provider.cost_service_charge_ids:
-                    if scs.charge_type == 'RAC':
-                        if not any(d['id'] == scs.commission_agent_id.id for d in total_commission):
-                            # if scs.commission_agent_id.id not in total_commission:
-                            total_commission.append({
-                                'id': scs.commission_agent_id.id,
-                                'amount': scs.amount
-                            })
-                        else:
-                            comm_dict = next(
-                                (item for item in total_commission if item['id'] == scs.commission_agent_id.id), None)
-                            comm_dict['amount'] += scs.amount
-
-            for comm in total_commission:
-                if comm['id'] == book_obj.agent_id.id:
-                    agent_diff = book_obj.agent_commission + comm['amount']
-                    for provider in book_obj.provider_booking_ids:
-                        for scs in provider.cost_service_charge_ids:
-                            if scs.commission_agent_id.id == comm['id']:
-                                if agent_diff > 0:
-                                    scs.amount -= agent_diff
-                                    scs.total -= agent_diff
-                                elif agent_diff < 0:
-                                    scs.amount += agent_diff
-                                    scs.total += agent_diff
-                                break
-                elif comm['id'] == self.env.ref('tt_base.rodex_ho').id:
-                    ho_diff = book_obj.ho_commission + comm['amount']
-                    ho_found = False
-                    for provider in book_obj.provider_booking_ids:
-                        for scs in provider.cost_service_charge_ids:
-                            if scs.commission_agent_id.id == comm['id']:
-                                if ho_diff > 0:
-                                    scs.amount -= ho_diff
-                                    scs.total -= ho_diff
-                                    ho_found = True
-                                elif ho_diff < 0:
-                                    scs.amount += ho_diff
-                                    scs.total += ho_diff
-                                    ho_found = True
-                                break
-                        if ho_found:
-                            break
-                else:
-                    parent_diff = book_obj.parent_agent_commission + comm['amount']
-                    for provider in book_obj.provider_booking_ids:
-                        for scs in provider.cost_service_charge_ids:
-                            if scs.commission_agent_id.id == comm['id']:
-                                if parent_diff > 0:
-                                    scs.amount -= parent_diff
-                                    scs.total -= parent_diff
-                                elif parent_diff < 0:
-                                    scs.amount += parent_diff
-                                    scs.total += parent_diff
-                                break
-
-            total_pricing_new = 0
-            for provider in new_book_obj.provider_booking_ids:
-                for scs in provider.cost_service_charge_ids:
-                    if scs.charge_type != 'RAC':
-                        total_pricing_new += scs.total
-            if total_pricing_new > new_book_obj.total:
-                pricing_diff = new_book_obj.total - total_pricing
-                new_book_obj.provider_booking_ids[0].cost_service_charge_ids[0].amount += pricing_diff
-                new_book_obj.provider_booking_ids[0].cost_service_charge_ids[0].total += pricing_diff
-            elif total_pricing_new > new_book_obj.total:
-                pricing_diff = total_pricing_new - new_book_obj.total
-                new_book_obj.provider_booking_ids[0].cost_service_charge_ids[0].amount -= pricing_diff
-                new_book_obj.provider_booking_ids[0].cost_service_charge_ids[0].total -= pricing_diff
-
-            total_commission = []
-            for provider in new_book_obj.provider_booking_ids:
-                for scs in provider.cost_service_charge_ids:
-                    if scs.charge_type == 'RAC':
-                        if not any(d['id'] == scs.commission_agent_id.id for d in total_commission):
-                            # if scs.commission_agent_id.id not in total_commission:
-                            total_commission.append({
-                                'id': scs.commission_agent_id.id,
-                                'amount': scs.amount
-                            })
-                        else:
-                            comm_dict = next(
-                                (item for item in total_commission if item['id'] == scs.commission_agent_id.id), None)
-                            comm_dict['amount'] += scs.amount
-
-            for comm in total_commission:
-                if comm['id'] == new_book_obj.agent_id.id:
-                    agent_diff = new_book_obj.agent_commission + comm['amount']
-                    for provider in new_book_obj.provider_booking_ids:
-                        for scs in provider.cost_service_charge_ids:
-                            if scs.commission_agent_id.id == comm['id']:
-                                if agent_diff > 0:
-                                    scs.amount += agent_diff
-                                    scs.total += agent_diff
-                                elif agent_diff < 0:
-                                    scs.amount -= agent_diff
-                                    scs.total -= agent_diff
-                                break
-                elif comm['id'] == self.env.ref('tt_base.rodex_ho').id:
-                    ho_diff = new_book_obj.ho_commission + comm['amount']
-                    for provider in new_book_obj.provider_booking_ids:
-                        for scs in provider.cost_service_charge_ids:
-                            if scs.commission_agent_id.id == comm['id']:
-                                if ho_diff > 0:
-                                    scs.amount += ho_diff
-                                    scs.total += ho_diff
-                                elif ho_diff < 0:
-                                    scs.amount -= ho_diff
-                                    scs.total -= ho_diff
-                                break
-                else:
-                    parent_diff = new_book_obj.parent_agent_commission + comm['amount']
-                    for provider in new_book_obj.provider_booking_ids:
-                        for scs in provider.cost_service_charge_ids:
-                            if scs.commission_agent_id.id == comm['id']:
-                                if parent_diff > 0:
-                                    scs.amount += parent_diff
-                                    scs.total += parent_diff
-                                elif parent_diff < 0:
-                                    scs.amount -= parent_diff
-                                    scs.total -= parent_diff
-                                break
+            self.round_service_charge(book_obj, new_book_obj)
 
             book_obj.calculate_service_charge()
             new_book_obj.calculate_service_charge()
 
             book_obj.get_provider_name_from_provider()
             book_obj.get_pnr_list_from_provider()
+            book_obj.get_carrier_name()
             new_book_obj.get_provider_name_from_provider()
             new_book_obj.get_pnr_list_from_provider()
+            new_book_obj.get_carrier_name()
 
             if book_obj.ledger_ids:
                 for led in book_obj.ledger_ids:
@@ -762,6 +760,7 @@ class TtSplitReservationWizard(models.TransientModel):
         else:
             line_list = []
             old_provider_list = []
+            old_pnr_list = []
             provider_dict = {}
             temp_pax_list = []
             temp_pax_dict = {}
@@ -799,8 +798,17 @@ class TtSplitReservationWizard(models.TransientModel):
                         line_list.append(rec2)
 
             if line_list:
-                for idx, line in enumerate(line_list):
-                    self.input_new_line(line, new_pnr_list[idx], new_book_obj.offline_provider_type, new_book_obj)
+                if book_obj.offline_provider_type in ['airline', 'train']:
+                    last_pnr = ''
+                    idx = -1
+                    for line in line_list:
+                        if last_pnr != line.pnr:
+                            last_pnr = line.pnr
+                            idx += 1
+                        self.input_new_line(line, new_pnr_list[idx], new_book_obj.offline_provider_type, new_book_obj)
+                else:
+                    for idx, line in enumerate(line_list):
+                        self.input_new_line(line, new_pnr_list[idx], new_book_obj.offline_provider_type, new_book_obj)
 
             for prov_pax in book_obj.passenger_ids:
                 if prov_pax.id in self.passenger_ids.ids:
@@ -834,159 +842,23 @@ class TtSplitReservationWizard(models.TransientModel):
             for provider in book_obj.provider_booking_ids:
                 # provider.create_service_charge()
                 self.create_service_charge_split_offline(provider, pax_list, provider_list, book_obj.passenger_ids,
-                                                         book_obj)
+                                                         book_obj, 'old')
             for provider in new_book_obj.provider_booking_ids:
                 # provider.create_service_charge()
                 self.create_service_charge_split_offline(provider, pax_list, provider_list, new_book_obj.passenger_ids,
-                                                         new_book_obj)
+                                                         new_book_obj, 'new')
 
-            # hitung total dari pricing, lalu bandingkan dg total sale price
-            total_pricing = 0
-            for provider in book_obj.provider_booking_ids:
-                for scs in provider.cost_service_charge_ids:
-                    if scs.charge_type != 'RAC':
-                        total_pricing += scs.total
-            if total_pricing < book_obj.total:
-                pricing_diff = book_obj.total - total_pricing
-                book_obj.provider_booking_ids[0].cost_service_charge_ids[0].amount += pricing_diff
-                book_obj.provider_booking_ids[0].cost_service_charge_ids[0].total += pricing_diff
-            elif total_pricing > book_obj.total:
-                pricing_diff = total_pricing - book_obj.total
-                book_obj.provider_booking_ids[0].cost_service_charge_ids[0].amount -= pricing_diff
-                book_obj.provider_booking_ids[0].cost_service_charge_ids[0].total -= pricing_diff
-
-            total_commission = []
-            for provider in book_obj.provider_booking_ids:
-                for scs in provider.cost_service_charge_ids:
-                    if scs.charge_type == 'RAC':
-                        if not any(d['id'] == scs.commission_agent_id.id for d in total_commission):
-                            # if scs.commission_agent_id.id not in total_commission:
-                            total_commission.append({
-                                'id': scs.commission_agent_id.id,
-                                'amount': scs.amount
-                            })
-                        else:
-                            comm_dict = next(
-                                (item for item in total_commission if item['id'] == scs.commission_agent_id.id), None)
-                            comm_dict['amount'] += scs.amount
-
-            for comm in total_commission:
-                if comm['id'] == book_obj.agent_id.id:
-                    agent_diff = book_obj.agent_commission + comm['amount']
-                    for provider in book_obj.provider_booking_ids:
-                        for scs in provider.cost_service_charge_ids:
-                            if scs.commission_agent_id.id == comm['id']:
-                                if agent_diff > 0:
-                                    scs.amount -= agent_diff
-                                    scs.total -= agent_diff
-                                elif agent_diff < 0:
-                                    scs.amount += agent_diff
-                                    scs.total += agent_diff
-                                break
-                elif comm['id'] == self.env.ref('tt_base.rodex_ho').id:
-                    ho_diff = book_obj.ho_commission + comm['amount']
-                    ho_found = False
-                    for provider in book_obj.provider_booking_ids:
-                        for scs in provider.cost_service_charge_ids:
-                            if scs.commission_agent_id.id == comm['id']:
-                                if ho_diff > 0:
-                                    scs.amount -= ho_diff
-                                    scs.total -= ho_diff
-                                    ho_found = True
-                                elif ho_diff < 0:
-                                    scs.amount += ho_diff
-                                    scs.total += ho_diff
-                                    ho_found = True
-                                break
-                        if ho_found:
-                            break
-                else:
-                    parent_diff = book_obj.parent_agent_commission + comm['amount']
-                    for provider in book_obj.provider_booking_ids:
-                        for scs in provider.cost_service_charge_ids:
-                            if scs.commission_agent_id.id == comm['id']:
-                                if parent_diff > 0:
-                                    scs.amount -= parent_diff
-                                    scs.total -= parent_diff
-                                elif parent_diff < 0:
-                                    scs.amount += parent_diff
-                                    scs.total += parent_diff
-                                break
-
-            total_pricing_new = 0
-            for provider in new_book_obj.provider_booking_ids:
-                for scs in provider.cost_service_charge_ids:
-                    if scs.charge_type != 'RAC':
-                        total_pricing_new += scs.total
-            if total_pricing_new > new_book_obj.total:
-                pricing_diff = new_book_obj.total - total_pricing
-                new_book_obj.provider_booking_ids[0].cost_service_charge_ids[0].amount += pricing_diff
-                new_book_obj.provider_booking_ids[0].cost_service_charge_ids[0].total += pricing_diff
-            elif total_pricing_new > new_book_obj.total:
-                pricing_diff = total_pricing_new - new_book_obj.total
-                new_book_obj.provider_booking_ids[0].cost_service_charge_ids[0].amount -= pricing_diff
-                new_book_obj.provider_booking_ids[0].cost_service_charge_ids[0].total -= pricing_diff
-
-            total_commission = []
-            for provider in new_book_obj.provider_booking_ids:
-                for scs in provider.cost_service_charge_ids:
-                    if scs.charge_type == 'RAC':
-                        if not any(d['id'] == scs.commission_agent_id.id for d in total_commission):
-                            # if scs.commission_agent_id.id not in total_commission:
-                            total_commission.append({
-                                'id': scs.commission_agent_id.id,
-                                'amount': scs.amount
-                            })
-                        else:
-                            comm_dict = next(
-                                (item for item in total_commission if item['id'] == scs.commission_agent_id.id), None)
-                            comm_dict['amount'] += scs.amount
-
-            for comm in total_commission:
-                if comm['id'] == new_book_obj.agent_id.id:
-                    agent_diff = new_book_obj.agent_commission + comm['amount']
-                    for provider in new_book_obj.provider_booking_ids:
-                        for scs in provider.cost_service_charge_ids:
-                            if scs.commission_agent_id.id == comm['id']:
-                                if agent_diff > 0:
-                                    scs.amount += agent_diff
-                                    scs.total += agent_diff
-                                elif agent_diff < 0:
-                                    scs.amount -= agent_diff
-                                    scs.total -= agent_diff
-                                break
-                elif comm['id'] == self.env.ref('tt_base.rodex_ho').id:
-                    ho_diff = new_book_obj.ho_commission + comm['amount']
-                    for provider in new_book_obj.provider_booking_ids:
-                        for scs in provider.cost_service_charge_ids:
-                            if scs.commission_agent_id.id == comm['id']:
-                                if ho_diff > 0:
-                                    scs.amount += ho_diff
-                                    scs.total += ho_diff
-                                elif ho_diff < 0:
-                                    scs.amount -= ho_diff
-                                    scs.total -= ho_diff
-                                break
-                else:
-                    parent_diff = new_book_obj.parent_agent_commission + comm['amount']
-                    for provider in new_book_obj.provider_booking_ids:
-                        for scs in provider.cost_service_charge_ids:
-                            if scs.commission_agent_id.id == comm['id']:
-                                if parent_diff > 0:
-                                    scs.amount += parent_diff
-                                    scs.total += parent_diff
-                                elif parent_diff < 0:
-                                    scs.amount -= parent_diff
-                                    scs.total -= parent_diff
-                                break
+            self.round_service_charge(book_obj, new_book_obj)
 
             book_obj.calculate_service_charge()
             new_book_obj.calculate_service_charge()
 
             book_obj.get_provider_name_from_provider()
             book_obj.get_pnr_list_from_provider()
+            book_obj.get_carrier_name()
             new_book_obj.get_provider_name_from_provider()
             new_book_obj.get_pnr_list_from_provider()
+            new_book_obj.get_carrier_name()
 
             if book_obj.ledger_ids:
                 for led in book_obj.ledger_ids:
