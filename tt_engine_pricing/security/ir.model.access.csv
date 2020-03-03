@@ -4,3 +4,4 @@ tt_pricing_provider_line_all,tt.pricing.provider.line.all,model_tt_pricing_provi
 tt_pricing_agent_all,tt.pricing.agent.all,model_tt_pricing_agent,base.user_admin,1,1,1,1
 tt_pricing_agent_line_all,tt.pricing.agent.line.all,model_tt_pricing_agent_line,base.user_admin,1,1,1,1
 tt_pricing_charge_code_all,tt.pricing.charge.code.all,model_tt_pricing_charge_code,base.user_admin,1,1,1,1
+tt_pricing_class_of_service_all,tt.pricing.class.of.service.all,model_tt_pricing_class_of_service,base.user_admin,1,1,1,1

@@ -22,6 +22,11 @@ class PricingProvider(models.Model):
     is_commission = fields.Boolean('Is Commission', default=False)
     is_provider_commission = fields.Boolean('Is Provider Commission', default=False)
 
+    def do_compute_name(self):
+        objs = self.sudo().search([])
+        for rec in objs:
+            rec._compute_name()
+
     @api.multi
     @api.depends('provider_ids.code','provider_ids','carrier_ids','carrier_ids.code')
     def _compute_name(self):
@@ -184,6 +189,9 @@ class PricingProviderLine(models.Model):
     charge_code_type = fields.Selection(variables.ACCESS_TYPE, 'Charge Code Type', required=True, default='all')
     charge_code_ids = fields.Many2many('tt.pricing.charge.code', 'tt_pricing_provider_line_charge_code_rel', 'pricing_line_id', 'charge_code_id', string='Charge Codes')
     display_charge_codes = fields.Char('Charge Codes', compute='_compute_display_charge_codes', store=True, readonly=1)
+    class_of_service_type = fields.Selection(variables.ACCESS_TYPE, 'Class of Service Type', required=True, default='all')
+    class_of_service_ids = fields.Many2many('tt.pricing.class.of.service', 'tt_pricing_provider_line_class_of_service_rel','pricing_line_id', 'class_of_service_id', string='Class of Services')
+    display_class_of_services = fields.Char('Class of Services', compute='_compute_display_class_of_services', store=True, readonly=1)
     currency_id = fields.Many2one('res.currency', 'Currency', required=True)
     fee_amount = fields.Monetary('Fee Amount', default=0)
     is_per_route = fields.Boolean('Is Per Route', default=False)
@@ -260,6 +268,13 @@ class PricingProviderLine(models.Model):
             res = [data.code for data in rec.charge_code_ids]
             rec.display_charge_codes = ','.join(res)
 
+    @api.multi
+    @api.depends('class_of_service_ids')
+    def _compute_display_class_of_services(self):
+        for rec in self:
+            res = [data.code for data in rec.class_of_service_ids]
+            rec.display_class_of_services = ','.join(res)
+
     def get_pricing_data(self):
         origin_codes = [rec.code for rec in self.origin_ids]
         origin_city_ids = [rec.id for rec in self.origin_city_ids]
@@ -268,6 +283,7 @@ class PricingProviderLine(models.Model):
         destination_city_ids = [rec.id for rec in self.destination_city_ids]
         destination_country_codes = [rec.code for rec in self.destination_country_ids]
         charge_codes = [rec.code for rec in self.charge_code_ids]
+        class_of_services = [rec.code for rec in self.class_of_service_ids]
         res = {
             'sequence': self.sequence,
             'date_from': self.date_from,
@@ -282,6 +298,8 @@ class PricingProviderLine(models.Model):
             'destination_country_codes': destination_country_codes,
             'charge_code_type': self.charge_code_type,
             'charge_codes': charge_codes,
+            'class_of_service_type': self.class_of_service_type,
+            'class_of_services': class_of_services,
             'currency_code': self.currency_id and self.currency_id.name or '',
             'fee_amount': self.fee_amount,
             'is_per_route': self.is_per_route,
@@ -314,6 +332,23 @@ class PricingProviderLine(models.Model):
 
 class PricingChargeCode(models.Model):
     _name = 'tt.pricing.charge.code'
+    _description = 'Rodex Model'
+
+    name = fields.Char('Name')
+    code = fields.Char('Code', required=True)
+    active = fields.Boolean('Active', default=True)
+
+    def get_pricing_data(self):
+        res = {
+            'name': self.name,
+            'code': self.code,
+            'active': self.active,
+        }
+        return res
+
+
+class PricingClassOfService(models.Model):
+    _name = 'tt.pricing.class.of.service'
     _description = 'Rodex Model'
 
     name = fields.Char('Name')
