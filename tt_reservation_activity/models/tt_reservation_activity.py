@@ -447,13 +447,16 @@ class ReservationActivity(models.Model):
                 contact_objs.append(self.create_contact_api(con, booker_obj, context))
 
             contact_obj = contact_objs[0]
-
-            activity_type_id = self.env['tt.master.activity.lines'].sudo().search([('uuid', '=', search_request['product_type_uuid'])])
-            if activity_type_id:
-                activity_type_id = activity_type_id[0]
             provider_id = self.env['tt.provider'].sudo().search([('code', '=', provider)])
             if provider_id:
                 provider_id = provider_id[0]
+
+            activity_product_id = self.env['tt.master.activity'].sudo().search([('uuid', '=', search_request['product_uuid']), ('provider_id', '=', provider_id.id)], limit=1)
+            if activity_product_id:
+                activity_product_id = activity_product_id[0]
+            activity_type_id = self.env['tt.master.activity.lines'].sudo().search([('uuid', '=', search_request['product_type_uuid']), ('activity_id', '=', activity_product_id.id)], limit=1)
+            if activity_type_id:
+                activity_type_id = activity_type_id[0]
 
             list_passenger_value = self.create_passenger_value_api_test(passengers)
             pax_ids = self.create_customer_api(passengers, context, booker_obj.seq_id, contact_obj.seq_id)
@@ -480,11 +483,16 @@ class ReservationActivity(models.Model):
                         }
                         pax_opt_obj = self.env['tt.reservation.passenger.activity.option'].sudo().create(pax_opt_vals)
                         pax_options.append(pax_opt_obj.id)
+
+                if temp_pax.get('sku_id'):
+                    temp_sku_id = self.env['tt.master.activity.sku'].sudo().search([('sku_id', '=', temp_pax['sku_id']), ('activity_line_id', '=', activity_type_id.id)], limit=1)
+                    temp_sku_id = temp_sku_id and temp_sku_id[0].id or 0
+
                 list_passenger_value[idx][2].update({
                     'customer_id': pax_ids[idx].id,
                     'title': temp_pax['title'],
                     'pax_type': temp_pax['pax_type'],
-                    'activity_sku_id': temp_pax.get('sku_real_id', 0),
+                    'activity_sku_id': temp_sku_id,
                     'option_ids': [(6, 0, pax_options)],
                 })
 
