@@ -81,12 +81,10 @@ class ApiManagement(models.Model):
             if _user.is_banned:
                 additional_msg = ""
                 try:
-                    addtional_msg = 'Until %s.' % datetime.strftime(self.env['tt.ban.user'].search([('user_id', '=', _user.id)],
-                                                                           limit=1).end_datetime,
-                                                                    '%Y-%m-%d %I %p')
+                    additional_msg = 'Until %s.' % datetime.strftime(self.env['tt.ban.user'].search([('user_id', '=', _user.id)], limit=1).end_datetime, '%Y-%m-%d %I %p')
                 except:
                     pass
-                raise RequestException(1029,additional_message=addtional_msg)
+                raise RequestException(1029,additional_message=additional_msg)
             if not _user.is_api_user:
                 raise Exception('User is not allowed to access API')
 

@@ -135,7 +135,7 @@
                             <div id="rectangle" style="width: 420px; height: 50px; bottom: 15px; background-image:  url('/tt_report_common/static/images/background footer airline.jpg'); border-radius: 25px; position: absolute; z-index: 0; margin-right:10px;">
                                 <div style="padding-left: 60px; padding-bottom: 10px; vertical-align: middle; text-align: center; border-radius: 25px; background-color: rgba(39,62,84,0.76); padding-top: 5px;">
                                     <div style="vertical-align: middle; display: flex; letter-spacing: 0.05em; font-size: 24px; color: white; font-weight: 600; margin-top: 0px; margin-left: -10px;">
-                                        <span t-field="doc.name" style="margin-top: 5px;"/>
+                                        <span t-field="doc.pnr" style="margin-top: 5px;"/>
                                     </div>
                                 </div>
                             </div>
@@ -143,6 +143,12 @@
                     </div>
                 </div>
                 <div style="border: 1px solid #BBB; margin-bottom: 10px; margin-top: 10px; position: absolute; left: 0; right: 0; width: 100%"/>
+
+                <div style="margin-bottom: 10px; margin-top: 20px;">
+                    <span style="font-size: 18px; font-weight: 730">No. Booking : </span>
+                    <span t-field="doc.name" style="font-size: 18px; font-weight: 730"/><br/>
+                </div>
+
                 <div style="margin-bottom: 10px; margin-top: 20px;">
                     <span style="font-size: 28px; font-weight: 730">Flight Detail(s)</span><br/>
                 </div>

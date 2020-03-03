@@ -92,6 +92,12 @@
     <!-- Content Version 2 -->
     <template id="reservation_hotel_content_view">
         <div class="box" style="margin: 0px 20px 20px 20px">
+            <!-- No. Booking -->
+            <div style="margin-bottom: 10px; margin-top: 5px;">
+                <span style="font-size: 18px; font-weight: 730">No. Booking : </span>
+                <span t-field="doc.name" style="font-size: 18px; font-weight: 730"/><br/>
+            </div>
+
             <!-- Hotel Description -->
             <div class="title" style="background-color: #DC5413; border-radius: 20px 20px 0 0; border-color: #CCC; padding-top: 5px; padding-bottom: 5px">
                 <span style="padding-left: 20px; color: white; font-weight: 600; font-size: 18px">Hotel name: <span t-field="doc.hotel_name"/></span><br/>
@@ -204,7 +210,7 @@
             <t t-foreach="docs" t-as="doc">
                 <div class="page">
                     <t t-call="tt_report_common.external_layout">
-                        <br/>
+<!--                        <br/>-->
                         <t t-call="tt_report_common.reservation_hotel_content_view"/>
                     </t>
                 </div>

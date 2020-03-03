@@ -60,6 +60,7 @@ class TransportCarrier(models.Model):
                     res[curr_rec['code']] = curr_rec
                 else:
                     res["%s~%s" % (curr_rec['code'],idx+1)] = curr_rec
+            _logger.info(json.dumps(res))
             res = ERR.get_no_error(res)
         except Exception as e:
             _logger.error(traceback.format_exc())

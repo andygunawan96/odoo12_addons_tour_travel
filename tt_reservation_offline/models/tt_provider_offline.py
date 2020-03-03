@@ -1,5 +1,6 @@
 from odoo import api, fields, models, _
 from ...tools import variables
+from datetime import datetime
 
 STATE_OFFLINE = [
     ('draft', 'Draft'),
@@ -118,6 +119,22 @@ class ProviderOffline(models.Model):
                 sale_price = self.booking_id.total
                 provider_line_count = 1
 
+        total_amount = self.booking_id.total_commission_amount
+        fee_amount_val = self.booking_id.get_fee_amount(self.booking_id.agent_id, provider_type_id,
+                                                        self.booking_id.total_commission_amount)
+        real_comm_amount = total_amount - (fee_amount_val['amount'] * (len(self.booking_id.provider_booking_ids) * len(self.booking_id.passenger_ids)))
+
+        """ Hitung fee amount """
+        for psg in self.booking_id.passenger_ids:
+            fee_amount_vals = self.booking_id.sudo().get_fee_amount(self.booking_id.agent_id, provider_type_id,
+                                                                    self.booking_id.total_commission_amount,
+                                                                    psg)
+            total_amount -= fee_amount_vals.get('amount')
+            fee_amount_vals['provider_offline_booking_id'] = self.id
+            fee_amount_vals['amount'] = -(fee_amount_vals['amount'])
+            fee_amount_vals['total'] = -(fee_amount_vals['total'])
+            scs_list.append(fee_amount_vals)
+
         # Get all pricing per pax
         for psg in self.booking_id.passenger_ids:
             scs = []
@@ -135,7 +152,7 @@ class ProviderOffline(models.Model):
             }
             vals['passenger_offline_ids'].append(psg.id)
             scs_list.append(vals)
-            commission_list = pricing_obj.get_commission(self.booking_id.total_commission_amount / len(self.booking_id.passenger_ids),
+            commission_list = pricing_obj.get_commission(real_comm_amount / len(self.booking_id.passenger_ids),
                                                          self.booking_id.agent_id, provider_type_id)
             for comm in commission_list:
                 if comm['amount'] > 0:
@@ -265,15 +282,49 @@ class ProviderOffline(models.Model):
             scs_obj = service_chg_obj.create(scs_2)
             scs_list_3.append(scs_obj.id)
 
-    def create_service_charge_hotel(self):
+    def create_service_charge_hotel(self, index):
         self.delete_service_charge()
 
         provider_type_id = self.env['tt.provider.type'].search([('code', '=', self.booking_id.offline_provider_type)], limit=1)
 
+        book_obj = self.booking_id
+
         scs_list = []
         scs_list_2 = []
         pricing_obj = self.env['tt.pricing.agent'].sudo()
-        sale_price = self.booking_id.total / len(self.booking_id.line_ids)
+        sale_price = book_obj.total / len(self.booking_id.line_ids)
+
+        """ Get provider fee amount """
+        total_fee_amount = 0
+        line_obj = book_obj.line_ids[index]
+
+        check_in = datetime.strptime(line_obj.check_in, '%Y-%m-%d')
+        check_out = datetime.strptime(line_obj.check_out, '%Y-%m-%d')
+        days = check_out - check_in
+        days_int = int(days.days)
+
+        fee_amount_vals = book_obj.get_fee_amount(book_obj.agent_id, provider_type_id,
+                                                  book_obj.total_commission_amount)
+        fee_amount_vals['provider_offline_booking_id'] = self.id
+        fee_amount_vals['amount'] = fee_amount_vals.get('amount')
+        fee_amount_vals['total'] = fee_amount_vals.get('total') * line_obj.obj_qty * days_int
+        scs_list.append(fee_amount_vals)
+
+        """ Get total fee amount """
+        for line in book_obj.line_ids:
+            check_in = datetime.strptime(line.check_in, '%Y-%m-%d')
+            check_out = datetime.strptime(line.check_out, '%Y-%m-%d')
+            days = check_out - check_in
+            days_int = int(days.days)
+
+            fee_amount_vals = book_obj.get_fee_amount(book_obj.agent_id, provider_type_id,
+                                                      book_obj.total_commission_amount)
+            fee_amount_vals['provider_offline_booking_id'] = self.id
+            fee_amount_vals['amount'] = fee_amount_vals.get('amount')
+            fee_amount_vals['total'] = fee_amount_vals.get('total') * line.obj_qty * days_int
+            total_fee_amount += fee_amount_vals.get('total')
+
+        real_comm_amount = book_obj.total_commission_amount - total_fee_amount
 
         # Get all pricing per pax
         vals = {
@@ -288,16 +339,14 @@ class ProviderOffline(models.Model):
             'total': sale_price,
         }
         scs_list.append(vals)
-        commission_list = pricing_obj.get_commission(
-            self.booking_id.total_commission_amount,
-            self.booking_id.agent_id, provider_type_id)
+        commission_list = pricing_obj.get_commission(real_comm_amount, book_obj.agent_id, provider_type_id)
         for comm in commission_list:
             if comm['amount'] > 0:
                 vals2 = vals.copy()
                 vals2.update({
                     'commission_agent_id': comm['commission_agent_id'],
-                    'total': comm['amount'] * -1 / len(self.booking_id.line_ids),
-                    'amount': comm['amount'] * -1 / len(self.booking_id.line_ids),
+                    'total': comm['amount'] * -1 / len(book_obj.line_ids),
+                    'amount': comm['amount'] * -1 / len(book_obj.line_ids),
                     'charge_code': comm['code'],
                     'charge_type': 'RAC',
                 })
