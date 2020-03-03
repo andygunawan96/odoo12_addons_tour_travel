@@ -26,3 +26,4 @@ from . import tt_reservation_passenger_hotel
 from . import scrapper_history
 from . import read_file
 from . import res_config
+from . import tt_refund_wizard

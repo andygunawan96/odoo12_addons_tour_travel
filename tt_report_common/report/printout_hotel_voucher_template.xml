@@ -103,10 +103,10 @@
                         <div class="col-4">
                             <b>
                                 <span>Phone</span><br/>
-                                <span>Agent Ref. #</span><br/>
+                                <!--<span>Agent Ref. #</span><br/>-->
+                                <span>Hotel Confirm #</span><br/>
                                 <span>Check In Date</span><br/>
                                 <span>Number Night(s)</span><br/>
-                                <span>Room Info</span><br/>
                             </b>
                         </div>
                         <div class="col-1">
@@ -114,14 +114,13 @@
                             <span>:</span>
                             <span>:</span>
                             <span>:</span>
-                            <span>:</span>
                         </div>
                         <div class="col-6">
                             <t t-if="doc.hotel_phone"><span t-field="doc.hotel_phone"/></t><t t-else="">-</t><br/>
-                            <span t-field="doc.room_detail_ids[0].name"/><br/>
+                            <!--<span t-field="doc.room_detail_ids[0].name"/><br/>-->
+                            <span t-field="doc.room_detail_ids[0].issued_name"/><br/>
                             <span t-field="doc.checkin_date"/><br/>
                             <span t-field="doc.nights"/><br/>
-                            <span t-field="doc.room_detail_ids[0].room_name"/><br/>
                         </div>
                     </div>
                 </div>
@@ -130,9 +129,8 @@
                         <div class="col-4">
                             <b>
                                 <span>Fax</span><br/>
-                                <span>Hotel Confirm #</span><br/>
-                                <span>Check Out Date</span><br/>
                                 <span>Room Name</span><br/>
+                                <span>Check Out Date</span><br/>
                                 <span>Num. of Room</span><br/>
                             </b>
                         </div>
@@ -141,40 +139,59 @@
                             <span>:</span>
                             <span>:</span>
                             <span>:</span>
-                            <span>:</span>
                         </div>
                         <div class="col-6">
                             <span>-</span><br/>
-                            <span t-field="doc.room_detail_ids[0].issued_name"/><br/>
-                            <span t-field="doc.checkout_date"/><br/>
                             <span t-field="doc.room_detail_ids[0].room_name"/><br/>
+                            <span t-field="doc.checkout_date"/><br/>
                             <span t-field="doc.room_count"/><br/>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <!-- Guest Description -->
-            <div class="box" style="margin: 0 20px; border: 1px solid #BBB; border-radius: 20px">
-                <div class="row" style="margin: 5px 0;">
-                    <div class="col-2" style="text-align: center; font-size:17px;">No.</div>
-                    <div class="col-8" style="text-align: left; font-size:17px;">Name</div>
-                    <div class="col-2" style="text-align: center; font-size:17px;">Type</div>
+            <!--Guest Description-->
+            <div class="box" style="margin: 0px; border: 1px solid #BBB; border-radius: 20px">
+                <div class="title" style="background-color: #DC5413; border-radius: 20px 20px 0 0; border-color: #CCC; padding-top: 5px; padding-bottom: 5px">
+                    <span style="padding-left: 20px; color: white; font-weight: 600; font-size: 18px">Room Information</span><br/>
                 </div>
-                <div style="border: 1px solid #BBB; margin-bottom: 5px; margin-left: 15px; margin-right: 15px"/>
-                <t t-foreach="doc.passenger_ids" t-as="psg">
-                    <div class="row" style="margin-left: 0px; margin-right: 0px">
-                        <div class="col-2" style="text-align: center">
-                            <label style="font-weight:450; font-size:17px; margin-bottom: 0px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"><span t-esc="psg_index+1"/>.</label>
-                        </div>
-                        <div class="col-8" style="text-align: left">
-                            <label style="font-weight:450; font-size:17px; margin-bottom: 0px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"><t t-if="psg.title"><span t-field="psg.title"/>. </t><span t-field="psg.first_name"/> <span t-field="psg.last_name"/></label>
-                        </div>
-                        <div class="col-2" style="text-align: center">
-                            <label style="font-weight:450; font-size:17px; margin-bottom: 0px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">-</label>
-                        </div>
+                <div class="row" style="margin-left: 0px; margin-right: 0px">
+                    <div class="col-2" style="text-align: center; border-right: 1px solid #BBB">
+                        <label style="font-weight:450; font-size:17px; margin-bottom: 0px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                            <span>Pax:</span>
+                        </label>
                     </div>
-                </t>
+                    <div class="col-9" style="text-align: left">
+                        <t t-foreach="doc.passenger_ids" t-as="psg">
+                            <label style="font-weight:450; font-size:17px; margin-bottom: 0px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"><span t-esc="psg_index+1"/>.</label>
+                            <label style="font-weight:450; font-size:17px; margin-bottom: 0px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"><t t-if="psg.title"><span t-field="psg.title"/>. </t><span t-field="psg.first_name"/> <span t-field="psg.last_name"/></label>
+                            <br/>
+                        </t>
+                    </div>
+                </div>
+                <hr/>
+                <div class="row" style="margin-left: 0px; margin-right: 0px">
+                    <div class="col-2" style="text-align: center; border-right: 1px solid #BBB">
+                        <label style="font-weight:450; font-size:17px; margin-bottom: 0px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                            <span>Remark(s):</span>
+                        </label>
+                    </div>
+                    <div class="col-9">
+                        <t t-set="idx" t-value="1"/>
+                        <t t-foreach="doc.room_detail_ids" t-as="room">
+                            <label style="font-weight:450; font-size:17px; margin-bottom: 0px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                                Room <t t-esc="idx"/> (<span t-field="room.room_name"/>):
+                                <t t-if="room.special_request">
+                                    <span t-field="room.special_request"/>
+                                </t>
+                                <t t-else="">
+                                    <span> No Special Request </span>
+                                </t>
+                            </label><br/>
+                            <t t-set="idx" t-value="idx + 1"/>
+                        </t>
+                    </div>
+                </div>
                 <div style="margin-bottom: 5px"/>
             </div>
         </div>
