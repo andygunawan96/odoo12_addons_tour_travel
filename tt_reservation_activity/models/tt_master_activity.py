@@ -1270,6 +1270,10 @@ class MasterActivity(models.Model):
                     'active': False
                 })
             for rec in res['response']:
+                rec.update({
+                    'activity_id': product_id,
+                    'active': True
+                })
                 activity_type_exist = self.env['tt.master.activity.lines'].sudo().search([('activity_id', '=', product_id), ('uuid', '=', rec['uuid']), '|',('active', '=', False), ('active', '=', True)])
                 vals = rec
 
@@ -1355,58 +1359,6 @@ class MasterActivity(models.Model):
                         self.env.cr.commit()
                     option_ids.append(opt_obj.id)
 
-                if rec['type_details']['data']['options']['perBooking']:
-                    for book in rec['type_details']['data']['options']['perBooking']:
-                        value2 = {
-                            'uuid': book['uuid'],
-                            'name': book['name'],
-                            'description': book['description'],
-                            'required': book['required'],
-                            'formatRegex': book['formatRegex'],
-                            'inputType': book['inputType'],
-                            'price': book.get('price', 0),
-                            'type': 'perBooking',
-                        }
-                        temp2 = self.env['tt.activity.booking.option'].sudo().create(value2)
-                        self.env.cr.commit()
-                        if book.get('items'):
-                            for item in book['items']:
-                                value4 = {
-                                    'booking_option_id': temp2.id,
-                                    'label': item['label'],
-                                    'value': item['value'],
-                                    'price': item.get('price', 0),
-                                    'currency_id': self.env['res.currency'].search([('name', '=', 'SGD')], limit=1).id,
-                                }
-                                self.env['tt.activity.booking.option.line'].sudo().create(value4)
-                                self.env.cr.commit()
-                        option_ids.append(temp2.id)
-                if rec['type_details']['data']['options']['perPax']:
-                    for pax in rec['type_details']['data']['options']['perPax']:
-                        value3 = {
-                            'uuid': pax['uuid'],
-                            'name': pax['name'],
-                            'description': pax['description'],
-                            'required': pax['required'],
-                            'formatRegex': pax['formatRegex'],
-                            'inputType': pax['inputType'],
-                            'price': pax.get('price', 0),
-                            'type': 'perPax',
-                        }
-                        temp = self.env['tt.activity.booking.option'].sudo().create(value3)
-                        self.env.cr.commit()
-                        if pax.get('items'):
-                            for item in pax['items']:
-                                value5 = {
-                                    'booking_option_id': temp.id,
-                                    'label': item['label'],
-                                    'value': item['value'],
-                                    'price': item.get('price', 0),
-                                    'currency_id': self.env['res.currency'].search([('name', '=', 'SGD')], limit=1).id,
-                                }
-                                self.env['tt.activity.booking.option.line'].sudo().create(value5)
-                                self.env.cr.commit()
-                        option_ids.append(temp.id)
                 activity_obj.update({
                     'option_ids': [(6, 0, option_ids)],
                 })
