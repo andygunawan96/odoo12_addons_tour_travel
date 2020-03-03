@@ -18,7 +18,9 @@ class AgentReportInvoice(models.Model):
         invoice.date_invoice, invoice.name as invoice_number, invoice.total as invoice_total,
         invoice.state, invoice.payment_acquirers as payment_acquirers, billing.name as billing_statement,
         agent.name as agent_name, agent_type.name as agent_type,
-        customer.name as customer_name,
+        customer.name as booker_name,
+        customer_parent.name as customer_name,
+        customer_type.name as customer_type,
         invoice_detail.name as invoice_line, invoice_detail.total as invoice_line_total, invoice_detail.reference as invoice_line_reference,
         payment.reference as payment_ref, payment_invoice.pay_amount as payment_pay_amount,
         acquirer.name as payment_acquirer, acquirer.account_number as payment_acquirer_account_number,
@@ -35,6 +37,7 @@ class AgentReportInvoice(models.Model):
         LEFT JOIN tt_agent_type agent_type ON agent.agent_type_id = agent_type.id
         LEFT JOIN tt_customer customer ON invoice.booker_id = customer.id
         LEFT JOIN tt_customer_parent customer_parent ON invoice.customer_parent_id = customer_parent.id
+        LEFT JOIN tt_customer_parent_type customer_type ON customer_parent.customer_parent_type_id = customer_type.id
         LEFT JOIN tt_payment_invoice_rel payment_invoice ON payment_invoice.invoice_id = invoice.id
         LEFT JOIN tt_payment payment ON payment.id = payment_invoice.payment_id
         LEFT JOIN payment_acquirer acquirer ON payment.acquirer_id = acquirer.id
