@@ -20,7 +20,7 @@ class AgentRegistrationPayment(models.Model):
 
     state = fields.Selection(STATE, 'State', default='draft')
     agent_registration_id = fields.Many2one('tt.agent.registration', 'Request')
-    amount = fields.Monetary('Amount')
+    amount = fields.Monetary('Amount', readonly=True)
     currency_id = fields.Many2one('res.currency', string='Currency',
                                   required=True, readonly=True, states={'draft': [('readonly', False)]},
                                   default=lambda self: self.env.user.company_id.currency_id)
