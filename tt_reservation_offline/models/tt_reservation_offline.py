@@ -366,10 +366,10 @@ class IssuedOffline(models.Model):
         self.get_carrier_name()
         if not self.provider_name:
             raise UserError(_('List of Provider can\'t be Empty'))
-        for provider in self.provider_booking_ids:
+        for idx, provider in enumerate(self.provider_booking_ids):
             # create pricing list
             if self.provider_type_id_name in ['hotel']:
-                provider.create_service_charge_hotel()
+                provider.create_service_charge_hotel(idx)
             else:
                 provider.create_service_charge()
         self.calculate_service_charge()
@@ -674,44 +674,153 @@ class IssuedOffline(models.Model):
         else:
             return ''
 
+    def get_fee_amount(self, agent_id, provider_type_id, input_commission, passenger_id=None):
+        ho_agent = self.env.ref('tt_base.rodex_ho').sudo()
+
+        pricing_obj = self.env['tt.pricing.agent'].sudo()
+
+        price_obj = pricing_obj.sudo().search([('agent_type_id', '=', agent_id.agent_type_id.id),
+                                               ('provider_type_id', '=', provider_type_id.id)], limit=1)
+
+        """ kurangi input amount dengan fee amount. masukkan fee amount ke dalam service charge HOC """
+        vals = {
+            'commission_agent_id': ho_agent.id,
+            'agent_id': ho_agent.id,
+            'agent_name': ho_agent.name,
+            'agent_type_id': ho_agent.agent_type_id.id,
+            'amount': price_obj.fee_amount if price_obj.fee_amount < input_commission else input_commission,
+            'total': price_obj.fee_amount if price_obj.fee_amount < input_commission else input_commission,
+            'charge_type': 'RAC',
+            'charge_code': 'hoc',
+            'description': self.name,
+            'pax_type': passenger_id.pax_type if passenger_id else 'ADT',
+            'currency_id': price_obj.currency_id.id,
+            'passenger_offline_ids': []
+        }
+        if passenger_id:
+            vals['passenger_offline_ids'].append(passenger_id.id)
+        return vals
+
     @api.onchange('total_commission_amount')
     @api.depends('total_commission_amount')
     def _get_agent_commission(self):
         for rec in self:
-            if rec.offline_provider_type and rec.offline_provider_type != 'other':
+            if rec.offline_provider_type:
+                pnr_list = []
+                fee_amount_list = []
+                total_fee_amount = 0
+                total_amount = rec.total_commission_amount
+
                 pricing_obj = rec.env['tt.pricing.agent'].sudo()
-                provider_type_id = self.env['tt.provider.type'].sudo().search([('code', '=', rec.offline_provider_type)], limit=1)
-                commission_list = pricing_obj.sudo().get_commission(rec.total_commission_amount, rec.agent_id,
-                                                                    provider_type_id)
-                if rec.total_commission_amount != 0:
+
+                """ Get provider type id """
+                if rec.offline_provider_type != 'other':
+                    provider_type_id = self.env['tt.provider.type'].sudo().search(
+                        [('code', '=', rec.offline_provider_type)], limit=1)
+                else:
+                    provider_type_id = self.env['tt.provider.type'].sudo().search([('code', '=', 'offline')], limit=1)
+
+                if not self.split_to_resv_ids:
+                    """ hitung fee amount di sini """
+                    for line in rec.line_ids:
+                        if rec.offline_provider_type in ['airline', 'train']:
+                            """ Jika offline type = airline, rule fee amount : per PNR per pax """
+                            if line.pnr not in pnr_list:
+                                pnr_list.append(line.pnr)
+                                for psg in rec.passenger_ids:
+                                    fee_amount_vals = rec.sudo().get_fee_amount(rec.agent_id, provider_type_id,
+                                                                                rec.total_commission_amount, psg)
+                                    fee_amount_list.append(fee_amount_vals)
+                                    total_amount -= fee_amount_vals.get('amount')
+                                    total_fee_amount += fee_amount_vals.get('amount')
+                        elif rec.offline_provider_type == 'hotel':
+                            """ Jika offline type = hotel, rule fee amount : per night per room * qty """
+                            check_in = datetime.strptime(line.check_in, '%Y-%m-%d')
+                            check_out = datetime.strptime(line.check_out, '%Y-%m-%d')
+                            days = check_out - check_in
+                            days_int = int(days.days)
+                            for day in range(0, days_int):
+                                fee_amount_vals = rec.get_fee_amount(rec.agent_id, provider_type_id,
+                                                                     rec.total_commission_amount)
+                                fee_amount_vals['amount'] = fee_amount_vals.get('amount') * line.obj_qty
+                                fee_amount_vals['total'] = fee_amount_vals.get('total') * line.obj_qty
+                                fee_amount_list.append(fee_amount_vals)
+                                total_amount -= fee_amount_vals.get('total')
+                                total_fee_amount += fee_amount_vals.get('total')
+                        else:
+                            """ else, rule fee amount : per line/provider per pax """
+                            for psg in rec.passenger_ids:
+                                fee_amount_vals = rec.get_fee_amount(rec.agent_id, provider_type_id,
+                                                                     rec.total_commission_amount, psg)
+                                fee_amount_list.append(fee_amount_vals)
+                                total_amount -= fee_amount_vals.get('amount')
+                                total_fee_amount += fee_amount_vals.get('amount')
+
+                    rec.agent_commission = 0
+                    rec.parent_agent_commission = 0
+                    rec.ho_commission = 0
+
+                    """ masukkan semua fee amount ke HO Commission """
+                    if total_amount > 0:
+                        rec.ho_commission += total_fee_amount
+                    else:
+                        rec.ho_commission += rec.total_commission_amount
+
+                    if total_amount > 0:
+                        """ Get commission list """
+                        commission_list = pricing_obj.sudo().get_commission(total_amount, rec.agent_id, provider_type_id)
+
+                        if rec.total_commission_amount != 0:
+                            for comm in commission_list:
+                                if comm.get('code') == 'rac':
+                                    rec.agent_commission += comm.get('amount')
+                                elif comm.get('agent_type_id') == rec.env.ref('tt_base.rodex_ho').sudo().agent_type_id.id:
+                                    rec.ho_commission += comm.get('amount')
+                                else:
+                                    rec.parent_agent_commission += comm.get('amount')
+                else:
+                    commission_list = []
+                    """ Jika belum di split, compute commission dari pricing di provider """
+                    for provider in self.provider_booking_ids:
+                        for scs in provider.cost_service_charge_ids:
+                            scs_val = scs.to_dict()
+                            if scs.charge_type != 'FARE':
+                                scs_val['agent_type_id'] = scs.commission_agent_id.agent_type_id.id
+                                commission_list.append(scs_val)
+
                     rec.agent_commission = 0
                     rec.parent_agent_commission = 0
                     rec.ho_commission = 0
 
                     for comm in commission_list:
-                        if comm.get('code') == 'rac':
-                            rec.agent_commission += comm.get('amount')
-                        elif comm.get('agent_type_id') == rec.env.ref('tt_base.rodex_ho').sudo().agent_type_id.id:
-                            rec.ho_commission += comm.get('amount')
-                        else:
-                            rec.parent_agent_commission += comm.get('amount')
-            elif rec.offline_provider_type and rec.offline_provider_type == 'other':
-                pricing_obj = rec.env['tt.pricing.agent'].sudo()
-                provider_type_id = self.env['tt.provider.type'].sudo().search([('code', '=', 'offline')], limit=1)
-                commission_list = pricing_obj.sudo().get_commission(rec.total_commission_amount, rec.agent_id,
-                                                                    provider_type_id)
-                if rec.total_commission_amount != 0:
-                    rec.agent_commission = 0
-                    rec.parent_agent_commission = 0
-                    rec.ho_commission = 0
+                        if comm['charge_code'] == 'hoc':
+                            rec.ho_commission += comm['amount']
 
-                    for comm in commission_list:
-                        if comm.get('code') == 'rac':
-                            rec.agent_commission += comm.get('amount')
-                        elif comm.get('agent_type_id') == rec.env.ref('tt_base.rodex_ho').sudo().agent_type_id.id:
-                            rec.ho_commission += comm.get('amount')
+                    total_amount -= rec.ho_commission
+                    percentage_rem = 100
+
+                    price_obj = pricing_obj.sudo().search([('agent_type_id', '=', rec.agent_id.agent_type_id.id),
+                                                           ('provider_type_id', '=', provider_type_id.id)], limit=1)
+                    if price_obj.basic_amount_type == 'percentage':
+                        rec.agent_commission = total_amount / 100 * price_obj.basic_amount
+                        percentage_rem -= price_obj.basic_amount
+                    elif price_obj.basic_amount_type == 'amount':
+                        rec.agent_commission = price_obj.basic_amount
+                    for line in price_obj.line_ids:
+                        if line.agent_type_id.id == self.env.ref('tt_base.rodex_ho').agent_type_id.id:
+                            if line.basic_amount_type == 'percentage':
+                                rec.ho_commission += total_amount / 100 * line.basic_amount
+                                percentage_rem -= line.basic_amount
+                            else:
+                                rec.ho_commission += line.basic_amount
                         else:
-                            rec.parent_agent_commission += comm.get('amount')
+                            if line.basic_amount_type == 'percentage':
+                                rec.parent_agent_commission += total_amount / 100 * line.basic_amount
+                                percentage_rem -= line.basic_amount
+                            else:
+                                rec.parent_agent_commission += line.basic_amount
+                    if percentage_rem > 0 and price_obj.basic_amount_type == 'percentage':
+                        rec.ho_commission += total_amount / 100 * percentage_rem
 
     # Hitung harga final / Agent NTA Price
     @api.onchange('vendor_amount', 'nta_price')
@@ -791,88 +900,107 @@ class IssuedOffline(models.Model):
                 empty = False
         return empty
 
+    # param_issued_offline_data = {
+    #     "type": "airline",
+    #     "total_sale_price": 100000,
+    #     "desc": "amdaksd",
+    #     "pnr": "10020120",
+    #     "social_media_id": "Facebook",
+    #     "expired_date": "2019-10-04 02:29",
+    #     "line_ids": [
+    #         {
+    #             "pnr": "MUIQBF",
+    #             "origin": "SUB",
+    #             "destination": "SIN",
+    #             "provider": "Garuda Indonesia",
+    #             "departure": "2019-10-04 02:30",
+    #             "arrival": "2019-10-04 02:30",
+    #             "carrier_code": "SQ",
+    #             "carrier_number": "a123",
+    #             "sub_class": "B",
+    #             "class_of_service": "eco"
+    #         },
+    #         {
+    #             "pnr": "MUIQBF",
+    #             "origin": "SIN",
+    #             "destination": "SUB",
+    #             "provider": "Garuda Indonesia",
+    #             "departure": "2019-10-06 02:30",
+    #             "arrival": "2019-10-06 02:30",
+    #             "carrier_code": "SQ",
+    #             "carrier_number": "a123",
+    #             "sub_class": "B",
+    #             "class_of_service": "eco"
+    #         },
+    #     ]
+    # }
+
+    # "type": "cruise",
+    # "total_sale_price": 100000,
+    # "desc": "Itinerary\n 02-05-2020: Singapore\n 03-05-2020: Surabaya\n 04-05-2020: Bali\n 05-05-2020: Surabaya\n 06-05-2020: Singapore",
+    # # "pnr": "10020120",
+    # "social_media_id": "Facebook",
+    # "expired_date": "2019-10-04 02:29",
+    # "quick_validate": True,
+    # "line_ids": [
+    #     {
+    #         'pnr': 'NVIDIA',
+    #         'provider': 'Genting Dream',
+    #         'cruise_package': '4D3N Surabaya Bali Package',
+    #         'departure_location': 'Singapore',
+    #         'arrival_location': 'Singapore',
+    #         'room': 'Balcony',
+    #         'check_in': "2020-05-02",
+    #         'check_out': "2020-05-05",
+    #         'description': 'Itinerary\n 02-05-2020: Singapore\n 03-05-2020: Surabaya\n 04-05-2020: Bali\n 05-05-2020: Singapore'
+    #     },
+    #     {
+    #         'pnr': 'AMDFTW',
+    #         'provider': 'Royal Caribbean Cruise',
+    #         'cruise_package': '5D/4N QUANTUM OF THE SEAS SINGAPORE MALAYSIA',
+    #         'departure_location': 'Singapore',
+    #         'arrival_location': 'Singapore',
+    #         'room': 'Ocean View',
+    #         'check_in': "2020-06-02",
+    #         'check_out': "2020-06-06",
+    #         'description': 'Itinerary\n 02-06-2020: Singapore\n 03-06-2020: Kuala Lumpur\n 04-06-2020: Penang\n 05-06-2020: Cruising\n 06-06-2020: Singapore'
+    #     },
+    # ]
+
+    # "line_ids": [
+    #     {
+    #         "name": 1,
+    #         "activity_package": 1,
+    #         "qty": 1,
+    #         "description": 'Test Activity',
+    #         "visit_date": '2019-10-04',
+    #     }
+    # ]
+    # "sector_type": "domestic"
+
+    #         {
+    #             "origin": "SIN",
+    #             "destination": "HKG",
+    #             "provider": "Singapore Airlines",
+    #             "departure": "2019-10-04 02:30",
+    #             "arrival": "2019-10-04 02:30",
+    #             "carrier_code": "SQ",
+    #             "carrier_number": "a123",
+    #             "sub_class": "B",
+    #             "class_of_service": "eco"
+    #         },
+    #     ]
+    # }
+
     param_issued_offline_data = {
-        # "type": "cruise",
-        # "total_sale_price": 100000,
-        # "desc": "Itinerary\n 02-05-2020: Singapore\n 03-05-2020: Surabaya\n 04-05-2020: Bali\n 05-05-2020: Surabaya\n 06-05-2020: Singapore",
-        # # "pnr": "10020120",
-        # "social_media_id": "Facebook",
-        # "expired_date": "2019-10-04 02:29",
-        # "quick_validate": True,
-        # "line_ids": [
-        #     {
-        #         'pnr': 'NVIDIA',
-        #         'provider': 'Genting Dream',
-        #         'cruise_package': '4D3N Surabaya Bali Package',
-        #         'departure_location': 'Singapore',
-        #         'arrival_location': 'Singapore',
-        #         'room': 'Balcony',
-        #         'check_in': "2020-05-02",
-        #         'check_out': "2020-05-05",
-        #         'description': 'Itinerary\n 02-05-2020: Singapore\n 03-05-2020: Surabaya\n 04-05-2020: Bali\n 05-05-2020: Singapore'
-        #     },
-        #     {
-        #         'pnr': 'AMDFTW',
-        #         'provider': 'Royal Caribbean Cruise',
-        #         'cruise_package': '5D/4N QUANTUM OF THE SEAS SINGAPORE MALAYSIA',
-        #         'departure_location': 'Singapore',
-        #         'arrival_location': 'Singapore',
-        #         'room': 'Ocean View',
-        #         'check_in': "2020-06-02",
-        #         'check_out': "2020-06-06",
-        #         'description': 'Itinerary\n 02-06-2020: Singapore\n 03-06-2020: Kuala Lumpur\n 04-06-2020: Penang\n 05-06-2020: Cruising\n 06-06-2020: Singapore'
-        #     },
-        # ]
-
-        # "line_ids": [
-        #     {
-        #         "name": 1,
-        #         "activity_package": 1,
-        #         "qty": 1,
-        #         "description": 'Test Activity',
-        #         "visit_date": '2019-10-04',
-        #     }
-        # ]
-        # "sector_type": "domestic"
-
-        # "type": "airline",
-        # "total_sale_price": 100000,
-        # "desc": "amdaksd",
-        # "pnr": "10020120",
-        # "social_media_id": "Facebook",
-        # "expired_date": "2019-10-04 02:29",
-        # "line_ids": [
-        #     {
-        #         "origin": "SUB",
-        #         "destination": "SIN",
-        #         "provider": "Garuda Indonesia",
-        #         "departure": "2019-10-04 02:30",
-        #         "arrival": "2019-10-04 02:30",
-        #         "carrier_code": "SQ",
-        #         "carrier_number": "a123",
-        #         "sub_class": "B",
-        #         "class_of_service": "eco"
-        #     },  #
-        #     {
-        #         "origin": "SIN",
-        #         "destination": "HKG",
-        #         "provider": "Singapore Airlines",
-        #         "departure": "2019-10-04 02:30",
-        #         "arrival": "2019-10-04 02:30",
-        #         "carrier_code": "SQ",
-        #         "carrier_number": "a123",
-        #         "sub_class": "B",
-        #         "class_of_service": "eco"
-        #     },
-        # ],
-        # "sector_type": "domestic"
+        "sector_type": "domestic",
+        "quick_validate": True,
         "type": "airline",
         "total_sale_price": 100000,
         "desc": "amdaksd",
         # "pnr": "10020120",
         "social_media_id": "Facebook",
         "expired_date": "2019-10-04 02:29",
-        "quick_validate": False,
         "line_ids": [
             {
                 "pnr": "MUIQBF",
@@ -898,6 +1026,18 @@ class IssuedOffline(models.Model):
                 "sub_class": "Y",
                 "class_of_service": "eco"
             },
+            {
+                "pnr": "VHYAUE",
+                "origin": "HKG",
+                "destination": "SUB",
+                "provider": "Cathay Pacific",
+                "departure": "2019-10-06 12:30",
+                "arrival": "2019-10-06 16:30",
+                "carrier_code": "CX",
+                "carrier_number": "912",
+                "sub_class": "Y",
+                "class_of_service": "eco"
+            },
         ]
     }
 
@@ -910,8 +1050,8 @@ class IssuedOffline(models.Model):
     #     "expired_date": "2019-10-04 02:29",
     #     "line_ids": [
     #         {
-    #             "name": 1,
-    #             "activity_package": 1,
+    #             "name": 'Universal Studios Singapore',
+    #             "activity_package": 'Universal Studios Singapore 1 Day Pass',
     #             "qty": 1,
     #             "description": 'Test Activity',
     #             "visit_date": '2019-10-04',
@@ -922,7 +1062,7 @@ class IssuedOffline(models.Model):
 
     # param_issued_offline_data = {
     #     "type": "hotel",
-    #     "total_sale_price": 100000,
+    #     "total_sale_price": 2000000,
     #     "desc": "amdaksd",
     #     # "pnr": "10020120",
     #     "social_media_id": "Facebook",
@@ -933,47 +1073,47 @@ class IssuedOffline(models.Model):
     #             "room": 'Deluxe',
     #             "meal_type": 'With Breakfast',
     #             "pnr": 'OINMDF',
-    #             "qty": 1,
+    #             "qty": 2,
     #             "description": 'Jemput di bandara',
     #             "check_in": '2019-10-04',
-    #             "check_out": '2019-10-07'
+    #             "check_out": '2019-10-06'
     #         },
     #         {
     #             "name": 'Wina Holiday Villa',
     #             "room": 'Superior',
     #             "meal_type": 'Room Only',
     #             "pnr": '',
-    #             "qty": 1,
+    #             "qty": 2,
     #             "description": 'Jemput di bandara',
     #             "check_in": '2019-10-04',
-    #             "check_out": '2019-10-07'
+    #             "check_out": '2019-10-06'
     #         },
-    #         {
-    #             "name": 'Mercure Kuta Beach Bali',
-    #             "room": 'Deluxe',
-    #             "meal_type": 'Breakfast + Dinner',
-    #             "pnr": '',
-    #             "qty": 1,
-    #             "description": 'Jemput di bandara',
-    #             "check_in": '2019-10-04',
-    #             "check_out": '2019-10-07'
-    #         },
-    #         {
-    #             "name": 'Harris Resort Kuta Beach Bali',
-    #             "room": 'Presidential',
-    #             "meal_type": '',
-    #             "pnr": '',
-    #             "qty": 1,
-    #             "description": 'Jemput di bandara',
-    #             "check_in": '2019-10-04',
-    #             "check_out": '2019-10-07'
-    #         },
+    #         # {
+    #         #     "name": 'Mercure Kuta Beach Bali',
+    #         #     "room": 'Deluxe',
+    #         #     "meal_type": 'Breakfast + Dinner',
+    #         #     "pnr": '',
+    #         #     "qty": 1,
+    #         #     "description": 'Jemput di bandara',
+    #         #     "check_in": '2019-10-04',
+    #         #     "check_out": '2019-10-07'
+    #         # },
+    #         # {
+    #         #     "name": 'Harris Resort Kuta Beach Bali',
+    #         #     "room": 'Presidential',
+    #         #     "meal_type": '',
+    #         #     "pnr": '',
+    #         #     "qty": 1,
+    #         #     "description": 'Jemput di bandara',
+    #         #     "check_in": '2019-10-04',
+    #         #     "check_out": '2019-10-07'
+    #         # },
     #     ]
-    #     "sector_type": "domestic"
+    #     # "sector_type": "domestic"
     # }
 
     # param_issued_offline_data = {
-    #     "type": "airline",
+    #     "type": "tour",
     #     "total_sale_price": 100000,
     #     "desc": "amdaksd",
     #     "pnr": "10020120",
@@ -981,15 +1121,8 @@ class IssuedOffline(models.Model):
     #     "expired_date": "2019-10-04 02:29",
     #     "line_ids": [
     #         {
-    #             "origin": "SUB",
-    #             "destination": "SIN",
-    #             "provider": "Garuda Indonesia",
-    #             "departure": "2019-10-04 02:30",
-    #             "arrival": "2019-10-04 02:30",
-    #             "carrier_code": "SQ",
-    #             "carrier_number": "a123",
-    #             "sub_class": "B",
-    #             "class_of_service": "eco"
+    #             "pnr": "5D BANGKOK PATTAYA BY SQ 21-25 MARET 2020",
+    #             "description": "5D BANGKOK PATTAYA BY SQ 21-25 MARET 2020",
     #         },
     #         # {
     #         #     "origin": "SIN",
@@ -1014,7 +1147,7 @@ class IssuedOffline(models.Model):
     #         #     "class_of_service": "eco"
     #         # },
     #     ],
-    #     "sector_type": "domestic"
+    #     # "sector_type": "domestic"
     # }
 
     param_booker = {
@@ -1194,7 +1327,7 @@ class IssuedOffline(models.Model):
             if create_line_res['error_code'] == 0:
                 booking_line_ids = create_line_res['response']
             else:
-                raise RequestException(1004, additional_message=create_line_res['error_msg'])
+                raise RequestException(1004, additional_message='Create line error.')
             if not passengers:
                 raise RequestException(1004, additional_message='Passengers can\'t be empty.')
             create_psg_res = self._create_reservation_offline_order(passengers, passenger_ids, context)

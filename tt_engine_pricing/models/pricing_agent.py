@@ -142,22 +142,6 @@ class PricingAgent(models.Model):
         agent_comm = 0
         rac_count = 0
 
-        ho_agent = self.env.ref('tt_base.rodex_ho')
-
-        """ kurangi input amount dengan fee amount. masukkan fee amount ke dalam service charge HOC """
-        if price_obj.fee_amount != 0:
-            vals = {
-                'commission_agent_id': ho_agent.id,
-                'agent_id': ho_agent.id,
-                'agent_name': ho_agent.name,
-                'agent_type_id': ho_agent.agent_type_id.id,
-                'amount': price_obj.fee_amount if price_obj.fee_amount < input_commission else input_commission,
-                'type': 'RAC',
-                'code': 'hoc'
-            }
-            vals_list.append(vals)
-            input_commission -= price_obj.fee_amount
-
         """ get basic amount untuk agent yang pesan """
         if input_commission > 0:
             if price_obj.basic_amount_type == 'percentage':
