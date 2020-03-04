@@ -32,6 +32,7 @@
         'security/ir.model.access.csv',
         'security/ir_rule_data.xml',
         'views/menu_item_base.xml',
+        'views/tt_tour_sync_product_wizard.xml',
         'views/tt_reservation_tour_views.xml',
         'views/tt_master_tour_quotation_views.xml',
         'views/tt_tour_master_locations_views.xml',

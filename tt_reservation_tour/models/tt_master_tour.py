@@ -19,6 +19,45 @@ class Survey(models.Model):
     tour_id = fields.Many2one('tt.master.tour', 'Tour')
 
 
+class TourSyncProducts(models.TransientModel):
+    _name = "tour.sync.product.wizard"
+    _description = 'Rodex Model'
+
+    def get_domain(self):
+        domain_id = self.env.ref('tt_reservation_tour.tt_provider_type_tour').id
+        return [('provider_type_id.id', '=', int(domain_id))]
+
+    provider_id = fields.Many2one('tt.provider', 'Provider', domain=get_domain, required=True)
+    provider_code = fields.Char('Provider Code')
+    start_num = fields.Char('Start Number', default='1')
+    end_num = fields.Char('End Number', default='1')
+
+    def generate_json(self):
+        def_name = 'action_get_%s_json' % self.provider_id.code
+        if hasattr(self.env['tt.master.tour'], def_name):
+            getattr(self.env['tt.master.tour'], def_name)()
+
+    def sync_product(self):
+        def_name = 'action_sync_%s' % self.provider_id.code
+        start_num = self.start_num
+        end_num = self.end_num
+        if hasattr(self.env['tt.master.tour'], def_name):
+            getattr(self.env['tt.master.tour'], def_name)(start_num, end_num)
+
+    def deactivate_product(self):
+        products = self.env['tt.master.activity'].sudo().search([('provider_id', '=', self.provider_id.id)])
+        for rec in products:
+            if rec.active:
+                rec.sudo().write({
+                    'active': False
+                })
+
+    @api.depends('provider_id')
+    @api.onchange('provider_id')
+    def _compute_provider_code(self):
+        self.provider_code = self.provider_id.code
+
+
 class TourItineraryItem(models.Model):
     _name = 'tt.reservation.tour.itinerary.item'
     _description = 'Rodex Model'
@@ -205,6 +244,24 @@ class MasterTour(models.Model):
                     rec.tour_type = 'series'
                 if rec.tour_type == 'sic':
                     rec.tipping_tour_leader = 0
+
+    def action_get_rodextrip_tour_json(self):
+        pass
+
+    def action_sync_rodextrip_tour(self, start, end):
+        pass
+
+    def action_get_gochina_json(self):
+        pass
+
+    def action_sync_gochina(self, start, end):
+        pass
+
+    def action_get_rodextrip_tour_btbo2_json(self):
+        pass
+
+    def action_sync_rodextrip_tour_btbo2(self, start, end):
+        pass
 
     def action_validate(self):
         self.state = 'open'
@@ -582,6 +639,7 @@ class MasterTour(models.Model):
             response = {
                 'seat': 0,
                 'quota': 0,
+                'state': 'sold',
                 'availability': False
             }
             provider_obj = self.env['tt.provider'].sudo().search([('code', '=', data['provider'])], limit=1)
@@ -592,6 +650,7 @@ class MasterTour(models.Model):
                 response.update({
                     'seat': tour_obj.seat,
                     'quota': tour_obj.quota,
+                    'state': tour_obj.state,
                     'availability': int(tour_obj.seat) > 0 and True or False
                 })
             return ERR.get_no_error(response)
@@ -612,6 +671,7 @@ class MasterTour(models.Model):
                 tour_obj.sudo().write({
                     'seat': data['seat'],
                     'quota': data['quota'],
+                    'state': data['state'],
                 })
             response = {
                 'tour_code': data['tour_code'],
