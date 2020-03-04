@@ -25,6 +25,7 @@ class PricingAgent(models.Model):
     basic_amount_type = fields.Selection(variables.AMOUNT_TYPE, 'Basic Amount Type', default='percentage')
     basic_amount = fields.Float('Basic Amount', default=0)
     currency_id = fields.Many2one('res.currency', 'Currency', required=True)
+    fee_charge_type = fields.Selection(variables.FEE_CHARGE_TYPE, 'Fee Charge Type', default='ho')
     fee_amount = fields.Monetary('Fee Amount', default=False)
     is_per_route = fields.Boolean('Is per Route', default=False)
     is_per_segment = fields.Boolean('Is per Segment', default=False)
@@ -109,6 +110,7 @@ class PricingAgent(models.Model):
             'basic_amount_type': self.basic_amount_type,
             'basic_amount': self.basic_amount,
             'currency': self.currency_id and self.currency_id.name,
+            'fee_charge_type': self.fee_charge_type,
             'fee_amount': self.fee_amount,
             'is_per_route': self.is_per_route,
             'is_per_segment': self.is_per_segment,
