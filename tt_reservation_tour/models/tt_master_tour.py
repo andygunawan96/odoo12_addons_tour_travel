@@ -577,6 +577,56 @@ class MasterTour(models.Model):
             _logger.error(traceback.format_exc())
             return ERR.get_error(1022)
 
+    def get_availability_api(self, data, context, **kwargs):
+        try:
+            response = {
+                'seat': 0,
+                'quota': 0,
+                'availability': False
+            }
+            provider_obj = self.env['tt.provider'].sudo().search([('code', '=', data['provider'])], limit=1)
+            provider_obj = provider_obj and provider_obj[0] or False
+            tour_obj = self.env['tt.master.tour'].sudo().search([('tour_code', '=', data['tour_code']), ('provider_id', '=', provider_obj.id)], limit=1)
+            if tour_obj:
+                tour_obj = tour_obj[0]
+                response.update({
+                    'seat': tour_obj.seat,
+                    'quota': tour_obj.quota,
+                    'availability': int(tour_obj.seat) > 0 and True or False
+                })
+            return ERR.get_no_error(response)
+        except RequestException as e:
+            _logger.error(traceback.format_exc())
+            return e.error_dict()
+        except Exception as e:
+            _logger.error(traceback.format_exc())
+            return ERR.get_error(1022)
+
+    def update_availability_api(self, data, context, **kwargs):
+        try:
+            provider_obj = self.env['tt.provider'].sudo().search([('code', '=', data['provider'])], limit=1)
+            provider_obj = provider_obj and provider_obj[0] or False
+            tour_obj = self.env['tt.master.tour'].sudo().search([('tour_code', '=', data['tour_code']), ('provider_id', '=', provider_obj.id)], limit=1)
+            if tour_obj:
+                tour_obj = tour_obj[0]
+                tour_obj.sudo().write({
+                    'seat': data['seat'],
+                    'quota': data['quota'],
+                })
+            response = {
+                'tour_code': data['tour_code'],
+                'seat': data['seat'],
+                'quota': data['quota'],
+                'availability': int(data['seat']) > 0 and True or False
+            }
+            return ERR.get_no_error(response)
+        except RequestException as e:
+            _logger.error(traceback.format_exc())
+            return e.error_dict()
+        except Exception as e:
+            _logger.error(traceback.format_exc())
+            return ERR.get_error(1025)
+
     def get_delay(self, day, hour, minute):
         delay_str = str(day)
         delay_str += 'd '
