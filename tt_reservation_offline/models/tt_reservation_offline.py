@@ -580,6 +580,11 @@ class IssuedOffline(models.Model):
                 })
                 new_aml = rec.env['tt.ledger'].create(vals)
 
+    def set_back_to_validate(self):
+        self.state = 'booked'
+        self.state_offline = 'validate'
+        self.hold_date = datetime.now() + timedelta(days=1)
+
     def create_provider_offline(self):
         for provider in self.provider_booking_ids:
             provider.unlink()

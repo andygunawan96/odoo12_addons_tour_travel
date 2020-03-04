@@ -97,6 +97,7 @@
                         'default_currency_id': currency_id,
                         'default_service_type': provider_type_id
                     }" attrs="{'invisible':[('refundable','=',False)]}"/>
+                        <button string="Set Back to Validate" name="set_back_to_validate" type="object" states="cancel2"/>
 <!--                        <button string="Print Invoice Ticket" name="print_invoice_ticket" type="object" states="paid,posted"/>-->
 <!--                        <button string="Get Config API" name="get_config_api" type="object"/>-->
 <!--                        <button string="Sync ALL Carrier List" name="sync_all_carrier_list" type="object" groups="base.user_admin"/>-->

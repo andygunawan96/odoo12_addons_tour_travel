@@ -99,6 +99,7 @@
                 <tree>
                     <field name="booking_id" invisible="1"/>
                     <field name="transaction_name" invisible="1"/>
+                    <field name="transaction_type" invisible="1"/>
                     <field name="pnr"/>
                     <field name="hotel_name"/>
                     <!--<field name="activity_package"/>-->
