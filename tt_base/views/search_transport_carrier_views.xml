@@ -34,6 +34,7 @@
                     <group>
                         <field name="carrier_id"/>
                         <field name="provider_type_id"/>
+                        <field name="dummy_generate_provider_domain" attrs="{'invisible':[('dummy_generate_provider_domain','=',True)]}"/>
                         <field name="provider_ids"/>
                         <field name="sequence"/>
                     </group>
