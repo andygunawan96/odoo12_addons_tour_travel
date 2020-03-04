@@ -26,6 +26,7 @@
                         </group>
                         <group>
                             <field name="currency_id"/>
+                            <field name="fee_charge_type"/>
                             <field name="fee_amount"/>
                             <field name="is_per_route"/>
                             <field name="is_per_segment"/>
@@ -73,6 +74,8 @@
             <field name="provider_type_id"/>
             <field name="basic_amount_type"/>
             <field name="basic_amount"/>
+            <field name="fee_charge_type"/>
+            <field name="fee_amount"/>
             <field name="active"/>
         </tree>
         </field>
