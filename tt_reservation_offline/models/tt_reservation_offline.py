@@ -62,7 +62,7 @@ class IssuedOffline(models.Model):
 
     # booking_id = fields.Many2one('tt.reservation.offline', 'Booking ID', default=lambda self: self.id)
 
-    state = fields.Selection(variables.BOOKING_STATE, 'State', default='pending')
+    state = fields.Selection(variables.BOOKING_STATE, 'State', default='draft')
     state_offline = fields.Selection(STATE_OFFLINE, 'State Offline', default='draft')
 
     provider_type_id = fields.Many2one('tt.provider.type', string='Provider Type',
@@ -224,7 +224,7 @@ class IssuedOffline(models.Model):
             if not self.check_passenger_empty():
                 if self.total != 0:
                     self.state_offline = 'confirm'
-                    self.state = 'pending'
+                    self.state = 'draft'
                     self.confirm_date = fields.Datetime.now()
                     self.confirm_uid = kwargs.get('co_uid') and kwargs['co_uid'] or self.env.user.id
                     if not self.acquirer_id:
@@ -261,7 +261,7 @@ class IssuedOffline(models.Model):
 
     @api.one
     def action_draft(self):
-        self.state = 'pending'
+        self.state = 'draft'
         self.state_offline = 'draft'
         self.confirm_date = False
         self.confirm_uid = False
@@ -351,7 +351,6 @@ class IssuedOffline(models.Model):
         if self.state_offline == 'done':
             raise UserError(_('Offline has been done. You cannot go back to Sent. Please refresh the page.'))
         self.state_offline = 'sent'
-        self.hold_date = datetime.now() + timedelta(days=1)
         self.sent_date = fields.Datetime.now()
         self.sent_uid = self.env.user.id
         self.create_provider_offline()
@@ -439,8 +438,9 @@ class IssuedOffline(models.Model):
         })
 
     def action_expired(self):
-        super(IssuedOffline, self).action_expired()
-        self.state_offline = 'expired'
+        if self.state_offline == 'confirm' and self.expired_date < datetime.now():
+            super(IssuedOffline, self).action_expired()  # Set state = expired
+            self.state_offline = 'expired'  # Set state_offline = expired
 
     @api.one
     def action_quick_issued(self):
@@ -1352,6 +1352,7 @@ class IssuedOffline(models.Model):
                 'total': data_reservation_offline['total_sale_price'],
                 "social_media_type": self._get_social_media_id_by_name(data_reservation_offline.get('social_media_id')),
                 "expired_date": data_reservation_offline.get('expired_date'),
+                "hold_date": data_reservation_offline.get('expired_date'),
                 "quick_validate": data_reservation_offline.get('quick_validate'),
                 'state': 'draft',
                 'state_offline': 'confirm',

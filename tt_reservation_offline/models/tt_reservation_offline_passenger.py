@@ -34,7 +34,7 @@ class IssuedOfflinePassenger(models.Model):
     transaction_name = fields.Char('Transaction Name', related='booking_id.provider_type_id_name')
     ticket_number = fields.Char('Ticket Number.')
     seat = fields.Char('Seat')
-    state = fields.Selection(variables.BOOKING_STATE, string='State', default='pending', related='booking_id.state')
+    state = fields.Selection(variables.BOOKING_STATE, string='State', default='draft', related='booking_id.state')
     state_offline = fields.Selection(STATE, string='State', default='draft', related='booking_id.state_offline')
     first_name = fields.Char('First Name', related='passenger_id.first_name')
     last_name = fields.Char('Last Name', related='passenger_id.last_name')
