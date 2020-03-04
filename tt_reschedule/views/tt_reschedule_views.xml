@@ -166,6 +166,7 @@
                                     <field name="origin_id"/>
                                     <field name="destination_id"/>
                                     <field name="departure_date"/>
+                                    <field name="arrival_date"/>
                                 </tree>
                                 <form>
                                     <sheet>
@@ -236,6 +237,7 @@
                                     <field name="origin_id"/>
                                     <field name="destination_id"/>
                                     <field name="departure_date"/>
+                                    <field name="arrival_date"/>
                                 </tree>
                             </field>
                             <button name="generate_changes" string="Generate Changes" type="object" attrs="{'invisible':['|', ('state','not in', ['draft', 'confirm']), ('created_by_api','=', True)]}"/>

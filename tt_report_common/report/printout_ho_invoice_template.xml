@@ -79,7 +79,7 @@
                                     <span style="margin-top: 5px;">Itinerary Form</span>
                                 </t>
                                 <t t-else="">
-                                    <span t-field="doc.name" style="margin-top: 5px;"/>
+                                    <span t-field="doc.pnr" style="margin-top: 5px;"/>
                                 </t>
                             </div>
                         </div>
@@ -93,6 +93,13 @@
     <template id="ho_invoice_content_view">
         <!-- Base Info Booker dkk -->
         <table style="margin: 1px; 1px; 15px;">
+            <tr>
+                <td style="width:150px;">No. Booking</td>
+                <td style="width:10px;">:</td>
+                <td style="width:400px;">
+                    <span t-field="doc.name"/>
+                </td>
+            </tr>
             <tr>
                 <td style="width:50px;">To</td>
                 <td style="width:10px;">:</td>
