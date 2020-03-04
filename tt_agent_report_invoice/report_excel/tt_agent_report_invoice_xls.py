@@ -34,16 +34,18 @@ class AgentReportInvoiceXls(models.TransientModel):
         sheet.write('A9', 'No.', style.table_head_center)
 
         sheet.write('B9', 'Invoice Date', style.table_head_center)
-        sheet.write('C9', 'Customer Type', style.table_head_center)
-        sheet.write('D9', 'Customer', style.table_head_center)
+        sheet.write('C9', 'Agent Type', style.table_head_center)
+        sheet.write('D9', 'Agent', style.table_head_center)
         sheet.write('E9', 'Booker', style.table_head_center)
-        sheet.write('F9', 'Invoice Number', style.table_head_center)
-        sheet.write('G9', 'Billing Statement', style.table_head_center)
-        sheet.write('H9', 'Payment Acquirer', style.table_head_center)
-        sheet.write('I9', 'Payment Ref', style.table_head_center)
-        sheet.write('J9', 'Total', style.table_head_center)
-        sheet.write('K9', 'State', style.table_head_center)
-        sheet.merge_range('L9:N9', 'Invoice Detail', style.table_head_center)
+        sheet.write('F9', 'Customer Type', style.table_head_center)
+        sheet.write('G9', 'Customer Name', style.table_head_center)
+        sheet.write('H9', 'Invoice Number', style.table_head_center)
+        sheet.write('I9', 'Billing Statement', style.table_head_center)
+        sheet.write('J9', 'Payment Acquirer', style.table_head_center)
+        sheet.write('K9', 'Payment Ref', style.table_head_center)
+        sheet.write('L9', 'Total', style.table_head_center)
+        sheet.write('M9', 'State', style.table_head_center)
+        sheet.merge_range('N9:P9', 'Invoice Detail', style.table_head_center)
 
         # ====== SET WIDTH AND HEIGHT ==========
         sheet.set_row(0, row_height)  # set_row(row, height) -> row 0-4 (1-5)
@@ -88,16 +90,18 @@ class AgentReportInvoiceXls(models.TransientModel):
                 sheet.write(row_data, 1, i['date_invoice'], sty_date)
                 sheet.write(row_data, 2, i['agent_type'], sty_table_data)
                 sheet.write(row_data, 3, i['agent_name'], sty_table_data)
-                sheet.write(row_data, 4, i['customer_name'], sty_table_data)
-                sheet.write(row_data, 5, i['invoice_number'], sty_table_data)
-                sheet.write(row_data, 6, i['billing_statement'], sty_table_data)
-                sheet.write(row_data, 7, '', sty_table_data)
-                sheet.write(row_data, 8, '', sty_table_data)
-                sheet.write(row_data, 9, i['invoice_total'], sty_amount_bold)
-                sheet.write(row_data, 10, i['state'], sty_table_data)
-                sheet.write(row_data, 11, '', sty_table_data)
-                sheet.write(row_data, 12, '', sty_amount)
-                sheet.write(row_data, 13, '', sty_amount)
+                sheet.write(row_data, 4, i['booker_name'], sty_table_data)
+                sheet.write(row_data, 5, i['customer_type'], sty_table_data)
+                sheet.write(row_data, 6, i['customer_name'], sty_table_data)
+                sheet.write(row_data, 7, i['invoice_number'], sty_table_data)
+                sheet.write(row_data, 8, i['billing_statement'], sty_table_data)
+                sheet.write(row_data, 9, '', sty_table_data)
+                sheet.write(row_data, 10, '', sty_table_data)
+                sheet.write(row_data, 11, i['invoice_total'], sty_amount_bold)
+                sheet.write(row_data, 12, i['state'], sty_table_data)
+                sheet.write(row_data, 13, '', sty_table_data)
+                sheet.write(row_data, 14, '', sty_amount)
+                sheet.write(row_data, 15, '', sty_amount)
 
 
                 filtered_data = list(filter(lambda x: x['invoice_number'] == i['invoice_number'], values['lines']))
@@ -140,6 +144,8 @@ class AgentReportInvoiceXls(models.TransientModel):
                             sheet.write(row_data, 4, '', sty_table_data)
                             sheet.write(row_data, 5, '', sty_table_data)
                             sheet.write(row_data, 6, '', sty_table_data)
+                            sheet.write(row_data, 7, '', sty_table_data)
+                            sheet.write(row_data, 8, '', sty_table_data)
                             to_print = ''
                             if str(j['payment_acquirer']) != 'None':
                                 to_print += str(j['payment_acquirer'])
@@ -147,13 +153,13 @@ class AgentReportInvoiceXls(models.TransientModel):
                                 to_print += 'No Data'
                             if str(j['payment_acquirer_account_number']) != 'None':
                                 to_print += ' ' + str(j['payment_acquirer_account_number'])
-                            sheet.write(row_data, 7, to_print, sty_table_data)
-                            sheet.write(row_data, 8, j['payment_ref'], sty_table_data)
-                            sheet.write(row_data, 9, j['payment_pay_amount'], sty_amount)
-                            sheet.write(row_data, 10, '', sty_table_data)
-                            sheet.write(row_data, 11, '', sty_table_data)
+                            sheet.write(row_data, 9, to_print, sty_table_data)
+                            sheet.write(row_data, 10, j['payment_ref'], sty_table_data)
+                            sheet.write(row_data, 11, j['payment_pay_amount'], sty_amount)
                             sheet.write(row_data, 12, '', sty_table_data)
                             sheet.write(row_data, 13, '', sty_table_data)
+                            sheet.write(row_data, 14, '', sty_table_data)
+                            sheet.write(row_data, 15, '', sty_table_data)
 
                     except:
                         _logger.error("ERROR in Invoice Name : {} ".format(i['invoice_number']))
@@ -187,9 +193,11 @@ class AgentReportInvoiceXls(models.TransientModel):
                             sheet.write(row_data, 8, '', sty_table_data)
                             sheet.write(row_data, 9, '', sty_table_data)
                             sheet.write(row_data, 10, '', sty_table_data)
-                            sheet.write(row_data, 11, j['invoice_line'], sty_table_data)
-                            sheet.write(row_data, 12, j['invoice_line_reference'], sty_table_data)
-                            sheet.write(row_data, 13, j['invoice_line_total'], sty_amount)
+                            sheet.write(row_data, 11, '', sty_table_data)
+                            sheet.write(row_data, 12, '', sty_table_data)
+                            sheet.write(row_data, 13, j['invoice_line'], sty_table_data)
+                            sheet.write(row_data, 14, j['invoice_line_reference'], sty_table_data)
+                            sheet.write(row_data, 15, j['invoice_line_total'], sty_amount)
                         except:
                             _logger.error("ERROR in Invoice Name : {} , Invoice Line : {}".format(i['invoice_number'], j['invoice_line']))
                             raise UserError("ERROR in Invoice Name : {} , Invoice Line : {}".format(i['invoice_number'], j['invoice_line']))
@@ -197,8 +205,8 @@ class AgentReportInvoiceXls(models.TransientModel):
                 continue
 
         row_data += 3
-        sheet.write(row_data, 10, 'Payment account', style.table_head_center)
-        sheet.write(row_data, 11, 'total amount', style.table_head_center)
+        sheet.write(row_data, 12, 'Payment account', style.table_head_center)
+        sheet.write(row_data, 13, 'total amount', style.table_head_center)
         try:
             for i in summary:
                 row_data += 1
@@ -209,12 +217,12 @@ class AgentReportInvoiceXls(models.TransientModel):
                     sty_amount = style.table_data_amount_even
 
                 if str(i['payment_acquirer']) == 'None':
-                    sheet.write(row_data, 10, 'No Data', sty_table_data)
+                    sheet.write(row_data, 12, 'No Data', sty_table_data)
                 elif str(i['payment_acquirer']) == 'Cash':
-                    sheet.write(row_data, 10, 'Cash', sty_table_data)
+                    sheet.write(row_data, 12, 'Cash', sty_table_data)
                 else:
-                    sheet.write(row_data, 10, str(i['payment_acquirer']) + ' ' + str(i['payment_account']), sty_table_data)
-                sheet.write(row_data, 11, i['total_amount'], sty_amount)
+                    sheet.write(row_data, 12, str(i['payment_acquirer']) + ' ' + str(i['payment_account']), sty_table_data)
+                sheet.write(row_data, 13, i['total_amount'], sty_amount)
         except:
             _logger.error("ERROR when Print Invoice Summary")
             raise UserError("ERROR when Print Invoice Summary")

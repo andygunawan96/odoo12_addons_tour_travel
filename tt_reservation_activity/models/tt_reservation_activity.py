@@ -1184,10 +1184,10 @@ class ReservationActivity(models.Model):
             book_obj = book_objs[0]
             req.update({
                 'booking_uuid': book_obj.booking_uuid,
+                'provider': book_obj.activity_id.provider_id.code
             })
             req.pop('order_number')
-            response = self.env['tt.activity.api.con'].file_upload(req)
-            return ERR.get_no_error(response)
+            return ERR.get_no_error(req)
         except RequestException as e:
             _logger.error(traceback.format_exc())
             try:

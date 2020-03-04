@@ -16,6 +16,7 @@
                     </div>
                     <group>
                         <group>
+                            <field name="sequence"/>
                             <field name="agent_type_id"/>
                             <field name="provider_type_id"/>
                             <field name="basic_amount_type"/>
@@ -30,6 +31,14 @@
                             <field name="is_per_segment"/>
                             <field name="is_per_pax"/>
                             <field name="is_compute_infant_fee"/>
+                        </group>
+                    </group>
+                    <group>
+                        <group>
+                            <field name="provider_type_access"/>
+                        </group>
+                        <group>
+                            <field name="carrier_type_access"/>
                         </group>
                     </group>
                     <separator string="Providers"/>
@@ -48,10 +57,12 @@
         <field name="model">tt.pricing.agent</field>
         <field name="arch" type="xml">
         <tree>
+            <field name="sequence" widget="handle"/>
             <field name="name"/>
+            <field name="provider_type_access"/>
+            <field name="carrier_type_access"/>
             <field name="display_providers"/>
             <field name="display_carriers"/>
-            <field name="name"/>
             <field name="agent_type_id"/>
             <field name="provider_type_id"/>
             <field name="basic_amount_type"/>
@@ -67,6 +78,8 @@
         <field name="arch" type="xml">
         <search>
             <field name="name"/>
+            <field name="provider_type_access"/>
+            <field name="carrier_type_access"/>
             <field name="display_providers"/>
             <field name="display_carriers"/>
             <field name="agent_type_id"/>
