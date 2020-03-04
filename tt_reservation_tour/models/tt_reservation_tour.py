@@ -643,7 +643,7 @@ class ReservationTour(models.Model):
             if book_info:
                 write_vals.update({
                     'pnr': book_info.get('pnr') and book_info['pnr'] or '',
-                    'booking_uuid': book_info.get('booking_uuid') and book_info['booking_uuid'] or False
+                    'booking_uuid': book_info.get('booking_uuid') and book_info['booking_uuid'] or ''
                 })
 
             for rec in book_obj.provider_booking_ids:
