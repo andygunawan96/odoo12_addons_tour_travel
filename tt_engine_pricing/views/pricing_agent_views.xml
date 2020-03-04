@@ -35,14 +35,20 @@
                     </group>
                     <group>
                         <group>
-                            <field name="provider_type_access"/>
+                            <field name="provider_access_type"/>
                         </group>
                         <group>
-                            <field name="carrier_type_access"/>
                         </group>
                     </group>
                     <separator string="Providers"/>
                     <field name="provider_ids"/>
+                    <group>
+                        <group>
+                            <field name="carrier_access_type"/>
+                        </group>
+                        <group>
+                        </group>
+                    </group>
                     <separator string="Carriers"/>
                     <field name="carrier_ids"/>
                     <separator string="Uplines"/>
@@ -59,8 +65,8 @@
         <tree>
             <field name="sequence" widget="handle"/>
             <field name="name"/>
-            <field name="provider_type_access"/>
-            <field name="carrier_type_access"/>
+            <field name="provider_access_type"/>
+            <field name="carrier_access_type"/>
             <field name="display_providers"/>
             <field name="display_carriers"/>
             <field name="agent_type_id"/>
@@ -78,8 +84,8 @@
         <field name="arch" type="xml">
         <search>
             <field name="name"/>
-            <field name="provider_type_access"/>
-            <field name="carrier_type_access"/>
+            <field name="provider_access_type"/>
+            <field name="carrier_access_type"/>
             <field name="display_providers"/>
             <field name="display_carriers"/>
             <field name="agent_type_id"/>

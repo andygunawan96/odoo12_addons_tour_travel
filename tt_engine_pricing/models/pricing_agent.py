@@ -18,9 +18,9 @@ class PricingAgent(models.Model):
     provider_type_id = fields.Many2one('tt.provider.type', 'Provider Type', required=True)
     provider_ids = fields.Many2many('tt.provider', 'tt_pricing_agent_provider_rel', 'pricing_id', 'provider_id', string='Providers')
     carrier_ids = fields.Many2many('tt.transport.carrier', 'tt_pricing_agent_carrier_rel', 'pricing_id', 'carrier_id', string='Carriers')
-    provider_type_access = fields.Selection(variables.ACCESS_TYPE, 'Provider Type Access', required=True, default='all')
+    provider_access_type = fields.Selection(variables.ACCESS_TYPE, 'Provider Access Type', required=True, default='all')
     display_providers = fields.Char('Display Providers', compute='_compute_display_providers', store=True, readonly=1)
-    carrier_type_access = fields.Selection(variables.ACCESS_TYPE, 'Carrier Type Access', required=True, default='all')
+    carrier_access_type = fields.Selection(variables.ACCESS_TYPE, 'Carrier Access Type', required=True, default='all')
     display_carriers = fields.Char('Display Carriers', compute='_compute_display_carriers', store=True, readonly=1)
     basic_amount_type = fields.Selection(variables.AMOUNT_TYPE, 'Basic Amount Type', default='percentage')
     basic_amount = fields.Float('Basic Amount', default=0)
@@ -102,9 +102,9 @@ class PricingAgent(models.Model):
         res = {
             'agent_type_id': self.agent_type_id.get_data(),
             'provider_type': self.provider_type_id and self.provider_type_id.code or '',
-            'carrier_type_access': self.carrier_type_access,
+            'carrier_access_type': self.carrier_access_type,
             'carrier_codes': carrier_codes,
-            'provider_type_access': self.provider_type_access,
+            'provider_access_type': self.provider_access_type,
             'providers': providers,
             'basic_amount_type': self.basic_amount_type,
             'basic_amount': self.basic_amount,
