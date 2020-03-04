@@ -35,6 +35,7 @@
         'views/tt_provider_visa_views.xml',
         'views/tt_reservation_visa_service_charge_views.xml',
         'views/tt_reservation_visa_vendor_views.xml',
+        'views/tt_visa_sync_product_wizard.xml',
         'report/printout_menu.xml',
         'report/printout_visa_ho_template.xml',
         'report/printout_visa_customer_template.xml',

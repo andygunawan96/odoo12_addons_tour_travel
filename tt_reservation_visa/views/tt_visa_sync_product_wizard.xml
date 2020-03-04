@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+	<data>
+		<record id="visa_sync_product_wizard" model="ir.ui.view">
+			<field name="name">Visa Sync Product Wizard</field>
+			<field name="model">visa.sync.product.wizard</field>
+			<field name="arch" type="xml">
+				<form string="Message">
+					<group>
+						<!--<group>-->
+							<!--<field name="provider_id"/>-->
+							<!--<field name="provider_code" invisible="1"/>-->
+						<!--</group>-->
+					</group>
+					<footer>
+						<button type="object" string="Compute reference code" name="get_reference_code" />
+						<button type="object" string="Generate Product From Vendor" name="actions_get_product_rodextrip" />
+						<button type="object" string="Sync Product" name="actions_sync_product_rodextrip" />
+						<!--<button string="Sync Products" name="sync_product" type="object" class="btn-primary" />-->
+						<!--<button string="Configure Products" name="config_product" type="object" class="btn-primary" />-->
+						<!--<button string="Generate JSON" name="generate_json" type="object" class="btn-primary" />-->
+						<!--<button string="Deactivate Products" name="deactivate_product" type="object" class="btn-primary" />-->
+						<!--<button string="Cancel" class="btn-default" special="cancel" />-->
+					</footer>
+				</form>
+			</field>
+		</record>
+
+		<record id="action_visa_sync_product_wizard" model="ir.actions.act_window">
+			<field name="name">Visa Sync Products</field>
+			<field name="type">ir.actions.act_window</field>
+			<field name="res_model">visa.sync.product.wizard</field>
+			<field name="view_type">form</field>
+			<field name="view_mode">form</field>
+			<field name="view_id" ref="visa_sync_product_wizard"/>
+			<field name="target">new</field>
+		</record>
+
+		<menuitem
+				id="sub_menu_visa_sync_product"
+				name="Sync Products"
+				parent="menu_tour_travel_visa_configuration"
+				action="action_visa_sync_product_wizard"
+				sequence="2"
+				groups="tt_base.group_tt_tour_travel_operator"/>
+	</data>
+</odoo>
