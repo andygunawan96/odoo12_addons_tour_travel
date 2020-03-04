@@ -62,7 +62,7 @@ class IssuedOffline(models.Model):
 
     # booking_id = fields.Many2one('tt.reservation.offline', 'Booking ID', default=lambda self: self.id)
 
-    state = fields.Selection(variables.BOOKING_STATE, 'State', default='pending')
+    state = fields.Selection(variables.BOOKING_STATE, 'State', default='draft')
     state_offline = fields.Selection(STATE_OFFLINE, 'State Offline', default='draft')
 
     provider_type_id = fields.Many2one('tt.provider.type', string='Provider Type',
@@ -104,9 +104,6 @@ class IssuedOffline(models.Model):
     done_uid = fields.Many2one('res.users', readonly=True, copy=False)
     cancel_date = fields.Datetime('Cancel Date', readonly=True, copy=False)
     cancel_uid = fields.Many2one('res.users', readonly=True, copy=False)
-
-    expired_date = fields.Datetime('Time Limit', readonly=True, states={'draft': [('readonly', False)],
-                                                                        'pending': [('readonly', False)]})
 
     # Monetary
     currency_id = fields.Many2one('res.currency', 'Currency', default=lambda self: self.env.user.company_id.currency_id,
@@ -224,7 +221,7 @@ class IssuedOffline(models.Model):
             if not self.check_passenger_empty():
                 if self.total != 0:
                     self.state_offline = 'confirm'
-                    self.state = 'pending'
+                    self.state = 'draft'
                     self.confirm_date = fields.Datetime.now()
                     self.confirm_uid = kwargs.get('co_uid') and kwargs['co_uid'] or self.env.user.id
                     if not self.acquirer_id:
@@ -261,7 +258,7 @@ class IssuedOffline(models.Model):
 
     @api.one
     def action_draft(self):
-        self.state = 'pending'
+        self.state = 'draft'
         self.state_offline = 'draft'
         self.confirm_date = False
         self.confirm_uid = False
@@ -351,7 +348,6 @@ class IssuedOffline(models.Model):
         if self.state_offline == 'done':
             raise UserError(_('Offline has been done. You cannot go back to Sent. Please refresh the page.'))
         self.state_offline = 'sent'
-        self.hold_date = datetime.now() + timedelta(days=1)
         self.sent_date = fields.Datetime.now()
         self.sent_uid = self.env.user.id
         self.create_provider_offline()
@@ -439,8 +435,9 @@ class IssuedOffline(models.Model):
         })
 
     def action_expired(self):
-        super(IssuedOffline, self).action_expired()
-        self.state_offline = 'expired'
+        if self.state_offline == 'confirm' and self.hold_date < datetime.now():
+            super(IssuedOffline, self).action_expired()  # Set state = expired
+            self.state_offline = 'expired'  # Set state_offline = expired
 
     @api.one
     def action_quick_issued(self):
@@ -546,6 +543,10 @@ class IssuedOffline(models.Model):
         for book in book_objs:
             book.sync_service_charge()
 
+    def set_back_to_confirm(self):
+        self.state = 'draft'
+        self.state_offline = 'confirm'
+
     def create_final_ho_ledger(self, provider_obj):
         for rec in self:
             if rec.nta_price > rec.vendor_amount:
@@ -579,6 +580,11 @@ class IssuedOffline(models.Model):
                     'agent_id': self.env.ref('tt_base.rodex_ho').id
                 })
                 new_aml = rec.env['tt.ledger'].create(vals)
+
+    def set_back_to_validate(self):
+        self.state = 'booked'
+        self.state_offline = 'validate'
+        self.hold_date = datetime.now() + timedelta(days=1)
 
     def create_provider_offline(self):
         for provider in self.provider_booking_ids:
@@ -1346,7 +1352,8 @@ class IssuedOffline(models.Model):
                 'description': data_reservation_offline.get('desc'),
                 'total': data_reservation_offline['total_sale_price'],
                 "social_media_type": self._get_social_media_id_by_name(data_reservation_offline.get('social_media_id')),
-                "expired_date": data_reservation_offline.get('expired_date'),
+                # "expired_date": data_reservation_offline.get('expired_date'),
+                "hold_date": data_reservation_offline.get('expired_date'),
                 "quick_validate": data_reservation_offline.get('quick_validate'),
                 'state': 'draft',
                 'state_offline': 'confirm',
