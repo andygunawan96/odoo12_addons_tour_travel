@@ -243,24 +243,6 @@ class TtReschedule(models.Model):
         if self.state != 'sent':
             raise UserError("Cannot Validate because state is not 'Sent'.")
 
-        self.write({
-            'state': 'validate',
-            'validate_uid': self.env.user.id,
-            'validate_date': datetime.now(),
-            'final_admin_fee': self.admin_fee,
-        })
-
-    def finalize_reschedule_from_button(self):
-        if self.state != 'validate':
-            raise UserError("Cannot Finalize because state is not 'Validated'.")
-
-        self.write({
-            'state': 'final',
-            'final_uid': self.env.user.id,
-            'final_date': datetime.now()
-        })
-
-    def action_done(self):
         for rec in self.reschedule_line_ids:
             credit = rec.reschedule_amount
             debit = 0
@@ -268,10 +250,10 @@ class TtReschedule(models.Model):
             ledger_type = rec.reschedule_type == 'addons' and 8 or 7
             temp_desc = str(dict(rec._fields['reschedule_type'].selection).get(rec.reschedule_type)) + '\n'
             self.env['tt.ledger'].create_ledger_vanilla(
-                self.res_model,
-                self.res_id,
+                self._name,
+                self.id,
                 'After Sales : %s' % (self.name),
-                self.referenced_document,
+                self.name,
                 datetime.now(pytz.timezone('Asia/Jakarta')).date(),
                 ledger_type,
                 self.currency_id.id,
@@ -291,10 +273,10 @@ class TtReschedule(models.Model):
                 ledger_type = 6
 
                 self.env['tt.ledger'].create_ledger_vanilla(
-                    self.res_model,
-                    self.res_id,
+                    self._name,
+                    self.id,
                     'After Sales Admin Fee: %s' % (self.name),
-                    self.referenced_document,
+                    self.name,
                     datetime.now(pytz.timezone('Asia/Jakarta')).date(),
                     ledger_type,
                     self.currency_id.id,
@@ -312,10 +294,10 @@ class TtReschedule(models.Model):
                 credit = 0
                 debit = rec.admin_fee
                 self.env['tt.ledger'].create_ledger_vanilla(
-                    self.res_model,
-                    self.res_id,
+                    self._name,
+                    self.id,
                     'After Sales Admin Fee: %s' % (self.name),
-                    self.referenced_document,
+                    self.name,
                     datetime.now(pytz.timezone('Asia/Jakarta')).date(),
                     ledger_type,
                     self.currency_id.id,
@@ -328,8 +310,28 @@ class TtReschedule(models.Model):
                     **{'reschedule_id': self.id}
                 )
 
-        self.action_create_invoice()
+        self.write({
+            'state': 'validate',
+            'validate_uid': self.env.user.id,
+            'validate_date': datetime.now(),
+            'final_admin_fee': self.admin_fee,
+        })
 
+    def finalize_reschedule_from_button(self):
+        if self.state != 'validate':
+            raise UserError("Cannot Finalize because state is not 'Validated'.")
+
+        self.write({
+            'state': 'final',
+            'final_uid': self.env.user.id,
+            'final_date': datetime.now()
+        })
+
+    def action_done(self):
+        if self.state != 'final':
+            raise UserError("Cannot Approve because state is not 'Finalized'.")
+
+        self.action_create_invoice()
         self.write({
             'state': 'done',
             'done_uid': self.env.user.id,
@@ -340,6 +342,9 @@ class TtReschedule(models.Model):
         if self.state in ['validate', 'final']:
             if not self.cancel_message:
                 raise UserError("Please fill the cancellation message!")
+            for rec in self.ledger_ids:
+                rec.reverse_ledger()
+
         self.write({
             'state': 'cancel',
             'cancel_uid': self.env.user.id,
