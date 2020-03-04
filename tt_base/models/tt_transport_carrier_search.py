@@ -18,12 +18,24 @@ class TransportCarrier(models.Model):
     is_default = fields.Boolean("Default Search", help="Usually on ALL")
     is_favorite = fields.Boolean("Favorite Search", help="Will make this search appear on top of the list")
     sequence = fields.Integer("Sequence",default=200)
+    dummy_generate_provider_domain = fields.Boolean("Generate Provider")
+
+    def write(self, vals):
+        vals['dummy_generate_provider_domain'] = False
+        super(TransportCarrier, self).write(vals)
+
+    @api.onchange('dummy_generate_provider_domain', 'carrier_id')
+    def _onchange_domain_target_invoice(self):
+        return {'domain': {
+            'provider_ids': self.get_provider_type_domain()
+        }}
 
     def get_provider_type_domain(self):
         return [('provider_type_id','=',self.provider_type_id.id)]
 
     provider_ids = fields.Many2many('tt.provider','tt_transport_provider_rel','search_carrier_id','provider_id','Provider',
                                     domain=get_provider_type_domain)
+
     active = fields.Boolean('Active', default=True)
 
     @api.onchange('carrier_id')
@@ -60,7 +72,6 @@ class TransportCarrier(models.Model):
                     res[curr_rec['code']] = curr_rec
                 else:
                     res["%s~%s" % (curr_rec['code'],idx+1)] = curr_rec
-            _logger.info(json.dumps(res))
             res = ERR.get_no_error(res)
         except Exception as e:
             _logger.error(traceback.format_exc())

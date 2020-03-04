@@ -94,6 +94,7 @@ class TtTopUp(models.Model):
     def get_help_by(self):
         return self.approve_uid and self.approve_uid.name or \
                self.cancel_uid and self.cancel_uid.name or ''
+
     def action_set_back_to_request(self):
         if self.state != "expired":
             raise  UserError("Can only set to request [Expired] state top up.")

@@ -83,7 +83,7 @@ class AgentInvoice(models.Model):
             amount += rec.total_after_tax
 
         vals = ledger.prepare_vals(self._name, self.id, 'Agent Invoice : ' + self.name, self.name, datetime.now(), 2,
-                                   self.currency_id.id, self.env.user.id, amount if debit else 0, 0 if debit else amount)
+                                   self.currency_id.id, self.env.user.id, amount if debit == True else 0, 0 if debit == False else amount)
 
         vals['customer_parent_id'] = self.customer_parent_id.id
 
