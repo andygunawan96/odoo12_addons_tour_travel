@@ -905,8 +905,13 @@ class MasterTour(models.Model):
 
     def get_payment_rules_api(self, data, context, **kwargs):
         try:
-            search_tour_code = data.get('tour_code')
-            search_tour_obj = self.env['tt.master.tour'].sudo().search([('tour_code', '=', search_tour_code)], limit=1)
+            search_request = {
+                'tour_code': data.get('tour_code') and data['tour_code'] or '',
+                'provider': data.get('provider') and data['provider'] or ''
+            }
+            provider_obj = self.env['tt.provider'].sudo().search([('code', '=', search_request['provider'])], limit=1)
+            provider_obj = provider_obj and provider_obj[0] or False
+            search_tour_obj = self.env['tt.master.tour'].sudo().search([('tour_code', '=', search_request['tour_code']), ('provider_id', '=', provider_obj.id)], limit=1)
             if search_tour_obj:
                 search_tour_obj = search_tour_obj[0]
             payment_rules = [
