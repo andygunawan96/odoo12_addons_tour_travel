@@ -72,10 +72,6 @@ class IssuedOffline(models.Model):
     provider_type_id_name = fields.Char('Transaction Name', readonly=True, compute='offline_type_to_char')
     provider_booking_ids = fields.One2many('tt.provider.offline', 'booking_id', string='Provider Booking')
 
-    segment = fields.Integer('Number of Segment', compute='get_segment_length')
-    person = fields.Integer('Person', readonly=True, states={'draft': [('readonly', False)],
-                                                             'pending': [('readonly', False)],
-                                                             'confirm': [('readonly', False)]})
     # carrier_id = fields.Many2one('tt.transport.carrier')
     sector_type = fields.Selection(SECTOR_TYPE, 'Sector', readonly=True, states={'draft': [('readonly', False)],
                                                                                  'pending': [('readonly', False)]})
@@ -87,9 +83,6 @@ class IssuedOffline(models.Model):
     # states={'draft': [('readonly', False)], 'confirm': [('readonly', False)]})
     nta_price = fields.Monetary('NTA Price', readonly=True, compute='_get_nta_price', store=True)
     agent_nta_price = fields.Monetary('Agent Price', readonly=True, compute='_get_agent_price', store=True)
-
-    vendor = fields.Char('Vendor Provider', readonly=True, states={'confirm': [('readonly', False)]})
-    master_vendor_id = fields.Char('Master Vendor', readonly=True, states={'confirm': [('readonly', False)]})
 
     resv_code = fields.Char('Vendor Order Number')
 
@@ -112,20 +105,14 @@ class IssuedOffline(models.Model):
     total = fields.Monetary('Total Sale Price', readonly=False, store=True, compute="")
     total_commission_amount = fields.Monetary('Total Commission Amount', store=True)
     # total_supplementary_price = fields.Monetary('Total Supplementary', compute='_get_total_supplement')
-    total_tax = fields.Monetary('Total Taxes')
 
     company_id = fields.Many2one('res.company', 'Company', required=True, default=lambda self: self.env.user.company_id,
                                  readonly=True)
-
-    contact_id_backup = fields.Integer('Backup ID')
 
     invoice_ids = fields.Many2many('tt.agent.invoice', 'issued_invoice_rel', 'issued_id', 'invoice_id', 'Invoice(s)')
 
     attachment_ids = fields.Many2many('tt.upload.center', 'offline_ir_attachments_rel', 'tt_issued_id',
                                       'attachment_id', string='Attachments')
-    guest_ids = fields.Many2many('tt.customer', 'tt_issued_guest_rel', 'resv_issued_id', 'tt_product_id',
-                                 'Guest(s)', readonly=True, states={'draft': [('readonly', False)],
-                                                                    'pending': [('readonly', False)]})
     # passenger_qty = fields.Integer('Passenger Qty', default=1)
     cancel_message = fields.Text('Cancellation Messages', copy=False)
     cancel_can_edit = fields.Boolean('Can Edit Cancellation Messages')
@@ -581,11 +568,6 @@ class IssuedOffline(models.Model):
                 })
                 new_aml = rec.env['tt.ledger'].create(vals)
 
-    def set_back_to_validate(self):
-        self.state = 'booked'
-        self.state_offline = 'validate'
-        self.hold_date = datetime.now() + timedelta(days=1)
-
     def create_provider_offline(self):
         for provider in self.provider_booking_ids:
             provider.unlink()
@@ -617,29 +599,6 @@ class IssuedOffline(models.Model):
     def _get_agent_price(self):
         for rec in self:
             rec.agent_nta_price = rec.total - rec.total_commission_amount + rec.parent_agent_commission + rec.ho_commission
-
-    @api.multi
-    def get_segment_length(self):
-        for rec in self:
-            rec.segment = len(rec.line_ids)
-
-    def get_destination_id(self, type, code):
-        if type == 'airline':
-            type = 'airport'
-        elif type == 'train':
-            type = 'train-st'
-        elif type == 'bus':
-            type = 'bus-st'
-        elif type == 'activity':
-            type = 'activity'
-        elif type == 'cruise':
-            type = 'harbour'
-        # elif type == 'tour':
-        #     type = 'tour'
-
-        dest = self.env['tt.destinations'].sudo().search([('code', '=', code), ('type', '=', type)], limit=1)
-        return dest and dest[0].id or False
-        # return dest or False
 
     def get_display_provider_name(self):
         provider_list = []
@@ -833,11 +792,6 @@ class IssuedOffline(models.Model):
     def compute_final_ho(self):
         for rec in self:
             rec.ho_final_amount = rec.nta_price - rec.vendor_amount
-
-    @api.onchange('master_vendor_id')
-    def _compute_vendor_text(self):
-        for rec in self:
-            rec.vendor = rec.master_vendor_id.name
 
     @api.onchange('contact_id')
     def _filter_customer_parent(self):
