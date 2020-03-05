@@ -52,6 +52,8 @@ class TtMasterTourApiCon(models.Model):
             res = table_obj.get_config_by_api()
         elif action == 'search':
             res = table_obj.search_tour_api(data,context)
+        elif action == 'update_availability':
+            res = table_obj.update_availability_api(data,context)
         elif action == 'get_details':
             res = table_obj.get_tour_details_api(data,context)
         elif action == 'get_payment_rules':
