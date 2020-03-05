@@ -355,6 +355,7 @@ class IssuedOffline(models.Model):
                 provider.create_service_charge_hotel(idx)
             else:
                 provider.create_service_charge()
+        self.round_offline_pricing()
         self.calculate_service_charge()
 
     @api.one
@@ -583,6 +584,93 @@ class IssuedOffline(models.Model):
                 }
                 self.env['tt.provider.offline'].create(vals)
                 pnr_found.append(line.pnr)
+
+    def round_offline_pricing(self):
+        """ Fungsi ini untuk melakukan pembulatan harga di pricing """
+        total_price = 0
+        agent_comm = 0
+        parent_comm = 0
+        ho_comm = 0
+
+        """ Get total price & commission from pricing """
+        for provider in self.provider_booking_ids:
+            for scs in provider.cost_service_charge_ids:
+                if scs.charge_type != 'RAC':
+                    total_price += scs.total
+                else:
+                    if scs.commission_agent_id.id == self.agent_id.id:
+                        agent_comm += abs(scs.total)
+                    elif scs.commission_agent_id.id == self.env.ref('tt_base.rodex_ho').id:
+                        ho_comm += abs(scs.total)
+                    else:
+                        parent_comm += abs(scs.total)
+
+        """ Get diff from pricing and from booking """
+        diff = self.total - total_price
+        agent_diff = self.agent_commission - agent_comm
+        ho_diff = self.ho_commission - ho_comm
+        parent_diff = self.parent_agent_commission - parent_comm
+
+        if diff != 0:
+            """ Jika diff != 0, lakukan pembulatan total price di pricing """
+            if diff < self.total:
+                for scs in self.provider_booking_ids[0].cost_service_charge_ids:
+                    if scs.charge_type == 'FARE':
+                        scs.amount += diff
+                        scs.total += diff
+                        break
+            elif diff > self.total:
+                for scs in self.provider_booking_ids[0].cost_service_charge_ids:
+                    if scs.charge_type == 'FARE':
+                        scs.amount -= diff
+                        scs.total -= diff
+                        break
+        if agent_diff != 0:
+            """ Jika agent_diff != 0, lakukan pembulatan komisi agent di pricing """
+            if agent_diff < self.agent_commission:
+                for scs in self.provider_booking_ids[0].cost_service_charge_ids:
+                    if scs.commission_agent_id.id == self.agent_id.id:
+                        scs.amount -= agent_diff
+                        scs.total -= agent_diff
+                        break
+            elif agent_diff > self.agent_commission:
+                for scs in self.provider_booking_ids[0].cost_service_charge_ids:
+                    if scs.commission_agent_id.id == self.agent_id.id:
+                        scs.amount += agent_diff
+                        scs.total += agent_diff
+                        break
+        if ho_diff != 0:
+            """ Jika ho_diff != 0, lakukan pembulatan komisi ho di pricing """
+            if ho_diff < self.ho_commission:
+                for scs in self.provider_booking_ids[0].cost_service_charge_ids:
+                    if scs.commission_agent_id.id == self.env.ref('tt_base.rodex_ho').id:
+                        if scs.charge_code != 'hoc':
+                            scs.amount -= ho_diff
+                            scs.total -= ho_diff
+                            break
+            elif ho_diff > self.ho_commission:
+                for scs in self.provider_booking_ids[0].cost_service_charge_ids:
+                    if scs.commission_agent_id.id == self.env.ref('tt_base.rodex_ho').id:
+                        if scs.charge_code != 'hoc':
+                            scs.amount += ho_diff
+                            scs.total += ho_diff
+                            break
+        if parent_diff != 0:
+            """ Jika parent_diff != 0, lakukan pembulatan komisi parent di pricing """
+            if parent_diff < self.parent_agent_commission:
+                for scs in self.provider_booking_ids[0].cost_service_charge_ids:
+                    if scs.commission_agent_id.id != self.env.ref(
+                            'tt_base.rodex_ho').id and scs.commission_agent_id.id != self.agent_id.id:
+                        scs.amount -= ho_diff
+                        scs.total -= ho_diff
+                        break
+            elif parent_diff > self.parent_agent_commission:
+                for scs in self.provider_booking_ids[0].cost_service_charge_ids:
+                    if scs.commission_agent_id.id != self.env.ref(
+                            'tt_base.rodex_ho').id and scs.commission_agent_id.id != self.agent_id.id:
+                        scs.amount += parent_diff
+                        scs.total += parent_diff
+                        break
 
     ####################################################################################################
     # Set, Get & Compute
