@@ -67,6 +67,9 @@ class TtMasterTourApiCon(models.Model):
 
         return res
 
+    def search_provider(self, data):
+        return self.send_request_to_gateway('%s/booking/tour' % (self.url), data, 'search_provider')
+
     def send_tour_request_notification(self,data,context):
         request = {
             'code': 9908,
