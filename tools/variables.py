@@ -183,3 +183,8 @@ ACC_TRANSPORT_TYPE_REVERSE = {
     'Top Up': 'tt.top.up',
     'Adjustment': 'tt.adjustment',
 }
+
+FEE_CHARGE_TYPE = [
+    ('parent', 'Parent'),
+    ('ho', 'HO')
+]

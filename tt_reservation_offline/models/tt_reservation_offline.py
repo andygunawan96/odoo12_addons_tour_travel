@@ -62,7 +62,7 @@ class IssuedOffline(models.Model):
 
     # booking_id = fields.Many2one('tt.reservation.offline', 'Booking ID', default=lambda self: self.id)
 
-    state = fields.Selection(variables.BOOKING_STATE, 'State', default='pending')
+    state = fields.Selection(variables.BOOKING_STATE, 'State', default='draft')
     state_offline = fields.Selection(STATE_OFFLINE, 'State Offline', default='draft')
 
     provider_type_id = fields.Many2one('tt.provider.type', string='Provider Type',
@@ -72,10 +72,6 @@ class IssuedOffline(models.Model):
     provider_type_id_name = fields.Char('Transaction Name', readonly=True, compute='offline_type_to_char')
     provider_booking_ids = fields.One2many('tt.provider.offline', 'booking_id', string='Provider Booking')
 
-    segment = fields.Integer('Number of Segment', compute='get_segment_length')
-    person = fields.Integer('Person', readonly=True, states={'draft': [('readonly', False)],
-                                                             'pending': [('readonly', False)],
-                                                             'confirm': [('readonly', False)]})
     # carrier_id = fields.Many2one('tt.transport.carrier')
     sector_type = fields.Selection(SECTOR_TYPE, 'Sector', readonly=True, states={'draft': [('readonly', False)],
                                                                                  'pending': [('readonly', False)]})
@@ -87,9 +83,6 @@ class IssuedOffline(models.Model):
     # states={'draft': [('readonly', False)], 'confirm': [('readonly', False)]})
     nta_price = fields.Monetary('NTA Price', readonly=True, compute='_get_nta_price', store=True)
     agent_nta_price = fields.Monetary('Agent Price', readonly=True, compute='_get_agent_price', store=True)
-
-    vendor = fields.Char('Vendor Provider', readonly=True, states={'confirm': [('readonly', False)]})
-    master_vendor_id = fields.Char('Master Vendor', readonly=True, states={'confirm': [('readonly', False)]})
 
     resv_code = fields.Char('Vendor Order Number')
 
@@ -105,9 +98,6 @@ class IssuedOffline(models.Model):
     cancel_date = fields.Datetime('Cancel Date', readonly=True, copy=False)
     cancel_uid = fields.Many2one('res.users', readonly=True, copy=False)
 
-    expired_date = fields.Datetime('Time Limit', readonly=True, states={'draft': [('readonly', False)],
-                                                                        'pending': [('readonly', False)]})
-
     # Monetary
     currency_id = fields.Many2one('res.currency', 'Currency', default=lambda self: self.env.user.company_id.currency_id,
                                   readonly=True, states={'draft': [('readonly', False)],
@@ -115,20 +105,14 @@ class IssuedOffline(models.Model):
     total = fields.Monetary('Total Sale Price', readonly=False, store=True, compute="")
     total_commission_amount = fields.Monetary('Total Commission Amount', store=True)
     # total_supplementary_price = fields.Monetary('Total Supplementary', compute='_get_total_supplement')
-    total_tax = fields.Monetary('Total Taxes')
 
     company_id = fields.Many2one('res.company', 'Company', required=True, default=lambda self: self.env.user.company_id,
                                  readonly=True)
-
-    contact_id_backup = fields.Integer('Backup ID')
 
     invoice_ids = fields.Many2many('tt.agent.invoice', 'issued_invoice_rel', 'issued_id', 'invoice_id', 'Invoice(s)')
 
     attachment_ids = fields.Many2many('tt.upload.center', 'offline_ir_attachments_rel', 'tt_issued_id',
                                       'attachment_id', string='Attachments')
-    guest_ids = fields.Many2many('tt.customer', 'tt_issued_guest_rel', 'resv_issued_id', 'tt_product_id',
-                                 'Guest(s)', readonly=True, states={'draft': [('readonly', False)],
-                                                                    'pending': [('readonly', False)]})
     # passenger_qty = fields.Integer('Passenger Qty', default=1)
     cancel_message = fields.Text('Cancellation Messages', copy=False)
     cancel_can_edit = fields.Boolean('Can Edit Cancellation Messages')
@@ -224,7 +208,7 @@ class IssuedOffline(models.Model):
             if not self.check_passenger_empty():
                 if self.total != 0:
                     self.state_offline = 'confirm'
-                    self.state = 'pending'
+                    self.state = 'draft'
                     self.confirm_date = fields.Datetime.now()
                     self.confirm_uid = kwargs.get('co_uid') and kwargs['co_uid'] or self.env.user.id
                     if not self.acquirer_id:
@@ -261,7 +245,7 @@ class IssuedOffline(models.Model):
 
     @api.one
     def action_draft(self):
-        self.state = 'pending'
+        self.state = 'draft'
         self.state_offline = 'draft'
         self.confirm_date = False
         self.confirm_uid = False
@@ -351,7 +335,6 @@ class IssuedOffline(models.Model):
         if self.state_offline == 'done':
             raise UserError(_('Offline has been done. You cannot go back to Sent. Please refresh the page.'))
         self.state_offline = 'sent'
-        self.hold_date = datetime.now() + timedelta(days=1)
         self.sent_date = fields.Datetime.now()
         self.sent_uid = self.env.user.id
         self.create_provider_offline()
@@ -372,6 +355,7 @@ class IssuedOffline(models.Model):
                 provider.create_service_charge_hotel(idx)
             else:
                 provider.create_service_charge()
+        self.round_offline_pricing()
         self.calculate_service_charge()
 
     @api.one
@@ -439,8 +423,9 @@ class IssuedOffline(models.Model):
         })
 
     def action_expired(self):
-        super(IssuedOffline, self).action_expired()
-        self.state_offline = 'expired'
+        if self.state_offline == 'confirm' and self.hold_date < datetime.now():
+            super(IssuedOffline, self).action_expired()  # Set state = expired
+            self.state_offline = 'expired'  # Set state_offline = expired
 
     @api.one
     def action_quick_issued(self):
@@ -546,6 +531,10 @@ class IssuedOffline(models.Model):
         for book in book_objs:
             book.sync_service_charge()
 
+    def set_back_to_confirm(self):
+        self.state = 'draft'
+        self.state_offline = 'confirm'
+
     def create_final_ho_ledger(self, provider_obj):
         for rec in self:
             if rec.nta_price > rec.vendor_amount:
@@ -596,6 +585,93 @@ class IssuedOffline(models.Model):
                 self.env['tt.provider.offline'].create(vals)
                 pnr_found.append(line.pnr)
 
+    def round_offline_pricing(self):
+        """ Fungsi ini untuk melakukan pembulatan harga di pricing """
+        total_price = 0
+        agent_comm = 0
+        parent_comm = 0
+        ho_comm = 0
+
+        """ Get total price & commission from pricing """
+        for provider in self.provider_booking_ids:
+            for scs in provider.cost_service_charge_ids:
+                if scs.charge_type != 'RAC':
+                    total_price += scs.total
+                else:
+                    if scs.commission_agent_id.id == self.agent_id.id:
+                        agent_comm += abs(scs.total)
+                    elif scs.commission_agent_id.id == self.env.ref('tt_base.rodex_ho').id:
+                        ho_comm += abs(scs.total)
+                    else:
+                        parent_comm += abs(scs.total)
+
+        """ Get diff from pricing and from booking """
+        diff = self.total - total_price
+        agent_diff = self.agent_commission - agent_comm
+        ho_diff = self.ho_commission - ho_comm
+        parent_diff = self.parent_agent_commission - parent_comm
+
+        if diff != 0:
+            """ Jika diff != 0, lakukan pembulatan total price di pricing """
+            if diff < self.total:
+                for scs in self.provider_booking_ids[0].cost_service_charge_ids:
+                    if scs.charge_type == 'FARE':
+                        scs.amount += diff
+                        scs.total += diff
+                        break
+            elif diff > self.total:
+                for scs in self.provider_booking_ids[0].cost_service_charge_ids:
+                    if scs.charge_type == 'FARE':
+                        scs.amount -= diff
+                        scs.total -= diff
+                        break
+        if agent_diff != 0:
+            """ Jika agent_diff != 0, lakukan pembulatan komisi agent di pricing """
+            if agent_diff < self.agent_commission:
+                for scs in self.provider_booking_ids[0].cost_service_charge_ids:
+                    if scs.commission_agent_id.id == self.agent_id.id:
+                        scs.amount -= agent_diff
+                        scs.total -= agent_diff
+                        break
+            elif agent_diff > self.agent_commission:
+                for scs in self.provider_booking_ids[0].cost_service_charge_ids:
+                    if scs.commission_agent_id.id == self.agent_id.id:
+                        scs.amount += agent_diff
+                        scs.total += agent_diff
+                        break
+        if ho_diff != 0:
+            """ Jika ho_diff != 0, lakukan pembulatan komisi ho di pricing """
+            if ho_diff < self.ho_commission:
+                for scs in self.provider_booking_ids[0].cost_service_charge_ids:
+                    if scs.commission_agent_id.id == self.env.ref('tt_base.rodex_ho').id:
+                        if scs.charge_code != 'hoc':
+                            scs.amount -= ho_diff
+                            scs.total -= ho_diff
+                            break
+            elif ho_diff > self.ho_commission:
+                for scs in self.provider_booking_ids[0].cost_service_charge_ids:
+                    if scs.commission_agent_id.id == self.env.ref('tt_base.rodex_ho').id:
+                        if scs.charge_code != 'hoc':
+                            scs.amount += ho_diff
+                            scs.total += ho_diff
+                            break
+        if parent_diff != 0:
+            """ Jika parent_diff != 0, lakukan pembulatan komisi parent di pricing """
+            if parent_diff < self.parent_agent_commission:
+                for scs in self.provider_booking_ids[0].cost_service_charge_ids:
+                    if scs.commission_agent_id.id != self.env.ref(
+                            'tt_base.rodex_ho').id and scs.commission_agent_id.id != self.agent_id.id:
+                        scs.amount -= ho_diff
+                        scs.total -= ho_diff
+                        break
+            elif parent_diff > self.parent_agent_commission:
+                for scs in self.provider_booking_ids[0].cost_service_charge_ids:
+                    if scs.commission_agent_id.id != self.env.ref(
+                            'tt_base.rodex_ho').id and scs.commission_agent_id.id != self.agent_id.id:
+                        scs.amount += parent_diff
+                        scs.total += parent_diff
+                        break
+
     ####################################################################################################
     # Set, Get & Compute
     ####################################################################################################
@@ -611,29 +687,6 @@ class IssuedOffline(models.Model):
     def _get_agent_price(self):
         for rec in self:
             rec.agent_nta_price = rec.total - rec.total_commission_amount + rec.parent_agent_commission + rec.ho_commission
-
-    @api.multi
-    def get_segment_length(self):
-        for rec in self:
-            rec.segment = len(rec.line_ids)
-
-    def get_destination_id(self, type, code):
-        if type == 'airline':
-            type = 'airport'
-        elif type == 'train':
-            type = 'train-st'
-        elif type == 'bus':
-            type = 'bus-st'
-        elif type == 'activity':
-            type = 'activity'
-        elif type == 'cruise':
-            type = 'harbour'
-        # elif type == 'tour':
-        #     type = 'tour'
-
-        dest = self.env['tt.destinations'].sudo().search([('code', '=', code), ('type', '=', type)], limit=1)
-        return dest and dest[0].id or False
-        # return dest or False
 
     def get_display_provider_name(self):
         provider_list = []
@@ -827,11 +880,6 @@ class IssuedOffline(models.Model):
     def compute_final_ho(self):
         for rec in self:
             rec.ho_final_amount = rec.nta_price - rec.vendor_amount
-
-    @api.onchange('master_vendor_id')
-    def _compute_vendor_text(self):
-        for rec in self:
-            rec.vendor = rec.master_vendor_id.name
 
     @api.onchange('contact_id')
     def _filter_customer_parent(self):
@@ -1346,7 +1394,8 @@ class IssuedOffline(models.Model):
                 'description': data_reservation_offline.get('desc'),
                 'total': data_reservation_offline['total_sale_price'],
                 "social_media_type": self._get_social_media_id_by_name(data_reservation_offline.get('social_media_id')),
-                "expired_date": data_reservation_offline.get('expired_date'),
+                # "expired_date": data_reservation_offline.get('expired_date'),
+                "hold_date": data_reservation_offline.get('expired_date'),
                 "quick_validate": data_reservation_offline.get('quick_validate'),
                 'state': 'draft',
                 'state_offline': 'confirm',

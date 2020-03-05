@@ -88,7 +88,8 @@ class TtProviderTour(models.Model):
     def action_booked_api_tour(self, provider_data, api_context):
         for rec in self:
             rec.write({
-                'pnr': provider_data['pnr'],
+                'pnr': provider_data.get('pnr') and provider_data['pnr'] or '',
+                'pnr2': provider_data.get('booking_uuid') and provider_data['booking_uuid'] or '',
                 'state': 'booked',
                 'booked_uid': api_context['co_uid'],
                 'booked_date': fields.Datetime.now(),

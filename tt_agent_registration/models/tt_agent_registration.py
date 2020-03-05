@@ -319,11 +319,16 @@ class AgentRegistration(models.Model):
 
     def check_user_contact(self):
         users = self.get_all_users()
+        users_email = []
         if self.agent_registration_customer_ids:
             for rec in self.agent_registration_customer_ids:
-                for user in users:
-                    if rec.email in user.get('login'):
-                        raise UserError(_('Contact with email : ' + rec.email + ' already exists. Please use another email.'))
+                if rec.email not in users_email:
+                    users_email.append(rec.email)
+                    for user in users:
+                        if rec.email in user.get('login'):
+                            raise UserError(_('Contact with email : ' + rec.email + ' already exists. Please use another email.'))
+                else:
+                    raise UserError(_('Two or more users cannot use same email. Please use another email.'))
         else:
             raise UserError(_('Please input contact information.'))
 

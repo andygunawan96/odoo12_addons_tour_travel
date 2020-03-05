@@ -9,6 +9,8 @@ import logging, traceback
 import json
 import pytz
 import base64
+import csv
+import os
 
 _logger = logging.getLogger(__name__)
 
@@ -17,6 +19,45 @@ class Survey(models.Model):
     _inherit = 'survey.survey'
 
     tour_id = fields.Many2one('tt.master.tour', 'Tour')
+
+
+class TourSyncProducts(models.TransientModel):
+    _name = "tour.sync.product.wizard"
+    _description = 'Rodex Model'
+
+    def get_domain(self):
+        domain_id = self.env.ref('tt_reservation_tour.tt_provider_type_tour').id
+        return [('provider_type_id.id', '=', int(domain_id))]
+
+    provider_id = fields.Many2one('tt.provider', 'Provider', domain=get_domain, required=True)
+    provider_code = fields.Char('Provider Code')
+    start_num = fields.Char('Start Number', default='1')
+    end_num = fields.Char('End Number', default='1')
+
+    def generate_json(self):
+        def_name = 'action_get_%s_json' % self.provider_id.code
+        if hasattr(self.env['tt.master.tour'], def_name):
+            getattr(self.env['tt.master.tour'], def_name)()
+
+    def sync_product(self):
+        def_name = 'action_sync_%s' % self.provider_id.code
+        start_num = self.start_num
+        end_num = self.end_num
+        if hasattr(self.env['tt.master.tour'], def_name):
+            getattr(self.env['tt.master.tour'], def_name)(start_num, end_num)
+
+    def deactivate_product(self):
+        products = self.env['tt.master.activity'].sudo().search([('provider_id', '=', self.provider_id.id)])
+        for rec in products:
+            if rec.active:
+                rec.sudo().write({
+                    'active': False
+                })
+
+    @api.depends('provider_id')
+    @api.onchange('provider_id')
+    def _compute_provider_code(self):
+        self.provider_code = self.provider_id.code
 
 
 class TourItineraryItem(models.Model):
@@ -206,13 +247,65 @@ class MasterTour(models.Model):
                 if rec.tour_type == 'sic':
                     rec.tipping_tour_leader = 0
 
+    def action_get_rodextrip_tour_json(self):
+        raise UserError(_("This Provider does not support Sync Products."))
+
+    def action_sync_rodextrip_tour(self, start, end):
+        raise UserError(_("This Provider does not support Sync Products."))
+
+    def action_get_gochina_json(self):
+        raise UserError(_("This Provider does not support Sync Products."))
+
+    def action_sync_gochina(self, start, end):
+        raise UserError(_("This Provider does not support Sync Products."))
+
+    def action_get_rodextrip_tour_btbo2_json(self):
+        req_post = {
+            'country_id': 0,
+            'city_id': 0,
+            'month': '00',
+            'year': '0000',
+            'tour_query': '',
+            'provider': 'rodextrip_tour_btbo2',
+        }
+
+        res = self.env['tt.master.tour.api.con'].search_provider(req_post)
+        temp = {}
+        if res['error_code'] == 0:
+            temp = res['response']
+        if temp:
+            folder_path = '/var/log/tour_travel/rodextrip_tour_btbo2_master_data'
+            if not os.path.exists(folder_path):
+                os.mkdir(folder_path)
+            file = open('/var/log/tour_travel/rodextrip_tour_btbo2_master_data/rodextrip_tour_btbo2_master_data.json', 'w')
+            file.write(json.dumps(temp))
+            file.close()
+
+    def action_sync_rodextrip_tour_btbo2(self, start, end):
+        provider = 'rodextrip_tour_btbo2'
+
+        file = []
+        for i in range(int(start), int(end) + 1):
+            file_dat = open('/var/log/tour_travel/rodextrip_tour_btbo2_master_data/rodextrip_tour_btbo2_master_data.json', 'r')
+            file = json.loads(file_dat.read())
+            file_dat.close()
+            if file:
+                self.sync_products(provider, file)
+
+    def sync_products(self, provider=None, data=None, page=None):
+        file = data
+        if file:
+            for rec in file['result']:
+                pass
+
     def action_validate(self):
         self.state = 'open'
         self.create_uid = self.env.user.id
-        if self.tour_category == 'group':
-            self.tour_code = self.env['ir.sequence'].next_by_code('master.tour.code.group')
-        elif self.tour_category == 'private':
-            self.tour_code = self.env['ir.sequence'].next_by_code('master.tour.code.fit')
+        if not self.tour_code:
+            if self.tour_category == 'group':
+                self.tour_code = self.env['ir.sequence'].next_by_code('master.tour.code.group')
+            elif self.tour_category == 'private':
+                self.tour_code = self.env['ir.sequence'].next_by_code('master.tour.code.fit')
 
     def action_closed(self):
         self.state = 'on_going'
@@ -577,6 +670,59 @@ class MasterTour(models.Model):
             _logger.error(traceback.format_exc())
             return ERR.get_error(1022)
 
+    def get_availability_api(self, data, context, **kwargs):
+        try:
+            response = {
+                'seat': 0,
+                'quota': 0,
+                'state': 'sold',
+                'availability': False
+            }
+            provider_obj = self.env['tt.provider'].sudo().search([('code', '=', data['provider'])], limit=1)
+            provider_obj = provider_obj and provider_obj[0] or False
+            tour_obj = self.env['tt.master.tour'].sudo().search([('tour_code', '=', data['tour_code']), ('provider_id', '=', provider_obj.id)], limit=1)
+            if tour_obj:
+                tour_obj = tour_obj[0]
+                response.update({
+                    'seat': tour_obj.seat,
+                    'quota': tour_obj.quota,
+                    'state': tour_obj.state,
+                    'availability': int(tour_obj.seat) > 0 and True or False
+                })
+            return ERR.get_no_error(response)
+        except RequestException as e:
+            _logger.error(traceback.format_exc())
+            return e.error_dict()
+        except Exception as e:
+            _logger.error(traceback.format_exc())
+            return ERR.get_error(1022)
+
+    def update_availability_api(self, data, context, **kwargs):
+        try:
+            provider_obj = self.env['tt.provider'].sudo().search([('code', '=', data['provider'])], limit=1)
+            provider_obj = provider_obj and provider_obj[0] or False
+            tour_obj = self.env['tt.master.tour'].sudo().search([('tour_code', '=', data['tour_code']), ('provider_id', '=', provider_obj.id)], limit=1)
+            if tour_obj:
+                tour_obj = tour_obj[0]
+                tour_obj.sudo().write({
+                    'seat': data['seat'],
+                    'quota': data['quota'],
+                    'state': data['state'],
+                })
+            response = {
+                'tour_code': data['tour_code'],
+                'seat': data['seat'],
+                'quota': data['quota'],
+                'availability': int(data['seat']) > 0 and True or False
+            }
+            return ERR.get_no_error(response)
+        except RequestException as e:
+            _logger.error(traceback.format_exc())
+            return e.error_dict()
+        except Exception as e:
+            _logger.error(traceback.format_exc())
+            return ERR.get_error(1025)
+
     def get_delay(self, day, hour, minute):
         delay_str = str(day)
         delay_str += 'd '
@@ -640,10 +786,12 @@ class MasterTour(models.Model):
     def get_tour_details_api(self, data, context, **kwargs):
         try:
             search_request = {
-                'tour_code': data.get('tour_code') and data['tour_code'] or ''
+                'tour_code': data.get('tour_code') and data['tour_code'] or '',
+                'provider': data.get('provider') and data['provider'] or ''
             }
-
-            tour_obj = self.env['tt.master.tour'].sudo().search([('tour_code', '=', search_request['tour_code'])], limit=1)
+            provider_obj = self.env['tt.provider'].sudo().search([('code', '=', search_request['provider'])], limit=1)
+            provider_obj = provider_obj and provider_obj[0] or False
+            tour_obj = self.env['tt.master.tour'].sudo().search([('tour_code', '=', search_request['tour_code']), ('provider_id', '=', provider_obj.id)], limit=1)
             if tour_obj:
                 tour_obj = tour_obj[0]
                 search_request.update({
@@ -757,8 +905,13 @@ class MasterTour(models.Model):
 
     def get_payment_rules_api(self, data, context, **kwargs):
         try:
-            search_tour_code = data.get('tour_code')
-            search_tour_obj = self.env['tt.master.tour'].sudo().search([('tour_code', '=', search_tour_code)], limit=1)
+            search_request = {
+                'tour_code': data.get('tour_code') and data['tour_code'] or '',
+                'provider': data.get('provider') and data['provider'] or ''
+            }
+            provider_obj = self.env['tt.provider'].sudo().search([('code', '=', search_request['provider'])], limit=1)
+            provider_obj = provider_obj and provider_obj[0] or False
+            search_tour_obj = self.env['tt.master.tour'].sudo().search([('tour_code', '=', search_request['tour_code']), ('provider_id', '=', provider_obj.id)], limit=1)
             if search_tour_obj:
                 search_tour_obj = search_tour_obj[0]
             payment_rules = [
@@ -835,8 +988,13 @@ class MasterTour(models.Model):
 
     def get_tour_pricing_api(self, req, context):
         try:
-            temp_tour_code = req['tour_code']
-            tour_data_list = self.env['tt.master.tour'].sudo().search([('tour_code', '=', temp_tour_code)], limit=1)
+            search_request = {
+                'tour_code': req['req'].get('tour_code') and req['req']['tour_code'] or '',
+                'provider': req.get('provider') and req['provider'] or ''
+            }
+            provider_obj = self.env['tt.provider'].sudo().search([('code', '=', search_request['provider'])], limit=1)
+            provider_obj = provider_obj and provider_obj[0] or False
+            tour_data_list = self.env['tt.master.tour'].sudo().search([('tour_code', '=', search_request['tour_code']), ('provider_id', '=', provider_obj.id)], limit=1)
             tour_data = tour_data_list[0]
             price_itinerary = {
                 'adult_fare': tour_data.adult_fare,
@@ -887,7 +1045,7 @@ class MasterTour(models.Model):
                     'infant_tipping_driver': tour_data.tipping_driver,
                 })
 
-            temp_room_list = req['room_list']
+            temp_room_list = req['req']['room_list']
             total_adt = 0
             total_chd = 0
             total_inf = 0

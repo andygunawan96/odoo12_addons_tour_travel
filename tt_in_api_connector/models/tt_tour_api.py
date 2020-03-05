@@ -52,6 +52,8 @@ class TtMasterTourApiCon(models.Model):
             res = table_obj.get_config_by_api()
         elif action == 'search':
             res = table_obj.search_tour_api(data,context)
+        elif action == 'update_availability':
+            res = table_obj.update_availability_api(data,context)
         elif action == 'get_details':
             res = table_obj.get_tour_details_api(data,context)
         elif action == 'get_payment_rules':
@@ -64,6 +66,9 @@ class TtMasterTourApiCon(models.Model):
             raise RequestException(999)
 
         return res
+
+    def search_provider(self, data):
+        return self.send_request_to_gateway('%s/booking/tour' % (self.url), data, 'search_provider')
 
     def send_tour_request_notification(self,data,context):
         request = {

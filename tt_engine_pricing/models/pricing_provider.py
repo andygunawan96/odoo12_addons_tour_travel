@@ -2,7 +2,7 @@ from odoo import models, fields, api, _
 from ...tools import variables
 from ...tools.api import Response
 import traceback, logging
-from datetime import datetime
+from datetime import datetime, timedelta
 
 
 _logger = logging.getLogger(__name__)
@@ -10,11 +10,15 @@ _logger = logging.getLogger(__name__)
 
 class PricingProvider(models.Model):
     _name = 'tt.pricing.provider'
+    _order = 'sequence'
     _description = 'Rodex Model'
 
     name = fields.Char('Name', readonly=1, compute="_compute_name", store=True)
+    sequence = fields.Integer('Sequence', default=50, required=True)
     provider_type_id = fields.Many2one('tt.provider.type', 'Provider Type', required=True)
+    provider_access_type = fields.Selection(variables.ACCESS_TYPE, 'Provider Access Type', required=True, default='allow')
     provider_ids = fields.Many2many('tt.provider', 'pricing_provider_rel', 'pricing_id', 'provider_id', 'Providers')
+    carrier_access_type = fields.Selection(variables.ACCESS_TYPE, 'Carrier Access Type', required=True, default='allow')
     carrier_ids = fields.Many2many('tt.transport.carrier', 'tt_pricing_provider_carrier_rel', 'pricing_id', 'carrier_id', string='Carriers')
     line_ids = fields.One2many('tt.pricing.provider.line', 'pricing_id', 'Configs', domain=['|', ('active', '=', 1), ('active', '=', 0)])
     active = fields.Boolean('Active', default=True)
@@ -95,8 +99,10 @@ class PricingProvider(models.Model):
         res = {
             'provider_type': self.provider_type_id and self.provider_type_id.code or '',
             # 'provider': self.provider_id and self.provider_id.code,
+            'provider_access_type': self.provider_access_type,
             'providers': providers,
             # 'pricing_type': self.pricing_type,
+            'carrier_access_type': self.carrier_access_type,
             'carrier_codes': carrier_codes,
             'is_sale': self.is_sale,
             'is_commission': self.is_commission,
@@ -165,8 +171,8 @@ class PricingProviderLine(models.Model):
     name = fields.Char('Name', requried=True)
     sequence = fields.Integer('Sequence', default=50, required=True)
     pricing_id = fields.Many2one('tt.pricing.provider', 'Pricing Provider', readonly=1)
-    date_from = fields.Datetime('Date From', required=True)
-    date_to = fields.Datetime('Date To', required=True)
+    date_from = fields.Datetime('Date From', default=datetime.now())
+    date_to = fields.Datetime('Date To', default=datetime.now() + timedelta(days=1000))
     origin_type = fields.Selection(variables.ACCESS_TYPE, 'Origin Type', required=True, default='all')
     origin_ids = fields.Many2many('tt.destinations', 'tt_pricing_provider_line_origin_rel', 'pricing_line_id', 'origin_id',
                                   string='Origins')
