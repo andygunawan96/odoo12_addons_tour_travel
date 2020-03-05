@@ -46,6 +46,11 @@
     </record>
 
     <record id="able_to_issued" model="tt.frontend.security">
+        <field name="name">Edit Announcement</field>
+        <field name="code">edit_announcement</field>
+    </record>
+
+    <record id="able_to_issued" model="tt.frontend.security">
         <field name="name">Issued Reservation</field>
         <field name="code">issued_reservation</field>
     </record>
