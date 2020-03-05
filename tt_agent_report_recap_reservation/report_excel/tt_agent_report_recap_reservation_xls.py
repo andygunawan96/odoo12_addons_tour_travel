@@ -139,6 +139,8 @@ class AgentReportRecapReservationXls(models.TransientModel):
                 filtered_data = []
 
                 for j in pnr_list:
+                    if j == '':
+                        continue
                     temp_charge = list(filter(lambda x: x['order_number'] == i['order_number'] and x['booking_pnr'] == j, service_charge))
                     temp_book = list(filter(lambda x: x['order_number'] == i['order_number'] and x['ledger_pnr'] == j, datas))
                     temp_dict = {
@@ -182,7 +184,10 @@ class AgentReportRecapReservationXls(models.TransientModel):
                     sheet.write(row_data, 3, '', sty_table_data)
                     sheet.write(row_data, 4, '', sty_date)
                     sheet.write(row_data, 5, '', sty_table_data)
-                    sheet.write(row_data, 6, '', sty_table_data)
+                    if temp_book:
+                        sheet.write(row_data, 6, temp_book[0]['ledger_provider'], sty_table_data)
+                    else:
+                        sheet.write(row_data, 6, '', sty_table_data)
                     sheet.write(row_data, 7, '', sty_amount)
                     sheet.write(row_data, 8, '', sty_amount)
                     sheet.write(row_data, 9, '', sty_amount)
