@@ -160,8 +160,6 @@
                             </group>
                             <group>
                                 <field name="state" string="Status" invisible="0" readonly="1"/>
-                                <field name="person" invisible="1"/>
-                                <field name="segment" invisible="1"/>
                                 <field name="social_media_type" attrs="{'required': [('state_offline', '=', 'confirm')], 'readonly': [('state_offline', 'not in', ['draft', 'confirm'])]}"/>
                                 <field name="hold_date" invisible="0" readonly="0" string="Time Limit"/>
 <!--                                <field name="expired_date" required="1"/>-->
