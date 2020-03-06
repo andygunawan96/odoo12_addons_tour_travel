@@ -19,14 +19,18 @@ class TtMasterTourFlight(models.Model):
 
     journey_type = fields.Selection(JOURNEY_TYPE, 'Journey Type', default='DP')
 
-    carrier_id = fields.Many2one('tt.transport.carrier', 'Airline', domain=[('provider_type_id.name', '=', 'Airline')])
+    def _get_domain_airline(self):
+        airline_type_id = self.env.ref('tt_reservation_airline.tt_provider_type_airline').id
+        return [('provider_type_id', '=', airline_type_id)]
+
+    carrier_id = fields.Many2one('tt.transport.carrier', 'Airline', domain=_get_domain_airline)
     carrier_code = fields.Char('Flight Code', related='carrier_id.code', store=True)
     carrier_number = fields.Char('Flight Number')
 
-    origin_id = fields.Many2one('tt.destinations', 'Origin', domain=[('provider_type_id.name', '=', 'Airline')])
+    origin_id = fields.Many2one('tt.destinations', 'Origin', domain=_get_domain_airline)
     origin_terminal = fields.Char('Origin Terminal')
 
-    destination_id = fields.Many2one('tt.destinations', 'Destination', domain=[('provider_type_id.name', '=', 'Airline')])
+    destination_id = fields.Many2one('tt.destinations', 'Destination', domain=_get_domain_airline)
     destination_terminal = fields.Char('Destination Terminal')
 
     departure_date_fmt = fields.Datetime('Departure Date (FMT)')
