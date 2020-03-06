@@ -20,7 +20,7 @@
             <field name="provider_ids" eval="[
                 (4, ref('tt_reservation_airline.tt_provider_airline_amadeus'))
             ]"/>
-
+            <field name="active" eval="False"/>
         </record>
 
         <record id="tt_transport_carrier_search_sq_sia" model="tt.transport.carrier.search">
@@ -31,6 +31,7 @@
             <field name="provider_ids" eval="[
                 (4, ref('tt_reservation_airline.tt_provider_airline_singaporeairlines'))
             ]"/>
+            <field name="active" eval="False"/>
         </record>
 
         <record id="tt_transport_carrier_search_cx_all" model="tt.transport.carrier.search">
@@ -58,6 +59,7 @@
             <field name="carrier_id" ref="tt_reservation_airline.tt_transport_carrier_airline_ga"/>
             <field name="is_default" eval="True"/>
             <field name="is_favorite" eval="False"/>
+            <field name="sequence">150</field>
             <field name="provider_ids" eval="[
                 (4, ref('tt_reservation_airline.tt_provider_airline_amadeus')),
                 (4, ref('tt_reservation_airline.tt_provider_airline_garuda')),
@@ -73,6 +75,7 @@
             <field name="provider_ids" eval="[
                 (4, ref('tt_reservation_airline.tt_provider_airline_amadeus'))
             ]"/>
+            <field name="active" eval="False"/>
         </record>
 
         <record id="tt_transport_carrier_search_ga_ags" model="tt.transport.carrier.search">
@@ -83,6 +86,7 @@
             <field name="provider_ids" eval="[
                 (4, ref('tt_reservation_airline.tt_provider_airline_garuda'))
             ]"/>
+            <field name="active" eval="False"/>
         </record>
 
         <record id="tt_transport_carrier_search_ga_altea" model="tt.transport.carrier.search">
@@ -93,6 +97,7 @@
             <field name="provider_ids" eval="[
                 (4, ref('tt_reservation_airline.tt_provider_airline_altea'))
             ]"/>
+            <field name="active" eval="False"/>
         </record>
 
 
@@ -121,6 +126,7 @@
             <field name="carrier_id" ref="tt_reservation_airline.tt_transport_carrier_airline_jt"/>
             <field name="is_default" eval="True"/>
             <field name="is_favorite" eval="False"/>
+            <field name="sequence">153</field>
             <field name="provider_ids" eval="[
                 (4, ref('tt_reservation_airline.tt_provider_airline_lionair'))
             ]"/>
@@ -481,6 +487,7 @@
             <field name="carrier_id" ref="tt_reservation_airline.tt_transport_carrier_airline_qg"/>
             <field name="is_default" eval="True"/>
             <field name="is_favorite" eval="False"/>
+            <field name="sequence">152</field>
             <field name="provider_ids" eval="[
                 (4, ref('tt_reservation_airline.tt_provider_airline_citilink'))
             ]"/>
@@ -511,6 +518,7 @@
             <field name="carrier_id" ref="tt_reservation_airline.tt_transport_carrier_airline_sj"/>
             <field name="is_default" eval="True"/>
             <field name="is_favorite" eval="False"/>
+            <field name="sequence">154</field>
             <field name="provider_ids" eval="[
                 (4, ref('tt_reservation_airline.tt_provider_airline_sriwijaya'))
             ]"/>
@@ -521,6 +529,7 @@
             <field name="carrier_id" ref="tt_reservation_airline.tt_transport_carrier_airline_ak"/>
             <field name="is_default" eval="True"/>
             <field name="is_favorite" eval="False"/>
+            <field name="sequence">151</field>
             <field name="provider_ids" eval="[
                 (4, ref('tt_reservation_airline.tt_provider_airline_airasia'))
             ]"/>
@@ -531,6 +540,7 @@
             <field name="carrier_id" ref="tt_reservation_airline.tt_transport_carrier_airline_3k"/>
             <field name="is_default" eval="True"/>
             <field name="is_favorite" eval="False"/>
+            <field name="sequence">155</field>
             <field name="provider_ids" eval="[
                 (4, ref('tt_reservation_airline.tt_provider_airline_jetstar'))
             ]"/>
