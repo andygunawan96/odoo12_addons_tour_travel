@@ -10,14 +10,14 @@
                 <field name="customer_parent_type_id"/>
                 <field name="parent_agent_id"/>
                 <group>
-                    <filter string="All" name="all"/>
+                    <filter string="All Type" name="all"/>
                     <filter string="COR" name="cor" domain="[('customer_parent_type_id','=',[%(tt_base.customer_type_cor)d,])]"/>
                     <filter string="POR" name="por" domain="[('customer_parent_type_id','=',[%(tt_base.customer_type_por)d,])]"/>
                     <filter string="FPO" name="fpo" domain="[('customer_parent_type_id','=',[%(tt_base.customer_type_fpo)d,])]"/>
                 </group>
                 <separator/>
                 <group>
-                    <filter string="All" name="all"/>
+                    <filter string="All State" name="all"/>
                     <filter string="Draft" name="draft" domain="[('state','=','draft')]"/>
                     <filter string="Confirmed" name="confirm" domain="[('state','=','confirm')]"/>
                     <filter string="Requested" name="request" domain="[('state','=','request')]"/>
