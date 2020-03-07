@@ -1,0 +1,226 @@
+<?xml version="1.0" encoding="utf-8" ?>
+
+<odoo>
+<!--    <record id="tt_monthly_fee_filter_view" model="ir.ui.view">-->
+<!--        <field name="name">tt.monthly.fee.filter.view</field>-->
+<!--        <field name="model">tt.monthly.fee</field>-->
+<!--        <field name="arch" type="xml">-->
+<!--            <search string="Search Payment">-->
+<!--                <field name="name"/>-->
+<!--                <field name="agent_id" groups="tt_base.group_tt_tour_travel_operator"/>-->
+<!--                <group expand="0" string="Group By">-->
+<!--                    <filter name="group_by_agent_id" string="Agent" domain="[]" context="{'group_by':'agent_id'}" groups="tt_base.group_tt_tour_travel_operator"/>-->
+<!--                    <filter name="group_by_customer_parent_id" string="Customer Parent" domain="[]" context="{'group_by':'customer_parent_id'}" groups="tt_base.group_tt_agent_user_operator,tt_base.group_tt_tour_travel_operator"/>-->
+<!--                    <filter name="group_by_acquirer_id" string="Payment Acquirer" domain="[]" context="{'group_by':'acquirer_id'}" groups="tt_base.group_tt_agent_user_operator,tt_base.group_tt_tour_travel_operator"/>-->
+<!--                    <filter name="group_by_state" string="State" domain="[]" context="{'group_by':'state'}" groups="tt_base.group_tt_agent_user_operator,tt_base.group_tt_tour_travel_operator"/>-->
+<!--                </group>-->
+<!--            </search>-->
+<!--        </field>-->
+<!--    </record>-->
+    <record id="tt_monthly_fee_form_view" model="ir.ui.view">
+        <field name="name">tt.monthly.fee.form.view</field>
+        <field name="model">tt.monthly.fee</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <button name="action_confirm" string="Confirm" type="object" states="draft" class="btn-primary" groups="tt_base.group_tt_tour_travel_operator"/>
+                    <button name="calc_mmf_line" string="Compute Line" type="object" states="draft" class="btn-secondary" groups="tt_base.group_tt_tour_travel_operator"/>
+                    <button name="get_mmf_rule" string="Get Rule" type="object" states="draft" class="btn-secondary" groups="tt_base.group_tt_tour_travel_operator"/>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,confirm,send,valid,done"/>
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="return_action_to_open" type="object" class="oe_stat_button" icon="fa-book" help="show the contract for this vehicle">
+                            <field name="line_count" widget="statinfo" string="Line"/>
+                        </button>
+                    </div>
+                    <h1>
+                        <field name="name"/>
+                    </h1>
+                    <group name="Agent">
+                        <group string="Agent">
+                            <field name="agent_id"/>
+                            <field name="period"/>
+                            <label for="start_date" string="Date Range"/>
+                            <div>
+                                <field name="start_date" class="oe_inline"/> -
+                                <field name="end_date" class="oe_inline"/>
+                            </div>
+                        </group>
+                        <group string="User">
+                            <label for="confirm_uid" string="Confirm By"/>
+                            <div>
+                                <field name="confirm_uid" readonly="1" class="oe_inline"/> -
+                                <field name="confirm_date" readonly="1" class="oe_inline"/>
+                            </div>
+                            <label for="validate_uid" string="Validate By"/>
+                            <div>
+                                <field name="validate_uid" readonly="1" class="oe_inline"/> -
+                                <field name="validate_date" readonly="1" class="oe_inline"/>
+                            </div>
+<!--                            <label for="recheck_uid" string="Recheck By"/>-->
+<!--                            <div>-->
+<!--                                <field name="recheck_uid" readonly="1" class="oe_inline"/> - -->
+<!--                                <field name="recheck_date" readonly="1" class="oe_inline"/>-->
+<!--                            </div>-->
+                            <label for="done_uid" string="Done By"/>
+                            <div>
+                                <field name="done_uid" readonly="1" class="oe_inline"/> -
+                                <field name="done_date" readonly="1" class="oe_inline"/>
+                            </div>
+                        </group>
+                    </group>
+                    <group name="Payment">
+                        <group string="Amount">
+                            <field name="transaction_amount"/>
+                            <field name="total_amount" string="Monthly Fee Amount"/>
+                            <field name="is_enough"/>
+                            <field name="currency_id" invisible="1"/>
+                        </group>
+                        <group string="Apply Rule">
+                            <field name="rule_id" help="Rule used; Setting maybe different with current rule setting"/>
+                            <field name="min_amount"/>
+                            <field name="max_amount"/>
+                            <field name="perc"/>
+                            <field name="amount"/>
+                        </group>
+                    </group>
+                </sheet>
+<!--                <div class="oe_chatter">-->
+<!--                    <field name="message_follower_ids" widget="mail_followers"/>-->
+<!--                    <field name="message_ids" widget="mail_thread"/>-->
+<!--                </div>-->
+            </form>
+        </field>
+    </record>
+    <record id="tt_monthly_fee_tree_view" model="ir.ui.view">
+        <field name="name">tt.monthly.fee.tree.view</field>
+        <field name="model">tt.monthly.fee</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="agent_id"/>
+                <field name="period"/>
+                <field name="amount" string="Minimum Amount"/>
+                <!--<field name="transaction_amount"/>-->
+                <field name="total_amount"/>
+                <field name="state"/>
+                <field name="currency_id" invisible="1"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="tt_monthly_fee_line_tree_view" model="ir.ui.view">
+        <field name="name">tt.monthly.fee.line.tree.view</field>
+        <field name="model">tt.monthly.fee.line</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="date"/>
+                <field name="transaction_type"/>
+                <field name="pnr"/>
+                <field name="carrier_name"/>
+                <field name="contact_id"/>
+                <field name="amount"/>
+                <field name="is_checked"/>
+                <field name="description"/>
+                <field name="state"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="tt_monthly_fee_rule_form_view" model="ir.ui.view">
+        <field name="name">tt.monthly.fee.rule.form.view</field>
+        <field name="model">tt.monthly.fee.rule</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <button name="action_confirm" string="Confirm" states="draft" type="object"/>
+                    <button name="set_to_inactive" string="In-Active" states="confirm" type="object"/>
+                    <button name="set_to_draft" string="Draft" states="inactive" type="object"/>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,confirm"/>
+                </header>
+                <sheet>
+                    <group name="">
+                        <group string="Apply On">
+                            <field name="agent_id"/>
+                            <field name="agent_type_id"/>
+<!--                            <label>Notes: Please fill "ONLY ONE" between this field.</label>-->
+                        </group>
+                        <group string="User">
+                            <label for="confirm_uid" string="Confirm By"/>
+                            <div>
+                                <field name="confirm_uid" readonly="1" class="oe_inline"/> -
+                                <field name="confirm_date" readonly="1" class="oe_inline"/>
+                            </div>
+                            <label for="inactive_uid" string="Inactive By"/>
+                            <div>
+                                <field name="inactive_uid" readonly="1" class="oe_inline"/> -
+                                <field name="inactive_date" readonly="1" class="oe_inline"/>
+                            </div>
+                        </group>
+                    </group>
+                    <group name="">
+                        <group string="Fee Amount">
+                            <field name="min_amount"/>
+                            <field name="max_amount"/>
+                            <field name="perc"/>
+                            <field name="currency_id" invisible="1"/>
+                        </group>
+                        <group string="Apply Date">
+                            <field name="start_date" required="1"/>
+                            <field name="end_date"/>
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+    <record id="tt_monthly_fee_rule_tree_view" model="ir.ui.view">
+        <field name="name">tt.monthly.fee.rule.tree.view</field>
+        <field name="model">tt.monthly.fee.rule</field>
+        <field name="arch" type="xml">
+            <tree decoration-muted="state == 'inactive'">
+                <field name="agent_type_id"/>
+                <field name="agent_id"/>
+                <field name="min_amount"/>
+                <field name="max_amount"/>
+                <field name="perc"/>
+                <field name="state"/>
+                <field name="currency_id" invisible="1"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="tt_monthly_fee_action" model="ir.actions.act_window">
+        <field name="name">Monthly Management Fee</field>
+        <field name="res_model">tt.monthly.fee</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+    <record id="tt_monthly_fee_rule_action" model="ir.actions.act_window">
+        <field name="name">Monthly Fee Rule</field>
+        <field name="res_model">tt.monthly.fee.rule</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+    <!-- Monthly Fee -->
+    <menuitem id="top_monthly_fee"
+              parent="tt_base.main_transaction"
+              name="Monthly Fee"
+              sequence="50"
+              groups="base.group_user"/>
+
+    <menuitem id="menu_monthly_fee"
+              parent="tt_monthly_fee.top_monthly_fee"
+              name="Monthly Management Fee"
+              action="tt_monthly_fee_action"
+              sequence="10"/>
+
+    <menuitem id="menu_monthly_fee_rule"
+              parent="tt_monthly_fee.top_monthly_fee"
+              name="Monthly Fee Rule"
+              action="tt_monthly_fee_rule_action"
+              sequence="20"/>
+
+</odoo>

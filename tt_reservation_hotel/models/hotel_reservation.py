@@ -239,54 +239,71 @@ class HotelReservation(models.Model):
         # return hotel_ho_invoice_id.report_action(self, data=datas)
 
     def print_itinerary(self, data, ctx=None):
+        book_obj = False
         # jika panggil dari backend
         if 'order_number' not in data:
             data['order_number'] = self.name
-        if 'provider_type' not in data:
-            data['provider_type'] = self.provider_type_id.name
+            if 'provider_type' not in data:
+                data['provider_type'] = self.provider_type_id.name
 
-        book_obj = self.env['tt.reservation.hotel'].search([('name', '=', data['order_number'])], limit=1)
-        datas = {'ids': book_obj.env.context.get('active_ids', [])}
-        res = book_obj.read()
-        res = res and res[0] or {}
-        datas['form'] = res
-        hotel_itinerary_id = book_obj.env.ref('tt_report_common.action_printout_itinerary_hotel')
-        if not book_obj.printout_itinerary_id:
-            if book_obj.agent_id:
-                co_agent_id = book_obj.agent_id.id
-            else:
-                co_agent_id = self.env.user.agent_id.id
+            book_obj = self.env['tt.reservation.hotel'].search([('name', '=', data['order_number'])], limit=1)
+            datas = {'ids': book_obj.env.context.get('active_ids', [])}
+            res = book_obj.read()
+            res = res and res[0] or {}
+            datas['form'] = res
+            pdf_obj = book_obj.env.ref('tt_report_common.action_printout_itinerary_hotel')
+            if not book_obj.printout_itinerary_id:
+                if book_obj.agent_id:
+                    co_agent_id = book_obj.agent_id.id
+                else:
+                    co_agent_id = self.env.user.agent_id.id
 
-            if book_obj.user_id:
-                co_uid = book_obj.user_id.id
-            else:
-                co_uid = self.env.user.id
+                if book_obj.user_id:
+                    co_uid = book_obj.user_id.id
+                else:
+                    co_uid = self.env.user.id
 
-            pdf_report = hotel_itinerary_id.report_action(book_obj, data=datas)
-            pdf_report['context'].update({
-                'active_model': book_obj._name,
-                'active_id': book_obj.id
-            })
-            pdf_report_bytes = hotel_itinerary_id.render_qweb_pdf(data=pdf_report)
-            res = book_obj.env['tt.upload.center.wizard'].upload_file_api(
-                {
-                    'filename': 'Hotel Itinerary %s.pdf' % book_obj.name,
-                    'file_reference': 'Hotel Itinerary',
-                    'file': base64.b64encode(pdf_report_bytes[0]),
-                    'delete_date': datetime.today() + timedelta(minutes=10)
-                },
-                {
-                    'co_agent_id': co_agent_id,
-                    'co_uid': co_uid,
-                }
-            )
-            upc_id = book_obj.env['tt.upload.center'].search([('seq_id', '=', res['response']['seq_id'])], limit=1)
+                pdf_report = pdf_obj.report_action(book_obj, data=datas)
+                pdf_report['context'].update({
+                    'active_model': book_obj._name,
+                    'active_id': book_obj.id
+                })
+                pdf_report_bytes, _ = pdf_obj.render_qweb_pdf(data=pdf_report)
+                book_name = book_obj.name
+        else:
+            pdf = self.env.ref('tt_report_common.action_printout_itinerary_from_json')
+            data = {'context': {'json_content': data['json_printout']}}
+            pdf_report_bytes, _ = pdf.sudo().render_qweb_pdf(False, data=data)
+            book_name = 'Printout'
+            co_agent_id = self.env.user.agent_id.id
+            co_uid = self.env.user.id
+            # pdfhttpheaders = [('Content-Type', 'application/pdf'), ('Content-Length', len(pdf))]
+            # pdfhttpheaders.append(('Content-Disposition', 'attachment; filename="Itinerary.pdf"'))
+            # self.make_response(pdf, headers=pdfhttpheaders)
+
+
+        res = self.env['tt.upload.center.wizard'].upload_file_api(
+            {
+                'filename': 'Hotel Itinerary %s.pdf' % book_name,
+                'file_reference': 'Hotel Itinerary',
+                'file': base64.b64encode(pdf_report_bytes),
+                'delete_date': datetime.today() + timedelta(minutes=10)
+            },
+            {
+                'co_agent_id': co_agent_id,
+                'co_uid': co_uid,
+            }
+        )
+        upc_id = self.env['tt.upload.center'].search([('seq_id', '=', res['response']['seq_id'])], limit=1)
+
+        if book_obj:
             book_obj.printout_itinerary_id = upc_id.id
+
         url = {
             'type': 'ir.actions.act_url',
             'name': "ZZZ",
             'target': 'new',
-            'url': book_obj.printout_itinerary_id.url,
+            'url': book_obj and book_obj.printout_itinerary_id.url or '',
         }
         return url
 
@@ -313,8 +330,8 @@ class HotelReservation(models.Model):
         self.ensure_one()
         provider_list = []
         for rec in self.room_detail_ids:
-            if rec.name and rec.name not in provider_list:
-                provider_list.append(rec.name)
+            # if rec.name and rec.name not in provider_list:
+            #     provider_list.append(rec.name)
             if rec.issued_name and rec.issued_name not in provider_list:
                 provider_list.append(rec.issued_name)
         return ','.join(provider_list)
@@ -453,8 +470,10 @@ class HotelReservation(models.Model):
 
         pnr_list = ','.join([rec['issued_code'] for rec in issued_response.values()])
         self.update_ledger_pnr(pnr_list)
+        self.pnr = self.get_pnr_list()
         # if state == 'done':
         #     self.action_create_invoice()
+        return True
 
     def action_calc_passenger_data(self):
         for rec in self:
