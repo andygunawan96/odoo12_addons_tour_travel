@@ -98,9 +98,9 @@ class AgentReportRecapTransactionXls(models.TransientModel):
             if temp_order_number != i['order_number']:
                 #set checker for order number
                 temp_order_number = i['order_number']
-                temp_charge = list(filter(lambda x: x['order_number'] == i['order_number'], service_charge))
-                for j in temp_charge:
-                    if j['ledger_created'] == True:
+                parent_temp_charge = list(filter(lambda x: x['order_number'] == i['order_number'], service_charge))
+                for x in parent_temp_charge:
+                    if x['ledger_created'] == True:
                         # get pnr list
                         try:
                             pnr_list = i['pnr'].split(", ")
@@ -151,7 +151,9 @@ class AgentReportRecapTransactionXls(models.TransientModel):
                         filtered_data = []
 
                         for j in pnr_list:
-                            temp_charge = list(filter(lambda x: x['booking_pnr'] == j, temp_charge))
+                            if j == '':
+                                continue
+                            temp_charge = list(filter(lambda x: x['booking_pnr'] == j, parent_temp_charge))
                             temp_book = list(
                                 filter(lambda x: x['order_number'] == i['order_number'] and x['ledger_pnr'] == j,
                                        datas))
@@ -196,7 +198,10 @@ class AgentReportRecapTransactionXls(models.TransientModel):
                             sheet.write(row_data, 3, '', sty_table_data)
                             sheet.write(row_data, 4, '', sty_date)
                             sheet.write(row_data, 5, '', sty_table_data)
-                            sheet.write(row_data, 6, '', sty_table_data)
+                            if temp_book:
+                                sheet.write(row_data, 6, temp_book[0]['ledger_provider'], sty_table_data)
+                            else:
+                                sheet.write(row_data, 6, '', sty_table_data)
                             sheet.write(row_data, 7, '', sty_amount)
                             sheet.write(row_data, 8, '', sty_amount)
                             sheet.write(row_data, 9, '', sty_amount)
@@ -278,6 +283,7 @@ class AgentReportRecapTransactionXls(models.TransientModel):
         sheet.write(row_data, 17, '', sty_amount)
         sheet.write(row_data, 18, '', sty_table_data)
         sheet.write(row_data, 19, '', sty_amount)
+        sheet.write(row_data, 20, '', sty_amount)
             #proceed
         workbook.close()
 

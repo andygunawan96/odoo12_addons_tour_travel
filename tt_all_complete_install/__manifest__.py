@@ -33,9 +33,12 @@
                 'tt_agent_sales_activity',
                 # 'tt_agent_sales_agent_registration',
                 'tt_agent_sales_airline', 'tt_agent_sales_hotel', 'tt_agent_sales_offline',
-                'tt_agent_sales_passport', 'tt_agent_sales_tour',
+                #'tt_agent_sales_passport',
+                'tt_agent_sales_tour',
                 'tt_agent_sales_train', 'tt_agent_sales_visa', 'web_m2x_options',
-                'tt_agent_report_balance', 'tt_agent_report_passport', 'tt_agent_report_visa'
+                'tt_agent_report_balance',
+                #'tt_agent_report_passport',
+                'tt_agent_report_visa'
     ],
 
     # always loaded

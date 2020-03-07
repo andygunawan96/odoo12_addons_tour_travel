@@ -19,7 +19,7 @@ class AgentReportRecapTransacion(models.Model):
             currency.name as currency_name,
             agent_type.name as agent_type_name, ledger.id as ledger_id, ledger.ref as ledger_name,
             ledger.debit, ledger_agent.name as ledger_agent_name, ledger.pnr as ledger_pnr,
-            ledger.transaction_type as ledger_transaction_type
+            ledger.transaction_type as ledger_transaction_type, ledger.display_provider_name as ledger_provider
             """
 
     @staticmethod
