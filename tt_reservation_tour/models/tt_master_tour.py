@@ -1148,6 +1148,54 @@ class MasterTour(models.Model):
             _logger.error(traceback.format_exc())
             return ERR.get_error(1022)
 
+    def update_payment_rules_api(self, data, context, **kwargs):
+        try:
+            search_request = {
+                'tour_code': data.get('tour_code') and data['tour_code'] or '',
+                'provider': data.get('provider') and data['provider'] or ''
+            }
+            provider_obj = self.env['tt.provider'].sudo().search([('code', '=', search_request['provider'])], limit=1)
+            provider_obj = provider_obj and provider_obj[0] or False
+            search_tour_obj = self.env['tt.master.tour'].sudo().search([('tour_code', '=', search_request['tour_code']), ('provider_id', '=', provider_obj.id)], limit=1)
+            if search_tour_obj:
+                search_tour_obj = search_tour_obj[0]
+
+            new_pay_rules = data.get('payment_rules') and data['payment_rules']['payment_rules'] or []
+            new_pay_ids = []
+            for rec in new_pay_rules:
+                if rec.get('is_dp'):
+                    if float(rec['payment_percentage']) != float(search_tour_obj.down_payment):
+                        search_tour_obj.sudo().write({
+                            'down_payment': float(rec['payment_percentage'])
+                        })
+                else:
+                    new_pay_obj = self.env['tt.payment.rules'].sudo().create({
+                        'name': rec['name'],
+                        'description': rec['description'],
+                        'payment_percentage': rec['payment_percentage'],
+                        'due_date': rec['due_date']
+                    })
+                    new_pay_ids.append(new_pay_obj.id)
+                self.env.cr.commit()
+
+            for rec in search_tour_obj.payment_rules_ids:
+                rec.sudo().unlink()
+
+            search_tour_obj.sudo().write({
+                'payment_rules_ids': [(6, 0, new_pay_ids)]
+            })
+
+            response = {
+                'success': True,
+            }
+            return ERR.get_no_error(response)
+        except RequestException as e:
+            _logger.error(traceback.format_exc())
+            return e.error_dict()
+        except Exception as e:
+            _logger.error(traceback.format_exc())
+            return ERR.get_error(1025)
+
     def get_config_by_api(self):
         try:
             countries_list = []
