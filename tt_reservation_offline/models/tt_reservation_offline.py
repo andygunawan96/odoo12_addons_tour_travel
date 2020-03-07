@@ -166,6 +166,15 @@ class IssuedOffline(models.Model):
     # REPORT
     ####################################################################################################
 
+    @api.model
+    def create(self, vals):
+        new_book = super(IssuedOffline, self).create(vals)
+        for psg in new_book.passenger_ids:
+            if not psg.agent_id:
+                """ Jika pax belum ada agent, set agent sesuai dg agent di booking offline """
+                psg.agent_id = new_book.agent_id
+        return new_book
+
     @api.depends('offline_provider_type')
     def offline_type_to_char(self):
         for rec in self:
