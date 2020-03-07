@@ -58,6 +58,8 @@ class TtMasterTourApiCon(models.Model):
             res = table_obj.get_tour_details_api(data,context)
         elif action == 'get_payment_rules':
             res = table_obj.get_payment_rules_api(data,context)
+        elif action == 'update_payment_rules':
+            res = table_obj.update_payment_rules_api(data, context)
         elif action == 'get_pricing':
             res = table_obj.get_pricing_api(data)
         elif action == 'get_autocomplete':
