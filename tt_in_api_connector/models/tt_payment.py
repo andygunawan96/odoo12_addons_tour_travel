@@ -21,7 +21,7 @@ class TtPaymentApiCon(models.Model):
                 request = {
                     'amount': data['amount'],
                     'seq_id': self.env['payment.acquirer.number'].search([('number', '=', data['virtual_account'])])[0].payment_acquirer_id.seq_id,
-                    'currency_code': 'IDR',
+                    'currency_code': data['ccy'],
                     'payment_seq_id': self.env['payment.acquirer.number'].search([('number', '=', data['virtual_account'])])[0].payment_acquirer_id.seq_id
                 }
                 res = self.env['tt.top.up'].create_top_up_api(request,context, True)
@@ -74,6 +74,15 @@ class TtPaymentApiCon(models.Model):
             'provider': 'espay'
         }
         return self.send_request_to_gateway('%s/payment' % (self.url), data, 'set_va')
+
+    def test(self, req):
+        data = {
+            'phone_number': req['number'],
+            'name': req['name'],
+            'email': req['email'],
+            'provider': 'espay'
+        }
+        return self.send_request_to_gateway('%s/payment' % (self.url), data, 'test')
 
     def delete_VA(self, req):
         data = {
