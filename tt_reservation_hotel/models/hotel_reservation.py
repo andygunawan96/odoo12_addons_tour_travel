@@ -235,6 +235,7 @@ class HotelReservation(models.Model):
             'target': 'new',
             'url': self.printout_ho_invoice_id.url,
         }
+        return url
         # return hotel_ho_invoice_id.report_action(self, data=datas)
 
     def print_itinerary(self, data, ctx=None):

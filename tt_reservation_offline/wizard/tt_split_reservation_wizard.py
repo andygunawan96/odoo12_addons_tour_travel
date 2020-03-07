@@ -199,7 +199,6 @@ class TtSplitReservationWizard(models.TransientModel):
                             book_obj.parent_agent_commission = comm['amount']
                         break
 
-        print('===============================================================================')
         for provider in book_obj.provider_booking_ids:
             for scs in provider.cost_service_charge_ids:
                 if scs.charge_type == 'FARE':

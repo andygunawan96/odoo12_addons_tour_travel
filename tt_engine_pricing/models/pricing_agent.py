@@ -227,30 +227,6 @@ class PricingAgent(models.Model):
                 }
                 vals_list.append(vals)
 
-            # """ Jika tipe amount = percentage """
-            # if price_obj.basic_amount_type == 'percentage':
-            #     """ Loop line ids """
-            #     for line in price_obj.line_ids:
-            #         for idx, rec in enumerate(agent_hierarchy):
-            #             if idx == 0:  # 0 = index agent yang pesan
-            #                 continue
-            #
-            #             if line.agent_type_id.id == rec['agent_type_id']:
-            #                 amount = curr_rule[line.agent_type_id.code]
-            #                 remaining_diff -= amount
-            #                 vals = {
-            #                     'commission_agent_id': rec['commission_agent_id'],
-            #                     'agent_id': rec['agent_id'],
-            #                     'agent_name': rec['agent_name'],
-            #                     'agent_type_id': rec['agent_type_id'],
-            #                     'type': 'RAC',
-            #                     'code': 'rac' + str(rac_count),
-            #                     'amount': amount,
-            #                 }
-            #                 vals_list.append(vals)
-            #                 rac_count += 1
-            #                 break
-            #
             #     """ Tentukan jumlah pembagian untuk diff """
             #     div = 0
             #     for idx, rec in enumerate(agent_hierarchy):
