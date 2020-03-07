@@ -114,11 +114,13 @@
         <field name="model">tt.monthly.fee.line</field>
         <field name="arch" type="xml">
             <tree>
+                <!--<field name="ledger_id" groups="base.group_system"/>-->
+                <field name="resv_name"/>
                 <field name="date"/>
                 <field name="transaction_type"/>
                 <field name="pnr"/>
                 <field name="carrier_name"/>
-                <field name="contact_id"/>
+                <field name="agent_name"/>
                 <field name="amount"/>
                 <field name="is_checked"/>
                 <field name="description"/>

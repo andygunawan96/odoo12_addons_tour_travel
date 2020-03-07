@@ -156,14 +156,13 @@ class MonthlyManagementFee(models.Model):
 
     @api.multi
     def return_action_to_open(self):
-        form_id = self.env.ref('tt_monthly_fee.tt_monthly_fee_line_tree_view')
         return {
             'type': 'ir.actions.act_window',
             'name': 'Monthly Management Fee(s)',
             'res_model': 'tt.monthly.fee.line',
             'view_type': 'form',
-            'view_mode': 'tree',
-            'view_id': form_id.id,
+            'view_mode': 'tree,form',
+            'view_id': False,
             'context': {},
             'domain': [('mmf_id', '=', self.id)],
             'target': 'current',
@@ -265,9 +264,16 @@ class MonthlyManagementFee(models.Model):
 
     @api.multi
     def create_mmf_line(self, mmf_id, ledger_id):
+        obj_id = self.env[ledger_id.res_model].sudo().browse(ledger_id.res_id)
         vals = {
             'mmf_id': mmf_id.id,
+            'resv_name': obj_id.name,
             'ledger_id': ledger_id.id,
+            'agent_name': ledger_id.sudo().agent_id.name,
+            'date': str(ledger_id.date)[:10],
+            'transaction_type': dict(ledger_id._fields['transaction_type'].selection).get(ledger_id.transaction_type),
+            'carrier_name': obj_id.provider_name,
+            'pnr': obj_id.pnr,
         }
         mmf_id = self.env['tt.monthly.fee.line'].create(vals)
         mmf_id.get_contact_id()
@@ -334,18 +340,20 @@ class MonthlyManagementFee(models.Model):
 
 class MonthlyManagementFeeLine(models.Model):
     _name = 'tt.monthly.fee.line'
-    _inherit = 'tt.history'
+    # _inherit = 'tt.history'
     _order = 'id desc'
 
     mmf_id = fields.Many2one('tt.monthly.fee', 'Monthly Management Fee', ondelete='cascade')
     ledger_id = fields.Many2one('tt.ledger', 'Ledger', readonly=True, states={'draft':[('readonly',False)]})
     date = fields.Date('Date', help='Ledger Date')
-    res_model = fields.Char('Related Reservation Name', index=True)
+    res_model = fields.Char('Related Reservation Model', index=True)
     res_id = fields.Integer('Related Reservation ID', index=True, help='Id of the followed resource')
-    transaction_type = fields.Selection([], 'Transaction Type')
+    resv_name = fields.Char('Reservation Name')
+    transaction_type = fields.Char('Transaction Type')
     pnr = fields.Char('PNR')
     carrier_name = fields.Char("Carrier", readonly=True, states={'draft':[('readonly',False)]})
-    contact_id = fields.Many2one('tt.customer', 'Contact', readonly=True, states={'draft':[('readonly',False)]})
+    agent_name = fields.Char("Agent", readonly=True, states={'draft':[('readonly',False)]})
+    # contact_id = fields.Many2one('tt.customer', 'Contact', readonly=True, states={'draft':[('readonly',False)]})
     state = fields.Selection([('draft', 'Draft'), ('confirm', 'Confirm'), ('send', 'Send'),
                               ('valid', 'Validate'), ('recheck', 'Re-Check'), ('done', 'Done')], string='State',
                              related='mmf_id.state')
