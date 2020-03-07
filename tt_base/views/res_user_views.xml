@@ -12,7 +12,7 @@
                 <field name='agent_id' groups="base.group_user" readonly="False"/>
             </xpath>
             <xpath expr="//notebook/page[last()]" position="after">
-                <page string="Skytors Info" name="skytors">
+                <page string="User Info" name="skytors">
                     <group>
                         <group>
                             <!--<field name='agent_id' groups="base.group_user" readonly="False"/>-->
@@ -27,7 +27,7 @@
                             <field name='user_type' groups="base.group_user" readonly="False"/>
                             <field name='device_type' groups="base.group_user" readonly="False"/>
                         </group>
-                        <separator string="Rodextrip Frontend"/>
+                        <separator string="Frontend Permissions"/>
                         <field name="frontend_security_ids"/>
                     </group>
                 </page>

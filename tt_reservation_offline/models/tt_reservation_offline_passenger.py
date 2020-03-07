@@ -29,7 +29,8 @@ class IssuedOfflinePassenger(models.Model):
     passenger_id = fields.Many2one('tt.customer', 'Passengers', readonly=True,
                                    states={'draft': [('readonly', False)],
                                            'pending': [('readonly', False)]})
-    agent_id = fields.Many2one('tt.agent', 'Agent', readonly=True, default=lambda self: self.env.user.agent_id.id)
+    agent_id = fields.Many2one('tt.agent', 'Agent', readonly=True, states={'draft': [('readonly', False)],
+                                                                           'pending': [('readonly', False)]})  # , default=lambda self: self.booking_id.agent_id.id
     pax_type = fields.Selection(PAX_TYPE)  # , related='passenger_id.pax_type'
     transaction_name = fields.Char('Transaction Name', related='booking_id.provider_type_id_name')
     ticket_number = fields.Char('Ticket Number.')
@@ -47,6 +48,12 @@ class IssuedOfflinePassenger(models.Model):
 
     channel_service_charge_ids = fields.Many2many('tt.service.charge', 'tt_reservation_offline_channel_charge_rel',
                                                   'passenger_id', 'service_charge_id', 'Channel Service Charges')
+
+    def create(self, vals):
+        new_psg = super(IssuedOfflinePassenger, self).create(vals)
+        for psg in new_psg:
+            psg.agent_id = psg.booking_id.agent_id
+        return new_psg
 
     def to_dict(self):
         res = {

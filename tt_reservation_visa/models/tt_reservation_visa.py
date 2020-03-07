@@ -237,10 +237,6 @@ class TtVisa(models.Model):
             'state_visa': 'in_process',
             # 'in_process_date': datetime.now()
         })
-        # cek saldo
-        # balance_res = self.env['tt.agent'].check_balance_limit_api(self.agent_id.id, self.total)
-        # if balance_res['error_code'] != 0:
-        #     raise UserError("Balance not enough.")
 
         for rec in self.passenger_ids:
             if rec.state in ['validate', 'cancel']:
