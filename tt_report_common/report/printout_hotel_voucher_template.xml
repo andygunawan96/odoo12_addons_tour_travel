@@ -187,6 +187,13 @@
                         <t t-foreach="doc.room_detail_ids" t-as="room">
                             <label style="font-weight:450; font-size:17px; margin-bottom: 0px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
                                 Room <t t-esc="idx"/> (<span t-field="room.room_name"/>):
+                                <t t-if="room.meal_type">
+                                    <span t-field="room.meal_type"/>,
+                                </t>
+                                <t t-else="">
+                                    <span> Room Only </span>,
+                                </t>
+
                                 <t t-if="room.special_request">
                                     <span t-field="room.special_request"/>
                                 </t>

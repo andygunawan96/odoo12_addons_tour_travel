@@ -199,7 +199,6 @@ class TtSplitReservationWizard(models.TransientModel):
                             book_obj.parent_agent_commission = comm['amount']
                         break
 
-        print('===============================================================================')
         for provider in book_obj.provider_booking_ids:
             for scs in provider.cost_service_charge_ids:
                 if scs.charge_type == 'FARE':
@@ -212,12 +211,18 @@ class TtSplitReservationWizard(models.TransientModel):
                     total_pricing_new += scs.total
         if total_pricing_new > new_book_obj.total:
             pricing_diff = new_book_obj.total - total_pricing
-            new_book_obj.provider_booking_ids[0].cost_service_charge_ids[0].amount += pricing_diff
-            new_book_obj.provider_booking_ids[0].cost_service_charge_ids[0].total += pricing_diff
-        elif total_pricing_new > new_book_obj.total:
+            for scs in new_book_obj.provider_booking_ids[0].cost_service_charge_ids:
+                if scs.charge_type == 'FARE':
+                    scs.amount += pricing_diff
+                    scs.total += pricing_diff
+                    break
+        elif total_pricing_new < new_book_obj.total:
             pricing_diff = total_pricing_new - new_book_obj.total
-            new_book_obj.provider_booking_ids[0].cost_service_charge_ids[0].amount -= pricing_diff
-            new_book_obj.provider_booking_ids[0].cost_service_charge_ids[0].total -= pricing_diff
+            for scs in new_book_obj.provider_booking_ids[0].cost_service_charge_ids:
+                if scs.charge_type == 'FARE':
+                    scs.amount -= pricing_diff
+                    scs.total -= pricing_diff
+                    break
 
         total_commission = []
         for provider in new_book_obj.provider_booking_ids:
@@ -240,41 +245,44 @@ class TtSplitReservationWizard(models.TransientModel):
         for comm in total_commission:
             if comm['id'] == new_book_obj.agent_id.id:
                 agent_diff = new_book_obj.agent_commission - comm['amount']
-                for provider in new_book_obj.provider_booking_ids:
-                    for scs in provider.cost_service_charge_ids:
-                        if scs.commission_agent_id.id == comm['id']:
-                            if agent_diff > 0:
-                                scs.amount -= agent_diff
-                                scs.total -= agent_diff
-                            elif agent_diff < 0:
-                                scs.amount += agent_diff
-                                scs.total += agent_diff
-                            break
+                for scs in new_book_obj.provider_booking_ids[0].cost_service_charge_ids:
+                    if scs.commission_agent_id.id == comm['id']:
+                        if agent_diff > 0:
+                            scs.amount += agent_diff
+                            scs.total += agent_diff
+                            new_book_obj.agent_commission = comm['amount']
+                        elif agent_diff < 0:
+                            scs.amount -= agent_diff
+                            scs.total -= agent_diff
+                            new_book_obj.agent_commission = comm['amount']
+                        break
             elif comm['id'] == self.env.ref('tt_base.rodex_ho').id:
                 ho_diff = new_book_obj.ho_commission - comm['amount']
-                for provider in new_book_obj.provider_booking_ids:
-                    for scs in provider.cost_service_charge_ids:
-                        if scs.commission_agent_id.id == comm['id']:
-                            if scs.charge_code == 'hoc':
-                                if ho_diff > 0:
-                                    scs.amount -= ho_diff
-                                    scs.total -= ho_diff
-                                elif ho_diff < 0:
-                                    scs.amount += ho_diff
-                                    scs.total += ho_diff
-                                break
+                for scs in new_book_obj.provider_booking_ids[0].cost_service_charge_ids:
+                    if scs.commission_agent_id.id == comm['id']:
+                        if scs.charge_code != 'hoc' and scs.amount != 0:
+                            if ho_diff > 0:
+                                scs.amount += ho_diff
+                                scs.total += ho_diff
+                                new_book_obj.ho_commission = comm['amount']
+                            elif ho_diff < 0:
+                                scs.amount -= ho_diff
+                                scs.total -= ho_diff
+                                new_book_obj.ho_commission = comm['amount']
+                            break
             else:
                 parent_diff = new_book_obj.parent_agent_commission - comm['amount']
-                for provider in new_book_obj.provider_booking_ids:
-                    for scs in provider.cost_service_charge_ids:
-                        if scs.commission_agent_id.id == comm['id']:
-                            if parent_diff > 0:
-                                scs.amount -= parent_diff
-                                scs.total -= parent_diff
-                            elif parent_diff < 0:
-                                scs.amount += parent_diff
-                                scs.total += parent_diff
-                            break
+                for scs in new_book_obj.provider_booking_ids[0].cost_service_charge_ids:
+                    if scs.commission_agent_id.id == comm['id']:
+                        if parent_diff > 0:
+                            scs.amount -= parent_diff
+                            scs.total -= parent_diff
+                            new_book_obj.parent_agent_commission = comm['amount']
+                        elif parent_diff < 0:
+                            scs.amount += parent_diff
+                            scs.total += parent_diff
+                            new_book_obj.parent_agent_commission = comm['amount']
+                        break
 
     def get_service_charge_value(self, charge_code, charge_type, pax_type, currency_id, amount, total, provider_id,
                                  sequence, foreign_amount, description, pax_count, passenger_ids,
@@ -480,6 +488,18 @@ class TtSplitReservationWizard(models.TransientModel):
             scs['passenger_offline_ids'] = [(6, 0, scs['passenger_offline_ids'])]
             scs_obj = service_chg_obj.create(scs)
 
+    @api.onchange('new_pnr')
+    def _onchange_new_pnr(self):
+        if self.passenger_ids:
+            new_pnr_list = self.new_pnr and self.new_pnr.strip().split(',') or []
+            def_txt = ''
+            book_obj = self.env['tt.reservation.offline'].sudo().browse(int(self.res_id))
+            for idx, rec in enumerate(self.provider_ids):
+                if idx < len(new_pnr_list):
+                    def_txt += str(rec.pnr) + ' will be converted to ' + str(
+                        new_pnr_list[idx]) + ' in the new reservation. \n'
+            self.new_pnr_text = def_txt
+
     def submit_split_reservation(self):
         book_obj = self.env['tt.reservation.offline'].sudo().browse(int(self.res_id))
         provider_list = []
@@ -520,10 +540,8 @@ class TtSplitReservationWizard(models.TransientModel):
             raise UserError(_('Total price for split cannot be larger than total sale price.'))
         if self.new_commission > book_obj.total_commission_amount:
             raise UserError(_('Total commission for split cannot be larger than total commission amount.'))
-        if is_provider_full and is_pax_full:
-            raise UserError(_('You cannot split all Provider(s) and Passenger(s) in this reservation. Please leave at least 1 Provider or 1 Passenger!'))
-        if is_provider_full and len(pax_list) <= 0:
-            raise UserError(_('You cannot split all Provider(s) in this reservation without any Passenger(s).'))
+        if is_provider_full:
+            raise UserError(_('You cannot split all Provider(s). Please remove 1 or more provider(s)'))
         if len(provider_list) <= 0 and is_pax_full:
             raise UserError(_('You cannot split all Passenger(s) in this reservation without any Provider(s).'))
         if len(provider_list) <= 0 and len(pax_list) <= 0:

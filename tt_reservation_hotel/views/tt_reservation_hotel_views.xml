@@ -301,6 +301,7 @@
                             <group>
                                 <field name="provider_data" states="confirm" groups="tt_base.group_tt_agent_user_operator"/>
                                 <field name="cancellation_policy_str"/>
+                                <field name="special_req"/>
                             </group>
                         </page>
 <!--                        <page string="Service on Request">-->

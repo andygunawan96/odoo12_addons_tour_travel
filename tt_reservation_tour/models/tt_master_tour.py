@@ -189,8 +189,8 @@ class MasterTour(models.Model):
 
     country_name = fields.Char('Country Name')
     itinerary_ids = fields.One2many('tt.reservation.tour.itinerary', 'tour_pricelist_id', 'Itinerary', ondelete='cascade')
-    provider_id = fields.Many2one('tt.provider', 'Provider', domain=get_domain, required=True)
-    provider_fare_code = fields.Char('Provider Fare Code', default='tour_rdx1', readonly=True)
+    provider_id = fields.Many2one('tt.provider', 'Provider', domain=get_domain, copy=False)
+    provider_fare_code = fields.Char('Provider Fare Code', default='tour_rdx1', readonly=True, copy=False)
     document_url = fields.Many2one('tt.upload.center', 'Document URL')
     import_other_info = fields.Binary('Import JSON')
     export_other_info = fields.Binary('Export JSON')
@@ -294,6 +294,101 @@ class MasterTour(models.Model):
             if file:
                 self.sync_products(provider, file)
 
+    def copy_tour(self):
+        new_tour_obj = self.copy()
+        new_tour_obj.sudo().write({
+            'seat': new_tour_obj.quota
+        })
+        for rec in self.payment_rules_ids:
+            self.env['tt.payment.rules'].sudo().create({
+                'name': rec.name,
+                'payment_percentage': rec.payment_percentage,
+                'description': rec.description,
+                'due_date': rec.due_date,
+                'pricelist_id': new_tour_obj.id,
+            })
+        for rec in self.room_ids:
+            self.env['tt.master.tour.rooms'].sudo().create({
+                'name': rec.name,
+                'room_code': rec.room_code,
+                'bed_type': rec.bed_type,
+                'description': rec.description,
+                'hotel': rec.hotel,
+                'address': rec.address,
+                'star': rec.star,
+                'adult_surcharge': rec.adult_surcharge,
+                'child_surcharge': rec.child_surcharge,
+                'additional_charge': rec.additional_charge,
+                'pax_minimum': rec.pax_minimum,
+                'pax_limit': rec.pax_limit,
+                'adult_limit': rec.adult_limit,
+                'extra_bed_limit': rec.extra_bed_limit,
+                'tour_pricelist_id': new_tour_obj.id,
+            })
+        for rec in self.flight_segment_ids:
+            self.env['flight.segment'].sudo().create({
+                'journey_type': rec.journey_type,
+                'class_of_service': rec.class_of_service,
+                'carrier_id': rec.carrier_id.id,
+                'carrier_number': rec.carrier_number,
+                'origin_id': rec.origin_id.id,
+                'origin_terminal': rec.origin_terminal,
+                'destination_id': rec.destination_id.id,
+                'destination_terminal': rec.destination_terminal,
+                'departure_date': rec.departure_date,
+                'arrival_date': rec.arrival_date,
+                'departure_date_fmt': rec.departure_date_fmt,
+                'arrival_date_fmt': rec.arrival_date_fmt,
+                'tour_pricelist_id': new_tour_obj.id,
+            })
+        for rec in self.itinerary_ids:
+            new_itin_obj = self.env['tt.reservation.tour.itinerary'].sudo().create({
+                'name': rec.name,
+                'day': rec.day,
+                'date': rec.date,
+                'tour_pricelist_id': new_tour_obj.id,
+            })
+            for rec2 in rec.item_ids:
+                self.env['tt.reservation.tour.itinerary.item'].sudo().create({
+                    'name': rec2.name,
+                    'description': rec2.description,
+                    'timeslot': rec2.timeslot,
+                    'sequence': rec2.sequence,
+                    'image_id': rec2.image_id.id,
+                    'itinerary_id': new_itin_obj.id,
+                })
+        new_image_ids = []
+        for rec in self.image_ids:
+            new_image_ids.append(rec.id)
+        new_tour_obj.sudo().write({
+            'image_ids': [(6, 0, new_image_ids)]
+        })
+
+        new_loc_ids = []
+        for rec in self.location_ids:
+            new_loc_ids.append(rec.id)
+        new_tour_obj.sudo().write({
+            'location_ids': [(6, 0, new_loc_ids)]
+        })
+
+        other_info_ids = []
+        for rec in self.other_info_ids:
+            other_info_ids.append(new_tour_obj.create_other_info_from_json(rec.convert_info_to_dict()))
+        new_tour_obj.sudo().write({
+            'other_info_ids': [(6, 0, other_info_ids)]
+        })
+
+        base_url = self.env['ir.config_parameter'].sudo().get_param('web.base.url')
+        action_num = self.env.ref('tt_reservation_tour.tt_master_tour_view_action').id
+        menu_num = self.env.ref('tt_reservation_tour.submenu_tour_pricelist').id
+        return {
+            'type': 'ir.actions.act_url',
+            'name': new_tour_obj.name,
+            'target': 'self',
+            'url': base_url + "/web#id=" + str(new_tour_obj.id) + "&action=" + str(
+                action_num) + "&model=tt.master.tour&view_type=form&menu_id=" + str(menu_num),
+        }
+
     def sync_products(self, provider=None, data=None, page=None):
         file = data
         if file:
@@ -362,97 +457,99 @@ class MasterTour(models.Model):
                         temp_img.sudo().unlink()
                     for temp_loc in new_tour_obj.location_ids:
                         temp_loc.sudo().unlink()
-                    detail_dat = det_res['response']
-                    for rec_det in detail_dat['accommodations']:
-                        self.env['tt.master.tour.rooms'].sudo().create({
-                            'name': rec_det['name'],
-                            'room_code': rec_det['room_code'],
-                            'bed_type': rec_det['bed_type'],
-                            'description': rec_det['description'],
-                            'hotel': rec_det['hotel'],
-                            'address': rec_det['address'],
-                            'star': rec_det['star'],
-                            'adult_surcharge': rec_det['adult_surcharge'],
-                            'child_surcharge': rec_det['child_surcharge'],
-                            'additional_charge': rec_det['additional_charge'],
-                            'pax_minimum': rec_det['pax_minimum'],
-                            'pax_limit': rec_det['pax_limit'],
-                            'adult_limit': rec_det['adult_limit'],
-                            'extra_bed_limit': rec_det['extra_bed_limit'],
-                            'tour_pricelist_id': new_tour_obj.id,
-                        })
-                    for rec_flight in detail_dat['flight_segments']:
-                        carrier_obj = self.env['tt.transport.carrier'].sudo().search([('code', '=', rec_flight['carrier_code']), ('provider_type_id', '=', self.env.ref('tt_reservation_airline.tt_provider_type_airline').id)], limit=1)
-                        carrier_obj = carrier_obj and carrier_obj[0] or False
-                        origin_obj = self.env['tt.destinations'].sudo().search([('code', '=', rec_flight['origin_code']), ('provider_type_id', '=', self.env.ref('tt_reservation_airline.tt_provider_type_airline').id)], limit=1)
-                        origin_obj = origin_obj and origin_obj[0] or False
-                        destination_obj = self.env['tt.destinations'].sudo().search([('code', '=', rec_flight['destination_code']), ('provider_type_id', '=', self.env.ref('tt_reservation_airline.tt_provider_type_airline').id)], limit=1)
-                        destination_obj = destination_obj and destination_obj[0] or False
-                        self.env['flight.segment'].sudo().create({
-                            'journey_type': rec_flight['journey_type'],
-                            'class_of_service': rec_flight['class_of_service'],
-                            'carrier_id': carrier_obj.id,
-                            'carrier_number': rec_flight['carrier_number'],
-                            'origin_id': origin_obj and origin_obj.id or False,
-                            'origin_terminal': rec_flight['origin_terminal'],
-                            'destination_id': destination_obj and destination_obj.id or False,
-                            'destination_terminal': rec_flight['destination_terminal'],
-                            'departure_date': datetime.strptime(rec_flight['departure_date'], "%Y-%m-%d %H:%M:%S"),
-                            'arrival_date': datetime.strptime(rec_flight['arrival_date'], "%Y-%m-%d %H:%M:%S"),
-                            'departure_date_fmt': datetime.strptime(rec_flight['departure_date_fmt'], "%d-%b-%Y %H:%M"),
-                            'arrival_date_fmt': datetime.strptime(rec_flight['arrival_date_fmt'], "%d-%b-%Y %H:%M"),
-                            'tour_pricelist_id': new_tour_obj.id,
-                        })
-                    for rec_itin in detail_dat['itinerary_ids']:
-                        new_itin_obj = self.env['tt.reservation.tour.itinerary'].sudo().create({
-                            'name': rec_itin['name'],
-                            'day': rec_itin['day'],
-                            'date': rec_itin['date'],
-                            'tour_pricelist_id': new_tour_obj.id,
-                        })
-                        for rec_item in rec_itin['items']:
-                            self.env['tt.reservation.tour.itinerary.item'].sudo().create({
-                                'name': rec_item['name'],
-                                'description': rec_item['description'],
-                                'timeslot': rec_item['timeslot'],
-                                'sequence': rec_item['sequence'],
-                                'image_id': rec_item.get('image') and self.convert_image_to_own(rec_item['image'], rec_item['image_file_name']) or False,
-                                'itinerary_id': new_itin_obj.id,
+                    if det_res['response'].get('selected_tour'):
+                        detail_dat = det_res['response']['selected_tour']
+                        for rec_det in detail_dat['accommodations']:
+                            self.env['tt.master.tour.rooms'].sudo().create({
+                                'name': rec_det['name'],
+                                'room_code': rec_det['room_code'],
+                                'bed_type': rec_det['bed_type'],
+                                'description': rec_det['description'],
+                                'hotel': rec_det['hotel'],
+                                'address': rec_det['address'],
+                                'star': rec_det['star'],
+                                'adult_surcharge': rec_det['adult_surcharge'],
+                                'child_surcharge': rec_det['child_surcharge'],
+                                'additional_charge': rec_det['additional_charge'],
+                                'pax_minimum': rec_det['pax_minimum'],
+                                'pax_limit': rec_det['pax_limit'],
+                                'adult_limit': rec_det['adult_limit'],
+                                'extra_bed_limit': rec_det['extra_bed_limit'],
+                                'tour_pricelist_id': new_tour_obj.id,
                             })
-                    new_image_ids = []
-                    for rec_det in detail_dat['images_obj']:
-                        new_image_ids.append(self.convert_image_to_own(rec_det['url'], rec_det['filename']))
-                        self.env.cr.commit()
-                    new_tour_obj.sudo().write({
-                        'image_ids': [(6, 0, new_image_ids)]
-                    })
-                    for rec_other in detail_dat['other_infos']:
-                        new_tour_obj.create_other_info_from_json(rec_other)
-
-                    new_loc_ids = []
-                    for rec_loc in detail_dat['locations']:
-                        search_params = []
-                        new_country_obj = self.env['res.country'].sudo().search([('code', '=', rec_loc['country_code'])], limit=1)
-                        new_city_obj = self.env['res.city'].sudo().search([('name', '=', rec_loc['city_name'])], limit=1)
-                        if new_country_obj:
-                            search_params.append(('country_id', '=', new_country_obj[0].id))
-                        if new_city_obj:
-                            search_params.append(('city_id', '=', new_city_obj[0].id))
-                        if search_params:
-                            temp_loc = self.env['tt.tour.master.locations'].sudo().search(search_params, limit=1)
-                            if temp_loc:
-                                new_loc = temp_loc[0]
-                            else:
-                                new_loc = self.env['tt.activity.master.locations'].sudo().create({
-                                    'country_id': new_country_obj and new_country_obj[0].id or False,
-                                    'city_id': new_city_obj and new_city_obj[0].id or False,
-                                    'state_id': False,
+                        for rec_flight in detail_dat['flight_segments']:
+                            carrier_obj = self.env['tt.transport.carrier'].sudo().search([('code', '=', rec_flight['carrier_code']), ('provider_type_id', '=', self.env.ref('tt_reservation_airline.tt_provider_type_airline').id)], limit=1)
+                            carrier_obj = carrier_obj and carrier_obj[0] or False
+                            origin_obj = self.env['tt.destinations'].sudo().search([('code', '=', rec_flight['origin_code']), ('provider_type_id', '=', self.env.ref('tt_reservation_airline.tt_provider_type_airline').id)], limit=1)
+                            origin_obj = origin_obj and origin_obj[0] or False
+                            destination_obj = self.env['tt.destinations'].sudo().search([('code', '=', rec_flight['destination_code']), ('provider_type_id', '=', self.env.ref('tt_reservation_airline.tt_provider_type_airline').id)], limit=1)
+                            destination_obj = destination_obj and destination_obj[0] or False
+                            self.env['flight.segment'].sudo().create({
+                                'journey_type': rec_flight['journey_type'],
+                                'class_of_service': rec_flight['class_of_service'],
+                                'carrier_id': carrier_obj.id,
+                                'carrier_number': rec_flight['carrier_number'],
+                                'origin_id': origin_obj and origin_obj.id or False,
+                                'origin_terminal': rec_flight['origin_terminal'],
+                                'destination_id': destination_obj and destination_obj.id or False,
+                                'destination_terminal': rec_flight['destination_terminal'],
+                                'departure_date': datetime.strptime(rec_flight['departure_date'], "%Y-%m-%d %H:%M:%S"),
+                                'arrival_date': datetime.strptime(rec_flight['arrival_date'], "%Y-%m-%d %H:%M:%S"),
+                                'departure_date_fmt': datetime.strptime(rec_flight['departure_date_fmt'], "%d-%b-%Y %H:%M"),
+                                'arrival_date_fmt': datetime.strptime(rec_flight['arrival_date_fmt'], "%d-%b-%Y %H:%M"),
+                                'tour_pricelist_id': new_tour_obj.id,
+                            })
+                        for rec_itin in detail_dat['itinerary_ids']:
+                            new_itin_obj = self.env['tt.reservation.tour.itinerary'].sudo().create({
+                                'name': rec_itin['name'],
+                                'day': rec_itin['day'],
+                                'date': rec_itin['date'],
+                                'tour_pricelist_id': new_tour_obj.id,
+                            })
+                            for rec_item in rec_itin['items']:
+                                self.env['tt.reservation.tour.itinerary.item'].sudo().create({
+                                    'name': rec_item['name'],
+                                    'description': rec_item['description'],
+                                    'timeslot': rec_item['timeslot'],
+                                    'sequence': rec_item['sequence'],
+                                    'image_id': rec_item.get('image') and self.convert_image_to_own(rec_item['image'], rec_item['image_file_name']) or False,
+                                    'itinerary_id': new_itin_obj.id,
                                 })
-                                self.env.cr.commit()
-                            new_loc_ids.append(new_loc.id)
-                    new_tour_obj.sudo().write({
-                        'location_ids': [(6, 0, new_loc_ids)]
-                    })
+                        new_image_ids = []
+                        for rec_det in detail_dat['images_obj']:
+                            new_image_ids.append(self.convert_image_to_own(rec_det['url'], rec_det['filename']))
+                            self.env.cr.commit()
+                        new_tour_obj.sudo().write({
+                            'image_ids': [(6, 0, new_image_ids)]
+                        })
+                        for rec_other in detail_dat['other_infos']:
+                            new_tour_obj.create_other_info_from_json(rec_other)
+
+                        new_loc_ids = []
+                        for rec_loc in detail_dat['locations']:
+                            search_params = []
+                            new_country_obj = self.env['res.country'].sudo().search([('code', '=', rec_loc['country_code'])], limit=1)
+                            new_city_obj = self.env['res.city'].sudo().search([('name', '=', rec_loc['city_name'])], limit=1)
+                            if new_country_obj:
+                                search_params.append(('country_id', '=', new_country_obj[0].id))
+                            if new_city_obj:
+                                search_params.append(('city_id', '=', new_city_obj[0].id))
+                            if search_params:
+                                temp_loc = self.env['tt.tour.master.locations'].sudo().search(search_params, limit=1)
+                                if temp_loc:
+                                    new_loc = temp_loc[0]
+                                else:
+                                    new_loc = self.env['tt.tour.master.locations'].sudo().create({
+                                        'country_id': new_country_obj and new_country_obj[0].id or False,
+                                        'city_id': new_city_obj and new_city_obj[0].id or False,
+                                        'state_id': False,
+                                    })
+                                    self.env.cr.commit()
+                                new_loc_ids.append(new_loc.id)
+                        new_tour_obj.sudo().write({
+                            'location_ids': [(6, 0, new_loc_ids)]
+                        })
+                        new_tour_obj.action_validate()
                 else:
                     raise UserError(det_res['error_msg'])
 
@@ -465,7 +562,7 @@ class MasterTour(models.Model):
             attachment_value = {
                 'filename': img_filename and str(img_filename) or 'image.jpg',
                 'file_reference': 'Tour Package Image: ' + str(img_filename),
-                'file': image_data,
+                'file': image_data['response'],
                 'delete_date': False
             }
             context = {
@@ -474,9 +571,14 @@ class MasterTour(models.Model):
             }
             attachment_obj = self.env['tt.upload.center.wizard'].upload_file_api(attachment_value, context)
             if attachment_obj['error_code'] == 0:
-                return int(attachment_obj['response']['id'])
+                upload_obj = self.env['tt.upload.center'].sudo().search([('seq_id', '=', attachment_obj['response']['seq_id'])], limit=1)
+                return upload_obj and upload_obj[0].id or False
 
     def action_validate(self):
+        if self.state != 'draft':
+            raise UserError(_('Cannot validate master tour because state is not "draft"!'))
+        if not self.provider_id:
+            raise UserError(_('Please fill Provider!'))
         self.state = 'open'
         self.create_uid = self.env.user.id
         if not self.tour_code:
@@ -1144,6 +1246,54 @@ class MasterTour(models.Model):
         except Exception as e:
             _logger.error(traceback.format_exc())
             return ERR.get_error(1022)
+
+    def update_payment_rules_api(self, data, context, **kwargs):
+        try:
+            search_request = {
+                'tour_code': data.get('tour_code') and data['tour_code'] or '',
+                'provider': data.get('provider') and data['provider'] or ''
+            }
+            provider_obj = self.env['tt.provider'].sudo().search([('code', '=', search_request['provider'])], limit=1)
+            provider_obj = provider_obj and provider_obj[0] or False
+            search_tour_obj = self.env['tt.master.tour'].sudo().search([('tour_code', '=', search_request['tour_code']), ('provider_id', '=', provider_obj.id)], limit=1)
+            if search_tour_obj:
+                search_tour_obj = search_tour_obj[0]
+
+            new_pay_rules = data.get('payment_rules') and data['payment_rules']['payment_rules'] or []
+            new_pay_ids = []
+            for rec in new_pay_rules:
+                if rec.get('is_dp'):
+                    if float(rec['payment_percentage']) != float(search_tour_obj.down_payment):
+                        search_tour_obj.sudo().write({
+                            'down_payment': float(rec['payment_percentage'])
+                        })
+                else:
+                    new_pay_obj = self.env['tt.payment.rules'].sudo().create({
+                        'name': rec['name'],
+                        'description': rec['description'],
+                        'payment_percentage': rec['payment_percentage'],
+                        'due_date': rec['due_date']
+                    })
+                    new_pay_ids.append(new_pay_obj.id)
+                self.env.cr.commit()
+
+            for rec in search_tour_obj.payment_rules_ids:
+                rec.sudo().unlink()
+
+            search_tour_obj.sudo().write({
+                'payment_rules_ids': [(6, 0, new_pay_ids)]
+            })
+
+            response = {
+                'success': True,
+            }
+            return ERR.get_no_error(response)
+        except RequestException as e:
+            _logger.error(traceback.format_exc())
+            return e.error_dict()
+        except Exception as e:
+            _logger.error(traceback.format_exc())
+            return ERR.get_error(1025)
 
     def get_config_by_api(self):
         try:
