@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record model="tt.api.webhook.data" id="api_webhook_data_sync_master_activity">
+        <field name='name'>Sync Master Data Activity</field>
+        <field name='provider_type_id' ref='tt_reservation_activity.tt_provider_type_activity'/>
+        <field name='action'>sync</field>
+    </record>
+</odoo>

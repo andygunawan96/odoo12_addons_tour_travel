@@ -49,7 +49,6 @@
             <form create="false">
                 <header>
                     <button name="set_to_bill" string="Set as Bill" type="object" groups="base.user_admin"/>
-                    <button name="create_ledger" string="Create Ledger" type="object" groups="base.user_admin"/>
                     <button name="set_as_confirm" string="Set as Confirm" type="object" groups="base.user_admin"/>
                     <button name="set_as_paid" string="Set as Paid" type="object" groups="base.user_admin"/>
 

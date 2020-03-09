@@ -1,0 +1,158 @@
+<odoo>
+    <record id="api_monitor_search_view" model="ir.ui.view">
+        <field name="name">api.monitor.search.view</field>
+        <field name="model">tt.api.monitor</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="user_id"/>
+                <field name="agent_id"/>
+            </search>
+        </field>
+    </record>
+
+    <record id="api_monitor_form_view" model="ir.ui.view">
+        <field name="name">api.monitor.form.view</field>
+        <field name="model">tt.api.monitor</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="user_id"/>
+                        </group>
+                        <group>
+                            <field name="agent_id"/>
+                        </group>
+                    </group>
+                    <field name="monitor_data_ids"/>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="api_monitor_tree_view" model="ir.ui.view">
+        <field name="name">api.monitor.tree.view</field>
+        <field name="model">tt.api.monitor</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="name"/>
+                <field name="agent_id"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="api_monitor_data_form_view" model="ir.ui.view">
+        <field name="name">api.monitor.data.form.view</field>
+        <field name="model">tt.api.monitor.data</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="action"/>
+                            <field name="provider_type_id"/>
+                            <field name="user_id"/>
+                        </group>
+                        <group>
+                            <field name="unverified_counter"/>
+                            <field name="hit_counter"/>
+                        </group>
+                        <h2>
+                            <label for="req_data" string="Request Data"/>
+                        </h2>
+                        <field name="req_data"/>
+                    </group>
+                    <field name="record_ids"/>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="api_monitor_data_tree_view" model="ir.ui.view">
+        <field name="name">api.monitor.data.tree.view</field>
+        <field name="model">tt.api.monitor.data</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="provider_type_id"/>
+                <field name="action"/>
+                <field name="hit_counter"/>
+                <field name="unverified_counter"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="api_monitor_data_record_form_view" model="ir.ui.view">
+        <field name="name">api.monitor.form.view</field>
+        <field name="model">tt.api.monitor.data.record</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <group>
+                        <field name="user_id"/>
+                        <field name="is_verified"/>
+                        <field name="create_date"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="api_monitor_data_record_tree_view" model="ir.ui.view">
+        <field name="name">api.monitor.tree.view</field>
+        <field name="model">tt.api.monitor.data.record</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="is_verified"/>
+                <field name="create_date"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="api_monitor_rule_form_view" model="ir.ui.view">
+        <field name="name">api.monitor.rule.form.view</field>
+        <field name="model">tt.api.monitor.rule</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <group>
+                        <field name="provider_type_id"/>
+                        <field name="notification_limit"/>
+                        <field name="ban_limit"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="api_monitor_rule_tree_view" model="ir.ui.view">
+        <field name="name">api.monitor.rule.tree.view</field>
+        <field name="model">tt.api.monitor.rule</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="provider_type_id"/>
+                <field name="notification_limit"/>
+                <field name="ban_limit"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="api_monitor_action_view" model="ir.actions.act_window">
+        <field name="name">API Monitor</field>
+        <field name="res_model">tt.api.monitor</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+    <record id="api_monitor_rule_action_view" model="ir.actions.act_window">
+        <field name="name">API Monitor Rule</field>
+        <field name="res_model">tt.api.monitor.rule</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+    <menuitem id="api_monitor_rule_submenu" parent="tt_api_management.menu_tt_gateway"
+              name="API Monitor Rule" action="api_monitor_rule_action_view" sequence="19"/>
+
+    <menuitem id="api_monitor_submenu" parent="tt_api_management.menu_tt_gateway"
+              name="API Monitor" action="api_monitor_action_view" sequence="18"/>
+</odoo>

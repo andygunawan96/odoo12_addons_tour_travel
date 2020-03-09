@@ -534,7 +534,7 @@
                 <td style="width:150px;">Booker</td>
                 <td style="width:10px;">:</td>
                 <td style="width:400px;text-align: right;">
-                    <i t-field="doc.booker_id.name"/>
+                    <i t-field="doc.sudo().booker_id.name"/>
                 </td>
             </tr>
             <tr>

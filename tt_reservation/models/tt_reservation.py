@@ -702,8 +702,8 @@ class TtReservation(models.Model):
                             'res_model_prov': provider._name,
                             'res_id_prov': provider.id
                         })
-                        if not quota_used:
-                            print("5k woi")
+                        # if not quota_used:
+                        #     print("5k woi")
 
                 new_waiting_list.is_in_transaction = False
                 self.env.cr.commit()

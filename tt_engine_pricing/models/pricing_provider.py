@@ -170,7 +170,7 @@ class PricingProviderLine(models.Model):
 
     name = fields.Char('Name', requried=True)
     sequence = fields.Integer('Sequence', default=50, required=True)
-    pricing_id = fields.Many2one('tt.pricing.provider', 'Pricing Provider', readonly=1)
+    pricing_id = fields.Many2one('tt.pricing.provider', 'Pricing Provider', readonly=1, ondelete='cascade')
     date_from = fields.Datetime('Date From', default=datetime.now())
     date_to = fields.Datetime('Date To', default=datetime.now() + timedelta(days=1000))
     origin_type = fields.Selection(variables.ACCESS_TYPE, 'Origin Type', required=True, default='all')
