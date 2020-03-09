@@ -189,8 +189,8 @@ class MasterTour(models.Model):
 
     country_name = fields.Char('Country Name')
     itinerary_ids = fields.One2many('tt.reservation.tour.itinerary', 'tour_pricelist_id', 'Itinerary', ondelete='cascade')
-    provider_id = fields.Many2one('tt.provider', 'Provider', domain=get_domain, required=True)
-    provider_fare_code = fields.Char('Provider Fare Code', default='tour_rdx1', readonly=True)
+    provider_id = fields.Many2one('tt.provider', 'Provider', domain=get_domain, copy=False)
+    provider_fare_code = fields.Char('Provider Fare Code', default='tour_rdx1', readonly=True, copy=False)
     document_url = fields.Many2one('tt.upload.center', 'Document URL')
     import_other_info = fields.Binary('Import JSON')
     export_other_info = fields.Binary('Export JSON')
@@ -293,6 +293,101 @@ class MasterTour(models.Model):
             file_dat.close()
             if file:
                 self.sync_products(provider, file)
+
+    def copy_tour(self):
+        new_tour_obj = self.copy()
+        new_tour_obj.sudo().write({
+            'seat': new_tour_obj.quota
+        })
+        for rec in self.payment_rules_ids:
+            self.env['tt.payment.rules'].sudo().create({
+                'name': rec.name,
+                'payment_percentage': rec.payment_percentage,
+                'description': rec.description,
+                'due_date': rec.due_date,
+                'pricelist_id': new_tour_obj.id,
+            })
+        for rec in self.room_ids:
+            self.env['tt.master.tour.rooms'].sudo().create({
+                'name': rec.name,
+                'room_code': rec.room_code,
+                'bed_type': rec.bed_type,
+                'description': rec.description,
+                'hotel': rec.hotel,
+                'address': rec.address,
+                'star': rec.star,
+                'adult_surcharge': rec.adult_surcharge,
+                'child_surcharge': rec.child_surcharge,
+                'additional_charge': rec.additional_charge,
+                'pax_minimum': rec.pax_minimum,
+                'pax_limit': rec.pax_limit,
+                'adult_limit': rec.adult_limit,
+                'extra_bed_limit': rec.extra_bed_limit,
+                'tour_pricelist_id': new_tour_obj.id,
+            })
+        for rec in self.flight_segment_ids:
+            self.env['flight.segment'].sudo().create({
+                'journey_type': rec.journey_type,
+                'class_of_service': rec.class_of_service,
+                'carrier_id': rec.carrier_id.id,
+                'carrier_number': rec.carrier_number,
+                'origin_id': rec.origin_id.id,
+                'origin_terminal': rec.origin_terminal,
+                'destination_id': rec.destination_id.id,
+                'destination_terminal': rec.destination_terminal,
+                'departure_date': rec.departure_date,
+                'arrival_date': rec.arrival_date,
+                'departure_date_fmt': rec.departure_date_fmt,
+                'arrival_date_fmt': rec.arrival_date_fmt,
+                'tour_pricelist_id': new_tour_obj.id,
+            })
+        for rec in self.itinerary_ids:
+            new_itin_obj = self.env['tt.reservation.tour.itinerary'].sudo().create({
+                'name': rec.name,
+                'day': rec.day,
+                'date': rec.date,
+                'tour_pricelist_id': new_tour_obj.id,
+            })
+            for rec2 in rec.item_ids:
+                self.env['tt.reservation.tour.itinerary.item'].sudo().create({
+                    'name': rec2.name,
+                    'description': rec2.description,
+                    'timeslot': rec2.timeslot,
+                    'sequence': rec2.sequence,
+                    'image_id': rec2.image_id.id,
+                    'itinerary_id': new_itin_obj.id,
+                })
+        new_image_ids = []
+        for rec in self.image_ids:
+            new_image_ids.append(rec.id)
+        new_tour_obj.sudo().write({
+            'image_ids': [(6, 0, new_image_ids)]
+        })
+
+        new_loc_ids = []
+        for rec in self.location_ids:
+            new_loc_ids.append(rec.id)
+        new_tour_obj.sudo().write({
+            'location_ids': [(6, 0, new_loc_ids)]
+        })
+
+        other_info_ids = []
+        for rec in self.other_info_ids:
+            other_info_ids.append(new_tour_obj.create_other_info_from_json(rec.convert_info_to_dict()))
+        new_tour_obj.sudo().write({
+            'other_info_ids': [(6, 0, other_info_ids)]
+        })
+
+        base_url = self.env['ir.config_parameter'].sudo().get_param('web.base.url')
+        action_num = self.env.ref('tt_reservation_tour.tt_master_tour_view_action').id
+        menu_num = self.env.ref('tt_reservation_tour.submenu_tour_pricelist').id
+        return {
+            'type': 'ir.actions.act_url',
+            'name': new_tour_obj.name,
+            'target': 'self',
+            'url': base_url + "/web#id=" + str(new_tour_obj.id) + "&action=" + str(
+                action_num) + "&model=tt.master.tour&view_type=form&menu_id=" + str(menu_num),
+        }
 
     def sync_products(self, provider=None, data=None, page=None):
         file = data
@@ -480,6 +575,10 @@ class MasterTour(models.Model):
                 return upload_obj and upload_obj[0].id or False
 
     def action_validate(self):
+        if self.state != 'draft':
+            raise UserError(_('Cannot validate master tour because state is not "draft"!'))
+        if not self.provider_id:
+            raise UserError(_('Please fill Provider!'))
         self.state = 'open'
         self.create_uid = self.env.user.id
         if not self.tour_code:
