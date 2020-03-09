@@ -4,8 +4,8 @@ from ...tools import ERR,variables,util
 from odoo.exceptions import UserError
 from datetime import datetime
 from ...tools.ERR import RequestException
-_logger = logging.getLogger(__name__)
 
+_logger = logging.getLogger(__name__)
 
 class TtAgent(models.Model):
     _inherit = ['tt.history']

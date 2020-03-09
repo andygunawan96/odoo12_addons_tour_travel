@@ -18,6 +18,7 @@ TT_TRANSPORT
         'data/tt_provider_type_data.xml',
         'data/tt_provider_activity.xml',
         'data/tt_transport_carrier_activity.xml',
+        'data/tt_api_webhook_data.xml',
         'security/ir.model.access.csv',
         'security/ir_rule_data.xml',
         # 'report/printout_invoice_templates.xml',

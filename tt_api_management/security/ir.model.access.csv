@@ -5,8 +5,20 @@ tt_api_config_all,tt.api.config.all,model_tt_api_config,,1,1,1,1
 tt_api_provider_all,tt.api.provider.all,model_tt_api_provider,,1,1,1,1
 tt_api_carrier_all,tt.api.carrier.all,model_tt_api_carrier,,1,1,1,1
 
-tt_api_monitor_for_public,tt_base.tt_api_monitor_for_public,model_tt_api_monitor,,1,1,1,1
+tt_api_monitor_for_public,tt_base.tt_api_monitor_for_public,model_tt_api_monitor,,1,0,0,0
+tt_api_monitor_for_admin,tt_base.tt_api_monitor_for_admin,model_tt_api_monitor,base.user_admin,1,1,1,1
 
-tt_api_monitor_data_for_public,tt_base.tt_api_monitor_data_for_public,model_tt_api_monitor_data,,1,1,1,1
+tt_api_monitor_data_for_public,tt_base.tt_api_monitor_data_for_public,model_tt_api_monitor_data,,1,0,0,0
+tt_api_monitor_data_for_admin,tt_base.tt_api_monitor_data_for_admin,model_tt_api_monitor_data,base.user_admin,1,1,1,1
 
-tt_api_monitor_data_record_for_public,tt_base.tt_api_monitor_data_record_for_public,model_tt_api_monitor_data_record,,1,1,1,1
+tt_api_monitor_data_record_for_public,tt_base.tt_api_monitor_data_record_for_public,model_tt_api_monitor_data_record,,1,0,0,0
+tt_api_monitor_data_record_for_admin,tt_base.tt_api_monitor_data_record_for_admin,model_tt_api_monitor_data_record,base.user_admin,1,1,1,1
+
+tt_api_monitor_rule_for_public,tt_base.tt_api_monitor_rule_for_public,model_tt_api_monitor_rule,,1,0,0,0
+tt_api_monitor_rule_for_admin,tt_base.tt_api_monitor_rule_for_admin,model_tt_api_monitor_rule,base.user_admin,1,1,1,1
+
+tt_api_webhook_for_public,tt_base.tt_api_webhook_for_public,model_tt_api_webhook,,1,0,0,0
+tt_api_webhook_for_admin,tt_base.tt_api_webhook_for_admin,model_tt_api_webhook,base.user_admin,1,1,1,1
+
+tt_api_webhook_data_for_public,tt_base.tt_api_webhook_data_for_public,model_tt_api_webhook_data,,1,0,0,0
+tt_api_webhook__data_for_admin,tt_base.tt_api_webhook_data_for_admin,model_tt_api_webhook_data,base.user_admin,1,1,1,1

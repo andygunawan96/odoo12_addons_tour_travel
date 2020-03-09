@@ -137,7 +137,6 @@ class ApiManagement(models.Model):
             res = Response().get_error(str(e), 500)
         return res
 
-
 class ResUsersApiInherit(models.Model):
     _inherit = 'res.users'
 
@@ -176,7 +175,6 @@ class ResUsersApiInherit(models.Model):
             res = Response().get_error(str(e), 500)
         return res
 
-
 class TtAgentApiInherit(models.Model):
     _inherit = 'tt.agent'
 
@@ -188,7 +186,6 @@ class TtAgentApiInherit(models.Model):
         if self.agent_type_id:
             res.update(self.agent_type_id.get_credential(prefix))
         return res
-
 
 class TtAgentTypeApiInherit(models.Model):
     _inherit = 'tt.agent.type'

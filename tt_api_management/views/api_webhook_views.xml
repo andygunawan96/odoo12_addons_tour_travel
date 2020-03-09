@@ -1,0 +1,99 @@
+<odoo>
+    <record id="api_credential_webhook_view_form_inherit" model="ir.ui.view">
+        <field name="name">api.credential.webhook.view.form.inherit</field>
+        <field name="model">tt.api.credential</field>
+        <field name="inherit_id" ref="tt_api_management.api_credential_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//group" position="after">
+                <separator string="Webhooks"/>
+                <field name="webhook_rel_ids"/>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="api_webhook_data_search_view" model="ir.ui.view">
+        <field name="name">api.webhook.data.search.view</field>
+        <field name="model">tt.api.webhook.data</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+                <field name="provider_type_id"/>
+                <field name="action"/>
+            </search>
+        </field>
+    </record>
+
+    <record id="api_webhook_data_form_view" model="ir.ui.view">
+        <field name="name">api.webhook.data.form.view</field>
+        <field name="model">tt.api.webhook.data</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <div class="oe_title">
+                        <label for="name" class="oe_edit_only" string="Name"/>
+                        <h1>
+                            <field name="name"/>
+                        </h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="provider_type_id"/>
+                        </group>
+                        <group>
+                            <field name="action"/>
+                        </group>
+                    </group>
+                    <field name="webhook_rel_ids"/>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="api_webhook_data_tree_view" model="ir.ui.view">
+        <field name="name">api.webhook.data.tree.view</field>
+        <field name="model">tt.api.webhook.data</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="name"/>
+                <field name="provider_type_id"/>
+                <field name="action"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="api_webhook_form_view" model="ir.ui.view">
+        <field name="name">api.webhook.form.view</field>
+        <field name="model">tt.api.webhook</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <group>
+                        <field name="webhook_data_id"/>
+                        <field name="credential_data_id"/>
+                        <field name="url"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="api_webhook_tree_view" model="ir.ui.view">
+        <field name="name">api.webhook.tree.view</field>
+        <field name="model">tt.api.webhook</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="url"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="api_webhook_data_action_view" model="ir.actions.act_window">
+        <field name="name">API Webhook Dat</field>
+        <field name="res_model">tt.api.webhook.data</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+    <menuitem id="api_webhook_data_submenu" parent="tt_api_management.menu_tt_gateway"
+              name="API Webhook Data" action="api_webhook_data_action_view" sequence="20"/>
+</odoo>

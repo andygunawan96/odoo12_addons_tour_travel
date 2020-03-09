@@ -65,8 +65,6 @@
                    }"/>
                 <button name="sync_booking_with_vendor" type="object" string="Sync Reservation"
                         groups="base.user_admin"/>
-                <button name="monitor_data" type="object" string="Monitor Data Test"
-                        groups="base.user_admin"/>
                 <!--                <button name="CR8" string="CR8" type="object" groups="base.user_admin"/>-->
             </xpath>
             <xpath expr="//div[hasclass('oe_button_box')]" position="inside">
