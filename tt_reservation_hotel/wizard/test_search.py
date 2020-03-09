@@ -1048,21 +1048,26 @@ class TestSearch(models.Model):
                 return vals
 
             resp = city_id.get_city_country_provider_code(city_id.id, vendor.provider_id.code)
-            vals = {
-                'provider_id': vendor.provider_id.id,
-                'name': vendor.provider_id.name,
-                'provider': vendor.provider_id.code or vendor.provider_id.name.lower(),
-                'provider_city_id': resp['city_id'],
-                'provider_country_id': resp['country_id'],
-                'currency_rule': vendor_rate_to_dic(vendor.provider_id.rate_ids),
-            }
-            return vals
+            if vendor.provider_id.active:
+                vals = {
+                    'provider_id': vendor.provider_id.id,
+                    'name': vendor.provider_id.name,
+                    'provider': vendor.provider_id.code or vendor.provider_id.name.lower(),
+                    'provider_city_id': resp['city_id'],
+                    'provider_country_id': resp['country_id'],
+                    'currency_rule': vendor_rate_to_dic(vendor.provider_id.rate_ids),
+                }
+                return vals
+            return False
 
         city_id = self.env['res.city'].find_city_by_name(dest_name, 1)
         country_id = city_id.state_id and city_id.state_id.country_id or city_id.country_id
         vendor_ids = self.env['tt.provider.destination'].sudo().search([('country_id', '=', country_id.id), ('is_apply', '=', True)])
-        providers = [provider_to_dic(rec, city_id) for rec in vendor_ids]
-
+        providers = []
+        for rec in vendor_ids:
+            a = provider_to_dic(rec, city_id)
+            if a:
+                providers.append(a)
         return providers
 
     def get_hotel_by_city(self, provider_code, dest_id):
