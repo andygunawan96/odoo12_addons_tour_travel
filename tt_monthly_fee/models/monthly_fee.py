@@ -307,10 +307,11 @@ class MonthlyManagementFee(models.Model):
                                                           ('state', 'in', ['approve',]),
                                                           ('approve_date', '>=', self.start_date),
                                                           ('approve_date', '<', self.end_date)]):
-            ledger = adj.ledger_id
-            total_transac += ledger.debit
-            total_transac -= ledger.credit
-            self.create_mmf_line(self, ledger)
+            for ledger in adj.ledger_ids:
+                if ledger.agent_id.id == self.agent_id.id:
+                    total_transac += ledger.debit
+                    total_transac -= ledger.credit
+                    self.create_mmf_line(self, ledger)
 
     def remove_line_2(self):
         for line in self.mmf_line_ids:
