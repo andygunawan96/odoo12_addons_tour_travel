@@ -49,6 +49,7 @@ class ReservationTour(models.Model):
     provider_type_id = fields.Many2one('tt.provider.type', 'Provider Type', default=lambda self: self.env.ref('tt_reservation_tour.tt_provider_type_tour'))
     payment_method_tour = fields.Selection(PAYMENT_METHOD, 'Tour Payment Method')
     installment_invoice_ids = fields.One2many('tt.installment.invoice', 'booking_id', 'Installments')
+    is_already_issued = fields.Boolean('Already Issued', default=False)
 
     @api.depends('tour_id')
     @api.onchange('tour_id')
@@ -470,7 +471,8 @@ class ReservationTour(models.Model):
             book_obj.action_issued_tour(payment_method, context)
             self.env.cr.commit()
 
-            book_obj.call_create_invoice(acquirer_id and acquirer_id.id or False, context['co_uid'], customer_parent_id, payment_method)
+            if not book_obj.is_already_issued:
+                book_obj.call_create_invoice(acquirer_id and acquirer_id.id or False, context['co_uid'], customer_parent_id, payment_method)
 
             response = {
                 'order_id': book_obj.id,
@@ -596,6 +598,17 @@ class ReservationTour(models.Model):
                     'is_dp': False
                 }
                 payment_rules.append(temp_pay)
+
+            if data.get('state'):
+                book_update_vals = {
+                    'state': data['state']
+                }
+                if book_obj.state == 'issued':
+                    book_update_vals.update({
+                        'is_already_issued': True
+                    })
+                book_obj.sudo().write(book_update_vals)
+                self.env.cr.commit()
 
             response = {
                 'booker_seq_id': book_obj.booker_id.seq_id,
