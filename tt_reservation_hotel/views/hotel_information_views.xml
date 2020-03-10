@@ -346,6 +346,7 @@
                         <button name="get_record_homas" class="oe_stat_button" string="1. Merge" type="object" icon="fa-plus"/>
                         <button name="prepare_gateway_cache" class="oe_stat_button" string="2. Send to GW" type="object" icon="fa-plus"/>
                         <button name="prepare_gateway_destination" class="oe_stat_button" string="3. Render AutoComplete" type="object" icon="fa-plus"/>
+                        <button name="merge_record_for_some_source" class="oe_stat_button" string="C. Merge to Master" type="object" icon="fa-plus"/>
                     </div>
                     <div class="oe_title">
                         <label for="name">Name</label>
@@ -387,7 +388,8 @@
                             <button name="get_record_by_api5" string="Hotel" type="object" icon="fa-home"/>
                         </group>
                         <group string="Klik and Book">
-                            <button name="get_record_by_api14" string="Hotel" type="object" icon="fa-building"/>
+                            <button name="get_record_by_api14" string="Hotel from web agent" type="object" icon="fa-building"/>
+                            <button name="get_record_by_api14d" string="Hotel from excel file" type="object" icon="fa-building"/>
                         </group>
                         <group string="Rodextrip">
                             <button name="get_record_by_api13" string="AutoComplete Cache" type="object" icon="fa-spoon"/>

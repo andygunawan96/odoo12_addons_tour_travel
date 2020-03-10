@@ -33,7 +33,7 @@
                     <button string="Cancel" name="action_cancel" type="object" attrs="{'invisible': [('state', 'not in', ['draft','open'])]}" groups="tt_base.group_tt_tour_division_operator" confirm="Are you sure you want to cancel this tour?"/>  <!--groups="tt_base.group_tt_tour_travel_operator"-->
                     <button string="Sold Out" name="action_sold" type="object" attrs="{'invisible': [('state', 'not in', ['draft','open','definite'])]}" groups="tt_base.group_tt_tour_division_operator" confirm="Are you sure you want to set this tour as sold out?"/>  <!--groups="tt_base.group_tt_tour_travel_operator"-->
                     <button string="Re-Open" name="action_reopen" type="object" attrs="{'invisible': [('state', '!=', 'cancelled')]}" groups="tt_base.group_tt_tour_division_operator" confirm="Are you sure you want to re-open this tour?"/>  <!--groups="tt_base.group_tt_tour_travel_manager"-->
-<!--                    <button string="Generate Room Codes" name="generate_all_room_codes" type="object" groups="base.user_admin"/>-->
+                    <!--                    <button string="Generate Room Codes" name="generate_all_room_codes" type="object" groups="base.user_admin"/>-->
                 </header>
                 <sheet>
                     <!--PRINT REPORT BUTTON-->
@@ -46,15 +46,19 @@
                     <!--                    </div>-->
                     <!--TITLE-->
                     <div class="oe_button_box" name="button_box">
+                        <button name="copy_tour"
+                                class="oe_stat_button"
+                                string="Copy Tour" type="object" icon="fa-copy"
+                                groups="tt_base.group_tt_tour_division_operator,base.user_admin"/>
                         <button name="%(tt_base.tt_upload_center_wizard_action_view)d" string="Upload Image" type="action"
-                                class="oe_stat_button" icon="fa-upload" groups="tt_base.group_tt_tour_travel_operator"
+                                class="oe_stat_button" icon="fa-upload" groups="tt_base.group_tt_tour_division_operator,base.user_admin"
                                 context="{'default_target_field_name': 'image_ids'}"/>
                         <button name="%(tt_base.tt_upload_center_wizard_action_view)d" string="Upload Itinerary" type="action"
-                                class="oe_stat_button" icon="fa-upload" groups="tt_base.group_tt_tour_travel_operator"
+                                class="oe_stat_button" icon="fa-upload" groups="tt_base.group_tt_tour_division_operator,base.user_admin"
                                 context="{'default_target_field_name': 'document_url'}"/>
                         <button name="toggle_active" type="object"
                                 class="oe_stat_button" icon="fa-archive"
-                                groups="tt_base.group_tt_tour_travel_supervisor">
+                                groups="tt_base.group_tt_tour_division_operator,base.user_admin">
                             <field name="active" widget="boolean_button"
                                    options='{"terminology": "archive"}'/>
                         </button>
@@ -88,10 +92,10 @@
                             <field name="tour_type" attrs="{'invisible': [('tour_category', '=', 'private')], 'required': [('tour_category', '!=', 'private')]}"/>
                             <field name="departure_date"/>
                             <field name="arrival_date"/>
-<!--                            <field name="departure_date" attrs="{'invisible': [('tour_category', '=', 'private')], 'required': [('tour_category', '!=', 'private')]}"/>-->
-<!--                            <field name="arrival_date" attrs="{'invisible': [('tour_category', '=', 'private')], 'required': [('tour_category', '!=', 'private')]}"/>-->
-<!--                            <field name="start_period" attrs="{'invisible': [('tour_category', '!=', 'private')], 'required': [('tour_category', '=', 'private')]}"/>-->
-<!--                            <field name="end_period" attrs="{'invisible': [('tour_category', '!=', 'private')], 'required': [('tour_category', '=', 'private')]}"/>-->
+                            <!--                            <field name="departure_date" attrs="{'invisible': [('tour_category', '=', 'private')], 'required': [('tour_category', '!=', 'private')]}"/>-->
+                            <!--                            <field name="arrival_date" attrs="{'invisible': [('tour_category', '=', 'private')], 'required': [('tour_category', '!=', 'private')]}"/>-->
+                            <!--                            <field name="start_period" attrs="{'invisible': [('tour_category', '!=', 'private')], 'required': [('tour_category', '=', 'private')]}"/>-->
+                            <!--                            <field name="end_period" attrs="{'invisible': [('tour_category', '!=', 'private')], 'required': [('tour_category', '=', 'private')]}"/>-->
                             <field name="agent_id" attrs="{'invisible': [('tour_category', '!=', 'private')], 'required': [('tour_category', '=', 'private')]}"/>
                             <field name="duration"/>
                             <field name="guiding_days"/>
@@ -285,6 +289,14 @@
                                 </tree>
                                 <form>
                                     <sheet>
+                                        <div class="oe_button_box" name="button_box">
+                                            <button name="toggle_active" type="object"
+                                                    class="oe_stat_button" icon="fa-archive"
+                                                    groups="tt_base.group_tt_tour_division_operator,base.user_admin">
+                                                <field name="active" widget="boolean_button"
+                                                       options='{"terminology": "archive"}'/>
+                                            </button>
+                                        </div>
                                         <group>
                                             <group>
                                                 <field name="room_code"/>
@@ -480,12 +492,12 @@
                 <field name="tour_route"/>
                 <field name="departure_date"/>
                 <field name="arrival_date"/>
-                <field name="country_str"/>
                 <field name="duration"/>
+                <field name="country_str"/>
                 <field name="seat" string="Seat Available"/>
-                <field name="state"/>
                 <field name="create_uid"/>
                 <field name="provider_id" groups="tt_base.group_tt_tour_travel_operator"/>
+                <field name="state"/>
             </tree>
         </field>
     </record>

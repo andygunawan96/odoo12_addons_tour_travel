@@ -1129,13 +1129,3 @@ class ReservationAirline(models.Model):
             desc_txt += 'Departure: ' + rec.origin_id.display_name+ ' (' + datetime.strptime(rec.departure_date, '%Y-%m-%d %H:%M:%S').strftime('%d %b %Y %H:%M') + ')<br/>'
             desc_txt += 'Arrival: ' + rec.destination_id.display_name+ ' (' + datetime.strptime(rec.arrival_date, '%Y-%m-%d %H:%M:%S').strftime('%d %b %Y %H:%M') + ')<br/><br/>'
         return desc_txt
-
-    def monitor_data(self):
-        self.env['tt.api.monitor'].create_monitor_api({
-            'provider': 'amadeus',
-            'action': 'search',
-            'req_data': '{"StartDate":"2020-03-02","EndDate":"2020-03-02","Currency":"IDR","StartBalance":"-394667963.67"}'
-        },
-        {
-            'co_uid': self.env.user.id
-        })

@@ -20,6 +20,8 @@ Key Features
         'views/api_config_views.xml',
         'views/api_provider_views.xml',
         'views/api_carrier_views.xml',
+        'views/api_monitor_views.xml',
+        'views/api_webhook_views.xml',
         'wizard/user_encrypt_views.xml',
         'security/ir.model.access.csv'
     ],

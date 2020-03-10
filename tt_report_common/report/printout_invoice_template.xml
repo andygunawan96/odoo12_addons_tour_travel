@@ -241,7 +241,7 @@
     <template id="external_layout_header">
         <div class="row" style="height:100px;">
             <t t-if="doc_type == 'itin'">
-                <t t-if="doc.agent_id.logo">
+                <t t-if="doc['agent_id']">
                     <div class="col-4" style="margin-left: 30px">
                         <img t-att-src="'data:image/png;base64,%s' % to_text(doc['agent_id'].logo)" height="200" border="1" width="300" style="max-height:100px; max-width:165px; margin-bottom: 20px"/><br/>
                     </div>
@@ -315,7 +315,7 @@
                         <div style="padding-left: 60px; padding-bottom: 10px; vertical-align: middle; text-align: center; border-radius: 25px; background-color: rgba(39,62,84,0.76); padding-top: 5px;">
                             <div style="vertical-align: middle; display: flex; letter-spacing: 0.05em; font-size: 24px; color: white; font-weight: 600; margin-top: 0px; margin-left: -10px;">
                                 <t t-if="doc_type == 'itin'">
-                                    <span t-field="doc.pnr" style="margin-top: 5px;"/>
+                                    <span t-esc="'Itinerary'" style="margin-top: 5px;"/>
                                 </t>
                                 <t t-elif="doc_model == 'tt.reservation.hotel'">
                                     <span t-field="doc.pnr" style="margin-top: 5px;"/>
@@ -534,7 +534,7 @@
                 <td style="width:150px;">Booker</td>
                 <td style="width:10px;">:</td>
                 <td style="width:400px;text-align: right;">
-                    <i t-field="doc.booker_id.name"/>
+                    <i t-field="doc.sudo().booker_id.name"/>
                 </td>
             </tr>
             <tr>

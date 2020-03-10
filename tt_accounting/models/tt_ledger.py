@@ -87,25 +87,27 @@ class Ledger(models.Model):
 
     def prepare_vals(self, res_model,res_id,name, ref, ledger_date, ledger_type, currency_id, issued_uid, debit=0, credit=0,description = ''):
         return {
-                'name': name,
-                'debit': debit,
-                'credit': credit,
-                'ref': ref,
-                'currency_id': currency_id,
-                'date': ledger_date,
-                'transaction_type': ledger_type,
-                'res_model': res_model,
-                'res_id': res_id,
-                'description': description,
-                'issued_uid': issued_uid
-            }
+            'name': name,
+            'debit': debit,
+            'credit': credit,
+            'ref': ref,
+            'currency_id': currency_id,
+            'date': ledger_date,
+            'transaction_type': ledger_type,
+            'res_model': res_model,
+            'res_id': res_id,
+            'description': description,
+            'issued_uid': issued_uid
+        }
 
     def create_ledger_vanilla(self, res_model,res_id,name, ref, ledger_date, ledger_type, currency_id, issued_uid,agent_id,customer_parent_id, debit=0, credit=0,description = '',**kwargs):
+        #2
+        #search dulu apa ada waiting list jalan, kalau ada return error
         vals = self.prepare_vals(res_model,
-                          res_id,name, ref,
-                          ledger_date, ledger_type,
-                          currency_id, issued_uid,
-                          debit, credit,description)
+                                 res_id,name, ref,
+                                 ledger_date, ledger_type,
+                                 currency_id, issued_uid,
+                                 debit, credit,description)
         if customer_parent_id:
             vals['customer_parent_id'] = customer_parent_id
         else:
@@ -117,6 +119,7 @@ class Ledger(models.Model):
         return True
 
     def reverse_ledger(self):
+        #3
         reverse_id = self.env['tt.ledger'].create({
             'name': 'Reverse:' + self.name,
             'debit': self.credit,
@@ -232,7 +235,7 @@ class Ledger(models.Model):
 
         for agent_id, amount in agent_commission.items():
             ledger_values = self.prepare_vals(booking_obj._name,booking_obj.id,'Commission : ' + booking_obj.name, booking_obj.name, datetime.now()+relativedelta(hours=7),
-                                       3, booking_obj.currency_id.id,issued_uid, amount, 0)
+                                              3, booking_obj.currency_id.id,issued_uid, amount, 0)
             ledger_values.update({
                 'agent_id': abs(agent_id),
             })
@@ -243,67 +246,28 @@ class Ledger(models.Model):
         return ledger_created
 
     def action_create_ledger(self, provider_obj,issued_uid):
+        #1
         commission_created = self.create_commission_ledger(provider_obj,issued_uid)
         ledger_created = self.create_ledger(provider_obj,issued_uid)
         return commission_created or ledger_created
 
-    # api_context : ['type', 'agent_id', 'amount', 'pnr', 'ref_name', 'order']
-    # def get_agent_ledger(self, start_date=False, end_date=False, limit=10, offset=1, api_context=None):
-    #     try:
-    #         # user_obj = self.env['res.users'].browse(user_id)
-    #         # partner_obj = self.env['res.partner'].browse(user_obj.agent_id.id)
-    #
-    #         user_obj = self.env['res.users'].browse(api_context['co_uid'])
-    #         domain = [('agent_id', 'in', user_obj.allowed__ids.ids)]
-    #         # domain.append(('agent_id', '=', partner_obj.id))
-    #         if api_context.get('type', False):
-    #             type = LEDGER_TYPE_TO_INT[api_context['type']]
-    #             domain.append(('transaction_type', '=', type))
-    #         if start_date and end_date:
-    #             domain += [('date', '>=', start_date), ('date', '<=', end_date)]
-    #         if api_context.get('agent_id', False):
-    #             domain += [('agent_id.name', 'ilike', api_context['agent_id'])]
-    #         if api_context.get('amount', False):
-    #             domain += ['|', ('debit', '=', api_context['amount']), ('credit', '=', api_context['amount'])]
-    #         if api_context.get('pnr', False):
-    #             domain.append(('pnr', 'ilike', api_context['pnr']))
-    #         if api_context.get('ref_name', False):
-    #             domain += ['|', ('name', 'ilike', api_context['ref_name']),
-    #                        ('ref', 'ilike', api_context['ref_name'])]
-    #
-    #         order = api_context.get('order', 'id DESC')
-    #         ledger_ids = self.search(domain, limit=limit, offset=offset, order=order)
-    #         list_ledger = []
-    #         for rec in ledger_ids:
-    #             list_ledger.append({
-    #                 'name': rec.name,
-    #                 'date': rec.create_date,
-    #                 'type': dict(rec._fields['transaction_type'].selection).get(rec.transaction_type),
-    #                 'transport_type': rec.transport_type,
-    #                 'reference': rec.ref,
-    #                 'debit': rec.debit,
-    #                 'credit': rec.credit,
-    #                 'provider': rec.transport_booking_id and rec.transport_booking_id.display_provider_name or
-    #                             rec.issued_offline_id and rec.issued_offline_id.provider or
-    #                             rec.itank_booking_id and rec.itank_booking_id.supplier_name or False,
-    #                 'pnr': rec.pnr,
-    #                 'desc': rec.description,
-    #             })
-    #
-    #         response = {
-    #             'error_code': 0,
-    #             'error_msg': '',
-    #             'response': {
-    #                 'ledger': list_ledger,
-    #             }
-    #         }
-    #
-    #     except Exception as e:
-    #         response = {
-    #             'error_code': 100,
-    #             'error_msg': str(e),
-    #         }
-    #
-    #     return response
+    def re_compute_ledger_balance(self):
+        if not self.customer_parent_id:
+            ledger_objs = self.search([('agent_id','=',self.agent_id.id),('id','>=',self.id)],order='id')
+        else:
+            ledger_objs = self.search([('customer_parent_id','=',self.customer_parent_id.id),('id','>=',self.id)],order='id')
 
-    # API END #######################################################################
+        cur_balance = 0
+        for idx,rec in enumerate(ledger_objs):
+            if idx>0:
+                rec.balance = cur_balance+rec.debit-rec.credit
+            cur_balance = rec.balance
+
+
+class TtLedgerWaitingList(models.Model):
+    _name = 'tt.ledger.waiting.list'
+    _description = 'Rodex Model ledger Waiting List'
+
+    agent_id = fields.Many2one('tt.agent','Agent')
+    customer_parent_id = fields.Many2one('tt.customer.parent','Customer Parent')
+    is_in_transaction = fields.Boolean("In Transaction",default=True)

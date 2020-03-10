@@ -615,3 +615,11 @@ class TtSplitReservationWizard(models.TransientModel):
         new_book_obj.calculate_pnr_provider_carrier()
         book_obj.calculate_service_charge()
         new_book_obj.calculate_service_charge()
+
+        provider_state_context = {
+            'co_uid': self.env.user.id,
+            'co_agent_id': self.env.user.agent_id.id,
+        }
+
+        book_obj.check_provider_state(context=provider_state_context)
+        new_book_obj.check_provider_state(context=provider_state_context)

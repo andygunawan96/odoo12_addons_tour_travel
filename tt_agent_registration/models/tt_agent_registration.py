@@ -865,8 +865,15 @@ class AgentRegistration(models.Model):
             for rec in self.env['tt.agent.type'].search([('id', '!=', self.env.ref('tt_base.agent_type_ho').id)]):
                 agent_type.append({
                     'name': rec.name,
-                    'is_allow_regis': rec.can_register_agent
+                    'is_allow_regis': rec.can_register_agent,
+                    'product': {}
                 })
+                for product in rec.benefit:
+                    if agent_type[len(agent_type)-1]['product'].get(product.title):
+                        agent_type[len(agent_type) - 1]['product'][product.title].append(product.benefit)
+                    else:
+                        agent_type[len(agent_type)-1]['product'][product.title] = [product.benefit]
+
             response = {
                 'agent_type': agent_type,
                 'company_type': COMPANY_TYPE

@@ -11,6 +11,7 @@ class Ledger(models.Model):
 
     agent_invoice_id = fields.Many2one('tt.agent.invoice','Agent Invoice ID')
 
+
 class AgentInvoice(models.Model):
     _name = 'tt.agent.invoice'
     _inherit = 'tt.history'

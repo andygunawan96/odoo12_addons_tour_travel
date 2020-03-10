@@ -18,6 +18,7 @@ TT_TRANSPORT
         'data/tt_provider_train.xml',
         'data/tt_destination_kai.xml',
         'data/tt_transport_carrier_train.xml',
+        'data/tt_api_monitor_rule_data.xml',
         'security/ir.model.access.csv',
         'security/ir_rule_data.xml',
 

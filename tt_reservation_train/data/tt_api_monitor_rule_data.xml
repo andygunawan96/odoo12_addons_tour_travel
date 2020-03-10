@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <record id="tt_api_monitor_rule_train" model="tt.api.monitor.rule">
+            <field name="provider_type_id" ref="tt_reservation_train.tt_provider_type_train"/>
+            <field name="notification_limit">200</field>
+            <field name="ban_limit">250</field>
+        </record>
+    </data>
+</odoo>

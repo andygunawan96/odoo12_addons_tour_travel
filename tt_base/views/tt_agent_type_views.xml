@@ -1,6 +1,30 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <data>
+
+        <record id="tt_agent_type_benefit_tree_view" model="ir.ui.view">
+            <field name="name">tt.agent.type.benefit.tree.view</field>
+            <field name="model">tt.agent.type.benefit</field>
+            <field name="arch" type="xml">
+                <tree>
+                    <field name="title"/>
+                    <field name="benefit"/>
+                </tree>
+            </field>
+
+        </record>
+
+        <record id="tt_agent_type_benefit_form_view" model="ir.ui.view">
+            <field name="name">tt.agent.type.benefit.form.view</field>
+            <field name="model">tt.agent.type.benefit</field>
+            <field name="arch" type="xml">
+                <form>
+                    <field name="title"/>
+                    <field name="benefit"/>
+                </form>
+            </field>
+        </record>
+
         <record id="tt_agent_type_form_view" model="ir.ui.view">
             <field name="name">tt.agent.type.form.view</field>
             <field name="model">tt.agent.type</field>
@@ -42,6 +66,7 @@
                                     <field name="can_be_registered"/>
                                     <field name="registration_upline_ids"/>
                                     <field name="is_using_pnr_quota"/>
+                                    <field name="benefit"/>
                                 </group>
                                 <group>
                                     <field name="create_uid"/>

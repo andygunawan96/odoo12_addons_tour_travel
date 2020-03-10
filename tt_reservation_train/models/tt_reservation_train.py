@@ -37,11 +37,6 @@ class TtReservationTrain(models.Model):
         for rec in self:
             rec.state = 'draft'
 
-    def ban_user(self):
-        self.env['tt.ban.user'].ban_user_api({
-            'user_id': 46,
-            'duration_minutes': 1
-        },{})
 
     @api.multi
     def action_set_as_booked(self):
