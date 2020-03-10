@@ -200,10 +200,45 @@
         <field name="view_mode">tree,form</field>
         <field name="context">
             {
-                'form_view_ref': 'tt_accounting.tt_ledger_form_view',
-                'tree_view_ref': 'tt_accounting.tt_ledger_tree_view'
+            'form_view_ref': 'tt_accounting.tt_ledger_form_view',
+            'tree_view_ref': 'tt_accounting.tt_ledger_tree_view'
             }
         </field>
+    </record>
+
+    <record id="tt_ledger_waiting_list_form_view" model="ir.ui.view">
+        <field name="name">tt.ledger.waiting.list.form.view</field>
+        <field name="model">tt.ledger.waiting.list</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <group>
+                        <field name="agent_id"/>
+                        <field name="customer_parent_id"/>
+                        <field name="is_in_transaction"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="tt_ledger_waiting_list_tree_view" model="ir.ui.view">
+        <field name="name">tt.ledger.waiting.list.tree.view</field>
+        <field name="model">tt.ledger.waiting.list</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="agent_id"/>
+                <field name="customer_parent_id"/>
+                <field name="is_in_transaction"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="tt_ledger_waiting_list_action" model="ir.actions.act_window">
+        <field name="name">Ledger Waiting List</field>
+        <field name="res_model">tt.ledger.waiting.list</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
     </record>
 
     <menuitem id="top_transaction_ledger" parent="tt_base.main_transaction"
@@ -211,5 +246,9 @@
 
     <menuitem id="menu_transaction_ledger" parent="tt_accounting.top_transaction_ledger"
               name="Ledger" action="tt_ledger_action" sequence="10"/>
+
+    <menuitem id="menu_transaction_ledger_waiting_list" parent="tt_accounting.top_transaction_ledger"
+              name="Ledger Waiting List" action="tt_ledger_waiting_list_action" sequence="16"
+              groups="base.user_admin"/>
 
 </odoo>

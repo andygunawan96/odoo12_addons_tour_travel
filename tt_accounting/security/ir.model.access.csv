@@ -13,3 +13,5 @@ access_tt_adjustment_for_admin,access_tt_accounting.access_tt_adjustment_for_adm
 access_tt_refund,access_tt_accounting.tt_refund,model_tt_refund,,1,1,1,0
 access_tt_refund_line,access_tt_accounting.tt_refund_line,model_tt_refund_line,,1,1,1,0
 access_tt_refund_line_customer,access_tt_accounting.tt_refund_line_customer,model_tt_refund_line_customer,,1,1,1,0
+
+access_tt_ledger_waiting_list_for_public,access_tt_accounting.tt_ledger_waiting_list_for_user,model_tt_ledger_waiting_list,,1,1,1,1

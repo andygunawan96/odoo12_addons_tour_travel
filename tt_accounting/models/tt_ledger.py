@@ -87,27 +87,27 @@ class Ledger(models.Model):
 
     def prepare_vals(self, res_model,res_id,name, ref, ledger_date, ledger_type, currency_id, issued_uid, debit=0, credit=0,description = ''):
         return {
-                'name': name,
-                'debit': debit,
-                'credit': credit,
-                'ref': ref,
-                'currency_id': currency_id,
-                'date': ledger_date,
-                'transaction_type': ledger_type,
-                'res_model': res_model,
-                'res_id': res_id,
-                'description': description,
-                'issued_uid': issued_uid
-            }
+            'name': name,
+            'debit': debit,
+            'credit': credit,
+            'ref': ref,
+            'currency_id': currency_id,
+            'date': ledger_date,
+            'transaction_type': ledger_type,
+            'res_model': res_model,
+            'res_id': res_id,
+            'description': description,
+            'issued_uid': issued_uid
+        }
 
     def create_ledger_vanilla(self, res_model,res_id,name, ref, ledger_date, ledger_type, currency_id, issued_uid,agent_id,customer_parent_id, debit=0, credit=0,description = '',**kwargs):
         #2
         #search dulu apa ada waiting list jalan, kalau ada return error
         vals = self.prepare_vals(res_model,
-                          res_id,name, ref,
-                          ledger_date, ledger_type,
-                          currency_id, issued_uid,
-                          debit, credit,description)
+                                 res_id,name, ref,
+                                 ledger_date, ledger_type,
+                                 currency_id, issued_uid,
+                                 debit, credit,description)
         if customer_parent_id:
             vals['customer_parent_id'] = customer_parent_id
         else:
@@ -235,7 +235,7 @@ class Ledger(models.Model):
 
         for agent_id, amount in agent_commission.items():
             ledger_values = self.prepare_vals(booking_obj._name,booking_obj.id,'Commission : ' + booking_obj.name, booking_obj.name, datetime.now()+relativedelta(hours=7),
-                                       3, booking_obj.currency_id.id,issued_uid, amount, 0)
+                                              3, booking_obj.currency_id.id,issued_uid, amount, 0)
             ledger_values.update({
                 'agent_id': abs(agent_id),
             })
@@ -254,9 +254,20 @@ class Ledger(models.Model):
     def re_compute_ledger_balance(self):
         if not self.customer_parent_id:
             ledger_objs = self.search([('agent_id','=',self.agent_id.id),('id','>=',self.id)],order='id')
-            cur_balance = 0
-            for idx,rec in enumerate(ledger_objs):
-                if idx>0:
-                    rec.balance = cur_balance+rec.debit-rec.credit
-                cur_balance = rec.balance
+        else:
+            ledger_objs = self.search([('customer_parent_id','=',self.customer_parent_id.id),('id','>=',self.id)],order='id')
 
+        cur_balance = 0
+        for idx,rec in enumerate(ledger_objs):
+            if idx>0:
+                rec.balance = cur_balance+rec.debit-rec.credit
+            cur_balance = rec.balance
+
+
+class TtLedgerWaitingList(models.Model):
+    _name = 'tt.ledger.waiting.list'
+    _description = 'Rodex Model ledger Waiting List'
+
+    agent_id = fields.Many2one('tt.agent','Agent')
+    customer_parent_id = fields.Many2one('tt.customer.parent','Customer Parent')
+    is_in_transaction = fields.Boolean("In Transaction",default=True)
