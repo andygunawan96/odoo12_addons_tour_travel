@@ -1193,8 +1193,6 @@ class MasterTour(models.Model):
                 'infant_sale_price': infant_sale_price <= 0 and '0' or infant_sale_price,
                 'departure_date': tour_obj.departure_date and tour_obj.departure_date or '',
                 'arrival_date': tour_obj.arrival_date and tour_obj.arrival_date or '',
-                'start_period': tour_obj.start_period and tour_obj.start_period or '',
-                'end_period': tour_obj.end_period and tour_obj.end_period or '',
                 'locations': location_list,
                 'country_names': country_names,
                 'flight_segments': tour_obj.get_flight_segment(),
