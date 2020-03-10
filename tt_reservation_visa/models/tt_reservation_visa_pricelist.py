@@ -44,14 +44,20 @@ class VisaSyncProducts(models.TransientModel):
     def get_reference_code(self):
         for idx, rec in enumerate(self.env['tt.reservation.visa.pricelist'].search([]),1):
             if rec.reference_code == '' or rec.reference_code == False:
-                rec.update({
-                    "reference_code": 'visa_rodextrip_' + rec.name + '_' + str(idx),
-                    "provider_id": self.env['tt.provider'].search([('code', '=', 'rodextrip_visa')], limit=1).id
-                })
-            for count, requirement in enumerate(rec.requirement_ids):
-                requirement.update({
-                    "reference_code": 'visa_rodextrip_%s_%s_%s' % (rec.name, str(idx), str(count))
-                })
+                counter = idx
+                while True:
+                    if not self.env['tt.reservation.visa.pricelist'].search([('reference_code', '=', 'visa_rodextrip_' + rec.name + '_' + str(counter))]):
+                        rec.update({
+                            "reference_code": 'visa_rodextrip_' + rec.name + '_' + str(counter),
+                            "provider_id": self.env['tt.provider'].search([('code', '=', 'rodextrip_visa')], limit=1).id
+                        })
+                        break
+                    counter += 1
+
+                for count, requirement in enumerate(rec.requirement_ids):
+                    requirement.update({
+                        "reference_code": 'visa_rodextrip_%s_%s_%s' % (rec.name, str(counter), str(count))
+                    })
 
     def actions_get_product_rodextrip(self, data):
         req = {
