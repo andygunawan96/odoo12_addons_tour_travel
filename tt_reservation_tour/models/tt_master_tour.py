@@ -47,7 +47,7 @@ class TourSyncProducts(models.TransientModel):
             getattr(self.env['tt.master.tour'], def_name)(start_num, end_num)
 
     def deactivate_product(self):
-        products = self.env['tt.master.activity'].sudo().search([('provider_id', '=', self.provider_id.id)])
+        products = self.env['tt.master.tour'].sudo().search([('provider_id', '=', self.provider_id.id)])
         for rec in products:
             if rec.active:
                 rec.sudo().write({
@@ -448,7 +448,9 @@ class MasterTour(models.Model):
                 det_res = self.env['tt.master.tour.api.con'].get_details_provider(req_post)
                 if det_res['error_code'] == 0:
                     for temp_room in new_tour_obj.room_ids:
-                        temp_room.sudo().unlink()
+                        temp_room.sudo().write({
+                            'active': False
+                        })
                     for temp_flight in new_tour_obj.flight_segment_ids:
                         temp_flight.sudo().unlink()
                     for temp_itin in new_tour_obj.itinerary_ids:
@@ -460,7 +462,7 @@ class MasterTour(models.Model):
                     if det_res['response'].get('selected_tour'):
                         detail_dat = det_res['response']['selected_tour']
                         for rec_det in detail_dat['accommodations']:
-                            self.env['tt.master.tour.rooms'].sudo().create({
+                            new_acco_vals = {
                                 'name': rec_det['name'],
                                 'room_code': rec_det['room_code'],
                                 'bed_type': rec_det['bed_type'],
@@ -476,7 +478,13 @@ class MasterTour(models.Model):
                                 'adult_limit': rec_det['adult_limit'],
                                 'extra_bed_limit': rec_det['extra_bed_limit'],
                                 'tour_pricelist_id': new_tour_obj.id,
-                            })
+                                'active': True,
+                            }
+                            new_acco_obj = self.env['tt.master.tour.rooms'].sudo().search([('room_code', '=', rec_det['room_code']), ('tour_pricelist_id', '=', new_tour_obj.id), '|', ('active', '=', False), ('active', '=', True)], limit=1)
+                            if new_acco_obj:
+                                new_acco_obj[0].sudo().write(new_acco_vals)
+                            else:
+                                self.env['tt.master.tour.rooms'].sudo().create(new_acco_vals)
                         for rec_flight in detail_dat['flight_segments']:
                             carrier_obj = self.env['tt.transport.carrier'].sudo().search([('code', '=', rec_flight['carrier_code']), ('provider_type_id', '=', self.env.ref('tt_reservation_airline.tt_provider_type_airline').id)], limit=1)
                             carrier_obj = carrier_obj and carrier_obj[0] or False
