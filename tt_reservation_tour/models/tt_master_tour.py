@@ -889,6 +889,7 @@ class MasterTour(models.Model):
                     final_images.append({
                         'seq_id': rec_img['seq_id'],
                         'url': rec_img['url'],
+                        'filename': rec_img.get('filename') and rec_img['filename'] or False,
                     })
 
                 adult_sale_price = int(rec['adult_fare']) + int(rec['adult_commission'])
@@ -1158,7 +1159,8 @@ class MasterTour(models.Model):
             for img_temp in images:
                 final_images.append({
                     'seq_id': img_temp['seq_id'],
-                    'url': img_temp['url']
+                    'url': img_temp['url'],
+                    'filename': img_temp.get('filename') and img_temp['filename'] or False,
                 })
 
             adult_sale_price = int(tour_obj.adult_fare) + int(tour_obj.adult_commission)
