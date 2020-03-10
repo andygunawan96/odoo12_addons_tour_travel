@@ -549,7 +549,8 @@ class MasterTour(models.Model):
                         new_tour_obj.sudo().write({
                             'location_ids': [(6, 0, new_loc_ids)]
                         })
-                        new_tour_obj.action_validate()
+                        if new_tour_obj.state == 'draft':
+                            new_tour_obj.action_validate()
                 else:
                     raise UserError(det_res['error_msg'])
 
