@@ -912,8 +912,6 @@ class MasterTour(models.Model):
                     'images_obj': images,
                     'departure_date': rec['departure_date'] and rec['departure_date'] or '',
                     'arrival_date': rec['arrival_date'] and rec['arrival_date'] or '',
-                    'start_period': rec.get('start_period') and rec['start_period'] or '',
-                    'end_period': rec.get('end_period') and rec['end_period'] or '',
                     'provider_id': rec.get('provider_id') and rec['provider_id'] or '',
                     'provider': res_provider and res_provider.code or '',
                     'create_date': '',
@@ -925,6 +923,20 @@ class MasterTour(models.Model):
                     rec.update({
                         'currency_code': self.env['res.currency'].sudo().browse(int(curr_id)).name
                     })
+
+                result_obj = self.env['tt.master.tour'].browse(int(rec['id']))
+                location_objs = result_obj.location_ids
+                location_temp = []
+                for location_obj in location_objs:
+                    loc_temp = {
+                        'country_name': location_obj.country_id.name,
+                        'state_name': location_obj.state_id.name,
+                        'city_name': location_obj.city_id.name,
+                    }
+                    location_temp.append(loc_temp)
+                rec.update({
+                    'locations': location_temp,
+                })
 
                 key_list = [key for key in rec.keys()]
                 for key in key_list:
