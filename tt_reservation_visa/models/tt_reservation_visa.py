@@ -1906,7 +1906,7 @@ class TtVisa(models.Model):
                 for req in psg['required']:  # pricelist_obj.requirement_ids
                     req_vals = {
                         'to_passenger_id': to_psg_obj.id,
-                        'requirement_id': req['id'],
+                        'requirement_id': self.env['tt.reservation.visa.requirements'].search([('reference_code', '=', req['id'])]).id,
                         'is_ori': req['is_original'],
                         'is_copy': req['is_copy'],
                         'check_uid': self.env.user.id,
