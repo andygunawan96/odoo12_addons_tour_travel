@@ -876,8 +876,6 @@ class MasterTour(models.Model):
             deleted_keys = ['import_other_info', 'export_other_info', 'adult_fare', 'adult_commission', 'child_fare',
                             'child_commission', 'infant_fare', 'infant_commission', 'document_url', 'down_payment',
                             'other_info_preview', 'create_date', 'create_uid', 'write_date', 'write_uid']
-            img_deleted_keys = ['will_be_deleted_time', 'will_be_deleted_date', 'filename', 'file_reference', 'name', 'upload_uid',
-                                'agent_id', 'create_date', 'create_uid', 'write_date', 'write_uid']
 
             for idx, rec in enumerate(result):
                 try:
@@ -886,19 +884,12 @@ class MasterTour(models.Model):
                 except Exception:
                     images = []
 
+                final_images = []
                 for rec_img in images:
-                    rec_img.update({
-                        'create_date': '',
-                        'write_date': '',
+                    final_images.append({
+                        'seq_id': rec_img['seq_id'],
+                        'url': rec_img['url'],
                     })
-                    img_key_list = [img_key for img_key in rec_img.keys()]
-                    for img_key in img_key_list:
-                        if rec_img[img_key] is None:
-                            rec_img.update({
-                                img_key: ''
-                            })
-                        if img_key in img_deleted_keys:
-                            rec_img.pop(img_key)
 
                 adult_sale_price = int(rec['adult_fare']) + int(rec['adult_commission'])
                 child_sale_price = int(rec['child_fare']) + int(rec['child_commission'])
@@ -909,7 +900,7 @@ class MasterTour(models.Model):
                     'adult_sale_price': adult_sale_price,
                     'child_sale_price': child_sale_price,
                     'infant_sale_price': infant_sale_price,
-                    'images_obj': images,
+                    'images_obj': final_images,
                     'departure_date': rec['departure_date'] and rec['departure_date'] or '',
                     'arrival_date': rec['arrival_date'] and rec['arrival_date'] or '',
                     'provider_id': rec.get('provider_id') and rec['provider_id'] or '',
@@ -1102,6 +1093,7 @@ class MasterTour(models.Model):
             country_names = []
             city_names = []
             for location in location_ids:
+                temp_country_name = False
                 temp_country = False
                 temp_city = False
                 if location != 0:
@@ -1111,6 +1103,7 @@ class MasterTour(models.Model):
                         if temp:
                             country_names.append(temp[0]['name'])
                             temp_country = temp[0]['code']
+                            temp_country_name = temp[0]['name']
 
                     if location.get('city_id'):
                         self.env.cr.execute("""SELECT id, name FROM res_city WHERE id=%s""", (location['city_id'],))
@@ -1120,6 +1113,7 @@ class MasterTour(models.Model):
                             temp_city = temp2[0]['name']
                 location_list.append({
                     'country_code': temp_country,
+                    'country_name': temp_country_name,
                     'city_name': temp_city,
                 })
 
@@ -1160,13 +1154,12 @@ class MasterTour(models.Model):
             except Exception:
                 images = []
 
+            final_images = []
             for img_temp in images:
-                img_key_list = [key for key in img_temp.keys()]
-                for key in img_key_list:
-                    if img_temp[key] is None:
-                        img_temp.update({
-                            key: ''
-                        })
+                final_images.append({
+                    'seq_id': img_temp['seq_id'],
+                    'url': img_temp['url']
+                })
 
             adult_sale_price = int(tour_obj.adult_fare) + int(tour_obj.adult_commission)
             child_sale_price = int(tour_obj.child_fare) + int(tour_obj.child_commission)
@@ -1199,7 +1192,7 @@ class MasterTour(models.Model):
                 'other_infos': tour_obj.get_tour_other_info(),
                 'hotel_names': hotel_names,
                 'duration': tour_obj.duration and tour_obj.duration or 0,
-                'images_obj': images,
+                'images_obj': final_images,
                 'document_url': tour_obj.document_url and tour_obj.document_url.url or '',
                 'provider': tour_obj.provider_id and tour_obj.provider_id.code or '',
                 'provider_fare_code': tour_obj.provider_fare_code and tour_obj.provider_fare_code or '',
