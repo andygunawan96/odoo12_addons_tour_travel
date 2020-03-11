@@ -1,10 +1,11 @@
 from odoo import api, fields, models, _
 from datetime import date, datetime
 from ...tools.ERR import RequestException
+from ...tools import ERR
 from dateutil.relativedelta import relativedelta
 from odoo.exceptions import UserError
 # from ...tools.telegram import TelegramInfoNotification
-import logging,json,traceback
+import logging,json,traceback,time
 
 LEDGER_TYPE = [
     (0, 'Opening Balance'),
@@ -101,13 +102,11 @@ class Ledger(models.Model):
         }
 
     def create_ledger_vanilla(self, res_model,res_id,name, ref, ledger_date, ledger_type, currency_id, issued_uid,agent_id,customer_parent_id, debit=0, credit=0,description = '',**kwargs):
-        #2
-        #search dulu apa ada waiting list jalan, kalau ada return error
         vals = self.prepare_vals(res_model,
-                                 res_id,name, ref,
-                                 ledger_date, ledger_type,
-                                 currency_id, issued_uid,
-                                 debit, credit,description)
+                          res_id,name, ref,
+                          ledger_date, ledger_type,
+                          currency_id, issued_uid,
+                          debit, credit,description)
         if customer_parent_id:
             vals['customer_parent_id'] = customer_parent_id
         else:
@@ -258,11 +257,31 @@ class Ledger(models.Model):
             ledger_objs = self.search([('customer_parent_id','=',self.customer_parent_id.id),('id','>=',self.id)],order='id')
 
         cur_balance = 0
-        for idx,rec in enumerate(ledger_objs):
-            if idx>0:
+        for idx, rec in enumerate(ledger_objs):
+            if idx > 0:
                 rec.balance = cur_balance+rec.debit-rec.credit
             cur_balance = rec.balance
 
+    def set_n_get_waiting_list(self, agent_id):
+        # sql_query = 'select * from tt_reservation_waiting_list where agent_id = %s and is_in_transaction = True and id < %s' % (agent_id, wait_id)
+        # self.env.cr.execute(sql_query)
+        # waiting_list = self.env.cr.dictfetchall()
+        # if waiting_list:
+        #     _logger.info(str(waiting_list[0].get('id')) + ', ' + str(waiting_list[-1].get('id')))
+        # else:
+        #     _logger.info("Empty Waiting List")
+        # return waiting_list
+        new_waiting_list = self.env['tt.ledger.waiting.list'].create({'agent_id': agent_id,
+                                                                      'reference': self.name})
+        self.env.cr.commit()
+        waiting_list = self.env['tt.ledger.waiting.list'].search([('agent_id', '=', agent_id),
+                                                                  ('is_in_transaction', '=', True),
+                                                                  ('id','<',new_waiting_list.id)])
+        if waiting_list:
+            _logger.info("Waiting List : " + str(waiting_list.ids))
+        else:
+            _logger.info("Empty Waiting List")
+        return new_waiting_list,waiting_list
 
 class TtLedgerWaitingList(models.Model):
     _name = 'tt.ledger.waiting.list'

@@ -433,9 +433,11 @@ class TtAgent(models.Model):
                     'res_id_prov': req.get('res_id_prov'),
                     'pnr_quota_id': price_list_id
                 })
-                return True
             else:
-                return False
+                ##ban user here because no quota left
+                for rec in self.user_ids:
+                    if hasattr(rec,'is_api_user') and rec.is_api_user or False:
+                        self.env['tt.ban.user'].ban_user(rec.id,1576800)
 
     def get_available_pnr_price_list_api(self,context):
         try:
@@ -457,6 +459,7 @@ class TtAgent(models.Model):
         except Exception as e:
             _logger.error(traceback.format_exc())
             return ERR.get_error(1012,additional_message="PNR Price List")
+
 
 class AgentTarget(models.Model):
     _inherit = ['tt.history']

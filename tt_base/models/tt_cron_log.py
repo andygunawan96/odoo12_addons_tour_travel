@@ -57,12 +57,13 @@ class TtCronLog(models.Model):
             pnr_quota_obj = self.env['tt.pnr.quota'].search([('expired_date','<', datetime.now(pytz.timezone('Asia/Jakarta')).date())])
             for rec in pnr_quota_obj:
                 rec.is_expired = True
-                curr_err_text = traceback.format_exc()
-                _logger.info(curr_err_text)
         except:
             self.create_cron_log_folder()
             self.write_cron_log('auto-expire quota')
 
-    def cron_extend_quota(self):
-        ##auto extend quota jika ada saldo
-        pass
+    # def cron_extend_quota(self):
+    #     ##auto extend quota jika ada saldo
+    #     try:
+    #
+    #     except:
+
