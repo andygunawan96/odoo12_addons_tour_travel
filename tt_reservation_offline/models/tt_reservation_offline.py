@@ -98,6 +98,9 @@ class IssuedOffline(models.Model):
     cancel_date = fields.Datetime('Cancel Date', readonly=True, copy=False)
     cancel_uid = fields.Many2one('res.users', readonly=True, copy=False)
 
+    hold_date = fields.Datetime('Hold Date', readonly=True, required=True, states={'draft': [('readonly', False)]},
+                                default=datetime.now() + timedelta(days=1))
+
     # Monetary
     currency_id = fields.Many2one('res.currency', 'Currency', default=lambda self: self.env.user.company_id.currency_id,
                                   readonly=True, states={'draft': [('readonly', False)],
@@ -432,9 +435,10 @@ class IssuedOffline(models.Model):
         })
 
     def action_expired(self):
-        if self.state_offline == 'confirm' and self.hold_date < datetime.now():
-            super(IssuedOffline, self).action_expired()  # Set state = expired
-            self.state_offline = 'expired'  # Set state_offline = expired
+        if self.hold_date:
+            if self.state_offline == 'confirm' and self.hold_date < datetime.now():
+                super(IssuedOffline, self).action_expired()  # Set state = expired
+                self.state_offline = 'expired'  # Set state_offline = expired
 
     @api.one
     def action_quick_issued(self):

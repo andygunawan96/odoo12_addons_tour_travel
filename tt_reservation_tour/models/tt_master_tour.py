@@ -47,7 +47,7 @@ class TourSyncProducts(models.TransientModel):
             getattr(self.env['tt.master.tour'], def_name)(start_num, end_num)
 
     def deactivate_product(self):
-        products = self.env['tt.master.activity'].sudo().search([('provider_id', '=', self.provider_id.id)])
+        products = self.env['tt.master.tour'].sudo().search([('provider_id', '=', self.provider_id.id)])
         for rec in products:
             if rec.active:
                 rec.sudo().write({
@@ -448,7 +448,9 @@ class MasterTour(models.Model):
                 det_res = self.env['tt.master.tour.api.con'].get_details_provider(req_post)
                 if det_res['error_code'] == 0:
                     for temp_room in new_tour_obj.room_ids:
-                        temp_room.sudo().unlink()
+                        temp_room.sudo().write({
+                            'active': False
+                        })
                     for temp_flight in new_tour_obj.flight_segment_ids:
                         temp_flight.sudo().unlink()
                     for temp_itin in new_tour_obj.itinerary_ids:
@@ -460,7 +462,7 @@ class MasterTour(models.Model):
                     if det_res['response'].get('selected_tour'):
                         detail_dat = det_res['response']['selected_tour']
                         for rec_det in detail_dat['accommodations']:
-                            self.env['tt.master.tour.rooms'].sudo().create({
+                            new_acco_vals = {
                                 'name': rec_det['name'],
                                 'room_code': rec_det['room_code'],
                                 'bed_type': rec_det['bed_type'],
@@ -476,7 +478,13 @@ class MasterTour(models.Model):
                                 'adult_limit': rec_det['adult_limit'],
                                 'extra_bed_limit': rec_det['extra_bed_limit'],
                                 'tour_pricelist_id': new_tour_obj.id,
-                            })
+                                'active': True,
+                            }
+                            new_acco_obj = self.env['tt.master.tour.rooms'].sudo().search([('room_code', '=', rec_det['room_code']), ('tour_pricelist_id', '=', new_tour_obj.id), '|', ('active', '=', False), ('active', '=', True)], limit=1)
+                            if new_acco_obj:
+                                new_acco_obj[0].sudo().write(new_acco_vals)
+                            else:
+                                self.env['tt.master.tour.rooms'].sudo().create(new_acco_vals)
                         for rec_flight in detail_dat['flight_segments']:
                             carrier_obj = self.env['tt.transport.carrier'].sudo().search([('code', '=', rec_flight['carrier_code']), ('provider_type_id', '=', self.env.ref('tt_reservation_airline.tt_provider_type_airline').id)], limit=1)
                             carrier_obj = carrier_obj and carrier_obj[0] or False
@@ -549,7 +557,8 @@ class MasterTour(models.Model):
                         new_tour_obj.sudo().write({
                             'location_ids': [(6, 0, new_loc_ids)]
                         })
-                        new_tour_obj.action_validate()
+                        if new_tour_obj.state == 'draft':
+                            new_tour_obj.action_validate()
                 else:
                     raise UserError(det_res['error_msg'])
 
@@ -875,8 +884,6 @@ class MasterTour(models.Model):
             deleted_keys = ['import_other_info', 'export_other_info', 'adult_fare', 'adult_commission', 'child_fare',
                             'child_commission', 'infant_fare', 'infant_commission', 'document_url', 'down_payment',
                             'other_info_preview', 'create_date', 'create_uid', 'write_date', 'write_uid']
-            img_deleted_keys = ['will_be_deleted_time', 'will_be_deleted_date', 'filename', 'file_reference', 'name', 'upload_uid',
-                                'agent_id', 'create_date', 'create_uid', 'write_date', 'write_uid']
 
             for idx, rec in enumerate(result):
                 try:
@@ -885,19 +892,13 @@ class MasterTour(models.Model):
                 except Exception:
                     images = []
 
+                final_images = []
                 for rec_img in images:
-                    rec_img.update({
-                        'create_date': '',
-                        'write_date': '',
+                    final_images.append({
+                        'seq_id': rec_img['seq_id'],
+                        'url': rec_img['url'],
+                        'filename': rec_img.get('filename') and rec_img['filename'] or False,
                     })
-                    img_key_list = [img_key for img_key in rec_img.keys()]
-                    for img_key in img_key_list:
-                        if rec_img[img_key] is None:
-                            rec_img.update({
-                                img_key: ''
-                            })
-                        if img_key in img_deleted_keys:
-                            rec_img.pop(img_key)
 
                 adult_sale_price = int(rec['adult_fare']) + int(rec['adult_commission'])
                 child_sale_price = int(rec['child_fare']) + int(rec['child_commission'])
@@ -908,11 +909,9 @@ class MasterTour(models.Model):
                     'adult_sale_price': adult_sale_price,
                     'child_sale_price': child_sale_price,
                     'infant_sale_price': infant_sale_price,
-                    'images_obj': images,
+                    'images_obj': final_images,
                     'departure_date': rec['departure_date'] and rec['departure_date'] or '',
                     'arrival_date': rec['arrival_date'] and rec['arrival_date'] or '',
-                    'start_period': rec.get('start_period') and rec['start_period'] or '',
-                    'end_period': rec.get('end_period') and rec['end_period'] or '',
                     'provider_id': rec.get('provider_id') and rec['provider_id'] or '',
                     'provider': res_provider and res_provider.code or '',
                     'create_date': '',
@@ -924,6 +923,20 @@ class MasterTour(models.Model):
                     rec.update({
                         'currency_code': self.env['res.currency'].sudo().browse(int(curr_id)).name
                     })
+
+                result_obj = self.env['tt.master.tour'].browse(int(rec['id']))
+                location_objs = result_obj.location_ids
+                location_temp = []
+                for location_obj in location_objs:
+                    loc_temp = {
+                        'country_name': location_obj.country_id.name,
+                        'state_name': location_obj.state_id.name,
+                        'city_name': location_obj.city_id.name,
+                    }
+                    location_temp.append(loc_temp)
+                rec.update({
+                    'locations': location_temp,
+                })
 
                 key_list = [key for key in rec.keys()]
                 for key in key_list:
@@ -1089,6 +1102,7 @@ class MasterTour(models.Model):
             country_names = []
             city_names = []
             for location in location_ids:
+                temp_country_name = False
                 temp_country = False
                 temp_city = False
                 if location != 0:
@@ -1098,6 +1112,7 @@ class MasterTour(models.Model):
                         if temp:
                             country_names.append(temp[0]['name'])
                             temp_country = temp[0]['code']
+                            temp_country_name = temp[0]['name']
 
                     if location.get('city_id'):
                         self.env.cr.execute("""SELECT id, name FROM res_city WHERE id=%s""", (location['city_id'],))
@@ -1107,6 +1122,7 @@ class MasterTour(models.Model):
                             temp_city = temp2[0]['name']
                 location_list.append({
                     'country_code': temp_country,
+                    'country_name': temp_country_name,
                     'city_name': temp_city,
                 })
 
@@ -1147,13 +1163,13 @@ class MasterTour(models.Model):
             except Exception:
                 images = []
 
+            final_images = []
             for img_temp in images:
-                img_key_list = [key for key in img_temp.keys()]
-                for key in img_key_list:
-                    if img_temp[key] is None:
-                        img_temp.update({
-                            key: ''
-                        })
+                final_images.append({
+                    'seq_id': img_temp['seq_id'],
+                    'url': img_temp['url'],
+                    'filename': img_temp.get('filename') and img_temp['filename'] or False,
+                })
 
             adult_sale_price = int(tour_obj.adult_fare) + int(tour_obj.adult_commission)
             child_sale_price = int(tour_obj.child_fare) + int(tour_obj.child_commission)
@@ -1177,8 +1193,6 @@ class MasterTour(models.Model):
                 'infant_sale_price': infant_sale_price <= 0 and '0' or infant_sale_price,
                 'departure_date': tour_obj.departure_date and tour_obj.departure_date or '',
                 'arrival_date': tour_obj.arrival_date and tour_obj.arrival_date or '',
-                'start_period': tour_obj.start_period and tour_obj.start_period or '',
-                'end_period': tour_obj.end_period and tour_obj.end_period or '',
                 'locations': location_list,
                 'country_names': country_names,
                 'flight_segments': tour_obj.get_flight_segment(),
@@ -1186,7 +1200,7 @@ class MasterTour(models.Model):
                 'other_infos': tour_obj.get_tour_other_info(),
                 'hotel_names': hotel_names,
                 'duration': tour_obj.duration and tour_obj.duration or 0,
-                'images_obj': images,
+                'images_obj': final_images,
                 'document_url': tour_obj.document_url and tour_obj.document_url.url or '',
                 'provider': tour_obj.provider_id and tour_obj.provider_id.code or '',
                 'provider_fare_code': tour_obj.provider_fare_code and tour_obj.provider_fare_code or '',

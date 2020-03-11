@@ -29,12 +29,12 @@ class TtPrintoutApiCon(models.Model):
                 if book_obj and book_obj.agent_id.id == context.get('co_agent_id', -1):
                     if data['mode'] == 'ticket':
                         res = self.env['tt.reservation.%s' % data['provider_type']].do_print_voucher(data, context)
-                    elif data['mode'] == 'itinerary':
-                        res = self.env['tt.reservation.%s' % data['provider_type']].print_itinerary(data, context)
+                    # elif data['mode'] == 'itinerary':
+                    #     res = self.env['tt.reservation.%s' % data['provider_type']].print_itinerary(data, context)
                 else:
-                    if data['mode'] == 'ticket':
-                        raise RequestException(1001)
-                    elif data['mode'] == 'itinerary':
+                    # if data['mode'] == 'ticket':
+                    #     raise RequestException(1001)
+                    if data['mode'] == 'itinerary':
                         res = self.env['tt.reservation.%s' % data['provider_type']].print_itinerary(data, context)
             else:
                 book_obj = self.env['tt.reservation.%s' % data['provider_type']].search([('name', '=', data['order_number'])])
