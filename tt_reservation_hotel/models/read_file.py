@@ -1897,10 +1897,11 @@ class HotelInformation(models.Model):
                     'street': rec[3],
                     'street2': rec[4],
                     'street3': rec[5],
-                    'description': rec[17],
+                    'description': rec[17] + ' ' + rec[18],
                     'email': rec[15],
                     'images': [],
-                    'facilities': rec[18],
+                    # 'facilities': rec[18], #Ada Kolom facility tapi isie string descripsi,
+                    'facilities': [], #Jadi isi dari field facility kita masukan ke description
                     'phone': rec[13],
                     'fax': rec[14],
                     'zip': rec[6],
@@ -2232,7 +2233,8 @@ class HotelInformation(models.Model):
         # provider_list = ['hotelspro', 'hotelspro_file', 'fitruums', 'webbeds_pool', 'webbeds_excel_pool',
         #                  'itank', 'quantum', 'quantum_pool', 'mgholiday', 'mg_pool', 'miki_api', 'miki_scrap', 'miki_pool',
         #                  'knb', 'dida_pool', 'tbo', 'oyo']
-        provider_list = ['webbeds_pool', 'webbeds_excel_pool', 'dida_pool', 'knb', 'quantum', 'quantum_pool']
+        provider_list = ['hotelspro_file', 'webbeds_pool', 'webbeds_excel_pool', 'quantum', 'quantum_pool', 'miki_api',
+                         'miki_scrap', 'miki_pool', 'knb', 'dida_pool', 'oyo']
 
         new_to_add_list2 = [['Type', '#1:Name', '#1:address', '#1:provider', '#2:Similar Name', '#2:address', '#2:provider']]
         if not rendered_city:
@@ -2479,7 +2481,7 @@ class HotelInformation(models.Model):
     # Masukan source yg di mau ke master record
     # On Progress
     def merge_record_for_some_source(self):
-        provider_list = ['hotelspro_file_partial', 'knb']
+        provider_list = ['hotelspro_file_partial', 'oyo']
         need_to_add_city = {}
         rendered_city_ids = []
 
@@ -2512,25 +2514,25 @@ class HotelInformation(models.Model):
                             # merge data source untuk city tsb
                             with open(vendor_city_url, 'r') as f1:
                                 vendor_hotel_objs = f1.read()
-                                for vendor_hotel_obj in json.loads(vendor_hotel_objs):
-                                    hotel_fmt = self.formating_homas(vendor_hotel_obj, vendor_hotel_obj['id'], master_provider, target_city[2], vendor_city)
-                                    same_name = self.exact_find_similar_name(hotel_fmt['name'], hotel_fmt['location']['city'], cache_content)
-
-                                    if same_name:
-                                        # tambahkan detail ke record yg sama tersebut
-                                        if hotel_fmt.get('external_code'):
-                                            same_name[0]['external_code'].update(hotel_fmt['external_code'])
-                                        else:
-                                            same_name[0]['external_code'][self.masking_provider(master_provider)] = hotel_fmt['id']
-                                        same_name[0]['images'] += hotel_fmt['images']
-                                        if len(same_name[0]['facilities']) < len(hotel_fmt['facilities']):
-                                            same_name[0]['facilities'] = hotel_fmt['facilities']
-                                        if not same_name[0]['description']:
-                                            same_name[0]['description'] = hotel_fmt['description']
-                                    else:
-                                        # create baru di memory
-                                        cache_content.append(hotel_fmt)
                             f1.close
+                            for vendor_hotel_obj in json.loads(vendor_hotel_objs):
+                                hotel_fmt = self.formating_homas(vendor_hotel_obj, vendor_hotel_obj['id'], master_provider, target_city[2], vendor_city)
+                                same_name = self.exact_find_similar_name(hotel_fmt['name'], hotel_fmt['location']['city'], cache_content)
+
+                                if same_name:
+                                    # tambahkan detail ke record yg sama tersebut
+                                    if hotel_fmt.get('external_code'):
+                                        same_name[0]['external_code'].update(hotel_fmt['external_code'])
+                                    else:
+                                        same_name[0]['external_code'][self.masking_provider(master_provider)] = hotel_fmt['id']
+                                    same_name[0]['images'] += hotel_fmt['images']
+                                    if len(same_name[0]['facilities']) < len(hotel_fmt['facilities']):
+                                        same_name[0]['facilities'] = hotel_fmt['facilities']
+                                    if not same_name[0]['description']:
+                                        same_name[0]['description'] = hotel_fmt['description']
+                                else:
+                                    # create baru di memory
+                                    cache_content.append(hotel_fmt)
 
                             # Adding data for update CSV Result
                             if not need_to_add_city.get(target_city[1].lower()):
@@ -2586,6 +2588,57 @@ class HotelInformation(models.Model):
             csvFile.close()
         f.close()
         # Update CSV Result merger (Nice to have)
+        return True
+
+    def merge_2_city_result(self):
+        # Baca City CSV
+        with open('/var/log/cache_hotel/result log/merger_process_result.csv', 'r') as f:
+            rendered_city_ids = csv.reader(f)
+            rendered_city_ids_1 = [target_city for target_city in rendered_city_ids]
+            rendered_city_ids = rendered_city_ids_1
+        f.close()
+        # Cari Index file using nama city yg ingin di merge
+        master_index = 0
+        slave_index = 0
+
+        # Baca File untuk master city
+        # Baca File untuk slave city (To Be Merge) dan nama kota yg digunakan adalah nama master city nya
+        with open('/var/log/cache_hotel/cache_hotel_' + str(master_index) + '.txt', 'r') as f2:
+            cache_file = f2.read()
+            master_cache_content = json.loads(cache_file)
+        f2.close()
+        with open('/var/log/cache_hotel/cache_hotel_' + str(slave_index) + '.txt', 'r') as f2:
+            cache_file = f2.read()
+            slave_cache_content = json.loads(cache_file)
+        f2.close()
+
+        for hotel_fmt in slave_cache_content:
+            same_name = self.exact_find_similar_name(hotel_fmt['name'], hotel_fmt['location']['city'], master_cache_content)
+            if same_name:
+                # tambahkan detail ke record yg sama tersebut
+                for rec in hotel_fmt['external_code'].keys():
+                    if same_name[0]['external_code'].get(rec):
+                        _logger.info(msg='External Code for Hotel ' + same_name[0]['name'] + ' for vendor ' + rec +
+                                          ': ' + same_name[0]['external_code'][rec] + ' Replace to: ' +
+                                         hotel_fmt['external_code'][rec]
+                                     )
+                    same_name[0]['external_code'].update({rec: str(hotel_fmt['external_code'][rec])})
+                same_name[0]['images'] += hotel_fmt['images']
+                if len(same_name[0]['facilities']) < len(hotel_fmt['facilities']):
+                    same_name[0]['facilities'] = hotel_fmt['facilities']
+            else:
+                # create baru di memory
+                master_cache_content.append(hotel_fmt)
+
+        # Remove Record dari data slave
+        file = open('/var/log/cache_hotel/cache_hotel_' + str(slave_index) + '.txt', 'w')
+        file.write(json.dumps([]))
+        file.close()
+        # Write Record ke data master
+        file = open('/var/log/cache_hotel/cache_hotel_' + str(master_index) + '.txt', 'w')
+        file.write(json.dumps(master_cache_content))
+        file.close()
+        # Tambah ke alias name
         return True
 
     # ====================== Correction after mapping ============================================
