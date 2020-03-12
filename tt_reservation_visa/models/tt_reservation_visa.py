@@ -1783,21 +1783,22 @@ class TtVisa(models.Model):
                     if 'commission' in sell:
                         commission_list2 = sell.get('commission')
                     break
-            for comm in commission_list2:
-                vals2 = vals.copy()
-                vals2.update({
-                    'commission_agent_id': comm['commission_agent_id'],
-                    'total': comm['amount'],
-                    'amount': comm['amount'],
-                    'charge_code': comm['charge_code'],
-                    'charge_type': 'RAC',
-                })
-                ssc_list.append(vals2)
-                ssc_obj2 = passenger_obj.cost_service_charge_ids.create(vals2)
-                ssc_obj2.write({
-                    'passenger_visa_ids': [(6, 0, passenger_obj.ids)]
-                })
-                ssc.append(ssc_obj2.id)
+            if commission_list2:
+                for comm in commission_list2:
+                    vals2 = vals.copy()
+                    vals2.update({
+                        'commission_agent_id': comm['commission_agent_id'],
+                        'total': comm['amount'],
+                        'amount': comm['amount'],
+                        'charge_code': comm['charge_code'],
+                        'charge_type': 'RAC',
+                    })
+                    ssc_list.append(vals2)
+                    ssc_obj2 = passenger_obj.cost_service_charge_ids.create(vals2)
+                    ssc_obj2.write({
+                        'passenger_visa_ids': [(6, 0, passenger_obj.ids)]
+                    })
+                    ssc.append(ssc_obj2.id)
             passenger_obj.write({
                 'cost_service_charge_ids': [(6, 0, ssc)]
             })
@@ -1906,7 +1907,7 @@ class TtVisa(models.Model):
                 for req in psg['required']:  # pricelist_obj.requirement_ids
                     req_vals = {
                         'to_passenger_id': to_psg_obj.id,
-                        'requirement_id': req['id'],
+                        'requirement_id': self.env['tt.reservation.visa.requirements'].search([('reference_code', '=', req['id'])], limit=1).id,
                         'is_ori': req['is_original'],
                         'is_copy': req['is_copy'],
                         'check_uid': self.env.user.id,
