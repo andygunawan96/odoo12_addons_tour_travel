@@ -539,9 +539,7 @@ class TtAgent(models.Model):
                 })
             else:
                 ##ban user here because no quota left
-                for rec in self.user_ids:
-                    if hasattr(rec,'is_api_user') and rec.is_api_user or False:
-                        self.env['tt.ban.user'].ban_user(rec.id,1576800)
+                self.ban_user_api()
 
     def get_available_pnr_price_list_api(self,context):
         try:

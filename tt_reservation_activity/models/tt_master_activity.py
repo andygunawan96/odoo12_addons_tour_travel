@@ -227,11 +227,8 @@ class MasterActivity(models.Model):
                 temp_idx += 1
                 if temp_idx == 100:
                     page += 1
-                    temp_idx = 0
         else:
-            #raise sini
-            pass
-
+            _logger.error('ACTIVITY ERROR, Generate rodextrip_activity JSON: %s, %s' % (res['error_code'], res['error_msg']))
 
     def action_sync_globaltix(self, start, end):
         provider = 'globaltix'

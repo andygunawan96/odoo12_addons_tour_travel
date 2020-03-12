@@ -187,6 +187,16 @@ class TtAgentApiInherit(models.Model):
             res.update(self.agent_type_id.get_credential(prefix))
         return res
 
+    def ban_user_api(self, duration=1576800):  # default = 3 tahun
+        for rec in self.user_ids:
+            if rec.is_api_user:
+                self.env['tt.ban.user'].ban_user(rec.id, duration)
+
+    def unban_user_api(self):
+        for rec in self.user_ids:
+            if rec.is_api_user:
+                self.env['tt.ban.user'].unban_user(rec.id)
+
 class TtAgentTypeApiInherit(models.Model):
     _inherit = 'tt.agent.type'
 

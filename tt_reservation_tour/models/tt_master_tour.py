@@ -1139,14 +1139,12 @@ class MasterTour(models.Model):
                     if acc['hotel'] not in hotel_names:
                         hotel_names.append(acc['hotel'])
 
-                if acc.get('adult_surcharge'):
-                    acc.pop('adult_surcharge')
-                if acc.get('child_surcharge'):
-                    acc.pop('child_surcharge')
-                if acc.get('single_supplement'):
-                    acc.pop('single_supplement')
-                if acc.get('additional_charge'):
-                    acc.pop('additional_charge')
+                if acc.get('active'):
+                    acc.pop('active')
+                if acc.get('write_date'):
+                    acc.pop('write_date')
+                if acc.get('write_uid'):
+                    acc.pop('write_uid')
                 if acc.get('currency_id'):
                     acc.pop('currency_id')
 
