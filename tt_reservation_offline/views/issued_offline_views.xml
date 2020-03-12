@@ -219,8 +219,30 @@
                             </group>
                         </group>
                         <notebook>
-                            <page string="Line(s)">  <!--Airlines, Train, Hotel, Activity-->
-                                <field name="line_ids" attrs="{'readonly': [('state_offline', 'not in', ['draft', 'confirm', 'validate'])]}"/>
+                            <page string="Line(s)" name="Lines">  <!--Airlines, Train, Hotel, Activity-->
+                                <field name="line_ids" attrs="{'readonly': [('state_offline', 'not in', ['draft', 'confirm', 'validate'])]}">
+                                    <tree>
+                                        <field name="id" invisible="1"/>
+                                        <field name="booking_id" invisible="1"/>
+                                        <field name="transaction_name" invisible="1"/>
+                                        <field name="transaction_type" invisible="1"/>
+                                        <field name="pnr"/>
+                                        <field name="carrier_id" attrs="{'column_invisible': [('parent.offline_provider_type', 'not in', ['airline','train'])]}"/>
+                                        <field name="origin_id" attrs="{'column_invisible': [('parent.offline_provider_type', 'not in', ['airline','train'])]}"/>
+                                        <field name="departure_date" attrs="{'column_invisible': [('parent.offline_provider_type', 'not in', ['airline','train'])]}"/>
+                                        <field name="destination_id" attrs="{'column_invisible': [('parent.offline_provider_type', 'not in', ['airline','train'])]}"/>
+                                        <field name="arrival_date" attrs="{'column_invisible': [('parent.offline_provider_type', 'not in', ['airline','train'])]}"/>
+                                        <field name="hotel_name" attrs="{'column_invisible': [('parent.offline_provider_type', 'not in', ['hotel'])]}"/>
+                                        <field name="room" attrs="{'column_invisible': [('parent.offline_provider_type', 'not in', ['hotel'])]}"/>
+                                        <field name="check_in" attrs="{'column_invisible': [('parent.offline_provider_type', 'not in', ['hotel'])]}"/>
+                                        <field name="check_out" attrs="{'column_invisible': [('parent.offline_provider_type', 'not in', ['hotel'])]}"/>
+                                        <field name="activity_name" attrs="{'column_invisible': [('parent.offline_provider_type', 'not in', ['activity'])]}"/>
+                                        <field name="activity_package" attrs="{'column_invisible': [('parent.offline_provider_type', 'not in', ['activity'])]}"/>
+                                        <field name="visit_date" attrs="{'column_invisible': [('parent.offline_provider_type', 'not in', ['activity'])]}"/>
+                                        <field name="obj_qty" attrs="{'column_invisible': [('parent.offline_provider_type', 'not in', ['hotel','activity'])]}"/>
+                                        <field name="state" invisible="1"/>
+                                    </tree>
+                                </field>
                             </page>
                             <page string="Passenger(s)">
                                 <field name="passenger_ids" attrs="{'readonly': [('state_offline', 'not in', ['draft', 'confirm', 'sent', 'validate'])]}"/>  <!--context="{'default_agent_id': sub_agent_id}"-->

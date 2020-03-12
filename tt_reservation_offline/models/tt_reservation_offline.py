@@ -186,11 +186,6 @@ class IssuedOffline(models.Model):
             else:
                 rec.provider_type_id_name = ''
 
-    # @api.depends('offline_provider_type')
-    # def offline_type_to_char2(self):
-    #     if self.offline_provider_type != 'other':
-    #         self.offline_provider_type_name = self.offline_provider_type
-
     def get_offline_type(self):
         provider_type_list = []
         for rec in self.env['tt.provider.type'].get_provider_type():
