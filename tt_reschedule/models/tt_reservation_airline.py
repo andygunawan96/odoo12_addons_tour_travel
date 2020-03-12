@@ -90,64 +90,6 @@ class ReservationAirline(models.Model):
     def update_reschedule_airline_api(self, vals, context):
         pass
 
-    def test_get_reschedule_airline(self):
-        vals = {
-            'order_number': 'AL.20012224115'
-        }
-        context = {
-            'co_uid': self.env.user.id,
-            'co_agent_id': self.env.user.agent_id.id,
-        }
-        self.get_reschedule_airline_api(vals, context)
-
-    def test_create_reschedule_airline(self):
-        segment_list = [
-            {
-                'segment_code': 'SQ,933,CGK,2020-05-12 15:30:00,HKG,2020-05-12 17:45:00,amadeus',
-                'pnr': 'TLHKL2',
-                'fare_code': '1~0~E',
-                'carrier_code': 'SQ',
-                'carrier_number': '933',
-                'provider_code': 'amadeus',
-                'origin': 'CGK',
-                'destination': 'HKG',
-                'origin_terminal': 'Soekarno-Hatta Terminal 1',
-                'destination_terminal': 'Chep Lap Kok Terminal 2',
-                'departure_date': '2020-05-12 15:30:00',
-                'arrival_date': '2020-05-12 17:45:00',
-                'class_of_service': 'E1',
-                'cabin_class': 'Economy',
-                'sequence': 1,
-            },
-            {
-                'segment_code': 'SQ,930,SIN,2020-05-17 07:50:00,SUB,2020-05-17 09:15:00,amadeus',
-                'pnr': 'TLHKL3',
-                'fare_code': '1~0~E',
-                'carrier_code': 'SQ',
-                'carrier_number': '930',
-                'provider_code': 'amadeus',
-                'origin': 'HKG',
-                'destination': 'SIN',
-                'origin_terminal': 'Chep Lap Kok Terminal 2',
-                'destination_terminal': 'Changi Terminal 2',
-                'departure_date': '2020-05-17 07:50:00',
-                'arrival_date': '2020-05-17 09:15:00',
-                'class_of_service': 'E2',
-                'cabin_class': 'Economy',
-                'sequence': 2,
-            },
-        ]
-        vals = {
-            'order_number': 'AL.20012224115',
-            'segments':segment_list,
-            'notes': 'Test Notes'
-        }
-        context = {
-            'co_uid': self.env.user.id,
-            'co_agent_id': self.env.user.agent_id.id,
-        }
-        self.create_reschedule_airline_api(vals, context)
-
     def get_reschedule_airline_api(self, vals, context):
         try:
             rs_list = []
