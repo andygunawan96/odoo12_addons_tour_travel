@@ -100,7 +100,7 @@
             <tree>
                 <field name="agent_id"/>
                 <field name="period"/>
-                <field name="amount" string="Minimum Amount"/>
+                <field name="min_amount" string="Minimum Amount"/>
                 <!--<field name="transaction_amount"/>-->
                 <field name="total_amount"/>
                 <field name="state"/>

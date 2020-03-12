@@ -471,6 +471,7 @@ class HotelReservation(models.Model):
         pnr_list = ','.join([rec['issued_code'] for rec in issued_response.values()])
         self.update_ledger_pnr(pnr_list)
         self.pnr = self.get_pnr_list()
+        self.provider_name = self.get_provider_list()
         # if state == 'done':
         #     self.action_create_invoice()
         return True
@@ -492,7 +493,8 @@ class HotelReservation(models.Model):
                 })
 
     def action_calc_pnr(self):
-        for rec in self.search([]):
+        # for rec in self.search([]):
+        for rec in self:
             pnr = []
             vendor = []
             for rec1 in rec.room_detail_ids:
