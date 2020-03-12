@@ -57,13 +57,23 @@ class TtCronLog(models.Model):
             pnr_quota_obj = self.env['tt.pnr.quota'].search([('expired_date','<', datetime.now(pytz.timezone('Asia/Jakarta')).date())])
             for rec in pnr_quota_obj:
                 rec.is_expired = True
+            self.env.cr.commit()
+            agent_obj = self.env['tt.agent'].search([('is_using_pnr_quota', '=', True), ('quota_total_duration', '=', False)])
+            for rec in agent_obj:
+                res = self.env['tt.pnr.quota'].create_pnr_quota_api(
+                    {
+                        'quota_seq_id': rec.quota_package_id.minimum_monthly_quota_id.seq_id
+                    },
+                    {
+                        'co_agent_id': rec.id
+                    }
+                )
+                if res['error_code'] != 0:
+                    rec.ban_user_api()
+                    _logger.info(res['error_msg'])
         except:
             self.create_cron_log_folder()
             self.write_cron_log('auto-expire quota')
 
-    # def cron_extend_quota(self):
-    #     ##auto extend quota jika ada saldo
-    #     try:
-    #
-    #     except:
+
 
