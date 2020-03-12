@@ -124,6 +124,12 @@ class ResCity(models.Model):
     image_url = fields.Char('City Icon', help='resolution in 200x200')
 
     def get_provider_code(self, city_id, provider_id):
+        if provider_id == self.env.ref('tt_reservation_hotel.tt_hotel_provider_rodextrip_hotel').id:
+            try:
+                return self.env['res.city'].browse(city_id).name.title()
+            except:
+                pass
+
         a = self.env['tt.provider.code'].sudo().search([('city_id', '=', city_id), ('provider_id', '=', provider_id)], limit=1)
         return a.code
 
