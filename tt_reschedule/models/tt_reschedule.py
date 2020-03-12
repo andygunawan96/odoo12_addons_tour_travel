@@ -602,123 +602,112 @@ class TtReschedule(models.Model):
         return url
         # return reschedule_printout_id.report_action(self, data=datas)
 
-    def get_reschedule_data_api(self, vals, context):
-        try:
-            reschedule_obj = self.env['tt.reschedule'].search([('name', '=', vals['reschedule_number'])], limit=1)
-            if reschedule_obj:
-                reschedule_obj = reschedule_obj[0]
-                resv_obj = self.env[reschedule_obj.res_model].browse(reschedule_obj.res_id)
-                passenger_list = []
-                for rec in reschedule_obj.passenger_ids:
-                    passenger_list.append(rec.to_dict())
-                prov_list = []
-                for rec in resv_obj.provider_booking_ids:
-                    prov_list.append(rec.to_dict())
-                old_segments = []
-                for rec in reschedule_obj.old_segment_ids:
-                    temp_seg = rec.to_dict()
-                    seat_list = []
-                    for rec2 in rec.seat_ids:
-                        seat_list.append({
-                            'passenger': rec2.passenger_id.title + ' ' + rec2.passenger_id.name,
-                            'seat': rec2.seat
-                        })
-                    addons_list = []
-                    for rec2 in rec.segment_addons_ids:
-                        addons_list.append({
-                            'detail_code': rec2.detail_code,
-                            'detail_type': rec2.detail_type,
-                            'detail_name': rec2.detail_name,
-                            'description': rec2.description,
-                            'amount': rec2.amount,
-                            'sequence': rec2.sequence,
-                        })
-                    temp_seg.update({
-                        'ref_sequence': rec.id,
-                        'origin_port': rec.origin_id.name,
-                        'destination_port': rec.destination_id.name,
-                        'seats': seat_list,
-                        'addons': addons_list,
-                    })
-                    old_segments.append(temp_seg)
-                new_segments = []
-                for rec in reschedule_obj.new_segment_ids:
-                    temp_seg = rec.to_dict()
-                    seat_list = []
-                    for rec2 in rec.seat_ids:
-                        seat_list.append({
-                            'passenger': rec2.passenger_id.title + ' ' + rec2.passenger_id.name,
-                            'seat': rec2.seat
-                        })
-                    addons_list = []
-                    for rec2 in rec.segment_addons_ids:
-                        addons_list.append({
-                            'detail_code': rec2.detail_code,
-                            'detail_type': rec2.detail_type,
-                            'detail_name': rec2.detail_name,
-                            'description': rec2.description,
-                            'amount': rec2.amount,
-                            'sequence': rec2.sequence,
-                        })
-                    temp_seg.update({
-                        'ref_sequence': rec.old_id,
-                        'origin_port': rec.origin_id.name,
-                        'destination_port': rec.destination_id.name,
-                        'seats': seat_list,
-                        'addons': addons_list,
-                    })
-                    new_segments.append(temp_seg)
-                changes = []
-                for rec in reschedule_obj.change_ids:
-                    changes.append({
-                        'ref_sequence': rec.seg_sequence,
-                        'name': rec.name,
-                        'old_value': rec.old_value,
-                        'new_value': rec.new_value,
-                    })
-                lines = []
-                for rec in reschedule_obj.reschedule_line_ids:
-                    lines.append({
-                        'after_sales_type': rec.reschedule_type,
-                        'expected_amount': rec.reschedule_amount_ho,
-                        'admin_fee': rec.admin_fee,
-                        'total_amount': rec.total_amount,
-                    })
-                vals = {
-                    'reschedule_number': reschedule_obj.name,
-                    'agent': reschedule_obj.agent_id.name,
-                    'agent_type': reschedule_obj.agent_type_id.name,
-                    'customer_parent': reschedule_obj.customer_parent_id.name,
-                    'customer_parent_type': reschedule_obj.customer_parent_type_id.name,
-                    'booker': reschedule_obj.booker_id.name,
-                    'currency': reschedule_obj.currency_id.name,
-                    'service_type': reschedule_obj.service_type,
-                    'direction': resv_obj.direction,
-                    'sector_type': resv_obj.sector_type,
-                    'resv_order_number': reschedule_obj.referenced_document,
-                    'old_pnr': reschedule_obj.referenced_pnr,
-                    'new_pnr': reschedule_obj.pnr,
-                    'expected_amount': reschedule_obj.reschedule_amount,
-                    'admin_fee': reschedule_obj.admin_fee,
-                    'total_amount': reschedule_obj.total_amount,
-                    'passengers': passenger_list,
-                    'old_segments': old_segments,
-                    'new_segments': new_segments,
-                    'changes': changes,
-                    'reschedule_lines': lines,
-                    'provider_bookings': prov_list,
-                    'created_by_api': reschedule_obj.created_by_api,
-                    'state': reschedule_obj.state
-                }
+    def get_reschedule_data(self):
+        resv_obj = self.env[self.res_model].browse(self.res_id)
+        passenger_list = []
+        for rec in self.passenger_ids:
+            passenger_list.append(rec.to_dict())
+        prov_list = []
+        for rec in resv_obj.provider_booking_ids:
+            prov_list.append(rec.to_dict())
+        old_segments = []
+        for rec in self.old_segment_ids:
+            temp_seg = rec.to_dict()
+            seat_list = []
+            for rec2 in rec.seat_ids:
+                seat_list.append({
+                    'passenger': rec2.passenger_id.title + ' ' + rec2.passenger_id.name,
+                    'seat': rec2.seat
+                })
+            addons_list = []
+            for rec2 in rec.segment_addons_ids:
+                addons_list.append({
+                    'detail_code': rec2.detail_code,
+                    'detail_type': rec2.detail_type,
+                    'detail_name': rec2.detail_name,
+                    'description': rec2.description,
+                    'amount': rec2.amount,
+                    'sequence': rec2.sequence,
+                })
+            temp_seg.update({
+                'ref_sequence': rec.id,
+                'origin_port': rec.origin_id.name,
+                'destination_port': rec.destination_id.name,
+                'seats': seat_list,
+                'addons': addons_list,
+            })
+            old_segments.append(temp_seg)
+        new_segments = []
+        for rec in self.new_segment_ids:
+            temp_seg = rec.to_dict()
+            seat_list = []
+            for rec2 in rec.seat_ids:
+                seat_list.append({
+                    'passenger': rec2.passenger_id.title + ' ' + rec2.passenger_id.name,
+                    'seat': rec2.seat
+                })
+            addons_list = []
+            for rec2 in rec.segment_addons_ids:
+                addons_list.append({
+                    'detail_code': rec2.detail_code,
+                    'detail_type': rec2.detail_type,
+                    'detail_name': rec2.detail_name,
+                    'description': rec2.description,
+                    'amount': rec2.amount,
+                    'sequence': rec2.sequence,
+                })
+            temp_seg.update({
+                'ref_sequence': rec.old_id,
+                'origin_port': rec.origin_id.name,
+                'destination_port': rec.destination_id.name,
+                'seats': seat_list,
+                'addons': addons_list,
+            })
+            new_segments.append(temp_seg)
+        changes = []
+        for rec in self.change_ids:
+            changes.append({
+                'ref_sequence': rec.seg_sequence,
+                'name': rec.name,
+                'old_value': rec.old_value,
+                'new_value': rec.new_value,
+            })
+        lines = []
+        for rec in self.reschedule_line_ids:
+            lines.append({
+                'after_sales_type': rec.reschedule_type,
+                'expected_amount': rec.reschedule_amount_ho,
+                'admin_fee': rec.admin_fee,
+                'total_amount': rec.total_amount,
+            })
+        new_vals = {
+            'reschedule_number': self.name,
+            'agent': self.agent_id.name,
+            'agent_type': self.agent_type_id.name,
+            'customer_parent': self.customer_parent_id.name,
+            'customer_parent_type': self.customer_parent_type_id.name,
+            'booker': self.booker_id.name,
+            'currency': self.currency_id.name,
+            'service_type': self.service_type,
+            'direction': resv_obj.direction,
+            'sector_type': resv_obj.sector_type,
+            'resv_order_number': self.referenced_document,
+            'old_pnr': self.referenced_pnr,
+            'new_pnr': self.pnr,
+            'expected_amount': self.reschedule_amount,
+            'admin_fee': self.admin_fee,
+            'total_amount': self.total_amount,
+            'passengers': passenger_list,
+            'old_segments': old_segments,
+            'new_segments': new_segments,
+            'changes': changes,
+            'reschedule_lines': lines,
+            'provider_bookings': prov_list,
+            'created_by_api': self.created_by_api,
+            'state': self.state
+        }
 
-                return ERR.get_no_error(vals)
-            else:
-                raise RequestException(1022, additional_message="Reschedule %s is not found in our system." % (vals['reschedule_number']))
-        except RequestException as e:
-            _logger.error(traceback.format_exc())
-            return e.error_dict()
-        except Exception as e:
-            _logger.error(traceback.format_exc())
-            return ERR.get_error(1022)
+        return new_vals
+
 
 
