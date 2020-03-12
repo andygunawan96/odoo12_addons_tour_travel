@@ -32,3 +32,10 @@ class TtBanUser(models.Model):
             })
         user_obj.is_banned = True
 
+    def unban_user_from_button(self):
+        self.unban_user(self.user_id.id)
+
+    def unban_user(self,user_id):
+        for rec in self.search([('user_id','=',user_id)]):
+            rec.user_id.is_banned = False
+            rec.active = False

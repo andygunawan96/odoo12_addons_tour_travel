@@ -106,18 +106,6 @@ class IssuedOfflineLines(models.Model):
     sale_service_charge_ids = fields.One2many('tt.service.charge', 'provider_offline_booking_id',
                                               'Cost Service Charges')
 
-    # @api.onchange('booking_id.offline_provider_type', 'transaction_type', 'provider_id')
-    # @api.depends('booking_id.offline_provider_type', 'transaction_type', 'provider_id')
-    # def onchange_domain(self):
-    #     provider_type_id = self.env['tt.provider.type'].search([('code', '=', self.booking_id.offline_provider_type)], limit=1)
-    #     provider_type_offline = self.env['tt.provider.type'].search([('code', '=', 'offline')], limit=1)
-    #     return {'domain': {
-    #         'carrier_id': [('provider_type_id', '=', provider_type_id.id)],
-    #         'origin_id': [('provider_type_id', '=', provider_type_id.id)],
-    #         'destination_id': [('provider_type_id', '=', provider_type_id.id)],
-    #         'provider_id': [('provider_type_id', 'in', [provider_type_id.id, provider_type_offline.id])]
-    #     }}
-
     @api.onchange('provider_id')
     def compute_provider_name(self):
         for rec in self:

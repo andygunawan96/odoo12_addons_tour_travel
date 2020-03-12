@@ -92,26 +92,13 @@
             </field>
         </record>
 
-        <record id="tt_reservation_offline_view_tree" model="ir.ui.view">
-            <field name="name">tt.reservation.offline.lines.view.tree</field>
-            <field name="model">tt.reservation.offline.lines</field>
-            <field name="arch" type="xml">
-                <tree>
-                    <field name="booking_id" invisible="1"/>
-                    <field name="transaction_name" invisible="1"/>
-                    <field name="transaction_type" invisible="1"/>
-                    <field name="pnr"/>
-                    <field name="hotel_name"/>
-                    <!--<field name="activity_package"/>-->
-                    <field name="obj_qty"/>
-                    <field name="origin_id"/>
-<!--                        <field name="departure_date"/>-->
-                    <field name="destination_id"/>
-                    <field name="arrival_date" string="Arrival Date"/>
-                    <field name="state" invisible="1"/>
-                </tree>
-            </field>
-        </record>
+<!--        <record id="tt_reservation_offline_view_tree" model="ir.ui.view">-->
+<!--            <field name="name">tt.reservation.offline.lines.view.tree</field>-->
+<!--            <field name="model">tt.reservation.offline.lines</field>-->
+<!--            <field name="arch" type="xml">-->
+
+<!--            </field>-->
+<!--        </record>-->
 
     </data>
 </odoo>

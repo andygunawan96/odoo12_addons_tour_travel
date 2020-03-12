@@ -44,10 +44,20 @@ class VisaSyncProducts(models.TransientModel):
     def get_reference_code(self):
         for idx, rec in enumerate(self.env['tt.reservation.visa.pricelist'].search([]),1):
             if rec.reference_code == '' or rec.reference_code == False:
-                rec.update({
-                    "reference_code": 'visa_rodextrip_' + rec.name + '_' + str(idx),
-                    "provider_id": self.env['tt.provider'].search([('code', '=', 'rodextrip_visa')], limit=1).id
-                })
+                counter = idx
+                while True:
+                    if not self.env['tt.reservation.visa.pricelist'].search([('reference_code', '=', 'visa_rodextrip_' + rec.name + '_' + str(counter))]):
+                        rec.update({
+                            "reference_code": 'visa_rodextrip_' + rec.name + '_' + str(counter),
+                            "provider_id": self.env['tt.provider'].search([('code', '=', 'rodextrip_visa')], limit=1).id
+                        })
+                        break
+                    counter += 1
+
+                for count, requirement in enumerate(rec.requirement_ids):
+                    requirement.update({
+                        "reference_code": 'visa_rodextrip_%s_%s_%s' % (rec.name, str(counter), str(count))
+                    })
 
     def actions_get_product_rodextrip(self, data):
         req = {
@@ -157,6 +167,7 @@ class VisaSyncProducts(models.TransientModel):
                             self.env['tt.reservation.visa.requirements'].create({
                                 'pricelist_id': master_data.id,
                                 'name': data['name'],
+                                'reference_code': data['reference_code'],
                                 'type_id': self.env['tt.traveldoc.type'].create(data['type_id']).id
                             })
                         upload = self.env['tt.upload.center.wizard']
@@ -309,7 +320,8 @@ class VisaPricelist(models.Model):
                 'type_id': {
                     'description': data.type_id.description,
                     'name': data.type_id.name
-                }
+                },
+                'reference_code': data.reference_code
             })
 
         for data in self.visa_location_ids:
@@ -372,7 +384,7 @@ class VisaPricelist(models.Model):
                         'name': rec1.type_id.name,
                         'description': rec1.type_id.description,
                         'required': rec1.required,
-                        'id': rec1.id
+                        'id': rec1.reference_code
                     })
                 for attach in rec.attachments_ids:
                     attachments.append({

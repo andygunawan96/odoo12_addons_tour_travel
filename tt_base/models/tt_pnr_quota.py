@@ -132,6 +132,10 @@ class TtPnrQuota(models.Model):
                                                         description='Buying PNR Quota for %s' % (agent_obj.name)
                                                         )
 
+            for rec in agent_obj.user_ids:
+                if hasattr(rec,'is_api_user') and rec.is_api_user or False:
+                    self.env['tt.ban.user'].unban_user(rec.id)
+
             return ERR.get_no_error()
         except RequestException as e:
             _logger.error(traceback.format_exc())
