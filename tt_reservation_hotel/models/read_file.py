@@ -2233,7 +2233,7 @@ class HotelInformation(models.Model):
         # provider_list = ['hotelspro', 'hotelspro_file', 'fitruums', 'webbeds_pool', 'webbeds_excel_pool',
         #                  'itank', 'quantum', 'quantum_pool', 'mgholiday', 'mg_pool', 'miki_api', 'miki_scrap', 'miki_pool',
         #                  'knb', 'dida_pool', 'tbo', 'oyo']
-        provider_list = ['hotelspro_file', 'webbeds_pool', 'webbeds_excel_pool', 'quantum', 'quantum_pool', 'miki_api',
+        provider_list = ['webbeds_pool', 'webbeds_excel_pool', 'quantum', 'quantum_pool', 'miki_api',
                          'miki_scrap', 'miki_pool', 'knb', 'dida_pool', 'oyo']
 
         new_to_add_list2 = [['Type', '#1:Name', '#1:address', '#1:provider', '#2:Similar Name', '#2:address', '#2:provider']]
@@ -2315,7 +2315,8 @@ class HotelInformation(models.Model):
                 if cache_content:
                     self.file_log_write('Render ' + city_name + ' End, Get:' + str(len(cache_content)) + ' Hotel(s)')
                     # Print hasil
-                    filename = "/var/log/cache_hotel/cache_hotel_" + str(target_city_index) + ".txt"
+                    # filename = "/var/log/cache_hotel/cache_hotel_" + str(target_city_index) + ".txt"
+                    filename = "/var/log/tour_travel/cache_hotel/cache_hotel_" + str(target_city_index) + ".txt"
                     file = open(filename, 'w')
                     file.write(json.dumps(cache_content))
                     file.close()
@@ -2336,7 +2337,7 @@ class HotelInformation(models.Model):
                     csvFile.close()
                     need_to_add_list = []
 
-                with open('/var/log/cache_hotel/result log/merger_history_' + city_name + '.csv', 'a') as csvFile:
+                with open('/var/log/cache_hotel/result log/merger_history_' + city_name + '.csv', 'w') as csvFile:
                     writer = csv.writer(csvFile)
                     writer.writerows(new_to_add_list2)
                 csvFile.close()
@@ -2655,7 +2656,8 @@ class HotelInformation(models.Model):
         while file_number:
             try:
                 name = "cache_hotel_" + str(file_number-1) + ".txt"
-                file = open("/var/log/cache_hotel/" + name, 'r')
+                # file = open("/var/log/cache_hotel/" + name, 'r')
+                file = open("/var/log/tour_travel/cache_hotel/" + name, 'r')
                 content = file.read()
                 file.close()
                 API_CN_HOTEL.send_request('create_hotel_file', {'name': name, 'content': content})

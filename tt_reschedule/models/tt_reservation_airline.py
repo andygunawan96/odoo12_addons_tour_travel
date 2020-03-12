@@ -39,6 +39,7 @@ class ReservationAirline(models.Model):
                         temp_destination_id = temp_destination_id[0]
                     new_seg_obj = self.env['tt.segment.reschedule'].sudo().create({
                         'segment_code': rec.get('segment_code', ''),
+                        'pnr': rec.get('pnr', ''),
                         'fare_code': rec.get('fare_code', ''),
                         'carrier_id': temp_carrier_id.id,
                         'carrier_code': rec.get('carrier_code', ''),
@@ -61,7 +62,8 @@ class ReservationAirline(models.Model):
                     'customer_parent_id': airline_obj.customer_parent_id.id,
                     'booker_id': airline_obj.booker_id.id,
                     'currency_id': airline_obj.currency_id.id,
-                    'service_type': airline_obj.service_type,
+                    'service_type': airline_obj.provider_type_id.id,
+                    'referenced_pnr': airline_obj.pnr,
                     'old_segment_ids': [(6, 0, old_segment_list)],
                     'new_segment_ids': [(6, 0, new_segment_list)],
                     'passenger_ids': [(6, 0, passenger_list)],
@@ -72,10 +74,10 @@ class ReservationAirline(models.Model):
                 }
                 res_obj = self.env['tt.reschedule'].create(res_vals)
                 res_obj.confirm_reschedule_from_button()
-                final_res = self.get_reschedule_airline_api({'reschedule_number': res_obj.name}, context)
-                if final_res['error_code'] != 0:
-                    return final_res
-                return ERR.get_no_error(final_res['response'])
+                final_res = {
+                    'reschedule_number': res_obj.name
+                }
+                return ERR.get_no_error(final_res)
             else:
                 raise RequestException(1001, additional_message="Airline reservation %s is not found in our system." % (vals['order_number']))
         except RequestException as e:
@@ -89,4 +91,18 @@ class ReservationAirline(models.Model):
         pass
 
     def get_reschedule_airline_api(self, vals, context):
-        return self.env['tt.reschedule'].get_reschedule_data_api(vals, context)
+        try:
+            rs_list = []
+            airline_obj = self.env['tt.reservation.airline'].search([('name', '=', vals['order_number'])], limit=1)
+            if airline_obj:
+                for rec in airline_obj.reschedule_ids:
+                    rs_list.append(rec.get_reschedule_data())
+            else:
+                raise RequestException(1001, additional_message="Airline reservation %s is not found in our system." % (vals['order_number']))
+            return ERR.get_no_error(rs_list)
+        except RequestException as e:
+            _logger.error(traceback.format_exc())
+            return e.error_dict()
+        except Exception as e:
+            _logger.error(traceback.format_exc())
+            return ERR.get_error(1030)
