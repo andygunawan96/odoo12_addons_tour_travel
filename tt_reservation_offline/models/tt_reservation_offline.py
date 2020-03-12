@@ -796,18 +796,19 @@ class IssuedOffline(models.Model):
                                     total_fee_amount += fee_amount_vals.get('amount')
                         elif rec.offline_provider_type == 'hotel':
                             """ Jika offline type = hotel, rule fee amount : per night per room * qty """
-                            check_in = datetime.strptime(line.check_in, '%Y-%m-%d')
-                            check_out = datetime.strptime(line.check_out, '%Y-%m-%d')
-                            days = check_out - check_in
-                            days_int = int(days.days)
-                            for day in range(0, days_int):
-                                fee_amount_vals = rec.get_fee_amount(rec.agent_id, provider_type_id,
-                                                                     rec.total_commission_amount)
-                                fee_amount_vals['amount'] = fee_amount_vals.get('amount') * line.obj_qty
-                                fee_amount_vals['total'] = fee_amount_vals.get('total') * line.obj_qty
-                                fee_amount_list.append(fee_amount_vals)
-                                total_amount -= fee_amount_vals.get('total')
-                                total_fee_amount += fee_amount_vals.get('total')
+                            if line.check_in is not False and line.check_out is not False:
+                                check_in = datetime.strptime(line.check_in, '%Y-%m-%d')
+                                check_out = datetime.strptime(line.check_out, '%Y-%m-%d')
+                                days = check_out - check_in
+                                days_int = int(days.days)
+                                for day in range(0, days_int):
+                                    fee_amount_vals = rec.get_fee_amount(rec.agent_id, provider_type_id,
+                                                                         rec.total_commission_amount)
+                                    fee_amount_vals['amount'] = fee_amount_vals.get('amount') * line.obj_qty
+                                    fee_amount_vals['total'] = fee_amount_vals.get('total') * line.obj_qty
+                                    fee_amount_list.append(fee_amount_vals)
+                                    total_amount -= fee_amount_vals.get('total')
+                                    total_fee_amount += fee_amount_vals.get('total')
                         else:
                             """ else, rule fee amount : per line/provider per pax """
                             for psg in rec.passenger_ids:
