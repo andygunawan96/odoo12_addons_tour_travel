@@ -257,6 +257,7 @@
                 <field name="name"/>
                 <field name="email"/>
                 <field name="est_date"/>
+                <field name="agent_type_id"/>
                 <!--                <field name="currency_id"/>-->
                 <templates>
                     <t t-name="kanban-box">
@@ -287,6 +288,8 @@
                                 <ul>
                                     <li id="est_date"/>
                                     <li>Established: <field name="est_date"/></li>
+                                    <li id="agent_type_id"/>
+                                    <li>Agent Type: <field name="agent_type_id"/></li>
                                     <!--t-if="record.est_date.raw_value"-->
                                 </ul>
                             </div>

@@ -55,6 +55,11 @@
         <field name="code">issued_reservation</field>
     </record>
 
+    <record id="able_to_create_page" model="tt.frontend.security">
+        <field name="name">Create Page</field>
+        <field name="code">create_page</field>
+    </record>
+
     <record id="b2c_limitation" model="tt.frontend.security">
         <field name="name">B2C limitation</field>
         <field name="code">b2c_limitation</field>
