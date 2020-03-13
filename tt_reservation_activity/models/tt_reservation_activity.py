@@ -786,28 +786,33 @@ class ReservationActivity(models.Model):
 
     def get_vouchers_by_api2(self, req, ctx):
         try:
-            booking_obj = self.env['tt.reservation.activity'].search([('name', '=', req['order_number'])])
-            vouch_objs = self.env['tt.reservation.activity.vouchers'].sudo().search([('booking_id', '=', int(booking_obj.id))])
-
-            if not ctx or ctx['co_uid'] == 1:
-                ctx.update({
-                    'co_uid': self.booked_uid.id,
-                    'agent_id': self.booked_uid.agent_id.id,
-                    'co_agent_id': self.booked_uid.agent_id.id,
-                })
-
-            if vouch_objs:
-                vouch_arr = []
-                for rec in vouch_objs:
-                    vouch_arr.append({
-                        'name': rec.name,
-                        'booking_id': rec.booking_id.id
+            booking_obj = self.env['tt.reservation.activity'].search([('name', '=', req['order_number'])], limit=1)
+            if booking_obj:
+                booking_obj = booking_obj[0]
+                if not ctx or ctx['co_uid'] == 1:
+                    ctx.update({
+                        'co_uid': booking_obj.booked_uid.id,
+                        'agent_id': booking_obj.booked_uid.agent_id.id,
+                        'co_agent_id': booking_obj.booked_uid.agent_id.id,
                     })
-                temp = ERR.get_no_error(vouch_arr)
-            else:
-                temp = self.get_vouchers_button_api(booking_obj[0]['id'], ctx)
+                if booking_obj.agent_id.id != ctx.get('co_agent_id', -1):
+                    raise RequestException(1001)
+                vouch_objs = self.env['tt.reservation.activity.vouchers'].sudo().search([('booking_id', '=', int(booking_obj.id))])
 
-            return temp['error_code'] == 0 and ERR.get_no_error(temp['response']) or temp
+                if vouch_objs:
+                    vouch_arr = []
+                    for rec in vouch_objs:
+                        vouch_arr.append({
+                            'name': rec.name,
+                            'booking_id': rec.booking_id.id
+                        })
+                    temp = ERR.get_no_error(vouch_arr)
+                else:
+                    temp = self.get_vouchers_button_api(booking_obj[0]['id'], ctx)
+
+                return temp['error_code'] == 0 and ERR.get_no_error(temp['response']) or temp
+            else:
+                raise RequestException(1001)
         except RequestException as e:
             _logger.error(traceback.format_exc())
             return e.error_dict()
@@ -965,105 +970,107 @@ class ReservationActivity(models.Model):
     def get_booking_by_api(self, res, req, context):
         try:
             order_number = req['order_number']
-
             activity_booking = self.env['tt.reservation.activity'].search([('name', '=', order_number)], limit=1)
             if activity_booking:
                 activity_booking = activity_booking[0]
+                if activity_booking.agent_id.id != context.get('co_agent_id', -1):
+                    raise RequestException(1001)
+                book_option_ids = []
+                for rec in activity_booking.option_ids:
+                    book_option_ids.append({
+                        'name': rec.name,
+                        'value': rec.value,
+                        'description': rec.description,
+                    })
 
-            book_option_ids = []
-            for rec in activity_booking.option_ids:
-                book_option_ids.append({
-                    'name': rec.name,
-                    'value': rec.value,
-                    'description': rec.description,
-                })
+                # self.env.cr.execute("""SELECT * FROM tt_service_charge WHERE booking_activity_id=%s""", (activity_booking[0]['id'],))
+                # api_price_ids = self.env.cr.dictfetchall()
+                passengers = []
+                for rec in activity_booking.sudo().passenger_ids:
+                    passengers.append(rec.to_dict())
+                contact = self.env['tt.customer'].browse(activity_booking.contact_id.id)
 
-            # self.env.cr.execute("""SELECT * FROM tt_service_charge WHERE booking_activity_id=%s""", (activity_booking[0]['id'],))
-            # api_price_ids = self.env.cr.dictfetchall()
-            passengers = []
-            for rec in activity_booking.sudo().passenger_ids:
-                passengers.append(rec.to_dict())
-            contact = self.env['tt.customer'].browse(activity_booking.contact_id.id)
+                master = self.env['tt.master.activity'].browse(activity_booking.activity_id.id)
+                image_urls = []
+                for img in master.image_ids:
+                    image_urls.append(str(img.photos_url) + str(img.photos_path))
 
-            master = self.env['tt.master.activity'].browse(activity_booking.activity_id.id)
-            image_urls = []
-            for img in master.image_ids:
-                image_urls.append(str(img.photos_url) + str(img.photos_path))
-
-            activity_details = {
-                'name': master.name,
-                'description': self.clean_string(master.description),
-                'highlights': self.clean_string(master.highlights),
-                'additionalInfo': self.clean_string(master.additionalInfo),
-                'safety': self.clean_string(master.safety),
-                'warnings': self.clean_string(master.warnings),
-                'priceIncludes': self.clean_string(master.priceIncludes),
-                'priceExcludes': self.clean_string(master.priceExcludes),
-                'image_urls': image_urls,
-            }
-            master_line = self.env['tt.master.activity.lines'].search([('activity_id', '=', master.id), ('uuid', '=', activity_booking.activity_product_uuid)])
-            if master_line:
-                master_line = master_line[0]
-            voucher_detail = {
-                'voucher_validity': {
-                    'voucher_validity_date': master_line.voucher_validity_date,
-                    'voucher_validity_days': master_line.voucher_validity_days,
-                    'voucher_validity_type': master_line.voucher_validity_type,
-                },
-                'voucherUse': self.clean_string(master_line.voucherUse),
-                'voucherRedemptionAddress': self.clean_string(master_line.voucherRedemptionAddress),
-                'cancellationPolicies': master_line.cancellationPolicies,
-            }
-
-            voucher_url_parsed = []
-            activity_voucher_urls = self.env['tt.reservation.activity.vouchers'].sudo().search([('booking_id', '=', int(activity_booking.id))])
-            if res.get('voucher_url') and not activity_voucher_urls:
-                new_vouch_obj = self.env['tt.reservation.activity.vouchers'].sudo().create({
-                    'name': res['voucher_url'],
-                    'booking_id': activity_booking.id
-                })
-                voucher_url_parsed = [new_vouch_obj.name]
-            elif activity_voucher_urls:
-                voucher_url_parsed = [url_voucher.name for url_voucher in activity_voucher_urls]
-
-            if activity_booking.state not in ['booked', 'issued', 'rejected', 'refund', 'cancel', 'cancel2', 'fail_booked', 'fail_issued', 'fail_refunded']:
-                activity_booking.sudo().write({
-                    'state': res['status']
-                })
-                self.env.cr.commit()
-
-            response = {
-                'booker_seq_id': activity_booking.booker_id.seq_id,
-                'contacts': {
-                    'email': activity_booking.contact_email,
-                    'name': activity_booking.contact_name,
-                    'phone': activity_booking.contact_phone,
-                    'gender': contact.gender and contact.gender or '',
-                    'marital_status': contact.marital_status and contact.marital_status or False,
-                },
-                'activity': {
+                activity_details = {
                     'name': master.name,
-                    'type': master_line.name,
-                },
-                'provider': master.provider_id.code,
-                'adults': activity_booking.adult,
-                'children': activity_booking.child,
-                'seniors': activity_booking.senior,
-                'pnr': activity_booking.pnr,
-                'hold_date': activity_booking.hold_date,
-                'visit_date': str(activity_booking.visit_date)[:10],
-                'timeslot': activity_booking.timeslot and activity_booking.timeslot or False,
-                'passengers': passengers,
-                'order_number': order_number,
-                'activity_details': activity_details,
-                'voucher_detail': voucher_detail,
-                'uuid': res.get('uuid') and res['uuid'] or '',
-                'status': activity_booking.state,
-                'booking_options': book_option_ids,
-                'voucher_url': voucher_url_parsed and voucher_url_parsed or []
-            }
-            result = ERR.get_no_error(response)
-            return result
+                    'description': self.clean_string(master.description),
+                    'highlights': self.clean_string(master.highlights),
+                    'additionalInfo': self.clean_string(master.additionalInfo),
+                    'safety': self.clean_string(master.safety),
+                    'warnings': self.clean_string(master.warnings),
+                    'priceIncludes': self.clean_string(master.priceIncludes),
+                    'priceExcludes': self.clean_string(master.priceExcludes),
+                    'image_urls': image_urls,
+                }
+                master_line = self.env['tt.master.activity.lines'].search([('activity_id', '=', master.id), ('uuid', '=', activity_booking.activity_product_uuid)])
+                if master_line:
+                    master_line = master_line[0]
+                voucher_detail = {
+                    'voucher_validity': {
+                        'voucher_validity_date': master_line.voucher_validity_date,
+                        'voucher_validity_days': master_line.voucher_validity_days,
+                        'voucher_validity_type': master_line.voucher_validity_type,
+                    },
+                    'voucherUse': self.clean_string(master_line.voucherUse),
+                    'voucherRedemptionAddress': self.clean_string(master_line.voucherRedemptionAddress),
+                    'cancellationPolicies': master_line.cancellationPolicies,
+                }
+
+                voucher_url_parsed = []
+                activity_voucher_urls = self.env['tt.reservation.activity.vouchers'].sudo().search([('booking_id', '=', int(activity_booking.id))])
+                if res.get('voucher_url') and not activity_voucher_urls:
+                    new_vouch_obj = self.env['tt.reservation.activity.vouchers'].sudo().create({
+                        'name': res['voucher_url'],
+                        'booking_id': activity_booking.id
+                    })
+                    voucher_url_parsed = [new_vouch_obj.name]
+                elif activity_voucher_urls:
+                    voucher_url_parsed = [url_voucher.name for url_voucher in activity_voucher_urls]
+
+                if activity_booking.state not in ['booked', 'issued', 'rejected', 'refund', 'cancel', 'cancel2', 'fail_booked', 'fail_issued', 'fail_refunded']:
+                    activity_booking.sudo().write({
+                        'state': res['status']
+                    })
+                    self.env.cr.commit()
+
+                response = {
+                    'booker_seq_id': activity_booking.booker_id.seq_id,
+                    'contacts': {
+                        'email': activity_booking.contact_email,
+                        'name': activity_booking.contact_name,
+                        'phone': activity_booking.contact_phone,
+                        'gender': contact.gender and contact.gender or '',
+                        'marital_status': contact.marital_status and contact.marital_status or False,
+                    },
+                    'activity': {
+                        'name': master.name,
+                        'type': master_line.name,
+                    },
+                    'provider': master.provider_id.code,
+                    'adults': activity_booking.adult,
+                    'children': activity_booking.child,
+                    'seniors': activity_booking.senior,
+                    'pnr': activity_booking.pnr,
+                    'hold_date': activity_booking.hold_date,
+                    'visit_date': str(activity_booking.visit_date)[:10],
+                    'timeslot': activity_booking.timeslot and activity_booking.timeslot or False,
+                    'passengers': passengers,
+                    'order_number': order_number,
+                    'activity_details': activity_details,
+                    'voucher_detail': voucher_detail,
+                    'uuid': res.get('uuid') and res['uuid'] or '',
+                    'status': activity_booking.state,
+                    'booking_options': book_option_ids,
+                    'voucher_url': voucher_url_parsed and voucher_url_parsed or []
+                }
+                result = ERR.get_no_error(response)
+                return result
+            else:
+                raise RequestException(1001)
         except RequestException as e:
             _logger.error(traceback.format_exc())
             return e.error_dict()

@@ -1,13 +1,20 @@
 import json
 from .api import Response
 from odoo.http import request
+from .db_connector import BackendConnector
 
-
+_backendDb = BackendConnector()
 ERR_CODE = {}
 
 
 def _do_config():
-    data = request.env['tt.error.api'].sudo().get_dict_by_int_code()
+    try:
+        data = request.env['tt.error.api'].sudo().get_dict_by_int_code()
+    except:
+        temp = _backendDb.get_error_code_api()
+        if temp['error_code'] != 0:
+            return False
+        data = temp['response']
     if data:
         [ERR_CODE.update({int(key): val}) for key, val in data.items()]
     return True
