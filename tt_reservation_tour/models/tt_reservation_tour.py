@@ -529,114 +529,117 @@ class ReservationTour(models.Model):
             book_obj = self.env['tt.reservation.tour'].sudo().search([('name', '=', search_booking_num)], limit=1)
             if book_obj:
                 book_obj = book_obj[0]
+                if book_obj.agent_id.id != context.get('co_agent_id', -1):
+                    raise RequestException(1001)
+                master = self.env['tt.master.tour'].browse(book_obj.tour_id.id)
+                image_urls = []
+                for img in master.image_ids:
+                    image_urls.append(str(img.url))
 
-            master = self.env['tt.master.tour'].browse(book_obj.tour_id.id)
-            image_urls = []
-            for img in master.image_ids:
-                image_urls.append(str(img.url))
-
-            tour_package = {
-                'id': master.id,
-                'name': master.name,
-                'duration': master.duration,
-                'departure_date': master.departure_date,
-                'arrival_date': master.arrival_date,
-                'visa': master.visa,
-                'flight': master.flight,
-                'image_urls': image_urls,
-            }
-
-            passengers = []
-            for rec in book_obj.sudo().passenger_ids:
-                passengers.append(rec.to_dict())
-            contact = self.env['tt.customer'].browse(book_obj.contact_id.id)
-
-            rooms = []
-            room_idx = 1
-            for room_data in book_obj.room_ids:
-                rooms.append({
-                    'room_index': room_idx,
-                    'room_id': room_data.room_id.id,
-                    'room_code': room_data.room_id.room_code,
-                    'room_name': room_data.room_id.name,
-                    'room_bed_type': room_data.room_id.bed_type,
-                    'room_hotel': room_data.room_id.hotel and room_data.room_id.hotel or '-',
-                    'room_desc': room_data.room_id.description and room_data.room_id.description or '-',
-                    'room_notes': room_data.notes and room_data.notes or '-',
-                })
-                room_idx += 1
-
-            for psg in passengers:
-                for temp_room in rooms:
-                    if int(psg['tour_room_id']) == int(temp_room['room_id']):
-                        psg.update({
-                            'tour_room_string': temp_room['room_name'] + ' (' + temp_room['room_hotel'] + ')'
-                        })
-                        break
-
-            for psg in passengers:
-                psg.pop('tour_room_id')
-
-            for temp_room in rooms:
-                temp_room.pop('room_id')
-
-            payment_rules = [
-                {
-                    'name': 'Down Payment',
-                    'description': 'Down Payment',
-                    'payment_percentage': book_obj.tour_id.down_payment,
-                    'due_date': date.today(),
-                    'is_dp': True
+                tour_package = {
+                    'id': master.id,
+                    'name': master.name,
+                    'duration': master.duration,
+                    'departure_date': master.departure_date,
+                    'arrival_date': master.arrival_date,
+                    'visa': master.visa,
+                    'flight': master.flight,
+                    'image_urls': image_urls,
                 }
-            ]
-            for payment in book_obj.tour_id.payment_rules_ids:
-                temp_pay = {
-                    'name': payment.name,
-                    'description': payment.description,
-                    'payment_percentage': payment.payment_percentage,
-                    'due_date': payment.due_date,
-                    'is_dp': False
-                }
-                payment_rules.append(temp_pay)
 
-            if data.get('state'):
-                book_update_vals = {
-                    'state': data['state']
-                }
-                if book_obj.state == 'issued':
-                    book_update_vals.update({
-                        'is_already_issued': True
+                passengers = []
+                for rec in book_obj.sudo().passenger_ids:
+                    passengers.append(rec.to_dict())
+                contact = self.env['tt.customer'].browse(book_obj.contact_id.id)
+
+                rooms = []
+                room_idx = 1
+                for room_data in book_obj.room_ids:
+                    rooms.append({
+                        'room_index': room_idx,
+                        'room_id': room_data.room_id.id,
+                        'room_code': room_data.room_id.room_code,
+                        'room_name': room_data.room_id.name,
+                        'room_bed_type': room_data.room_id.bed_type,
+                        'room_hotel': room_data.room_id.hotel and room_data.room_id.hotel or '-',
+                        'room_desc': room_data.room_id.description and room_data.room_id.description or '-',
+                        'room_notes': room_data.notes and room_data.notes or '-',
                     })
-                book_obj.sudo().write(book_update_vals)
-                self.env.cr.commit()
+                    room_idx += 1
 
-            response = {
-                'booker_seq_id': book_obj.booker_id.seq_id,
-                'contacts': {
-                    'email': book_obj.contact_email,
-                    'name': book_obj.contact_name,
-                    'phone': book_obj.contact_phone,
-                    'gender': contact.gender and contact.gender or '',
-                    'marital_status': contact.marital_status and contact.marital_status or False,
-                },
-                'passengers': passengers,
-                'pnr': book_obj.pnr,
-                'state': data.get('state') and data['state'] or book_obj.state,
-                'adult': book_obj.adult,
-                'child': book_obj.child,
-                'infant': book_obj.infant,
-                'departure_date': book_obj.departure_date,
-                'arrival_date': book_obj.arrival_date,
-                'order_number': book_obj.name,
-                'booking_uuid': book_obj.booking_uuid and book_obj.booking_uuid or False,
-                'hold_date': book_obj.hold_date,
-                'provider': master.provider_id.code,
-                'tour_details': tour_package,
-                'rooms': rooms,
-                'payment_rules': payment_rules,
-                'grand_total': book_obj.total,
-            }
-            return ERR.get_no_error(response)
+                for psg in passengers:
+                    for temp_room in rooms:
+                        if int(psg['tour_room_id']) == int(temp_room['room_id']):
+                            psg.update({
+                                'tour_room_string': temp_room['room_name'] + ' (' + temp_room['room_hotel'] + ')'
+                            })
+                            break
+
+                for psg in passengers:
+                    psg.pop('tour_room_id')
+
+                for temp_room in rooms:
+                    temp_room.pop('room_id')
+
+                payment_rules = [
+                    {
+                        'name': 'Down Payment',
+                        'description': 'Down Payment',
+                        'payment_percentage': book_obj.tour_id.down_payment,
+                        'due_date': date.today(),
+                        'is_dp': True
+                    }
+                ]
+                for payment in book_obj.tour_id.payment_rules_ids:
+                    temp_pay = {
+                        'name': payment.name,
+                        'description': payment.description,
+                        'payment_percentage': payment.payment_percentage,
+                        'due_date': payment.due_date,
+                        'is_dp': False
+                    }
+                    payment_rules.append(temp_pay)
+
+                if data.get('state'):
+                    book_update_vals = {
+                        'state': data['state']
+                    }
+                    if book_obj.state == 'issued':
+                        book_update_vals.update({
+                            'is_already_issued': True
+                        })
+                    book_obj.sudo().write(book_update_vals)
+                    self.env.cr.commit()
+
+                response = {
+                    'booker_seq_id': book_obj.booker_id.seq_id,
+                    'contacts': {
+                        'email': book_obj.contact_email,
+                        'name': book_obj.contact_name,
+                        'phone': book_obj.contact_phone,
+                        'gender': contact.gender and contact.gender or '',
+                        'marital_status': contact.marital_status and contact.marital_status or False,
+                    },
+                    'passengers': passengers,
+                    'pnr': book_obj.pnr,
+                    'state': data.get('state') and data['state'] or book_obj.state,
+                    'adult': book_obj.adult,
+                    'child': book_obj.child,
+                    'infant': book_obj.infant,
+                    'departure_date': book_obj.departure_date,
+                    'arrival_date': book_obj.arrival_date,
+                    'order_number': book_obj.name,
+                    'booking_uuid': book_obj.booking_uuid and book_obj.booking_uuid or False,
+                    'hold_date': book_obj.hold_date,
+                    'provider': master.provider_id.code,
+                    'tour_details': tour_package,
+                    'rooms': rooms,
+                    'payment_rules': payment_rules,
+                    'grand_total': book_obj.total,
+                }
+                return ERR.get_no_error(response)
+            else:
+                raise RequestException(1001)
         except RequestException as e:
             _logger.error(traceback.format_exc())
             return e.error_dict()
