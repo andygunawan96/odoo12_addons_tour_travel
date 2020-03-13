@@ -29,10 +29,15 @@
             <field name="currency_id" ref="base.IDR"/>
         </record>
 
+        ##billing
+        # 1
+        # 8
+        # 15
+        # 22
         <record id="tt_pnr_quota_price_999c" model="tt.pnr.quota.price.list">
             <field name="name">Unlimited Monthly C</field>
             <field name="amount">99999</field>
-            <field name="price">0</field>
+            <field name="price">2500000</field>
             <field name="currency_id" ref="base.IDR"/>
         </record>
 
@@ -56,7 +61,7 @@
             <field name="name">Promo Unlimited Monthly</field>
             <field name="available_price_list_ids" eval="[(6, 0, [ref('tt_base.tt_pnr_quota_price_999c'),
                                                            ])]"/>
-            <field name="minimum_monthly_quota_id" ref="tt_pnr_quota_price_1000b"/>
+            <field name="minimum_monthly_quota_id" ref="tt_pnr_quota_price_999c"/>
             <field name="excess_quota_fee">0</field>
         </record>
     </data>
