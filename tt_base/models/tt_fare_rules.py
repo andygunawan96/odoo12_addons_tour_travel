@@ -2,11 +2,9 @@ from odoo import api, fields, models, _
 from ...tools.api import Response
 import logging
 import traceback
-from ...tools.db_connector import GatewayConnector
 
 
 _logger = logging.getLogger(__name__)
-_gw_con = GatewayConnector()
 
 
 class FareRules(models.Model):
