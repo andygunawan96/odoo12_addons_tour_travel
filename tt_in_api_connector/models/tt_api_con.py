@@ -100,3 +100,11 @@ class TtApiCon(models.Model):
         return self.send_request_to_gateway('%s/notification' % (self.url),
                                             request
                                             ,'notification_api')
+
+    def send_new_ssr_notification(self, code, title, message, **kwargs):
+        request = {
+            'code': code,
+            'title': title,
+            'message': message
+        }
+        return self.send_request_to_gateway('%s/notification' % self.url, request, 'notification_api')
