@@ -972,7 +972,9 @@ class MasterTour(models.Model):
                 'availability': False
             }
             provider_obj = self.env['tt.provider'].sudo().search([('code', '=', data['provider'])], limit=1)
-            provider_obj = provider_obj and provider_obj[0] or False
+            if not provider_obj:
+                raise RequestException(1002)
+            provider_obj = provider_obj[0]
             tour_obj = self.env['tt.master.tour'].sudo().search([('tour_code', '=', data['tour_code']), ('provider_id', '=', provider_obj.id)], limit=1)
             if tour_obj:
                 tour_obj = tour_obj[0]
@@ -993,7 +995,9 @@ class MasterTour(models.Model):
     def update_availability_api(self, data, context, **kwargs):
         try:
             provider_obj = self.env['tt.provider'].sudo().search([('code', '=', data['provider'])], limit=1)
-            provider_obj = provider_obj and provider_obj[0] or False
+            if not provider_obj:
+                raise RequestException(1002)
+            provider_obj = provider_obj[0]
             tour_obj = self.env['tt.master.tour'].sudo().search([('tour_code', '=', data['tour_code']), ('provider_id', '=', provider_obj.id)], limit=1)
             if tour_obj:
                 tour_obj = tour_obj[0]
@@ -1088,7 +1092,9 @@ class MasterTour(models.Model):
                 'provider': data.get('provider') and data['provider'] or ''
             }
             provider_obj = self.env['tt.provider'].sudo().search([('code', '=', search_request['provider'])], limit=1)
-            provider_obj = provider_obj and provider_obj[0] or False
+            if not provider_obj:
+                raise RequestException(1002)
+            provider_obj = provider_obj[0]
             tour_obj = self.env['tt.master.tour'].sudo().search([('tour_code', '=', search_request['tour_code']), ('provider_id', '=', provider_obj.id)], limit=1)
             if tour_obj:
                 tour_obj = tour_obj[0]
@@ -1225,7 +1231,9 @@ class MasterTour(models.Model):
                 'provider': data.get('provider') and data['provider'] or ''
             }
             provider_obj = self.env['tt.provider'].sudo().search([('code', '=', search_request['provider'])], limit=1)
-            provider_obj = provider_obj and provider_obj[0] or False
+            if not provider_obj:
+                raise RequestException(1002)
+            provider_obj = provider_obj[0]
             search_tour_obj = self.env['tt.master.tour'].sudo().search([('tour_code', '=', search_request['tour_code']), ('provider_id', '=', provider_obj.id)], limit=1)
             if search_tour_obj:
                 search_tour_obj = search_tour_obj[0]
@@ -1266,7 +1274,9 @@ class MasterTour(models.Model):
                 'provider': data.get('provider') and data['provider'] or ''
             }
             provider_obj = self.env['tt.provider'].sudo().search([('code', '=', search_request['provider'])], limit=1)
-            provider_obj = provider_obj and provider_obj[0] or False
+            if not provider_obj:
+                raise RequestException(1002)
+            provider_obj = provider_obj[0]
             search_tour_obj = self.env['tt.master.tour'].sudo().search([('tour_code', '=', search_request['tour_code']), ('provider_id', '=', provider_obj.id)], limit=1)
             if search_tour_obj:
                 search_tour_obj = search_tour_obj[0]
@@ -1356,7 +1366,9 @@ class MasterTour(models.Model):
                 'provider': req.get('provider') and req['provider'] or ''
             }
             provider_obj = self.env['tt.provider'].sudo().search([('code', '=', search_request['provider'])], limit=1)
-            provider_obj = provider_obj and provider_obj[0] or False
+            if not provider_obj:
+                raise RequestException(1002)
+            provider_obj = provider_obj[0]
             tour_data_list = self.env['tt.master.tour'].sudo().search([('tour_code', '=', search_request['tour_code']), ('provider_id', '=', provider_obj.id)], limit=1)
             tour_data = tour_data_list[0]
             price_itinerary = {
