@@ -29,11 +29,11 @@
             <field name="currency_id" ref="base.IDR"/>
         </record>
 
-        ##billing
+        <!--##billing
         # 1
         # 8
         # 15
-        # 22
+        # 22-->
         <record id="tt_pnr_quota_price_999c" model="tt.pnr.quota.price.list">
             <field name="name">Unlimited Monthly C</field>
             <field name="amount">99999</field>

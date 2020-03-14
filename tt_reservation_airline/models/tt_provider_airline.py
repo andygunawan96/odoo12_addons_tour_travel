@@ -26,6 +26,7 @@ class TtProviderAirline(models.Model):
     arrival_date = fields.Char('Arrival Date')
 
     sid_issued = fields.Char('SID Issued')#signature generate sendiri
+    sid_cancel = fields.Char('SID Cancel')#signature generate sendiri
 
     journey_ids = fields.One2many('tt.journey.airline', 'provider_booking_id', string='Journeys')
     cost_service_charge_ids = fields.One2many('tt.service.charge', 'provider_airline_booking_id', 'Cost Service Charges')
@@ -168,6 +169,15 @@ class TtProviderAirline(models.Model):
                 'issued_uid': context['co_uid'],
                 'sid_issued': context['signature'],
                 'balance_due': 0
+            })
+
+    def action_cancel_api_airline(self,context):
+        for rec in self:
+            rec.write({
+                'state': 'cancel',
+                'cancel_date': datetime.now(),
+                'cancel_uid': context['co_uid'],
+                'sid_cancel': context['signature'],
             })
 
     def action_failed_booked_api_airline(self,err_code,err_msg):
@@ -364,6 +374,13 @@ class TtProviderAirline(models.Model):
         ticket_list = []
         for rec in self.ticket_ids:
             ticket_list.append(rec.to_dict())
+
+        service_charges = []
+        for rec in self.cost_service_charge_ids:
+            if rec.charge_type == 'RAC' and not rec.charge_code == 'rac':
+                continue
+            service_charges.append(rec.to_dict())
+
         res = {
             'pnr': self.pnr and self.pnr or '',
             'pnr2': self.pnr2 and self.pnr2 or '',
@@ -381,7 +398,8 @@ class TtProviderAirline(models.Model):
             'currency': self.currency_id.name,
             'hold_date': self.hold_date and self.hold_date or '',
             'tickets': ticket_list,
-            'error_msg': self.error_history_ids and self.error_history_ids[-1].error_msg or ''
+            'error_msg': self.error_history_ids and self.error_history_ids[-1].error_msg or '',
+            'service_charges': service_charges,
         }
 
         return res
