@@ -447,16 +447,18 @@ class ReservationActivity(models.Model):
                 contact_objs.append(self.create_contact_api(con, booker_obj, context))
 
             contact_obj = contact_objs[0]
-            provider_id = self.env['tt.provider'].sudo().search([('code', '=', provider)])
-            if provider_id:
-                provider_id = provider_id[0]
-
+            provider_id = self.env['tt.provider'].sudo().search([('code', '=', provider)], limit=1)
+            if not provider_id:
+                raise RequestException(1002)
+            provider_id = provider_id[0]
             activity_product_id = self.env['tt.master.activity'].sudo().search([('uuid', '=', search_request['product_uuid']), ('provider_id', '=', provider_id.id)], limit=1)
-            if activity_product_id:
-                activity_product_id = activity_product_id[0]
+            if not activity_product_id:
+                raise RequestException(1004, additional_message='Activity not found. Please check your product_uuid.')
+            activity_product_id = activity_product_id[0]
             activity_type_id = self.env['tt.master.activity.lines'].sudo().search([('uuid', '=', search_request['product_type_uuid']), ('activity_id', '=', activity_product_id.id)], limit=1)
-            if activity_type_id:
-                activity_type_id = activity_type_id[0]
+            if not activity_type_id:
+                raise RequestException(1004, additional_message='Activity type not found. Please check your product_type_uuid.')
+            activity_type_id = activity_type_id[0]
 
             list_passenger_value = self.create_passenger_value_api_test(passengers)
             pax_ids = self.create_customer_api(passengers, context, booker_obj.seq_id, contact_obj.seq_id)
