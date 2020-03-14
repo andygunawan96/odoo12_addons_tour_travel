@@ -1689,7 +1689,9 @@ class MasterActivity(models.Model):
                 raise RequestException(1002)
             provider_id = provider_id[0]
             activity_id = self.search([('uuid', '=', req['uuid']), ('provider_id', '=', provider_id.id)], limit=1)
-            activity_id = activity_id and activity_id[0] or None
+            if not activity_id:
+                raise RequestException(1022, additional_message='Activity not found.')
+            activity_id = activity_id[0]
             provider = provider_id.code
             result_id_list = self.env['tt.master.activity.lines'].search([('activity_id', '=', activity_id.id)])
             temp = []
