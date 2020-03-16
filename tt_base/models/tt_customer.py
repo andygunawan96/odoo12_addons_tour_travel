@@ -17,7 +17,7 @@ class TtCustomer(models.Model):
     _rec_name = 'name'
     _description = 'Tour & Travel - Customer'
 
-    seq_id = fields.Char('ID', index=True,readonly=True)
+    seq_id = fields.Char('Sequence ID', index=True,readonly=True)
     name = fields.Char(string='Name', compute='_compute_name', store=True)
     face_image_id = fields.Many2one('tt.upload.center','Face Image')
     first_name = fields.Char('First Name')
@@ -466,6 +466,45 @@ class TtCustomer(models.Model):
         res = Response().get_no_error(user_id)
         return res
 
+    def compute_darmo_customer(self):
+        self.compute_register_uid(8)
+
+    def compute_ptc_customer(self):
+        self.compute_register_uid(155)
+
+    def compute_japro_b_customer(self):
+        self.compute_register_uid(5)
+
+    def compute_register_uid(self,agent_id):
+        customers_obj = self.search([('agent_id','=',agent_id)])
+        for rec in customers_obj:
+            #airline
+
+            _logger.info("#Airline\nCustomer OBJ : " + str(rec.id))
+            psg_air_obj = self.env['tt.reservation.passenger.airline'].search([('customer_id','=',rec.id)],order= 'id asc')
+            _logger.info("Passenger IDS : " + str(psg_air_obj.ids))
+            psg_air_obj = psg_air_obj.filtered(lambda x: x.booking_id.id != False)
+            _logger.info("Passenger IDS : " + str(psg_air_obj.ids))
+
+            if psg_air_obj:
+                user_id = psg_air_obj[0].booking_id.user_id
+                _logger.info("Set Register UID to : %s\n\n" % (user_id.name) )
+                rec.register_uid = user_id.id
+            else:
+                _logger.info("Skip Register UID, no Transaction\n\n")
+
+            _logger.info("#Train\nCustomer OBJ : " + str(rec.id))
+            psg_air_obj = self.env['tt.reservation.passenger.train'].search([('customer_id','=',rec.id)],order= 'id asc')
+            _logger.info("Passenger IDS : " + str(psg_air_obj.ids))
+            psg_air_obj = psg_air_obj.filtered(lambda x: x.booking_id.id != False)
+            _logger.info("Passenger IDS : " + str(psg_air_obj.ids))
+
+            if psg_air_obj:
+                user_id = psg_air_obj[0].booking_id.user_id
+                _logger.info("Set Register UID to : %s\n\n" % (user_id.name) )
+                rec.register_uid = user_id.id
+            else:
+                _logger.info("Skip Register UID, no Transaction\n\n")
 
 class TtCustomerIdentityNumber(models.Model):
     _name = "tt.customer.identity"

@@ -6,7 +6,7 @@ class TtPnrQuotaMasterPackage(models.Model):
     _description = 'Rodex Model PNR Quota Master Data'
 
     name = fields.Char('Name')
-    seq_id = fields.Char('Seq ID',readonly=True)
+    seq_id = fields.Char('Sequence ID',readonly=True)
     available_price_list_ids = fields.Many2many('tt.pnr.quota.price.list',
                                            'tt_pnr_quota_price_package_list_rel',
                                            'price_package_id','price_list_id',
