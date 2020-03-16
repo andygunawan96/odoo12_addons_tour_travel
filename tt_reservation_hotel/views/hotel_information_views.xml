@@ -375,6 +375,7 @@
                         <group string="TBO">
                             <button name="get_record_by_api9" string="Country + City" type="object" icon="fa-building"/>
                             <button name="get_record_by_api9a" string="Hotel" type="object" icon="fa-home"/>
+                            <button name="get_record_by_api9b" string="Hotel (Re empty/error result)" type="object" icon="fa-home"/>
                         </group>
                         <group string="Miki Travel">
                             <button name="get_record_by_api3a" string="Hotel by API XML" type="object" icon="fa-building"/>
