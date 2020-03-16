@@ -39,6 +39,14 @@ class TtAgentType(models.Model):
             'prefix': '{}.%(day)s%(sec)s'.format(new_agent_type.seq_prefix),
             'padding': 3
         })
+        try:
+            """ Set registration upline menjadi HO """
+            new_agent_type.write({
+                'registration_upline_ids': [(4, self.env.ref('tt_base.agent_type_ho').id)],
+            })
+        except ValueError:
+            """ Jika belum ada HO, kosongi """
+            pass
         return new_agent_type
 
     # fixme : nanti akan diubah
