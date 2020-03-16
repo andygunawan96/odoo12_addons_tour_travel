@@ -30,14 +30,6 @@
 <!--                            <field name="expired_date"/>-->
                         </group>
                     </group>
-                    <group string="Passport Information">
-                        <group>
-                            <field name="country_id"/>
-                        </group>
-                        <group>
-                            <field name="departure_date"/>
-                        </group>
-                    </group>
                     <group string="Expenses">
                         <field name="vendor_ids" attrs="{'readonly': [('state_passport', 'in', ['delivered','ready','done'])]}" groups="tt_base.group_tt_tour_travel_operator,account.group_account_user">
                             <tree editable="bottom">
@@ -86,7 +78,6 @@
             <tree>
                 <field name="pnr"/>
                 <field name="provider_id"/>
-                <field name="departure_date"/>
                 <field name="state" string="Status"/>
             </tree>
         </field>
