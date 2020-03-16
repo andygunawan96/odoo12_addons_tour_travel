@@ -1576,6 +1576,7 @@ class HotelInformation(models.Model):
             'co_uid': self.env.user.id
         }
         i = 1
+        stopper = 0
         rendered_city = []
         need_to_add_list = []
         try:
@@ -1591,66 +1592,121 @@ class HotelInformation(models.Model):
 
         file_content = glob.glob("/var/log/cache_hotel/tbo/master/*.txt")
         for rec in file_content:
-                # open file
-                filename = rec
-                try:
-                    file = open(filename, 'r')
-                    country_file = json.loads(file.read())
-                    file.close()
-                except:
-                    continue
-                # loop per city ke fungsi get hotel giata
-                for city in country_file:
+            # open file
+            filename = rec
+            try:
+                file = open(filename, 'r')
+                country_file = json.loads(file.read())
+                file.close()
+            except:
+                continue
+            # loop per city ke fungsi get hotel giata
+            for city in country_file:
                 # for city in [{'code':'126632'}, {'code':'115936'}, {'code':'131408'}]:
-                    if city['name'].split(',')[0].lower() in rendered_city:
-                        continue
+                if city['name'].split(',')[0].lower() in rendered_city:
+                    continue
 
+                search_req = {
+                    'provider': 'tbo',
+                    'type': 'hotel',
+                    'limit': '',
+                    'offset': '',
+                    'codes': city['code'],
+                }
+                hotel_fmt = []
+                try:
+                    hotel_objs = API_CN_HOTEL.get_record_by_api(search_req, api_context)
+                    # for hotel in hotel_objs['response'][1]:
+                    #     try:
+                    # TODO: Ambil image dkk
+                    # search_req = {
+                    #     'provider': 'tbo',
+                    #     'type': 'hotel_detail',
+                    #     'limit': '',
+                    #     'offset': '',
+                    #     'codes': hotel['id'],
+                    # }
+                    # hotel_fmt.append(hotel)
+                    # except:
+                    #     continue
+                    hotel_fmt = hotel_objs[1]
+                    length = len(hotel_fmt)
+                    stopper = 0
+                except:
+                    length = -1
+                    stopper += 1
+
+                    if stopper == 7:
+                        _logger.info("==================================")
+                        _logger.info("= Stopped Because 7 error in row =")
+                        _logger.info("==================================")
+                        break
+                # _logger.info("Get "+str(length)+" Hotel(s) for City: " + city + ', ' + rec[1])
+                # need_to_add_list.append([i, city, rec[1], length])
+                # filename = "/var/log/cache_hotel/tbo/" + city + ".json"
+
+                _logger.info("Get "+str(length)+" Hotel(s) for City: " + city['name'] + ', ' + rec[32:-4])
+                need_to_add_list.append([i, city['name'].split(',')[0], city['code'], rec[32:-4], length])
+                filename = "/var/log/cache_hotel/tbo/" + city['name'].split(',')[0].replace('/', '-') + ".json"
+
+                i += 1
+                # Create Record Hotel per City
+                file = open(filename, 'w')
+                file.write(json.dumps(hotel_fmt))
+                file.close()
+
+                # Save per City
+                with open('/var/log/cache_hotel/tbo/master_csv/result_data.csv', 'w') as csvFile:
+                    writer = csv.writer(csvFile)
+                    writer.writerows(need_to_add_list)
+                csvFile.close()
+        return True
+
+    # TBO Holidays
+    # Re-Get Hotel yg 0 maupun -1
+    def get_record_by_api9b(self):
+        api_context = {
+            'co_uid': self.env.user.id
+        }
+        with open("/var/log/cache_hotel/tbo/master_csv/result_data.csv", 'r') as file:
+            file_content = csv.reader(file)
+            for rec in file_content:
+                # Sementara di set 0 dan -1 karena data lama try except return nya 0
+                # Per tanggal 13 maret 2020 error diganti -1
+                if rec[-1] < 1: #Bisa di ganti 0 jika mau render yg error only (-1)
                     search_req = {
                         'provider': 'tbo',
                         'type': 'hotel',
                         'limit': '',
                         'offset': '',
-                        'codes': city['code'],
+                        'codes': rec[2],
                     }
                     hotel_fmt = []
                     try:
                         hotel_objs = API_CN_HOTEL.get_record_by_api(search_req, api_context)
-                        # for hotel in hotel_objs['response'][1]:
-                        #     try:
-                                # TODO: Ambil image dkk
-                                # search_req = {
-                                #     'provider': 'tbo',
-                                #     'type': 'hotel_detail',
-                                #     'limit': '',
-                                #     'offset': '',
-                                #     'codes': hotel['id'],
-                                # }
-                                # hotel_fmt.append(hotel)
-                            # except:
-                            #     continue
                         hotel_fmt = hotel_objs[1]
                         length = len(hotel_fmt)
                     except:
-                        length = 0
-                    # _logger.info("Get "+str(length)+" Hotel(s) for City: " + city + ', ' + rec[1])
-                    # need_to_add_list.append([i, city, rec[1], length])
-                    # filename = "/var/log/cache_hotel/tbo/" + city + ".json"
+                        length = -1
 
-                    _logger.info("Get "+str(length)+" Hotel(s) for City: " + city['name'] + ', ' + rec[32:-4])
-                    need_to_add_list.append([i, city['name'].split(',')[0], city['code'], rec[32:-4], length])
-                    filename = "/var/log/cache_hotel/tbo/" + city['name'].split(',')[0].replace('/', '-') + ".json"
+                    rec[-1] = length
+                    if length > 0:
+                        _logger.info("Update " + str(length) + " Hotel(s) for City: " + rec[1] + ', ' + rec[3])
+                        filename = "/var/log/cache_hotel/tbo/" + rec[1] + ".json"
+                        file = open(filename, 'w')
+                        file.write(json.dumps(hotel_fmt))
+                        file.close()
+                    elif length == 0:
+                        _logger.info("Empty Hotel(s) for City: " + rec[1] + ', ' + rec[3])
+                    else:
+                        _logger.info("Error get data for City: " + rec[1] + ', ' + rec[3])
 
-                    i += 1
-                    # Create Record Hotel per City
-                    file = open(filename, 'w')
-                    file.write(json.dumps(hotel_fmt))
-                    file.close()
-
-                    # Save per City
-                    with open('/var/log/cache_hotel/tbo/master_csv/result_data.csv', 'w') as csvFile:
-                        writer = csv.writer(csvFile)
-                        writer.writerows(need_to_add_list)
-                    csvFile.close()
+                # Save per City
+                with open('/var/log/cache_hotel/tbo/master_csv/result_data.csv', 'w') as csvFile:
+                    writer = csv.writer(csvFile)
+                    writer.writerows(file_content)
+                csvFile.close()
+            file.close()
         return True
 
     # OYO TMC
@@ -2482,7 +2538,7 @@ class HotelInformation(models.Model):
     # Masukan source yg di mau ke master record
     # On Progress
     def merge_record_for_some_source(self):
-        provider_list = ['hotelspro_file_partial', 'oyo']
+        provider_list = ['tbo',]
         need_to_add_city = {}
         rendered_city_ids = []
 
@@ -2495,8 +2551,11 @@ class HotelInformation(models.Model):
 
         for master_provider in provider_list:
             vendor_city_ids = glob.glob("/var/log/cache_hotel/" + master_provider + "/*.json")
-            for vendor_city_url in vendor_city_ids[:50]:
+            for vendor_city_url in vendor_city_ids:
                 vendor_city = vendor_city_url[22 + len(master_provider):-5]
+                with open(vendor_city_url, 'r') as f1:
+                    vendor_hotel_objs = f1.read()
+                f1.close
                 for target_city in rendered_city_ids:
                     if target_city[1].lower() == vendor_city.lower():
                         _logger.info(msg='Processing ' + master_provider + ' From: ' + vendor_city)
@@ -2507,15 +2566,13 @@ class HotelInformation(models.Model):
                             file_number = int(target_city[0])-1
 
                             # Baca File + merge data source untuk city tsb
-                            with open('/var/log/cache_hotel/cache_hotel_' + str(file_number) + '.txt', 'r') as f2:
+                            # with open('/var/log/cache_hotel/cache_hotel_' + str(file_number) + '.txt', 'r') as f2:
+                            with open('/var/log/tour_travel/cache_hotel/cache_hotel_' + str(file_number) + '.txt', 'r') as f2:
                                 cache_file = f2.read()
                                 cache_content = json.loads(cache_file)
                             f2.close()
 
                             # merge data source untuk city tsb
-                            with open(vendor_city_url, 'r') as f1:
-                                vendor_hotel_objs = f1.read()
-                            f1.close
                             for vendor_hotel_obj in json.loads(vendor_hotel_objs):
                                 hotel_fmt = self.formating_homas(vendor_hotel_obj, vendor_hotel_obj['id'], master_provider, target_city[2], vendor_city)
                                 same_name = self.exact_find_similar_name(hotel_fmt['name'], hotel_fmt['location']['city'], cache_content)
@@ -2541,53 +2598,72 @@ class HotelInformation(models.Model):
                             need_to_add_city[target_city[1].lower()].update({master_provider: len(json.loads(vendor_hotel_objs)) })
                             need_to_add_city[target_city[1].lower()].update({ 'total': len(cache_content) })
 
-                            file = open('/var/log/cache_hotel/cache_hotel_' + str(file_number) + '.txt', 'w')
+                            file = open('/var/log/tour_travel/cache_hotel/cache_hotel_' + str(file_number) + '.txt', 'w')
                             file.write(json.dumps(cache_content))
                             file.close()
 
                             _logger.info(msg='Get ' + str(len(json.loads(vendor_hotel_objs))) + ' From: ' + vendor_city + ' Total: ' + str(len(cache_content)))
                             break
                         except:
-                            _logger.info(msg='Error While Processing' + master_provider + ' From: ' + vendor_city)
+                            _logger.info(msg='Error While Processing ' + master_provider + ' From: ' + vendor_city)
 
-            # Notif jika city tidak ditemukan
+                # Notif jika city tidak ditemukan
+                if not need_to_add_city.get(vendor_city.lower()):
+                    if len(json.loads(vendor_hotel_objs)) < 1:
+                        _logger.info(msg='Skipping city ' + vendor_city + ' No Hotel Found')
+                        continue
+                    _logger.info(msg='Create new city ' + vendor_city + ' with ' + str(len(json.loads(vendor_hotel_objs))) + ' Hotel(s)')
 
+                    target_city_index = int(rendered_city_ids[-1][0])
+                    # Add hotel file
+                    filename = "/var/log/tour_travel/cache_hotel/cache_hotel_" + str(target_city_index) + ".txt"
+                    file = open(filename, 'w')
+                    file.write(vendor_hotel_objs)
+                    file.close()
+
+                    # Update Need to add
+                    if not need_to_add_city.get(vendor_city.lower()):
+                        need_to_add_city[vendor_city.lower()] = {}
+                    need_to_add_city[vendor_city.lower()].update({master_provider: len(json.loads(vendor_hotel_objs))})
+                    need_to_add_city[vendor_city.lower()].update({'total': len(json.loads(vendor_hotel_objs))})
+
+                    # Update concurrent cache
+                    new_a = [str(target_city_index+1), vendor_city.title()]
+                    new_a += [0 for a in range(2, len(rendered_city_ids[0]))]
+                    rendered_city_ids.append(new_a)
 
         # Update Master Result
         idx = 1
-        with open('/var/log/cache_hotel/result log/merger_process_result.csv', 'r') as f:
-            rendered_city_ids = csv.reader(f)
-            need_to_add = []
-            for rec in rendered_city_ids:
-                if idx == 1:
-                    # Re formatting Header result merge
-                    total_idx = -1
-                    for idx, total_idxs in enumerate( rec ):
-                        if total_idxs.lower() == 'total':
-                            total_idx = idx
-                            break
-                    total = rec.pop(total_idx)  # Pop Total
-                    # Adding provider_list
-                    rec += provider_list
-                    rec.append(total)
-                    need_to_add.append(rec)
-                    idx = 2
-                    continue
-
-                add_hotel_qty = [0 for a in provider_list]
-                total = rec.pop(total_idx) # Pop Total
-                if need_to_add_city.get(rec[1].lower()):
-                    add_hotel_qty = [need_to_add_city[rec[1].lower()].get(a) and need_to_add_city[rec[1].lower()][a] or 0 for a in provider_list]
-                    total = need_to_add_city[rec[1].lower()]['total']
-                rec += add_hotel_qty
+        need_to_add = []
+        for rec in rendered_city_ids:
+            if idx == 1:
+                # Re formatting Header result merge
+                total_idx = -1
+                for idx, total_idxs in enumerate( rec ):
+                    if total_idxs.lower() == 'total':
+                        total_idx = idx
+                        break
+                total = rec.pop(total_idx)  # Pop Total
+                # Adding provider_list
+                rec += provider_list
                 rec.append(total)
                 need_to_add.append(rec)
+                idx = 2
+                continue
 
-            with open('/var/log/cache_hotel/result log/merger_process_result_1.csv', 'w') as csvFile:
-                writer = csv.writer(csvFile)
-                writer.writerows(need_to_add)
-            csvFile.close()
-        f.close()
+            add_hotel_qty = [0 for a in provider_list]
+            total = rec.pop(total_idx) # Pop Total
+            if need_to_add_city.get(rec[1].lower()):
+                add_hotel_qty = [need_to_add_city[rec[1].lower()].get(a) and need_to_add_city[rec[1].lower()][a] or 0 for a in provider_list]
+                total = need_to_add_city[rec[1].lower()]['total']
+            rec += add_hotel_qty
+            rec.append(total)
+            need_to_add.append(rec)
+
+        with open('/var/log/cache_hotel/result log/merger_process_result_1.csv', 'w') as csvFile:
+            writer = csv.writer(csvFile)
+            writer.writerows(need_to_add)
+        csvFile.close()
         # Update CSV Result merger (Nice to have)
         return True
 

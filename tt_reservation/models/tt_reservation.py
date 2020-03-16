@@ -176,6 +176,7 @@ class TtReservation(models.Model):
             'gender': vals.get('gender'),
             'marital_status': 'married' if vals.get('title') == 'MRS' else '',
             'is_get_booking_from_vendor': vals.get('is_get_booking_from_vendor',False),
+            'register_uid': context['co_uid'],
         })
         return booker_obj.create(vals)
 
