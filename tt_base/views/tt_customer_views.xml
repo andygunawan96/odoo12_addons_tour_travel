@@ -60,15 +60,20 @@
                                 </h3>
                             </div>
                             <group>
-                                <field name="agent_id" readonly="0"/>
-                                <field name="name" readonly="1"/>
-                                <field name="email"/>
-                                <field name="gender"/>
-                                <field name="marital_status"/>
-                                <field name="nationality_id"/>
-                                <field name="religion"/>
-                                <field name="birth_date"/>
-                                <field name="face_image_id"/>
+                                <group>
+                                    <field name="agent_id" readonly="0"/>
+                                    <field name="name" readonly="1"/>
+                                    <field name="email"/>
+                                    <field name="gender"/>
+                                    <field name="marital_status"/>
+                                    <field name="nationality_id"/>
+                                    <field name="birth_date"/>
+                                </group>
+                                <group>
+                                    <field name="religion"/>
+                                    <field name="face_image_id"/>
+                                    <field name="register_uid"/>
+                                </group>
                             </group>
 
                             <notebook colspan="2">

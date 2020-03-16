@@ -35,9 +35,11 @@ class ReservationAirline(models.Model):
     def get_segment_description(self):
         tmp = ''
         # vals = []
-        for rec in self.journey_ids:
-            tmp += '%s(%s) - %s(%s),' % (rec.origin_id.city, rec.origin_id.code, rec.destination_id.city, rec.destination_id.code)
-            tmp += '%s - %s\n ' % (rec.departure_date[:16], rec.arrival_date[:16])
+        for journey in self.journey_ids:
+            tmp += '%s - %s\n' % (journey.departure_date[:16], journey.arrival_date[:16])
+            for rec in journey.segment_ids:
+                tmp += '%s(%s) - %s(%s), ' % (rec.origin_id.city, rec.origin_id.code, rec.destination_id.city, rec.destination_id.code)
+                tmp += '%s - %s\n' % (rec.departure_date[:16], rec.arrival_date[:16])
         return tmp
 
     def action_create_invoice(self,acquirer_id,co_uid,customer_parent_id):

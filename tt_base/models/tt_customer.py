@@ -43,6 +43,8 @@ class TtCustomer(models.Model):
     is_get_booking_from_vendor = fields.Boolean('Get Booking From Vendor')
     is_search_allowed = fields.Boolean("Search Allowed", default=True)
 
+    register_uid = fields.Many2one('res.users', 'Register UID', default=lambda self: self.env.user)
+
     @api.depends('first_name', 'last_name')
     def _compute_name(self):
         for rec in self:

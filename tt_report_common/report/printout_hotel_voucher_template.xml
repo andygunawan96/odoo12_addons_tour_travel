@@ -110,9 +110,9 @@
                             <b>
                                 <span>Phone</span><br/>
                                 <!--<span>Agent Ref. #</span><br/>-->
-                                <span>Hotel Confirm #</span><br/>
-                                <span>Check In Date</span><br/>
-                                <span>Number Night(s)</span><br/>
+                                <span>Hotel Confirm</span><br/>
+                                <span>CheckIn Date</span><br/>
+                                <span>Numb. Night</span><br/>
                             </b>
                         </div>
                         <div class="col-1">
@@ -134,10 +134,10 @@
                     <div class="row" style="margin: 0px; padding:0px;">
                         <div class="col-4">
                             <b>
-                                <span>Fax</span><br/>
+                                <span>Resv</span><br/>
                                 <span>Room Name</span><br/>
-                                <span>Check Out Date</span><br/>
-                                <span>Num. of Room</span><br/>
+                                <span>CheckOut Date</span><br/>
+                                <span>Num. Room</span><br/>
                             </b>
                         </div>
                         <div class="col-1">
@@ -147,7 +147,7 @@
                             <span>:</span>
                         </div>
                         <div class="col-6">
-                            <span>-</span><br/>
+                            <span t-field="doc.name"/><br/>
                             <span t-field="doc.room_detail_ids[0].room_name"/><br/>
                             <span t-field="doc.checkout_date"/><br/>
                             <span t-field="doc.room_count"/><br/>

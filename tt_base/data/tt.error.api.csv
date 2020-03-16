@@ -68,6 +68,7 @@ tt_error_api_4027,4027,"Not enough vendor balance",,,1,1
 tt_error_api_4028,4028,"Restricted booking, infant cannot be paired with senior citizen (YCD)",,,1,1
 tt_error_api_4029,4029,"Failed Issued",,,1,1
 tt_error_api_4030,4030,"User is banned",,,1,1
+tt_error_api_4031,4031,"Resource not found",,,1,1
 tt_error_api_9001,9901,Notification,For Notif,,1,1
 tt_error_api_9002,9902,Warning,For Warning,,1,1
 tt_error_api_9003,9903,Error,For Error,,1,1
