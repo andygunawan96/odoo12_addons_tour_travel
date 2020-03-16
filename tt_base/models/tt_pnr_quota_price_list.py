@@ -6,7 +6,7 @@ class TtPnrQuotaMasterData(models.Model):
     _description = 'Rodex Model PNR Quota Master Data'
 
     name = fields.Char('Name')
-    seq_id = fields.Char('Seq ID', readonly=True)
+    seq_id = fields.Char('Sequence ID', readonly=True)
     amount = fields.Integer('Amount')
     currency_id = fields.Many2one('res.currency', 'Currency', default=lambda self:self.env.user.company_id.currency_id)
     price = fields.Monetary('Price')

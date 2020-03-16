@@ -61,6 +61,7 @@
                         <group>
                             <field name="currency_id"/>
                             <field name="sid_issued"/>
+                            <field name="sid_cancel"/>
                             <field name="promotion_code"/>
                         </group>
                     </group>

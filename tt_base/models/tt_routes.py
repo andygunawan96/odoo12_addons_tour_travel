@@ -4,11 +4,9 @@ from ...tools.api import Response
 from ...tools import ERR
 import logging
 import traceback
-from ...tools.db_connector import GatewayConnector
 from ...tools.timer import Timer
 
 _logger = logging.getLogger(__name__)
-_gw_con = GatewayConnector()
 _UPDATE_TIME = 300 # 5 x 60 seconds
 
 

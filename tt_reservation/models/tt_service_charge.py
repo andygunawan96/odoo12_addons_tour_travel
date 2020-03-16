@@ -37,7 +37,10 @@ class TbServiceCharge(models.Model):
             'currency': self.currency_id.name,
             'amount': self.amount,
             'foreign_currency': self.foreign_currency_id.name,
-            'foreign_amount': self.foreign_amount
+            'foreign_amount': self.foreign_amount,
+            'pax_count': self.pax_count,
+            'pax_type': self.pax_type,
+            'total': self.total,
         }
 
     def get_total_for_payment(self):

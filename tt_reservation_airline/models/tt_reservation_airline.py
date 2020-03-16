@@ -125,6 +125,11 @@ class ReservationAirline(models.Model):
             'customer_parent_id': customer_parent_id
         })
 
+    @api.multi
+    def action_set_as_cancel(self):
+        for rec in self:
+            rec.state = 'cancel'
+
     def action_cancel(self):
         super(ReservationAirline, self).action_cancel()
         for rec in self.provider_booking_ids:
@@ -413,6 +418,8 @@ class ReservationAirline(models.Model):
                         self.update_pnr_booked(provider_obj,provider,context)
                     if provider.get('pnr', '') != provider_obj.pnr:
                         provider_obj.write({'pnr': provider['pnr']})
+                        for sc in provider_obj.cost_service_charge_ids:
+                            sc.description = provider['pnr']
                         any_pnr_changed = True
 
                     #action issued dan create ticket number
@@ -432,6 +439,9 @@ class ReservationAirline(models.Model):
                     any_provider_changed = True
                 elif provider['status'] == 'FAIL_ISSUED':
                     provider_obj.action_failed_issued_api_airline(provider.get('error_code'),provider.get('error_msg'))
+                    any_provider_changed = True
+                elif provider['status'] == 'CANCELLED':
+                    provider_obj.action_cancel_api_airline(context)
                     any_provider_changed = True
 
             for rec in book_obj.provider_booking_ids:
@@ -614,6 +624,9 @@ class ReservationAirline(models.Model):
         elif all(rec.state == 'fail_booked' for rec in self.provider_booking_ids):
             # failed book
             self.action_failed_book()
+        elif all(rec.state == 'cancel' for rec in self.provider_booking_ids):
+            # failed book
+            self.action_set_as_cancel()
         else:
             # entah status apa
             _logger.error('Entah status apa')

@@ -176,6 +176,7 @@ class TtReservation(models.Model):
             'gender': vals.get('gender'),
             'marital_status': 'married' if vals.get('title') == 'MRS' else '',
             'is_get_booking_from_vendor': vals.get('is_get_booking_from_vendor',False),
+            'register_uid': context['co_uid']
         })
         return booker_obj.create(vals)
 
@@ -232,6 +233,7 @@ class TtReservation(models.Model):
             'marital_status': 'married' if vals.get('title') == 'MRS' else '',
             'gender': vals.get('gender'),
             'is_get_booking_from_vendor': vals.get('is_get_booking_from_vendor', False),
+            'register_uid': context['co_uid']
         })
 
         return contact_obj.create(vals)
@@ -288,6 +290,7 @@ class TtReservation(models.Model):
             psg.update({
                 'marital_status': 'married' if psg.get('title') == 'MRS' else '',
                 'is_get_booking_from_vendor': psg.get('is_get_booking_from_vendor', False),
+                'register_uid': context['co_uid']
             })
             #if ada phone, kalau dari frontend cache passenger
             if psg.get('phone'):

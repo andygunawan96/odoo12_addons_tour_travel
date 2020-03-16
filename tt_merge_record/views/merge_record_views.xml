@@ -79,6 +79,6 @@
         <field name="domain">['|',('active', '=', 1),('active', '=', 0)]</field>
     </record>
 
-    <menuitem id="top_merge_record" parent="tt_base.main_tour_travel" name="New Record" sequence="30"
+    <menuitem id="top_merge_record" parent="tt_base.top_tour_travel_configuration" name="New Record" sequence="998"
               action="tt_merge_record.temporary_record_action"/>
 </odoo>

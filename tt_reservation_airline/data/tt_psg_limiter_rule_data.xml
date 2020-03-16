@@ -1,57 +1,70 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <odoo>
-    <record id="tt_limiter_rule_sq" model="tt.limiter.rule">
-        <field name="carrier_id" ref="tt_reservation_airline.tt_transport_carrier_airline_sq"/>
-        <field name="adm">30USD</field>
-    </record>
+    <data>
+        <record id="tt_limiter_rule_sq" model="tt.limiter.rule">
+            <field name="carrier_id" ref="tt_reservation_airline.tt_transport_carrier_airline_sq"/>
+            <field name="rebooking_limit">2</field>
+            <field name="adm">30USD</field>
+        </record>
 
-    <record id="tt_limiter_rule_mi" model="tt.limiter.rule">
-        <field name="carrier_id" ref="tt_reservation_airline.tt_transport_carrier_airline_mi"/>
-        <field name="adm">30USD</field>
-    </record>
+        <record id="tt_limiter_rule_mi" model="tt.limiter.rule">
+            <field name="carrier_id" ref="tt_reservation_airline.tt_transport_carrier_airline_mi"/>
+            <field name="rebooking_limit">2</field>
+            <field name="adm">30USD</field>
+        </record>
 
-    <record id="tt_limiter_rule_cx" model="tt.limiter.rule">
-        <field name="carrier_id" ref="tt_reservation_airline.tt_transport_carrier_airline_cx"/>
-        <field name="adm">30USD</field>
-    </record>
+        <record id="tt_limiter_rule_cx" model="tt.limiter.rule">
+            <field name="carrier_id" ref="tt_reservation_airline.tt_transport_carrier_airline_cx"/>
+            <field name="rebooking_limit">2</field>
+            <field name="adm">30USD</field>
+        </record>
 
-    <record id="tt_limiter_rule_ci" model="tt.limiter.rule">
-        <field name="carrier_id" ref="tt_reservation_airline.tt_transport_carrier_airline_ci"/>
-        <field name="adm">30USD</field>
-    </record>
+        <record id="tt_limiter_rule_ci" model="tt.limiter.rule">
+            <field name="carrier_id" ref="tt_reservation_airline.tt_transport_carrier_airline_ci"/>
+            <field name="rebooking_limit">2</field>
+            <field name="adm">30USD</field>
+        </record>
 
-    <record id="tt_limiter_rule_tk" model="tt.limiter.rule">
-        <field name="carrier_id" ref="tt_reservation_airline.tt_transport_carrier_airline_tk"/>
-        <field name="adm">30USD</field>
-    </record>
+        <record id="tt_limiter_rule_tk" model="tt.limiter.rule">
+            <field name="carrier_id" ref="tt_reservation_airline.tt_transport_carrier_airline_tk"/>
+            <field name="rebooking_limit">2</field>
+            <field name="adm">30USD</field>
+        </record>
 
-    <record id="tt_limiter_rule_dl" model="tt.limiter.rule">
-        <field name="carrier_id" ref="tt_reservation_airline.tt_transport_carrier_airline_dl"/>
-        <field name="adm">30USD</field>
-    </record>
+        <record id="tt_limiter_rule_dl" model="tt.limiter.rule">
+            <field name="carrier_id" ref="tt_reservation_airline.tt_transport_carrier_airline_dl"/>
+            <field name="rebooking_limit">2</field>
+            <field name="adm">30USD</field>
+        </record>
 
-    <record id="tt_limiter_rule_qr" model="tt.limiter.rule">
-        <field name="carrier_id" ref="tt_reservation_airline.tt_transport_carrier_airline_qr"/>
-        <field name="adm">30USD</field>
-    </record>
+        <record id="tt_limiter_rule_qr" model="tt.limiter.rule">
+            <field name="carrier_id" ref="tt_reservation_airline.tt_transport_carrier_airline_qr"/>
+            <field name="rebooking_limit">1</field>
+            <field name="adm">30USD</field>
+        </record>
 
-    <record id="tt_limiter_rule_ey" model="tt.limiter.rule">
-        <field name="carrier_id" ref="tt_reservation_airline.tt_transport_carrier_airline_ey"/>
-        <field name="adm">30USD</field>
-    </record>
+        <record id="tt_limiter_rule_ey" model="tt.limiter.rule">
+            <field name="carrier_id" ref="tt_reservation_airline.tt_transport_carrier_airline_ey"/>
+            <field name="rebooking_limit">2</field>
+            <field name="adm">30USD</field>
+        </record>
 
-    <record id="tt_limiter_rule_nh" model="tt.limiter.rule">
-        <field name="carrier_id" ref="tt_reservation_airline.tt_transport_carrier_airline_nh"/>
-        <field name="adm">30USD</field>
-    </record>
+        <record id="tt_limiter_rule_nh" model="tt.limiter.rule">
+            <field name="carrier_id" ref="tt_reservation_airline.tt_transport_carrier_airline_nh"/>
+            <field name="rebooking_limit">2</field>
+            <field name="adm">30USD</field>
+        </record>
 
-    <record id="tt_limiter_rule_jl" model="tt.limiter.rule">
-        <field name="carrier_id" ref="tt_reservation_airline.tt_transport_carrier_airline_jl"/>
-        <field name="adm">30USD</field>
-    </record>
+        <record id="tt_limiter_rule_jl" model="tt.limiter.rule">
+            <field name="carrier_id" ref="tt_reservation_airline.tt_transport_carrier_airline_jl"/>
+            <field name="rebooking_limit">2</field>
+            <field name="adm">30USD</field>
+        </record>
 
-    <record id="tt_limiter_rule_ps" model="tt.limiter.rule">
-        <field name="carrier_id" ref="tt_reservation_airline.tt_transport_carrier_airline_ps"/>
-        <field name="adm">30USD</field>
-    </record>
+        <record id="tt_limiter_rule_ps" model="tt.limiter.rule">
+            <field name="carrier_id" ref="tt_reservation_airline.tt_transport_carrier_airline_ps"/>
+            <field name="rebooking_limit">2</field>
+            <field name="adm">30USD</field>
+        </record>
+    </data>
 </odoo>
