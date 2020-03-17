@@ -38,8 +38,12 @@ class PhoneDetail(models.Model):
 
     def generate_va_number(self):
         check_number = self.env['payment.acquirer.number'].search([('number', 'ilike', self.calling_number[-8:])])
-        payment_acq = self.env['tt.agent'].search([('id', '=', self.agent_id.id)]).payment_acq_ids.search([('state','=','open')])
-        if len(check_number) == 0 and len(payment_acq) == 0:
+        payment_acq = self.env['tt.agent'].search([('id', '=', self.agent_id.id)]).payment_acq_ids
+        payment_acq_open_length = 0
+        for rec in payment_acq:
+            if rec.state == 'open':
+                payment_acq_open_length += 1
+        if len(check_number) == 0 and payment_acq_open_length == 0:
             agent = self.env['tt.agent'].search([('id', '=', self.agent_id.id)])
             data = {
                 # 'number': self.calling_number[-8:],
@@ -104,7 +108,7 @@ class PhoneDetail(models.Model):
                 raise UserError(_(res['error_msg']))
         elif len(check_number) > 0:
             raise UserError(_("Phone number has been register in our system please use other number"))
-        elif len(payment_acq) > 0:
+        elif payment_acq_open_length > 0:
             raise UserError(_("You have register VA account"))
 
 
