@@ -29,6 +29,7 @@ class TtAgentType(models.Model):
     seq_prefix = fields.Char('Sequence Prefix', size=2, required=True)
     terms_and_condition = fields.Html('Terms and Condition')
     is_using_pnr_quota = fields.Boolean('Is Using PNR Quota')
+    menuitem_id = fields.Many2one('ir.ui.menu','Menuitem')
 
     @api.model
     def create(self, vals_list):
@@ -39,7 +40,66 @@ class TtAgentType(models.Model):
             'prefix': '{}.%(day)s%(sec)s'.format(new_agent_type.seq_prefix),
             'padding': 3
         })
+        new_agent_type.create_menuitem()
         return new_agent_type
+
+    def unlink(self):
+        self.delete_menuitem()
+        super(TtAgentType, self).unlink()
+
+    def write(self, vals):
+        super(TtAgentType, self).write(vals)
+        if 'name' in vals:
+            self.menuitem_id.name = vals['name']
+
+    def create_menuitem(self):
+        if not self.menuitem_id:
+            ## create search view
+            search_obj = self.env['ir.ui.view'].create({
+                'name': 'tt.agent.view.search.inh.custom.%s' % (self.code),
+                'model': 'tt.agent',
+                'type': 'search',
+                'inherit_id': self.env.ref('tt_base.tt_agent_view_search').id,
+                'arch': '''
+                <xpath expr="//group[@name='agent_type_filter']" position="inside">
+                    <filter string="%s" name="%s" domain="[('agent_type_id','=',[%s,])]"/>
+                </xpath>
+                ''' % (self.name,self.code,self.id)
+            })
+
+            ## create action
+            action_obj = self.env['ir.actions.act_window'].create({
+                'name': 'Agent %s' % (self.name),
+                'type': 'ir.actions.act_window',
+                'res_model': 'tt.agent',
+                'view_type': 'form',
+                'view_mode': 'kanban,tree,form',
+
+                'search_view_id': search_obj.id,
+                'context': {
+                    'form_view_ref': 'tt_base.tt_agent_form_view',
+                    'kanban_view_ref': 'tt_base.tt_agent_kanban_view',
+                    'search_default_%s' % (self.code) : 1,
+                    'default_agent_type_id': self.id
+                }
+            })
+
+
+        ## create custom menu item here
+        menuitem_obj = self.env['ir.ui.menu'].create({
+            'parent_id': self.env.ref('tt_base.menu_tour_travel_agent').id,
+            'groups_id': [(4,self.env.ref('tt_base.group_tt_tour_travel_operator').id)],
+            'name': self.name,
+            'sequence': 35,
+            'action': 'ir.actions.act_window,%s' % (action_obj.id)
+        })
+        self.menuitem_id = menuitem_obj.id
+
+    def delete_menuitem(self):
+        if self.menuitem_id:
+            self.menuitem_id.action.search_view_id.unlink()
+            self.menuitem_id.action.unlink()
+            self.menuitem_id.unlink()
 
     # fixme : nanti akan diubah
     def calc_commission(self, amount, multiplier, carrier_id=False):

@@ -72,7 +72,7 @@
                                 <group>
                                     <field name="religion"/>
                                     <field name="face_image_id"/>
-                                    <field name="register_uid"/>
+                                    <field name="register_uid" groups="tt_base.group_tt_tour_travel_operator"/>
                                 </group>
                             </group>
 
