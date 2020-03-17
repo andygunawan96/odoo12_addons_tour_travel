@@ -9,12 +9,12 @@
                 <field name="agent_type_id"/>
                 <field name="parent_agent_id"/>
                 <field name="email"/>
-                <group>
+                <group name="agent_type_filter">
                     <filter string="All" name="all"/>
-                    <filter string="Citra" name="citra" domain="[('agent_type_id','=',[%(tt_base.agent_type_citra)d,])]"/>
-                    <filter string="Japro" name="japro" domain="[('agent_type_id','=',[%(tt_base.agent_type_japro)d,])]"/>
-                    <filter string="BTBO" name="btbo" domain="[('agent_type_id','=',[%(tt_base.agent_type_btbo)d,])]"/>
-                    <filter string="BTBR" name="btbr" domain="[('agent_type_id','=',[%(tt_base.agent_type_btbr)d,])]"/>
+<!--                    <filter string="Citra" name="citra" domain="[('agent_type_id','=',[%(tt_base.agent_type_citra)d,])]"/>-->
+<!--                    <filter string="Japro" name="japro" domain="[('agent_type_id','=',[%(tt_base.agent_type_japro)d,])]"/>-->
+<!--                    <filter string="BTBO" name="btbo" domain="[('agent_type_id','=',[%(tt_base.agent_type_btbo)d,])]"/>-->
+<!--                    <filter string="BTBR" name="btbr" domain="[('agent_type_id','=',[%(tt_base.agent_type_btbr)d,])]"/>-->
                 </group>
                 <separator/>
                 <filter string="Today" name="today" domain="[('date','&gt;=',time.strftime('%%Y-%%m-%%d'))]"/>
@@ -48,7 +48,6 @@
             <form create="false">
                 <header>
                     <button name="get_current_agent_target" type="object" string="Calc Target" groups="base.user_admin"/>
-                    <button name="generate_va_number" type="object" string="Generate VA" groups="tt_base.group_tt_accounting_supervisor"/>
                     <button name="dummy_use_pnr_quota" type="object" string="Use PNR Quota" groups="base.user_admin"/>
                     <button name="dummy_buy_pnr_quota" type="object" string="Buy PNR Quota" groups="base.user_admin"/>
                 </header>
@@ -318,73 +317,73 @@
         </field>
     </record>
 
-    <record id="tt_agent_citra_action_view" model="ir.actions.act_window">
-        <field name="name">Agent Citra</field>
-        <field name="type">ir.actions.act_window</field>
-        <field name="res_model">tt.agent</field>
-        <field name="view_type">form</field>
-        <field name="view_mode">kanban,tree,form</field>
-        <field name="search_view_id" ref="tt_agent_view_search"/>
-        <field name="context" eval="
-            {
-                'form_view_ref': 'tt_base.tt_agent_form_view',
-                'kanban_view_ref': 'tt_base.tt_agent_kanban_view',
-                'search_default_citra': 1,
-                'default_agent_type_id': ref('tt_base.agent_type_citra')
-            }
-        "/>
-    </record>
+<!--    <record id="tt_agent_citra_action_view" model="ir.actions.act_window">-->
+<!--        <field name="name">Agent Citra</field>-->
+<!--        <field name="type">ir.actions.act_window</field>-->
+<!--        <field name="res_model">tt.agent</field>-->
+<!--        <field name="view_type">form</field>-->
+<!--        <field name="view_mode">kanban,tree,form</field>-->
+<!--        <field name="search_view_id" ref="tt_agent_view_search"/>-->
+<!--        <field name="context" eval="-->
+<!--            {-->
+<!--                'form_view_ref': 'tt_base.tt_agent_form_view',-->
+<!--                'kanban_view_ref': 'tt_base.tt_agent_kanban_view',-->
+<!--                'search_default_citra': 1,-->
+<!--                'default_agent_type_id': ref('tt_base.agent_type_citra')-->
+<!--            }-->
+<!--        "/>-->
+<!--    </record>-->
 
-    <record id="tt_agent_japro_action_view" model="ir.actions.act_window">
-        <field name="name">Agent Japro</field>
-        <field name="type">ir.actions.act_window</field>
-        <field name="res_model">tt.agent</field>
-        <field name="view_type">form</field>
-        <field name="view_mode">kanban,tree,form</field>
-        <field name="search_view_id" ref="tt_agent_view_search"/>
-        <field name="context" eval="
-            {
-                'form_view_ref': 'tt_base.tt_agent_form_view',
-                'kanban_view_ref': 'tt_base.tt_agent_kanban_view',
-                'search_default_japro': 1,
-                'default_agent_type_id': ref('tt_base.agent_type_japro')
-            }
-        "/>
-    </record>
+<!--    <record id="tt_agent_japro_action_view" model="ir.actions.act_window">-->
+<!--        <field name="name">Agent Japro</field>-->
+<!--        <field name="type">ir.actions.act_window</field>-->
+<!--        <field name="res_model">tt.agent</field>-->
+<!--        <field name="view_type">form</field>-->
+<!--        <field name="view_mode">kanban,tree,form</field>-->
+<!--        <field name="search_view_id" ref="tt_agent_view_search"/>-->
+<!--        <field name="context" eval="-->
+<!--            {-->
+<!--                'form_view_ref': 'tt_base.tt_agent_form_view',-->
+<!--                'kanban_view_ref': 'tt_base.tt_agent_kanban_view',-->
+<!--                'search_default_japro': 1,-->
+<!--                'default_agent_type_id': ref('tt_base.agent_type_japro')-->
+<!--            }-->
+<!--        "/>-->
+<!--    </record>-->
 
-    <record id="tt_agent_btbo_action_view" model="ir.actions.act_window">
-        <field name="name">Agent BTBO</field>
-        <field name="type">ir.actions.act_window</field>
-        <field name="res_model">tt.agent</field>
-        <field name="view_type">form</field>
-        <field name="view_mode">kanban,tree,form</field>
-        <field name="search_view_id" ref="tt_agent_view_search"/>
-        <field name="context" eval="
-            {
-                'form_view_ref': 'tt_base.tt_agent_form_view',
-                'kanban_view_ref': 'tt_base.tt_agent_kanban_view',
-                'search_default_btbo': 1,
-                'default_agent_type_id': ref('tt_base.agent_type_btbo')
-            }
-        "/>
-    </record>
+<!--    <record id="tt_agent_btbo_action_view" model="ir.actions.act_window">-->
+<!--        <field name="name">Agent BTBO</field>-->
+<!--        <field name="type">ir.actions.act_window</field>-->
+<!--        <field name="res_model">tt.agent</field>-->
+<!--        <field name="view_type">form</field>-->
+<!--        <field name="view_mode">kanban,tree,form</field>-->
+<!--        <field name="search_view_id" ref="tt_agent_view_search"/>-->
+<!--        <field name="context" eval="-->
+<!--            {-->
+<!--                'form_view_ref': 'tt_base.tt_agent_form_view',-->
+<!--                'kanban_view_ref': 'tt_base.tt_agent_kanban_view',-->
+<!--                'search_default_btbo': 1,-->
+<!--                'default_agent_type_id': ref('tt_base.agent_type_btbo')-->
+<!--            }-->
+<!--        "/>-->
+<!--    </record>-->
 
-    <record id="tt_agent_btbr_action_view" model="ir.actions.act_window">
-        <field name="name">Agent BTBR</field>
-        <field name="type">ir.actions.act_window</field>
-        <field name="res_model">tt.agent</field>
-        <field name="view_type">form</field>
-        <field name="view_mode">kanban,tree,form</field>
-        <field name="search_view_id" ref="tt_agent_view_search"/>
-        <field name="context" eval="
-            {
-                'form_view_ref': 'tt_base.tt_agent_form_view',
-                'kanban_view_ref': 'tt_base.tt_agent_kanban_view',
-                'search_default_btbr': 1,
-                'default_agent_type_id': ref('tt_base.agent_type_btbr')
-            }
-        "/>
-    </record>
+<!--    <record id="tt_agent_btbr_action_view" model="ir.actions.act_window">-->
+<!--        <field name="name">Agent BTBR</field>-->
+<!--        <field name="type">ir.actions.act_window</field>-->
+<!--        <field name="res_model">tt.agent</field>-->
+<!--        <field name="view_type">form</field>-->
+<!--        <field name="view_mode">kanban,tree,form</field>-->
+<!--        <field name="search_view_id" ref="tt_agent_view_search"/>-->
+<!--        <field name="context" eval="-->
+<!--            {-->
+<!--                'form_view_ref': 'tt_base.tt_agent_form_view',-->
+<!--                'kanban_view_ref': 'tt_base.tt_agent_kanban_view',-->
+<!--                'search_default_btbr': 1,-->
+<!--                'default_agent_type_id': ref('tt_base.agent_type_btbr')-->
+<!--            }-->
+<!--        "/>-->
+<!--    </record>-->
 
     <menuitem id="menu_tour_travel_agent"
               parent="tt_base.top_tour_travel_customers"
@@ -399,33 +398,33 @@
               sequence="1"
               action="tt_agent_all_action_view"/>
 
-    <menuitem id="submenu_tour_travel_citra_agent"
-              parent="tt_base.menu_tour_travel_agent"
-              groups="group_tt_tour_travel_operator"
-              name="Citra"
-              sequence="2"
-              action="tt_agent_citra_action_view"/>
+<!--    <menuitem id="submenu_tour_travel_citra_agent"-->
+<!--              parent="tt_base.menu_tour_travel_agent"-->
+<!--              groups="group_tt_tour_travel_operator"-->
+<!--              name="Citra"-->
+<!--              sequence="2"-->
+<!--              action="tt_agent_citra_action_view"/>-->
 
-    <menuitem id="submenu_tour_travel_japro_agent"
-              parent="tt_base.menu_tour_travel_agent"
-              groups="group_tt_tour_travel_operator"
-              name="JaPro"
-              sequence="3"
-              action="tt_agent_japro_action_view"/>
+<!--    <menuitem id="submenu_tour_travel_japro_agent"-->
+<!--              parent="tt_base.menu_tour_travel_agent"-->
+<!--              groups="group_tt_tour_travel_operator"-->
+<!--              name="JaPro"-->
+<!--              sequence="3"-->
+<!--              action="tt_agent_japro_action_view"/>-->
 
-    <menuitem id="submenu_tour_travel_btbo_agent"
-              parent="tt_base.menu_tour_travel_agent"
-              groups="group_tt_tour_travel_operator"
-              name="BTBO"
-              sequence="4"
-              action="tt_agent_btbo_action_view"/>
+<!--    <menuitem id="submenu_tour_travel_btbo_agent"-->
+<!--              parent="tt_base.menu_tour_travel_agent"-->
+<!--              groups="group_tt_tour_travel_operator"-->
+<!--              name="BTBO"-->
+<!--              sequence="4"-->
+<!--              action="tt_agent_btbo_action_view"/>-->
 
-    <menuitem id="submenu_tour_travel_btbr_agent"
-              parent="tt_base.menu_tour_travel_agent"
-              groups="group_tt_tour_travel_operator"
-              name="BTBR"
-              sequence="5"
-              action="tt_agent_btbr_action_view"/>
+<!--    <menuitem id="submenu_tour_travel_btbr_agent"-->
+<!--              parent="tt_base.menu_tour_travel_agent"-->
+<!--              groups="group_tt_tour_travel_operator"-->
+<!--              name="BTBR"-->
+<!--              sequence="5"-->
+<!--              action="tt_agent_btbr_action_view"/>-->
 
     <record id="view_agent_target_form" model="ir.ui.view">
         <field name="name">view.tt.agent.target.form.view</field>

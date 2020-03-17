@@ -134,13 +134,28 @@ class AgentRegistration(models.Model):
             else:
                 pass
 
+    @staticmethod
+    def reg_upline_contains(agent_type_id, target_agent_type_id):
+        for upline in agent_type_id.registration_upline_ids:
+            if upline.code == target_agent_type_id.code:
+                return True
+        return False
+
     def set_parent_agent_id(self):
         for rec in self:
             if rec.agent_type_id:
-                if rec.agent_type_id.id == self.env.ref('tt_base.agent_type_citra').id:
+                # Set parent agent berdasarkan registration upline di agent type
+                if not rec.agent_type_id.registration_upline_ids:
+                    """ Jika registration upline ids kosong, langsung set ke HO """
                     rec.parent_agent_id = rec.env.ref('tt_base.rodex_ho').id
                 else:
-                    rec.parent_agent_id = rec.env.user.agent_id
+                    if rec.reg_upline_contains(rec.agent_type_id, rec.env.user.agent_id.agent_type_id):
+                        rec.parent_agent_id = rec.env.user.agent_id
+                    else:
+                        if rec.reg_upline_contains(rec.agent_type_id, rec.env.ref('tt_base.agent_type_ho')):
+                            rec.parent_agent_id = rec.env.ref('tt_base.rodex_ho').id
+                        else:
+                            pass
             else:
                 rec.parent_agent_id = rec.env.user.agent_id
             rec.tac = rec.agent_type_id.terms_and_condition
@@ -840,18 +855,36 @@ class AgentRegistration(models.Model):
         return header
 
     def set_parent_agent_id_api(self, agent_type_id, agent_id):
-        if agent_type_id:
-            if agent_type_id.id == self.env.ref('tt_base.agent_type_citra').id:
+        if agent_id:
+            """ Kalo daftar agent dengan login dulu """
+            if agent_id == self.env.ref('tt_base.agent_b2c').id:
+                """ Kalo B2C, parent set to HO """
                 parent_agent_id = self.env.ref('tt_base.rodex_ho').id
             else:
-                if agent_id:
-                    if agent_id == self.env.ref('tt_base.agent_b2c').id:
-                        parent_agent_id = self.env.ref('tt_base.rodex_ho').id
-                    else:
-                        parent_agent_id = agent_id
-                else:
+                # Set parent agent berdasarkan registration upline di agent type
+                if not agent_type_id.registration_upline_ids:
+                    """ Jika registration upline ids kosong, langsung set ke HO """
                     parent_agent_id = self.env.ref('tt_base.rodex_ho').id
+                else:
+                    if self.reg_upline_contains(agent_type_id, self.env['tt.agent'].browse(agent_id).agent_type_id):
+                        parent_agent_id = agent_id
+                    else:
+                        if self.reg_upline_contains(self.env.ref('tt_base.agent_type_ho'), self.env['tt.agent'].browse(agent_id).agent_type_id):
+                            parent_agent_id = self.env.ref('tt_base.rodex_ho').id
+                        else:
+                            parent_agent_id = self.env.ref('tt_base.rodex_ho').id  # Sementara
+            # if agent_type_id.id == self.env.ref('tt_base.agent_type_citra').id:
+            #     parent_agent_id = self.env.ref('tt_base.rodex_ho').id
+            # else:
+            #     if agent_id:
+            #         if agent_id == self.env.ref('tt_base.agent_b2c').id:
+            #             parent_agent_id = self.env.ref('tt_base.rodex_ho').id
+            #         else:
+            #             parent_agent_id = agent_id
+            #     else:
+            #         parent_agent_id = self.env.ref('tt_base.rodex_ho').id
         else:
+            """ Kalo tidak login """
             if agent_id:
                 if agent_id == self.env.ref('tt_base.agent_b2c').id:
                     parent_agent_id = self.env.ref('tt_base.rodex_ho').id

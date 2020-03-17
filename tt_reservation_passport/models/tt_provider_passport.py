@@ -51,13 +51,6 @@ class TtProviderPassport(models.Model):
     state_passport = fields.Selection(STATE_PASSPORT, 'State', related="booking_id.state_passport")
     cost_service_charge_ids = fields.One2many('tt.service.charge', 'provider_passport_booking_id', 'Cost Service Charges')
 
-    country_id = fields.Many2one('res.country', 'Country', ondelete="cascade", readonly=True,
-                                 states={'draft': [('readonly', False)]})
-    departure_date = fields.Char('Journey Date', readonly=True,
-                                 states={'draft': [('readonly', False)]})
-
-    # use_vendor = fields.Boolean('Use Vendor', readonly=True, default=False)
-
     booked_uid = fields.Many2one('res.users', 'Booked By')
     booked_date = fields.Datetime('Booking Date')
     issued_uid = fields.Many2one('res.users', 'Issued By')
@@ -113,9 +106,10 @@ class TtProviderPassport(models.Model):
     def action_booked(self):
         self.state = 'booked'
 
-    def action_refund(self):
+    def action_refund(self, check_provider_state=False):
         self.state = 'refund'
-        self.booking_id.check_provider_state({'co_uid': self.env.user.id})
+        if check_provider_state:
+            self.booking_id.check_provider_state({'co_uid': self.env.user.id})
 
     def create_service_charge(self, service_charge_vals):
         service_chg_obj = self.env['tt.service.charge']
@@ -193,3 +187,5 @@ class TtProviderPassport(models.Model):
         }
         return res
 
+    def get_carrier_name(self):
+        return []
