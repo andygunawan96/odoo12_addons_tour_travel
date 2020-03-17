@@ -166,7 +166,7 @@ class TtTopUp(models.Model):
     def action_va_top_up(self, data, context):
         #update pay
         top_up = self.search([('name', '=', data['name'])])
-        top_up.payment_id.reference = data['virtual_account'] + str(datetime.now())
+        top_up.payment_id.reference = data['payment_ref']
         top_up.payment_id.payment_date = str(datetime.now())
         top_up.validated_amount = top_up.payment_id.total_amount
         top_up.state = 'validated'
@@ -189,6 +189,8 @@ class TtTopUp(models.Model):
                                                                     top_up.validated_amount,top_up.agent_id.name)
         except Exception as e:
             _logger.error("Send TOP UP Approve Notification Telegram Error")
+
+        return ERR.get_no_error()
 
     def get_total_amount(self):
         return self.total
