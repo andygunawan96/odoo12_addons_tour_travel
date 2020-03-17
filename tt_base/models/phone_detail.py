@@ -109,10 +109,11 @@ class PhoneDetail(models.Model):
 
 
     def delete_va_number(self):
-        data = []
+        data = {
+            "number": self.calling_number[-8:]
+        }
         self.va_create = False
         self.env.cr.commit()
-        data.append(self.calling_number[-8:])
         if len(data) != 0:
             res = self.env['tt.payment.api.con'].delete_VA(data)
             if res['error_code'] == 0:
