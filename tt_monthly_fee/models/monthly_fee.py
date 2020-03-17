@@ -373,4 +373,4 @@ class MonthlyManagementFeeLine(models.Model):
     @api.depends('ledger_id')
     def get_ledger_value(self):
         for rec in self:
-            rec.amount = rec.ledger_id.debit - rec.ledger_id.credit
+            rec.amount = rec.ledger_id.sudo().debit - rec.ledger_id.sudo().credit
