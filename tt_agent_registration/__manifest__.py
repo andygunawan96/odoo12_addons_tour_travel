@@ -27,7 +27,7 @@
         'data/ir_cron_data.xml',
         'data/ir_send_email.xml',
         'data/tt_agent_registration_promotion.xml',
-        'data/tt_agent_registration_document.xml',
+        # 'data/tt_agent_registration_document.xml',
         # 'data/tt_provider_type_data.xml',
         'data/param_data.xml',
         'views/tt_agent_registration_views.xml',

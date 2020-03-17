@@ -38,6 +38,7 @@ STATE_PASSPORT = [
 class TtPassport(models.Model):
     _name = 'tt.reservation.passport'
     _inherit = 'tt.reservation'
+    _order = 'name desc'
     _description = 'Rodex Model'
 
     provider_type_id = fields.Many2one('tt.provider.type', string='Provider Type',
@@ -54,8 +55,6 @@ class TtPassport(models.Model):
                                             confirm = HO accepted
                                             validate = if all required documents submitted and documents in progress
                                             cancel = request cancelled
-                                            to_vendor = Documents sent to Vendor
-                                            vendor_process = Documents proceed by Vendor
                                             in_process = before payment
                                             payment = payment
                                             partial proceed = partial proceed by consulate/immigration
@@ -99,8 +98,8 @@ class TtPassport(models.Model):
     recipient_address = fields.Char('Recipient Address')
     recipient_phone = fields.Char('Recipient Phone')
 
-    to_vendor_date = fields.Datetime('Send To Vendor Date', readonly=1)
-    vendor_process_date = fields.Datetime('Vendor Process Date', readonly=1)
+    # to_vendor_date = fields.Datetime('Send To Vendor Date', readonly=1)
+    # vendor_process_date = fields.Datetime('Vendor Process Date', readonly=1)
     in_process_date = fields.Datetime('In Process Date', readonly=1)
     delivered_date = fields.Datetime('Delivered Date', readonly=1)
 
@@ -207,14 +206,22 @@ class TtPassport(models.Model):
             'state_passport': 'in_process',
             'in_process_date': datetime.now()
         })
+
         for rec in self.passenger_ids:
             if rec.state in ['validate', 'cancel']:
                 rec.action_in_process()
-        context = {
-            'co_uid': self.env.user.id
-        }
-        self.action_booked_passport(context)
+        # self.action_booked_passport(context)
         self.action_issued_passport(context)
+        provider_id = self.provider_booking_ids[0]
+        expenses_vals = {
+            'provider_id': provider_id.id,
+            'passport_id': self.id,
+            'reference_number': 'NTA',
+            'nta_amount': self.total_nta,
+        }
+        provider_id.write({
+            'vendor_ids': [(0, 0, expenses_vals)]
+        })
         self.message_post(body='Order IN PROCESS')
 
     def action_payment_passport(self):
@@ -475,6 +482,7 @@ class TtPassport(models.Model):
 
     @api.one
     def action_issued_passport(self, api_context=None):
+        """ Mengubah state menjadi issued / state passport menjadi in process """
         if not api_context:  # Jika dari call from backend
             api_context = {
                 'co_uid': self.env.user.id
@@ -783,7 +791,7 @@ class TtPassport(models.Model):
 
     param_sell_passport = {
         "total_cost": 25,
-        "provider": "rodextrip_passport",
+        "provider": "passport_rodextrip",
         "pax": {
             "adult": 1,
             "child": 0,
@@ -834,7 +842,7 @@ class TtPassport(models.Model):
             "is_contact": False,
             "number": 1,
             "nationality_code": "ID",
-
+            "master_passport_Id": "1",
             "notes": "",
             "sequence": 1,
             "passenger_id": "PSG_1",
@@ -890,6 +898,12 @@ class TtPassport(models.Model):
             booker_id = self.create_booker_api(booker, context)
             contact_id = self.create_contact_api(contact[0], booker_id, context)
             passenger_ids = self.create_customer_api(passengers, context, booker_id, contact_id)  # create passenger
+            to_psg_ids = self._create_passport_order(passengers, passenger_ids)  # create visa order data['passenger']
+
+            voucher = ''
+            # if data['voucher']:
+            #     voucher = data['voucher']['voucher_reference']
+
             # to_psg_ids = self._create_passport_order(passengers, passenger_ids)  # create passport order data['passenger']
             # pricing = self.create_sale_service_charge_value(passengers, to_psg_ids, context,
             #                                                 sell_passport)  # create pricing dict
@@ -910,8 +924,8 @@ class TtPassport(models.Model):
                 'contact_name': contact[0]['first_name'] + ' ' + contact[0]['last_name'],
                 'contact_email': contact_id.email,
                 'contact_phone': "%s - %s" % (
-                contact_id.phone_ids[0].calling_code, contact_id.phone_ids[0].calling_number),
-                # 'passenger_ids': [(6, 0, to_psg_ids)],
+                    contact_id.phone_ids[0].calling_code, contact_id.phone_ids[0].calling_number),
+                'passenger_ids': [(6, 0, to_psg_ids)],
                 'adult': sell_passport['pax']['adult'],
                 'child': sell_passport['pax']['child'],
                 'infant': sell_passport['pax']['infant'],
@@ -937,6 +951,34 @@ class TtPassport(models.Model):
                 'confirmed_date': datetime.now(),
                 'confirmed_uid': context['co_uid']
             })
+
+            self._calc_grand_total()
+
+            country_obj = self.env['res.country']
+            provider_obj = self.env['tt.provider']
+
+            provider = provider_obj.env['tt.provider'].search([('code', '=', sell_passport['provider'])], limit=1)
+            country = country_obj.search([('name', '=', search['destination'])], limit=1)
+
+            vals = {
+                'booking_id': book_obj.id,
+                'pnr': book_obj.name,
+                'provider_id': provider.id,
+                'country_id': country.id,
+            }
+            provider_passport_obj = book_obj.env['tt.provider.passport'].sudo().create(vals)
+
+            book_obj.get_list_of_provider_passport()
+
+            for psg in book_obj.passenger_ids:
+                vals = {
+                    'provider_id': provider_passport_obj.id,
+                    'passenger_id': psg.id,
+                    'pax_type': psg.passenger_type,
+                    'pricelist_id': psg.pricelist_id.id
+                }
+                self.env['tt.provider.passport.passengers'].sudo().create(vals)
+
             book_obj.message_post(body='Order CONFIRMED')
 
             res = ''
@@ -1030,6 +1072,32 @@ class TtPassport(models.Model):
             print(ssc_obj.read())
             ssc_ids.append(ssc_obj.id)
         return ssc_ids
+
+    def _create_passport_order(self, passengers, passenger_ids):
+        pricelist_env = self.env['tt.reservation.passport.pricelist'].sudo()
+        to_psg_env = self.env['tt.reservation.passport.order.passengers'].sudo()
+        to_req_env = self.env['tt.reservation.passport.order.requirements'].sudo()
+        to_psg_list = []
+
+        for idx, psg in enumerate(passengers):
+            pricelist_id = self.env['tt.reservation.passport.pricelist'].search([('id', '=', psg['master_passport_Id'])]).id
+            pricelist_obj = pricelist_env.browse(pricelist_id)
+            psg_vals = passenger_ids[idx][0].copy_to_passenger()
+            psg_vals.update({
+                'name': psg_vals['first_name'] + ' ' + psg_vals['last_name'],
+                'customer_id': passenger_ids[idx][0].id,
+                'title': psg['title'],
+                'pricelist_id': pricelist_id,
+                'passenger_type': psg['pax_type'],
+                'notes': psg.get('notes'),
+                # Pada state request, pax akan diberi expired date dg durasi tergantung dari paket visa yang diambil
+                'expired_date': fields.Date.today() + timedelta(days=pricelist_obj.duration),
+                'sequence': int(idx + 1)
+            })
+            to_psg_obj = to_psg_env.create(psg_vals)
+
+            to_psg_list.append(to_psg_obj.id)
+        return to_psg_list
 
     def get_list_of_provider_passport(self):
         provider_list = []
