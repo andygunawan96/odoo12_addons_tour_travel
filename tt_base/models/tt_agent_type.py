@@ -8,8 +8,6 @@ class TtAgentType(models.Model):
 
     name = fields.Char('Name', required=True)
     code = fields.Char('Code', required=True, help='Fixed code, ex: citra, japro, for sale pricing', default='undefine')
-    state = fields.Selection([('draft', 'Draft'), ('confirm', 'Confirmed'), ('cancel', 'Cancelled')], string='State',
-                             default='draft')
     active = fields.Boolean('Active', default='True')
     registration_upline_ids = fields.Many2many('tt.agent.type', 'tt_agent_type_upline_1_2_rel', 'agent_1', 'agent_2')
     description = fields.Text('Description')

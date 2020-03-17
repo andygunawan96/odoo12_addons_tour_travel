@@ -140,9 +140,6 @@ class IssuedOffline(models.Model):
                                               readonly=True, states={'draft': [('readonly', False)],
                                                                      'pending': [('readonly', False)]})
 
-    contact_ids = fields.One2many('tt.customer', 'reservation_offline_id', 'Contact Person', readonly=True,
-                                  states={'draft': [('readonly', False)],
-                                          'pending': [('readonly', False)]})
     booker_id = fields.Many2one('tt.customer', 'Booker', ondelete='restrict', readonly=True,
                                 states={'draft': [('readonly', False)],
                                         'pending': [('readonly', False)]})

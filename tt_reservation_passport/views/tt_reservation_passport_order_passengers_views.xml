@@ -51,7 +51,6 @@
                             <field name="booking_state"/>
                             <field name="passenger_id"/>
                             <field name="passenger_type"/>
-                            <field name="passenger_domicile"/>
                             <field name="pricelist_id"/>
                         </group>
                         <group>

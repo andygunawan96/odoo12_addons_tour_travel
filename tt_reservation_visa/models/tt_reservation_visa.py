@@ -108,7 +108,6 @@ class TtVisa(models.Model):
     in_process_date = fields.Datetime('In Process Date', readonly=1)
     delivered_date = fields.Datetime('Delivered Date', readonly=1)
 
-    contact_ids = fields.One2many('tt.customer', 'visa_id', 'Contacts', readonly=True)
     booker_id = fields.Many2one('tt.customer', 'Booker', ondelete='restrict', readonly=True)
 
     acquirer_id = fields.Many2one('payment.acquirer', 'Payment Method', readonly=True)
