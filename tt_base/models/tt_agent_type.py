@@ -154,8 +154,8 @@ class TtAgentTypeBenefit(models.Model):
     _name = 'tt.agent.type.benefit'
     _description = 'Tour & Travel - Agent Type Benefit'
 
-    title = fields.Char('Title', required=True)
-    benefit = fields.Char('Benefit', required=True)
+    title = fields.Text('Title', required=True)
+    benefit = fields.Html('Benefit', required=True)
 
 class CommissionRule(models.Model):
     _name = 'tt.commission.rule'
