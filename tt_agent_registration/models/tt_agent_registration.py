@@ -762,21 +762,23 @@ class AgentRegistration(models.Model):
         context = context  # self.param_context
         regis_doc = data['regis_doc']  # self.param_regis_doc
         promotion = data['promotion_id']  # self.param_promotion_id
-        registration_list = self.search([('name', '=', company['name'])], order='registration_date desc', limit=1)  # data['company']
+
         check = 0
-        response = {}
-        for rec in registration_list:
-            response = {
-                'name': rec.name,
-                # 'discount': rec.discount,
-                'registration_number': rec.registration_num,
-                'registration_fee': int(rec.registration_fee),
-                'currency': rec.currency_id.name
-            }
-            break
-        for rec in registration_list:
-            if datetime.now() <= rec.registration_date + timedelta(minutes=2):
-                check = 1
+        if company.get('name'):
+            registration_list = self.search([('name', '=', company['name'])], order='registration_date desc', limit=1)  # data['company']
+            response = {}
+            for rec in registration_list:
+                response = {
+                    'name': rec.name,
+                    # 'discount': rec.discount,
+                    'registration_number': rec.registration_num,
+                    'registration_fee': int(rec.registration_fee),
+                    'currency': rec.currency_id.name
+                }
+                break
+            for rec in registration_list:
+                if datetime.now() <= rec.registration_date + timedelta(minutes=2):
+                    check = 1
 
         context.update({
             'co_uid': self.env.user.id
@@ -899,13 +901,9 @@ class AgentRegistration(models.Model):
                 agent_type.append({
                     'name': rec.name,
                     'is_allow_regis': rec.can_register_agent,
-                    'product': {}
+                    'terms_and_condition': rec.terms_and_condition,
+                    'product': [{'title': rec2.title, 'benefit': rec2.benefit} for rec2 in rec.benefit]
                 })
-                for product in rec.benefit:
-                    if agent_type[len(agent_type)-1]['product'].get(product.title):
-                        agent_type[len(agent_type) - 1]['product'][product.title].append(product.benefit)
-                    else:
-                        agent_type[len(agent_type)-1]['product'][product.title] = [product.benefit]
 
             response = {
                 'agent_type': agent_type,

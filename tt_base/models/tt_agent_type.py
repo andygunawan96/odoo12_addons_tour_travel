@@ -8,8 +8,6 @@ class TtAgentType(models.Model):
 
     name = fields.Char('Name', required=True)
     code = fields.Char('Code', required=True, help='Fixed code, ex: citra, japro, for sale pricing', default='undefine')
-    state = fields.Selection([('draft', 'Draft'), ('confirm', 'Confirmed'), ('cancel', 'Cancelled')], string='State',
-                             default='draft')
     active = fields.Boolean('Active', default='True')
     registration_upline_ids = fields.Many2many('tt.agent.type', 'tt_agent_type_upline_1_2_rel', 'agent_1', 'agent_2')
     description = fields.Text('Description')
@@ -156,8 +154,8 @@ class TtAgentTypeBenefit(models.Model):
     _name = 'tt.agent.type.benefit'
     _description = 'Tour & Travel - Agent Type Benefit'
 
-    title = fields.Char('Title', required=True)
-    benefit = fields.Char('Benefit', required=True)
+    title = fields.Text('Title', required=True)
+    benefit = fields.Html('Benefit', required=True)
 
 class CommissionRule(models.Model):
     _name = 'tt.commission.rule'
