@@ -32,7 +32,6 @@ class PassportVendorLines(models.Model):
     def to_dict(self):
         res = {
             'order_number': self.passenger_id.name,
-            'vendor': self.vendor_id.name,
             'reference_number': self.reference_number,
             'currency': self.currency_id.name,
             'amount': self.amount,

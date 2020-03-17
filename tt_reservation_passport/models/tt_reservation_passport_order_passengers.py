@@ -118,12 +118,13 @@ class PassportOrderPassengers(models.Model):
                                                 confirm = HO accepted
                                                 validate = if all required documents submitted and documents in progress
                                                 cancel = request cancelled
-                                                to_vendor = Documents sent to Vendor
-                                                vendor_process = Documents proceed by Vendor
                                                 in_process = Documents proceed at Consulat or Imigration
                                                 to_HO = documents sent to HO
                                                 waiting = Documents ready at HO
                                                 done = Documents given to customer''')  # readonly=1
+
+    # to_vendor = Documents sent to Vendor
+    # vendor_process = Documents proceed by Vendor
 
     state = fields.Selection(STATE, default='confirm', help='''draft = requested
                                                 confirm = HO accepted

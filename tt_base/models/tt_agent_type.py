@@ -41,9 +41,17 @@ class TtAgentType(models.Model):
             'padding': 3
         })
         new_agent_type.create_menuitem()
+        try:
+            """ Set registration upline menjadi HO """
+            new_agent_type.write({
+                'registration_upline_ids': [(4, self.env.ref('tt_base.agent_type_ho').id)],
+            })
+        except ValueError:
+            """ Jika belum ada HO, kosongi """
+            pass
         return new_agent_type
-
-    def unlink(self):
+    
+        def unlink(self):
         self.delete_menuitem()
         super(TtAgentType, self).unlink()
 

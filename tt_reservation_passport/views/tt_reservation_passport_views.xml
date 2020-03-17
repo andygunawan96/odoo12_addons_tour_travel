@@ -15,7 +15,7 @@
                     <filter string="All" name="all"/>
                     <filter string="Open" name="draft" domain="[('state_passport','=','draft')]"/>
                     <filter string="Confirm to HO/Validated by HO" name="confirm_validate" domain="['|', ('state_passport','=','confirm'),('state_passport','=','validate')]"/>
-                    <filter string="Send to Vendor/Proceed by Vendor" name="to_vendor_vendor_process" domain="['|', ('state_passport','=','to_vendor'),('state_passport','=','vendor_process')]"/>
+<!--                    <filter string="Send to Vendor/Proceed by Vendor" name="to_vendor_vendor_process" domain="['|', ('state_passport','=','to_vendor'),('state_passport','=','vendor_process')]"/>-->
                     <filter string="In Process/Payment" name="in_process_payment" domain="['|', ('state_passport','=','in_process'),('state_passport','=','payment')]"/>
                     <filter string="Partial Proceed/Proceed" name="partial_proceed" domain="['|', ('state_passport','=','partial_proceed'),('state_passport','=','proceed')]"/>
                     <filter string="Delivered/Ready" name="delivered_ready" domain="['|', ('state_passport','=','delivered'),('state_passport','=','ready')]"/>
@@ -102,7 +102,7 @@
             <field name="carrier_name" position="replace">
                 <field name="document_to_ho_date"/>
                 <field name="ho_validate_date"/>
-                <field name="use_vendor"/>
+<!--                <field name="use_vendor"/>-->
                 <field name="can_refund"/>
             </field>
             <field name="date" position="before">
@@ -122,10 +122,10 @@
                     <field name="validate_date" readonly="1" class="oe_inline"/>
                 </div>
             </xpath>
-            <xpath expr="//label[@for='issued_uid']" position="before">
-                <field name="to_vendor_date" readonly="1" attrs="{'invisible': [('use_vendor', '!=', True)]}"/>
-                <field name="vendor_process_date" readonly="1" attrs="{'invisible': [('use_vendor', '!=', True)]}"/>
-            </xpath>
+<!--            <xpath expr="//label[@for='issued_uid']" position="before">-->
+<!--                <field name="to_vendor_date" readonly="1" attrs="{'invisible': [('use_vendor', '!=', True)]}"/>-->
+<!--                <field name="vendor_process_date" readonly="1" attrs="{'invisible': [('use_vendor', '!=', True)]}"/>-->
+<!--            </xpath>-->
             <field name="sid_booked" position="replace">
                 <field name="in_process_date"/>
                 <field name="estimate_date"/>
@@ -136,9 +136,6 @@
                     <group>
 <!--                        <field name="country_id" readonly="1"/>-->
                         <field name="immigration_consulate" string="Consulate"/>
-                    </group>
-                    <group>
-                        <field name="departure_date" readonly="1"/>
                     </group>
                 </group>
             </xpath>
@@ -180,7 +177,6 @@
                         <tree create="true">
                             <field name="provider_id"/>
                             <field name="pnr"/>
-                            <field name="departure_date"/>
                             <field name="state"/>
                         </tree>
                     </field>
@@ -197,6 +193,7 @@
         <field name="model">tt.reservation.passport</field>
         <field name="arch" type="xml">
             <tree create="true">
+                <button type="object" string="Create Booking Passport" name="create_booking_passport_api"/>
                 <field name="name"/>
                 <field name="agent_id" groups="tt_base.group_tt_tour_travel_operator"/>
                 <field name="agent_type_id" groups="tt_base.group_tt_tour_travel_operator"/>

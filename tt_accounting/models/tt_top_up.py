@@ -185,8 +185,8 @@ class TtTopUp(models.Model):
         })
 
         try:
-            self.env['tt.top.up.api.con'].send_approve_notification('Top up with VA' + top_up.name,self.env.user.name,
-                                                                    top_up.validated_amount,self.agent_id.name)
+            self.env['tt.top.up.api.con'].send_approve_notification('Top up with VA ' + top_up.name, top_up.env.user.name,
+                                                                    top_up.validated_amount,top_up.agent_id.name)
         except Exception as e:
             _logger.error("Send TOP UP Approve Notification Telegram Error")
 
