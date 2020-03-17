@@ -10,6 +10,7 @@ _logger = logging.getLogger(__name__)
 
 class PricingProvider(models.Model):
     _name = 'tt.pricing.provider'
+    _inherit = 'tt.history'
     _order = 'sequence'
     _description = 'Rodex Model'
 
@@ -165,6 +166,7 @@ class PricingProvider(models.Model):
 
 class PricingProviderLine(models.Model):
     _name = 'tt.pricing.provider.line'
+    _inherit = 'tt.history'
     _order = 'sequence'
     _description = 'Rodex Model'
 
@@ -338,6 +340,7 @@ class PricingProviderLine(models.Model):
 
 class PricingChargeCode(models.Model):
     _name = 'tt.pricing.charge.code'
+    _inherit = 'tt.history'
     _description = 'Rodex Model'
 
     name = fields.Char('Name')
@@ -355,6 +358,7 @@ class PricingChargeCode(models.Model):
 
 class PricingClassOfService(models.Model):
     _name = 'tt.pricing.class.of.service'
+    _inherit = 'tt.history'
     _description = 'Rodex Model'
 
     name = fields.Char('Name')

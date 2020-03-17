@@ -9,6 +9,7 @@ _logger = logging.getLogger(__name__)
 
 class PricingAgent(models.Model):
     _name = 'tt.pricing.agent'
+    _inherit = 'tt.history'
     _order = 'sequence'
     _description = 'Rodex Model'
 
@@ -383,6 +384,7 @@ class PricingAgent(models.Model):
 
 class PricingAgentLine(models.Model):
     _name = 'tt.pricing.agent.line'
+    _inherit = 'tt.history'
     _description = 'Rodex Model'
 
     name = fields.Char('Name')
