@@ -6,6 +6,7 @@
             <field name="carrier_id" ref="tt_reservation_airline.tt_transport_carrier_airline_sq"/>
             <field name="is_default" eval="True"/>
             <field name="is_favorite" eval="True"/>
+            <field name="sequence">100</field>
             <field name="provider_ids" eval="[
                 (4, ref('tt_reservation_airline.tt_provider_airline_singaporeairlines')),
                 (4, ref('tt_reservation_airline.tt_provider_airline_amadeus'))
@@ -58,7 +59,7 @@
             <field name="name">Garuda Indonesia</field>
             <field name="carrier_id" ref="tt_reservation_airline.tt_transport_carrier_airline_ga"/>
             <field name="is_default" eval="True"/>
-            <field name="is_favorite" eval="False"/>
+            <field name="is_favorite" eval="True"/>
             <field name="sequence">150</field>
             <field name="provider_ids" eval="[
                 (4, ref('tt_reservation_airline.tt_provider_airline_amadeus')),

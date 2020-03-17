@@ -19,8 +19,10 @@
             <field name="model">tt.agent.type.benefit</field>
             <field name="arch" type="xml">
                 <form>
-                    <field name="title"/>
-                    <field name="benefit"/>
+                    <group>
+                        <field name="title" string="Title"/>
+                        <field name="benefit" string="Benefit"/>
+                    </group>
                 </form>
             </field>
         </record>
@@ -64,9 +66,9 @@
                                     <field name="seq_prefix"/>
                                     <field name="can_register_agent"/>
                                     <field name="can_be_registered"/>
-                                    <field name="registration_upline_ids"/>
                                     <field name="is_using_pnr_quota"/>
-                                    <field name="benefit"/>
+                                    <field name="document"/>
+                                    <field name="description"/>
                                 </group>
                                 <group>
                                     <field name="create_uid"/>
@@ -79,9 +81,7 @@
                                     <field name="min_monthly_fee"/>
                                     <field name="max_monthly_fee"/>
                                     <field name="percentage_monthly_fee"/>
-                                    <field name="recruitment_fee"/>
-                                    <field name="document"/>
-                                    <field name="description"/>
+<!--                                    <field name="recruitment_fee"/>-->
                                 </group>
                             </group>
                             <group>
@@ -89,11 +89,16 @@
                             </group>
                         </div></div>
                         <notebook>
-
+                            <page string="Registration Upline" name="registration_upline">
+                                <field name="registration_upline_ids"/>
+                            </page>
+                            <page string="Benefit" name="benefit">
+                                <field name="benefit"/>
+                            </page>
+                            <page string="Terms and Condition" name="terms_and_condition">
+                                <field name="terms_and_condition"/>
+                            </page>
                         </notebook>
-                        <group>
-                            <field name="terms_and_condition"/>
-                        </group>
                     </sheet>
                     <div class="oe_chatter">
                         <field name="message_follower_ids" widget="mail_followers"/>
