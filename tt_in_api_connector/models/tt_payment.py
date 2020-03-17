@@ -11,26 +11,35 @@ class TtPaymentApiCon(models.Model):
     def action_call(self, table_obj, action, data, context):
 
         if action == 'payment':
+
             if self.env['payment.acquirer.number'].search([('number', '=', data['virtual_account'])])[0].state == 'open':
-                #topup
-                agent_id = self.env['tt.agent'].browse(self.env['payment.acquirer.number'].search([('number', '=', data['virtual_account'])])[0].agent_id.id)
-                context = {
-                    'co_agent_id': agent_id.id,
-                    'co_uid': self.env.ref('tt_base.base_top_up_admin').id
-                }
-                request = {
-                    'amount': data['amount'],
-                    'seq_id': self.env['payment.acquirer.number'].search([('number', '=', data['virtual_account'])])[0].payment_acquirer_id.seq_id,
-                    'currency_code': data['ccy'],
-                    'payment_seq_id': self.env['payment.acquirer.number'].search([('number', '=', data['virtual_account'])])[0].payment_acquirer_id.seq_id
-                }
-                res = self.env['tt.top.up'].create_top_up_api(request,context, True)
-                if res['error_code'] == 0:
-                    request = {
-                        'virtual_account': data['virtual_account'],
-                        'name': res['response']['name']
+
+                # check ada payment ref yg kembar ngga
+                if not self.env['tt.top.up'].search([('reference', '=', data['payment_ref'])]):
+                    # topup
+
+                    agent_id = self.env['tt.agent'].browse(self.env['payment.acquirer.number'].search([('number', '=', data['virtual_account'])])[0].agent_id.id)
+                    context = {
+                        'co_agent_id': agent_id.id,
+                        'co_uid': self.env.ref('tt_base.base_top_up_admin').id
                     }
-                    res = self.env['tt.top.up'].action_va_top_up(request, context)
+                    request = {
+                        'amount': data['amount'],
+                        'seq_id': self.env['payment.acquirer.number'].search([('number', '=', data['virtual_account'])])[0].payment_acquirer_id.seq_id,
+                        'currency_code': data['ccy'],
+                        'payment_ref': data['payment_ref'],
+                        'payment_seq_id': self.env['payment.acquirer.number'].search([('number', '=', data['virtual_account'])])[0].payment_acquirer_id.seq_id
+                    }
+
+                    res = self.env['tt.top.up'].create_top_up_api(request,context, True)
+                    if res['error_code'] == 0:
+                        request = {
+                            'virtual_account': data['virtual_account'],
+                            'name': res['response']['name']
+                        }
+                        res = self.env['tt.top.up'].action_va_top_up(request, context)
+                else:
+                    res = ERR.get_error(500, additional_message="double payment")
                 pass
             elif self.env['payment.acquirer.number'].search([('number', '=', data['virtual_account'])])[0].state == 'close':
                 #close
@@ -55,8 +64,6 @@ class TtPaymentApiCon(models.Model):
                 #close already done
                 pass
             payment_acq = self.env['payment.acquirer.number'].search([('number', '=', data['virtual_account'])])
-
-            res = table_obj.get_config_api()
 
         elif action == 'create_booking_reservation_offline_api':
             res = table_obj.create_booking_reservation_offline_api(data, context)
