@@ -87,6 +87,14 @@ class ResUsers(models.Model):
         new_user.partner_id.parent_agent_id = False
         return new_user
 
+    def write(self, vals):
+        admin_obj_id = self.env.ref('base.user_admin').id
+        if vals.get('sel_groups_2_3') == 3 and self.env.user.id != admin_obj_id:
+            vals.pop('sel_groups_2_3')
+        if 'password' in vals and self.id == admin_obj_id and self.env.user.id != admin_obj_id:
+            vals.pop('password')
+        super(ResUsers, self).write(vals)
+
     @api.model
     def _update_last_login(self):
         super(ResUsers, self)._update_last_login()
