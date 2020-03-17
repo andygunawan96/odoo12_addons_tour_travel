@@ -48,7 +48,6 @@
             <form create="false">
                 <header>
                     <button name="get_current_agent_target" type="object" string="Calc Target" groups="base.user_admin"/>
-                    <button name="generate_va_number" type="object" string="Generate VA" groups="tt_base.group_tt_accounting_supervisor"/>
                     <button name="dummy_use_pnr_quota" type="object" string="Use PNR Quota" groups="base.user_admin"/>
                     <button name="dummy_buy_pnr_quota" type="object" string="Buy PNR Quota" groups="base.user_admin"/>
                 </header>
