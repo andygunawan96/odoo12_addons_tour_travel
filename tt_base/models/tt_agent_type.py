@@ -50,8 +50,8 @@ class TtAgentType(models.Model):
             """ Jika belum ada HO, kosongi """
             pass
         return new_agent_type
-    
-        def unlink(self):
+
+    def unlink(self):
         self.delete_menuitem()
         super(TtAgentType, self).unlink()
 
