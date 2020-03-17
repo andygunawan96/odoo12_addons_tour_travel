@@ -19,8 +19,14 @@
             <field name="model">tt.agent.type.benefit</field>
             <field name="arch" type="xml">
                 <form>
-                    <field name="title"/>
-                    <field name="benefit"/>
+                    <group>
+                        <group>
+                            <field name="title"/>
+                        </group>
+                        <group>
+                            <field name="benefit"/>
+                        </group>
+                    </group>
                 </form>
             </field>
         </record>
