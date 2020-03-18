@@ -63,6 +63,18 @@ class TtProvider(models.Model):
         provider_obj = self.search([('code','=',code),('provider_type_id','=',provider_type.id)], limit=1)
         return provider_obj.id
 
+    def clear_destination_ids(self):
+        for rec in self:
+            rec.provider_destination_ids = False
+
+    def compute_destination_ids(self):
+        for rec in self:
+            for country in self.env['res.country'].search([]):
+                self.env['tt.provider.destination'].create({
+                    'provider_id': rec.id,
+                    'country_id': country.id,
+                })
+
 
 class TtProviderCode(models.Model):
     _name = 'tt.provider.code'
@@ -74,6 +86,7 @@ class TtProviderCode(models.Model):
     state_id = fields.Many2one('res.country.state', 'State')
     city_id = fields.Many2one('res.city', 'City')
     provider_id = fields.Many2one('tt.provider', 'Provider')
+    provider_type_id = fields.Many2one('tt.provider.type','Provider Type',related='provider_id.provider_type_id',store=True)
 
 
 class TtProviderDestination(models.Model):
