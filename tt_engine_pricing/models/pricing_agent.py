@@ -13,7 +13,7 @@ class PricingAgent(models.Model):
     _order = 'sequence'
     _description = 'Rodex Model'
 
-    name = fields.Char('Name', readonly=1)
+    name = fields.Char('Name', compute='_compute_name_pricing', store=True)
     sequence = fields.Integer('Sequence', default=50, required=True)
     agent_type_id = fields.Many2one('tt.agent.type', 'Agent Type', required=True)
     provider_type_id = fields.Many2one('tt.provider.type', 'Provider Type', required=True)
@@ -37,6 +37,11 @@ class PricingAgent(models.Model):
     active = fields.Boolean('Active', default=True)
 
     is_per_pnr = fields.Boolean('Is per PNR', default=False)
+
+    @api.depends('agent_type_id.code','provider_type_id.code')
+    def _compute_name_pricing(self):
+        for rec in self:
+            rec.name = rec.get_name()
 
     def get_name(self):
         # Perlu diupdate lagi, sementara menggunakan ini
