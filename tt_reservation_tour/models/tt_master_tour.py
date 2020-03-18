@@ -189,7 +189,7 @@ class MasterTour(models.Model):
 
     country_name = fields.Char('Country Name')
     itinerary_ids = fields.One2many('tt.reservation.tour.itinerary', 'tour_pricelist_id', 'Itinerary', ondelete='cascade')
-    provider_id = fields.Many2one('tt.provider', 'Provider', domain=get_domain, readonly=False, default=lambda self: self.env.ref('tt_reservation_tour.tt_provider_tour_internal'), copy=False)
+    provider_id = fields.Many2one('tt.provider', 'Provider', domain=get_domain, readonly=True, default=lambda self: self.env.ref('tt_reservation_tour.tt_provider_tour_internal'), copy=False)
     provider_fare_code = fields.Char('Provider Fare Code', default='tour_rdx1', readonly=True, copy=False)
     document_url = fields.Many2one('tt.upload.center', 'Document URL')
     import_other_info = fields.Binary('Import JSON')
@@ -259,14 +259,14 @@ class MasterTour(models.Model):
     def action_sync_gochina(self, start, end):
         raise UserError(_("This Provider does not support Sync Products."))
 
-    def action_get_rodextrip_tour_btbo2_json(self):
+    def action_get_rodextrip_tour_json(self):
         req_post = {
             'country_id': 0,
             'city_id': 0,
             'month': '00',
             'year': '0000',
             'tour_query': '',
-            'provider': 'rodextrip_tour_btbo2',
+            'provider': 'rodextrip_tour',
         }
 
         res = self.env['tt.master.tour.api.con'].search_provider(req_post)
@@ -276,19 +276,19 @@ class MasterTour(models.Model):
         else:
             raise UserError(res['error_msg'])
         if temp:
-            folder_path = '/var/log/tour_travel/rodextrip_tour_btbo2_master_data'
+            folder_path = '/var/log/tour_travel/rodextrip_tour_master_data'
             if not os.path.exists(folder_path):
                 os.mkdir(folder_path)
-            file = open('/var/log/tour_travel/rodextrip_tour_btbo2_master_data/rodextrip_tour_btbo2_master_data.json', 'w')
+            file = open('/var/log/tour_travel/rodextrip_tour_master_data/rodextrip_tour_master_data.json', 'w')
             file.write(json.dumps(temp))
             file.close()
 
-    def action_sync_rodextrip_tour_btbo2(self, start, end):
-        provider = 'rodextrip_tour_btbo2'
+    def action_sync_rodextrip_tour(self, start, end):
+        provider = 'rodextrip_tour'
 
         file = []
         for i in range(int(start), int(end) + 1):
-            file_dat = open('/var/log/tour_travel/rodextrip_tour_btbo2_master_data/rodextrip_tour_btbo2_master_data.json', 'r')
+            file_dat = open('/var/log/tour_travel/rodextrip_tour_master_data/rodextrip_tour_master_data.json', 'r')
             file = json.loads(file_dat.read())
             file_dat.close()
             if file:
