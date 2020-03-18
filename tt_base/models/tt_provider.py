@@ -63,6 +63,18 @@ class TtProvider(models.Model):
         provider_obj = self.search([('code','=',code),('provider_type_id','=',provider_type.id)], limit=1)
         return provider_obj.id
 
+    def clear_destination_ids(self):
+        for rec in self:
+            rec.provider_destination_ids = False
+
+    def compute_destination_ids(self):
+        for rec in self:
+            for country in self.env['res.country'].search([]):
+                self.env['tt.provider.destination'].create({
+                    'provider_id': rec.id,
+                    'country_id': country.id,
+                })
+
 
 class TtProviderCode(models.Model):
     _name = 'tt.provider.code'
