@@ -46,18 +46,22 @@ class VisaSyncProducts(models.TransientModel):
             if rec.reference_code == '' or rec.reference_code == False:
                 counter = idx
                 while True:
-                    if not self.env['tt.reservation.visa.pricelist'].search([('reference_code', '=', 'visa_rodextrip_' + rec.name + '_' + str(counter))]):
+                    if not self.env['tt.reservation.visa.pricelist'].search([('reference_code', '=', rec.provider_id.code + rec.name + '_' + str(counter))]):
                         rec.update({
-                            "reference_code": 'visa_rodextrip_' + rec.name + '_' + str(counter),
-                            "provider_id": self.env['tt.provider'].search([('code', '=', 'rodextrip_visa')], limit=1).id
+                            "reference_code": rec.provider_id.code + '_' + rec.name + '_' + str(counter),
+                            "provider_id": self.env['tt.provider'].search([('code', '=', rec.provider_id.code)], limit=1).id
                         })
                         break
                     counter += 1
 
                 for count, requirement in enumerate(rec.requirement_ids):
                     requirement.update({
-                        "reference_code": 'visa_rodextrip_%s_%s_%s' % (rec.name, str(counter), str(count))
+                        "reference_code": '%s_%s_%s_%s' % (rec.provider_id.code, rec.name, str(counter), str(count))
                     })
+        return {
+            'type': 'ir.actions.client',
+            'tag': 'reload',
+        }
 
     def actions_get_product_rodextrip(self, data):
         req = {
@@ -106,7 +110,7 @@ class VisaSyncProducts(models.TransientModel):
                     res = self.env['tt.visa.api.con'].get_product_detail_vendor(req)
                     #create object
                     if res['error_code'] == 0:
-                        master_data = self.env['tt.reservation.visa.pricelist'].search([('reference_code','=',res['response']['reference_code'])], limit=1)
+                        master_data = self.env['tt.reservation.visa.pricelist'].search([('reference_code','=',res['response']['reference_code'] + '_rdx')], limit=1)
                         if master_data:
                             master_data.update({
                                 'commercial_duration': res['response']['commercial_duration'],
@@ -126,9 +130,8 @@ class VisaSyncProducts(models.TransientModel):
                                 'nta_price': res['response']['nta_price'],
                                 'pax_type': res['response']['pax_type'],
                                 'process_type': res['response']['process_type'],
-                                'reference_code': res['response']['reference_code'],
-                                    'provider_id': self.env['tt.provider'].search(
-                                    [('name', '=', res['response']['provider_id'])]).id,
+                                'reference_code': res['response']['reference_code'] + '_rdx',
+                                'provider_id': self.env['tt.provider'].search([('name', '=', res['response']['provider_id'])]).id,
                                 'sale_price': res['response']['sale_price'],
                                 'visa_nta_price': res['response']['visa_nta_price'],
                                 'visa_type': res['response']['visa_type']
@@ -155,9 +158,8 @@ class VisaSyncProducts(models.TransientModel):
                                 'nta_price': res['response']['nta_price'],
                                 'pax_type': res['response']['pax_type'],
                                 'process_type': res['response']['process_type'],
-                                'reference_code': res['response']['reference_code'],
-                                'provider_id': self.env['tt.provider'].search(
-                                    [('name', '=', res['response']['provider_id'])]).id,
+                                'reference_code': res['response']['reference_code'] + '_rdx',
+                                'provider_id': self.env['tt.provider'].search([('name', '=', res['response']['provider_id'])]).id,
                                 'sale_price': res['response']['sale_price'],
                                 'visa_nta_price': res['response']['visa_nta_price'],
                                 'visa_type': res['response']['visa_type']
@@ -214,6 +216,10 @@ class VisaPricelist(models.Model):
     _name = 'tt.reservation.visa.pricelist'
     _description = 'Rodex Model'
 
+    def get_domain(self):
+        domain_id = self.env.ref('tt_reservation_visa.tt_provider_type_visa').id
+        return [('provider_type_id.id', '=', int(domain_id))]
+
     name = fields.Char('Name', required=True, default='New')
     description = fields.Char('Description')
     pax_type = fields.Selection(PAX_TYPE, 'Pax Type', default='ADT', required=True)
@@ -222,7 +228,7 @@ class VisaPricelist(models.Model):
     process_type = fields.Selection(PROCESS_TYPE, 'Process Type')
 
     reference_code = fields.Char('Reference Code', required=False)
-    provider_id = fields.Many2one('tt.provider', 'Provider')
+    provider_id = fields.Many2one('tt.provider', 'Provider', domain=get_domain)
     active = fields.Boolean('Active', default=True)
 
     country_id = fields.Many2one('res.country', 'Country')
@@ -375,7 +381,6 @@ class VisaPricelist(models.Model):
     def search_api(self, data):
         try:
             list_of_visa = []
-
             for idx, rec in enumerate(self.sudo().search([('country_id.name', '=ilike', data['destination']), ('immigration_consulate', '=ilike', data['consulate'])])):
                 requirement = []
                 attachments = []
@@ -413,6 +418,7 @@ class VisaPricelist(models.Model):
                         'currency': rec.currency_id.name
                     },
                     'id': rec.reference_code,
+                    'provider': rec.provider_id.code
                 }
                 if rec.notes:
                     notes_html = BeautifulSoup(rec.notes, features="lxml")
@@ -430,6 +436,24 @@ class VisaPricelist(models.Model):
             response = {
                 'country': data['destination'],
                 'list_of_visa': list_of_visa
+            }
+            res = Response().get_no_error(response)
+        except Exception as e:
+            _logger.error(traceback.format_exc())
+            res = Response().get_error(str(e), 500)
+        return res
+
+    def availability_api(self, data):
+        try:
+            list_of_availability = []
+            for idx, rec in enumerate(data['reference_code']):
+                if self.sudo().search([('reference_code', '=', rec)]):
+                    list_of_availability.append(True)
+                else:
+                    list_of_availability.append(False)
+            response = {
+                'availability': list_of_availability,
+
             }
             res = Response().get_no_error(response)
         except Exception as e:
