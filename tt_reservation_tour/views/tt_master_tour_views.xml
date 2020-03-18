@@ -111,22 +111,6 @@
                         </group>
                     </group>
 
-                    <!--Visa Pricelist Segment-->
-                    <separator string="Visa Pricelist" attrs="{'invisible':[('visa','!=', 'exclude')]}"/>
-                    <!--                    <field name="visa_pricelist_ids" context="" attrs="{'invisible':[('visa','!=', 'exclude')]}">-->
-                    <!--                        <tree edit="false">-->
-                    <!--                            <field name="name"/>-->
-                    <!--                            <field name="pax_type"/>-->
-                    <!--                            <field name="entry_type"/>-->
-                    <!--                            <field name="visa_type"/>-->
-                    <!--                            <field name="process_type"/>-->
-                    <!--                            <field name="commercial_duration"/>-->
-                    <!--                            <field name="immigration_consulate"/>-->
-                    <!--                            <field name="sale_price"/>-->
-                    <!--                            <field name="currency_id" invisible="1"/>-->
-                    <!--                        </tree>-->
-                    <!--                    </field>-->
-
                     <!--Flight Segment-->
                     <separator string="Segments Flight" attrs="{'invisible':[('flight','!=', 'include')]}"/>
                     <field name="flight_segment_ids" attrs="{'invisible':[('flight','!=', 'include')]}">

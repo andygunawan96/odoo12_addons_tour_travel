@@ -189,7 +189,7 @@ class MasterTour(models.Model):
 
     country_name = fields.Char('Country Name')
     itinerary_ids = fields.One2many('tt.reservation.tour.itinerary', 'tour_pricelist_id', 'Itinerary', ondelete='cascade')
-    provider_id = fields.Many2one('tt.provider', 'Provider', domain=get_domain, readonly=False, default=lambda self: self.env.ref('tt_reservation_tour.tt_provider_tour_internal'), copy=False)
+    provider_id = fields.Many2one('tt.provider', 'Provider', domain=get_domain, readonly=True, default=lambda self: self.env.ref('tt_reservation_tour.tt_provider_tour_internal'), copy=False)
     provider_fare_code = fields.Char('Provider Fare Code', default='tour_rdx1', readonly=True, copy=False)
     document_url = fields.Many2one('tt.upload.center', 'Document URL')
     import_other_info = fields.Binary('Import JSON')
