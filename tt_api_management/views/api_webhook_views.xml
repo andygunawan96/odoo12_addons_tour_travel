@@ -18,7 +18,6 @@
             <search>
                 <field name="name"/>
                 <field name="provider_type_id"/>
-                <field name="action"/>
             </search>
         </field>
     </record>
@@ -40,7 +39,7 @@
                             <field name="provider_type_id"/>
                         </group>
                         <group>
-                            <field name="action"/>
+
                         </group>
                     </group>
                     <field name="webhook_rel_ids"/>
@@ -56,7 +55,6 @@
             <tree>
                 <field name="name"/>
                 <field name="provider_type_id"/>
-                <field name="action"/>
             </tree>
         </field>
     </record>
@@ -70,6 +68,7 @@
                     <group>
                         <field name="webhook_data_id"/>
                         <field name="credential_data_id"/>
+                        <field name="api_key"/>
                         <field name="url"/>
                     </group>
                 </sheet>

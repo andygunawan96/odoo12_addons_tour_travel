@@ -46,8 +46,7 @@ class PhoneDetail(models.Model):
         if len(check_number) == 0 and payment_acq_open_length == 0:
             agent = self.env['tt.agent'].search([('id', '=', self.agent_id.id)])
             data = {
-                # 'number': self.calling_number[-8:],
-                'number': self.calling_number,
+                'number': self.calling_number[-8:],
                 'email': agent.email,
                 'name': agent.name
             }

@@ -32,18 +32,6 @@
             <field name="model">tt.agent.type</field>
             <field name="arch" type="xml">
                 <form>
-
-                    <header>
-                        <button string="Set to Draft" name="_action_draft" type="object" states="confirm,cancel"
-                                groups="base.group_user"/>
-                        <button string="Confirm" name="_action_confirm" type="object" states="draft"
-                                groups="base.group_user"/>
-                        <button string="Cancel" name="_action_draft" type="object" states="draft,confirm"
-                                groups="base.group_user"/>
-
-                        <field name="state" widget="statusbar" statusbar_visible="draft,confirm,cancel"/>
-                    </header>
-
                     <sheet>
                         <div class="oe_button_box" name="button_box">
                             <button name="toggle_active" type="object" groups="base.group_user"
@@ -67,8 +55,6 @@
                                     <field name="can_register_agent"/>
                                     <field name="can_be_registered"/>
                                     <field name="is_using_pnr_quota"/>
-                                    <field name="document"/>
-                                    <field name="description"/>
                                 </group>
                                 <group>
                                     <field name="create_uid"/>
