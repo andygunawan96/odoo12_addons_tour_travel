@@ -51,7 +51,7 @@
                         <group>
                             <field name="booking_state"/>
                             <field name="passenger_type"/>
-                            <field name="passenger_domicile"/>
+<!--                            <field name="passenger_domicile"/>-->
                             <field name="pricelist_id"/>
                             <field name="sequence"/>
                         </group>

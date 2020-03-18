@@ -57,11 +57,6 @@ class IssuedOffline(models.Model):
     _order = 'name desc'
     _description = 'Rodex Model'
 
-    # sub_agent_id = fields.Many2one('tt.agent', 'Sub-Agent', readonly=True, states={'draft': [('readonly', False)]},
-    #                                help='COR / POR', related='booker_id.agent_id')
-
-    # booking_id = fields.Many2one('tt.reservation.offline', 'Booking ID', default=lambda self: self.id)
-
     state = fields.Selection(variables.BOOKING_STATE, 'State', default='draft')
     state_offline = fields.Selection(STATE_OFFLINE, 'State Offline', default='draft')
 
@@ -140,9 +135,6 @@ class IssuedOffline(models.Model):
                                               readonly=True, states={'draft': [('readonly', False)],
                                                                      'pending': [('readonly', False)]})
 
-    contact_ids = fields.One2many('tt.customer', 'reservation_offline_id', 'Contact Person', readonly=True,
-                                  states={'draft': [('readonly', False)],
-                                          'pending': [('readonly', False)]})
     booker_id = fields.Many2one('tt.customer', 'Booker', ondelete='restrict', readonly=True,
                                 states={'draft': [('readonly', False)],
                                         'pending': [('readonly', False)]})
@@ -161,22 +153,179 @@ class IssuedOffline(models.Model):
     split_from_resv_id = fields.Many2one('tt.reservation.offline', 'Splitted From', readonly=1)
     split_to_resv_ids = fields.One2many('tt.reservation.offline', 'split_from_resv_id', 'Splitted To', readonly=1)
 
-    # display_mobile = fields.Char('Contact Person for Urgent Situation',
-    #                              readonly=True, states={'draft': [('readonly', False)]})
-    # refund_id = fields.Many2one('tt.refund', 'Refund')
+    def date_format_check(self, vals=None):
+        """ Cek format tanggal line """
+        if vals is not False:
+            if 'departure_date' in vals:
+                try:
+                    if vals['departure_date'] is not False:
+                        datetime.strptime(vals['departure_date'], '%Y-%m-%d')
+                except Exception as e:
+                    raise UserError('Departure date ' + vals['departure_date'] + ' input is wrong. Input Example: 2020-10-31')
+            if 'departure_minute' in vals:
+                try:
+                    if vals['departure_minute'] is not False:
+                        if 0 <= int(vals['departure_minute']) < 60:
+                            datetime.strptime(vals['departure_minute'], '%M')
+                        else:
+                            raise UserError(
+                                'Departure minute ' + vals[
+                                    'departure_minute'] + ' input is wrong. Input must be between 0-59')
+                except Exception as e:
+                    raise UserError(
+                        'Departure minute ' + vals['departure_minute'] + ' input is wrong. Input must be between 0-59')
+            if 'departure_hour' in vals:
+                try:
+                    if vals['departure_hour'] is not False:
+                        if 0 <= int(vals['departure_hour']) < 24:
+                            datetime.strptime(vals['departure_hour'], '%H')
+                        else:
+                            raise UserError(
+                                'Departure hour ' + vals['departure_hour'] + ' input is wrong. Input must be between 0-23')
+                except Exception as e:
+                    raise UserError(
+                        'Departure hour ' + vals['departure_hour'] + ' input is wrong. Input must be between 0-23')
+            if 'arrival_date' in vals:
+                try:
+                    if vals['arrival_date'] is not False:
+                        datetime.strptime(vals['arrival_date'], '%Y-%m-%d')
+                except Exception as e:
+                    raise UserError('Arrival date ' + vals['arrival_date'] + ' input is wrong. Input Example: 2020-10-31')
+            if 'return_minute' in vals:
+                try:
+                    if vals['return_minute'] is not False:
+                        if 0 <= int(vals['return_minute']) < 60:
+                            datetime.strptime(vals['return_minute'], '%M')
+                        else:
+                            raise UserError(
+                                'Arrival minute ' + vals['return_minute'] + ' input is wrong. Input must be between 0-59')
+                except Exception as e:
+                    raise UserError(
+                        'Arrival minute ' + vals['return_minute'] + ' input is wrong. Input must be between 0-59')
+            if 'return_hour' in vals:
+                try:
+                    if vals['return_hour'] is not False:
+                        if 0 <= int(vals['return_hour']) < 24:
+                            datetime.strptime(vals['return_hour'], '%H')
+                        else:
+                            raise UserError(
+                                'Arrival hour ' + vals['return_hour'] + ' input is wrong. Input must be between 0-23')
+                except Exception as e:
+                    raise UserError(
+                        'Arrival hour ' + vals['return_hour'] + ' input is wrong. Input must be between 0-23')
+            if 'check_in' in vals:
+                try:
+                    if vals['check_in'] is not False:
+                        datetime.strptime(vals['check_in'], '%Y-%m-%d')
+                except Exception as e:
+                    raise UserError('Check in date ' + vals['check_in'] + ' input is wrong. Input Example: 2020-10-31')
+            if 'check_out' in vals:
+                try:
+                    if vals['check_out'] is not False:
+                        datetime.strptime(vals['check_out'] , '%Y-%m-%d')
+                except Exception as e:
+                    raise UserError('Check out date ' + vals['check_out']  + ' input is wrong. Input Example: 2020-10-31')
+            if 'visit_date' in vals:
+                try:
+                    if vals['visit_date'] is not False:
+                        datetime.strptime(vals['visit_date'], '%Y-%m-%d')
+                except Exception as e:
+                    raise UserError('Visit Date ' + vals['visit_date'] + ' input is wrong. Input Example: 2020-10-31')
 
-    ####################################################################################################
-    # REPORT
-    ####################################################################################################
+    def date_validator(self, line, vals=None):
+        """ Cek validasi tanggal line """
+        if vals is None or vals is False:
+            vals = {}
+
+        if 'offline_provider_type' in vals:
+            offline_provider_type = vals['offline_provider_type']
+        else:
+            offline_provider_type = self.offline_provider_type
+
+        if offline_provider_type == 'airline':
+            if 'departure_date' in vals:
+                if vals['departure_date'] is not False:
+                    departure_date = datetime.strptime(vals['departure_date'], '%Y-%m-%d')
+                else:
+                    departure_date = False
+            else:
+                departure_date = datetime.strptime(line.departure_date, '%Y-%m-%d')
+            if 'arrival_date' in vals:
+                if vals['arrival_date'] is not False:
+                    arrival_date = datetime.strptime(vals['arrival_date'], '%Y-%m-%d')
+                else:
+                    arrival_date = False
+            else:
+                arrival_date = datetime.strptime(line.arrival_date, '%Y-%m-%d')
+
+            if arrival_date is not False and departure_date is not False:
+                delta_date = arrival_date - departure_date
+                if delta_date.days < 0:
+                    raise UserError('Arrival date ' + arrival_date.strftime('%Y-%m-%d') + ' must be better than departure date ' + departure_date.strftime('%Y-%m-%d'))
+                if delta_date.days == 0:
+                    if line.departure_hour and line.return_hour:
+                        delta_hour = int(line.return_hour if 'return_hour' not in vals else vals['return_hour']) - \
+                                     int(line.departure_hour if 'departure_hour' not in vals else vals['departure_hour'])
+                        if delta_hour < 0:
+                            raise UserError('Arrival date ' + arrival_date.strftime('%Y-%m-%d') + ' must be better than departure date ' + departure_date.strftime('%Y-%m-%d'))
+                        if delta_hour == 0:
+                            if line.departure_minute and line.return_minute:
+                                delta_minute = int(line.return_minute if 'return_minute' not in vals else vals['return_minute']) - \
+                                               int(line.departure_minute if 'departure_minute' not in vals else vals['departure_minute'])
+                                if delta_minute < 0:
+                                    raise UserError('Arrival date ' + arrival_date.strftime('%Y-%m-%d') + ' must be better than departure date ' + departure_date.strftime('%Y-%m-%d'))
+        elif offline_provider_type == 'hotel':
+            if 'check_in' in vals:
+                if vals['check_in'] is not False:
+                    check_in = datetime.strptime(vals['check_in'], '%Y-%m-%d')
+                else:
+                    check_in = False
+            else:
+                check_in = datetime.strptime(line.check_in, '%Y-%m-%d')
+            if 'check_out' in vals:
+                if vals['check_out'] is not False:
+                    check_out = datetime.strptime(vals['check_out'], '%Y-%m-%d')
+                else:
+                    check_out = False
+            else:
+                check_out = datetime.strptime(line.check_out, '%Y-%m-%d')
+            if check_out is not False and check_in is not False:
+                delta_date = check_out - check_in
+                if delta_date.days < 0:
+                    raise UserError('Check Out date ' + check_out.strftime('%Y-%m-%d') + ' must be better than Check In date ' + check_in.strftime('%Y-%m-%d'))
 
     @api.model
     def create(self, vals):
+        if 'line_ids' in vals:
+            """ Cek format tanggal di lines """
+            for line in vals['line_ids']:
+                self.date_format_check(line[2])
         new_book = super(IssuedOffline, self).create(vals)
+        for line in new_book.line_ids:
+            new_book.date_validator(line)
         for psg in new_book.passenger_ids:
             if not psg.agent_id:
                 """ Jika pax belum ada agent, set agent sesuai dg agent di booking offline """
                 psg.agent_id = new_book.agent_id
         return new_book
+
+    def write(self, vals):
+        """ Cek format tanggal pada tanggal di lines yang diubah """
+        if vals.get('line_ids'):
+            for line in vals['line_ids']:
+                self.date_format_check(line[2])
+        """ Cek selisih tanggal departure-arrival / check in-check out per line offline """
+        for line in self.line_ids:
+            val_dict = {}
+            if 'line_ids' in vals:
+                for val in vals['line_ids']:
+                    if val[1] == line.id:
+                        val_dict = val[2]
+                        break
+            if 'offline_provider_type' in vals:
+                val_dict['offline_provider_type'] = vals['offline_provider_type']
+            self.date_validator(line, val_dict)
+        super(IssuedOffline, self).write(vals)
 
     @api.depends('offline_provider_type')
     def offline_type_to_char(self):
@@ -1471,9 +1620,6 @@ class IssuedOffline(models.Model):
         try:
             if provider_type in ['airline', 'train']:
                 for line in lines:
-                    # print('Origin: ' + str(destination_env.search([('code', '=', line.get('origin'))], limit=1).name))
-                    # print('Destination: ' + str(destination_env.search([('code', '=', line.get('destination'))], limit=1).name))
-                    # print('Carrier : ' + str(provider_env.search([('name', '=', line.get('provider'))], limit=1).name))
                     departure_time = datetime.strptime(line.get('departure'), '%Y-%m-%d %H:%M')
                     arrival_time = datetime.strptime(line.get('arrival'), '%Y-%m-%d %H:%M')
                     line_tmp = {

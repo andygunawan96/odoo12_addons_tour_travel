@@ -8,12 +8,6 @@ LEVEL = [
 ]
 
 
-class AgentRegistrationCustomer(models.Model):
-    _inherit = 'tt.customer'
-
-    agent_registration_id = fields.Many2one('tt.agent.registration', 'Agent Registration ID')
-
-
 class AgentRegistrationCustomerContact(models.Model):
     _name = 'tt.agent.registration.customer'
     _description = 'Rodex Model'

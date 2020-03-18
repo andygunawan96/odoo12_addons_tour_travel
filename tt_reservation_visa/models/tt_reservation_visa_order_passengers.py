@@ -89,7 +89,7 @@ class VisaOrderPassengers(models.Model):
     age = fields.Char('Age', readonly=1, compute="_compute_age", store=True)
     passport_number = fields.Char(string='Passport Number')
     passport_expdate = fields.Date(string='Passport Exp Date')
-    passenger_domicile = fields.Char('Domicile', related='passenger_id.domicile', readonly=1)  # readonly=1
+    # passenger_domicile = fields.Char('Domicile', related='passenger_id.domicile', readonly=1)  # readonly=1
     process_status = fields.Selection(PROCESS_STATUS, string='Process Result',
                                       readonly=1)  # readonly=1
 
