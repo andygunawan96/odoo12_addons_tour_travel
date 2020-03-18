@@ -1622,6 +1622,10 @@ class IssuedOffline(models.Model):
                 for line in lines:
                     departure_time = datetime.strptime(line.get('departure'), '%Y-%m-%d %H:%M')
                     arrival_time = datetime.strptime(line.get('arrival'), '%Y-%m-%d %H:%M')
+                    delta_date = arrival_time - departure_time
+                    if delta_date.days < 0:
+                        return ERR.get_error(1004,
+                                             additional_message='Error create line : Arrival date must be better than departure date')
                     line_tmp = {
                         "pnr": line.get('pnr'),
                         "origin_id": destination_env.search([('code', '=', line.get('origin'))], limit=1).id,
@@ -1645,6 +1649,10 @@ class IssuedOffline(models.Model):
                 for line in lines:
                     check_in = datetime.strptime(line.get('check_in'), '%Y-%m-%d')
                     check_out = datetime.strptime(line.get('check_out'), '%Y-%m-%d')
+                    delta_date = check_out - check_in
+                    if delta_date.days < 0:
+                        return ERR.get_error(1004,
+                                             additional_message='Error create line : Check out date must be better than Check in date')
                     line_tmp = {
                         "pnr": line.get('pnr'),
                         "hotel_name": line.get('name'),
