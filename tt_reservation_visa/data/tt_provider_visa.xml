@@ -1,9 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <data noupdate="1">
+    <data noupdate="0">
+        <record id="tt_provider_visa_internal" model="tt.provider">
+            <field name="name">Visa Internal</field>
+            <field name="code">visa_internal</field>
+            <field name="active" eval="True"/>
+            <field name="provider_type_id" ref="tt_provider_type_visa"/>
+        </record>
         <record id="tt_provider_visa_rodextrip" model="tt.provider">
             <field name="name">Visa Rodextrip</field>
-            <field name="code">visa_rodextrip</field>
+            <field name="code">rodextrip_visa</field>
             <field name="active" eval="True"/>
             <field name="provider_type_id" ref="tt_provider_type_visa"/>
         </record>
