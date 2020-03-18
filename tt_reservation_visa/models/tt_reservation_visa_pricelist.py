@@ -65,7 +65,7 @@ class VisaSyncProducts(models.TransientModel):
 
     def actions_get_product_rodextrip(self, data):
         req = {
-            'provider': 'rodextrip_visa_btbo2'
+            'provider': 'rodextrip_visa'
         }
         res = self.env['tt.visa.api.con'].get_product_vendor(req)
         if res['error_code'] == 0:
@@ -80,7 +80,7 @@ class VisaSyncProducts(models.TransientModel):
             pass
 
     def actions_sync_product_rodextrip(self, data):
-        provider = 'rodextrip_visa_btbo2'
+        provider = 'rodextrip_visa'
         list_product = self.env['tt.reservation.visa.pricelist'].search([('provider_id', '=', self.env['tt.provider'].search([('code', '=', 'rodextrip_visa')], limit=1).id)])
         for rec in list_product:
             rec.active = True
