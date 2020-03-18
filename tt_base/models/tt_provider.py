@@ -74,6 +74,7 @@ class TtProviderCode(models.Model):
     state_id = fields.Many2one('res.country.state', 'State')
     city_id = fields.Many2one('res.city', 'City')
     provider_id = fields.Many2one('tt.provider', 'Provider')
+    provider_type_id = fields.Many2one('tt.provider.type','Provider Type',related='provider_id.provider_type_id',store=True)
 
 
 class TtProviderDestination(models.Model):
