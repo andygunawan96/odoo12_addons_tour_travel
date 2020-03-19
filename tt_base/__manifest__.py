@@ -1,3 +1,9 @@
+
+
+
+
+
+
 {
     'name': 'Tour & Travel - Base',
     'version': '1.1',
@@ -18,10 +24,7 @@ Key Features
         'data/ir_module_category_data.xml',
         'data/frontend_security.xml',
         'data/res_groups_data.xml',
-        'data/agent_type_rodex_data.xml',
         'data/customer_parent_type_rodex_data.xml',
-        'data/tt_agent_ho_data.xml',
-        'data/agent_b2c_data.xml',
         'data/skipped_history_data.xml',
         'data/tt.bank.csv',
         'data/tt.error.api.csv',
@@ -83,6 +86,10 @@ Key Features
         'views/tt_pnr_quota_price_list_views..xml',
         'views/tt_pnr_quota_usage_views.xml',
         'views/tt_pnr_quota_price_package_views.xml',
+
+        'data/agent_type_rodex_data.xml',
+        'data/tt_agent_ho_data.xml',
+        'data/agent_b2c_data.xml',
 
         'wizard/tt_upload_center_wizard_view.xml',
         'wizard/create_user_wizard_view.xml',
