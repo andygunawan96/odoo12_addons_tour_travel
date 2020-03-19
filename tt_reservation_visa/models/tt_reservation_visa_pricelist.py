@@ -102,7 +102,7 @@ class VisaSyncProducts(models.TransientModel):
                 product_obj = self.env['tt.reservation.visa.pricelist'].search([('reference_code', '=', rec)], limit=1)
                 product_obj = product_obj and product_obj[0] or False
                 temp = []
-                if provider == 'rodextrip_visa_btbo2':
+                if provider == 'rodextrip_visa':
                     req = {
                         'provider': provider,
                         'code': rec
