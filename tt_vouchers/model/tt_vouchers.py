@@ -1241,7 +1241,7 @@ class TtVoucherusedDetail(models.Model):
 
     voucher_detail_id = fields.Many2one("tt.voucher.detail")
     voucher_date_use = fields.Datetime("Date use")
-    voucher_agent_type_id = fields.Many2one("tt.agent_type", "Agent Type")
+    voucher_agent_type_id = fields.Many2one("tt.agent.type", "Agent Type")
     voucher_agent_id = fields.Many2one("tt.agent", "Agent ID")
     voucher_provider_type_id = fields.Many2one("tt.provider.type", "Provider Type")
     voucher_provider_id = fields.Many2one("tt.provider", "Provider ID")

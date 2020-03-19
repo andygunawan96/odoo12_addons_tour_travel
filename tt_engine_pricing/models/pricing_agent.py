@@ -38,6 +38,7 @@ class PricingAgent(models.Model):
 
     is_per_pnr = fields.Boolean('Is per PNR', default=False)
 
+    @api.multi
     @api.depends('agent_type_id.code','provider_type_id.code')
     def _compute_name_pricing(self):
         for rec in self:

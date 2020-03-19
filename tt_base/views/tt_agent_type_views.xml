@@ -61,12 +61,8 @@
                                     <field name="create_date"/>
                                     <field name="write_uid"/>
                                     <field name="write_date"/>
-                                    <field name="user_template"/>
-                                    <field name="currency_id"/>
+                                    <field name="currency_id" invisible="1"/>
                                     <field name="registration_fee"/>
-                                    <field name="min_monthly_fee"/>
-                                    <field name="max_monthly_fee"/>
-                                    <field name="percentage_monthly_fee"/>
 <!--                                    <field name="recruitment_fee"/>-->
                                 </group>
                             </group>
