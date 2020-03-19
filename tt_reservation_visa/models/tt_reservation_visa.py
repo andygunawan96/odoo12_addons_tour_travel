@@ -1902,7 +1902,7 @@ class TtVisa(models.Model):
 
             to_req_list = []
 
-            if len(psg['required']) > 0:
+            if 'required' in psg:
                 for req in psg['required']:  # pricelist_obj.requirement_ids
                     req_vals = {
                         'to_passenger_id': to_psg_obj.id,
