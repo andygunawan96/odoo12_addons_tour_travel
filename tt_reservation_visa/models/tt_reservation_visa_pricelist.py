@@ -131,7 +131,7 @@ class VisaSyncProducts(models.TransientModel):
                                 'pax_type': res['response']['pax_type'],
                                 'process_type': res['response']['process_type'],
                                 'reference_code': res['response']['reference_code'] + '_rdx',
-                                'provider_id': self.env['tt.provider'].search([('name', '=', res['response']['provider_id'])]).id,
+                                'provider_id': self.env['tt.provider'].search([('code', '=', res['response']['provider_id'])]).id,
                                 'sale_price': res['response']['sale_price'],
                                 'visa_nta_price': res['response']['visa_nta_price'],
                                 'visa_type': res['response']['visa_type']
@@ -159,7 +159,7 @@ class VisaSyncProducts(models.TransientModel):
                                 'pax_type': res['response']['pax_type'],
                                 'process_type': res['response']['process_type'],
                                 'reference_code': res['response']['reference_code'] + '_rdx',
-                                'provider_id': self.env['tt.provider'].search([('name', '=', res['response']['provider_id'])]).id,
+                                'provider_id': self.env['tt.provider'].search([('code', '=', res['response']['provider_id'])]).id,
                                 'sale_price': res['response']['sale_price'],
                                 'visa_nta_price': res['response']['visa_nta_price'],
                                 'visa_type': res['response']['visa_type']
@@ -169,7 +169,7 @@ class VisaSyncProducts(models.TransientModel):
                             self.env['tt.reservation.visa.requirements'].create({
                                 'pricelist_id': master_data.id,
                                 'name': data['name'],
-                                'reference_code': data['reference_code'],
+                                'reference_code': data['reference_code'] + '_rdx',
                                 'type_id': self.env['tt.traveldoc.type'].create(data['type_id']).id
                             })
                         upload = self.env['tt.upload.center.wizard']
@@ -358,7 +358,7 @@ class VisaPricelist(models.Model):
             'pax_type': self.pax_type,
             'process_type': self.process_type,
             'reference_code': self.reference_code,
-            'provider_id': self.provider_id.name,
+            'provider_id': self.provider_id.code,
             'sale_price': self.sale_price,
             'visa_nta_price': self.visa_nta_price,
             'visa_type': self.visa_type,
