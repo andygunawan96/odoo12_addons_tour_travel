@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <data noupdate="0">
+    <data noupdate="1">
         <record id="tt_provider_visa_internal" model="tt.provider">
             <field name="name">Visa Internal</field>
             <field name="code">visa_internal</field>
