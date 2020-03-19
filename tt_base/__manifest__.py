@@ -33,7 +33,6 @@ Key Features
         'data/res.social.media.type.csv',
         'security/ir.model.access.csv',
         'security/ir_rule_data.xml',
-        'data/payment_acquirer_ho_data.xml',
         'data/tt_pnr_quota_price_list.xml',
         'data/tt_ssr_category_data.xml',
         'views/menu_item_base.xml',
@@ -90,6 +89,7 @@ Key Features
         'data/agent_type_rodex_data.xml',
         'data/tt_agent_ho_data.xml',
         'data/agent_b2c_data.xml',
+        'data/payment_acquirer_ho_data.xml',
 
         'wizard/tt_upload_center_wizard_view.xml',
         'wizard/create_user_wizard_view.xml',
