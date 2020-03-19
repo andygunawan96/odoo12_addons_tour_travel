@@ -17,8 +17,12 @@ class TtVisaApiCon(models.Model):
             res = self.env['tt.reservation.visa.pricelist'].get_product_detail_api(data)
         elif action == 'search_api':
             res = self.env['tt.reservation.visa.pricelist'].search_api(data)
+        elif action == 'availability_api':
+            res = self.env['tt.reservation.visa.pricelist'].availability_api(data)
         elif action == 'create_booking_visa_api':
             res = table_obj.create_booking_visa_api(data, context)
+        elif action == 'state_booking_visa_api':
+            res = table_obj.state_booking_visa_api(data, context)
         elif action == 'change_pnr_api':
             res = table_obj.change_pnr_api(data, context)
         elif action == 'get_booking_visa_api':

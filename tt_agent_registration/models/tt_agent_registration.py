@@ -82,7 +82,7 @@ class AgentRegistration(models.Model):
     ledger_ids = fields.One2many('tt.ledger', 'res_id', 'Ledger', readonly=True,
                                  domain=[('res_model', '=', 'tt.agent.registration')])
 
-    contact_ids = fields.One2many('tt.customer', 'agent_registration_id', 'Contact Information')
+    # contact_ids = fields.One2many('tt.customer', 'agent_registration_id', 'Contact Information')
 
     agent_registration_customer_ids = fields.One2many('tt.agent.registration.customer', 'agent_registration_id',
                                                       'Agent Registration Contact')
@@ -352,12 +352,6 @@ class AgentRegistration(models.Model):
             if self.tac is False or '':
                 raise UserError('Terms and Conditions is Empty')
 
-    def get_parent_citra(self, parent_agent_id):
-        if parent_agent_id.parent_agent_id.agent_type_id.id == self.env.ref('tt_base.agent_type_citra').id:
-            return parent_agent_id.parent_agent_id
-        else:
-            return self.get_parent_citra(parent_agent_id.parent_agent_id)
-
     def calc_commission(self):
         ledger = self.env['tt.ledger']
         self.calc_ledger()
@@ -551,7 +545,6 @@ class AgentRegistration(models.Model):
                 contact_objs.update({
                     'phone_ids': [(6, 0, phone_list)]
                 })
-                # todo : create phone_ids untuk contact
                 customer_id.append(contact_objs.id)
                 con.update({
                     'customer_id': contact_objs.id,
@@ -873,16 +866,6 @@ class AgentRegistration(models.Model):
                             parent_agent_id = self.env.ref('tt_base.rodex_ho').id
                         else:
                             parent_agent_id = self.env.ref('tt_base.rodex_ho').id  # Sementara
-            # if agent_type_id.id == self.env.ref('tt_base.agent_type_citra').id:
-            #     parent_agent_id = self.env.ref('tt_base.rodex_ho').id
-            # else:
-            #     if agent_id:
-            #         if agent_id == self.env.ref('tt_base.agent_b2c').id:
-            #             parent_agent_id = self.env.ref('tt_base.rodex_ho').id
-            #         else:
-            #             parent_agent_id = agent_id
-            #     else:
-            #         parent_agent_id = self.env.ref('tt_base.rodex_ho').id
         else:
             """ Kalo tidak login """
             if agent_id:

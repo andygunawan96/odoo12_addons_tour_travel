@@ -20,7 +20,7 @@ TT_RESERVATION_HOTEL
         'data/res.city.type.csv',
         # 'data/res.country.state.csv',
         'data/res.city.csv',
-        'data/tt.provider.code.csv',
+        # 'data/tt.provider.code.csv',
         # 'data/res.country.district.csv',
         'security/ir.model.access.csv',
         'security/ir_rule_data.xml',
