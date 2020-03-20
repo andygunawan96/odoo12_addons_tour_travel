@@ -29,7 +29,7 @@ class ApiWebhookData(models.Model):
                             vals = {
                                 'action': req['action'],
                                 'url': rec.url,
-                                'signature': hashlib.sha256(temp_sha.encode()),
+                                'signature': hashlib.sha256(temp_sha.encode()).hexdigest(),
                                 'datetime': temp_date,
                                 'data': req['data']
                             }

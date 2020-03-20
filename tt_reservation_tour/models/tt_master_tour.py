@@ -1590,7 +1590,7 @@ class MasterTour(models.Model):
             if not provider_id:
                 raise RequestException(1002)
             for rec in req['data']:
-                currency_obj = self.env['res.currency'].sudo().search(['name', '=', rec['currency_code']], limit=1)
+                currency_obj = self.env['res.currency'].sudo().search([('name', '=', rec['currency_code'])], limit=1)
                 vals = {
                     'name': rec['name'],
                     'tour_code': rec['tour_code'],

@@ -2149,7 +2149,7 @@ class MasterActivity(models.Model):
             if not provider_id:
                 raise RequestException(1002)
             for rec in req['data']:
-                currency_obj = self.env['res.currency'].sudo().search(['name', '=', rec['currency_code']], limit=1)
+                currency_obj = self.env['res.currency'].sudo().search([('name', '=', rec['currency_code'])], limit=1)
                 vals = {
                     'name': rec['name'],
                     'uuid': rec['uuid'],
@@ -2327,7 +2327,7 @@ class MasterActivity(models.Model):
 
                     option_list = []
                     for rec3 in rec2['option_ids']:
-                        opt_currency_obj = self.env['res.currency'].sudo().search(['name', '=', rec3['currency_code']], limit=1)
+                        opt_currency_obj = self.env['res.currency'].sudo().search([('name', '=', rec3['currency_code'])], limit=1)
                         option_vals = {
                             'uuid': rec3['uuid'],
                             'name': rec3['name'],
@@ -2342,7 +2342,7 @@ class MasterActivity(models.Model):
                         option_obj = self.env['tt.activity.booking.option'].sudo().create(option_vals)
                         self.env.cr.commit()
                         for rec4 in rec3['items']:
-                            item_currency_obj = self.env['res.currency'].sudo().search(['name', '=', rec4['currency_code']], limit=1)
+                            item_currency_obj = self.env['res.currency'].sudo().search([('name', '=', rec4['currency_code'])], limit=1)
                             opt_item_vals = {
                                 'booking_option_id': option_obj.id,
                                 'label': rec4['label'],
@@ -2448,7 +2448,7 @@ class ActivitySyncProductsChildren(models.TransientModel):
                         'voucherRequiresPrinting': rec2.voucherRequiresPrinting,
                         'voucher_validity_type': rec2.voucher_validity_type,
                         'voucher_validity_days': rec2.voucher_validity_days,
-                        'voucher_validity_date': rec2.voucher_validity_date,
+                        'voucher_validity_date': rec2.voucher_validity_date and rec2.voucher_validity_date.strftime("%Y-%m-%d"),
                         'meetingLocation': rec2.meetingLocation,
                         'meetingAddress': rec2.meetingAddress,
                         'meetingTime': rec2.meetingTime,
