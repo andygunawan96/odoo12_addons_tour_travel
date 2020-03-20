@@ -2175,6 +2175,7 @@ class MasterActivity(models.Model):
                     'additionalInfo': rec['additionalInfo'],
                     'warnings': rec['warnings'],
                     'safety': rec['safety'],
+                    'can_hold_booking': rec['can_hold_booking'],
                 }
                 activity_obj = self.env['tt.master.activity'].sudo().search([('uuid', '=', rec['uuid']), ('provider_id', '=', provider_id[0].id)], limit=1)
                 if activity_obj:
@@ -2403,6 +2404,7 @@ class ActivitySyncProductsChildren(models.TransientModel):
                     'additionalInfo': rec.additionalInfo,
                     'warnings': rec.warnings,
                     'safety': rec.safety,
+                    'can_hold_booking': rec.can_hold_booking,
                 }
                 location_list = []
                 for rec2 in rec.location_ids:
