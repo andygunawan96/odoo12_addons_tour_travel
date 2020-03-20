@@ -9,6 +9,7 @@ import pickle
 from datetime import datetime
 import csv
 import os
+from odoo.exceptions import UserError
 
 _logger = logging.getLogger(__name__)
 
@@ -623,7 +624,7 @@ class MasterActivity(models.Model):
                     'active': False
                 })
             for rec in res['response']:
-                activity_type_exist = self.env['tt.master.activity.lines'].sudo().search([('activity_id', '=', product_id), ('uuid', '=', rec['type_details']['data']['uuid']), '|', ('active', '=', False), ('active', '=', True)])
+                activity_type_exist = self.env['tt.master.activity.lines'].sudo().search([('activity_id', '=', product_id), ('uuid', '=', rec['type_details']['data']['uuid']), '|', ('active', '=', False), ('active', '=', True)], limit=1)
                 cancellationPolicies = ''
                 if rec['type_details']['data']['cancellationPolicies']:
                     for cancel in rec['type_details']['data']['cancellationPolicies']:
@@ -661,7 +662,7 @@ class MasterActivity(models.Model):
                     activity_obj = self.env['tt.master.activity.lines'].sudo().create(vals)
                 self.env.cr.commit()
 
-                old_adult_sku = self.env['tt.master.activity.sku'].sudo().search([('activity_line_id', '=', activity_obj.id), ('sku_id', '=', 'Adult'), '|', ('active', '=', False), ('active', '=', True)])
+                old_adult_sku = self.env['tt.master.activity.sku'].sudo().search([('activity_line_id', '=', activity_obj.id), ('sku_id', '=', 'Adult'), '|', ('active', '=', False), ('active', '=', True)], limit=1)
 
                 chd_min_age = 0
                 adt_min_age = rec['type_details']['data'].get('minAdultAge') and rec['type_details']['data']['minAdultAge'] or 0
@@ -683,7 +684,7 @@ class MasterActivity(models.Model):
                     self.env['tt.master.activity.sku'].sudo().create(sku_vals)
                 self.env.cr.commit()
 
-                old_child_sku = self.env['tt.master.activity.sku'].sudo().search([('activity_line_id', '=', activity_obj.id), ('sku_id', '=', 'Child'), '|', ('active', '=', False), ('active', '=', True)])
+                old_child_sku = self.env['tt.master.activity.sku'].sudo().search([('activity_line_id', '=', activity_obj.id), ('sku_id', '=', 'Child'), '|', ('active', '=', False), ('active', '=', True)], limit=1)
                 if rec['type_details']['data']['allowChildren']:
                     chd_min_age = rec['type_details']['data'].get('minChildAge') and rec['type_details']['data']['minChildAge'] or 0
                     chd_max_age = rec['type_details']['data'].get('maxChildAge') and rec['type_details']['data']['maxChildAge'] or (adt_min_age - 1 >= 0 and adt_min_age or 0)
@@ -709,7 +710,7 @@ class MasterActivity(models.Model):
                             'active': False
                         })
 
-                old_senior_sku = self.env['tt.master.activity.sku'].sudo().search([('activity_line_id', '=', activity_obj.id), ('sku_id', '=', 'Senior'), '|', ('active', '=', False), ('active', '=', True)])
+                old_senior_sku = self.env['tt.master.activity.sku'].sudo().search([('activity_line_id', '=', activity_obj.id), ('sku_id', '=', 'Senior'), '|', ('active', '=', False), ('active', '=', True)], limit=1)
                 if rec['type_details']['data']['allowSeniors']:
                     ycd_min_age = rec['type_details']['data'].get('minSeniorAge') and rec['type_details']['data']['minSeniorAge'] or adt_max_age + 1
                     ycd_max_age = rec['type_details']['data'].get('maxSeniorAge') and rec['type_details']['data']['maxSeniorAge'] or 200
@@ -735,7 +736,7 @@ class MasterActivity(models.Model):
                             'active': False
                         })
 
-                old_infant_sku = self.env['tt.master.activity.sku'].sudo().search([('activity_line_id', '=', activity_obj.id), ('sku_id', '=', 'Infant'), '|', ('active', '=', False), ('active', '=', True)])
+                old_infant_sku = self.env['tt.master.activity.sku'].sudo().search([('activity_line_id', '=', activity_obj.id), ('sku_id', '=', 'Infant'), '|', ('active', '=', False), ('active', '=', True)], limit=1)
                 if rec['type_details']['data']['allowInfant']:
                     inf_min_age = rec['type_details']['data'].get('minInfantAge') and rec['type_details']['data']['minInfantAge'] or 0
                     inf_max_age = rec['type_details']['data'].get('maxInfantAge') and rec['type_details']['data']['maxInfantAge'] or (chd_min_age and (chd_min_age - 1 >= 0 and chd_min_age or 0) or (adt_min_age - 1 >= 0 and adt_min_age or 0))
@@ -769,7 +770,7 @@ class MasterActivity(models.Model):
 
                 if rec['type_details']['data']['timeslots']:
                     for time in rec['type_details']['data']['timeslots']:
-                        old_timeslot = self.env['tt.activity.master.timeslot'].sudo().search([('product_type_id', '=', activity_obj.id), ('uuid', '=', time['uuid']), '|', ('active', '=', False), ('active', '=', True)])
+                        old_timeslot = self.env['tt.activity.master.timeslot'].sudo().search([('product_type_id', '=', activity_obj.id), ('uuid', '=', time['uuid']), '|', ('active', '=', False), ('active', '=', True)], limit=1)
                         value = {
                             'product_type_id': activity_obj.id,
                             'uuid': time['uuid'],
@@ -1064,7 +1065,7 @@ class MasterActivity(models.Model):
                 refundable = True
             else:
                 refundable = False
-            activity_type_exist = self.env['tt.master.activity.lines'].search([('activity_id', '=', product_id), ('uuid', '=', rec2.get('product_id')), '|', ('active', '=', False), ('active', '=', True)])
+            activity_type_exist = self.env['tt.master.activity.lines'].search([('activity_id', '=', product_id), ('uuid', '=', rec2.get('product_id')), '|', ('active', '=', False), ('active', '=', True)], limit=1)
             vals = {
                 'activity_id': product_id,
                 'uuid': rec2.get('product_id') and rec2['product_id'] or '',
@@ -1140,7 +1141,7 @@ class MasterActivity(models.Model):
                     if temp_pax_type not in ['adult', 'child', 'senior', 'infant']:
                         temp_pax_type = 'adult'
 
-                    old_sku_data = self.env['tt.master.activity.sku'].search([('activity_line_id', '=', activity_obj.id), ('sku_id', '=', rec3.get('sku_id')), '|', ('active', '=', False), ('active', '=', True)])
+                    old_sku_data = self.env['tt.master.activity.sku'].search([('activity_line_id', '=', activity_obj.id), ('sku_id', '=', rec3.get('sku_id')), '|', ('active', '=', False), ('active', '=', True)], limit=1)
                     sku_create_vals = {
                         'sku_id': rec3.get('sku_id') and rec3['sku_id'] or '',
                         'title': rec3.get('title') and rec3['title'] or '',
@@ -1167,7 +1168,7 @@ class MasterActivity(models.Model):
 
             if rec2.get('timeslots'):
                 for time in rec2['timeslots']:
-                    old_timeslot = self.env['tt.activity.master.timeslot'].search([('product_type_id', '=', activity_obj.id), ('uuid', '=', time['uuid']), '|', ('active', '=', False), ('active', '=', True)])
+                    old_timeslot = self.env['tt.activity.master.timeslot'].search([('product_type_id', '=', activity_obj.id), ('uuid', '=', time['uuid']), '|', ('active', '=', False), ('active', '=', True)], limit=1)
                     value = {
                         'product_type_id': activity_obj.id,
                         'uuid': time.get('uuid') and time['uuid'] or '',
@@ -1271,7 +1272,7 @@ class MasterActivity(models.Model):
                     'activity_id': product_id,
                     'active': True
                 })
-                activity_type_exist = self.env['tt.master.activity.lines'].sudo().search([('activity_id', '=', product_id), ('uuid', '=', rec['uuid']), '|',('active', '=', False), ('active', '=', True)])
+                activity_type_exist = self.env['tt.master.activity.lines'].sudo().search([('activity_id', '=', product_id), ('uuid', '=', rec['uuid']), '|',('active', '=', False), ('active', '=', True)], limit=1)
                 vals = rec
 
                 vals.pop('voucher_validity')
@@ -1304,7 +1305,7 @@ class MasterActivity(models.Model):
                         'active': False
                     })
                 for temp_time in timeslot_list:
-                    old_timeslot = self.env['tt.activity.master.timeslot'].sudo().search([('product_type_id', '=', activity_obj.id), ('uuid', '=', temp_time['uuid']), '|', ('active', '=', False), ('active', '=', True)])
+                    old_timeslot = self.env['tt.activity.master.timeslot'].sudo().search([('product_type_id', '=', activity_obj.id), ('uuid', '=', temp_time['uuid']), '|', ('active', '=', False), ('active', '=', True)], limit=1)
                     temp_time.update({
                         'product_type_id': activity_obj.id,
                         'active': True,
@@ -1894,7 +1895,7 @@ class MasterActivity(models.Model):
         activity_id = self.env['tt.master.activity'].sudo().search(
             [('uuid', '=', req['productUuid']), ('provider_id', '=', provider_id.id)], limit=1)
         product_id = activity_id[0].id
-        activity_type_exist = self.env['tt.master.activity.lines'].search([('activity_id', '=', product_id), ('uuid', '=', req['data']['uuid']), '|', ('active', '=', False), ('active', '=', True)])
+        activity_type_exist = self.env['tt.master.activity.lines'].search([('activity_id', '=', product_id), ('uuid', '=', req['data']['uuid']), '|', ('active', '=', False), ('active', '=', True)], limit=1)
         cancellationPolicies = ''
         if req['data']['cancellationPolicies']:
             for cancel in req['data']['cancellationPolicies']:
@@ -1934,7 +1935,7 @@ class MasterActivity(models.Model):
             activity_obj = self.env['tt.master.activity.lines'].sudo().create(vals)
         self.env.cr.commit()
 
-        old_adult_sku = self.env['tt.master.activity.sku'].search([('activity_line_id', '=', activity_obj.id), ('sku_id', '=', 'Adult'), '|', ('active', '=', False), ('active', '=', True)])
+        old_adult_sku = self.env['tt.master.activity.sku'].search([('activity_line_id', '=', activity_obj.id), ('sku_id', '=', 'Adult'), '|', ('active', '=', False), ('active', '=', True)], limit=1)
 
         chd_min_age = 0
         adt_min_age = req['data'].get('minAdultAge') and req['data']['minAdultAge'] or 0
@@ -1958,7 +1959,7 @@ class MasterActivity(models.Model):
 
         old_child_sku = self.env['tt.master.activity.sku'].search(
             [('activity_line_id', '=', activity_obj.id), ('sku_id', '=', 'Child'), '|', ('active', '=', False),
-             ('active', '=', True)])
+             ('active', '=', True)], limit=1)
         if req['data']['allowChildren']:
             chd_min_age = req['data'].get('minChildAge') and req['data']['minChildAge'] or 0
             chd_max_age = req['data'].get('maxChildAge') and req['data']['maxChildAge'] or (adt_min_age - 1 >= 0 and adt_min_age or 0)
@@ -1986,7 +1987,7 @@ class MasterActivity(models.Model):
 
         old_senior_sku = self.env['tt.master.activity.sku'].search(
             [('activity_line_id', '=', activity_obj.id), ('sku_id', '=', 'Senior'), '|', ('active', '=', False),
-             ('active', '=', True)])
+             ('active', '=', True)], limit=1)
         if req['data']['allowSeniors']:
             ycd_min_age = req['data'].get('minSeniorAge') and req['data']['minSeniorAge'] or adt_max_age + 1
             ycd_max_age = req['data'].get('maxSeniorAge') and req['data']['maxSeniorAge'] or 200
@@ -2014,7 +2015,7 @@ class MasterActivity(models.Model):
 
         old_infant_sku = self.env['tt.master.activity.sku'].search(
             [('activity_line_id', '=', activity_obj.id), ('sku_id', '=', 'Infant'), '|', ('active', '=', False),
-             ('active', '=', True)])
+             ('active', '=', True)], limit=1)
         if req['data']['allowInfant']:
             inf_min_age = req['data'].get('minInfantAge') and req['data']['minInfantAge'] or 0
             inf_max_age = req['data'].get('maxInfantAge') and req['data']['maxInfantAge'] or (chd_min_age and (chd_min_age - 1 >= 0 and chd_min_age or 0) or (adt_min_age - 1 >= 0 and adt_min_age or 0))
@@ -2050,7 +2051,7 @@ class MasterActivity(models.Model):
             for time in req['data']['timeslots']:
                 old_timeslot = self.env['tt.activity.master.timeslot'].search(
                     [('product_type_id', '=', activity_obj.id), ('uuid', '=', time['uuid']), '|',
-                     ('active', '=', False), ('active', '=', True)])
+                     ('active', '=', False), ('active', '=', True)], limit=1)
                 value = {
                     'product_type_id': activity_obj.id,
                     'uuid': time['uuid'],
@@ -2142,102 +2143,384 @@ class MasterActivity(models.Model):
         }
         return ERR.get_no_error(response)
 
-    # def test_webhook_product(self):
-    #     data = {
-    #         "type": "product_type_available",
-    #         "productUuid": "862a4a30-533f-57dc-94d0-dab9d59bacc5",
-    #         "data": {
-    #             "uuid": "e96a52d5-9488-5891-bf5a-ce60caec8d1f",
-    #             "title": "Fun Pass Play TEST",
-    #             "titleTranslated": "Fun Pass Play 3",
-    #             "description": "Choose Fun Pass Play 3 to play 3 out of 18 attractions",
-    #             "descriptionTranslated": "Choose Fun Pass Play 3 to play 3 out of 18 attractions",
-    #             "durationDays": 0,
-    #             "durationHours": 12,
-    #             "durationMinutes": 0,
-    #             "daysInAdvance": False,
-    #             "cutOffTime": False,
-    #             "firstAvailabilityDate": "2019-07-22",
-    #             "isNonRefundable": True,
-    #             "allowAdults": True,
-    #             "minPax": 1,
-    #             "maxPax": 60,
-    #             "minAdultAge": 13,
-    #             "maxAdultAge": 100,
-    #             "hasChildPrice": True,
-    #             "allowChildren": True,
-    #             "minChildren": 0,
-    #             "maxChildren": 20,
-    #             "minChildAge": 3,
-    #             "maxChildAge": 12,
-    #             "allowSeniors": False,
-    #             "minSeniors": False,
-    #             "maxSeniors": False,
-    #             "minSeniorAge": False,
-    #             "maxSeniorAge": False,
-    #             "allowInfant": False,
-    #             "minInfantAge": False,
-    #             "maxInfantAge": False,
-    #             "maxGroup": False,
-    #             "minGroup": False,
-    #             "instantConfirmation": True,
-    #             "nonInstantVoucher": True,
-    #             "directAdmission": False,
-    #             "voucherUse": "You will receive a voucher by email. It contains all the information for this activity. You will need to present this voucher.",
-    #             "voucherUseTranslated": "You will receive a voucher by email. It contains all the information for this activity. You will need to present this voucher.",
-    #             "voucherRedemptionAddress": "Sentosa Ticketing Counters\n- Beach Station (09:00 to 21:00)\n- Fort Siloso (10:00 to 17:30)\n- Imbiah Forecourt (09:00 to 18:00)\n- Imbiah Lookout (10:00 to 19:00)\n- Merlion Plaza (09:00 to 20:00)\n- Sentosa Boardwalk (09:00 to 17:00)\n- Sentosa Station, VivoCity, Lobby L, Level 3 (09:00 to 21:00) \n- Sentosa Merlion (10:00 to 19:30)\n- Waterfront Station (09:00 to 16:00)",
-    #             "voucherRedemptionAddressTranslated": "Sentosa Ticketing Counters\n- Beach Station (09:00 to 21:00)\n- Fort Siloso (10:00 to 17:30)\n- Imbiah Forecourt (09:00 to 18:00)\n- Imbiah Lookout (10:00 to 19:00)\n- Merlion Plaza (09:00 to 20:00)\n- Sentosa Boardwalk (09:00 to 17:00)\n- Sentosa Station, VivoCity, Lobby L, Level 3 (09:00 to 21:00) \n- Sentosa Merlion (10:00 to 19:30)\n- Waterfront Station (09:00 to 16:00)",
-    #             "voucherRequiresPrinting": False,
-    #             "meetingTime": False,
-    #             "meetingAddress": False,
-    #             "meetingLocation": "Make your own way\nto Sentosa Ticketing Counters",
-    #             "meetingLocationTranslated": "Make your own way\nto Sentosa Ticketing Counters",
-    #             "cancellationPolicies": [],
-    #             "recommendedMarkup": 6.67,
-    #             "childRecommendedMarkup": False,
-    #             "seniorRecommendedMarkup": False,
-    #             "adultParityPrice": False,
-    #             "childParityPrice": False,
-    #             "seniorParityPrice": False,
-    #             "adultGateRatePrice": 0,
-    #             "childGateRatePrice": 0,
-    #             "seniorGateRatePrice": False,
-    #             "validity": {
-    #                 "type": "after_issue_date",
-    #                 "days": 90,
-    #                 "date": False,
-    #                 "hasBatchValidityDate": False
-    #             },
-    #             "timeslots": [],
-    #             "options": {
-    #                 "perBooking": [],
-    #                 "perPax": []
-    #             },
-    #             "hasOptions": False,
-    #             "hasFileUploadOptions": False,
-    #             "hasPriceOptions": False,
-    #             "links": [
-    #                 {
-    #                     "method": "GET",
-    #                     "rel": "self",
-    #                     "href": "https://api.demo.bemyguest.com.sg/v2/product-types/e96a52d5-9488-5891-bf5a-ce60caec8d1f"
-    #                 },
-    #                 {
-    #                     "method": "GET",
-    #                     "rel": "product",
-    #                     "href": "https://api.demo.bemyguest.com.sg/v2/products/862a4a30-533f-57dc-94d0-dab9d59bacc5"
-    #                 },
-    #                 {
-    #                     "method": "GET",
-    #                     "rel": "priceLists",
-    #                     "href": "https://api.demo.bemyguest.com.sg/v2/product-types/e96a52d5-9488-5891-bf5a-ce60caec8d1f/price-lists"
-    #                 }
-    #             ]
-    #         },
-    #         "signature": "gdfhgy786g78dfg7d7f8gdfghgfhgk6786786868",
-    #         "timestamp": "2019-07-21 12:00:04 SGT"
-    #     }
-    #     self.env['tt.master.activity.api.con'].test_update_product_webhook(json.dumps(data))
+    def product_sync_webhook_nosend(self, req, context):
+        try:
+            provider_id = self.env['tt.provider'].sudo().search([('code', '=', req['provider'])], limit=1)
+            if not provider_id:
+                raise RequestException(1002)
+            for rec in req['data']:
+                currency_obj = self.env['res.currency'].sudo().search(['name', '=', rec['currency_code']], limit=1)
+                vals = {
+                    'name': rec['name'],
+                    'uuid': rec['uuid'],
+                    'latitude': rec['latitude'],
+                    'longitude': rec['longitude'],
+                    'businessHoursFrom': rec['businessHoursFrom'],
+                    'businessHoursTo': rec['businessHoursTo'],
+                    'minPax': rec['minPax'],
+                    'maxPax': rec['maxPax'],
+                    'reviewAverageScore': rec['reviewAverageScore'],
+                    'reviewCount': rec['reviewCount'],
+                    'airportPickup': rec['airportPickup'],
+                    'hotelPickup': rec['hotelPickup'],
+                    'provider_id': provider_id[0].id,
+                    'provider_fare_code': rec['provider_fare_code'],
+                    'currency_id': currency_obj and currency_obj[0].id or False,
+                    'basePrice': rec['basePrice'],
+                    'priceIncludes': rec['priceIncludes'],
+                    'priceExcludes': rec['priceExcludes'],
+                    'description': rec['description'],
+                    'highlights': rec['highlights'],
+                    'itinerary': rec['itinerary'],
+                    'additionalInfo': rec['additionalInfo'],
+                    'warnings': rec['warnings'],
+                    'safety': rec['safety'],
+                }
+                activity_obj = self.env['tt.master.activity'].sudo().search([('uuid', '=', rec['uuid']), ('provider_id', '=', provider_id[0].id)], limit=1)
+                if activity_obj:
+                    activity_obj = activity_obj[0]
+                    activity_obj.sudo().write(vals)
+                    for img in activity_obj.image_ids:
+                        img.sudo().unlink()
+                    for vid in activity_obj.video_ids:
+                        vid.sudo().unlink()
+                    for line in activity_obj.line_ids:
+                        line.sudo().write({
+                            'active': False
+                        })
+                else:
+                    activity_obj = self.env['tt.master.activity'].sudo().create(vals)
+                self.env.cr.commit()
+
+                location_list = []
+                for rec2 in rec['location_ids']:
+                    search_params = []
+                    country_obj = self.env['res.country'].sudo().search([('code', '=', rec2['country_code'])], limit=1)
+                    if country_obj:
+                        search_params.append(('country_id', '=', country_obj[0].id))
+                    city_obj = self.env['res.city'].sudo().search([('name', '=', rec2['city_name'])], limit=1)
+                    if city_obj:
+                        search_params.append(('city_id', '=', city_obj[0].id))
+                    loc_obj = self.env['tt.activity.master.locations'].sudo().search(search_params, limit=1)
+                    if loc_obj:
+                        loc_obj = loc_obj[0]
+                    else:
+                        loc_obj = self.env['tt.activity.master.locations'].sudo().create({
+                            'country_id': country_obj and country_obj[0].id or False,
+                            'city_id': city_obj and city_obj[0].id or False,
+                        })
+                    location_list.append(loc_obj.id)
+
+                category_list = []
+                for rec2 in rec['category_ids']:
+                    cat_search_params = [('name', '=', rec2['name']), ('type', '=', 'category')]
+                    cat_parent_obj = False
+                    if rec2.get('parent_name'):
+                        cat_parent_obj = self.env['tt.activity.category'].sudo().search([('name', '=', rec2['parent_name']), ('type', '=', 'category')], limit=1)
+                        if cat_parent_obj:
+                            cat_parent_obj = cat_parent_obj[0]
+                        else:
+                            cat_parent_obj = self.env['tt.activity.category'].sudo().create({
+                                'name': rec2['parent_name'],
+                                'type': 'category'
+                            })
+                        cat_search_params.append(('parent_id', '=', cat_parent_obj.id))
+                    cat_obj = self.env['tt.activity.category'].sudo().search(cat_search_params, limit=1)
+                    if cat_obj:
+                        cat_obj = cat_obj[0]
+                    else:
+                        cat_obj = self.env['tt.activity.category'].sudo().create({
+                            'name': rec2['name'],
+                            'type': 'category',
+                            'parent_id': cat_parent_obj and cat_parent_obj.id or False,
+                        })
+                    category_list.append(cat_obj.id)
+
+                for rec2 in rec['image_ids']:
+                    self.env['tt.activity.master.images'].sudo().create({
+                        'activity_id': activity_obj.id,
+                        'photos_path': rec2['photos_path'],
+                        'photos_url': rec2['photos_url'],
+                    })
+                for rec2 in rec['video_ids']:
+                    self.env['tt.activity.master.videos'].sudo().create({
+                        'activity_id': activity_obj.id,
+                        'video_url': rec2['video_url'],
+                    })
+
+                for rec2 in rec['line_ids']:
+                    line_vals = {
+                        'activity_id': activity_obj.id,
+                        'uuid': rec2['uuid'],
+                        'name': rec2['name'],
+                        'description': rec2['description'],
+                        'durationDays': rec2['durationDays'],
+                        'durationHours': rec2['durationHours'],
+                        'durationMinutes': rec2['durationMinutes'],
+                        'advanceBookingDays': rec2['advanceBookingDays'],
+                        'minimumSellingPrice': rec2['minimumSellingPrice'],
+                        'minPax': rec2['minPax'],
+                        'maxPax': rec2['maxPax'],
+                        'isNonRefundable': rec2['isNonRefundable'],
+                        'voucherUse': rec2['voucherUse'],
+                        'voucherRedemptionAddress': rec2['voucherRedemptionAddress'],
+                        'voucherRequiresPrinting': rec2['voucherRequiresPrinting'],
+                        'voucher_validity_type': rec2['voucher_validity_type'],
+                        'voucher_validity_days': rec2['voucher_validity_days'],
+                        'voucher_validity_date': rec2['voucher_validity_date'],
+                        'meetingLocation': rec2['meetingLocation'],
+                        'meetingAddress': rec2['meetingAddress'],
+                        'meetingTime': rec2['meetingTime'],
+                        'cancellationPolicies': rec2['cancellationPolicies'],
+                        'instantConfirmation': rec2['instantConfirmation'],
+                        'active': True
+                    }
+                    line_obj = self.env['tt.master.activity.lines'].sudo().search([('uuid', '=', rec2['uuid']), ('activity_id', '=', activity_obj.id), '|', ('active', '=', False), ('active', '=', True)], limit=1)
+                    if line_obj:
+                        line_obj = line_obj[0]
+                        line_obj.sudo().write(line_vals)
+                        for temp_sku in line_obj.sku_ids:
+                            temp_sku.sudo().write({
+                                'active': False
+                            })
+                        for temp_time in line_obj.timeslot_ids:
+                            temp_time.sudo().write({
+                                'active': False
+                            })
+                    else:
+                        line_obj = self.env['tt.master.activity.lines'].sudo().create(line_vals)
+                    self.env.cr.commit()
+                    for rec3 in rec2['sku_ids']:
+                        sku_vals = {
+                            'activity_line_id': line_obj.id,
+                            'sku_id': rec3['sku_id'],
+                            'title': rec3['title'],
+                            'pax_type': rec3['pax_type'],
+                            'add_information': rec3['add_information'],
+                            'minPax': rec3['minPax'],
+                            'maxPax': rec3['maxPax'],
+                            'minAge': rec3['minAge'],
+                            'maxAge': rec3['maxAge'],
+                            'active': True
+                        }
+                        sku_obj = self.env['tt.master.activity.sku'].sudo().search([('activity_line_id', '=', line_obj.id), ('sku_id', '=', rec3['sku_id']), '|',('active', '=', False), ('active', '=', True)], limit=1)
+                        if sku_obj:
+                            sku_obj = sku_obj[0]
+                            sku_obj.sudo().write(sku_vals)
+                        else:
+                            sku_obj = self.env['tt.master.activity.sku'].sudo().create(sku_vals)
+
+                    for rec3 in rec2['timeslot_ids']:
+                        timeslot_vals = {
+                            'product_type_id': line_obj.id,
+                            'uuid': rec3['uuid'],
+                            'startTime': rec3['startTime'],
+                            'endTime': rec3['endTime'],
+                            'active': True
+                        }
+                        timeslot_obj = self.env['tt.activity.master.timeslot'].sudo().search([('product_type_id', '=', line_obj.id), ('uuid', '=', rec3['uuid']), '|',('active', '=', False), ('active', '=', True)], limit=1)
+                        if timeslot_obj:
+                            timeslot_obj = timeslot_obj[0]
+                            timeslot_obj.sudo().write(timeslot_vals)
+                        else:
+                            timeslot_obj = self.env['tt.master.activity.sku'].sudo().create(timeslot_vals)
+
+                    option_list = []
+                    for rec3 in rec2['option_ids']:
+                        opt_currency_obj = self.env['res.currency'].sudo().search(['name', '=', rec3['currency_code']], limit=1)
+                        option_vals = {
+                            'uuid': rec3['uuid'],
+                            'name': rec3['name'],
+                            'description': rec3['description'],
+                            'required': rec3['required'],
+                            'formatRegex': rec3['formatRegex'],
+                            'inputType': rec3['inputType'],
+                            'type': rec3['type'],
+                            'price': rec3['price'],
+                            'currency_id': opt_currency_obj and opt_currency_obj[0].id or False,
+                        }
+                        option_obj = self.env['tt.activity.booking.option'].sudo().create(option_vals)
+                        self.env.cr.commit()
+                        for rec4 in rec3['items']:
+                            item_currency_obj = self.env['res.currency'].sudo().search(['name', '=', rec4['currency_code']], limit=1)
+                            opt_item_vals = {
+                                'booking_option_id': option_obj.id,
+                                'label': rec4['label'],
+                                'value': rec4['value'],
+                                'price': rec4['price'],
+                                'currency_id': item_currency_obj and item_currency_obj[0].id or False,
+                            }
+                            opt_item_obj = self.env['tt.activity.booking.option.line'].sudo().create(opt_item_vals)
+                        option_list.append(option_obj.id)
+                    line_obj.sudo().write({
+                        'option_ids': [(6, 0, option_list)]
+                    })
+
+                activity_obj.sudo().write({
+                    'location_ids': [(6, 0, location_list)],
+                    'category_ids': [(6, 0, category_list)],
+                })
+
+            response = {
+                'success': True
+            }
+            return ERR.get_no_error(response)
+        except Exception as e:
+            _logger.error(traceback.format_exc())
+            return ERR.get_error()
+
+
+class ActivitySyncProductsChildren(models.TransientModel):
+    _name = "activity.sync.product.children.wizard"
+    _description = 'Rodex Model'
+
+    def sync_data_to_children(self):
+        try:
+            activity_data_list = []
+            activity_datas = self.env['tt.master.activity'].sudo().search([])
+            for rec in activity_datas:
+                dict_vals = {
+                    'name': rec.name,
+                    'uuid': rec.uuid,
+                    'latitude': rec.latitude,
+                    'longitude': rec.longitude,
+                    'businessHoursFrom': rec.businessHoursFrom,
+                    'businessHoursTo': rec.businessHoursTo,
+                    'minPax': rec.minPax,
+                    'maxPax': rec.maxPax,
+                    'reviewAverageScore': rec.reviewAverageScore,
+                    'reviewCount': rec.reviewCount,
+                    'airportPickup': rec.airportPickup,
+                    'hotelPickup': rec.hotelPickup,
+                    'provider_fare_code': rec.provider_fare_code,
+                    'currency_code': rec.currency_id.name,
+                    'basePrice': rec.basePrice,
+                    'priceIncludes': rec.priceIncludes,
+                    'priceExcludes': rec.priceExcludes,
+                    'description': rec.description,
+                    'highlights': rec.highlights,
+                    'itinerary': rec.itinerary,
+                    'additionalInfo': rec.additionalInfo,
+                    'warnings': rec.warnings,
+                    'safety': rec.safety,
+                }
+                location_list = []
+                for rec2 in rec.location_ids:
+                    location_list.append({
+                        'city_name': rec2.city_id.name,
+                        'country_code': rec2.country_id.code
+                    })
+                category_list = []
+                for rec2 in rec.category_ids:
+                    category_list.append({
+                        'name': rec2.name,
+                        'parent_name': rec2.parent_id.name
+                    })
+                image_list = []
+                for rec2 in rec.image_ids:
+                    image_list.append({
+                        'photos_url': rec2.photos_url,
+                        'photos_path': rec2.photos_path,
+                    })
+
+                video_list = []
+                for rec2 in rec.video_ids:
+                    video_list.append({
+                        'video_url': rec2.video_url,
+                    })
+
+                product_type_list = []
+                for rec2 in rec.line_ids:
+                    type_data = {
+                        'uuid': rec2.uuid,
+                        'name': rec2.name,
+                        'description': rec2.description,
+                        'durationDays': rec2.durationDays,
+                        'durationHours': rec2.durationHours,
+                        'durationMinutes': rec2.durationMinutes,
+                        'advanceBookingDays': rec2.advanceBookingDays,
+                        'minimumSellingPrice': rec2.minimumSellingPrice,
+                        'minPax': rec2.minPax,
+                        'maxPax': rec2.maxPax,
+                        'isNonRefundable': rec2.isNonRefundable,
+                        'voucherUse': rec2.voucherUse,
+                        'voucherRedemptionAddress': rec2.voucherRedemptionAddress,
+                        'voucherRequiresPrinting': rec2.voucherRequiresPrinting,
+                        'voucher_validity_type': rec2.voucher_validity_type,
+                        'voucher_validity_days': rec2.voucher_validity_days,
+                        'voucher_validity_date': rec2.voucher_validity_date,
+                        'meetingLocation': rec2.meetingLocation,
+                        'meetingAddress': rec2.meetingAddress,
+                        'meetingTime': rec2.meetingTime,
+                        'cancellationPolicies': rec2.cancellationPolicies,
+                        'instantConfirmation': rec2.instantConfirmation,
+                    }
+                    sku_list = []
+                    for rec3 in rec2.sku_ids:
+                        sku_list.append({
+                            'sku_id': rec3.sku_id,
+                            'title': rec3.title,
+                            'pax_type': rec3.pax_type,
+                            'add_information': rec3.add_information,
+                            'minPax': rec3.minPax,
+                            'maxPax': rec3.maxPax,
+                            'minAge': rec3.minAge,
+                            'maxAge': rec3.maxAge,
+                        })
+
+                    timeslot_list = []
+                    for rec3 in rec2.timeslot_ids:
+                        timeslot_list.append({
+                            'uuid': rec3.uuid,
+                            'startTime': rec3.startTime,
+                            'endTime': rec3.endTime,
+                        })
+                    option_list = []
+                    for rec3 in rec2.option_ids:
+                        item_list = []
+                        for rec4 in rec3.items:
+                            item_list.append({
+                                'label': rec4.label,
+                                'value': rec4.value,
+                                'price': rec4.price,
+                                'currency_code': rec4.currency_id.name,
+                            })
+                        option_list.append({
+                            'uuid': rec3.uuid,
+                            'name': rec3.name,
+                            'description': rec3.description,
+                            'required': rec3.required,
+                            'formatRegex': rec3.formatRegex,
+                            'inputType': rec3.inputType,
+                            'type': rec3.type,
+                            'price': rec3.price,
+                            'currency_code': rec3.currency_id.name,
+                            'items': item_list,
+                        })
+
+                    type_data.update({
+                        'sku_ids': sku_list,
+                        'timeslot_ids': timeslot_list,
+                        'option_ids': option_list
+                    })
+                    product_type_list.append(type_data)
+
+                dict_vals.update({
+                    'location_ids': location_list,
+                    'category_ids': category_list,
+                    'image_ids': image_list,
+                    'video_ids': video_list,
+                    'line_ids': product_type_list
+                })
+                activity_data_list.append(dict_vals)
+            vals = {
+                'provider_type': 'activity',
+                'action': 'sync_products_to_children',
+                'data': activity_data_list,
+            }
+            self.env['tt.api.webhook.data'].notify_subscriber(vals)
+        except Exception as e:
+            raise UserError(_('Failed to sync activity data to children!'))
 
 
 
