@@ -7,7 +7,7 @@
     """,
 
     'description': """
-        Data Provider Hotel
+        Data Provider Hotel, Must install tt_base and tt_reservation_hotel first before install
     """,
 
     'author': "Rodex Travel and Tour",
