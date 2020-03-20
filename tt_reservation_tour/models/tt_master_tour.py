@@ -1722,7 +1722,7 @@ class MasterTour(models.Model):
                     new_itin_obj = self.env['tt.reservation.tour.itinerary'].sudo().create({
                         'name': rec2['name'],
                         'day': rec2['day'],
-                        'date': rec2['date'],
+                        'date': datetime.strptime(rec2['date'], "%Y-%m-%d"),
                         'tour_pricelist_id': tour_obj.id,
                     })
                     for rec3 in rec2['item_ids']:
@@ -1774,17 +1774,16 @@ class TourSyncProductsChildren(models.TransientModel):
                     'tour_route': rec.tour_route,
                     'sequence': rec.sequence,
                     'is_can_hold': rec.is_can_hold,
-                    'document_url': rec.document_url,
                     'currency_code': rec.currency_id.name,
                     'description': rec.description,
                     'tour_category': rec.tour_category,
                     'tour_type': rec.tour_type,
-                    'departure_date': rec.departure_date,
-                    'arrival_date': rec.arrival_date,
+                    'departure_date': rec.departure_date and rec.departure_date.strftime("%Y-%m-%d") or False,
+                    'arrival_date': rec.arrival_date and rec.arrival_date.strftime("%Y-%m-%d") or False,
                     'duration': rec.duration,
                     'guiding_days': rec.guiding_days,
                     'driving_times': rec.driving_times,
-                    'survey_date': rec.survey_date,
+                    'survey_date': rec.survey_date and rec.survey_date.strftime("%Y-%m-%d") or False,
                     'seat': rec.seat,
                     'quota': rec.quota,
                     'visa': rec.visa,
@@ -1824,19 +1823,10 @@ class TourSyncProductsChildren(models.TransientModel):
                         'class_of_service': rec2.class_of_service,
                         'origin_code': rec2.origin_id.code,
                         'destination_code': rec2.destination_id.code,
-                        'departure_date': rec2.departure_date,
-                        'arrival_date': rec2.arrival_date,
+                        'departure_date': rec2.departure_date and rec2.departure_date.strftime("%Y-%m-%d %H:%M:%S") or False,
+                        'arrival_date': rec2.arrival_date and rec2.arrival_date.strftime("%Y-%m-%d %H:%M:%S") or False,
                         'origin_terminal': rec2.origin_terminal,
                         'destination_terminal': rec2.destination_terminal,
-                    })
-
-                payment_rules_list = []
-                for rec2 in rec.payment_rules_ids:
-                    payment_rules_list.append({
-                        'name': rec2.name,
-                        'payment_percentage': rec2.payment_percentage,
-                        'description': rec2.description,
-                        'due_date': rec2.due_date,
                     })
 
                 image_list = []
@@ -1883,7 +1873,7 @@ class TourSyncProductsChildren(models.TransientModel):
                     itinerary_list.append({
                         'name': rec2.name,
                         'day': rec2.day,
-                        'date': rec2.date,
+                        'date': rec2.date and rec2.date.strftime("%Y-%m-%d") or False,
                         'item_ids': item_list,
                     })
 
@@ -1894,7 +1884,6 @@ class TourSyncProductsChildren(models.TransientModel):
                 dict_vals.update({
                     'location_ids': location_list,
                     'flight_segment_ids': flight_list,
-                    'payment_rules_ids': payment_rules_list,
                     'image_ids': image_list,
                     'room_ids': room_list,
                     'itinerary_ids': itinerary_list,
