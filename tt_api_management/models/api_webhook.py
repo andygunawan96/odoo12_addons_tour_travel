@@ -1,4 +1,5 @@
 from odoo import api,models,fields
+import odoo.tools as tools
 import logging,traceback
 from datetime import datetime
 import hashlib
@@ -18,22 +19,24 @@ class ApiWebhookData(models.Model):
         try:
             webhook_data_obj = self.search([('provider_type_id.code','=',req['provider_type'])],limit=1)
             if webhook_data_obj:
-                for rec in webhook_data_obj[0].webhook_rel_ids:
-                    temp_date = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-                    temp_sha = rec.api_key + temp_date
-                    headers = {
-
-                    }
-                    vals = {
-                        'action': req['action'],
-                        'signature': hashlib.sha256(temp_sha.encode()),
-                        'datetime': temp_date,
-                        'data': req['data']
-                    }
-                    pass
-                    # send request to gateway
-                    # res = util.send_request(rec.url, vals, headers, content_type='json', timeout=5 * 60, method='POST')
-                    # mekanisme kalau server ga nerima
+                sent_data = []
+                send_limit = 3
+                while len(sent_data) < len(webhook_data_obj[0].webhook_rel_ids.ids) and send_limit > 0:
+                    for rec in webhook_data_obj[0].webhook_rel_ids:
+                        if rec.id not in sent_data:
+                            temp_date = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+                            temp_sha = rec.api_key + temp_date
+                            vals = {
+                                'action': req['action'],
+                                'url': rec.url,
+                                'signature': hashlib.sha256(temp_sha.encode()),
+                                'datetime': temp_date,
+                                'data': req['data']
+                            }
+                            res = self.env['tt.api.con'].send_webhook_to_children(vals)
+                            if not res.get('error_code'):
+                                sent_data.append(rec.id)
+                            send_limit -= 1
         except Exception as e:
             _logger.error(traceback.format_exc())
 
