@@ -2323,7 +2323,7 @@ class MasterActivity(models.Model):
                             timeslot_obj = timeslot_obj[0]
                             timeslot_obj.sudo().write(timeslot_vals)
                         else:
-                            timeslot_obj = self.env['tt.master.activity.sku'].sudo().create(timeslot_vals)
+                            timeslot_obj = self.env['tt.master.activity.timeslot'].sudo().create(timeslot_vals)
 
                     option_list = []
                     for rec3 in rec2['option_ids']:
