@@ -124,7 +124,7 @@ class TtProviderPassport(models.Model):
             scs['provider_passport_booking_id'] = self.id  # id provider passport
             if scs['charge_code'] != 'disc':
                 for psg in self.passenger_ids:
-                    if scs['pax_type'] == psg.pax_type and scs['pricelist_id'] == psg.pricelist_id.id:
+                    if scs['pax_type'] == psg.pax_type and scs['passport_pricelist_id'] == psg.pricelist_id.id:
                         scs['passenger_passport_ids'].append(psg.passenger_id.id)  # add passenger to passenger passport ids
                         scs['pax_count'] += 1
                         scs['total'] += scs['amount']
@@ -149,10 +149,8 @@ class TtProviderPassport(models.Model):
                 rec.unlink()
         return ledger_created
 
-    def action_create_ledger(self):
-        if not self.is_ledger_created:
-            self.write({'is_ledger_created': True})
-            self.env['tt.ledger'].action_create_ledger(self)
+    def action_create_ledger(self, issued_uid, pay_method=None):
+        return self.env['tt.ledger'].action_create_ledger(self, issued_uid)
 
     def action_create_expenses_invoice(self):
         datas = {
