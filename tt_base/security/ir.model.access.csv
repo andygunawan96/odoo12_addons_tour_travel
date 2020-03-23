@@ -262,6 +262,7 @@ access_tt_provider_destination_city_for_tour_travel_operator,tt.provider.destina
 
 access_tt_provider_code_for_public,tt.provider.code.for.public,model_tt_provider_code,,1,0,0,0
 access_tt_provider_code_for_tour_travel_operator,tt.provider.code.for.tour_travel_operator,model_tt_provider_code,group_tt_tour_travel_operator,1,1,1,0
+access_tt_provider_code_for_admin,tt.provider.code.for.admin,model_tt_provider_code,base.user_admin,1,1,1,1
 
 access_tt_provider_currency_for_public,tt.provider.currency.for.public,model_tt_provider_currency,,1,0,0,0
 access_tt_provider_currency_for_tour_travel_operator,tt.provider.currency.for.tour_travel_operator,model_tt_provider_currency,group_tt_tour_travel_operator,1,1,1,0
