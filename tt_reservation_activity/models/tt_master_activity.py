@@ -2378,7 +2378,7 @@ class ActivitySyncProductsChildren(models.TransientModel):
     def sync_data_to_children(self):
         try:
             activity_data_list = []
-            activity_datas = self.env['tt.master.activity'].sudo().search([])
+            activity_datas = self.env['tt.master.activity'].sudo().search([('basePrice', '>', 0)])
             for rec in activity_datas:
                 dict_vals = {
                     'name': rec.name,

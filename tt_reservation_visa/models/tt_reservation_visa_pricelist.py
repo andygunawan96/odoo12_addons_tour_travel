@@ -88,7 +88,7 @@ class VisaSyncProducts(models.TransientModel):
         provider = 'rodextrip_visa'
         list_product = self.env['tt.reservation.visa.pricelist'].search([('provider_id', '=', self.env['tt.provider'].search([('code', '=', 'rodextrip_visa')], limit=1).id)])
         for rec in list_product:
-            rec.active = True
+            rec.active = False
         file = []
         file_dat = open('/var/log/tour_travel/rodextrip_visa_master_data/rodextrip_visa_master_data.json','r')
         file = json.loads(file_dat.read())
@@ -139,7 +139,8 @@ class VisaSyncProducts(models.TransientModel):
                                 'provider_id': self.env['tt.provider'].search([('code', '=', res['response']['provider_id'])]).id,
                                 'sale_price': res['response']['sale_price'],
                                 'visa_nta_price': res['response']['visa_nta_price'],
-                                'visa_type': res['response']['visa_type']
+                                'visa_type': res['response']['visa_type'],
+                                'active': True
                             })
                             master_data.requirement_ids.unlink()
                             master_data.attachments_ids.unlink()
@@ -167,7 +168,8 @@ class VisaSyncProducts(models.TransientModel):
                                 'provider_id': self.env['tt.provider'].search([('code', '=', res['response']['provider_id'])]).id,
                                 'sale_price': res['response']['sale_price'],
                                 'visa_nta_price': res['response']['visa_nta_price'],
-                                'visa_type': res['response']['visa_type']
+                                'visa_type': res['response']['visa_type'],
+                                'active': True
                             })
                         for data in res['response']['requirement_ids']:
 

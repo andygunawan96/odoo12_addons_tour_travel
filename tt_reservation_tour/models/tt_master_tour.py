@@ -582,6 +582,10 @@ class MasterTour(models.Model):
             if attachment_obj['error_code'] == 0:
                 upload_obj = self.env['tt.upload.center'].sudo().search([('seq_id', '=', attachment_obj['response']['seq_id'])], limit=1)
                 return upload_obj and upload_obj[0].id or False
+            else:
+                return False
+        else:
+            return False
 
     def action_validate(self):
         if self.state != 'draft':
@@ -1715,8 +1719,9 @@ class MasterTour(models.Model):
 
                 image_list = []
                 for rec2 in rec['image_ids']:
-                    image_list.append(self.convert_image_to_own(rec2['url'], rec2['filename']))
-                    self.env.cr.commit()
+                    temp_img_list_id = self.convert_image_to_own(rec2['url'], rec2['filename'])
+                    if temp_img_list_id:
+                        image_list.append(temp_img_list_id)
 
                 for rec2 in rec['itinerary_ids']:
                     new_itin_obj = self.env['tt.reservation.tour.itinerary'].sudo().create({
@@ -1742,6 +1747,9 @@ class MasterTour(models.Model):
                     'location_ids': [(6, 0, location_list)],
                     'image_ids': [(6, 0, image_list)],
                 })
+
+                if tour_obj.state == 'draft':
+                    tour_obj.action_validate()
             response = {
                 'success': True
             }
@@ -1765,7 +1773,7 @@ class TourSyncProductsChildren(models.TransientModel):
     def sync_data_to_children(self):
         try:
             tour_data_list = []
-            tour_datas = self.env['tt.master.tour'].sudo().search([])
+            tour_datas = self.env['tt.master.tour'].sudo().search([('state', 'in', ['open', 'definite'])])
             for rec in tour_datas:
                 dict_vals = {
                     'name': rec.name,
