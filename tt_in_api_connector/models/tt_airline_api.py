@@ -56,6 +56,18 @@ class TtAirlineApiCon(models.Model):
                                             'retrieve_booking',
                                             timeout=120)
 
+    def send_sync_refund_status(self, req):
+        request = {
+            'proxy_co_uid': req.get('user_id',False),
+            'pnr': req.get('pnr', ''),
+            'pnr2': req.get('pnr2', ''),
+            'provider': req.get('provider', ''),
+        }
+        return self.send_request_to_gateway('%s/booking/airline/private' % (self.url),
+                                            request,
+                                            'refund_status',
+                                            timeout=120)
+
     def send_get_booking_for_sync(self, req):
         request = {
             'order_number': req.get('order_number'),

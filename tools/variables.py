@@ -45,6 +45,8 @@ BOOKING_STATE = [
     ('confirm', 'Confirmed'),
     ('cancel', 'Cancelled'),
     ('cancel2', 'Expired'),
+    ('cancel_pending', 'Cancel Pending'),
+    ('fail_cancel', 'Failed (Cancel)'),
     ('error', 'Connection Loss'), #diganti failed issue
     ('fail_booked', 'Failed (Book)'),
     ('booked', 'Booked'),
@@ -61,6 +63,7 @@ BOOKING_STATE = [
     ('rejected', 'Rejected'),
     ('fail_refunded', 'Failed (REFUNDED)'),
     ('refund', 'Refund'),
+    ('refund_pending', 'Refund Pending'),
     ('reissue', 'Reissue'), #diganti reissue
 ]
 
@@ -69,6 +72,8 @@ BOOKING_STATE_STR = {
     'confirm': 'Confirmed',
     'cancel': 'Cancelled',
     'cancel2': 'Expired',
+    'cancel_pending': 'Cancel Pending',
+    'fail_cancel': 'Failed (Cancel)',
     'error': 'Connection Loss', #diganti failed issue
     'fail_booked': 'Failed (Book)',
     'booked': 'Booked',
@@ -85,6 +90,7 @@ BOOKING_STATE_STR = {
     'rejected': 'Rejected',
     'fail_refunded': 'Failed (REFUNDED)',
     'refund': 'Refund',
+    'refund_pending': 'Refund Pending',
     'reroute': 'Reroute', #diganti reissue
 }
 

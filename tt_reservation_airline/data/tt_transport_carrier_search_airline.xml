@@ -490,7 +490,8 @@
             <field name="is_favorite" eval="False"/>
             <field name="sequence">152</field>
             <field name="provider_ids" eval="[
-                (4, ref('tt_reservation_airline.tt_provider_airline_citilink'))
+                (4, ref('tt_reservation_airline.tt_provider_airline_citilink')),
+                (4, ref('tt_reservation_airline.tt_provider_airline_traveloka'))
             ]"/>
         </record>
 
