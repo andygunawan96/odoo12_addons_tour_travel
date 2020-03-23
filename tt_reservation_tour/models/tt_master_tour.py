@@ -582,6 +582,10 @@ class MasterTour(models.Model):
             if attachment_obj['error_code'] == 0:
                 upload_obj = self.env['tt.upload.center'].sudo().search([('seq_id', '=', attachment_obj['response']['seq_id'])], limit=1)
                 return upload_obj and upload_obj[0].id or False
+            else:
+                return False
+        else:
+            return False
 
     def action_validate(self):
         if self.state != 'draft':
