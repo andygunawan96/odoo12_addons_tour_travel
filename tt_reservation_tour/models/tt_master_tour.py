@@ -1747,6 +1747,9 @@ class MasterTour(models.Model):
                     'location_ids': [(6, 0, location_list)],
                     'image_ids': [(6, 0, image_list)],
                 })
+
+                if tour_obj.state == 'draft':
+                    tour_obj.action_validate()
             response = {
                 'success': True
             }
