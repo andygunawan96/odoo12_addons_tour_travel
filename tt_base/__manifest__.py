@@ -1,9 +1,3 @@
-
-
-
-
-
-
 {
     'name': 'Tour & Travel - Base',
     'version': '1.1',

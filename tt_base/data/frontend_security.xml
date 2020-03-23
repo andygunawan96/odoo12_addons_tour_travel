@@ -60,6 +60,11 @@
         <field name="code">create_page</field>
     </record>
 
+    <record id="able_to_edit_appearance" model="tt.frontend.security">
+        <field name="name">Appearance</field>
+        <field name="code">edit_appearance</field>
+    </record>
+
     <record id="b2c_limitation" model="tt.frontend.security">
         <field name="name">B2C limitation</field>
         <field name="code">b2c_limitation</field>
