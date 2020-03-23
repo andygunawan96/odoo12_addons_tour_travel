@@ -154,7 +154,8 @@ class AgentReportOfflineXls(models.TransientModel):
                             sty_date)
                 sheet.write(row_data, 2, i['ro_name'], sty_table_data)
                 sheet.write(row_data, 3, i['agent_name'], sty_table_data)
-                sheet.write(row_data, 4, i['customer_first_name'] + ' ' + i['customer_last_name'], sty_table_data)
+                sheet.write(row_data, 4, (i['customer_first_name'] if i['customer_first_name'] else '') + ' ' +
+                            (i['customer_last_name'] if i['customer_last_name'] else ''), sty_table_data)
                 sheet.write(row_data, 5, i['provider_type_name'], sty_table_data)
                 sheet.write(row_data, 6, i['provider_name'], sty_table_data)
                 sheet.write(row_data, 7, i['ro_pnr'], sty_table_data)

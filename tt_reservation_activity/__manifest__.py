@@ -25,6 +25,7 @@ TT_TRANSPORT
         'views/menu_item_base.xml',
         'views/tt_activity_voucher_wizard.xml',
         'views/tt_activity_sync_product_wizard.xml',
+        'views/tt_activity_sync_to_children_wizard.xml',
         'views/tt_activity_category_views.xml',
         'views/tt_reservation_activity_option_views.xml',
         'views/tt_master_activity_views.xml',

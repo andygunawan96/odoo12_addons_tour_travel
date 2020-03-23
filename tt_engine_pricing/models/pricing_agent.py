@@ -46,7 +46,7 @@ class PricingAgent(models.Model):
 
     def get_name(self):
         # Perlu diupdate lagi, sementara menggunakan ini
-        res = '%s - %s' % (self.agent_type_id.code.title(), self.provider_type_id.code.title())
+        res = '%s - %s' % ( self.agent_type_id.code and self.agent_type_id.code.title() or '', self.provider_type_id.code and self.provider_type_id.code.title() or '')
         return res
 
     @api.multi

@@ -99,6 +99,8 @@ class TtMasterActivityApiCon(models.Model):
             res = table_obj.product_type_update_webhook(data,context)
         elif action == 'product_type_inactive_webhook':
             res = table_obj.product_type_inactive_webhook(data,context)
+        elif action == 'product_sync_webhook_nosend':
+            res = table_obj.product_sync_webhook_nosend(data,context)
         else:
             raise RequestException(999)
 

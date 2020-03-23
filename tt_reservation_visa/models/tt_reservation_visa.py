@@ -1959,10 +1959,6 @@ class TtVisa(models.Model):
             pvdr.action_booked_api_visa(pvdr.to_dict(), api_context, self.hold_date)
         self.write(vals)
 
-    ######################################################################################################
-    # LEDGER
-    ######################################################################################################
-
     def action_issued_visa_api(self, data, context):
         book_obj = self.env['tt.reservation.visa'].search([('name', '=', data['order_number'])])
 

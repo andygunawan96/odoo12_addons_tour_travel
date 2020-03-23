@@ -127,8 +127,6 @@ class IssuedOffline(models.Model):
     ho_final_amount = fields.Float('HO Amount', readonly=True, compute='compute_final_ho')
     ho_final_ledger_id = fields.Many2one('tt.ledger')
 
-    # social_media_id = fields.Many2one('res.social.media.type', 'Order From(Media)', readonly=True,
-    #                                   states={'draft': [('readonly', False)], 'confirm': [('readonly', False)]})
     social_media_type = fields.Many2one('res.social.media.type', 'Order From(Media)')
 
     sale_service_charge_ids = fields.One2many('tt.service.charge', 'booking_offline_id', 'Service Charge',
@@ -1562,14 +1560,14 @@ class IssuedOffline(models.Model):
             if create_line_res['error_code'] == 0:
                 booking_line_ids = create_line_res['response']
             else:
-                raise RequestException(1004, additional_message='Create line error.')
+                return create_line_res  # Return error code & msg
             if not passengers:
                 raise RequestException(1004, additional_message='Passengers can\'t be empty.')
             create_psg_res = self._create_reservation_offline_order(passengers, passenger_ids, context)
             if create_psg_res['error_code'] == 0:
                 iss_off_psg_ids = create_psg_res['response']
             else:
-                raise RequestException(create_psg_res['error_code'])
+                return create_psg_res  # Return error code & msg
             header_val = {
                 'booker_id': booker_id.id,
                 'passenger_ids': [(6, 0, iss_off_psg_ids)],
@@ -1640,21 +1638,20 @@ class IssuedOffline(models.Model):
         return res
 
     def _create_line(self, lines, data_reservation_offline):
-        line_list = []
-        destination_env = self.env['tt.destinations'].sudo()
-        line_env = self.env['tt.reservation.offline.lines'].sudo()
-        provider_env = self.env['tt.transport.carrier'].sudo()
-        provider_type = data_reservation_offline['type']
-        print('Provider_type : ' + provider_type)
         try:
+            line_list = []
+            destination_env = self.env['tt.destinations'].sudo()
+            line_env = self.env['tt.reservation.offline.lines'].sudo()
+            provider_env = self.env['tt.transport.carrier'].sudo()
+            provider_type = data_reservation_offline['type']
             if provider_type in ['airline', 'train']:
                 for line in lines:
                     departure_time = datetime.strptime(line.get('departure'), '%Y-%m-%d %H:%M')
                     arrival_time = datetime.strptime(line.get('arrival'), '%Y-%m-%d %H:%M')
                     delta_date = arrival_time - departure_time
                     if delta_date.days < 0:
-                        return ERR.get_error(1004,
-                                             additional_message='Error create line : Arrival date must be better than departure date')
+                        raise RequestException(1004,
+                                               additional_message='Error create line : Arrival date must be better than departure date')
                     line_tmp = {
                         "pnr": line.get('pnr'),
                         "origin_id": destination_env.search([('code', '=', line.get('origin'))], limit=1).id,
@@ -1680,8 +1677,7 @@ class IssuedOffline(models.Model):
                     check_out = datetime.strptime(line.get('check_out'), '%Y-%m-%d')
                     delta_date = check_out - check_in
                     if delta_date.days < 0:
-                        return ERR.get_error(1004,
-                                             additional_message='Error create line : Check out date must be better than Check in date')
+                        raise RequestException(1004, additional_message='Error create line : Check out date must be better than Check in date')
                     line_tmp = {
                         "pnr": line.get('pnr'),
                         "hotel_name": line.get('name'),
@@ -1734,15 +1730,18 @@ class IssuedOffline(models.Model):
                     line_list.append(line_obj.id)
             res = Response().get_no_error(line_list)
             return res
+        except RequestException as e:
+            _logger.error(traceback.format_exc())
+            return e.error_dict()
         except Exception as e:
             print('Error line : ' + str(e))
             _logger.error(traceback.format_exc())
-            return ERR.get_error(1004, additional_message='Error create line : ' + str(e))
+            return ERR.get_error(1004, additional_message='Error create line. There\'s something wrong.')
 
     def _create_reservation_offline_order(self, passengers, passenger_ids, context):
-        iss_off_psg_env = self.env['tt.reservation.offline.passenger'].sudo()
-        iss_off_pas_list = []
         try:
+            iss_off_psg_env = self.env['tt.reservation.offline.passenger'].sudo()
+            iss_off_pas_list = []
             for idx, psg in enumerate(passengers):
                 psg_vals = {
                     'passenger_id': passenger_ids[idx][0].id,
@@ -1755,7 +1754,7 @@ class IssuedOffline(models.Model):
         except Exception as e:
             print('Error line : ' + str(e))
             _logger.error(traceback.format_exc())
-            return ERR.get_error(1004, additional_message='Error create passenger : ' + str(e))
+            return ERR.get_error(1004, additional_message='Error create passenger. There\'s something wrong.')
         res = Response().get_no_error(iss_off_pas_list)
         return res
 
@@ -1897,8 +1896,8 @@ class IssuedOffline(models.Model):
                 desc_txt += 'Description : ' + (rec.description or '') + '<br/><br/>'
         else:
             for rec in self.line_ids:
-                desc_txt += 'PNR: ' + rec.pnr + '<br/>'
-                desc_txt += 'Description : ' + rec.description + '<br/><br/>'
+                desc_txt += 'PNR: ' + (rec.pnr or '') + '<br/>'
+                desc_txt += 'Description : ' + (rec.description or '') + '<br/><br/>'
         return desc_txt
 
     def to_dict(self):

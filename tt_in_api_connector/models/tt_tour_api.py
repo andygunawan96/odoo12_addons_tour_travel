@@ -64,6 +64,8 @@ class TtMasterTourApiCon(models.Model):
             res = table_obj.get_pricing_api(data)
         elif action == 'get_autocomplete':
             res = table_obj.get_autocomplete_api(data,context)
+        elif action == 'product_sync_webhook_nosend':
+            res = table_obj.product_sync_webhook_nosend(data,context)
         else:
             raise RequestException(999)
 
