@@ -74,6 +74,7 @@
                 <button string="Confirm to HO" name="action_confirm_passport" type="object" attrs="{'invisible': [('state_passport', '!=', 'draft')]}" groups="tt_base.group_tt_agent_user_operator"/>
                 <button string="Validate" name="action_validate_passport" type="object" attrs="{'invisible': [('state_passport', 'not in', ['confirm','partial_validate'])]}" groups="tt_base.group_tt_tour_travel_operator"/>
                 <button string="In Process" name="action_in_process_passport" type="object" attrs="{'invisible': [('state_passport', 'not in', ['validate'])]}" groups="tt_base.group_tt_tour_travel_operator"/>
+                <button string="Process to Consulate" name="action_in_process_immigration_passport" type="object" attrs="{'invisible': [('state_passport', '!=', 'payment')]}" groups="tt_base.group_tt_tour_travel_operator"/>
                 <button string="Cancel All" name="action_cancel_passport" type="object" attrs="{'invisible': [('state_passport', 'in', ['cancel','process_by_consulate','partial_proceed','proceed','delivered','ready','done'])]}" groups="tt_base.group_tt_tour_travel_operator"/>
                 <button string="Calc. Expenses" name="action_calc_expenses_passport" type="object" groups="tt_base.group_tt_tour_travel_operator" state="issued" attrs="{'invisible': [('state_passport', 'in', ['delivered','ready','done'])]}"/>
             </button>
@@ -141,7 +142,7 @@
             </xpath>
             <xpath expr="//page[@name='anchor']" position="before">
                 <page string="Passengers">
-                    <field name="passenger_ids" readonly="0">
+                    <field name="passenger_ids" readonly="1">
                         <tree create="true">
                             <field name="title"/>
                             <field name="first_name"/>
@@ -174,7 +175,7 @@
             <xpath expr="//page[@name='anchor']" position="before">
                 <page string="Vendor" name="vendor" groups="tt_base.group_tt_tour_travel_operator">
                     <field name="provider_booking_ids">
-                        <tree create="true">
+                        <tree create="false">
                             <field name="provider_id"/>
                             <field name="pnr"/>
                             <field name="state"/>

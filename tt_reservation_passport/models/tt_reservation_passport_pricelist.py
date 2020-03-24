@@ -2,6 +2,7 @@ from odoo import api, fields, models, _
 from ...tools.api import Response
 import html2text
 import json,traceback,logging
+from ...tools import util,variables,ERR
 from bs4 import BeautifulSoup
 
 _logger = logging.getLogger(__name__)
@@ -101,13 +102,7 @@ class PassportPricelist(models.Model):
             res = Response().get_error(str(e), 500)
         return res
 
-    def search_api(self):
-        data = {
-            'passport_type': 'passport',
-            'apply_type': 'new',
-            'immigration_consulate': 'Surabaya',
-            'departure_date': '03-03-2020'
-        }
+    def search_api(self, data):
         try:
             list_of_passport = []
 
@@ -167,8 +162,7 @@ class PassportPricelist(models.Model):
             response = {
                 'list_of_passport': list_of_passport
             }
-            res = Response().get_no_error(response)
+            return ERR.get_no_error(response)
         except Exception as e:
             _logger.error(traceback.format_exc())
-            res = Response().get_error(str(e), 500)
-        return res
+            return ERR.get_error(1022)

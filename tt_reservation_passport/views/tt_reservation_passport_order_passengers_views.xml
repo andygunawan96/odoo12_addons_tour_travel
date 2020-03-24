@@ -32,18 +32,18 @@
                         <group>
 <!--                            <field name="use_vendor"/>-->
                             <field name="passport_id"/>
-                            <field name="title" readonly="0"/>  <!--readonly="1"-->
-                            <field name="first_name" readonly="0"/>  <!--readonly="1"-->
-                            <field name="gender" readonly="0"/>  <!--readonly="1"-->
-                            <field name="passport_number" readonly="0"/>  <!--readonly="1"-->
-                            <field name="passport_expdate" readonly="0"/>  <!--readonly="1"-->
+                            <field name="title" readonly="1"/>  <!--readonly="1"-->
+                            <field name="first_name" readonly="1"/>  <!--readonly="1"-->
+                            <field name="gender" readonly="1"/>  <!--readonly="1"-->
+                            <field name="passport_number" readonly="1"/>  <!--readonly="1"-->
+                            <field name="passport_expdate" readonly="1"/>  <!--readonly="1"-->
                         </group>
                         <group>
-                            <field name="customer_id" readonly="0"/>  <!--readonly="1"-->
-                            <field name="name" readonly="0"/>  <!--readonly="1"-->
-                            <field name="last_name" readonly="0"/>  <!--readonly="1"-->
-                            <field name="birth_date" readonly="0"/>  <!--readonly="1"-->
-                            <field name="age" readonly="0"/>  <!--readonly="1"-->
+                            <field name="customer_id" readonly="1"/>  <!--readonly="1"-->
+                            <field name="name" readonly="1"/>  <!--readonly="1"-->
+                            <field name="last_name" readonly="1"/>  <!--readonly="1"-->
+                            <field name="birth_date" readonly="1"/>  <!--readonly="1"-->
+                            <field name="age" readonly="1"/>  <!--readonly="1"-->
                         </group>
                     </group>
                     <group>
@@ -67,7 +67,7 @@
                     </group>
                     <group>
                         <group string="Interview">
-                            <field name="interview" attrs="{'readonly': [('state', 'not in', ['in_process', 'confirm_payment', 'add_payment', 'in_process2'])]}"/>
+                            <field name="interview"/>  <!-- attrs="{'readonly': [('state', 'not in', ['in_process', 'confirm_payment', 'add_payment', 'in_process2'])]}"-->
 <!--                            <button string="Send Email Interview" name="action_send_email_interview" type="object" groups="tt_base.group_tt_tour_travel_operator" attrs="{'invisible': [('interview', '=', False)]}"/>  &lt;!&ndash; attrs="{'invisible': [('state', 'not in', ['in_process2'])]}"&ndash;&gt;-->
                             <field name="interview_ids" attrs="{'invisible': [('interview', '=', False)], 'readonly': [('state', 'not in', ['in_process', 'waiting'])]}">
                                 <tree editable="bottom">
