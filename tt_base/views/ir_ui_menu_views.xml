@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Employee -->
+<!--    <record id="hr.menu_hr_root" model="ir.ui.menu">-->
+<!--        <field name="active" eval="False"></field>-->
+<!--    </record>-->
+    <menuitem id="hr.menu_hr_root" active="False"/>
+
+    <!-- Survey -->
+<!--    <record id="survey.menu_surveys" model="ir.ui.menu">-->
+<!--        <field name="active" eval="False"></field>-->
+<!--    </record>-->
+
+    <!-- Invoicing -->
+<!--    <record id="account.menu_finance" model="ir.ui.menu">-->
+<!--        <field name="active" eval="False"></field>-->
+<!--    </record>-->
+</odoo>
