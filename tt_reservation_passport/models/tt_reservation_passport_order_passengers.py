@@ -75,36 +75,36 @@ class PassportOrderPassengers(models.Model):
     to_requirement_ids = fields.One2many('tt.reservation.passport.order.requirements', 'to_passenger_id', 'Requirements',
                                          readonly=0, states={'ready': [('readonly', True)],
                                                              'done': [('readonly', True)]})  # readonly=0
-    passport_id = fields.Many2one('tt.reservation.passport', 'Passport', readonly=0)  # readonly=1
-    passenger_id = fields.Many2one('tt.customer', 'Passenger', readonly=0)  # readonly=1
-    pricelist_id = fields.Many2one('tt.reservation.passport.pricelist', 'Passport Pricelist', readonly=0)  # readonly=1
-    passenger_type = fields.Selection(PASSENGER_TYPE, 'Pax Type', readonly=0)  # readonly=1
+    passport_id = fields.Many2one('tt.reservation.passport', 'Passport', readonly=1)  # readonly=1
+    passenger_id = fields.Many2one('tt.customer', 'Passenger', readonly=1)  # readonly=1
+    pricelist_id = fields.Many2one('tt.reservation.passport.pricelist', 'Passport Pricelist', readonly=1)  # readonly=1
+    passenger_type = fields.Selection(PASSENGER_TYPE, 'Pax Type', readonly=1)  # readonly=1
     age = fields.Char('Age', readonly=1, compute="_compute_age", store=True)
     passport_number = fields.Char(string='Passport Number')
     passport_expdate = fields.Date(string='Passport Exp Date')
     process_status = fields.Selection(PROCESS_STATUS, string='Process Result',
-                                      readonly=0)  # readonly=1
+                                      readonly=1)  # readonly=1
 
-    interview = fields.Boolean('Needs Interview')
+    interview = fields.Boolean('Needs Interview', readonly=0)
     interview_ids = fields.One2many('tt.reservation.passport.interview.biometrics', 'passenger_interview_id', 'Interview')
 
     # handling_ids = fields.One2many('tt.reservation.passport.order.handling', 'to_passenger_id', 'Handling Questions')
     handling_information = fields.Text('Handling Information')
 
-    in_process_date = fields.Datetime('In Process Date', readonly=0)  # readonly=1
-    payment_date = fields.Datetime('Payment Date', readonly=0)  # readonly=1
-    payment_uid = fields.Many2one('res.users', 'Payment By', readonly=0)  # readonly=1
+    in_process_date = fields.Datetime('In Process Date', readonly=1)  # readonly=1
+    payment_date = fields.Datetime('Payment Date', readonly=1)  # readonly=1
+    payment_uid = fields.Many2one('res.users', 'Payment By', readonly=1)  # readonly=1
     call_date = fields.Datetime('Call Date', help='Call to interview (visa) or take a photo (passport)')
-    out_process_date = fields.Datetime('Out Process Date', readonly=0)  # readonly=1
-    to_HO_date = fields.Datetime('Send to HO Date', readonly=0)  # readonly=1
-    to_agent_date = fields.Datetime('Send to Agent Date', readonly=0)  # readonly=1
-    ready_date = fields.Datetime('Ready Date', readonly=0)  # readonly=1
-    expired_date = fields.Date('Expired Date', readonly=0)  # readonly=1
+    out_process_date = fields.Datetime('Out Process Date', readonly=1)  # readonly=1
+    to_HO_date = fields.Datetime('Send to HO Date', readonly=1)  # readonly=1
+    to_agent_date = fields.Datetime('Send to Agent Date', readonly=1)  # readonly=1
+    ready_date = fields.Datetime('Ready Date', readonly=1)  # readonly=1
+    expired_date = fields.Date('Expired Date', readonly=1)  # readonly=1
 
     use_vendor = fields.Boolean('Use Vendor', readonly=1, related='passport_id.use_vendor')
 
     cost_service_charge_ids = fields.Many2many('tt.service.charge', 'tt_reservation_passport_cost_charge_rel',
-                                               'passenger_id', 'service_charge_id', 'Cost Service Charges')
+                                               'passenger_id', 'service_charge_id', 'Cost Service Charges', readonly=1)
     channel_service_charge_ids = fields.Many2many('tt.service.charge', 'tt_reservation_passport_channel_charge_rel',
                                                   'passenger_id', 'service_charge_id', 'Channel Service Charges')
 
@@ -112,7 +112,7 @@ class PassportOrderPassengers(models.Model):
     notes = fields.Text('Notes (Agent to Customer)')
     notes_HO = fields.Text('Notes (HO to Agent)')
 
-    booking_state = fields.Selection(BOOKING_STATE, default='draft', string='Order State', readonly=0,
+    booking_state = fields.Selection(BOOKING_STATE, default='draft', string='Order State', readonly=1,
                                      related='passport_id.state_passport', help='''draft = requested
                                                 confirm = HO accepted
                                                 validate = if all required documents submitted and documents in progress

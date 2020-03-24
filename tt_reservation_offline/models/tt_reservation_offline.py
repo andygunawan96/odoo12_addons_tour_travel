@@ -272,19 +272,19 @@ class IssuedOffline(models.Model):
             if arrival_date is not False and departure_date is not False:
                 delta_date = arrival_date - departure_date
                 if delta_date.days < 0:
-                    raise UserError('Arrival date ' + arrival_date.strftime('%Y-%m-%d') + ' must be better than departure date ' + departure_date.strftime('%Y-%m-%d'))
+                    raise UserError('Arrival date ' + arrival_date.strftime('%Y-%m-%d') + ' must be greater than departure date ' + departure_date.strftime('%Y-%m-%d'))
                 if delta_date.days == 0:
                     if line.departure_hour and line.return_hour:
                         delta_hour = int(line.return_hour if 'return_hour' not in vals else vals['return_hour']) - \
                                      int(line.departure_hour if 'departure_hour' not in vals else vals['departure_hour'])
                         if delta_hour < 0:
-                            raise UserError('Arrival date ' + arrival_date.strftime('%Y-%m-%d') + ' must be better than departure date ' + departure_date.strftime('%Y-%m-%d'))
+                            raise UserError('Arrival date ' + arrival_date.strftime('%Y-%m-%d') + ' must be greater than departure date ' + departure_date.strftime('%Y-%m-%d'))
                         if delta_hour == 0:
                             if line.departure_minute and line.return_minute:
                                 delta_minute = int(line.return_minute if 'return_minute' not in vals else vals['return_minute']) - \
                                                int(line.departure_minute if 'departure_minute' not in vals else vals['departure_minute'])
                                 if delta_minute < 0:
-                                    raise UserError('Arrival date ' + arrival_date.strftime('%Y-%m-%d') + ' must be better than departure date ' + departure_date.strftime('%Y-%m-%d'))
+                                    raise UserError('Arrival date ' + arrival_date.strftime('%Y-%m-%d') + ' must be greater than departure date ' + departure_date.strftime('%Y-%m-%d'))
         elif offline_provider_type == 'hotel':
             if 'check_in' in vals:
                 if vals['check_in'] is not False:
@@ -315,7 +315,7 @@ class IssuedOffline(models.Model):
             if check_out is not False and check_in is not False:
                 delta_date = check_out - check_in
                 if delta_date.days < 0:
-                    raise UserError('Check Out date ' + check_out.strftime('%Y-%m-%d') + ' must be better than Check In date ' + check_in.strftime('%Y-%m-%d'))
+                    raise UserError('Check Out date ' + check_out.strftime('%Y-%m-%d') + ' must be greater than Check In date ' + check_in.strftime('%Y-%m-%d'))
 
     @api.model
     def create(self, vals):
@@ -341,17 +341,17 @@ class IssuedOffline(models.Model):
         if vals.get('line_ids'):
             for line in vals['line_ids']:
                 self.date_format_check(offline_provider_type, line[2])
-        """ Cek selisih tanggal departure-arrival / check in-check out per line offline """
-        for line in self.line_ids:
-            val_dict = {}
-            if 'line_ids' in vals:
-                for val in vals['line_ids']:
-                    if val[1] == line.id:
-                        val_dict = val[2]
-                        break
-            if 'offline_provider_type' in vals:
-                val_dict['offline_provider_type'] = vals['offline_provider_type']
-            self.date_validator(line, val_dict)
+            """ Cek selisih tanggal departure-arrival / check in-check out per line offline """
+            for line in self.line_ids:
+                val_dict = {}
+                if 'line_ids' in vals:
+                    for val in vals['line_ids']:
+                        if val[1] == line.id:
+                            val_dict = val[2]
+                            break
+                if 'offline_provider_type' in vals:
+                    val_dict['offline_provider_type'] = vals['offline_provider_type']
+                self.date_validator(line, val_dict)
         super(IssuedOffline, self).write(vals)
 
     @api.depends('offline_provider_type')
@@ -1525,17 +1525,17 @@ class IssuedOffline(models.Model):
                     'currency': book_obj.currency_id.name,
                     'attachment': attachments
                 }
-                print(res)
+                # print(res)
                 _logger.info("Get resp\n" + json.dumps(res))
                 return Response().get_no_error(res)
             else:
-                raise RequestException(1001)
+                raise RequestException(1013)
         except RequestException as e:
             _logger.error(traceback.format_exc())
             return e.error_dict()
         except Exception as e:
             _logger.error(traceback.format_exc())
-            return ERR.get_error(1013)
+            return ERR.get_error(1013, additional_message='There\'s something wrong.')
 
     def create_booking_reservation_offline_api(self, data, context):  #
         booker = data['booker']  # self.param_booker
@@ -1651,7 +1651,7 @@ class IssuedOffline(models.Model):
                     delta_date = arrival_time - departure_time
                     if delta_date.days < 0:
                         raise RequestException(1004,
-                                               additional_message='Error create line : Arrival date must be better than departure date')
+                                               additional_message='Error create line : Arrival date must be greater than departure date')
                     line_tmp = {
                         "pnr": line.get('pnr'),
                         "origin_id": destination_env.search([('code', '=', line.get('origin'))], limit=1).id,
@@ -1677,7 +1677,7 @@ class IssuedOffline(models.Model):
                     check_out = datetime.strptime(line.get('check_out'), '%Y-%m-%d')
                     delta_date = check_out - check_in
                     if delta_date.days < 0:
-                        raise RequestException(1004, additional_message='Error create line : Check out date must be better than Check in date')
+                        raise RequestException(1004, additional_message='Error create line : Check out date must be greater than Check in date')
                     line_tmp = {
                         "pnr": line.get('pnr'),
                         "hotel_name": line.get('name'),
