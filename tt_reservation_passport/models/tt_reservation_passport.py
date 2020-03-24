@@ -241,7 +241,7 @@ class TtPassport(models.Model):
             if rec.state in ['validate', 'cancel']:
                 rec.action_in_process()
         # self.action_booked_passport(context)
-        self.action_issued_passport(data, context)
+        self.action_issued_passport_api(data, context)
         provider_id = self.provider_booking_ids[0]
         expenses_vals = {
             'provider_id': provider_id.id,
@@ -1147,9 +1147,10 @@ class TtPassport(models.Model):
             'booked_uid': api_context and api_context['co_uid'],
             'booked_date': datetime.now(),
         })
-        self.write(vals)
-
         self._compute_commercial_state()
+        for pvdr in self.provider_booking_ids:
+            pvdr.action_booked_api_passport(pvdr.to_dict(), api_context, self.hold_date)
+        self.write(vals)
 
     def action_booked_api_passport(self, context, pnr_list, hold_date):
         self.write({
