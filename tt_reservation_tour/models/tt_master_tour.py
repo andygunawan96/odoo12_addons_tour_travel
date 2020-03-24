@@ -27,7 +27,8 @@ class TourSyncProducts(models.TransientModel):
 
     def get_domain(self):
         domain_id = self.env.ref('tt_reservation_tour.tt_provider_type_tour').id
-        return [('provider_type_id.id', '=', int(domain_id))]
+        except_id = self.env.ref('tt_reservation_tour.tt_provider_tour_internal').id
+        return [('provider_type_id.id', '=', int(domain_id)), ('id', '!=', int(except_id))]
 
     provider_id = fields.Many2one('tt.provider', 'Provider', domain=get_domain, required=True)
     provider_code = fields.Char('Provider Code')
