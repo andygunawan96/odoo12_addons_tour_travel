@@ -56,8 +56,8 @@ class AgentRegistration(models.Model):
     promotion_id = fields.Many2one('tt.agent.registration.promotion', 'Promotion', readonly=True, required=False,
                                    states={'draft': [('readonly', False)], 'confirm': [('readonly', False)]},
                                    domain=lambda self: [("agent_type_id", "=", self.env.user.agent_id.agent_type_id.id),
-                                                        ("start_date", "<=", date.today().strftime('%d/%m/%Y')),
-                                                        ("end_date", ">=", date.today().strftime('%d/%m/%Y'))])
+                                                        ("start_date", "<=", date.today()),
+                                                        ("end_date", ">=", date.today())])
     discount = fields.Float('Discount', readonly=True, compute='compute_discount')
     opening_balance = fields.Float('Opening Balance', readonly=True, states={'draft': [('readonly', False)],
                                                                              'confirm': [('readonly', False)]})

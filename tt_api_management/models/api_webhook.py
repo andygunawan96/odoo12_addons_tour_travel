@@ -17,6 +17,7 @@ class ApiWebhookData(models.Model):
 
     def notify_subscriber(self,req):
         try:
+            _logger.info("Sending webhook data to children...")
             webhook_data_obj = self.search([('provider_type_id.code','=',req['provider_type'])],limit=1)
             if webhook_data_obj:
                 sent_data = []

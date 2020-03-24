@@ -104,6 +104,23 @@ class TtProviderAirline(models.Model):
             'tag': 'reload',
         }
 
+    def action_sync_refund_status(self):
+        req = {
+            'user_id': self.cancel_uid.id,
+            'pnr': self.pnr,
+            'pnr2': self.pnr2,
+            'provider': self.provider_id.code
+        }
+        res = self.env['tt.airline.api.con'].send_sync_refund_status(req)
+        if res['error_code'] != 0:
+            return False
+        if res['response']['status'] == 'CANCELLED':
+            self.write({
+                'state': 'cancel',
+                'cancel_date': datetime.now()
+            })
+            self.booking_id.check_provider_state({'co_uid': self.cancel_uid.id})
+
     def action_reverse_ledger_from_button(self):
         if self.state == 'fail_refunded':
             raise UserError("Cannot refund, this PNR has been refunded.")
@@ -175,6 +192,24 @@ class TtProviderAirline(models.Model):
         for rec in self:
             rec.write({
                 'state': 'cancel',
+                'cancel_date': datetime.now(),
+                'cancel_uid': context['co_uid'],
+                'sid_cancel': context['signature'],
+            })
+
+    def action_refund_pending_api_airline(self,context):
+        for rec in self:
+            rec.write({
+                'state': 'refund_pending',
+                'cancel_date': datetime.now(),
+                'cancel_uid': context['co_uid'],
+                'sid_cancel': context['signature'],
+            })
+
+    def action_cancel_pending_api_airline(self,context):
+        for rec in self:
+            rec.write({
+                'state': 'cancel_pending',
                 'cancel_date': datetime.now(),
                 'cancel_uid': context['co_uid'],
                 'sid_cancel': context['signature'],
