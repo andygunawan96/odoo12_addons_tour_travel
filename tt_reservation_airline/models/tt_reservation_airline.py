@@ -130,6 +130,16 @@ class ReservationAirline(models.Model):
         for rec in self:
             rec.state = 'cancel'
 
+    @api.multi
+    def action_set_as_refund_pending(self):
+        for rec in self:
+            rec.state = 'refund_pending'
+
+    @api.multi
+    def action_set_as_cancel_pending(self):
+        for rec in self:
+            rec.state = 'refund_pending'
+
     def action_cancel(self):
         super(ReservationAirline, self).action_cancel()
         for rec in self.provider_booking_ids:
@@ -443,6 +453,12 @@ class ReservationAirline(models.Model):
                 elif provider['status'] == 'CANCELLED':
                     provider_obj.action_cancel_api_airline(context)
                     any_provider_changed = True
+                elif provider['status'] == 'REFUND_PENDING':
+                    provider_obj.action_refund_pending_api_airline(context)
+                    any_provider_changed = True
+                elif provider['status'] == 'CANCEL_PENDING':
+                    provider_obj.action_cancel_pending_api_airline(context)
+                    any_provider_changed = True
 
             for rec in book_obj.provider_booking_ids:
                 if rec.pnr:
@@ -627,6 +643,12 @@ class ReservationAirline(models.Model):
         elif all(rec.state == 'cancel' for rec in self.provider_booking_ids):
             # failed book
             self.action_set_as_cancel()
+        elif all(rec.state == 'refund_pending' for rec in self.provider_booking_ids):
+            # refund pending
+            self.action_set_as_refund_pending()
+        elif all(rec.state == 'cancel_pending' for rec in self.provider_booking_ids):
+            # cancel pending
+            self.action_set_as_cancel_pending()
         else:
             # entah status apa
             _logger.error('Entah status apa')
