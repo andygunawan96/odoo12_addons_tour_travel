@@ -124,6 +124,7 @@
                             <field name="pricing_id"/>
                         </group>
                         <group>
+                            <field name="is_override_pricing"/>
                             <field name="is_no_expiration"/>
                             <field name="date_from" attrs="{'required' : [('is_no_expiration', '=', False)]}"/>
                             <field name="date_to" attrs="{'required' : [('is_no_expiration', '=', False)]}"/>
@@ -237,6 +238,7 @@
         <tree decoration-muted="active == False">
             <field name="sequence" widget="handle"/>
             <field name="name"/>
+            <field name="is_override_pricing"/>
             <field name="is_no_expiration"/>
             <field name="date_from"/>
             <field name="date_to"/>
