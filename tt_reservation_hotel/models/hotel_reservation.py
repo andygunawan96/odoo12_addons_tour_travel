@@ -396,11 +396,32 @@ class HotelReservation(models.Model):
         self.env['test.search'].validation_booking(self.id)
         return True
 
-    @api.one
-    def action_refund(self):
-        # Todo Tambahkan pengecekan state disini
-        self.state = 'refund'
-        self._refund_ledger()
+    # @api.one
+    # def action_refund(self):
+    def action_reverse_ledger_from_button(self):
+        if self.state != 'fail_issued':
+            raise UserError("Cannot refund, non Fail Issued state")
+        if self.state == 'fail_refunded':
+            raise UserError("Cannot refund, this PNR has been refunded.")
+
+        # if not self.is_ledger_created:
+        #     raise UserError("This Provider Ledger is not Created.")
+
+        for ledger_id in self.ledger_ids:
+            ledger_id.reverse_ledger()
+            # self._refund_ledger()
+
+        self.write({
+            'state': 'fail_refunded',
+            # 'is_ledger_created': False,
+            'refund_uid': self.env.user.id,
+            'refund_date': datetime.now()
+        })
+
+        return {
+            'type': 'ir.actions.client',
+            'tag': 'reload',
+        }
 
     @api.one
     def action_draft(self):
@@ -443,15 +464,14 @@ class HotelReservation(models.Model):
         self.calc_voucher_name()
         return True
 
-    def action_issued_backend(self, kwargs=False):
-        a = self.action_issued()
-        if not a:
-            raise UserError('Balance in not enough to issued: ' + self.name + '(' + str(self.total) + ')' +
-                            ' Current Balance for Agent:' + self.agent_id.name + ' is ' +
-                            str(self.agent_id.balance))
-        else:
-            raise UserError('Order has been issued')
-
+    # def action_issued_backend(self, kwargs=False):
+    #     a = self.action_issued()
+    #     if not a:
+    #         raise UserError('Balance in not enough to issued: ' + self.name + '(' + str(self.total) + ')' +
+    #                         ' Current Balance for Agent:' + self.agent_id.name + ' is ' +
+    #                         str(self.agent_id.balance))
+    #     else:
+    #         raise UserError('Order has been issued')
 
     @api.one
     def action_done(self, issued_response={}):
@@ -745,6 +765,8 @@ class HotelReservation(models.Model):
             'co_uid': self.env.user.agent_id.id
         }
         res = API_CN_HOTEL.check_booking_status_by_api({'name': self.name, 'provider': self.room_detail_ids[0].provider_id.code,
+                                                        'sid_booked': self.sid_booked, 'sid_issued': self.sid_issued,
+                                                        'booking_id': self.id,
                                                         'booked_name': self.room_detail_ids[0].name,
                                                         'issued_name': self.room_detail_ids[0].issued_name,
                                                         }, api_context)

@@ -634,8 +634,8 @@ class TestSearch(models.Model):
 
         vals.update({
             'customer_parent_id': customer_parent_id,
-            'sid_booked': context['sid'],
-            'sid_issued': context['sid']
+            'sid_booked': context['signature'],
+            'sid_issued': context['signature']
         })
         passenger_objs = self.env['tt.reservation.hotel'].create_customer_api(cust_names, context, booker_obj.id, cust_partner_obj.id)  # create passenger
 
@@ -979,7 +979,8 @@ class TestSearch(models.Model):
 
     def action_done_hotel_api(self, book_id, issued_res, acq_id, co_uid):
         resv_obj = self.env['tt.reservation.hotel'].browse(book_id)
-        resv_obj.sudo().action_issued(acq_id, co_uid)
+        if resv_obj.state not in ['issued', 'fail_issued']:
+            resv_obj.sudo().action_issued(acq_id, co_uid)
         return resv_obj.sudo().action_done(issued_res)
 
     # Asumsi Destinasi sdah berupa kode negara

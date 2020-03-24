@@ -44,6 +44,8 @@
         'views/tt_reservation_passenger_tour_form_views.xml',
         'views/tt_request_tour_views.xml',
         'wizard/import_request_tour_wizard_views.xml',
+
+        'views/ir_ui_menu_views.xml',
     ],
     # only loaded in demonstration mode
     'demo': [],

@@ -226,6 +226,7 @@ class PricingProviderLine(models.Model):
     # is_provide_infant_commission = fields.Boolean('Provider Infant Commission', default=False)
     active = fields.Boolean('Active', default=True)
     provider_commission_amount = fields.Float('Provider Commission Amount', default=0)
+    is_override_pricing = fields.Boolean('Override Pricing', default=False)
 
     @api.multi
     @api.depends('origin_ids')
@@ -333,6 +334,7 @@ class PricingProviderLine(models.Model):
             'is_compute_infant_fee': self.is_compute_infant_fee,
             'is_no_expiration': self.is_no_expiration,
             'active': self.active,
+            'is_override_pricing': self.is_override_pricing,
             # 'is_provide_infant_commission': self.is_provide_infant_commission,
         }
         return res
