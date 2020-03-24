@@ -1591,6 +1591,7 @@ class MasterTour(models.Model):
 
     def product_sync_webhook_nosend(self, req, context):
         try:
+            _logger.info("Receiving tour data from webhook...")
             provider_id = self.env['tt.provider'].sudo().search([('code', '=', req['provider'])], limit=1)
             if not provider_id:
                 raise RequestException(1002)
