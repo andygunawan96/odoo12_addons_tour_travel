@@ -40,6 +40,7 @@
             <field name="carrier_id" ref="tt_reservation_airline.tt_transport_carrier_airline_cx"/>
             <field name="is_default" eval="True"/>
             <field name="is_favorite" eval="True"/>
+            <field name="sequence">101</field>
             <field name="provider_ids" eval="[
                 (4, ref('tt_reservation_airline.tt_provider_airline_amadeus'))
             ]"/>
