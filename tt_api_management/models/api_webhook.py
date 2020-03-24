@@ -37,6 +37,8 @@ class ApiWebhookData(models.Model):
                             res = self.env['tt.api.con'].send_webhook_to_children(vals)
                             if not res.get('error_code'):
                                 sent_data.append(rec.id)
+                            else:
+                                _logger.info(res['error_msg'])
                             send_limit -= 1
         except Exception as e:
             _logger.error(traceback.format_exc())
