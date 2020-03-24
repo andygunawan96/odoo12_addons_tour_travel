@@ -38,7 +38,9 @@
         'views/tt_agent_views.xml',
         'views/tt_top_up_views.xml',
         'views/tt_customer_parent_views.xml',
-        'views/tt_pnr_quota_views.xml'
+        'views/tt_pnr_quota_views.xml',
+
+        'views/ir_ui_menu_views.xml',
     ],
     # only loaded in demonstration mode
     'demo': [
