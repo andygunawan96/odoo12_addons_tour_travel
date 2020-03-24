@@ -341,17 +341,17 @@ class IssuedOffline(models.Model):
         if vals.get('line_ids'):
             for line in vals['line_ids']:
                 self.date_format_check(offline_provider_type, line[2])
-        """ Cek selisih tanggal departure-arrival / check in-check out per line offline """
-        for line in self.line_ids:
-            val_dict = {}
-            if 'line_ids' in vals:
-                for val in vals['line_ids']:
-                    if val[1] == line.id:
-                        val_dict = val[2]
-                        break
-            if 'offline_provider_type' in vals:
-                val_dict['offline_provider_type'] = vals['offline_provider_type']
-            self.date_validator(line, val_dict)
+            """ Cek selisih tanggal departure-arrival / check in-check out per line offline """
+            for line in self.line_ids:
+                val_dict = {}
+                if 'line_ids' in vals:
+                    for val in vals['line_ids']:
+                        if val[1] == line.id:
+                            val_dict = val[2]
+                            break
+                if 'offline_provider_type' in vals:
+                    val_dict['offline_provider_type'] = vals['offline_provider_type']
+                self.date_validator(line, val_dict)
         super(IssuedOffline, self).write(vals)
 
     @api.depends('offline_provider_type')
