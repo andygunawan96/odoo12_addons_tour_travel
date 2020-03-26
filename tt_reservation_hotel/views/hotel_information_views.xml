@@ -330,6 +330,9 @@
         <field name="view_type">form</field>
         <field name="view_mode">tree,form</field>
         <field name="search_view_id" ref="tt_hotel_view_search"/>
+        <field name="context">{
+            'form_view_ref': 'tt_reservation_hotel.tt_hotel_view_form_rodex',
+        }</field>
     </record>
 
     <record id="tt_hotel_read_file_view_form_rodex" model="ir.ui.view">
@@ -347,6 +350,7 @@
                         <button name="prepare_gateway_cache" class="oe_stat_button" string="2. Send to GW" type="object" icon="fa-plus"/>
                         <button name="prepare_gateway_destination" class="oe_stat_button" string="3. Render AutoComplete" type="object" icon="fa-plus"/>
                         <button name="merge_record_for_some_source" class="oe_stat_button" string="C. Merge to Master" type="object" icon="fa-plus"/>
+                        <button name="merge_record_for_with_search_result" class="oe_stat_button" string="D. Merge from GW Cache" type="object" icon="fa-plus"/>
                     </div>
                     <div class="oe_title">
                         <label for="name">Name</label>
@@ -391,6 +395,7 @@
                         <group string="Klik and Book">
                             <button name="get_record_by_api14" string="Hotel from web agent" type="object" icon="fa-building"/>
                             <button name="get_record_by_api14d" string="Hotel from excel file" type="object" icon="fa-building"/>
+                            <button name="get_record_by_api14e" string="Hotel from excel file New" type="object" icon="fa-building"/>
                         </group>
                         <group string="Rodextrip">
                             <button name="get_record_by_api13" string="AutoComplete Cache" type="object" icon="fa-spoon"/>

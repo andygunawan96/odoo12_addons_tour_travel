@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Survey -->
+    <record id="survey.menu_surveys" model="ir.ui.menu">
+        <field name="active" eval="False"></field>
+    </record>
+</odoo>

@@ -170,24 +170,37 @@
                                     <span t-field="provider.booking_id.infant"/><span style="color: white;">.</span><span/>BAYI<span/>
                                 </div>
                             </div>
-                            <div class="row" style="margin-left:0px; width: 90%; border-top: 1px solid black; border-bottom: 1px solid #CCCCCC; padding-bottom: 2px">
-                                <div class="col-5">
+                        </div>
+                        <div class="col-3 col-offset-1 text-right">
+                            <img t-att-src="'/report/barcode/?type=%s&amp;value=%s&amp;width=%s&amp;height=%s' % ('QR', provider.pnr, 180, 180)" style="width:200px;height:200px; margin-top: 20px;"/>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-12" style="font-size: 20px; padding-left: 0px;">
+                            <div class="row" style="margin-left:0px; width: 75%; border-top: 1px solid black; border-bottom: 1px solid #CCCCCC; padding-bottom: 2px">
+                                <div class="col-4">
                                     <span>Nama Penumpang</span>
                                 </div>
-                                <div class="col-3">
+                                <div class="col-4">
+                                    <span>ID Penumpang</span>
+                                </div>
+                                <div class="col-2">
                                     <span>Kategori</span>
                                 </div>
-                                <div class="col-4">
+                                <div class="col-2">
                                     <span>Seat</span>
                                 </div>
                             </div>
                             <t t-if="provider.journey_ids.seat_ids">
                                 <t t-foreach="provider.journey_ids.seat_ids" t-as="psg">
-                                    <div class="row" style="margin-left:0px; width: 90%;">
-                                        <div class="col-5">
+                                    <div class="row" style="margin-left:0px; width: 75%;">
+                                        <div class="col-4">
                                             <span t-field="psg.passenger_id.first_name"/><span style="color: white;">.</span><span t-field="psg.passenger_id.last_name"/>
                                         </div>
-                                        <div class="col-3">
+                                        <div class="col-4">
+                                            <span t-field="psg.passenger_id.identity_number"/>
+                                        </div>
+                                        <div class="col-2">
                                             <t t-foreach="provider.ticket_ids" t-as="ticket">
                                                 <t t-if="ticket.passenger_id.id == psg.passenger_id.id">
                                                     <t t-if="ticket.pax_type == 'ADT'">
@@ -199,12 +212,16 @@
                                                 </t>
                                             </t>
                                         </div>
-                                        <div class="col-4">
+                                        <div class="col-2">
                                             <span t-field="psg.seat"/>
                                         </div>
                                     </div>
                                 </t>
                             </t>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-9" style="font-size: 20px; padding-left: 0px;">
                             <t t-if="with_price">
                                 <t t-set="fare" t-value="0"/>
                                 <t t-set="discount" t-value="0"/>
@@ -255,9 +272,6 @@
                                     </div>
                                 </div>
                             </t>
-                        </div>
-                        <div class="col-3 col-offset-1 text-right">
-                            <img t-att-src="'/report/barcode/?type=%s&amp;value=%s&amp;width=%s&amp;height=%s' % ('QR', provider.pnr, 180, 180)" style="width:200px;height:200px; margin-top: 20px;"/>
                         </div>
                     </div>
 

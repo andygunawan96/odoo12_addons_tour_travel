@@ -73,14 +73,14 @@ class TtProviderPassport(models.Model):
 
     passenger_ids = fields.One2many('tt.provider.passport.passengers', 'provider_id', 'Passengers')
 
-    def action_booked_api_passport(self, provider_data, api_context):
+    def action_booked_api_passport(self, provider_data, api_context, hold_date):
         for rec in self:
             rec.write({
                 'pnr': provider_data['pnr'],
                 'state': 'booked',
                 'booked_uid': api_context['co_uid'],
                 'booked_date': fields.Datetime.now(),
-                # 'hold_date': datetime.strptime(provider_data['hold_date'],"%Y-%m-%d %H:%M:%S"),
+                'hold_date': hold_date,
             })
 
     def action_issued_api_passport(self,context):
@@ -124,7 +124,7 @@ class TtProviderPassport(models.Model):
             scs['provider_passport_booking_id'] = self.id  # id provider passport
             if scs['charge_code'] != 'disc':
                 for psg in self.passenger_ids:
-                    if scs['pax_type'] == psg.pax_type and scs['pricelist_id'] == psg.pricelist_id.id:
+                    if scs['pax_type'] == psg.pax_type and scs['passport_pricelist_id'] == psg.pricelist_id.id:
                         scs['passenger_passport_ids'].append(psg.passenger_id.id)  # add passenger to passenger passport ids
                         scs['pax_count'] += 1
                         scs['total'] += scs['amount']
@@ -149,10 +149,8 @@ class TtProviderPassport(models.Model):
                 rec.unlink()
         return ledger_created
 
-    def action_create_ledger(self):
-        if not self.is_ledger_created:
-            self.write({'is_ledger_created': True})
-            self.env['tt.ledger'].action_create_ledger(self)
+    def action_create_ledger(self, issued_uid, pay_method=None):
+        return self.env['tt.ledger'].action_create_ledger(self, issued_uid)
 
     def action_create_expenses_invoice(self):
         datas = {
@@ -178,10 +176,6 @@ class TtProviderPassport(models.Model):
             'provider_id': self.id,
             'state': self.state,
             'state_description': variables.BOOKING_STATE_STR[self.state],
-            'country': self.country_id.name,
-            'country_code': self.country_id.code,
-            'country_id': self.country_id,
-            'departure_date': self.departure_date,
             'passengers': passenger_list,
             'vendors': vendor_list
         }
