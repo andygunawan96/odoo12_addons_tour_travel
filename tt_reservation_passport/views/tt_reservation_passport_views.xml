@@ -75,7 +75,8 @@
                 <button string="Validate" name="action_validate_passport" type="object" attrs="{'invisible': [('state_passport', 'not in', ['confirm','partial_validate'])]}" groups="tt_base.group_tt_tour_travel_operator"/>
                 <button string="In Process" name="action_in_process_passport" type="object" attrs="{'invisible': [('state_passport', 'not in', ['validate'])]}" groups="tt_base.group_tt_tour_travel_operator"/>
                 <button string="Process to Consulate" name="action_in_process_immigration_passport" type="object" attrs="{'invisible': [('state_passport', '!=', 'payment')]}" groups="tt_base.group_tt_tour_travel_operator"/>
-                <button string="Cancel All" name="action_cancel_passport" type="object" attrs="{'invisible': [('state_passport', 'in', ['cancel','process_by_consulate','partial_proceed','proceed','delivered','ready','done'])]}" groups="tt_base.group_tt_tour_travel_operator"/>
+                <button string="Cancel" name="action_cancel_passport" type="object" attrs="{'invisible': [('state_passport', 'in', ['cancel','in_process','payment','process_by_consulate','partial_proceed','proceed','delivered','ready','done'])]}" groups="tt_base.group_tt_tour_travel_operator"/>
+                <button string="Cancel Process" name="action_cancel_passport" type="object" attrs="{'invisible': [('state_passport', 'not in', ['in_process', 'payment'])]}" groups="tt_base.group_tt_tour_travel_operator" confirm="Are you sure want to cancel?"/>
                 <button string="Calc. Expenses" name="action_calc_expenses_passport" type="object" groups="tt_base.group_tt_tour_travel_operator" state="issued" attrs="{'invisible': [('state_passport', 'in', ['delivered','ready','done'])]}"/>
             </button>
             <xpath expr="//div[hasclass('oe_button_box')]" position="inside">

@@ -7,5 +7,11 @@
             <field name="active" eval="True"/>
             <field name="provider_type_id" ref="tt_provider_type_passport"/>
         </record>
+        <record id="tt_provider_passport_internal" model="tt.provider">
+            <field name="name">Passport Internal</field>
+            <field name="code">passport_internal</field>
+            <field name="active" eval="True"/>
+            <field name="provider_type_id" ref="tt_provider_type_passport"/>
+        </record>
     </data>
 </odoo>

@@ -2,6 +2,22 @@
 <odoo>
     <data>
 
+        <!-- Settings Top menu item (Users) -->
+        <menuitem name="Settings"
+                id="base.menu_administration"
+                web_icon="base,static/description/settings.png"
+                sequence="500"
+                groups="base.group_erp_manager,group_tt_agent_management_operator"/>
+        <menuitem id="base.menu_users" name="Users &amp; Companies" parent="base.menu_administration" sequence="0" groups="group_tt_agent_management_operator"/>
+
+        <act_window id="base.change_password_wizard_action"
+            name="Change Password"
+            src_model="res.users"
+            res_model="change.password.wizard"
+            view_type="form" view_mode="form"
+            key2="client_action_multi" target="new"
+            groups="base.group_erp_manager,group_tt_agent_management_operator"/>
+
         <!-- Main Menu -->
         <!--Tours and Travel-->
         <menuitem id="main_tour_travel"
