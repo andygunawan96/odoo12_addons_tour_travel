@@ -11,7 +11,7 @@ class TtBillingStatement(models.Model):
     _order = 'id desc'
 
     name = fields.Char('Number', required=True, readonly=True, default='New')
-    date_billing = fields.Date('Date', default=fields.Date.context_today)
+    date_billing = fields.Date('Date', default=fields.Date.context_today, readonly=True, states={'draft': [('readonly', False)]})
 
     due_date = fields.Date('Due Date', readonly=True,
                              states={'draft': [('readonly', False)]})

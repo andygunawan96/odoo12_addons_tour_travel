@@ -193,22 +193,22 @@
         <field name="priority">40</field>
         <field name="arch" type="xml">
             <field name="dummy_acquirer_field" position="replace">
-                <field name="dummy_acquirer_field" class="oe_edit_only" attrs="{'invisible':[('dummy_acquirer_field','=', True)], 'readonly':[('top_up_id','!=', False)]}"/>
+                <field name="dummy_acquirer_field" class="oe_edit_only" attrs="{'invisible':[('dummy_acquirer_field','=', True)], 'readonly':['|', ('top_up_id','!=', False), ('state','in', ['validated', 'validated2', 'approved'])]}"/>
             </field>
             <field name="acquirer_id" position="replace">
-                <field name="acquirer_id" attrs="{'readonly':[('top_up_id','!=', False)]}"/>
+                <field name="acquirer_id" attrs="{'readonly':['|', ('top_up_id','!=', False), ('state','in', ['validated', 'validated2', 'approved'])]}"/>
             </field>
             <field name="payment_date" position="replace">
-                <field name="payment_date" attrs="{'readonly':[('top_up_id','!=', False)]}"/>
+                <field name="payment_date" attrs="{'readonly':['|', ('top_up_id','!=', False), ('state','in', ['validated', 'validated2', 'approved'])]}"/>
             </field>
             <field name="reference" position="replace">
-                <field name="reference" attrs="{'readonly':[('top_up_id','!=', False)]}"/>
+                <field name="reference" attrs="{'readonly':['|', ('top_up_id','!=', False), ('state','in', ['validated', 'validated2', 'approved'])]}"/>
             </field>
             <field name="real_total_amount" position="replace">
-                <field name="real_total_amount" attrs="{'readonly':[('top_up_id','!=', False)]}"/>
+                <field name="real_total_amount" attrs="{'readonly':['|', ('top_up_id','!=', False), ('state','in', ['validated', 'validated2', 'approved'])]}"/>
             </field>
             <field name="payment_image_ids" position="replace">
-                <field name="payment_image_ids" attrs="{'readonly':[('top_up_id','!=', False)]}"/>
+                <field name="payment_image_ids" attrs="{'readonly':['|', ('top_up_id','!=', False), ('state','in', ['validated', 'validated2', 'approved'])]}"/>
             </field>
             <button name="%(tt_base.tt_upload_center_wizard_action_view)d" position="replace">
                 <button name="%(tt_base.tt_upload_center_wizard_action_view)d" string="Upload Document" type="action"

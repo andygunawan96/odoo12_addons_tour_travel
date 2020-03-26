@@ -68,7 +68,7 @@
                         </group>
                         <group>
                             <field name="provider_id" groups="tt_base.group_tt_tour_travel_operator"/>
-                            <field name="provider_fare_code" groups="tt_base.group_tt_tour_travel_operator"/>
+                            <field name="provider_fare_code" invisible="1"/>
                             <field name="uuid"/>
                             <field name="type_ids"/>
                             <field name="category_ids">

@@ -26,6 +26,7 @@
             <field name="active">True</field>
             <field name="registration_fee">0</field>
             <field name="seq_prefix">BO</field>
+            <field name="is_using_invoice" eval="False"/>
         </record>
         <record id="agent_type_btbr" model="tt.agent.type">
             <field name="name">Agent BTBR</field>
@@ -33,6 +34,7 @@
             <field name="active">True</field>
             <field name="registration_fee">0</field>
             <field name="seq_prefix">BR</field>
+            <field name="is_using_invoice" eval="False"/>
         </record>
         <record id="agent_type_btbo2" model="tt.agent.type">
             <field name="name">Agent BTBO 2</field>
