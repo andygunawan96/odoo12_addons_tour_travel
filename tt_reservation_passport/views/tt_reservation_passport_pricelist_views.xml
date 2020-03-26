@@ -51,7 +51,7 @@
                     </group>
                     <separator string="Requirements"/>
                     <field name="requirement_ids" string="Requirements">
-                        <tree>
+                        <tree editable="bottom">
                             <field name="type_id"/>
                             <field name="required"/>
                         </tree>

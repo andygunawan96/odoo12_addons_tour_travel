@@ -741,8 +741,74 @@ class TtPassport(models.Model):
     ######################################################################################################
 
     param_sell_passport = {
+        "search_data": [
+            {
+                "sequence": 0,
+                "name": "Regular Passport (7 working days after photo)",
+                "apply_type": "New",
+                "type": {
+                    "process_type": "Regular",
+                    "duration": 7
+                },
+                "consulate": {
+                    "city": "Surabaya",
+                    "address": "IMIGRASI JUANDA , jalan Raya Juanda km 3-4 Surabaya"
+                },
+                "requirements": [],
+                "attachments": [],
+                "sale_price": {
+                    "commission": 80000,
+                    "total_price": 1310000,
+                    "currency": "IDR"
+                },
+                "id": "passport_internal_Regular Passport (7 working days after photo)_1",
+                "provider": "passport_internal",
+                "notes": [],
+                "commission": [
+                    {
+                        "charge_type": "RAC",
+                        "charge_code": "rac",
+                        "amount": -80000,
+                        "currency": "IDR",
+                        "commission_agent_id": 3
+                    }
+                ]
+            },
+            {
+                "sequence": 1,
+                "name": "Express Passport (5 working days after photo)",
+                "apply_type": "New",
+                "type": {
+                    "process_type": "Express",
+                    "duration": 5
+                },
+                "consulate": {
+                    "city": "Surabaya",
+                    "address": "IMIGRASI JUANDA , jalan Raya Juanda km 3-4 Surabaya"
+                },
+                "requirements": [],
+                "attachments": [],
+                "sale_price": {
+                    "commission": 80000,
+                    "total_price": 1460000,
+                    "currency": "IDR"
+                },
+                "id": "passport_internal_Express Passport (5 working days after photo)_3",
+                "provider": "passport_internal",
+                "notes": [],
+                "commission": [
+                    {
+                        "charge_type": "RAC",
+                        "charge_code": "rac",
+                        "amount": -80000,
+                        "currency": "IDR",
+                        "commission_agent_id": 3
+                    }
+                ]
+            }
+        ],
         "total_cost": 25,
-        "provider": "passport_rodextrip",
+        "provider": "passport_internal",
         "pax": {
             "adult": 1,
             "child": 0,
@@ -793,10 +859,32 @@ class TtPassport(models.Model):
             "is_contact": False,
             "number": 1,
             "nationality_code": "ID",
-            "master_passport_Id": "1",
+            "master_passport_Id": "passport_internal_Regular Passport (7 working days after photo)_1",
+            "required": [],
             "notes": "",
             "sequence": 1,
             "passenger_id": "PSG_1",
+            "gender": "male",
+            "is_also_booker": False,
+            "is_also_contact": False
+        },
+        {
+            "pax_type": "ADT",
+            "first_name": "Testing",
+            "last_name": "Lalala",
+            "title": "MR",
+            "birth_date": "2002-12-01",
+            "nationality_name": "Indonesia",
+            "passenger_seq_id": "CU.1204174",
+            "is_booker": False,
+            "is_contact": False,
+            "number": 1,
+            "nationality_code": "ID",
+            "master_passport_Id": "passport_internal_Regular Passport (7 working days after photo)_1",
+            "required": [],
+            "notes": "",
+            "sequence": 1,
+            "passenger_id": "PSG_2",
             "gender": "male",
             "is_also_booker": False,
             "is_also_contact": False
@@ -810,16 +898,15 @@ class TtPassport(models.Model):
     }
 
     param_search = {
-        "destination": "Singapore",
-        "immigration": "Surabaya",
-        "passport_type": "passport",
-        "apply_type": "new",
+        "passport_type": "Passport",
+        "apply_type": "New",
+        "immigration_consulate": "Surabaya",
         "provider": "passport_rodextrip"
     }
 
     param_payment = {
-        "member": False,
-        "acquirer_seq_id": "PQR.0429001",
+        "member": True,
+        "acquirer_seq_id": "CTP.1900052",
         'force_issued': False
         # "seq_id": "PQR.9999999"
     }
@@ -834,15 +921,15 @@ class TtPassport(models.Model):
             elif data['state'] == 'failed':
                 book_obj.action_fail_booked_passport()
 
-    def create_booking_passport_api(self):
-        sell_passport = self.param_sell_passport  # data['passport']
-        booker = self.param_booker  # data['booker']
-        contact = self.param_contact  # data['contact']
-        passengers = self.param_passenger  # copy.deepcopy(data['passenger'])
-        payment = self.param_payment  # data['payment']
-        search = self.param_search  # data['payment']
-        context = self.param_context  # context
-        voucher = self.param_voucher  # data['voucher']
+    def create_booking_passport_api(self, data, context):  #
+        sell_passport = data['passport']  # self.param_sell_passport
+        booker = data['booker']  # self.param_booker
+        contact = data['contact']  # self.param_contact
+        passengers = data['passenger']  # self.param_passenger
+        payment = data['payment']  # self.param_payment
+        search = data['payment']  # self.param_search
+        context = context  # self.param_context
+        voucher_ref = data['voucher']  # self.param_voucher
 
         try:
             header_val = {}
@@ -850,19 +937,18 @@ class TtPassport(models.Model):
             contact_id = self.create_contact_api(contact[0], booker_id, context)
             passenger_ids = self.create_customer_api(passengers, context, booker_id, contact_id)  # create passenger
             to_psg_ids = self._create_passport_order(passengers, passenger_ids)  # create visa order data['passenger']
-            pricing = self.create_sale_service_charge_value(passengers, to_psg_ids)  # create pricing dict
+            pricing = self.create_sale_service_charge_value(passengers, to_psg_ids, sell_passport)  # create pricing dict
 
             voucher = ''
             # if data['voucher']:
             #     voucher = data['voucher']['voucher_reference']
 
             header_val.update({
-                'country_id': self.env['res.country'].sudo().search([('name', '=', search['destination'])], limit=1).id,
-                'provider_name': self.env['tt.provider'].sudo().search([('code', '=', 'passport_rodextrip')], limit=1).name,
                 'booker_id': booker_id.id,
                 'voucher_code': voucher,
                 'payment_method': payment['acquirer_seq_id'],
                 'payment_active': True,
+                'is_member': payment['member'],
                 'contact_title': contact[0]['title'],
                 'contact_id': contact_id.id,
                 'contact_name': contact[0]['first_name'] + ' ' + contact[0]['last_name'],
@@ -903,13 +989,13 @@ class TtPassport(models.Model):
             provider_obj = self.env['tt.provider']
 
             provider = provider_obj.env['tt.provider'].search([('code', '=', sell_passport['provider'])], limit=1)
-            country = country_obj.search([('name', '=', search['destination'])], limit=1)
+            # country = country_obj.search([('name', '=', search['destination'])], limit=1)
 
             vals = {
                 'booking_id': book_obj.id,
                 'pnr': book_obj.name,
                 'provider_id': provider.id,
-                'country_id': country.id,
+                # 'country_id': country.id,
             }
             provider_passport_obj = book_obj.env['tt.provider.passport'].sudo().create(vals)
 
@@ -928,7 +1014,13 @@ class TtPassport(models.Model):
             provider_passport_obj.create_service_charge(pricing)
             book_obj.calculate_service_charge()
 
+            book_obj.action_booked_passport(context)
+
+            response = {
+                'order_number': book_obj.name
+            }
             res = ''
+            # res = self.get_booking_passport_api(response, context)
         except RequestException as e:
             _logger.error(traceback.format_exc())
             return e.error_dict()
@@ -999,14 +1091,14 @@ class TtPassport(models.Model):
                 'sale_service_charge_ids': values
             })
 
-    def create_sale_service_charge_value(self, passenger, passenger_ids):
+    def create_sale_service_charge_value(self, passenger, passenger_ids, sell_passport):
         ssc_list = []
         ssc_list_final = []
         pricelist_env = self.env['tt.reservation.passport.pricelist'].sudo()
         passenger_env = self.env['tt.reservation.passport.order.passengers']
         for idx, psg in enumerate(passenger):
             ssc = []
-            pricelist_id = int(psg['master_passport_Id'])
+            pricelist_id = self.env['tt.reservation.passport.pricelist'].search([('reference_code', '=', psg['master_passport_Id'])]).id
             pricelist_obj = pricelist_env.browse(pricelist_id)
             passenger_obj = passenger_env.browse(passenger_ids[idx])
             vals = {
@@ -1029,6 +1121,29 @@ class TtPassport(models.Model):
                 'passenger_passport_ids': [(6, 0, passenger_obj.ids)]
             })
             ssc.append(ssc_obj.id)
+
+            commission_list2 = []
+            for sell in sell_passport['search_data']:
+                if str(sell['id']) == psg['master_passport_Id']:
+                    if 'commission' in sell:
+                        commission_list2 = sell.get('commission')
+                    break
+            if commission_list2:
+                for comm in commission_list2:
+                    vals2 = vals.copy()
+                    vals2.update({
+                        'commission_agent_id': comm['commission_agent_id'],
+                        'total': comm['amount'],
+                        'amount': comm['amount'],
+                        'charge_code': comm['charge_code'],
+                        'charge_type': 'RAC',
+                    })
+                    ssc_list.append(vals2)
+                    ssc_obj2 = passenger_obj.cost_service_charge_ids.create(vals2)
+                    ssc_obj2.write({
+                        'passenger_passport_ids': [(6, 0, passenger_obj.ids)]
+                    })
+                    ssc.append(ssc_obj2.id)
 
             vals_fixed = {
                 'commission_agent_id': self.env.ref('tt_base.rodex_ho').id,
@@ -1105,7 +1220,7 @@ class TtPassport(models.Model):
         to_psg_list = []
 
         for idx, psg in enumerate(passengers):
-            pricelist_id = self.env['tt.reservation.passport.pricelist'].search([('id', '=', psg['master_passport_Id'])]).id
+            pricelist_id = self.env['tt.reservation.passport.pricelist'].search([('reference_code', '=', psg['master_passport_Id'])]).id
             pricelist_obj = pricelist_env.browse(pricelist_id)
             psg_vals = passenger_ids[idx][0].copy_to_passenger()
             psg_vals.update({
@@ -1120,6 +1235,22 @@ class TtPassport(models.Model):
                 'sequence': int(idx + 1)
             })
             to_psg_obj = to_psg_env.create(psg_vals)
+
+            to_req_list = []
+
+            if 'required' in psg:
+                for req in psg['required']:  # pricelist_obj.requirement_ids
+                    req_vals = {
+                        'to_passenger_id': to_psg_obj.id,
+                        'requirement_id': self.env['tt.reservation.passport.requirements'].search(
+                            [('id', '=', req['id'])], limit=1).id,
+                        'is_ori': req['is_original'],
+                        'is_copy': req['is_copy'],
+                        'check_uid': self.env.user.id,
+                        'check_date': datetime.now()
+                    }
+                    to_req_obj = to_req_env.create(req_vals)
+                    to_req_list.append(to_req_obj.id)  # akan dipindah ke edit requirements
 
             to_psg_list.append(to_psg_obj.id)
         return to_psg_list
