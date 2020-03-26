@@ -47,10 +47,10 @@
         </record>
 
         <menuitem id="sub_menu_tour_travel_user_ban_user"
-                  parent="tt_base.top_tour_travel_user"
-                  groups="base.group_user"
-                  name="Ban User"
-                  sequence="16"
+                  parent="tt_base.menu_tour_travel_configuration_administration"
+                  groups="tt_base.group_tt_agent_management_operator"
+                  name="Banned Users"
+                  sequence="3"
                   action="tt_ban_user_action_view"/>
     </data>
 </odoo>

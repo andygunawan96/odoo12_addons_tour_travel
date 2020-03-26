@@ -21,6 +21,7 @@ class TtAgentType(models.Model):
     seq_prefix = fields.Char('Sequence Prefix', size=2, required=True)
     terms_and_condition = fields.Html('Terms and Condition')
     is_using_pnr_quota = fields.Boolean('Is Using PNR Quota')
+    is_using_invoice = fields.Boolean('Is Using Invoice', default=True)
     menuitem_id = fields.Many2one('ir.ui.menu','Menuitem')
 
     @api.model
