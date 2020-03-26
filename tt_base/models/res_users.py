@@ -45,6 +45,16 @@ DEVICE_TYPE = [
 ]
 
 
+class ResPartner(models.Model):
+    _inherit = 'res.partner'
+
+    signup_token = fields.Char(copy=False, groups="base.group_erp_manager, tt_base.group_tt_agent_management_operator")
+    signup_type = fields.Char(string='Signup Token Type', copy=False,
+                              groups="base.group_erp_manager, tt_base.group_tt_agent_management_operator")
+    signup_expiration = fields.Datetime(copy=False,
+                                        groups="base.group_erp_manager, tt_base.group_tt_agent_management_operator")
+
+
 class ResUsers(models.Model):
     _inherit = 'res.users'
 
