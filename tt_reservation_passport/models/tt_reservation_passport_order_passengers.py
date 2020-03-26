@@ -177,6 +177,10 @@ class PassportOrderPassengers(models.Model):
 
     def action_validate(self):
         for rec in self:
+            for req in rec.to_requirement_ids:
+                if req.is_copy is True or req.is_ori is True:
+                    if req.validate_HO is False:
+                        raise UserError(_('You have to Validate All Passengers Documents.'))
             rec.write({
                 'state': 'validate'
             })
