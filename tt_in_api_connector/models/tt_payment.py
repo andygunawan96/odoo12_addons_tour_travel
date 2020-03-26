@@ -35,7 +35,8 @@ class TtPaymentApiCon(models.Model):
                     if res['error_code'] == 0:
                         request = {
                             'virtual_account': data['virtual_account'],
-                            'name': res['response']['name']
+                            'name': res['response']['name'],
+                            'payment_ref': data['payment_ref'],
                         }
                         res = self.env['tt.top.up'].action_va_top_up(request, context)
                 else:
