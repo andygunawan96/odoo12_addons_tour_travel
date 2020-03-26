@@ -43,6 +43,7 @@
             <field name="registration_fee">0</field>
             <field name="seq_prefix">BD</field>
             <field name="is_using_pnr_quota" eval="True"/>
+            <field name="is_using_invoice" eval="False"/>
         </record>
     </data>
 </odoo>
