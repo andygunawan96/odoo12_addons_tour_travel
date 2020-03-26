@@ -108,10 +108,10 @@
 
     <menuitem id="menu_tour_travel_accounting" parent="tt_base.main_tour_travel"
               name="Accounting" sequence="9"
-              groups="tt_base.group_tt_tour_travel_operator,tt_base.group_tt_accounting_operator"/>
+              groups="tt_base.group_tt_accounting_operator"/>
 
     <menuitem id="submenu_tour_travel_accounting_log" name="JasaWeb Sync Log" sequence="1"
               parent="tt_accounting_connector.menu_tour_travel_accounting" action="tt_accounting_history_action"
-              groups="tt_base.group_tt_tour_travel_operator,tt_base.group_tt_accounting_operator"/>
+              groups="tt_base.group_tt_accounting_operator"/>
 
 </odoo>
