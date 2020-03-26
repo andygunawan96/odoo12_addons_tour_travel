@@ -29,14 +29,10 @@ access_tt_agent_for_agent_user_manager,tt.agent.for.agent.user.manager,model_tt_
 
 access_tt_customer_for_public,tt.customer.for.public,model_tt_customer,,1,0,0,0
 access_tt_customer_for_agent_user_operator,tt_customer.for.agent.user.operator,model_tt_customer,tt_base.group_tt_agent_user_operator,1,1,1,0
-access_tt_customer_for_agent_user_supervisor,tt_customer.for.agent.user.supervisor,model_tt_customer,tt_base.group_tt_agent_user_supervisor,1,1,1,0
-access_tt_customer_for_agent_user_manager,tt_customer.for.agent.user.manager,model_tt_customer,tt_base.group_tt_agent_user_manager,1,1,1,0
 access_tt_customer_for_agent_management_operator,tt_customer.for.agent.management.operator,model_tt_customer,tt_base.group_tt_agent_management_operator,1,1,0,0
 access_tt_customer_for_agent_management_supervisor,tt_customer.for.agent.management.supervisor,model_tt_customer,tt_base.group_tt_agent_management_supervisor,1,1,1,0
 access_tt_customer_for_agent_management_manager,tt_customer.for.agent.management.manager,model_tt_customer,tt_base.group_tt_agent_management_manager,1,1,1,1
-access_tt_customer_for_tour_travel_operator,tt_customer.for.tour.travel.operator,model_tt_customer,tt_base.group_tt_tour_travel_operator,1,1,0,0
-access_tt_customer_for_tour_travel_supervisor,tt_customer.for.tour.travel.supervisor,model_tt_customer,tt_base.group_tt_tour_travel_supervisor,1,1,1,0
-access_tt_customer_for_tour_travel_manager,tt_customer.for.tour.travel.manager,model_tt_customer,tt_base.group_tt_tour_travel_manager,1,1,1,1
+access_tt_customer_for_ticketing_operator,tt_customer.for.ticketing.operator,model_tt_customer,tt_base.group_tt_ticketing_operator,1,1,0,0
 
 access_tt_customer_identity_for_public,tt.customer.identity.for.public,model_tt_customer_identity,,1,1,1,1
 
@@ -238,8 +234,11 @@ access_tt_commission_rule_for_agent_management_operator,tt.commission.rule.for.a
 access_tt_commission_rule_for_agent_management_supervisor,tt.commission.rule.for.agent.man.supervisor,model_tt_commission_rule,group_tt_agent_management_supervisor,1,1,1,1
 access_tt_commission_rule_for_agent_management_manager,tt.commission.rule.for.agent.man.manager,model_tt_commission_rule,group_tt_agent_management_manager,1,1,1,1
 
-access_tt_customer_parent_for_public,tt.customer.parent.for.public,model_tt_customer_parent,,1,1,1,0
+access_tt_customer_parent_for_public,tt.customer.parent.for.public,model_tt_customer_parent,,1,0,0,0
 access_tt_customer_parent_for_agent_management_manager,tt.customer.parent.for.agent.management.manager,model_tt_customer_parent,group_tt_agent_management_manager,1,1,1,1
+access_tt_customer_parent_for_agent_user_operator,tt.customer.parent.for.agent.user.operator,model_tt_customer_parent,group_tt_agent_user_operator,1,1,1,0
+access_tt_customer_parent_for_agent_finance_operator,tt.customer.parent.for.agent.finance.operator,model_tt_customer_parent,group_tt_agent_finance_operator,1,1,1,0
+access_tt_customer_parent_for_accounting_operator,tt.customer.parent.for.accounting.operator,model_tt_customer_parent,group_tt_accounting_operator,1,1,1,0
 
 access_tt_customer_parent_type_for_public,tt.customer.for.public,model_tt_customer_parent_type,,1,0,0,0
 access_tt_customer_parent_type_for_agent_management_manager,tt.customer.parent.type.for.agent.management.manager,model_tt_customer_parent_type,group_tt_agent_management_manager,1,1,1,1

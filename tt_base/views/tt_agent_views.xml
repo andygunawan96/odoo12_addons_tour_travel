@@ -55,7 +55,7 @@
                                    options='{"terminology": "archive"}'/>
                         </button>
                         <button name="action_create_user" type="object" string="Create User" icon="fa-user"
-                                class="oe_stat_button" groups="tt_base.group_tt_agent_user_supervisor,tt_base.group_tt_tour_travel_operator">
+                                class="oe_stat_button" groups="tt_base.group_tt_agent_management_operator">
                         </button>
                         <button type="object" name="action_show_agent_target_history"
                                 groups="tt_base.group_tt_agent_management_operator"

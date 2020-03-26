@@ -58,6 +58,6 @@
         <field name="domain">['|',('active', '=', 1),('active', '=', 0)]</field>
     </record>
 
-    <menuitem id="error_api_menu" parent="tt_base.top_tour_travel_configuration"
-              name="Error API List" action="error_api_action" sequence="999"/>
+    <menuitem id="error_api_menu" parent="tt_base.menu_tour_travel_configuration_administration"
+              name="Error API List" action="error_api_action" sequence="999" groups="base.user_admin"/>
 </odoo>
