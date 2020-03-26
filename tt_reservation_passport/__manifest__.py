@@ -29,6 +29,7 @@
         'views/tt_reservation_passport_order_passengers_views.xml',
         'views/tt_reservation_passport_service_charge_views.xml',
         'views/tt_reservation_passport_pricelist_views.xml',
+        'views/tt_passport_sync_product_wizard.xml',
         'views/tt_reservation_passport_vendor_views.xml',
         'views/tt_provider_passport_views.xml',
         'report/printout_menu.xml',
