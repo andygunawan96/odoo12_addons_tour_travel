@@ -15,7 +15,7 @@ class TtPaymentApiCon(models.Model):
             if self.env['payment.acquirer.number'].search([('number', '=', data['virtual_account'])])[0].state == 'open':
 
                 # check ada payment ref yg kembar ngga
-                if not self.env['tt.top.up'].search([('reference', '=', data['payment_ref'])]):
+                if not self.env['tt.payment'].search([('reference', '=', data['payment_ref'])]):
                     # topup
 
                     agent_id = self.env['tt.agent'].browse(self.env['payment.acquirer.number'].search([('number', '=', data['virtual_account'])])[0].agent_id.id)
