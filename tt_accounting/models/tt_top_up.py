@@ -171,12 +171,6 @@ class TtTopUp(models.Model):
         top_up.payment_id.action_validate_from_button()
         top_up.payment_id.action_approve_from_button()
 
-        try:
-            self.env['tt.top.up.api.con'].send_approve_notification('Top up with VA ' + top_up.name, top_up.env.user.name,
-                                                                    top_up.validated_amount,top_up.agent_id.name)
-        except Exception as e:
-            _logger.error("Send TOP UP Approve Notification Telegram Error")
-
         return ERR.get_no_error()
 
     def get_total_amount(self):
