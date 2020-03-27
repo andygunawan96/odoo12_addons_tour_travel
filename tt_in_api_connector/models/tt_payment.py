@@ -69,7 +69,8 @@ class TtPaymentApiCon(models.Model):
             book_obj = self.env['tt.reservation.%s' % data['provider_type']].search([('name', '=', data['order_number']), ('state', 'in', ['booked'])])
             if book_obj:
                 values = {
-                    "amount": book_obj.total
+                    "amount": book_obj.total,
+                    "currency": book_obj.currency_id.name
                 }
                 res = ERR.get_no_error(values)
             else:
