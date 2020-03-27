@@ -66,8 +66,6 @@ class TtPaymentApiCon(models.Model):
                 pass
             # payment_acq = self.env['payment.acquirer.number'].search([('number', '=', data['virtual_account'])])
 
-        elif action == 'create_booking_reservation_offline_api':
-            res = table_obj.create_booking_reservation_offline_api(data, context)
         else:
             raise RequestException(999)
 
