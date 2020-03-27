@@ -1,5 +1,5 @@
 <odoo>
     <menuitem id="menu_tt_gateway" sequence="900" name="API Management"
-              groups = "base.user_admin"
+              groups = "tt_base.group_tt_agent_management_operator"
               web_icon="tt_api_management,static/description/icon.png"/>
 </odoo>

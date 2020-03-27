@@ -49,7 +49,7 @@
     </record>
 
     <menuitem id="sub_menu_tour_travel_frontend_security"
-              parent="tt_base.menu_tour_travel_configuration_administration"
+              parent="tt_base.top_tour_travel_administration"
               action="tt_base.tt_frontend_security_action_views"
               name="Frontend Security"
               sequence="4"

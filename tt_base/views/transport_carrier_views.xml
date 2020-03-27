@@ -70,6 +70,6 @@
         <field name="domain">['|',('active', '=', 1),('active', '=', 0)]</field>
     </record>
 
-    <menuitem id="transport_carrier_menu" parent="tt_base.menu_tour_travel_carrier"
+    <menuitem id="transport_carrier_menu" parent="tt_base.menu_tour_travel_carrier_master"
               name="Transport Carrier" action="transport_carrier_action" sequence="20"/>
 </odoo>

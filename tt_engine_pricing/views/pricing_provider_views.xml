@@ -100,7 +100,7 @@
         <!--<field name="search_view_id" ref="api_connector_view_search"/>-->
     </record>
 
-    <menuitem id="pricing_provider_menu" parent="tt_base.menu_tour_travel_pricing"
+    <menuitem id="pricing_provider_menu" parent="tt_base.menu_tour_travel_pricing" groups="tt_base.group_tt_tour_travel_operator"
               name="Pricing Provider" action="pricing_provider_action" sequence="10"/>
 
     <record id="pricing_provider_line_view_form" model="ir.ui.view">
@@ -295,7 +295,7 @@
         <!--<field name="search_view_id" ref="api_connector_view_search"/>-->
     </record>
 
-    <menuitem id="pricing_provider_line_menu" parent="tt_base.menu_tour_travel_pricing"
+    <menuitem id="pricing_provider_line_menu" parent="tt_base.menu_tour_travel_pricing" groups="tt_base.group_tt_tour_travel_operator"
               name="Pricing Provider Line" action="pricing_provider_line_action" sequence="11"/>
 
     <record id="pricing_charge_code_view_form" model="ir.ui.view">
@@ -362,7 +362,7 @@
         <!--<field name="search_view_id" ref="api_connector_view_search"/>-->
     </record>
 
-    <menuitem id="pricing_charge_code_menu" parent="tt_base.menu_tour_travel_pricing"
+    <menuitem id="pricing_charge_code_menu" parent="tt_base.menu_tour_travel_pricing" groups="tt_base.group_tt_tour_travel_operator"
               name="Pricing Charge Code" action="pricing_charge_code_action" sequence="20"/>
 
     <record id="pricing_class_of_service_view_form" model="ir.ui.view">
@@ -429,6 +429,6 @@
         <!--<field name="search_view_id" ref="api_connector_view_search"/>-->
     </record>
 
-    <menuitem id="pricing_class_of_service_menu" parent="tt_base.menu_tour_travel_pricing"
+    <menuitem id="pricing_class_of_service_menu" parent="tt_base.menu_tour_travel_pricing" groups="tt_base.group_tt_tour_travel_operator"
               name="Pricing Class of Service" action="pricing_class_of_service_action" sequence="20"/>
 </odoo>

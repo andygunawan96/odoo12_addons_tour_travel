@@ -75,7 +75,7 @@
                   <!--name="Currency" sequence="5" action="res_currency_action"/>-->
 
         <menuitem id="sub_menu_item_tour_travel_currency"
-                  parent="tt_base.menu_tour_travel_configuration_currency"
+                  parent="tt_base.menu_tour_travel_master_currency"
                   groups="group_tt_tour_travel_operator,account.group_account_user"
                   name="Currency"
                   sequence="1"
