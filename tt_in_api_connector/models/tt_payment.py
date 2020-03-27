@@ -11,7 +11,6 @@ class TtPaymentApiCon(models.Model):
     def action_call(self, table_obj, action, data, context):
 
         if action == 'payment':
-
             if self.env['payment.acquirer.number'].search([('number', '=', data['virtual_account'])])[0].state == 'open':
 
                 # check ada payment ref yg kembar ngga
@@ -65,9 +64,6 @@ class TtPaymentApiCon(models.Model):
                 #close already done
                 pass
             # payment_acq = self.env['payment.acquirer.number'].search([('number', '=', data['virtual_account'])])
-
-        elif action == 'create_booking_reservation_offline_api':
-            res = table_obj.create_booking_reservation_offline_api(data, context)
         else:
             raise RequestException(999)
 
