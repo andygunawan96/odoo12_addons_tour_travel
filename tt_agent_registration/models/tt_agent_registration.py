@@ -641,8 +641,6 @@ class AgentRegistration(models.Model):
         agent_id = self.create_partner_agent(user_ids)
         # self.create_customers_contact(agent_id)
         self.create_opening_balance_ledger(agent_id)
-        for rec in self.contact_ids:
-            print("Send Email")
         self.state = 'done'
         # try:
         #
