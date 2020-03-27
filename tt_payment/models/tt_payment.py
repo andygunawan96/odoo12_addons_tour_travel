@@ -20,9 +20,9 @@ class PaymentTransaction(models.Model):
 
     display_name = fields.Char('Display Name',compute="_compute_display_name_payment",store=False,readonly=True)
 
-    payment_date = fields.Datetime('Payment Date',states={'validated': [('readonly', True)]},copy=False)
+    payment_date = fields.Datetime('Payment Date', states={'validated': [('readonly', True)], 'validated2': [('readonly', True)], 'approved': [('readonly', True)]},copy=False)
 
-    real_total_amount = fields.Monetary('Adjusting Amount',help='To edit total when real payment done by customer is different.',states={'validated': [('readonly', True)]})
+    real_total_amount = fields.Monetary('Adjusting Amount',help='To edit total when real payment done by customer is different.', states={'validated': [('readonly', True)], 'validated2': [('readonly', True)], 'approved': [('readonly', True)]})
     total_amount = fields.Monetary('Total Payment', required=True, related="real_total_amount") # yang benar benar di transfer
     currency_id = fields.Many2one('res.currency', string='Currency', default=lambda self: self.env.user.company_id.currency_id,readonly=True)
 
@@ -90,7 +90,7 @@ class PaymentTransaction(models.Model):
     approve_date = fields.Datetime('Approve Date',readonly=True)
     cancel_uid = fields.Many2one('res.users', 'Cancel By',readonly=True)
     cancel_date = fields.Datetime('Cancel Date',readonly=True)
-    reference = fields.Char('Validate Ref.', help='Transaction Reference / Approval number',states={'validated': [('readonly', True)]})
+    reference = fields.Char('Validate Ref.', help='Transaction Reference / Approval number', states={'validated': [('readonly', True)], 'validated2': [('readonly', True)], 'approved': [('readonly', True)]})
     agent_id = fields.Many2one('tt.agent', 'Agent', required=True,readonly=True,states={'draft': [('readonly', False)]})
     customer_parent_id = fields.Many2one('tt.customer.parent', 'Customer',readonly=True,states={'draft': [('readonly', False)]}, domain=_get_c_parent_domain)
     # acquirer_id = fields.Many2one('payment.acquirer', 'Acquirer', domain=_get_acquirer_domain,states={'validated': [('readonly', True)]})
@@ -106,7 +106,7 @@ class PaymentTransaction(models.Model):
             dom = [('agent_id','=', ho_id)]
         return dom
 
-    acquirer_id = fields.Many2one('payment.acquirer', 'Acquirer',states={'validated': [('readonly', True)]}, domain=[('id', '=', -1)])
+    acquirer_id = fields.Many2one('payment.acquirer', 'Acquirer', states={'validated': [('readonly', True)], 'validated2': [('readonly', True)], 'approved': [('readonly', True)]}, domain=[('id', '=', -1)])
 
     # #Todo:
     # # 1. Pertimbangkan penggunaan monetary field untuk integer field (pertimbangkan multi currency juga)

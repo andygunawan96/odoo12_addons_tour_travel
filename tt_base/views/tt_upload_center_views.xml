@@ -6,7 +6,7 @@
         <field name="model">tt.upload.center</field>
         <field name="priority">10</field>
         <field name="arch" type="xml">
-            <form string="Upload Center">
+            <form string="Upload Center" create="false">
                 <sheet>
                     <div class="oe_button_box" name="button_box">
                         <button name="toggle_active" type="object" groups="base.group_user"
@@ -80,7 +80,7 @@
         <field name="name">tt.upload.center.tree.view</field>
         <field name="model">tt.upload.center</field>
         <field name="arch" type="xml">
-            <tree decoration-muted="active == False">
+            <tree decoration-muted="active == False" create="false">
                 <field name="seq_id"/>
                 <field name="name"/>
                 <field name="path" groups="base.user_admin"/>

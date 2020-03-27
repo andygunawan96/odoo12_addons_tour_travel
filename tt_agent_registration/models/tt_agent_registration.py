@@ -33,7 +33,7 @@ class AgentRegistration(models.Model):
     _rec_name = 'registration_num'
     _order = 'registration_num desc'
 
-    name = fields.Char('Name', default='')
+    name = fields.Char('Name', default='', readonly=True, states={'draft': [('readonly', False)], 'confirm': [('readonly', False)]})
     image = fields.Binary('Image', store=True)
     state = fields.Selection(STATE, 'State', default='draft',
                              help='''draft = Requested
@@ -49,7 +49,7 @@ class AgentRegistration(models.Model):
                                     states={'draft': [('readonly', False)]})
     agent_id = fields.Many2one('tt.agent', 'Agent ID', readonly=True)
     currency_id = fields.Many2one('res.currency', string='Currency')
-    company_type = fields.Selection(COMPANY_TYPE, 'Company Type', default='individual')
+    company_type = fields.Selection(COMPANY_TYPE, 'Company Type', default='individual', readonly=True, states={'draft': [('readonly', False)], 'confirm': [('readonly', False)]})
     registration_num = fields.Char('Registration No.', readonly=True)
     registration_fee = fields.Float('Registration Fee', store=True, compute='get_registration_fee')
     # promotion_id required supaya agent yang merekrut bisa dapat komisi

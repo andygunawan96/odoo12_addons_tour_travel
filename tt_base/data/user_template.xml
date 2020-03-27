@@ -11,10 +11,12 @@
                    eval="[(4, ref('tt_base.group_tt_billing_statement_operator')),
                          (4, ref('tt_base.group_tt_agent_invoice_operator')),
                          (4, ref('tt_base.group_tt_tour_travel_operator')),
-                         (4, ref('tt_base.group_tt_agent_management_operator')),
                          (4, ref('tt_base.group_tt_accounting_operator')),
                          (4, ref('account.group_account_invoice')),
                          (4, ref('hr.group_hr_user'))]"/>
+            <field name="frontend_security_ids"
+                   eval="[(4,ref('tt_base.able_to_login')),
+                         (4, ref('tt_base.able_to_ticketing'))]"/>
         </record>
 
         <record id="ho_template_user_accounting_supervisor" model="res.users">
@@ -26,10 +28,12 @@
                    eval="[(4, ref('tt_base.group_tt_billing_statement_supervisor')),
                          (4, ref('tt_base.group_tt_agent_invoice_supervisor')),
                          (4, ref('tt_base.group_tt_tour_travel_supervisor')),
-                         (4, ref('tt_base.group_tt_agent_management_supervisor')),
                          (4, ref('tt_base.group_tt_accounting_supervisor')),
                          (4, ref('account.group_account_invoice')),
                          (4, ref('hr.group_hr_user'))]"/>
+            <field name="frontend_security_ids"
+                   eval="[(4,ref('tt_base.able_to_login')),
+                         (4, ref('tt_base.able_to_ticketing'))]"/>
         </record>
 
         <record id="ho_template_user_accounting_manager" model="res.users">
@@ -41,10 +45,12 @@
                    eval="[(4, ref('tt_base.group_tt_billing_statement_manager')),
                          (4, ref('tt_base.group_tt_agent_invoice_manager')),
                          (4, ref('tt_base.group_tt_tour_travel_manager')),
-                         (4, ref('tt_base.group_tt_agent_management_manager')),
                          (4, ref('tt_base.group_tt_accounting_manager')),
                          (4, ref('account.group_account_manager')),
                          (4, ref('hr.group_hr_user'))]"/>
+            <field name="frontend_security_ids"
+                   eval="[(4,ref('tt_base.able_to_login')),
+                         (4, ref('tt_base.able_to_ticketing'))]"/>
         </record>
 
         <record id="ho_template_user_btb_operator" model="res.users">
@@ -97,6 +103,114 @@
                          (4, ref('tt_base.group_tt_agent_management_manager')),
                          (4, ref('tt_base.group_tt_ticketing_manager')),
                          (4, ref('tt_base.group_tt_accounting_operator')),
+                         (4, ref('account.group_account_invoice')),
+                         (4, ref('hr.group_hr_user'))]"/>
+            <field name="frontend_security_ids"
+                   eval="[(4,ref('tt_base.able_to_login')),
+                         (4, ref('tt_base.able_to_ticketing'))]"/>
+        </record>
+
+        <record id="ho_template_user_nd_operator" model="res.users">
+            <field name="name">HO Agent Template ND Operator</field>
+            <!--                <field name="agent_id" ref="tt_base.rodex_ho"/>-->
+            <field name="login">ho_template_nd_operator</field>
+            <field name="password">XuJ5XfHahbXzJ9SYs5kc</field>
+            <field name="groups_id"
+                   eval="[(4, ref('tt_base.group_tt_billing_statement_operator')),
+                         (4, ref('tt_base.group_tt_agent_invoice_operator')),
+                         (4, ref('tt_base.group_tt_tour_travel_operator')),
+                         (4, ref('tt_base.group_tt_agent_management_operator')),
+                         (4, ref('tt_base.group_tt_ticketing_operator')),
+                         (4, ref('tt_base.group_tt_accounting_operator')),
+                         (4, ref('account.group_account_invoice')),
+                         (4, ref('hr.group_hr_user'))]"/>
+            <field name="frontend_security_ids"
+                   eval="[(4,ref('tt_base.able_to_login')),
+                         (4, ref('tt_base.able_to_ticketing'))]"/>
+        </record>
+
+        <record id="ho_template_user_nd_supervisor" model="res.users">
+            <field name="name">HO Agent Template ND Supervisor</field>
+            <!--                <field name="agent_id" ref="tt_base.rodex_ho"/>-->
+            <field name="login">ho_template_nd_supervisor</field>
+            <field name="password">HVmJVyku2GCByZ7P6DTy</field>
+            <field name="groups_id"
+                   eval="[(4, ref('tt_base.group_tt_billing_statement_supervisor')),
+                         (4, ref('tt_base.group_tt_agent_invoice_supervisor')),
+                         (4, ref('tt_base.group_tt_tour_travel_supervisor')),
+                         (4, ref('tt_base.group_tt_agent_management_supervisor')),
+                         (4, ref('tt_base.group_tt_ticketing_supervisor')),
+                         (4, ref('tt_base.group_tt_accounting_operator')),
+                         (4, ref('account.group_account_invoice')),
+                         (4, ref('hr.group_hr_user'))]"/>
+            <field name="frontend_security_ids"
+                   eval="[(4,ref('tt_base.able_to_login')),
+                         (4, ref('tt_base.able_to_ticketing'))]"/>
+        </record>
+
+        <record id="ho_template_user_nd_manager" model="res.users">
+            <field name="name">HO Agent Template ND Manager</field>
+            <!--                <field name="agent_id" ref="tt_base.rodex_ho"/>-->
+            <field name="login">ho_template_nd_manager</field>
+            <field name="password">k24Tr596uuRHNBLQrTv3</field>
+            <field name="groups_id"
+                   eval="[(4, ref('tt_base.group_tt_billing_statement_manager')),
+                         (4, ref('tt_base.group_tt_agent_invoice_manager')),
+                         (4, ref('tt_base.group_tt_tour_travel_manager')),
+                         (4, ref('tt_base.group_tt_agent_management_manager')),
+                         (4, ref('tt_base.group_tt_ticketing_manager')),
+                         (4, ref('tt_base.group_tt_accounting_operator')),
+                         (4, ref('account.group_account_invoice')),
+                         (4, ref('hr.group_hr_user'))]"/>
+            <field name="frontend_security_ids"
+                   eval="[(4,ref('tt_base.able_to_login')),
+                         (4, ref('tt_base.able_to_ticketing'))]"/>
+        </record>
+
+        <record id="ho_template_user_tour_operator" model="res.users">
+            <field name="name">HO Agent Template Tour Operator</field>
+            <!--                <field name="agent_id" ref="tt_base.rodex_ho"/>-->
+            <field name="login">ho_template_tour_operator</field>
+            <field name="password">D7vXYGNVNefdeUdcLn5c</field>
+            <field name="groups_id"
+                   eval="[(4, ref('tt_base.group_tt_billing_statement_operator')),
+                         (4, ref('tt_base.group_tt_agent_invoice_operator')),
+                         (4, ref('tt_base.group_tt_tour_travel_operator')),
+                         (4, ref('tt_base.group_tt_tour_division_operator')),
+                         (4, ref('account.group_account_invoice')),
+                         (4, ref('hr.group_hr_user'))]"/>
+            <field name="frontend_security_ids"
+                   eval="[(4,ref('tt_base.able_to_login')),
+                         (4, ref('tt_base.able_to_ticketing'))]"/>
+        </record>
+
+        <record id="ho_template_user_tour_supervisor" model="res.users">
+            <field name="name">HO Agent Template Tour Supervisor</field>
+            <!--                <field name="agent_id" ref="tt_base.rodex_ho"/>-->
+            <field name="login">ho_template_tour_supervisor</field>
+            <field name="password">dB39kD5vDVq8QXhkJaVV</field>
+            <field name="groups_id"
+                   eval="[(4, ref('tt_base.group_tt_billing_statement_supervisor')),
+                         (4, ref('tt_base.group_tt_agent_invoice_supervisor')),
+                         (4, ref('tt_base.group_tt_tour_travel_supervisor')),
+                         (4, ref('tt_base.group_tt_tour_division_supervisor')),
+                         (4, ref('account.group_account_invoice')),
+                         (4, ref('hr.group_hr_user'))]"/>
+            <field name="frontend_security_ids"
+                   eval="[(4,ref('tt_base.able_to_login')),
+                         (4, ref('tt_base.able_to_ticketing'))]"/>
+        </record>
+
+        <record id="ho_template_user_tour_manager" model="res.users">
+            <field name="name">HO Agent Template Tour Manager</field>
+            <!--                <field name="agent_id" ref="tt_base.rodex_ho"/>-->
+            <field name="login">ho_template_tour_manager</field>
+            <field name="password">dkkhRGSttN4ABMpYquuz</field>
+            <field name="groups_id"
+                   eval="[(4, ref('tt_base.group_tt_billing_statement_manager')),
+                         (4, ref('tt_base.group_tt_agent_invoice_manager')),
+                         (4, ref('tt_base.group_tt_tour_travel_manager')),
+                         (4, ref('tt_base.group_tt_tour_division_manager')),
                          (4, ref('account.group_account_invoice')),
                          (4, ref('hr.group_hr_user'))]"/>
             <field name="frontend_security_ids"

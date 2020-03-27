@@ -83,14 +83,7 @@ class PhoneDetail(models.Model):
                             })
                         self.env['payment.acquirer.number'].create({
                             'agent_id': agent.id,
-                            'payment_acquirer_id': HO_acq.env['payment.acquirer'].search([('name', '=',
-                                                                                           'Virtual Account ' +
-                                                                                           self.env['tt.bank'].search([(
-                                                                                                                       'name',
-                                                                                                                       '=ilike',
-                                                                                                                       rec[
-                                                                                                                           'bank'])],
-                                                                                                                      limit=1).name)]).id,
+                            'payment_acquirer_id': HO_acq.env['payment.acquirer'].search([('name', '=','Virtual Account ' +self.env['tt.bank'].search([('code','=',rec['code'])], limit=1).name)]).id,
                             'state': 'open',
                             'number': rec['number']
                         })

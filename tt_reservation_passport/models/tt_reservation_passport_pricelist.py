@@ -4,6 +4,9 @@ import html2text
 import json,traceback,logging
 from ...tools import util,variables,ERR
 from bs4 import BeautifulSoup
+import base64
+import requests
+import os
 
 _logger = logging.getLogger(__name__)
 
@@ -25,17 +28,207 @@ PROCESS_TYPE = [
     ('super', 'Super Express')
 ]
 
+class PassportSyncProducts(models.TransientModel):
+    _name = "passport.sync.product.wizard"
+    _description = 'Rodex Model'
+
+    def get_domain(self):
+        domain_id = self.env.ref('tt_reservation_passport.tt_provider_type_passport').id
+        return [('provider_type_id.id', '=', int(domain_id))]
+
+    def update_reference_code_internal(self):
+        for idx, rec in enumerate(self.env['tt.reservation.passport.pricelist'].search([]), 1):
+            rec.reference_code = ''
+            rec.provider_id = self.env['tt.provider'].search([('code', '=', 'passport_internal')], limit=1).id
+
+    def get_reference_code(self):
+        for idx, rec in enumerate(self.env['tt.reservation.passport.pricelist'].search([]),1):
+            if rec.reference_code == '' or rec.reference_code == False:
+                counter = idx
+                while True:
+                    if not self.env['tt.reservation.passport.pricelist'].search([('reference_code', '=', rec.provider_id.code + rec.name + '_' + str(counter))]):
+                        rec.update({
+                            "reference_code": rec.provider_id.code + '_' + rec.name + '_' + str(counter),
+                            "provider_id": self.env['tt.provider'].search([('code', '=', rec.provider_id.code)], limit=1).id
+                        })
+                        break
+                    counter += 1
+
+                for count, requirement in enumerate(rec.requirement_ids):
+                    requirement.update({
+                        "reference_code": '%s_%s_%s_%s' % (rec.provider_id.code, rec.name, str(counter), str(count))
+                    })
+        return {
+            'type': 'ir.actions.client',
+            'tag': 'reload',
+        }
+
+    def actions_get_product_rodextrip(self, data):
+        req = {
+            'provider': 'rodextrip_passport'
+        }
+        res = self.env['tt.passport.api.con'].get_product_vendor(req)
+        if res['error_code'] == 0:
+            folder_path = '/var/log/tour_travel/rodextrip_passport_master_data'
+            if not os.path.exists(folder_path):
+                os.mkdir(folder_path)
+            file = open('/var/log/tour_travel/rodextrip_passport_master_data/rodextrip_passport_master_data.json', 'w')
+            file.write(json.dumps(res['response']))
+            file.close()
+        else:
+            #raise sini
+            pass
+
+    def actions_sync_product_rodextrip(self, data):
+        provider = 'rodextrip_passport'
+        list_product = self.env['tt.reservation.passport.pricelist'].search([('provider_id', '=', self.env['tt.provider'].search([('code', '=', 'rodextrip_passport')], limit=1).id)])
+        for rec in list_product:
+            rec.active = False
+        file = []
+        file_dat = open('/var/log/tour_travel/rodextrip_passport_master_data/rodextrip_passport_master_data.json','r')
+        file = json.loads(file_dat.read())
+        file_dat.close()
+        if file:
+            self.sync_products(provider, file)
+        return {
+            'type': 'ir.actions.client',
+            'tag': 'reload',
+        }
+
+    def sync_products(self, provider=None, data=None, page=None):
+        file = data
+        if file:
+            for rec in file:
+                product_obj = self.env['tt.reservation.passport.pricelist'].search([('reference_code', '=', rec)], limit=1)
+                product_obj = product_obj and product_obj[0] or False
+                temp = []
+                if provider == 'rodextrip_passport':
+                    req = {
+                        'provider': provider,
+                        'code': rec
+                    }
+                    res = self.env['tt.passport.api.con'].get_product_detail_vendor(req)
+                    #create object
+                    if res['error_code'] == 0:
+                        master_data = self.env['tt.reservation.passport.pricelist'].search([('reference_code','=',res['response']['reference_code'] + '_rdx')], limit=1)
+                        if master_data:
+                            master_data.update({
+                                'commercial_duration': res['response']['commercial_duration'],
+                                'commission_price': res['response']['commission_price'],
+                                'cost_price': res['response']['cost_price'],
+                                'country_id': self.env['res.country'].search(
+                                    [('name', '=', res['response']['country_id'])]).id,
+                                'currency_id': self.env['res.currency'].search(
+                                    [('name', '=', res['response']['currency_id'])]).id,
+                                'delivery_nta_price': res['response']['delivery_nta_price'],
+                                'description': res['response']['description'],
+                                'duration': res['response']['duration'],
+                                'entry_type': res['response']['entry_type'],
+                                'immigration_consulate': res['response']['immigration_consulate'],
+                                'name': res['response']['name'],
+                                'notes': res['response']['notes'],
+                                'nta_price': res['response']['nta_price'],
+                                'pax_type': res['response']['pax_type'],
+                                'process_type': res['response']['process_type'],
+                                'reference_code': res['response']['reference_code'] + '_rdx',
+                                'provider_id': self.env['tt.provider'].search([('code', '=', res['response']['provider_id'])]).id,
+                                'sale_price': res['response']['sale_price'],
+                                'visa_nta_price': res['response']['visa_nta_price'],
+                                'visa_type': res['response']['visa_type'],
+                                'active': True
+                            })
+                            master_data.requirement_ids.unlink()
+                            master_data.attachments_ids.unlink()
+                            master_data.visa_location_ids.unlink()
+                        else:
+                            master_data = self.env['tt.reservation.passport.pricelist'].create({
+                                'commercial_duration': res['response']['commercial_duration'],
+                                'commission_price': res['response']['commission_price'],
+                                'cost_price': res['response']['cost_price'],
+                                'country_id': self.env['res.country'].search(
+                                    [('name', '=', res['response']['country_id'])]).id,
+                                'currency_id': self.env['res.currency'].search(
+                                    [('name', '=', res['response']['currency_id'])]).id,
+                                'delivery_nta_price': res['response']['delivery_nta_price'],
+                                'description': res['response']['description'],
+                                'duration': res['response']['duration'],
+                                'entry_type': res['response']['entry_type'],
+                                'immigration_consulate': res['response']['immigration_consulate'],
+                                'name': res['response']['name'],
+                                'notes': res['response']['notes'],
+                                'nta_price': res['response']['nta_price'],
+                                'pax_type': res['response']['pax_type'],
+                                'process_type': res['response']['process_type'],
+                                'reference_code': res['response']['reference_code'] + '_rdx',
+                                'provider_id': self.env['tt.provider'].search([('code', '=', res['response']['provider_id'])]).id,
+                                'sale_price': res['response']['sale_price'],
+                                'visa_nta_price': res['response']['visa_nta_price'],
+                                'visa_type': res['response']['visa_type'],
+                                'active': True
+                            })
+                        for data in res['response']['requirement_ids']:
+
+                            self.env['tt.reservation.passport.requirements'].create({
+                                'pricelist_id': master_data.id,
+                                'name': data['name'],
+                                'reference_code': data['reference_code'] + '_rdx',
+                                'type_id': self.env['tt.traveldoc.type'].create(data['type_id']).id
+                            })
+                        upload = self.env['tt.upload.center.wizard']
+                        co_agent_id = self.env.user.agent_id.id
+                        co_uid = self.env.user.id
+                        context = {
+                            'co_agent_id': co_agent_id,
+                            'co_uid': co_uid
+                        }
+                        attachments = []
+                        for data in res['response']['attachments_ids']:
+                            data['file'] = self.url_to_base64(data['url'])
+                            # data['filename'], data['file_reference'], data['file']
+                            # KASIH TRY EXCEPT
+                            upload = upload.upload_file_api(data, context)
+                            attachments.append(self.env['tt.upload.center'].search([('seq_id', '=', upload['response']['seq_id'])],limit=1).id)
+                        #     pass
+                        #     #tt upload center
+                        #     self.env['tt.upload.center'].create({
+                        #         'pricelist_id': master_data.id,
+                        #     })
+                        if attachments:
+                            master_data.update({
+                                'attachments_ids': [(6, 0, attachments)]
+                            })
+                        for data in res['response']['passport_location_ids']:
+                            self.env['tt.master.passport.locations'].create({
+                                'pricelist_id': master_data.id,
+                                'name': data['name'],
+                                'location_type': data['location_type'],
+                                'address': data['address'],
+                                'city': data['city']
+                            })
+                    else:
+                        print('error sync data' + rec)
+                    pass
+
+    def url_to_base64(self, url):
+        return base64.b64encode(requests.get(url).content)
 
 class PassportPricelist(models.Model):
     _inherit = ['tt.history']
     _name = 'tt.reservation.passport.pricelist'
     _description = 'Rodex Model'
 
+    def get_domain(self):
+        domain_id = self.env.ref('tt_reservation_passport.tt_provider_type_passport').id
+        return [('provider_type_id.id', '=', int(domain_id))]
+
     name = fields.Char('Name', required=True, default='New')
     description = fields.Char('Description')
     passport_type = fields.Selection(PASSPORT_TYPE, 'Passport Type')
     apply_type = fields.Selection(APPLY_TYPE, 'Apply Type')
     process_type = fields.Selection(PROCESS_TYPE, 'Process Type')
+
+    reference_code = fields.Char('Reference Code', required=False)
+    provider_id = fields.Many2one('tt.provider', 'Provider', domain=get_domain)
 
     country_id = fields.Many2one('res.country', 'Country')
     immigration_consulate = fields.Char('Immigration Consulate')
@@ -126,10 +319,9 @@ class PassportPricelist(models.Model):
                 passport_vals = {
                     'sequence': idx,
                     'name': rec.name,
-                    'apply_type': rec.apply_type,
-                    'process_type': rec.process_type,
+                    'apply_type': dict(APPLY_TYPE)[rec.apply_type],
                     'type': {
-                        'process_type': rec.process_type,
+                        'process_type': dict(PROCESS_TYPE)[rec.process_type],
                         'duration': rec.duration
                     },
                     'consulate': {
@@ -143,7 +335,8 @@ class PassportPricelist(models.Model):
                         'total_price': rec.sale_price,
                         'currency': rec.currency_id.name
                     },
-                    'id': rec.id
+                    'id': rec.reference_code,
+                    'provider': rec.provider_id.code
                 }
                 if rec.notes:
                     notes_html = BeautifulSoup(rec.notes, features="lxml")
@@ -162,7 +355,25 @@ class PassportPricelist(models.Model):
             response = {
                 'list_of_passport': list_of_passport
             }
-            return ERR.get_no_error(response)
+            res = Response().get_no_error(response)
         except Exception as e:
             _logger.error(traceback.format_exc())
-            return ERR.get_error(1022)
+            res = Response().get_error(str(e), 500)
+        return res
+
+    def availability_api(self, data):
+        try:
+            list_of_availability = []
+            for idx, rec in enumerate(data['reference_code']):
+                if self.sudo().search([('reference_code', '=', rec)]):
+                    list_of_availability.append(True)
+                else:
+                    list_of_availability.append(False)
+            response = {
+                'availability': list_of_availability,
+            }
+            res = Response().get_no_error(response)
+        except Exception as e:
+            _logger.error(traceback.format_exc())
+            res = Response().get_error(str(e), 500)
+        return res

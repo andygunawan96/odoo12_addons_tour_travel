@@ -24,6 +24,8 @@
                             <field name="passport_type"/>
                             <field name="apply_type"/>
                             <field name="process_type"/>
+                            <field name="reference_code"/>
+                            <field name="provider_id"/>
                         </group>
                         <group string="Document Information">
                             <field name="country_id"/>
@@ -49,7 +51,7 @@
                     </group>
                     <separator string="Requirements"/>
                     <field name="requirement_ids" string="Requirements">
-                        <tree>
+                        <tree editable="bottom">
                             <field name="type_id"/>
                             <field name="required"/>
                         </tree>

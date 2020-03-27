@@ -32,12 +32,11 @@
         <field name="groups" eval="[(4,ref('tt_base.group_tt_agent_user_operator'))]"/>  <!--,(4,ref('tt_base.group_tt_sub_agent_user_operator'))-->
     </record>
 
-<!--    masih salah -->
-<!--    <record id="payment_acquirer_for_agent" model="ir.rule">-->
- <!--        <field name="name">Payment Acquirer For Agent</field>-->
-<!--        <field name="model_id" ref="model_payment_acquirer"/>-->
-<!--        <field name="domain_force">['|',('agent_id','=',user.agent_id.id),('agent_id','=',ref('tt_base.rodex_ho')]</field>  &lt;!&ndash;['|',('agent_id','=',user.agent_id.id),('sub_agent_id','=',user.agent_id.id)]&ndash;&gt;  &lt;!&ndash;[('agent_id','=',user.agent_id.id)]&ndash;&gt;-->
-<!--        <field name="groups" eval="[(4,ref('tt_base.group_tt_agent_user_operator'))]"/>  &lt;!&ndash;,(4,ref('tt_base.group_tt_sub_agent_user_operator'))&ndash;&gt;-->
-<!--    </record>-->
+    <record id="payment_acquirer_for_agent" model="ir.rule">
+        <field name="name">Payment Acquirer For Agent</field>
+        <field name="model_id" ref="model_payment_acquirer"/>
+        <field name="domain_force">[('agent_id','=',user.agent_id.id)]</field>  <!--['|',('agent_id','=',user.agent_id.id),('sub_agent_id','=',user.agent_id.id)]-->  <!--[('agent_id','=',user.agent_id.id)]-->
+        <field name="groups" eval="[(4,ref('tt_base.group_tt_agent_user_operator'))]"/>  <!--,(4,ref('tt_base.group_tt_sub_agent_user_operator'))-->
+    </record>
 
 </odoo>

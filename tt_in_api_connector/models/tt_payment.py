@@ -15,7 +15,7 @@ class TtPaymentApiCon(models.Model):
             if self.env['payment.acquirer.number'].search([('number', '=', data['virtual_account'])])[0].state == 'open':
 
                 # check ada payment ref yg kembar ngga
-                if not self.env['tt.top.up'].search([('reference', '=', data['payment_ref'])]):
+                if not self.env['tt.payment'].search([('reference', '=', data['payment_ref'])]):
                     # topup
 
                     agent_id = self.env['tt.agent'].browse(self.env['payment.acquirer.number'].search([('number', '=', data['virtual_account'])])[0].agent_id.id)
@@ -35,7 +35,8 @@ class TtPaymentApiCon(models.Model):
                     if res['error_code'] == 0:
                         request = {
                             'virtual_account': data['virtual_account'],
-                            'name': res['response']['name']
+                            'name': res['response']['name'],
+                            'payment_ref': data['payment_ref'],
                         }
                         res = self.env['tt.top.up'].action_va_top_up(request, context)
                 else:
@@ -63,7 +64,7 @@ class TtPaymentApiCon(models.Model):
             elif self.env['payment.acquirer.number'].search([('number', '=', data['virtual_account'])])[0].state == 'done':
                 #close already done
                 pass
-            payment_acq = self.env['payment.acquirer.number'].search([('number', '=', data['virtual_account'])])
+            # payment_acq = self.env['payment.acquirer.number'].search([('number', '=', data['virtual_account'])])
 
         elif action == 'create_booking_reservation_offline_api':
             res = table_obj.create_booking_reservation_offline_api(data, context)
