@@ -88,13 +88,26 @@
 <!--                  groups="base.group_user"-->
 <!--        />-->
 
+        <!--Master Data-->
+        <menuitem id="top_tour_travel_master_data"
+                  parent="tt_base.main_tour_travel"
+                  name="Master Data"
+                  sequence="200"
+                  groups="base.group_user"/>
+
         <!--Configurations-->
         <menuitem id="top_tour_travel_configuration"
                   parent="tt_base.main_tour_travel"
                   name="Configuration"
-                  sequence="90"
+                  sequence="210"
                   groups="base.group_user"/>
-        <!--action="tt_base.res_country_action_view"-->
+
+        <!-- Administration -->
+        <menuitem id="top_tour_travel_administration"
+                  name="Administration"
+                  groups="base.user_admin,tt_base.group_tt_agent_management_operator"
+                  parent="tt_base.main_tour_travel"
+                  sequence = "220"/>
 
         <!--After Sales-->
         <menuitem id="top_transaction_aftersales"
@@ -106,7 +119,7 @@
         <!--Menu (tag) Inside Top Menu-->
         <!--Admin Fee-->
         <menuitem id="menu_tour_travel_configuration_admin_fee"
-                  name="Admin Fee"
+                  name="Refund and After Sales"
                   groups="tt_base.group_tt_tour_travel_operator"
                   parent="tt_base.top_tour_travel_configuration"
                   sequence="1"/>
@@ -115,7 +128,7 @@
         <menuitem id="menu_tour_travel_configuration_res_country"
                   name="Country"
                   groups="tt_base.group_tt_tour_travel_operator"
-                  parent="tt_base.top_tour_travel_configuration"
+                  parent="tt_base.top_tour_travel_master_data"
                   sequence="10"/>
 
         <!--Agent-->
@@ -132,6 +145,7 @@
                   parent="tt_base.top_tour_travel_configuration"
                   sequence="30"/>
 
+        <!--Limiter-->
         <menuitem id="menu_tour_travel_configuration_reservation_limiter"
                   name="Limiter"
                   groups="tt_base.group_tt_tour_travel_operator"
@@ -145,6 +159,12 @@
                   parent="tt_base.top_tour_travel_configuration"
                   sequence="40"/>
 
+        <menuitem id="menu_tour_travel_master_currency"
+                  name="Currency"
+                  groups="tt_base.group_tt_tour_travel_operator,account.group_account_user"
+                  parent="tt_base.top_tour_travel_master_data"
+                  sequence="40"/>
+
         <!--Bank-->
         <menuitem id="menu_tour_travel_configuration_bank"
                   name="Bank"
@@ -156,31 +176,34 @@
         <menuitem id="menu_tour_travel_provider"
                   name="Provider"
                   groups="tt_base.group_tt_tour_travel_operator"
-                  parent="tt_base.top_tour_travel_configuration"
+                  parent="tt_base.top_tour_travel_master_data"
                   sequence="60"/>
 
+        <!--Destination-->
         <menuitem id="menu_tour_travel_destination"
                   name="Destination"
                   groups="tt_base.group_tt_tour_travel_operator"
-                  parent="tt_base.top_tour_travel_configuration"
+                  parent="tt_base.top_tour_travel_master_data"
                   sequence="70"/>
 
-<!--        <menuitem id="menu_tour_travel_history_skip"-->
-<!--                  name="History Skip"-->
-<!--                  groups="base.user_admin"-->
-<!--                  parent="tt_base.top_tour_travel_configuration"-->
-<!--                  sequence="80"/>-->
-
+        <!--Pricing-->
         <menuitem id="menu_tour_travel_pricing"
                   name="Pricing"
                   groups="tt_base.group_tt_tour_travel_operator"
                   parent="tt_base.top_tour_travel_configuration"
                   sequence="90"/>
 
+        <!--Carrier-->
         <menuitem id="menu_tour_travel_carrier"
                   name="Carrier"
                   groups="tt_base.group_tt_tour_travel_operator"
                   parent="tt_base.top_tour_travel_configuration"
+                  sequence="100"/>
+
+        <menuitem id="menu_tour_travel_carrier_master"
+                  name="Transport Carrier"
+                  groups="tt_base.group_tt_tour_travel_operator"
+                  parent="tt_base.top_tour_travel_master_data"
                   sequence="100"/>
 
         <!-- Voucher -->
@@ -190,11 +213,5 @@
                   parent="tt_base.top_tour_travel_configuration"
                   sequence = "110"/>
 
-        <!-- Administration -->
-        <menuitem id="menu_tour_travel_configuration_administration"
-                  name="Administration"
-                  groups="base.user_admin,tt_base.group_tt_agent_management_operator"
-                  parent="tt_base.top_tour_travel_configuration"
-                  sequence = "120"/>
     </data>
 </odoo>

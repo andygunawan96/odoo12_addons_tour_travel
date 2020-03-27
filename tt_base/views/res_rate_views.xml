@@ -25,6 +25,7 @@
                             <field name="provider_id"/>
                             <field name="date"/>
                             <field name="currency_id"/>
+                            <field name="rate_currency_id"/>
                             <field name="buy_rate"/>
                             <field name="sell_rate"/>
                         </group>
@@ -41,6 +42,7 @@
                     <field name="provider_id"/>
                     <field name="date"/>
                     <field name="currency_id"/>
+                    <field name="rate_currency_id" invisible="1"/>
                     <field name="buy_rate"/>
                     <field name="sell_rate"/>
                 </tree>

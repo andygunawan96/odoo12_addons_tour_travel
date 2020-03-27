@@ -51,7 +51,7 @@
     </record>
 
     <menuitem id="sub_menu_tour_travel_history_skip"
-              parent="tt_base.menu_tour_travel_configuration_administration"
+              parent="tt_base.top_tour_travel_administration"
               action="tt_base.tt_skipped_keys_action_views"
               name="History Skip"
               sequence="2"

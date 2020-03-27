@@ -49,7 +49,8 @@ class TtProviderPassport(models.Model):
     passport_id = fields.Many2one('tt.reservation.passport.pricelist', 'Passport Pricelist')
     state = fields.Selection(variables.BOOKING_STATE, 'Status', default='draft')
     state_passport = fields.Selection(STATE_PASSPORT, 'State', related="booking_id.state_passport")
-    cost_service_charge_ids = fields.One2many('tt.service.charge', 'provider_passport_booking_id', 'Cost Service Charges')
+    cost_service_charge_ids = fields.One2many('tt.service.charge', 'provider_passport_booking_id',
+                                              'Cost Service Charges')
 
     booked_uid = fields.Many2one('res.users', 'Booked By')
     booked_date = fields.Datetime('Booking Date')
@@ -83,7 +84,7 @@ class TtProviderPassport(models.Model):
                 'hold_date': hold_date,
             })
 
-    def action_issued_api_passport(self,context):
+    def action_issued_api_passport(self, context):
         for rec in self:
             rec.write({
                 'state': 'issued',
@@ -142,7 +143,7 @@ class TtProviderPassport(models.Model):
 
     def delete_service_charge(self):
         ledger_created = False
-        for rec in self.cost_service_charge_ids.filtered(lambda x: x.is_extra_fees == False):
+        for rec in self.cost_service_charge_ids.filtered(lambda x: x.is_extra_fees is False):
             if rec.is_ledger_created:
                 ledger_created = True
             else:

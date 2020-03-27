@@ -88,7 +88,7 @@ class TtTopUp(models.Model):
             # else:
             tp.update({
                 'total': tp.amount + tp.unique_amount,
-                'total_with_fees': tp.amount + tp.unique_amount + tp.fees,
+                'total_with_fees': tp.amount + tp.unique_amount - tp.fees,
             })
 
     def get_help_by(self):
@@ -141,8 +141,8 @@ class TtTopUp(models.Model):
         self.write({
             'state': 'validated'
         })
+
     def action_approve_top_up(self):
-        print("approve")
         if self.state != 'validated':
             raise UserError('Can only approve [validate] state Top Up.')
 
@@ -166,34 +166,15 @@ class TtTopUp(models.Model):
     def action_va_top_up(self, data, context):
         #update pay
         top_up = self.search([('name', '=', data['name'])])
+        top_up.state = 'request'
         top_up.payment_id.reference = data['payment_ref']
-        top_up.payment_id.payment_date = str(datetime.now())
-        top_up.validated_amount = top_up.payment_id.total_amount
-        top_up.state = 'validated'
-        #validate
-        ledger_obj = self.env['tt.ledger']
-        vals = ledger_obj.prepare_vals(top_up._name, top_up.id, 'Top Up : %s' % (top_up.name), top_up.name, datetime.now(), 1,
-                                       top_up.currency_id.id, top_up.env.user.id, top_up.get_total_amount(),
-                                       description='Top Up Ledger for %s' % top_up.name)
-        vals['agent_id'] = top_up.agent_id.id
-        new_aml = ledger_obj.create(vals)
-        top_up.write({
-            'state': 'approved',
-            'ledger_id': new_aml.id,
-            'approve_uid': top_up.env.user.id,
-            'approve_date': datetime.now()
-        })
-
-        try:
-            self.env['tt.top.up.api.con'].send_approve_notification('Top up with VA ' + top_up.name, top_up.env.user.name,
-                                                                    top_up.validated_amount,top_up.agent_id.name)
-        except Exception as e:
-            _logger.error("Send TOP UP Approve Notification Telegram Error")
+        top_up.payment_id.action_validate_from_button()
+        top_up.payment_id.action_approve_from_button()
 
         return ERR.get_no_error()
 
     def get_total_amount(self):
-        return self.total
+        return self.total_with_fees
 
     def to_dict(self):
         res = {
