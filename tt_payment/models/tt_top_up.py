@@ -24,4 +24,4 @@ class TtTopUpInh(models.Model):
     @api.depends('acquirer_id','acquirer_id.va_fee')
     def _compute_fee_related_to_acqurier(self):
         for rec in self:
-            rec.fees = rec.acquirer_id
+            rec.fees = rec.acquirer_id.va_fee
