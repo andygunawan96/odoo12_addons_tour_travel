@@ -67,6 +67,8 @@ class Ledger(models.Model):
     res_id = fields.Integer(
         'Related Reservation ID', index=True, help='Id of the followed resource')
 
+    provider_type_id = fields.Many2one('tt.provider.type', 'Provider Type')
+
     def calc_balance(self, vals):
         # Pertimbangkan Multi Currency Ledgers
         balance = 0
@@ -118,22 +120,31 @@ class Ledger(models.Model):
         return True
 
     def reverse_ledger(self):
-        #3
+        # 3
         reverse_id = self.env['tt.ledger'].create({
             'name': 'Reverse:' + self.name,
             'debit': self.credit,
             'credit': self.debit,
             'ref': self.ref,
-            'date': fields.datetime.now(),
             'currency_id': self.currency_id.id,
+            'transaction_type': self.transaction_type,
             'reverse_id': self.id,
             'agent_id': self.agent_id.id,
             'customer_parent_id': self.customer_parent_id.id,
+            'pnr': self.pnr,
+            'date': fields.datetime.now(),
             'issued_uid': self.issued_uid.id,
+            'display_provider_name': self.display_provider_name,
+            'res_model': self.res_model,
+            'res_id': self.res_id,
             'is_reversed': True,
+            'description': 'Reverse for %s' % (self.name),
             'adjustment_id': self.adjustment_id and self.adjustment_id.id or False,
-            'refund_id': self.refund_id and self.refund.id or False
+            'refund_id': self.refund_id and self.refund.id or False,
+            'reschedule_id': hasattr(self,'reschedule_id') and self.reschedule_id.id or False,
+            'provider_type_id': self.provider_type_id and self.provider_type_id.id or False
         })
+
         self.update({
             'reverse_id': reverse_id.id,
             'is_reversed': True,
@@ -144,12 +155,6 @@ class Ledger(models.Model):
         vals_list['balance'] = self.calc_balance(vals_list)
         ledger_obj = super(Ledger, self).create(vals_list)
         return ledger_obj
-
-    # @api.model_create_multi
-    # def create(self, vals_list):
-    #     for vals in vals_list:
-    #         vals['balance'] = self.calc_balance(vals)
-    #     return super(Ledger, self).create(vals_list)
 
     def open_reference(self):
         try:

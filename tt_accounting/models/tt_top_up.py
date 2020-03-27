@@ -88,7 +88,7 @@ class TtTopUp(models.Model):
             # else:
             tp.update({
                 'total': tp.amount + tp.unique_amount,
-                'total_with_fees': tp.amount + tp.unique_amount + tp.fees,
+                'total_with_fees': tp.amount + tp.unique_amount - tp.fees,
             })
 
     def get_help_by(self):
@@ -141,8 +141,8 @@ class TtTopUp(models.Model):
         self.write({
             'state': 'validated'
         })
+
     def action_approve_top_up(self):
-        print("approve")
         if self.state != 'validated':
             raise UserError('Can only approve [validate] state Top Up.')
 
@@ -193,7 +193,7 @@ class TtTopUp(models.Model):
         return ERR.get_no_error()
 
     def get_total_amount(self):
-        return self.total
+        return self.total_with_fees
 
     def to_dict(self):
         res = {
