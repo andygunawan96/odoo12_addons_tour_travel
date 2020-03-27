@@ -142,15 +142,24 @@ class PaymentAcquirer(models.Model):
 
             values = {}
             for acq in self.sudo().search(dom):
-                if not values.get(acq.type):
+                if not values.get(acq.type) and acq.type != 'va' and acq.type != 'payment_gateway':
                     values[acq.type] = []
-                values[acq.type].append(acq.acquirer_format(amount,unique))
+                if acq.type != 'va' and acq.type != 'payment_gateway':
+                    values[acq.type].append(acq.acquirer_format(amount,unique))
             if req['transaction_type'] == 'top_up':
                 for acq in agent_obj.payment_acq_ids:
                     if not values.get('va'):
                         values['va'] = []
                     if agent_obj.payment_acq_ids[0].state == 'open':
                         values['va'].append(self.acquirer_format_VA(acq, amount, unique))
+            elif util.get_without_empty(req, 'order_number'):
+                dom = [('website_published', '=', True), ('company_id', '=', self.env.user.company_id.id)]
+                dom.append(('agent_id', '=', self.env.ref('tt_base.rodex_ho').id))
+                for acq in self.sudo().search(dom):
+                    if not values.get(acq.type):
+                        values[acq.type] = []
+                    if acq.type == 'payment_gateway':
+                        values[acq.type].append(acq.acquirer_format(amount, unique))
             res = {}
             res['non_member'] = values
             res['member'] = {}

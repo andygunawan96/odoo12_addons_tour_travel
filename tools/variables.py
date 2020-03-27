@@ -159,7 +159,8 @@ ACQUIRER_TYPE = [
     ('transfer', 'Transfer'),
     ('debit', 'Debit Card'),
     ('credit', 'Credit Card'),
-    ('va', 'Virtual Account')
+    ('va', 'Virtual Account'),
+    ('payment_gateway', 'Payment Gateway')
 ]
 
 ACC_TRANSPORT_TYPE = {

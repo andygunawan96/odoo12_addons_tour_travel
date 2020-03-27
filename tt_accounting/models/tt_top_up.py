@@ -167,22 +167,8 @@ class TtTopUp(models.Model):
         #update pay
         top_up = self.search([('name', '=', data['name'])])
         top_up.payment_id.reference = data['payment_ref']
-        top_up.payment_id.payment_date = str(datetime.now())
-        top_up.validated_amount = top_up.payment_id.total_amount
-        top_up.state = 'validated'
-        #validate
-        ledger_obj = self.env['tt.ledger']
-        vals = ledger_obj.prepare_vals(top_up._name, top_up.id, 'Top Up : %s' % (top_up.name), top_up.name, datetime.now(), 1,
-                                       top_up.currency_id.id, top_up.env.user.id, top_up.get_total_amount(),
-                                       description='Top Up Ledger for %s' % top_up.name)
-        vals['agent_id'] = top_up.agent_id.id
-        new_aml = ledger_obj.create(vals)
-        top_up.write({
-            'state': 'approved',
-            'ledger_id': new_aml.id,
-            'approve_uid': top_up.env.user.id,
-            'approve_date': datetime.now()
-        })
+        top_up.payment_id.action_validate_from_button()
+        top_up.payment_id.action_approve_from_button()
 
         try:
             self.env['tt.top.up.api.con'].send_approve_notification('Top up with VA ' + top_up.name, top_up.env.user.name,
