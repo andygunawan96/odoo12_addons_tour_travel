@@ -11,7 +11,7 @@ class TtPaymentApiCon(models.Model):
     def action_call(self, table_obj, action, data, context):
 
         if action == 'payment':
-            if self.env['payment.acquirer.number'].search([('number', '=', data['virtual_account'])])[0].state == 'open':
+            if self.env['payment.acquirer.number'].search([('number', '=', data['virtual_account'])])[0].state == 'open' and data['va_type'] == 'open':
 
                 # check ada payment ref yg kembar ngga
                 if not self.env['tt.payment'].search([('reference', '=', data['payment_ref'])]):
@@ -41,7 +41,7 @@ class TtPaymentApiCon(models.Model):
                 else:
                     res = ERR.get_error(500, additional_message="double payment")
                 pass
-            elif self.env['payment.acquirer.number'].search([('number', '=', data['virtual_account'])])[0].state == 'close':
+            elif data['va_type'] == 'close':
                 #close
                 provider_type = self.env['tt.provider.type'].search([])
                 check = 0
@@ -64,6 +64,15 @@ class TtPaymentApiCon(models.Model):
                 #close already done
                 pass
             # payment_acq = self.env['payment.acquirer.number'].search([('number', '=', data['virtual_account'])])
+        elif action == 'get_amount':
+            book_obj = self.env['tt.reservation.%s' % data['provider_type']].search([('name', '=', data['order_number'])])
+            if book_obj:
+                values = {
+                    "amount": book_obj.total
+                }
+                res = ERR.get_no_error(values)
+            else:
+                res = ERR.get_error(additional_message='Reservation Not Found')
         else:
             raise RequestException(999)
 
