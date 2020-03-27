@@ -83,8 +83,8 @@
     <menuitem id="sub_menu_tour_travel_master_admin_fee"
               parent="tt_base.menu_tour_travel_configuration_admin_fee"
               action="tt_accounting.tt_master_admin_fee_action_views"
-              name="Master Admin Fee"
+              name="Admin Fee"
               sequence="1"
-              groups="tt_base.group_tt_tour_travel_manager,tt_base.group_tt_accounting_operator"/>
+              groups="tt_base.group_tt_tour_travel_operator"/>
 
 </odoo>

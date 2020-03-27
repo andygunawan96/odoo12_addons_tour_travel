@@ -80,5 +80,5 @@
     </record>
 
     <menuitem id="transport_carrier_search_menu" parent="tt_base.menu_tour_travel_carrier"
-              name="Transport Carrier Search" action="transport_carrier_search_action" sequence="21"/>
+              name="Search Configuration" action="transport_carrier_search_action" sequence="21"/>
 </odoo>
