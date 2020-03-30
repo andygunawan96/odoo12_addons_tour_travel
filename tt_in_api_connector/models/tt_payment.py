@@ -1,6 +1,9 @@
 from odoo import api,models,fields
 from ...tools import ERR
 from ...tools.ERR import RequestException
+import logging
+import json
+_logger = logging.getLogger(__name__)
 
 class TtPaymentApiCon(models.Model):
     _name = 'tt.payment.api.con'
@@ -69,6 +72,7 @@ class TtPaymentApiCon(models.Model):
                         res = self.env['tt.top.up'].action_va_top_up(request, context)
 
                 book_obj = self.env['tt.reservation.%s' % data['provider_type']].search([('name', '=', data['order_number']), ('state', 'in', ['booked'])])
+                _logger.info(json.dumps(book_obj))
                 if book_obj:
                     values = {
                         "amount": book_obj.total,
@@ -77,7 +81,7 @@ class TtPaymentApiCon(models.Model):
                     }
                     res = ERR.get_no_error(values)
                 else:
-                    res = ERR.get_error(additional_message='Reservation Not Found')
+                    res = ERR.get_error(additional_message='Reservation Already Paid or Expired')
                 try:
                     if res == '':
                         res = ERR.get_error(500, additional_message="double payment")
