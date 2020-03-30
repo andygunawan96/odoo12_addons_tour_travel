@@ -101,6 +101,8 @@ class TtPaymentApiCon(models.Model):
                 res = ERR.get_no_error(values)
             else:
                 res = ERR.get_error(additional_message='Reservation Not Found')
+        elif action == 'get_payment_acquirer_payment_gateway':
+            res = self.env['payment.acquirer.number'].create_payment_acq_api(data)
         else:
             raise RequestException(999)
 
