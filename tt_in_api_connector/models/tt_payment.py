@@ -71,8 +71,8 @@ class TtPaymentApiCon(models.Model):
                         }
                         res = self.env['tt.top.up'].action_va_top_up(request, context)
 
-                book_obj = self.env['tt.reservation.%s' % data['provider_type']].search([('name', '=', data['order_number']), ('state', 'in', ['booked'])])
-                _logger.info(json.dumps(book_obj))
+                book_obj = self.env['tt.reservation.%s' % data['provider_type']].search([('name', '=', data['order_number']), ('state', 'in', ['booked'])], limit=1)
+                _logger.info(data['order_number'])
                 if book_obj:
                     values = {
                         "amount": book_obj.total,
