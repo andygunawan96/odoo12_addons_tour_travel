@@ -1,6 +1,9 @@
 from odoo import api,models,fields
 from ...tools import ERR
 from ...tools.ERR import RequestException
+import logging
+import json
+_logger = logging.getLogger(__name__)
 
 class TtPaymentApiCon(models.Model):
     _name = 'tt.payment.api.con'
@@ -43,24 +46,47 @@ class TtPaymentApiCon(models.Model):
                 else:
                     res = ERR.get_error(500, additional_message="VA Not Found")
             elif data['va_type'] == 'close':
-                #close
-                provider_type = self.env['tt.provider.type'].search([])
-                check = 0
-                for rec in provider_type:
-                    # cari nomor VA
-                    res = self.env['tt.reservation.%s' % rec.code].search([
-                        ('state', '=', 'booked'),
-                        ('payment_method', '=', self.env['payment.acquirer.number'].search([('number', '=', data['virtual_account'])])[0].payment_acquirer_id.seq_id),
-                        ('va_number', '=', data['virtual_account'])])
-                    if res:
-                        #payment
-                        self.send_request_to_gateway('%s/booking/%s' % (self.url, rec.code), data, 'issued')
-                        check = 1
-                        break
-                if check == 0:
-                    #MUNGKIN EXPIRED TANYA ACCOUNTING
+                res = ''
+                agent_id = self.env['tt.reservation.%s' % data['provider_type']].search([('name', '=', data['order_number'])]).agent_id
+                if not self.env['tt.payment'].search([('reference', '=', data['payment_ref'])]):
+                    # topup
+                    context = {
+                        'co_agent_id': agent_id.id,
+                        'co_uid': self.env.ref('tt_base.base_top_up_admin').id
+                    }
+                    request = {
+                        'amount': data['amount'],
+                        'seq_id': self.env.ref('tt_base.payment_acquirer_ho_payment_gateway').seq_id,
+                        'currency_code': data['ccy'],
+                        'payment_ref': data['payment_ref'],
+                        'payment_seq_id': self.env.ref('tt_base.payment_acquirer_ho_payment_gateway').seq_id
+                    }
+
+                    res = self.env['tt.top.up'].create_top_up_api(request,context, True)
+                    if res['error_code'] == 0:
+                        request = {
+                            'virtual_account': data['virtual_account'],
+                            'name': res['response']['name'],
+                            'payment_ref': data['payment_ref'],
+                        }
+                        res = self.env['tt.top.up'].action_va_top_up(request, context)
+
+                book_obj = self.env['tt.reservation.%s' % data['provider_type']].search([('name', '=', data['order_number']), ('state', 'in', ['booked'])], limit=1)
+                _logger.info(data['order_number'])
+                if book_obj:
+                    values = {
+                        "amount": book_obj.total,
+                        "currency": book_obj.currency_id.name,
+                        "co_uid": book_obj.booked_uid.id
+                    }
+                    res = ERR.get_no_error(values)
+                else:
+                    res = ERR.get_error(additional_message='Reservation Already Paid or Expired')
+                try:
+                    if res == '':
+                        res = ERR.get_error(500, additional_message="double payment")
+                except:
                     pass
-                pass
             elif self.env['payment.acquirer.number'].search([('number', '=', data['virtual_account'])])[0].state == 'done':
                 #close already done
                 pass
@@ -75,6 +101,8 @@ class TtPaymentApiCon(models.Model):
                 res = ERR.get_no_error(values)
             else:
                 res = ERR.get_error(additional_message='Reservation Not Found')
+        elif action == 'get_payment_acquirer_payment_gateway':
+            res = self.env['payment.acquirer.number'].create_payment_acq_api(data)
         else:
             raise RequestException(999)
 
