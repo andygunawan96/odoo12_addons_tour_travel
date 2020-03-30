@@ -252,6 +252,8 @@
             <field name="display_destination_countries"/>
             <field name="charge_code_type"/>
             <field name="display_charge_codes"/>
+            <field name="class_of_service_type"/>
+            <field name="display_class_of_services"/>
             <field name="basic_amount_type"/>
             <field name="basic_amount"/>
             <field name="tax_amount_type"/>
