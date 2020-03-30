@@ -217,7 +217,7 @@ class PaymentAcquirerNumber(models.Model):
             #check datetime
             date_now = datetime.now()
             time_delta = date_now - payment_acq[len(payment_acq)-1].create_date
-            if divmod(time_delta.seconds, 3600)[0] == 0:
+            if divmod(time_delta.seconds, 3600)[0] > 0:
                 payment = self.env['payment.acquirer.number'].create({
                     'state': 'close',
                     'number': data['order_number'] + '.' + str(datetime.now())
