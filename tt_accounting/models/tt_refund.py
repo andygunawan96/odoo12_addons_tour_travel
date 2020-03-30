@@ -170,6 +170,10 @@ class TtRefund(models.Model):
 
         return super(TtRefund, self).create(vals_list)
 
+    def dummy_compute_admin_fee_id(self):
+        for rec in self.search([]):
+            rec._compute_admin_fee_id()
+
     @api.depends('refund_type')
     @api.onchange('refund_type')
     def _compute_admin_fee_id(self):
