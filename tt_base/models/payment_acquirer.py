@@ -3,7 +3,7 @@ import json
 import traceback,logging
 from ...tools import variables
 from ...tools import ERR,util
-
+from datetime import datetime
 _logger = logging.getLogger(__name__)
 
 class PaymentAcquirer(models.Model):
@@ -209,4 +209,26 @@ class PaymentAcquirerNumber(models.Model):
     @api.depends('number','payment_acquirer_id')
     def _compute_display_name_payment(self):
         for rec in self:
-            rec.display_name_payment = "{} - {}".format(rec.payment_acquirer_id.name,rec.number)
+            rec.display_name_payment = "{} - {}".format(rec.payment_acquirer_id.name if rec.payment_acquirer_id.name != False else '',rec.number)
+
+    def create_payment_acq_api(self, data):
+        payment_acq = self.search([('number', 'ilike', data['order_number'])])
+        if payment_acq:
+            #check datetime
+            date_now = datetime.now()
+            time_delta = date_now - payment_acq[len(payment_acq)-1].create_date
+            if divmod(time_delta.seconds, 3600)[0] > 0:
+                payment = self.env['payment.acquirer.number'].create({
+                    'state': 'close',
+                    'number': data['order_number'] + '.' + str(datetime.now())
+                })
+                payment = {'order_number': payment.number}
+            else:
+                payment = {'order_number': payment_acq[len(payment_acq)-1].number}
+        else:
+            payment = self.env['payment.acquirer.number'].create({
+                'state': 'close',
+                'number': data['order_number']
+            })
+            payment = {'order_number': payment.number}
+        return ERR.get_no_error(payment)

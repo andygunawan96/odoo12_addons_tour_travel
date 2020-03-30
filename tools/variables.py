@@ -195,3 +195,9 @@ FEE_CHARGE_TYPE = [
     ('parent', 'Parent'),
     ('ho', 'HO')
 ]
+
+COMMISSION_CHARGE_TYPE = [
+    ('pricing', 'Pricing'),
+    ('fare', 'Basic Fare'),
+    ('total', 'Total Fare and Tax'),
+]
