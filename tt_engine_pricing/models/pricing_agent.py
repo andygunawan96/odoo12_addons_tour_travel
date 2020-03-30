@@ -35,7 +35,7 @@ class PricingAgent(models.Model):
     is_compute_infant_fee = fields.Boolean('Compute Inf Fee Amount', default=False)
     line_ids = fields.One2many('tt.pricing.agent.line', 'pricing_id', 'Pricing')
     active = fields.Boolean('Active', default=True)
-
+    commission_charge_type = fields.Selection(variables.COMMISSION_CHARGE_TYPE, 'Commission Charge Type', default='pricing')
     is_per_pnr = fields.Boolean('Is per PNR', default=False)
 
     @api.multi
@@ -113,6 +113,7 @@ class PricingAgent(models.Model):
             'carrier_access_type': self.carrier_access_type,
             'carrier_codes': carrier_codes,
             'provider_access_type': self.provider_access_type,
+            'commission_charge_type': self.commission_charge_type,
             'providers': providers,
             'basic_amount_type': self.basic_amount_type,
             'basic_amount': self.basic_amount,
@@ -395,11 +396,12 @@ class PricingAgentLine(models.Model):
 
     name = fields.Char('Name')
     sequence = fields.Integer('Sequence')
-    pricing_id = fields.Many2one('tt.pricing.agent', 'Pricing', readonly=True)
+    pricing_id = fields.Many2one('tt.pricing.agent', 'Pricing', readonly=True, ondelete='cascade')
     agent_type_id = fields.Many2one('tt.agent.type', 'Agent Type', required=True)
     basic_amount_type = fields.Selection(variables.AMOUNT_TYPE, 'Basic Amount Type', default='percentage')
     basic_amount = fields.Float('Basic Amount', default=0)
     active = fields.Boolean('Active', default=True)
+    commission_charge_type = fields.Selection(variables.COMMISSION_CHARGE_TYPE, 'Commission Charge Type', default='pricing')
 
     def get_name(self):
         # Perlu diupdate lagi, sementara menggunakan ini
@@ -420,5 +422,6 @@ class PricingAgentLine(models.Model):
             'agent_type_id': self.agent_type_id.get_data(),
             'basic_amount_type': self.basic_amount_type,
             'basic_amount': self.basic_amount,
+            'commission_charge_type': self.commission_charge_type,
         }
         return res
