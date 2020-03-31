@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="tt_email_queue_search_view" model="ir.ui.view">
+        <field name="name">tt.email.queue.search.view</field>
+        <field name="model">tt.email.queue</field>
+        <field name="arch" type="xml">
+            <search string="Search Email Queue">
+                <field name="name"/>
+                <field name="template_id"/>
+                <field name="res_model"/>
+                <group expand="0" string="Group By">
+                    <filter string="Model" name="res_model" domain="[]" context="{'group_by':'res_model'}" groups="base.user_admin"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="tt_email_queue_form_view" model="ir.ui.view">
+        <field name="name">tt.email.queue.form.view</field>
+        <field name="model">tt.email.queue</field>
+        <field name="arch" type="xml">
+            <form create="false">
+                <header>
+                    <button string="Send Email Now" name="action_send_email" type="object"
+                            groups="base.user_admin"/>
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="toggle_active" type="object" groups="base.group_user"
+                                class="oe_stat_button" icon="fa-archive">
+                            <field name="active" widget="boolean_button"
+                                   options='{"terminology": "archive"}'/>
+                        </button>
+                    </div>
+                    <div id="o_employee_container">
+                        <div id="o_employee_main">
+                            <div class="oe_title">
+                                <h1>
+                                    <field name="name"/>
+                                </h1>
+                            </div>
+                            <group>
+                                <group>
+                                    <field name="name"/>
+                                    <field name="template_id"/>
+                                </group>
+                                <group>
+                                    <field name="res_id" groups="base.user_admin"/>
+                                    <field name="res_model" groups="base.user_admin"/>
+                                    <button name="open_reference" string="Go to reference" type="object"
+                                            attrs="{'invisible':['|',('res_model','=',False),('res_id','=',0)]}"/>
+                                </group>
+                            </group>
+                        </div>
+                    </div>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids" widget="mail_followers"/>
+                    <field name="message_ids" widget="mail_thread"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <record id="tt_email_queue_tree_view" model="ir.ui.view">
+        <field name="name">tt.email.queue.tree.view</field>
+        <field name="model">tt.email.queue</field>
+        <field name="arch" type="xml">
+            <tree create="false">
+                <field name="name"/>
+                <field name="template_id"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="tt_email_queue_action_view" model="ir.actions.act_window">
+        <field name="name">Email Queue</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">tt.email.queue</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+        <field name="domain">[]</field>
+        <field name="context">
+            {
+            'form_view_ref': 'tt_base.tt_email_queue_form_view',
+            'tree_view_ref': 'tt_base.tt_email_queue_tree_view'
+            }
+        </field>
+    </record>
+
+    <menuitem id="menu_email_queue"
+              parent="tt_base.top_tour_travel_administration"
+              groups="base.user_admin"
+              name="Email Queue"
+              sequence="5"
+              action="tt_email_queue_action_view"/>
+
+</odoo>
