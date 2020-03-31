@@ -957,8 +957,6 @@ class TtPassport(models.Model):
                     contact_id.phone_ids[0].calling_code, contact_id.phone_ids[0].calling_number),
                 'passenger_ids': [(6, 0, to_psg_ids)],
                 'adult': sell_passport['pax']['adult'],
-                'child': sell_passport['pax']['child'],
-                'infant': sell_passport['pax']['infant'],
                 'state': 'booked',
                 'agent_id': context['co_agent_id'],
                 'user_id': context['co_uid'],
