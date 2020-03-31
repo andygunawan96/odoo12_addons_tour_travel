@@ -22,7 +22,7 @@
         <field name="arch" type="xml">
             <form create="false">
                 <header>
-                    <button string="Send Email Now" name="action_send_email" type="object"
+                    <button string="Send Email Now" name="action_send_email_button" type="object"
                             groups="base.user_admin"/>
                 </header>
                 <sheet>

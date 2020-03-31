@@ -81,6 +81,7 @@ class TtCronLog(models.Model):
             for rec in queue_obj:
                 rec.action_send_email()
                 rec.write({
+                    'last_sent_attempt_date': datetime.now(),
                     'active': False
                 })
                 self.env.cr.commit()
