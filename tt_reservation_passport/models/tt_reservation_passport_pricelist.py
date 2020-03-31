@@ -54,10 +54,10 @@ class PassportSyncProducts(models.TransientModel):
                         break
                     counter += 1
 
-                for count, requirement in enumerate(rec.requirement_ids):
-                    requirement.update({
-                        "reference_code": '%s_%s_%s_%s' % (rec.provider_id.code, rec.name, str(counter), str(count))
-                    })
+            for count, requirement in enumerate(rec.requirement_ids):
+                requirement.update({
+                    "reference_code": '%s_%s' % (rec.reference_code, str(count))
+                })
         return {
             'type': 'ir.actions.client',
             'tag': 'reload',
@@ -192,14 +192,6 @@ class PassportSyncProducts(models.TransientModel):
                         if attachments:
                             master_data.update({
                                 'attachments_ids': [(6, 0, attachments)]
-                            })
-                        for data in res['response']['passport_location_ids']:
-                            self.env['tt.master.passport.locations'].create({
-                                'pricelist_id': master_data.id,
-                                'name': data['name'],
-                                'location_type': data['location_type'],
-                                'address': data['address'],
-                                'city': data['city']
                             })
                     else:
                         print('error sync data' + rec)
