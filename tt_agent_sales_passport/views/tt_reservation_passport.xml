@@ -9,9 +9,6 @@
             <field name="contact_id" position="after">
                 <field name="state_invoice"/>
             </field>
-            <xpath expr="//button[@name='action_cancel_passport']" position="after">
-                <button string="CREATE INVOICE" name="action_create_invoice" type="object"/>
-            </xpath>
             <xpath expr="//page[@name='ledger_page']" position="after">
                 <page string="Agent Invoice" name="agent_invoice">
                     <field name="invoice_line_ids" readonly="1">

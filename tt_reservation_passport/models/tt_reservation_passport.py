@@ -25,7 +25,7 @@ STATE_PASSPORT = [
     ('in_process', 'In Process'),
     ('payment', 'Payment'),
     ('refund', 'Refund'),
-    ('process_by_consulate', 'Process by Consulate'),
+    ('process_by_immigration', 'Process by Immigration'),
     ('partial_proceed', 'Partial Proceed'),
     ('proceed', 'Proceed'),
     ('partial_approve', 'Partial Approve'),
@@ -117,9 +117,6 @@ class TtPassport(models.Model):
     printout_handling_customer_id = fields.Many2one('tt.upload.center', readonly=True)
     printout_itinerary_passport = fields.Many2one('tt.upload.center', 'Printout Itinerary', readonly=True)
 
-    adjustment_ids = fields.One2many('tt.adjustment', 'res_id', 'Adjustment', readonly=True,
-                                     domain=[('res_model', '=', 'tt_reservation_passport')])
-
     can_refund = fields.Boolean('Can Refund', default=False, readonly=True)
 
     ######################################################################################################
@@ -133,7 +130,7 @@ class TtPassport(models.Model):
     @api.multi
     def _compute_commercial_state(self):
         for rec in self:
-            if rec.state == 'issued':
+            if rec.state == 'issued' or rec.issued_uid.id is not False:
                 rec.commercial_state = 'Paid'
             else:
                 rec.commercial_state = 'Unpaid'
@@ -276,7 +273,7 @@ class TtPassport(models.Model):
                 estimate_days = psg.pricelist_id.duration
 
         self.write({
-            'state_passport': 'in_process',
+            'state_passport': 'process_by_immigration',
             'can_refund': False,
             'in_process_date': datetime.now(),
             'estimate_date': date.today() + timedelta(days=estimate_days)
@@ -347,6 +344,8 @@ class TtPassport(models.Model):
         self.write({
             'state_passport': 'cancel',
             'state': 'cancel',
+            'cancel_uid': self.env.user.id,
+            'cancel_date': datetime.now()
         })
         self.message_post(body='Order CANCELED')
 
@@ -368,6 +367,11 @@ class TtPassport(models.Model):
         super(TtPassport, self).action_expired()
         self.state_passport = 'expired'
 
+    def action_calc_expenses_passport(self):
+        # Calc visa vendor
+        self.calc_passport_upsell_vendor()
+        # Create new agent invoice (panggil di agent sales visa)
+
     def calc_passport_upsell_vendor(self):
         diff_nta_upsell = 0
         total_charge = 0
@@ -383,8 +387,8 @@ class TtPassport(models.Model):
             for rec in self:
                 doc_type = []
                 for sc in rec.sale_service_charge_ids:
-                    if not sc.pricelist_id.passport_type in doc_type:
-                        doc_type.append(sc.pricelist_id.passport_type)
+                    if not sc.passport_pricelist_id.passport_type in doc_type:
+                        doc_type.append(sc.passport_pricelist_id.passport_type)
 
                 vals = ledger.prepare_vals(self._name, self.id, 'Additional Charge Passport : ' + rec.name, rec.name,
                                            datetime.now().strftime('%Y-%m-%d %H:%M:%S'), 2,
@@ -407,8 +411,8 @@ class TtPassport(models.Model):
             for rec in self:
                 doc_type = []
                 for sc in rec.sale_service_charge_ids:
-                    if not sc.pricelist_id.passport_type in doc_type:
-                        doc_type.append(sc.pricelist_id.passport_type)
+                    if not sc.passport_pricelist_id.passport_type in doc_type:
+                        doc_type.append(sc.passport_pricelist_id.passport_type)
 
                 vals = ledger.prepare_vals(self._name, self.id, 'NTA Upsell Passport : ' + rec.name, rec.name,
                                            datetime.now().strftime('%Y-%m-%d %H:%M:%S'), 3,
@@ -811,7 +815,7 @@ class TtPassport(models.Model):
         "provider": "passport_internal",
         "pax": {
             "adult": 1,
-            "child": 0,
+            "child": 2,
             "infant": 0,
             "elder": 0
         }
@@ -860,7 +864,13 @@ class TtPassport(models.Model):
             "number": 1,
             "nationality_code": "ID",
             "master_passport_Id": "passport_internal_Regular Passport (7 working days after photo)_1",
-            "required": [],
+            "required": [
+                {
+                    "is_original": True,
+                    "is_copy": False,
+                    "id": 1
+                }
+            ],
             "notes": "",
             "sequence": 1,
             "passenger_id": "PSG_1",
@@ -870,6 +880,60 @@ class TtPassport(models.Model):
         },
         {
             "pax_type": "ADT",
+            "first_name": "Lele",
+            "last_name": "Lele",
+            "title": "MR",
+            "birth_date": "2003-01-31",
+            "nationality_name": "Indonesia",
+            "passenger_seq_id": "",
+            "is_booker": False,
+            "is_contact": False,
+            "number": 1,
+            "nationality_code": "ID",
+            "master_passport_Id": "passport_internal_Regular Passport (7 working days after photo)_1",
+            "required": [
+                {
+                    "is_original": True,
+                    "is_copy": False,
+                    "id": 1
+                }
+            ],
+            "notes": "",
+            "sequence": 1,
+            "passenger_id": "PSG_1",
+            "gender": "male",
+            "is_also_booker": False,
+            "is_also_contact": False
+        },
+        {
+            "pax_type": "CHD",
+            "first_name": "Lulu",
+            "last_name": "Lulu",
+            "title": "MR",
+            "birth_date": "2004-01-31",
+            "nationality_name": "Indonesia",
+            "passenger_seq_id": "",
+            "is_booker": False,
+            "is_contact": False,
+            "number": 1,
+            "nationality_code": "ID",
+            "master_passport_Id": "passport_internal_Regular Passport (7 working days after photo)_1",
+            "required": [
+                {
+                    "is_original": True,
+                    "is_copy": False,
+                    "id": 1
+                }
+            ],
+            "notes": "",
+            "sequence": 1,
+            "passenger_id": "PSG_1",
+            "gender": "male",
+            "is_also_booker": False,
+            "is_also_contact": False
+        },
+        {
+            "pax_type": "CHD",
             "first_name": "Testing",
             "last_name": "Lalala",
             "title": "MR",
@@ -912,6 +976,109 @@ class TtPassport(models.Model):
     }
 
     param_voucher = False
+    def get_booking_passport_api(self, data, context):  #
+        try:
+            _logger.info("Get req\n" + json.dumps(context))
+            book_obj = self.env['tt.reservation.passport'].search([('name', '=', data.get('order_number'))], limit=1)
+            if book_obj and book_obj.agent_id.id == context.get('co_agent_id', -1):
+                res_dict = book_obj.sudo().to_dict()
+                passenger = []
+                type = []
+                # Loop per pax
+                for idx, pax in enumerate(book_obj.passenger_ids, 1):
+                    requirement = []
+                    interview = {
+                        'needs': pax.interview
+                    }
+                    sale = {}
+                    for ssc in pax.cost_service_charge_ids:
+                        if ssc.charge_code == 'rac':
+                            sale['RAC'] = {
+                                'charge_code': ssc.charge_code,
+                                'amount': ssc.amount
+                            }
+                            if ssc.currency_id:
+                                sale['RAC'].update({
+                                    'currency': ssc.currency_id.name
+                                })
+                        elif ssc.charge_code == 'fare':
+                            sale['TOTAL'] = {
+                                'charge_code': 'total',
+                                'amount': ssc.amount
+                            }
+                            if ssc['currency_id']:
+                                sale['TOTAL'].update({
+                                    'currency': ssc.currency_id.name
+                                })
+                    """ Requirements """
+                    for require in pax.to_requirement_ids:
+                        requirement.append({
+                            'name': require.requirement_id.name,
+                            'is_copy': require.is_copy,
+                            'is_original': require.is_ori
+                        })
+                    """ Interview """
+                    interview_list = []
+                    if pax.interview is True:
+                        for intvw in pax.interview_ids:
+                            interview_list.append({
+                                'datetime': str(intvw.datetime),
+                                'ho_employee': intvw.ho_employee.name,
+                                'meeting_point': intvw.meeting_point,
+                                'location': intvw.location_id.name
+                            })
+                    passenger.append({
+                        'title': pax.title,
+                        'first_name': pax.first_name,
+                        'last_name': pax.last_name,
+                        'birth_date': str(pax.birth_date),
+                        'gender': pax.gender,
+                        # 'age': pax.passenger_id.age or '',
+                        'passport_number': pax.passport_number or '',
+                        'passport_expdate': str(pax.passport_expdate) or '',
+                        'passport': {
+                            'price': sale,
+                            'passport_type': dict(pax.pricelist_id._fields['passport_type'].selection).get(
+                                pax.pricelist_id.passport_type) if pax.pricelist_id else '',
+                            'apply_type': dict(pax.pricelist_id._fields['apply_type'].selection).get(
+                                pax.pricelist_id.apply_type) if pax.pricelist_id else '',
+                            'process_type': dict(pax.pricelist_id._fields['process_type'].selection).get(
+                                pax.pricelist_id.process_type) if pax.pricelist_id else '',
+                            'duration': pax.pricelist_id.duration if pax.pricelist_id else '',
+                            'immigration_consulate': pax.pricelist_id.immigration_consulate if pax.pricelist_id else '',
+                            'requirement': requirement,
+                            'interview': interview,
+                        },
+                        'sequence': idx
+                    })
+                res = {
+                    'contact': {
+                        'title': res_dict['contact']['title'],
+                        'name': res_dict['contact']['name'],
+                        'email': res_dict['contact']['email'],
+                        'phone': res_dict['contact']['phone']
+                    },
+                    'journey': {
+                        'in_process_date': str(book_obj['in_process_date'].strftime("%Y-%m-%d")) if book_obj[
+                            'in_process_date'] else '',
+                        'name': res_dict['order_number'],
+                        'payment_status': book_obj.commercial_state,
+                        'state': dict(book_obj._fields['state'].selection).get(book_obj.state),
+                        'state_passport': dict(book_obj._fields['state_passport'].selection).get(book_obj.state_passport)
+                    },
+                    'passengers': passenger
+                }
+                _logger.info("Get resp\n" + json.dumps(res))
+                print(Response().get_no_error(res))
+                return Response().get_no_error(res)
+            else:
+                raise RequestException(1001)
+        except RequestException as e:
+            _logger.error(traceback.format_exc())
+            return e.error_dict()
+        except Exception as e:
+            _logger.error(traceback.format_exc())
+            return ERR.get_error(1013)
 
     def state_booking_passport_api(self, data, context):
         book_obj = self.env['tt.reservation.passport'].search([('name', '=', data.get('order_number'))], limit=1)
@@ -936,8 +1103,14 @@ class TtPassport(models.Model):
             booker_id = self.create_booker_api(booker, context)
             contact_id = self.create_contact_api(contact[0], booker_id, context)
             passenger_ids = self.create_customer_api(passengers, context, booker_id, contact_id)  # create passenger
+
             to_psg_ids = self._create_passport_order(passengers, passenger_ids)  # create visa order data['passenger']
-            pricing = self.create_sale_service_charge_value(passengers, to_psg_ids, sell_passport)  # create pricing dict
+            if to_psg_ids['error_code'] == 0:
+                psg_ids = to_psg_ids['response']
+            else:
+                return to_psg_ids  # Return error code & msg
+
+            pricing = self.create_sale_service_charge_value(passengers, psg_ids, sell_passport)  # create pricing dict
 
             voucher = ''
             # if data['voucher']:
@@ -955,7 +1128,7 @@ class TtPassport(models.Model):
                 'contact_email': contact_id.email,
                 'contact_phone': "%s - %s" % (
                     contact_id.phone_ids[0].calling_code, contact_id.phone_ids[0].calling_number),
-                'passenger_ids': [(6, 0, to_psg_ids)],
+                'passenger_ids': [(6, 0, psg_ids)],
                 'adult': sell_passport['pax']['adult'],
                 'child': sell_passport['pax']['child'],
                 'infant': sell_passport['pax']['infant'],
@@ -985,7 +1158,6 @@ class TtPassport(models.Model):
 
             self._calc_grand_total()
 
-            country_obj = self.env['res.country']
             provider_obj = self.env['tt.provider']
 
             provider = provider_obj.env['tt.provider'].search([('code', '=', sell_passport['provider'])], limit=1)
@@ -995,7 +1167,6 @@ class TtPassport(models.Model):
                 'booking_id': book_obj.id,
                 'pnr': book_obj.name,
                 'provider_id': provider.id,
-                # 'country_id': country.id,
             }
             provider_passport_obj = book_obj.env['tt.provider.passport'].sudo().create(vals)
 
@@ -1019,8 +1190,7 @@ class TtPassport(models.Model):
             response = {
                 'order_number': book_obj.name
             }
-            res = ''
-            # res = self.get_booking_passport_api(response, context)
+            res = self.get_booking_passport_api(response, context)
         except RequestException as e:
             _logger.error(traceback.format_exc())
             return e.error_dict()
@@ -1044,10 +1214,12 @@ class TtPassport(models.Model):
                 p_pricelist_id = p_sc.passport_pricelist_id.id
                 if not sc_value.get(p_pricelist_id):  # if sc_value[pax type] not exists
                     sc_value[p_pricelist_id] = {}
+                if not sc_value[p_pricelist_id].get(p_pax_type):
+                    sc_value[p_pricelist_id][p_pax_type] = {}
                 if p_charge_type != 'RAC':  # if charge type != RAC
-                    if not sc_value[p_pricelist_id].get(p_charge_type):  # if charge type not exists
-                        sc_value[p_pricelist_id][p_charge_type] = {}
-                        sc_value[p_pricelist_id][p_charge_type].update({
+                    if not sc_value[p_pricelist_id][p_pax_type].get(p_charge_type):  # if charge type not exists
+                        sc_value[p_pricelist_id][p_pax_type][p_charge_type] = {}
+                        sc_value[p_pricelist_id][p_pax_type][p_charge_type].update({
                             'amount': 0,
                             'foreign_amount': 0,
                             'total': 0
@@ -1055,37 +1227,38 @@ class TtPassport(models.Model):
                     c_type = p_charge_type
                     c_code = p_charge_type.lower()
                 elif p_charge_type == 'RAC':  # elif charge type == RAC
-                    if not sc_value[p_pricelist_id].get(p_charge_code):
-                        sc_value[p_pricelist_id][p_charge_code] = {}
-                        sc_value[p_pricelist_id][p_charge_code].update({
+                    if not sc_value[p_pricelist_id][p_pax_type].get(p_charge_code):
+                        sc_value[p_pricelist_id][p_pax_type][p_charge_code] = {}
+                        sc_value[p_pricelist_id][p_pax_type][p_charge_code].update({
                             'amount': 0,
                             'foreign_amount': 0,
                             'total': 0
                         })
                     c_type = p_charge_code
                     c_code = p_charge_code
-                sc_value[p_pricelist_id][c_type].update({
+                sc_value[p_pricelist_id][p_pax_type][c_type].update({
                     'charge_type': p_charge_type,
                     'charge_code': p_charge_code,
                     'pax_type': p_pax_type,
                     'pax_count': p_sc.pax_count,
                     'currency_id': p_sc.currency_id.id,
                     'foreign_currency_id': p_sc.foreign_currency_id.id,
-                    'amount': sc_value[p_pricelist_id][c_type]['amount'] + p_sc.amount,
-                    'total': sc_value[p_pricelist_id][c_type]['total'] + p_sc.total,
-                    'foreign_amount': sc_value[p_pricelist_id][c_type]['foreign_amount'] + p_sc.foreign_amount,
+                    'amount': sc_value[p_pricelist_id][p_pax_type][c_type]['amount'] + p_sc.amount,
+                    'total': sc_value[p_pricelist_id][p_pax_type][c_type]['total'] + p_sc.total,
+                    'foreign_amount': sc_value[p_pricelist_id][p_pax_type][c_type]['foreign_amount'] + p_sc.foreign_amount,
                 })
 
             values = []
             for p_pricelist, p_val in sc_value.items():
-                for c_type, c_val in p_val.items():
-                    curr_dict = {
-                        'passport_pricelist_id': p_pricelist,
-                        'booking_visa_id': self.id,
-                        'description': provider.pnr
-                    }
-                    curr_dict.update(c_val)
-                    values.append((0, 0, curr_dict))
+                for pax_type, t_val in p_val.items():
+                    for c_type, c_val in t_val.items():
+                        curr_dict = {
+                            'passport_pricelist_id': p_pricelist,
+                            'booking_passport_id': self.id,
+                            'description': provider.pnr
+                        }
+                        curr_dict.update(c_val)
+                        values.append((0, 0, curr_dict))
 
             self.write({
                 'sale_service_charge_ids': values
@@ -1107,7 +1280,7 @@ class TtPassport(models.Model):
                 'charge_type': 'TOTAL',
                 'passenger_passport_id': passenger_ids[idx],
                 'description': pricelist_obj.description,
-                'pax_type': 'ADT',
+                'pax_type': psg['pax_type'],
                 'currency_id': pricelist_obj.currency_id.id,
                 'pax_count': 1,
                 'total': pricelist_obj.sale_price,
@@ -1152,7 +1325,7 @@ class TtPassport(models.Model):
                 'charge_type': 'RAC',
                 'passenger_passport_id': passenger_ids[idx],
                 'description': pricelist_obj.description,
-                'pax_type': 'ADT',
+                'pax_type': psg['pax_type'],
                 'currency_id': pricelist_obj.currency_id.id,
                 'pax_count': 1,
                 'total': -(pricelist_obj.cost_price - pricelist_obj.nta_price),
@@ -1214,46 +1387,60 @@ class TtPassport(models.Model):
         return ssc_ids
 
     def _create_passport_order(self, passengers, passenger_ids):
-        pricelist_env = self.env['tt.reservation.passport.pricelist'].sudo()
-        to_psg_env = self.env['tt.reservation.passport.order.passengers'].sudo()
-        to_req_env = self.env['tt.reservation.passport.order.requirements'].sudo()
-        to_psg_list = []
+        try:
+            pricelist_env = self.env['tt.reservation.passport.pricelist'].sudo()
+            to_psg_env = self.env['tt.reservation.passport.order.passengers'].sudo()
+            to_req_env = self.env['tt.reservation.passport.order.requirements'].sudo()
+            to_psg_list = []
 
-        for idx, psg in enumerate(passengers):
-            pricelist_id = self.env['tt.reservation.passport.pricelist'].search([('reference_code', '=', psg['master_passport_Id'])]).id
-            pricelist_obj = pricelist_env.browse(pricelist_id)
-            psg_vals = passenger_ids[idx][0].copy_to_passenger()
-            psg_vals.update({
-                'name': psg_vals['first_name'] + ' ' + psg_vals['last_name'],
-                'customer_id': passenger_ids[idx][0].id,
-                'title': psg['title'],
-                'pricelist_id': pricelist_id,
-                'passenger_type': psg['pax_type'],
-                'notes': psg.get('notes'),
-                # Pada state request, pax akan diberi expired date dg durasi tergantung dari paket visa yang diambil
-                'expired_date': fields.Date.today() + timedelta(days=pricelist_obj.duration),
-                'sequence': int(idx + 1)
-            })
-            to_psg_obj = to_psg_env.create(psg_vals)
+            for idx, psg in enumerate(passengers):
+                if 'master_passport_Id' not in psg:
+                    """ Kalau reference code kosong, raise RequestException """
+                    raise RequestException(1004, additional_message='Error create Passenger Passport : Reference Code is Empty.')
+                pricelist_id = self.env['tt.reservation.passport.pricelist'].search([('reference_code', '=', psg['master_passport_Id'])]).id
+                if pricelist_id is False:
+                    raise RequestException(1004, additional_message='Error create Passenger Passport : Reference Code not Found.')
+                pricelist_obj = pricelist_env.browse(pricelist_id)
+                psg_vals = passenger_ids[idx][0].copy_to_passenger()
+                psg_vals.update({
+                    'name': psg_vals['first_name'] + ' ' + psg_vals['last_name'],
+                    'customer_id': passenger_ids[idx][0].id,
+                    'title': psg['title'],
+                    'pricelist_id': pricelist_id,
+                    'passenger_type': psg['pax_type'],
+                    'notes': psg.get('notes'),
+                    # Pada state request, pax akan diberi expired date dg durasi tergantung dari paket visa yang diambil
+                    'expired_date': fields.Date.today() + timedelta(days=pricelist_obj.duration),
+                    'sequence': int(idx + 1)
+                })
+                to_psg_obj = to_psg_env.create(psg_vals)
 
-            to_req_list = []
+                to_req_list = []
 
-            if 'required' in psg:
-                for req in psg['required']:  # pricelist_obj.requirement_ids
-                    req_vals = {
-                        'to_passenger_id': to_psg_obj.id,
-                        'requirement_id': self.env['tt.reservation.passport.requirements'].search(
-                            [('id', '=', req['id'])], limit=1).id,
-                        'is_ori': req['is_original'],
-                        'is_copy': req['is_copy'],
-                        'check_uid': self.env.user.id,
-                        'check_date': datetime.now()
-                    }
-                    to_req_obj = to_req_env.create(req_vals)
-                    to_req_list.append(to_req_obj.id)  # akan dipindah ke edit requirements
+                if 'required' in psg:
+                    for req in psg['required']:  # pricelist_obj.requirement_ids
+                        req_vals = {
+                            'to_passenger_id': to_psg_obj.id,
+                            'requirement_id': self.env['tt.reservation.passport.requirements'].search(
+                                [('id', '=', req['id'])], limit=1).id,
+                            'is_ori': req['is_original'],
+                            'is_copy': req['is_copy'],
+                            'check_uid': self.env.user.id,
+                            'check_date': datetime.now()
+                        }
+                        to_req_obj = to_req_env.create(req_vals)
+                        to_req_list.append(to_req_obj.id)  # akan dipindah ke edit requirements
 
-            to_psg_list.append(to_psg_obj.id)
-        return to_psg_list
+                to_psg_list.append(to_psg_obj.id)
+            res = Response().get_no_error(to_psg_list)
+            return res
+        except RequestException as e:
+            _logger.error(traceback.format_exc())
+            return e.error_dict()
+        except Exception as e:
+            print('Error Passport : ' + str(e))
+            _logger.error(traceback.format_exc())
+            return ERR.get_error(1004, additional_message='Error create Passenger Passport. There\'s something wrong.')
 
     def get_list_of_provider_passport(self):
         provider_list = []
@@ -1338,6 +1525,17 @@ class TtPassport(models.Model):
                 customer_parent_id = acquirer_id.agent_id.id
             else:
                 customer_parent_id = self.agent_id.customer_parent_walkin_id.id
+        elif all(rec.state == 'refund' for rec in self.provider_booking_ids):
+            self.write({
+                'state': 'refund',
+                'state_passport': 'refund',
+                'refund_uid': context['co_uid'],
+                'refund_date': datetime.now()
+            })
+        else:
+            # entah status apa
+            _logger.error('Entah status apa')
+            raise RequestException(1006)
 
     @api.onchange('state')
     @api.depends('state')
@@ -1404,8 +1602,11 @@ class TtPassport(models.Model):
     def get_aftersales_desc(self):
         desc_txt = ''
         for psg in self.passenger_ids:
-            desc_txt += psg.first_name + ' ' + psg.last_name + ', ' + psg.title + ' (' + psg.passenger_type + ') ' + \
-                        psg.pricelist_id.apply_type.capitalize() + ' ' + psg.pricelist_id.passport_type.capitalize() \
-                        + ' ' + psg.pricelist_id.process_type.capitalize() + ' (' + str(psg.pricelist_id.duration) + \
-                        ' days)' + '<br/>'
+            desc_txt += (psg.first_name if psg.first_name else '') + ' ' + \
+                        (psg.last_name if psg.last_name else '') + ', ' + \
+                        psg.title + ' (' + psg.passenger_type + ') ' + \
+                        (psg.pricelist_id.apply_type.capitalize() if psg.pricelist_id.apply_type else '') + ' ' + \
+                        (psg.pricelist_id.passport_type.capitalize() if psg.pricelist_id.passport_type else '') + ' ' + \
+                        (psg.pricelist_id.process_type.capitalize() if psg.pricelist_id.process_type else '') + \
+                        ' (' + str(psg.pricelist_id.duration if psg.pricelist_id.duration else '-') + ' days)' + '<br/>'
         return desc_txt
