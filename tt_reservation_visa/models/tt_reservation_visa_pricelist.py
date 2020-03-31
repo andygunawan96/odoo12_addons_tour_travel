@@ -59,10 +59,10 @@ class VisaSyncProducts(models.TransientModel):
                         break
                     counter += 1
 
-                for count, requirement in enumerate(rec.requirement_ids):
-                    requirement.update({
-                        "reference_code": '%s_%s_%s_%s' % (rec.provider_id.code, rec.name, str(counter), str(count))
-                    })
+            for count, requirement in enumerate(rec.requirement_ids):
+                requirement.update({
+                    "reference_code": '%s_%s' % (rec.reference_code, str(count))
+                })
         return {
             'type': 'ir.actions.client',
             'tag': 'reload',
