@@ -41,6 +41,3 @@ class TtEmailQueue(models.Model):
 
     def action_send_email(self):
         self.template_id.send_mail(self.res_id, force_send=True)
-        self.write({
-            'active': False
-        })

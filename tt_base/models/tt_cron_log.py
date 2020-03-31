@@ -80,6 +80,9 @@ class TtCronLog(models.Model):
             queue_obj = self.env['tt.email.queue'].search([])
             for rec in queue_obj:
                 rec.action_send_email()
+                rec.write({
+                    'active': False
+                })
                 self.env.cr.commit()
         except:
             self.create_cron_log_folder()
