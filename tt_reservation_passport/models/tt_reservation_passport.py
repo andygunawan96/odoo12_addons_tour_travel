@@ -1608,3 +1608,13 @@ class TtPassport(models.Model):
                         (psg.pricelist_id.process_type.capitalize() if psg.pricelist_id.process_type else '') + \
                         ' (' + str(psg.pricelist_id.duration if psg.pricelist_id.duration else '-') + ' days)' + '<br/>'
         return desc_txt
+
+    def change_pnr_api(self, data, context):
+        book_obj = self.env['tt.reservation.passport'].search([('name', '=', data.get('order_number'))], limit=1)
+        if book_obj and book_obj.agent_id.id == context.get('co_agent_id', -1):
+            for vendor in book_obj['provider_booking_ids']:
+                vendor.pnr = data['pnr']
+                vendor.provider_id = self.env['tt.provider'].search([('code', '=', data['provider'])], limit=1).id
+            #ganti yang dalam vendor + tambah provider
+            return True
+        return False
