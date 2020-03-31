@@ -12,6 +12,7 @@
             <field name="active">True</field>
             <field name="registration_fee">98000000</field>
             <field name="seq_prefix">CR</field>
+            <field name="is_send_email" eval="True"/>
         </record>
         <record id="agent_type_japro" model="tt.agent.type">
             <field name="name">Agent JaPro</field>
