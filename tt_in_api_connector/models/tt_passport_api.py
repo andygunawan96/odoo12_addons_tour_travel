@@ -37,7 +37,7 @@ class TtVisaApiCon(models.Model):
         return res
 
     def get_product_vendor(self, data):
-        return self.send_request_to_gateway('%s/booking/visa' % (self.url), data, 'get_product_provider', timeout=600)
+        return self.send_request_to_gateway('%s/booking/passport' % (self.url), data, 'get_product_provider', timeout=600)
 
     def get_product_detail_vendor(self, data):
-        return self.send_request_to_gateway('%s/booking/visa' % (self.url), data, 'get_product_detail_provider', timeout=600)
+        return self.send_request_to_gateway('%s/booking/passport' % (self.url), data, 'get_product_detail_provider', timeout=600)
