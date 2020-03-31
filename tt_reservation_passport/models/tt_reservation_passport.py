@@ -922,7 +922,7 @@ class TtPassport(models.Model):
                 book_obj.action_fail_booked_passport()
 
     def create_booking_passport_api(self, data, context):  #
-        sell_passport = data['passport']  # self.param_sell_passport
+        sell_passport = data['sell_passport']  # self.param_sell_passport
         booker = data['booker']  # self.param_booker
         contact = data['contact']  # self.param_contact
         passengers = data['passenger']  # self.param_passenger
