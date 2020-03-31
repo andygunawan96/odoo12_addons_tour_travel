@@ -21,6 +21,7 @@
         'data/ir_sequence_data.xml',
         'data/tt_provider_type_data.xml',
         'data/tt_provider_other.xml',
+        'data/ir_send_email.xml',
         'views/tt_reservation_offline_menuheader.xml',
         'views/issued_offline_views.xml',
         'views/tt_reservation_offline_lines_views.xml',

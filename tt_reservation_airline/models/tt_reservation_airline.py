@@ -106,6 +106,18 @@ class ReservationAirline(models.Model):
             'customer_parent_id': customer_parent_id
         })
 
+        try:
+            if self.agent_type_id.is_send_email:
+                self.env['tt.email.queue'].sudo().create({
+                    'name': 'Issued ' + self.name,
+                    'type': 'reservation',
+                    'template_id': self.env.ref('tt_reservation_airline.template_mail_reservation_issued_airline').id,
+                    'res_model': self._name,
+                    'res_id': self.id,
+                })
+        except Exception as e:
+            _logger.info('Error Create Email Queue')
+
     def action_partial_booked_api_airline(self,context,pnr_list,hold_date):
         if type(hold_date) != datetime:
             hold_date = False

@@ -81,6 +81,12 @@
                                 <t t-elif="doc_model == 'tt.top.up'">
                                     <span t-field="doc.name" style="margin-top: 5px;"/>
                                 </t>
+                                <t t-elif="doc_model == 'tt.refund'">
+                                    <span t-field="doc.name" style="margin-top: 5px;"/>
+                                </t>
+                                <t t-elif="doc_model == 'tt.reschedule'">
+                                    <span t-field="doc.name" style="margin-top: 5px;"/>
+                                </t>
                                 <t t-else="">
                                     <span t-field="doc.pnr" style="margin-top: 5px;"/>
                                 </t>
