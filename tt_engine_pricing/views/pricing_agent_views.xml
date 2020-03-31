@@ -19,6 +19,7 @@
                             <field name="sequence"/>
                             <field name="agent_type_id"/>
                             <field name="provider_type_id"/>
+                            <field name="commission_charge_type"/>
                             <field name="basic_amount_type"/>
                             <field name="basic_amount"/>
                             <field name="is_per_pnr"/>
@@ -71,6 +72,7 @@
             <field name="sequence" widget="handle"/>
             <field name="name"/>
             <field name="provider_access_type"/>
+            <field name="commission_charge_type"/>
             <field name="carrier_access_type"/>
             <field name="display_providers"/>
             <field name="display_carriers"/>
@@ -136,6 +138,7 @@
                             <field name="sequence"/>
                         </group>
                         <group>
+                            <field name="commission_charge_type"/>
                             <field name="basic_amount_type"/>
                             <field name="basic_amount"/>
                         </group>
@@ -157,6 +160,7 @@
             <field name="sequence" widget="handle"/>
             <field name="name"/>
             <field name="agent_type_id"/>
+            <field name="commission_charge_type"/>
             <field name="basic_amount_type"/>
             <field name="basic_amount"/>
             <field name="active"/>

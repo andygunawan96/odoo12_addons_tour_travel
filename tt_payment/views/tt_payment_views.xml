@@ -92,7 +92,7 @@
                             <field name="create_date"/>
                             <field name="dummy_acquirer_field" class="oe_edit_only" attrs="{'invisible':[('dummy_acquirer_field','=', True)]}"/>
                             <!--                            <field name="acquirer_id" domain="acquirer_domain"/>-->
-                            <field name="acquirer_id"/>
+                            <field name="acquirer_id" context="{'form_view_ref':'tt_base.payment_acquirer_form_view_readonly'}"/>
                         </group>
                         <group string="User">
                             <label for="confirm_uid" string="Confirm By"/>
@@ -196,7 +196,7 @@
                 <field name="dummy_acquirer_field" class="oe_edit_only" attrs="{'invisible':[('dummy_acquirer_field','=', True)], 'readonly':['|', ('top_up_id','!=', False), ('state','in', ['validated', 'validated2', 'approved'])]}"/>
             </field>
             <field name="acquirer_id" position="replace">
-                <field name="acquirer_id" attrs="{'readonly':['|', ('top_up_id','!=', False), ('state','in', ['validated', 'validated2', 'approved'])]}"/>
+                <field name="acquirer_id" context="{'form_view_ref':'tt_base.payment_acquirer_form_view_readonly'}" attrs="{'readonly':['|', ('top_up_id','!=', False), ('state','in', ['validated', 'validated2', 'approved'])]}"/>
             </field>
             <field name="payment_date" position="replace">
                 <field name="payment_date" attrs="{'readonly':['|', ('top_up_id','!=', False), ('state','in', ['validated', 'validated2', 'approved'])]}"/>

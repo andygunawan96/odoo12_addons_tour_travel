@@ -4,6 +4,7 @@
         <record id="payment_acquirer_form_view" model="ir.ui.view">
             <field name="name">payment.acquirer.form.view</field>
             <field name="model">payment.acquirer</field>
+            <field name="priority">20</field>
             <field name="arch" type="xml">
                 <form string="Provider">
                     <sheet>
@@ -62,6 +63,68 @@
                                     <field name="done_msg"/>
                                     <field name="cancel_msg"/>
                                     <field name="error_msg"/>
+                                </group>
+                            </page>
+                        </notebook>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <record id="payment_acquirer_form_view_readonly" model="ir.ui.view">
+            <field name="name">payment.acquirer.form.view.readonly</field>
+            <field name="model">payment.acquirer</field>
+            <field name="priority">10</field>
+            <field name="arch" type="xml">
+                <form string="Provider">
+                    <sheet>
+                        <field name="image" widget="image" class="oe_avatar" options="{&quot;preview_image&quot;: &quot;image_medium&quot;}"/>
+                        <div class="oe_title">
+                            <h1>
+                                <field name="name" placeholder="Name" readonly="1"/><br/>
+                            </h1>
+                            <h3>
+                                <field name="seq_id"/>
+                            </h3>
+                        </div>
+                        <div attrs="{'invisible': ['|', ('module_state', '=', 'installed'), ('module_id', '=', False)]}">
+                            <button type="object" class="btn btn-primary" name="button_immediate_install" string="Install"/>
+                            <div class="o_payment_acquirer_desc">
+                                <field name="description" readonly="1"/>
+                            </div>
+                        </div>
+                        <group name="acquirer_base" col="2" attrs="{'invisible': ['&amp;', ('module_id', '!=', False), ('module_state', '!=', 'installed')]}">
+                            <group name="acquirer_left">
+                                <field name="provider" groups="base.group_no_one" readonly="1"/>
+                                <field name="environment" invisible="1" readonly="1"/>
+                                <field name="module_id" invisible="1" readonly="1"/>
+                                <field name="module_state" invisible="1" readonly="1"/>
+                                <field name="agent_id" readonly="1"/>
+                                <field name="type" readonly="1"/>
+                            </group>
+                            <group name="acquirer_right">
+                                <field name="bank_id" attrs="{'invisible': [('type','=','cash')]}" readonly="1"/>
+                                <field name="provider_id" attrs="{'invisible': [('type','not in',['va'])]}" readonly="1"/>
+                                <field name="account_number" attrs="{'invisible': [('type','not in',['transfer','debit','credit','va'])]}" readonly="1"/>
+                                <field name="account_name" attrs="{'invisible': [('type','not in',['transfer','debit','credit','va'])]}" readonly="1"/>
+                                <field name="cust_fee" attrs="{'invisible': [('type','not in',['debit','credit'])]}" readonly="1"/>
+                                <field name="bank_fee" attrs="{'invisible': [('type','not in',['debit','credit'])]}" readonly="1"/>
+                                <field name="va_fee" attrs="{'invisible': [('type','not in',['va'])]}" readonly="1"/>
+                            </group>
+                        </group>
+                        <notebook attrs="{'invisible': ['&amp;', ('module_id', '!=', False), ('module_state', '!=', 'installed')]}">
+                            <page string="Credentials">
+                                <group name="acquirer" readonly="1">
+                                </group>
+                            </page>
+                            <page string="Messages">
+                                <group>
+                                    <field name="pre_msg" readonly="1"/>
+                                    <field name="post_msg" readonly="1"/>
+                                    <field name="pending_msg" readonly="1"/>
+                                    <field name="done_msg" readonly="1"/>
+                                    <field name="cancel_msg" readonly="1"/>
+                                    <field name="error_msg" readonly="1"/>
                                 </group>
                             </page>
                         </notebook>
@@ -130,7 +193,7 @@
             </field>
             <field name="context">
                 {
-                'form_view_ref': 'tt_base.payment_acquirer_form_view',
+                'form_view_ref': 'tt_base.payment_acquirer_form_view_readonly',
                 'tree_view_ref': 'tt_base.payment_acquirer_tree_view'
                 }
             </field>
