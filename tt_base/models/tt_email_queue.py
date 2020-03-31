@@ -15,6 +15,7 @@ class TtEmailQueue(models.Model):
     _order = 'id DESC'
 
     name = fields.Char('Order Number', index=True, default='No Name', readonly=True)
+    type = fields.Char('Type', readonly=True)
     template_id = fields.Many2one('mail.template', 'Mail Template', readonly=True)
     res_model = fields.Char('Related Model Name', index=True)
     res_id = fields.Integer('Related Model ID', index=True, help='Id of the followed resource')
