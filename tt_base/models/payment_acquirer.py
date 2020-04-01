@@ -103,17 +103,6 @@ class PaymentAcquirer(models.Model):
             'return_url': '/payment/' + str(payment_acq.id.type) + '/feedback?acq_id=' + str(payment_acq.id.id)
         }
 
-    def button_test_acquirer(self):
-        print(self.env['ir.sequence'].next_by_code('tt.payment.unique.amount'))
-        # self.env['tt.cron.log'].create_cron_log_folder()
-        # self.get_payment_acquirer_api({
-        #     'transaction_type': 'billing',
-        #     'amount': 16000,
-        #     'booker_seq_id': 'CU.010101'
-        # },{
-        #     'agent_id': 5
-        # })
-
     ##fixmee amount di cache
     def get_payment_acquirer_api(self, req,context):
         try:
@@ -138,7 +127,6 @@ class PaymentAcquirer(models.Model):
             elif req['transaction_type'] == 'billing':
                 dom.append(('agent_id', '=', context['co_agent_id']))
                 unique = 0
-
 
             values = {}
             for acq in self.sudo().search(dom):

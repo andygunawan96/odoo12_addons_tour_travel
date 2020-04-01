@@ -86,7 +86,9 @@ class Ledger(models.Model):
         #     return (balance[0]['balance'] + vals['debit']) - vals['credit']
         # else:
         #     return 0
-        return (balance + vals['debit']) - vals['credit']
+        current_balance = balance + vals['debit'] - vals['credit']
+        _logger.info("### CALC BALANCE, old balance: %s, current_balance: %s ###" % (balance,current_balance))
+        return current_balance
 
     def prepare_vals(self, res_model,res_id,name, ref, ledger_date, ledger_type, currency_id, issued_uid, debit=0, credit=0,description = ''):
         return {
@@ -104,6 +106,7 @@ class Ledger(models.Model):
         }
 
     def create_ledger_vanilla(self, res_model,res_id,name, ref, ledger_date, ledger_type, currency_id, issued_uid,agent_id,customer_parent_id, debit=0, credit=0,description = '',**kwargs):
+        self.waiting_list_process([agent_id],customer_parent_id)
         vals = self.prepare_vals(res_model,
                           res_id,name, ref,
                           ledger_date, ledger_type,
@@ -121,6 +124,7 @@ class Ledger(models.Model):
 
     def reverse_ledger(self):
         # 3
+        new_waiting_list = self.waiting_list_process([self.agent_id and self.agent_id.id or False],self.customer_parent_id and self.customer_parent_id.id or False)
         reverse_id = self.env['tt.ledger'].create({
             'name': 'Reverse:' + self.name,
             'debit': self.credit,
@@ -149,6 +153,8 @@ class Ledger(models.Model):
             'reverse_id': reverse_id.id,
             'is_reversed': True,
         })
+        new_waiting_list.is_in_transaction = False
+        self.env.cr.commit()
 
     @api.model
     def create(self, vals_list):
@@ -201,8 +207,6 @@ class Ledger(models.Model):
     # API START #####################################################################
     def create_ledger(self, provider_obj,issued_uid):
         amount = 0
-        ledger_created = False
-
         for sc in provider_obj.cost_service_charge_ids:
             if sc.charge_type != 'RAC' and not sc.is_ledger_created:
                 amount += sc.get_total_for_payment()
@@ -251,6 +255,10 @@ class Ledger(models.Model):
 
     def action_create_ledger(self, provider_obj,issued_uid):
         #1
+        affected_agent = [rec.commission_agent_id.id if rec.commission_agent_id else provider_obj.booking_id.agent_id.id for rec in provider_obj.cost_service_charge_ids]
+        affected_agent = set(affected_agent)
+        print("### Affected Agent %s ###" % (str(affected_agent)))
+        self.waiting_list_process(affected_agent, False)
         commission_created = self.create_commission_ledger(provider_obj,issued_uid)
         ledger_created = self.create_ledger(provider_obj,issued_uid)
         return commission_created or ledger_created
@@ -267,31 +275,84 @@ class Ledger(models.Model):
                 rec.balance = cur_balance+rec.debit-rec.credit
             cur_balance = rec.balance
 
-    def set_n_get_waiting_list(self, agent_id):
-        # sql_query = 'select * from tt_reservation_waiting_list where agent_id = %s and is_in_transaction = True and id < %s' % (agent_id, wait_id)
-        # self.env.cr.execute(sql_query)
-        # waiting_list = self.env.cr.dictfetchall()
-        # if waiting_list:
-        #     _logger.info(str(waiting_list[0].get('id')) + ', ' + str(waiting_list[-1].get('id')))
-        # else:
-        #     _logger.info("Empty Waiting List")
-        # return waiting_list
-        new_waiting_list = self.env['tt.ledger.waiting.list'].create({'agent_id': agent_id,
-                                                                      'reference': self.name})
-        self.env.cr.commit()
-        waiting_list = self.env['tt.ledger.waiting.list'].search([('agent_id', '=', agent_id),
-                                                                  ('is_in_transaction', '=', True),
-                                                                  ('id','<',new_waiting_list.id)])
-        if waiting_list:
-            _logger.info("Waiting List : " + str(waiting_list.ids))
+    def waiting_list_process(self,list_agent_id,customer_parent_id):
+        start_time = time.time()
+        res = {'error_code': 0}
+        second = False
+        new_list_of_waiting_list = []
+        new_list_of_waiting_list_obj = []
+        if customer_parent_id:
+            new_waiting_list = self.env['tt.ledger.waiting.list'].create({'customer_parent_id': customer_parent_id})
+            new_list_of_waiting_list_obj.append(new_waiting_list)
+            new_list_of_waiting_list.append((False,customer_parent_id,new_waiting_list.id,new_waiting_list.waiting_number))
         else:
-            _logger.info("Empty Waiting List")
-        return new_waiting_list,waiting_list
+            waiting_number = False
+            for rec in list_agent_id:
+                if len(new_list_of_waiting_list) == 1:
+                    waiting_number = new_list_of_waiting_list[0][3]
+                new_waiting_list = self.env['tt.ledger.waiting.list'].create({'agent_id': rec,'waiting_number': waiting_number})
+                new_list_of_waiting_list_obj.append(new_waiting_list)
+                new_list_of_waiting_list.append((rec,False, new_waiting_list.id,new_waiting_list.waiting_number))
+
+        self.env.cr.commit()
+
+        list_of_waiting_list = self.get_waiting_list(new_list_of_waiting_list)
+        if list_of_waiting_list:
+            res = {'error_code': 1028}
+        while list_of_waiting_list and time.time() - start_time < 60:
+            list_of_waiting_list = self.get_waiting_list(new_list_of_waiting_list)
+            if not list_of_waiting_list:
+                res = {'error_code': 0}
+                break
+            if second:
+                _logger.error("### CONCURRENT UPDATE LEDGER ERROR, WAITING LIST: %s. CURRENT IDS: %s ###" % ([str(rec.ids) for rec in list_of_waiting_list],str(list_agent_id)))
+                self.clear_caches()
+                self.env.cr.commit()
+                time.sleep(1)
+            second = True
+
+        for rec in new_list_of_waiting_list_obj:
+            rec.is_in_transaction = False
+        self.env.cr.commit()
+
+        if res['error_code'] != 0:
+            raise RequestException(res['error_code'])
+
+        return new_waiting_list
+
+    def get_waiting_list(self,list_of_waiting_id):
+        list_of_waiting_list = []
+        for rec in list_of_waiting_id:
+            current_search = self.env['tt.ledger.waiting.list'].search(['|',('agent_id','=', rec[0]),('customer_parent_id','=', rec[1]),
+                                                                           ('is_in_transaction', '=', True),
+                                                                           ('waiting_number','<',rec[3])])
+            if current_search:
+                list_of_waiting_list.append(current_search)
+
+        if list_of_waiting_list:
+            _logger.info("Waiting List : " + str([rec.ids for rec in list_of_waiting_list]))
+        else:
+            _logger.info("Empty Waiting List, current ID: %s." % (str(list_of_waiting_id)))
+
+        return list_of_waiting_list
 
 class TtLedgerWaitingList(models.Model):
     _name = 'tt.ledger.waiting.list'
     _description = 'Rodex Model ledger Waiting List'
+    _order = 'create_date desc'
 
     agent_id = fields.Many2one('tt.agent','Agent')
     customer_parent_id = fields.Many2one('tt.customer.parent','Customer Parent')
     is_in_transaction = fields.Boolean("In Transaction",default=True)
+    waiting_number = fields.Integer('Waiting Number')
+
+    @api.model
+    def create(self, vals_list):
+        new_waiting_list = super(TtLedgerWaitingList, self).create(vals_list)
+        if not vals_list.get('waiting_number'):
+            new_waiting_list.waiting_number = new_waiting_list.id
+        return new_waiting_list
+
+    def turn_off_all_transaction(self):
+        for rec in self.search([('is_in_transaction','=',True)]):
+            rec.is_in_transaction = False

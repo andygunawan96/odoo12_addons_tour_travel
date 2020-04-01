@@ -191,7 +191,7 @@ class TtAgent(models.Model):
             #     if expiry_date < quota_id.expired_date:
             #         expiry_date = quota_id.expired_date
             if rec.quota_ids.filtered(lambda x: x.state == 'active'):
-                rec.quota_total_duration = rec.quota_ids[-1].expired_date
+                rec.quota_total_duration = rec.quota_ids[0].expired_date
 
     def _compute_balance_agent(self):
         for rec in self:
@@ -508,24 +508,6 @@ class TtAgent(models.Model):
             'context': {},
             'domain': ['|', ('parent_agent_id', '=', self.env.user.agent_id.id), ('id', '=', self.env.user.agent_id.id)]
         }
-
-    def dummy_buy_pnr_quota(self):
-        self.env['tt.pnr.quota'].create_pnr_quota_api(
-            {
-                'quota_seq_id': 'PQL.2628004'
-            },
-            {
-                'co_agent_id': self.id
-            }
-        )
-
-    def dummy_use_pnr_quota(self):
-        self.use_pnr_quota({
-            'res_model_resv': 'tt.reservation.airline',
-            'res_id_resv': 874,
-            'res_model_prov': 'tt.provider.airline',
-            'res_id_prov': 1022
-        })
 
     def use_pnr_quota(self, req):
         if self.is_using_pnr_quota:
