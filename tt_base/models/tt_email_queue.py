@@ -71,6 +71,9 @@ class TtEmailQueue(models.Model):
                     attachment_id_list.append(attachment_obj.id)
                 else:
                     _logger.info(upload_data['error_msg'])
+                    raise Exception(_('Failed to convert ticket attachment!'))
+            else:
+                raise Exception(_('Failed to get ticket attachment!'))
             for rec in ref_obj.invoice_line_ids:
                 if rec.invoice_id.id not in printed_inv_ids:
                     inv_data = rec.invoice_id.print_invoice()
@@ -88,8 +91,9 @@ class TtEmailQueue(models.Model):
                             attachment_id_list.append(attachment_obj.id)
                         else:
                             _logger.info(upload_data['error_msg'])
+                            raise Exception(_('Failed to convert invoice attachment!'))
                     else:
-                        _logger.info('Failed to Print Invoice!')
+                        raise Exception(_('Failed to get invoice attachment!'))
                     printed_inv_ids.append(rec.invoice_id.id)
             self.template_id.attachment_ids = [(6, 0, attachment_id_list)]
         else:
