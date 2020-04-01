@@ -1119,6 +1119,18 @@ class ReservationActivity(models.Model):
             for rec in self.provider_booking_ids:
                 rec.action_issued_api_activity(api_context)
 
+            try:
+                if self.agent_type_id.is_send_email:
+                    self.env['tt.email.queue'].sudo().create({
+                        'name': 'Issued ' + self.name,
+                        'type': 'reservation_activity',
+                        'template_id': self.env.ref('tt_reservation_activity.template_mail_reservation_issued_activity').id,
+                        'res_model': self._name,
+                        'res_id': self.id,
+                    })
+            except Exception as e:
+                _logger.info('Error Create Email Queue')
+
     def get_id(self, booking_number):
         row = self.env['tt.reservation.activity'].search([('name', '=', booking_number)])
         if not row:
