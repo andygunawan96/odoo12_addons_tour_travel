@@ -548,6 +548,18 @@ class IssuedOffline(models.Model):
         if is_enough[0]['error_code'] != 0:
             raise UserError(is_enough[0]['error_msg'])
 
+        try:
+            if self.agent_type_id.is_send_email:
+                self.env['tt.email.queue'].sudo().create({
+                    'name': 'Issued ' + self.name,
+                    'type': 'reservation_offline',
+                    'template_id': self.env.ref('tt_reservation_offline.template_mail_reservation_issued_offline').id,
+                    'res_model': self._name,
+                    'res_id': self.id,
+                })
+        except Exception as e:
+            _logger.info('Error Create Email Queue')
+
     @api.one
     def action_done(self,  kwargs={}):
         if self.state_offline != 'cancel':
