@@ -22,7 +22,7 @@
         <field name="arch" type="xml">
             <form create="false">
                 <header>
-                    <button string="Send Email Now" name="action_send_email_button" type="object"
+                    <button string="Send Email Now" name="action_send_email" type="object"
                             groups="base.user_admin"/>
                 </header>
                 <sheet>
@@ -51,6 +51,9 @@
                                     <button name="open_reference" string="Go to reference" type="object"
                                             attrs="{'invisible':['|',('res_model','=',False),('res_id','=',0)]}"/>
                                 </group>
+                            </group>
+                            <group>
+                                <field name="failure_reason"/>
                             </group>
                         </div>
                     </div>

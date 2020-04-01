@@ -103,16 +103,15 @@ class PaymentAcquirer(models.Model):
             'return_url': '/payment/' + str(payment_acq.id.type) + '/feedback?acq_id=' + str(payment_acq.id.id)
         }
 
-    def button_test_acquirer(self):
-        print(self.env['ir.sequence'].next_by_code('tt.payment.unique.amount'))
-        # self.env['tt.cron.log'].create_cron_log_folder()
-        # self.get_payment_acquirer_api({
-        #     'transaction_type': 'billing',
-        #     'amount': 16000,
-        #     'booker_seq_id': 'CU.010101'
-        # },{
-        #     'agent_id': 5
-        # })
+    def get_va_number(self, req, context):
+        agent_obj = self.env['tt.agent'].sudo().browse(context['co_agent_id'])
+        values = {
+            'va': []
+        }
+        for acq in agent_obj.payment_acq_ids:
+            if agent_obj.payment_acq_ids[0].state == 'open':
+                values['va'].append(self.acquirer_format_VA(acq, 0, 0))
+        return ERR.get_no_error(values)
 
     ##fixmee amount di cache
     def get_payment_acquirer_api(self, req,context):
@@ -139,20 +138,14 @@ class PaymentAcquirer(models.Model):
                 dom.append(('agent_id', '=', context['co_agent_id']))
                 unique = 0
 
-
             values = {}
             for acq in self.sudo().search(dom):
                 if not values.get(acq.type) and acq.type != 'va' and acq.type != 'payment_gateway':
                     values[acq.type] = []
                 if acq.type != 'va' and acq.type != 'payment_gateway':
                     values[acq.type].append(acq.acquirer_format(amount,unique))
-            if req['transaction_type'] == 'top_up':
-                for acq in agent_obj.payment_acq_ids:
-                    if not values.get('va'):
-                        values['va'] = []
-                    if agent_obj.payment_acq_ids[0].state == 'open':
-                        values['va'].append(self.acquirer_format_VA(acq, amount, unique))
-            elif util.get_without_empty(req, 'order_number'):
+
+            if util.get_without_empty(req, 'order_number'):
                 dom = [('website_published', '=', True), ('company_id', '=', self.env.user.company_id.id)]
                 dom.append(('agent_id', '=', self.env.ref('tt_base.rodex_ho').id))
                 for acq in self.sudo().search(dom):

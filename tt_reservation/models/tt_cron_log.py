@@ -24,13 +24,3 @@ class TtCronLogInhResv(models.Model):
         except Exception as e:
             self.create_cron_log_folder()
             self.write_cron_log('auto expired booking')
-
-    def cron_inactive_reservation_waiting_list(self):
-        try:
-            old_recs = self.env['tt.reservation.waiting.list'].search([('is_in_transaction','=',True),
-                                                                       ('create_date', '<=', datetime.today() - timedelta(minutes=5))])
-            for rec in old_recs:
-                rec.is_in_transaction = False
-        except Exception as e:
-            self.create_cron_log_folder()
-            self.write_cron_log('auto expired booking')

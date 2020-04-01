@@ -1,6 +1,5 @@
 from odoo import models, fields, api, _
 
-
 class AgentRegistration(models.Model):
 
     _inherit = 'tt.agent.registration'

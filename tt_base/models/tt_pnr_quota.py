@@ -10,7 +10,7 @@ class TtPnrQuota(models.Model):
     _name = 'tt.pnr.quota'
     _rec_name = 'name'
     _description = 'Rodex Model PNR Quota'
-    _order = 'state,expired_date,available_amount'
+    _order = 'state,expired_date desc,available_amount'
 
     name = fields.Char('Name')
     used_amount = fields.Integer('Used Amount', compute='_compute_used_amount',store=True)

@@ -20,6 +20,7 @@ class TtEmailQueue(models.Model):
     res_model = fields.Char('Related Model Name', index=True)
     res_id = fields.Integer('Related Model ID', index=True, help='Id of the followed resource')
     last_sent_attempt_date = fields.Datetime('Last Sent Attempt Date', readonly=True)
+    failure_reason = fields.Text('Failure Reason', readonly=True)
     active = fields.Boolean('Active', default=True)
 
     def open_reference(self):
@@ -41,57 +42,71 @@ class TtEmailQueue(models.Model):
             'target': 'current',
         }
 
-    def action_send_email_button(self):
-        try:
-            self.action_send_email()
-            self.write({
-                'last_sent_attempt_date': datetime.now(),
-                'active': False
-            })
-        except:
-            _logger.info('Failed to send email!')
-
     def action_send_email(self):
-        if self.type in ['reservation_airline', 'reservation_train']:
-            attachment_id_list = []
-            ref_obj = self.env[self.res_model].sudo().browse(int(self.res_id))
-            printed_inv_ids = []
-            ticket_data = ref_obj.print_eticket({})
-            if ticket_data.get('url'):
-                headers = {
-                    'Content-Type': 'application/json',
-                }
-                upload_data = util.send_request(ticket_data['url'], data={}, headers=headers, method='GET', content_type='content', timeout=600)
-                if upload_data['error_code'] == 0:
-                    attachment_obj = self.env['ir.attachment'].create({
-                        'name': ref_obj.name + ' E-Ticket.pdf',
-                        'datas_fname': ref_obj.name + ' E-Ticket.pdf',
-                        'datas': upload_data['response'],
-                    })
-                    attachment_id_list.append(attachment_obj.id)
-                else:
-                    _logger.info(upload_data['error_msg'])
-            for rec in ref_obj.invoice_line_ids:
-                if rec.invoice_id.id not in printed_inv_ids:
-                    inv_data = rec.invoice_id.print_invoice()
-                    if inv_data.get('url'):
+        try:
+            if self.type in ['reservation_airline', 'reservation_train']:
+                attachment_id_list = []
+                ref_obj = self.env[self.res_model].sudo().browse(int(self.res_id))
+                if ref_obj.state == 'issued':
+                    printed_inv_ids = []
+                    ticket_data = ref_obj.print_eticket({})
+                    if ticket_data.get('url'):
                         headers = {
                             'Content-Type': 'application/json',
                         }
-                        upload_data = util.send_request(inv_data['url'], data={}, headers=headers, method='GET', content_type='content', timeout=600)
+                        upload_data = util.send_request(ticket_data['url'], data={}, headers=headers, method='GET', content_type='content', timeout=600)
                         if upload_data['error_code'] == 0:
                             attachment_obj = self.env['ir.attachment'].create({
-                                'name': ref_obj.name + ' Invoice.pdf',
-                                'datas_fname': ref_obj.name + ' Invoice.pdf',
+                                'name': ref_obj.name + ' E-Ticket.pdf',
+                                'datas_fname': ref_obj.name + ' E-Ticket.pdf',
                                 'datas': upload_data['response'],
                             })
                             attachment_id_list.append(attachment_obj.id)
                         else:
                             _logger.info(upload_data['error_msg'])
+                            raise Exception(_('Failed to convert ticket attachment!'))
                     else:
-                        _logger.info('Failed to Print Invoice!')
-                    printed_inv_ids.append(rec.invoice_id.id)
-            self.template_id.attachment_ids = [(6, 0, attachment_id_list)]
-        else:
-            self.template_id.attachment_ids = [(6, 0, [])]
-        self.template_id.send_mail(self.res_id, force_send=True)
+                        raise Exception(_('Failed to get ticket attachment!'))
+
+                    resv_has_invoice = False
+                    for rec in ref_obj.invoice_line_ids:
+                        if rec.invoice_id.id not in printed_inv_ids:
+                            inv_data = rec.invoice_id.print_invoice()
+                            if inv_data.get('url'):
+                                headers = {
+                                    'Content-Type': 'application/json',
+                                }
+                                upload_data = util.send_request(inv_data['url'], data={}, headers=headers, method='GET', content_type='content', timeout=600)
+                                if upload_data['error_code'] == 0:
+                                    attachment_obj = self.env['ir.attachment'].create({
+                                        'name': ref_obj.name + ' Invoice.pdf',
+                                        'datas_fname': ref_obj.name + ' Invoice.pdf',
+                                        'datas': upload_data['response'],
+                                    })
+                                    attachment_id_list.append(attachment_obj.id)
+                                    resv_has_invoice = True
+                                else:
+                                    _logger.info(upload_data['error_msg'])
+                                    raise Exception(_('Failed to convert invoice attachment!'))
+                            else:
+                                raise Exception(_('Failed to get invoice attachment!'))
+                            printed_inv_ids.append(rec.invoice_id.id)
+                    if not resv_has_invoice:
+                        raise Exception(_('Reservation has no Invoice!'))
+                    self.template_id.attachment_ids = [(6, 0, attachment_id_list)]
+                else:
+                    raise Exception(_('Reservation is not issued!'))
+            else:
+                self.template_id.attachment_ids = [(6, 0, [])]
+
+            self.template_id.send_mail(self.res_id, force_send=True)
+            self.write({
+                'last_sent_attempt_date': datetime.now(),
+                'active': False
+            })
+        except Exception as e:
+            self.write({
+                'last_sent_attempt_date': datetime.now(),
+                'active': False,
+                'failure_reason': str(e)
+            })
