@@ -19,7 +19,7 @@
 <p>Your ${object.offline_provider_type} reservation at ${object.agent_id.name} has been issued with the following information:</p>
 <p>Order Number: ${object.name}</p>
 <p>PNR: ${object.pnr}</p>
-<p>Booked Date: ${object.booked_date}</p>
+<p>Issued Date: ${object.issued_date}</p>
 <p>Booker Name: ${object.booker_id.name}</p>
 <br/>
 <p>Your Invoice is attached in this E-mail. Thank you for your trust and support in using our service.</p>
