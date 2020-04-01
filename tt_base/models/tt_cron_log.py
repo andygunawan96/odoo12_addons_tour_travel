@@ -75,5 +75,19 @@ class TtCronLog(models.Model):
             self.create_cron_log_folder()
             self.write_cron_log('auto-expire quota')
 
+    def cron_send_email_queue(self):
+        try:
+            queue_obj = self.env['tt.email.queue'].search([])
+            for rec in queue_obj:
+                rec.action_send_email()
+                rec.write({
+                    'last_sent_attempt_date': datetime.now(),
+                    'active': False
+                })
+                self.env.cr.commit()
+        except:
+            self.create_cron_log_folder()
+            self.write_cron_log('auto-send email queue')
+
 
 

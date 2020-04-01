@@ -54,10 +54,10 @@ class PassportSyncProducts(models.TransientModel):
                         break
                     counter += 1
 
-                for count, requirement in enumerate(rec.requirement_ids):
-                    requirement.update({
-                        "reference_code": '%s_%s_%s_%s' % (rec.provider_id.code, rec.name, str(counter), str(count))
-                    })
+            for count, requirement in enumerate(rec.requirement_ids):
+                requirement.update({
+                    "reference_code": '%s_%s' % (rec.reference_code, str(count))
+                })
         return {
             'type': 'ir.actions.client',
             'tag': 'reload',
@@ -123,18 +123,17 @@ class PassportSyncProducts(models.TransientModel):
                                 'delivery_nta_price': res['response']['delivery_nta_price'],
                                 'description': res['response']['description'],
                                 'duration': res['response']['duration'],
-                                'entry_type': res['response']['entry_type'],
+                                'apply_type': res['response']['apply_type'],
                                 'immigration_consulate': res['response']['immigration_consulate'],
                                 'name': res['response']['name'],
                                 'notes': res['response']['notes'],
-                                'nta_price': res['response']['nta_price'],
-                                'pax_type': res['response']['pax_type'],
                                 'process_type': res['response']['process_type'],
+                                'nta_price': res['response']['nta_price'],
+                                'passport_type': res['response']['passport_type'],
                                 'reference_code': res['response']['reference_code'] + '_rdx',
                                 'provider_id': self.env['tt.provider'].search([('code', '=', res['response']['provider_id'])]).id,
                                 'sale_price': res['response']['sale_price'],
-                                'visa_nta_price': res['response']['visa_nta_price'],
-                                'visa_type': res['response']['visa_type'],
+                                'passport_nta_price': res['response']['passport_nta_price'],
                                 'active': True
                             })
                             master_data.requirement_ids.unlink()
@@ -152,18 +151,17 @@ class PassportSyncProducts(models.TransientModel):
                                 'delivery_nta_price': res['response']['delivery_nta_price'],
                                 'description': res['response']['description'],
                                 'duration': res['response']['duration'],
-                                'entry_type': res['response']['entry_type'],
+                                'apply_type': res['response']['apply_type'],
                                 'immigration_consulate': res['response']['immigration_consulate'],
                                 'name': res['response']['name'],
                                 'notes': res['response']['notes'],
-                                'nta_price': res['response']['nta_price'],
-                                'pax_type': res['response']['pax_type'],
                                 'process_type': res['response']['process_type'],
+                                'nta_price': res['response']['nta_price'],
+                                'passport_type': res['response']['passport_type'],
                                 'reference_code': res['response']['reference_code'] + '_rdx',
                                 'provider_id': self.env['tt.provider'].search([('code', '=', res['response']['provider_id'])]).id,
                                 'sale_price': res['response']['sale_price'],
-                                'visa_nta_price': res['response']['visa_nta_price'],
-                                'visa_type': res['response']['visa_type'],
+                                'passport_nta_price': res['response']['passport_nta_price'],
                                 'active': True
                             })
                         for data in res['response']['requirement_ids']:
@@ -196,14 +194,6 @@ class PassportSyncProducts(models.TransientModel):
                         if attachments:
                             master_data.update({
                                 'attachments_ids': [(6, 0, attachments)]
-                            })
-                        for data in res['response']['passport_location_ids']:
-                            self.env['tt.master.passport.locations'].create({
-                                'pricelist_id': master_data.id,
-                                'name': data['name'],
-                                'location_type': data['location_type'],
-                                'address': data['address'],
-                                'city': data['city']
                             })
                     else:
                         print('error sync data' + rec)
@@ -373,6 +363,97 @@ class PassportPricelist(models.Model):
                 'availability': list_of_availability,
             }
             res = Response().get_no_error(response)
+        except Exception as e:
+            _logger.error(traceback.format_exc())
+            res = Response().get_error(str(e), 500)
+        return res
+
+    def get_config_api(self):
+        try:
+            passport = {}
+            for rec in self.sudo().search([]):
+                if not passport.get(rec.country_id.name): #kalau ngga ada bikin dict
+                    passport[rec.country_id.name] = [] #append country
+                count = 0
+                for rec1 in passport[rec.country_id.name]:
+                    if rec1 == rec.immigration_consulate:
+                        count = 1
+                if count == 0:
+                    passport[rec.country_id.name].append(rec.immigration_consulate)
+
+                # for rec1 in self.search([('name', '=ilike', rec.country_id.id)]):
+                #
+                # pass
+            response = passport
+            res = Response().get_no_error(response)
+        except Exception as e:
+            res = Response().get_error(str(e), 500)
+        return res
+
+    def get_inventory_api(self):
+        try:
+            res = []
+            for idx, rec in enumerate(self.sudo().search([])):
+                res.append(rec.reference_code)
+            res = Response().get_no_error(res)
+        except Exception as e:
+            _logger.error(traceback.format_exc())
+            res = Response().get_error(str(e), 500)
+        return res
+
+    def to_dict(self):
+        attachement_ids = []
+        requirement_ids = []
+        visa_location_ids = []
+        for data in self.attachments_ids:
+            attachement_ids.append({
+                'file_reference': data.file_reference,
+                'file_name': data.filename,
+                'name': data.name,
+                'url': data.url
+            })
+        for data in self.requirement_ids:
+            requirement_ids.append({
+                'name': data.name,
+                'type_id': {
+                    'description': data.type_id.description,
+                    'name': data.type_id.name
+                },
+                'reference_code': data.reference_code
+            })
+
+        return {
+            'attachments_ids': attachement_ids,
+            'requirement_ids': requirement_ids,
+            'commercial_duration': self.commercial_duration,
+            'commission_price': self.commission_price,
+            'process_type': self.process_type,
+            'cost_price': self.cost_price,
+            'country_id': self.country_id.name,
+            'currency_id': self.currency_id.name,
+            'delivery_nta_price': self.delivery_nta_price,
+            'description': self.description,
+            'duration': self.duration,
+            'apply_type': self.apply_type,
+            'immigration_consulate': self.immigration_consulate,
+            'name': self.name,
+            'notes': self.notes,
+            'nta_price': self.nta_price,
+            'passport_type': self.passport_type,
+            'reference_code': self.reference_code,
+            'provider_id': self.provider_id.code,
+            'sale_price': self.sale_price,
+            'passport_nta_price': self.passport_nta_price,
+        }
+
+    def get_product_detail_api(self,data):
+        try:
+            res = []
+            res = self.sudo().search([('reference_code', '=', data['code'])], limit=1).to_dict()
+            if res:
+                res = Response().get_no_error(res)
+            else:
+                res = Response().get_error(str("Data Doesn't exist!"), 500)
         except Exception as e:
             _logger.error(traceback.format_exc())
             res = Response().get_error(str(e), 500)
