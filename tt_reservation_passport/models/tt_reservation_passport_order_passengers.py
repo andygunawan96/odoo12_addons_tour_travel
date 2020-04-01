@@ -59,12 +59,18 @@ class PassportInterviewBiometrics(models.Model):
                                              related="passenger_interview_id.pricelist_id", readonly=1)
     pricelist_biometrics_id = fields.Many2one('tt.reservation.passport.pricelist', 'Pricelist',
                                               related="passenger_biometrics_id.pricelist_id", readonly=1)
-    location_interview_id = fields.Char('Location', related="pricelist_interview_id.description")
+    location_interview_id = fields.Char('Location', compute='compute_location_interview', store=True)  # related="pricelist_interview_id.description"
     location_biometrics_id = fields.Char('Location', related="pricelist_biometrics_id.description")
     datetime = fields.Datetime('Datetime')
     ho_employee = fields.Char('Employee')
     meeting_point = fields.Char('Meeting Point')
     description = fields.Char('Description')
+
+    @api.depends('datetime')
+    @api.onchange('datetime')
+    def compute_location_interview(self):
+        for rec in self:
+            rec.location_interview_id = rec.passenger_interview_id.pricelist_id.description
 
 
 class PassportOrderPassengers(models.Model):

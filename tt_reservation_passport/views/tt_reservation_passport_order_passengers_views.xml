@@ -28,7 +28,7 @@
                     <button string="Cancel" name="action_cancel" type="object" attrs="{'invisible': [('state', 'not in', ['draft','confirm','validate','re_validate','re_confirm'])]}" groups="tt_base.group_tt_tour_travel_operator"/>
                 </header>
                 <sheet>
-                    <group>
+                    <group string="Passenger Info">
                         <group>
 <!--                            <field name="use_vendor"/>-->
                             <field name="passport_id"/>
@@ -46,7 +46,7 @@
                             <field name="age" readonly="1"/>  <!--readonly="1"-->
                         </group>
                     </group>
-                    <group>
+                    <group string="Passport Info &#38; Progress">
                         <group>
                             <field name="booking_state"/>
                             <field name="passenger_type"/>
@@ -65,41 +65,38 @@
                             <field name="done_date" groups="tt_base.group_tt_tour_travel_operator"/>
                         </group>
                     </group>
-                    <group>
-                        <group string="Interview">
-                            <field name="interview"/>  <!-- attrs="{'readonly': [('state', 'not in', ['in_process', 'confirm_payment', 'add_payment', 'in_process2'])]}"-->
-<!--                            <button string="Send Email Interview" name="action_send_email_interview" type="object" groups="tt_base.group_tt_tour_travel_operator" attrs="{'invisible': [('interview', '=', False)]}"/>  &lt;!&ndash; attrs="{'invisible': [('state', 'not in', ['in_process2'])]}"&ndash;&gt;-->
-                            <field name="interview_ids" attrs="{'invisible': [('interview', '=', False)], 'readonly': [('state', 'not in', ['in_process', 'waiting'])]}">
-                                <tree editable="bottom">
-                                    <field name="pricelist_interview_id" invisible="1"/>
-                                    <field name="datetime" required="1"/>
-                                    <field name="ho_employee"/>
-                                    <field name="meeting_point"/>
-    <!--                                <field name="location_id" domain="[('pricelist_ids', 'in', pricelist_interview_id), ('location_type', '=', 'interview')]"/>-->
-                                    <field name="location_interview_id"/>
+                    <group string="Interview">
+                        <field name="interview"/>  <!-- attrs="{'readonly': [('state', 'not in', ['in_process', 'confirm_payment', 'add_payment', 'in_process2'])]}"-->
+                        <field name="interview_ids" attrs="{'invisible': [('interview', '=', False)], 'readonly': [('state', 'not in', ['in_process', 'waiting'])]}">
+                            <tree editable="bottom">
+                                <field name="pricelist_interview_id" invisible="1"/>
+                                <field name="datetime" required="1"/>
+                                <field name="ho_employee"/>
+                                <field name="meeting_point"/>
+<!--                                <field name="location_id" domain="[('pricelist_ids', 'in', pricelist_interview_id), ('location_type', '=', 'interview')]"/>-->
+                                <field name="location_interview_id"/>
+                                <field name="description"/>
+                            </tree>
+                            <form>
+                                <group>
+                                    <group>
+                                        <field name="passenger_interview_id"/>
+                                        <field name="location_interview_id"/>
+                                        <field name="ho_employee"/>
+                                    </group>
+                                    <group>
+                                        <field name="pricelist_interview_id"/>
+                                        <field name="datetime" required="1"/>
+                                        <field name="meeting_point"/>
+                                    </group>
+                                </group>
+                                <group>
                                     <field name="description"/>
-                                </tree>
-                                <form>
-                                    <group>
-                                        <group>
-                                            <field name="passenger_interview_id"/>
-                                            <field name="location_interview_id"/>
-                                            <field name="ho_employee"/>
-                                        </group>
-                                        <group>
-                                            <field name="pricelist_interview_id"/>
-                                            <field name="datetime" required="1"/>
-                                            <field name="meeting_point"/>
-                                        </group>
-                                    </group>
-                                    <group>
-                                        <field name="description"/>
-                                    </group>
-                                </form>
-                            </field>
-                        </group>
+                                </group>
+                            </form>
+                        </field>
                     </group>
-                    <group>
+                    <group string="Requirements">
                         <field name="to_requirement_ids" string="Requirements">  <!-- attrs="{'readonly': [('state', 'not in', ['draft','re_validate','confirm'])]}"-->
                             <tree editable="bottom" create="0">
                                 <field name="requirement_id"/>
