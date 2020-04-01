@@ -193,13 +193,6 @@ class TtAgent(models.Model):
             if rec.quota_ids.filtered(lambda x: x.state == 'active'):
                 rec.quota_total_duration = rec.quota_ids[0].expired_date
 
-    def _compute_balance_agent(self):
-        for rec in self:
-            if len(rec.ledger_ids)>0:
-                rec.balance = rec.ledger_ids[0].balance
-            else:
-                rec.balance = 0
-
     def set_default_agent(self):
         try:
             return self.env.ref('tt_base.rodex_ho').id
