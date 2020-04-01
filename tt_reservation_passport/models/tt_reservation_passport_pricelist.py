@@ -38,8 +38,9 @@ class PassportSyncProducts(models.TransientModel):
 
     def update_reference_code_internal(self):
         for idx, rec in enumerate(self.env['tt.reservation.passport.pricelist'].search([]), 1):
-            rec.reference_code = ''
-            rec.provider_id = self.env['tt.provider'].search([('code', '=', 'passport_internal')], limit=1).id
+            if rec.provider_id == '':
+                rec.reference_code = ''
+                rec.provider_id = self.env['tt.provider'].search([('code', '=', 'passport_internal')], limit=1).id
 
     def get_reference_code(self):
         for idx, rec in enumerate(self.env['tt.reservation.passport.pricelist'].search([]),1):
@@ -138,7 +139,6 @@ class PassportSyncProducts(models.TransientModel):
                             })
                             master_data.requirement_ids.unlink()
                             master_data.attachments_ids.unlink()
-                            master_data.visa_location_ids.unlink()
                         else:
                             master_data = self.env['tt.reservation.passport.pricelist'].create({
                                 'commercial_duration': res['response']['commercial_duration'],
@@ -219,6 +219,7 @@ class PassportPricelist(models.Model):
 
     reference_code = fields.Char('Reference Code', required=False)
     provider_id = fields.Many2one('tt.provider', 'Provider', domain=get_domain)
+    active = fields.Boolean('Active', default=True)
 
     country_id = fields.Many2one('res.country', 'Country')
     immigration_consulate = fields.Char('Immigration Consulate')

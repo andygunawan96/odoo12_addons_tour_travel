@@ -175,7 +175,7 @@
                         <group>
                             <field name="refund_amount"/>
                             <field name="real_refund_amount" groups="tt_base.group_tt_tour_travel_operator"/>
-                            <field name="admin_fee_id" groups="tt_base.group_tt_tour_travel_operator" attrs="{'readonly':[('state','!=','confirm')]}"/>
+                            <field name="admin_fee_id" groups="tt_base.group_tt_tour_travel_operator" attrs="{'readonly':[('state','!=','confirm')]}" required="1"/>
                             <field name="admin_fee"/>
                             <field name="total_amount"/>
                             <field name="total_amount_cust" attrs="{'invisible':[('refund_line_cust_ids','=', [])]}"/>

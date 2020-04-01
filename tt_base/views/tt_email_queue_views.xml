@@ -22,7 +22,7 @@
         <field name="arch" type="xml">
             <form create="false">
                 <header>
-                    <button string="Send Email Now" name="action_send_email_button" type="object"
+                    <button string="Send Email Now" name="action_send_email" type="object"
                             groups="base.user_admin"/>
                 </header>
                 <sheet>
@@ -52,6 +52,9 @@
                                             attrs="{'invisible':['|',('res_model','=',False),('res_id','=',0)]}"/>
                                 </group>
                             </group>
+                            <group>
+                                <field name="failure_reason"/>
+                            </group>
                         </div>
                     </div>
                 </sheet>
@@ -67,9 +70,11 @@
         <field name="name">tt.email.queue.tree.view</field>
         <field name="model">tt.email.queue</field>
         <field name="arch" type="xml">
-            <tree create="false">
+            <tree create="false" decoration-muted="active == False">
                 <field name="name"/>
                 <field name="template_id"/>
+                <field name="last_sent_attempt_date"/>
+                <field name="active"/>
             </tree>
         </field>
     </record>
@@ -80,7 +85,7 @@
         <field name="res_model">tt.email.queue</field>
         <field name="view_type">form</field>
         <field name="view_mode">tree,form</field>
-        <field name="domain">[]</field>
+        <field name="domain">['|',('active','=',True),('active','=',False)]</field>
         <field name="context">
             {
             'form_view_ref': 'tt_base.tt_email_queue_form_view',
