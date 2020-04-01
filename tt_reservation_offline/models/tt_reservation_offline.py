@@ -6,6 +6,7 @@ import traceback
 import copy
 import json
 import base64
+import pytz
 from ...tools.api import Response
 from ...tools.ERR import RequestException
 from ...tools import variables, ERR
@@ -719,39 +720,48 @@ class IssuedOffline(models.Model):
         self.state = 'draft'
         self.state_offline = 'confirm'
 
-    def create_final_ho_ledger(self, provider_obj):
+    def create_final_ho_ledger(self):
         for rec in self:
+            ledger = self.env['tt.ledger']
+
             if rec.nta_price > rec.vendor_amount:
-                # Agent Ledger
-                pnr = self.get_pnr_list_from_provider()
-
-                vals = self.env['tt.ledger'].prepare_vals(self._name, self.id, 'Resv : ' + rec.name, 'Profit&Loss: ' + rec.name,
-                                                          rec.validate_date, 3, rec.currency_id.id, self.env.user.id,
-                                                          rec.ho_final_amount, 0)
-                vals = self.env['tt.ledger'].prepare_vals_for_resv(self, pnr, vals)
-                vals.update({
-                    'pnr': self.pnr,
-                    'provider_type_id': self.provider_type_id.id,
-                    'display_provider_name': self.provider_name,
-                    'agent_id': self.env.ref('tt_base.rodex_ho').id
-                })
-                new_aml = rec.env['tt.ledger'].create(vals)
+                ledger.create_ledger_vanilla(
+                    self._name,
+                    self.id,
+                    'Resv : ' + rec.name,
+                    'Profit&Loss: ' + rec.name,
+                    datetime.now(pytz.timezone('Asia/Jakarta')).date(),
+                    3,
+                    rec.currency_id.id,
+                    self.env.user.id,
+                    self.env.ref('tt_base.rodex_ho').id,
+                    False,
+                    rec.ho_final_amount,
+                    0,
+                    'Ledger for ' + self.name,
+                    pnr=self.pnr,
+                    provider_type_id=self.provider_type_id.id,
+                    display_provider_name=self.provider_name,
+                )
             else:
-                # Agent Ledger
-                pnr = self.get_pnr_list_from_provider()
-
-                vals = self.env['tt.ledger'].prepare_vals(self._name, self.id, 'Resv : ' + rec.name,
-                                                          'Profit&Loss: ' + rec.name,
-                                                          rec.validate_date, 3, rec.currency_id.id, self.env.user.id,
-                                                          0, abs(rec.ho_final_amount))
-                vals = self.env['tt.ledger'].prepare_vals_for_resv(self, pnr, vals)
-                vals.update({
-                    'pnr': self.pnr,
-                    'provider_type_id': self.provider_type_id.id,
-                    'display_provider_name': self.provider_name,
-                    'agent_id': self.env.ref('tt_base.rodex_ho').id
-                })
-                new_aml = rec.env['tt.ledger'].create(vals)
+                ledger.create_ledger_vanilla(
+                    self._name,
+                    self.id,
+                    'Resv : ' + rec.name,
+                    'Profit&Loss: ' + rec.name,
+                    datetime.now(pytz.timezone('Asia/Jakarta')).date(),
+                    3,
+                    rec.currency_id.id,
+                    self.env.user.id,
+                    self.env.ref('tt_base.rodex_ho').id,
+                    False,
+                    0,
+                    rec.ho_final_amount,
+                    'Ledger for ' + self.name,
+                    pnr=self.pnr,
+                    provider_type_id=self.provider_type_id.id,
+                    display_provider_name=self.provider_name,
+                )
 
     def create_provider_offline(self):
         for provider in self.provider_booking_ids:
