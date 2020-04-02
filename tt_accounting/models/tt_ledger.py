@@ -326,6 +326,8 @@ class Ledger(models.Model):
             if not list_of_waiting_list:
                 res = {'error_code': 0}
                 break
+            self.clear_caches()
+            self.env.cr.commit()
             if second:
                 _logger.error("### CONCURRENT UPDATE LEDGER ERROR, WAITING LIST: %s. CURRENT IDS: %s ###" % ([str(rec.ids) for rec in list_of_waiting_list],str(list_agent_id)))
                 time.sleep(1)
@@ -340,8 +342,6 @@ class Ledger(models.Model):
 
     def get_waiting_list(self,list_of_waiting_id):
         list_of_waiting_list = []
-        self.clear_caches()
-        self.env.cr.commit()
         for rec in list_of_waiting_id:
             current_search = self.env['tt.ledger.waiting.list'].search(['|',('agent_id','=', rec[0]),('customer_parent_id','=', rec[1]),
                                                                            ('is_in_transaction', '=', True),
