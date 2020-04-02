@@ -109,7 +109,7 @@ class Ledger(models.Model):
         }
 
     def create_ledger_vanilla(self, res_model,res_id,name, ref, ledger_date, ledger_type, currency_id, issued_uid,agent_id,customer_parent_id, debit=0, credit=0,description = '',**kwargs):
-        self.waiting_list_process([agent_id],customer_parent_id)
+        self.waiting_list_process([agent_id],customer_parent_id,debit)
         vals = self.prepare_vals(res_model,
                           res_id,name, ref,
                           ledger_date, ledger_type,
@@ -127,7 +127,7 @@ class Ledger(models.Model):
 
     def reverse_ledger(self):
         # 3
-        self.waiting_list_process([self.agent_id and self.agent_id.id or False],self.customer_parent_id and self.customer_parent_id.id or False)
+        self.waiting_list_process([self.agent_id and self.agent_id.id or False],self.customer_parent_id and self.customer_parent_id.id or False,"Reverse")
         reverse_id = self.env['tt.ledger'].create({
             'name': 'Reverse:' + self.name,
             'debit': self.credit,
@@ -268,7 +268,7 @@ class Ledger(models.Model):
         #1
         affected_agent = [rec.commission_agent_id.id if rec.commission_agent_id else provider_obj.booking_id.agent_id.id for rec in provider_obj.cost_service_charge_ids]
         affected_agent = set(affected_agent)
-        self.waiting_list_process(affected_agent, False)
+        self.waiting_list_process(affected_agent, False,"Create Ledger Provider")
         commission_created = self.create_commission_ledger(provider_obj,issued_uid)
         ledger_created = self.create_ledger(provider_obj,issued_uid)
         return commission_created or ledger_created
@@ -285,21 +285,21 @@ class Ledger(models.Model):
                 rec.balance = cur_balance+rec.debit-rec.credit
             cur_balance = rec.balance
 
-    def waiting_list_process(self,list_agent_id,customer_parent_id):
+    def waiting_list_process(self,list_agent_id,customer_parent_id,amount_comment):
         start_time = time.time()
         res = {'error_code': 0}
         second = False
         new_list_of_waiting_list = []
 
         if customer_parent_id:
-            new_waiting_list = self.env['tt.ledger.waiting.list'].create({'customer_parent_id': customer_parent_id})
+            new_waiting_list = self.env['tt.ledger.waiting.list'].create({'customer_parent_id': customer_parent_id,'comment': amount_comment})
             new_list_of_waiting_list.append((False,customer_parent_id,new_waiting_list))
         else:
             waiting_number = False
             for rec in list_agent_id:
                 if len(new_list_of_waiting_list) == 1:
                     waiting_number = new_list_of_waiting_list[0][3]
-                new_waiting_list = self.env['tt.ledger.waiting.list'].create({'agent_id': rec,'waiting_number': waiting_number})
+                new_waiting_list = self.env['tt.ledger.waiting.list'].create({'agent_id': rec,'waiting_number': waiting_number, 'comment': amount_comment})
                 new_list_of_waiting_list.append((rec,False, new_waiting_list))
         self.env.cr.commit()
         # print("Done Commit %s" % (new_waiting_list.id))
