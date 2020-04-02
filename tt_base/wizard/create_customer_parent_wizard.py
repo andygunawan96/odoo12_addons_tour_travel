@@ -12,6 +12,7 @@ class CreateCustomerParentWizard(models.TransientModel):
 
     customer_parent_type_id = fields.Many2one('tt.customer.parent.type', 'Customer Parent Type', required=True, domain=get_customer_parent_domain)
     parent_agent_id = fields.Many2one('tt.agent', 'Parent', required=True, readonly=True, default=lambda self: self.env.user.agent_id.id)
+    email = fields.Char('Email', required=True)
     currency_id = fields.Many2one('res.currency', default=lambda self: self.env.user.company_id.currency_id.id, string='Currency')
 
     def submit_customer_parent(self):
@@ -19,6 +20,7 @@ class CreateCustomerParentWizard(models.TransientModel):
             'name': self.name,
             'customer_parent_type_id': self.customer_parent_type_id.id,
             'parent_agent_id': self.parent_agent_id.id,
+            'email': self.email,
             'credit_limit': 0,
             'tax_percentage': 0.0,
         })

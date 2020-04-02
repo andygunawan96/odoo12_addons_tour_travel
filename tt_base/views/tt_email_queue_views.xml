@@ -9,6 +9,7 @@
                 <field name="name"/>
                 <field name="template_id"/>
                 <field name="res_model"/>
+                <field name="failure_reason"/>
                 <group expand="0" string="Group By">
                     <filter string="Model" name="res_model" domain="[]" context="{'group_by':'res_model'}" groups="base.user_admin"/>
                 </group>
@@ -54,6 +55,7 @@
                             </group>
                             <group>
                                 <field name="failure_reason"/>
+                                <field name="last_sent_attempt_date"/>
                             </group>
                         </div>
                     </div>
