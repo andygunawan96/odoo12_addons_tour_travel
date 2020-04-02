@@ -401,6 +401,9 @@
                             <button name="get_record_by_api13" string="AutoComplete Cache" type="object" icon="fa-spoon"/>
                             <!--<button name="get_record_by_api13b" string="Hotel" type="object" icon="fa-home"/>-->
                         </group>
+                        <group string="Be My Guest">
+                            <button name="mapping_be_my_guest" string="Get City List" type="object" icon="fa-home"/>
+                        </group>
                     </group>
                 </sheet>
             </form>

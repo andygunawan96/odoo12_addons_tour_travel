@@ -43,8 +43,9 @@ class VisaSyncProducts(models.TransientModel):
 
     def update_reference_code_internal(self):
         for idx, rec in enumerate(self.env['tt.reservation.visa.pricelist'].search([]), 1):
-            rec.reference_code = ''
-            rec.provider_id = self.env['tt.provider'].search([('code', '=', 'visa_internal')], limit=1).id
+            if rec.provider_id == '':
+                rec.reference_code = ''
+                rec.provider_id = self.env['tt.provider'].search([('code', '=', 'visa_internal')], limit=1).id
 
     def get_reference_code(self):
         for idx, rec in enumerate(self.env['tt.reservation.visa.pricelist'].search([]),1):

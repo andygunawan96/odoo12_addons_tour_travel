@@ -1961,6 +1961,19 @@ class TtVisa(models.Model):
         book_obj._compute_commercial_state()
         for rec in book_obj.provider_booking_ids:
             rec.write(vals)
+
+        try:
+            if self.agent_type_id.is_send_email:
+                self.env['tt.email.queue'].sudo().create({
+                    'name': 'Issued ' + self.name,
+                    'type': 'reservation_visa',
+                    'template_id': self.env.ref('tt_reservation_visa.template_mail_reservation_issued_visa').id,
+                    'res_model': self._name,
+                    'res_id': self.id,
+                })
+        except Exception as e:
+            _logger.info('Error Create Email Queue')
+
         return self.get_booking_visa_api(data, context)
 
     ######################################################################################################

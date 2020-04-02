@@ -1112,7 +1112,7 @@ class TtPassport(models.Model):
                             'in_process_date'] else '',
                         'name': res_dict['order_number'],
                         'payment_status': book_obj.commercial_state,
-                        'state': dict(book_obj._fields['state'].selection).get(book_obj.state),
+                        'state': book_obj.state,
                         'state_passport': dict(book_obj._fields['state_passport'].selection).get(book_obj.state_passport)
                     },
                     'passengers': passenger

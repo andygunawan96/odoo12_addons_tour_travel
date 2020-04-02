@@ -42,67 +42,384 @@ class TtEmailQueue(models.Model):
             'target': 'current',
         }
 
-    def action_send_email(self):
-        try:
-            if self.type in ['reservation_airline', 'reservation_train']:
-                attachment_id_list = []
-                ref_obj = self.env[self.res_model].sudo().browse(int(self.res_id))
-                if ref_obj.state == 'issued':
-                    printed_inv_ids = []
-                    ticket_data = ref_obj.print_eticket({})
-                    if ticket_data.get('url'):
+    def prepare_attachment_reservation_airline(self):
+        attachment_id_list = []
+        ref_obj = self.env[self.res_model].sudo().browse(int(self.res_id))
+        if ref_obj.state == 'issued':
+            ticket_data = ref_obj.print_eticket({})
+            if ticket_data.get('url'):
+                headers = {
+                    'Content-Type': 'application/json',
+                }
+                upload_data = util.send_request(ticket_data['url'], data={}, headers=headers, method='GET',
+                                                content_type='content', timeout=600)
+                if upload_data['error_code'] == 0:
+                    attachment_obj = self.env['ir.attachment'].create({
+                        'name': ref_obj.name + ' E-Ticket.pdf',
+                        'datas_fname': ref_obj.name + ' E-Ticket.pdf',
+                        'datas': upload_data['response'],
+                    })
+                    attachment_id_list.append(attachment_obj.id)
+                else:
+                    _logger.info(upload_data['error_msg'])
+                    raise Exception(_('Failed to convert ticket attachment!'))
+            else:
+                raise Exception(_('Failed to get ticket attachment!'))
+
+            resv_has_invoice = False
+            printed_inv_ids = []
+            for rec in ref_obj.invoice_line_ids:
+                if rec.invoice_id.id not in printed_inv_ids and rec.invoice_id.state != 'cancel':
+                    inv_data = rec.invoice_id.print_invoice()
+                    if inv_data.get('url'):
                         headers = {
                             'Content-Type': 'application/json',
                         }
-                        upload_data = util.send_request(ticket_data['url'], data={}, headers=headers, method='GET', content_type='content', timeout=600)
+                        upload_data = util.send_request(inv_data['url'], data={}, headers=headers, method='GET',
+                                                        content_type='content', timeout=600)
                         if upload_data['error_code'] == 0:
                             attachment_obj = self.env['ir.attachment'].create({
-                                'name': ref_obj.name + ' E-Ticket.pdf',
-                                'datas_fname': ref_obj.name + ' E-Ticket.pdf',
+                                'name': ref_obj.name + ' Invoice.pdf',
+                                'datas_fname': ref_obj.name + ' Invoice.pdf',
                                 'datas': upload_data['response'],
                             })
                             attachment_id_list.append(attachment_obj.id)
+                            resv_has_invoice = True
                         else:
                             _logger.info(upload_data['error_msg'])
-                            raise Exception(_('Failed to convert ticket attachment!'))
+                            raise Exception(_('Failed to convert invoice attachment!'))
                     else:
-                        raise Exception(_('Failed to get ticket attachment!'))
+                        raise Exception(_('Failed to get invoice attachment!'))
+                    printed_inv_ids.append(rec.invoice_id.id)
+            if not resv_has_invoice:
+                raise Exception(_('Reservation has no Invoice!'))
+            self.template_id.attachment_ids = [(6, 0, attachment_id_list)]
+        else:
+            raise Exception(_('Reservation is not issued!'))
 
-                    resv_has_invoice = False
-                    for rec in ref_obj.invoice_line_ids:
-                        if rec.invoice_id.id not in printed_inv_ids:
-                            inv_data = rec.invoice_id.print_invoice()
-                            if inv_data.get('url'):
-                                headers = {
-                                    'Content-Type': 'application/json',
-                                }
-                                upload_data = util.send_request(inv_data['url'], data={}, headers=headers, method='GET', content_type='content', timeout=600)
-                                if upload_data['error_code'] == 0:
-                                    attachment_obj = self.env['ir.attachment'].create({
-                                        'name': ref_obj.name + ' Invoice.pdf',
-                                        'datas_fname': ref_obj.name + ' Invoice.pdf',
-                                        'datas': upload_data['response'],
-                                    })
-                                    attachment_id_list.append(attachment_obj.id)
-                                    resv_has_invoice = True
-                                else:
-                                    _logger.info(upload_data['error_msg'])
-                                    raise Exception(_('Failed to convert invoice attachment!'))
-                            else:
-                                raise Exception(_('Failed to get invoice attachment!'))
-                            printed_inv_ids.append(rec.invoice_id.id)
-                    if not resv_has_invoice:
-                        raise Exception(_('Reservation has no Invoice!'))
-                    self.template_id.attachment_ids = [(6, 0, attachment_id_list)]
+    def prepare_attachment_reservation_train(self):
+        attachment_id_list = []
+        ref_obj = self.env[self.res_model].sudo().browse(int(self.res_id))
+        if ref_obj.state == 'issued':
+            ticket_data = ref_obj.print_eticket({})
+            if ticket_data.get('url'):
+                headers = {
+                    'Content-Type': 'application/json',
+                }
+                upload_data = util.send_request(ticket_data['url'], data={}, headers=headers, method='GET',
+                                                content_type='content', timeout=600)
+                if upload_data['error_code'] == 0:
+                    attachment_obj = self.env['ir.attachment'].create({
+                        'name': ref_obj.name + ' E-Ticket.pdf',
+                        'datas_fname': ref_obj.name + ' E-Ticket.pdf',
+                        'datas': upload_data['response'],
+                    })
+                    attachment_id_list.append(attachment_obj.id)
                 else:
-                    raise Exception(_('Reservation is not issued!'))
+                    _logger.info(upload_data['error_msg'])
+                    raise Exception(_('Failed to convert ticket attachment!'))
+            else:
+                raise Exception(_('Failed to get ticket attachment!'))
+
+            resv_has_invoice = False
+            printed_inv_ids = []
+            for rec in ref_obj.invoice_line_ids:
+                if rec.invoice_id.id not in printed_inv_ids and rec.invoice_id.state != 'cancel':
+                    inv_data = rec.invoice_id.print_invoice()
+                    if inv_data.get('url'):
+                        headers = {
+                            'Content-Type': 'application/json',
+                        }
+                        upload_data = util.send_request(inv_data['url'], data={}, headers=headers, method='GET',
+                                                        content_type='content', timeout=600)
+                        if upload_data['error_code'] == 0:
+                            attachment_obj = self.env['ir.attachment'].create({
+                                'name': ref_obj.name + ' Invoice.pdf',
+                                'datas_fname': ref_obj.name + ' Invoice.pdf',
+                                'datas': upload_data['response'],
+                            })
+                            attachment_id_list.append(attachment_obj.id)
+                            resv_has_invoice = True
+                        else:
+                            _logger.info(upload_data['error_msg'])
+                            raise Exception(_('Failed to convert invoice attachment!'))
+                    else:
+                        raise Exception(_('Failed to get invoice attachment!'))
+                    printed_inv_ids.append(rec.invoice_id.id)
+            if not resv_has_invoice:
+                raise Exception(_('Reservation has no Invoice!'))
+            self.template_id.attachment_ids = [(6, 0, attachment_id_list)]
+        else:
+            raise Exception(_('Reservation is not issued!'))
+
+    def prepare_attachment_reservation_activity(self):
+        attachment_id_list = []
+        ref_obj = self.env[self.res_model].sudo().browse(int(self.res_id))
+        if ref_obj.state == 'issued':
+            ticket_data = ref_obj.get_vouchers_button()
+            if ticket_data.get('url'):
+                headers = {
+                    'Content-Type': 'application/json',
+                }
+                upload_data = util.send_request(ticket_data['url'], data={}, headers=headers, method='GET',
+                                                content_type='content', timeout=600)
+                if upload_data['error_code'] == 0:
+                    attachment_obj = self.env['ir.attachment'].create({
+                        'name': ref_obj.name + ' E-Ticket.pdf',
+                        'datas_fname': ref_obj.name + ' E-Ticket.pdf',
+                        'datas': upload_data['response'],
+                    })
+                    attachment_id_list.append(attachment_obj.id)
+                else:
+                    _logger.info(upload_data['error_msg'])
+                    raise Exception(_('Failed to convert ticket attachment!'))
+            else:
+                raise Exception(_('Failed to get ticket attachment!'))
+
+            resv_has_invoice = False
+            printed_inv_ids = []
+            for rec in ref_obj.invoice_line_ids:
+                if rec.invoice_id.id not in printed_inv_ids and rec.invoice_id.state != 'cancel':
+                    inv_data = rec.invoice_id.print_invoice()
+                    if inv_data.get('url'):
+                        headers = {
+                            'Content-Type': 'application/json',
+                        }
+                        upload_data = util.send_request(inv_data['url'], data={}, headers=headers, method='GET',
+                                                        content_type='content', timeout=600)
+                        if upload_data['error_code'] == 0:
+                            attachment_obj = self.env['ir.attachment'].create({
+                                'name': ref_obj.name + ' Invoice.pdf',
+                                'datas_fname': ref_obj.name + ' Invoice.pdf',
+                                'datas': upload_data['response'],
+                            })
+                            attachment_id_list.append(attachment_obj.id)
+                            resv_has_invoice = True
+                        else:
+                            _logger.info(upload_data['error_msg'])
+                            raise Exception(_('Failed to convert invoice attachment!'))
+                    else:
+                        raise Exception(_('Failed to get invoice attachment!'))
+                    printed_inv_ids.append(rec.invoice_id.id)
+            if not resv_has_invoice:
+                raise Exception(_('Reservation has no Invoice!'))
+            self.template_id.attachment_ids = [(6, 0, attachment_id_list)]
+        else:
+            raise Exception(_('Reservation is not issued!'))
+
+    def prepare_attachment_reservation_tour(self):
+        attachment_id_list = []
+        ref_obj = self.env[self.res_model].sudo().browse(int(self.res_id))
+        if ref_obj.state == 'issued':
+            resv_has_invoice = False
+            printed_inv_ids = []
+            for rec in ref_obj.invoice_line_ids:
+                if rec.invoice_id.id not in printed_inv_ids and rec.invoice_id.state != 'cancel':
+                    inv_data = rec.invoice_id.print_invoice()
+                    if inv_data.get('url'):
+                        headers = {
+                            'Content-Type': 'application/json',
+                        }
+                        upload_data = util.send_request(inv_data['url'], data={}, headers=headers, method='GET',
+                                                        content_type='content', timeout=600)
+                        if upload_data['error_code'] == 0:
+                            attachment_obj = self.env['ir.attachment'].create({
+                                'name': ref_obj.name + ' Invoice.pdf',
+                                'datas_fname': ref_obj.name + ' Invoice.pdf',
+                                'datas': upload_data['response'],
+                            })
+                            attachment_id_list.append(attachment_obj.id)
+                            resv_has_invoice = True
+                        else:
+                            _logger.info(upload_data['error_msg'])
+                            raise Exception(_('Failed to convert invoice attachment!'))
+                    else:
+                        raise Exception(_('Failed to get invoice attachment!'))
+                    printed_inv_ids.append(rec.invoice_id.id)
+            if not resv_has_invoice:
+                raise Exception(_('Reservation has no Invoice!'))
+            self.template_id.attachment_ids = [(6, 0, attachment_id_list)]
+        else:
+            raise Exception(_('Reservation is not issued!'))
+
+    def prepare_attachment_reservation_visa(self):
+        attachment_id_list = []
+        ref_obj = self.env[self.res_model].sudo().browse(int(self.res_id))
+        if ref_obj.state == 'issued':
+            resv_has_invoice = False
+            printed_inv_ids = []
+            for rec in ref_obj.invoice_line_ids:
+                if rec.invoice_id.id not in printed_inv_ids and rec.invoice_id.state != 'cancel':
+                    inv_data = rec.invoice_id.print_invoice()
+                    if inv_data.get('url'):
+                        headers = {
+                            'Content-Type': 'application/json',
+                        }
+                        upload_data = util.send_request(inv_data['url'], data={}, headers=headers, method='GET',
+                                                        content_type='content', timeout=600)
+                        if upload_data['error_code'] == 0:
+                            attachment_obj = self.env['ir.attachment'].create({
+                                'name': ref_obj.name + ' Invoice.pdf',
+                                'datas_fname': ref_obj.name + ' Invoice.pdf',
+                                'datas': upload_data['response'],
+                            })
+                            attachment_id_list.append(attachment_obj.id)
+                            resv_has_invoice = True
+                        else:
+                            _logger.info(upload_data['error_msg'])
+                            raise Exception(_('Failed to convert invoice attachment!'))
+                    else:
+                        raise Exception(_('Failed to get invoice attachment!'))
+                    printed_inv_ids.append(rec.invoice_id.id)
+            if not resv_has_invoice:
+                raise Exception(_('Reservation has no Invoice!'))
+            self.template_id.attachment_ids = [(6, 0, attachment_id_list)]
+        else:
+            raise Exception(_('Reservation is not issued!'))
+
+    def prepare_attachment_reservation_hotel(self):
+        attachment_id_list = []
+        ref_obj = self.env[self.res_model].sudo().browse(int(self.res_id))
+        if ref_obj.state == 'issued':
+            ticket_data = ref_obj.do_print_voucher({})
+            if ticket_data.get('url'):
+                headers = {
+                    'Content-Type': 'application/json',
+                }
+                upload_data = util.send_request(ticket_data['url'], data={}, headers=headers, method='GET',
+                                                content_type='content', timeout=600)
+                if upload_data['error_code'] == 0:
+                    attachment_obj = self.env['ir.attachment'].create({
+                        'name': ref_obj.name + ' E-Ticket.pdf',
+                        'datas_fname': ref_obj.name + ' E-Ticket.pdf',
+                        'datas': upload_data['response'],
+                    })
+                    attachment_id_list.append(attachment_obj.id)
+                else:
+                    _logger.info(upload_data['error_msg'])
+                    raise Exception(_('Failed to convert ticket attachment!'))
+            else:
+                raise Exception(_('Failed to get ticket attachment!'))
+
+            resv_has_invoice = False
+            printed_inv_ids = []
+            for rec in ref_obj.invoice_line_ids:
+                if rec.invoice_id.id not in printed_inv_ids and rec.invoice_id.state != 'cancel':
+                    inv_data = rec.invoice_id.print_invoice()
+                    if inv_data.get('url'):
+                        headers = {
+                            'Content-Type': 'application/json',
+                        }
+                        upload_data = util.send_request(inv_data['url'], data={}, headers=headers, method='GET',
+                                                        content_type='content', timeout=600)
+                        if upload_data['error_code'] == 0:
+                            attachment_obj = self.env['ir.attachment'].create({
+                                'name': ref_obj.name + ' Invoice.pdf',
+                                'datas_fname': ref_obj.name + ' Invoice.pdf',
+                                'datas': upload_data['response'],
+                            })
+                            attachment_id_list.append(attachment_obj.id)
+                            resv_has_invoice = True
+                        else:
+                            _logger.info(upload_data['error_msg'])
+                            raise Exception(_('Failed to convert invoice attachment!'))
+                    else:
+                        raise Exception(_('Failed to get invoice attachment!'))
+                    printed_inv_ids.append(rec.invoice_id.id)
+            if not resv_has_invoice:
+                raise Exception(_('Reservation has no Invoice!'))
+            self.template_id.attachment_ids = [(6, 0, attachment_id_list)]
+        else:
+            raise Exception(_('Reservation is not issued!'))
+
+    def prepare_attachment_reservation_offline(self):
+        attachment_id_list = []
+        ref_obj = self.env[self.res_model].sudo().browse(int(self.res_id))
+        if ref_obj.state == 'issued':
+            resv_has_invoice = False
+            printed_inv_ids = []
+            for rec in ref_obj.invoice_line_ids:
+                if rec.invoice_id.id not in printed_inv_ids and rec.invoice_id.state != 'cancel':
+                    inv_data = rec.invoice_id.print_invoice()
+                    if inv_data.get('url'):
+                        headers = {
+                            'Content-Type': 'application/json',
+                        }
+                        upload_data = util.send_request(inv_data['url'], data={}, headers=headers, method='GET',
+                                                        content_type='content', timeout=600)
+                        if upload_data['error_code'] == 0:
+                            attachment_obj = self.env['ir.attachment'].create({
+                                'name': ref_obj.name + ' Invoice.pdf',
+                                'datas_fname': ref_obj.name + ' Invoice.pdf',
+                                'datas': upload_data['response'],
+                            })
+                            attachment_id_list.append(attachment_obj.id)
+                            resv_has_invoice = True
+                        else:
+                            _logger.info(upload_data['error_msg'])
+                            raise Exception(_('Failed to convert invoice attachment!'))
+                    else:
+                        raise Exception(_('Failed to get invoice attachment!'))
+                    printed_inv_ids.append(rec.invoice_id.id)
+            if not resv_has_invoice:
+                raise Exception(_('Reservation has no Invoice!'))
+            self.template_id.attachment_ids = [(6, 0, attachment_id_list)]
+        else:
+            raise Exception(_('Reservation is not issued!'))
+
+    def prepare_attachment_billing_statement(self):
+        attachment_id_list = []
+        ref_obj = self.env[self.res_model].sudo().browse(int(self.res_id))
+        if ref_obj.state != 'cancel':
+            ticket_data = ref_obj.print_report_billing_statement()
+            if ticket_data.get('url'):
+                headers = {
+                    'Content-Type': 'application/json',
+                }
+                upload_data = util.send_request(ticket_data['url'], data={}, headers=headers, method='GET',
+                                                content_type='content', timeout=600)
+                if upload_data['error_code'] == 0:
+                    attachment_obj = self.env['ir.attachment'].create({
+                        'name': 'e-Billing Statement.pdf',
+                        'datas_fname': 'e-Billing Statement.pdf',
+                        'datas': upload_data['response'],
+                    })
+                    attachment_id_list.append(attachment_obj.id)
+                else:
+                    _logger.info(upload_data['error_msg'])
+                    raise Exception(_('Failed to convert billing attachment!'))
+            else:
+                raise Exception(_('Failed to get billing attachment!'))
+            self.template_id.attachment_ids = [(6, 0, attachment_id_list)]
+        else:
+            raise Exception(_('Billing is already cancelled!'))
+
+    def action_send_email(self):
+        try:
+            if self.type == 'reservation_airline':
+                self.prepare_attachment_reservation_airline()
+            elif self.type == 'reservation_train':
+                self.prepare_attachment_reservation_train()
+            elif self.type == 'reservation_activity':
+                self.prepare_attachment_reservation_activity()
+            elif self.type == 'reservation_tour':
+                self.prepare_attachment_reservation_tour()
+            elif self.type == 'reservation_visa':
+                self.prepare_attachment_reservation_visa()
+            elif self.type == 'reservation_hotel':
+                self.prepare_attachment_reservation_hotel()
+            elif self.type == 'reservation_offline':
+                self.prepare_attachment_reservation_offline()
+            elif self.type == 'billing_statement':
+                self.prepare_attachment_billing_statement()
             else:
                 self.template_id.attachment_ids = [(6, 0, [])]
 
             self.template_id.send_mail(self.res_id, force_send=True)
             self.write({
                 'last_sent_attempt_date': datetime.now(),
-                'active': False
+                'active': False,
+                'failure_reason': ''
             })
         except Exception as e:
             self.write({

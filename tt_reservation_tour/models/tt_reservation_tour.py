@@ -116,6 +116,18 @@ class ReservationTour(models.Model):
                 'issued_uid': api_context['co_uid'] or self.env.user.id,
             })
 
+            try:
+                if self.agent_type_id.is_send_email:
+                    self.env['tt.email.queue'].sudo().create({
+                        'name': 'Issued ' + self.name,
+                        'type': 'reservation_tour',
+                        'template_id': self.env.ref('tt_reservation_tour.template_mail_reservation_issued_tour').id,
+                        'res_model': self._name,
+                        'res_id': self.id,
+                    })
+            except Exception as e:
+                _logger.info('Error Create Email Queue')
+
     def call_create_invoice(self, acquirer_id, co_uid, customer_parent_id, payment_method):
         _logger.info('Creating Invoice for ' + self.name)
 
