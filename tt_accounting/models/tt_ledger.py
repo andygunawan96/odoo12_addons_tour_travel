@@ -65,7 +65,7 @@ class Ledger(models.Model):
     res_model = fields.Char(
         'Related Reservation Name', index=True)
     res_id = fields.Integer(
-        'Related Reservation ID', index=True, help='Id of the followed resource')
+        'Related Reservation ID', index=True, help='ID of the followed resource')
 
     provider_type_id = fields.Many2one('tt.provider.type', 'Provider Type')
 
@@ -286,25 +286,27 @@ class Ledger(models.Model):
         res = {'error_code': 0}
         second = False
         new_list_of_waiting_list = []
-        new_list_of_waiting_list_obj = []
+
         if customer_parent_id:
             new_waiting_list = self.env['tt.ledger.waiting.list'].create({'customer_parent_id': customer_parent_id})
-            new_list_of_waiting_list_obj.append(new_waiting_list)
-            new_list_of_waiting_list.append((False,customer_parent_id,new_waiting_list.id,new_waiting_list.waiting_number))
+            new_list_of_waiting_list.append((False,customer_parent_id,new_waiting_list))
         else:
             waiting_number = False
             for rec in list_agent_id:
                 if len(new_list_of_waiting_list) == 1:
                     waiting_number = new_list_of_waiting_list[0][3]
                 new_waiting_list = self.env['tt.ledger.waiting.list'].create({'agent_id': rec,'waiting_number': waiting_number})
-                new_list_of_waiting_list_obj.append(new_waiting_list)
-                new_list_of_waiting_list.append((rec,False, new_waiting_list.id,new_waiting_list.waiting_number))
+                new_list_of_waiting_list.append((rec,False, new_waiting_list))
         self.env.cr.commit()
-        # print("Done Commit %s" % (new_waiting_list.id))5
+        # print("Done Commit %s" % (new_waiting_list.id))
         # self.env['tt.ledger.waiting.list'].invalidate_cache()
         # sleep_time = ((new_waiting_list.id%10))
         # print(sleep_time)
         # time.sleep(sleep_time)
+        sleep_time = new_waiting_list.id % 10 * 0.2
+        print(sleep_time)
+        time.sleep(sleep_time)
+
         list_of_waiting_list = self.get_waiting_list(new_list_of_waiting_list)
         if list_of_waiting_list:
             res = {'error_code': 1028}
@@ -318,8 +320,8 @@ class Ledger(models.Model):
                 time.sleep(1)
             second = True
 
-        for rec in new_list_of_waiting_list_obj:
-            rec.is_in_transaction = False
+        for rec in new_list_of_waiting_list:
+            rec[2].is_in_transaction = False
         self.env.cr.commit()
         if res['error_code'] != 0:
             raise RequestException(res['error_code'])
@@ -332,15 +334,14 @@ class Ledger(models.Model):
         for rec in list_of_waiting_id:
             current_search = self.env['tt.ledger.waiting.list'].search(['|',('agent_id','=', rec[0]),('customer_parent_id','=', rec[1]),
                                                                            ('is_in_transaction', '=', True),
-                                                                        ('waiting_number','<',rec[3])])
+                                                                        ('waiting_number','<',rec[2].waiting_number)])
             if current_search:
                 list_of_waiting_list.append(current_search)
 
         if list_of_waiting_list:
             _logger.info("Waiting List : " + str([rec.ids for rec in list_of_waiting_list]))
         else:
-            _logger.info("Empty Waiting List, current ID: %s." % (str(list_of_waiting_id)))
-
+            _logger.info("Empty Waiting List, current ID: %s." % (str([(rec[0],rec[1],rec[2].id,rec[2].waiting_number) for rec in list_of_waiting_id])))
         return list_of_waiting_list
 
 class TtLedgerWaitingList(models.Model):
