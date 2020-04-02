@@ -78,4 +78,20 @@
               sequence="1"
               groups="base.group_user"/>
 
+    <record id="destination_alias_action_view" model="ir.actions.act_window" >
+        <field name="name">Destination Alias</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">tt.destination.alias</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+        <field name="domain">[]</field>
+        <field name="context"/>
+    </record>
+
+    <menuitem id="sub_menu_item_tour_travel_dest_alias"
+              parent="tt_base.menu_tour_travel_configuration_res_country"
+              action="tt_base.destination_alias_action_view"
+              name="Alias"
+              sequence="99"
+              groups="base.group_user"/>
 </odoo>

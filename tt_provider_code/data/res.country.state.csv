@@ -1,0 +1,3992 @@
+id,country_id/id,name
+state_XK_Mal_1,base.xk,Malishevë
+state_XK_Pri_2,base.xk,Prizren
+state_XK_Zub_3,base.xk,Zubin Potok
+state_XK_Kam_4,base.xk,Kamenicë
+state_XK_Vit_5,base.xk,Viti
+state_XK_Sht_6,base.xk,Shtërpcë
+state_XK_Sht_7,base.xk,Shtime
+state_XK_Vus_8,base.xk,Vushtrri
+state_XK_Dra_9,base.xk,Dragash
+state_XK_Pod_10,base.xk,Podujevë
+state_XK_Fus_11,base.xk,Fushë Kosovë
+state_XK_Kaç_12,base.xk,Kaçanik
+state_XK_Kli_13,base.xk,Klinë
+state_XK_Lep_14,base.xk,Leposaviq
+state_XK_Pej_15,base.xk,Pejë
+state_XK_Rah_16,base.xk,Rahovec
+state_XK_Gji_17,base.xk,Gjilan
+state_XK_Lip_18,base.xk,Lipjan
+state_XK_Obi_19,base.xk,Obiliq
+state_XK_Gja_20,base.xk,Gjakovë
+state_XK_Pri_21,base.xk,Prishtinë
+state_XK_Deç_22,base.xk,Deçan
+state_XK_Ist_23,base.xk,Istog
+state_XK_Han_24,base.xk,Hani i Elezit
+state_XK_Jun_25,base.xk,Junik
+state_XK_Kll_26,base.xk,Kllokot
+state_XK_Mam_27,base.xk,Mamushë
+state_XK_Par_28,base.xk,Partesh
+state_XK_Ran_29,base.xk,Ranillug
+state_XK_Fer_30,base.xk,Ferizaj
+state_XK_Zve_31,base.xk,Zveçan
+state_XK_Suh_32,base.xk,Suharekë
+state_XK_Gll_33,base.xk,Gllogovc
+state_XK_Ske_34,base.xk,Skenderaj 
+state_XK_Nov_35,base.xk,Novobërdë
+state_XK_Gra_36,base.xk,Graçanicë
+state_YE_Amā_1,base.ye,Amānat al ‘Āşimah
+state_YE_Ma’_2,base.ye,Ma’rib
+state_YE_Ray_3,base.ye,Raymah
+state_YE_Ḩaj_4,base.ye,Ḩajjah
+state_YE_Ibb_5,base.ye,Ibb
+state_YE_Al _6,base.ye,Al Ḩudaydah
+state_YE_Laḩ_7,base.ye,Laḩij
+state_YE_Al _8,base.ye,Al Maḩwīt
+state_YE_Ta‘_9,base.ye,Ta‘izz
+state_YE_Şa‘_10,base.ye,Şa‘dah
+state_YE_Dha_11,base.ye,Dhamār
+state_YE_‘Am_12,base.ye,‘Amrān
+state_YE_Aḑ_13,base.ye,Aḑ Ḑāli‘
+state_YE_Ḩaḑ_14,base.ye,Ḩaḑramawt
+state_YE_Al _15,base.ye,Al Bayḑā’
+state_YE_Aby_16,base.ye,Abyan
+state_YE_Sha_17,base.ye,Shabwah
+state_YE_Al _18,base.ye,Al Mahrah
+state_YE_Al _19,base.ye,Al Jawf
+state_YE_‘Ad_20,base.ye,‘Adan
+state_YE_Ark_21,base.ye,Arkhabīl Suquţrá
+base.state_za_lp,base.za,Limpopo
+base.state_za_nw,base.za,North West
+base.state_za_ec,base.za,Eastern Cape
+base.state_za_fs,base.za,Free State
+base.state_za_nl,base.za,KwaZulu-Natal
+base.state_za_gt,base.za,Gauteng
+base.state_za_nc,base.za,Northern Cape
+base.state_za_wc,base.za,Western Cape
+base.state_za_mp,base.za,Mpumalanga
+state_ZM_Nor_1,base.zm,North-Western
+state_ZM_Lus_2,base.zm,Lusaka
+state_ZM_Wes_3,base.zm,Western
+state_ZM_Eas_4,base.zm,Eastern
+state_ZM_Cop_5,base.zm,Copperbelt
+state_ZM_Lua_6,base.zm,Luapula
+state_ZM_Sou_7,base.zm,Southern
+state_ZM_Cen_8,base.zm,Central
+state_ZM_Nor_9,base.zm,Northern
+state_ZM_Muc_10,base.zm,Muchinga
+state_ZW_Mas_1,base.zw,Mashonaland Central
+state_ZW_Mas_2,base.zw,Masvingo
+state_ZW_Har_3,base.zw,Harare
+state_ZW_Mid_4,base.zw,Midlands
+state_ZW_Mas_5,base.zw,Mashonaland West
+state_ZW_Mat_6,base.zw,Matabeleland North
+state_ZW_Mas_7,base.zw,Mashonaland East
+state_ZW_Man_8,base.zw,Manicaland
+state_ZW_Bul_9,base.zw,Bulawayo
+state_ZW_Mat_10,base.zw,Matabeleland South
+state_KZ_Aty_1,base.kz,Atyraū
+state_KZ_Man_2,base.kz,Mangghystaū
+state_KZ_Zha_3,base.kz,Zhambyl
+state_KZ_Bat_4,base.kz,Batys Qazaqstan
+state_KZ_Qar_5,base.kz,Qaraghandy
+state_KZ_Shy_6,base.kz,Shyghys Qazaqstan
+state_KZ_Aqm_7,base.kz,Aqmola
+state_KZ_Qos_8,base.kz,Qostanay
+state_KZ_Aqt_9,base.kz,Aqtöbe
+state_KZ_Alm_10,base.kz,Almaty
+state_KZ_Qyz_11,base.kz,Qyzylorda
+state_KZ_Pav_12,base.kz,Pavlodar
+state_KZ_Sol_13,base.kz,Soltüstik Qazaqstan
+state_KZ_Ong_14,base.kz,Ongtüstik Qazaqstan
+state_KZ_Ast_15,base.kz,Astana
+state_LA_Xia_1,base.la,Xiangkhouang
+state_LA_Via_2,base.la,Viangchan
+state_LA_Bok_3,base.la,Bokèo
+state_LA_Lou_4,base.la,Louangnamtha
+state_LA_Phô_5,base.la,Phôngsali
+state_LA_Kha_6,base.la,Khammouan
+state_LA_Bol_7,base.la,Bolikhamxai
+state_LA_Lou_8,base.la,Louangphabang
+state_LA_Xai_9,base.la,Xaignabouli
+state_LA_Sav_10,base.la,Savannakhét
+state_LA_Xék_11,base.la,Xékong
+state_LA_Cha_12,base.la,Champasak
+state_LA_Att_13,base.la,Attapu
+state_LA_Hou_14,base.la,Houaphan
+state_LA_Oud_15,base.la,Oudômxai
+state_LA_Sal_16,base.la,Salavan
+state_LB_Bey_1,base.lb,Beyrouth
+state_LB_Béq_2,base.lb,Béqaa
+state_LB_Baa_3,base.lb,Baalbek-Hermel
+state_LB_Mon_4,base.lb,Mont-Liban
+state_LB_Aak_5,base.lb,Aakkâr
+state_LB_Lib_6,base.lb,Liban-Sud
+state_LB_Nab_7,base.lb,Nabatîyé
+state_LB_Lib_8,base.lb,Liban-Nord
+state_LC_Cas_1,base.lc,Castries
+state_LI_Gam_1,base.li,Gamprin
+state_LI_Tri_2,base.li,Triesenberg
+state_LI_Sch_3,base.li,Schaan
+state_LI_Rug_4,base.li,Ruggell
+state_LI_Mau_5,base.li,Mauren
+state_LI_Esc_6,base.li,Eschen
+state_LI_Tri_7,base.li,Triesen
+state_LI_Bal_8,base.li,Balzers
+state_LI_Vad_9,base.li,Vaduz
+state_LI_Pla_10,base.li,Planken
+state_LI_Sch_11,base.li,Schellenberg
+state_LK_Wes_1,base.lk,Western
+state_LK_Sab_2,base.lk,Sabaragamuwa
+state_LK_Sou_3,base.lk,Southern
+state_LK_Nor_4,base.lk,North Central
+state_LK_Nor_5,base.lk,North Western
+state_LK_Cen_6,base.lk,Central
+state_LK_Uva_7,base.lk,Uva
+state_LK_Eas_8,base.lk,Eastern
+state_LK_Nor_9,base.lk,Northern
+state_LR_Gba_1,base.lr,Gbarpolu
+state_LR_Lof_2,base.lr,Lofa
+state_LR_Gra_3,base.lr,Grand Cape Mount
+state_LR_Gra_4,base.lr,Grand Bassa
+state_LR_Mon_5,base.lr,Montserrado
+state_LR_Bom_6,base.lr,Bomi
+state_LR_Gra_7,base.lr,Grand Gedeh
+state_LR_Gra_8,base.lr,Grand Kru
+state_LR_Riv_9,base.lr,River Cess
+state_LR_Riv_10,base.lr,River Gee
+state_LR_Bon_11,base.lr,Bong
+state_LR_Mar_12,base.lr,Margibi
+state_LR_Nim_13,base.lr,Nimba
+state_LR_Sin_14,base.lr,Sinoe
+state_LR_Mar_15,base.lr,Maryland
+state_LS_Mas_1,base.ls,Maseru
+state_LS_Mok_2,base.ls,Mokhotlong
+state_LS_Tha_3,base.ls,Thaba-Tseka
+state_LS_Qut_4,base.ls,Quthing
+state_LS_Qac_5,base.ls,Qacha’s Nek
+state_LS_Maf_6,base.ls,Mafeteng
+state_LS_Ler_7,base.ls,Leribe
+state_LS_Ber_8,base.ls,Berea
+state_LS_Moh_9,base.ls,Mohale’s Hoek
+state_LS_But_10,base.ls,Butha-Buthe
+state_LT_Kla_1,base.lt,Klaipėdos Miestas
+state_LT_Pal_2,base.lt,Palangos Miestas
+state_LT_Ner_3,base.lt,Neringa
+state_LT_Kre_4,base.lt,Kretinga
+state_LT_Tau_5,base.lt,Tauragė
+state_LT_Šil_6,base.lt,Šilutė
+state_LT_Rie_7,base.lt,Rietavo
+state_LT_Plu_8,base.lt,Plungė
+state_LT_Šil_9,base.lt,Šilalė
+state_LT_Vis_10,base.lt,Visaginas
+state_LT_Zar_11,base.lt,Zarasai
+state_LT_Ign_12,base.lt,Ignalina
+state_LT_Ute_13,base.lt,Utena
+state_LT_Šve_14,base.lt,Švenčionys
+state_LT_Rok_15,base.lt,Rokiškis
+state_LT_Mol_16,base.lt,Molėtai
+state_LT_Šal_17,base.lt,Šalčininkai
+state_LT_Vil_18,base.lt,Vilniaus Miestas
+state_LT_Kup_19,base.lt,Kupiškis
+state_LT_Tra_20,base.lt,Trakai
+state_LT_Bir_21,base.lt,Biržai
+state_LT_Any_22,base.lt,Anykščiai
+state_LT_Tel_23,base.lt,Telšiai
+state_LT_Kel_24,base.lt,Kelmė
+state_LT_Mar_25,base.lt,Marijampolė
+state_LT_Laz_26,base.lt,Lazdijai
+state_LT_Šak_27,base.lt,Šakiai
+state_LT_Rad_28,base.lt,Radviliškis
+state_LT_Šia_29,base.lt,Šiaulių Miestas
+state_LT_Bir_30,base.lt,Birštono
+state_LT_Dru_31,base.lt,Druskininkai
+state_LT_Kėd_32,base.lt,Kėdainiai
+state_LT_Aly_33,base.lt,Alytaus Miestas
+state_LT_Pri_34,base.lt,Prienai
+state_LT_Ele_35,base.lt,Elektrénai
+state_LT_Kau_36,base.lt,Kauno Miestas
+state_LT_Jon_37,base.lt,Jonava
+state_LT_Kai_38,base.lt,Kaišiadorys
+state_LT_Pan_39,base.lt,Panevėžio Miestas
+state_LT_Jon_40,base.lt,Joniškis
+state_LT_Kaz_41,base.lt,Kazlų Rūdos
+state_LT_Vil_42,base.lt,Vilkaviškis
+state_LT_Pas_43,base.lt,Pasvalys
+state_LT_Pak_44,base.lt,Pakruojis
+state_LT_Ras_45,base.lt,Raseiniai
+state_LT_Pag_46,base.lt,Pagégiai
+state_LT_Jur_47,base.lt,Jurbarkas
+state_LT_Kal_48,base.lt,Kalvarijos
+state_LT_Šir_49,base.lt,Širvintos
+state_LT_Sku_50,base.lt,Skuodas
+state_LT_Maž_51,base.lt,Mažeikiai
+state_LT_Akm_52,base.lt,Akmenė
+state_LT_Ukm_53,base.lt,Ukmergė
+state_LT_Var_54,base.lt,Varėna
+state_LU_Cap_1,base.lu,Capellen
+state_LU_Esc_2,base.lu,Esch-sur-Alzette
+state_LU_Rem_3,base.lu,Remich
+state_LU_Ech_4,base.lu,Echternach
+state_LU_Mer_5,base.lu,Mersch
+state_LU_Red_6,base.lu,Redange
+state_LU_Via_7,base.lu,Vianden
+state_LU_Wil_8,base.lu,Wiltz
+state_LU_Cle_9,base.lu,Clervaux
+state_LU_Die_10,base.lu,Diekirch
+state_LU_Gre_11,base.lu,Grevenmacher
+state_LU_Lux_12,base.lu,Luxembourg
+state_LV_Auc_1,base.lv,Auces Novads
+state_LV_Dau_2,base.lv,Daugavpils Novads
+state_LV_Jēk_3,base.lv,Jēkabpils Novads
+state_LV_Sal_4,base.lv,Salacgrīvas Novads
+state_LV_Ven_5,base.lv,Ventspils
+state_LV_Dun_6,base.lv,Dundagas Novads
+state_LV_Jau_7,base.lv,Jaunjelgavas Novads
+state_LV_Ner_8,base.lv,Neretas Novads
+state_LV_Als_9,base.lv,Alsungas Novads
+state_LV_Kul_10,base.lv,Kuldīgas Novads
+state_LV_Pāv_11,base.lv,Pāvilostas Novads
+state_LV_Bab_12,base.lv,Babītes Novads
+state_LV_Āda_13,base.lv,Ādažu Novads
+state_LV_Kan_14,base.lv,Kandavas Novads
+state_LV_Roj_15,base.lv,Rojas Novads
+state_LV_Car_16,base.lv,Carnikavas Novads
+state_LV_Gar_17,base.lv,Garkalnes Novads
+state_LV_Sau_18,base.lv,Saulkrastu Novads
+state_LV_Eng_19,base.lv,Engures Novads
+state_LV_Mēr_20,base.lv,Mērsraga Novads
+state_LV_Tal_21,base.lv,Talsu Novads
+state_LV_Jūr_22,base.lv,Jūrmala
+state_LV_Mār_23,base.lv,Mārupes Novads
+state_LV_Sto_24,base.lv,Stopiņu Novads
+state_LV_Zil_25,base.lv,Zilupes Novads
+state_LV_Lud_26,base.lv,Ludzas Novads
+state_LV_Dag_27,base.lv,Dagdas Novads
+state_LV_Bal_28,base.lv,Baltinavas Novads
+state_LV_Cib_29,base.lv,Ciblas Novads
+state_LV_Kār_30,base.lv,Kārsavas Novads
+state_LV_Rīg_31,base.lv,Rīga
+state_LV_Krā_32,base.lv,Krāslavas Novads
+state_LV_Lim_33,base.lv,Limbažu Novads
+state_LV_Pre_34,base.lv,Preiļu Novads
+state_LV_Vār_35,base.lv,Vārkavas Novads
+state_LV_Ilū_36,base.lv,Ilūkstes Novads
+state_LV_Nīc_37,base.lv,Nīcas Novads
+state_LV_Bau_38,base.lv,Bauskas Novads
+state_LV_Viļ_39,base.lv,Viļakas Novads
+state_LV_Līv_40,base.lv,Līvānu Novads
+state_LV_Alū_41,base.lv,Alūksnes Novads
+state_LV_Jau_42,base.lv,Jaunpils Novads
+state_LV_Bro_43,base.lv,Brocēnu Novads
+state_LV_Rug_44,base.lv,Rugāju Novads
+state_LV_Rie_45,base.lv,Riebiņu Novads
+state_LV_Viļ_46,base.lv,Viļānu Novads
+state_LV_Var_47,base.lv,Varakļānu Novads
+state_LV_Ape_48,base.lv,Apes Novads
+state_LV_Mad_49,base.lv,Madonas Novads
+state_LV_Jau_50,base.lv,Jaunpiebalgas Novads
+state_LV_Lub_51,base.lv,Lubānas Novads
+state_LV_Gul_52,base.lv,Gulbenes Novads
+state_LV_Bal_53,base.lv,Balvu Novads
+state_LV_Akn_54,base.lv,Aknīstes Novads
+state_LV_Vie_55,base.lv,Viesītes Novads
+state_LV_Ces_56,base.lv,Cesvaines Novads
+state_LV_Ķeg_57,base.lv,Ķeguma Novads
+state_LV_Vec_58,base.lv,Vecpiebalgas Novads
+state_LV_Smi_59,base.lv,Smiltenes Novads
+state_LV_Ama_60,base.lv,Amatas Novads
+state_LV_Cēs_61,base.lv,Cēsu Novads
+state_LV_Ērg_62,base.lv,Ērgļu Novads
+state_LV_Val_63,base.lv,Valkas Novads
+state_LV_Gro_64,base.lv,Grobiņas Novads
+state_LV_Str_65,base.lv,Strenču Novads
+state_LV_Bev_66,base.lv,Beverīnas Novads
+state_LV_Maz_67,base.lv,Mazsalacas Novads
+state_LV_Alo_68,base.lv,Alojas Novads
+state_LV_Bur_69,base.lv,Burtnieku Novads
+state_LV_Kok_70,base.lv,Kokneses Novads
+state_LV_Aiz_71,base.lv,Aizkraukles Novads
+state_LV_Skr_72,base.lv,Skrīveru Novads
+state_LV_Bal_73,base.lv,Baldones Novads
+state_LV_Vec_74,base.lv,Vecumnieku Novads
+state_LV_Sal_75,base.lv,Salas Novads
+state_LV_Pļa_76,base.lv,Pļaviņu Novads
+state_LV_Lie_77,base.lv,Liepāja
+state_LV_Rūj_78,base.lv,Rūjienas Novads
+state_LV_Nau_79,base.lv,Naukšēnu Novads
+state_LV_Dur_80,base.lv,Durbes Novads
+state_LV_Rau_81,base.lv,Raunas Novads
+state_LV_Aiz_82,base.lv,Aizputes Novads
+state_LV_Koc_83,base.lv,Kocēnu Novads
+state_LV_Val_84,base.lv,Valmiera
+state_LV_Sig_85,base.lv,Siguldas Novads
+state_LV_Pri_86,base.lv,Priekuļu Novads
+state_LV_Ogr_87,base.lv,Ogres Novads
+state_LV_Kri_88,base.lv,Krimuldas Novads
+state_LV_Sēj_89,base.lv,Sējas Novads
+state_LV_Rop_90,base.lv,Ropažu Novads
+state_LV_Pri_91,base.lv,Priekules Novads
+state_LV_Iec_92,base.lv,Iecavas Novads
+state_LV_Ruc_93,base.lv,Rucavas Novads
+state_LV_Run_94,base.lv,Rundāles Novads
+state_LV_Sal_95,base.lv,Salaspils Novads
+state_LV_Ikš_96,base.lv,Ikšķiles Novads
+state_LV_Lie_97,base.lv,Lielvārdes Novads
+state_LV_Inč_98,base.lv,Inčukalna Novads
+state_LV_Māl_99,base.lv,Mālpils Novads
+state_LV_Ola_100,base.lv,Olaines Novads
+state_LV_Ķek_101,base.lv,Ķekavas Novads
+state_LV_Līg_102,base.lv,Līgatnes Novads
+state_LV_Pār_103,base.lv,Pārgaujas Novads
+state_LV_Jel_104,base.lv,Jelgavas Novads
+state_LV_Skr_105,base.lv,Skrundas Novads
+state_LV_Vai_106,base.lv,Vaiņodes Novads
+state_LV_Sal_107,base.lv,Saldus Novads
+state_LV_Tuk_108,base.lv,Tukuma Novads
+state_LV_Tēr_109,base.lv,Tērvetes Novads
+state_LV_Dob_110,base.lv,Dobeles Novads
+state_LV_Rēz_111,base.lv,Rēzeknes Novads
+state_LV_Agl_112,base.lv,Aglonas Novads
+state_LV_Ozo_113,base.lv,Ozolnieku Novads
+state_LY_Ţar_1,base.ly,Ţarābulus
+state_LY_Al _2,base.ly,Al Jafārah
+state_LY_An _3,base.ly,An Nuqāţ al Khams
+state_LY_Al _4,base.ly,Al Marqab
+state_LY_Nāl_5,base.ly,Nālūt
+state_LY_Wād_6,base.ly,Wādī ash Shāţi’
+state_LY_Sab_7,base.ly,Sabhā
+state_LY_Al _8,base.ly,Al Jufrah
+state_LY_Az _9,base.ly,Az Zāwiyah
+state_LY_Al _10,base.ly,Al Wāḩāt
+state_LY_Dar_11,base.ly,Darnah
+state_LY_Al _12,base.ly,Al Buţnān
+state_LY_Al _13,base.ly,Al Jabal al Gharbī
+state_LY_Al _14,base.ly,Al Jabal al Akhḑar
+state_LY_Mur_15,base.ly,Murzuq
+state_LY_Ghā_16,base.ly,Ghāt
+state_LY_Al _17,base.ly,Al Marj
+state_LY_Sur_18,base.ly,Surt
+state_LY_Miş_19,base.ly,Mişrātah
+state_LY_Wād_20,base.ly,Wādī al Ḩayāt
+state_LY_Al _21,base.ly,Al Kufrah
+state_LY_Ban_22,base.ly,Banghāzī
+state_MA_Rab_1,base.ma,Rabat-Salé-Kénitra
+state_MA_Gue_2,base.ma,Guelmim-Oued Noun
+state_MA_Fès_3,base.ma,Fès-Meknès
+state_MA_Cas_4,base.ma,Casablanca-Settat
+state_MA_Sou_5,base.ma,Souss-Massa
+state_MA_Bén_6,base.ma,Béni Mellal-Khénifra
+state_MA_Tan_7,base.ma,Tanger-Tétouan-Al Hoceïma
+state_MA_Ori_8,base.ma,Oriental
+state_MA_Mar_9,base.ma,Marrakech-Safi
+state_MA_Drâ_10,base.ma,Drâa-Tafilalet
+state_MD_Leo_1,base.md,Leova
+state_MD_Rez_2,base.md,Rezina
+state_MD_Cău_3,base.md,Căuşeni
+state_MD_Rîş_4,base.md,Rîşcani
+state_MD_Sîn_5,base.md,Sîngerei
+state_MD_Făl_6,base.md,Făleşti
+state_MD_Flo_7,base.md,Floreşti
+state_MD_Şol_8,base.md,Şoldăneşti
+state_MD_Şte_9,base.md,Ştefan-Vodă
+state_MD_Orh_10,base.md,Orhei
+state_MD_Găg_11,base.md,Găgăuzia
+state_MD_Cim_12,base.md,Cimişlia
+state_MD_Can_13,base.md,Cantemir
+state_MD_Bas_14,base.md,Basarabeasca
+state_MD_Edi_15,base.md,Edineţ
+state_MD_Ocn_16,base.md,Ocniţa
+state_MD_Dro_17,base.md,Drochia
+state_MD_Don_18,base.md,Donduşeni
+state_MD_Bri_19,base.md,Briceni
+state_MD_Ial_20,base.md,Ialoveni
+state_MD_Băl_21,base.md,Bălţi
+state_MD_Cri_22,base.md,Criuleni
+state_MD_Ben_23,base.md,Bender
+state_MD_Ane_24,base.md,Anenii Noi
+state_MD_Cah_25,base.md,Cahul
+state_MD_Chi_26,base.md,Chişinău
+state_MD_Str_27,base.md,Străşeni
+state_MD_Stî_28,base.md,Stînga Nistrului
+state_MD_Tel_29,base.md,Teleneşti
+state_MD_Tar_30,base.md,Taraclia
+state_MD_Dub_31,base.md,Dubăsari
+state_MD_Căl_32,base.md,Călăraşi
+state_MD_Glo_33,base.md,Glodeni
+state_MD_Hîn_34,base.md,Hînceşti
+state_MD_Nis_35,base.md,Nisporeni
+state_MD_Sor_36,base.md,Soroca
+state_MD_Ung_37,base.md,Ungheni
+state_ME_Ber_1,base.me,Berane
+state_ME_Pla_2,base.me,Plav
+state_ME_And_3,base.me,Andrijevica
+state_ME_Pet_4,base.me,Petnjica
+state_ME_Gus_5,base.me,Gusinje
+state_ME_Kol_6,base.me,Kolašin
+state_ME_Pod_7,base.me,Podgorica
+state_ME_Bij_8,base.me,Bijelo Polje
+state_ME_Bar_9,base.me,Bar
+state_ME_Bud_10,base.me,Budva
+state_ME_Cet_11,base.me,Cetinje
+state_ME_Dan_12,base.me,Danilovgrad
+state_ME_Her_13,base.me,Herceg Novi
+state_ME_Kot_14,base.me,Kotor
+state_ME_Moj_15,base.me,Mojkovac
+state_ME_Nik_16,base.me,Nikšić
+state_ME_Plu_17,base.me,Plužine
+state_ME_Plj_18,base.me,Pljevlja
+state_ME_Rož_19,base.me,Rožaje
+state_ME_Šav_20,base.me,Šavnik
+state_ME_Tiv_21,base.me,Tivat
+state_ME_Ulc_22,base.me,Ulcinj
+state_ME_Žab_23,base.me,Žabljak
+state_MG_Ant_1,base.mg,Antananarivo
+state_MG_Toa_2,base.mg,Toamasina
+state_MG_Ant_3,base.mg,Antsiranana
+state_MG_Mah_4,base.mg,Mahajanga
+state_MG_Tol_5,base.mg,Toliara
+state_MG_Fia_6,base.mg,Fianarantsoa
+state_MH_Maj_1,base.mh,Majuro
+state_MK_Vev_1,base.mk,Vevčani
+state_MK_Koč_2,base.mk,Kočani
+state_MK_Sta_3,base.mk,Staro Nagoričane
+state_MK_Rad_4,base.mk,Radoviš
+state_MK_Sop_5,base.mk,Sopište
+state_MK_Pet_6,base.mk,Petrovec
+state_MK_Bos_7,base.mk,Bosilovo
+state_MK_Zrn_8,base.mk,Zrnovci
+state_MK_Gra_9,base.mk,Gradsko
+state_MK_Lip_10,base.mk,Lipkovo
+state_MK_Loz_11,base.mk,Lozovo
+state_MK_Pla_12,base.mk,Plasnica
+state_MK_Ara_13,base.mk,Aračinovo
+state_MK_Stu_14,base.mk,Studeničani
+state_MK_Res_15,base.mk,Resen
+state_MK_Bog_16,base.mk,Bogovinje
+state_MK_Vin_17,base.mk,Vinica
+state_MK_Deb_18,base.mk,Debarca
+state_MK_Mog_19,base.mk,Mogila
+state_MK_Vel_20,base.mk,Veles
+state_MK_Kav_21,base.mk,Kavadarci
+state_MK_Kum_22,base.mk,Kumanovo
+state_MK_Ohr_23,base.mk,Ohrid
+state_MK_Str_24,base.mk,Strumica
+state_MK_Mak_25,base.mk,Makedonski Brod
+state_MK_Mav_26,base.mk,Mavrovo i Rostuša
+state_MK_Str_27,base.mk,Struga
+state_MK_Čuč_28,base.mk,Čučer-Sandevo
+state_MK_Nov_29,base.mk,Novo Selo
+state_MK_Zel_30,base.mk,Zelenikovo
+state_MK_Doj_31,base.mk,Dojran
+state_MK_Šti_32,base.mk,Štip
+state_MK_Mak_33,base.mk,Makedonska Kamenica
+state_MK_Ili_34,base.mk,Ilinden
+state_MK_Dem_35,base.mk,Demir Hisar
+state_MK_Žel_36,base.mk,Želino
+state_MK_Pri_37,base.mk,Prilep
+state_MK_Bit_38,base.mk,Bitola
+state_MK_Kri_39,base.mk,Krivogaštani
+state_MK_Kru_40,base.mk,Kruševo
+state_MK_Vas_41,base.mk,Vasilevo
+state_MK_Gos_42,base.mk,Gostivar
+state_MK_Vra_43,base.mk,Vrapčište
+state_MK_Nov_44,base.mk,Novaci
+state_MK_Čaš_45,base.mk,Čaška
+state_MK_Kra_46,base.mk,Kratovo
+state_MK_Pro_47,base.mk,Probištip
+state_MK_Deb_48,base.mk,Debar
+state_MK_Cen_49,base.mk,Centar Župa
+state_MK_Ros_50,base.mk,Rosoman
+state_MK_Jeg_51,base.mk,Jegunovce
+state_MK_Dem_52,base.mk,Demir Kapija
+state_MK_Neg_53,base.mk,Negotino
+state_MK_Kon_54,base.mk,Konče
+state_MK_Dol_55,base.mk,Dolneni
+state_MK_Sve_56,base.mk,Sveti Nikole
+state_MK_Val_57,base.mk,Valandovo
+state_MK_Kič_58,base.mk,Kičevo
+state_MK_Del_59,base.mk,Delčevo
+state_MK_Tet_60,base.mk,Tetovo
+state_MK_Češ_61,base.mk,Češinovo-Obleševo
+state_MK_Kar_62,base.mk,Karbinci
+state_MK_Tea_63,base.mk,Tearce
+state_MK_Kri_64,base.mk,Kriva Palanka
+state_MK_Ran_65,base.mk,Rankovce
+state_MK_Peh_66,base.mk,Pehčevo
+state_MK_Gev_67,base.mk,Gevgelija
+state_MK_Bog_68,base.mk,Bogdanci
+state_MK_Ber_69,base.mk,Berovo
+state_MK_Brv_70,base.mk,Brvenica
+state_ML_Kid_1,base.ml,Kidal
+state_ML_Bam_2,base.ml,Bamako
+state_ML_Gao_3,base.ml,Gao
+state_ML_Mop_4,base.ml,Mopti
+state_ML_Kay_5,base.ml,Kayes
+state_ML_Kou_6,base.ml,Koulikoro
+state_ML_Sik_7,base.ml,Sikasso
+state_ML_Tom_8,base.ml,Tombouctou
+state_ML_Ség_9,base.ml,Ségou
+state_MM_Yan_1,base.mm,Yangon
+state_MM_Mag_2,base.mm,Magway
+state_MM_Mon_3,base.mm,Mon State
+state_MM_Aye_4,base.mm,Ayeyawady
+state_MM_Tan_5,base.mm,Taninthayi
+state_MM_Sha_6,base.mm,Shan State
+state_MM_Bag_7,base.mm,Bago
+state_MM_Kac_8,base.mm,Kachin State
+state_MM_Sag_9,base.mm,Sagaing
+state_MM_Nay_10,base.mm,Nay Pyi Taw
+state_MM_Kay_11,base.mm,Kayah State
+state_MM_Rak_12,base.mm,Rakhine State
+state_MM_Man_13,base.mm,Mandalay
+state_MM_Kay_14,base.mm,Kayin State
+state_MM_Chi_15,base.mm,Chin State
+state_MN_Bay_1,base.mn,Bayan-Ölgiy
+state_MN_Dun_2,base.mn,Dundgovĭ
+state_MN_Ula_3,base.mn,Ulaanbaatar
+state_MN_Höv_4,base.mn,Hövsgöl
+state_MN_Sel_5,base.mn,Selenge
+state_MN_Orh_6,base.mn,Orhon
+state_MN_Dza_7,base.mn,Dzavhan
+state_MN_Gov_8,base.mn,Govĭsümber
+state_MN_Gov_9,base.mn,Govĭ-Altay
+state_MN_Dor_10,base.mn,Dornogovĭ
+state_MN_Dor_11,base.mn,Dornod
+state_MN_Uvs_12,base.mn,Uvs
+state_MN_Bul_13,base.mn,Bulgan
+state_MN_Övö_14,base.mn,Övörhangay
+state_MN_Arh_15,base.mn,Arhangay
+state_MN_Bay_16,base.mn,Bayanhongor
+state_MN_Dar_17,base.mn,Darhan-Uul
+state_MN_Töv_18,base.mn,Töv
+state_MN_Hen_19,base.mn,Hentiy
+state_MN_Ömn_20,base.mn,Ömnögovĭ
+state_MN_Süh_21,base.mn,Sühbaatar
+state_MN_Hov_22,base.mn,Hovd
+state_MR_Bra_1,base.mr,Brakna
+state_MR_Tir_2,base.mr,Tiris Zemmour
+state_MR_Tra_3,base.mr,Trarza
+state_MR_Hod_4,base.mr,Hodh ech Chargui
+state_MR_Gui_5,base.mr,Guidimaka
+state_MR_Inc_6,base.mr,Inchiri
+state_MR_Ass_7,base.mr,Assaba
+state_MR_Dak_8,base.mr,Dakhlet Nouadhibou
+state_MR_Tag_9,base.mr,Tagant
+state_MR_Adr_10,base.mr,Adrar
+state_MR_Gor_11,base.mr,Gorgol
+state_MR_Nou_12,base.mr,Nouakchott Sud
+state_MR_Nou_13,base.mr,Nouakchott Nord
+state_MR_Nou_14,base.mr,Nouakchott Ouest
+state_MR_Hod_15,base.mr,Hodh el Gharbi
+state_MS_Sai_1,base.ms,Saint Anthony
+state_MT_Bir_1,base.mt,Birżebbuġa
+state_MT_Mar_2,base.mt,Marsaskala
+state_MT_Mar_3,base.mt,Marsaxlokk
+state_MT_Kir_4,base.mt,Kirkop
+state_MT_Pie_5,base.mt,Pietà
+state_MT_Żej_6,base.mt,Żejtun
+state_MT_Att_7,base.mt,Attard
+state_MT_Pem_8,base.mt,Pembroke
+state_MT_Żeb_9,base.mt,Żebbuġ
+state_MT_Ta’_10,base.mt,Ta’ Xbiex
+state_MT_Sli_11,base.mt,Sliema
+state_MT_San_12,base.mt,San Lawrenz
+state_MT_Imq_13,base.mt,Imqabba
+state_MT_Imd_14,base.mt,Imdina
+state_MT_Qal_15,base.mt,Qala
+state_MT_Imt_16,base.mt,Imtarfa
+state_MT_Żur_17,base.mt,Żurrieq
+state_MT_Gud_18,base.mt,Gudja
+state_MT_San_19,base.mt,Sannat
+state_MT_Val_20,base.mt,Valletta
+state_MT_Żab_21,base.mt,Żabbar
+state_MT_Luq_22,base.mt,Luqa
+state_MT_Qor_23,base.mt,Qormi
+state_MT_Imġ_24,base.mt,Imġarr
+state_MT_San_25,base.mt,San Pawl il-Baħar
+state_MT_Qre_26,base.mt,Qrendi
+state_MT_Mun_27,base.mt,Munxar
+state_MT_Ħam_28,base.mt,Ħamrun
+state_MT_Nax_29,base.mt,Naxxar
+state_MT_Għa_30,base.mt,Għaxaq
+state_MT_Għa_31,base.mt,Għasri
+state_MT_Rab_32,base.mt,Rabat (Ghawdex)
+state_MT_Ikl_33,base.mt,Iklin
+state_MT_Għa_34,base.mt,Għargħur
+state_MT_Din_35,base.mt,Dingli
+state_MT_Siġ_36,base.mt,Siġġiewi
+state_MT_Xew_37,base.mt,Xewkija
+state_MT_Lij_38,base.mt,Lija
+state_MT_Saf_39,base.mt,Safi
+state_MT_Isl_40,base.mt,Isla
+state_MT_Xag_41,base.mt,Xagħra
+state_MT_Xgħ_42,base.mt,Xgħajra
+state_MT_Żeb_43,base.mt,Żebbuġ (Ghawdex)
+state_MT_Gżi_44,base.mt,Gżira
+state_MT_Ims_45,base.mt,Imsida
+state_MT_Kal_46,base.mt,Kalkara
+state_MT_Ker_47,base.mt,Kerċem
+state_MT_Mel_48,base.mt,Mellieħa
+state_MT_Mos_49,base.mt,Mosta
+state_MT_Nad_50,base.mt,Nadur
+state_MT_Pao_51,base.mt,Paola
+state_MT_Rab_52,base.mt,Rabat
+state_MT_Mar_53,base.mt,Marsa
+state_MT_San_54,base.mt,San Ġiljan
+state_MT_San_55,base.mt,San Ġwann
+state_MT_San_56,base.mt,Santa Luċija
+state_MT_San_57,base.mt,Santa Venera
+state_MT_Swi_58,base.mt,Swieqi
+state_MT_Tar_59,base.mt,Tarxien
+state_MT_Bal_60,base.mt,Balzan
+state_MT_Bir_61,base.mt,Birgu
+state_MT_Bir_62,base.mt,Birkirkara
+state_MT_Bor_63,base.mt,Bormla
+state_MT_Fgu_64,base.mt,Fgura
+state_MT_Flo_65,base.mt,Floriana
+state_MT_Fon_66,base.mt,Fontana
+state_MT_Għa_67,base.mt,Għajnsielem
+state_MT_Għa_68,base.mt,Għarb
+state_MU_Por_1,base.mu,Port Louis
+state_MU_Pla_2,base.mu,Plaines Wilhems
+state_MV_Maa_1,base.mv,Maale
+state_MW_Thy_1,base.mw,Thyolo
+state_MW_Mwa_2,base.mw,Mwanza
+state_MW_Chi_3,base.mw,Chiradzulu
+state_MW_Kar_4,base.mw,Karonga
+state_MW_Nen_5,base.mw,Neno
+state_MW_Zom_6,base.mw,Zomba
+state_MW_Chi_7,base.mw,Chikwawa
+state_MW_Mul_8,base.mw,Mulanje
+state_MW_Bla_9,base.mw,Blantyre
+state_MW_Nsa_10,base.mw,Nsanje
+state_MW_Pha_11,base.mw,Phalombe
+state_MW_Nkh_12,base.mw,Nkhata Bay
+state_MW_Rum_13,base.mw,Rumphi
+state_MW_Chi_14,base.mw,Chitipa
+state_MW_Mzi_15,base.mw,Mzimba
+state_MW_Ntc_16,base.mw,Ntchisi
+state_MW_Dow_17,base.mw,Dowa
+state_MW_Mch_18,base.mw,Mchinji
+state_MW_Nkh_19,base.mw,Nkhotakota
+state_MW_Kas_20,base.mw,Kasungu
+state_MW_Ntc_21,base.mw,Ntcheu
+state_MW_Ded_22,base.mw,Dedza
+state_MW_Sal_23,base.mw,Salima
+state_MW_Lil_24,base.mw,Lilongwe
+state_MW_Man_25,base.mw,Mangochi
+state_MW_Bal_26,base.mw,Balaka
+state_MW_Mac_27,base.mw,Machinga
+base.state_mx_son,base.mx,Sonora
+base.state_mx_coah,base.mx,Coahuila
+base.state_mx_bc,base.mx,Baja California
+base.state_mx_zac,base.mx,Zacatecas
+base.state_mx_gto,base.mx,Guanajuato
+base.state_mx_q roo,base.mx,Quintana Roo
+base.state_mx_yuc,base.mx,Yucatán
+base.state_mx_tab,base.mx,Tabasco
+base.state_mx_sin,base.mx,Sinaloa
+base.state_mx_tamps,base.mx,Tamaulipas
+base.state_mx_ags,base.mx,Aguascalientes
+base.state_mx_chih,base.mx,Chihuahua
+base.state_mx_gro,base.mx,Guerrero
+base.state_mx_hgo,base.mx,Hidalgo
+base.state_mx_jal,base.mx,Jalisco
+base.state_mx_mor,base.mx,Morelos
+base.state_mx_nl,base.mx,Nuevo León
+base.state_mx_mich,base.mx,Michoacán
+base.state_mx_oax,base.mx,Oaxaca
+base.state_mx_bcs,base.mx,Baja California Sur
+base.state_mx_ver,base.mx,Veracruz
+base.state_mx_pue,base.mx,Puebla
+base.state_mx_dgo,base.mx,Durango
+base.state_mx_nay,base.mx,Nayarit
+base.state_mx_col,base.mx,Colima
+base.state_mx_slp,base.mx,San Luis Potosí
+base.state_mx_df,base.mx,Ciudad de México
+base.state_mx_chis,base.mx,Chiapas
+base.state_mx_qro,base.mx,Querétaro
+base.state_mx_camp,base.mx,Campeche
+base.state_mx_mex,base.mx,México
+base.state_mx_tlax,base.mx,Tlaxcala
+base.state_my_swk,base.my,Sarawak
+base.state_my_lbn,base.my,Labuan
+base.state_my_prk,base.my,Perak
+base.state_my_trg,base.my,Terengganu
+base.state_my_kul,base.my,Kuala Lumpur
+base.state_my_pls,base.my,Perlis
+base.state_my_kdh,base.my,Kedah
+base.state_my_png,base.my,Pulau Pinang
+base.state_my_sbh,base.my,Sabah
+base.state_my_ktn,base.my,Kelantan
+base.state_my_jhr,base.my,Johor
+base.state_my_phg,base.my,Pahang
+base.state_my_mlk,base.my,Melaka
+base.state_my_nsn,base.my,Negeri Sembilan
+base.state_my_sgr,base.my,Selangor
+state_MZ_Man_1,base.mz,Manica
+state_MZ_Zam_2,base.mz,Zambézia
+state_MZ_Gaz_3,base.mz,Gaza
+state_MZ_Inh_4,base.mz,Inhambane
+state_MZ_Nam_5,base.mz,Nampula
+state_MZ_Sof_6,base.mz,Sofala
+state_MZ_Tet_7,base.mz,Tete
+state_MZ_Nia_8,base.mz,Niassa
+state_MZ_Cab_9,base.mz,Cabo Delgado
+state_MZ_Map_10,base.mz,Maputo
+state_NA_Oha_1,base.na,Ohangwena
+state_NA_Otj_2,base.na,Otjozondjupa
+state_NA_Osh_3,base.na,Oshana
+state_NA_Kho_4,base.na,Khomas
+state_NA_//K_5,base.na,//Karas
+state_NA_Har_6,base.na,Hardap
+state_NA_Ero_7,base.na,Erongo
+state_NA_Kun_8,base.na,Kunene
+state_NA_Zam_9,base.na,Zambezi
+state_NA_Omu_10,base.na,Omusati
+state_NA_Oma_11,base.na,Omaheke
+state_NA_Kav_12,base.na,Kavango East
+state_NA_Kav_13,base.na,Kavango West
+state_NA_Osh_14,base.na,Oshikoto
+state_NC_Pro_1,base.nc,Province Nord
+state_NC_Pro_2,base.nc,Province Îles
+state_NC_Pro_3,base.nc,Province Sud
+state_NE_Nia_1,base.ne,Niamey
+state_NE_Mar_2,base.ne,Maradi
+state_NE_Zin_3,base.ne,Zinder
+state_NE_Til_4,base.ne,Tillabéri
+state_NE_Dos_5,base.ne,Dosso
+state_NE_Aga_6,base.ne,Agadez
+state_NE_Tah_7,base.ne,Tahoua
+state_NE_Dif_8,base.ne,Diffa
+state_NG_Fed_1,base.ng,Federal Capital Territory
+state_NG_Akw_2,base.ng,Akwa Ibom
+state_NG_Ond_3,base.ng,Ondo
+state_NG_Keb_4,base.ng,Kebbi
+state_NG_Riv_5,base.ng,Rivers
+state_NG_Gom_6,base.ng,Gombe
+state_NG_Enu_7,base.ng,Enugu
+state_NG_Yob_8,base.ng,Yobe
+state_NG_Tar_9,base.ng,Taraba
+state_NG_Bor_10,base.ng,Borno
+state_NG_Nig_11,base.ng,Niger
+state_NG_Pla_12,base.ng,Plateau
+state_NG_Ebo_13,base.ng,Ebonyi
+state_NG_Osu_14,base.ng,Osun
+state_NG_Ogu_15,base.ng,Ogun
+state_NG_Lag_16,base.ng,Lagos
+state_NG_Kwa_17,base.ng,Kwara
+state_NG_Zam_18,base.ng,Zamfara
+state_NG_Bay_19,base.ng,Bayelsa
+state_NG_Eki_20,base.ng,Ekiti
+state_NG_Oyo_21,base.ng,Oyo
+state_NG_Kat_22,base.ng,Katsina
+state_NG_Edo_23,base.ng,Edo
+state_NG_Nas_24,base.ng,Nasarawa
+state_NG_Kog_25,base.ng,Kogi
+state_NG_Sok_26,base.ng,Sokoto
+state_NG_Kad_27,base.ng,Kaduna
+state_NG_Kan_28,base.ng,Kano
+state_NG_Jig_29,base.ng,Jigawa
+state_NG_Ada_30,base.ng,Adamawa
+state_NG_Imo_31,base.ng,Imo
+state_NG_Bau_32,base.ng,Bauchi
+state_NG_Ben_33,base.ng,Benue
+state_NG_Ana_34,base.ng,Anambra
+state_NG_Cro_35,base.ng,Cross River
+state_NG_Del_36,base.ng,Delta
+state_NG_Abi_37,base.ng,Abia
+state_NI_Man_1,base.ni,Managua
+state_NI_Río_2,base.ni,Río San Juan
+state_NI_Cho_3,base.ni,Chontales
+state_NI_Boa_4,base.ni,Boaco
+state_NI_Gra_5,base.ni,Granada
+state_NI_Car_6,base.ni,Caribe Norte
+state_NI_Car_7,base.ni,Carazo
+state_NI_Jin_8,base.ni,Jinotega
+state_NI_Leó_9,base.ni,León
+state_NI_Est_10,base.ni,Estelí
+state_NI_Mad_11,base.ni,Madriz
+state_NI_Chi_12,base.ni,Chinandega
+state_NI_Nue_13,base.ni,Nueva Segovia
+state_NI_Mas_14,base.ni,Masaya
+state_NI_Car_15,base.ni,Caribe Sur
+state_NI_Riv_16,base.ni,Rivas
+state_NI_Mat_17,base.ni,Matagalpa
+state_NL_Lim_1,base.nl,Limburg
+state_NL_Noo_2,base.nl,Noord-Holland
+state_NL_Zui_3,base.nl,Zuid-Holland
+state_NL_Gro_4,base.nl,Groningen
+state_NL_Zee_5,base.nl,Zeeland
+state_NL_Fle_6,base.nl,Flevoland
+state_NL_Gel_7,base.nl,Gelderland
+state_NL_Dre_8,base.nl,Drenthe
+state_NL_Noo_9,base.nl,Noord-Brabant
+state_NL_Ove_10,base.nl,Overijssel
+state_NL_Utr_11,base.nl,Utrecht
+state_NL_Fry_12,base.nl,Fryslân
+state_NO_Tro_1,base.no,Troms
+state_NO_Mør_2,base.no,Møre og Romsdal
+state_NO_Hor_3,base.no,Hordaland
+state_NO_Osl_4,base.no,Oslo
+state_NO_Opp_5,base.no,Oppland
+state_NO_Ake_6,base.no,Akershus
+state_NO_Rog_7,base.no,Rogaland
+state_NO_Sog_8,base.no,Sogn og Fjordane
+state_NO_Ves_9,base.no,Vest-Agder
+state_NO_Tel_10,base.no,Telemark
+state_NO_Aus_11,base.no,Aust-Agder
+state_NO_Hed_12,base.no,Hedmark
+state_NO_Ves_13,base.no,Vestfold
+state_NO_Bus_14,base.no,Buskerud
+state_NO_Nor_15,base.no,Nordland
+state_NO_Fin_16,base.no,Finnmark
+state_NO_Øst_17,base.no,Østfold
+state_NP_Bāg_1,base.np,Bāgmatī
+state_NP_Jan_2,base.np,Janakpur
+base.state_nz_wgn,base.nz,Wellington
+base.state_nz_stl,base.nz,Southland
+base.state_nz_can,base.nz,Canterbury
+base.state_nz_ota,base.nz,Otago
+base.state_nz_nsn,base.nz,Nelson
+base.state_nz_mbh,base.nz,Marlborough
+base.state_nz_wko,base.nz,Waikato
+base.state_nz_mwt,base.nz,Manawatu-Wanganui
+base.state_nz_wtc,base.nz,West Coast
+base.state_nz_bop,base.nz,Bay of Plenty
+state_NZ_Cha_11,base.nz,Chatham Islands
+base.state_nz_ntl,base.nz,Northland
+base.state_nz_auk,base.nz,Auckland
+base.state_nz_gis,base.nz,Gisborne
+base.state_nz_hkb,base.nz,Hawke's Bay
+base.state_nz_tki,base.nz,Taranaki
+state_OM_Z̧u_1,base.om,Z̧ufār
+state_OM_Ad _2,base.om,Ad Dākhilīyah
+state_OM_Jan_3,base.om,Janūb al Bāţinah
+state_OM_Al _4,base.om,Al Wusţá
+state_OM_Jan_5,base.om,Janūb ash Sharqīyah
+state_OM_Mus_6,base.om,Musandam
+state_OM_Mas_7,base.om,Masqaţ
+state_OM_Sha_8,base.om,Shamāl al Bāţinah
+state_OM_Sha_9,base.om,Shamāl ash Sharqīyah
+state_OM_Al _10,base.om,Al Buraymī
+state_PA_Pan_1,base.pa,Panamá
+state_PA_Pan_2,base.pa,Panamá Oeste
+state_PA_Col_3,base.pa,Colón
+state_PA_Dar_4,base.pa,Darién
+state_PA_Coc_5,base.pa,Coclé
+state_PA_Emb_6,base.pa,Emberá-Wounaan
+state_PA_Chi_7,base.pa,Chiriquí
+state_PA_Ver_8,base.pa,Veraguas
+state_PA_Los_9,base.pa,Los Santos
+state_PA_Her_10,base.pa,Herrera
+state_PA_Ngö_11,base.pa,Ngöbe-Buglé
+state_PA_Boc_12,base.pa,Bocas del Toro
+state_PA_Kun_13,base.pa,Kuna Yala
+state_PE_La _1,base.pe,La Libertad
+state_PE_Lim_2,base.pe,Lima
+state_PE_Apu_3,base.pe,Apurímac
+state_PE_Lor_4,base.pe,Loreto
+state_PE_Are_5,base.pe,Arequipa
+state_PE_Huá_6,base.pe,Huánuco
+state_PE_Caj_7,base.pe,Cajamarca
+state_PE_Lam_8,base.pe,Lambayeque
+state_PE_San_9,base.pe,San Martín
+state_PE_Piu_10,base.pe,Piura
+state_PE_Anc_11,base.pe,Ancash
+state_PE_Cal_12,base.pe,Callao
+state_PE_Jun_13,base.pe,Junín
+state_PE_Pun_14,base.pe,Puno
+state_PE_Cus_15,base.pe,Cusco
+state_PE_Pas_16,base.pe,Pasco
+state_PE_Moq_17,base.pe,Moquegua
+state_PE_Tum_18,base.pe,Tumbes
+state_PE_Ica_19,base.pe,Ica
+state_PE_Aya_20,base.pe,Ayacucho
+state_PE_Uca_21,base.pe,Ucayali
+state_PE_Mad_22,base.pe,Madre de Dios
+state_PE_Hua_23,base.pe,Huancavelica
+state_PE_Ama_24,base.pe,Amazonas
+state_PE_Tac_25,base.pe,Tacna
+state_PG_Nat_1,base.pg,National Capital
+state_PG_Bou_2,base.pg,Bougainville
+state_PG_Eas_3,base.pg,East Sepik
+state_PG_New_4,base.pg,New Ireland
+state_PG_Man_5,base.pg,Manus
+state_PG_Wes_6,base.pg,West New Britain
+state_PG_Cen_7,base.pg,Central
+state_PG_Mil_8,base.pg,Milne Bay
+state_PG_Wes_9,base.pg,Western
+state_PG_Wes_10,base.pg,Western Highlands
+state_PG_Mor_11,base.pg,Morobe
+state_PG_Eas_12,base.pg,Eastern Highlands
+state_PG_Mad_13,base.pg,Madang
+state_PG_Gul_14,base.pg,Gulf
+state_PG_Wes_15,base.pg,West Sepik
+state_PG_Eas_16,base.pg,East New Britain
+state_PG_Nor_17,base.pg,Northern
+state_PG_Eng_18,base.pg,Enga
+state_PG_Sou_19,base.pg,Southern Highlands
+state_PG_Chi_20,base.pg,Chimbu
+state_PH_Sar_1,base.ph,Sarangani
+state_PH_Ilo_2,base.ph,Ilocos Norte
+state_PH_Lan_3,base.ph,Lanao del Sur
+state_PH_Neg_4,base.ph,Negros Occidental
+state_PH_Buk_5,base.ph,Bukidnon
+state_PH_Sam_6,base.ph,Samar
+state_PH_Mis_7,base.ph,Misamis Oriental
+state_PH_Cap_8,base.ph,Capiz
+state_PH_Lag_9,base.ph,Laguna
+state_PH_Bas_10,base.ph,Basilan
+state_PH_Nue_11,base.ph,Nueva Ecija
+state_PH_Bag_12,base.ph,Baguio
+state_PH_Mak_13,base.ph,Makati
+state_PH_Pas_14,base.ph,Pasig
+state_PH_Par_15,base.ph,Parañaque
+state_PH_Aur_16,base.ph,Aurora
+state_PH_Abr_17,base.ph,Abra
+state_PH_Bat_18,base.ph,Bataan
+state_PH_Mar_19,base.ph,Marinduque
+state_PH_Dav_20,base.ph,Davao Occidental
+state_PH_Bul_21,base.ph,Bulacan
+state_PH_Dav_22,base.ph,Davao Oriental
+state_PH_Bat_23,base.ph,Batangas
+state_PH_Nue_24,base.ph,Nueva Vizcaya
+state_PH_Ang_25,base.ph,Angeles
+state_PH_Bac_26,base.ph,Bacolod
+state_PH_Man_27,base.ph,Mandaue
+state_PH_Taw_28,base.ph,Tawi-Tawi
+state_PH_Mou_29,base.ph,Mountain
+state_PH_Eas_30,base.ph,Eastern Samar
+state_PH_But_31,base.ph,Butuan
+state_PH_Agu_32,base.ph,Agusan del Norte
+state_PH_Qui_33,base.ph,Quirino
+state_PH_Cag_34,base.ph,Cagayan de Oro
+state_PH_Ori_35,base.ph,Oriental Mindoro
+state_PH_Cal_36,base.ph,Caloocan
+state_PH_Nor_37,base.ph,Northern Samar
+state_PH_Ceb_38,base.ph,Cebu
+state_PH_Cot_39,base.ph,Cotabato
+state_PH_Cam_40,base.ph,Camarines Norte
+state_PH_Dag_41,base.ph,Dagupan
+state_PH_Dav_42,base.ph,Davao
+state_PH_Dav_43,base.ph,Davao del Sur
+state_PH_Zam_44,base.ph,Zamboanga del Norte
+state_PH_Neg_45,base.ph,Negros Oriental
+state_PH_Gen_46,base.ph,General Santos
+state_PH_Zam_47,base.ph,Zambales
+state_PH_Isa_48,base.ph,Isabela
+state_PH_Ili_49,base.ph,Iligan
+state_PH_Ilo_50,base.ph,Iloilo
+state_PH_Zam_51,base.ph,Zamboanga Sibugay
+state_PH_Sul_52,base.ph,Sulu
+state_PH_Gui_53,base.ph,Guimaras
+state_PH_Apa_54,base.ph,Apayao
+state_PH_Akl_55,base.ph,Aklan
+state_PH_Ifu_56,base.ph,Ifugao
+state_PH_Ben_57,base.ph,Benguet
+state_PH_Lap_58,base.ph,Lapu-Lapu
+state_PH_Alb_59,base.ph,Albay
+state_PH_Pan_60,base.ph,Pangasinan
+state_PH_Luc_61,base.ph,Lucena
+state_PH_Sou_62,base.ph,Southern Leyte
+state_PH_Mal_63,base.ph,Malabon
+state_PH_Cam_64,base.ph,Camiguin
+state_PH_Occ_65,base.ph,Occidental Mindoro
+state_PH_Man_66,base.ph,Mandaluyong
+state_PH_Mar_67,base.ph,Marikina
+state_PH_Mas_68,base.ph,Masbate
+state_PH_Mun_69,base.ph,Muntinlupa
+state_PH_Com_70,base.ph,Compostela Valley
+state_PH_Nag_71,base.ph,Naga
+state_PH_Bil_72,base.ph,Biliran
+state_PH_Nav_73,base.ph,Navotas
+state_PH_Olo_74,base.ph,Olongapo
+state_PH_Orm_75,base.ph,Ormoc
+state_PH_Mis_76,base.ph,Misamis Occidental
+state_PH_Zam_77,base.ph,Zamboanga del Sur
+state_PH_Pas_78,base.ph,Pasay
+state_PH_Cam_79,base.ph,Camarines Sur
+state_PH_Agu_80,base.ph,Agusan del Sur
+state_PH_Pue_81,base.ph,Puerto Princesa
+state_PH_Que_82,base.ph,Quezon
+state_PH_Rom_83,base.ph,Romblon
+state_PH_La _84,base.ph,La Union
+state_PH_Pam_85,base.ph,Pampanga
+state_PH_Din_86,base.ph,Dinagat Islands
+state_PH_San_87,base.ph,San Juan
+state_PH_San_88,base.ph,Santiago
+state_PH_Mag_89,base.ph,Maguindanao
+state_PH_Siq_90,base.ph,Siquijor
+state_PH_Sor_91,base.ph,Sorsogon
+state_PH_Sur_92,base.ph,Surigao del Norte
+state_PH_Kal_93,base.ph,Kalinga
+state_PH_Tac_94,base.ph,Tacloban
+state_PH_Tag_95,base.ph,Taguig
+state_PH_Dav_96,base.ph,Davao del Norte
+state_PH_Sur_97,base.ph,Surigao del Sur
+state_PH_Tar_98,base.ph,Tarlac
+state_PH_Cav_99,base.ph,Cavite
+state_PH_Lan_100,base.ph,Lanao del Norte
+state_PH_Cag_101,base.ph,Cagayan
+state_PH_Val_102,base.ph,Valenzuela
+state_PH_Ilo_103,base.ph,Ilocos Sur
+state_PH_Cat_104,base.ph,Catanduanes
+state_PH_Zam_105,base.ph,Zamboanga
+state_PH_Ant_106,base.ph,Antique
+state_PH_Bat_107,base.ph,Batanes
+state_PH_Riz_108,base.ph,Rizal
+state_PH_Sou_109,base.ph,South Cotabato
+state_PH_Sul_110,base.ph,Sultan Kudarat
+state_PK_Sin_1,base.pk,Sindh
+state_PK_Gil_2,base.pk,Gilgit-Baltistan
+state_PK_Bal_3,base.pk,Balochistān
+state_PK_Isl_4,base.pk,Islāmābād
+state_PK_Khy_5,base.pk,Khyber Pakhtunkhwa
+state_PK_Pun_6,base.pk,Punjab
+state_PK_Fed_7,base.pk,Federally Administered Tribal Areas
+state_PL_Łód_1,base.pl,Łódzkie
+state_PL_Lub_2,base.pl,Lubelskie
+state_PL_Dol_3,base.pl,Dolnośląskie
+state_PL_Pod_4,base.pl,Podlaskie
+state_PL_Wie_5,base.pl,Wielkopolskie
+state_PL_Lub_6,base.pl,Lubuskie
+state_PL_Kuj_7,base.pl,Kujawsko-Pomorskie
+state_PL_Zac_8,base.pl,Zachodniopomorskie
+state_PL_Pom_9,base.pl,Pomorskie
+state_PL_War_10,base.pl,Warmińsko-Mazurskie
+state_PL_Ślą_11,base.pl,Śląskie
+state_PL_Pod_12,base.pl,Podkarpackie
+state_PL_Mał_13,base.pl,Małopolskie
+state_PL_Opo_14,base.pl,Opolskie
+state_PL_Świ_15,base.pl,Świętokrzyskie
+state_PL_Maz_16,base.pl,Mazowieckie
+base.state_pt_pt-30,base.pt,Madeira
+base.state_pt_pt-15,base.pt,Setúbal
+base.state_pt_pt-11,base.pt,Lisboa
+base.state_pt_pt-07,base.pt,Évora
+state_PT_Azo_5,base.pt,Azores
+base.state_pt_pt-14,base.pt,Santarém
+base.state_pt_pt-13,base.pt,Porto
+base.state_pt_pt-08,base.pt,Faro
+base.state_pt_pt-17,base.pt,Vila Real
+base.state_pt_pt-01,base.pt,Aveiro
+base.state_pt_pt-09,base.pt,Guarda
+base.state_pt_pt-18,base.pt,Viseu
+base.state_pt_pt-04,base.pt,Bragança
+base.state_pt_pt-16,base.pt,Viana do Castelo
+base.state_pt_pt-03,base.pt,Braga
+base.state_pt_pt-02,base.pt,Beja
+base.state_pt_pt-05,base.pt,Castelo Branco
+base.state_pt_pt-12,base.pt,Portalegre
+base.state_pt_pt-06,base.pt,Coimbra
+base.state_pt_pt-10,base.pt,Leiria
+state_PW_Mel_1,base.pw,Melekeok
+state_PY_Alt_1,base.py,Alto Paraguay
+state_PY_Boq_2,base.py,Boquerón
+state_PY_Ama_3,base.py,Amambay
+state_PY_Alt_4,base.py,Alto Paraná
+state_PY_Con_5,base.py,Concepción
+state_PY_Pre_6,base.py,Presidente Hayes
+state_PY_Caa_7,base.py,Caazapá
+state_PY_Cen_8,base.py,Central
+state_PY_Cor_9,base.py,Cordillera
+state_PY_Gua_10,base.py,Guairá
+state_PY_Ita_11,base.py,Itapúa
+state_PY_Caa_12,base.py,Caaguazú
+state_PY_Mis_13,base.py,Misiones
+state_PY_Ñee_14,base.py,Ñeembucú
+state_PY_Par_15,base.py,Paraguarí
+state_PY_San_16,base.py,San Pedro
+state_PY_Can_17,base.py,Canindeyú
+state_PY_Asu_18,base.py,Asunción
+state_QA_Az̧_1,base.qa,Az̧ Z̧a‘āyin
+state_QA_Al _2,base.qa,Al Wakrah
+state_QA_Al _3,base.qa,Al Khawr wa adh Dhakhīrah
+state_QA_Ash_4,base.qa,Ash Shamāl
+state_QA_Umm_5,base.qa,Umm Şalāl
+state_QA_Ar _6,base.qa,Ar Rayyān
+state_QA_Ad _7,base.qa,Ad Dawḩah
+state_RO_Meh_1,base.ro,Mehedinţi
+state_RO_Bră_2,base.ro,Brăila
+state_RO_Bih_3,base.ro,Bihor
+state_RO_Tim_4,base.ro,Timiş
+state_RO_Car_5,base.ro,Caraş-Severin
+state_RO_Căl_6,base.ro,Călăraşi
+state_RO_Ara_7,base.ro,Arad
+state_RO_Tel_8,base.ro,Teleorman
+state_RO_Ial_9,base.ro,Ialomiţa
+state_RO_Mar_10,base.ro,Maramureş
+state_RO_Tul_11,base.ro,Tulcea
+state_RO_Pra_12,base.ro,Prahova
+state_RO_Nea_13,base.ro,Neamţ
+state_RO_Suc_14,base.ro,Suceava
+state_RO_Bot_15,base.ro,Botoşani
+state_RO_Con_16,base.ro,Constanţa
+state_RO_Buz_17,base.ro,Buzău
+state_RO_Gal_18,base.ro,Galaţi
+state_RO_Vas_19,base.ro,Vaslui
+state_RO_Cov_20,base.ro,Covasna
+state_RO_Bac_21,base.ro,Bacău
+state_RO_Vra_22,base.ro,Vrancea
+state_RO_Buc_23,base.ro,Bucureşti
+state_RO_Bra_24,base.ro,Braşov
+state_RO_Arg_25,base.ro,Argeş
+state_RO_Mur_26,base.ro,Mureş
+state_RO_Hun_27,base.ro,Hunedoara
+state_RO_Clu_28,base.ro,Cluj
+state_RO_Vâl_29,base.ro,Vâlcea
+state_RO_Sib_30,base.ro,Sibiu
+state_RO_Gor_31,base.ro,Gorj
+state_RO_Alb_32,base.ro,Alba
+state_RO_Giu_33,base.ro,Giurgiu
+state_RO_Săl_34,base.ro,Sălaj
+state_RO_Dol_35,base.ro,Dolj
+state_RO_Dâm_36,base.ro,Dâmboviţa
+state_RO_Bis_37,base.ro,Bistriţa-Năsăud
+state_RO_Sat_38,base.ro,Satu Mare
+state_RO_Olt_39,base.ro,Olt
+state_RO_Har_40,base.ro,Harghita
+state_RO_Iaş_41,base.ro,Iaşi
+state_RS_Ara_1,base.rs,Aranđelovac
+state_RS_Bel_2,base.rs,Bela Palanka
+state_RS_Gad_3,base.rs,Gadžin Han
+state_RS_Niš_4,base.rs,Niš
+state_RS_Svr_5,base.rs,Svrljig
+state_RS_Sok_6,base.rs,Sokobanja
+state_RS_Bol_7,base.rs,Boljevac
+state_RS_Zaj_8,base.rs,Zaječar
+state_RS_Bor_9,base.rs,Bor
+state_RS_Neg_10,base.rs,Negotin
+state_RS_Kla_11,base.rs,Kladovo
+state_RS_Maj_12,base.rs,Majdanpek
+state_RS_Gol_13,base.rs,Golubac
+state_RS_Kuč_14,base.rs,Kučevo
+state_RS_Žag_15,base.rs,Žagubica
+state_RS_Pet_16,base.rs,Petrovac na Mlavi
+state_RS_Des_17,base.rs,Despotovac
+state_RS_Svi_18,base.rs,Svilajnac
+state_RS_Dol_19,base.rs,Doljevac
+state_RS_Mer_20,base.rs,Merošina
+state_RS_Ale_21,base.rs,Aleksinac
+state_RS_Bla_22,base.rs,Blace
+state_RS_Bru_23,base.rs,Brus
+state_RS_Kru_24,base.rs,Kruševac
+state_RS_Ale_25,base.rs,Aleksandrovac
+state_RS_Vrn_26,base.rs,Vrnjačka Banja
+state_RS_Trs_27,base.rs,Trstenik
+state_RS_Var_28,base.rs,Varvarin
+state_RS_Ćić_29,base.rs,Ćićevac
+state_RS_Raž_30,base.rs,Ražanj
+state_RS_Par_31,base.rs,Paraćin
+state_RS_Ćup_32,base.rs,Ćuprija
+state_RS_Jag_33,base.rs,Jagodina
+state_RS_Rek_34,base.rs,Rekovac
+state_RS_Ada_35,base.rs,Ada
+state_RS_Ali_36,base.rs,Alibunar
+state_RS_Apa_37,base.rs,Apatin
+state_RS_Pri_38,base.rs,Prijepolje
+state_RS_Rač_39,base.rs,Rača
+state_RS_Raš_40,base.rs,Raška
+state_RS_Rum_41,base.rs,Ruma
+state_RS_Sen_42,base.rs,Senta
+state_RS_Seč_43,base.rs,Sečanj
+state_RS_Sje_44,base.rs,Sjenica
+state_RS_Sme_45,base.rs,Smederevo
+state_RS_Sme_46,base.rs,Smederevska Palanka
+state_RS_Som_47,base.rs,Sombor
+state_RS_Srb_48,base.rs,Srbobran
+state_RS_Sre_49,base.rs,Sremska Mitrovica
+state_RS_Sre_50,base.rs,Sremski Karlovci
+state_RS_Sta_51,base.rs,Stara Pazova
+state_RS_Sub_52,base.rs,Subotica
+state_RS_Tem_53,base.rs,Temerin
+state_RS_Tit_54,base.rs,Titel
+state_RS_Top_55,base.rs,Topola
+state_RS_Tut_56,base.rs,Tutin
+state_RS_Ub_57,base.rs,Ub
+state_RS_Uži_58,base.rs,Užice
+state_RS_Val_59,base.rs,Valjevo
+state_RS_Vel_60,base.rs,Veliko Gradište
+state_RS_Vla_61,base.rs,Vladimirci
+state_RS_Vrb_62,base.rs,Vrbas
+state_RS_Vrš_63,base.rs,Vršac
+state_RS_Zre_64,base.rs,Zrenjanin
+state_RS_Gor_65,base.rs,Gornji Milanovac
+state_RS_Inđ_66,base.rs,Inđija
+state_RS_Iri_67,base.rs,Irig
+state_RS_Iva_68,base.rs,Ivanjica
+state_RS_Kan_69,base.rs,Kanjiža
+state_RS_Kik_70,base.rs,Kikinda
+state_RS_Kni_71,base.rs,Knić
+state_RS_Koc_72,base.rs,Koceljeva
+state_RS_Kos_73,base.rs,Kosjerić
+state_RS_Kov_74,base.rs,Kovačica
+state_RS_Kov_75,base.rs,Kovin
+state_RS_Kra_76,base.rs,Kragujevac
+state_RS_Kra_77,base.rs,Kraljevo
+state_RS_Kru_78,base.rs,Krupanj
+state_RS_Kul_79,base.rs,Kula
+state_RS_Laj_80,base.rs,Lajkovac
+state_RS_Lap_81,base.rs,Lapovo
+state_RS_Lji_82,base.rs,Ljig
+state_RS_Lju_83,base.rs,Ljubovija
+state_RS_Loz_84,base.rs,Loznica
+state_RS_Luč_85,base.rs,Lučani
+state_RS_Mal_86,base.rs,Mali Iđoš
+state_RS_Mal_87,base.rs,Mali Zvornik
+state_RS_Mal_88,base.rs,Malo Crniće
+state_RS_Mio_89,base.rs,Mionica
+state_RS_Nov_90,base.rs,Nova Crnja
+state_RS_Nov_91,base.rs,Nova Varoš
+state_RS_Nov_92,base.rs,Novi Bečej
+state_RS_Nov_93,base.rs,Novi Kneževac
+state_RS_Nov_94,base.rs,Novi Pazar
+state_RS_Nov_95,base.rs,Novi Sad
+state_RS_Odž_96,base.rs,Odžaci
+state_RS_Opo_97,base.rs,Opovo
+state_RS_Ose_98,base.rs,Osečina
+state_RS_Pan_99,base.rs,Pančevo
+state_RS_Peć_100,base.rs,Pećinci
+state_RS_Pla_101,base.rs,Plandište
+state_RS_Pož_102,base.rs,Požarevac
+state_RS_Pož_103,base.rs,Požega
+state_RS_Pri_104,base.rs,Priboj
+state_RS_Šid_105,base.rs,Šid
+state_RS_Šab_106,base.rs,Šabac
+state_RS_Ari_107,base.rs,Arilje
+state_RS_Baj_108,base.rs,Bajina Bašta
+state_RS_Bat_109,base.rs,Batočina
+state_RS_Bač_110,base.rs,Bač
+state_RS_Bač_111,base.rs,Bačka Palanka
+state_RS_Bač_112,base.rs,Bačka Topola
+state_RS_Bač_113,base.rs,Bački Petrovac
+state_RS_Bel_114,base.rs,Bela Crkva
+state_RS_Beč_115,base.rs,Bečej
+state_RS_Bog_116,base.rs,Bogatić
+state_RS_Žit_117,base.rs,Žitište
+state_RS_Žab_118,base.rs,Žabari
+state_RS_Žab_119,base.rs,Žabalj
+state_RS_Čok_120,base.rs,Čoka
+state_RS_Čač_121,base.rs,Čačak
+state_RS_Trg_122,base.rs,Trgovište
+state_RS_Vra_123,base.rs,Vranje
+state_RS_Buj_124,base.rs,Bujanovac
+state_RS_Pre_125,base.rs,Preševo
+state_RS_Bos_126,base.rs,Bosilegrad
+state_RS_Sur_127,base.rs,Surdulica
+state_RS_Vla_128,base.rs,Vladičin Han
+state_RS_Crn_129,base.rs,Crna Trava
+state_RS_Vla_130,base.rs,Vlasotince
+state_RS_Žit_131,base.rs,Žitorađa
+state_RS_Pro_132,base.rs,Prokuplje
+state_RS_Bab_133,base.rs,Babušnica
+state_RS_Dim_134,base.rs,Dimitrovgrad
+state_RS_Pir_135,base.rs,Pirot
+state_RS_Knj_136,base.rs,Knjaževac
+state_RS_Kur_137,base.rs,Kuršumlija
+state_RS_Med_138,base.rs,Medveđa
+state_RS_Boj_139,base.rs,Bojnik
+state_RS_Leb_140,base.rs,Lebane
+state_RS_Les_141,base.rs,Leskovac
+state_RS_Čaj_142,base.rs,Čajetina
+state_RS_Vel_143,base.rs,Velika Plana
+state_RS_Beo_144,base.rs,Beočin
+state_RU_Ros_1,base.ru,Rostovskaya Oblast’
+state_RU_Sak_2,base.ru,Sakha (Yakutiya)
+state_RU_Sve_3,base.ru,Sverdlovskaya Oblast’
+state_RU_Kha_4,base.ru,Khanty-Mansiyskiy Avtonomnyy Okrug-Yugra
+state_RU_Kom_5,base.ru,Komi
+state_RU_Yam_6,base.ru,Yamalo-Nenetskiy Avtonomnyy Okrug
+state_RU_Sar_7,base.ru,Saratovskaya Oblast’
+state_RU_Bur_8,base.ru,Buryatiya
+state_RU_Niz_9,base.ru,Nizhegorodskaya Oblast’
+state_RU_Che_10,base.ru,Chelyabinskaya Oblast’
+state_RU_Oms_11,base.ru,Omskaya Oblast’
+state_RU_Kab_12,base.ru,Kabardino-Balkariya
+state_RU_Mur_13,base.ru,Murmanskaya Oblast’
+state_RU_Ady_14,base.ru,Adygeya
+state_RU_Irk_15,base.ru,Irkutskaya Oblast’
+state_RU_San_16,base.ru,Sankt-Peterburg
+state_RU_Sta_17,base.ru,Stavropol’skiy Kray
+state_RU_Kem_18,base.ru,Kemerovskaya Oblast’
+state_RU_Pen_19,base.ru,Penzenskaya Oblast’
+state_RU_Nov_20,base.ru,Novosibirskaya Oblast’
+state_RU_Rya_21,base.ru,Ryazanskaya Oblast’
+state_RU_Mos_22,base.ru,Moskovskaya Oblast’
+state_RU_Ul’_23,base.ru,Ul’yanovskaya Oblast’
+state_RU_Alt_24,base.ru,Altayskiy Kray
+state_RU_Kha_25,base.ru,Khakasiya
+state_RU_Bas_26,base.ru,Bashkortostan
+state_RU_Psk_27,base.ru,Pskovskaya Oblast’
+state_RU_Smo_28,base.ru,Smolenskaya Oblast’
+state_RU_Tom_29,base.ru,Tomskaya Oblast’
+state_RU_Nov_30,base.ru,Novgorodskaya Oblast’
+state_RU_Kal_31,base.ru,Kaluzhskaya Oblast’
+state_RU_Udm_32,base.ru,Udmurtiya
+state_RU_Vol_33,base.ru,Vologodskaya Oblast’
+state_RU_Vol_34,base.ru,Volgogradskaya Oblast’
+state_RU_Tyu_35,base.ru,Tyumenskaya Oblast’
+state_RU_Ark_36,base.ru,Arkhangel’skaya Oblast’
+state_RU_Kur_37,base.ru,Kurganskaya Oblast’
+state_RU_Tve_38,base.ru,Tverskaya Oblast’
+state_RU_Kal_39,base.ru,Kalmykiya
+state_RU_Alt_40,base.ru,Altay
+state_RU_Chu_41,base.ru,Chuvashiya
+state_RU_Vla_42,base.ru,Vladimirskaya Oblast’
+state_RU_Len_43,base.ru,Leningradskaya Oblast’
+state_RU_Mos_44,base.ru,Moskva
+state_RU_Nor_45,base.ru,North Ossetia
+state_RU_Nen_46,base.ru,Nenetskiy Avtonomnyy Okrug
+state_RU_Sam_47,base.ru,Samarskaya Oblast’
+state_RU_Kra_48,base.ru,Krasnoyarskiy Kray
+state_RU_Ore_49,base.ru,Orenburgskaya Oblast’
+state_RU_Mor_50,base.ru,Mordoviya
+state_RU_Zab_51,base.ru,Zabaykal’skiy Kray
+state_RU_Tat_52,base.ru,Tatarstan
+state_RU_Tul_53,base.ru,Tul’skaya Oblast’
+state_RU_Kur_54,base.ru,Kurskaya Oblast’
+state_RU_Bel_55,base.ru,Belgorodskaya Oblast’
+state_RU_Yar_56,base.ru,Yaroslavskaya Oblast’
+state_RU_Mar_57,base.ru,Mariy-El
+state_RU_Bry_58,base.ru,Bryanskaya Oblast’
+state_RU_Tam_59,base.ru,Tambovskaya Oblast’
+state_RU_Kra_60,base.ru,Krasnodarskiy Kray
+state_RU_Dag_61,base.ru,Dagestan
+state_RU_Kos_62,base.ru,Kostromskaya Oblast’
+state_RU_Vor_63,base.ru,Voronezhskaya Oblast’
+state_RU_Iva_64,base.ru,Ivanovskaya Oblast’
+state_RU_Orl_65,base.ru,Orlovskaya Oblast’
+state_RU_Kir_66,base.ru,Kirovskaya Oblast’
+state_RU_Pri_67,base.ru,Primorskiy Kray
+state_RU_Kar_68,base.ru,Kareliya
+state_RU_Kal_69,base.ru,Kaliningradskaya Oblast’
+state_RU_Per_70,base.ru,Permskiy Kray
+state_RU_Lip_71,base.ru,Lipetskaya Oblast’
+state_RU_Kar_72,base.ru,Karachayevo-Cherkesiya
+state_RU_Ast_73,base.ru,Astrakhanskaya Oblast’
+state_RU_Tyv_74,base.ru,Tyva
+state_RU_Ing_75,base.ru,Ingushetiya
+state_RU_Che_76,base.ru,Chechnya
+state_RU_Chu_77,base.ru,Chukotskiy Avtonomnyy Okrug
+state_RU_Amu_78,base.ru,Amurskaya Oblast’
+state_RU_Kha_79,base.ru,Khabarovskiy Kray
+state_RU_Mag_80,base.ru,Magadanskaya Oblast’
+state_RU_Sak_81,base.ru,Sakhalinskaya Oblast’
+state_RU_Kam_82,base.ru,Kamchatskiy Kray
+state_RU_Yev_83,base.ru,Yevreyskaya Avtonomnaya Oblast’
+state_RW_Wes_1,base.rw,Western Province
+state_RW_Nor_2,base.rw,Northern Province
+state_RW_Sou_3,base.rw,Southern Province
+state_RW_Eas_4,base.rw,Eastern Province
+state_SA_Mak_1,base.sa,Makkah al Mukarramah
+state_SA_Ar _2,base.sa,Ar Riyāḑ
+state_SA_Tab_3,base.sa,Tabūk
+state_SA_Al _4,base.sa,Al Jawf
+state_SA_Naj_5,base.sa,Najrān
+state_SA_Al _6,base.sa,Al Bāḩah
+state_SA_Al _7,base.sa,Al Madīnah al Munawwarah
+state_SA_Ḩā’_8,base.sa,Ḩā’il
+state_SA_Jāz_9,base.sa,Jāzān
+state_SA_Al _10,base.sa,Al Ḩudūd ash Shamālīyah
+state_SA_‘As_11,base.sa,‘Asīr
+state_SA_Ash_12,base.sa,Ash Sharqīyah
+state_SA_Al _13,base.sa,Al Qaşīm
+state_SB_Hon_1,base.sb,Honiara
+state_SB_Mal_2,base.sb,Malaita
+state_SB_Isa_3,base.sb,Isabel
+state_SB_Wes_4,base.sb,Western
+state_SB_Mak_5,base.sb,Makira and Ulawa
+state_SB_Cen_6,base.sb,Central
+state_SB_Cho_7,base.sb,Choiseul
+state_SB_Ren_8,base.sb,Rennell and Bellona
+state_SB_Tem_9,base.sb,Temotu
+state_SD_Kha_1,base.sd,Khartoum
+state_SD_Riv_2,base.sd,River Nile
+state_SD_Al _3,base.sd,Al Gazira
+state_SD_Whi_4,base.sd,White Nile
+state_SD_Red_5,base.sd,Red Sea
+state_SD_Nor_6,base.sd,Northern
+state_SD_Sen_7,base.sd,Sennar
+state_SD_Nor_8,base.sd,North Kordofan
+state_SD_Wes_9,base.sd,Western Kordofan
+state_SD_Wes_10,base.sd,West Darfur
+state_SD_Al _11,base.sd,Al Gedaref
+state_SD_Eas_12,base.sd,East Darfur
+state_SD_Blu_13,base.sd,Blue Nile
+state_SD_Nor_14,base.sd,North Darfur
+state_SD_Sou_15,base.sd,South Kordofan
+state_SD_Sou_16,base.sd,South Darfur
+state_SD_Cen_17,base.sd,Central Darfur
+state_SD_Kas_18,base.sd,Kassala
+state_SE_Väs_1,base.se,Västmanland
+state_SE_Upp_2,base.se,Uppsala
+state_SE_Öre_3,base.se,Örebro
+state_SE_Jäm_4,base.se,Jämtland
+state_SE_Vär_5,base.se,Värmland
+state_SE_Söd_6,base.se,Södermanland
+state_SE_Väs_7,base.se,Västra Götaland
+state_SE_Hal_8,base.se,Halland
+state_SE_Öst_9,base.se,Östergötland
+state_SE_Jön_10,base.se,Jönköping
+state_SE_Kal_11,base.se,Kalmar
+state_SE_Gäv_12,base.se,Gävleborg
+state_SE_Skå_13,base.se,Skåne
+state_SE_Kro_14,base.se,Kronoberg
+state_SE_Nor_15,base.se,Norrbotten
+state_SE_Sto_16,base.se,Stockholm
+state_SE_Ble_17,base.se,Blekinge
+state_SE_Dal_18,base.se,Dalarna
+state_SE_Väs_19,base.se,Västernorrland
+state_SE_Väs_20,base.se,Västerbotten
+state_SE_Got_21,base.se,Gotland
+state_SH_Tri_1,base.sh,Tristan da Cunha
+state_SH_Asc_2,base.sh,Ascension
+state_SH_Sai_3,base.sh,Saint Helena
+state_SI_Lju_1,base.si,Ljubljana
+state_SI_Reč_2,base.si,Rečica ob Savinji
+state_SI_Sel_3,base.si,Selnica ob Dravi
+state_SI_Sem_4,base.si,Semič
+state_SI_Šal_5,base.si,Šalovci
+state_SI_Rib_6,base.si,Ribnica na Pohorju
+state_SI_Rib_7,base.si,Ribnica
+state_SI_Rog_8,base.si,Rogaška Slatina
+state_SI_Rog_9,base.si,Rogašovci
+state_SI_Rog_10,base.si,Rogatec
+state_SI_Ruš_11,base.si,Ruše
+state_SI_Ren_12,base.si,Renče-Vogrsko
+state_SI_Mik_13,base.si,Miklavž na Dravskem Polju
+state_SI_Mir_14,base.si,Miren-Kostanjevica
+state_SI_Pol_15,base.si,Poljčane
+state_SI_Pre_16,base.si,Prevalje
+state_SI_Rač_17,base.si,Rače-Fram
+state_SI_Pod_18,base.si,Podlehnik
+state_SI_Pre_19,base.si,Prebold
+state_SI_Ptu_20,base.si,Ptuj
+state_SI_Puc_21,base.si,Puconci
+state_SI_Pos_22,base.si,Postojna
+state_SI_Piv_23,base.si,Pivka
+state_SI_Rad_24,base.si,Radeče
+state_SI_Pol_25,base.si,Polzela
+state_SI_Pre_26,base.si,Preddvor
+state_SI_Pod_27,base.si,Podvelka
+state_SI_Pod_28,base.si,Podčetrtek
+state_SI_Ajd_29,base.si,Ajdovščina
+state_SI_Ble_30,base.si,Bled
+state_SI_Bis_31,base.si,Bistrica ob Sotli
+state_SI_Ben_32,base.si,Benedikt
+state_SI_Bel_33,base.si,Beltinci
+state_SI_Gor_34,base.si,Gornji Petrovci
+state_SI_Gra_35,base.si,Grad
+state_SI_Gro_36,base.si,Grosuplje
+state_SI_Blo_37,base.si,Bloke
+state_SI_Haj_38,base.si,Hajdina
+state_SI_Boh_39,base.si,Bohinj
+state_SI_Bor_40,base.si,Borovnica
+state_SI_Bov_41,base.si,Bovec
+state_SI_Bra_42,base.si,Braslovče
+state_SI_Bre_43,base.si,Brežice
+state_SI_Bre_44,base.si,Brezovica
+state_SI_Brd_45,base.si,Brda
+state_SI_Can_46,base.si,Cankova
+state_SI_Cel_47,base.si,Celje
+state_SI_Cer_48,base.si,Cerklje na Gorenjskem
+state_SI_Cer_49,base.si,Cerknica
+state_SI_Cer_50,base.si,Cerkno
+state_SI_Cer_51,base.si,Cerkvenjak
+state_SI_Čre_52,base.si,Črenšovci
+state_SI_Črn_53,base.si,Črna na Koroškem
+state_SI_Črn_54,base.si,Črnomelj
+state_SI_Des_55,base.si,Destrnik
+state_SI_Hor_56,base.si,Horjul
+state_SI_Kra_57,base.si,Kranjska Gora
+state_SI_Kri_58,base.si,Križevci
+state_SI_Krš_59,base.si,Krško
+state_SI_Ili_60,base.si,Ilirska Bistrica
+state_SI_Iva_61,base.si,Ivančna Gorica
+state_SI_Izo_62,base.si,Izola
+state_SI_Jes_63,base.si,Jesenice
+state_SI_Kop_64,base.si,Koper
+state_SI_Kos_65,base.si,Kostanjevica na Krki
+state_SI_Koz_66,base.si,Kozje
+state_SI_Kra_67,base.si,Kranj
+state_SI_Len_68,base.si,Lendava
+state_SI_Lit_69,base.si,Litija
+state_SI_Lju_70,base.si,Ljubno
+state_SI_Lju_71,base.si,Ljutomer
+state_SI_Hoč_72,base.si,Hoče-Slivnica
+state_SI_Hod_73,base.si,Hodoš
+state_SI_Hra_74,base.si,Hrastnik
+state_SI_Hrp_75,base.si,Hrpelje-Kozina
+state_SI_Idr_76,base.si,Idrija
+state_SI_Ig_77,base.si,Ig
+state_SI_Kun_78,base.si,Kungota
+state_SI_Kuz_79,base.si,Kuzma
+state_SI_Laš_80,base.si,Laško
+state_SI_Len_81,base.si,Lenart
+state_SI_Log_82,base.si,Logatec
+state_SI_Log_83,base.si,Log-Dragomer
+state_SI_Loš_84,base.si,Loška Dolina
+state_SI_Loš_85,base.si,Loški Potok
+state_SI_Jez_86,base.si,Jezersko
+state_SI_Jur_87,base.si,Juršinci
+state_SI_Kam_88,base.si,Kamnik
+state_SI_Kan_89,base.si,Kanal
+state_SI_Kid_90,base.si,Kidričevo
+state_SI_Kob_91,base.si,Kobarid
+state_SI_Kob_92,base.si,Kobilje
+state_SI_Koč_93,base.si,Kočevje
+state_SI_Kom_94,base.si,Komen
+state_SI_Sve_95,base.si,Sveta Trojica v Slovenskih Goricah
+state_SI_Pes_96,base.si,Pesnica
+state_SI_Pir_97,base.si,Piran
+state_SI_Mur_98,base.si,Murska Sobota
+state_SI_Mut_99,base.si,Muta
+state_SI_Mor_100,base.si,Moravče
+state_SI_Nov_101,base.si,Novo Mesto
+state_SI_Odr_102,base.si,Odranci
+state_SI_Opl_103,base.si,Oplotnica
+state_SI_Orm_104,base.si,Ormož
+state_SI_Mor_105,base.si,Moravske Toplice
+state_SI_Moz_106,base.si,Mozirje
+state_SI_Mir_107,base.si,Mirna
+state_SI_Mir_108,base.si,Mirna Peč
+state_SI_Mis_109,base.si,Mislinja
+state_SI_Mok_110,base.si,Mokronog-Trebelno
+state_SI_Nak_111,base.si,Naklo
+state_SI_Nov_112,base.si,Nova Gorica
+state_SI_Dol_113,base.si,Dol pri Ljubljani
+state_SI_Dol_114,base.si,Dolenjske Toplice
+state_SI_Dom_115,base.si,Domžale
+state_SI_Dor_116,base.si,Dornava
+state_SI_Dra_117,base.si,Dravograd
+state_SI_Dup_118,base.si,Duplek
+state_SI_Gor_119,base.si,Gorenja Vas-Poljane
+state_SI_Gor_120,base.si,Gorišnica
+state_SI_Gor_121,base.si,Gornja Radgona
+state_SI_Gor_122,base.si,Gornji Grad
+state_SI_Gor_123,base.si,Gorje
+state_SI_Div_124,base.si,Divača
+state_SI_Dob_125,base.si,Dobje
+state_SI_Dob_126,base.si,Dobrepolje
+state_SI_Dob_127,base.si,Dobrna
+state_SI_Dob_128,base.si,Dobrova-Polhov Gradec
+state_SI_Dob_129,base.si,Dobrovnik
+state_SI_Rad_130,base.si,Radenci
+state_SI_Rad_131,base.si,Radlje ob Dravi
+state_SI_Rad_132,base.si,Radovljica
+state_SI_Rav_133,base.si,Ravne na Koroškem
+state_SI_Šen_134,base.si,Šentjur
+state_SI_Šen_135,base.si,Šentrupert
+state_SI_Sev_136,base.si,Sevnica
+state_SI_Sve_137,base.si,Sveti Andraž v Slovenskih Goricah
+state_SI_Str_138,base.si,Straža
+state_SI_Sve_139,base.si,Sveta Ana
+state_SI_Sve_140,base.si,Sveti Jurij v Slovenskih Goricah
+state_SI_Šoš_141,base.si,Šoštanj
+state_SI_Sre_142,base.si,Središče ob Dravi
+state_SI_Sta_143,base.si,Starše
+state_SI_Što_144,base.si,Štore
+state_SI_Sve_145,base.si,Sveti Jurij ob Ščavnici
+state_SI_Šma_146,base.si,Šmartno ob Paki
+state_SI_Šma_147,base.si,Šmartno pri Litiji
+state_SI_Sod_148,base.si,Sodražica
+state_SI_Sol_149,base.si,Solčava
+state_SI_Slo_150,base.si,Slovenj Gradec
+state_SI_Slo_151,base.si,Slovenska Bistrica
+state_SI_Slo_152,base.si,Slovenske Konjice
+state_SI_Šma_153,base.si,Šmarje pri Jelšah
+state_SI_Šen_154,base.si,Šenčur
+state_SI_Šem_155,base.si,Šempeter-Vrtojba
+state_SI_Šen_156,base.si,Šentilj
+state_SI_Šen_157,base.si,Šentjernej
+state_SI_Sež_158,base.si,Sežana
+state_SI_Ško_159,base.si,Škocjan
+state_SI_Ško_160,base.si,Škofja Loka
+state_SI_Ško_161,base.si,Škofljica
+state_SI_Raz_162,base.si,Razkrižje
+state_SI_Mar_163,base.si,Markovci
+state_SI_Med_164,base.si,Medvode
+state_SI_Men_165,base.si,Mengeš
+state_SI_Met_166,base.si,Metlika
+state_SI_Mež_167,base.si,Mežica
+state_SI_Lov_168,base.si,Lovrenc na Pohorju
+state_SI_Luč_169,base.si,Luče
+state_SI_Luk_170,base.si,Lukovica
+state_SI_Maj_171,base.si,Majšperk
+state_SI_Mak_172,base.si,Makole
+state_SI_Mar_173,base.si,Maribor
+state_SI_Sve_174,base.si,Sveti Tomaž
+state_SI_Vid_175,base.si,Videm
+state_SI_Tol_176,base.si,Tolmin
+state_SI_Trb_177,base.si,Trbovlje
+state_SI_Tre_178,base.si,Trebnje
+state_SI_Trž_179,base.si,Tržič
+state_SI_Tur_180,base.si,Turnišče
+state_SI_Vel_181,base.si,Velenje
+state_SI_Vel_182,base.si,Velike Lašče
+state_SI_Vip_183,base.si,Vipava
+state_SI_Vit_184,base.si,Vitanje
+state_SI_Vod_185,base.si,Vodice
+state_SI_Vrh_186,base.si,Vrhnika
+state_SI_Vuz_187,base.si,Vuzenica
+state_SI_Zag_188,base.si,Zagorje ob Savi
+state_SI_Zav_189,base.si,Zavrč
+state_SI_Žel_190,base.si,Železniki
+state_SI_Voj_191,base.si,Vojnik
+state_SI_Vra_192,base.si,Vransko
+state_SI_Žal_193,base.si,Žalec
+state_SI_Žet_194,base.si,Žetale
+state_SI_Žir_195,base.si,Žirovnica
+state_SI_Žuž_196,base.si,Žužemberk
+state_SI_Trn_197,base.si,Trnovska Vas
+state_SI_Trz_198,base.si,Trzin
+state_SI_Vel_199,base.si,Velika Polana
+state_SI_Ver_200,base.si,Veržej
+state_SI_Žir_201,base.si,Žiri
+state_SI_Zre_202,base.si,Zreče
+state_SI_Tab_203,base.si,Tabor
+state_SI_Tiš_204,base.si,Tišina
+state_SI_Osi_205,base.si,Osilnica
+state_SI_Kos_206,base.si,Kostel
+state_SI_Cir_207,base.si,Cirkulane
+state_SI_Apa_208,base.si,Apače
+state_SI_Kom_209,base.si,Komenda
+state_SI_Šma_210,base.si,Šmarješke Toplice
+state_SI_Naz_211,base.si,Nazarje
+state_SI_Ank_212,base.si,Ankaran
+state_SK_Žil_1,base.sk,Žilinský
+state_SK_Bra_2,base.sk,Bratislavský
+state_SK_Trn_3,base.sk,Trnavský
+state_SK_Pre_4,base.sk,Prešovský
+state_SK_Koš_5,base.sk,Košický
+state_SK_Tre_6,base.sk,Trenčiansky
+state_SK_Nit_7,base.sk,Nitriansky
+state_SK_Ban_8,base.sk,Banskobystrický
+state_SL_Sou_1,base.sl,Southern
+state_SL_Nor_2,base.sl,Northern
+state_SL_Eas_3,base.sl,Eastern
+state_SL_Wes_4,base.sl,Western Area
+state_SM_Ser_1,base.sm,Serravalle
+state_SM_Chi_2,base.sm,Chiesanuova
+state_SM_Acq_3,base.sm,Acquaviva
+state_SM_San_4,base.sm,San Marino Città
+state_SN_Lou_1,base.sn,Louga
+state_SN_Séd_2,base.sn,Sédhiou
+state_SN_Mat_3,base.sn,Matam
+state_SN_Dak_4,base.sn,Dakar
+state_SN_Sai_5,base.sn,Saint-Louis
+state_SN_Dio_6,base.sn,Diourbel
+state_SN_Tam_7,base.sn,Tambacounda
+state_SN_Thi_8,base.sn,Thiès
+state_SN_Fat_9,base.sn,Fatick
+state_SN_Kao_10,base.sn,Kaolack
+state_SN_Kol_11,base.sn,Kolda
+state_SN_Zig_12,base.sn,Ziguinchor
+state_SN_Kaf_13,base.sn,Kaffrine
+state_SN_Kéd_14,base.sn,Kédougou
+state_SO_Woq_1,base.so,Woqooyi Galbeed
+state_SO_Gal_2,base.so,Galguduud
+state_SO_Ban_3,base.so,Banaadir
+state_SO_Bar_4,base.so,Bari
+state_SO_Nug_5,base.so,Nugaal
+state_SO_Soo_6,base.so,Sool
+state_SO_Ged_7,base.so,Gedo
+state_SO_Jub_8,base.so,Jubbada Hoose
+state_SO_Bay_9,base.so,Bay
+state_SO_Awd_10,base.so,Awdal
+state_SO_Tog_11,base.so,Togdheer
+state_SO_Mud_12,base.so,Mudug
+state_SO_San_13,base.so,Sanaag
+state_SO_Jub_14,base.so,Jubbada Dhexe
+state_SO_Bak_15,base.so,Bakool
+state_SO_Sha_16,base.so,Shabeellaha Hoose
+state_SO_Sha_17,base.so,Shabeellaha Dhexe
+state_SO_Hii_18,base.so,Hiiraan
+state_SR_Sip_1,base.sr,Sipaliwini
+state_SR_Par_2,base.sr,Paramaribo
+state_SR_Sar_3,base.sr,Saramacca
+state_SR_Wan_4,base.sr,Wanica
+state_SR_Mar_5,base.sr,Marowijne
+state_SR_Cor_6,base.sr,Coronie
+state_SR_Nic_7,base.sr,Nickerie
+state_SR_Com_8,base.sr,Commewijne
+state_SR_Par_9,base.sr,Para
+state_SR_Bro_10,base.sr,Brokopondo
+state_SS_Cen_1,base.ss,Central Equatoria
+state_SS_Upp_2,base.ss,Upper Nile
+state_SS_War_3,base.ss,Warrap
+state_SS_Eas_4,base.ss,Eastern Equatoria
+state_SS_Wes_5,base.ss,Western Equatoria
+state_SS_Nor_6,base.ss,Northern Bahr el Ghazal
+state_SS_Lak_7,base.ss,Lakes
+state_SS_Jon_8,base.ss,Jonglei
+state_SS_Uni_9,base.ss,Unity
+state_SS_Wes_10,base.ss,Western Bahr el Ghazal
+state_ST_Prí_1,base.st,Príncipe
+state_ST_São_2,base.st,São Tomé
+state_SV_San_1,base.sv,San Salvador
+state_SV_San_2,base.sv,San Miguel
+state_SV_La _3,base.sv,La Libertad
+state_SV_Ahu_4,base.sv,Ahuachapán
+state_SV_Cus_5,base.sv,Cuscatlán
+state_SV_La _6,base.sv,La Paz
+state_SV_La _7,base.sv,La Unión
+state_SV_Mor_8,base.sv,Morazán
+state_SV_Cab_9,base.sv,Cabañas
+state_SV_Cha_10,base.sv,Chalatenango
+state_SV_San_11,base.sv,Santa Ana
+state_SV_San_12,base.sv,San Vicente
+state_SV_Son_13,base.sv,Sonsonate
+state_SV_Usu_14,base.sv,Usulután
+state_SY_Ar _1,base.sy,Ar Raqqah
+state_SY_Ţar_2,base.sy,Ţarţūs
+state_SY_Rīf_3,base.sy,Rīf Dimashq
+state_SY_As _4,base.sy,As Suwaydā’
+state_SY_Al _5,base.sy,Al Ḩasakah
+state_SY_Dar_6,base.sy,Dar‘ā
+state_SY_Ḩam_7,base.sy,Ḩamāh
+state_SY_Idl_8,base.sy,Idlib
+state_SY_Ḩal_9,base.sy,Ḩalab
+state_SY_Ḩim_10,base.sy,Ḩimş
+state_SY_Dim_11,base.sy,Dimashq
+state_SY_Al _12,base.sy,Al Lādhiqīyah
+state_SY_Al _13,base.sy,Al Qunayţirah
+state_SY_Day_14,base.sy,Dayr az Zawr
+state_SZ_Hho_1,base.sz,Hhohho
+state_SZ_Shi_2,base.sz,Shiselweni
+state_SZ_Lub_3,base.sz,Lubombo
+state_SZ_Man_4,base.sz,Manzini
+state_TD_Log_1,base.td,Logone Oriental
+state_TD_Had_2,base.td,Hadjer-Lamis
+state_TD_Man_3,base.td,Mandoul
+state_TD_May_4,base.td,Mayo-Kébbi Ouest
+state_TD_Log_5,base.td,Logone Occidental
+state_TD_Tib_6,base.td,Tibesti
+state_TD_Vil_7,base.td,Ville de N’Djaména
+state_TD_May_8,base.td,Mayo-Kébbi Est
+state_TD_Bat_9,base.td,Batha
+state_TD_Tan_10,base.td,Tandjilé
+state_TD_Sal_11,base.td,Salamat
+state_TD_Cha_12,base.td,Chari-Baguirmi
+state_TD_Gué_13,base.td,Guéra
+state_TD_Kan_14,base.td,Kanem
+state_TD_Enn_15,base.td,Ennedi-Ouest
+state_TD_Bar_16,base.td,Barh el Gazel
+state_TD_Sil_17,base.td,Sila
+state_TD_Enn_18,base.td,Ennedi-Est
+state_TD_Wad_19,base.td,Wadi Fira
+state_TD_Oua_20,base.td,Ouaddaï
+state_TD_Bor_21,base.td,Borkou
+state_TD_Moy_22,base.td,Moyen-Chari
+state_TD_Lac_23,base.td,Lac
+state_TG_Mar_1,base.tg,Maritime
+state_TG_Pla_2,base.tg,Plateaux
+state_TG_Sav_3,base.tg,Savanes
+state_TG_Kar_4,base.tg,Kara
+state_TG_Cen_5,base.tg,Centrale
+state_TH_Amn_1,base.th,Amnat Charoen
+state_TH_Chi_2,base.th,Chiang Rai
+state_TH_Kru_3,base.th,Krung Thep Maha Nakhon
+state_TH_Sam_4,base.th,Samut Prakan
+state_TH_Ray_5,base.th,Rayong
+state_TH_Cho_6,base.th,Chon Buri
+state_TH_Phi_7,base.th,Phitsanulok
+state_TH_Yal_8,base.th,Yala
+state_TH_Pha_9,base.th,Phayao
+state_TH_Pha_10,base.th,Phatthalung
+state_TH_Non_11,base.th,Nong Khai
+state_TH_Suk_12,base.th,Sukhothai
+state_TH_Sin_13,base.th,Sing Buri
+state_TH_Sat_14,base.th,Satun
+state_TH_Ran_15,base.th,Ranong
+state_TH_Pra_16,base.th,Prachin Buri
+state_TH_Sa _17,base.th,Sa Kaeo
+state_TH_Roi_18,base.th,Roi Et
+state_TH_Phu_19,base.th,Phuket
+state_TH_Phr_20,base.th,Phrae
+state_TH_Phi_21,base.th,Phichit
+state_TH_Phe_22,base.th,Phetchabun
+state_TH_Cha_23,base.th,Chaiyaphum
+state_TH_Cha_24,base.th,Chanthaburi
+state_TH_Cha_25,base.th,Chai Nat
+state_TH_Cha_26,base.th,Chachoengsao
+state_TH_Ang_27,base.th,Ang Thong
+state_TH_Sur_28,base.th,Surat Thani
+state_TH_Phr_29,base.th,Phra Nakhon Si Ayutthaya
+state_TH_Pha_30,base.th,Phangnga
+state_TH_Lam_31,base.th,Lampang
+state_TH_Kal_32,base.th,Kalasin
+state_TH_Nak_33,base.th,Nakhon Sawan
+state_TH_Nak_34,base.th,Nakhon Phanom
+state_TH_Mah_35,base.th,Maha Sarakham
+state_TH_Lop_36,base.th,Lop Buri
+state_TH_Loe_37,base.th,Loei
+state_TH_Uth_38,base.th,Uthai Thani
+state_TH_Tra_39,base.th,Trang
+state_TH_Phe_40,base.th,Phetchaburi
+state_TH_Yas_41,base.th,Yasothon
+state_TH_Sur_42,base.th,Surin
+state_TH_Utt_43,base.th,Uttaradit
+state_TH_Mae_44,base.th,Mae Hong Son
+state_TH_Sam_45,base.th,Samut Songkhram
+state_TH_Tak_46,base.th,Tak
+state_TH_Chi_47,base.th,Chiang Mai
+state_TH_Nar_48,base.th,Narathiwat
+state_TH_Son_49,base.th,Songkhla
+state_TH_Ubo_50,base.th,Ubon Ratchathani
+state_TH_Tra_51,base.th,Trat
+state_TH_Kan_52,base.th,Kanchanaburi
+state_TH_Nak_53,base.th,Nakhon Ratchasima
+state_TH_Sak_54,base.th,Sakon Nakhon
+state_TH_Lam_55,base.th,Lamphun
+state_TH_Nak_56,base.th,Nakhon Pathom
+state_TH_Rat_57,base.th,Ratchaburi
+state_TH_Udo_58,base.th,Udon Thani
+state_TH_Sam_59,base.th,Samut Sakhon
+state_TH_Sis_60,base.th,Sisaket
+state_TH_Sup_61,base.th,Suphan Buri
+state_TH_Non_62,base.th,Nonthaburi
+state_TH_Kho_63,base.th,Khon Kaen
+state_TH_Muk_64,base.th,Mukdahan
+state_TH_Non_65,base.th,Nong Bua Lamphu
+state_TH_Nak_66,base.th,Nakhon Si Thammarat
+state_TH_Kra_67,base.th,Krabi
+state_TH_Pat_68,base.th,Pathum Thani
+state_TH_Nak_69,base.th,Nakhon Nayok
+state_TH_Pra_70,base.th,Prachuap Khiri Khan
+state_TH_Nan_71,base.th,Nan
+state_TH_Bue_72,base.th,Bueng Kan
+state_TH_Kam_73,base.th,Kamphaeng Phet
+state_TH_Chu_74,base.th,Chumphon
+state_TH_Pat_75,base.th,Pattani
+state_TH_Bur_76,base.th,Buriram
+state_TH_Sar_77,base.th,Sara Buri
+state_TJ_Kŭh_1,base.tj,Kŭhistoni Badakhshon
+state_TJ_Kha_2,base.tj,Khatlon
+state_TJ_Sug_3,base.tj,Sughd
+state_TJ_Dus_4,base.tj,Dushanbe
+state_TL_Díl_1,base.tl,Díli
+state_TL_Ail_2,base.tl,Aileu
+state_TL_Ain_3,base.tl,Ainaro
+state_TL_Bau_4,base.tl,Baucau
+state_TL_Bob_5,base.tl,Bobonaro
+state_TL_Cov_6,base.tl,Cova Lima
+state_TL_Erm_7,base.tl,Ermera
+state_TL_Lau_8,base.tl,Lautém
+state_TL_Liq_9,base.tl,Liquiçá
+state_TL_Man_10,base.tl,Manatuto
+state_TL_Man_11,base.tl,Manufahi
+state_TL_Oec_12,base.tl,Oecussi-Ambeno
+state_TL_Viq_13,base.tl,Viqueque
+state_TM_Bal_1,base.tm,Balkan
+state_TM_Daş_2,base.tm,Daşoguz
+state_TM_Leb_3,base.tm,Lebap
+state_TM_Mar_4,base.tm,Mary
+state_TM_Aha_5,base.tm,Ahal
+state_TN_Tat_1,base.tn,Tataouine
+state_TN_Méd_2,base.tn,Médenine
+state_TN_Gab_3,base.tn,Gabès
+state_TN_Gaf_4,base.tn,Gafsa
+state_TN_Kas_5,base.tn,Kasserine
+state_TN_Sid_6,base.tn,Sidi Bouzid
+state_TN_Sfa_7,base.tn,Sfax
+state_TN_Mah_8,base.tn,Mahdia
+state_TN_Mon_9,base.tn,Monastir
+state_TN_Sou_10,base.tn,Sousse
+state_TN_Kai_11,base.tn,Kairouan
+state_TN_Kef_12,base.tn,Kef
+state_TN_Jen_13,base.tn,Jendouba
+state_TN_Béj_14,base.tn,Béja
+state_TN_Biz_15,base.tn,Bizerte
+state_TN_Zag_16,base.tn,Zaghouan
+state_TN_Sil_17,base.tn,Siliana
+state_TN_Nab_18,base.tn,Nabeul
+state_TN_Kéb_19,base.tn,Kébili
+state_TN_Toz_20,base.tn,Tozeur
+state_TN_Tun_21,base.tn,Tunis
+state_TN_Ben_22,base.tn,Ben Arous
+state_TN_Man_23,base.tn,Manouba
+state_TN_L’A_24,base.tn,L’Ariana
+state_TO_Vav_1,base.to,Vava‘u
+state_TO_Ton_2,base.to,Tongatapu
+state_TR_Isp_1,base.tr,Isparta
+state_TR_Siv_2,base.tr,Sivas
+state_TR_Kil_3,base.tr,Kilis
+state_TR_Edi_4,base.tr,Edirne
+state_TR_Bin_5,base.tr,Bingöl
+state_TR_Çor_6,base.tr,Çorum
+state_TR_Iğd_7,base.tr,Iğdır
+state_TR_Bat_8,base.tr,Batman
+state_TR_Riz_9,base.tr,Rize
+state_TR_Ard_10,base.tr,Ardahan
+state_TR_Adı_11,base.tr,Adıyaman
+state_TR_Bit_12,base.tr,Bitlis
+state_TR_Tra_13,base.tr,Trabzon
+state_TR_Mar_14,base.tr,Mardin
+state_TR_Gaz_15,base.tr,Gaziantep
+state_TR_Sin_16,base.tr,Sinop
+state_TR_Man_17,base.tr,Manisa
+state_TR_Ayd_18,base.tr,Aydın
+state_TR_Gir_19,base.tr,Giresun
+state_TR_Hat_20,base.tr,Hatay
+state_TR_Kah_21,base.tr,Kahramanmaraş
+state_TR_Ada_22,base.tr,Adana
+state_TR_Osm_23,base.tr,Osmaniye
+state_TR_Kay_24,base.tr,Kayseri
+state_TR_Sam_25,base.tr,Samsun
+state_TR_Yoz_26,base.tr,Yozgat
+state_TR_Ama_27,base.tr,Amasya
+state_TR_Tok_28,base.tr,Tokat
+state_TR_Niğ_29,base.tr,Niğde
+state_TR_Kır_30,base.tr,Kırıkkale
+state_TR_Bur_31,base.tr,Burdur
+state_TR_Kır_32,base.tr,Kırşehir
+state_TR_Kar_33,base.tr,Karabük
+state_TR_Kar_34,base.tr,Karaman
+state_TR_Nev_35,base.tr,Nevşehir
+state_TR_Aks_36,base.tr,Aksaray
+state_TR_Ank_37,base.tr,Ankara
+state_TR_Afy_38,base.tr,Afyonkarahisar
+state_TR_Kas_39,base.tr,Kastamonu
+state_TR_Bol_40,base.tr,Bolu
+state_TR_Ant_41,base.tr,Antalya
+state_TR_Kon_42,base.tr,Konya
+state_TR_Çan_43,base.tr,Çankırı
+state_TR_Bal_44,base.tr,Balıkesir
+state_TR_Bar_45,base.tr,Bartın
+state_TR_Düz_46,base.tr,Düzce
+state_TR_Zon_47,base.tr,Zonguldak
+state_TR_Esk_48,base.tr,Eskişehir
+state_TR_Sak_49,base.tr,Sakarya
+state_TR_Koc_50,base.tr,Kocaeli
+state_TR_Yal_51,base.tr,Yalova
+state_TR_Bil_52,base.tr,Bilecik
+state_TR_İst_53,base.tr,İstanbul
+state_TR_Den_54,base.tr,Denizli
+state_TR_Muğ_55,base.tr,Muğla
+state_TR_Tek_56,base.tr,Tekirdağ
+state_TR_Küt_57,base.tr,Kütahya
+state_TR_Kır_58,base.tr,Kırklareli
+state_TR_Uşa_59,base.tr,Uşak
+state_TR_Mal_60,base.tr,Malatya
+state_TR_Ela_61,base.tr,Elazığ
+state_TR_Art_62,base.tr,Artvin
+state_TR_Şır_63,base.tr,Şırnak
+state_TR_Hak_64,base.tr,Hakkâri
+state_TR_Güm_65,base.tr,Gümüşhane
+state_TR_Tun_66,base.tr,Tunceli
+state_TR_Bay_67,base.tr,Bayburt
+state_TR_Erz_68,base.tr,Erzincan
+state_TR_Ağr_69,base.tr,Ağrı
+state_TR_Muş_70,base.tr,Muş
+state_TR_İzm_71,base.tr,İzmir
+state_TR_Van_72,base.tr,Van
+state_TR_Kar_73,base.tr,Kars
+state_TR_Diy_74,base.tr,Diyarbakır
+state_TR_Erz_75,base.tr,Erzurum
+state_TR_Bur_76,base.tr,Bursa
+state_TR_Çan_77,base.tr,Çanakkale
+state_TR_Mer_78,base.tr,Mersin
+state_TR_Ord_79,base.tr,Ordu
+state_TR_Sii_80,base.tr,Siirt
+state_TR_Şan_81,base.tr,Şanlıurfa
+state_TT_Por_1,base.tt,Port of Spain
+state_TT_Ari_2,base.tt,Arima
+state_TT_San_3,base.tt,San Juan/Laventille
+state_TT_Cha_4,base.tt,Chaguanas
+state_TT_Cou_5,base.tt,Couva/Tabaquite/Talparo
+state_TT_Pen_6,base.tt,Penal/Debe
+state_TT_Die_7,base.tt,Diego Martin
+state_TT_Poi_8,base.tt,Point Fortin
+state_TT_Pri_9,base.tt,Princes Town
+state_TT_May_10,base.tt,Mayaro/Rio Claro
+state_TT_San_11,base.tt,San Fernando
+state_TT_San_12,base.tt,Sangre Grande
+state_TT_Tob_13,base.tt,Tobago
+state_TT_Sip_14,base.tt,Siparia
+state_TT_Tun_15,base.tt,Tunapuna/Piarco
+state_TV_Fun_1,base.tv,Funafuti
+state_TW_Tai_1,base.tw,Taipei
+state_TW_Pen_2,base.tw,Penghu
+state_TW_Pin_3,base.tw,Pingtung
+state_TW_Tao_4,base.tw,Taoyuan
+state_TW_Hua_5,base.tw,Hualien
+state_TW_Mia_6,base.tw,Miaoli
+state_TW_Hsi_7,base.tw,Hsinchu
+state_TW_Tai_8,base.tw,Taitung
+state_TW_Chi_9,base.tw,Chiayi
+state_TW_Yil_10,base.tw,Yilan
+state_TW_Cha_11,base.tw,Changhua
+state_TW_Nan_12,base.tw,Nantou
+state_TW_Yun_13,base.tw,Yunlin
+state_TW_New_14,base.tw,New Taipei
+state_TW_Tai_15,base.tw,Taichung
+state_TW_Kee_16,base.tw,Keelung
+state_TW_Tai_17,base.tw,Tainan
+state_TW_Kao_18,base.tw,Kaohsiung
+state_TW_Kin_19,base.tw,Kinmen
+state_TW_Lie_20,base.tw,Lienchiang
+state_TZ_Ruk_1,base.tz,Rukwa
+state_TZ_Mtw_2,base.tz,Mtwara
+state_TZ_Zan_3,base.tz,Zanzibar Central/South
+state_TZ_Mbe_4,base.tz,Mbeya
+state_TZ_Zan_5,base.tz,Zanzibar Urban/West
+state_TZ_Kig_6,base.tz,Kigoma
+state_TZ_Mar_7,base.tz,Mara
+state_TZ_Tan_8,base.tz,Tanga
+state_TZ_Kil_9,base.tz,Kilimanjaro
+state_TZ_Aru_10,base.tz,Arusha
+state_TZ_Lin_11,base.tz,Lindi
+state_TZ_Coa_12,base.tz,Coast
+state_TZ_Mor_13,base.tz,Morogoro
+state_TZ_Pem_14,base.tz,Pemba South
+state_TZ_Kag_15,base.tz,Kagera
+state_TZ_Iri_16,base.tz,Iringa
+state_TZ_Ruv_17,base.tz,Ruvuma
+state_TZ_Mwa_18,base.tz,Mwanza
+state_TZ_Pem_19,base.tz,Pemba North
+state_TZ_Man_20,base.tz,Manyara
+state_TZ_Sin_21,base.tz,Singida
+state_TZ_Tab_22,base.tz,Tabora
+state_TZ_Dod_23,base.tz,Dodoma
+state_TZ_Kat_24,base.tz,Katavi
+state_TZ_Sim_25,base.tz,Simiyu
+state_TZ_Shi_26,base.tz,Shinyanga
+state_TZ_Gei_27,base.tz,Geita
+state_TZ_Zan_28,base.tz,Zanzibar North
+state_TZ_Njo_29,base.tz,Njombe
+state_UA_Zak_1,base.ua,Zakarpats’ka Oblast’
+state_UA_Kyy_2,base.ua,Kyyiv, Misto
+state_UA_Iva_3,base.ua,Ivano-Frankivs’ka Oblast’
+state_UA_Khe_4,base.ua,Khersons’ka Oblast’
+state_UA_Don_5,base.ua,Donets’ka Oblast’
+state_UA_Khm_6,base.ua,Khmel’nyts’ka Oblast’
+state_UA_Myk_7,base.ua,Mykolayivs’ka Oblast’
+state_UA_L’v_8,base.ua,L’vivs’ka Oblast’
+state_UA_Ode_9,base.ua,Odes’ka Oblast’
+state_UA_Kha_10,base.ua,Kharkivs’ka Oblast’
+state_UA_Zap_11,base.ua,Zaporiz’ka Oblast’
+state_UA_Luh_12,base.ua,Luhans’ka Oblast’
+state_UA_Sum_13,base.ua,Sums’ka Oblast’
+state_UA_Ter_14,base.ua,Ternopil’s’ka Oblast’
+state_UA_Pol_15,base.ua,Poltavs’ka Oblast’
+state_UA_Vin_16,base.ua,Vinnyts’ka Oblast’
+state_UA_Kry_17,base.ua,Krym, Avtonomna Respublika
+state_UA_Vol_18,base.ua,Volyns’ka Oblast’
+state_UA_Che_19,base.ua,Chernivets’ka Oblast’
+state_UA_Che_20,base.ua,Cherkas’ka Oblast’
+state_UA_Kyy_21,base.ua,Kyyivs’ka Oblast’
+state_UA_Zhy_22,base.ua,Zhytomyrs’ka Oblast’
+state_UA_Che_23,base.ua,Chernihivs’ka Oblast’
+state_UA_Dni_24,base.ua,Dnipropetrovs’ka Oblast’
+state_UA_Riv_25,base.ua,Rivnens’ka Oblast’
+state_UA_Sev_26,base.ua,Sevastopol’, Misto
+state_UA_Kir_27,base.ua,Kirovohrads’ka Oblast’
+state_UG_Ruk_1,base.ug,Rukungiri
+state_UG_Kan_2,base.ug,Kanungu
+state_UG_Kas_3,base.ug,Kasese
+state_UG_Kum_4,base.ug,Kumi
+state_UG_Bug_5,base.ug,Bugiri
+state_UG_Kib_6,base.ug,Kibaale
+state_UG_Kib_7,base.ug,Kiboga
+state_UG_Bus_8,base.ug,Bushenyi
+state_UG_Hoi_9,base.ug,Hoima
+state_UG_Kay_10,base.ug,Kayunga
+state_UG_Jin_11,base.ug,Jinja
+state_UG_Nak_12,base.ug,Nakapiripirit
+state_UG_Kye_13,base.ug,Kyenjojo
+state_UG_Kal_14,base.ug,Kalangala
+state_UG_Muk_15,base.ug,Mukono
+state_UG_Sem_16,base.ug,Sembabule
+state_UG_Kam_17,base.ug,Kamwenge
+state_UG_Wak_18,base.ug,Wakiso
+state_UG_Ntu_19,base.ug,Ntungamo
+state_UG_Nak_20,base.ug,Nakasongola
+state_UG_Kab_21,base.ug,Kabale
+state_UG_Mas_22,base.ug,Masindi
+state_UG_Kaa_23,base.ug,Kaabong
+state_UG_Rak_24,base.ug,Rakai
+state_UG_Isi_25,base.ug,Isingiro
+state_UG_Kir_26,base.ug,Kiryandongo
+state_UG_Zom_27,base.ug,Zombo
+state_UG_Pal_28,base.ug,Pallisa
+state_UG_Luw_29,base.ug,Luwero
+state_UG_Kot_30,base.ug,Kotido
+state_UG_Lir_31,base.ug,Lira
+state_UG_Mub_32,base.ug,Mubende
+state_UG_Bui_33,base.ug,Buikwe
+state_UG_Lam_34,base.ug,Lamwo
+state_UG_Aga_35,base.ug,Agago
+state_UG_Nap_36,base.ug,Napak
+state_UG_Luu_37,base.ug,Luuka
+state_UG_Otu_38,base.ug,Otuke
+state_UG_Ale_39,base.ug,Alebtong
+state_UG_Amu_40,base.ug,Amuria
+state_UG_Kol_41,base.ug,Kole
+state_UG_Oya_42,base.ug,Oyam
+state_UG_Abi_43,base.ug,Abim
+state_UG_Kwe_44,base.ug,Kween
+state_UG_Bul_45,base.ug,Bulambuli
+state_UG_Bud_46,base.ug,Bududa
+state_UG_Amu_47,base.ug,Amudat
+state_UG_Buk_48,base.ug,Bukwa
+state_UG_Kap_49,base.ug,Kapchorwa
+state_UG_Mas_50,base.ug,Masaka
+state_UG_Mba_51,base.ug,Mbale
+state_UG_Mba_52,base.ug,Mbarara
+state_UG_Tor_53,base.ug,Tororo
+state_UG_Sir_54,base.ug,Sironko
+state_UG_Rub_55,base.ug,Rubirizi
+state_UG_Mit_56,base.ug,Mitooma
+state_UG_Nto_57,base.ug,Ntoroko
+state_UG_Gom_58,base.ug,Gomba
+state_UG_She_59,base.ug,Sheema
+state_UG_Nak_60,base.ug,Nakaseke
+state_UG_Iba_61,base.ug,Ibanda
+state_UG_Nam_62,base.ug,Namayingo
+state_UG_Buv_63,base.ug,Buvuma
+state_UG_Kye_64,base.ug,Kyegegwa
+state_UG_Lwe_65,base.ug,Lwengo
+state_UG_Buk_66,base.ug,Bukomansimbi
+state_UG_Kal_67,base.ug,Kalungu
+state_UG_Kir_68,base.ug,Kiruhura
+state_UG_Lya_69,base.ug,Lyantonde
+state_UG_Buy_70,base.ug,Buyende
+state_UG_Ngo_71,base.ug,Ngora
+state_UG_Kib_72,base.ug,Kibuku
+state_UG_Buh_73,base.ug,Buhweju
+state_UG_Buk_74,base.ug,Bukedea
+state_UG_Kam_75,base.ug,Kampala
+state_UG_Neb_76,base.ug,Nebbi
+state_UG_Kob_77,base.ug,Koboko
+state_UG_Aru_78,base.ug,Arua
+state_UG_Mar_79,base.ug,Maracha
+state_UG_Yum_80,base.ug,Yumbe
+state_UG_Bul_81,base.ug,Buliisa
+state_UG_Gul_82,base.ug,Gulu
+state_UG_Adj_83,base.ug,Adjumani
+state_UG_Moy_84,base.ug,Moyo
+state_UG_Nwo_85,base.ug,Nwoya
+state_UG_Amu_86,base.ug,Amuru
+state_UG_Kis_87,base.ug,Kisoro
+state_UG_Kit_88,base.ug,Kitgum
+state_UG_Pad_89,base.ug,Pader
+state_UG_Kat_90,base.ug,Katakwi
+state_UG_Mor_91,base.ug,Moroto
+state_UG_May_92,base.ug,Mayuge
+state_UG_Mit_93,base.ug,Mityana
+state_UG_Bun_94,base.ug,Bundibugyo
+state_UG_Kab_95,base.ug,Kabarole
+state_UG_Man_96,base.ug,Manafwa
+state_UG_Nam_97,base.ug,Namutumba
+state_UG_But_98,base.ug,Butaleja
+state_UG_Kal_99,base.ug,Kaliro
+state_UG_But_100,base.ug,Butambala
+state_UG_Sor_101,base.ug,Soroti
+state_UG_Amo_102,base.ug,Amolatar
+state_UG_Apa_103,base.ug,Apac
+state_UG_Mpi_104,base.ug,Mpigi
+state_UG_Kam_105,base.ug,Kamuli
+state_UG_Iga_106,base.ug,Iganga
+state_UG_Kya_107,base.ug,Kyankwanzi
+state_UG_Bus_108,base.ug,Busia
+state_UG_Dok_109,base.ug,Dokolo
+state_UG_Ser_110,base.ug,Serere
+state_UG_Kab_111,base.ug,Kaberamaido
+state_UY_Flo_1,base.uy,Flores
+state_UY_Dur_2,base.uy,Durazno
+state_UY_Can_3,base.uy,Canelones
+state_UY_Riv_4,base.uy,Rivera
+state_UY_Mon_5,base.uy,Montevideo
+state_UY_Tre_6,base.uy,Treinta y Tres
+state_UY_Lav_7,base.uy,Lavalleja
+state_UY_Roc_8,base.uy,Rocha
+state_UY_Mal_9,base.uy,Maldonado
+state_UY_Col_10,base.uy,Colonia
+state_UY_Art_11,base.uy,Artigas
+state_UY_Flo_12,base.uy,Florida
+state_UY_Río_13,base.uy,Río Negro
+state_UY_Cer_14,base.uy,Cerro Largo
+state_UY_Sor_15,base.uy,Soriano
+state_UY_Pay_16,base.uy,Paysandú
+state_UY_Sal_17,base.uy,Salto
+state_UY_Tac_18,base.uy,Tacuarembó
+state_UY_San_19,base.uy,San José
+state_UZ_Sam_1,base.uz,Samarqand
+state_UZ_Far_2,base.uz,Farg‘ona
+state_UZ_Tos_3,base.uz,Toshkent
+state_UZ_Qas_4,base.uz,Qashqadaryo
+state_UZ_Sir_5,base.uz,Sirdaryo
+state_UZ_Qor_6,base.uz,Qoraqalpog‘iston
+state_UZ_Jiz_7,base.uz,Jizzax
+state_UZ_Xor_8,base.uz,Xorazm
+state_UZ_Bux_9,base.uz,Buxoro
+state_UZ_Nav_10,base.uz,Navoiy
+state_UZ_And_11,base.uz,Andijon
+state_UZ_Nam_12,base.uz,Namangan
+state_UZ_Sur_13,base.uz,Surxondaryo
+state_VC_Sai_1,base.vc,Saint George
+state_VE_Anz_1,base.ve,Anzoátegui
+state_VE_Bol_2,base.ve,Bolívar
+state_VE_Dis_3,base.ve,Distrito Capital
+state_VE_Bar_4,base.ve,Barinas
+state_VE_Lar_5,base.ve,Lara
+state_VE_Fal_6,base.ve,Falcón
+state_VE_Suc_7,base.ve,Sucre
+state_VE_Por_8,base.ve,Portuguesa
+state_VE_Var_9,base.ve,Vargas
+state_VE_Mir_10,base.ve,Miranda
+state_VE_Zul_11,base.ve,Zulia
+state_VE_Ara_12,base.ve,Aragua
+state_VE_Mon_13,base.ve,Monagas
+state_VE_Mér_14,base.ve,Mérida
+state_VE_Coj_15,base.ve,Cojedes
+state_VE_Tác_16,base.ve,Táchira
+state_VE_Yar_17,base.ve,Yaracuy
+state_VE_Apu_18,base.ve,Apure
+state_VE_Guá_19,base.ve,Guárico
+state_VE_Tru_20,base.ve,Trujillo
+state_VE_Del_21,base.ve,Delta Amacuro
+state_VE_Car_22,base.ve,Carabobo
+state_VE_Ama_23,base.ve,Amazonas
+state_VE_Nue_24,base.ve,Nueva Esparta
+state_VN_Quả_1,base.vn,Quảng Trị
+state_VN_Tha_2,base.vn,Thanh Hóa
+state_VN_Bà _3,base.vn,Bà Rịa-Vũng Tàu
+state_VN_Gia_4,base.vn,Gia Lai
+state_VN_Khá_5,base.vn,Khánh Hòa
+state_VN_Điệ_6,base.vn,Điện Biên
+state_VN_Tiề_7,base.vn,Tiền Giang
+state_VN_Bắc_8,base.vn,Bắc Giang
+state_VN_Bắc_9,base.vn,Bắc Ninh
+state_VN_Quả_10,base.vn,Quảng Ngãi
+state_VN_An _11,base.vn,An Giang
+state_VN_Bắc_12,base.vn,Bắc Kạn
+state_VN_Lào_13,base.vn,Lào Cai
+state_VN_Quả_14,base.vn,Quảng Nam
+state_VN_Vĩn_15,base.vn,Vĩnh Phúc
+state_VN_Kon_16,base.vn,Kon Tum
+state_VN_Hà _17,base.vn,Hà Nội
+state_VN_Lâm_18,base.vn,Lâm Đồng
+state_VN_Hải_19,base.vn,Hải Phòng
+state_VN_Hưn_20,base.vn,Hưng Yên
+state_VN_Quả_21,base.vn,Quảng Ninh
+state_VN_Đắk_22,base.vn,Đắk Lắk
+state_VN_Phú_23,base.vn,Phú Yên
+state_VN_Ngh_24,base.vn,Nghệ An
+state_VN_Yên_25,base.vn,Yên Bái
+state_VN_Đắk_26,base.vn,Đắk Nông
+state_VN_Đà _27,base.vn,Đà Nẵng
+state_VN_Hồ _28,base.vn,Hồ Chí Minh
+state_VN_Đồn_29,base.vn,Đồng Tháp
+state_VN_Quả_30,base.vn,Quảng Bình
+state_VN_Vĩn_31,base.vn,Vĩnh Long
+state_VN_Bến_32,base.vn,Bến Tre
+state_VN_Kiế_33,base.vn,Kiến Giang
+state_VN_Sóc_34,base.vn,Sóc Trăng
+state_VN_Cần_35,base.vn,Cần Thơ
+state_VN_Bìn_36,base.vn,Bình Phước
+state_VN_Thừ_37,base.vn,Thừa Thiên-Huế
+state_VN_Hậu_38,base.vn,Hậu Giang
+state_VN_Phú_39,base.vn,Phú Thọ
+state_VN_Đồn_40,base.vn,Đồng Nai
+state_VN_Hà _41,base.vn,Hà Tĩnh
+state_VN_Nin_42,base.vn,Ninh Thuận
+state_VN_Bìn_43,base.vn,Bình Thuận
+state_VN_Lon_44,base.vn,Long An
+state_VN_Cà _45,base.vn,Cà Mau
+state_VN_Trà_46,base.vn,Trà Vinh
+state_VN_Bìn_47,base.vn,Bình Định
+state_VN_Bìn_48,base.vn,Bình Dương
+state_VN_Tây_49,base.vn,Tây Ninh
+state_VN_Lai_50,base.vn,Lai Châu
+state_VN_Thá_51,base.vn,Thái Nguyên
+state_VN_Thá_52,base.vn,Thái Bình
+state_VN_Sơn_53,base.vn,Sơn La
+state_VN_Hà _54,base.vn,Hà Nam
+state_VN_Nin_55,base.vn,Ninh Bình
+state_VN_Nam_56,base.vn,Nam Định
+state_VN_Lạn_57,base.vn,Lạng Sơn
+state_VN_Hòa_58,base.vn,Hòa Bình
+state_VN_Hải_59,base.vn,Hải Dương
+state_VN_Hà _60,base.vn,Hà Giang
+state_VN_Cao_61,base.vn,Cao Bằng
+state_VN_Bạc_62,base.vn,Bạc Liêu
+state_VN_Tuy_63,base.vn,Tuyên Quang
+state_VU_She_1,base.vu,Shefa
+state_VU_Taf_2,base.vu,Tafea
+state_VU_San_3,base.vu,Sanma
+state_VU_Mal_4,base.vu,Malampa
+state_VU_Pen_5,base.vu,Penama
+state_VU_Tor_6,base.vu,Torba
+state_WF_Sig_1,base.wf,Sigave
+state_WF_Uve_2,base.wf,Uvea
+state_WS_Tua_1,base.ws,Tuamasaga
+state_WS_Vai_2,base.ws,Vaisigano
+state_WS_A‘a_3,base.ws,A‘ana
+state_WS_Gag_4,base.ws,Gagaifomauga
+state_WS_Fa‘_5,base.ws,Fa‘asaleleaga
+state_WS_Atu_6,base.ws,Atua
+state_WS_Aig_7,base.ws,Aiga-i-le-Tai
+state_WS_Gag_8,base.ws,Gaga‘emauga
+state_WS_Va‘_9,base.ws,Va‘a-o-Fonoti
+state_WS_Sat_10,base.ws,Satupa‘itea
+state_WS_Pal_11,base.ws,Palauli
+state_AD_Ord_1,base.ad,Ordino
+state_AD_La _2,base.ad,La Massana
+state_AD_Can_3,base.ad,Canillo
+state_AD_And_4,base.ad,Andorra la Vella
+state_AD_Enc_5,base.ad,Encamp
+state_AD_San_6,base.ad,Sant Julià de Lòria
+state_AD_Esc_7,base.ad,Escaldes-Engordany
+base.state_ae_fu,base.ae,Fujairah
+base.state_ae_du,base.ae,Dubai
+base.state_ae_rk,base.ae,Ras al-Khaimah
+base.state_ae_uq,base.ae,Umm al-Quwain
+base.state_ae_az,base.ae,Abu Dhabi
+base.state_ae_aj,base.ae,Ajman
+base.state_ae_sh,base.ae,Sharjah
+state_AF_Kāb_1,base.af,Kābul
+state_AF_Pak_2,base.af,Paktīkā
+state_AF_Nīm_3,base.af,Nīmrōz
+state_AF_Hel_4,base.af,Helmand
+state_AF_Kan_5,base.af,Kandahār
+state_AF_Uru_6,base.af,Uruzgān
+state_AF_Her_7,base.af,Herāt
+state_AF_Gha_8,base.af,Ghaznī
+state_AF_War_9,base.af,Wardak
+state_AF_Fār_10,base.af,Fāryāb
+state_AF_Bag_11,base.af,Baghlān
+state_AF_Bal_12,base.af,Balkh
+state_AF_Sar_13,base.af,Sar-e Pul
+state_AF_Pak_14,base.af,Paktiyā
+state_AF_Kun_15,base.af,Kunaṟ
+state_AF_Nan_16,base.af,Nangarhār
+state_AF_Lag_17,base.af,Laghmān
+state_AF_Sam_18,base.af,Samangān
+state_AF_Jow_19,base.af,Jowzjān
+state_AF_Khō_20,base.af,Khōst
+state_AF_Far_21,base.af,Farāh
+state_AF_Kāp_22,base.af,Kāpīsā
+state_AF_Bād_23,base.af,Bādghīs
+state_AF_Bad_24,base.af,Badakhshān
+state_AF_Par_25,base.af,Parwān
+state_AF_Dāy_26,base.af,Dāykundī
+state_AF_Pan_27,base.af,Panjshir
+state_AF_Kun_28,base.af,Kunduz
+state_AF_Zāb_29,base.af,Zābul
+state_AF_Tak_30,base.af,Takhār
+state_AF_Bām_31,base.af,Bāmyān
+state_AF_Lōg_32,base.af,Lōgar
+state_AF_Nūr_33,base.af,Nūristān
+state_AF_Ghō_34,base.af,Ghōr
+state_AG_Sai_1,base.ag,Saint John
+state_AL_Ber_1,base.al,Berat
+state_AL_Kor_2,base.al,Korçë
+state_AL_Elb_3,base.al,Elbasan
+state_AL_Gji_4,base.al,Gjirokastër
+state_AL_Shk_5,base.al,Shkodër
+state_AL_Dur_6,base.al,Durrës
+state_AL_Lez_7,base.al,Lezhë
+state_AL_Fie_8,base.al,Fier
+state_AL_Kuk_9,base.al,Kukës
+state_AL_Dib_10,base.al,Dibër
+state_AL_Vlo_11,base.al,Vlorë
+state_AL_Tir_12,base.al,Tiranë
+state_AM_Yer_1,base.am,Yerevan
+state_AM_Shi_2,base.am,Shirak
+state_AM_Geg_3,base.am,Geghark’unik’
+state_AM_Ara_4,base.am,Ararat
+state_AM_Vay_5,base.am,Vayots’ Dzor
+state_AM_Arm_6,base.am,Armavir
+state_AM_Tav_7,base.am,Tavush
+state_AM_Kot_8,base.am,Kotayk’
+state_AM_Lor_9,base.am,Lorri
+state_AM_Ara_10,base.am,Aragatsotn
+state_AM_Syu_11,base.am,Syunik’
+state_AO_Kua_1,base.ao,Kuando Kubango
+state_AO_Ben_2,base.ao,Benguela
+state_AO_Mox_3,base.ao,Moxico
+state_AO_Cab_4,base.ao,Cabinda
+state_AO_Cun_5,base.ao,Cunene
+state_AO_Huí_6,base.ao,Huíla
+state_AO_Hua_7,base.ao,Huambo
+state_AO_Kwa_8,base.ao,Kwanza Norte
+state_AO_Zai_9,base.ao,Zaire
+state_AO_Lun_10,base.ao,Lunda Norte
+state_AO_Kwa_11,base.ao,Kwanza Sul
+state_AO_Bié_12,base.ao,Bié
+state_AO_Uíg_13,base.ao,Uíge
+state_AO_Lun_14,base.ao,Lunda Sul
+state_AO_Ben_15,base.ao,Bengo
+state_AO_Lua_16,base.ao,Luanda
+state_AO_Mal_17,base.ao,Malanje
+state_AO_Nam_18,base.ao,Namibe
+base.state_ar_j,base.ar,San Juan
+base.state_ar_a,base.ar,Salta
+base.state_ar_r,base.ar,Río Negro
+base.state_ar_v,base.ar,Tierra del Fuego
+base.state_ar_l,base.ar,La Pampa
+base.state_ar_z,base.ar,Santa Cruz
+base.state_ar_s,base.ar,Santa Fe
+base.state_ar_e,base.ar,Entre Ríos
+base.state_ar_w,base.ar,Corrientes
+base.state_ar_b,base.ar,Buenos Aires
+base.state_ar_u,base.ar,Chobut
+base.state_ar_f,base.ar,La Rioja
+base.state_ar_y,base.ar,Jujuy
+base.state_ar_h,base.ar,Chaco
+base.state_ar_n,base.ar,Misiones
+base.state_ar_p,base.ar,Formosa
+base.state_ar_q,base.ar,Neuquén
+base.state_ar_g,base.ar,Santiago del Estero
+base.state_ar_m,base.ar,Mendoza
+base.state_ar_t,base.ar,Tucumán
+base.state_ar_b,base.ar,Buenos Aires
+base.state_ar_x,base.ar,Córdoba
+base.state_ar_k,base.ar,Catamarca
+base.state_ar_d,base.ar,San Luis
+state_AT_Bur_1,base.at,Burgenland
+state_AT_Tir_2,base.at,Tirol
+state_AT_Vor_3,base.at,Vorarlberg
+state_AT_Sal_4,base.at,Salzburg
+state_AT_Obe_5,base.at,Oberösterreich
+state_AT_Nie_6,base.at,Niederösterreich
+state_AT_Ste_7,base.at,Steiermark
+state_AT_Kär_8,base.at,Kärnten
+state_AT_Wie_9,base.at,Wien
+base.state_au_5,base.au,South Australia
+base.state_au_8,base.au,Western Australia
+base.state_au_4,base.au,Queensland
+base.state_au_7,base.au,Victoria
+base.state_au_2,base.au,New South Wales
+base.state_au_3,base.au,Northern Territory
+base.state_au_6,base.au,Tasmania
+base.state_au_1,base.au,Australian Capital Territory
+state_AZ_Bak_1,base.az,Bakı
+state_AZ_Gor_2,base.az,Goranboy
+state_AZ_Şək_3,base.az,Şəki
+state_AZ_Füz_4,base.az,Füzuli
+state_AZ_Lən_5,base.az,Lənkəran
+state_AZ_Xoc_6,base.az,Xocalı
+state_AZ_Ağd_7,base.az,Ağdam
+state_AZ_Ast_8,base.az,Astara
+state_AZ_Cəb_9,base.az,Cəbrayıl
+state_AZ_Bey_10,base.az,Beyləqan
+state_AZ_Mas_11,base.az,Masallı
+state_AZ_Bil_12,base.az,Biləsuvar
+state_AZ_Cəl_13,base.az,Cəlilabad
+state_AZ_Şab_14,base.az,Şabran
+state_AZ_Ağs_15,base.az,Ağsu
+state_AZ_Yev_16,base.az,Yevlax
+state_AZ_Min_17,base.az,Mingəçevir
+state_AZ_Gən_18,base.az,Gəncə
+state_AZ_Sum_19,base.az,Sumqayıt
+state_AZ_Xaç_20,base.az,Xaçmaz
+state_AZ_İmi_21,base.az,İmişli
+state_AZ_Saa_22,base.az,Saatlı
+state_AZ_Laç_23,base.az,Laçın
+state_AZ_Şər_24,base.az,Şərur
+state_AZ_Qub_25,base.az,Qubadlı
+state_AZ_Səd_26,base.az,Sədərək
+state_AZ_Yar_27,base.az,Yardımlı
+state_AZ_Şah_28,base.az,Şahbuz
+state_AZ_Kən_29,base.az,Kəngərli
+state_AZ_Ord_30,base.az,Ordubad
+state_AZ_Göy_31,base.az,Göyçay
+state_AZ_Ağd_32,base.az,Ağdaş
+state_AZ_Naf_33,base.az,Naftalan
+state_AZ_Nax_34,base.az,Naxçıvan
+state_AZ_Göy_35,base.az,Göygöl
+state_AZ_Hac_36,base.az,Hacıqabul
+state_AZ_Kür_37,base.az,Kürdəmir
+state_AZ_Qob_38,base.az,Qobustan
+state_AZ_Bər_39,base.az,Bərdə
+state_AZ_Ler_40,base.az,Lerik
+state_AZ_Xan_41,base.az,Xankəndi
+state_AZ_Şuş_42,base.az,Şuşa
+state_AZ_Daş_43,base.az,Daşkəsən
+state_AZ_Sal_44,base.az,Salyan
+state_AZ_Qus_45,base.az,Qusar
+state_AZ_Şir_46,base.az,Şirvan
+state_AZ_Sab_47,base.az,Sabirabad
+state_AZ_Qub_48,base.az,Quba
+state_AZ_Gəd_49,base.az,Gədəbəy
+state_AZ_Oğu_50,base.az,Oğuz
+state_AZ_Bal_51,base.az,Balakən
+state_AZ_Qax_52,base.az,Qax
+state_AZ_Abş_53,base.az,Abşeron
+state_AZ_Nef_54,base.az,Neftçala
+state_AZ_Ağc_55,base.az,Ağcabədi
+state_AZ_Kəl_56,base.az,Kəlbəcər
+state_AZ_Qaz_57,base.az,Qazax
+state_AZ_Ağs_58,base.az,Ağstafa
+state_AZ_Tov_59,base.az,Tovuz
+state_AZ_Qəb_60,base.az,Qəbələ
+state_AZ_İsm_61,base.az,İsmayıllı
+state_AZ_Sam_62,base.az,Samux
+state_AZ_Şəm_63,base.az,Şəmkir
+state_AZ_Zaq_64,base.az,Zaqatala
+state_AZ_Zən_65,base.az,Zəngilan
+state_AZ_Tər_66,base.az,Tərtər
+state_AZ_Siy_67,base.az,Siyəzən
+state_AZ_Zər_68,base.az,Zərdab
+state_AZ_Xız_69,base.az,Xızı
+state_AZ_Uca_70,base.az,Ucar
+state_AZ_Xoc_71,base.az,Xocavənd
+state_BA_Bos_1,base.ba,Bosnia and Herzegovina, Federation of
+state_BA_Srp_2,base.ba,Srpska, Republika
+state_BA_Brc_3,base.ba,Brcko District
+state_BB_Sai_1,base.bb,Saint Michael
+state_BD_Dha_1,base.bd,Dhaka
+state_BD_Khu_2,base.bd,Khulna
+state_BD_Syl_3,base.bd,Sylhet
+state_BD_Chi_4,base.bd,Chittagong
+state_BD_Bar_5,base.bd,Barisāl
+state_BD_Rāj_6,base.bd,Rājshāhi
+state_BD_Ran_7,base.bd,Rangpur
+state_BD_Mym_8,base.bd,Mymensingh
+state_BE_Bru_1,base.be,Brussels-Capital Region
+state_BE_Wal_2,base.be,Wallonia
+state_BE_Fla_3,base.be,Flanders
+state_BF_Cas_1,base.bf,Cascades
+state_BF_Bou_2,base.bf,Boucle du Mouhoun
+state_BF_Cen_3,base.bf,Centre-Sud
+state_BF_Hau_4,base.bf,Hauts-Bassins
+state_BF_Cen_5,base.bf,Centre-Est
+state_BF_Est_6,base.bf,Est
+state_BF_Sah_7,base.bf,Sahel
+state_BF_Nor_8,base.bf,Nord
+state_BF_Cen_9,base.bf,Centre-Nord
+state_BF_Sud_10,base.bf,Sud-Ouest
+state_BF_Cen_11,base.bf,Centre-Ouest
+state_BF_Cen_12,base.bf,Centre
+state_BF_Pla_13,base.bf,Plateau-Central
+state_BG_Rus_1,base.bg,Ruse
+state_BG_Var_2,base.bg,Varna
+state_BG_Paz_3,base.bg,Pazardzhik
+state_BG_Yam_4,base.bg,Yambol
+state_BG_Sli_5,base.bg,Sliven
+state_BG_Dob_6,base.bg,Dobrich
+state_BG_Lov_7,base.bg,Lovech
+state_BG_Plo_8,base.bg,Plovdiv
+state_BG_Vid_9,base.bg,Vidin
+state_BG_Shu_10,base.bg,Shumen
+state_BG_Raz_11,base.bg,Razgrad
+state_BG_Sil_12,base.bg,Silistra
+state_BG_Bla_13,base.bg,Blagoevgrad
+state_BG_Bur_14,base.bg,Burgas
+state_BG_Mon_15,base.bg,Montana
+state_BG_Gab_16,base.bg,Gabrovo
+state_BG_Kyu_17,base.bg,Kyustendil
+state_BG_Vra_18,base.bg,Vratsa
+state_BG_Sta_19,base.bg,Stara Zagora
+state_BG_Smo_20,base.bg,Smolyan
+state_BG_Per_21,base.bg,Pernik
+state_BG_Ple_22,base.bg,Pleven
+state_BG_Sof_23,base.bg,Sofia-Grad
+state_BG_Has_24,base.bg,Haskovo
+state_BG_Kar_25,base.bg,Kardzhali
+state_BG_Tar_26,base.bg,Targovishte
+state_BG_Vel_27,base.bg,Veliko Tarnovo
+state_BH_Al _1,base.bh,Al ‘Āşimah
+state_BI_Kay_1,base.bi,Kayanza
+state_BI_Ruy_2,base.bi,Ruyigi
+state_BI_Bur_3,base.bi,Bururi
+state_BI_Mak_4,base.bi,Makamba
+state_BI_Cib_5,base.bi,Cibitoke
+state_BI_Rut_6,base.bi,Rutana
+state_BI_Can_7,base.bi,Cankuzo
+state_BI_Mur_8,base.bi,Muramvya
+state_BI_Git_9,base.bi,Gitega
+state_BI_Mwa_10,base.bi,Mwaro
+state_BI_Kir_11,base.bi,Kirundo
+state_BI_Muy_12,base.bi,Muyinga
+state_BI_Rum_13,base.bi,Rumonge
+state_BI_Bub_14,base.bi,Bubanza
+state_BI_Kar_15,base.bi,Karuzi
+state_BI_Ngo_16,base.bi,Ngozi
+state_BI_Buj_17,base.bi,Bujumbura Rural
+state_BJ_Ali_1,base.bj,Alibori
+state_BJ_Cou_2,base.bj,Couffo
+state_BJ_Col_3,base.bj,Collines
+state_BJ_Atl_4,base.bj,Atlantique
+state_BJ_Mon_5,base.bj,Mono
+state_BJ_Pla_6,base.bj,Plateau
+state_BJ_Ata_7,base.bj,Atacora
+state_BJ_Zou_8,base.bj,Zou
+state_BJ_Don_9,base.bj,Donga
+state_BJ_Bor_10,base.bj,Borgou
+state_BJ_Oué_11,base.bj,Ouémé
+state_BJ_Lit_12,base.bj,Littoral
+state_BM_Ham_1,base.bm,Hamilton
+state_BO_Pot_1,base.bo,Potosí
+state_BO_San_2,base.bo,Santa Cruz
+state_BO_La _3,base.bo,La Paz
+state_BO_El _4,base.bo,El Beni
+state_BO_Oru_5,base.bo,Oruro
+state_BO_Coc_6,base.bo,Cochabamba
+state_BO_Chu_7,base.bo,Chuquisaca
+state_BO_Tar_8,base.bo,Tarija
+state_BO_Pan_9,base.bo,Pando
+base.state_br_ce,base.br,Ceará
+base.state_br_rs,base.br,Rio Grande do Sul
+base.state_br_pe,base.br,Pernambuco
+base.state_br_ba,base.br,Bahia
+base.state_br_es,base.br,Espírito Santo
+base.state_br_sc,base.br,Santa Catarina
+base.state_br_mg,base.br,Minas Gerais
+base.state_br_pr,base.br,Paraná
+base.state_br_sp,base.br,São Paulo
+base.state_br_ma,base.br,Maranhão
+base.state_br_ro,base.br,Rondônia
+base.state_br_rn,base.br,Rio Grande do Norte
+base.state_br_ms,base.br,Mato Grosso do Sul
+base.state_br_se,base.br,Sergipe
+base.state_br_ac,base.br,Acre
+base.state_br_pa,base.br,Pará
+base.state_br_go,base.br,Goiás
+base.state_br_mt,base.br,Mato Grosso
+base.state_br_df,base.br,Distrito Federal
+base.state_br_rr,base.br,Roraima
+base.state_br_am,base.br,Amazonas
+base.state_br_pi,base.br,Piauí
+base.state_br_al,base.br,Alagoas
+base.state_br_rj,base.br,Rio de Janeiro
+base.state_br_pb,base.br,Paraíba
+base.state_br_to,base.br,Tocantins
+base.state_br_ap,base.br,Amapá
+state_BS_Cit_1,base.bs,City of Freeport
+state_BT_Mon_1,base.bt,Mongar
+state_BT_Pem_2,base.bt,Pemagatshel
+state_BT_Sam_3,base.bt,Samdrup Jongkhar
+state_BT_Gas_4,base.bt,Gasa
+state_BT_Thi_5,base.bt,Thimphu
+state_BT_Tra_6,base.bt,Trashigang
+state_BT_Lhu_7,base.bt,Lhuentse
+state_BT_Tra_8,base.bt,Trashi Yangtse
+state_BT_Wan_9,base.bt,Wangdue Phodrang
+state_BT_Pun_10,base.bt,Punakha
+state_BT_Haa_11,base.bt,Haa
+state_BT_Tro_12,base.bt,Trongsa
+state_BT_Zhe_13,base.bt,Zhemgang
+state_BT_Bum_14,base.bt,Bumthang
+state_BT_Sar_15,base.bt,Sarpang
+state_BT_Tsi_16,base.bt,Tsirang
+state_BT_Par_17,base.bt,Paro
+state_BT_Sam_18,base.bt,Samtse
+state_BT_Dag_19,base.bt,Dagana
+state_BT_Chh_20,base.bt,Chhukha
+state_BW_Gha_1,base.bw,Ghanzi
+state_BW_Kga_2,base.bw,Kgalagadi
+state_BW_Kga_3,base.bw,Kgatleng
+state_BW_Nor_4,base.bw,North West
+state_BW_Cen_5,base.bw,Central
+state_BW_Sou_6,base.bw,Southern
+state_BW_Kwe_7,base.bw,Kweneng
+state_BW_Cho_8,base.bw,Chobe
+state_BW_Sow_9,base.bw,Sowa Town
+state_BW_Sou_10,base.bw,South East
+state_BW_Nor_11,base.bw,North East
+state_BW_Gab_12,base.bw,Gaborone
+state_BW_Jwa_13,base.bw,Jwaneng
+state_BW_Lob_14,base.bw,Lobatse
+state_BW_Sel_15,base.bw,Selibe Phikwe
+state_BW_Fra_16,base.bw,Francistown
+state_BY_Bre_1,base.by,Brestskaya Voblasts’
+state_BY_Hro_2,base.by,Hrodzyenskaya Voblasts’
+state_BY_Hom_3,base.by,Homyel’skaya Voblasts’
+state_BY_Min_4,base.by,Minskaya Voblasts’
+state_BY_Vit_5,base.by,Vitsyebskaya Voblasts’
+state_BY_Mah_6,base.by,Mahilyowskaya Voblasts’
+state_BZ_Cay_1,base.bz,Cayo
+state_BZ_Cor_2,base.bz,Corozal
+state_BZ_Bel_3,base.bz,Belize
+state_BZ_Sta_4,base.bz,Stann Creek
+state_BZ_Ora_5,base.bz,Orange Walk
+state_BZ_Tol_6,base.bz,Toledo
+base.state_ca_mb,base.ca,Manitoba
+base.state_ca_nl,base.ca,Newfoundland and Labrador
+base.state_ca_qc,base.ca,Quebec
+base.state_ca_yt,base.ca,Yukon
+base.state_ca_sk,base.ca,Saskatchewan
+base.state_ca_ns,base.ca,Nova Scotia
+base.state_ca_ab,base.ca,Alberta
+base.state_ca_on,base.ca,Ontario
+base.state_ca_bc,base.ca,British Columbia
+base.state_ca_nt,base.ca,Northwest Territories
+base.state_ca_nu,base.ca,Nunavut
+base.state_ca_nb,base.ca,New Brunswick
+base.state_ca_pe,base.ca,Prince Edward Island
+state_CG_Kon_1,base.cg,Kongo Central
+state_CG_Sud_2,base.cg,Sud-Kivu
+state_CG_Équ_3,base.cg,Équateur
+state_CG_Man_4,base.cg,Maniema
+state_CG_Nor_5,base.cg,Nord-Kivu
+state_CG_Kas_6,base.cg,Kasaï Oriental
+state_CG_Kin_7,base.cg,Kinshasa
+state_CG_Kas_8,base.cg,Kasaï
+state_CG_Bas_9,base.cg,Bas-Uélé
+state_CG_Kas_10,base.cg,Kasaï Central
+state_CG_Hau_11,base.cg,Haut-Uélé
+state_CG_Hau_12,base.cg,Haut-Lomami
+state_CG_Itu_13,base.cg,Ituri
+state_CG_Mon_14,base.cg,Mongala
+state_CG_Hau_15,base.cg,Haut-Katanga
+state_CG_Nor_16,base.cg,Nord-Ubangi
+state_CG_Kwa_17,base.cg,Kwango
+state_CG_Tsh_18,base.cg,Tshopo
+state_CG_Tan_19,base.cg,Tanganyika
+state_CG_Mai_20,base.cg,Mai-Ndombe
+state_CG_Sud_21,base.cg,Sud-Ubangi
+state_CG_Tsh_22,base.cg,Tshuapa
+state_CG_Kwi_23,base.cg,Kwilu
+state_CG_Lom_24,base.cg,Lomami
+state_CG_San_25,base.cg,Sankuru
+state_CG_Lua_26,base.cg,Lualaba
+state_CF_Ban_1,base.cf,Bangui
+state_CF_San_2,base.cf,Sangha-Mbaéré
+state_CF_Ouh_3,base.cf,Ouham-Pendé
+state_CF_Oua_4,base.cf,Ouaka
+state_CF_Bas_5,base.cf,Basse-Kotto
+state_CF_Omb_6,base.cf,Ombella-Mpoko
+state_CF_Nan_7,base.cf,Nana-Grébizi
+state_CF_Kém_8,base.cf,Kémo
+state_CF_Nan_9,base.cf,Nana-Mambéré
+state_CF_Mam_10,base.cf,Mambéré-Kadéï
+state_CF_Hau_11,base.cf,Haute-Kotto
+state_CF_Hau_12,base.cf,Haut-Mbomou
+state_CF_Mbo_13,base.cf,Mbomou
+state_CF_Lob_14,base.cf,Lobaye
+state_CF_Ouh_15,base.cf,Ouham
+state_CF_Bam_16,base.cf,Bamingui-Bangoran
+state_CF_Vak_17,base.cf,Vakaga
+state_CG_Bra_1,base.cg,Brazzaville
+state_CG_San_2,base.cg,Sangha
+state_CG_Bou_3,base.cg,Bouenza
+state_CG_Lik_4,base.cg,Likouala
+state_CG_Pla_5,base.cg,Plateaux
+state_CG_Lék_6,base.cg,Lékoumou
+state_CG_Cuv_7,base.cg,Cuvette-Ouest
+state_CG_Cuv_8,base.cg,Cuvette
+state_CG_Poo_9,base.cg,Pool
+state_CG_Nia_10,base.cg,Niari
+state_CG_Kou_11,base.cg,Kouilou
+state_CG_Poi_12,base.cg,Pointe-Noire
+state_CH_Sch_1,base.ch,Schaffhausen
+state_CH_Aar_2,base.ch,Aargau
+state_CH_Gla_3,base.ch,Glarus
+state_CH_Zür_4,base.ch,Zürich
+state_CH_Jur_5,base.ch,Jura
+state_CH_Bas_6,base.ch,Basel-Landschaft
+state_CH_Bas_7,base.ch,Basel-Stadt
+state_CH_Sol_8,base.ch,Solothurn
+state_CH_Fri_9,base.ch,Fribourg
+state_CH_Zug_10,base.ch,Zug
+state_CH_Gra_11,base.ch,Graubünden
+state_CH_Obw_12,base.ch,Obwalden
+state_CH_Sch_13,base.ch,Schwyz
+state_CH_Luz_14,base.ch,Luzern
+state_CH_Neu_15,base.ch,Neuchâtel
+state_CH_Uri_16,base.ch,Uri
+state_CH_Ber_17,base.ch,Bern
+state_CH_Gen_18,base.ch,Genève
+state_CH_Vau_19,base.ch,Vaud
+state_CH_Nid_20,base.ch,Nidwalden
+state_CH_San_21,base.ch,Sankt Gallen
+state_CH_App_22,base.ch,Appenzell Innerrhoden
+state_CH_App_23,base.ch,Appenzell Ausserrhoden
+state_CH_Thu_24,base.ch,Thurgau
+state_CH_Tic_25,base.ch,Ticino
+state_CH_Val_26,base.ch,Valais
+state_CI_Bas_1,base.ci,Bas-Sassandra
+state_CI_Val_2,base.ci,Vallée du Bandama
+state_CI_Mon_3,base.ci,Montagnes
+state_CI_Sav_4,base.ci,Savanes
+state_CI_Den_5,base.ci,Denguélé
+state_CI_Zan_6,base.ci,Zanzan
+state_CI_Lag_7,base.ci,Lagunes
+state_CI_Abi_8,base.ci,Abidjan
+state_CI_Yam_9,base.ci,Yamoussoukro
+state_CI_Gôh_10,base.ci,Gôh-Djiboua
+state_CI_Com_11,base.ci,Comoé
+state_CI_Lac_12,base.ci,Lacs
+state_CI_Sas_13,base.ci,Sassandra-Marahoué
+state_CI_Wor_14,base.ci,Woroba
+state_CL_Ata_1,base.cl,Atacama
+state_CL_Reg_2,base.cl,Región Metropolitana
+state_CL_Lib_3,base.cl,Libertador General Bernardo O’Higgins
+state_CL_Bio_4,base.cl,Biobío
+state_CL_Ara_5,base.cl,Araucanía
+state_CL_Mau_6,base.cl,Maule
+state_CL_Ari_7,base.cl,Arica y Parinacota
+state_CL_Coq_8,base.cl,Coquimbo
+state_CL_Mag_9,base.cl,Magallanes y de la Antártica Chilena
+state_CL_Tar_10,base.cl,Tarapacá
+state_CL_Ant_11,base.cl,Antofagasta
+state_CL_Los_12,base.cl,Los Ríos
+state_CL_Val_13,base.cl,Valparaíso
+state_CL_Ays_14,base.cl,Aysén
+state_CL_Los_15,base.cl,Los Lagos
+state_CM_Cen_1,base.cm,Centre
+state_CM_Est_2,base.cm,Est
+state_CM_Ada_3,base.cm,Adamaoua
+state_CM_Nor_4,base.cm,Nord
+state_CM_Sud_5,base.cm,Sud
+state_CM_Lit_6,base.cm,Littoral
+state_CM_Ext_7,base.cm,Extrême-Nord
+state_CM_Sou_8,base.cm,South-West
+state_CM_Nor_9,base.cm,North-West
+state_CM_Oue_10,base.cm,Ouest
+state_CN_Gui_1,base.cn,Guizhou
+state_CN_Jia_2,base.cn,Jiangxi
+state_CN_Gua_3,base.cn,Guangxi
+state_CN_Hub_4,base.cn,Hubei
+state_CN_Sha_5,base.cn,Shandong
+state_CN_Sha_6,base.cn,Shanghai
+state_CN_Hun_7,base.cn,Hunan
+state_CN_Inn_8,base.cn,Inner Mongolia
+state_CN_Hei_9,base.cn,Heilongjiang
+state_CN_Heb_10,base.cn,Hebei
+state_CN_Hen_11,base.cn,Henan
+state_CN_Sha_12,base.cn,Shaanxi
+state_CN_Tia_13,base.cn,Tianjin
+state_CN_Nin_14,base.cn,Ningxia
+state_CN_Jil_15,base.cn,Jilin
+state_CN_Hai_16,base.cn,Hainan
+state_CN_Tib_17,base.cn,Tibet
+state_CN_Anh_18,base.cn,Anhui
+state_CN_Yun_19,base.cn,Yunnan
+state_CN_Sic_20,base.cn,Sichuan
+state_CN_Lia_21,base.cn,Liaoning
+state_CN_Gan_22,base.cn,Gansu
+state_CN_Jia_23,base.cn,Jiangsu
+state_CN_Gua_24,base.cn,Guangdong
+state_CN_Xin_25,base.cn,Xinjiang
+state_CN_Sha_26,base.cn,Shanxi
+state_CN_Fuj_27,base.cn,Fujian
+state_CN_Zhe_28,base.cn,Zhejiang
+state_CN_Bei_29,base.cn,Beijing
+state_CN_Cho_30,base.cn,Chongqing
+state_CN_Qin_31,base.cn,Qinghai
+base.state_co_22,base.co,Sucre
+base.state_co_12,base.co,Chocó
+base.state_co_29,base.co,Amazonas
+base.state_co_30,base.co,Guainía
+base.state_co_17,base.co,Nariño
+base.state_co_23,base.co,Tolima
+base.state_co_24,base.co,Valle del Cauca
+base.state_co_02,base.co,Atlántico
+base.state_co_01,base.co,Antioquia
+base.state_co_14,base.co,La Guajira
+base.state_co_20,base.co,Risaralda
+base.state_co_19,base.co,Quindio
+base.state_co_04,base.co,Bolívar
+base.state_co_05,base.co,Boyacá
+base.state_co_33,base.co,Vichada
+base.state_co_25,base.co,Arauca
+base.state_co_13,base.co,Huila
+base.state_co_16,base.co,Meta
+base.state_co_27,base.co,Putumayo
+base.state_co_26,base.co,Casanare
+base.state_co_31,base.co,Guaviare
+base.state_co_09,base.co,Cesar
+base.state_co_21,base.co,Santander
+base.state_co_10,base.co,Córdoba
+base.state_co_18,base.co,Norte de Santander
+state_CO_Bog_26,base.co,Bogotá
+base.state_co_15,base.co,Magdalena
+base.state_co_06,base.co,Caldas
+base.state_co_07,base.co,Caquetá
+base.state_co_32,base.co,Vaupés
+base.state_co_08,base.co,Cauca
+base.state_co_28,base.co,Archipiélago de San Andrés, Providencia y Santa Catalina
+base.state_co_11,base.co,Cundinamarca
+state_CR_San_1,base.cr,San José
+state_CR_Lim_2,base.cr,Limón
+state_CR_Ala_3,base.cr,Alajuela
+state_CR_Gua_4,base.cr,Guanacaste
+state_CR_Car_5,base.cr,Cartago
+state_CR_Her_6,base.cr,Heredia
+state_CR_Pun_7,base.cr,Puntarenas
+state_CU_La _1,base.cu,La Habana
+state_CU_May_2,base.cu,Mayabeque
+state_CU_Art_3,base.cu,Artemisa
+state_CU_Mat_4,base.cu,Matanzas
+state_CU_Vil_5,base.cu,Villa Clara
+state_CU_Gra_6,base.cu,Granma
+state_CU_Cie_7,base.cu,Ciego de Ávila
+state_CU_Cam_8,base.cu,Camagüey
+state_CU_Cie_9,base.cu,Cienfuegos
+state_CU_Gua_10,base.cu,Guantánamo
+state_CU_Hol_11,base.cu,Holguín
+state_CU_Isl_12,base.cu,Isla de la Juventud
+state_CU_Pin_13,base.cu,Pinar del Río
+state_CU_San_14,base.cu,Sancti Spíritus
+state_CU_San_15,base.cu,Santiago de Cuba
+state_CU_Las_16,base.cu,Las Tunas
+state_CV_Rib_1,base.cv,Ribeira Brava
+state_CV_Tar_2,base.cv,Tarrafal de São Nicolau
+state_CV_Mai_3,base.cv,Maio
+state_CV_Bra_4,base.cv,Brava
+state_CV_Mos_5,base.cv,Mosteiros
+state_CV_São_6,base.cv,São Domingos
+state_CV_São_7,base.cv,São Salvador do Mundo
+state_CV_Sal_8,base.cv,Sal
+state_CV_São_9,base.cv,São Filipe
+state_CV_Tar_10,base.cv,Tarrafal
+state_CV_Pra_11,base.cv,Praia
+state_CV_San_12,base.cv,Santa Catarina
+state_CV_Rib_13,base.cv,Ribeira Grande de Santiago
+state_CV_San_14,base.cv,Santa Catarina do Fogo
+state_CV_São_15,base.cv,São Vicente
+state_CV_Por_16,base.cv,Porto Novo
+state_CV_Rib_17,base.cv,Ribeira Grande
+state_CV_Pau_18,base.cv,Paul
+state_CV_São_19,base.cv,São Miguel
+state_CV_Boa_20,base.cv,Boa Vista
+state_CY_Lem_1,base.cy,Lemesós
+state_CY_Amm_2,base.cy,Ammóchostos
+state_CY_Lár_3,base.cy,Lárnaka
+state_CY_Ker_4,base.cy,Kerýneia
+state_CY_Páf_5,base.cy,Páfos
+state_CY_Lef_6,base.cy,Lefkosía
+state_CZ_Úst_1,base.cz,Ústecký Kraj
+state_CZ_Par_2,base.cz,Pardubický Kraj
+state_CZ_Vys_3,base.cz,Vysočina
+state_CZ_Lib_4,base.cz,Liberecký Kraj
+state_CZ_Pra_5,base.cz,Praha, Hlavní Město
+state_CZ_Jih_6,base.cz,Jihomoravský Kraj
+state_CZ_Plz_7,base.cz,Plzeňský Kraj
+state_CZ_Jih_8,base.cz,Jihočeský Kraj
+state_CZ_Kar_9,base.cz,Karlovarský Kraj
+state_CZ_Mor_10,base.cz,Moravskoslezský Kraj
+state_CZ_Olo_11,base.cz,Olomoucký Kraj
+state_CZ_Krá_12,base.cz,Královéhradecký Kraj
+state_CZ_Zlí_13,base.cz,Zlínský Kraj
+state_DE_Ber_1,base.de,Berlin
+state_DE_Nor_2,base.de,North Rhine-Westphalia
+state_DE_Bav_3,base.de,Bavaria
+state_DE_Bra_4,base.de,Brandenburg
+state_DE_Sch_5,base.de,Schleswig-Holstein
+state_DE_Hes_6,base.de,Hesse
+state_DE_Sax_7,base.de,Saxony-Anhalt
+state_DE_Bre_8,base.de,Bremen
+state_DE_Low_9,base.de,Lower Saxony
+state_DE_Saa_10,base.de,Saarland
+state_DE_Mec_11,base.de,Mecklenburg-Western Pomerania
+state_DE_Ham_12,base.de,Hamburg
+state_DE_Bad_13,base.de,Baden-Württemberg
+state_DE_Sax_14,base.de,Saxony
+state_DE_Thu_15,base.de,Thuringia
+state_DE_Rhi_16,base.de,Rhineland-Palatinate
+state_DJ_Tad_1,base.dj,Tadjourah
+state_DJ_Art_2,base.dj,Arta
+state_DJ_Ali_3,base.dj,Ali Sabieh
+state_DJ_Dik_4,base.dj,Dikhil
+state_DJ_Dji_5,base.dj,Djibouti
+state_DJ_Obo_6,base.dj,Obock
+state_DK_Syd_1,base.dk,Syddanmark
+state_DK_Hov_2,base.dk,Hovedstaden
+state_DK_Mid_3,base.dk,Midtjylland
+state_DK_Sjæ_4,base.dk,Sjælland
+state_DK_Nor_5,base.dk,Nordjylland
+state_DM_Sai_1,base.dm,Saint George
+state_DO_Yum_1,base.do,Yuma
+state_DO_Cib_2,base.do,Cibao Sur
+state_DO_Enr_3,base.do,Enriquillo
+state_DO_El _4,base.do,El Valle
+state_DO_Cib_5,base.do,Cibao Noroeste
+state_DO_Cib_6,base.do,Cibao Norte
+state_DO_Cib_7,base.do,Cibao Nordeste
+state_DO_Hig_8,base.do,Higuamo
+state_DO_Val_9,base.do,Valdesia
+state_DO_Oza_10,base.do,Ozama
+state_DZ_Béc_1,base.dz,Béchar
+state_DZ_Alg_2,base.dz,Alger
+state_DZ_Oua_3,base.dz,Ouargla
+state_DZ_Ill_4,base.dz,Illizi
+state_DZ_Gha_5,base.dz,Ghardaïa
+state_DZ_Tam_6,base.dz,Tamanrasset
+state_DZ_Adr_7,base.dz,Adrar
+state_DZ_Naa_8,base.dz,Naama
+state_DZ_Oum_9,base.dz,Oum el Bouaghi
+state_DZ_Sou_10,base.dz,Souk Ahras
+state_DZ_Tis_11,base.dz,Tissemsilt
+state_DZ_Tin_12,base.dz,Tindouf
+state_DZ_M’s_13,base.dz,M’sila
+state_DZ_Gue_14,base.dz,Guelma
+state_DZ_El _15,base.dz,El Oued
+state_DZ_Bor_16,base.dz,Bordj Bou Arréridj
+state_DZ_Ann_17,base.dz,Annaba
+state_DZ_Aïn_18,base.dz,Aïn Temouchent
+state_DZ_Aïn_19,base.dz,Aïn Defla
+state_DZ_Bat_20,base.dz,Batna
+state_DZ_Bej_21,base.dz,Bejaïa
+state_DZ_Bis_22,base.dz,Biskra
+state_DZ_Bli_23,base.dz,Blida
+state_DZ_Bou_24,base.dz,Bouira
+state_DZ_Bou_25,base.dz,Boumerdes
+state_DZ_Chl_26,base.dz,Chlef
+state_DZ_Con_27,base.dz,Constantine
+state_DZ_Dje_28,base.dz,Djelfa
+state_DZ_El _29,base.dz,El Bayadh
+state_DZ_El _30,base.dz,El Tarf
+state_DZ_Jij_31,base.dz,Jijel
+state_DZ_Khe_32,base.dz,Khenchela
+state_DZ_Lag_33,base.dz,Laghouat
+state_DZ_Mas_34,base.dz,Mascara
+state_DZ_Méd_35,base.dz,Médéa
+state_DZ_Mil_36,base.dz,Mila
+state_DZ_Mos_37,base.dz,Mostaganem
+state_DZ_Ora_38,base.dz,Oran
+state_DZ_Rel_39,base.dz,Relizane
+state_DZ_Saï_40,base.dz,Saïda
+state_DZ_Sét_41,base.dz,Sétif
+state_DZ_Sid_42,base.dz,Sidi Bel Abbès
+state_DZ_Ski_43,base.dz,Skikda
+state_DZ_Téb_44,base.dz,Tébessa
+state_DZ_Tia_45,base.dz,Tiaret
+state_DZ_Tip_46,base.dz,Tipaza
+state_DZ_Tiz_47,base.dz,Tizi Ouzou
+state_DZ_Tle_48,base.dz,Tlemcen
+state_EC_Esm_1,base.ec,Esmeraldas
+state_EC_El _2,base.ec,El Oro
+state_EC_Chi_3,base.ec,Chimborazo
+state_EC_Mor_4,base.ec,Morona-Santiago
+state_EC_Pic_5,base.ec,Pichincha
+state_EC_Car_6,base.ec,Carchi
+state_EC_Man_7,base.ec,Manabí
+state_EC_Gal_8,base.ec,Galápagos
+state_EC_Gua_9,base.ec,Guayas
+state_EC_Zam_10,base.ec,Zamora-Chinchipe
+state_EC_Suc_11,base.ec,Sucumbíos
+state_EC_Loj_12,base.ec,Loja
+state_EC_Imb_13,base.ec,Imbabura
+state_EC_Los_14,base.ec,Los Ríos
+state_EC_Pas_15,base.ec,Pastaza
+state_EC_Tun_16,base.ec,Tungurahua
+state_EC_Nap_17,base.ec,Napo
+state_EC_Ore_18,base.ec,Orellana
+state_EC_San_19,base.ec,Santo Domingo de los Tsáchilas
+state_EC_San_20,base.ec,Santa Elena
+state_EC_Azu_21,base.ec,Azuay
+state_EC_Bol_22,base.ec,Bolívar
+state_EC_Cañ_23,base.ec,Cañar
+state_EC_Cot_24,base.ec,Cotopaxi
+state_EE_Val_1,base.ee,Valgamaa
+state_EE_Vil_2,base.ee,Viljandimaa
+state_EE_Har_3,base.ee,Harjumaa
+state_EE_Hii_4,base.ee,Hiiumaa
+state_EE_Lää_5,base.ee,Lääne-Virumaa
+state_EE_Pär_6,base.ee,Pärnumaa
+state_EE_Jär_7,base.ee,Järvamaa
+state_EE_Jõg_8,base.ee,Jõgevamaa
+state_EE_Põl_9,base.ee,Põlvamaa
+state_EE_Tar_10,base.ee,Tartumaa
+state_EE_Rap_11,base.ee,Raplamaa
+state_EE_Saa_12,base.ee,Saaremaa
+state_EE_Ida_13,base.ee,Ida-Virumaa
+state_EE_Võr_14,base.ee,Võrumaa
+state_EE_Lää_15,base.ee,Läänemaa
+state_EG_Al _1,base.eg,Al Baḩr al Aḩmar
+state_EG_Al _2,base.eg,Al Minyā
+state_EG_Ad _3,base.eg,Ad Daqahlīyah
+state_EG_Maţ_4,base.eg,Maţrūḩ
+state_EG_Qin_5,base.eg,Qinā
+state_EG_Al _6,base.eg,Al Fayyūm
+state_EG_Asy_7,base.eg,Asyūţ
+state_EG_Asw_8,base.eg,Aswān
+state_EG_Al _9,base.eg,Al Jīzah
+state_EG_Al _10,base.eg,Al Wādī al Jadīd
+state_EG_Sūh_11,base.eg,Sūhāj
+state_EG_Jan_12,base.eg,Janūb Sīnā’
+state_EG_Būr_13,base.eg,Būr Sa‘īd
+state_EG_Al _14,base.eg,Al Gharbīyah
+state_EG_Al _15,base.eg,Al Ismā‘īlīyah
+state_EG_As _16,base.eg,As Suways
+state_EG_Ban_17,base.eg,Banī Suwayf
+state_EG_Al _18,base.eg,Al Qāhirah
+state_EG_Dum_19,base.eg,Dumyāţ
+state_EG_Ash_20,base.eg,Ash Sharqīyah
+state_EG_Al _21,base.eg,Al Iskandarīyah
+state_EG_Al _22,base.eg,Al Minūfīyah
+state_EG_Sha_23,base.eg,Shamāl Sīnā’
+state_EG_Al _24,base.eg,Al Buḩayrah
+state_EG_Al _25,base.eg,Al Uqşur
+state_EG_Kaf_26,base.eg,Kafr ash Shaykh
+state_EG_Al _27,base.eg,Al Qalyūbīyah
+state_ER_Gas_1,base.er,Gash Barka
+state_ER_Deb_2,base.er,Debub
+state_ER_Deb_3,base.er,Debubawī K’eyih Bahrī
+state_ER_Sem_4,base.er,Semēnawī K’eyih Bahrī
+state_ER_Ma’_5,base.er,Ma’ākel
+state_ER_Āns_6,base.er,Ānseba
+state_ES_Bas_1,base.es,Basque Country
+base.state_es_s,base.es,Cantabria
+base.state_es_lo,base.es,La Rioja
+state_ES_Cat_4,base.es,Catalonia
+base.state_es_o,base.es,Asturias
+state_ES_Can_6,base.es,Canary Islands
+state_ES_Cas_7,base.es,Castille-La Mancha
+base.state_es_mu,base.es,Murcia
+state_ES_Ara_9,base.es,Aragon
+state_ES_And_10,base.es,Andalusia
+state_ES_Gal_11,base.es,Galicia
+state_ES_Cas_12,base.es,Castille-Leon
+state_ES_Ext_13,base.es,Extremadura
+base.state_es_ce,base.es,Ceuta
+base.state_es_ml,base.es,Melilla
+base.state_es_na,base.es,Navarra (Nafarroa)
+state_ES_Bal_17,base.es,Balearic Islands
+base.state_es_v,base.es,València (Valencia)
+base.state_es_m,base.es,Madrid
+state_ET_Tig_1,base.et,Tigray
+state_ET_Āma_2,base.et,Āmara
+state_ET_Oro_3,base.et,Oromīya
+state_ET_YeD_4,base.et,YeDebub Bihēroch Bihēreseboch na Hizboch
+state_ET_Sum_5,base.et,Sumalē
+state_ET_Bīn_6,base.et,Bīnshangul Gumuz
+state_ET_Gam_7,base.et,Gambēla Hizboch
+state_ET_Ādī_8,base.et,Ādīs Ābeba
+state_ET_Dir_9,base.et,Dirē Dawa
+state_ET_Hār_10,base.et,Hārerī Hizb
+state_ET_Āfa_11,base.et,Āfar
+state_FI_Sat_1,base.fi,Satakunta
+state_FI_Poh_2,base.fi,Pohjois-Savo
+state_FI_Kes_3,base.fi,Keski-Suomi
+state_FI_Lap_4,base.fi,Lappi
+state_FI_Päi_5,base.fi,Päijät-Häme
+state_FI_Ete_6,base.fi,Etelä-Savo
+state_FI_Poh_7,base.fi,Pohjois-Pohjanmaa
+state_FI_Kan_8,base.fi,Kanta-Häme
+state_FI_Ete_9,base.fi,Etelä-Pohjanmaa
+state_FI_Pir_10,base.fi,Pirkanmaa
+state_FI_Kai_11,base.fi,Kainuu
+state_FI_Ete_12,base.fi,Etelä-Karjala
+state_FI_Poh_13,base.fi,Pohjois-Karjala
+state_FI_Kym_14,base.fi,Kymenlaakso
+state_FI_Uus_15,base.fi,Uusimaa
+state_FI_Åla_16,base.fi,Åland
+state_FI_Var_17,base.fi,Varsinais-Suomi
+state_FI_Kes_18,base.fi,Keski-Pohjanmaa
+state_FI_Poh_19,base.fi,Pohjanmaa
+state_FJ_Ba_1,base.fj,Ba
+state_FJ_Rew_2,base.fj,Rewa
+state_FJ_Mac_3,base.fj,Macuata
+state_FM_Poh_1,base.fm,Pohnpei
+state_FM_Yap_2,base.fm,Yap
+state_FM_Chu_3,base.fm,Chuuk
+state_FM_Kos_4,base.fm,Kosrae
+state_FR_Bre_1,base.fr,Bretagne
+state_FR_Pro_2,base.fr,Provence-Alpes-Côte d’Azur
+state_FR_Cor_3,base.fr,Corsica
+state_FR_Pay_4,base.fr,Pays de la Loire
+state_FR_Cen_5,base.fr,Centre-Val de Loire
+state_FR_Île_6,base.fr,Île-de-France
+state_FR_Auv_7,base.fr,Auvergne-Rhône-Alpes
+state_FR_Occ_8,base.fr,Occitanie
+state_FR_Nou_9,base.fr,Nouvelle-Aquitaine
+state_FR_Bou_10,base.fr,Bourgogne-Franche-Comté
+state_FR_Hau_11,base.fr,Hauts-de-France
+state_FR_Nor_12,base.fr,Normandie
+state_FR_Gra_13,base.fr,Grand Est
+state_GA_Nya_1,base.ga,Nyanga
+state_GA_Ogo_2,base.ga,Ogooué-Maritime
+state_GA_Est_3,base.ga,Estuaire
+state_GA_Ngo_4,base.ga,Ngounié
+state_GA_Hau_5,base.ga,Haut-Ogooué
+state_GA_Wol_6,base.ga,Woleu-Ntem
+state_GA_Ogo_7,base.ga,Ogooué-Ivindo
+state_GA_Ogo_8,base.ga,Ogooué-Lolo
+state_GA_Moy_9,base.ga,Moyen-Ogooué
+state_GB_War_1,base.uk,Warrington
+state_GB_Wes_2,base.uk,West Berkshire
+state_GB_Swi_3,base.uk,Swindon
+state_GB_Hig_4,base.uk,Highland
+state_GB_Dud_5,base.uk,Dudley
+state_GB_Oxf_6,base.uk,Oxfordshire
+state_GB_Hac_7,base.uk,Hackney
+state_GB_Der_8,base.uk,Derbyshire
+state_GB_Arg_9,base.uk,Argyll and Bute
+state_GB_Nor_10,base.uk,North Yorkshire
+state_GB_Edi_11,base.uk,Edinburgh, City of
+state_GB_Sun_12,base.uk,Sunderland
+state_GB_Swa_13,base.uk,Swansea
+state_GB_Wok_14,base.uk,Wokingham
+state_GB_Wes_15,base.uk,Westminster
+state_GB_Sol_16,base.uk,Solihull
+state_GB_Roc_17,base.uk,Rochdale
+state_GB_Not_18,base.uk,Nottingham
+state_GB_Ham_19,base.uk,Hampshire
+state_GB_Bre_20,base.uk,Brent
+state_GB_Nor_21,base.uk,North Lanarkshire
+state_GB_Rea_22,base.uk,Reading
+state_GB_Tor_23,base.uk,Torbay
+state_GB_Sou_24,base.uk,South Gloucestershire
+state_GB_Old_25,base.uk,Oldham
+state_GB_Mor_26,base.uk,Moray
+state_GB_Nor_27,base.uk,North Tyneside
+state_GB_Nor_28,base.uk,North Somerset
+state_GB_Hou_29,base.uk,Hounslow
+state_GB_Nor_30,base.uk,North Ayrshire
+state_GB_Bar_31,base.uk,Barnsley
+state_GB_Fal_32,base.uk,Falkirk
+state_GB_Slo_33,base.uk,Slough
+state_GB_Kir_34,base.uk,Kirklees
+state_GB_Kin_35,base.uk,Kingston upon Hull, City of
+state_GB_Hav_36,base.uk,Havering
+state_GB_Thu_37,base.uk,Thurrock
+state_GB_Her_38,base.uk,Hertfordshire
+state_GB_Cov_39,base.uk,Coventry
+state_GB_Lei_40,base.uk,Leicester
+state_GB_Eas_41,base.uk,East Riding of Yorkshire
+state_GB_Sti_42,base.uk,Stirling
+state_GB_Nor_43,base.uk,Norfolk
+state_GB_Dar_44,base.uk,Darlington
+state_GB_Her_45,base.uk,Herefordshire
+state_GB_Nor_46,base.uk,North East Lincolnshire
+state_GB_Bra_47,base.uk,Bradford
+state_GB_Bra_48,base.uk,Bracknell Forest
+state_GB_Nor_49,base.uk,Northumberland
+state_GB_Gat_50,base.uk,Gateshead
+state_GB_Wan_51,base.uk,Wandsworth
+state_GB_Sou_52,base.uk,South Tyneside
+state_GB_She_53,base.uk,Sheffield
+state_GB_Cae_54,base.uk,Caerphilly
+state_GB_Red_55,base.uk,Redcar and Cleveland
+state_GB_Eas_56,base.uk,East Lothian
+state_GB_Cer_57,base.uk,Ceredigion
+state_GB_She_58,base.uk,Shetland Islands
+state_GB_Cam_59,base.uk,Cambridgeshire
+state_GB_Fif_60,base.uk,Fife
+state_GB_Bri_61,base.uk,Bridgend
+state_GB_Val_62,base.uk,Vale of Glamorgan, The
+state_GB_Cum_63,base.uk,Cumbria
+state_GB_Buc_64,base.uk,Buckinghamshire
+state_GB_Lin_65,base.uk,Lincolnshire
+state_GB_Bro_66,base.uk,Bromley
+state_GB_Ork_67,base.uk,Orkney Islands
+state_GB_Bla_68,base.uk,Blackpool
+state_GB_Cro_69,base.uk,Croydon
+state_GB_Dor_70,base.uk,Dorset
+state_GB_Bar_71,base.uk,Barnet
+state_GB_Ham_72,base.uk,Hammersmith and Fulham
+state_GB_Bou_73,base.uk,Bournemouth
+state_GB_Dum_74,base.uk,Dumfries and Galloway
+state_GB_Wes_75,base.uk,West Dunbartonshire
+state_GB_Lut_76,base.uk,Luton
+state_GB_Bri_77,base.uk,Bristol, City of
+state_GB_Enf_78,base.uk,Enfield
+state_GB_Sou_79,base.uk,Southwark
+state_GB_Cor_80,base.uk,Cornwall
+state_GB_Rho_81,base.uk,Rhondda Cynon Taff
+state_GB_Tel_82,base.uk,Telford and Wrekin
+state_GB_Sto_83,base.uk,Stockton-on-Tees
+state_GB_Win_84,base.uk,Windsor and Maidenhead
+state_GB_Mid_85,base.uk,Midlothian
+state_GB_Har_86,base.uk,Haringey
+state_GB_Tor_87,base.uk,Torfaen
+state_GB_Per_88,base.uk,Perth and Kinross
+state_GB_Mil_89,base.uk,Milton Keynes
+state_GB_Har_90,base.uk,Hartlepool
+state_GB_Har_91,base.uk,Harrow
+state_GB_San_92,base.uk,Sandwell
+state_GB_Tam_93,base.uk,Tameside
+state_GB_Wak_94,base.uk,Wakefield
+state_GB_Wil_95,base.uk,Wiltshire
+state_GB_Ken_96,base.uk,Kent
+state_GB_Poo_97,base.uk,Poole
+state_GB_Isl_98,base.uk,Isle of Wight
+state_GB_Wal_99,base.uk,Walsall
+state_GB_Gre_100,base.uk,Greenwich
+state_GB_Sou_101,base.uk,Southend-on-Sea
+state_GB_Nor_102,base.uk,North Lincolnshire
+state_GB_Gwy_103,base.uk,Gwynedd
+state_GB_Sou_104,base.uk,South Lanarkshire
+state_GB_Dur_105,base.uk,Durham
+state_GB_War_106,base.uk,Warwickshire
+state_GB_Abe_107,base.uk,Aberdeen City
+state_GB_Sco_108,base.uk,Scottish Borders, The
+state_GB_Sut_109,base.uk,Sutton
+state_GB_Lew_110,base.uk,Lewisham
+state_GB_Lam_111,base.uk,Lambeth
+state_GB_Eas_112,base.uk,East Sussex
+state_GB_Dun_113,base.uk,Dundee City
+state_GB_Suf_114,base.uk,Suffolk
+state_GB_Bir_115,base.uk,Birmingham
+state_GB_Sto_116,base.uk,Stoke-on-Trent
+state_GB_Sto_117,base.uk,Stockport
+state_GB_Ess_118,base.uk,Essex
+state_GB_Lee_119,base.uk,Leeds
+state_GB_Bat_120,base.uk,Bath and North East Somerset
+state_GB_Sou_121,base.uk,South Ayrshire
+state_GB_Eas_122,base.uk,East Dunbartonshire
+state_GB_Wir_123,base.uk,Wirral
+state_GB_Con_124,base.uk,Conwy
+state_GB_Den_125,base.uk,Denbighshire
+state_GB_Wal_126,base.uk,Waltham Forest
+state_GB_Cal_127,base.uk,Calderdale
+state_GB_Pet_128,base.uk,Peterborough
+state_GB_Rot_129,base.uk,Rotherham
+state_GB_Cla_130,base.uk,Clackmannanshire
+state_GB_Sou_131,base.uk,Southampton
+state_GB_Bla_132,base.uk,Blaenau Gwent
+state_GB_Ang_133,base.uk,Angus
+state_GB_Isl_134,base.uk,Islington
+state_GB_Car_135,base.uk,Carmarthenshire
+state_GB_Eal_136,base.uk,Ealing
+state_GB_Eas_137,base.uk,East Ayrshire
+state_GB_New_138,base.uk,Newport
+state_GB_Ken_139,base.uk,Kensington and Chelsea
+state_GB_Pem_140,base.uk,Pembrokeshire
+state_GB_Hil_141,base.uk,Hillingdon
+state_GB_Ric_142,base.uk,Richmond upon Thames
+state_GB_Ply_143,base.uk,Plymouth
+state_GB_Wes_144,base.uk,West Lothian
+state_GB_Por_145,base.uk,Portsmouth
+state_GB_Ren_146,base.uk,Renfrewshire
+state_GB_Dev_147,base.uk,Devon
+state_GB_Hal_148,base.uk,Halton
+state_GB_Tra_149,base.uk,Trafford
+state_GB_Eil_150,base.uk,Eilean Siar
+state_GB_Man_151,base.uk,Manchester
+state_GB_Mer_152,base.uk,Merton
+state_GB_Red_153,base.uk,Redbridge
+state_GB_Tow_154,base.uk,Tower Hamlets
+state_GB_Sal_155,base.uk,Salford
+state_GB_Der_156,base.uk,Derby
+state_GB_Fli_157,base.uk,Flintshire
+state_GB_Wor_158,base.uk,Worcestershire
+state_GB_Med_159,base.uk,Medway
+state_GB_Wes_160,base.uk,West Sussex
+state_GB_New_161,base.uk,Newham
+state_GB_Rut_162,base.uk,Rutland
+state_GB_Glo_163,base.uk,Gloucestershire
+state_GB_Wre_164,base.uk,Wrexham
+state_GB_Wol_165,base.uk,Wolverhampton
+state_GB_Isl_166,base.uk,Isle of Anglesey
+state_GB_Bri_167,base.uk,Brighton and Hove
+state_GB_Don_168,base.uk,Doncaster
+state_GB_Shr_169,base.uk,Shropshire
+state_GB_Gla_170,base.uk,Glasgow City
+state_GB_Cam_171,base.uk,Camden
+state_GB_Car_172,base.uk,Cardiff
+state_GB_Bex_173,base.uk,Bexley
+state_GB_Bur_174,base.uk,Bury
+state_GB_Inv_175,base.uk,Inverclyde
+state_GB_Mer_176,base.uk,Merthyr Tydfil
+state_GB_Som_177,base.uk,Somerset
+state_GB_Yor_178,base.uk,York
+state_GB_Nea_179,base.uk,Neath Port Talbot
+state_GB_Bar_180,base.uk,Barking and Dagenham
+state_GB_Liv_181,base.uk,Liverpool
+state_GB_St._182,base.uk,St. Helens
+state_GB_Kno_183,base.uk,Knowsley
+state_GB_Kin_184,base.uk,Kingston upon Thames
+state_GB_Wig_185,base.uk,Wigan
+state_GB_Sef_186,base.uk,Sefton
+state_GB_Lan_187,base.uk,Lancashire
+state_GB_Bla_188,base.uk,Blackburn with Darwen
+state_GB_Bol_189,base.uk,Bolton
+state_GB_Isl_190,base.uk,Isles of Scilly
+state_GB_Bed_191,base.uk,Bedford
+state_GB_Cen_192,base.uk,Central Bedfordshire
+state_GB_Che_193,base.uk,Cheshire East
+state_GB_Che_194,base.uk,Cheshire West and Chester
+state_GB_Pow_195,base.uk,Powys
+state_GB_Nor_196,base.uk,Northamptonshire
+state_GB_Eas_197,base.uk,East Renfrewshire
+state_GB_New_198,base.uk,Newcastle upon Tyne
+state_GB_New_199,base.uk,Newry, Mourne and Down
+state_GB_Cau_200,base.uk,Causeway Coast and Glens
+state_GB_Mid_201,base.uk,Mid Ulster
+state_GB_Ard_202,base.uk,Ards and North Down
+state_GB_Der_203,base.uk,Derry and Strabane
+state_GB_Fer_204,base.uk,Fermanagh and Omagh
+state_GB_Mid_205,base.uk,Mid and East Antrim
+state_GB_Arm_206,base.uk,Armagh, Banbridge and Craigavon
+state_GB_Ant_207,base.uk,Antrim and Newtownabbey
+state_GB_Lis_208,base.uk,Lisburn and Castlereagh
+state_GB_Bel_209,base.uk,Belfast
+state_GB_Mon_210,base.uk,Monmouthshire
+state_GB_Sta_211,base.uk,Staffordshire
+state_GD_Sai_1,base.gd,Saint George
+state_GE_Kve_1,base.ge,Kvemo Kartli
+state_GE_Abk_2,base.ge,Abkhazia
+state_GE_Sam_3,base.ge,Samegrelo-Zemo Svaneti
+state_GE_Shi_4,base.ge,Shida Kartli
+state_GE_Aja_5,base.ge,Ajaria
+state_GE_Sam_6,base.ge,Samtskhe-Javakheti
+state_GE_Mts_7,base.ge,Mtskheta Mtianeti
+state_GE_K’a_8,base.ge,K’akheti
+state_GE_Gur_9,base.ge,Guria
+state_GE_Ime_10,base.ge,Imereti
+state_GE_Rac_11,base.ge,Rach’a-Lechkhumi da Kvemo Svaneti
+state_GH_Vol_1,base.gh,Volta
+state_GH_Upp_2,base.gh,Upper East
+state_GH_Nor_3,base.gh,Northern
+state_GH_Bro_4,base.gh,Brong-Ahafo
+state_GH_Ash_5,base.gh,Ashanti
+state_GH_Upp_6,base.gh,Upper West
+state_GH_Cen_7,base.gh,Central
+state_GH_Wes_8,base.gh,Western
+state_GH_Eas_9,base.gh,Eastern
+state_GH_Gre_10,base.gh,Greater Accra
+state_GL_Qeq_1,base.gl,Qeqqata
+state_GL_Kuj_2,base.gl,Kujalleq
+state_GL_Qaa_3,base.gl,Qaasuitsup
+state_GL_Ser_4,base.gl,Sermersooq
+state_GM_Cen_1,base.gm,Central River
+state_GM_Ban_2,base.gm,Banjul
+state_GM_Upp_3,base.gm,Upper River
+state_GM_Wes_4,base.gm,Western
+state_GM_Nor_5,base.gm,North Bank
+state_GM_Low_6,base.gm,Lower River
+state_GN_Con_1,base.gn,Conakry
+state_GN_Far_2,base.gn,Faranah
+state_GN_Kan_3,base.gn,Kankan
+state_GN_Lab_4,base.gn,Labé
+state_GN_Bok_5,base.gn,Boké
+state_GN_Mam_6,base.gn,Mamou
+state_GN_Kin_7,base.gn,Kindia
+state_GN_N’Z_8,base.gn,N’Zérékoré
+state_GQ_Bio_1,base.gq,Bioko Norte
+state_GQ_Ann_2,base.gq,Annobón
+state_GQ_Cen_3,base.gq,Centro Sur
+state_GQ_Wel_4,base.gq,Wele-Nzas
+state_GQ_Lit_5,base.gq,Litoral
+state_GQ_Kié_6,base.gq,Kié-Ntem
+state_GQ_Bio_7,base.gq,Bioko Sur
+state_GR_Ana_1,base.gr,Anatolikí Makedonía kai Thráki
+state_GR_Att_2,base.gr,Attikí
+state_GR_Not_3,base.gr,Notío Aigaío
+state_GR_Dyt_4,base.gr,Dytikí Elláda
+state_GR_Ste_5,base.gr,Stereá Elláda
+state_GR_Pel_6,base.gr,Peloponnísos
+state_GR_Vor_7,base.gr,Voreío Aigaío
+state_GR_Krí_8,base.gr,Kríti
+state_GR_Ken_9,base.gr,Kentrikí Makedonía
+state_GR_Ion_10,base.gr,Ionía Nísia
+state_GR_Dyt_11,base.gr,Dytikí Makedonía
+state_GR_Ípe_12,base.gr,Ípeiros
+state_GR_The_13,base.gr,Thessalía
+base.state_gt_esc,base.gt,Escuintla
+base.state_gt_suc,base.gt,Suchitepéquez
+base.state_gt_sro,base.gt,Santa Rosa
+base.state_gt_ave,base.gt,Alta Verapaz
+base.state_gt_jut,base.gt,Jutiapa
+base.state_gt_ret,base.gt,Retalhuleu
+base.state_gt_iza,base.gt,Izabal
+base.state_gt_pet,base.gt,Petén
+base.state_gt_sma,base.gt,San Marcos
+base.state_gt_bve,base.gt,Baja Verapaz
+base.state_gt_cqm,base.gt,Chiquimula
+base.state_gt_cmt,base.gt,Chimaltenango
+base.state_gt_epr,base.gt,El Progreso
+base.state_gt_sac,base.gt,Sacatepéquez
+base.state_gt_jal,base.gt,Jalapa
+base.state_gt_que,base.gt,Quetzaltenango
+base.state_gt_tot,base.gt,Totonicapán
+base.state_gt_zac,base.gt,Zacapa
+base.state_gt_sol,base.gt,Sololá
+base.state_gt_gua,base.gt,Guatemala
+base.state_gt_hue,base.gt,Huehuetenango
+base.state_gt_qui,base.gt,Quiché
+state_GW_Oio_1,base.gw,Oio
+state_GW_Baf_2,base.gw,Bafatá
+state_GW_Bis_3,base.gw,Bissau
+state_GW_Bol_4,base.gw,Bolama/Bijagós
+state_GW_Qui_5,base.gw,Quinara
+state_GW_Cac_6,base.gw,Cacheu
+state_GW_Tom_7,base.gw,Tombali
+state_GW_Gab_8,base.gw,Gabú
+state_GW_Bio_9,base.gw,Biombo
+state_GY_Eas_1,base.gy,East Berbice-Corentyne
+state_GY_Dem_2,base.gy,Demerara-Mahaica
+state_GY_Mah_3,base.gy,Mahaica-Berbice
+state_GY_Cuy_4,base.gy,Cuyuni-Mazaruni
+state_GY_Bar_5,base.gy,Barima-Waini
+state_GY_Ess_6,base.gy,Essequibo Islands-West Demerara
+state_GY_Pot_7,base.gy,Potaro-Siparuni
+state_GY_Upp_8,base.gy,Upper Demerara-Berbice
+state_GY_Upp_9,base.gy,Upper Takutu-Upper Essequibo
+state_GY_Pom_10,base.gy,Pomeroon-Supenaam
+state_HN_Fra_1,base.hn,Francisco Morazán
+state_HN_Yor_2,base.hn,Yoro
+state_HN_Gra_3,base.hn,Gracias a Dios
+state_HN_Atl_4,base.hn,Atlántida
+state_HN_Cho_5,base.hn,Choluteca
+state_HN_Col_6,base.hn,Colón
+state_HN_Com_7,base.hn,Comayagua
+state_HN_Cop_8,base.hn,Copán
+state_HN_Cor_9,base.hn,Cortés
+state_HN_El _10,base.hn,El Paraíso
+state_HN_Int_11,base.hn,Intibucá
+state_HN_Isl_12,base.hn,Islas de la Bahía
+state_HN_La _13,base.hn,La Paz
+state_HN_Lem_14,base.hn,Lempira
+state_HN_Oco_15,base.hn,Ocotepeque
+state_HN_Ola_16,base.hn,Olancho
+state_HN_San_17,base.hn,Santa Bárbara
+state_HN_Val_18,base.hn,Valle
+state_HR_Šib_1,base.hr,Šibensko-Kninska Županija
+state_HR_Bro_2,base.hr,Brodsko-Posavska Županija
+state_HR_Pož_3,base.hr,Požeško-Slavonska Županija
+state_HR_Vir_4,base.hr,Virovitičko-Podravska Županija
+state_HR_Pri_5,base.hr,Primorsko-Goranska Županija
+state_HR_Kra_6,base.hr,Krapinsko-Zagorska Županija
+state_HR_Dub_7,base.hr,Dubrovačko-Neretvanska Županija
+state_HR_Sis_8,base.hr,Sisačko-Moslavačka Županija
+state_HR_Osj_9,base.hr,Osječko-Baranjska Županija
+state_HR_Kop_10,base.hr,Koprivničko-Križevačka Županija
+state_HR_Međ_11,base.hr,Međimurska Županija
+state_HR_Vuk_12,base.hr,Vukovarsko-Srijemska Županija
+state_HR_Zad_13,base.hr,Zadarska Županija
+state_HR_Lič_14,base.hr,Ličko-Senjska Županija
+state_HR_Var_15,base.hr,Varaždinska Županija
+state_HR_Spl_16,base.hr,Splitsko-Dalmatinska Županija
+state_HR_Ist_17,base.hr,Istarska Županija
+state_HR_Zag_18,base.hr,Zagreb, Grad
+state_HR_Kar_19,base.hr,Karlovačka Županija
+state_HR_Bje_20,base.hr,Bjelovarsko-Bilogorska Županija
+state_HT_Oue_1,base.ht,Ouest
+state_HT_Nor_2,base.ht,Nord-Ouest
+state_HT_Nor_3,base.ht,Nord
+state_HT_Art_4,base.ht,Artibonite
+state_HT_Cen_5,base.ht,Centre
+state_HT_Nor_6,base.ht,Nord-Est
+state_HT_Sud_7,base.ht,Sud-Est
+state_HT_Nip_8,base.ht,Nippes
+state_HT_Sud_9,base.ht,Sud
+state_HT_Gra_10,base.ht,Grand’Anse
+state_HU_Jás_1,base.hu,Jász-Nagykun-Szolnok
+state_HU_Cso_2,base.hu,Csongrád
+state_HU_Zal_3,base.hu,Zala
+state_HU_Sza_4,base.hu,Szabolcs-Szatmár-Bereg
+state_HU_Bud_5,base.hu,Budapest
+state_HU_Bék_6,base.hu,Békés
+state_HU_Som_7,base.hu,Somogy
+state_HU_Sze_8,base.hu,Szeged
+state_HU_Győ_9,base.hu,Győr-Moson-Sopron
+state_HU_Bác_10,base.hu,Bács-Kiskun
+state_HU_Deb_11,base.hu,Debrecen
+state_HU_Mis_12,base.hu,Miskolc
+state_HU_Vas_13,base.hu,Vas
+state_HU_Fej_14,base.hu,Fejér
+state_HU_Ves_15,base.hu,Veszprém
+state_HU_Nóg_16,base.hu,Nógrád
+state_HU_Győ_17,base.hu,Győr
+state_HU_Kom_18,base.hu,Komárom-Esztergom
+state_HU_Péc_19,base.hu,Pécs
+state_HU_Tol_20,base.hu,Tolna
+state_HU_Hev_21,base.hu,Heves
+state_HU_Pes_22,base.hu,Pest
+base.state_id_jb,base.id,Jawa Barat
+base.state_id_jt,base.id,Jawa Tengah
+base.state_id_sr,base.id,Sulawesi Barat
+base.state_id_nt,base.id,Nusa Tenggara Timur
+base.state_id_ji,base.id,Jawa Timur
+base.state_id_su,base.id,Sumatra Utara
+base.state_id_ac,base.id,Aceh
+base.state_id_st,base.id,Sulawesi Tengah
+base.state_id_jk,base.id,Jakarta
+base.state_id_sg,base.id,Sulawesi Tenggara
+base.state_id_sn,base.id,Sulawesi Selatan
+base.state_id_nb,base.id,Nusa Tenggara Barat
+base.state_id_la,base.id,Lampung
+base.state_id_ba,base.id,Bali
+base.state_id_pa,base.id,Papua
+base.state_id_ss,base.id,Sumatra Selatan
+base.state_id_ja,base.id,Jambi
+base.state_id_sa,base.id,Sulawesi Utara
+base.state_id_ma,base.id,Maluku
+base.state_id_kr,base.id,Kepulauan Riau
+base.state_id_kt,base.id,Kalimantan Tengah
+base.state_id_ks,base.id,Kalimantan Selatan
+base.state_id_bb,base.id,Bangka Belitung
+base.state_id_ku,base.id,Kalimantan Utara
+base.state_id_pb,base.id,Papua Barat
+base.state_id_kb,base.id,Kalimantan Barat
+base.state_id_sb,base.id,Sumatra Barat
+base.state_id_mu,base.id,Maluku Utara
+base.state_id_ki,base.id,Kalimantan Timur
+base.state_id_be,base.id,Bengkulu
+base.state_id_go,base.id,Gorontalo
+base.state_id_ri,base.id,Riau
+base.state_id_bt,base.id,Banten
+base.state_id_yo,base.id,Yogyakarta
+state_IE_Sli_1,base.ie,Sligo
+state_IE_Wes_2,base.ie,Westmeath
+state_IE_Lou_3,base.ie,Louth
+state_IE_Mon_4,base.ie,Monaghan
+state_IE_Lao_5,base.ie,Laois
+state_IE_Lon_6,base.ie,Longford
+state_IE_Cla_7,base.ie,Clare
+state_IE_Ker_8,base.ie,Kerry
+state_IE_Don_9,base.ie,Donegal
+state_IE_Wic_10,base.ie,Wicklow
+state_IE_Kil_11,base.ie,Kilkenny
+state_IE_Cav_12,base.ie,Cavan
+state_IE_Lei_13,base.ie,Leitrim
+state_IE_Wex_14,base.ie,Wexford
+state_IE_Ros_15,base.ie,Roscommon
+state_IE_Gal_16,base.ie,Galway
+state_IE_Cor_17,base.ie,Cork
+state_IE_Dub_18,base.ie,Dublin
+state_IE_Mea_19,base.ie,Meath
+state_IE_Wat_20,base.ie,Waterford
+state_IE_Lim_21,base.ie,Limerick
+state_IE_Tip_22,base.ie,Tipperary
+state_IE_Fin_23,base.ie,Fingal
+state_IE_Dún_24,base.ie,Dún Laoghaire-Rathdown
+state_IE_Sou_25,base.ie,South Dublin
+state_IE_May_26,base.ie,Mayo
+state_IE_Kil_27,base.ie,Kildare
+state_IE_Car_28,base.ie,Carlow
+state_IE_Off_29,base.ie,Offaly
+state_IL_Sou_1,base.il,Southern
+state_IL_Nor_2,base.il,Northern
+state_IL_Tel_3,base.il,Tel Aviv
+state_IL_Hai_4,base.il,Haifa
+state_IL_Cen_5,base.il,Central
+base.state_in_ld,base.in,Lakshadweep
+base.state_in_dl,base.in,Delhi
+base.state_in_as,base.in,Assam
+base.state_in_pb,base.in,Punjab
+base.state_in_gj,base.in,Gujarat
+base.state_in_wb,base.in,West Bengal
+base.state_in_an,base.in,Andaman and Nicobar
+base.state_in_rj,base.in,Rajasthan
+base.state_in_up,base.in,Uttar Pradesh
+base.state_in_hr,base.in,Haryana
+base.state_in_hp,base.in,Himachal Pradesh
+base.state_in_br,base.in,Bihar
+base.state_in_mp,base.in,Madhya Pradesh
+base.state_in_jk,base.in,Jammu and Kashmir
+base.state_in_ka,base.in,Karnataka
+base.state_in_mh,base.in,Maharashtra
+base.state_in_tr,base.in,Tripura
+base.state_in_tn,base.in,Tamil Nadu
+base.state_in_sk,base.in,Sikkim
+state_IN_Odi_20,base.in,Odisha
+base.state_in_dd,base.in,Daman and Diu
+base.state_in_kl,base.in,Kerala
+base.state_in_ap,base.in,Andhra Pradesh
+base.state_in_mz,base.in,Mizoram
+base.state_in_ch,base.in,Chandigarh
+base.state_in_mn,base.in,Manipur
+base.state_in_nl,base.in,Nagaland
+base.state_in_jh,base.in,Jharkhand
+base.state_in_ml,base.in,Meghalaya
+base.state_in_dn,base.in,Dadra and Nagar Haveli
+base.state_in_py,base.in,Puducherry
+base.state_in_ar,base.in,Arunachal Pradesh
+base.state_in_cg,base.in,Chattisgarh
+base.state_in_ga,base.in,Goa
+base.state_in_uk,base.in,Uttarakhand
+state_IQ_Diy_1,base.iq,Diyālá
+state_IQ_Bag_2,base.iq,Baghdād
+state_IQ_As _3,base.iq,As Sulaymānīyah
+state_IQ_Al _4,base.iq,Al Muthanná
+state_IQ_Dhī_5,base.iq,Dhī Qār
+state_IQ_Nīn_6,base.iq,Nīnawá
+state_IQ_Kir_7,base.iq,Kirkūk
+state_IQ_Şal_8,base.iq,Şalāḩ ad Dīn
+state_IQ_Kar_9,base.iq,Karbalā’
+state_IQ_May_10,base.iq,Maysān
+state_IQ_Al _11,base.iq,Al Anbār
+state_IQ_Bāb_12,base.iq,Bābil
+state_IQ_Dah_13,base.iq,Dahūk
+state_IQ_Al _14,base.iq,Al Başrah
+state_IQ_An _15,base.iq,An Najaf
+state_IQ_Al _16,base.iq,Al Qādisīyah
+state_IQ_Wās_17,base.iq,Wāsiţ
+state_IQ_Arb_18,base.iq,Arbīl
+state_IR_Kho_1,base.ir,Khorāsān-e Shomālī
+state_IR_Āz̄_2,base.ir,Āz̄arbāyjān-e Gharbī
+state_IR_Ard_3,base.ir,Ardabīl
+state_IR_Eşf_4,base.ir,Eşfahān
+state_IR_Sīs_5,base.ir,Sīstān va Balūchestān
+state_IR_Īlā_6,base.ir,Īlām
+state_IR_Hor_7,base.ir,Hormozgān
+state_IR_Ker_8,base.ir,Kermānshāh
+state_IR_Āz̄_9,base.ir,Āz̄arbāyjān-e Sharqī
+state_IR_Lor_10,base.ir,Lorestān
+state_IR_Ham_11,base.ir,Hamadān
+state_IR_Koh_12,base.ir,Kohgīlūyeh va Bowyer Aḩmad
+state_IR_Māz_13,base.ir,Māzandarān
+state_IR_Kho_14,base.ir,Khorāsān-e Jonūbī
+state_IR_Ker_15,base.ir,Kermān
+state_IR_Kor_16,base.ir,Kordestān
+state_IR_Khū_17,base.ir,Khūzestān
+state_IR_Fār_18,base.ir,Fārs
+state_IR_Būs_19,base.ir,Būshehr
+state_IR_Kho_20,base.ir,Khorāsān-e Raẕavī
+state_IR_Yaz_21,base.ir,Yazd
+state_IR_Sem_22,base.ir,Semnān
+state_IR_Alb_23,base.ir,Alborz
+state_IR_Mar_24,base.ir,Markazī
+state_IR_Qaz_25,base.ir,Qazvīn
+state_IR_Gol_26,base.ir,Golestān
+state_IR_Teh_27,base.ir,Tehrān
+state_IR_Qom_28,base.ir,Qom
+state_IR_Gīl_29,base.ir,Gīlān
+state_IR_Zan_30,base.ir,Zanjān
+state_IR_Cha_31,base.ir,Chahār Maḩāl va Bakhtīārī
+state_IS_Höf_1,base.is,Höfuðborgarsvæði
+state_IS_Aus_2,base.is,Austurland
+state_IT_Ven_1,base.it,Veneto
+state_IT_Tre_2,base.it,Trentino-Alto Adige
+state_IT_Sar_3,base.it,Sardegna
+state_IT_Laz_4,base.it,Lazio
+state_IT_Fri_5,base.it,Friuli-Venezia Giulia
+state_IT_Sic_6,base.it,Sicilia
+state_IT_Mol_7,base.it,Molise
+state_IT_Abr_8,base.it,Abruzzo
+state_IT_Cal_9,base.it,Calabria
+state_IT_Lig_10,base.it,Liguria
+state_IT_Mar_11,base.it,Marche
+state_IT_Emi_12,base.it,Emilia-Romagna
+state_IT_Bas_13,base.it,Basilicata
+state_IT_Pug_14,base.it,Puglia
+state_IT_Lom_15,base.it,Lombardy
+state_IT_Pie_16,base.it,Piedmont
+state_IT_Cam_17,base.it,Campania
+state_IT_Tus_18,base.it,Tuscany
+state_IT_Val_19,base.it,Valle d’Aosta
+state_IT_Umb_20,base.it,Umbria
+state_JM_Sai_1,base.jm,Saint Thomas
+state_JM_Sai_2,base.jm,Saint Elizabeth
+state_JM_Tre_3,base.jm,Trelawny
+state_JM_Han_4,base.jm,Hanover
+state_JM_Man_5,base.jm,Manchester
+state_JM_Cla_6,base.jm,Clarendon
+state_JM_Sai_7,base.jm,Saint James
+state_JM_Por_8,base.jm,Portland
+state_JM_Sai_9,base.jm,Saint Mary
+state_JM_Sai_10,base.jm,Saint Ann
+state_JM_Wes_11,base.jm,Westmoreland
+state_JM_Sai_12,base.jm,Saint Catherine
+state_JM_Sai_13,base.jm,Saint Andrew
+state_JO_‘Aj_1,base.jo,‘Ajlūn
+state_JO_Al _2,base.jo,Al ‘Āşimah
+state_JO_Ma‘_3,base.jo,Ma‘ān
+state_JO_Al _4,base.jo,Al ‘Aqabah
+state_JO_Al _5,base.jo,Al Mafraq
+state_JO_Irb_6,base.jo,Irbid
+state_JO_Al _7,base.jo,Al Balqā’
+state_JO_Jar_8,base.jo,Jarash
+state_JO_Az _9,base.jo,Az Zarqā’
+state_JO_Al _10,base.jo,Al Karak
+state_JO_Aţ _11,base.jo,Aţ Ţafīlah
+state_JO_Ma’_12,base.jo,Ma’dabā
+base.state_jp_jp-01,base.jp,Hokkaidō
+base.state_jp_jp-07,base.jp,Fukushima
+base.state_jp_jp-06,base.jp,Yamagata
+base.state_jp_jp-31,base.jp,Tottori
+base.state_jp_jp-26,base.jp,Kyōto
+base.state_jp_jp-22,base.jp,Shizuoka
+base.state_jp_jp-16,base.jp,Toyama
+base.state_jp_jp-11,base.jp,Saitama
+base.state_jp_jp-13,base.jp,Tōkyō
+base.state_jp_jp-02,base.jp,Aomori
+base.state_jp_jp-34,base.jp,Hiroshima
+base.state_jp_jp-20,base.jp,Nagano
+base.state_jp_jp-15,base.jp,Niigata
+base.state_jp_jp-40,base.jp,Fukuoka
+base.state_jp_jp-42,base.jp,Nagasaki
+base.state_jp_jp-46,base.jp,Kagoshima
+base.state_jp_jp-05,base.jp,Akita
+base.state_jp_jp-12,base.jp,Chiba
+base.state_jp_jp-18,base.jp,Fukui
+base.state_jp_jp-21,base.jp,Gifu
+base.state_jp_jp-17,base.jp,Ishikawa
+base.state_jp_jp-28,base.jp,Hyōgo
+base.state_jp_jp-39,base.jp,Kōchi
+base.state_jp_jp-19,base.jp,Yamanashi
+base.state_jp_jp-43,base.jp,Kumamoto
+base.state_jp_jp-10,base.jp,Gunma
+base.state_jp_jp-32,base.jp,Shimane
+base.state_jp_jp-38,base.jp,Ehime
+base.state_jp_jp-08,base.jp,Ibaraki
+base.state_jp_jp-45,base.jp,Miyazaki
+base.state_jp_jp-03,base.jp,Iwate
+base.state_jp_jp-23,base.jp,Aichi
+base.state_jp_jp-47,base.jp,Okinawa
+base.state_jp_jp-44,base.jp,Ōita
+base.state_jp_jp-33,base.jp,Okayama
+base.state_jp_jp-27,base.jp,Ōsaka
+base.state_jp_jp-25,base.jp,Shiga
+base.state_jp_jp-04,base.jp,Miyagi
+base.state_jp_jp-37,base.jp,Kagawa
+base.state_jp_jp-36,base.jp,Tokushima
+base.state_jp_jp-24,base.jp,Mie
+base.state_jp_jp-09,base.jp,Tochigi
+base.state_jp_jp-30,base.jp,Wakayama
+base.state_jp_jp-35,base.jp,Yamaguchi
+base.state_jp_jp-14,base.jp,Kanagawa
+base.state_jp_jp-41,base.jp,Saga
+base.state_jp_jp-29,base.jp,Nara
+state_KE_Nai_1,base.ke,Nairobi City
+state_KE_Mar_2,base.ke,Marsabit
+state_KE_Kis_3,base.ke,Kisumu
+state_KE_Mom_4,base.ke,Mombasa
+state_KE_Nye_5,base.ke,Nyeri
+state_KE_Gar_6,base.ke,Garissa
+state_KE_Kak_7,base.ke,Kakamega
+state_KE_Nak_8,base.ke,Nakuru
+state_KE_Lam_9,base.ke,Lamu
+state_KE_Emb_10,base.ke,Embu
+state_KE_Hom_11,base.ke,Homa Bay
+state_KE_Isi_12,base.ke,Isiolo
+state_KE_Elg_13,base.ke,Elgeyo/Marakwet
+state_KE_Bar_14,base.ke,Baringo
+state_KE_Kaj_15,base.ke,Kajiado
+state_KE_Wes_16,base.ke,West Pokot
+state_KE_Nan_17,base.ke,Nandi
+state_KE_Ker_18,base.ke,Kericho
+state_KE_Kir_19,base.ke,Kirinyaga
+state_KE_Kia_20,base.ke,Kiambu
+state_KE_Kil_21,base.ke,Kilifi
+state_KE_Kis_22,base.ke,Kisii
+state_KE_Tra_23,base.ke,Trans Nzoia
+state_KE_Kit_24,base.ke,Kitui
+state_KE_Kwa_25,base.ke,Kwale
+state_KE_Tur_26,base.ke,Turkana
+state_KE_Mac_27,base.ke,Machakos
+state_KE_Man_28,base.ke,Mandera
+state_KE_Sam_29,base.ke,Samburu
+state_KE_Mer_30,base.ke,Meru
+state_KE_Mig_31,base.ke,Migori
+state_KE_Mur_32,base.ke,Murang’a
+state_KE_Tai_33,base.ke,Taita/Taveta
+state_KE_Nar_34,base.ke,Narok
+state_KE_Nya_35,base.ke,Nyamira
+state_KE_Nya_36,base.ke,Nyandarua
+state_KE_Lai_37,base.ke,Laikipia
+state_KE_Waj_38,base.ke,Wajir
+state_KE_Mak_39,base.ke,Makueni
+state_KE_Bus_40,base.ke,Busia
+state_KE_Tha_41,base.ke,Tharaka-Nithi
+state_KE_Bom_42,base.ke,Bomet
+state_KE_Bun_43,base.ke,Bungoma
+state_KE_Uas_44,base.ke,Uasin Gishu
+state_KE_Tan_45,base.ke,Tana River
+state_KE_Sia_46,base.ke,Siaya
+state_KG_Bis_1,base.kg,Bishkek
+state_KG_Chü_2,base.kg,Chüy
+state_KG_Ysy_3,base.kg,Ysyk-Köl
+state_KG_Jal_4,base.kg,Jalal-Abad
+state_KG_Nar_5,base.kg,Naryn
+state_KG_Tal_6,base.kg,Talas
+state_KG_Osh_7,base.kg,Osh
+state_KG_Bat_8,base.kg,Batken
+state_KH_Phn_1,base.kh,Phnom Penh
+state_KH_Kan_2,base.kh,Kandal
+state_KH_Sih_3,base.kh,Sihanoukville
+state_KH_Pur_4,base.kh,Pursat
+state_KH_Pre_5,base.kh,Prey Veng
+state_KH_Sie_6,base.kh,Siem Reap
+state_KH_Stu_7,base.kh,Stung Treng
+state_KH_Sva_8,base.kh,Svay Rieng
+state_KH_Tak_9,base.kh,Takeo
+state_KH_Bat_10,base.kh,Battambang
+state_KH_Kam_11,base.kh,Kampong Cham
+state_KH_Kam_12,base.kh,Kampong Chhnang
+state_KH_Kam_13,base.kh,Kampong Speu
+state_KH_Kam_14,base.kh,Kampong Thom
+state_KH_Kam_15,base.kh,Kampot
+state_KH_Koh_16,base.kh,Koh Kong
+state_KH_Kra_17,base.kh,Kratie
+state_KH_Kep_18,base.kh,Kep
+state_KH_Pai_19,base.kh,Pailin
+state_KH_Rat_20,base.kh,Ratanakiri
+state_KH_Odd_21,base.kh,Oddar Meanchey
+state_KH_Mon_22,base.kh,Mondolkiri
+state_KH_Ban_23,base.kh,Banteay Meanchey
+state_KH_Tbo_24,base.kh,Tbong Khmum
+state_KH_Pre_25,base.kh,Preah Vihear
+state_KM_Gra_1,base.km,Grande Comore
+state_KN_Sai_1,base.kn,Saint George Basseterre
+state_KP_Hwa_1,base.kp,Hwangbuk
+state_KP_Yan_2,base.kp,Yanggang
+state_KP_P’y_3,base.kp,P’yŏngbuk
+state_KP_Hwa_4,base.kp,Hwangnam
+state_KP_Ham_5,base.kp,Hambuk
+state_KP_Cha_6,base.kp,Chagang
+state_KP_Ham_7,base.kp,Hamnam
+state_KP_P’y_8,base.kp,P’yŏngnam
+state_KP_Kan_9,base.kp,Kangwŏn
+state_KP_Nas_10,base.kp,Nasŏn
+state_KP_P’y_11,base.kp,P’yŏngyang
+state_KR_Gye_1,base.kr,Gyeongbuk
+state_KR_Jeo_2,base.kr,Jeonbuk
+state_KR_Gye_3,base.kr,Gyeonggi
+state_KR_Uls_4,base.kr,Ulsan
+state_KR_Gan_5,base.kr,Gangwon
+state_KR_Seo_6,base.kr,Seoul
+state_KR_Jej_7,base.kr,Jeju
+state_KR_Bus_8,base.kr,Busan
+state_KR_Inc_9,base.kr,Incheon
+state_KR_Dae_10,base.kr,Daegu
+state_KR_Gwa_11,base.kr,Gwangju
+state_KR_Dae_12,base.kr,Daejeon
+state_KR_Gye_13,base.kr,Gyeongnam
+state_KR_Chu_14,base.kr,Chungbuk
+state_KR_Jeo_15,base.kr,Jeonnam
+state_KR_Chu_16,base.kr,Chungnam
+state_KR_Sej_17,base.kr,Sejong
+base.state_us_48,base.us,Washington
+base.state_us_47,base.us,Virginia
+base.state_us_8,base.us,Delaware
+base.state_us_9,base.us,District of Columbia
+base.state_us_50,base.us,Wisconsin
+base.state_us_49,base.us,West Virginia
+base.state_us_12,base.us,Hawaii
+base.state_us_10,base.us,Florida
+base.state_us_51,base.us,Wyoming
+base.state_us_24,base.us,New Hampshire
+base.state_us_25,base.us,New Jersey
+base.state_us_26,base.us,New Mexico
+base.state_us_44,base.us,Texas
+base.state_us_19,base.us,Louisiana
+base.state_us_28,base.us,North Carolina
+base.state_us_29,base.us,North Dakota
+base.state_us_22,base.us,Nebraska
+base.state_us_43,base.us,Tennessee
+base.state_us_27,base.us,New York
+base.state_us_39,base.us,Pennsylvania
+base.state_us_5,base.us,California
+base.state_us_23,base.us,Nevada
+base.state_us_6,base.us,Colorado
+base.state_us_2,base.us,Alaska
+base.state_us_1,base.us,Alabama
+base.state_us_4,base.us,Arkansas
+base.state_us_46,base.us,Vermont
+base.state_us_14,base.us,Illinois
+base.state_us_11,base.us,Georgia
+base.state_us_15,base.us,Indiana
+base.state_us_16,base.us,Iowa
+base.state_us_31,base.us,Oklahoma
+base.state_us_3,base.us,Arizona
+base.state_us_13,base.us,Idaho
+base.state_us_7,base.us,Connecticut
+base.state_us_20,base.us,Maine
+base.state_us_33,base.us,Maryland
+base.state_us_34,base.us,Massachusetts
+base.state_us_30,base.us,Ohio
+base.state_us_45,base.us,Utah
+base.state_us_38,base.us,Missouri
+base.state_us_36,base.us,Minnesota
+base.state_us_35,base.us,Michigan
+base.state_us_40,base.us,Rhode Island
+base.state_us_17,base.us,Kansas
+base.state_us_21,base.us,Montana
+base.state_us_37,base.us,Mississippi
+base.state_us_41,base.us,South Carolina
+base.state_us_18,base.us,Kentucky
+base.state_us_32,base.us,Oregon
+base.state_us_42,base.us,South Dakota
