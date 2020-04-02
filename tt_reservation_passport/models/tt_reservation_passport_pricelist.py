@@ -369,28 +369,6 @@ class PassportPricelist(models.Model):
             res = Response().get_error(str(e), 500)
         return res
 
-    def get_config_api(self):
-        try:
-            passport = {}
-            for rec in self.sudo().search([]):
-                if not passport.get(rec.country_id.name): #kalau ngga ada bikin dict
-                    passport[rec.country_id.name] = [] #append country
-                count = 0
-                for rec1 in passport[rec.country_id.name]:
-                    if rec1 == rec.immigration_consulate:
-                        count = 1
-                if count == 0:
-                    passport[rec.country_id.name].append(rec.immigration_consulate)
-
-                # for rec1 in self.search([('name', '=ilike', rec.country_id.id)]):
-                #
-                # pass
-            response = passport
-            res = Response().get_no_error(response)
-        except Exception as e:
-            res = Response().get_error(str(e), 500)
-        return res
-
     def get_inventory_api(self):
         try:
             res = []

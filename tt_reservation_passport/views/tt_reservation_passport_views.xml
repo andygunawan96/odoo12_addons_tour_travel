@@ -8,18 +8,16 @@
             <search string="Search Passport Booking">
                 <field name="name"/>
                 <field name="agent_id" groups="tt_base.group_tt_tour_travel_operator"/>
-<!--                <field name="sub_agent_id" groups="tt_base.group_tt_agent_user_operator,tt_base.group_tt_tour_travel_operator"/>-->
                 <field name="contact_id"/>
                 <field name="country_id"/>
                 <group>
                     <filter string="All" name="all"/>
-                    <filter string="Open" name="draft" domain="[('state_passport','=','draft')]"/>
+                    <filter string="Request" name="draft" domain="[('state_passport','=','draft')]"/>
                     <filter string="Confirm to HO/Validated by HO" name="confirm_validate" domain="['|', ('state_passport','=','confirm'),('state_passport','=','validate')]"/>
-<!--                    <filter string="Send to Vendor/Proceed by Vendor" name="to_vendor_vendor_process" domain="['|', ('state_passport','=','to_vendor'),('state_passport','=','vendor_process')]"/>-->
                     <filter string="In Process/Payment" name="in_process_payment" domain="['|', ('state_passport','=','in_process'),('state_passport','=','payment')]"/>
-                    <filter string="Partial Proceed/Proceed" name="partial_proceed" domain="['|', ('state_passport','=','partial_proceed'),('state_passport','=','proceed')]"/>
-                    <filter string="Delivered/Ready" name="delivered_ready" domain="['|', ('state_passport','=','delivered'),('state_passport','=','ready')]"/>
-                    <filter string="Done" name="done" domain="[('state_passport','=','done')]"/>
+                    <filter string="Partial Proceed/Proceed" name="partial_proceed_proceed" domain="['|', ('state_passport','=','partial_proceed'),('state_passport','=','proceed')]"/>
+                    <filter string="Partial Approved/Approved/Rejected" name="partial_approved_approved_rejected" domain="[('state_passport','in',['partial_approve','approve','reject'])]"/>
+                    <filter string="Delivered/Done" name="delivered_done" domain="['|', ('state_passport','=','delivered'),('state_passport','=','done')]"/>
                     <filter string="Canceled" name="cancel" domain="[('state_passport','=','cancel')]"/>
                 </group>
                 <separator/>
@@ -41,8 +39,6 @@
                 <group expand="0" string="Group By">
                     <filter string="Agent" name="agent" domain="[]" context="{'group_by':'agent_id'}" groups="tt_base.group_tt_tour_travel_operator"/>
                     <filter string="Agent Type" name="agent_type" domain="[]" context="{'group_by':'agent_type_id'}" groups="tt_base.group_tt_tour_travel_operator"/>
-<!--                    <filter string="Sub Agent" name="sub_agent" domain="[]" context="{'group_by':'sub_agent_id'}" groups="tt_base.group_tt_agent_user_operator,tt_base.group_tt_tour_travel_operator"/>-->
-<!--                    <filter string="Sub Agent Type" name="sub_agent_type" domain="[]" context="{'group_by':'sub_agent_type_id'}" groups="tt_base.group_tt_agent_user_operator,tt_base.group_tt_tour_travel_operator"/>-->
                     <filter string="State" name="state" domain="[]" context="{'group_by':'state_passport'}"/>
                 </group>
             </search>
@@ -237,7 +233,7 @@
             {
                 'form_view_ref': 'tt_reservation_passport.tt_reservation_passport_view_form',
                 'tree_view_ref': 'tt_reservation_passport.tt_reservation_passport_view_tree',
-                'search_default_open': 1,
+                'search_default_draft': 1,
             }
         </field>
     </record>
@@ -274,8 +270,8 @@
         </field>
     </record>
 
-    <!--Passport Document Filter Delivered Ready-->
-    <record model="ir.actions.act_window" id="tt_reservation_passport_delivered_ready_view_action">
+    <!--Passport Document Filter Partial Proceed Proceed-->
+    <record model="ir.actions.act_window" id="tt_reservation_passport_partial_proceed_proceed_view_action">
         <field name="name">Passport Document</field>
         <field name="res_model">tt.reservation.passport</field>
         <field name="view_type">form</field>
@@ -285,13 +281,13 @@
             {
                 'form_view_ref': 'tt_reservation_passport.tt_reservation_passport_view_form',
                 'tree_view_ref': 'tt_reservation_passport.tt_reservation_passport_view_tree',
-                'search_default_delivered_ready': 1,
+                'search_default_partial_proceed_proceed': 1,
             }
         </field>
     </record>
 
-    <!--Passport Document Filter Done-->
-    <record model="ir.actions.act_window" id="tt_reservation_passport_done_view_action">
+    <!--Passport Document Filter Partial Proceed Proceed-->
+    <record model="ir.actions.act_window" id="tt_reservation_passport_partial_approved_approved_rejected_view_action">
         <field name="name">Passport Document</field>
         <field name="res_model">tt.reservation.passport</field>
         <field name="view_type">form</field>
@@ -301,7 +297,23 @@
             {
                 'form_view_ref': 'tt_reservation_passport.tt_reservation_passport_view_form',
                 'tree_view_ref': 'tt_reservation_passport.tt_reservation_passport_view_tree',
-                'search_default_done': 1,
+                'search_default_partial_approved_approved_rejected': 1,
+            }
+        </field>
+    </record>
+
+    <!--Passport Document Filter Delivered Done-->
+    <record model="ir.actions.act_window" id="tt_reservation_passport_delivered_done_view_action">
+        <field name="name">Passport Document</field>
+        <field name="res_model">tt.reservation.passport</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+        <field name="search_view_id" ref="tt_reservation_passport_view_filter"/>
+        <field name="context">
+            {
+                'form_view_ref': 'tt_reservation_passport.tt_reservation_passport_view_form',
+                'tree_view_ref': 'tt_reservation_passport.tt_reservation_passport_view_tree',
+                'search_default_delivered_done': 1,
             }
         </field>
     </record>
@@ -328,26 +340,30 @@
 
     <!--Passport Document Menu Item Open-->
     <menuitem id="menu_passport_open" parent="menu_passport_order"
-              name="Open" action="tt_reservation_passport_open_view_action" sequence="2"/>
+              name="Request" action="tt_reservation_passport_open_view_action" sequence="2"/>
 
     <!--Passport Document Menu Item Confirm Validate-->
     <menuitem id="menu_passport_confirm_validate" parent="menu_passport_order"
-              name="Confirm to HO/Validated by" action="tt_reservation_passport_confirm_validate_view_action" sequence="3"/>
+              name="Confirm to HO/Validate" action="tt_reservation_passport_confirm_validate_view_action" sequence="3"/>
 
     <!--Passport Document Menu Item In Process Payment-->
     <menuitem id="menu_passport_in_process_payment" parent="menu_passport_order"
               name="In Process/Payment" action="tt_reservation_passport_in_process_payment_view_action" sequence="4"/>
 
-    <!--Passport Document Menu Item Delivered Ready-->
-    <menuitem id="menu_passport_delivered_ready" parent="menu_passport_order"
-              name="Delivered/Ready" action="tt_reservation_passport_delivered_ready_view_action" sequence="5"/>
+    <!--Passport Document Menu Item Partial Proceed Proceed-->
+    <menuitem id="menu_passport_partial_proceed_proceed" parent="menu_passport_order" name="Partial Proceed/Proceed"
+              action="tt_reservation_passport_partial_proceed_proceed_view_action" sequence="5"/>
 
-    <!--Passport Document Menu Item Done-->
-    <menuitem id="menu_passport_done" parent="menu_passport_order"
-              name="Done" action="tt_reservation_passport_done_view_action" sequence="6"/>
+    <!--Passport Document Menu Item Partial Proceed Proceed-->
+    <menuitem id="menu_passport_partial_approved_approved_rejected" parent="menu_passport_order" name="Partial Approved/Approved/Rejected"
+              action="tt_reservation_passport_partial_approved_approved_rejected_view_action" sequence="6"/>
+
+    <!--Passport Document Menu Item Delivered Done-->
+    <menuitem id="menu_passport_delivered_done" parent="menu_passport_order"
+              name="Delivered/Done" action="tt_reservation_passport_delivered_done_view_action" sequence="7"/>
 
     <!--Passport Document Menu Item Cancel-->
     <menuitem id="menu_passport_cancel" parent="menu_passport_order"
-              name="Cancel" action="tt_reservation_passport_cancel_view_action" sequence="7"/>
+              name="Cancel" action="tt_reservation_passport_cancel_view_action" sequence="8"/>
 
 </odoo>
