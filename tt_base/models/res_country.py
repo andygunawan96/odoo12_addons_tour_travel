@@ -12,6 +12,7 @@ class DestinationAlias(models.Model):
 
     name = fields.Char('Name', required=True)
     city_id = fields.Many2one('res.city', 'City')
+    state_id = fields.Many2one('res.country.state', 'State')
     country_id = fields.Many2one('res.country', 'Country')
 
 
@@ -73,6 +74,7 @@ class CountryState(models.Model):
     provide_code_ids = fields.One2many('tt.provider.code', 'state_id', string='Provide Code')
     active = fields.Boolean('Active', default=True)
 
+    other_name_ids = fields.One2many('tt.destination.alias', 'state_id', 'Dest. Alias', help='Destination Alias or Other Name')
     address_detail_ids = fields.One2many('address.detail', 'state_id', string='Addresses')
 
 
@@ -80,7 +82,7 @@ class CountryCity(models.Model):
     _inherit = 'res.city'
     _description = 'Tour & Travel - Res City'
 
-    code = fields.Char('Skytors Code', help="Code for skytors' channel")
+    code = fields.Char('Internal Code', help="Code for internal channel")
     district_ids = fields.One2many('res.district', 'city_id', string='Districts')
     country_id = fields.Many2one('res.country', string='Country')
     provide_code_ids = fields.One2many('tt.provider.code', 'city_id', string='Provide Code')
@@ -91,6 +93,7 @@ class CountryCity(models.Model):
 
     latitude = fields.Float('Latitude Degree', digits=(3, 7))
     longitude = fields.Float('Longitude Degree', digits=(3, 7))
+    city_alias_name = fields.Char('Alias Name')
 
     def find_city_by_name(self, str_name, limit=1):
         found = self.search([('name', '=ilike', str_name)], limit=limit)
@@ -106,6 +109,16 @@ class CountryCity(models.Model):
             # 'city_alias_list': [rec.name for rec in city_obj.other_name_ids],
             'alias': ','.join([rec.name for rec in city_obj.other_name_ids]),
         }
+
+    @api.onchange('name', 'other_name_ids')
+    def city_search_name(self):
+        for rec1 in self:
+            new_str = rec1.name
+            if rec1.other_name_ids:
+                new_str += ', '
+                new_str += ', '.join([rec.name for rec in rec1.other_name_ids])
+            rec1.city_alias_name = new_str
+
 
 class CountryDistrict(models.Model):
     _name = 'res.district'
