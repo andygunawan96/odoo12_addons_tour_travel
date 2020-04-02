@@ -363,6 +363,7 @@ class TtLedgerWaitingList(models.Model):
     agent_id = fields.Many2one('tt.agent','Agent')
     customer_parent_id = fields.Many2one('tt.customer.parent','Customer Parent')
     is_in_transaction = fields.Boolean("In Transaction",default=True)
+    comment = fields.Text("Comment")
     waiting_number = fields.Integer('Waiting Number')
 
     @api.model

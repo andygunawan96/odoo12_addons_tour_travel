@@ -219,6 +219,7 @@
                         <field name="create_date"/>
                         <field name="agent_id"/>
                         <field name="customer_parent_id"/>
+                        <field name="comment"/>
                         <field name="is_in_transaction"/>
                         <field name="waiting_number"/>
                     </group>
@@ -235,6 +236,7 @@
                 <field name="create_date"/>
                 <field name="agent_id"/>
                 <field name="customer_parent_id"/>
+                <field name="comment"/>
                 <field name="is_in_transaction"/>
                 <field name="waiting_number"/>
             </tree>
