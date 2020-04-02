@@ -679,6 +679,7 @@ class TtReservation(models.Model):
                 _logger.error('Creating Notes Error')
             return e.error_dict()
         except Exception as e:
+            _logger.error(traceback.format_exc())
             try:
                 book_obj.notes += str(datetime.now()) + '\n' + traceback.format_exc() + '\n'
             except:
