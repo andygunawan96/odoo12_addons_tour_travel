@@ -298,7 +298,7 @@ class Ledger(models.Model):
             waiting_number = False
             for rec in list_agent_id:
                 if len(new_list_of_waiting_list) == 1:
-                    waiting_number = new_list_of_waiting_list[0][3]
+                    waiting_number = new_list_of_waiting_list[0][3]['waiting_number']
                 new_waiting_list = self.env['tt.ledger.waiting.list'].create({'agent_id': rec,'waiting_number': waiting_number, 'comment': amount_comment})
                 new_list_of_waiting_list.append((rec,False, new_waiting_list))
         self.env.cr.commit()
