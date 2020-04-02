@@ -10,6 +10,7 @@
                     <field name="name"/>
                     <field name="customer_parent_type_id"/>
                     <field name="parent_agent_id"/>
+                    <field name="email"/>
                     <field name="currency_id"/>
                 </group>
                 <footer>

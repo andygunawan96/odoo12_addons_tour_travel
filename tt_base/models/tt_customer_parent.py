@@ -22,7 +22,7 @@ class TtCustomerParent(models.Model):
     unprocessed_amount = fields.Monetary(string="Unprocessed Amount", readonly=True, compute="_compute_unprocessed_amount")
 
     seq_id = fields.Char('Sequence ID', index=True, readonly=True)
-    email = fields.Char(string="Email", required=False, )
+    email = fields.Char(string="Email", required=True)
     currency_id = fields.Many2one('res.currency', default=lambda self: self.env.user.company_id.currency_id.id, string='Currency')
     address_ids = fields.One2many('address.detail', 'customer_parent_id', string='Addresses')
     phone_ids = fields.One2many('phone.detail', 'customer_parent_id', string='Phones')
