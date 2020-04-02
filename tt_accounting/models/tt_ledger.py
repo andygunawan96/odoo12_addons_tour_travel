@@ -169,7 +169,8 @@ class Ledger(models.Model):
                 # except Exception as e:
                 #     _logger.error(traceback.format_exc())
         except Exception as e:
-            raise Exception(traceback.format_exc())
+            # raise Exception(traceback.format_exc())
+            raise Exception("Sigh... Concurrent Update")
         _logger.info('Created Ledger Succesfully %s' % (ledger_obj.id))
         return ledger_obj
 
