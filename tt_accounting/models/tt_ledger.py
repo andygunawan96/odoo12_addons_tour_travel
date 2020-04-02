@@ -314,7 +314,7 @@ class Ledger(models.Model):
         else:
             last_digit -= 1
 
-        sleep_time = last_digit * 0.5
+        sleep_time = last_digit * 0.3
         _logger.info(" ### SLEEP TIME %s ###" % (sleep_time))
         time.sleep(sleep_time)
 
@@ -328,7 +328,6 @@ class Ledger(models.Model):
                 break
             if second:
                 _logger.error("### CONCURRENT UPDATE LEDGER ERROR, WAITING LIST: %s. CURRENT IDS: %s ###" % ([str(rec.ids) for rec in list_of_waiting_list],str(list_agent_id)))
-                time.sleep(1)
             second = True
 
         for rec in new_list_of_waiting_list:
