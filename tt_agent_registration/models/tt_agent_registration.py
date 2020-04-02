@@ -437,22 +437,37 @@ class AgentRegistration(models.Model):
     def create_opening_balance_ledger(self, agent_id):
         ledger = self.env['tt.ledger']
 
-        vals_credit = self.env['tt.ledger'].prepare_vals(self._name, self.id, 'Opening Balance : ' + self.name,
-                                                         'Opening Balance : ' + self.name, datetime.now(), 0,
-                                                         self.currency_id.id, self.env.user.id, 0, self.opening_balance)
-        vals_credit = ledger.prepare_vals_for_agent_regis(self, vals_credit)
-        vals_credit.update({
-            'agent_id': self.parent_agent_id.id,
-        })
-        self.env['tt.ledger'].create(vals_credit)
+        ledger.create_ledger_vanilla(
+            self._name,
+            self.id,
+            'Opening Balance : ' + self.name,
+            'Opening Balance : ' + self.name,
+            datetime.now(pytz.timezone('Asia/Jakarta')).date(),
+            0,
+            self.currency_id.id,
+            self.env.user.id,
+            self.parent_agent_id.id,
+            False,
+            0,
+            self.opening_balance,
+            'Ledger for ' + self.name
+        )
 
-        vals_debit = self.env['tt.ledger'].prepare_vals(self._name, self.id, 'Opening Balance', 'Opening Balance', datetime.now(),
-                                                        0, self.currency_id.id, self.env.user.id, self.opening_balance, 0)
-        vals_debit = ledger.prepare_vals_for_agent_regis(self, vals_debit)
-        vals_debit.update({
-            'agent_id': agent_id.id
-        })
-        self.env['tt.ledger'].create(vals_debit)
+        ledger.create_ledger_vanilla(
+            self._name,
+            self.id,
+            'Opening Balance : ' + self.name,
+            'Opening Balance : ' + self.name,
+            datetime.now(pytz.timezone('Asia/Jakarta')).date(),
+            0,
+            self.currency_id.id,
+            self.env.user.id,
+            self.agent_id.id,
+            False,
+            self.opening_balance,
+            0,
+            'Ledger for ' + self.name
+        )
 
     def create_partner_agent(self, user_ids):
         address_ids = []
