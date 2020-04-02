@@ -303,9 +303,9 @@ class Ledger(models.Model):
         # sleep_time = ((new_waiting_list.id%10))
         # print(sleep_time)
         # time.sleep(sleep_time)
-        last_digit = new_waiting_list.id % 10 if new_waiting_list.id % 10 == 0 else 10
-        sleep_time = last_digit * 0.2
-        print(sleep_time)
+        last_digit = new_list_of_waiting_list[0][2].id % 10 if new_list_of_waiting_list[0][2].id % 10 == 0 else 10
+        sleep_time = last_digit * 0.3
+        _logger.info(" ### SLEEP TIME ###")
         time.sleep(sleep_time)
 
         list_of_waiting_list = self.get_waiting_list(new_list_of_waiting_list)
