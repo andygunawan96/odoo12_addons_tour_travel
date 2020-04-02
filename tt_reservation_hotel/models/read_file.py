@@ -2860,6 +2860,29 @@ class HotelInformation(models.Model):
         # Tambah ke alias name
         return True
 
+    # ====================== Activity get City only ============================================
+    def mapping_be_my_guest(self):
+        vendor_city_ids = glob.glob("/var/log/tour_travel/bemyguest_master_data/*.json")
+        need_to_add = []
+        for rec1 in vendor_city_ids:
+            _logger.info('Open File ' + rec1)
+            with open(rec1, 'r') as f:
+                vendor_hotel_objs = f.read()
+            f.close()
+
+            for rec in json.loads(vendor_hotel_objs)['product_detail']:
+                for rec1 in rec['product']['countries']:
+                    for rec2 in rec['product']['cities']:
+                        new_rec = [rec1, rec2]
+                        if new_rec not in need_to_add:
+                            need_to_add.append(new_rec)
+
+        with open('/var/log/tour_travel/bemyguest_master_data/result_data.csv', 'w') as csvFile:
+            writer = csv.writer(csvFile)
+            writer.writerows(need_to_add)
+        csvFile.close()
+        return True
+
     # ====================== Correction after mapping ============================================
     def get_other_facility_name(self):
         return True
