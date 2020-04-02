@@ -328,6 +328,7 @@ class Ledger(models.Model):
                 break
             if second:
                 _logger.error("### CONCURRENT UPDATE LEDGER ERROR, WAITING LIST: %s. CURRENT IDS: %s ###" % ([str(rec.ids) for rec in list_of_waiting_list],str(list_agent_id)))
+                time.sleep(0.5)
             second = True
 
         for rec in new_list_of_waiting_list:
