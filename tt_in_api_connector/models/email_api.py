@@ -5,6 +5,7 @@ import logging,traceback
 from ...tools.api import Response
 import json
 
+
 class EmailApiCon(models.Model):
     _name = 'email.api.con'
     _inherit = 'tt.api.con'
@@ -14,7 +15,6 @@ class EmailApiCon(models.Model):
             res = table_obj.send_email(data,context)
         else:
             raise RequestException(999)
-
         return res
 
     def send_email(self, data, context):
@@ -35,7 +35,6 @@ class EmailApiCon(models.Model):
                 return Response().get_no_error(json.dumps({
                     'mail': mail_mail_obj.name,
                     'failure_reason': mail_mail_obj.failure_reason,
-                    'last_sent_attempt_date': mail_mail_obj.last_sent_attempt_date,
                     'status': mail_mail_obj.active and 'waiting' or 'Done',
                 }))
             else:
