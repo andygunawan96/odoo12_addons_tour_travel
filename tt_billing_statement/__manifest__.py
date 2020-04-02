@@ -16,6 +16,7 @@ Billing Statement
         'data/ir_sequence_data.xml',
         'data/tt_billing_cycle.xml',
         'data/ir_cron_data.xml',
+        'data/ir_send_email.xml',
 
         'security/ir.model.access.csv',
 
