@@ -11,7 +11,7 @@ class EmailApiCon(models.Model):
     _inherit = 'tt.api.con'
 
     def action_call(self, table_obj, action, data, context):
-        if action == 'sent_email':
+        if action == 'send_email':
             res = table_obj.send_email(data,context)
         else:
             raise RequestException(999)
@@ -23,11 +23,12 @@ class EmailApiCon(models.Model):
             resv = self.env['tt.reservation.{}'.format(data['provider_type'])].search([('name', '=ilike', data.get('order_number')), ('agent_id', '=', context.get('co_agent_id', -1))], limit=1)
             # TODO: error code ketika object tidak ditemukan
             if resv:
-                # booker_obj = resv.booker_id.email
+                resv.btb_url = data.get('url_booking', '#')
+                template = self.env.ref('tt_reservation_{}.template_mail_{}_issued_{}'.format(data['provider_type'], data.get('type', 'reservation'), data['provider_type'])).id
                 mail_mail_obj = self.env['tt.email.queue'].sudo().create({
                     'name': 'Issued ' + resv.name,
                     'type': '{}_{}'.format(data.get('type', 'reservation'), data['provider_type']),
-                    'template_id': self.env.ref('tt_reservation_{}.template_mail_reservation_issued_{}'.format(data['provider_type'], data['provider_type'])).id,
+                    'template_id': template,
                     'res_model': resv._name,
                     'res_id': resv.id,
                 })

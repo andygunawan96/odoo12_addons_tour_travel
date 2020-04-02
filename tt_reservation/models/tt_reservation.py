@@ -75,6 +75,7 @@ class TtReservation(models.Model):
     refund_ids = fields.One2many('tt.refund','res_id','Refund',readonly=True,domain=_get_res_model_domain)  # domain=[('res_model','=',lambda self: self._name)]
     error_msg = fields.Char('Error Message')
     notes = fields.Text('Notes for IT',default='')
+    btb_url = fields.Text('B2B URL', default='')
     refundable = fields.Boolean('Refundable', default=True, readonly=True, compute='_compute_refundable')
 
     ##fixme tambahkan compute field nanti
