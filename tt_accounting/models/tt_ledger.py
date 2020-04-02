@@ -314,7 +314,7 @@ class Ledger(models.Model):
         else:
             last_digit -= 1
 
-        sleep_time = last_digit * 0.3 + last_digit * 0.03
+        sleep_time = last_digit * 0.3
         _logger.info(" ### SLEEP TIME %s ###" % (sleep_time))
         time.sleep(sleep_time)
 
