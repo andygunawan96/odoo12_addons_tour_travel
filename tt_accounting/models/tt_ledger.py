@@ -90,7 +90,7 @@ class Ledger(models.Model):
         # else:
         #     return 0
         current_balance = balance + vals['debit'] - vals['credit']
-        _logger.info("### CALC BALANCE, old balance: %s, current_balance: %s ###" % (balance,current_balance))
+        _logger.info("### CALC BALANCE, old balance: %s, current_balance: %s, debit: %s ###" % (balance,current_balance,vals.get('debit',0)))
         return current_balance
 
     def prepare_vals(self, res_model,res_id,name, ref, ledger_date, ledger_type, currency_id, issued_uid, debit=0, credit=0,description = ''):
