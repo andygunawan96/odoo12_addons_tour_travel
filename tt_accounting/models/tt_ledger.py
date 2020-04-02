@@ -162,12 +162,15 @@ class Ledger(models.Model):
         # successfully_created = False
         # while(not successfully_created):
         #     try:
-        vals_list['balance'] = self.calc_balance(vals_list)
-        ledger_obj = super(Ledger, self).create(vals_list)
-            #     successfully_created = True
-            # except Exception as e:
-            #     _logger.error(traceback.format_exc())
-        print(" APAKAH CONCURRENT ")
+        try:
+            vals_list['balance'] = self.calc_balance(vals_list)
+            ledger_obj = super(Ledger, self).create(vals_list)
+                #     successfully_created = True
+                # except Exception as e:
+                #     _logger.error(traceback.format_exc())
+        except Exception as e:
+            raise Exception(traceback.format_exc())
+        _logger.info('Created Ledger Succesfully %s' % (ledger_obj.id))
         return ledger_obj
 
     def open_reference(self):
@@ -303,9 +306,13 @@ class Ledger(models.Model):
         # sleep_time = ((new_waiting_list.id%10))
         # print(sleep_time)
         # time.sleep(sleep_time)
-        last_digit = new_list_of_waiting_list[0][2].id % 10
+        last_digit = (new_list_of_waiting_list[0][2].id % 20)
+
         if last_digit == 0:
-            last_digit = 10
+            last_digit = 19
+        else:
+            last_digit -= 1
+
         sleep_time = last_digit * 0.3
         _logger.info(" ### SLEEP TIME %s ###" % (sleep_time))
         time.sleep(sleep_time)
