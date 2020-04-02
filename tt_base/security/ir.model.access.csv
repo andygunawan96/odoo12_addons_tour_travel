@@ -136,8 +136,11 @@ access_payment_acquirer_for_agent_user_manager,payment.acquirer.for.agent.user.m
 access_payment_acquirer_for_account_invoice,payment.acquirer.for.account.invoice,model_payment_acquirer,account.group_account_invoice,1,1,1,0
 access_payment_acquirer_for_account_manager,payment.acquirer.for.account.manager,model_payment_acquirer,account.group_account_manager,1,1,1,0
 
-access_payment_acquirer_for_public,payment.acquirer.for.public,model_payment_acquirer_number,,1,0,0,0
-access_payment_acquirer_for_accounting_manager,payment.acquirer.for.accounting.manager,model_payment_acquirer_number,tt_base.group_tt_accounting_manager,1,1,1,1
+access_payment_acquirer_number_for_public,payment.acquirer.for.public,model_payment_acquirer_number,,1,0,0,0
+access_payment_acquirer_number_for_accounting_manager,payment.acquirer.for.accounting.manager,model_payment_acquirer_number,tt_base.group_tt_accounting_manager,1,1,1,1
+
+access_unique_amount_for_public,unique.amount,model_unique_amount,,1,0,0,0
+access_unique_amount_for_admin,unique.amount,model_unique_amount,base.user_admin,1,1,1,1
 
 access_tt_bank_for_public,tt.bank.for.public,model_tt_bank,,1,0,0,0
 access_tt_bank_for_tour_travel_operator,tt.bank.for.tour.travel.operator,model_tt_bank,tt_base.group_tt_tour_travel_operator,1,0,0,0
