@@ -6,6 +6,7 @@ import traceback
 import copy
 import json
 import base64
+import pytz
 from ...tools.api import Response
 from ...tools import util,variables,ERR
 from ...tools.ERR import RequestException
@@ -122,9 +123,6 @@ class TtVisa(models.Model):
     printout_handling_customer_id = fields.Many2one('tt.upload.center', readonly=True)
     printout_itinerary_visa = fields.Many2one('tt.upload.center', 'Printout Itinerary', readonly=True)
 
-    adjustment_ids = fields.One2many('tt.adjustment', 'res_id', 'Adjustment', readonly=True,
-                                     domain=[('res_model', '=', 'tt_reservation_visa')])
-
     can_refund = fields.Boolean('Can Refund', default=False, readonly=True)
     ######################################################################################################
     # STATE
@@ -133,7 +131,7 @@ class TtVisa(models.Model):
     @api.multi
     def _compute_commercial_state(self):
         for rec in self:
-            if rec.state == 'issued':
+            if rec.state == 'issued' or rec.issued_uid.id is not False:
                 rec.commercial_state = 'Paid'
             else:
                 rec.commercial_state = 'Unpaid'
@@ -358,20 +356,11 @@ class TtVisa(models.Model):
         # jika state : in_process, partial_proceed, proceed, delivered, ready, done, create reverse ledger
         if self.state_visa in ['in_process', 'payment']:
             self.can_refund = True
-        # if self.state_visa not in ['process_by_consulate', 'partial_proceed', 'proceed', 'delivered', 'ready', 'done']:
-        #     for rec in self.ledger_ids:
-        #         rec.reverse_ledger()
-        #         self._create_anti_ho_ledger_visa()
-        #         self._create_anti_ledger_visa()
-        #         self._create_anti_commission_ledger_visa()
         # set semua state passenger ke cancel
         for rec in self.passenger_ids:
             rec.action_cancel()
         for rec in self.provider_booking_ids:
             rec.action_cancel()
-        # set state agent invoice ke cancel
-        # for rec2 in self.agent_invoice_ids:
-        #     rec2.action_cancel()
         # unlink semua vendor
         for rec3 in self.vendor_ids:
             rec3.sudo().unlink()
@@ -423,78 +412,69 @@ class TtVisa(models.Model):
         ledger = self.env['tt.ledger']
         if total_charge > 0:
             for rec in self:
-                doc_type = []
-                for sc in rec.sale_service_charge_ids:
-                    if not sc.pricelist_id.visa_type in doc_type:
-                        doc_type.append(sc.pricelist_id.visa_type)
-
-                doc_type = ','.join(str(e) for e in doc_type)
-
-                vals = ledger.prepare_vals(self._name, self.id, 'Additional Charge Visa : ' + rec.name, rec.name,
-                                           datetime.now().strftime('%Y-%m-%d %H:%M:%S'), 2,
-                                           rec.currency_id.id, self.env.user.id, 0, total_charge,
-                                           'Additional Charge Visa : ' + rec.name)
-                vals.update({
-                    'pnr': self.pnr,
-                    'display_provider_name': self.provider_name,
-                    'provider_type_id': self.provider_type_id.id
-                })
-                vals['agent_id'] = self.agent_id.id
-
-                new_aml = ledger.create(vals)
-                # new_aml.action_done()
-                rec.ledger_id = new_aml
+                ledger.create_ledger_vanilla(
+                    self._name,
+                    self.id,
+                    'Additional Charge Visa : ' + rec.name,
+                    rec.name,
+                    datetime.now(pytz.timezone('Asia/Jakarta')).date(),
+                    2,
+                    self.currency_id.id,
+                    self.env.user.id,
+                    self.agent_id.id,
+                    False,
+                    0,
+                    total_charge,
+                    'Additional Charge Visa : ' + rec.name,
+                    pnr=self.pnr,
+                    display_provider_name=self.provider_name,
+                    provider_type_id=self.provider_type_id.id
+                )
 
         """ Jika diff nta upsell > 0 """
         if diff_nta_upsell > 0:
             ledger = self.env['tt.ledger']
             for rec in self:
-                doc_type = []
-                for sc in rec.sale_service_charge_ids:
-                    if not sc.pricelist_id.visa_type in doc_type:
-                        doc_type.append(sc.pricelist_id.visa_type)
-
-                doc_type = ','.join(str(e) for e in doc_type)
-
-                vals = ledger.prepare_vals(self._name, self.id, 'NTA Upsell Visa : ' + rec.name, rec.name,
-                                           datetime.now().strftime('%Y-%m-%d %H:%M:%S'), 3,
-                                           rec.currency_id.id, self.env.user.id, diff_nta_upsell, 0,
-                                           'NTA Upsell Visa : ' + rec.name)
-                vals.update({
-                    'pnr': self.pnr,
-                    'display_provider_name': self.provider_name,
-                    'provider_type_id': self.provider_type_id.id
-                })
-                vals['agent_id'] = rec.env.ref('tt_base.rodex_ho').id
-
-                new_aml = ledger.create(vals)
-                # new_aml.action_done()
-                rec.ledger_id = new_aml
+                ledger.create_ledger_vanilla(
+                    self._name,
+                    self.id,
+                    'NTA Upsell Visa : ' + rec.name,
+                    rec.name,
+                    datetime.now(pytz.timezone('Asia/Jakarta')).date(),
+                    3,
+                    rec.currency_id.id,
+                    rec.env.user.id,
+                    rec.env.ref('tt_base.rodex_ho').id,
+                    False,
+                    diff_nta_upsell,
+                    0,
+                    'NTA Upsell Visa : ' + rec.name,
+                    pnr=self.pnr,
+                    display_provider_name=self.provider_name,
+                    provider_type_id=self.provider_type_id.id
+                )
         elif diff_nta_upsell < 0:
             """ Jika diff nta upsell < 0 """
             ledger = self.env['tt.ledger']
             for rec in self:
-                doc_type = []
-                for sc in rec.sale_service_charge_ids:
-                    if not sc.pricelist_id.visa_type in doc_type:
-                        doc_type.append(sc.pricelist_id.visa_type)
-
-                doc_type = ','.join(str(e) for e in doc_type)
-
-                vals = ledger.prepare_vals(self._name, self.id, 'NTA Upsell Visa : ' + rec.name, rec.name,
-                                           datetime.now().strftime('%Y-%m-%d %H:%M:%S'), 3,
-                                           rec.currency_id.id, self.env.user.id, 0, abs(diff_nta_upsell),
-                                           'NTA Upsell Visa : ' + rec.name)
-                vals.update({
-                    'pnr': self.pnr,
-                    'display_provider_name': self.provider_name,
-                    'provider_type_id': self.provider_type_id.id
-                })
-                vals['agent_id'] = rec.env.ref('tt_base.rodex_ho').id
-
-                new_aml = ledger.create(vals)
-                # new_aml.action_done()
-                rec.ledger_id = new_aml
+                ledger.create_ledger_vanilla(
+                    rec._name,
+                    rec.id,
+                    'NTA Upsell Visa : ' + rec.name,
+                    rec.name,
+                    datetime.now(pytz.timezone('Asia/Jakarta')).date(),
+                    3,
+                    rec.currency_id.id,
+                    rec.env.user.id,
+                    rec.env.ref('tt_base.rodex_ho').id,
+                    False,
+                    0,
+                    diff_nta_upsell,
+                    'NTA Upsell Visa : ' + rec.name,
+                    pnr=self.pnr,
+                    display_provider_name=self.provider_name,
+                    provider_type_id=self.provider_type_id.id
+                )
 
     def calc_visa_vendor(self):
         """ Mencatat expenses ke dalam ledger visa """
@@ -526,20 +506,21 @@ class TtVisa(models.Model):
 
                 doc_type = ','.join(str(e) for e in doc_type)
 
-                vals = ledger.prepare_vals(self._name, self.id, 'Profit ' + doc_type + ' : ' + rec.name, rec.name,
-                                           datetime.now().strftime('%Y-%m-%d %H:%M:%S'), 3,
-                                           rec.currency_id.id, self.env.user.id, ho_profit, 0,
-                                           'Profit HO Visa : ' + rec.name)
-                vals.update({
-                    'pnr': self.pnr,
-                    'display_provider_name': self.provider_name,
-                    'provider_type_id': self.provider_type_id.id
-                })
-                vals['agent_id'] = rec.env.ref('tt_base.rodex_ho').id
-
-                new_aml = ledger.create(vals)
-                # new_aml.action_done()
-                rec.ledger_id = new_aml
+                ledger.create_ledger_vanilla(
+                    self._name,
+                    self.id,
+                    'Profit ' + doc_type + ' : ' + rec.name,
+                    rec.name,
+                    datetime.now(pytz.timezone('Asia/Jakarta')).date(),
+                    3,
+                    rec.currency_id.id,
+                    rec.env.user.id,
+                    rec.env.ref('tt_base.rodex_ho').id,
+                    False,
+                    ho_profit,
+                    0,
+                    'Profit HO Visa : ' + rec.name
+                )
         """ Jika profit HO < 0 (rugi) """
         if ho_profit < 0:
             ledger = self.env['tt.ledger']
@@ -551,20 +532,21 @@ class TtVisa(models.Model):
 
                 doc_type = ','.join(str(e) for e in doc_type)
 
-                vals = ledger.prepare_vals(self._name, self.id, 'Additional Charge ' + doc_type + ' : ' + rec.name,
-                                           rec.name, datetime.now().strftime('%Y-%m-%d %H:%M:%S'), 3,
-                                           rec.currency_id.id, self.env.user.id, 0, ho_profit,
-                                           'Additional Charge Visa : ' + rec.name)
-                vals.update({
-                    'pnr': self.pnr,
-                    'display_provider_name': self.provider_name,
-                    'provider_type_id': self.provider_type_id.id
-                })
-                vals['agent_id'] = rec.env.ref('tt_base.rodex_ho').id
-
-                new_aml = ledger.create(vals)
-                # new_aml.action_done()
-                rec.ledger_id = new_aml
+                ledger.create_ledger_vanilla(
+                    self._name,
+                    self.id,
+                    'Additional Charge ' + doc_type + ' : ' + rec.name,
+                    rec.name,
+                    datetime.now(pytz.timezone('Asia/Jakarta')).date(),
+                    3,
+                    rec.currency_id.id,
+                    rec.env.user.id,
+                    rec.env.ref('tt_base.rodex_ho').id,
+                    False,
+                    0,
+                    ho_profit,
+                    'Additional Charge Visa : ' + rec.name
+                )
 
     ######################################################################################################
     # CREATE
@@ -1478,14 +1460,14 @@ class TtVisa(models.Model):
                         'visa': {
                             'price': sale,
                             'entry_type': dict(pax.pricelist_id._fields['entry_type'].selection).get(
-                                pax.pricelist_id.entry_type),
+                                pax.pricelist_id.entry_type) if pax.pricelist_id else '',
                             'visa_type': dict(pax.pricelist_id._fields['visa_type'].selection).get(
-                                pax.pricelist_id.visa_type),
+                                pax.pricelist_id.visa_type) if pax.pricelist_id else '',
                             'process': dict(pax.pricelist_id._fields['process_type'].selection).get(
-                                pax.pricelist_id.process_type),
-                            'pax_type': pax.pricelist_id.pax_type,
-                            'duration': pax.pricelist_id.duration,
-                            'immigration_consulate': pax.pricelist_id.immigration_consulate,
+                                pax.pricelist_id.process_type) if pax.pricelist_id else '',
+                            'pax_type': pax.pricelist_id.pax_type if pax.pricelist_id else '',
+                            'duration': pax.pricelist_id.duration if pax.pricelist_id else '',
+                            'immigration_consulate': pax.pricelist_id.immigration_consulate if pax.pricelist_id else '',
                             'requirement': requirement,
                             'interview': interview,
                             'biometrics': biometrics
@@ -1979,6 +1961,19 @@ class TtVisa(models.Model):
         book_obj._compute_commercial_state()
         for rec in book_obj.provider_booking_ids:
             rec.write(vals)
+
+        try:
+            if self.agent_type_id.is_send_email:
+                self.env['tt.email.queue'].sudo().create({
+                    'name': 'Issued ' + self.name,
+                    'type': 'reservation_visa',
+                    'template_id': self.env.ref('tt_reservation_visa.template_mail_reservation_issued_visa').id,
+                    'res_model': self._name,
+                    'res_id': self.id,
+                })
+        except Exception as e:
+            _logger.info('Error Create Email Queue')
+
         return self.get_booking_visa_api(data, context)
 
     ######################################################################################################

@@ -1,5 +1,5 @@
 from odoo import api, fields, models, _
-import json
+import json,random
 import traceback,logging
 from ...tools import variables
 from ...tools import ERR,util
@@ -25,8 +25,9 @@ class PaymentAcquirer(models.Model):
         vals_list['seq_id'] = self.env['ir.sequence'].next_by_code('pay.acq')
         return super(PaymentAcquirer, self).create(vals_list)
     # FUNGSI
-    def generate_unique_amount(self):
-        return int(self.env['ir.sequence'].next_by_code('tt.payment.unique.amount'))
+    def generate_unique_amount(self,amount):
+        # return int(self.env['ir.sequence'].next_by_code('tt.payment.unique.amount'))
+        return self.env['unique.amount'].create({'amount':amount})
 
     def compute_fee(self,amount,unique = 0):
         uniq = 0
@@ -103,16 +104,15 @@ class PaymentAcquirer(models.Model):
             'return_url': '/payment/' + str(payment_acq.id.type) + '/feedback?acq_id=' + str(payment_acq.id.id)
         }
 
-    def button_test_acquirer(self):
-        print(self.env['ir.sequence'].next_by_code('tt.payment.unique.amount'))
-        # self.env['tt.cron.log'].create_cron_log_folder()
-        # self.get_payment_acquirer_api({
-        #     'transaction_type': 'billing',
-        #     'amount': 16000,
-        #     'booker_seq_id': 'CU.010101'
-        # },{
-        #     'agent_id': 5
-        # })
+    def get_va_number(self, req, context):
+        agent_obj = self.env['tt.agent'].sudo().browse(context['co_agent_id'])
+        values = {
+            'va': []
+        }
+        for acq in agent_obj.payment_acq_ids:
+            if agent_obj.payment_acq_ids[0].state == 'open':
+                values['va'].append(self.acquirer_format_VA(acq, 0, 0))
+        return ERR.get_no_error(values)
 
     ##fixmee amount di cache
     def get_payment_acquirer_api(self, req,context):
@@ -134,11 +134,10 @@ class PaymentAcquirer(models.Model):
             if req['transaction_type'] == 'top_up':
                 # Kalau top up Ambil agent_id HO
                 dom.append(('agent_id', '=', self.env.ref('tt_base.rodex_ho').id))
-                unique = self.generate_unique_amount()
+                unique = self.generate_unique_amount(amount).upper_number
             elif req['transaction_type'] == 'billing':
                 dom.append(('agent_id', '=', context['co_agent_id']))
                 unique = 0
-
 
             values = {}
             for acq in self.sudo().search(dom):
@@ -146,13 +145,8 @@ class PaymentAcquirer(models.Model):
                     values[acq.type] = []
                 if acq.type != 'va' and acq.type != 'payment_gateway':
                     values[acq.type].append(acq.acquirer_format(amount,unique))
-            if req['transaction_type'] == 'top_up':
-                for acq in agent_obj.payment_acq_ids:
-                    if not values.get('va'):
-                        values['va'] = []
-                    if agent_obj.payment_acq_ids[0].state == 'open':
-                        values['va'].append(self.acquirer_format_VA(acq, amount, unique))
-            elif util.get_without_empty(req, 'order_number'):
+
+            if util.get_without_empty(req, 'order_number'):
                 dom = [('website_published', '=', True), ('company_id', '=', self.env.user.company_id.id)]
                 dom.append(('agent_id', '=', self.env.ref('tt_base.rodex_ho').id))
                 for acq in self.sudo().search(dom):
@@ -232,3 +226,25 @@ class PaymentAcquirerNumber(models.Model):
             })
             payment = {'order_number': payment.number}
         return ERR.get_no_error(payment)
+
+class PaymentAcquirerNumber(models.Model):
+    _name = 'unique.amount'
+    _description = 'Rodex Model Unique Amount'
+
+    amount = fields.Float('Amount', required=True)
+    upper_number = fields.Integer('Up Number')
+    lower_number = fields.Integer('Lower Number')
+    active = fields.Boolean('Active',default=True)
+
+    @api.model
+    def create(self, vals_list):
+        already_exist = [rec.upper_number for rec in self.search([('amount','=',vals_list['amount'])])]
+        unique_amount = None
+        while (not unique_amount):
+            number = random.randint(1,999)
+            if number not in already_exist:
+                unique_amount = number
+        vals_list['upper_number'] = unique_amount
+        vals_list['lower_number'] = 1000 - unique_amount
+        new_unique = super(PaymentAcquirerNumber, self).create(vals_list)
+        return new_unique

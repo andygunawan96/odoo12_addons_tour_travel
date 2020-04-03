@@ -1,7 +1,7 @@
 from odoo import api,models,fields
 from ...tools import variables
 import logging,traceback
-from datetime import datetime, date
+from datetime import datetime, date, timedelta
 _logger = logging.getLogger(__name__)
 
 class TtCronLogInhResv(models.Model):
@@ -45,3 +45,13 @@ class TtCronLogInhResv(models.Model):
         except Exception as e:
             self.create_cron_log_folder()
             self.write_cron_log('auto-action-approve refund.')
+
+    def cron_inactive_ledger_waiting_list(self):
+        try:
+            old_recs = self.env['tt.ledger.waiting.list'].search([('is_in_transaction','=',True),
+                                                                       ('create_date', '<=', datetime.today() - timedelta(minutes=5))])
+            for rec in old_recs:
+                rec.is_in_transaction = False
+        except Exception as e:
+            self.create_cron_log_folder()
+            self.write_cron_log('auto expired ledger waiting list')

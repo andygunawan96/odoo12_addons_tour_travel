@@ -81,7 +81,7 @@
                                 <div class="col-1" style="max-width: 6%; padding: 0px;">:<span style="color: white;">..</span></div>
                                 <t t-if="doc.issued_date">
                                     <div class="col-8" style="padding: 0px; text-transform:uppercase; font-weight: 300">
-                                        <span t-field="doc.issued_date"/>  <!--provider.journey_ids.departure_date">-->
+                                        <span t-field="doc.issued_date" t-options='{"format": "yyyy-MM-dd HH:mm:ss"}'/>  <!--provider.journey_ids.departure_date">-->
                                     </div>
                                 </t>
                                 <t t-if="not doc.issued_date">
@@ -258,7 +258,7 @@
                                     </div>
                                 </div>
                                 <div class="row" style="margin-top: -3px">
-                                    <div class="col-3" style="max-width: 27.5%;"><span>Admin Agen</span></div>
+                                    <div class="col-3" style="max-width: 27.5%;"><span>Convenience Fee</span></div>
                                     <div class="col-1" style="max-width: 6%; padding: 0px;">:<span style="color: white;">..</span></div>
                                     <div class="col-8" style="padding: 0px; text-transform:uppercase;">
                                         <span t-esc="int(admin_agent)" t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/>

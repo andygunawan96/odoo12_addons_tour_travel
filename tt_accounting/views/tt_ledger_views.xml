@@ -211,11 +211,17 @@
         <field name="model">tt.ledger.waiting.list</field>
         <field name="arch" type="xml">
             <form>
+                <header>
+                    <button name="turn_off_all_transaction" string="Turn Off Transaction" type="object"/>
+                </header>
                 <sheet>
                     <group>
+                        <field name="create_date"/>
                         <field name="agent_id"/>
                         <field name="customer_parent_id"/>
+                        <field name="comment"/>
                         <field name="is_in_transaction"/>
+                        <field name="waiting_number"/>
                     </group>
                 </sheet>
             </form>
@@ -227,9 +233,12 @@
         <field name="model">tt.ledger.waiting.list</field>
         <field name="arch" type="xml">
             <tree>
+                <field name="create_date"/>
                 <field name="agent_id"/>
                 <field name="customer_parent_id"/>
+                <field name="comment"/>
                 <field name="is_in_transaction"/>
+                <field name="waiting_number"/>
             </tree>
         </field>
     </record>

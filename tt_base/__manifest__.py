@@ -79,6 +79,7 @@ Key Features
         'views/tt_pnr_quota_price_list_views..xml',
         'views/tt_pnr_quota_usage_views.xml',
         'views/tt_pnr_quota_price_package_views.xml',
+        'views/tt_email_queue_views.xml',
 
         'data/agent_type_rodex_data.xml',
         'data/tt_agent_ho_data.xml',

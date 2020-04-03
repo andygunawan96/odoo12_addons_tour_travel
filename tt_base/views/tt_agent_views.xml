@@ -44,8 +44,6 @@
             <form create="false">
                 <header>
                     <button name="get_current_agent_target" type="object" string="Calc Target" groups="base.user_admin"/>
-                    <button name="dummy_use_pnr_quota" type="object" string="Use PNR Quota" groups="base.user_admin"/>
-                    <button name="dummy_buy_pnr_quota" type="object" string="Buy PNR Quota" groups="base.user_admin"/>
                 </header>
                 <sheet>
                     <div class="oe_button_box" name="button_box">

@@ -86,6 +86,18 @@ class TtReservationTrain(models.Model):
             'customer_parent_id': customer_parent_id
         })
 
+        try:
+            if self.agent_type_id.is_send_email:
+                self.env['tt.email.queue'].sudo().create({
+                    'name': 'Issued ' + self.name,
+                    'type': 'reservation_train',
+                    'template_id': self.env.ref('tt_reservation_train.template_mail_reservation_issued_train').id,
+                    'res_model': self._name,
+                    'res_id': self.id,
+                })
+        except Exception as e:
+            _logger.info('Error Create Email Queue')
+
     def action_partial_issued_api_train(self,co_uid,customer_parent_id):
         self.write({
             'state': 'partial_issued',

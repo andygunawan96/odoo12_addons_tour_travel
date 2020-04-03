@@ -1,6 +1,6 @@
 from odoo import api,models,fields
 import os,traceback,pytz,logging
-from datetime import datetime,date
+from datetime import datetime,timedelta
 
 _logger = logging.getLogger(__name__)
 
@@ -74,6 +74,25 @@ class TtCronLog(models.Model):
         except:
             self.create_cron_log_folder()
             self.write_cron_log('auto-expire quota')
+
+    def cron_send_email_queue(self):
+        try:
+            queue_obj = self.env['tt.email.queue'].search([])
+            for rec in queue_obj:
+                rec.action_send_email()
+                self.env.cr.commit()
+        except:
+            self.create_cron_log_folder()
+            self.write_cron_log('auto-send email queue')
+
+    def cron_expire_unique_amount(self):
+        try:
+            unique_obj = self.env['unique.amount'].search([('create_date','<',datetime.now() - timedelta(hours=3))])
+            for rec in unique_obj:
+                rec.active = False
+        except:
+            self.create_cron_log_folder()
+            self.write_cron_log('auto-expired unique amount')
 
 
 

@@ -4,9 +4,12 @@ from datetime import datetime, timedelta
 from dateutil.relativedelta import relativedelta
 from odoo.exceptions import UserError
 import base64
+import logging
+import traceback
 
 from .ApiConnector_Hotel import ApiConnectorHotels
 API_CN_HOTEL = ApiConnectorHotels()
+_logger = logging.getLogger(__name__)
 
 
 class HotelReservation(models.Model):
@@ -462,6 +465,19 @@ class HotelReservation(models.Model):
         self.action_create_invoice(acquirer_id, co_uid)
         self.state = 'issued'
         self.calc_voucher_name()
+
+        try:
+            if self.agent_type_id.is_send_email:
+                self.env['tt.email.queue'].sudo().create({
+                    'name': 'Issued ' + self.name,
+                    'type': 'reservation_hotel',
+                    'template_id': self.env.ref('tt_reservation_hotel.template_mail_reservation_issued_hotel').id,
+                    'res_model': self._name,
+                    'res_id': self.id,
+                })
+        except Exception as e:
+            _logger.info('Error Create Email Queue')
+
         return True
 
     # def action_issued_backend(self, kwargs=False):

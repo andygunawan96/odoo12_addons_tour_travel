@@ -76,7 +76,7 @@
                     <t t-if="o.validate_uid.name">
                         (<span t-field="o.validate_uid.name"/>)
                     </t>
-                    <t t-if="o.validate_uid.name">
+                    <t t-else="">
                         (<span style="color: white;">_____________</span>)
                     </t>
                 </div>
@@ -135,14 +135,12 @@
                                     <div class="col-4" style="padding: 0px;">
                                         <span>Name</span><br/>
                                         <span>Date of birth</span><br/>
-                                        <span>Domicile</span><br/>
                                         <span>Passport Type</span><br/>
                                         <span>Handling Process</span><br/>
                                         <span>Estimated time</span>
                                     </div>
                                     <!--<div class="col-xs-1" style="width: 2%; padding: 0px;">-->
                                     <div class="col-1" style="padding: 0px;">
-                                        <span>:</span><br/>
                                         <span>:</span><br/>
                                         <span>:</span><br/>
                                         <span>:</span><br/>

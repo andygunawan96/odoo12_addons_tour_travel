@@ -35,7 +35,7 @@ class ReservationPassport(models.Model):
                          (psg.pricelist_id.apply_type.capitalize() if psg.pricelist_id.apply_type else '') + ' ' + \
                          (psg.pricelist_id.passport_type.capitalize() if psg.pricelist_id.passport_type else '') + ' ' + \
                          (psg.pricelist_id.process_type.capitalize() if psg.pricelist_id.process_type else '') + \
-                         ' (' + str((psg.pricelist_id.duration if psg.pricelist_id.duration else '')) + ' days)' + \
+                         ' (' + str((psg.pricelist_id.duration if psg.pricelist_id.duration else '-')) + ' days)' + \
                          '\n'
         return desc_text
 
@@ -72,9 +72,13 @@ class ReservationPassport(models.Model):
         invoice_line_id = inv_line_obj.id
 
         for psg in self.passenger_ids:
-            desc_text = psg.first_name + ' ' + psg.last_name + ', ' + psg.title + ' (' + psg.passenger_type + ') ' + \
-                        psg.pricelist_id.apply_type.capitalize() + ' ' + psg.pricelist_id.passport_type.capitalize() + ' ' \
-                        + psg.pricelist_id.process_type.capitalize() + ' (' + str(psg.pricelist_id.duration) + ' days)'
+            desc_text = (psg.first_name if psg.first_name else '') + ' ' + \
+                        (psg.last_name if psg.last_name else '') + ', ' + \
+                        psg.title + ' (' + psg.passenger_type + ') ' + \
+                        (psg.pricelist_id.apply_type.capitalize() if psg.pricelist_id.apply_type else '') + ' ' + \
+                        (psg.pricelist_id.passport_type.capitalize() if psg.pricelist_id.passport_type else '') + ' ' + \
+                        (psg.pricelist_id.process_type.capitalize() if psg.pricelist_id.process_type else '') + \
+                        ' (' + str(psg.pricelist_id.duration if psg.pricelist_id.duration else '-') + ' days)'
             price = 0
             for srvc in psg.cost_service_charge_ids:
                 if srvc.charge_type != 'RAC':
@@ -108,7 +112,7 @@ class ReservationPassport(models.Model):
             'pay_amount': inv_line_obj.total_after_tax,
         })
 
-    def action_issued_passport(self, data, context):  # , context
-        res = super(ReservationPassport, self).action_issued_passport(data, context)  # , context
+    def action_issued_passport_api(self, data, context):  # , context
+        res = super(ReservationPassport, self).action_issued_passport_api(data, context)  # , context
         self.action_create_invoice(data, context)  # , context
         return res

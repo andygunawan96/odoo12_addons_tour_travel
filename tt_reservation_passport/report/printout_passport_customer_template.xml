@@ -73,7 +73,7 @@
                     <t t-if="o.confirmed_uid.name">
                         (<span t-field="o.confirmed_uid.name"/>)
                     </t>
-                    <t t-if="not o.confirmed_uid.name">
+                    <t t-else="">
                         (<span style="color: white;">_____________</span>)
                     </t>
                 </div>
@@ -132,14 +132,12 @@
                                     <div class="col-4" style="padding: 0px;">
                                         <span>Name</span><br/>
                                         <span>Date of birth</span><br/>
-                                        <span>Domicile</span><br/>
                                         <span>Passport Type</span><br/>
                                         <span>Handling Process</span><br/>
                                         <span>Estimated time</span>
                                     </div>
                                     <!--<div class="col-xs-1" style="width: 2%; padding: 0px;">-->
                                     <div class="col-1" style="padding: 0px;">
-                                        <span>:</span><br/>
                                         <span>:</span><br/>
                                         <span>:</span><br/>
                                         <span>:</span><br/>
@@ -167,9 +165,9 @@
                             <div class="col-5">
                                 <div class="row">
                                     <div class="col-6">
-<!--                                        <span>Passport number</span><br/>-->
+                                        <span>Passport number</span><br/>
                                         <span>Phone</span><br/>
-<!--                                        <span>Expired</span><br/>-->
+                                        <span>Expired</span><br/>
                                         <span/><br/>
 <!--                                        <span>Departure Plan</span><br/>-->
                                     </div>
@@ -181,12 +179,12 @@
 <!--                                        <span>:</span>-->
                                     </div>
                                     <div class="col-5">
-<!--                                        <span t-field="p.passenger_id.passport_number"/><br/>-->
+                                        <span t-field="p.passport_number"/><br/>
                                         <t t-if="p.customer_id.phone_ids">
                                             <span t-field="p.customer_id.phone_ids[0].phone_number"/>
                                         </t>
                                         <br/>
-<!--                                        <span t-field="p.passenger_id.passport_expdate" t-field-options="{&quot;format&quot;: &quot;dd-MM-yyyy&quot;}"/><br/>-->
+                                        <span t-field="p.passport_expdate" t-field-options="{&quot;format&quot;: &quot;dd-MM-yyyy&quot;}"/><br/>
                                         <span/><br/>
 <!--                                        <span t-field="p.passport_id.departure_date" t-field-options="{&quot;format&quot;: &quot;dd-MM-yyyy&quot;}"/>-->
                                     </div>

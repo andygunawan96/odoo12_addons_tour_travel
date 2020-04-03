@@ -59,12 +59,18 @@ class PassportInterviewBiometrics(models.Model):
                                              related="passenger_interview_id.pricelist_id", readonly=1)
     pricelist_biometrics_id = fields.Many2one('tt.reservation.passport.pricelist', 'Pricelist',
                                               related="passenger_biometrics_id.pricelist_id", readonly=1)
-    location_interview_id = fields.Char('Location', related="pricelist_interview_id.description")
+    location_interview_id = fields.Char('Location', compute='compute_location_interview', store=True)  # related="pricelist_interview_id.description"
     location_biometrics_id = fields.Char('Location', related="pricelist_biometrics_id.description")
     datetime = fields.Datetime('Datetime')
     ho_employee = fields.Char('Employee')
     meeting_point = fields.Char('Meeting Point')
     description = fields.Char('Description')
+
+    @api.depends('datetime')
+    @api.onchange('datetime')
+    def compute_location_interview(self):
+        for rec in self:
+            rec.location_interview_id = rec.passenger_interview_id.pricelist_id.description
 
 
 class PassportOrderPassengers(models.Model):
@@ -99,6 +105,7 @@ class PassportOrderPassengers(models.Model):
     to_HO_date = fields.Datetime('Send to HO Date', readonly=1)  # readonly=1
     to_agent_date = fields.Datetime('Send to Agent Date', readonly=1)  # readonly=1
     ready_date = fields.Datetime('Ready Date', readonly=1)  # readonly=1
+    done_date = fields.Datetime('Done Date', readonly=1)  # readonly=1
     expired_date = fields.Date('Expired Date', readonly=1)  # readonly=1
 
     use_vendor = fields.Boolean('Use Vendor', readonly=1, related='passport_id.use_vendor')
@@ -144,13 +151,6 @@ class PassportOrderPassengers(models.Model):
         mail = self.env['mail.template'].browse(template.id)
         mail.send_mail(self.id)
         print("Email Sent")
-
-    def action_send_email_biometrics(self):
-        """Dijalankan, jika user menekan tombol 'Send Email Biometrics'"""
-        template = self.env.ref('tt_reservation_passport.template_mail_passport_biometrics')
-        mail = self.env['mail.template'].browse(template.id)
-        mail.send_mail(self.id)
-        print("Email Biometrics Sent")
 
     def action_fail_booked(self):
         for rec in self:
@@ -266,26 +266,27 @@ class PassportOrderPassengers(models.Model):
 
     def action_proceed(self):
         for rec in self:
-            # jika interview / biometrics dicentang & belum ada record interview / biometrics, tidak bisa proceed
+            # jika interview dicentang & belum ada record interview, tidak bisa proceed
             if rec.interview is True:
                 if not rec.interview_ids:
                     raise UserError(_('You have to add interview record.'))
-            if rec.biometrics is True:
-                if not rec.biometrics_ids:
-                    raise UserError(_('You have to add biometrics record.'))
             rec.write({
                 'state': 'proceed',
             })
             rec.message_post(body='Passenger PROCEED')
             is_proceed = True
+            is_approved = False
             for psg in rec.passport_id.passenger_ids:
                 if psg.state not in ['proceed', 'cancel']:
                     is_proceed = False
+                if psg.process_status == 'accepted':
+                    is_approved = True
             # jika ada sebagian state passenger yang belum proceed -> partial proceed
-            if not is_proceed:
-                rec.passport_id.action_partial_proceed_passport()
-            else:  # else -> proceed
-                rec.passport_id.action_proceed_passport()
+            if not is_approved:
+                if not is_proceed:
+                    rec.passport_id.action_partial_proceed_passport()
+                else:  # else -> proceed
+                    rec.passport_id.action_proceed_passport()
 
     def action_reject(self):
         for rec in self:
@@ -305,7 +306,7 @@ class PassportOrderPassengers(models.Model):
             })
             all_approve = True
             for psg in rec.passport_id.passenger_ids:
-                if psg.state != 'accepted':
+                if psg.process_status != 'accepted':
                     all_approve = False
             if all_approve:
                 rec.passport_id.action_approved_passport()
@@ -353,7 +354,8 @@ class PassportOrderPassengers(models.Model):
     def action_done(self):
         for rec in self:
             rec.write({
-                'state': 'done'
+                'state': 'done',
+                'done_date': datetime.now()
             })
             rec.message_post(body='Passenger DONE')
             is_done = True

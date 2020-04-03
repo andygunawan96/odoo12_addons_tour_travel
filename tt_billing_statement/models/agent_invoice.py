@@ -3,6 +3,7 @@ import werkzeug
 from odoo.exceptions import UserError
 from datetime import datetime
 import logging, traceback
+import pytz
 _logger = logging.getLogger(__name__)
 
 
@@ -77,17 +78,25 @@ class AgentInvoice(models.Model):
         if self.customer_parent_type_id == self.env.ref('tt_base.customer_type_fpo'):
             return True
 
-        ledger = self.env['tt.ledger'].sudo()
         amount = 0
         for rec in self.invoice_line_ids:
             amount += rec.total_after_tax
 
-        vals = ledger.prepare_vals(self._name, self.id, 'Agent Invoice : ' + self.name, self.name, datetime.now(), 2,
-                                   self.currency_id.id, self.env.user.id, amount if debit == True else 0, amount if debit == False else 0)
-
-        vals['customer_parent_id'] = self.customer_parent_id.id
-
-        ledger.create(vals)
+        self.env['tt.ledger'].create_ledger_vanilla(
+            self._name,
+            self.id,
+            'Agent Invoice : %s' % self.name,
+            self.name,
+            datetime.now(pytz.timezone('Asia/Jakarta')).date(),
+            2,
+            self.currency_id.id,
+            self.env.user.id,
+            False,
+            self.customer_parent_id.id,
+            amount if debit == True else 0,
+            amount if debit == False else 0,
+            'Ledger for: %s' % self.name,
+        )
 
     def action_confirm(self):
         if self.state == 'draft':
