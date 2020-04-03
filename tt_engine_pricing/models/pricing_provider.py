@@ -26,6 +26,8 @@ class PricingProvider(models.Model):
     is_sale = fields.Boolean('Is Sale', default=False)
     is_commission = fields.Boolean('Is Commission', default=False)
     is_provider_commission = fields.Boolean('Is Provider Commission', default=False)
+    agent_type_ids = fields.Many2many('tt.agent.type', 'pricing_provider_agent_type_rel', 'pricing_id', 'agent_type_id', string='Agent Types')
+    agent_type_access_type = fields.Selection(variables.ACCESS_TYPE, 'Agent Type Access Type', default='all')
 
     def do_compute_name(self):
         objs = self.sudo().search([])
@@ -33,11 +35,20 @@ class PricingProvider(models.Model):
             rec._compute_name()
 
     @api.multi
-    @api.depends('provider_ids.code','provider_ids','carrier_ids','carrier_ids.code')
+    @api.depends('provider_ids.code','provider_ids','carrier_ids','carrier_ids.code', 'agent_type_ids')
     def _compute_name(self):
         for rec in self:
-            res = '%s - %s' % (','.join([provider.code.title() for provider in rec.provider_ids]), ','.join([carrier.code for carrier in rec.carrier_ids]))
-            rec.name = res
+            name_list = []
+            # name_list.append('Provider %s' % rec.provider_access_type)
+            if rec.provider_access_type != 'all':
+                name_list.append(','.join([provider.code.title() for provider in rec.provider_ids]))
+            # name_list.append('Carrier %s' % rec.carrier_access_type)
+            if rec.carrier_access_type != 'all':
+                name_list.append(','.join(['%s' % rec.carrier_access_type.title()] + [carrier.code for carrier in rec.carrier_ids]))
+            # name_list.append('Agent Type %s' % rec.agent_type_access_type)
+            if rec.agent_type_access_type != 'all':
+                name_list.append(','.join(['%s' % rec.agent_type_access_type.title()] + [agent_type.code for agent_type in rec.agent_type_ids]))
+            rec.name = ' - '.join(name_list)
 
     @api.multi
     @api.depends('provider_ids')
@@ -97,6 +108,7 @@ class PricingProvider(models.Model):
         # line_ids = sorted(line_ids, key=lambda i: i['sequence'])
         carrier_codes = [rec.code for rec in self.carrier_ids]
         providers = [rec.code for rec in self.provider_ids]
+        agent_types = [rec.code for rec in self.agent_type_ids]
         res = {
             'provider_type': self.provider_type_id and self.provider_type_id.code or '',
             # 'provider': self.provider_id and self.provider_id.code,
@@ -109,6 +121,8 @@ class PricingProvider(models.Model):
             'is_commission': self.is_commission,
             'is_provider_commission': self.is_provider_commission,
             'line_ids': line_ids,
+            'agent_type_access_type': self.agent_type_access_type,
+            'agent_types': agent_types,
         }
         return res
 
