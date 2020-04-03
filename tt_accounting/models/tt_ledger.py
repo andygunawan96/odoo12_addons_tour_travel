@@ -76,19 +76,20 @@ class Ledger(models.Model):
         # self.env['tt.agent'].clear_caches()
         # self.env.cr.commit()
         if vals.get('agent_id'):
+            owner_id = vals['agent_id']
+            param_search = 'agent_id'
             # balance = self.env['tt.agent'].browse(vals['agent_id']).balance
-            sql_query = 'select balance from tt_ledger where agent_id = %s order by id desc limit 1;' % (vals['agent_id'])
-            self.env.cr.execute(sql_query)
-            balance = self.env.cr.dictfetchall()[0]['balance']
         elif vals.get('customer_parent_id'):
-            balance = self.env['tt.customer.parent'].browse(vals['customer_parent_id']).balance
-            # sql_query = 'select id,balance from tt_ledger where customer_parent_id = %s order by id desc limit 1;' % (vals['customer_parent_id'])
-            # self.env.cr.execute(sql_query)
-            # balance = self.env.cr.dictfetchall()
-        # if balance:
-        #     return (balance[0]['balance'] + vals['debit']) - vals['credit']
-        # else:
-        #     return 0
+            owner_id = vals['customer_parent_id']
+            param_search = 'customer_parent_id'
+
+        sql_query = 'select balance from tt_ledger where %s = %s order by id desc limit 1;' % (param_search,owner_id)
+        self.env.cr.execute(sql_query)
+        balance = self.env.cr.dictfetchall()
+        if balance:
+            balance = balance[0]['balance'] + vals['debit'] - vals['credit']
+        else:
+            balance = 0
         current_balance = balance + vals['debit'] - vals['credit']
         _logger.info("### CALC BALANCE, old balance: %s, current_balance: %s, debit: %s ###" % (balance,current_balance,vals.get('debit',0)))
         return current_balance
