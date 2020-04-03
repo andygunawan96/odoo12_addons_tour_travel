@@ -467,14 +467,16 @@ class HotelReservation(models.Model):
         self.calc_voucher_name()
 
         try:
-            if self.agent_type_id.is_send_email:
-                self.env['tt.email.queue'].sudo().create({
-                    'name': 'Issued ' + self.name,
-                    'type': 'reservation_hotel',
-                    'template_id': self.env.ref('tt_reservation_hotel.template_mail_reservation_issued_hotel').id,
-                    'res_model': self._name,
-                    'res_id': self.id,
-                })
+            if self.agent_type_id.is_send_email_issued:
+                temp_data = {
+                    'provider_type': 'hotel',
+                    'order_number': self.name,
+                    'type': 'issued',
+                }
+                temp_context = {
+                    'co_agent_id': self.agent_id.id
+                }
+                self.env['tt.email.queue'].create_email_queue(temp_data, temp_context)
         except Exception as e:
             _logger.info('Error Create Email Queue')
 

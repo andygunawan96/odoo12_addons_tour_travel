@@ -29,6 +29,35 @@
 			</field>
 		</record>
 
+		<record model="mail.template" id="template_mail_reservation_booked_visa">
+			<field name="name">Template Mail Reservation Booked</field>
+			<field name="email_from">${object.agent_id.email}</field>
+			<field name="subject">Reservation Booked: ${object.name}</field>
+			<field name="email_to">${object.contact_email}</field>
+            <field name="email_cc"/>
+			<field name="model_id" ref="tt_reservation_visa.model_tt_reservation_visa"/>
+			<field name="auto_delete" eval="False"/>
+			<field name="lang"/>
+			<field name="copyvalue"/>
+			<field name="body_html">
+<![CDATA[
+<p>Dear ${object.contact_title} ${object.contact_name},</p>
+<br/>
+<p>Your ${object.provider_type_id.name} reservation at ${object.agent_id.name} has been booked with the following information:</p>
+<p>Order Number: <a href="https://google.com">${object.name}</a></p>
+<p>PNR: ${object.pnr}</p>
+<p>Booked Date: ${object.booked_date}</p>
+<p>Booker Name: ${object.booker_id.name}</p>
+<br/>
+<p>Booking Url: ${object.btb_url}</p><br/>
+<p>Please complete your payment by ${object.get_btc_hold_date()}, otherwise your reservation will be expired. Thank you for your trust and support in using our service.</p>
+<br/>
+<p>Regards,</p>
+<p>${object.agent_id.name}</p>
+]]>
+			</field>
+		</record>
+
         <record model="mail.template" id="template_mail_visa_interview">
 			<field name="name">Template Mail Visa Interview</field>
 			<field name="email_from">${user.email}</field>
