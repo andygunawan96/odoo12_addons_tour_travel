@@ -65,11 +65,11 @@
                                             <t t-esc="line['in_process_date'].strftime('%Y-%m-%d %H:%M:%S')"/>
                                         </t>
                                     </td>
-                                    <td style="padding: 2px; font-weight: 200; font-size: 14px">
-                                        <t t-if="line['ready_date']">
-                                            <t t-esc="line['ready_date'].strftime('%Y-%m-%d %H:%M:%S')"/>
-                                        </t>
-                                    </td>
+<!--                                    <td style="padding: 2px; font-weight: 200; font-size: 14px">-->
+<!--                                        <t t-if="line['ready_date']">-->
+<!--                                            <t t-esc="line['ready_date'].strftime('%Y-%m-%d %H:%M:%S')"/>-->
+<!--                                        </t>-->
+<!--                                    </td>-->
                                     <td style="padding: 2px; font-weight: 200; font-size: 14px">
                                         <t t-if="line['done_date']">
                                             <t t-esc="line['done_date'].strftime('%Y-%m-%d %H:%M:%S')"/>

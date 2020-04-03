@@ -14,7 +14,7 @@ class AgentReportPassportModel(models.AbstractModel):
         return """
         ps.name, tcd.first_name || ' ' || tcd.last_name as contact_person, ps.contact_name, rc.name as country_name,
         top.title || ' ' || top.first_name || ' ' || top.last_name as pass_name, top.age age, ps.departure_date, 
-        ps.issued_date, ps.in_process_date, ps.ready_date, ps.done_date, ps.state, rp.name as issued_name, 
+        ps.issued_date, ps.in_process_date, ps.done_date, ps.state, rp.name as issued_name, 
         tpp.immigration_consulate, tpp.passport_type, tl.debit as commission, ps.total, ps.total_nta
         """
 
