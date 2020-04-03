@@ -48,6 +48,15 @@
                     </group>
                     <separator string="Carriers"/>
                     <field name="carrier_ids"/>
+                    <group>
+                        <group>
+                            <field name="agent_type_access_type"/>
+                        </group>
+                        <group>
+                        </group>
+                    </group>
+                    <separator string="Agent Types"/>
+                    <field name="agent_type_ids"/>
                     <separator string="Details"/>
                     <field name="line_ids"/>
                 </sheet>
@@ -69,6 +78,7 @@
             <field name="provider_type_id"/>
             <field name="provider_access_type"/>
             <field name="carrier_access_type"/>
+            <field name="agent_type_access_type"/>
             <field name="is_sale"/>
             <field name="is_commission"/>
             <field name="is_provider_commission"/>
