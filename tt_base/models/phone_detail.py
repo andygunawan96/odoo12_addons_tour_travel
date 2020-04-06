@@ -98,9 +98,9 @@ class PhoneDetail(models.Model):
                     raise UserError(_("Phone number has been use, please change first phone number"))
             else:
                 raise UserError(_(res['error_msg']))
-        elif agent.email:
+        elif not agent.email:
             raise UserError(_("Please fill email"))
-        elif agent.name:
+        elif not agent.name:
             raise UserError(_("Please fill agent name"))
         elif len(check_number) > 0:
             raise UserError(_("Phone number has been register in our system please use other number"))
