@@ -3,7 +3,7 @@ from ...tools import variables, util, ERR
 import json
 from ...tools.ERR import RequestException
 import logging, traceback
-from datetime import datetime
+from datetime import datetime, timedelta
 import time
 
 _logger = logging.getLogger(__name__)
@@ -686,3 +686,6 @@ class TtReservation(models.Model):
             except:
                 _logger.error('Creating Notes Error')
             return ERR.get_error(1011)
+
+    def get_btc_hold_date(self):
+        return (self.booked_date + timedelta(hours=1)).strftime('%Y-%m-%d %H:%M:%S')

@@ -3,7 +3,7 @@
     <data noupdate="1">
         <record id="agent_b2c" model="tt.agent">
             <field name="name">Agent B2C</field>
-            <field name="agent_type_id" ref="agent_type_citra"/>
+            <field name="agent_type_id" ref="agent_type_btc"/>
         </record>
 
         <record id="agent_b2c_user" model="res.users">

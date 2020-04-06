@@ -131,12 +131,15 @@ class TtCustomerParentInh(models.Model):
                     'state': 'confirm'
                 })
 
-                if cor.email:
-                    self.env['tt.email.queue'].sudo().create({
-                        'name': cor.parent_agent_id.name + ' e-Billing Statement for ' + cor.name,
-                        'type': 'billing_statement',
-                        'template_id': self.env.ref('tt_billing_statement.template_mail_billing_statement').id,
-                        'res_model': new_bs_obj._name,
-                        'res_id': new_bs_obj.id,
-                    })
-
+                try:
+                    if cor.email:
+                        temp_data = {
+                            'provider_type': 'billing_statement',
+                            'order_number': new_bs_obj.name,
+                        }
+                        temp_context = {
+                            'co_agent_id': new_bs_obj.agent_id.id
+                        }
+                        self.env['tt.email.queue'].create_email_queue(temp_data, temp_context)
+                except Exception as e:
+                    _logger.info('Error Create Email Queue')

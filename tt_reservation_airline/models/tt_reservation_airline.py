@@ -95,6 +95,20 @@ class ReservationAirline(models.Model):
 
         self.write(write_values)
 
+        try:
+            if self.agent_type_id.is_send_email_booked:
+                temp_data = {
+                    'provider_type': 'airline',
+                    'order_number': self.name,
+                    'type': 'booked',
+                }
+                temp_context = {
+                    'co_agent_id': self.agent_id.id
+                }
+                self.env['tt.email.queue'].create_email_queue(temp_data, temp_context)
+        except Exception as e:
+            _logger.info('Error Create Email Queue')
+
     def action_issued_api_airline(self,acquirer_id,customer_parent_id,context):
         self.action_issued_airline(context['co_uid'],customer_parent_id,acquirer_id)
 
@@ -107,14 +121,16 @@ class ReservationAirline(models.Model):
         })
 
         try:
-            if self.agent_type_id.is_send_email:
-                self.env['tt.email.queue'].sudo().create({
-                    'name': 'Issued ' + self.name,
-                    'type': 'reservation_airline',
-                    'template_id': self.env.ref('tt_reservation_airline.template_mail_reservation_issued_airline').id,
-                    'res_model': self._name,
-                    'res_id': self.id,
-                })
+            if self.agent_type_id.is_send_email_issued:
+                temp_data = {
+                    'provider_type': 'airline',
+                    'order_number': self.name,
+                    'type': 'issued',
+                }
+                temp_context = {
+                    'co_agent_id': self.agent_id.id
+                }
+                self.env['tt.email.queue'].create_email_queue(temp_data, temp_context)
         except Exception as e:
             _logger.info('Error Create Email Queue')
 
