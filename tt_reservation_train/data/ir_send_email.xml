@@ -30,7 +30,7 @@
 			</field>
 		</record>
 
-		<record model="mail.template" id="template_mail_reservation_book_train">
+		<record model="mail.template" id="template_mail_reservation_booked_train">
 			<field name="name">Template Mail Reservation Booked</field>
 			<field name="email_from">${object.agent_id.email}</field>
 			<field name="subject">Reservation Booked: ${object.name}</field>
@@ -44,14 +44,14 @@
 <![CDATA[
 <p>Dear ${object.contact_title} ${object.contact_name},</p>
 <br/>
-<p>Your ${object.provider_type_id.name} reservation at ${object.agent_id.name} has been issued with the following information:</p>
+<p>Your ${object.provider_type_id.name} reservation at ${object.agent_id.name} has been booked with the following information:</p>
 <p>Order Number: <a href="https://google.com">${object.name}</a></p>
 <p>PNR: ${object.pnr}</p>
 <p>Booked Date: ${object.booked_date}</p>
 <p>Booker Name: ${object.booker_id.name}</p>
 <br/>
 <p>Booking Url: ${object.btb_url}</p><br/>
-<p>Please note Hold Date information. Thank you for your trust and support in using our service.</p>
+<p>Please complete your payment by ${object.get_btc_hold_date()}, otherwise your reservation will be expired. Thank you for your trust and support in using our service.</p>
 <br/>
 <p>Regards,</p>
 <p>${object.agent_id.name}</p>
