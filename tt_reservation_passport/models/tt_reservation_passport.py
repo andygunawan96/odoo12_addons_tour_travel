@@ -31,6 +31,7 @@ STATE_PASSPORT = [
     ('proceed', 'Proceed'),
     ('partial_approve', 'Partial Approve'),
     ('approve', 'Approve'),
+    ('reject', 'Rejected'),
     ('delivered', 'Delivered'),
     # ('ready', 'Ready'),
     ('done', 'Done'),
@@ -220,7 +221,7 @@ class TtPassport(models.Model):
             'co_uid': self.booked_uid.id
         }
 
-        payment_res = self.payment_reservation_api('passport', data, context)  # visa, member, payment_seq_id
+        payment_res = self.payment_reservation_api('passport', data, context)  # passport, member, payment_seq_id
         if payment_res['error_code'] != 0:
             raise UserError(payment_res['error_msg'])
         self.write({
@@ -358,9 +359,8 @@ class TtPassport(models.Model):
         self.state_passport = 'expired'
 
     def action_calc_expenses_passport(self):
-        # Calc visa vendor
+        # Calc passport vendor
         self.calc_passport_upsell_vendor()
-        # Create new agent invoice (panggil di agent sales visa)
 
     def calc_passport_upsell_vendor(self):
         diff_nta_upsell = 0
@@ -1137,7 +1137,7 @@ class TtPassport(models.Model):
             contact_id = self.create_contact_api(contact[0], booker_id, context)
             passenger_ids = self.create_customer_api(passengers, context, booker_id, contact_id)  # create passenger
 
-            to_psg_ids = self._create_passport_order(passengers, passenger_ids)  # create visa order data['passenger']
+            to_psg_ids = self._create_passport_order(passengers, passenger_ids)  # create passport order data['passenger']
             if to_psg_ids['error_code'] == 0:
                 psg_ids = to_psg_ids['response']
             else:
@@ -1369,7 +1369,6 @@ class TtPassport(models.Model):
                 'total': -(pricelist_obj.cost_price - pricelist_obj.nta_price),
                 'passport_pricelist_id': pricelist_id,
                 'sequence': passenger_obj.sequence,
-                # 'passenger_visa_ids': []
             }
             ssc_list.append(vals_fixed)
             ssc_obj3 = passenger_obj.cost_service_charge_ids.create(vals_fixed)
@@ -1451,7 +1450,6 @@ class TtPassport(models.Model):
                     'pricelist_id': pricelist_id,
                     'passenger_type': psg['pax_type'],
                     'notes': psg.get('notes'),
-                    # Pada state request, pax akan diberi expired date dg durasi tergantung dari paket visa yang diambil
                     'expired_date': fields.Date.today() + timedelta(days=pricelist_obj.duration),
                     'sequence': int(idx + 1)
                 })
