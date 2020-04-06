@@ -5,6 +5,8 @@ from ...tools.ERR import RequestException
 import logging, traceback
 from datetime import datetime, timedelta
 import time
+import odoo.tools as tools
+import base64
 
 _logger = logging.getLogger(__name__)
 
@@ -75,7 +77,6 @@ class TtReservation(models.Model):
     refund_ids = fields.One2many('tt.refund','res_id','Refund',readonly=True,domain=_get_res_model_domain)  # domain=[('res_model','=',lambda self: self._name)]
     error_msg = fields.Char('Error Message')
     notes = fields.Text('Notes for IT',default='')
-    btb_url = fields.Text('B2B URL', default='')
     refundable = fields.Boolean('Refundable', default=True, readonly=True, compute='_compute_refundable')
 
     ##fixme tambahkan compute field nanti
@@ -688,4 +689,17 @@ class TtReservation(models.Model):
             return ERR.get_error(1011)
 
     def get_btc_hold_date(self):
-        return (self.booked_date + timedelta(hours=1)).strftime('%Y-%m-%d %H:%M:%S')
+        if (self.booked_date + timedelta(hours=1)) >= self.hold_date:
+            final_time = (self.hold_date - timedelta(minutes=10)).strftime('%Y-%m-%d %H:%M:%S')
+        else:
+            final_time = (self.booked_date + timedelta(hours=1)).strftime('%Y-%m-%d %H:%M:%S')
+        return final_time
+
+    def get_btc_url(self):
+        try:
+            base_url = tools.config.get('frontend_url', '')
+            final_url = base_url + '/' + str(self.provider_type_id.code) + '/booking/' + (base64.b64encode(str(self.name).encode())).decode()
+        except Exception as e:
+            _logger.info(str(e))
+            final_url = '#'
+        return final_url

@@ -133,13 +133,18 @@ class TtCustomerParentInh(models.Model):
 
                 try:
                     if cor.email:
-                        temp_data = {
-                            'provider_type': 'billing_statement',
-                            'order_number': new_bs_obj.name,
-                        }
-                        temp_context = {
-                            'co_agent_id': new_bs_obj.agent_id.id
-                        }
-                        self.env['tt.email.queue'].create_email_queue(temp_data, temp_context)
+                        mail_created = self.env['tt.email.queue'].sudo().search([('res_id', '=', new_bs_obj.id), ('res_model', '=', new_bs_obj._name), ('type', '=', 'billing_statement')], limit=1)
+                        if not mail_created:
+                            temp_data = {
+                                'provider_type': 'billing_statement',
+                                'order_number': new_bs_obj.name,
+                            }
+                            temp_context = {
+                                'co_agent_id': new_bs_obj.agent_id.id
+                            }
+                            self.env['tt.email.queue'].create_email_queue(temp_data, temp_context)
+                        else:
+                            _logger.info('Billing Statement email for {} is already created!'.format(new_bs_obj.name))
+                            raise Exception('Billing Statement email for {} is already created!'.format(new_bs_obj.name))
                 except Exception as e:
                     _logger.info('Error Create Email Queue')

@@ -140,11 +140,12 @@ class PaymentAcquirer(models.Model):
                 unique = 0
 
             values = {}
-            for acq in self.sudo().search(dom):
-                if not values.get(acq.type) and acq.type != 'va' and acq.type != 'payment_gateway':
-                    values[acq.type] = []
-                if acq.type != 'va' and acq.type != 'payment_gateway':
-                    values[acq.type].append(acq.acquirer_format(amount,unique))
+            if context['co_user_login'] != self.env.ref('tt_base.agent_b2c_user').login:
+                for acq in self.sudo().search(dom):
+                    if not values.get(acq.type) and acq.type != 'va' and acq.type != 'payment_gateway':
+                        values[acq.type] = []
+                    if acq.type != 'va' and acq.type != 'payment_gateway':
+                        values[acq.type].append(acq.acquirer_format(amount,unique))
 
             if util.get_without_empty(req, 'order_number'):
                 dom = [('website_published', '=', True), ('company_id', '=', self.env.user.company_id.id)]
