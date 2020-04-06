@@ -10,8 +10,9 @@ class AgentReportVisa(models.TransientModel):
                               ('to_vendor', 'Send to Vendor'), ('vendor_process', 'Proceed by Vendor'),
                               ('cancel', 'Canceled'), ('payment', 'Payment'), ('in_process', 'In Process'),
                               ('partial_proceed', 'Partial Proceed'), ('proceed', 'Proceed'),
-                              ('delivered', 'Delivered'), ('ready', 'Ready'), ('done', 'Done')],
+                              ('delivered', 'Delivered'), ('done', 'Done')],
                              'State', default='all')
+    # , ('ready', 'Ready')
 
     def _print_report(self, data):
         records = {

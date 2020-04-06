@@ -32,7 +32,7 @@ STATE_PASSPORT = [
     ('partial_approve', 'Partial Approve'),
     ('approve', 'Approve'),
     ('delivered', 'Delivered'),
-    ('ready', 'Ready'),
+    # ('ready', 'Ready'),
     ('done', 'Done'),
     ('expired', 'Expired')
 ]
@@ -47,7 +47,7 @@ class TtPassport(models.Model):
     provider_type_id = fields.Many2one('tt.provider.type', string='Provider Type',
                                        default=lambda self: self.env.ref('tt_reservation_passport.tt_provider_type_passport'))
 
-    description = fields.Char('Description', readonly=True, states={'draft': [('readonly', False)]})
+    # description = fields.Char('Description', readonly=True, states={'draft': [('readonly', False)]})
     country_id = fields.Many2one('res.country', 'Country', ondelete="cascade", readonly=True,
                                  states={'draft': [('readonly', False)]},
                                  default=lambda self: self.default_country_id())
@@ -63,7 +63,6 @@ class TtPassport(models.Model):
                                             partial proceed = partial proceed by consulate/immigration
                                             proceed = proceed by consulate/immigration
                                             delivered = Documents sent to agent
-                                            ready = Documents ready at agent
                                             done = Documents given to customer''')
 
     ho_profit = fields.Monetary('HO Profit')
@@ -95,14 +94,8 @@ class TtPassport(models.Model):
     provider_booking_ids = fields.One2many('tt.provider.passport', 'booking_id', string='Provider Booking')  # , readonly=True, states={'cancel2': [('readonly', False)]}
 
     done_date = fields.Datetime('Done Date', readonly=1)
-    ready_date = fields.Datetime('Ready Date', readonly=1)
+    # ready_date = fields.Datetime('Ready Date', readonly=1)
 
-    recipient_name = fields.Char('Recipient Name')
-    recipient_address = fields.Char('Recipient Address')
-    recipient_phone = fields.Char('Recipient Phone')
-
-    # to_vendor_date = fields.Datetime('Send To Vendor Date', readonly=1)
-    # vendor_process_date = fields.Datetime('Vendor Process Date', readonly=1)
     in_process_date = fields.Datetime('In Process Date', readonly=1)
     delivered_date = fields.Datetime('Delivered Date', readonly=1)
 
@@ -320,6 +313,7 @@ class TtPassport(models.Model):
                 raise UserError(
                     _('You have to Fill Expenses.'))
         if self.state_passport != 'delivered':
+            self.calc_passport_upsell_vendor()
             self.calc_passport_vendor()
         self.write({
             'state_passport': 'delivered',
@@ -331,11 +325,6 @@ class TtPassport(models.Model):
         # set semua state passenger ke cancel
         if self.state_passport in ['in_process', 'payment']:
             self.can_refund = True
-        # if self.state_passport not in ['in_process', 'partial_proceed', 'proceed', 'delivered', 'ready', 'done']:
-        #     if self.sale_service_charge_ids:
-        #         self._create_anti_ho_ledger_passport()
-        #         self._create_anti_ledger_passport()
-        #         self._create_anti_commission_ledger_passport()
         for rec in self.passenger_ids:
             rec.action_cancel()
         for rec in self.provider_booking_ids:
@@ -350,12 +339,12 @@ class TtPassport(models.Model):
         })
         self.message_post(body='Order CANCELED')
 
-    def action_ready_passport(self):
-        self.write({
-            'state_passport': 'ready',
-            'ready_date': datetime.now()
-        })
-        self.message_post(body='Order READY')
+    # def action_ready_passport(self):
+    #     self.write({
+    #         'state_passport': 'ready',
+    #         'ready_date': datetime.now()
+    #     })
+    #     self.message_post(body='Order READY')
 
     def action_done_passport(self):
         self.write({
@@ -376,33 +365,40 @@ class TtPassport(models.Model):
     def calc_passport_upsell_vendor(self):
         diff_nta_upsell = 0
         total_charge = 0
+        provider_code_list = []
+
         for provider in self.provider_booking_ids:
+            if provider.provider_id.code not in provider_code_list:
+                provider_code_list.append(provider.provider_id.code)
             for rec in provider.vendor_ids:
                 if not rec.is_upsell_ledger_created and rec.amount != 0:
                     total_charge += rec.amount
                     diff_nta_upsell += (rec.amount - rec.nta_amount)
                     rec.is_upsell_ledger_created = True
 
+        provider_code = ', '.join(provider_code_list)
+
+        """ Buat additional charge ke agent """
         ledger = self.env['tt.ledger']
         if total_charge > 0:
             for rec in self:
                 ledger.create_ledger_vanilla(
-                    self._name,
-                    self.id,
+                    rec._name,
+                    rec.id,
                     'Additional Charge Passport : ' + rec.name,
                     rec.name,
                     datetime.now(pytz.timezone('Asia/Jakarta')).date(),
                     2,
-                    self.currency_id.id,
-                    self.env.user.id,
-                    self.agent_id.id,
+                    rec.currency_id.id,
+                    rec.env.user.id,
+                    rec.agent_id.id,
                     False,
                     0,
                     total_charge,
                     'Additional Charge Passport : ' + rec.name,
-                    pnr=self.pnr,
-                    display_provider_name=self.provider_name,
-                    provider_type_id=self.provider_type_id.id
+                    pnr=rec.pnr,
+                    display_provider_name=provider_code,
+                    provider_type_id=rec.provider_type_id.id
                 )
 
         """ Jika diff nta upsell > 0 """
@@ -423,15 +419,14 @@ class TtPassport(models.Model):
                     diff_nta_upsell,
                     0,
                     'NTA Upsell passport : ' + rec.name,
-                    pnr=self.pnr,
-                    display_provider_name=self.provider_name,
-                    provider_type_id=self.provider_type_id.id
+                    pnr=rec.pnr,
+                    display_provider_name=provider_code,
+                    provider_type_id=rec.provider_type_id.id
                 )
         elif diff_nta_upsell < 0:
             """ Jika diff nta upsell < 0 """
             ledger = self.env['tt.ledger']
             for rec in self:
-
                 ledger.create_ledger_vanilla(
                     rec._name,
                     rec.id,
@@ -446,9 +441,9 @@ class TtPassport(models.Model):
                     0,
                     diff_nta_upsell,
                     'NTA Upsell Passport : ' + rec.name,
-                    pnr=self.pnr,
-                    display_provider_name=self.provider_name,
-                    provider_type_id=self.provider_type_id.id
+                    pnr=rec.pnr,
+                    display_provider_name=provider_code,
+                    provider_type_id=rec.provider_type_id.id
                 )
 
     def calc_passport_vendor(self):
@@ -456,10 +451,16 @@ class TtPassport(models.Model):
 
         """ Hitung total expenses (pengeluaran) """
         total_expenses = 0
+        provider_code_list = []
+
         for provider in self.provider_booking_ids:
+            if provider.provider_id.code not in provider_code_list:
+                provider_code_list.append(provider.provider_id.code)
             for rec in provider.vendor_ids:
                 if rec.amount == 0:
                     total_expenses += rec.nta_amount
+
+        provider_code = ', '.join(provider_code_list)
 
         """ Hitung total nta per pax """
         nta_price = 0
@@ -474,17 +475,17 @@ class TtPassport(models.Model):
         if ho_profit > 0:
             ledger = self.env['tt.ledger']
             for rec in self:
-                # doc_type = []
-                # for sc in rec.sale_service_charge_ids:
-                #     if not sc.pricelist_id.passport_type in doc_type:
-                #         doc_type.append(sc.pricelist_id.passport_type)
-                #
-                # doc_type = ','.join(str(e) for e in doc_type)
+                doc_type = []
+                for sc in rec.sale_service_charge_ids:
+                    if not sc.passport_pricelist_id.passport_type in doc_type:
+                        doc_type.append(sc.passport_pricelist_id.passport_type)
+
+                doc_type = ','.join(str(e) for e in doc_type)
 
                 ledger.create_ledger_vanilla(
-                    self._name,
-                    self.id,
-                    'Profit Passport : ' + rec.name,
+                    rec._name,
+                    rec.id,
+                    'Profit ' + doc_type + ' : ' + rec.name,
                     rec.name,
                     datetime.now(pytz.timezone('Asia/Jakarta')).date(),
                     3,
@@ -496,33 +497,25 @@ class TtPassport(models.Model):
                     0,
                     'Profit Passport : ' + rec.name,
                     pnr=rec.pnr,
-                    provider_type=rec.provider_type_id.name,
-                    display_provider_name=self.provider_name,
+                    provider_type_id=rec.provider_type_id.id,
+                    display_provider_name=provider_code,
                 )
-
-                # vals = ledger.prepare_vals(self._name, self.id, 'Profit Passport : ' + rec.name, rec.name,
-                #                            datetime.now().strftime('%Y-%m-%d %H:%M:%S'), 3,
-                #                            rec.currency_id.id, self.env.user.id, ho_profit, 0)
-                # vals['agent_id'] = rec.env.ref('tt_base.rodex_ho').id
-                #
-                # new_aml = ledger.create(vals)
-                # # new_aml.action_done()
                 # rec.ledger_id = new_aml
         """ Jika profit HO < 0 (rugi) """
         if ho_profit < 0:
             ledger = self.env['tt.ledger']
             for rec in self:
-                # doc_type = []
-                # for sc in rec.sale_service_charge_ids:
-                #     if not sc.pricelist_id.passport_type in doc_type:
-                #         doc_type.append(sc.pricelist_id.passport_type)
-                #
-                # doc_type = ','.join(str(e) for e in doc_type)
+                doc_type = []
+                for sc in rec.sale_service_charge_ids:
+                    if not sc.passport_pricelist_id.passport_type in doc_type:
+                        doc_type.append(sc.passport_pricelist_id.passport_type)
+
+                doc_type = ','.join(str(e) for e in doc_type)
 
                 ledger.create_ledger_vanilla(
-                    self._name,
-                    self.id,
-                    'Additional Charge Passport : ' + rec.name,
+                    rec._name,
+                    rec.id,
+                    'Additional Charge ' + doc_type + ' : ' + rec.name,
                     rec.name,
                     datetime.now(pytz.timezone('Asia/Jakarta')).date(),
                     3,
@@ -534,18 +527,9 @@ class TtPassport(models.Model):
                     ho_profit,
                     'Profit Passport : ' + rec.name,
                     pnr=rec.pnr,
-                    provider_type=rec.provider_type_id.name,
-                    display_provider_name=self.provider_name,
+                    provider_type_id=rec.provider_type_id.id,
+                    display_provider_name=provider_code,
                 )
-
-                # vals = ledger.prepare_vals(self._name, self.id, 'Additional Charge Passport : ' + rec.name,
-                #                            rec.name, datetime.now().strftime('%Y-%m-%d %H:%M:%S'), 3,
-                #                            rec.currency_id.id, self.env.user.id, 0, ho_profit)
-                # vals['agent_id'] = rec.env.ref('tt_base.rodex_ho').id
-                #
-                # new_aml = ledger.create(vals)
-                # # new_aml.action_done()
-                # rec.ledger_id = new_aml
 
     @api.one
     def action_issued_passport(self, data, api_context=None):
@@ -1321,7 +1305,7 @@ class TtPassport(models.Model):
             pricelist_obj = pricelist_env.browse(pricelist_id)
             sale_price = 0
             for sell in sell_passport['search_data']:
-                if str(sell['id']) == psg['master_passport_Id']:
+                if 'id' in sell and str(sell['id']) == psg['master_passport_Id']:
                     if 'sale_price' in sell:
                         if 'total_price' in sell['sale_price']:
                             sale_price = sell['sale_price'].get('total_price')
@@ -1351,7 +1335,7 @@ class TtPassport(models.Model):
 
             commission_list2 = []
             for sell in sell_passport['search_data']:
-                if str(sell['id']) == psg['master_passport_Id']:
+                if 'id' in sell and str(sell['id']) == psg['master_passport_Id']:
                     if 'commission' in sell:
                         commission_list2 = sell.get('commission')
                     break
@@ -1425,6 +1409,10 @@ class TtPassport(models.Model):
                     'total': ssc['total'],
                     'passport_pricelist_id': ssc['passport_pricelist_id']
                 }
+                if 'commission_agent_id' in ssc:
+                    vals.update({
+                        'commission_agent_id': ssc['commission_agent_id']
+                    })
                 vals['passenger_passport_ids'].append(ssc['passenger_passport_id'])
                 ssc_list_final.append(vals)
         print('Final : ' + str(ssc_list_final))

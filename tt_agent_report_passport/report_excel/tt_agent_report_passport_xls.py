@@ -44,12 +44,12 @@ class AgentReportPassportXls(models.TransientModel):
         sheet.write('J9', 'Issued By', style.table_head_center)
         sheet.write('K9', 'Issued Date', style.table_head_center)
         sheet.write('L9', 'In Process Date', style.table_head_center)
-        sheet.write('M9', 'Ready Date', style.table_head_center)
-        sheet.write('N9', 'Done Date', style.table_head_center)
-        sheet.write('O9', 'Commission', style.table_head_center)
-        sheet.write('P9', 'Grand Total', style.table_head_center)
-        sheet.write('Q9', 'NTA Amount', style.table_head_center)
-        sheet.write('R9', 'State', style.table_head_center)
+        # sheet.write('M9', 'Ready Date', style.table_head_center)
+        sheet.write('M9', 'Done Date', style.table_head_center)
+        sheet.write('N9', 'Commission', style.table_head_center)
+        sheet.write('O9', 'Grand Total', style.table_head_center)
+        sheet.write('P9', 'NTA Amount', style.table_head_center)
+        sheet.write('Q9', 'State', style.table_head_center)
 
         # ====== SET WIDTH AND HEIGHT ==========
         sheet.set_row(0, row_height)  # set_row(row, height) -> row 0-4 (1-5)
@@ -113,18 +113,18 @@ class AgentReportPassportXls(models.TransientModel):
                 sheet.write(row_data, 11, rec['in_process_date'].strftime("%Y-%m-%d %H:%M:%S"), sty_datetime)
             else:
                 sheet.write(row_data, 11, '', sty_datetime)
-            if rec['ready_date']:  # Ready Date
-                sheet.write(row_data, 12, rec['ready_date'].strftime("%Y-%m-%d %H:%M:%S"), sty_datetime)
+            # if rec['ready_date']:  # Ready Date
+            #     sheet.write(row_data, 12, rec['ready_date'].strftime("%Y-%m-%d %H:%M:%S"), sty_datetime)
+            # else:
+            #     sheet.write(row_data, 12, '', sty_datetime)
+            if rec['done_date']:  # Done Date
+                sheet.write(row_data, 12, rec['done_date'].strftime("%Y-%m-%d %H:%M:%S"), sty_datetime)
             else:
                 sheet.write(row_data, 12, '', sty_datetime)
-            if rec['done_date']:  # Done Date
-                sheet.write(row_data, 13, rec['done_date'].strftime("%Y-%m-%d %H:%M:%S"), sty_datetime)
-            else:
-                sheet.write(row_data, 13, '', sty_datetime)
-            sheet.write(row_data, 14, rec['commission'], sty_table_data_center)  # Commission
-            sheet.write(row_data, 15, rec['total'], sty_table_data_center)  # Grand Total
-            sheet.write(row_data, 16, rec['total_nta'], sty_table_data_center)  # NTA Amount
-            sheet.write(row_data, 17, BOOKING_STATE_STR[rec['state']] if rec['state'] else '', sty_table_data_center)  # State
+            sheet.write(row_data, 13, rec['commission'], sty_table_data_center)  # Commission
+            sheet.write(row_data, 14, rec['total'], sty_table_data_center)  # Grand Total
+            sheet.write(row_data, 15, rec['total_nta'], sty_table_data_center)  # NTA Amount
+            sheet.write(row_data, 16, BOOKING_STATE_STR[rec['state']] if rec['state'] else '', sty_table_data_center)  # State
             sheet.set_row(row_data, row_height)  # Set new row
 
         workbook.close()
