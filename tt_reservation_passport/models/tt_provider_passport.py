@@ -15,7 +15,6 @@ STATE_PASSPORT = [
     ('partial_proceed', 'Partial Proceed'),
     ('proceed', 'Proceed'),
     ('delivered', 'Delivered'),
-    ('ready', 'Sent'),
     ('done', 'Done')
 ]
 
@@ -60,7 +59,6 @@ class TtProviderPassport(models.Model):
     in_process_date = fields.Datetime('In Process Date', readonly=1)
 
     done_date = fields.Datetime('Done Date', readonly=1)
-    ready_date = fields.Datetime('Ready Date', readonly=1)
     hold_date = fields.Datetime('Hold Date', readonly=1)
     expired_date = fields.Datetime('Expired Date', readonly=True)
 

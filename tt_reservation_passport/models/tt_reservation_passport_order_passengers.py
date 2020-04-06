@@ -20,7 +20,7 @@ STATE = [
     ('accepted', 'Accepted'),
     ('to_HO', 'To HO'),
     ('to_agent', 'To Agent'),
-    ('ready', 'Ready'),
+    # ('ready', 'Ready'),
     ('done', 'Done')
 ]
 
@@ -79,8 +79,7 @@ class PassportOrderPassengers(models.Model):
     _description = 'Tour & Travel - Passport Order Passengers'
 
     to_requirement_ids = fields.One2many('tt.reservation.passport.order.requirements', 'to_passenger_id', 'Requirements',
-                                         readonly=0, states={'ready': [('readonly', True)],
-                                                             'done': [('readonly', True)]})  # readonly=0
+                                         readonly=0, states={'done': [('readonly', True)]})  # readonly=0
     passport_id = fields.Many2one('tt.reservation.passport', 'Passport', readonly=1)  # readonly=1
     passenger_id = fields.Many2one('tt.customer', 'Passenger', readonly=1)  # readonly=1
     pricelist_id = fields.Many2one('tt.reservation.passport.pricelist', 'Passport Pricelist', readonly=1)  # readonly=1
@@ -104,7 +103,7 @@ class PassportOrderPassengers(models.Model):
     out_process_date = fields.Datetime('Out Process Date', readonly=1)  # readonly=1
     to_HO_date = fields.Datetime('Send to HO Date', readonly=1)  # readonly=1
     to_agent_date = fields.Datetime('Send to Agent Date', readonly=1)  # readonly=1
-    ready_date = fields.Datetime('Ready Date', readonly=1)  # readonly=1
+    # ready_date = fields.Datetime('Ready Date', readonly=1)  # readonly=1
     done_date = fields.Datetime('Done Date', readonly=1)  # readonly=1
     expired_date = fields.Date('Expired Date', readonly=1)  # readonly=1
 
@@ -142,7 +141,6 @@ class PassportOrderPassengers(models.Model):
                                                 proceed = Has Finished the requirements
                                                 accepted = Accepted by the Immigration
                                                 rejected = Rejected by the Immigration
-                                                ready = ready to pickup by customer
                                                 done = picked up by customer''')
 
     def action_send_email_interview(self):
@@ -342,14 +340,14 @@ class PassportOrderPassengers(models.Model):
             if is_sent:
                 rec.passport_id.action_delivered_passport()
 
-    def action_ready(self):
-        for rec in self:
-            rec.write({
-                'state': 'ready',
-                'ready_date': datetime.now(),
-            })
-            rec.message_post(body='Passenger documents READY')
-            rec.passport_id.action_ready_passport()
+    # def action_ready(self):
+    #     for rec in self:
+    #         rec.write({
+    #             'state': 'ready',
+    #             'ready_date': datetime.now(),
+    #         })
+    #         rec.message_post(body='Passenger documents READY')
+    #         rec.passport_id.action_ready_passport()
 
     def action_done(self):
         for rec in self:

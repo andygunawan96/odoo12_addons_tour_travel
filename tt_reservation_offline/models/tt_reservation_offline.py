@@ -581,7 +581,7 @@ class IssuedOffline(models.Model):
                     else:
                         self.get_pnr_list_from_provider()
                     self.get_provider_name()
-                    self.create_final_ho_ledger(self)
+                    self.create_final_ho_ledger()
                     for provider in self.provider_booking_ids:
                         provider.state = 'issued'
                         provider.issued_date = self.issued_date
