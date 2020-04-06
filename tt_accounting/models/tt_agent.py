@@ -23,6 +23,10 @@ class TtAgent(models.Model):
             },
         }
 
+    def compute_all_agent_balance(self):
+        for rec in self.search([]):
+            rec._compute_balance_agent()
+
     @api.depends('ledger_ids','ledger_ids.balance')
     def _compute_balance_agent(self):
         for rec in self:
