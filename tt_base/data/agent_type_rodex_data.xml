@@ -12,7 +12,7 @@
             <field name="active">True</field>
             <field name="registration_fee">98000000</field>
             <field name="seq_prefix">CR</field>
-            <field name="is_send_email" eval="True"/>
+            <field name="is_send_email_issued" eval="True"/>
         </record>
         <record id="agent_type_japro" model="tt.agent.type">
             <field name="name">Agent JaPro</field>
@@ -45,6 +45,15 @@
             <field name="seq_prefix">BD</field>
             <field name="is_using_pnr_quota" eval="True"/>
             <field name="is_using_invoice" eval="False"/>
+        </record>
+        <record id="agent_type_btc" model="tt.agent.type">
+            <field name="name">Agent BTC</field>
+            <field name="code">btc</field>
+            <field name="active">True</field>
+            <field name="registration_fee">0</field>
+            <field name="seq_prefix">BC</field>
+            <field name="is_send_email_issued" eval="True"/>
+            <field name="is_send_email_booked" eval="True"/>
         </record>
     </data>
 </odoo>

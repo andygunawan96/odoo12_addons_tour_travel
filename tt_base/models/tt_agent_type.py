@@ -22,7 +22,8 @@ class TtAgentType(models.Model):
     terms_and_condition = fields.Html('Terms and Condition')
     is_using_pnr_quota = fields.Boolean('Is Using PNR Quota')
     is_using_invoice = fields.Boolean('Is Using Invoice', default=True)
-    is_send_email = fields.Boolean('Is Send Email', default=False)
+    is_send_email_issued = fields.Boolean('Is Send Email Issued', default=False)
+    is_send_email_booked = fields.Boolean('Is Send Email Booked', default=False)
     menuitem_id = fields.Many2one('ir.ui.menu','Menuitem')
 
     @api.model
