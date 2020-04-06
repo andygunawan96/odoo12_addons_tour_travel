@@ -26,26 +26,28 @@ class TtEmailQueue(models.Model):
     def create_email_queue(self, data, context=None):
         # Data {'provider_type':'', 'url_booking':'', 'order_number':'', 'type':''}
         if data.get('provider_type') in ['airline', 'train', 'hotel', 'visa', 'passport', 'activity', 'tour']:
-            if self.env.get('tt.reservation.{}'.format(data['provider_type'])):
-                resv = self.env['tt.reservation.{}'.format(data['provider_type'])].search([('name', '=ilike', data.get('order_number')), ('agent_id', '=', context.get('co_agent_id', -1))], limit=1)
-                if resv:
-                    if data.get('type') == 'booked':
-                        type_str = 'Booked'
-                    else:
-                        type_str = 'Issued'
-                    resv.btb_url = data.get('url_booking', '#')
-                    template = self.env.ref('tt_reservation_{}.template_mail_reservation_{}_{}'.format(data['provider_type'], data.get('type', 'issued'), data['provider_type'])).id
-                    self.env['tt.email.queue'].sudo().create({
-                        'name': type_str + resv.name,
-                        'type': '{}_{}'.format(data.get('type', 'issued'), data['provider_type']),
-                        'template_id': template,
-                        'res_model': resv._name,
-                        'res_id': resv.id,
-                    })
-                else:
-                    raise RequestException(1001)
-            else:
+            try:
+                self.env.get('tt.reservation.{}'.format(data['provider_type']))._name
+            except:
                 raise Exception('Module tt.reservation.{} not found!'.format(data['provider_type']))
+
+            resv = self.env['tt.reservation.{}'.format(data['provider_type'])].search([('name', '=ilike', data.get('order_number')), ('agent_id', '=', context.get('co_agent_id', -1))], limit=1)
+            if resv:
+                if data.get('type') == 'booked':
+                    type_str = 'Booked'
+                else:
+                    type_str = 'Issued'
+                resv.btb_url = data.get('url_booking', '#')
+                template = self.env.ref('tt_reservation_{}.template_mail_reservation_{}_{}'.format(data['provider_type'], data.get('type', 'issued'), data['provider_type'])).id
+                self.env['tt.email.queue'].sudo().create({
+                    'name': type_str + ' ' + resv.name,
+                    'type': '{}_{}'.format(data.get('type', 'issued'), data['provider_type']),
+                    'template_id': template,
+                    'res_model': resv._name,
+                    'res_id': resv.id,
+                })
+            else:
+                raise RequestException(1001)
         elif data.get('provider_type') == 'billing_statement':
             if self.env.get('tt.billing.statement'):
                 resv = self.env['tt.billing.statement'].search([('name', '=ilike', data.get('order_number')), ('agent_id', '=', context.get('co_agent_id', -1))], limit=1)

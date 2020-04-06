@@ -103,7 +103,7 @@ class ResUsers(models.Model):
             vals.pop('sel_groups_2_3')
         if 'password' in vals and self.id == admin_obj_id and self.env.user.id != admin_obj_id:
             vals.pop('password')
-        super(ResUsers, self).write(vals)
+        return super(ResUsers, self).write(vals)
 
     @api.model
     def _update_last_login(self):
