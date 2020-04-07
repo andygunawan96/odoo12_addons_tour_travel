@@ -232,7 +232,7 @@ class TtVisa(models.Model):
             raise UserError(payment_res['error_msg'])
         self.write({
             'state_visa': 'in_process',
-            # 'in_process_date': datetime.now()
+            'in_process_date': datetime.now()
         })
 
         for rec in self.passenger_ids:
@@ -402,33 +402,39 @@ class TtVisa(models.Model):
     def calc_visa_upsell_vendor(self):
         diff_nta_upsell = 0
         total_charge = 0
+        provider_code_list = []
+
         for provider in self.provider_booking_ids:
+            if provider.provider_id.code not in provider_code_list:
+                provider_code_list.append(provider.provider_id.code)
             for rec in provider.vendor_ids:
                 if not rec.is_upsell_ledger_created and rec.amount != 0:
                     total_charge += rec.amount
                     diff_nta_upsell += (rec.amount - rec.nta_amount)
                     rec.is_upsell_ledger_created = True
 
+        provider_code = ', '.join(provider_code_list)
+
         ledger = self.env['tt.ledger']
         if total_charge > 0:
             for rec in self:
                 ledger.create_ledger_vanilla(
-                    self._name,
-                    self.id,
+                    rec._name,
+                    rec.id,
                     'Additional Charge Visa : ' + rec.name,
                     rec.name,
                     datetime.now(pytz.timezone('Asia/Jakarta')).date(),
                     2,
-                    self.currency_id.id,
-                    self.env.user.id,
-                    self.agent_id.id,
+                    rec.currency_id.id,
+                    rec.env.user.id,
+                    rec.agent_id.id,
                     False,
                     0,
                     total_charge,
                     'Additional Charge Visa : ' + rec.name,
-                    pnr=self.pnr,
-                    display_provider_name=self.provider_name,
-                    provider_type_id=self.provider_type_id.id
+                    pnr=rec.pnr,
+                    display_provider_name=provider_code,
+                    provider_type_id=rec.provider_type_id.id
                 )
 
         """ Jika diff nta upsell > 0 """
@@ -436,8 +442,8 @@ class TtVisa(models.Model):
             ledger = self.env['tt.ledger']
             for rec in self:
                 ledger.create_ledger_vanilla(
-                    self._name,
-                    self.id,
+                    rec._name,
+                    rec.id,
                     'NTA Upsell Visa : ' + rec.name,
                     rec.name,
                     datetime.now(pytz.timezone('Asia/Jakarta')).date(),
@@ -449,9 +455,9 @@ class TtVisa(models.Model):
                     diff_nta_upsell,
                     0,
                     'NTA Upsell Visa : ' + rec.name,
-                    pnr=self.pnr,
-                    display_provider_name=self.provider_name,
-                    provider_type_id=self.provider_type_id.id
+                    pnr=rec.pnr,
+                    display_provider_name=provider_code,
+                    provider_type_id=rec.provider_type_id.id
                 )
         elif diff_nta_upsell < 0:
             """ Jika diff nta upsell < 0 """
@@ -471,9 +477,9 @@ class TtVisa(models.Model):
                     0,
                     diff_nta_upsell,
                     'NTA Upsell Visa : ' + rec.name,
-                    pnr=self.pnr,
-                    display_provider_name=self.provider_name,
-                    provider_type_id=self.provider_type_id.id
+                    pnr=rec.pnr,
+                    display_provider_name=provider_code,
+                    provider_type_id=rec.provider_type_id.id
                 )
 
     def calc_visa_vendor(self):
@@ -481,10 +487,16 @@ class TtVisa(models.Model):
 
         """ Hitung total expenses (pengeluaran) """
         total_expenses = 0
+        provider_code_list = []
+
         for provider in self.provider_booking_ids:
+            if provider.provider_id.code not in provider_code_list:
+                provider_code_list.append(provider.provider_id.code)
             for rec in provider.vendor_ids:
                 if rec.amount == 0:
                     total_expenses += rec.nta_amount
+
+        provider_code = ', '.join(provider_code_list)
 
         """ Hitung total nta per pax """
         nta_price = 0
@@ -507,8 +519,8 @@ class TtVisa(models.Model):
                 doc_type = ','.join(str(e) for e in doc_type)
 
                 ledger.create_ledger_vanilla(
-                    self._name,
-                    self.id,
+                    rec._name,
+                    rec.id,
                     'Profit ' + doc_type + ' : ' + rec.name,
                     rec.name,
                     datetime.now(pytz.timezone('Asia/Jakarta')).date(),
@@ -519,7 +531,10 @@ class TtVisa(models.Model):
                     False,
                     ho_profit,
                     0,
-                    'Profit HO Visa : ' + rec.name
+                    'Profit HO Visa : ' + rec.name,
+                    pnr=rec.pnr,
+                    display_provider_name=provider_code,
+                    provider_type_id=rec.provider_type_id.id
                 )
         """ Jika profit HO < 0 (rugi) """
         if ho_profit < 0:
@@ -533,8 +548,8 @@ class TtVisa(models.Model):
                 doc_type = ','.join(str(e) for e in doc_type)
 
                 ledger.create_ledger_vanilla(
-                    self._name,
-                    self.id,
+                    rec._name,
+                    rec.id,
                     'Additional Charge ' + doc_type + ' : ' + rec.name,
                     rec.name,
                     datetime.now(pytz.timezone('Asia/Jakarta')).date(),
@@ -545,7 +560,10 @@ class TtVisa(models.Model):
                     False,
                     0,
                     ho_profit,
-                    'Additional Charge Visa : ' + rec.name
+                    'Additional Charge Visa : ' + rec.name,
+                    pnr=rec.pnr,
+                    display_provider_name=provider_code,
+                    provider_type_id=rec.provider_type_id.id
                 )
 
     ######################################################################################################
@@ -1474,14 +1492,6 @@ class TtVisa(models.Model):
                         },
                         'sequence': idx
                     })
-                    type.append({
-                        'entry_type': dict(pax.pricelist_id._fields['entry_type'].selection).get(
-                            pax.pricelist_id.entry_type),
-                        'visa_type': dict(pax.pricelist_id._fields['visa_type'].selection).get(
-                            pax.pricelist_id.visa_type),
-                        'process': dict(pax.pricelist_id._fields['process_type'].selection).get(
-                            pax.pricelist_id.process_type)
-                    })
                 res = {
                     'contact': {
                         'title': res_dict['contact']['title'],
@@ -1503,6 +1513,8 @@ class TtVisa(models.Model):
                 }
                 _logger.info("Get resp\n" + json.dumps(res))
                 return Response().get_no_error(res)
+            else:
+                raise RequestException(1001)
         except RequestException as e:
             _logger.error(traceback.format_exc())
             return e.error_dict()
@@ -1534,19 +1546,15 @@ class TtVisa(models.Model):
                 visa_pricelist_obj = self.env['tt.reservation.visa.pricelist'].search([('reference_code', '=', psg['master_visa_Id'])])
                 if visa_pricelist_obj:
                     total_price += visa_pricelist_obj.sale_price
-            # balance_res = self.env['tt.agent'].check_balance_limit_api(context['co_agent_id'], total_price)
-            # if balance_res['error_code'] != 0:
-            #     _logger.error('Agent Balance not enough')
-            #     raise RequestException(1007, additional_message="agent balance")
 
             user_obj = self.env['res.users'].sudo().browse(context['co_uid'])
 
-            # header_val = self._visa_header_normalization(search, sell_visa)
             header_val = {}
 
             booker_id = self.create_booker_api(booker, context)
             contact_id = self.create_contact_api(contact[0], booker_id, context)
             passenger_ids = self.create_customer_api(passengers, context, booker_id, contact_id)  # create passenger
+
             to_psg_ids = self._create_visa_order(passengers, passenger_ids)  # create visa order data['passenger']
             pricing = self.create_sale_service_charge_value(passengers, to_psg_ids, context, sell_visa)  # create pricing dict
 
@@ -1628,7 +1636,7 @@ class TtVisa(models.Model):
             provider_visa_obj.create_service_charge(pricing)
             book_obj.calculate_service_charge()
 
-            # book_obj.action_booked_visa(context)
+            book_obj.action_booked_visa(context)
 
             response = {
                 'order_number': book_obj.name
@@ -1736,8 +1744,17 @@ class TtVisa(models.Model):
             pricelist_id = self.env['tt.reservation.visa.pricelist'].search([('reference_code', '=', psg['master_visa_Id'])]).id
             pricelist_obj = pricelist_env.browse(pricelist_id)
             passenger_obj = passenger_env.browse(passenger_ids[idx])
+
+            sale_price = 0
+            for sell in sell_visa['search_data']:
+                if 'id' in sell and str(sell['id']) == psg['master_visa_Id']:
+                    if 'sale_price' in sell:
+                        if 'total_price' in sell['sale_price']:
+                            sale_price = sell['sale_price'].get('total_price')
+                    break
+
             vals = {
-                'amount': pricelist_obj.sale_price,
+                'amount': sale_price,
                 'charge_code': 'fare',
                 'charge_type': 'TOTAL',
                 'passenger_visa_id': passenger_ids[idx],
@@ -1760,7 +1777,7 @@ class TtVisa(models.Model):
             ssc.append(ssc_obj.id)
             commission_list2 = []
             for sell in sell_visa['search_data']:
-                if str(sell['id']) == psg['master_visa_Id']:
+                if 'id' in sell and str(sell['id']) == psg['master_visa_Id']:
                     if 'commission' in sell:
                         commission_list2 = sell.get('commission')
                     break
@@ -2222,29 +2239,6 @@ class TtVisa(models.Model):
     ######################################################################################################
     # OTHERS
     ######################################################################################################
-
-    def update_service_charges(self):
-        pricing_list = []
-        for psg in self.passenger_ids:
-            if psg.pricelist_id and (psg.booking_state == 'draft' or psg.booking_state == 'confirm' or psg.booking_state == 'validate'):
-                for scs in psg.cost_service_charge_ids:
-                    if scs.charge_type == 'TOTAL':
-                        if scs.amount != psg.pricelist_id.sale_price:
-                            scs.amount = psg.pricelist_id.sale_price
-                    elif scs.charge_type == 'RAC':
-                        if scs.amount != psg.pricelist_id.commission_price:
-                            scs.amount = psg.pricelist_id.commission_price
-            for scs in psg.cost_service_charge_ids:
-                pricing_list.append({
-                    'amount': scs.amount if scs.amount else 0,
-                    'total': scs.total if scs.total else 0,
-                    'charge_code': scs.charge_code,
-                    'charge_type': scs.charge_type,
-                    'pax_type': scs.pax_type,
-                    'currency_id': scs.currency_id,
-                    'sequence': scs.sequence,
-                    'description': scs.description
-                })
 
     def action_booked_api_visa(self, context, pnr_list, hold_date):
         self.write({

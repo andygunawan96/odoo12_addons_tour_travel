@@ -332,6 +332,15 @@ class PrintoutInvoiceHO(models.AbstractModel):
                             pax_dict[psg.name]['total'] = cost_charge.amount
                         else:
                             pax_dict[psg.name]['total'] += cost_charge.amount
+                elif rec._name == 'tt.reservation.passport':
+                    for psg in cost_charge.passenger_passport_ids:
+                        if psg.name not in pax_dict:
+                            pax_dict[psg.name] = {}
+                            pax_dict[psg.name]['name'] = '%s, %s' % (
+                                ' '.join((psg.first_name or '', psg.last_name or '')), psg.title or '')
+                            pax_dict[psg.name]['total'] = cost_charge.amount
+                        else:
+                            pax_dict[psg.name]['total'] += cost_charge.amount
         return pax_dict
 
     def get_pax_data(self):
@@ -382,6 +391,9 @@ class PrintoutInvoiceHO(models.AbstractModel):
             desc = ''
             desc = 'Reservation Visa Country : ' + rec.booking_id.country_id.name + ' ' + 'Consulate : ' + \
                         rec.booking_id.immigration_consulate + ' ' + 'Journey Date : ' + str(rec.booking_id.departure_date)
+        elif data['context']['active_model'] == 'tt.reservation.passport':
+            desc = ''
+            desc = 'Reservation Passport Consulate : ' + rec.booking_id.immigration_consulate
         elif data['context']['active_model'] == 'tt.reservation.offline':
             desc = ''
             if rec.provider_type_id_name != 'hotel':

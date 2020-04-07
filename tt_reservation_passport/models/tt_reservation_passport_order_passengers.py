@@ -293,6 +293,12 @@ class PassportOrderPassengers(models.Model):
                 'process_status': 'rejected',
                 'out_process_date': datetime.now()
             })
+            all_reject = True
+            for psg in rec.passport_id.passenger_ids:
+                if psg.state != 'rejected':
+                    all_reject = False
+            if all_reject:
+                rec.passport_id.action_rejected_passport()
             rec.message_post(body='Passenger REJECTED')
 
     def action_accept(self):
