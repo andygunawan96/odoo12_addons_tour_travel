@@ -33,7 +33,7 @@ STATE_VISA = [
     ('approve', 'Approve'),
     ('reject', 'Rejected'),
     ('delivered', 'Delivered'),
-    ('ready', 'Sent'),
+    # ('ready', 'Sent'),
     ('done', 'Done'),
     ('expired', 'Expired')
 ]
@@ -97,11 +97,6 @@ class TtVisa(models.Model):
     provider_booking_ids = fields.One2many('tt.provider.visa', 'booking_id', string='Provider Booking')  # readonly=True, states={'cancel2': [('readonly', False)]}
 
     done_date = fields.Datetime('Done Date', readonly=1)
-    ready_date = fields.Datetime('Ready Date', readonly=1)
-
-    recipient_name = fields.Char('Recipient Name')
-    recipient_address = fields.Char('Recipient Address')
-    recipient_phone = fields.Char('Recipient Phone')
 
     to_vendor_date = fields.Datetime('Send To Vendor Date', readonly=1)
     vendor_process_date = fields.Datetime('Vendor Process Date', readonly=1)
@@ -369,12 +364,12 @@ class TtVisa(models.Model):
         })
         self.message_post(body='Order CANCELED')
 
-    def action_ready_visa(self):
-        self.write({
-            'state_visa': 'ready',
-            'ready_date': datetime.now()
-        })
-        self.message_post(body='Order READY')
+    # def action_ready_visa(self):
+    #     self.write({
+    #         'state_visa': 'ready',
+    #         'ready_date': datetime.now()
+    #     })
+    #     self.message_post(body='Order READY')
 
     def action_done_visa(self):
         self.write({

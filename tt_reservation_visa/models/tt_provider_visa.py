@@ -15,7 +15,7 @@ STATE_VISA = [
     ('partial_proceed', 'Partial Proceed'),
     ('proceed', 'Proceed'),
     ('delivered', 'Delivered'),
-    ('ready', 'Sent'),
+    # ('ready', 'Sent'),
     ('done', 'Done')
 ]
 
@@ -68,7 +68,7 @@ class TtProviderVisa(models.Model):
     in_process_date = fields.Datetime('In Process Date', readonly=1)
 
     done_date = fields.Datetime('Done Date', readonly=1)
-    ready_date = fields.Datetime('Ready Date', readonly=1)
+    # ready_date = fields.Datetime('Ready Date', readonly=1)
     hold_date = fields.Datetime('Hold Date', readonly=1)
 
     currency_id = fields.Many2one('res.currency', 'Currency', readonly=True, states={'draft': [('readonly', False)]},

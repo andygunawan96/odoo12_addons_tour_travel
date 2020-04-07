@@ -21,7 +21,7 @@ STATE = [
     ('accepted', 'Accepted'),
     ('to_HO', 'To HO'),
     ('to_agent', 'To Agent'),
-    ('ready', 'Ready'),
+    # ('ready', 'Ready'),
     ('done', 'Done')
 ]
 
@@ -106,7 +106,8 @@ class VisaOrderPassengers(models.Model):
     out_process_date = fields.Datetime('Out Process Date', readonly=1)
     to_HO_date = fields.Datetime('Send to HO Date', readonly=1)
     to_agent_date = fields.Datetime('Send to Agent Date', readonly=1)
-    ready_date = fields.Datetime('Ready Date', readonly=1)
+    # ready_date = fields.Datetime('Ready Date', readonly=1)
+    done_date = fields.Datetime('Done Date', readonly=1)
     expired_date = fields.Date('Expired Date', readonly=1)
 
     use_vendor = fields.Boolean('Use Vendor', readonly=1, related='visa_id.use_vendor')
@@ -365,14 +366,14 @@ class VisaOrderPassengers(models.Model):
             if is_sent:
                 rec.visa_id.action_delivered_visa()
 
-    def action_ready(self):
-        for rec in self:
-            rec.write({
-                'state': 'ready',
-                'ready_date': datetime.now(),
-            })
-            rec.message_post(body='Passenger documents READY')
-            rec.visa_id.action_ready_visa()
+    # def action_ready(self):
+    #     for rec in self:
+    #         rec.write({
+    #             'state': 'ready',
+    #             'ready_date': datetime.now(),
+    #         })
+    #         rec.message_post(body='Passenger documents READY')
+    #         rec.visa_id.action_ready_visa()
 
     def action_done(self):
         for rec in self:

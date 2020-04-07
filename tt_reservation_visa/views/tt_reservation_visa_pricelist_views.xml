@@ -32,7 +32,7 @@
                             <field name="pax_type"/>
                             <field name="reference_code"/>
                             <field name="provider_id"/>
-                            <field name="active"/>
+<!--                            <field name="active"/>-->
                         </group>
                         <group string="Document Information">
                             <field name="country_id"/>
@@ -82,9 +82,6 @@
                                 <field name="url"/>
                             </tree>
                         </field>
-                    </group>
-                    <group string="Locations">
-                            <field name="visa_location_ids"/>
                     </group>
                     <notebook colspan="4">
                         <page string="Notes">
