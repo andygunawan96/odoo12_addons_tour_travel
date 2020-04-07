@@ -56,6 +56,9 @@ class TtAgentType(models.Model):
         super(TtAgentType, self).write(vals)
         if 'name' in vals:
             self.menuitem_id.name = vals['name']
+        if 'code' in vals:
+            self.sequence_prefix_id.code = 'tt.agent.type.%s' % (vals['code'])
+            self.sequence_prefix_id.name = 'Agent %s' % (vals['code'].title())
         if 'seq_prefix' in vals:
             self.sequence_prefix_id.prefix = '%s.%s' % (vals['seq_prefix'],self.sequence_prefix_id.prefix.split('.')[1])
 
