@@ -17,8 +17,8 @@
 <p>Dear ${object.contact_title} ${object.contact_name},</p>
 <br/>
 <p>Your ${object.provider_type_id.name} reservation at ${object.agent_id.name} has been issued with the following information:</p>
-<p>Order Number: ${object.name}</p>
 <p>Reservation Code: ${object.pnr}</p>
+<p>Order Number: ${object.name}</p>
 <p>Issued Date: ${object.issued_date}</p>
 <p>Booker Name: ${object.booker_id.name}</p>
 <br/>
