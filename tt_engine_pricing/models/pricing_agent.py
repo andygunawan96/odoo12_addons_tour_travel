@@ -38,6 +38,83 @@ class PricingAgent(models.Model):
     commission_charge_type = fields.Selection(variables.COMMISSION_CHARGE_TYPE, 'Commission Charge Type', default='pricing')
     is_per_pnr = fields.Boolean('Is per PNR', default=False)
 
+    origin_type = fields.Selection(variables.ACCESS_TYPE, 'Origin Type', required=True, default='all')
+    origin_ids = fields.Many2many('tt.destinations', 'tt_pricing_agent_origin_rel', 'pricing_id', 'origin_id', string='Origins')
+    display_origins = fields.Char('Display Origins', compute='_compute_display_origins', store=True, readonly=1)
+    origin_city_ids = fields.Many2many('res.city', 'tt_pricing_agent_origin_city_rel', 'pricing_id', 'city_id', string='Origin Cities')
+    display_origin_cities = fields.Char('Display Origin Cities', compute='_compute_display_origin_cities', store=True, readonly=1)
+    origin_country_ids = fields.Many2many('res.country', 'tt_pricing_agent_origin_country_rel', 'pricing_id', 'country_id', string='Origin Countries')
+    display_origin_countries = fields.Char('Display Origin Countries', compute='_compute_display_origin_countries', store=True, readonly=1)
+    destination_type = fields.Selection(variables.ACCESS_TYPE, 'Destination Type', required=True, default='all')
+    destination_ids = fields.Many2many('tt.destinations', 'tt_pricing_agent_destination_rel', 'pricing_id', 'destination_id', string='Destinations')
+    display_destinations = fields.Char('Display Destinations', compute='_compute_display_destinations', store=True, readonly=1)
+    destination_city_ids = fields.Many2many('res.city', 'tt_pricing_agent_destination_city_rel', 'pricing_id', 'city_id', string='Destination Cities')
+    display_destination_cities = fields.Char('Display Destination Cities', compute='_compute_display_destination_cities', store=True, readonly=1)
+    destination_country_ids = fields.Many2many('res.country', 'tt_pricing_agent_destination_country_rel', 'pricing_id', 'country_id', string='Destination Countries')
+    display_destination_countries = fields.Char('Display Destination Countries', compute='_compute_display_destination_countries', store=True, readonly=1)
+    class_of_service_type = fields.Selection(variables.ACCESS_TYPE, 'Class of Service Type', required=True, default='all')
+    class_of_service_ids = fields.Many2many('tt.pricing.class.of.service', 'tt_pricing_agent_class_of_service_rel', 'pricing_id', 'class_of_service_id', string='Class of Services')
+    display_class_of_services = fields.Char('Class of Services', compute='_compute_display_class_of_services', store=True, readonly=1)
+    charge_code_type = fields.Selection(variables.ACCESS_TYPE, 'Charge Code Type', required=True, default='all')
+    charge_code_ids = fields.Many2many('tt.pricing.charge.code', 'tt_pricing_provider_line_charge_code_rel', 'pricing_line_id', 'charge_code_id', string='Charge Codes')
+    display_charge_codes = fields.Char('Charge Codes', compute='_compute_display_charge_codes', store=True, readonly=1)
+
+    @api.multi
+    @api.depends('origin_ids')
+    def _compute_display_origins(self):
+        for rec in self:
+            res = [data.code for data in rec.origin_ids]
+            rec.display_origins = ','.join(res)
+
+    @api.multi
+    @api.depends('destination_ids')
+    def _compute_display_destinations(self):
+        for rec in self:
+            res = [data.code for data in rec.destination_ids]
+            rec.display_destinations = ','.join(res)
+
+    @api.multi
+    @api.depends('origin_city_ids')
+    def _compute_display_origin_cities(self):
+        for rec in self:
+            res = [data.code for data in rec.origin_city_ids]
+            rec.display_origin_cities = ','.join(res)
+
+    @api.multi
+    @api.depends('destination_city_ids')
+    def _compute_display_destination_cities(self):
+        for rec in self:
+            res = [data.code for data in rec.destination_city_ids]
+            rec.display_destination_cities = ','.join(res)
+
+    @api.multi
+    @api.depends('origin_country_ids')
+    def _compute_display_origin_countries(self):
+        for rec in self:
+            res = [data.code for data in rec.origin_country_ids]
+            rec.display_origin_countries = ','.join(res)
+
+    @api.multi
+    @api.depends('destination_country_ids')
+    def _compute_display_destination_countries(self):
+        for rec in self:
+            res = [data.code for data in rec.destination_country_ids]
+            rec.display_destination_countries = ','.join(res)
+
+    @api.multi
+    @api.depends('class_of_service_ids')
+    def _compute_display_class_of_services(self):
+        for rec in self:
+            res = [data.code for data in rec.class_of_service_ids]
+            rec.display_class_of_services = ','.join(res)
+
+    @api.multi
+    @api.depends('charge_code_ids')
+    def _compute_display_charge_codes(self):
+        for rec in self:
+            res = [data.code for data in rec.charge_code_ids]
+            rec.display_charge_codes = ','.join(res)
+
     @api.multi
     @api.depends('agent_type_id.code','provider_type_id.code')
     def _compute_name_pricing(self):
@@ -107,6 +184,14 @@ class PricingAgent(models.Model):
         [line_dict.update({rec.agent_type_id.code: rec.get_data()}) for rec in self.line_ids if rec.active]
         carrier_codes = [rec.code for rec in self.carrier_ids]
         providers = [rec.code for rec in self.provider_ids]
+        origin_codes = [rec.code for rec in self.origin_ids]
+        origin_city_ids = [rec.id for rec in self.origin_city_ids]
+        origin_country_codes = [rec.code for rec in self.origin_country_ids]
+        destination_codes = [rec.code for rec in self.destination_ids]
+        destination_city_ids = [rec.id for rec in self.destination_city_ids]
+        destination_country_codes = [rec.code for rec in self.destination_country_ids]
+        charge_codes = [rec.code for rec in self.charge_code_ids]
+        class_of_services = [rec.code for rec in self.class_of_service_ids]
         res = {
             'agent_type_id': self.agent_type_id.get_data(),
             'provider_type': self.provider_type_id and self.provider_type_id.code or '',
@@ -128,6 +213,18 @@ class PricingAgent(models.Model):
             'is_compute_infant_fee': self.is_compute_infant_fee,
             # 'line_ids': line_ids,
             'line_dict': line_dict,
+            'origin_type': self.origin_type,
+            'origin_codes': origin_codes,
+            'origin_city_ids': origin_city_ids,
+            'origin_country_codes': origin_country_codes,
+            'destination_type': self.destination_type,
+            'destination_codes': destination_codes,
+            'destination_city_ids': destination_city_ids,
+            'destination_country_codes': destination_country_codes,
+            'charge_code_type': self.charge_code_type,
+            'charge_codes': charge_codes,
+            'class_of_service_type': self.class_of_service_type,
+            'class_of_services': class_of_services,
         }
         return res
 
