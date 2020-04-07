@@ -60,11 +60,9 @@ class VisaInterviewBiometrics(models.Model):
                                              related="passenger_interview_id.pricelist_id", readonly=1)
     pricelist_biometrics_id = fields.Many2one('tt.reservation.visa.pricelist', 'Pricelist',
                                               related="passenger_biometrics_id.pricelist_id", readonly=1)
-    # location_id = fields.Many2one('tt.master.visa.locations')  # self.get_domain_location() [] , domain=lambda self: self.onchange_pricelist() , domain=lambda self: [('id', 'in', self.passenger_interview_id.pricelist_id.visa_location_ids.ids)]
     location_interview_id = fields.Char('Location', related="pricelist_interview_id.description")
     location_biometrics_id = fields.Char('Location', related="pricelist_biometrics_id.description")
     datetime = fields.Datetime('Datetime')
-    # ho_employee = fields.Many2one('res.users', 'Employee', domain=lambda self: self.get_user_HO())
     ho_employee = fields.Char('Employee')
     meeting_point = fields.Char('Meeting Point')
     description = fields.Char('Description')
@@ -80,8 +78,7 @@ class VisaOrderPassengers(models.Model):
     _description = 'Tour & Travel - Visa Order Passengers'
 
     to_requirement_ids = fields.One2many('tt.reservation.visa.order.requirements', 'to_passenger_id', 'Requirements',
-                                         readonly=0, states={'ready': [('readonly', True)],
-                                                             'done': [('readonly', True)]})
+                                         readonly=0, states={'done': [('readonly', True)]})
     visa_id = fields.Many2one('tt.reservation.visa', 'Visa', readonly=1)  # readonly=1
     passenger_id = fields.Many2one('tt.customer', 'Passenger', readonly=1)  # readonly=1
     pricelist_id = fields.Many2one('tt.reservation.visa.pricelist', 'Visa Pricelist', readonly=1)  # readonly=1
@@ -296,14 +293,18 @@ class VisaOrderPassengers(models.Model):
             })
             rec.message_post(body='Passenger PROCEED')
             is_proceed = True
+            is_approved = False
             for psg in rec.visa_id.passenger_ids:
                 if psg.state not in ['proceed', 'cancel']:
                     is_proceed = False
+                if psg.process_status == 'accepted':
+                    is_approved = True
             # jika ada sebagian state passenger yang belum proceed -> partial proceed
-            if not is_proceed:
-                rec.visa_id.action_partial_proceed_visa()
-            else:  # else -> proceed
-                rec.visa_id.action_proceed_visa()
+            if not is_approved:
+                if not is_proceed:
+                    rec.visa_id.action_partial_proceed_visa()
+                else:  # else -> proceed
+                    rec.visa_id.action_proceed_visa()
 
     def action_reject(self):
         for rec in self:
@@ -377,7 +378,8 @@ class VisaOrderPassengers(models.Model):
     def action_done(self):
         for rec in self:
             rec.write({
-                'state': 'done'
+                'state': 'done',
+                'done_date': datetime.now()
             })
             rec.message_post(body='Passenger DONE')
             is_done = True

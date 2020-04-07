@@ -25,16 +25,18 @@ class TtAgentType(models.Model):
     is_send_email_issued = fields.Boolean('Is Send Email Issued', default=False)
     is_send_email_booked = fields.Boolean('Is Send Email Booked', default=False)
     menuitem_id = fields.Many2one('ir.ui.menu','Menuitem')
+    sequence_prefix_id = fields.Many2one('ir.sequence','Sequence Prefix')
 
     @api.model
     def create(self, vals_list):
         new_agent_type = super(TtAgentType, self).create(vals_list)
-        self.env['ir.sequence'].create({
+        sequence_obj = self.env['ir.sequence'].create({
             'name': new_agent_type.name,
             'code': 'tt.agent.type.%s' % (new_agent_type.code),
             'prefix': '{}.%(day)s%(sec)s'.format(new_agent_type.seq_prefix),
             'padding': 3
         })
+        new_agent_type.sequence_prefix_id = sequence_obj.id
         new_agent_type.create_menuitem()
         try:
             """ Set registration upline menjadi HO """
@@ -54,6 +56,9 @@ class TtAgentType(models.Model):
         super(TtAgentType, self).write(vals)
         if 'name' in vals:
             self.menuitem_id.name = vals['name']
+        if 'seq_prefix' in vals:
+            self.sequence_prefix_id.prefix = '%s.%s' % (vals['seq_prefix'],self.sequence_prefix_id.prefix.split('.')[1])
+
 
     def create_menuitem(self):
         if not self.menuitem_id:

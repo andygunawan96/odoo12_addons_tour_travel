@@ -383,7 +383,6 @@ class PassportPricelist(models.Model):
     def to_dict(self):
         attachement_ids = []
         requirement_ids = []
-        visa_location_ids = []
         for data in self.attachments_ids:
             attachement_ids.append({
                 'file_reference': data.file_reference,
