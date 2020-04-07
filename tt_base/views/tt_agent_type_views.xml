@@ -66,6 +66,7 @@
                                     <field name="write_date"/>
                                     <field name="currency_id" invisible="1"/>
                                     <field name="registration_fee"/>
+                                    <field name="sequence_prefix_id" attrs="{'invisible':[('sequence_prefix_id','!=',False)]}"/>
 <!--                                    <field name="recruitment_fee"/>-->
                                 </group>
                             </group>
