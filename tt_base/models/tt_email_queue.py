@@ -37,7 +37,6 @@ class TtEmailQueue(models.Model):
                     type_str = 'Booked'
                 else:
                     type_str = 'Issued'
-                resv.btb_url = data.get('url_booking', '#')
                 template = self.env.ref('tt_reservation_{}.template_mail_reservation_{}_{}'.format(data['provider_type'], data.get('type', 'issued'), data['provider_type'])).id
                 self.env['tt.email.queue'].sudo().create({
                     'name': type_str + ' ' + resv.name,
