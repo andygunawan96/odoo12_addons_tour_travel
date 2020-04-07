@@ -31,6 +31,7 @@ STATE_PASSPORT = [
     ('proceed', 'Proceed'),
     ('partial_approve', 'Partial Approve'),
     ('approve', 'Approve'),
+    ('reject', 'Rejected'),
     ('delivered', 'Delivered'),
     # ('ready', 'Ready'),
     ('done', 'Done'),
@@ -47,7 +48,6 @@ class TtPassport(models.Model):
     provider_type_id = fields.Many2one('tt.provider.type', string='Provider Type',
                                        default=lambda self: self.env.ref('tt_reservation_passport.tt_provider_type_passport'))
 
-    # description = fields.Char('Description', readonly=True, states={'draft': [('readonly', False)]})
     country_id = fields.Many2one('res.country', 'Country', ondelete="cascade", readonly=True,
                                  states={'draft': [('readonly', False)]},
                                  default=lambda self: self.default_country_id())
@@ -94,7 +94,6 @@ class TtPassport(models.Model):
     provider_booking_ids = fields.One2many('tt.provider.passport', 'booking_id', string='Provider Booking')  # , readonly=True, states={'cancel2': [('readonly', False)]}
 
     done_date = fields.Datetime('Done Date', readonly=1)
-    # ready_date = fields.Datetime('Ready Date', readonly=1)
 
     in_process_date = fields.Datetime('In Process Date', readonly=1)
     delivered_date = fields.Datetime('Delivered Date', readonly=1)
@@ -220,7 +219,7 @@ class TtPassport(models.Model):
             'co_uid': self.booked_uid.id
         }
 
-        payment_res = self.payment_reservation_api('passport', data, context)  # visa, member, payment_seq_id
+        payment_res = self.payment_reservation_api('passport', data, context)  # passport, member, payment_seq_id
         if payment_res['error_code'] != 0:
             raise UserError(payment_res['error_msg'])
         self.write({
@@ -358,9 +357,8 @@ class TtPassport(models.Model):
         self.state_passport = 'expired'
 
     def action_calc_expenses_passport(self):
-        # Calc visa vendor
+        # Calc passport vendor
         self.calc_passport_upsell_vendor()
-        # Create new agent invoice (panggil di agent sales visa)
 
     def calc_passport_upsell_vendor(self):
         diff_nta_upsell = 0
@@ -1137,7 +1135,7 @@ class TtPassport(models.Model):
             contact_id = self.create_contact_api(contact[0], booker_id, context)
             passenger_ids = self.create_customer_api(passengers, context, booker_id, contact_id)  # create passenger
 
-            to_psg_ids = self._create_passport_order(passengers, passenger_ids)  # create visa order data['passenger']
+            to_psg_ids = self._create_passport_order(passengers, passenger_ids)  # create passport order data['passenger']
             if to_psg_ids['error_code'] == 0:
                 psg_ids = to_psg_ids['response']
             else:
@@ -1297,12 +1295,16 @@ class TtPassport(models.Model):
     def create_sale_service_charge_value(self, passenger, passenger_ids, sell_passport):
         ssc_list = []
         ssc_list_final = []
+
         pricelist_env = self.env['tt.reservation.passport.pricelist'].sudo()
         passenger_env = self.env['tt.reservation.passport.order.passengers']
+
         for idx, psg in enumerate(passenger):
             ssc = []
             pricelist_id = self.env['tt.reservation.passport.pricelist'].search([('reference_code', '=', psg['master_passport_Id'])]).id
             pricelist_obj = pricelist_env.browse(pricelist_id)
+            passenger_obj = passenger_env.browse(passenger_ids[idx])
+
             sale_price = 0
             for sell in sell_passport['search_data']:
                 if 'id' in sell and str(sell['id']) == psg['master_passport_Id']:
@@ -1311,7 +1313,6 @@ class TtPassport(models.Model):
                             sale_price = sell['sale_price'].get('total_price')
                     break
 
-            passenger_obj = passenger_env.browse(passenger_ids[idx])
             vals = {
                 'amount': sale_price,
                 'charge_code': 'fare',
@@ -1356,6 +1357,9 @@ class TtPassport(models.Model):
                     })
                     ssc.append(ssc_obj2.id)
 
+            passenger_obj.write({
+                'cost_service_charge_ids': [(6, 0, ssc)]
+            })
             vals_fixed = {
                 'commission_agent_id': self.env.ref('tt_base.rodex_ho').id,
                 'amount': -(pricelist_obj.cost_price - pricelist_obj.nta_price),
@@ -1369,7 +1373,6 @@ class TtPassport(models.Model):
                 'total': -(pricelist_obj.cost_price - pricelist_obj.nta_price),
                 'passport_pricelist_id': pricelist_id,
                 'sequence': passenger_obj.sequence,
-                # 'passenger_visa_ids': []
             }
             ssc_list.append(vals_fixed)
             ssc_obj3 = passenger_obj.cost_service_charge_ids.create(vals_fixed)
@@ -1451,7 +1454,6 @@ class TtPassport(models.Model):
                     'pricelist_id': pricelist_id,
                     'passenger_type': psg['pax_type'],
                     'notes': psg.get('notes'),
-                    # Pada state request, pax akan diberi expired date dg durasi tergantung dari paket visa yang diambil
                     'expired_date': fields.Date.today() + timedelta(days=pricelist_obj.duration),
                     'sequence': int(idx + 1)
                 })

@@ -28,7 +28,6 @@
                             <field name="issued_uid" readonly="1"/>
                             <field name="issued_date" readonly="1"/>
                             <field name="hold_date" readonly="1"/>
-                            <field name="expired_date" readonly="1"/>
                         </group>
                     </group>
                     <group string="Visa Information">
@@ -41,7 +40,7 @@
                     </group>
                     <group string="Expenses">
                         <field name="use_vendor"/>
-                        <field name="vendor_ids" attrs="{'required': [('use_vendor', '=', True)], 'readonly': [('state_visa', 'in', ['delivered','ready','done'])]}" groups="tt_base.group_tt_tour_travel_operator,account.group_account_user">
+                        <field name="vendor_ids" attrs="{'required': [('use_vendor', '=', True)], 'readonly': [('state_visa', 'in', ['delivered','done'])]}" groups="tt_base.group_tt_tour_travel_operator,account.group_account_user">
                             <tree editable="bottom">
                                 <field name="visa_id" invisible="1"/>
                                 <field name="provider_id" invisible="1"/>
