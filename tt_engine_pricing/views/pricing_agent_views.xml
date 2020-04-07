@@ -53,6 +53,54 @@
                     </group>
                     <separator string="Carriers"/>
                     <field name="carrier_ids"/>
+                    <group>
+                        <group>
+                            <field name="origin_type"/>
+                        </group>
+                        <group>
+                            <field name="destination_type"/>
+                        </group>
+                    </group>
+                    <group>
+                        <group string="Origin ID">
+                            <field name="origin_ids" nolabel="1"/>
+                        </group>
+                        <group string="Destination ID">
+                            <field name="destination_ids" nolabel="1"/>
+                        </group>
+                    </group>
+                    <group>
+                        <group string="Origin City">
+                            <field name="origin_city_ids" nolabel="1"/>
+                        </group>
+                        <group string="Destination City">
+                            <field name="destination_city_ids" nolabel="1"/>
+                        </group>
+                    </group>
+                    <group>
+                        <group string="Origin Countries">
+                            <field name="origin_country_ids" nolabel="1"/>
+                        </group>
+                        <group string="Destination Countries">
+                            <field name="destination_country_ids" nolabel="1"/>
+                        </group>
+                    </group>
+                    <group>
+                        <group>
+                            <field name="class_of_service_type"/>
+                        </group>
+                        <group>
+                            <field name="charge_code_type"/>
+                        </group>
+                    </group>
+                    <group>
+                        <group string="Class of Services">
+                            <field name="class_of_service_ids" nolabel="1"/>
+                        </group>
+                        <group string="Charge Codes">
+                            <field name="charge_code_ids" nolabel="1"/>
+                        </group>
+                    </group>
                     <separator string="Uplines"/>
                     <field name="line_ids"/>
                 </sheet>
@@ -71,6 +119,18 @@
         <tree>
             <field name="sequence" widget="handle"/>
             <field name="name"/>
+            <field name="origin_type"/>
+            <field name="display_origins"/>
+            <field name="display_origin_cities"/>
+            <field name="display_origin_countries"/>
+            <field name="destination_type"/>
+            <field name="display_destinations"/>
+            <field name="display_destination_cities"/>
+            <field name="display_destination_countries"/>
+            <field name="charge_code_type"/>
+            <field name="display_charge_codes"/>
+            <field name="class_of_service_type"/>
+            <field name="display_class_of_services"/>
             <field name="provider_access_type"/>
             <field name="commission_charge_type"/>
             <field name="carrier_access_type"/>
