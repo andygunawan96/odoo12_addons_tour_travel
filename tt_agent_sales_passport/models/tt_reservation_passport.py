@@ -30,7 +30,9 @@ class ReservationPassport(models.Model):
     def get_all_passengers_desc(self):
         desc_text = ''
         for psg in self.passenger_ids:
-            desc_text += psg.first_name + ' ' + psg.last_name + ', ' + psg.title + \
+            desc_text += (psg.first_name if psg.first_name else '') + ' ' + \
+                         (psg.last_name if psg.last_name else '') + ', ' + \
+                         (psg.title if psg.title else '') + \
                          ' (' + (psg.passenger_type if psg.passenger_type else '') + ') ' + \
                          (psg.pricelist_id.apply_type.capitalize() if psg.pricelist_id.apply_type else '') + ' ' + \
                          (psg.pricelist_id.passport_type.capitalize() if psg.pricelist_id.passport_type else '') + ' ' + \
@@ -74,7 +76,8 @@ class ReservationPassport(models.Model):
         for psg in self.passenger_ids:
             desc_text = (psg.first_name if psg.first_name else '') + ' ' + \
                         (psg.last_name if psg.last_name else '') + ', ' + \
-                        psg.title + ' (' + psg.passenger_type + ') ' + \
+                        (psg.title if psg.title else '') + \
+                        ' (' + (psg.passenger_type if psg.passenger_type else '') + ') ' + \
                         (psg.pricelist_id.apply_type.capitalize() if psg.pricelist_id.apply_type else '') + ' ' + \
                         (psg.pricelist_id.passport_type.capitalize() if psg.pricelist_id.passport_type else '') + ' ' + \
                         (psg.pricelist_id.process_type.capitalize() if psg.pricelist_id.process_type else '') + \
