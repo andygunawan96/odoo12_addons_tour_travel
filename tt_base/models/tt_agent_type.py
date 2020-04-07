@@ -155,6 +155,13 @@ class TtAgentType(models.Model):
         }
         return res
 
+    def toggle_non_updateable(self):
+        templates_user = self.env['ir.model.data'].search([('module','=','tt_base'),
+                                                     ('name','ilike','_template_user_')])
+        value = not templates_user[0].noupdate
+        for rec in templates_user:
+            rec.noupdate = value
+
 class TtAgentTypeBenefit(models.Model):
     _name = 'tt.agent.type.benefit'
     _description = 'Tour & Travel - Agent Type Benefit'
@@ -195,3 +202,4 @@ class CommissionRule(models.Model):
     #                                  value[key],  # New Value
     #                                  self.env.user.name))  # User that Changed the Value
     #     return super(TtAgentType, self).write(value)
+
