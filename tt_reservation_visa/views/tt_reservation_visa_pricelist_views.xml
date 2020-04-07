@@ -10,9 +10,14 @@
 <!--                </header>-->
                 <sheet>
                     <div class="oe_button_box" name="button_box">
-                            <button name="%(tt_base.tt_upload_center_wizard_action_view)d" string="Upload Document" type="action"
-                                    class="oe_stat_button" icon="fa-upload" groups="tt_base.group_tt_tour_travel_operator"
-                                    context="{'default_target_field_name': 'attachments_ids'}"/>
+                        <button name="toggle_active" type="object" groups="base.group_user"
+                                class="oe_stat_button" icon="fa-archive">
+                            <field name="active" widget="boolean_button"
+                                   options='{"terminology": "archive"}'/>
+                        </button>
+                        <button name="%(tt_base.tt_upload_center_wizard_action_view)d" string="Upload Document" type="action"
+                                class="oe_stat_button" icon="fa-upload" groups="tt_base.group_tt_tour_travel_operator"
+                                context="{'default_target_field_name': 'attachments_ids'}"/>
                     </div>
                     <div class="oe_title">
                         <h1>
@@ -27,7 +32,7 @@
                             <field name="pax_type"/>
                             <field name="reference_code"/>
                             <field name="provider_id"/>
-                            <field name="active"/>
+<!--                            <field name="active"/>-->
                         </group>
                         <group string="Document Information">
                             <field name="country_id"/>
@@ -77,9 +82,6 @@
                                 <field name="url"/>
                             </tree>
                         </field>
-                    </group>
-                    <group string="Locations">
-                            <field name="visa_location_ids"/>
                     </group>
                     <notebook colspan="4">
                         <page string="Notes">

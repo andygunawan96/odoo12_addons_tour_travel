@@ -30,10 +30,14 @@ class ReservationVisa(models.Model):
     def get_all_passengers_desc(self):
         desc_text = ''
         for psg in self.passenger_ids:
-            desc_text += psg.first_name + ' ' + psg.last_name + ', ' + psg.title + ' (' + psg.passenger_type + ') ' + \
-                        psg.pricelist_id.entry_type.capitalize() + ' ' + psg.pricelist_id.visa_type.capitalize() + ' ' \
-                        + psg.pricelist_id.process_type.capitalize() + ' (' + str(psg.pricelist_id.duration) + ' days)'\
-                        + '\n'
+            desc_text += (psg.first_name if psg.first_name else '') + ' ' + \
+                         (psg.last_name if psg.last_name else '') + ', ' + \
+                         (psg.title if psg.title else '') + \
+                         ' (' + (psg.passenger_type if psg.passenger_type else '') + ') ' + \
+                         (psg.pricelist_id.entry_type.capitalize() if psg.pricelist_id.entry_type else '') + ' ' + \
+                         (psg.pricelist_id.visa_type.capitalize() if psg.pricelist_id.visa_type else '') + ' ' + \
+                         (psg.pricelist_id.process_type.capitalize() if psg.pricelist_id.process_type else '') + \
+                         ' (' + str(psg.pricelist_id.duration if psg.pricelist_id.duration else '-') + ' days)' + '\n'
         return desc_text
 
     def get_visa_summary(self):
@@ -68,9 +72,14 @@ class ReservationVisa(models.Model):
         invoice_line_id = inv_line_obj.id
 
         for psg in book_obj.passenger_ids:
-            desc_text = psg.first_name + ' ' + psg.last_name + ', ' + psg.title + ' (' + psg.passenger_type + ') ' + \
-                        psg.pricelist_id.entry_type.capitalize() + ' ' + psg.pricelist_id.visa_type.capitalize() + ' ' \
-                        + psg.pricelist_id.process_type.capitalize() + ' (' + str(psg.pricelist_id.duration) + ' days)'
+            desc_text = (psg.first_name if psg.first_name else '') + ' ' + \
+                        (psg.last_name if psg.last_name else '') + ', ' + \
+                        (psg.title if psg.title else '') + \
+                        ' (' + (psg.passenger_type if psg.passenger_type else '') + ') ' + \
+                        (psg.pricelist_id.entry_type.capitalize() if psg.pricelist_id.entry_type else '') + ' ' + \
+                        (psg.pricelist_id.visa_type.capitalize() if psg.pricelist_id.visa_type else '') + ' ' + \
+                        (psg.pricelist_id.process_type.capitalize() if psg.pricelist_id.process_type else '') + \
+                        ' (' + str(psg.pricelist_id.duration if psg.pricelist_id.duration else '-') + ' days)'
             price = 0
             for srvc in psg.cost_service_charge_ids:
                 if srvc.charge_type != 'RAC':
