@@ -1,4 +1,5 @@
 from odoo import api, fields, models, _
+from odoo.exceptions import UserError
 from ...tools.api import Response
 import html2text
 import json,traceback,logging
@@ -50,15 +51,19 @@ class VisaSyncProducts(models.TransientModel):
     def get_reference_code(self):
         for idx, rec in enumerate(self.env['tt.reservation.visa.pricelist'].search([]),1):
             if rec.reference_code == '' or rec.reference_code == False:
-                counter = idx
-                while True:
-                    if not self.env['tt.reservation.visa.pricelist'].search([('reference_code', '=', rec.provider_id.code + rec.name + '_' + str(counter))]):
-                        rec.update({
-                            "reference_code": rec.provider_id.code + '_' + rec.name + '_' + str(counter),
-                            "provider_id": self.env['tt.provider'].search([('code', '=', rec.provider_id.code)], limit=1).id
-                        })
-                        break
-                    counter += 1
+                if rec.provider_id.code:
+                    counter = idx
+                    while True:
+                        if not self.env['tt.reservation.visa.pricelist'].search([('reference_code', '=', rec.provider_id.code + rec.name + '_' + str(counter))]):
+                            rec.update({
+                                "reference_code": rec.provider_id.code + '_' + rec.name + '_' + str(counter),
+                                "provider_id": self.env['tt.provider'].search([('code', '=', rec.provider_id.code)], limit=1).id
+                            })
+                            break
+                        counter += 1
+                else:
+                    raise UserError(
+                        _('You have to fill Provider ID in all Visa Pricelist.'))
 
             for count, requirement in enumerate(rec.requirement_ids):
                 requirement.update({

@@ -142,8 +142,7 @@ class VisaOrderPassengers(models.Model):
                                                 proceed = Has Finished the requirements
                                                 accepted = Accepted by the Consulate
                                                 rejected = Rejected by the Consulate
-                                                ready = ready to pickup by customer
-                                                done = picked up by customer''')
+                                                done = Document at agent or picked up by customer''')
 
     def action_send_email_interview(self):
         """Dijalankan, jika user menekan tombol 'Send Email Interview'"""
