@@ -6,11 +6,11 @@
             <form>
                 <header>
                     <field name="state" widget="statusbar" statusbar_visible="validate,in_process,add_payment,in_process2,done"/>
-                    <button string="Draft" name="action_draft" type="object" attrs="{'invisible': [('state', '!=', 'cancel')]}" groups="tt_base.group_tt_tour_travel_manager"/>
+                    <field name="can_refund" invisible="1"/>
+                    <button string="Draft" name="action_draft" type="object" attrs="{'invisible': ['|', ('state', 'not in', ['cancel']), '&amp;', ('can_refund', '=', True)]}" groups="tt_base.group_tt_tour_travel_manager"/>
                     <button string="Confirm" name="action_confirm" type="object" attrs="{'invisible': [('state', '!=', 'draft')]}" groups="tt_base.group_tt_agent_user_operator"/>
                     <button string="Reject" name="action_draft" type="object" attrs="{'invisible': [('state', '!=', 'confirm')]}" groups="tt_base.group_tt_tour_travel_operator"/>
                     <button string="Validate" name="action_validate" type="object" attrs="{'invisible': [('state', '!=', 'confirm')]}" groups="tt_base.group_tt_tour_travel_operator"/>
-<!--                    <button string="Compute Price" name="compute_price" type="object" attrs="{'invisible': [('state', 'not in', ['draft','confirm','validate'])]}" groups="tt_base.group_tt_tour_travel_operator"/>-->
                     <button string="Re Validate Document" name="action_re_validate" type="object" attrs="{'invisible': [('state', 'not in', ['in_process','re_confirm','confirm_payment'])]}" groups="tt_base.group_tt_tour_travel_operator"/>
                     <button string="Re Confirm Document" name="action_re_confirm" type="object" attrs="{'invisible': [('state', '!=', 're_validate')]}" groups="tt_base.group_tt_agent_user_operator"/>
                     <button string="Payment" name="action_add_payment" type="object" attrs="{'invisible': [('state', 'not in', ['in_process','re_confirm','confirm_payment'])]}" groups="tt_base.group_tt_tour_travel_operator"/>
@@ -34,7 +34,6 @@
                             <field name="visa_id"/>
                             <field name="title" readonly="1"/>
                             <field name="first_name" readonly="1"/>
-<!--                            <field name="gender" readonly="1"/>-->
                             <field name="passport_number" readonly="1"/>
                             <field name="passport_expdate" readonly="1"/>
                         </group>
@@ -59,7 +58,6 @@
                             <field name="payment_uid" groups="tt_base.group_tt_tour_travel_operator"/>
                             <field name="payment_date" groups="tt_base.group_tt_tour_travel_operator"/>
                             <field name="in_process_date" groups="tt_base.group_tt_tour_travel_operator"/>
-<!--                            <field name="call_date" groups="tt_base.group_tt_tour_travel_operator" attrs="{'readonly': [('state', 'not in', ['in_process', 'waiting'])], 'required': [('state', 'in', ['waiting'])]}"/>-->
                             <field name="out_process_date" groups="tt_base.group_tt_tour_travel_operator"/>
                             <field name="to_HO_date" groups="tt_base.group_tt_tour_travel_operator"/>  <!-- attrs="{'invisible': [('use_vendor', '=', False)]}"-->
                             <field name="to_agent_date" groups="tt_base.group_tt_tour_travel_operator"/>
@@ -74,7 +72,6 @@
                                 <field name="datetime" required="1"/>
                                 <field name="ho_employee"/>
                                 <field name="meeting_point"/>
-<!--                                <field name="location_id" domain="[('pricelist_ids', 'in', pricelist_interview_id), ('location_type', '=', 'interview')]"/>-->
                                 <field name="location_interview_id"/>
                                 <field name="description"/>
                             </tree>

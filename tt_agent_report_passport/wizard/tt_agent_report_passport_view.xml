@@ -11,7 +11,7 @@
         </field>
     </record>
 
-    <record id="action_agent_report_passport" model="ir.actions.act_window">
+    <record id="action_agent_report_passport_wz" model="ir.actions.act_window">
         <field name="name">Passport Report</field>
         <field name="type">ir.actions.act_window</field>
         <field name="res_model">tt.agent.report.passport.wizard</field>
@@ -25,7 +25,7 @@
         id="sub_menu_agent_report_passport"
         name="Passport Report"
         parent="tt_reservation_passport.menu_passport_report"
-        action="action_agent_report_passport"
+        action="action_agent_report_passport_wz"
         sequence="1"
         groups="tt_base.group_tt_agent_user_supervisor,tt_base.group_tt_tour_travel_operator"
        />

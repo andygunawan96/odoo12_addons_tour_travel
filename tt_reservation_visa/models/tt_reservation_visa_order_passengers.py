@@ -133,6 +133,8 @@ class VisaOrderPassengers(models.Model):
                                                 waiting = Documents ready at HO
                                                 done = Documents given to customer''')
 
+    can_refund = fields.Boolean('Can Refund', related='visa_id.can_refund')
+
     state = fields.Selection(STATE, default='confirm', help='''draft = requested
                                                 confirm = HO accepted
                                                 validate = if all required documents submitted and documents in progress
@@ -174,6 +176,13 @@ class VisaOrderPassengers(models.Model):
             # set juga state visa_id ke draft
             if rec.visa_id.state_visa == 'confirm':
                 rec.visa_id.action_draft_visa()
+            elif rec.visa_id.state_visa == 'cancel':
+                is_all_draft = True
+                for psg in rec.visa_id.passenger_ids:
+                    if psg.state not in ['draft']:
+                        is_all_draft = False
+                if is_all_draft:
+                    rec.visa_id.action_draft_visa()
             rec.message_post(body='Passenger DRAFT')
 
     def action_confirm(self):
@@ -359,12 +368,13 @@ class VisaOrderPassengers(models.Model):
                 'to_agent_date': datetime.now()
             })
             rec.message_post(body='Passenger documents TO Agent')
-            is_sent = True
-            for psg in rec.visa_id.passenger_ids:
-                if psg.state not in ['to_agent']:
-                    is_sent = False
-            if is_sent:
-                rec.visa_id.action_delivered_visa()
+            if rec.visa_id.state_visa != 'delivered':
+                is_sent = True
+                for psg in rec.visa_id.passenger_ids:
+                    if psg.state not in ['to_agent']:
+                        is_sent = False
+                if is_sent:
+                    rec.visa_id.action_delivered_visa()
 
     # def action_ready(self):
     #     for rec in self:

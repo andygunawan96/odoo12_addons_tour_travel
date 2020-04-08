@@ -26,7 +26,6 @@
     'data': [
         'security/ir.model.access.csv',
         'wizard/tt_agent_report_visa_view.xml',
-        # 'report/tt_agent_report_visa_menu.xml',
         'report/tt_agent_report_visa_report.xml',
         'report/tt_agent_report_visa_template.xml',
     ],

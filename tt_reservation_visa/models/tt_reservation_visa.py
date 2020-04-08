@@ -361,15 +361,10 @@ class TtVisa(models.Model):
         self.write({
             'state_visa': 'cancel',
             'state': 'cancel',
+            'cancel_uid': self.env.user.id,
+            'cancel_date': datetime.now()
         })
         self.message_post(body='Order CANCELED')
-
-    # def action_ready_visa(self):
-    #     self.write({
-    #         'state_visa': 'ready',
-    #         'ready_date': datetime.now()
-    #     })
-    #     self.message_post(body='Order READY')
 
     def action_done_visa(self):
         self.write({
@@ -1443,9 +1438,9 @@ class TtVisa(models.Model):
                         for intvw in pax.interview_ids:
                             interview_list.append({
                                 'datetime': str(intvw.datetime),
-                                'ho_employee': intvw.ho_employee.name,
+                                'ho_employee': intvw.ho_employee,
                                 'meeting_point': intvw.meeting_point,
-                                'location': intvw.location_id.name
+                                'location': intvw.location_interview_id
                             })
                     interview['interview_list'] = interview_list
                     """ Biometrics """
@@ -1454,9 +1449,9 @@ class TtVisa(models.Model):
                         for bio in pax.biometrics_ids:
                             biometrics_list.append({
                                 'datetime': str(bio.datetime),
-                                'ho_employee': bio.ho_employee.name,
+                                'ho_employee': bio.ho_employee,
                                 'meeting_point': bio.meeting_point,
-                                'location': bio.location_id.name
+                                'location': bio.location_biometrics_id
                             })
                     biometrics['biometrics_list'] = biometrics_list
                     passenger.append({
@@ -1464,8 +1459,6 @@ class TtVisa(models.Model):
                         'first_name': pax.first_name,
                         'last_name': pax.last_name,
                         'birth_date': str(pax.birth_date),
-                        'gender': pax.gender,
-                        # 'age': pax.passenger_id.age or '',
                         'passport_number': pax.passport_number or '',
                         'passport_expdate': str(pax.passport_expdate) or '',
                         'visa': {
@@ -1513,7 +1506,7 @@ class TtVisa(models.Model):
             return e.error_dict()
         except Exception as e:
             _logger.error(traceback.format_exc())
-            return ERR.get_error(1013)
+            return ERR.get_error(1013, additional_message='There\'s something wrong.')
 
     def state_booking_visa_api(self,data, context):
         book_obj = self.env['tt.reservation.visa'].search([('name', '=', data.get('order_number'))], limit=1)

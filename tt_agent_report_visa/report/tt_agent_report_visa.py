@@ -15,7 +15,7 @@ class AgentReportVisaModel(models.AbstractModel):
         return """
         vs.id, vs.name, tcd.first_name || ' ' || tcd.last_name as contact_person, vs.contact_name, rc.name as country_name,
         top.title || ' ' || top.first_name || ' ' || top.last_name as pass_name, top.age, vs.departure_date, vs.issued_date, 
-        vs.in_process_date, vs.done_date, vs.state, rp.name as issued_name, tvp.immigration_consulate, 
+        vs.in_process_date, vs.done_date, vs.state, vs.state_visa, rp.name as issued_name, tvp.immigration_consulate, 
         tvp.visa_type, tl.debit as commission
         """
 
