@@ -690,10 +690,10 @@ class TtReservation(models.Model):
 
     def get_btc_hold_date(self):
         if (self.booked_date + timedelta(hours=1)) >= self.hold_date:
-            final_time = (self.hold_date - timedelta(minutes=10)).strftime('%Y-%m-%d %H:%M:%S')
+            final_time = ((self.hold_date + timedelta(hours=7)) - timedelta(minutes=10)).strftime('%Y-%m-%d %H:%M:%S')
         else:
-            final_time = (self.booked_date + timedelta(hours=1)).strftime('%Y-%m-%d %H:%M:%S')
-        return final_time
+            final_time = (self.booked_date + timedelta(hours=8)).strftime('%Y-%m-%d %H:%M:%S')
+        return final_time + ' (GMT +7)'
 
     def get_btc_url(self):
         try:
@@ -703,3 +703,9 @@ class TtReservation(models.Model):
             _logger.info(str(e))
             final_url = '#'
         return final_url
+
+    def get_btc_booked_date(self):
+        return (self.booked_date + timedelta(hours=7)).strftime('%Y-%m-%d %H:%M:%S') + ' (GMT +7)'
+
+    def get_btc_issued_date(self):
+        return (self.issued_date + timedelta(hours=7)).strftime('%Y-%m-%d %H:%M:%S') + ' (GMT +7)'
