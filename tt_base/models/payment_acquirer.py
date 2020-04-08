@@ -252,3 +252,10 @@ class PaymentAcquirerNumber(models.Model):
         vals_list['lower_number'] = unique_amount-1000
         new_unique = super(PaymentAcquirerNumber, self).create(vals_list)
         return new_unique
+
+
+    def lower_unique(self):
+        return -1*self.upper_number
+
+    def upper_unique(self):
+        return self.upper_number
