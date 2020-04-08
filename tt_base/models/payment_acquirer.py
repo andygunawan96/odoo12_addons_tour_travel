@@ -68,7 +68,7 @@ class PaymentAcquirer(models.Model):
             'price_component': {
                 'amount': amount,
                 'fee': fee,
-                'unique_amount': uniq,
+                'unique_amount': abs(uniq),
             },
             'total_amount': float(amount) + fee + uniq,
             'image': self.bank_id.image_id and self.bank_id.image_id.url or '',
@@ -239,13 +239,16 @@ class PaymentAcquirerNumber(models.Model):
 
     @api.model
     def create(self, vals_list):
-        already_exist = [rec.upper_number for rec in self.search([('amount','=',vals_list['amount'])])]
+        already_exist_on_same_amount = [rec.upper_number for rec in self.search([('amount', '=', vals_list['amount'])])]
+        already_exist_on_lower_higher_amount = [abs(rec.lower_number) for rec in self.search([('amount', 'in', [int(vals_list['amount'])-1000,
+                                                                                                    int(vals_list['amount'])+1000])])]
+        already_exist = already_exist_on_same_amount+already_exist_on_lower_higher_amount
         unique_amount = None
         while (not unique_amount):
             number = random.randint(1,999)
             if number not in already_exist:
                 unique_amount = number
         vals_list['upper_number'] = unique_amount
-        vals_list['lower_number'] = 1000 - unique_amount
+        vals_list['lower_number'] = unique_amount-1000
         new_unique = super(PaymentAcquirerNumber, self).create(vals_list)
         return new_unique
