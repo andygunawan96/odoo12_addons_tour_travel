@@ -490,6 +490,16 @@
         </record>
 
 
+        <record id="tt_transport_carrier_airline_in" model="tt.transport.carrier">
+            <field name="name">NAM Air</field>
+            <field name="code">IN</field>
+            <field name="icao">LKN</field>
+            <field name="call_sign">NAMAIR</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+
         <record id="tt_transport_carrier_airline_ak" model="tt.transport.carrier">
             <field name="name">AirAsia Berhad</field>
             <field name="code">AK</field>
