@@ -201,3 +201,10 @@ COMMISSION_CHARGE_TYPE = [
     ('fare', 'Basic Fare'),
     ('total', 'Total Fare and Tax'),
 ]
+
+ROUNDING_AMOUNT_TYPE = (
+    ('none', 'None'),
+    ('ceil', 'Ceil'),
+    ('floor', 'Floor'),
+    ('round', 'Round'),
+)
