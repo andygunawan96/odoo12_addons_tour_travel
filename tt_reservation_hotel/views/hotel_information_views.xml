@@ -404,6 +404,9 @@
                         <group string="Be My Guest">
                             <button name="mapping_be_my_guest" string="Get City List" type="object" icon="fa-home"/>
                         </group>
+                        <group string="Jupiter Notebook">
+                            <button name="jupiter_reader" string="Jupiter NoteBook" type="object" icon="fa-home"/>
+                        </group>
                     </group>
                 </sheet>
             </form>
