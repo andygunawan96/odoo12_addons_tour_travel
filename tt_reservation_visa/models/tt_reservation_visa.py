@@ -111,8 +111,6 @@ class TtVisa(models.Model):
 
     immigration_consulate = fields.Char('Immigration Consulate', readonly=1, compute="_compute_immigration_consulate")
 
-    agent_commission = fields.Monetary('Agent Commission', default=0, compute="_compute_agent_commission")
-
     printout_handling_ho_id = fields.Many2one('tt.upload.center', readonly=True)
     printout_handling_customer_id = fields.Many2one('tt.upload.center', readonly=True)
     printout_itinerary_visa = fields.Many2one('tt.upload.center', 'Printout Itinerary', readonly=True)
@@ -350,6 +348,10 @@ class TtVisa(models.Model):
         # jika state : in_process, partial_proceed, proceed, delivered, ready, done, create reverse ledger
         if self.state_visa in ['in_process', 'payment']:
             self.can_refund = True
+        if self.commercial_state == 'Unpaid':
+            self.write({
+                'use_vendor': False
+            })
         # set semua state passenger ke cancel
         for rec in self.passenger_ids:
             rec.action_cancel()
@@ -1871,7 +1873,7 @@ class TtVisa(models.Model):
                     'passenger_type': psg['pax_type'],
                     'notes': psg.get('notes'),
                     # Pada state request, pax akan diberi expired date dg durasi tergantung dari paket visa yang diambil
-                    'expired_date': fields.Date.today() + timedelta(days=pricelist_obj.duration),
+                    # 'expired_date': fields.Date.today() + timedelta(days=pricelist_obj.duration),
                     'sequence': int(idx+1)
                 })
                 if 'identity' in psg:
@@ -2214,20 +2216,6 @@ class TtVisa(models.Model):
         # return visa_ho_invoice_id.report_action(self, data=datas)
 
     ######################################################################################################
-    # CRON
-    ######################################################################################################
-
-    def cron_check_visa_pax_expired_date(self):
-        visa_draft = self.search([('state_visa', '=', 'draft')])
-        for rec in visa_draft:
-            expired = False
-            for psg in rec.passenger_ids:
-                if psg.expired_date <= fields.Date.today():
-                    expired = True
-            if expired:
-                rec.action_cancel_visa()
-
-    ######################################################################################################
     # OTHERS
     ######################################################################################################
 
@@ -2297,20 +2285,12 @@ class TtVisa(models.Model):
             _logger.error('Entah status apa')
             raise RequestException(1006)
 
-    @api.onchange('state')
-    @api.depends('state')
-    def _compute_expired_visa(self):
-        for rec in self:
-            if rec.state == 'expired':
-                rec.state_visa = 'expired'
-
-    def _compute_agent_commission(self):
-        for rec in self:
-            agent_comm = 0
-            for sale in rec.sale_service_charge_ids:
-                if sale.charge_code == 'rac':
-                    agent_comm += sale.total
-            rec.agent_commission = abs(agent_comm)
+    # @api.onchange('state')
+    # @api.depends('state')
+    # def _compute_expired_visa(self):
+    #     for rec in self:
+    #         if rec.state == 'expired':
+    #             rec.state_visa = 'expired'
 
     @api.multi
     @api.depends('passenger_ids')

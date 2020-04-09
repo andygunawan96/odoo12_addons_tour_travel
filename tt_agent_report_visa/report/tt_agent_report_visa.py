@@ -71,7 +71,6 @@ class AgentReportVisaModel(models.AbstractModel):
         odoobot_user = self.env['res.users'].sudo().search([('id', '=', 1), ('active', '=', False)])
         tz = odoobot_user.tz
         local = pytz.timezone(tz)
-        print(tz)
         for line in line_list:
             visa_obj = self.env['tt.reservation.visa'].search([('id', '=', line.get('id'))], limit=1)
             line['total'] = visa_obj.total
@@ -85,7 +84,6 @@ class AgentReportVisaModel(models.AbstractModel):
             if line['done_date']:
                 local_dt = line['done_date']
                 line['done_date'] = local_dt.astimezone(local)
-            print(line)
         return line_list
 
     @staticmethod

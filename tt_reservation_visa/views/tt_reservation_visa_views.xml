@@ -137,6 +137,7 @@
             <field name="sid_booked" position="replace">
                 <field name="in_process_date"/>
                 <field name="estimate_date"/>
+                <field name="delivered_date"/>
                 <field name="done_date"/>
             </field>
             <xpath expr="//group[@name='paxgroup']" position="before">
