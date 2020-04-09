@@ -233,6 +233,7 @@ class PaymentAcquirerNumber(models.Model):
             raise RequestException(1001)
 
         payment_acq = self.search([('number', 'ilike', data['order_number'])])
+        HO_acq = self.env['tt.agent'].browse(self.env.ref('tt_base.rodex_ho').id)
         if payment_acq:
             #check datetime
             date_now = datetime.now()
@@ -243,6 +244,7 @@ class PaymentAcquirerNumber(models.Model):
                     'number': data['order_number'] + '.' + str(datetime.now().strftime('%Y%m%d%H:%M:%S')),
                     'unique_amount': data['unique_amount'],
                     'amount': data['amount'],
+                    'payment_acquirer_id': HO_acq.env['payment.acquirer'].search([('seq_id', '=', data['seq_id'])]).id,
                     'res_model': provider_type,
                     'res_id': booking_obj.id
                 })
@@ -254,6 +256,7 @@ class PaymentAcquirerNumber(models.Model):
                 'state': 'close',
                 'number': data['order_number'],
                 'unique_amount': data['unique_amount'],
+                'payment_acquirer_id': HO_acq.env['payment.acquirer'].search([('name', '=', data['seq_id'])]).id,
                 'amount': data['amount'],
                 'res_model': provider_type,
                 'res_id': booking_obj.id
@@ -300,3 +303,10 @@ class PaymentAcquirerNumber(models.Model):
         vals_list['lower_number'] = unique_amount-1000
         new_unique = super(PaymentAcquirerNumber, self).create(vals_list)
         return new_unique
+
+
+    def lower_unique(self):
+        return -1*self.upper_number
+
+    def upper_unique(self):
+        return self.upper_number
