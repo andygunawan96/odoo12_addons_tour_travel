@@ -1,13 +1,13 @@
 # -*- coding: utf-8 -*-
 {
-    'name': "tt_hotel_provider_data",
+    'name': "City Code",
 
     'summary': """
-        Data Provider Hotel
+        Data City, Must install tt_base and tt_reservation_hotel first before install
     """,
 
     'description': """
-        Data Provider Hotel, Must install tt_base and tt_reservation_hotel first before install
+        Data City, Must install tt_base and tt_reservation_hotel first before install
     """,
 
     'author': "Rodex Travel and Tour",
@@ -20,10 +20,12 @@
     'version': '0.1',
 
     # any module necessary for this one to work correctly
-    'depends': ['tt_city_code'],
+    'depends': [],
 
     # always loaded
     'data': [
-        'data/tt.provider.code.csv',
+        'data/res.country.state.csv',
+        'data/res.city.csv',
+        'data/tt.destination.alias.csv',
     ],
 }
