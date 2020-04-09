@@ -354,10 +354,20 @@ class MasterActivity(models.Model):
                 for index in ['categories', 'types']:
                     if file.get(index):
                         for rec in file[index]['data']:
-                            obj_id = self.env['tt.activity.category'].search([('name', '=', rec['name'])])
+                            obj_id = self.env['tt.activity.category'].search([('name', '=', rec['name'])], limit=1)
                             if obj_id:
-                                line_obj = self.env['tt.activity.category.lines'].search([('category_id', '=', obj_id.id), ('provider_id', '=', vendor_id)])
-                                line_obj.uuid = rec['uuid']
+                                obj_id = obj_id[0]
+                                line_obj = self.env['tt.activity.category.lines'].search([('category_id', '=', obj_id.id), ('provider_id', '=', vendor_id)], limit=1)
+                                if not line_obj:
+                                    self.env['tt.activity.category.lines'].sudo().create({
+                                        'uuid': rec['uuid'],
+                                        'provider_id': vendor_id,
+                                        'category_id': obj_id.id,
+                                    })
+                                else:
+                                    line_obj[0].sudo().write({
+                                        'uuid': rec['uuid']
+                                    })
                                 obj_id.parent_id = False
                             else:
                                 obj_id = self.env['tt.activity.category'].sudo().create({
@@ -374,10 +384,20 @@ class MasterActivity(models.Model):
                                 self.env.cr.commit()
                             if rec.get('children'):
                                 for child in rec['children']:
-                                    child_id = self.env['tt.activity.category'].search([('name', '=', child['name'])])
+                                    child_id = self.env['tt.activity.category'].search([('name', '=', child['name'])], limit=1)
                                     if child_id:
-                                        child_lines = self.env['tt.activity.category.lines'].search([('category_id', '=', child_id.id), ('provider_id', '=', vendor_id)])
-                                        child_lines.uuid = child['uuid']
+                                        child_id = child_id[0]
+                                        child_lines = self.env['tt.activity.category.lines'].search([('category_id', '=', child_id.id), ('provider_id', '=', vendor_id)], limit=1)
+                                        if not child_lines:
+                                            self.env['tt.activity.category.lines'].sudo().create({
+                                                'uuid': child['uuid'],
+                                                'provider_id': vendor_id,
+                                                'category_id': child_id.id,
+                                            })
+                                        else:
+                                            child_lines[0].sudo().write({
+                                                'uuid': child['uuid']
+                                            })
                                         child_id.parent_id = obj_id.id
                                     else:
                                         child_id = self.env['tt.activity.category'].sudo().create({
