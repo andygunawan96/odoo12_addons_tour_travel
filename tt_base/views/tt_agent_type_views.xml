@@ -67,6 +67,8 @@
                                     <field name="currency_id" invisible="1"/>
                                     <field name="registration_fee"/>
                                     <field name="sequence_prefix_id" attrs="{'invisible':[('sequence_prefix_id','!=',False)]}"/>
+                                    <field name="rounding_amount_type"/>
+                                    <field name="rounding_places"/>
 <!--                                    <field name="recruitment_fee"/>-->
                                 </group>
                             </group>
@@ -101,6 +103,8 @@
                 <tree>
                     <field name="name"/>
                     <field name="code"/>
+                    <field name="rounding_amount_type"/>
+                    <field name="rounding_places"/>
                     <field name="description"/>
                 </tree>
             </field>
