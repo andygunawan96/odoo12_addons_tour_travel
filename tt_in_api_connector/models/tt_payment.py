@@ -60,7 +60,7 @@ class TtPaymentApiCon(models.Model):
                     }
                     request = {
                         'amount': data['amount'],
-                        'seq_id': self.env.ref('tt_base.payment_acquirer_ho_payment_gateway_bca').seq_id,
+                        'seq_id': self.env.ref('tt_base.payment_acquirer_ho_payment_gateway').seq_id,
                         'currency_code': data['ccy'],
                         'payment_ref': data['payment_ref'],
                         'payment_seq_id': self.env.ref('tt_base.payment_acquirer_ho_payment_gateway').seq_id
@@ -157,3 +157,29 @@ class TtPaymentApiCon(models.Model):
             'provider': 'espay'
         }
         return self.send_request_to_gateway('%s/payment' % (self.url), data, 'merchant_info')
+
+    def send_payment(self, req):
+        request = {
+            'order_number': req.get('order_number'),
+            'proxy_co_uid': req.get('user_id', False),
+        }
+        provider = req.get('provider_type')
+        action = ''
+        if provider == 'activity':
+            action = "issued_booking"
+        elif provider == 'airline':
+            action = "issued"
+        elif provider == 'hotel':
+            action = "issued"
+        elif provider == 'passport':
+            action = "issued"
+        elif provider == 'tour':
+            action = "issued_booking"
+        elif provider == 'train':
+            action = "issued"
+        elif provider == 'visa':
+            action = "issued"
+        return self.send_request_to_gateway('%s/booking/%s' % (self.url, provider),
+                                            request,
+                                            action,
+                                            timeout=180)

@@ -5,6 +5,16 @@ import re
 from datetime import datetime, timedelta
 _logger = logging.getLogger(__name__)
 
+provider_type = {
+    'AL': 'airline',
+    'TN': 'train',
+    'PS': 'passport',
+    'VS': 'visa',
+    'AT': 'activity',
+    'TR': 'tour',
+    'RESV': 'hotel'
+}
+
 class ttCronTopUpValidator(models.Model):
     _inherit = 'tt.cron.log'
 
@@ -55,6 +65,66 @@ class ttCronTopUpValidator(models.Model):
             except Exception as e:
                 self.create_cron_log_folder()
                 self.write_cron_log('auto tup-up validator by system')
+            #payment reservation
+            try:
+                data = self.env['payment.acquirer.number'].search([('state','=','close')])
+                for i in data:
+                    transaction = self.env['tt.bank.accounts'].search([])
+                    if transaction:
+                        date_exist = transaction.bank_transaction_date_ids.filtered(lambda x: x.date == datetime.today().strftime("%Y-%m-%d"))
+                        if date_exist:
+                            result = date_exist.transaction_ids.filtered(lambda x: x.transaction_amount == i.amount - i.unique_amount and x.transaction_type == 'C')
+                            if result:
+                                if result.transaction_message == '':
+                                    reference_code = result.transaction_code
+                                else:
+                                    reference_code = result.transaction_message
+                                agent_id = self.env['tt.reservation.%s' % provider_type[i['number'].split('.')[0]]].search([('name', '=', '%s.%s' %(i['number'].split('.')[0], i['number'].split('.')[1]))]).agent_id
+                                if not self.env['tt.payment'].search([('reference', '=', reference_code)]):
+                                    # topup
+                                    context = {
+                                        'co_agent_id': agent_id.id,
+                                        'co_uid': self.env.ref('tt_base.base_top_up_admin').id
+                                    }
+                                    request = {
+                                        'amount': i.amount - i.unique_amount,
+                                        'seq_id': self.env.ref('tt_base.payment_acquirer_ho_payment_gateway_bca').seq_id,
+                                        'currency_code': result.currency_id.name,
+                                        'payment_ref': reference_code,
+                                        'payment_seq_id': self.env.ref('tt_base.payment_acquirer_ho_payment_gateway_bca').seq_id
+                                    }
+
+                                    res = self.env['tt.top.up'].create_top_up_api(request, context, True)
+                                    if res['error_code'] == 0:
+                                        request = {
+                                            'virtual_account': '',
+                                            'name': res['response']['name'],
+                                            'payment_ref': reference_code,
+                                        }
+                                        res = self.env['tt.top.up'].action_va_top_up(request, context)
+                                        self._cr.commit()
+                                        # result.top_up_validated(i.id)
+                                book_obj = self.env['tt.reservation.%s' % provider_type[i['number'].split('.')[0]]].search([('name', '=', '%s.%s' % (i['number'].split('.')[0], i['number'].split('.')[1])), ('state', 'in', ['booked'])], limit=1)
+
+                                if book_obj:
+                                    #login gateway, payment
+                                    req = {
+                                        'order_number': book_obj.name,
+                                        'user_id': book_obj.booked_uid.id,
+                                        'provider_type': provider_type[book_obj.name.split('.')[0]]
+                                    }
+                                    res = self.env['tt.payment.api.con'].send_payment(req)
+                                    print(res)
+                                    #tutup payment acq number
+
+                    else:
+                        _logger.error("%s ID, is not found within transaction" % i.id)
+                        continue
+
+            except Exception as e:
+                self.create_cron_log_folder()
+                self.write_cron_log('auto tup-up validator by system')
+
         else:
             _logger.error("Cron only works between 0800 to 2000 UTC +7")
 
