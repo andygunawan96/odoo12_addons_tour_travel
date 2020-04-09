@@ -175,7 +175,7 @@ class TtEmailQueue(models.Model):
 
     def action_send_email(self):
         try:
-            if self.type in ['issued_airline', 'issued_train', 'issued_activity', 'issued_tour', 'issued_visa', 'issued_hotel', 'issued_offline']:
+            if self.type in ['issued_airline', 'issued_train', 'issued_activity', 'issued_tour', 'issued_visa', 'issued_passport', 'issued_hotel', 'issued_offline']:
                 self.prepare_attachment_reservation_issued()
             elif self.type == 'billing_statement':
                 self.prepare_attachment_billing_statement()

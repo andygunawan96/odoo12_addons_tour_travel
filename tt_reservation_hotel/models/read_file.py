@@ -2181,6 +2181,37 @@ class HotelInformation(models.Model):
             #         csvFile.close()
         return new_hotel
 
+    def formating_homas_jupiter(self, hotel_id, hotel_rec, providers):
+        new_hotel = {
+                    'id': str(hotel_id),
+                    'name': hotel_rec[1].title(),
+                    'rating': hotel_rec[19],
+                    'prices': [],
+                    'description': hotel_rec[17],
+                    'location': {
+                        'city_id': hotel_rec[8],
+                        'address': hotel_rec[2],
+                        'city': hotel_rec[8],
+                        'state': hotel_rec[3],
+                        'district': hotel_rec[4],
+                        'kelurahan': hotel_rec[5],
+                        'zipcode': hotel_rec[6],
+                    },
+                    'telephone': hotel_rec[13],
+                    'fax': hotel_rec[14],
+                    'ribbon': '',
+                    'lat': hotel_rec[20],
+                    'long': hotel_rec[21],
+                    'state': 'confirm',
+                    'external_code': {self.masking_provider(providers): str(hotel_rec[0])},
+                    'near_by_facility': [],
+                    'images': [],
+                    'facilities': [],
+                }
+        # for provider in providers:
+        #     new_hotel['external_code'][self.masking_provider(provider[0])] = str(provider[1])
+        return new_hotel
+
     def formatting_hotel_name(self, hotel_name, city_name=False):
         # Comparing Hotel Tunjungan Surabaya dengan Tunjungan Hotel Surabaya
         # 1. Set to lower
@@ -2921,3 +2952,93 @@ class HotelInformation(models.Model):
             'country_ids': self.env['test.search'].prepare_countries(self.env['res.country'].sudo().search([])),
             'landmark_ids': []
         })
+
+    # ====================== Cache Hotel edo ke odoo ==============================================
+    def compare_hotel_jupiter(self, curr_hotel, new_hotel):
+        curr_hotel['external_code'].update(new_hotel['external_code'])
+        curr_hotel['name'] = len(curr_hotel['name']) > len(new_hotel['name']) and curr_hotel['name'] or new_hotel['name']
+        curr_hotel['location']['address'] = len(curr_hotel['location']['address']) > len(new_hotel['location']['address'])\
+                                            and curr_hotel['location']['address'] or new_hotel['location']['address']
+        return curr_hotel
+
+    def jupiter_reader(self):
+        need_to_add = [['No', 'Country', 'City', 'No Similar', 'To Merge', 'Total']]
+        i = 0
+        hotel_id = 0
+        for path, subdir, files in os.walk('/var/log/cache_hotel/jupiter_master/'):
+            for country in subdir:
+                try:
+                    path = '/var/log/cache_hotel/jupiter_master/00Result00/' + country
+                    os.mkdir(path)
+                except:
+                    pass
+                for path1, subdir1, files1 in os.walk('/var/log/cache_hotel/jupiter_master/' + country):
+                    for city in subdir1:
+                        i += 1
+                        a = []
+                        current_hotel_objs = []
+                        no_similar = 0
+                        to_merge = 0
+                        try:
+                            with open('/var/log/cache_hotel/jupiter_master/' + country + '/' + city + '/rodex_hotel_result.csv', 'r') as f:
+                                rendered_city_ids = csv.reader(f)
+                                is_header = 0
+                                # providers = []
+                                for rec in rendered_city_ids:
+                                    if is_header == 0:
+                                        is_header = rec[2:7]
+                                        continue
+                                    vendor_list = 0
+                                    idx = 0
+                                    current_hotel_obj = {}
+                                    for code in rec[2:7]:
+                                        if str(code) != '0':
+                                            vendor_list += 1
+                                            # providers.append([is_header[idx].lower(), code])
+
+                                            # Find Object
+                                            with open(
+                                                    '/var/log/cache_hotel/jupiter_master/' + country + '/' + city + '/' +
+                                                    is_header[idx].lower() + '_' + city + '.csv', 'r') as f_hotel:
+                                                file_hotel_data = csv.reader(f_hotel)
+                                                for rec1 in file_hotel_data:
+                                                    if rec1[0] == code:
+                                                        hotel_id += 1
+                                                        # Fungsi Mapping dari csv nya edo ke template rodextrip
+                                                        hotel_obj_fmt = self.formating_homas_jupiter(hotel_id, rec1, is_header[idx].lower())
+                                                        if not current_hotel_obj:
+                                                            current_hotel_obj = hotel_obj_fmt
+                                                        else:
+                                                            current_hotel_obj = self.compare_hotel_jupiter(current_hotel_obj, hotel_obj_fmt)
+                                                        break
+                                            f_hotel.close()
+
+                                        idx += 1
+                                    if vendor_list > 1:
+                                        to_merge += 1
+                                    else:
+                                        no_similar += 1
+                                    a.append(rec)
+                                    current_hotel_objs.append(current_hotel_obj)
+                                    # G bsa ambil facility + image dari tempate edo
+                                    # Flow buat ambil data per city kedata vendor
+                            f.close()
+                            need_to_add.append([i, country, city, no_similar, to_merge, len(a)])
+                            _logger.info('Open {} - {} Success, get {} record(s)'.format(country, city, len(a)))
+                        except:
+                            need_to_add.append([i, country, city, no_similar, to_merge, -1])
+                            _logger.info('Open {} - {} Error, Cannot open rodex_hotel_result.csv'.format(country, city))
+
+                        file = open(path + '/' + city + '.json', 'w')
+                        file.write(json.dumps(current_hotel_objs))
+                        file.close()
+
+        # Write Result
+        _logger.info('Write in XD')
+        with open('/var/log/cache_hotel/jupiter_master/00Result00/result_data.csv', 'w') as csvFile:
+            writer = csv.writer(csvFile)
+            writer.writerows(need_to_add)
+        csvFile.close()
+        return True
+
+

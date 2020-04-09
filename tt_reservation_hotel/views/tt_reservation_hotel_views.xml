@@ -491,9 +491,9 @@
         <field name="domain">[]</field>
         <field name="context">
             {
-            'form_view_ref': 'tt_reservation_hotel.tt_hotel_reservation_form',
-            'tree_view_ref': 'tt_reservation_hotel.tt_hotel_reservation_view_tree',
-            'search_default_cancel': 1
+                'form_view_ref': 'tt_reservation_hotel.tt_hotel_reservation_form',
+                'tree_view_ref': 'tt_reservation_hotel.tt_hotel_reservation_view_tree',
+                'search_default_cancel': 1
             }
         </field>
     </record>
