@@ -161,6 +161,8 @@
                             <field name="number"/>
                             <field name="payment_acquirer_id"/>
                             <field name="state"/>
+                            <field name="amount"/>
+                            <field name="unique_amount"/>
                         </group>
                     </sheet>
                 </form>

@@ -63,5 +63,16 @@
             <field name="account_name">Roda Express Sukses Payment Espay</field>
             <field name="website_published" eval="True"/>
         </record>
+
+        <record id="payment_acquirer_ho_payment_gateway_bca" model="payment.acquirer">
+            <field name="name">Transfer BANK BCA</field>
+            <field name="provider">manual</field>
+            <field name="type">payment_gateway</field>
+            <field name="agent_id" ref="tt_base.rodex_ho"/>
+            <field name="bank_id" ref="tt_base.tt_bank_id_1"/>
+            <field name="account_number">511.0150.000</field>
+            <field name="account_name">Roda Express Sukses Mandiri</field>
+            <field name="website_published" eval="True"/>
+        </record>
     </data>
 </odoo>

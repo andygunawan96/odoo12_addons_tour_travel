@@ -47,6 +47,10 @@ class TtPaymentApiCon(models.Model):
                     res = ERR.get_error(500, additional_message="VA Not Found")
             elif data['va_type'] == 'close':
                 res = ''
+                #ganti ke done
+                pay_acq_num = self.env['payment.acquirer.number'].search([('number', 'ilike', data['order_number'])])
+                if pay_acq_num:
+                    pay_acq_num[len(pay_acq_num)-1].state = 'done'
                 agent_id = self.env['tt.reservation.%s' % data['provider_type']].search([('name', '=', data['order_number'])]).agent_id
                 if not self.env['tt.payment'].search([('reference', '=', data['payment_ref'])]):
                     # topup
@@ -56,7 +60,7 @@ class TtPaymentApiCon(models.Model):
                     }
                     request = {
                         'amount': data['amount'],
-                        'seq_id': self.env.ref('tt_base.payment_acquirer_ho_payment_gateway').seq_id,
+                        'seq_id': self.env.ref('tt_base.payment_acquirer_ho_payment_gateway_bca').seq_id,
                         'currency_code': data['ccy'],
                         'payment_ref': data['payment_ref'],
                         'payment_seq_id': self.env.ref('tt_base.payment_acquirer_ho_payment_gateway').seq_id
@@ -103,6 +107,8 @@ class TtPaymentApiCon(models.Model):
                 res = ERR.get_error(additional_message='Reservation Not Found')
         elif action == 'get_payment_acquirer_payment_gateway':
             res = self.env['payment.acquirer.number'].create_payment_acq_api(data)
+        elif action == 'get_payment_acquirer_payment_gateway_frontend':
+            res = self.env['payment.acquirer.number'].get_payment_acq_api(data)
         else:
             raise RequestException(999)
 
