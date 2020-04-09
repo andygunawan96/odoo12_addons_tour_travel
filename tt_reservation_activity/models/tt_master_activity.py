@@ -133,6 +133,9 @@ class MasterActivity(models.Model):
     def action_sync_config_globaltix(self, start, end):
         self.sync_config('globaltix')
 
+    def action_sync_config_rodextrip_activity(self, start, end):
+        self.sync_config('rodextrip_activity')
+
     def action_sync_config_bemyguest(self, start, end):
         self.sync_config('bemyguest')
 
@@ -1365,45 +1368,72 @@ class MasterActivity(models.Model):
         try:
             result_objs = self.env['tt.activity.category'].sudo().search([])
             categories = result_objs.filtered(lambda x: x.type == 'category' and not x.parent_id)
-            sub_categories = {}
             categories_list = []
             for rec in categories:
-                categories_list.append({
-                    'name': rec.name,
-                    'id': rec.id,
-                })
                 child_list = []
                 for child in rec.child_ids:
                     child_list.append({
                         'name': child.name,
-                        'id': child.id,
+                        'uuid': child.id,
                     })
-                sub_categories[rec.name] = child_list
+                categories_list.append({
+                    'name': rec.name,
+                    'uuid': rec.id,
+                    'children': child_list
+                })
             types = result_objs.filtered(lambda x: x.type == 'type')
             types_list = []
             for type in types:
                 types_list.append({
                     'name': type.name,
-                    'id': type.id,
+                    'uuid': type.id,
                 })
 
             countries_list = []
             country_objs = self.env['res.country'].sudo().search([('provider_city_ids', '!=', False)])
             for country in country_objs:
-                # for rec in country.provider_city_ids:
-                #     if rec.provider_id.id == vendor_id:
-                city = self.get_cities_by_api(country.id)
+                state = self.get_states_by_api(country.id)
+                if state.get('error_code'):
+                    _logger.info(state['error_msg'])
+                    raise Exception(state['error_msg'])
+                if len(state['response'] > 0):
+                    state_list = []
+                    for temp_state in state['response']:
+                        temp_state.update({
+                            'cities': self.get_cities_state_by_api(int(temp_state['uuid']))
+                        })
+                        state_list.append(temp_state)
+                else:
+                    city = self.get_cities_by_api(country.id)
+                    if city.get('error_code'):
+                        _logger.info(city['error_msg'])
+                        raise Exception(city['error_msg'])
+                    city_list = []
+                    for temp_city in city['response']:
+                        city_list.append(temp_city)
+                    state_list = [{
+                        'name': False,
+                        'uuid': False,
+                        'cities': city_list
+                    }]
+
                 countries_list.append({
                     'name': country.name,
-                    'id': country.id,
-                    'city': city
+                    'code': country.code,
+                    'uuid': country.id,
+                    'states': state_list
                 })
 
             values = {
-                'categories': categories_list,
-                'sub_categories': sub_categories,
-                'types': types_list,
-                'countries': countries_list,
+                'categories': {
+                    'data': categories_list
+                },
+                'types': {
+                    'data': types_list
+                },
+                'locations': [{
+                    'countries': countries_list
+                }],
             }
             return ERR.get_no_error(values)
         except RequestException as e:
@@ -1420,7 +1450,41 @@ class MasterActivity(models.Model):
             for rec in result_objs:
                 cities.append({
                     'name': rec.name,
-                    'id': rec.id,
+                    'uuid': rec.id,
+                })
+            return ERR.get_no_error(cities)
+        except RequestException as e:
+            _logger.error(traceback.format_exc())
+            return e.error_dict()
+        except Exception as e:
+            _logger.error(traceback.format_exc())
+            return ERR.get_error(1021)
+
+    def get_states_by_api(self, id):
+        try:
+            result_objs = self.env['res.country.state'].sudo().search([('country_id', '=', int(id))])
+            states = []
+            for rec in result_objs:
+                states.append({
+                    'name': rec.name,
+                    'uuid': rec.id,
+                })
+            return ERR.get_no_error(states)
+        except RequestException as e:
+            _logger.error(traceback.format_exc())
+            return e.error_dict()
+        except Exception as e:
+            _logger.error(traceback.format_exc())
+            return ERR.get_error(1021)
+
+    def get_cities_state_by_api(self, id):
+        try:
+            result_objs = self.env['res.city'].sudo().search([('state_id', '=', int(id))])
+            cities = []
+            for rec in result_objs:
+                cities.append({
+                    'name': rec.name,
+                    'uuid': rec.id,
                 })
             return ERR.get_no_error(cities)
         except RequestException as e:
