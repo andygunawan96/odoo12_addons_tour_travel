@@ -1399,8 +1399,15 @@ class MasterActivity(models.Model):
                 if len(state['response']) > 0:
                     state_list = []
                     for temp_state in state['response']:
+                        city = self.get_cities_state_by_api(int(temp_state['uuid']))
+                        if city.get('error_code'):
+                            _logger.info(city['error_msg'])
+                            raise Exception(city['error_msg'])
+                        city_list = []
+                        for temp_city in city['response']:
+                            city_list.append(temp_city)
                         temp_state.update({
-                            'cities': self.get_cities_state_by_api(int(temp_state['uuid']))
+                            'cities': city_list
                         })
                         state_list.append(temp_state)
                 else:
