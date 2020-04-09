@@ -24,7 +24,7 @@
                     <filter string="Partial Proceed/Proceed" name="partial_proceed_proceed" domain="['|', ('state_visa','=','partial_proceed'),('state_visa','=','proceed')]"/>
                     <filter string="Partial Approved/Approved/Rejected" name="partial_approved_approved_rejected" domain="[('state_visa','in',['partial_approve','approve','reject'])]"/>
                     <filter string="Delivered/Done" name="delivered_done" domain="['|', ('state_visa','=','delivered'),('state_visa','=','done')]"/>
-                    <filter string="Canceled" name="cancel" domain="[('state_visa','=','cancel')]"/>
+                    <filter string="Canceled/Refund" name="cancel_refund" domain="[('state_visa','in',['cancel','refund'])]"/>
                 </group>
                 <separator/>
                 <filter name="today" string="Today" domain="[('date','&gt;=',time.strftime('%%Y-%%m-%%d'))]"/>
@@ -83,9 +83,7 @@
                 <button string="Process to Consulate" name="action_in_process_consulate_visa" type="object" attrs="{'invisible': [('state_visa', '!=', 'payment')]}" groups="tt_base.group_tt_tour_travel_operator"/>
                 <button string="Cancel" name="action_cancel_visa" type="object" attrs="{'invisible': [('state_visa', 'in', ['cancel','in_process','payment','process_by_consulate','partial_proceed','proceed','partial_approve','approve','reject','delivered','done','refund'])]}" groups="tt_base.group_tt_tour_travel_operator" confirm="Are you sure want to cancel?"/>
                 <button string="Cancel Process" name="action_cancel_visa" type="object" attrs="{'invisible': [('state_visa', 'not in', ['in_process', 'payment'])]}" groups="tt_base.group_tt_tour_travel_operator" confirm="Are you sure want to cancel?"/>
-                <button string="Calc. Expenses" name="action_calc_expenses_visa" type="object" groups="tt_base.group_tt_tour_travel_operator" state="issued" attrs="{'invisible': [('state_visa', 'in', ['draft','fail_booked','confirm','partial_validate','validate','to_vendor','vendor_process','delivered','done'])]}"/>
-<!--                    <button string="Calc. Channel Prices" name="calc_channel_service_charge_visa" type="object"/>-->
-<!--                    <button string="Recalculate Price" name="recalculate_price" type="object"/>-->
+                <button string="Calc. Expenses" name="action_calc_expenses_visa" type="object" groups="tt_base.group_tt_tour_travel_operator" state="issued" attrs="{'invisible': [('state_visa', 'in', ['draft','fail_booked','confirm','partial_validate','validate','to_vendor','vendor_process','delivered','done','cancel','refund'])]}"/>
             </button>
             <xpath expr="//div[hasclass('oe_button_box')]" position="inside">
                 <div class="oe_button_box" name="button_box">
@@ -139,6 +137,7 @@
             <field name="sid_booked" position="replace">
                 <field name="in_process_date"/>
                 <field name="estimate_date"/>
+                <field name="delivered_date"/>
                 <field name="done_date"/>
             </field>
             <xpath expr="//group[@name='paxgroup']" position="before">
@@ -353,7 +352,7 @@
     </record>
 
     <!--Visa Document Filter Cancel-->
-    <record model="ir.actions.act_window" id="tt_reservation_visa_cancel_view_action">
+    <record model="ir.actions.act_window" id="tt_reservation_visa_cancel_refund_view_action">
         <field name="name">Visa Document</field>
         <field name="res_model">tt.reservation.visa</field>
         <field name="view_type">form</field>
@@ -363,7 +362,7 @@
             {
             'form_view_ref': 'tt_reservation_visa.tt_reservation_visa_view_form',
             'tree_view_ref': 'tt_reservation_visa.tt_reservation_visa_view_tree',
-            'search_default_cancel': 1,
+            'search_default_cancel_refund': 1,
             }
         </field>
     </record>
@@ -402,7 +401,7 @@
               action="tt_reservation_visa_delivered_done_view_action" sequence="8"/>
 
     <!--Visa Document Menu Item Cancel-->
-    <menuitem id="menu_visa_cancel" parent="menu_visa_order" name="Cancel"
-              action="tt_reservation_visa_cancel_view_action" sequence="9"/>
+    <menuitem id="menu_visa_cancel_refund" parent="menu_visa_order" name="Cancel/Refund"
+              action="tt_reservation_visa_cancel_refund_view_action" sequence="9"/>
 
 </odoo>

@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <record model="ir.cron" id="cron_update_passport_booking_status">
+            <field name='name'>Update Passport Booking Status</field>
+            <field name="user_id" ref="base.user_root"/>
+            <field name='interval_number'>1</field>
+            <field name='interval_type'>days</field>
+            <field name="numbercall">-1</field>
+            <field name="active">False</field>
+            <field name="nextcall" eval="(datetime.now().isoformat())"/>
+            <field name="model_id" ref="tt_base.model_tt_cron_log"/>
+            <field name="code">model.cron_update_status_booking_passport()</field>
+            <field name="state">code</field>
+        </record>
+
+    </data>
+</odoo>

@@ -17,7 +17,8 @@ class TtCronLogInhResv(models.Model):
                     if rec.delivered_date:
                         delivered_date = rec.delivered_date
                         if delivered_date < datetime.now() + timedelta(days=1):
-                            rec.action_done_visa()
+                            for psg in rec.passenger_ids:
+                                psg.action_done()
                     else:
                         rec.delivered_date = datetime.now()
         except Exception as e:

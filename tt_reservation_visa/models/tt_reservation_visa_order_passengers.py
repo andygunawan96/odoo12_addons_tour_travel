@@ -86,7 +86,6 @@ class VisaOrderPassengers(models.Model):
     age = fields.Char('Age', readonly=1, compute="_compute_age", store=True)
     passport_number = fields.Char(string='Passport Number')
     passport_expdate = fields.Date(string='Passport Exp Date')
-    # passenger_domicile = fields.Char('Domicile', related='passenger_id.domicile', readonly=1)  # readonly=1
     process_status = fields.Selection(PROCESS_STATUS, string='Process Result',
                                       readonly=1)  # readonly=1
 
@@ -117,7 +116,6 @@ class VisaOrderPassengers(models.Model):
     channel_service_charge_ids = fields.Many2many('tt.service.charge', 'tt_reservation_visa_channel_charge_rel',
                                                   'passenger_id', 'service_charge_id', 'Channel Service Charges')
 
-    # use_vendor = fields.Boolean('Use Vendor', readonly=1, related='passport_id.use_vendor')
     notes = fields.Text('Notes (Agent to Customer)')
     notes_HO = fields.Text('Notes (HO to Agent)')
 
@@ -132,6 +130,8 @@ class VisaOrderPassengers(models.Model):
                                                 to_HO = documents sent to HO
                                                 waiting = Documents ready at HO
                                                 done = Documents given to customer''')
+
+    can_refund = fields.Boolean('Can Refund', related='visa_id.can_refund')
 
     state = fields.Selection(STATE, default='confirm', help='''draft = requested
                                                 confirm = HO accepted
@@ -174,6 +174,13 @@ class VisaOrderPassengers(models.Model):
             # set juga state visa_id ke draft
             if rec.visa_id.state_visa == 'confirm':
                 rec.visa_id.action_draft_visa()
+            elif rec.visa_id.state_visa == 'cancel':
+                is_all_draft = True
+                for psg in rec.visa_id.passenger_ids:
+                    if psg.state not in ['draft']:
+                        is_all_draft = False
+                if is_all_draft:
+                    rec.visa_id.action_draft_visa()
             rec.message_post(body='Passenger DRAFT')
 
     def action_confirm(self):
@@ -359,12 +366,13 @@ class VisaOrderPassengers(models.Model):
                 'to_agent_date': datetime.now()
             })
             rec.message_post(body='Passenger documents TO Agent')
-            is_sent = True
-            for psg in rec.visa_id.passenger_ids:
-                if psg.state not in ['to_agent']:
-                    is_sent = False
-            if is_sent:
-                rec.visa_id.action_delivered_visa()
+            if rec.visa_id.state_visa != 'delivered':
+                is_sent = True
+                for psg in rec.visa_id.passenger_ids:
+                    if psg.state not in ['to_agent']:
+                        is_sent = False
+                if is_sent:
+                    rec.visa_id.action_delivered_visa()
 
     # def action_ready(self):
     #     for rec in self:

@@ -26,7 +26,7 @@
     'data': [
         'security/ir.model.access.csv',
         'wizard/tt_agent_report_passport_view.xml',
-        'report/tt_agent_report_passport_menu.xml',
+        'report/tt_agent_report_passport_report.xml',
         'report/tt_agent_report_passport_template.xml',
     ],
     # only loaded in demonstration mode

@@ -203,7 +203,7 @@ class PassportOrderPassengers(models.Model):
 
     def action_cancel(self):
         for rec in self:
-            rec.passenger_id.write({
+            rec.passport_id.write({
                 'state': 'cancel',
                 'state_passport': 'cancel'
             })
