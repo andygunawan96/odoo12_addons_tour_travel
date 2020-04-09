@@ -43,8 +43,9 @@ class ReservationVisa(models.Model):
     def get_visa_summary(self):
         desc_text = ''
         for rec in self:
-            desc_text = 'Reservation Visa Country : ' + self.country_id.name + ' ' + 'Consulate : ' + \
-                        rec.immigration_consulate + ' ' + 'Journey Date : ' + str(rec.departure_date)
+            desc_text = 'Reservation Visa Country : ' + (self.country_id.name if self.country_id else '') + ' ' + \
+                        'Consulate : ' + (rec.immigration_consulate if rec.immigration_consulate else '') + ' ' + \
+                        'Journey Date : ' + str(rec.departure_date if rec.departure_date else '')
         return desc_text
 
     def action_create_invoice(self, data, context):

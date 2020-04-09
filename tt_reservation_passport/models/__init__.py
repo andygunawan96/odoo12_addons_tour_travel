@@ -8,3 +8,4 @@ from . import tt_reservation_passport_order_passengers
 from . import tt_reservation_passport_pricelist
 from . import tt_provider_passport
 from . import tt_service_charge_passport
+from . import tt_cron_log

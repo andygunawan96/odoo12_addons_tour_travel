@@ -1327,7 +1327,6 @@ class TtPassport(models.Model):
                 'sequence': passenger_obj.sequence
             }
             ssc_list.append(vals)
-            # passenger_env.search([('id', '=', 'passenger_ids[idx])].limit=1).cost_service_charge_ids.create(ssc_list))
             ssc_obj = passenger_obj.cost_service_charge_ids.create(vals)
             ssc_obj.write({
                 'passenger_passport_ids': [(6, 0, passenger_obj.ids)]

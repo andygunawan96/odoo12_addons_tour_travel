@@ -85,7 +85,7 @@
                         'default_currency_id': currency_id,
                         'default_adj_type': provider_type_id
                     }"/>
-                        <button string="Refund Request" name="%(tt_accounting.tt_refund_wizard_action_view)d" type="action" groups="tt_base.group_tt_agent_user_operator"
+                        <button string="Refund Request" name="%(tt_accounting.tt_refund_wizard_action_view)d" type="action" groups="tt_base.group_tt_agent_user_operator, base.user_admin"
                                        context="{
                         'default_res_model': res_model,
                         'default_res_id': id,

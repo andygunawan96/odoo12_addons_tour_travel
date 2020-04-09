@@ -45,12 +45,12 @@ class AgentReportVisa(models.TransientModel):
         sheet.write('J9', 'Issued By', style.table_head_center)
         sheet.write('K9', 'Issued Date', style.table_head_center)
         sheet.write('L9', 'In Process Date', style.table_head_center)
-        # sheet.write('M9', 'Ready Date', style.table_head_center)
         sheet.write('M9', 'Done Date', style.table_head_center)
         sheet.write('N9', 'Commission', style.table_head_center)
         sheet.write('O9', 'Grand Total', style.table_head_center)
         sheet.write('P9', 'NTA Amount', style.table_head_center)
         sheet.write('Q9', 'State', style.table_head_center)
+        sheet.write('R9', 'State Visa', style.table_head_center)
 
         # ====== SET WIDTH AND HEIGHT ==========
         sheet.set_row(0, row_height)  # set_row(row, height) -> row 0-4 (1-5)
@@ -76,6 +76,7 @@ class AgentReportVisa(models.TransientModel):
         sheet.set_column('O:O', 11)
         sheet.set_column('P:P', 11)
         sheet.set_column('Q:Q', 8)
+        sheet.set_column('R:R', 10)
 
         # ======= TABLE DATA ==========
         row_data = 8
@@ -85,13 +86,11 @@ class AgentReportVisa(models.TransientModel):
             sty_table_data = style.table_data  # data di table memiliki align 'left'
             sty_datetime = style.table_data_datetime  # style content untuk datetime
             sty_date = style.table_data_date  # style content untuk date
-            sty_amount = style.table_data_amount  # style content untuk amount
             if row_data % 2 == 1:  # Why need even style?
                 sty_table_data_center = style.table_data_center_even
                 sty_table_data = style.table_data_even
                 sty_datetime = style.table_data_datetime_even
                 sty_date = style.table_data_date_even
-                sty_amount = style.table_data_amount_even
 
             sheet.write(row_data, 0, row_data - 8, sty_table_data_center)  # No.
             sheet.write(row_data, 1, rec['name'], sty_table_data)  # Order Number
@@ -121,6 +120,7 @@ class AgentReportVisa(models.TransientModel):
             sheet.write(row_data, 14, rec['total'], sty_table_data_center)  # Grand Total
             sheet.write(row_data, 15, rec['total_nta'], sty_table_data_center)  # NTA Amount
             sheet.write(row_data, 16, BOOKING_STATE_STR[rec['state']] if rec['state'] else '', sty_table_data_center)  # State
+            sheet.write(row_data, 17, rec['state_visa'] if rec['state_visa'] else '', sty_table_data_center)  # State Visa
             sheet.set_row(row_data, row_height)  # Set new row
 
         workbook.close()

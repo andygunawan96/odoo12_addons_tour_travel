@@ -1325,13 +1325,36 @@ class MasterTour(models.Model):
             countries_list = []
             country_objs = self.env['res.country'].sudo().search([('provider_city_ids', '!=', False)])
             for country in country_objs:
-                # for rec in country.provider_city_ids:
-                #     if rec.provider_id.id == vendor_id:
-                city = self.get_cities_by_api(country.id)
+                state = self.get_states_by_api(country.id)
+                if state.get('error_code'):
+                    _logger.info(state['error_msg'])
+                    raise Exception(state['error_msg'])
+                if len(state['response']) > 0:
+                    state_list = []
+                    for temp_state in state['response']:
+                        temp_state.update({
+                            'cities': self.get_cities_state_by_api(int(temp_state['uuid']))
+                        })
+                        state_list.append(temp_state)
+                else:
+                    city = self.get_cities_by_api(country.id)
+                    if city.get('error_code'):
+                        _logger.info(city['error_msg'])
+                        raise Exception(city['error_msg'])
+                    city_list = []
+                    for temp_city in city['response']:
+                        city_list.append(temp_city)
+                    state_list = [{
+                        'name': False,
+                        'uuid': False,
+                        'cities': city_list
+                    }]
+
                 countries_list.append({
                     'name': country.name,
-                    'id': country.id,
-                    'city': city
+                    'code': country.code,
+                    'uuid': country.id,
+                    'states': state_list
                 })
 
             values = {
@@ -1352,7 +1375,6 @@ class MasterTour(models.Model):
             for rec in result_objs:
                 cities.append({
                     'name': rec.name,
-                    'id': rec.id,
                 })
             return ERR.get_no_error(cities)
         except RequestException as e:

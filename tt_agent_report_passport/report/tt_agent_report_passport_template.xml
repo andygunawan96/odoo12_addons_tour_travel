@@ -33,7 +33,6 @@
                                     <th style="padding: 2px; font-size: 14px">Issued By</th>
                                     <th style="padding: 2px; font-size: 14px">Issued Date</th>
                                     <th style="padding: 2px; font-size: 14px">In Process Date</th>
-                                    <th style="padding: 2px; font-size: 14px">Ready Date</th>
                                     <th style="padding: 2px; font-size: 14px">Done Date</th>
                                     <th style="padding: 2px; font-size: 14px">Commission</th>
                                     <th style="padding: 2px; font-size: 14px">Grand Total</th>
@@ -65,11 +64,6 @@
                                             <t t-esc="line['in_process_date'].strftime('%Y-%m-%d %H:%M:%S')"/>
                                         </t>
                                     </td>
-<!--                                    <td style="padding: 2px; font-weight: 200; font-size: 14px">-->
-<!--                                        <t t-if="line['ready_date']">-->
-<!--                                            <t t-esc="line['ready_date'].strftime('%Y-%m-%d %H:%M:%S')"/>-->
-<!--                                        </t>-->
-<!--                                    </td>-->
                                     <td style="padding: 2px; font-weight: 200; font-size: 14px">
                                         <t t-if="line['done_date']">
                                             <t t-esc="line['done_date'].strftime('%Y-%m-%d %H:%M:%S')"/>

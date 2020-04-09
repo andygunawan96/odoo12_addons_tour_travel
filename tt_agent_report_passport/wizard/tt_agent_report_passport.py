@@ -12,7 +12,6 @@ class AgentReportPassport(models.TransientModel):
                               ('partial_proceed', 'Partial Proceed'), ('proceed', 'Proceed'),
                               ('delivered', 'Delivered'), ('done', 'Done')],
                              'State', default='all')
-    # ('ready', 'Ready'),
 
     def _print_report(self, data):
         records = {

@@ -44,8 +44,7 @@ class ReservationPassport(models.Model):
     def get_passport_summary(self):
         desc_text = ''
         for rec in self:
-            desc_text = 'Reservation Passport Immigration : ' + rec.immigration_consulate + ' ' + \
-                        'Journey Date : ' + str(rec.departure_date)
+            desc_text = 'Reservation Passport Immigration : ' + (rec.immigration_consulate if rec.immigration_consulate else '')
         return desc_text
 
     def action_create_invoice(self, data, context):  #
