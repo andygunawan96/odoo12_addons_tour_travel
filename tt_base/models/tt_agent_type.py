@@ -1,4 +1,5 @@
 from odoo import models, fields, api, _
+from ...tools import variables
 
 
 class TtAgentType(models.Model):
