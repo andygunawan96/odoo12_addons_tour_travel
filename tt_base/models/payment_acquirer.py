@@ -3,10 +3,11 @@ import json,random
 import traceback,logging
 from ...tools import variables
 from ...tools import ERR,util
+from ...tools.ERR import RequestException
 from datetime import datetime, timedelta
 _logger = logging.getLogger(__name__)
 
-provider_type = {
+PROVIDER_TYPE = {
     'AL': 'airline',
     'TN': 'train',
     'PS': 'passport',
@@ -225,6 +226,12 @@ class PaymentAcquirerNumber(models.Model):
             rec.display_name_payment = "{} - {}".format(rec.payment_acquirer_id.name if rec.payment_acquirer_id.name != False else '',rec.number)
 
     def create_payment_acq_api(self, data):
+        provider_type = 'tt.reservation.%s' % PROVIDER_TYPE[data['order_number'].split('.')[0]]
+        booking_obj = self.env[provider_type].search([('name','=',data['order_number'])])
+
+        if not booking_obj:
+            raise RequestException(1001)
+
         payment_acq = self.search([('number', 'ilike', data['order_number'])])
         if payment_acq:
             #check datetime
@@ -236,7 +243,8 @@ class PaymentAcquirerNumber(models.Model):
                     'number': data['order_number'] + '.' + str(datetime.now().strftime('%Y%m%d%H:%M:%S')),
                     'unique_amount': data['unique_amount'],
                     'amount': data['amount'],
-                    'res_model': 'tt.reservation.%s' % provider_type[data['order_number'].split('.')[0]]
+                    'res_model': provider_type,
+                    'res_id': booking_obj.id
                 })
                 payment = {'order_number': payment.number}
             else:
@@ -247,7 +255,8 @@ class PaymentAcquirerNumber(models.Model):
                 'number': data['order_number'],
                 'unique_amount': data['unique_amount'],
                 'amount': data['amount'],
-                'res_model': 'tt.reservation.%s' % provider_type[data['order_number'].split('.')[0]]
+                'res_model': provider_type,
+                'res_id': booking_obj.id
             })
             payment = {'order_number': payment.number}
         return ERR.get_no_error(payment)
@@ -291,10 +300,3 @@ class PaymentAcquirerNumber(models.Model):
         vals_list['lower_number'] = unique_amount-1000
         new_unique = super(PaymentAcquirerNumber, self).create(vals_list)
         return new_unique
-
-
-    def lower_unique(self):
-        return -1*self.upper_number
-
-    def upper_unique(self):
-        return self.upper_number
