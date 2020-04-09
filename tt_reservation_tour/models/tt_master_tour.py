@@ -1329,7 +1329,7 @@ class MasterTour(models.Model):
                 if state.get('error_code'):
                     _logger.info(state['error_msg'])
                     raise Exception(state['error_msg'])
-                if len(state['response'] > 0):
+                if len(state['response']) > 0:
                     state_list = []
                     for temp_state in state['response']:
                         temp_state.update({
