@@ -3,8 +3,18 @@ import json,random
 import traceback,logging
 from ...tools import variables
 from ...tools import ERR,util
-from datetime import datetime
+from datetime import datetime, timedelta
 _logger = logging.getLogger(__name__)
+
+provider_type = {
+    'AL': 'airline',
+    'TN': 'train',
+    'PS': 'passport',
+    'VS': 'visa',
+    'AT': 'activity',
+    'TR': 'tour',
+    'RESV': 'hotel'
+}
 
 class PaymentAcquirer(models.Model):
     _inherit = 'payment.acquirer'
@@ -146,10 +156,16 @@ class PaymentAcquirer(models.Model):
                         values[acq.type] = []
                     if acq.type != 'va' and acq.type != 'payment_gateway':
                         values[acq.type].append(acq.acquirer_format(amount,unique))
-
+            #payment gateway
             if util.get_without_empty(req, 'order_number'):
                 dom = [('website_published', '=', True), ('company_id', '=', self.env.user.company_id.id)]
                 dom.append(('agent_id', '=', self.env.ref('tt_base.rodex_ho').id))
+                pay_acq_num = self.env['payment.acquirer.number'].search([('number', 'ilike', req['order_number'])])
+                if pay_acq_num:
+                    unique = pay_acq_num[0].unique_amount * -1
+                else:
+                    unique = self.generate_unique_amount(amount).lower_number
+
                 for acq in self.sudo().search(dom):
                     if not values.get(acq.type):
                         values[acq.type] = []
@@ -198,7 +214,9 @@ class PaymentAcquirerNumber(models.Model):
     agent_id = fields.Many2one('tt.agent', 'Agent', readonly=True)
     payment_acquirer_id = fields.Many2one('payment.acquirer','Payment Acquirer')
     number = fields.Char('Number')
-    state = fields.Selection([('open', 'Open'), ('close', 'Closed'), ('done','Done')], 'Payment Type')
+    unique_amount = fields.Float('Unique Amount')
+    amount = fields.Float('Amount')
+    state = fields.Selection([('open', 'Open'), ('close', 'Closed'), ('done','Done'), ('cancel','Expired')], 'Payment Type')
     display_name_payment = fields.Char('Display Name',compute="_compute_display_name_payment")
 
     @api.depends('number','payment_acquirer_id')
@@ -215,7 +233,10 @@ class PaymentAcquirerNumber(models.Model):
             if divmod(time_delta.seconds, 3600)[0] > 0:
                 payment = self.env['payment.acquirer.number'].create({
                     'state': 'close',
-                    'number': data['order_number'] + '.' + str(datetime.now())
+                    'number': data['order_number'] + '.' + str(datetime.now().strftime('%Y%m%d%H:%M:%S')),
+                    'unique_amount': data['unique_amount'],
+                    'amount': data['amount'],
+                    'res_model': 'tt.reservation.%s' % provider_type[data['order_number'].split('.')[0]]
                 })
                 payment = {'order_number': payment.number}
             else:
@@ -223,10 +244,28 @@ class PaymentAcquirerNumber(models.Model):
         else:
             payment = self.env['payment.acquirer.number'].create({
                 'state': 'close',
-                'number': data['order_number']
+                'number': data['order_number'],
+                'unique_amount': data['unique_amount'],
+                'amount': data['amount'],
+                'res_model': 'tt.reservation.%s' % provider_type[data['order_number'].split('.')[0]]
             })
             payment = {'order_number': payment.number}
         return ERR.get_no_error(payment)
+
+    def get_payment_acq_api(self, data):
+        payment_acq = self.search([('number', '=', data['order_number'])])
+        if payment_acq:
+            res = {
+                'order_number': data['order_number'],
+                'create_date': payment_acq.create_date.strftime("%Y-%m-%d %H:%M:%S"),
+                'time_limit': (payment_acq.create_date + timedelta(hours=1)).strftime("%Y-%m-%d %H:%M:%S"),
+                'nomor_rekening': self.env.ref('tt_base.payment_acquirer_ho_payment_gateway_bca').account_number,
+                'amount': payment_acq.amount - payment_acq.unique_amount
+            }
+            return ERR.get_no_error(res)
+        else:
+            return ERR.get_error(additional_message='Order Number not found')
+
 
 class PaymentAcquirerNumber(models.Model):
     _name = 'unique.amount'

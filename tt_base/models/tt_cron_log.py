@@ -94,5 +94,13 @@ class TtCronLog(models.Model):
             self.create_cron_log_folder()
             self.write_cron_log('auto-expired unique amount')
 
+    def cron_expire_payment_acq_number(self):
+        try:
+            payment_acq = self.env['payment.acquirer.number'].search([('create_date','<',datetime.now() - timedelta(hours=1)), ('state', '=', 'close')])
+            for rec in payment_acq:
+                rec.state = 'cancel'
+        except:
+            self.create_cron_log_folder()
+            self.write_cron_log('auto-expired payment acquirer number')
 
 
