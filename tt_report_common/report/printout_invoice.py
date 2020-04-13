@@ -326,18 +326,30 @@ class PrintoutInvoiceHO(models.AbstractModel):
                 elif rec._name == 'tt.reservation.visa':
                     for psg in cost_charge.passenger_visa_ids:
                         if psg.name not in pax_dict:
+                            name = ''
+                            name += (psg.first_name or '') + ' ' + (psg.last_name or '') + ', ' + (psg.title or '') + \
+                                    ' (' + (psg.passenger_type if psg.passenger_type else '') + ') ' + \
+                                    (psg.pricelist_id.entry_type.capitalize() if psg.pricelist_id.entry_type else '') + ' ' + \
+                                    (psg.pricelist_id.visa_type.capitalize() if psg.pricelist_id.visa_type else '') + ' ' + \
+                                    (psg.pricelist_id.process_type.capitalize() if psg.pricelist_id.process_type else '') + \
+                                    ' (' + str(psg.pricelist_id.duration if psg.pricelist_id.duration else '-') + ' days)'
                             pax_dict[psg.name] = {}
-                            pax_dict[psg.name]['name'] = '%s, %s' % (
-                            ' '.join((psg.first_name or '', psg.last_name or '')), psg.title or '')
+                            pax_dict[psg.name]['name'] = name
                             pax_dict[psg.name]['total'] = cost_charge.amount
                         else:
                             pax_dict[psg.name]['total'] += cost_charge.amount
                 elif rec._name == 'tt.reservation.passport':
                     for psg in cost_charge.passenger_passport_ids:
                         if psg.name not in pax_dict:
+                            name = ''
+                            name += (psg.first_name or '') + ' ' + (psg.last_name or '') + ', ' + (psg.title or '') + \
+                                    ' (' + (psg.passenger_type if psg.passenger_type else '') + ') ' + \
+                                    (psg.pricelist_id.apply_type.capitalize() if psg.pricelist_id.apply_type else '') + ' ' + \
+                                    (psg.pricelist_id.passport_type.capitalize() if psg.pricelist_id.passport_type else '') + ' ' + \
+                                    (psg.pricelist_id.process_type.capitalize() if psg.pricelist_id.process_type else '') + \
+                                    ' (' + str((psg.pricelist_id.duration if psg.pricelist_id.duration else '-')) + ' days)'
                             pax_dict[psg.name] = {}
-                            pax_dict[psg.name]['name'] = '%s, %s' % (
-                                ' '.join((psg.first_name or '', psg.last_name or '')), psg.title or '')
+                            pax_dict[psg.name]['name'] = name
                             pax_dict[psg.name]['total'] = cost_charge.amount
                         else:
                             pax_dict[psg.name]['total'] += cost_charge.amount

@@ -1,4 +1,5 @@
 from odoo import models, fields, api, _
+from ...tools import variables
 
 
 class TtAgentType(models.Model):
@@ -26,6 +27,8 @@ class TtAgentType(models.Model):
     is_send_email_booked = fields.Boolean('Is Send Email Booked', default=False)
     menuitem_id = fields.Many2one('ir.ui.menu','Menuitem')
     sequence_prefix_id = fields.Many2one('ir.sequence','Sequence Prefix')
+    rounding_amount_type = fields.Selection(selection=variables.ROUNDING_AMOUNT_TYPE, string='Rounding Amount Type', help='Set rounding type amount in pricing', default='round')
+    rounding_places = fields.Integer('Rounding Places', default=0)
 
     @api.model
     def create(self, vals_list):
@@ -152,6 +155,8 @@ class TtAgentType(models.Model):
             'id': self.id,
             'name': self.name,
             'code': self.code,
+            'rounding_amount_type': self.rounding_amount_type,
+            'rounding_places': self.rounding_places,
         }
         return res
 

@@ -12,7 +12,7 @@ class ApiMonitor(models.Model):
 
     def create_monitor_api(self,req, context):
         try:
-            monitor_obj = self.search([('user_id','=',context['co_uid'])])
+            monitor_obj = self.search([('user_id','=',context['co_uid'])],limit=1)
             if not monitor_obj:
                 monitor_obj = self.create({
                     'user_id': context['co_uid']

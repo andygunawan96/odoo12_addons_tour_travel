@@ -24,7 +24,7 @@
                     <button string="Send to Agent" name="action_to_agent" type="object" attrs="{'invisible': ['|',('state', '!=', 'to_HO')]}" groups="tt_base.group_tt_tour_travel_operator"/>  <!--,('use_vendor', '!=', True)-->
                     <button string="Done" name="action_done" type="object" attrs="{'invisible': [('state', 'not in', ['to_agent'])]}" groups="tt_base.group_tt_agent_user_operator,tt_base.group_tt_tour_travel_operator"/>
                     <button string="Sync Requirements" name="action_sync_requirements" type="object" groups="tt_base.group_tt_tour_travel_operator"/>
-                    <button string="Cancel" name="action_cancel" type="object" attrs="{'invisible': [('state', 'not in', ['draft','confirm','validate','re_validate','re_confirm'])]}" groups="tt_base.group_tt_tour_travel_operator"/>
+                    <button string="Cancel" name="action_cancel" type="object" attrs="{'invisible': [('state', 'not in', ['draft','confirm','validate','re_validate','re_confirm','in_process','add_payment','confirm_payment'])]}" groups="tt_base.group_tt_tour_travel_operator"/>
                 </header>
                 <sheet>
                     <group string="Passenger Info">

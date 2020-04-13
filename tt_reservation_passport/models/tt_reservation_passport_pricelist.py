@@ -288,7 +288,8 @@ class PassportPricelist(models.Model):
             print(response)
             res = Response().get_no_error(response)
         except Exception as e:
-            res = Response().get_error(str(e), 500)
+            _logger.error(traceback.format_exc())
+            return ERR.get_error(500)
         return res
 
     def search_api(self, data):
@@ -354,7 +355,7 @@ class PassportPricelist(models.Model):
             res = Response().get_no_error(response)
         except Exception as e:
             _logger.error(traceback.format_exc())
-            res = Response().get_error(str(e), 500)
+            return ERR.get_error(500)
         return res
 
     def availability_api(self, data):
@@ -371,7 +372,7 @@ class PassportPricelist(models.Model):
             res = Response().get_no_error(response)
         except Exception as e:
             _logger.error(traceback.format_exc())
-            res = Response().get_error(str(e), 500)
+            return ERR.get_error(500)
         return res
 
     def get_inventory_api(self):
@@ -382,7 +383,7 @@ class PassportPricelist(models.Model):
             res = Response().get_no_error(res)
         except Exception as e:
             _logger.error(traceback.format_exc())
-            res = Response().get_error(str(e), 500)
+            return ERR.get_error(500)
         return res
 
     def to_dict(self):
@@ -437,7 +438,7 @@ class PassportPricelist(models.Model):
                 res = Response().get_no_error(res)
             else:
                 res = Response().get_error(str("Data Doesn't exist!"), 500)
+            return res
         except Exception as e:
             _logger.error(traceback.format_exc())
-            res = Response().get_error(str(e), 500)
-        return res
+            return ERR.get_error(500)

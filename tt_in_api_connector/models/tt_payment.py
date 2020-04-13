@@ -47,6 +47,10 @@ class TtPaymentApiCon(models.Model):
                     res = ERR.get_error(500, additional_message="VA Not Found")
             elif data['va_type'] == 'close':
                 res = ''
+                #ganti ke done
+                pay_acq_num = self.env['payment.acquirer.number'].search([('number', 'ilike', data['order_number'])])
+                if pay_acq_num:
+                    pay_acq_num[len(pay_acq_num)-1].state = 'done'
                 agent_id = self.env['tt.reservation.%s' % data['provider_type']].search([('name', '=', data['order_number'])]).agent_id
                 if not self.env['tt.payment'].search([('reference', '=', data['payment_ref'])]):
                     # topup
@@ -103,6 +107,8 @@ class TtPaymentApiCon(models.Model):
                 res = ERR.get_error(additional_message='Reservation Not Found')
         elif action == 'get_payment_acquirer_payment_gateway':
             res = self.env['payment.acquirer.number'].create_payment_acq_api(data)
+        elif action == 'get_payment_acquirer_payment_gateway_frontend':
+            res = self.env['payment.acquirer.number'].get_payment_acq_api(data)
         else:
             raise RequestException(999)
 
@@ -151,3 +157,29 @@ class TtPaymentApiCon(models.Model):
             'provider': 'espay'
         }
         return self.send_request_to_gateway('%s/payment' % (self.url), data, 'merchant_info')
+
+    def send_payment(self, req):
+        request = {
+            'order_number': req.get('order_number'),
+            'proxy_co_uid': req.get('user_id', False),
+        }
+        provider = req.get('provider_type')
+        action = ''
+        if provider == 'activity':
+            action = "issued_booking"
+        elif provider == 'airline':
+            action = "issued"
+        elif provider == 'hotel':
+            action = "issued"
+        elif provider == 'passport':
+            action = "issued"
+        elif provider == 'tour':
+            action = "issued_booking"
+        elif provider == 'train':
+            action = "issued"
+        elif provider == 'visa':
+            action = "issued"
+        return self.send_request_to_gateway('%s/booking/%s' % (self.url, provider),
+                                            request,
+                                            action,
+                                            timeout=180)

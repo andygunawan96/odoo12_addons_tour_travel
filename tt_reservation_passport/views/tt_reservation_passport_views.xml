@@ -18,7 +18,7 @@
                     <filter string="Partial Proceed/Proceed" name="partial_proceed_proceed" domain="['|', ('state_passport','=','partial_proceed'),('state_passport','=','proceed')]"/>
                     <filter string="Partial Approved/Approved/Rejected" name="partial_approved_approved_rejected" domain="[('state_passport','in',['partial_approve','approve','reject'])]"/>
                     <filter string="Delivered/Done" name="delivered_done" domain="['|', ('state_passport','=','delivered'),('state_passport','=','done')]"/>
-                    <filter string="Canceled" name="cancel" domain="[('state_passport','=','cancel')]"/>
+                    <filter string="Canceled/Refund" name="cancel_refund" domain="[('state_passport','in',['cancel','refund'])]"/>
                 </group>
                 <separator/>
                 <filter name="today" string="Today" domain="[('date','&gt;=',time.strftime('%%Y-%%m-%%d'))]"/>
@@ -71,9 +71,9 @@
                 <button string="Validate" name="action_validate_passport" type="object" attrs="{'invisible': [('state_passport', 'not in', ['confirm','partial_validate'])]}" groups="tt_base.group_tt_tour_travel_operator"/>
                 <button string="In Process" name="action_in_process_passport" type="object" attrs="{'invisible': [('state_passport', 'not in', ['validate'])]}" groups="tt_base.group_tt_tour_travel_operator"/>
                 <button string="Process to Immigration" name="action_in_process_immigration_passport" type="object" attrs="{'invisible': [('state_passport', '!=', 'payment')]}" groups="tt_base.group_tt_tour_travel_operator"/>
-                <button string="Cancel" name="action_cancel_passport" type="object" attrs="{'invisible': [('state_passport', 'in', ['cancel','in_process','payment','process_by_immigration','partial_proceed','proceed','delivered','done'])]}" groups="tt_base.group_tt_tour_travel_operator"/>
+                <button string="Cancel" name="action_cancel_passport" type="object" attrs="{'invisible': [('state_passport', 'in', ['cancel','in_process','payment','process_by_immigration','partial_proceed','proceed','delivered','done','refund'])]}" groups="tt_base.group_tt_tour_travel_operator"/>
                 <button string="Cancel Process" name="action_cancel_passport" type="object" attrs="{'invisible': [('state_passport', 'not in', ['in_process', 'payment'])]}" groups="tt_base.group_tt_tour_travel_operator" confirm="Are you sure want to cancel?"/>
-                <button string="Calc. Expenses" name="action_calc_expenses_passport" type="object" groups="tt_base.group_tt_tour_travel_operator" state="issued" attrs="{'invisible': [('state_passport', 'in', ['draft','confirm','partial_validate','validate','delivered','done'])]}"/>
+                <button string="Calc. Expenses" name="action_calc_expenses_passport" type="object" groups="tt_base.group_tt_tour_travel_operator" state="issued" attrs="{'invisible': [('state_passport', 'in', ['draft','confirm','partial_validate','validate','delivered','done','cancel','refund'])]}"/>
             </button>
             <xpath expr="//div[hasclass('oe_button_box')]" position="inside">
                 <div class="oe_button_box" name="button_box">
@@ -319,7 +319,7 @@
     </record>
 
     <!--Passport Document Filter Cancel-->
-    <record model="ir.actions.act_window" id="tt_reservation_passport_cancel_view_action">
+    <record model="ir.actions.act_window" id="tt_reservation_passport_cancel_refund_view_action">
         <field name="name">Passport Document</field>
         <field name="res_model">tt.reservation.passport</field>
         <field name="view_type">form</field>
@@ -329,7 +329,7 @@
             {
                 'form_view_ref': 'tt_reservation_passport.tt_reservation_passport_view_form',
                 'tree_view_ref': 'tt_reservation_passport.tt_reservation_passport_view_tree',
-                'search_default_cancel': 1,
+                'search_default_cancel_refund': 1,
             }
         </field>
     </record>
@@ -364,6 +364,6 @@
 
     <!--Passport Document Menu Item Cancel-->
     <menuitem id="menu_passport_cancel" parent="menu_passport_order"
-              name="Cancel" action="tt_reservation_passport_cancel_view_action" sequence="8"/>
+              name="Cancel/Refund" action="tt_reservation_passport_cancel_refund_view_action" sequence="8"/>
 
 </odoo>

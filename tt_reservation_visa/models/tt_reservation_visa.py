@@ -63,9 +63,10 @@ class TtVisa(models.Model):
                                         vendor_process = Documents proceed by Vendor
                                         in_process = in process by HO
                                         payment = payment to embassy
-                                        process_by_consulate = process to consulate/immigration
-                                        partial proceed = partial proceed by consulate/immigration
-                                        proceed = proceed by consulate/immigration
+                                        process_by_consulate = process to consulate
+                                        partial proceed = partial proceed by consulate
+                                        proceed = proceed by consulate
+                                        approved = approved by consulate
                                         delivered = Documents sent to agent
                                         done = Documents ready at agent or given to customer''')
 
@@ -75,7 +76,6 @@ class TtVisa(models.Model):
                                 readonly=True)
     payment_date = fields.Date('Payment Date', help='Date when accounting must pay the vendor')
     use_vendor = fields.Boolean('Use Vendor', readonly=True, default=False)
-    vendor = fields.Char('Vendor Name')
     receipt_number = fields.Char('Reference Number')
     vendor_ids = fields.One2many('tt.reservation.visa.vendor.lines', 'visa_id', 'Expenses')
 
@@ -89,7 +89,6 @@ class TtVisa(models.Model):
 
     validate_date = fields.Datetime('Validate Date', readonly=1)
     validate_uid = fields.Many2one('res.users', 'Validate By', readonly=1)
-    payment_uid = fields.Many2one('res.users', 'Payment By', readonly=1)
 
     sale_service_charge_ids = fields.One2many('tt.service.charge', 'visa_id', 'Service Charge',
                                               readonly=True, states={'draft': [('readonly', False)]})
@@ -110,8 +109,6 @@ class TtVisa(models.Model):
     proof_of_consulate = fields.Many2many('ir.attachment', string="Proof of Consulate")
 
     immigration_consulate = fields.Char('Immigration Consulate', readonly=1, compute="_compute_immigration_consulate")
-
-    agent_commission = fields.Monetary('Agent Commission', default=0, compute="_compute_agent_commission")
 
     printout_handling_ho_id = fields.Many2one('tt.upload.center', readonly=True)
     printout_handling_customer_id = fields.Many2one('tt.upload.center', readonly=True)
@@ -350,6 +347,10 @@ class TtVisa(models.Model):
         # jika state : in_process, partial_proceed, proceed, delivered, ready, done, create reverse ledger
         if self.state_visa in ['in_process', 'payment']:
             self.can_refund = True
+        if self.commercial_state == 'Unpaid':
+            self.write({
+                'use_vendor': False
+            })
         # set semua state passenger ke cancel
         for rec in self.passenger_ids:
             rec.action_cancel()
@@ -361,15 +362,10 @@ class TtVisa(models.Model):
         self.write({
             'state_visa': 'cancel',
             'state': 'cancel',
+            'cancel_uid': self.env.user.id,
+            'cancel_date': datetime.now()
         })
         self.message_post(body='Order CANCELED')
-
-    # def action_ready_visa(self):
-    #     self.write({
-    #         'state_visa': 'ready',
-    #         'ready_date': datetime.now()
-    #     })
-    #     self.message_post(body='Order READY')
 
     def action_done_visa(self):
         self.write({
@@ -381,9 +377,6 @@ class TtVisa(models.Model):
     def action_expired(self):
         super(TtVisa, self).action_expired()
         self.state_visa = 'expired'
-
-    def action_refund_visa(self):
-        raise UserError(_('Not implemented.'))
 
     def payment_visa_api(self, req, context):
         return self.payment_reservation_api('visa', req, context)
@@ -1443,9 +1436,9 @@ class TtVisa(models.Model):
                         for intvw in pax.interview_ids:
                             interview_list.append({
                                 'datetime': str(intvw.datetime),
-                                'ho_employee': intvw.ho_employee.name,
+                                'ho_employee': intvw.ho_employee,
                                 'meeting_point': intvw.meeting_point,
-                                'location': intvw.location_id.name
+                                'location': intvw.location_interview_id
                             })
                     interview['interview_list'] = interview_list
                     """ Biometrics """
@@ -1454,9 +1447,9 @@ class TtVisa(models.Model):
                         for bio in pax.biometrics_ids:
                             biometrics_list.append({
                                 'datetime': str(bio.datetime),
-                                'ho_employee': bio.ho_employee.name,
+                                'ho_employee': bio.ho_employee,
                                 'meeting_point': bio.meeting_point,
-                                'location': bio.location_id.name
+                                'location': bio.location_biometrics_id
                             })
                     biometrics['biometrics_list'] = biometrics_list
                     passenger.append({
@@ -1465,7 +1458,6 @@ class TtVisa(models.Model):
                         'last_name': pax.last_name,
                         'birth_date': str(pax.birth_date),
                         'gender': pax.gender,
-                        # 'age': pax.passenger_id.age or '',
                         'passport_number': pax.passport_number or '',
                         'passport_expdate': str(pax.passport_expdate) or '',
                         'visa': {
@@ -1513,7 +1505,7 @@ class TtVisa(models.Model):
             return e.error_dict()
         except Exception as e:
             _logger.error(traceback.format_exc())
-            return ERR.get_error(1013)
+            return ERR.get_error(1013, additional_message='There\'s something wrong.')
 
     def state_booking_visa_api(self,data, context):
         book_obj = self.env['tt.reservation.visa'].search([('name', '=', data.get('order_number'))], limit=1)
@@ -1639,14 +1631,22 @@ class TtVisa(models.Model):
                 'order_number': book_obj.name
             }
             res = self.get_booking_visa_api(response, context)
+            return res
         except RequestException as e:
             _logger.error(traceback.format_exc())
+            try:
+                book_obj.notes += str(datetime.now()) + '\n' + traceback.format_exc()+'\n'
+            except:
+                _logger.error('Creating Notes Error')
             return e.error_dict()
         except Exception as e:
-            res = Response().get_error(str(e), 500)
+            _logger.error(traceback.format_exc())
+            try:
+                book_obj.notes += str(datetime.now()) + '\n' + traceback.format_exc() + '\n'
+            except:
+                _logger.error('Creating Notes Error')
             self.env.cr.rollback()
-            _logger.error(msg=str(e) + '\n' + traceback.format_exc())
-        return res
+            return ERR.get_error(1004, additional_message='There\'s something wrong.')
 
     # to generate sale service charge
     def calculate_service_charge(self):
@@ -1878,7 +1878,7 @@ class TtVisa(models.Model):
                     'passenger_type': psg['pax_type'],
                     'notes': psg.get('notes'),
                     # Pada state request, pax akan diberi expired date dg durasi tergantung dari paket visa yang diambil
-                    'expired_date': fields.Date.today() + timedelta(days=pricelist_obj.duration),
+                    # 'expired_date': fields.Date.today() + timedelta(days=pricelist_obj.duration),
                     'sequence': int(idx+1)
                 })
                 if 'identity' in psg:
@@ -2221,20 +2221,6 @@ class TtVisa(models.Model):
         # return visa_ho_invoice_id.report_action(self, data=datas)
 
     ######################################################################################################
-    # CRON
-    ######################################################################################################
-
-    def cron_check_visa_pax_expired_date(self):
-        visa_draft = self.search([('state_visa', '=', 'draft')])
-        for rec in visa_draft:
-            expired = False
-            for psg in rec.passenger_ids:
-                if psg.expired_date <= fields.Date.today():
-                    expired = True
-            if expired:
-                rec.action_cancel_visa()
-
-    ######################################################################################################
     # OTHERS
     ######################################################################################################
 
@@ -2304,20 +2290,12 @@ class TtVisa(models.Model):
             _logger.error('Entah status apa')
             raise RequestException(1006)
 
-    @api.onchange('state')
-    @api.depends('state')
-    def _compute_expired_visa(self):
-        for rec in self:
-            if rec.state == 'expired':
-                rec.state_visa = 'expired'
-
-    def _compute_agent_commission(self):
-        for rec in self:
-            agent_comm = 0
-            for sale in rec.sale_service_charge_ids:
-                if sale.charge_code == 'rac':
-                    agent_comm += sale.total
-            rec.agent_commission = abs(agent_comm)
+    # @api.onchange('state')
+    # @api.depends('state')
+    # def _compute_expired_visa(self):
+    #     for rec in self:
+    #         if rec.state == 'expired':
+    #             rec.state_visa = 'expired'
 
     @api.multi
     @api.depends('passenger_ids')

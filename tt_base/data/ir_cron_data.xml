@@ -4,7 +4,7 @@
         <field name="name">Top up admin</field>
         <field name="login">Top_Up_Admin</field>
         <field name="password">1q2w3e4r5t</field>
-        <field name="groups_id" eval="[(4, ref('tt_base.group_tt_accounting_manager')), (4, ref('tt_base.group_tt_tour_travel_operator')), (4, ref('base.group_erp_manager'))]"/>
+        <field name="groups_id" eval="[(4, ref('tt_base.group_tt_accounting_manager')), (4, ref('tt_base.group_tt_tour_travel_operator')), (4, ref('base.group_system'))]"/>
     </record>
     <record model="ir.cron" id="cron_reset_payment_unique_amount">
         <field name='name'>Auto-reset Payment Unique Amount</field>
@@ -83,5 +83,18 @@
         <field name="state">code</field>
         <field name="model_id" ref="tt_base.model_tt_cron_log"/>
         <field name="code">model.cron_expire_unique_amount()</field>
+    </record>
+
+    <record model="ir.cron" id="cron_expire_payment_acquirer_number">
+        <field name='name'>Auto-Expired Payment Acquirer Number</field>
+        <field name="user_id" ref="base.user_root"/>
+        <field name='interval_number'>30</field>
+        <field name='interval_type'>minutes</field>
+        <field name="numbercall">-1</field>
+        <field name="nextcall" eval="datetime.now().isoformat()"/>
+        <field name="active">True</field>
+        <field name="state">code</field>
+        <field name="model_id" ref="tt_base.model_tt_cron_log"/>
+        <field name="code">model.cron_expire_payment_acq_number()</field>
     </record>
 </odoo>
