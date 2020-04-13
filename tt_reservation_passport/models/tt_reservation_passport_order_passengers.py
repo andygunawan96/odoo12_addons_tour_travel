@@ -182,6 +182,14 @@ class PassportOrderPassengers(models.Model):
             rec.write({
                 'state': 'validate'
             })
+            all_validate = True
+            for psg in rec.passport_id.passenger_ids:
+                if psg.state != 'validate':
+                    all_validate = False
+            if all_validate:
+                rec.passport_id.action_validate_passport()
+            else:
+                rec.passport_id.action_partial_validate_passport()
             rec.message_post(body='Passenger VALIDATED')
 
     def action_re_validate(self):
@@ -345,15 +353,6 @@ class PassportOrderPassengers(models.Model):
                     is_sent = False
             if is_sent:
                 rec.passport_id.action_delivered_passport()
-
-    # def action_ready(self):
-    #     for rec in self:
-    #         rec.write({
-    #             'state': 'ready',
-    #             'ready_date': datetime.now(),
-    #         })
-    #         rec.message_post(body='Passenger documents READY')
-    #         rec.passport_id.action_ready_passport()
 
     def action_done(self):
         for rec in self:

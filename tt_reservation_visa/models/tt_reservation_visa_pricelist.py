@@ -7,6 +7,7 @@ from bs4 import BeautifulSoup
 import base64
 import requests
 import os
+from ...tools import util,variables,ERR
 
 _logger = logging.getLogger(__name__)
 
@@ -308,7 +309,8 @@ class VisaPricelist(models.Model):
             response = visa
             res = Response().get_no_error(response)
         except Exception as e:
-            res = Response().get_error(str(e), 500)
+            _logger.error(traceback.format_exc())
+            return ERR.get_error(500)
         return res
 
     def get_inventory_api(self):
@@ -319,7 +321,7 @@ class VisaPricelist(models.Model):
             res = Response().get_no_error(res)
         except Exception as e:
             _logger.error(traceback.format_exc())
-            res = Response().get_error(str(e), 500)
+            return ERR.get_error(500)
         return res
 
     def to_dict(self):
@@ -388,7 +390,7 @@ class VisaPricelist(models.Model):
                 res = Response().get_error(str("Data Doesn't exist!"), 500)
         except Exception as e:
             _logger.error(traceback.format_exc())
-            res = Response().get_error(str(e), 500)
+            return ERR.get_error(500)
         return res
 
     def search_api(self, data):
@@ -453,7 +455,7 @@ class VisaPricelist(models.Model):
             res = Response().get_no_error(response)
         except Exception as e:
             _logger.error(traceback.format_exc())
-            res = Response().get_error(str(e), 500)
+            return ERR.get_error(500)
         return res
 
     def availability_api(self, data):
@@ -471,5 +473,5 @@ class VisaPricelist(models.Model):
             res = Response().get_no_error(response)
         except Exception as e:
             _logger.error(traceback.format_exc())
-            res = Response().get_error(str(e), 500)
+            return ERR.get_error(500)
         return res

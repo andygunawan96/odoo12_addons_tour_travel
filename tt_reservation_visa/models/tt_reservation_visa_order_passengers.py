@@ -207,6 +207,7 @@ class VisaOrderPassengers(models.Model):
                 rec.visa_id.action_validate_visa()
             else:
                 rec.visa_id.action_partial_validate_visa()
+            rec.message_post(body='Passenger VALIDATED')
 
     def action_re_validate(self):
         for rec in self:

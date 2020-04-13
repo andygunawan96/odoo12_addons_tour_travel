@@ -43,6 +43,7 @@
                             <field name="last_name" readonly="1"/>
                             <field name="birth_date" readonly="1"/>
                             <field name="age" readonly="1"/>
+                            <field name="gender" readonly="1"/>
                         </group>
                     </group>
                     <group string="Visa Info &#38; Progress">
