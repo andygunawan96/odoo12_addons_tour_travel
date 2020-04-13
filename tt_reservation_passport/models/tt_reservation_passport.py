@@ -60,10 +60,11 @@ class TtPassport(models.Model):
                                             cancel = request cancelled
                                             in_process = before payment
                                             payment = payment
-                                            partial proceed = partial proceed by consulate/immigration
-                                            proceed = proceed by consulate/immigration
+                                            partial proceed = partial proceed by immigration
+                                            proceed = proceed by immigration
+                                            approved = approved by immigration
                                             delivered = Documents sent to agent
-                                            done = Documents given to customer''')
+                                            done = Documents ready at agent or given to customer''')
 
     ho_profit = fields.Monetary('HO Profit')
 
@@ -71,7 +72,7 @@ class TtPassport(models.Model):
                                 readonly=True)  # estimasi tanggal selesainya paspor
     payment_date = fields.Date('Payment Date', help='Date when accounting must pay the vendor')
     use_vendor = fields.Boolean('Use Vendor', readonly=True, default=False)
-    vendor = fields.Char('Vendor Name')
+    # vendor = fields.Char('Vendor Name')
     receipt_number = fields.Char('Reference Number')
     vendor_ids = fields.One2many('tt.reservation.passport.vendor.lines', 'passport_id', 'Expenses')
 
@@ -86,7 +87,7 @@ class TtPassport(models.Model):
 
     validate_date = fields.Datetime('Validate Date', readonly=1)
     validate_uid = fields.Many2one('res.users', 'Validate By', readonly=1)
-    payment_uid = fields.Many2one('res.users', 'Payment By', readonly=1)
+    # payment_uid = fields.Many2one('res.users', 'Payment By', readonly=1)
 
     sale_service_charge_ids = fields.One2many('tt.service.charge', 'passport_id', 'Service Charge',
                                               readonly=True, states={'draft': [('readonly', False)]})
@@ -104,7 +105,7 @@ class TtPassport(models.Model):
 
     immigration_consulate = fields.Char('Immigration Consulate', readonly=1, compute="_compute_immigration_consulate")
 
-    agent_commission = fields.Monetary('Agent Commission', default=0, compute="_compute_agent_commission")
+    # agent_commission = fields.Monetary('Agent Commission', default=0, compute="_compute_agent_commission")
 
     printout_handling_ho_id = fields.Many2one('tt.upload.center', readonly=True)
     printout_handling_customer_id = fields.Many2one('tt.upload.center', readonly=True)
@@ -1219,14 +1220,22 @@ class TtPassport(models.Model):
                 'order_number': book_obj.name
             }
             res = self.get_booking_passport_api(response, context)
+            return res
         except RequestException as e:
             _logger.error(traceback.format_exc())
+            try:
+                book_obj.notes += str(datetime.now()) + '\n' + traceback.format_exc()+'\n'
+            except:
+                _logger.error('Creating Notes Error')
             return e.error_dict()
         except Exception as e:
-            res = Response().get_error(str(e), 500)
+            _logger.error(traceback.format_exc())
+            try:
+                book_obj.notes += str(datetime.now()) + '\n' + traceback.format_exc()+'\n'
+            except:
+                _logger.error('Creating Notes Error')
             self.env.cr.rollback()
-            _logger.error(msg=str(e) + '\n' + traceback.format_exc())
-        return res
+            return ERR.get_error(1004, additional_message='There\'s something wrong.')
 
     # to generate sale service charge
     def calculate_service_charge(self):
@@ -1443,7 +1452,7 @@ class TtPassport(models.Model):
                     raise RequestException(1004, additional_message='Error create Passenger Passport : Reference Code is Empty.')
                 pricelist_id = self.env['tt.reservation.passport.pricelist'].search([('reference_code', '=', psg['master_passport_Id'])]).id
                 if pricelist_id is False:
-                    raise RequestException(1004, additional_message='Error create Passenger Passport : Reference Code not Found.')
+                    raise RequestException(1004, additional_message='Error Create Passenger Passport : Reference Code not Found.')
                 pricelist_obj = pricelist_env.browse(pricelist_id)
                 psg_vals = passenger_ids[idx][0].copy_to_passenger()
                 psg_vals.update({
@@ -1653,13 +1662,13 @@ class TtPassport(models.Model):
             if rec.passenger_ids:
                 rec.immigration_consulate = rec.passenger_ids[0].pricelist_id.immigration_consulate
 
-    def _compute_agent_commission(self):
-        for rec in self:
-            agent_comm = 0
-            for sale in rec.sale_service_charge_ids:
-                if sale.charge_code == 'rac':
-                    agent_comm += sale.total
-            rec.agent_commission = abs(agent_comm)
+    # def _compute_agent_commission(self):
+    #     for rec in self:
+    #         agent_comm = 0
+    #         for sale in rec.sale_service_charge_ids:
+    #             if sale.charge_code == 'rac':
+    #                 agent_comm += sale.total
+    #         rec.agent_commission = abs(agent_comm)
 
     def _compute_total_price(self):
         for rec in self:

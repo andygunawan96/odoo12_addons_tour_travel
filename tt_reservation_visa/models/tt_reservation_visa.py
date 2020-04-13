@@ -63,9 +63,10 @@ class TtVisa(models.Model):
                                         vendor_process = Documents proceed by Vendor
                                         in_process = in process by HO
                                         payment = payment to embassy
-                                        process_by_consulate = process to consulate/immigration
-                                        partial proceed = partial proceed by consulate/immigration
-                                        proceed = proceed by consulate/immigration
+                                        process_by_consulate = process to consulate
+                                        partial proceed = partial proceed by consulate
+                                        proceed = proceed by consulate
+                                        approved = approved by consulate
                                         delivered = Documents sent to agent
                                         done = Documents ready at agent or given to customer''')
 
@@ -75,7 +76,6 @@ class TtVisa(models.Model):
                                 readonly=True)
     payment_date = fields.Date('Payment Date', help='Date when accounting must pay the vendor')
     use_vendor = fields.Boolean('Use Vendor', readonly=True, default=False)
-    vendor = fields.Char('Vendor Name')
     receipt_number = fields.Char('Reference Number')
     vendor_ids = fields.One2many('tt.reservation.visa.vendor.lines', 'visa_id', 'Expenses')
 
@@ -89,7 +89,6 @@ class TtVisa(models.Model):
 
     validate_date = fields.Datetime('Validate Date', readonly=1)
     validate_uid = fields.Many2one('res.users', 'Validate By', readonly=1)
-    payment_uid = fields.Many2one('res.users', 'Payment By', readonly=1)
 
     sale_service_charge_ids = fields.One2many('tt.service.charge', 'visa_id', 'Service Charge',
                                               readonly=True, states={'draft': [('readonly', False)]})
@@ -378,9 +377,6 @@ class TtVisa(models.Model):
     def action_expired(self):
         super(TtVisa, self).action_expired()
         self.state_visa = 'expired'
-
-    def action_refund_visa(self):
-        raise UserError(_('Not implemented.'))
 
     def payment_visa_api(self, req, context):
         return self.payment_reservation_api('visa', req, context)
@@ -1461,6 +1457,7 @@ class TtVisa(models.Model):
                         'first_name': pax.first_name,
                         'last_name': pax.last_name,
                         'birth_date': str(pax.birth_date),
+                        'gender': pax.gender,
                         'passport_number': pax.passport_number or '',
                         'passport_expdate': str(pax.passport_expdate) or '',
                         'visa': {
@@ -1634,14 +1631,22 @@ class TtVisa(models.Model):
                 'order_number': book_obj.name
             }
             res = self.get_booking_visa_api(response, context)
+            return res
         except RequestException as e:
             _logger.error(traceback.format_exc())
+            try:
+                book_obj.notes += str(datetime.now()) + '\n' + traceback.format_exc()+'\n'
+            except:
+                _logger.error('Creating Notes Error')
             return e.error_dict()
         except Exception as e:
-            res = Response().get_error(str(e), 500)
+            _logger.error(traceback.format_exc())
+            try:
+                book_obj.notes += str(datetime.now()) + '\n' + traceback.format_exc() + '\n'
+            except:
+                _logger.error('Creating Notes Error')
             self.env.cr.rollback()
-            _logger.error(msg=str(e) + '\n' + traceback.format_exc())
-        return res
+            return ERR.get_error(1004, additional_message='There\'s something wrong.')
 
     # to generate sale service charge
     def calculate_service_charge(self):
