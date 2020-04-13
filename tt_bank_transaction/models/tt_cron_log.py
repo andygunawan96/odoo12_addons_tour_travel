@@ -2,6 +2,7 @@ from odoo import api,models,fields
 from ...tools import variables
 import logging,traceback
 import re
+import json
 from datetime import datetime, timedelta
 _logger = logging.getLogger(__name__)
 
@@ -114,7 +115,8 @@ class ttCronTopUpValidator(models.Model):
                                         'provider_type': provider_type[book_obj.name.split('.')[0]]
                                     }
                                     res = self.env['tt.payment.api.con'].send_payment(req)
-                                    print(res)
+                                    i.state = 'done'
+                                    _logger.info(json.dumps(res))
                                     #tutup payment acq number
 
                     else:
