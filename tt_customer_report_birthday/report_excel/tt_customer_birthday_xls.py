@@ -57,8 +57,9 @@ class CustomerReportBirthday(models.TransientModel):
         sheet.write('B6', 'Day', style.table_head_center)
         sheet.write('C6', 'Month', style.table_head_center)
         sheet.write('D6', 'Customer Name', style.table_head_center)
+        # sheet.write('E6', 'Agent', style.table_head_center)
 
-        row_data = 8
+        row_data = 5
         for i in values['lines']:
             row_data += 1
             sty_table_data_center = style.table_data_center
@@ -73,6 +74,7 @@ class CustomerReportBirthday(models.TransientModel):
             sheet.write(row_data, 1, i['customer_birthday'], sty_table_data)
             sheet.write(row_data, 2, months[int(i['customer_birthmonth']) - 1], sty_table_data)
             sheet.write(row_data, 3, i['customer_name'], sty_table_data)
+            # sheet.write(row_data, 4, i['agent_id'], sty_table_data)
 
         workbook.close()
 
