@@ -60,6 +60,7 @@
                                 <field name="reference_id"/>
                                 <field name="parent_agent_id"/>
                                 <field name="agent_level"/>
+                                <field name="dummy_promotion" attrs="{'invisible':[('dummy_promotion','=',True)]}"/>
                             </group>
                             <group string="Registration Information">
                                 <field name="registration_num"/>

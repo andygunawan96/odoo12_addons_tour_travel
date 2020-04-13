@@ -53,11 +53,20 @@ class AgentRegistration(models.Model):
     registration_num = fields.Char('Registration No.', readonly=True)
     registration_fee = fields.Float('Registration Fee', store=True, compute='get_registration_fee')
     # promotion_id required supaya agent yang merekrut bisa dapat komisi
+
+    def get_promotion_ids(self):
+        promotions_list = []
+        promotion_objs = self.env['tt.agent.registration.promotion'].search([])
+        for rec in promotion_objs:
+            if rec.agent_type_id.id == self.parent_agent_id.agent_type_id.id:
+                if rec.start_date <= date.today() <= rec.end_date:
+                    promotions_list.append(rec.id)
+        return [('id', 'in', promotions_list)]
+
     promotion_id = fields.Many2one('tt.agent.registration.promotion', 'Promotion', readonly=True, required=False,
                                    states={'draft': [('readonly', False)], 'confirm': [('readonly', False)]},
-                                   domain=lambda self: [("agent_type_id", "=", self.env.user.agent_id.agent_type_id.id),
-                                                        ("start_date", "<=", date.today()),
-                                                        ("end_date", ">=", date.today())])
+                                   domain=[('id', '=', -1)])
+    dummy_promotion = fields.Boolean('Generate Promotions', default=False, help="Generate Promotions List")
     discount = fields.Float('Discount', readonly=True, compute='compute_discount')
     opening_balance = fields.Float('Opening Balance', readonly=True, states={'draft': [('readonly', False)],
                                                                              'confirm': [('readonly', False)]})
@@ -104,6 +113,20 @@ class AgentRegistration(models.Model):
 
     tac = fields.Html('Terms and Conditions', readonly=True, states={'draft': [('readonly', False)],
                                                                      'confirm': [('readonly', False)]})
+
+    @api.multi
+    def write(self, vals_list):
+        vals_list.update({
+            'dummy_promotion': False
+        })
+        return super(AgentRegistration, self).write(vals_list)
+
+    @api.depends('parent_agent_id', 'dummy_promotion')
+    @api.onchange('parent_agent_id', 'dummy_promotion')
+    def _onchange_domain_promotion(self):
+        return {'domain': {
+            'promotion_id': self.get_promotion_ids()
+        }}
 
     def print_agent_registration_invoice(self):
         data = {
