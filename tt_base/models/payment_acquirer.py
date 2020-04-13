@@ -279,7 +279,7 @@ class PaymentAcquirerNumber(models.Model):
             return ERR.get_error(additional_message='Order Number not found')
 
 
-class PaymentAcquirerNumber(models.Model):
+class PaymentUniqueAmount(models.Model):
     _name = 'unique.amount'
     _description = 'Rodex Model Unique Amount'
 
@@ -301,12 +301,5 @@ class PaymentAcquirerNumber(models.Model):
                 unique_amount = number
         vals_list['upper_number'] = unique_amount
         vals_list['lower_number'] = unique_amount-1000
-        new_unique = super(PaymentAcquirerNumber, self).create(vals_list)
+        new_unique = super(PaymentUniqueAmount, self).create(vals_list)
         return new_unique
-
-
-    def lower_unique(self):
-        return -1*self.upper_number
-
-    def upper_unique(self):
-        return self.upper_number
