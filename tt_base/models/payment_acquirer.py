@@ -256,7 +256,7 @@ class PaymentAcquirerNumber(models.Model):
                 'state': 'close',
                 'number': data['order_number'],
                 'unique_amount': data['unique_amount'],
-                'payment_acquirer_id': HO_acq.env['payment.acquirer'].search([('name', '=', data['seq_id'])]).id,
+                'payment_acquirer_id': HO_acq.env['payment.acquirer'].search([('seq_id', '=', data['seq_id'])]).id,
                 'amount': data['amount'],
                 'res_model': provider_type,
                 'res_id': booking_obj.id
