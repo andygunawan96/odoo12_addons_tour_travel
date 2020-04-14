@@ -162,6 +162,8 @@
                             <field name="state"/>
                             <field name="amount"/>
                             <field name="unique_amount"/>
+                            <field name="fee_amount"/>
+                            <field name="agent_id"/>
                         </group>
                     </sheet>
                 </form>
@@ -173,6 +175,7 @@
             <field name="model">payment.acquirer.number</field>
             <field name="arch" type="xml">
                 <tree>
+                    <field name="create_date"/>
                     <field name="number"/>
                     <field name="payment_acquirer_id"/>
                     <field name="state"/>
