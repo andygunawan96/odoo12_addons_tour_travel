@@ -60,16 +60,24 @@ class VisaInterviewBiometrics(models.Model):
                                              related="passenger_interview_id.pricelist_id", readonly=1)
     pricelist_biometrics_id = fields.Many2one('tt.reservation.visa.pricelist', 'Pricelist',
                                               related="passenger_biometrics_id.pricelist_id", readonly=1)
-    location_interview_id = fields.Char('Location', related="pricelist_interview_id.description")
-    location_biometrics_id = fields.Char('Location', related="pricelist_biometrics_id.description")
+    location_interview_id = fields.Char('Location', compute='compute_location_interview', store=True)
+    location_biometrics_id = fields.Char('Location', compute='compute_location_biometrics', store=True)
     datetime = fields.Datetime('Datetime')
     ho_employee = fields.Char('Employee')
     meeting_point = fields.Char('Meeting Point')
     description = fields.Char('Description')
 
-    @api.model
-    def get_user_HO(self):
-        return [('agent_id.name', '=', self.env.ref('tt_base.rodex_ho').name)]
+    @api.depends('datetime')
+    @api.onchange('datetime')
+    def compute_location_interview(self):
+        for rec in self:
+            rec.location_interview_id = rec.passenger_interview_id.pricelist_id.description
+
+    @api.depends('datetime')
+    @api.onchange('datetime')
+    def compute_location_biometrics(self):
+        for rec in self:
+            rec.location_biometrics_id = rec.passenger_biometrics_id.pricelist_id.description
 
 
 class VisaOrderPassengers(models.Model):
@@ -105,7 +113,6 @@ class VisaOrderPassengers(models.Model):
     out_process_date = fields.Datetime('Out Process Date', readonly=1)
     to_HO_date = fields.Datetime('Send to HO Date', readonly=1)
     to_agent_date = fields.Datetime('Send to Agent Date', readonly=1)
-    # ready_date = fields.Datetime('Ready Date', readonly=1)
     done_date = fields.Datetime('Done Date', readonly=1)
     expired_date = fields.Date('Expired Date', readonly=1)
 

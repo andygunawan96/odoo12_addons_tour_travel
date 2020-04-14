@@ -809,9 +809,9 @@ class AgentRegistration(models.Model):
                 if datetime.now() <= rec.registration_date + timedelta(minutes=2):
                     check = 1
 
-        context.update({
-            'co_uid': self.env.user.id
-        })
+        # context.update({
+        #     'co_uid': self.env.user.id
+        # })
 
         if check == 0:
             try:

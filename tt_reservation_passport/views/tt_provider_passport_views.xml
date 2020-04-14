@@ -75,9 +75,9 @@
         <field name="name">tt.provider.passport.tree.view</field>
         <field name="model">tt.provider.passport</field>
         <field name="arch" type="xml">
-            <tree>
-                <field name="pnr"/>
+            <tree create="false">
                 <field name="provider_id"/>
+                <field name="pnr"/>
                 <field name="state" string="Status"/>
             </tree>
         </field>

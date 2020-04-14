@@ -15,6 +15,7 @@
                     <filter string="Request" name="draft" domain="[('state_passport','=','draft')]"/>
                     <filter string="Confirm to HO/Validated by HO" name="confirm_validate" domain="['|', ('state_passport','=','confirm'),('state_passport','=','validate')]"/>
                     <filter string="In Process/Payment" name="in_process_payment" domain="['|', ('state_passport','=','in_process'),('state_passport','=','payment')]"/>
+                    <filter string="Process to Immigration" name="process_to_immigration" domain="[('state_passport','=','process_by_immigration')]"/>
                     <filter string="Partial Proceed/Proceed" name="partial_proceed_proceed" domain="['|', ('state_passport','=','partial_proceed'),('state_passport','=','proceed')]"/>
                     <filter string="Partial Approved/Approved/Rejected" name="partial_approved_approved_rejected" domain="[('state_passport','in',['partial_approve','approve','reject'])]"/>
                     <filter string="Delivered/Done" name="delivered_done" domain="['|', ('state_passport','=','delivered'),('state_passport','=','done')]"/>
@@ -73,7 +74,7 @@
                 <button string="Process to Immigration" name="action_in_process_immigration_passport" type="object" attrs="{'invisible': [('state_passport', '!=', 'payment')]}" groups="tt_base.group_tt_tour_travel_operator"/>
                 <button string="Cancel" name="action_cancel_passport" type="object" attrs="{'invisible': [('state_passport', 'in', ['cancel','in_process','payment','process_by_immigration','partial_proceed','proceed','delivered','done','refund'])]}" groups="tt_base.group_tt_tour_travel_operator"/>
                 <button string="Cancel Process" name="action_cancel_passport" type="object" attrs="{'invisible': [('state_passport', 'not in', ['in_process', 'payment'])]}" groups="tt_base.group_tt_tour_travel_operator" confirm="Are you sure want to cancel?"/>
-                <button string="Calc. Expenses" name="action_calc_expenses_passport" type="object" groups="tt_base.group_tt_tour_travel_operator" state="issued" attrs="{'invisible': [('state_passport', 'in', ['draft','confirm','partial_validate','validate','delivered','done','cancel','refund'])]}"/>
+                <button string="Calc. Expenses" name="action_calc_expenses_passport" type="object" groups="tt_base.group_tt_tour_travel_operator" state="issued" attrs="{'invisible': [('state_passport', 'in', ['draft','confirm','partial_validate','validate','delivered','done','cancel','refund','expired'])]}"/>
             </button>
             <xpath expr="//div[hasclass('oe_button_box')]" position="inside">
                 <div class="oe_button_box" name="button_box">
@@ -120,10 +121,6 @@
                     <field name="validate_date" readonly="1" class="oe_inline"/>
                 </div>
             </xpath>
-<!--            <xpath expr="//label[@for='issued_uid']" position="before">-->
-<!--                <field name="to_vendor_date" readonly="1" attrs="{'invisible': [('use_vendor', '!=', True)]}"/>-->
-<!--                <field name="vendor_process_date" readonly="1" attrs="{'invisible': [('use_vendor', '!=', True)]}"/>-->
-<!--            </xpath>-->
             <field name="sid_booked" position="replace">
                 <field name="in_process_date"/>
                 <field name="estimate_date"/>
@@ -139,18 +136,7 @@
             </xpath>
             <xpath expr="//page[@name='anchor']" position="before">
                 <page string="Passengers">
-                    <field name="passenger_ids" readonly="0">
-                        <tree create="false">
-                            <field name="title"/>
-                            <field name="first_name"/>
-                            <field name="last_name"/>
-                            <field name="gender"/>
-                            <field name="birth_date"/>
-                            <field name="nationality_id"/>
-                            <field name="process_status"/>
-                            <field name="state"/>
-                        </tree>
-                    </field>
+                    <field name="passenger_ids" readonly="0"/>
                 </page>
             </xpath>
             <xpath expr="//page[@name='anchor']" position="before">
@@ -171,13 +157,7 @@
             </xpath>
             <xpath expr="//page[@name='anchor']" position="before">
                 <page string="Vendor" name="vendor" groups="tt_base.group_tt_tour_travel_operator">
-                    <field name="provider_booking_ids">
-                        <tree create="false">
-                            <field name="provider_id"/>
-                            <field name="pnr"/>
-                            <field name="state"/>
-                        </tree>
-                    </field>
+                    <field name="provider_booking_ids"/>
                 </page>
             </xpath>
             <field name="total_fare" position="replace"/>
@@ -270,6 +250,22 @@
         </field>
     </record>
 
+    <!--Passport Document Filter In Process Payment-->
+    <record model="ir.actions.act_window" id="tt_reservation_passport_process_in_immigration_view_action">
+        <field name="name">Passport Document</field>
+        <field name="res_model">tt.reservation.passport</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+        <field name="search_view_id" ref="tt_reservation_passport_view_filter"/>
+        <field name="context">
+            {
+                'form_view_ref': 'tt_reservation_passport.tt_reservation_passport_view_form',
+                'tree_view_ref': 'tt_reservation_passport.tt_reservation_passport_view_tree',
+                'search_default_process_to_immigration': 1,
+            }
+        </field>
+    </record>
+
     <!--Passport Document Filter Partial Proceed Proceed-->
     <record model="ir.actions.act_window" id="tt_reservation_passport_partial_proceed_proceed_view_action">
         <field name="name">Passport Document</field>
@@ -350,20 +346,24 @@
     <menuitem id="menu_passport_in_process_payment" parent="menu_passport_order"
               name="In Process/Payment" action="tt_reservation_passport_in_process_payment_view_action" sequence="4"/>
 
-    <!--Passport Document Menu Item Partial Proceed Proceed-->
-    <menuitem id="menu_passport_partial_proceed_proceed" parent="menu_passport_order" name="Partial Proceed/Proceed"
-              action="tt_reservation_passport_partial_proceed_proceed_view_action" sequence="5"/>
+    <!--Passport Document Menu Item Process to Immigration-->
+    <menuitem id="menu_passport_process_to_immigration" parent="menu_passport_order"
+              name="Process to Immigration" action="tt_reservation_passport_process_in_immigration_view_action" sequence="5"/>
 
     <!--Passport Document Menu Item Partial Proceed Proceed-->
+    <menuitem id="menu_passport_partial_proceed_proceed" parent="menu_passport_order" name="Partial Proceed/Proceed"
+              action="tt_reservation_passport_partial_proceed_proceed_view_action" sequence="6"/>
+
+    <!--Passport Document Menu Item Partial Approved Approved Rejected-->
     <menuitem id="menu_passport_partial_approved_approved_rejected" parent="menu_passport_order" name="Partial Approved/Approved/Rejected"
-              action="tt_reservation_passport_partial_approved_approved_rejected_view_action" sequence="6"/>
+              action="tt_reservation_passport_partial_approved_approved_rejected_view_action" sequence="7"/>
 
     <!--Passport Document Menu Item Delivered Done-->
     <menuitem id="menu_passport_delivered_done" parent="menu_passport_order"
-              name="Delivered/Done" action="tt_reservation_passport_delivered_done_view_action" sequence="7"/>
+              name="Delivered/Done" action="tt_reservation_passport_delivered_done_view_action" sequence="8"/>
 
     <!--Passport Document Menu Item Cancel-->
     <menuitem id="menu_passport_cancel" parent="menu_passport_order"
-              name="Cancel/Refund" action="tt_reservation_passport_cancel_refund_view_action" sequence="8"/>
+              name="Cancel/Refund" action="tt_reservation_passport_cancel_refund_view_action" sequence="9"/>
 
 </odoo>

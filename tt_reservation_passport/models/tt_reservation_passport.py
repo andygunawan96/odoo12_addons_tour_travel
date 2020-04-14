@@ -51,7 +51,7 @@ class TtPassport(models.Model):
     country_id = fields.Many2one('res.country', 'Country', ondelete="cascade", readonly=True,
                                  states={'draft': [('readonly', False)]},
                                  default=lambda self: self.default_country_id())
-    duration = fields.Char('Duration', readonly=True, states={'draft': [('readonly', False)]})
+    # duration = fields.Char('Duration', readonly=True, states={'draft': [('readonly', False)]})
     total_cost_price = fields.Monetary('Total Cost Price', default=0, readonly=True)
 
     state_passport = fields.Selection(STATE_PASSPORT, 'State', default='draft', help='''draft = requested
@@ -66,15 +66,8 @@ class TtPassport(models.Model):
                                             delivered = Documents sent to agent
                                             done = Documents ready at agent or given to customer''')
 
-    ho_profit = fields.Monetary('HO Profit')
-
     estimate_date = fields.Date('Estimate Date', help='Estimate Process Done since the required documents submitted',
                                 readonly=True)  # estimasi tanggal selesainya paspor
-    payment_date = fields.Date('Payment Date', help='Date when accounting must pay the vendor')
-    use_vendor = fields.Boolean('Use Vendor', readonly=True, default=False)
-    # vendor = fields.Char('Vendor Name')
-    receipt_number = fields.Char('Reference Number')
-    vendor_ids = fields.One2many('tt.reservation.passport.vendor.lines', 'passport_id', 'Expenses')
 
     document_to_ho_date = fields.Datetime('Document to HO Date', readonly=1)
     ho_validate_date = fields.Datetime('HO Validate Date', readonly=1)
@@ -87,7 +80,6 @@ class TtPassport(models.Model):
 
     validate_date = fields.Datetime('Validate Date', readonly=1)
     validate_uid = fields.Many2one('res.users', 'Validate By', readonly=1)
-    # payment_uid = fields.Many2one('res.users', 'Payment By', readonly=1)
 
     sale_service_charge_ids = fields.One2many('tt.service.charge', 'passport_id', 'Service Charge',
                                               readonly=True, states={'draft': [('readonly', False)]})
@@ -104,8 +96,6 @@ class TtPassport(models.Model):
     acquirer_id = fields.Char('Payment Method', readonly=True)  # dipake di agent invoice
 
     immigration_consulate = fields.Char('Immigration Consulate', readonly=1, compute="_compute_immigration_consulate")
-
-    # agent_commission = fields.Monetary('Agent Commission', default=0, compute="_compute_agent_commission")
 
     printout_handling_ho_id = fields.Many2one('tt.upload.center', readonly=True)
     printout_handling_customer_id = fields.Many2one('tt.upload.center', readonly=True)
@@ -329,8 +319,8 @@ class TtPassport(models.Model):
             rec.action_cancel()
         for rec in self.provider_booking_ids:
             rec.action_cancel()
-        for rec3 in self.vendor_ids:
-            rec3.sudo().unlink()
+            for vendor in rec.vendor_ids:
+                vendor.sudo().unlink()
         self.write({
             'state_passport': 'cancel',
             'state': 'cancel',
@@ -338,13 +328,6 @@ class TtPassport(models.Model):
             'cancel_date': datetime.now()
         })
         self.message_post(body='Order CANCELED')
-
-    # def action_ready_passport(self):
-    #     self.write({
-    #         'state_passport': 'ready',
-    #         'ready_date': datetime.now()
-    #     })
-    #     self.message_post(body='Order READY')
 
     def action_done_passport(self):
         self.write({
@@ -1136,7 +1119,7 @@ class TtPassport(models.Model):
             contact_id = self.create_contact_api(contact[0], booker_id, context)
             passenger_ids = self.create_customer_api(passengers, context, booker_id, contact_id)  # create passenger
 
-            to_psg_ids = self._create_passport_order(passengers, passenger_ids)  # create passport order data['passenger']
+            to_psg_ids = self._create_passport_order(passengers, passenger_ids, context)  # create passport order data['passenger']
             if to_psg_ids['error_code'] == 0:
                 psg_ids = to_psg_ids['response']
             else:
@@ -1429,19 +1412,8 @@ class TtPassport(models.Model):
         print('Final : ' + str(ssc_list_final))
         return ssc_list_final
 
-    def _create_sale_service_charge(self, ssc_vals):
-        service_chg_obj = self.env['tt.service.charge']
-        ssc_ids = []
-        for ssc in ssc_vals:
-            ssc['passenger_passport_ids'] = [(6, 0, ssc['passenger_passport_ids'])]
-            ssc_obj = service_chg_obj.create(ssc)
-            print(ssc_obj.read())
-            ssc_ids.append(ssc_obj.id)
-        return ssc_ids
-
-    def _create_passport_order(self, passengers, passenger_ids):
+    def _create_passport_order(self, passengers, passenger_ids, context):
         try:
-            pricelist_env = self.env['tt.reservation.passport.pricelist'].sudo()
             to_psg_env = self.env['tt.reservation.passport.order.passengers'].sudo()
             to_req_env = self.env['tt.reservation.passport.order.requirements'].sudo()
             to_psg_list = []
@@ -1453,7 +1425,6 @@ class TtPassport(models.Model):
                 pricelist_id = self.env['tt.reservation.passport.pricelist'].search([('reference_code', '=', psg['master_passport_Id'])]).id
                 if pricelist_id is False:
                     raise RequestException(1004, additional_message='Error Create Passenger Passport : Reference Code not Found.')
-                pricelist_obj = pricelist_env.browse(pricelist_id)
                 psg_vals = passenger_ids[idx][0].copy_to_passenger()
                 psg_vals.update({
                     'name': psg_vals['first_name'] + ' ' + psg_vals['last_name'],
@@ -1462,7 +1433,6 @@ class TtPassport(models.Model):
                     'pricelist_id': pricelist_id,
                     'passenger_type': psg['pax_type'],
                     'notes': psg.get('notes'),
-                    'expired_date': fields.Date.today() + timedelta(days=pricelist_obj.duration),
                     'sequence': int(idx + 1)
                 })
                 to_psg_obj = to_psg_env.create(psg_vals)
@@ -1474,10 +1444,10 @@ class TtPassport(models.Model):
                         req_vals = {
                             'to_passenger_id': to_psg_obj.id,
                             'requirement_id': self.env['tt.reservation.passport.requirements'].search(
-                                [('id', '=', req['id'])], limit=1).id,
+                                [('reference_code', '=', req['id'])], limit=1).id,
                             'is_ori': req['is_original'],
                             'is_copy': req['is_copy'],
-                            'check_uid': self.env.user.id,
+                            'check_uid': context['co_uid'],
                             'check_date': datetime.now()
                         }
                         to_req_obj = to_req_env.create(req_vals)
@@ -1619,23 +1589,26 @@ class TtPassport(models.Model):
     def check_provider_state(self, context, pnr_list=[], hold_date=False, req={}):
         if all(rec.state == 'booked' for rec in self.provider_booking_ids):
             # booked
-            self.calculate_service_charge()
-            self.action_booked_api_passport(context, pnr_list, hold_date)
+            pass
+            # self.calculate_service_charge()
+            # self.action_booked_api_passport(context, pnr_list, hold_date)
         elif all(rec.state == 'issued' for rec in self.provider_booking_ids):
             # issued
+            pass
+            # issued
             ##get payment acquirer
-            if req.get('acquirer_seq_id'):
-                acquirer_id = self.env['payment.acquirer'].search([('seq_id', '=', req['acquirer_seq_id'])])
-                if not acquirer_id:
-                    raise RequestException(1017)
-            else:
-                # raise RequestException(1017)
-                acquirer_id = self.agent_id.default_acquirer_id
-
-            if req.get('member'):
-                customer_parent_id = acquirer_id.agent_id.id
-            else:
-                customer_parent_id = self.agent_id.customer_parent_walkin_id.id
+            # if req.get('acquirer_seq_id'):
+            #     acquirer_id = self.env['payment.acquirer'].search([('seq_id', '=', req['acquirer_seq_id'])])
+            #     if not acquirer_id:
+            #         raise RequestException(1017)
+            # else:
+            #     # raise RequestException(1017)
+            #     acquirer_id = self.agent_id.default_acquirer_id
+            #
+            # if req.get('member'):
+            #     customer_parent_id = acquirer_id.agent_id.id
+            # else:
+            #     customer_parent_id = self.agent_id.customer_parent_walkin_id.id
         elif all(rec.state == 'refund' for rec in self.provider_booking_ids):
             self.write({
                 'state': 'refund',
@@ -1661,14 +1634,6 @@ class TtPassport(models.Model):
         for rec in self:
             if rec.passenger_ids:
                 rec.immigration_consulate = rec.passenger_ids[0].pricelist_id.immigration_consulate
-
-    # def _compute_agent_commission(self):
-    #     for rec in self:
-    #         agent_comm = 0
-    #         for sale in rec.sale_service_charge_ids:
-    #             if sale.charge_code == 'rac':
-    #                 agent_comm += sale.total
-    #         rec.agent_commission = abs(agent_comm)
 
     def _compute_total_price(self):
         for rec in self:
