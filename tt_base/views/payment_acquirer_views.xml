@@ -47,7 +47,6 @@
                                 <field name="account_name" attrs="{'invisible': [('type','not in',['transfer','debit','credit','va'])]}"/>
                                 <field name="cust_fee" attrs="{'invisible': [('type','not in',['debit','credit'])]}"/>
                                 <field name="bank_fee" attrs="{'invisible': [('type','not in',['debit','credit'])]}"/>
-                                <field name="va_fee" attrs="{'invisible': [('type','not in',['va'])]}"/>
                             </group>
                         </group>
                         <notebook attrs="{'invisible': ['&amp;', ('module_id', '!=', False), ('module_state', '!=', 'installed')]}">
@@ -104,12 +103,11 @@
                             </group>
                             <group name="acquirer_right">
                                 <field name="bank_id" attrs="{'invisible': [('type','=','cash')]}" readonly="1"/>
-                                <field name="provider_id" attrs="{'invisible': [('type','not in',['va'])]}" readonly="1"/>
-                                <field name="account_number" attrs="{'invisible': [('type','not in',['transfer','debit','credit','va'])]}" readonly="1"/>
-                                <field name="account_name" attrs="{'invisible': [('type','not in',['transfer','debit','credit','va'])]}" readonly="1"/>
+                                <field name="provider_id" attrs="{'invisible': [('type','not in',['va','payment_gateway'])]}" readonly="1"/>
+                                <field name="account_number" attrs="{'invisible': [('type','not in',['transfer','debit','credit','va','payment_gateway'])]}" readonly="1"/>
+                                <field name="account_name" attrs="{'invisible': [('type','not in',['transfer','debit','credit','va','payment_gateway'])]}" readonly="1"/>
                                 <field name="cust_fee" attrs="{'invisible': [('type','not in',['debit','credit'])]}" readonly="1"/>
                                 <field name="bank_fee" attrs="{'invisible': [('type','not in',['debit','credit'])]}" readonly="1"/>
-                                <field name="va_fee" attrs="{'invisible': [('type','not in',['va'])]}" readonly="1"/>
                             </group>
                         </group>
                         <notebook attrs="{'invisible': ['&amp;', ('module_id', '!=', False), ('module_state', '!=', 'installed')]}">

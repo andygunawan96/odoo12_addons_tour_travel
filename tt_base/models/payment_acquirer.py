@@ -29,7 +29,6 @@ class PaymentAcquirer(models.Model):
     account_name = fields.Char('Account Name')
     cust_fee = fields.Float('Customer Fee')
     bank_fee = fields.Float('Bank Fee')
-    va_fee = fields.Float('VA Fee')
 
     @api.model
     def create(self, vals_list):
@@ -216,6 +215,7 @@ class PaymentAcquirerNumber(models.Model):
     payment_acquirer_id = fields.Many2one('payment.acquirer','Payment Acquirer')
     number = fields.Char('Number')
     unique_amount = fields.Float('Unique Amount')
+    fee_amount = fields.Float('Fee Amount')
     amount = fields.Float('Amount')
     state = fields.Selection([('open', 'Open'), ('close', 'Closed'), ('done','Done'), ('cancel','Expired')], 'Payment Type')
     display_name_payment = fields.Char('Display Name',compute="_compute_display_name_payment")
@@ -265,7 +265,7 @@ class PaymentAcquirerNumber(models.Model):
         return ERR.get_no_error(payment)
 
     def get_payment_acq_api(self, data):
-        payment_acq = self.search([('number', 'ilike', data['order_number'])])
+        payment_acq = self.search([('number', 'ilike', data['order_number'])], order='create_date desc', limit=1)
         if payment_acq:
             # check datetime
             date_now = datetime.now()
