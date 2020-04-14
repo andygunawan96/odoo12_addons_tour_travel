@@ -9,6 +9,11 @@
                     <field name="month_from" required="1"/>
                     <field name="month_to" required="1"/>
                 </group>
+                <group>
+                    <field name="is_ho" invisible="1"/>
+                    <field name="all_agent" attrs="{'invisible': [('is_ho', '=', False)]}"/>
+                    <field name="agent_id" attrs="{'invisible': ['|', ('is_ho', '=', False), ('all_agent', '=', True)]}"/>  <!--attrs="{'invisible': [('is_ho_user', '=', False)]}"-->
+                </group>
             <footer>
                 <button name="action_print_excel" string="Print in Excel" type="object" class="oe_highlight"/>
                 or

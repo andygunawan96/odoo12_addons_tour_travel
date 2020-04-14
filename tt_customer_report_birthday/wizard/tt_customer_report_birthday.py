@@ -22,8 +22,15 @@ months_list = [
 class CustomerReportBirthday(models.TransientModel):
     _name = 'tt.customer.report.birthday.wizard'
 
+    def _check_ho_user(self):
+        return self.env.user.agent_id.agent_type_id.id == self.env.ref('tt_base.agent_type_ho').id
+
     month_from = fields.Selection(months_list, default='01')
     month_to = fields.Selection(months_list, default='01')
+
+    agent_id = fields.Many2one('tt.agent', string='Agent', default=lambda self: self.env.user.agent_id)
+    all_agent = fields.Boolean('All Agent', default=False)
+    is_ho = fields.Boolean('Ho User', default=_check_ho_user)
 
     def _print_report_excel(self, data):
         raise UserError(_("Not implemented."))
@@ -39,6 +46,28 @@ class CustomerReportBirthday(models.TransientModel):
 
         # ============= subtitle process ==========
         data['form']['subtitle'] = "{} to {}".format(self.month_from, self.month_to)
+
+        # ============= agent id and name ==========
+        if self.all_agent == True:
+            data['form']['agent_id'] = ''
+            data['form']['agent_name'] = ''
+        else:
+            agent_id = data['form']['agent_id'][0] if 'agent_id' in data['form'] else False
+            if agent_id != self.env.user.agent_id.id and self.env.user.agent_id.agent_type_id.id != self.env.ref(
+                    'tt_base.agent_type_ho').id:
+                agent_id = self.env.user.agent_id.id
+            agent_name = self.env['tt.agent'].sudo().browse(agent_id).name if agent_id else 'All Agent'
+            data['form']['agent_id'] = agent_id
+            data['form']['agent_name'] = agent_name
+
+        if 'agent_type_id' in data['form']:
+            agent_type = data['form']['agent_type_id']
+            if not agent_type:
+                data['form']['agent_type_id'] = False
+                data['form']['agent_type'] = ''
+            else:
+                data['form']['agent_type_id'] = agent_type[0]
+                data['form']['agent_type'] = agent_type[1]
 
     def _build_contexts(self, data):
         result = {}
