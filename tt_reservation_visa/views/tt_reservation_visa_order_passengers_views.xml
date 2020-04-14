@@ -55,7 +55,6 @@
                         </group>
                         <group>
                             <field name="process_status"/>
-<!--                            <field name="expired_date"/>-->
                             <field name="payment_uid" groups="tt_base.group_tt_tour_travel_operator"/>
                             <field name="payment_date" groups="tt_base.group_tt_tour_travel_operator"/>
                             <field name="in_process_date" groups="tt_base.group_tt_tour_travel_operator"/>
@@ -175,15 +174,12 @@
         <field name="model">tt.reservation.visa.order.passengers</field>
         <field name="arch" type="xml">
             <tree create="0">
-                <field name="customer_id"/>
-                <field name="passenger_type"/>
-                <field name="pricelist_id"/>
-                <field name="in_process_date"/>
-                <field name="call_date"/>
-                <field name="out_process_date"/>
-                <field name="to_HO_date"/>
-                <field name="to_agent_date"/>
-                <field name="done_date"/>
+                <field name="title"/>
+                <field name="first_name"/>
+                <field name="last_name"/>
+                <field name="gender"/>
+                <field name="birth_date"/>
+                <field name="nationality_id"/>
                 <field name="process_status"/>
                 <field name="state"/>
             </tree>

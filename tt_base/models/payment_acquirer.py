@@ -171,7 +171,10 @@ class PaymentAcquirer(models.Model):
                     if not values.get(acq.type):
                         values[acq.type] = []
                     if acq.type == 'payment_gateway':
-                        values[acq.type].append(acq.acquirer_format(amount, unique))
+                        if acq.account_number == '':
+                            values[acq.type].append(acq.acquirer_format(amount, 0))
+                        else:
+                            values[acq.type].append(acq.acquirer_format(amount, unique))
             res = {}
             res['non_member'] = values
             res['member'] = {}
@@ -233,13 +236,16 @@ class PaymentAcquirerNumber(models.Model):
         if not booking_obj:
             raise RequestException(1001)
 
-        payment_acq = self.search([('number', 'ilike', data['order_number'])])
+        payment_acq_number = self.search([('number', 'ilike', data['order_number'])])
         HO_acq = self.env['tt.agent'].browse(self.env.ref('tt_base.rodex_ho').id)
-        if payment_acq:
+        if payment_acq_number:
             #check datetime
             date_now = datetime.now()
-            time_delta = date_now - payment_acq[len(payment_acq)-1].create_date
+            time_delta = date_now - payment_acq_number[len(payment_acq_number)-1].create_date
             if divmod(time_delta.seconds, 3600)[0] > 0:
+                for rec in payment_acq_number:
+                    if rec.state == 'close':
+                        rec.state = 'cancel'
                 payment = self.env['payment.acquirer.number'].create({
                     'state': 'close',
                     'number': data['order_number'] + '.' + str(datetime.now().strftime('%Y%m%d%H:%M:%S')),
@@ -249,9 +255,11 @@ class PaymentAcquirerNumber(models.Model):
                     'res_model': provider_type,
                     'res_id': booking_obj.id
                 })
+                booking_obj.payment_acquirer_number_id = payment.id
                 payment = {'order_number': payment.number}
             else:
-                payment = {'order_number': payment_acq[len(payment_acq)-1].number}
+                payment = {'order_number': payment_acq_number[len(payment_acq_number)-1].number}
+                booking_obj.payment_acquirer_number_id = payment_acq_number[len(payment_acq_number)-1].id
         else:
             payment = self.env['payment.acquirer.number'].create({
                 'state': 'close',
@@ -262,22 +270,23 @@ class PaymentAcquirerNumber(models.Model):
                 'res_model': provider_type,
                 'res_id': booking_obj.id
             })
+            booking_obj.payment_acquirer_number_id = payment.id
             payment = {'order_number': payment.number}
         return ERR.get_no_error(payment)
 
     def get_payment_acq_api(self, data):
-        payment_acq = self.search([('number', 'ilike', data['order_number'])], order='create_date desc', limit=1)
-        if payment_acq:
+        payment_acq_number = self.search([('number', 'ilike', data['order_number'])], order='create_date desc', limit=1)
+        if payment_acq_number:
             # check datetime
             date_now = datetime.now()
-            time_delta = date_now - payment_acq[len(payment_acq) - 1].create_date
-            if divmod(time_delta.seconds, 3600)[0] > 0:
+            time_delta = date_now - payment_acq_number[len(payment_acq_number) - 1].create_date
+            if divmod(time_delta.seconds, 3600)[0] == 0:
                 res = {
                     'order_number': data['order_number'],
-                    'create_date': payment_acq.create_date.strftime("%Y-%m-%d %H:%M:%S"),
-                    'time_limit': (payment_acq.create_date + timedelta(hours=1)).strftime("%Y-%m-%d %H:%M:%S"),
-                    'nomor_rekening': self.env.ref('tt_base.payment_acquirer_ho_payment_gateway_bca').account_number,
-                    'amount': payment_acq.amount - payment_acq.unique_amount
+                    'create_date': payment_acq_number.create_date.strftime("%Y-%m-%d %H:%M:%S"),
+                    'time_limit': (payment_acq_number.create_date + timedelta(hours=1)).strftime("%Y-%m-%d %H:%M:%S"),
+                    'nomor_rekening': payment_acq_number.payment_acquirer_id.account_number,
+                    'amount': payment_acq_number.amount - payment_acq_number.unique_amount
                 }
                 return ERR.get_no_error(res)
             else:

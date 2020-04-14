@@ -51,7 +51,7 @@ class TtVisa(models.Model):
     # description = fields.Char('Description', readonly=True, states={'draft': [('readonly', False)]})
     country_id = fields.Many2one('res.country', 'Country', ondelete="cascade", readonly=True,
                                  states={'draft': [('readonly', False)]})
-    duration = fields.Char('Duration', readonly=True, states={'draft': [('readonly', False)]})
+    # duration = fields.Char('Duration', readonly=True, states={'draft': [('readonly', False)]})
     total_cost_price = fields.Monetary('Total Cost Price', default=0, readonly=True, compute="_compute_total_price")
 
     state_visa = fields.Selection(STATE_VISA, 'State', default='draft',
@@ -70,13 +70,13 @@ class TtVisa(models.Model):
                                         delivered = Documents sent to agent
                                         done = Documents ready at agent or given to customer''')
 
-    ho_profit = fields.Monetary('HO Profit')
+    # ho_profit = fields.Monetary('HO Profit')
 
     estimate_date = fields.Date('Estimate Date', help='Estimate Process Done since the required documents submitted',
                                 readonly=True)
-    payment_date = fields.Date('Payment Date', help='Date when accounting must pay the vendor')
+    # payment_date = fields.Date('Payment Date', help='Date when accounting must pay the vendor')
     use_vendor = fields.Boolean('Use Vendor', readonly=True, default=False)
-    receipt_number = fields.Char('Reference Number')
+    # receipt_number = fields.Char('Reference Number')
     vendor_ids = fields.One2many('tt.reservation.visa.vendor.lines', 'visa_id', 'Expenses')
 
     document_to_ho_date = fields.Datetime('Document to HO Date', readonly=1)
@@ -356,9 +356,8 @@ class TtVisa(models.Model):
             rec.action_cancel()
         for rec in self.provider_booking_ids:
             rec.action_cancel()
-        # unlink semua vendor
-        for rec3 in self.vendor_ids:
-            rec3.sudo().unlink()
+            for vendor in rec.vendor_ids:
+                vendor.sudo().unlink()
         self.write({
             'state_visa': 'cancel',
             'state': 'cancel',
@@ -1540,7 +1539,7 @@ class TtVisa(models.Model):
             contact_id = self.create_contact_api(contact[0], booker_id, context)
             passenger_ids = self.create_customer_api(passengers, context, booker_id, contact_id)  # create passenger
 
-            to_psg_ids = self._create_visa_order(passengers, passenger_ids)  # create visa order data['passenger']
+            to_psg_ids = self._create_visa_order(passengers, passenger_ids, context)  # create visa order data['passenger']
             if to_psg_ids['error_code'] == 0:
                 psg_ids = to_psg_ids['response']
             else:
@@ -1842,19 +1841,8 @@ class TtVisa(models.Model):
 
         return ssc_list_2
 
-    def _create_sale_service_charge(self, ssc_vals):
-        service_chg_obj = self.env['tt.service.charge']
-        ssc_ids = []
-        for ssc in ssc_vals:
-            ssc['passenger_visa_ids'] = [(6, 0, ssc['passenger_visa_ids'])]
-            ssc_obj = service_chg_obj.create(ssc)
-            print(ssc_obj.read())
-            ssc_ids.append(ssc_obj.id)
-        return ssc_ids
-
-    def _create_visa_order(self, passengers, passenger_ids):
+    def _create_visa_order(self, passengers, passenger_ids, context):
         try:
-            pricelist_env = self.env['tt.reservation.visa.pricelist'].sudo()
             to_psg_env = self.env['tt.reservation.visa.order.passengers'].sudo()
             to_req_env = self.env['tt.reservation.visa.order.requirements'].sudo()
             to_psg_list = []
@@ -1868,7 +1856,6 @@ class TtVisa(models.Model):
                 if pricelist_id is False:
                     raise RequestException(1004,
                                            additional_message='Error create Passenger Visa : Reference Code not Found.')
-                pricelist_obj = pricelist_env.browse(pricelist_id)
                 psg_vals = passenger_ids[idx][0].copy_to_passenger()
                 psg_vals.update({
                     'name': psg_vals['first_name'] + ' ' + psg_vals['last_name'],
@@ -1877,8 +1864,6 @@ class TtVisa(models.Model):
                     'pricelist_id': pricelist_id,
                     'passenger_type': psg['pax_type'],
                     'notes': psg.get('notes'),
-                    # Pada state request, pax akan diberi expired date dg durasi tergantung dari paket visa yang diambil
-                    # 'expired_date': fields.Date.today() + timedelta(days=pricelist_obj.duration),
                     'sequence': int(idx+1)
                 })
                 if 'identity' in psg:
@@ -1895,10 +1880,11 @@ class TtVisa(models.Model):
                     for req in psg['required']:  # pricelist_obj.requirement_ids
                         req_vals = {
                             'to_passenger_id': to_psg_obj.id,
-                            'requirement_id': self.env['tt.reservation.visa.requirements'].search([('reference_code', '=', req['id'])], limit=1).id,
+                            'requirement_id': self.env['tt.reservation.visa.requirements'].search(
+                                [('reference_code', '=', req['id'])], limit=1).id,
                             'is_ori': req['is_original'],
                             'is_copy': req['is_copy'],
-                            'check_uid': self.env.user.id,
+                            'check_uid': context['co_uid'],
                             'check_date': datetime.now()
                         }
                         to_req_obj = to_req_env.create(req_vals)
@@ -2255,23 +2241,26 @@ class TtVisa(models.Model):
     def check_provider_state(self, context, pnr_list=[], hold_date=False, req={}):
         if all(rec.state == 'booked' for rec in self.provider_booking_ids):
             # booked
-            self.calculate_service_charge()
-            self.action_booked_api_visa(context, pnr_list, hold_date)
+            pass
+            # self.calculate_service_charge()
+            # self.action_booked_api_visa(context, pnr_list, hold_date)
         elif all(rec.state == 'issued' for rec in self.provider_booking_ids):
+            #issued
+            pass
             # issued
             ##get payment acquirer
-            if req.get('acquirer_seq_id'):
-                acquirer_id = self.env['payment.acquirer'].search([('seq_id', '=', req['acquirer_seq_id'])])
-                if not acquirer_id:
-                    raise RequestException(1017)
-            else:
-                # raise RequestException(1017)
-                acquirer_id = self.agent_id.default_acquirer_id
-
-            if req.get('member'):
-                customer_parent_id = acquirer_id.agent_id.id
-            else:
-                customer_parent_id = self.agent_id.customer_parent_walkin_id.id
+            # if req.get('acquirer_seq_id'):
+            #     acquirer_id = self.env['payment.acquirer'].search([('seq_id', '=', req['acquirer_seq_id'])])
+            #     if not acquirer_id:
+            #         raise RequestException(1017)
+            # else:
+            #     # raise RequestException(1017)
+            #     acquirer_id = self.agent_id.default_acquirer_id
+            #
+            # if req.get('member'):
+            #     customer_parent_id = acquirer_id.agent_id.id
+            # else:
+            #     customer_parent_id = self.agent_id.customer_parent_walkin_id.id
         elif all(rec.state == 'refund' for rec in self.provider_booking_ids):
             self.write({
                 'state': 'refund',
@@ -2289,13 +2278,6 @@ class TtVisa(models.Model):
             # entah status apa
             _logger.error('Entah status apa')
             raise RequestException(1006)
-
-    # @api.onchange('state')
-    # @api.depends('state')
-    # def _compute_expired_visa(self):
-    #     for rec in self:
-    #         if rec.state == 'expired':
-    #             rec.state_visa = 'expired'
 
     @api.multi
     @api.depends('passenger_ids')

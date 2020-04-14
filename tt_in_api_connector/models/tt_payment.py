@@ -16,6 +16,7 @@ class TtPaymentApiCon(models.Model):
         if action == 'payment':
             if data['va_type'] == 'open':
                 if self.env['payment.acquirer.number'].search([('number', '=', data['virtual_account'])])[0].state == 'open':
+                    self.env['payment.acquirer.number'].search([('number', '=', data['virtual_account'])])[0].fee = data['fee']
                     # check ada payment ref yg kembar ngga
                     if not self.env['tt.payment'].search([('reference', '=', data['payment_ref'])]):
                         # topup
@@ -39,6 +40,7 @@ class TtPaymentApiCon(models.Model):
                                 'virtual_account': data['virtual_account'],
                                 'name': res['response']['name'],
                                 'payment_ref': data['payment_ref'],
+                                'fee': data['fee']
                             }
                             res = self.env['tt.top.up'].action_va_top_up(request, context)
                     else:

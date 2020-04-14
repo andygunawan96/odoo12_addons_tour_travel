@@ -71,6 +71,7 @@
                                 </div>
                                 <group>
                                     <field name="required" string="Required"/>
+                                    <field name="reference_code" string="Reference Code"/>
                                 </group>
                             </sheet>
                         </form>

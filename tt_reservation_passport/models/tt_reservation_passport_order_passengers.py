@@ -57,10 +57,7 @@ class PassportInterviewBiometrics(models.Model):
     passenger_biometrics_id = fields.Many2one('tt.reservation.passport.order.passengers', 'Passenger', readonly=1)
     pricelist_interview_id = fields.Many2one('tt.reservation.passport.pricelist', 'Pricelist',
                                              related="passenger_interview_id.pricelist_id", readonly=1)
-    pricelist_biometrics_id = fields.Many2one('tt.reservation.passport.pricelist', 'Pricelist',
-                                              related="passenger_biometrics_id.pricelist_id", readonly=1)
     location_interview_id = fields.Char('Location', compute='compute_location_interview', store=True)  # related="pricelist_interview_id.description"
-    location_biometrics_id = fields.Char('Location', related="pricelist_biometrics_id.description")
     datetime = fields.Datetime('Datetime')
     ho_employee = fields.Char('Employee')
     meeting_point = fields.Char('Meeting Point')
@@ -93,28 +90,22 @@ class PassportOrderPassengers(models.Model):
     interview = fields.Boolean('Needs Interview', readonly=0)
     interview_ids = fields.One2many('tt.reservation.passport.interview.biometrics', 'passenger_interview_id', 'Interview')
 
-    # handling_ids = fields.One2many('tt.reservation.passport.order.handling', 'to_passenger_id', 'Handling Questions')
-    handling_information = fields.Text('Handling Information')
-
     in_process_date = fields.Datetime('In Process Date', readonly=1)  # readonly=1
     payment_date = fields.Datetime('Payment Date', readonly=1)  # readonly=1
     payment_uid = fields.Many2one('res.users', 'Payment By', readonly=1)  # readonly=1
     call_date = fields.Datetime('Call Date', help='Call to interview (visa) or take a photo (passport)')
     out_process_date = fields.Datetime('Out Process Date', readonly=1)  # readonly=1
-    to_HO_date = fields.Datetime('Send to HO Date', readonly=1)  # readonly=1
     to_agent_date = fields.Datetime('Send to Agent Date', readonly=1)  # readonly=1
-    # ready_date = fields.Datetime('Ready Date', readonly=1)  # readonly=1
     done_date = fields.Datetime('Done Date', readonly=1)  # readonly=1
     expired_date = fields.Date('Expired Date', readonly=1)  # readonly=1
 
-    use_vendor = fields.Boolean('Use Vendor', readonly=1, related='passport_id.use_vendor')
+    # use_vendor = fields.Boolean('Use Vendor', readonly=1, related='passport_id.use_vendor')
 
     cost_service_charge_ids = fields.Many2many('tt.service.charge', 'tt_reservation_passport_cost_charge_rel',
                                                'passenger_id', 'service_charge_id', 'Cost Service Charges', readonly=1)
     channel_service_charge_ids = fields.Many2many('tt.service.charge', 'tt_reservation_passport_channel_charge_rel',
                                                   'passenger_id', 'service_charge_id', 'Channel Service Charges')
 
-    # use_vendor = fields.Boolean('Use Vendor', readonly=1, related='passport_id.use_vendor')
     notes = fields.Text('Notes (Agent to Customer)')
     notes_HO = fields.Text('Notes (HO to Agent)')
 
@@ -127,9 +118,6 @@ class PassportOrderPassengers(models.Model):
                                                 to_HO = documents sent to HO
                                                 waiting = Documents ready at HO
                                                 done = Documents given to customer''')  # readonly=1
-
-    # to_vendor = Documents sent to Vendor
-    # vendor_process = Documents proceed by Vendor
 
     state = fields.Selection(STATE, default='confirm', help='''draft = requested
                                                 confirm = HO accepted
@@ -326,20 +314,6 @@ class PassportOrderPassengers(models.Model):
                 rec.passport_id.action_partial_approved_passport()
             rec.message_post(body='Passenger ACCEPTED')
 
-    def action_to_HO(self):
-        for rec in self:
-            rec.write({
-                'state': 'to_HO',
-                'to_HO_date': datetime.now()
-            })
-            is_sent = True
-            for psg in rec.passport_id.passenger_ids:
-                if not psg.state in ['to_HO']:
-                    is_sent = False
-            if is_sent:
-                rec.passport_id.action_delivered_passport()
-            rec.message_post(body='Passenger documents TO HO')
-
     def action_to_agent(self):
         for rec in self:
             rec.write({
@@ -385,23 +359,23 @@ class PassportOrderPassengers(models.Model):
                     'to_requirement_ids': [(4, data)]
                 })
 
-    def action_sync_handling(self):
-        handling_env = self.env['tt.reservation.passport.order.handling']
-        for rec in self:
-            res = []
-            handling_datas = rec.get_all_handling_data()
-            for handling in handling_datas:
-                if not rec.check_handling(handling.id):
-                    vals = {
-                        'handling_id': handling.id,
-                        'to_passenger_id': rec.id,
-                    }
-                    handling_obj = handling_env.create(vals)
-                    res.append(handling_obj.id)
-            for data in res:
-                rec.write({
-                    'handling_ids': [(4, data)]
-                })
+    # def action_sync_handling(self):
+    #     handling_env = self.env['tt.reservation.passport.order.handling']
+    #     for rec in self:
+    #         res = []
+    #         handling_datas = rec.get_all_handling_data()
+    #         for handling in handling_datas:
+    #             if not rec.check_handling(handling.id):
+    #                 vals = {
+    #                     'handling_id': handling.id,
+    #                     'to_passenger_id': rec.id,
+    #                 }
+    #                 handling_obj = handling_env.create(vals)
+    #                 res.append(handling_obj.id)
+    #         for data in res:
+    #             rec.write({
+    #                 'handling_ids': [(4, data)]
+    #             })
 
     @api.depends('birth_date')
     @api.onchange('birth_date')
@@ -420,9 +394,9 @@ class PassportOrderPassengers(models.Model):
                     return True
             return False
 
-    def check_handling(self, handling_id):
-        for rec in self:
-            for handling in rec.handling_ids:
-                if handling.handling_id.id == handling_id:
-                    return True
-            return False
+    # def check_handling(self, handling_id):
+    #     for rec in self:
+    #         for handling in rec.handling_ids:
+    #             if handling.handling_id.id == handling_id:
+    #                 return True
+    #         return False

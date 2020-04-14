@@ -120,6 +120,8 @@ class TtReservation(models.Model):
     printout_voucher_id = fields.Many2one('tt.upload.center', 'Voucher', readonly=True)
     printout_ho_invoice_id = fields.Many2one('tt.upload.center', 'Voucher', readonly=True)
 
+    payment_acquirer_number_id = fields.Many2one('payment.acquirer.number','Payment Acquier Number')
+
     @api.model
     def create(self, vals_list):
         try:
@@ -431,8 +433,25 @@ class TtReservation(models.Model):
         #     for rec in self.invoice_line_ids:
         #         invoice_list.append({
         #             'name': rec.name,
-        #             'state': rec.state
+        #             'stat e': rec.state
         #         })
+
+        payment_acquirer_number = {}
+        if self.payment_acquirer_number_id:
+            date_now = datetime.now()
+            time_delta = date_now - self.payment_acquirer_number_id.create_date
+            if divmod(time_delta.seconds, 3600)[0] == 0:
+                payment_acquirer_number = {
+                    'create_date': self.payment_acquirer_number_id.create_date.strftime("%Y-%m-%d %H:%M:%S"),
+                    'time_limit': (self.payment_acquirer_number_id.create_date + timedelta(hours=1)).strftime("%Y-%m-%d %H:%M:%S"),
+                    'nomor_rekening': self.payment_acquirer_number_id.payment_acquirer_id.account_number,
+                    'account_name': self.payment_acquirer_number_id.payment_acquirer_id.account_name,
+                    'amount': self.payment_acquirer_number_id.amount - self.payment_acquirer_number_id.unique_amount,
+                    'order_number': self.payment_acquirer_number_id.number
+                }
+            else:
+                self.payment_acquirer_number_id.state = 'cancel'
+                self.payment_acquirer_number_id = False
 
         res = {
             'order_number': self.name,
@@ -455,7 +474,7 @@ class TtReservation(models.Model):
             'departure_date': self.departure_date and self.departure_date or '',
             'arrival_date': self.arrival_date and self.arrival_date or '',
             'provider_type': self.provider_type_id.code,
-            # 'invoice_ids': invoice_list
+            'payment_acquirer_number': payment_acquirer_number
         }
 
         return res
