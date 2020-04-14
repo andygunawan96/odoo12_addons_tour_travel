@@ -120,6 +120,8 @@ class TtReservation(models.Model):
     printout_voucher_id = fields.Many2one('tt.upload.center', 'Voucher', readonly=True)
     printout_ho_invoice_id = fields.Many2one('tt.upload.center', 'Voucher', readonly=True)
 
+    payment_acquirer_number_id = fields.Many2one('payment.acquirer.number','Payment Acquier Number')
+
     @api.model
     def create(self, vals_list):
         try:
