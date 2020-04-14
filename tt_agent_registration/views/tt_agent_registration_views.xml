@@ -85,16 +85,7 @@
                         <group string="Address &amp; Contact">
                             <notebook>
                                 <page string="Address">
-                                    <field name="address_ids" attrs="{'readonly': [('state', '=', 'done')]}">
-                                        <tree create="true">
-                                            <field name="address"/>
-                                            <field name="rt"/>
-                                            <field name="rw"/>
-                                            <field name="city_id"/>
-                                            <field name="district_id"/>
-                                            <field name="sub_district_id"/>
-                                        </tree>
-                                    </field>
+                                    <field name="address_ids" attrs="{'readonly': [('state', '=', 'done')]}"/>
                                 </page>
                                 <page string="Contact Information">
                                     <field name="agent_registration_customer_ids" attrs="{'readonly': [('state', '=', 'done')]}"/>

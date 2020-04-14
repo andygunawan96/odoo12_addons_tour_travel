@@ -31,7 +31,7 @@
         </div>
     </template>
 
-    <template id="printout_passport_notes_signature_cust">
+    <template id="printout_passport_notes_signature_ho">
         <div style="top:50px;">  <!--position: absolute; z-index:1; -->
             <div class="row" style="font-family: Times New Roman, Georgia, Serif; font-size: 16px;">
                 <p><strong><span>Notes: </span></strong>
@@ -60,10 +60,10 @@
                     <br/>
                     <br/>
                     <br/>
-                    <t t-if="o.booked_uid.name">
-                        (<span t-field="o.booked_uid.name"/>)
+                    <t t-if="vals['booked_name']">
+                        (<span t-esc="vals['booked_name']"/>)
                     </t>
-                    <t t-if="not o.booked_uid.name">
+                    <t t-if="not vals['booked_name']">
                         (<span style="color: white;">_____________</span>)
                     </t>
                 </div>
@@ -73,10 +73,10 @@
                     <br/>
                     <br/>
                     <br/>
-                    <t t-if="o.validate_uid.name">
-                        (<span t-field="o.validate_uid.name"/>)
+                    <t t-if="vals['validate_name']">
+                        (<span t-esc="vals['validate_name']"/>)
                     </t>
-                    <t t-else="">
+                    <t t-if="not vals['validate_name']">
                         (<span style="color: white;">_____________</span>)
                     </t>
                 </div>
@@ -139,7 +139,6 @@
                                         <span>Handling Process</span><br/>
                                         <span>Estimated time</span>
                                     </div>
-                                    <!--<div class="col-xs-1" style="width: 2%; padding: 0px;">-->
                                     <div class="col-1" style="padding: 0px;">
                                         <span>:</span><br/>
                                         <span>:</span><br/>
@@ -170,7 +169,7 @@
                                     <div class="col-6">
                                         <span>Passport number</span><br/>
                                         <span>Phone</span><br/>
-                                        <span>Expired</span><br/>
+                                        <span>Passport Exp Date</span><br/>
                                         <span/><br/>
 <!--                                        <span>Departure Plan</span><br/>-->
                                     </div>
@@ -235,7 +234,7 @@
                             </t>
                         </t>
                         <br/>
-                        <t t-call="tt_reservation_passport.printout_passport_notes_signature_cust"/>
+                        <t t-call="tt_reservation_passport.printout_passport_notes_signature_ho"/>
                     </div>
                 </t>
                 <t t-call="tt_reservation_passport.printout_passport_footer"/>

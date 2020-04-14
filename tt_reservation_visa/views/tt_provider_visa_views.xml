@@ -84,7 +84,7 @@
         <field name="name">tt.provider.visa.tree.view</field>
         <field name="model">tt.provider.visa</field>
         <field name="arch" type="xml">
-            <tree>
+            <tree create="false">
                 <field name="provider_id" groups="tt_base.group_tt_tour_travel_operator"/>
                 <field name="pnr"/>
                 <field name="departure_date"/>

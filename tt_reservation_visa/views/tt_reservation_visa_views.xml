@@ -21,6 +21,7 @@
                     <filter string="Confirm to HO/Validated by HO" name="confirm_validate" domain="['|', ('state_visa','=','confirm'),('state_visa','=','validate')]"/>
                     <filter string="Send to Vendor/Proceed by Vendor" name="to_vendor_vendor_process" domain="['|', ('state_visa','=','to_vendor'),('state_visa','=','vendor_process')]"/>
                     <filter string="In Process/Payment" name="in_process_payment" domain="['|', ('state_visa','=','in_process'),('state_visa','=','payment')]"/>
+                    <filter string="Process by Consulate" name="process_by_consulate" domain="[('state_visa','=','process_by_consulate')]"/>
                     <filter string="Partial Proceed/Proceed" name="partial_proceed_proceed" domain="['|', ('state_visa','=','partial_proceed'),('state_visa','=','proceed')]"/>
                     <filter string="Partial Approved/Approved/Rejected" name="partial_approved_approved_rejected" domain="[('state_visa','in',['partial_approve','approve','reject'])]"/>
                     <filter string="Delivered/Done" name="delivered_done" domain="['|', ('state_visa','=','delivered'),('state_visa','=','done')]"/>
@@ -153,18 +154,7 @@
             </xpath>
             <xpath expr="//page[@name='anchor']" position="before">
                 <page string="Passengers">
-                    <field name="passenger_ids">
-                        <tree create="false">
-                            <field name="title"/>
-                            <field name="first_name"/>
-                            <field name="last_name"/>
-                            <field name="gender"/>
-                            <field name="birth_date"/>
-                            <field name="nationality_id"/>
-                            <field name="process_status"/>
-                            <field name="state"/>
-                        </tree>
-                    </field>
+                    <field name="passenger_ids" readonly="0"/>
                 </page>
             </xpath>
             <xpath expr="//page[@name='anchor']" position="before">
@@ -185,14 +175,7 @@
             </xpath>
             <xpath expr="//page[@name='anchor']" position="before">
                 <page string="Vendor" name="vendor" groups="tt_base.group_tt_tour_travel_operator">
-                    <field name="provider_booking_ids">
-                        <tree create="false">
-                            <field name="provider_id"/>
-                            <field name="pnr"/>
-                            <field name="departure_date"/>
-                            <field name="state"/>
-                        </tree>
-                    </field>
+                    <field name="provider_booking_ids"/>
                 </page>
             </xpath>
             <field name="total_fare" position="replace"/>
@@ -303,6 +286,22 @@
         </field>
     </record>
 
+    <!--Visa Document Filter In Process Payment-->
+    <record model="ir.actions.act_window" id="tt_reservation_visa_process_by_consulate_view_action">
+        <field name="name">Visa Document</field>
+        <field name="res_model">tt.reservation.visa</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+        <field name="search_view_id" ref="tt_reservation_visa_view_filter"/>
+        <field name="context">
+            {
+            'form_view_ref': 'tt_reservation_visa.tt_reservation_visa_view_form',
+            'tree_view_ref': 'tt_reservation_visa.tt_reservation_visa_view_tree',
+            'search_default_process_by_consulate': 1,
+            }
+        </field>
+    </record>
+
     <!--Visa Document Filter Partial Proceed Proceed-->
     <record model="ir.actions.act_window" id="tt_reservation_visa_partial_proceed_proceed_view_action">
         <field name="name">Visa Document</field>
@@ -387,21 +386,25 @@
     <menuitem id="menu_visa_in_process_payment" parent="menu_visa_order" name="In Process/Payment"
               action="tt_reservation_visa_in_process_payment_view_action" sequence="5"/>
 
+    <!--Visa Document Menu Item Process by Consulate-->
+    <menuitem id="menu_visa_process_by_consulate" parent="menu_visa_order" name="Process by Consulate"
+              action="tt_reservation_visa_process_by_consulate_view_action" sequence="6"/>
+
     <!--Visa Document Menu Item Partial Proceed Proceed-->
     <menuitem id="menu_visa_partial_proceed_proceed" parent="menu_visa_order" name="Partial Proceed/Proceed"
-              action="tt_reservation_visa_partial_proceed_proceed_view_action" sequence="6"/>
+              action="tt_reservation_visa_partial_proceed_proceed_view_action" sequence="7"/>
 
     <!--Visa Document Menu Item Partial Approved Approved Rejected-->
     <menuitem id="menu_visa_partial_approved_approved_rejected" parent="menu_visa_order"
               name="Partial Approved/Approved/Rejected"
-              action="tt_reservation_visa_partial_approved_approved_rejected_view_action" sequence="7"/>
+              action="tt_reservation_visa_partial_approved_approved_rejected_view_action" sequence="8"/>
 
     <!--Visa Document Menu Item Done-->
     <menuitem id="menu_visa_done" parent="menu_visa_order" name="Delivered/Done"
-              action="tt_reservation_visa_delivered_done_view_action" sequence="8"/>
+              action="tt_reservation_visa_delivered_done_view_action" sequence="9"/>
 
     <!--Visa Document Menu Item Cancel-->
     <menuitem id="menu_visa_cancel_refund" parent="menu_visa_order" name="Cancel/Refund"
-              action="tt_reservation_visa_cancel_refund_view_action" sequence="9"/>
+              action="tt_reservation_visa_cancel_refund_view_action" sequence="10"/>
 
 </odoo>
