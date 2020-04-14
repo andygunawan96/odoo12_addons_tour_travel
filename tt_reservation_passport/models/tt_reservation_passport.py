@@ -1119,7 +1119,7 @@ class TtPassport(models.Model):
             contact_id = self.create_contact_api(contact[0], booker_id, context)
             passenger_ids = self.create_customer_api(passengers, context, booker_id, contact_id)  # create passenger
 
-            to_psg_ids = self._create_passport_order(passengers, passenger_ids)  # create passport order data['passenger']
+            to_psg_ids = self._create_passport_order(passengers, passenger_ids, context)  # create passport order data['passenger']
             if to_psg_ids['error_code'] == 0:
                 psg_ids = to_psg_ids['response']
             else:
@@ -1412,9 +1412,8 @@ class TtPassport(models.Model):
         print('Final : ' + str(ssc_list_final))
         return ssc_list_final
 
-    def _create_passport_order(self, passengers, passenger_ids):
+    def _create_passport_order(self, passengers, passenger_ids, context):
         try:
-            pricelist_env = self.env['tt.reservation.passport.pricelist'].sudo()
             to_psg_env = self.env['tt.reservation.passport.order.passengers'].sudo()
             to_req_env = self.env['tt.reservation.passport.order.requirements'].sudo()
             to_psg_list = []
@@ -1426,7 +1425,6 @@ class TtPassport(models.Model):
                 pricelist_id = self.env['tt.reservation.passport.pricelist'].search([('reference_code', '=', psg['master_passport_Id'])]).id
                 if pricelist_id is False:
                     raise RequestException(1004, additional_message='Error Create Passenger Passport : Reference Code not Found.')
-                pricelist_obj = pricelist_env.browse(pricelist_id)
                 psg_vals = passenger_ids[idx][0].copy_to_passenger()
                 psg_vals.update({
                     'name': psg_vals['first_name'] + ' ' + psg_vals['last_name'],
@@ -1435,7 +1433,6 @@ class TtPassport(models.Model):
                     'pricelist_id': pricelist_id,
                     'passenger_type': psg['pax_type'],
                     'notes': psg.get('notes'),
-                    'expired_date': fields.Date.today() + timedelta(days=pricelist_obj.duration),
                     'sequence': int(idx + 1)
                 })
                 to_psg_obj = to_psg_env.create(psg_vals)
@@ -1447,10 +1444,10 @@ class TtPassport(models.Model):
                         req_vals = {
                             'to_passenger_id': to_psg_obj.id,
                             'requirement_id': self.env['tt.reservation.passport.requirements'].search(
-                                [('id', '=', req['id'])], limit=1).id,
+                                [('reference_code', '=', req['id'])], limit=1).id,
                             'is_ori': req['is_original'],
                             'is_copy': req['is_copy'],
-                            'check_uid': self.env.user.id,
+                            'check_uid': context['co_uid'],
                             'check_date': datetime.now()
                         }
                         to_req_obj = to_req_env.create(req_vals)

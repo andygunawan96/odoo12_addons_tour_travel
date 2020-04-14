@@ -1539,7 +1539,7 @@ class TtVisa(models.Model):
             contact_id = self.create_contact_api(contact[0], booker_id, context)
             passenger_ids = self.create_customer_api(passengers, context, booker_id, contact_id)  # create passenger
 
-            to_psg_ids = self._create_visa_order(passengers, passenger_ids)  # create visa order data['passenger']
+            to_psg_ids = self._create_visa_order(passengers, passenger_ids, context)  # create visa order data['passenger']
             if to_psg_ids['error_code'] == 0:
                 psg_ids = to_psg_ids['response']
             else:
@@ -1841,7 +1841,7 @@ class TtVisa(models.Model):
 
         return ssc_list_2
 
-    def _create_visa_order(self, passengers, passenger_ids):
+    def _create_visa_order(self, passengers, passenger_ids, context):
         try:
             to_psg_env = self.env['tt.reservation.visa.order.passengers'].sudo()
             to_req_env = self.env['tt.reservation.visa.order.requirements'].sudo()
@@ -1880,10 +1880,11 @@ class TtVisa(models.Model):
                     for req in psg['required']:  # pricelist_obj.requirement_ids
                         req_vals = {
                             'to_passenger_id': to_psg_obj.id,
-                            'requirement_id': self.env['tt.reservation.visa.requirements'].search([('reference_code', '=', req['id'])], limit=1).id,
+                            'requirement_id': self.env['tt.reservation.visa.requirements'].search(
+                                [('reference_code', '=', req['id'])], limit=1).id,
                             'is_ori': req['is_original'],
                             'is_copy': req['is_copy'],
-                            'check_uid': self.env.user.id,
+                            'check_uid': context['co_uid'],
                             'check_date': datetime.now()
                         }
                         to_req_obj = to_req_env.create(req_vals)
