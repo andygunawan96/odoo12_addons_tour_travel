@@ -50,22 +50,6 @@
                                 <field name="va_fee" attrs="{'invisible': [('type','not in',['va','payment_gateway'])]}"/>
                             </group>
                         </group>
-                        <notebook attrs="{'invisible': ['&amp;', ('module_id', '!=', False), ('module_state', '!=', 'installed')]}">
-                            <page string="Credentials">
-                                <group name="acquirer">
-                                </group>
-                            </page>
-                            <page string="Messages">
-                                <group>
-                                    <field name="pre_msg"/>
-                                    <field name="post_msg"/>
-                                    <field name="pending_msg"/>
-                                    <field name="done_msg"/>
-                                    <field name="cancel_msg"/>
-                                    <field name="error_msg"/>
-                                </group>
-                            </page>
-                        </notebook>
                     </sheet>
                 </form>
             </field>
@@ -109,24 +93,9 @@
                                 <field name="account_name" attrs="{'invisible': [('type','not in',['transfer','debit','credit','va','payment_gateway'])]}" readonly="1"/>
                                 <field name="cust_fee" attrs="{'invisible': [('type','not in',['debit','credit'])]}" readonly="1"/>
                                 <field name="bank_fee" attrs="{'invisible': [('type','not in',['debit','credit'])]}" readonly="1"/>
+                                <field name="va_fee" attrs="{'invisible': [('type','not in',['va','payment_gateway'])]}"/>
                             </group>
                         </group>
-                        <notebook attrs="{'invisible': ['&amp;', ('module_id', '!=', False), ('module_state', '!=', 'installed')]}">
-                            <page string="Credentials">
-                                <group name="acquirer" readonly="1">
-                                </group>
-                            </page>
-                            <page string="Messages">
-                                <group>
-                                    <field name="pre_msg" readonly="1"/>
-                                    <field name="post_msg" readonly="1"/>
-                                    <field name="pending_msg" readonly="1"/>
-                                    <field name="done_msg" readonly="1"/>
-                                    <field name="cancel_msg" readonly="1"/>
-                                    <field name="error_msg" readonly="1"/>
-                                </group>
-                            </page>
-                        </notebook>
                     </sheet>
                 </form>
             </field>
