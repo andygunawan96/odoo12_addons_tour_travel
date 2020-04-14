@@ -171,7 +171,10 @@ class PaymentAcquirer(models.Model):
                     if not values.get(acq.type):
                         values[acq.type] = []
                     if acq.type == 'payment_gateway':
-                        values[acq.type].append(acq.acquirer_format(amount, unique))
+                        if acq.account_number == '':
+                            values[acq.type].append(acq.acquirer_format(amount, 0))
+                        else:
+                            values[acq.type].append(acq.acquirer_format(amount, unique))
             res = {}
             res['non_member'] = values
             res['member'] = {}
