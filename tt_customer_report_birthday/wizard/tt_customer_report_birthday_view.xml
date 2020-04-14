@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record model="ir.ui.view" id="detail_customer_report_birthday_form">
+        <field name="name">Customer Birthday Report Form</field>
+        <field name="model">tt.customer.report.birthday.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Birthday Report">
+                <group>
+                    <field name="month_from" required="1"/>
+                    <field name="month_to" required="1"/>
+                </group>
+                <group>
+                    <field name="is_ho" invisible="1"/>
+                    <field name="all_agent" attrs="{'invisible': [('is_ho', '=', False)]}"/>
+                    <field name="agent_id" attrs="{'invisible': ['|', ('is_ho', '=', False), ('all_agent', '=', True)]}"/>  <!--attrs="{'invisible': [('is_ho_user', '=', False)]}"-->
+                </group>
+            <footer>
+                <button name="action_print_excel" string="Print in Excel" type="object" class="oe_highlight"/>
+                or
+                <button string="Cancel" class="oe_link" special="cancel"/>
+            </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_customer_report_birthday_menu" model="ir.actions.act_window">
+        <field name="name">Common Report</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">tt.customer.report.birthday.wizard</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">form</field>
+        <field name="view_id" ref="detail_customer_report_birthday_form"/>
+        <field name="target">new</field>
+    </record>
+
+    <menuitem
+        id="sub_menu_customer_birthday_report_HO"
+        name="Customer Birthday Report"
+        parent="tt_base.top_tour_travel_customers"
+        action="action_customer_report_birthday_menu"
+        sequence="1"
+    />
+
+    <menuitem
+        id="sub_menu_customer_birthday_report_nonHO"
+        name="Customer Birthday Report"
+        parent="tt_base.top_customers_customers"
+        action="action_customer_report_birthday_menu"
+        sequence="1"
+    />
+
+</odoo>
