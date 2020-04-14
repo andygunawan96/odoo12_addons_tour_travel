@@ -29,6 +29,7 @@ class PaymentAcquirer(models.Model):
     account_name = fields.Char('Account Name')
     cust_fee = fields.Float('Customer Fee')
     bank_fee = fields.Float('Bank Fee')
+    va_fee = fields.Float('VA Fee')
 
     @api.model
     def create(self, vals_list):
