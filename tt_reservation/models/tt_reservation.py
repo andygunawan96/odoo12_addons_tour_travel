@@ -440,12 +440,14 @@ class TtReservation(models.Model):
         if self.payment_acquirer_number_id:
             date_now = datetime.now()
             time_delta = date_now - self.payment_acquirer_number_id.create_date
-            if divmod(time_delta.seconds, 3600)[0] > 0:
+            if divmod(time_delta.seconds, 3600)[0] == 0:
                 payment_acquirer_number = {
                     'create_date': self.payment_acquirer_number_id.create_date.strftime("%Y-%m-%d %H:%M:%S"),
                     'time_limit': (self.payment_acquirer_number_id.create_date + timedelta(hours=1)).strftime("%Y-%m-%d %H:%M:%S"),
                     'nomor_rekening': self.payment_acquirer_number_id.payment_acquirer_id.account_number,
-                    'amount': self.payment_acquirer_number_id.amount - self.payment_acquirer_number_id.unique_amount
+                    'account_name': self.payment_acquirer_number_id.payment_acquirer_id.account_name,
+                    'amount': self.payment_acquirer_number_id.amount - self.payment_acquirer_number_id.unique_amount,
+                    'order_number': self.payment_acquirer_number_id.number
                 }
             else:
                 self.payment_acquirer_number_id.state = 'cancel'
