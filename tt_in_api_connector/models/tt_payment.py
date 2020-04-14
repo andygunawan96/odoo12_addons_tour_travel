@@ -51,6 +51,7 @@ class TtPaymentApiCon(models.Model):
                 pay_acq_num = self.env['payment.acquirer.number'].search([('number', 'ilike', data['order_number'])])
                 if pay_acq_num:
                     pay_acq_num[len(pay_acq_num)-1].state = 'done'
+                    pay_acq_num[len(pay_acq_num)-1].fee_amount = float(data['fee'])
                 agent_id = self.env['tt.reservation.%s' % data['provider_type']].search([('name', '=', data['order_number'])]).agent_id
                 if not self.env['tt.payment'].search([('reference', '=', data['payment_ref'])]):
                     # topup
@@ -78,12 +79,15 @@ class TtPaymentApiCon(models.Model):
                 book_obj = self.env['tt.reservation.%s' % data['provider_type']].search([('name', '=', data['order_number']), ('state', 'in', ['booked'])], limit=1)
                 _logger.info(data['order_number'])
                 if book_obj:
-                    values = {
-                        "amount": book_obj.total,
-                        "currency": book_obj.currency_id.name,
-                        "co_uid": book_obj.booked_uid.id
-                    }
-                    res = ERR.get_no_error(values)
+                    if book_obj.total == float(data['transaction_amount']):
+                        values = {
+                            "amount": book_obj.total,
+                            "currency": book_obj.currency_id.name,
+                            "co_uid": book_obj.booked_uid.id
+                        }
+                        res = ERR.get_no_error(values)
+                    else:
+                        res = ERR.get_error(additional_message='Price not same')
                 else:
                     res = ERR.get_error(additional_message='Reservation Already Paid or Expired')
                 try:
