@@ -265,16 +265,22 @@ class PaymentAcquirerNumber(models.Model):
         return ERR.get_no_error(payment)
 
     def get_payment_acq_api(self, data):
-        payment_acq = self.search([('number', '=', data['order_number'])])
+        payment_acq = self.search([('number', 'ilike', data['order_number'])])
         if payment_acq:
-            res = {
-                'order_number': data['order_number'],
-                'create_date': payment_acq.create_date.strftime("%Y-%m-%d %H:%M:%S"),
-                'time_limit': (payment_acq.create_date + timedelta(hours=1)).strftime("%Y-%m-%d %H:%M:%S"),
-                'nomor_rekening': self.env.ref('tt_base.payment_acquirer_ho_payment_gateway_bca').account_number,
-                'amount': payment_acq.amount - payment_acq.unique_amount
-            }
-            return ERR.get_no_error(res)
+            # check datetime
+            date_now = datetime.now()
+            time_delta = date_now - payment_acq[len(payment_acq) - 1].create_date
+            if divmod(time_delta.seconds, 3600)[0] > 0:
+                res = {
+                    'order_number': data['order_number'],
+                    'create_date': payment_acq.create_date.strftime("%Y-%m-%d %H:%M:%S"),
+                    'time_limit': (payment_acq.create_date + timedelta(hours=1)).strftime("%Y-%m-%d %H:%M:%S"),
+                    'nomor_rekening': self.env.ref('tt_base.payment_acquirer_ho_payment_gateway_bca').account_number,
+                    'amount': payment_acq.amount - payment_acq.unique_amount
+                }
+                return ERR.get_no_error(res)
+            else:
+                return ERR.get_error(additional_message='Order Has Been Expired')
         else:
             return ERR.get_error(additional_message='Order Number not found')
 
