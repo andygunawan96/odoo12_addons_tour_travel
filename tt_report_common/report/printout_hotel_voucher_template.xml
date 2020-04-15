@@ -99,7 +99,7 @@
             </div>
 
             <!-- Hotel Description -->
-            <div class="title" style="background-color: #DC5413; border-radius: 20px 20px 0 0; border-color: #CCC; padding-top: 5px; padding-bottom: 5px">
+            <div class="title" t-att-style="'background-color: '+base_color+'; border-radius: 20px 20px 0 0; border-color: #CCC; padding-top: 5px; padding-bottom: 5px'">
                 <span style="padding-left: 20px; color: white; font-weight: 600; font-size: 18px">Hotel name: <span t-field="doc.hotel_name"/></span><br/>
                 <span style="padding-left: 20px; color: white; font-weight: 600; font-size: 16px">Address: <span t-field="doc.hotel_address"/></span>
             </div>
@@ -158,7 +158,7 @@
 
             <!--Guest Description-->
             <div class="box" style="margin: 0px; border: 1px solid #BBB; border-radius: 20px">
-                <div class="title" style="background-color: #DC5413; border-radius: 20px 20px 0 0; border-color: #CCC; padding-top: 5px; padding-bottom: 5px">
+                <div class="title" t-att-style="'background-color: '+base_color+'; border-radius: 20px 20px 0 0; border-color: #CCC; padding-top: 5px; padding-bottom: 5px'">
                     <span style="padding-left: 20px; color: white; font-weight: 600; font-size: 18px">Room Information</span><br/>
                 </div>
                 <div class="row" style="margin-left: 0px; margin-right: 0px">

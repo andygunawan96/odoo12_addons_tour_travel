@@ -15,4 +15,5 @@ class PrintoutReservation(models.AbstractModel):
             'doc_ids': data['context']['active_ids'],
             'doc_model': data['context']['active_model'],
             'docs': self.env[data['context']['active_model']].browse(data['context']['active_ids']),
+            'base_color': self.env['ir.config_parameter'].get_param('tt_base.website_default_color', default='#FFFFFF'),
         }

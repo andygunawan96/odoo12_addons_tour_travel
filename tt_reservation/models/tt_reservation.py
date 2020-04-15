@@ -433,7 +433,7 @@ class TtReservation(models.Model):
         #     for rec in self.invoice_line_ids:
         #         invoice_list.append({
         #             'name': rec.name,
-        #             'stat e': rec.state
+        #             'state': rec.state
         #         })
 
         payment_acquirer_number = {}

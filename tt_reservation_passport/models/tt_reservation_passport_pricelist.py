@@ -306,7 +306,7 @@ class PassportPricelist(models.Model):
                         'name': rec1.type_id.name,
                         'description': rec1.type_id.description,
                         'required': rec1.required,
-                        'id': rec1.id
+                        'id': rec1.reference_code
                     })
                 for attach in rec.attachments_ids:
                     attachments.append({

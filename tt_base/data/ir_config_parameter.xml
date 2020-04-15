@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="website_default_color_value" model="ir.config_parameter">
+            <field name="key">tt_base.website_default_color</field>
+            <field name="value">#FF0000</field>
+        </record>
+    </data>
+</odoo>
