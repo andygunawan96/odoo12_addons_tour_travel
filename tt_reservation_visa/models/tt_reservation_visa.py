@@ -48,10 +48,8 @@ class TtVisa(models.Model):
     provider_type_id = fields.Many2one('tt.provider.type', string='Provider Type',
                                        default=lambda self: self.env.ref('tt_reservation_visa.tt_provider_type_visa'))
 
-    # description = fields.Char('Description', readonly=True, states={'draft': [('readonly', False)]})
     country_id = fields.Many2one('res.country', 'Country', ondelete="cascade", readonly=True,
                                  states={'draft': [('readonly', False)]})
-    # duration = fields.Char('Duration', readonly=True, states={'draft': [('readonly', False)]})
     total_cost_price = fields.Monetary('Total Cost Price', default=0, readonly=True, compute="_compute_total_price")
 
     state_visa = fields.Selection(STATE_VISA, 'State', default='draft',
@@ -70,13 +68,9 @@ class TtVisa(models.Model):
                                         delivered = Documents sent to agent
                                         done = Documents ready at agent or given to customer''')
 
-    # ho_profit = fields.Monetary('HO Profit')
-
     estimate_date = fields.Date('Estimate Date', help='Estimate Process Done since the required documents submitted',
                                 readonly=True)
-    # payment_date = fields.Date('Payment Date', help='Date when accounting must pay the vendor')
     use_vendor = fields.Boolean('Use Vendor', readonly=True, default=False)
-    # receipt_number = fields.Char('Reference Number')
     vendor_ids = fields.One2many('tt.reservation.visa.vendor.lines', 'visa_id', 'Expenses')
 
     document_to_ho_date = fields.Datetime('Document to HO Date', readonly=1)
@@ -1741,10 +1735,8 @@ class TtVisa(models.Model):
                 'total': pricelist_obj.sale_price,
                 'pricelist_id': pricelist_id,
                 'sequence': passenger_obj.sequence,
-                # 'passenger_visa_ids': []
             }
             ssc_list.append(vals)
-            # passenger_env.search([('id', '=', 'passenger_ids[idx])].limit=1).cost_service_charge_ids.create(ssc_list))
             ssc_obj = passenger_obj.cost_service_charge_ids.create(vals)
             ssc_obj.write({
                 'passenger_visa_ids': [(6, 0, passenger_obj.ids)]
@@ -1790,7 +1782,6 @@ class TtVisa(models.Model):
                 'total': -(pricelist_obj.cost_price - pricelist_obj.nta_price),
                 'pricelist_id': pricelist_id,
                 'sequence': passenger_obj.sequence,
-                # 'passenger_visa_ids': []
             }
             ssc_list.append(vals_fixed)
             ssc_obj3 = passenger_obj.cost_service_charge_ids.create(vals_fixed)
