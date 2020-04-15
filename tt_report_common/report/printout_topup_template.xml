@@ -45,7 +45,7 @@
         <!-- Line Info -->
         <br/>
         <div class="box" style="margin: 0px 0px 20px; text-align:center;">
-            <div class="title" style="background-color: #DC5413; border-radius: 20px 20px 0 0; border-color: #CCC; padding-top: 5px; padding-bottom: 5px">
+            <div class="title" t-att-style="'background-color: '+base_color+'; border-radius: 20px 20px 0 0; border-color: #CCC; padding-top: 5px; padding-bottom: 5px'">
                 <div class="row" style="padding-left: 20px; color: white; font-weight: 600; font-size: 18px">
                     <div class="col-3">Amount</div>
                     <div class="col-2">Code</div>

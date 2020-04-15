@@ -16,7 +16,7 @@ class TtTemporaryRecord(models.Model):
     rec_model = fields.Char('Res Model', required=True)
 
     state = fields.Selection([('new', 'New'), ('confirm', 'Confirmed'), ('need_merge', 'Need to be Merge'), ('merge', 'Merged')],
-                             'State', help='This Record are Confirmed as new record or need to merge', default='new')
+                             'State', help='This Record are Confirmed as new record or need to merge with old record', default='new')
     active = fields.Boolean('Active', default=True)
     line_ids = fields.One2many('tt.record.move.line', 'temp_rec_id', 'Move Obj')
 
@@ -40,9 +40,22 @@ class TtTemporaryRecord(models.Model):
                     'rec_id': rec.id,
                     'rec_model': model_name,
                 })
+        parent_obj = self.env[self.rec_model].browse(self.parent_rec_id)
         remove_obj = self.env[self.rec_model].browse(self.remove_rec_id)
-        if self.rec_model in ['res.city', 'res.country']:
-            if not self.env[self.rec_model].browse(self.parent_rec_id).other_name_ids.filtered(lambda x: x.name == remove_obj.name):
+        if self.rec_model in ['res.city', 'res.country.state', 'res.country']:
+            alias_name_list = []
+            # Pindah smua alias name dari object ke target merge nya
+            for alias in parent_obj.other_name_ids:
+                if alias.name != parent_obj.name:
+                    if self.rec_model == 'res.city':
+                        alias.city_id = self.parent_rec_id
+                    elif self.rec_model == 'res.country':
+                        alias.country_id = self.parent_rec_id
+                    elif self.rec_model == 'res.country.state':
+                        alias.state_id = self.parent_rec_id
+                alias_name_list.append(alias.name)
+            # Pindah smua nama asli obj yg ingin di remove ke target merge nya
+            if remove_obj.name not in alias_name_list:
                 self.env['tt.destination.alias'].create({'name': remove_obj.name, 'city_id': self.parent_rec_id, })
 
             for a in remove_obj.provide_code_ids:
@@ -100,6 +113,7 @@ class TtTemporaryRecord(models.Model):
             'context': {},
             'target': 'current',
         }
+
 
 class TtMoveLine(models.Model):
     _name = 'tt.record.move.line'
