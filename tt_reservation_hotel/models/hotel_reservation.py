@@ -195,7 +195,7 @@ class HotelReservation(models.Model):
     def print_ho_invoice(self):
         datas = {
             'ids': self.env.context.get('active_ids', []),
-            'model': self._name
+            'model': self._name,
         }
         res = self.read()
         res = res and res[0] or {}
