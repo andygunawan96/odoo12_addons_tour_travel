@@ -45,7 +45,8 @@ class TtCustomer(models.Model):
 
                 first_name = vals.get('first_name') and vals['first_name'] or ''
                 last_name = vals.get('last_name') and vals['last_name'] or ''
-                agent = vals.get('agent_id') and self.env['tt.agent'].browse(int(vals['agent_id'])).name or ''
+                agent = vals.get('agent_id') and self.env['tt.agent'].browse(int(vals['agent_id'])) or False
+                nationality = vals.get('nationality_id') and self.env['res.country'].browse(int(vals['nationality_id'])) or False
 
                 emailfield = []
                 emailvals = {
@@ -115,12 +116,14 @@ class TtCustomer(models.Model):
                     'UF_CRM_1529548344555': address_list and (address_list[0]['address'] + ' ' + address_list[0]['postal_code'] + ', ' + address_list[0]['city'] + ', ' + address_list[0]['state'] + ', ' + address_list[0]['country']) or '',
                     'BIRTHDATE': vals.get('birth_date') and vals['birth_date'].strftime('%Y-%m-%d') or False,
                     'EMAIL': emailfield,
-                    'UF_CRM_1529549610946': vals.get('nationality_id') and self.env['res.country'].browse(int(vals['nationality_id'])).name or '',
+                    'UF_CRM_1529549610946': nationality and nationality.name or '',
+                    'UF_CRM_1587010972': nationality and nationality.id or 0,
                     'ASSIGNED_BY_ID': 97,
                     'PHONE': phone_list,
                     'UF_CRM_1586761168': cust_obj.id,
                     'UF_CRM_1586920969': cust_obj.seq_id and cust_obj.seq_id or '',
-                    'UF_CRM_1532507009': agent,
+                    'UF_CRM_1532507009': agent and agent.name or '',
+                    'UF_CRM_1587005538': agent and agent.id or 0,
                     'UF_CRM_5C3EB7BF2AD44': gender,
                     'UF_CRM_1529548076671': marital,
                     'UF_CRM_1529548307310': religion,
@@ -237,10 +240,12 @@ class TtCustomer(models.Model):
                     'BIRTHDATE': self.birth_date and self.birth_date.strftime('%Y-%m-%d') or '',
                     'EMAIL': emailfield,
                     'UF_CRM_1529549610946': self.nationality_id and self.nationality_id.name or '',
+                    'UF_CRM_1587010972': self.nationality_id and self.nationality_id.id or 0,
                     'PHONE': phone_list,
                     'UF_CRM_1586761168': self.id,
                     'UF_CRM_1586920969': self.seq_id,
-                    'UF_CRM_1532507009': self.agent_id.name,
+                    'UF_CRM_1532507009': self.agent_id and self.agent_id.name or '',
+                    'UF_CRM_1587005538': self.agent_id and self.agent_id.id or 0,
                     'UF_CRM_5C3EB7BF2AD44': self.gender and gender_conv[self.gender] or '',
                     'UF_CRM_1529548076671': self.marital_status and marital_status_conv[self.marital_status] or '',
                     'UF_CRM_1529548307310': self.religion and religion_conv[self.religion] or '',
@@ -305,25 +310,60 @@ class TtCustomer(models.Model):
                            'ADDRESS_CITY', 'ADDRESS_PROVINCE', 'ADDRESS_COUNTRY', 'ADDRESS_COUNTRY_CODE', 'BIRTHDATE',
                            'EMAIL', 'UF_CRM_1529549610946', 'PHONE', 'UF_CRM_1586761168', 'UF_CRM_1586920969',
                            'UF_CRM_1532507009', 'UF_CRM_5C3EB7BF2AD44', 'UF_CRM_1529548076671', 'UF_CRM_1529548307310',
-                           'UF_CRM_1529549538070', 'UF_CRM_1529549568200'],
+                           'UF_CRM_1529549538070', 'UF_CRM_1529549568200', 'UF_CRM_1587005538'],
             }
             contacts = bx.SelectContact(contact_params)
             if contacts['response']:
                 for rec in json.loads(contacts['response'])['result']:
+                    agent_obj = rec.get('UF_CRM_1587005538') and self.env['tt.agent'].sudo().browse(int(rec['UF_CRM_1587005538'])) or False
+                    nationality_obj = rec.get('UF_CRM_1587010972') and self.env['res.country'].sudo().browse(int(rec['UF_CRM_1587010972'])) or False
+                    email_list = rec.get('EMAIL') and rec['EMAIL'] or []
+                    phone_list = rec.get('PHONE') and rec['PHONE'] or []
                     vals = {
                         'webhook_from_bitrix': True,
                         'rdx_id': rec.get('UF_CRM_1586761168') and rec['UF_CRM_1586761168'] or False,
+                        'agent_id': agent_obj and agent_obj.id or False,
+                        'nationality_id': nationality_obj and nationality_obj.id or False,
                         'first_name': rec.get('NAME') and rec['NAME'] or '',
                         'last_name': rec.get('LAST_NAME') and rec['LAST_NAME'] or '',
                         'birth_date': rec.get('BIRTHDATE') and rec['BIRTHDATE'] or False,
-                        'email': rec.get('EMAIL') and rec['EMAIL'] or '',
+                        'email': email_list and email_list[0]['VALUE'] or '',
                         'gender': rec.get('UF_CRM_5C3EB7BF2AD44') and gender_conv[str(rec['UF_CRM_5C3EB7BF2AD44'])] or '',
                         'marital_status': rec.get('UF_CRM_1529548076671') and marital_status_conv[str(rec['UF_CRM_1529548076671'])] or '',
                         'religion': rec.get('UF_CRM_1529548307310') and religion_conv[str(rec['UF_CRM_1529548307310'])] or '',
                     }
                     if data['event'] == 'ONCRMCONTACTADD' or not vals.get('rdx_id'):
-                        vals.get('rdx_id') and vals.pop('rdx_id')
+                        if vals.get('rdx_id'):
+                            vals.pop('rdx_id')
                         new_bitrix_cust = self.sudo().create(vals)
+                        add_city_obj = rec.get('ADDRESS_CITY') and self.env['res.city'].sudo().search([('name', '=', rec['ADDRESS_CITY'])], limit=1) or False
+                        add_state_obj = rec.get('ADDRESS_PROVINCE') and self.env['res.country.state'].sudo().search([('name', '=', rec['ADDRESS_PROVINCE'])], limit=1) or False
+                        add_country_obj = rec.get('ADDRESS_COUNTRY_CODE') and self.env['res.country'].sudo().search([('code', '=', rec['ADDRESS_COUNTRY_CODE'])], limit=1) or False
+                        self.env['address.detail'].sudo().create({
+                            'customer_id': new_bitrix_cust.id,
+                            'address': rec.get('ADDRESS') and rec['ADDRESS'] or '',
+                            'zip': rec.get('ADDRESS_POSTAL_CODE') and rec['ADDRESS_POSTAL_CODE'] or '',
+                            'city_id': add_city_obj and add_city_obj[0].id or False,
+                            'state_id': add_state_obj and add_state_obj[0].id or False,
+                            'country_id': add_country_obj and add_country_obj[0].id or False,
+                        })
+                        for cust_phone in phone_list:
+                            phone_type_conv = {
+                                'work': 'WORK',
+                                'home': 'HOME',
+                                'other': 'OTHER'
+                            }
+                            self.env['phone.detail'].sudo().create({
+                                'customer_id': new_bitrix_cust.id,
+                                'calling_code': cust_phone.get('VALUE') and cust_phone['VALUE'][:2] or '0',
+                                'calling_number': cust_phone.get('VALUE') and cust_phone['VALUE'][2:] or '0',
+                                'type': cust_phone.get('VALUE_TYPE') and phone_type_conv[str(cust_phone['VALUE_TYPE'])] or False
+                            })
+                        self.env['tt.customer.identity'].sudo().create({
+                            'customer_id': new_bitrix_cust.id,
+                            'identity_type': rec.get('UF_CRM_1529549538070') and identity_conv[str(rec['UF_CRM_1529549538070'])] or False,
+                            'identity_number': rec.get('UF_CRM_1529549568200') and rec['UF_CRM_1529549568200'] or ''
+                        })
                         req = {
                             'ID': rec['ID'],
                             'FIELDS': {
@@ -336,6 +376,69 @@ class TtCustomer(models.Model):
                         cust_obj = self.sudo().browse(int(vals['rdx_id']))
                         vals.pop('rdx_id')
                         cust_obj.sudo().write(vals)
+
+                        add_add = rec.get('ADDRESS') and rec['ADDRESS'] or ''
+                        add_zip = rec.get('ADDRESS_POSTAL_CODE') and rec['ADDRESS_POSTAL_CODE'] or ''
+                        add_city_obj = rec.get('ADDRESS_CITY') and self.env['res.city'].sudo().search([('name', '=', rec['ADDRESS_CITY'])], limit=1) or False
+                        add_state_obj = rec.get('ADDRESS_PROVINCE') and self.env['res.country.state'].sudo().search([('name', '=', rec['ADDRESS_PROVINCE'])], limit=1) or False
+                        add_country_obj = rec.get('ADDRESS_COUNTRY_CODE') and self.env['res.country'].sudo().search([('code', '=', rec['ADDRESS_COUNTRY_CODE'])], limit=1) or False
+                        add_data_list = self.env['address.detail'].sudo().search([('customer_id', '=', cust_obj.id), ('address', '=', add_add), ('zip', '=', add_zip)])
+                        if add_data_list:
+                            add_data_list[0].sudo().write({
+                                'address': add_add,
+                                'zip': add_zip,
+                                'city_id': add_city_obj and add_city_obj[0].id or False,
+                                'state_id': add_state_obj and add_state_obj[0].id or False,
+                                'country_id': add_country_obj and add_country_obj[0].id or False,
+                            })
+                        else:
+                            self.env['address.detail'].sudo().create({
+                                'customer_id': cust_obj.id,
+                                'address': add_add,
+                                'zip': add_zip,
+                                'city_id': add_city_obj and add_city_obj[0].id or False,
+                                'state_id': add_state_obj and add_state_obj[0].id or False,
+                                'country_id': add_country_obj and add_country_obj[0].id or False,
+                            })
+
+                        for cust_phone in phone_list:
+                            phone_type_conv = {
+                                'work': 'WORK',
+                                'home': 'HOME',
+                                'other': 'OTHER'
+                            }
+                            call_code = cust_phone.get('VALUE') and cust_phone['VALUE'][:2] or '0'
+                            call_num = cust_phone.get('VALUE') and cust_phone['VALUE'][2:] or '0'
+                            call_type = cust_phone.get('VALUE_TYPE') and phone_type_conv[str(cust_phone['VALUE_TYPE'])] or False
+                            phone_data_list = self.env['phone.detail'].sudo().search([('customer_id', '=', cust_obj.id), ('calling_code', '=', call_code), ('calling_number', '=', call_num), ('type', '=', call_type)])
+                            if phone_data_list:
+                                phone_data_list[0].sudo().write({
+                                    'calling_code': call_code,
+                                    'calling_number': call_num,
+                                    'type': call_type
+                                })
+                            else:
+                                self.env['phone.detail'].sudo().create({
+                                    'customer_id': cust_obj.id,
+                                    'calling_code': call_code,
+                                    'calling_number': call_num,
+                                    'type': call_type
+                                })
+
+                        ide_type = rec.get('UF_CRM_1529549538070') and identity_conv[str(rec['UF_CRM_1529549538070'])] or False
+                        ide_num = rec.get('UF_CRM_1529549568200') and rec['UF_CRM_1529549568200'] or ''
+                        ide_data_list = self.env['phone.detail'].sudo().search([('customer_id', '=', cust_obj.id), ('identity_type', '=', ide_type), ('identity_number', '=', ide_num)])
+                        if ide_data_list:
+                            ide_data_list[0].sudo().write({
+                                'identity_type': ide_type,
+                                'identity_number': ide_num
+                            })
+                        else:
+                            self.env['tt.customer.identity'].sudo().create({
+                                'customer_id': cust_obj.id,
+                                'identity_type': ide_type,
+                                'identity_number': ide_num
+                            })
             return ERR.get_no_error()
         except:
             _logger.error(traceback.format_exc())
