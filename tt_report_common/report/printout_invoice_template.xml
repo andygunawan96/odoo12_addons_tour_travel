@@ -315,7 +315,11 @@
                         <div style="padding-left: 60px; padding-bottom: 10px; vertical-align: middle; text-align: center; border-radius: 25px; background-color: rgba(39,62,84,0.76); padding-top: 5px;">
                             <div style="vertical-align: middle; display: flex; letter-spacing: 0.05em; font-size: 24px; color: white; font-weight: 600; margin-top: 0px; margin-left: -10px;">
                                 <t t-if="doc_type == 'itin'">
-                                    <span t-esc="'Itinerary'" style="margin-top: 5px;"/>
+                                    <t t-if="doc.pnr">
+                                        <span t-field="doc.pnr" style="margin-top: 5px;"/>
+                                    </t><t t-else="">
+                                        <span t-esc="'Itinerary'" style="margin-top: 5px;"/>
+                                    </t>
                                 </t>
                                 <t t-elif="doc_model == 'tt.reservation.hotel'">
                                     <span t-field="doc.pnr" style="margin-top: 5px;"/>
