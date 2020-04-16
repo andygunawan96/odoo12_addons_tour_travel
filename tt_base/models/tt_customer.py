@@ -506,6 +506,10 @@ class TtCustomer(models.Model):
             else:
                 _logger.info("Skip Register UID, no Transaction\n\n")
 
+    def create_or_update_customer_bitrix(self, data, context):
+        return ERR.get_no_error()
+
+
 class TtCustomerIdentityNumber(models.Model):
     _name = "tt.customer.identity"
     _description = "Customer Identity Type"
