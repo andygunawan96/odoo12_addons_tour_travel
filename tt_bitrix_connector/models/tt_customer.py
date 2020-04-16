@@ -45,7 +45,8 @@ class TtCustomer(models.Model):
 
                 first_name = vals.get('first_name') and vals['first_name'] or ''
                 last_name = vals.get('last_name') and vals['last_name'] or ''
-                agent = vals.get('agent_id') and self.env['tt.agent'].browse(int(vals['agent_id'])).name or ''
+                agent = vals.get('agent_id') and self.env['tt.agent'].browse(int(vals['agent_id'])) or False
+                nationality = vals.get('nationality_id') and self.env['res.country'].browse(int(vals['nationality_id'])) or False
 
                 emailfield = []
                 emailvals = {
@@ -115,12 +116,14 @@ class TtCustomer(models.Model):
                     'UF_CRM_1529548344555': address_list and (address_list[0]['address'] + ' ' + address_list[0]['postal_code'] + ', ' + address_list[0]['city'] + ', ' + address_list[0]['state'] + ', ' + address_list[0]['country']) or '',
                     'BIRTHDATE': vals.get('birth_date') and vals['birth_date'].strftime('%Y-%m-%d') or False,
                     'EMAIL': emailfield,
-                    'UF_CRM_1529549610946': vals.get('nationality_id') and self.env['res.country'].browse(int(vals['nationality_id'])).name or '',
+                    'UF_CRM_1529549610946': nationality and nationality.name or '',
+                    'UF_CRM_1587010972': nationality and nationality.id or 0,
                     'ASSIGNED_BY_ID': 97,
                     'PHONE': phone_list,
                     'UF_CRM_1586761168': cust_obj.id,
                     'UF_CRM_1586920969': cust_obj.seq_id and cust_obj.seq_id or '',
-                    'UF_CRM_1532507009': agent,
+                    'UF_CRM_1532507009': agent and agent.name or '',
+                    'UF_CRM_1587005538': agent and agent.id or 0,
                     'UF_CRM_5C3EB7BF2AD44': gender,
                     'UF_CRM_1529548076671': marital,
                     'UF_CRM_1529548307310': religion,
@@ -237,10 +240,12 @@ class TtCustomer(models.Model):
                     'BIRTHDATE': self.birth_date and self.birth_date.strftime('%Y-%m-%d') or '',
                     'EMAIL': emailfield,
                     'UF_CRM_1529549610946': self.nationality_id and self.nationality_id.name or '',
+                    'UF_CRM_1587010972': self.nationality_id and self.nationality_id.id or 0,
                     'PHONE': phone_list,
                     'UF_CRM_1586761168': self.id,
                     'UF_CRM_1586920969': self.seq_id,
-                    'UF_CRM_1532507009': self.agent_id.name,
+                    'UF_CRM_1532507009': self.agent_id and self.agent_id.name or '',
+                    'UF_CRM_1587005538': self.agent_id and self.agent_id.id or 0,
                     'UF_CRM_5C3EB7BF2AD44': self.gender and gender_conv[self.gender] or '',
                     'UF_CRM_1529548076671': self.marital_status and marital_status_conv[self.marital_status] or '',
                     'UF_CRM_1529548307310': self.religion and religion_conv[self.religion] or '',
@@ -305,14 +310,19 @@ class TtCustomer(models.Model):
                            'ADDRESS_CITY', 'ADDRESS_PROVINCE', 'ADDRESS_COUNTRY', 'ADDRESS_COUNTRY_CODE', 'BIRTHDATE',
                            'EMAIL', 'UF_CRM_1529549610946', 'PHONE', 'UF_CRM_1586761168', 'UF_CRM_1586920969',
                            'UF_CRM_1532507009', 'UF_CRM_5C3EB7BF2AD44', 'UF_CRM_1529548076671', 'UF_CRM_1529548307310',
-                           'UF_CRM_1529549538070', 'UF_CRM_1529549568200'],
+                           'UF_CRM_1529549538070', 'UF_CRM_1529549568200', 'UF_CRM_1587005538'],
             }
             contacts = bx.SelectContact(contact_params)
             if contacts['response']:
                 for rec in json.loads(contacts['response'])['result']:
+                    agent_obj = rec.get('UF_CRM_1587005538') and self.env['tt.agent'].sudo().browse(int(rec['UF_CRM_1587005538'])) or False
+                    nationality_obj = rec.get('UF_CRM_1587010972') and self.env['res.country'].sudo().browse(int(rec['UF_CRM_1587010972'])) or False
+                    # kurang phone, address, identity
                     vals = {
                         'webhook_from_bitrix': True,
                         'rdx_id': rec.get('UF_CRM_1586761168') and rec['UF_CRM_1586761168'] or False,
+                        'agent_id': agent_obj and agent_obj.id or False,
+                        'nationality_id': nationality_obj and nationality_obj.id or False,
                         'first_name': rec.get('NAME') and rec['NAME'] or '',
                         'last_name': rec.get('LAST_NAME') and rec['LAST_NAME'] or '',
                         'birth_date': rec.get('BIRTHDATE') and rec['BIRTHDATE'] or False,
