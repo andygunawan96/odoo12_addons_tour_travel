@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <data noupdate="1">
+
+        <record id="use_bitrix_contact" model="ir.config_parameter">
+            <field name="key">use.bitrix.contact</field>
+            <field name="value">True</field>
+        </record>
+
+        <record id="use_bitrix_task" model="ir.config_parameter">
+            <field name="key">use.bitrix.task</field>
+            <field name="value">True</field>
+        </record>
+
+    </data>
+</odoo>

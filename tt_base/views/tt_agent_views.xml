@@ -106,7 +106,7 @@
                         <field name="email" placeholder="Agent's Email" readonly="1"/>
                         <field name="website" readonly="1"/>
                         <field name="npwp" readonly="1"/>
-                        <field name="payment_acquirer_ids" context="{'form_view_ref':'tt_base.payment_acquirer_form_view'}" readonly="1"/>
+                        <field name="payment_acquirer_ids" context="{'form_view_ref':'tt_base.payment_acquirer_form_view'}" readonly="0"/>
                         <field name="agent_bank_detail_ids" readonly="1"/>
                         <!--<field name="history_ids"/>-->
                     </group>
