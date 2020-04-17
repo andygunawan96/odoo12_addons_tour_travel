@@ -433,7 +433,7 @@ class TtCustomer(models.Model):
 
                         ide_type = rec.get('UF_CRM_1529549538070') and identity_conv[str(rec['UF_CRM_1529549538070'])] or 'other'
                         ide_num = rec.get('UF_CRM_1529549568200') and rec['UF_CRM_1529549568200'] or ''
-                        ide_data_list = self.env['phone.detail'].sudo().search([('customer_id', '=', cust_obj.id), ('identity_type', '=', ide_type), ('identity_number', '=', ide_num)])
+                        ide_data_list = self.env['tt.customer.identity'].sudo().search([('customer_id', '=', cust_obj.id), ('identity_type', '=', ide_type), ('identity_number', '=', ide_num)])
                         if ide_data_list:
                             ide_data_list[0].sudo().write({
                                 'identity_type': ide_type,
