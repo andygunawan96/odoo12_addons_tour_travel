@@ -416,7 +416,7 @@ class TtCustomer(models.Model):
                             call_code = cust_phone.get('VALUE') and cust_phone['VALUE'][:2] or '0'
                             call_num = cust_phone.get('VALUE') and cust_phone['VALUE'][2:] or '0'
                             call_type = cust_phone.get('VALUE_TYPE') and phone_type_conv[str(cust_phone['VALUE_TYPE'])] or False
-                            phone_data_list = self.env['phone.detail'].sudo().search([('customer_id', '=', cust_obj.id), ('calling_code', '=', call_code), ('calling_number', '=', call_num), ('type', '=', call_type)])
+                            phone_data_list = self.env['phone.detail'].sudo().search([('customer_id', '=', cust_obj.id), ('type', '=', call_type)])
                             if phone_data_list:
                                 phone_data_list[0].sudo().write({
                                     'calling_code': call_code,
