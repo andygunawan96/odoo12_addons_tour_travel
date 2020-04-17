@@ -409,9 +409,9 @@ class TtCustomer(models.Model):
 
                         for cust_phone in phone_list:
                             phone_type_conv = {
-                                'work': 'WORK',
-                                'home': 'HOME',
-                                'other': 'OTHER'
+                                'WORK': 'work',
+                                'HOME': 'home',
+                                'OTHER': 'other'
                             }
                             call_code = cust_phone.get('VALUE') and cust_phone['VALUE'][:2] or '0'
                             call_num = cust_phone.get('VALUE') and cust_phone['VALUE'][2:] or '0'
