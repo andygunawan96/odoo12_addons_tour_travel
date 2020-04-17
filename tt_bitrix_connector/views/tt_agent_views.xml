@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="tt_agent_form_view_bitrix" model="ir.ui.view">
+        <field name="name">tt.agent.form.view.bitrix</field>
+        <field name="model">tt.agent</field>
+        <field name="inherit_id" ref="tt_base.tt_agent_form_view"/>
+        <field name="arch" type="xml">
+            <field name="est_date" position="after">
+                <field name="is_using_bitrix" groups="base.user_admin"/>
+                <field name="is_default_bitrix_agent" groups="base.user_admin" attrs="{'invisible': [('is_using_bitrix', '=', False)]}"/>
+            </field>
+        </field>
+    </record>
+</odoo>
