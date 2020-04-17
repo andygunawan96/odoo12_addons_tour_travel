@@ -129,6 +129,11 @@ class ApiManagement(models.Model):
                 _co_user = self.env['res.users'].sudo().browse(int(data['co_uid']))
                 values.update(_co_user.get_credential(prefix='co_'))
             response.update(values)
+
+            # April 9, 2019 - SAM
+            # Menambahkan uplines dari user
+            co_user_info = self.env['tt.agent'].sudo().get_agent_level(response['co_agent_id'])
+            response['co_user_info'] = co_user_info
             res = Response().get_no_error(response)
         except RequestException as e:
             _logger.error(traceback.format_exc())
