@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+
+        <record id="tt_transport_carrier_ppob_bpjs" model="tt.transport.carrier">
+            <field name="name">BPJS Kesehatan</field>
+            <field name="code">3200</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_ppob.tt_provider_type_ppob"/>
+        </record>
+
+        <record id="tt_transport_carrier_ppob_postpln" model="tt.transport.carrier">
+            <field name="name">PLN Postpaid</field>
+            <field name="code">521</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_ppob.tt_provider_type_ppob"/>
+        </record>
+
+        <record id="tt_transport_carrier_ppob_prepln" model="tt.transport.carrier">
+            <field name="name">PLN Prepaid</field>
+            <field name="code">522</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_ppob.tt_provider_type_ppob"/>
+        </record>
+
+        <record id="tt_transport_carrier_ppob_notaglispln" model="tt.transport.carrier">
+            <field name="name">PLN Non Tagihan</field>
+            <field name="code">524</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_ppob.tt_provider_type_ppob"/>
+        </record>
+    </data>
+</odoo>
+    
