@@ -166,7 +166,7 @@ class TtGetBookingFromVendor(models.TransientModel):
             # if self.booker_id.gender == "male":
             #     title = "MR"
             if self.booker_id.gender == "female" and self.booker_id == "married":
-                title= "MRS"
+                title = "MRS"
             elif self.booker_id.gender == "female":
                 title = "MS"
 
