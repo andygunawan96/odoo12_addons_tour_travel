@@ -315,7 +315,11 @@ class TtCustomer(models.Model):
             contacts = bx.SelectContact(contact_params)
             if contacts['response']:
                 for rec in json.loads(contacts['response'])['result']:
-                    agent_obj = rec.get('UF_CRM_1587005538') and self.env['tt.agent'].sudo().browse(int(rec['UF_CRM_1587005538'])) or False
+                    default_agent = self.env['tt.agent'].sudo().search([('is_default_bitrix_agent', '=', True)], limit=1)
+                    default_agent = default_agent and default_agent[0] or False
+                    agent_obj = rec.get('UF_CRM_1587005538') and self.env['tt.agent'].sudo().browse(int(rec['UF_CRM_1587005538'])) or default_agent
+                    if not agent_obj:
+                        raise Exception('Please fill Agent field on Bitrix, or set a default agent!')
                     nationality_obj = rec.get('UF_CRM_1587010972') and self.env['res.country'].sudo().browse(int(rec['UF_CRM_1587010972'])) or False
                     email_list = rec.get('EMAIL') and rec['EMAIL'] or []
                     phone_list = rec.get('PHONE') and rec['PHONE'] or []
@@ -340,6 +344,7 @@ class TtCustomer(models.Model):
                         add_state_obj = rec.get('ADDRESS_PROVINCE') and self.env['res.country.state'].sudo().search([('name', '=', rec['ADDRESS_PROVINCE'])], limit=1) or False
                         add_country_obj = rec.get('ADDRESS_COUNTRY_CODE') and self.env['res.country'].sudo().search([('code', '=', rec['ADDRESS_COUNTRY_CODE'])], limit=1) or False
                         self.env['address.detail'].sudo().create({
+                            'type': 'home',
                             'customer_id': new_bitrix_cust.id,
                             'address': rec.get('ADDRESS') and rec['ADDRESS'] or '',
                             'zip': rec.get('ADDRESS_POSTAL_CODE') and rec['ADDRESS_POSTAL_CODE'] or '',
@@ -361,7 +366,7 @@ class TtCustomer(models.Model):
                             })
                         self.env['tt.customer.identity'].sudo().create({
                             'customer_id': new_bitrix_cust.id,
-                            'identity_type': rec.get('UF_CRM_1529549538070') and identity_conv[str(rec['UF_CRM_1529549538070'])] or False,
+                            'identity_type': rec.get('UF_CRM_1529549538070') and identity_conv[str(rec['UF_CRM_1529549538070'])] or 'other',
                             'identity_number': rec.get('UF_CRM_1529549568200') and rec['UF_CRM_1529549568200'] or ''
                         })
                         req = {
@@ -393,6 +398,7 @@ class TtCustomer(models.Model):
                             })
                         else:
                             self.env['address.detail'].sudo().create({
+                                'type': 'home',
                                 'customer_id': cust_obj.id,
                                 'address': add_add,
                                 'zip': add_zip,
@@ -425,7 +431,7 @@ class TtCustomer(models.Model):
                                     'type': call_type
                                 })
 
-                        ide_type = rec.get('UF_CRM_1529549538070') and identity_conv[str(rec['UF_CRM_1529549538070'])] or False
+                        ide_type = rec.get('UF_CRM_1529549538070') and identity_conv[str(rec['UF_CRM_1529549538070'])] or 'other'
                         ide_num = rec.get('UF_CRM_1529549568200') and rec['UF_CRM_1529549568200'] or ''
                         ide_data_list = self.env['phone.detail'].sudo().search([('customer_id', '=', cust_obj.id), ('identity_type', '=', ide_type), ('identity_number', '=', ide_num)])
                         if ide_data_list:
