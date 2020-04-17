@@ -354,9 +354,9 @@ class TtCustomer(models.Model):
                         })
                         for cust_phone in phone_list:
                             phone_type_conv = {
-                                'work': 'WORK',
-                                'home': 'HOME',
-                                'other': 'OTHER'
+                                'WORK': 'work',
+                                'HOME': 'home',
+                                'OTHER': 'other'
                             }
                             self.env['phone.detail'].sudo().create({
                                 'customer_id': new_bitrix_cust.id,
