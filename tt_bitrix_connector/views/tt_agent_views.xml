@@ -7,6 +7,7 @@
         <field name="arch" type="xml">
             <field name="est_date" position="after">
                 <field name="is_using_bitrix" groups="base.user_admin"/>
+                <field name="is_default_bitrix_agent" groups="base.user_admin" attrs="{'invisible': [('is_using_bitrix', '=', False)]}"/>
             </field>
         </field>
     </record>
