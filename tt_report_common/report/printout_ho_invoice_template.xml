@@ -32,30 +32,30 @@
 
             </div>
             <div class="col-5 text-center">
-                <t t-set="printout_icon" t-value="'/tt_report_common/static/images/bill-white.png'"/>
                 <t t-if="doc_model == 'tt.agent.invoice'">
-                    <span style="margin-top: 10px; margin-left: 10px; color: #DC5413; font-size: 20px;">HO Invoice</span><br/>
+                    <span t-att-style="'margin-top: 10px; margin-left: 10px; color: ' + base_color + '; font-size: 20px;'">HO Invoice</span><br/>
+                    <!-- <span style="margin-top: 10px; margin-left: 10px; color: #DC5413; font-size: 20px;">HO Invoice</span><br/>-->
                     <t t-set="printout_icon" t-value="'/tt_report_common/static/images/bill-white.png'"/>
                 </t><t t-elif="doc_model == 'tt.billing.statement'">
-                    <span style="margin-top: 10px; margin-left: 10px; color: #DC5413; font-size: 20px;">Billing</span><br/>
+                    <span t-att-style="'margin-top: 10px; margin-left: 10px; color: ' + base_color + '; font-size: 20px;'">Billing</span><br/>
                     <t t-set="printout_icon" t-value="'/tt_report_common/static/images/bill-white.png'"/>
                 </t><t t-elif="doc_model == 'tt.top.up'">
                     <t t-if="doc.state in ['draft','request','confirm']">
-                        <span style="margin-top: 10px; margin-left: 10px; color: #DC5413; font-size: 20px;">Proforma Top Up</span><br/>  <!--Proforma HO Invoice-->
+                        <span t-att-style="'margin-top: 10px; margin-left: 10px; color: ' + base_color + '; font-size: 20px;'">Proforma Top Up</span><br/>  <!--Proforma HO Invoice-->
                         <t t-set="printout_icon" t-value="'/tt_report_common/static/images/bill-white.png'"/>
                     </t>
                     <t t-if="doc.state in ['validated','approved']">  <!--['valid','done']-->
-                        <span style="margin-top: 10px; margin-left: 10px; color: #DC5413; font-size: 20px;">Top Up</span><br/>  <!--HO Invoice-->
+                        <span t-att-style="'margin-top: 10px; margin-left: 10px; color: ' + base_color + '; font-size: 20px;'">Top Up</span><br/>  <!--HO Invoice-->
                         <t t-set="printout_icon" t-value="'/tt_report_common/static/images/bill-white.png'"/>
                     </t>
                 </t><t t-elif="doc_model == 'tt.refund'">
-                        <span style="margin-top: 10px; margin-left: 10px; color: #DC5413; font-size: 20px;">Refund</span><br/>
+                        <span t-att-style="'margin-top: 10px; margin-left: 10px; color: ' + base_color + '; font-size: 20px;'">Refund</span><br/>
                         <t t-set="printout_icon" t-value="'/tt_report_common/static/images/refund-white.png'"/>
                 </t><t t-elif="doc_model == 'tt.reschedule'">
-                        <span style="margin-top: 10px; margin-left: 10px; color: #DC5413; font-size: 20px;">After Sales</span><br/>
+                        <span t-att-style="'margin-top: 10px; margin-left: 10px; color: ' + base_color + '; font-size: 20px;'">After Sales</span><br/>
                         <t t-set="printout_icon" t-value="'/tt_report_common/static/images/refund-white.png'"/>
                 </t><t t-elif="doc_type == 'itin'">
-                    <span style="margin-top: 10px; margin-left: 10px; color: #DC5413; font-size: 20px;">Itinerary</span><br/>
+                    <span t-att-style="'margin-top: 10px; margin-left: 10px; color: ' + base_color + '; font-size: 20px;'">Itinerary</span><br/>
                     <t t-if="doc_model == 'tt.reservation.activity'">
                         <t t-set="printout_icon" t-value="'/tt_report_common/static/images/activity-white.png'"/>
                     </t>
@@ -63,13 +63,14 @@
                         <t t-set="printout_icon" t-value="'/tt_report_common/static/images/hotel-white.png'"/>
                     </t>
                 </t><t t-elif="doc_type == 'expenses'">
-                    <span style="margin-top: 10px; margin-left: 10px; color: #DC5413; font-size: 20px;">Expenses</span><br/>
+                    <span t-att-style="'margin-top: 10px; margin-left: 10px; color: ' + base_color + '; font-size: 20px;'">Expenses</span><br/>
                     <t t-set="printout_icon" t-value="'/tt_report_common/static/images/bill-white.png'"/>
                 </t><t t-else="">
-                    <span style="margin-top: 10px; margin-left: 10px; color: #DC5413; font-size: 20px;">HO Invoice</span><br/>
+                    <span t-att-style="'margin-top: 10px; margin-left: 10px; color: ' + base_color + '; font-size: 20px;'">HO Invoice</span><br/>
+                    <t t-set="printout_icon" t-value="'/tt_report_common/static/images/bill-white.png'"/>
                 </t>
                 <div style="height: 105px; margin-left: 0px">
-                    <div id="circle" style="width: 60px; height: 60px; background: #DC5413; border-radius: 100%; position: absolute; z-index: 1;">
+                    <div id="circle" t-att-style="'width: 60px; height: 60px; background: ' + base_color + '; border-radius: 100%; position: absolute; z-index: 1;'">
                         <img t-att-src="printout_icon" style="max-height: 35px; max-width: 35px; margin: 12px 0px 0px 0px;"/>
                     </div>
                     <div id="rectangle" style="width: 100%; height: 50px; bottom: 15px; background-image:  url('/tt_report_common/static/images/background footer airline.jpg'); border-radius: 25px; position: absolute; z-index: 0;">
@@ -192,7 +193,7 @@
             <span style="font-size: 28px; font-weight: 730">INVOICE DETAILS</span><br/>
         </div>
         <table style="width: 100%; line-height: normal; border-collapse: separate; border-spacing: 0;">  <!--border-radius: 20px; border: 1px solid #CCC; border-spacing: 0; margin-bottom: 30px; padding: 5px 0px 5px 0px;-->
-            <tr style="background-color: #DC5413; padding-top: 5px; padding-bottom: 5px">
+            <tr t-att-style="'background-color: '+base_color+'; padding-top: 5px; padding-bottom: 5px'">
                 <th style="width: 16.667%; padding: 7px 7px 7px 20px; border-left: 1px solid #CCC; border-top-left-radius: 20px; color: white; font-weight: 800; font-size: 18px">
                     <span>Ref. Number</span>
                 </th>

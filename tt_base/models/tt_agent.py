@@ -215,23 +215,27 @@ class TtAgent(models.Model):
         }
         return res
 
+    def get_agent_level(self, agent_id):
+        _obj = self.sudo().browse(int(agent_id))
+        response = []
+
+        level = 0
+        temp_agent_ids = []
+        temp = _obj
+        while True:
+            values = temp.get_data()
+            values.update({'agent_level': level})
+            response.append(values)
+            temp_agent_ids.append(temp.id)
+            if not temp.parent_agent_id or temp.parent_agent_id.id in temp_agent_ids:
+                break
+            temp = temp.parent_agent_id
+            level += 1
+        return response
+
     def get_agent_level_api(self, agent_id):
         try:
-            _obj = self.sudo().browse(int(agent_id))
-            response = []
-
-            level = 0
-            temp_agent_ids = []
-            temp = _obj
-            while True:
-                values = temp.get_data()
-                values.update({'agent_level': level})
-                response.append(values)
-                temp_agent_ids.append(temp.id)
-                if not temp.parent_agent_id or temp.parent_agent_id.id in temp_agent_ids:
-                    break
-                temp = temp.parent_agent_id
-                level += 1
+            response = self.get_agent_level(agent_id)
             res = ERR.get_no_error(response)
         except Exception as e:
             _logger.error('%s, %s' % (str(e), traceback.format_exc()))

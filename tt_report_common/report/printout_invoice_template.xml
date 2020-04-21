@@ -272,50 +272,54 @@
             <div class="col-5 text-center">
                 <t t-set="printout_icon" t-value="'/tt_report_common/static/images/airfreight-white.svg'"/>
                 <t t-if="doc_model == 'tt.agent.invoice'">
-                    <span style="margin-top: 10px; margin-left: 10px; color: #DC5413; font-size: 20px;">Invoice</span><br/>
+                    <span t-att-style="'margin-top: 10px; margin-left: 10px; color: '+ base_color +'; font-size: 20px;'">Invoice</span><br/>
                     <t t-set="printout_icon" t-value="'/tt_report_common/static/images/bill-white.png'"/>
                 </t><t t-elif="doc_model == 'tt.billing.statement'">
-                    <span style="margin-top: 10px; margin-left: 10px; color: #DC5413; font-size: 20px;">Billing</span><br/>
+                    <span t-att-style="'margin-top: 10px; margin-left: 10px; color: '+ base_color +'; font-size: 20px;'">Billing</span><br/>
                     <t t-set="printout_icon" t-value="'/tt_report_common/static/images/bill-white.png'"/>
                 </t><t t-elif="doc_model == 'tt.top.up'">
                     <t t-if="doc.state in ['draft','request','confirm']">
-                        <span style="margin-top: 10px; margin-left: 10px; color: #DC5413; font-size: 20px;">Proforma Top Up</span><br/>  <!--Proforma HO Invoice-->
+                        <span t-att-style="'margin-top: 10px; margin-left: 10px; color: '+ base_color +'; font-size: 20px;'">Proforma Top Up</span><br/>  <!--Proforma HO Invoice-->
                         <t t-set="printout_icon" t-value="'/tt_report_common/static/images/bill-white.png'"/>
                     </t>
                     <t t-if="doc.state in ['validated','approved']">  <!--['valid','done']-->
-                        <span style="margin-top: 10px; margin-left: 10px; color: #DC5413; font-size: 20px;">Top Up</span><br/>  <!--HO Invoice-->
+                        <span t-att-style="'margin-top: 10px; margin-left: 10px; color: '+ base_color +'; font-size: 20px;'">Top Up</span><br/>  <!--HO Invoice-->
                         <t t-set="printout_icon" t-value="'/tt_report_common/static/images/bill-white.png'"/>
                     </t>
                 </t><t t-elif="doc_model == 'tt.refund'">
-                    <span style="margin-top: 10px; margin-left: 10px; color: #DC5413; font-size: 20px;">Refund</span><br/>
+                    <span t-att-style="'margin-top: 10px; margin-left: 10px; color: '+ base_color +'; font-size: 20px;'">Refund</span><br/>
                     <t t-set="printout_icon" t-value="'/tt_report_common/static/images/refund-white.png'"/>
                 </t><t t-elif="doc_model == 'tt.reschedule'">
-                    <span style="margin-top: 10px; margin-left: 10px; color: #DC5413; font-size: 20px;">After Sales</span><br/>
+                    <span t-att-style="'margin-top: 10px; margin-left: 10px; color: '+ base_color +'; font-size: 20px;'">After Sales</span><br/>
                     <t t-set="printout_icon" t-value="'/tt_report_common/static/images/refund-white.png'"/>
                 <!--</t><t t-elif="doc_model == 'tt.reservation.activity'">-->
                     <!--<span style="margin-top: 10px; margin-left: 10px; color: #DC5413; font-size: 20px;">Itinerary</span><br/>-->
                     <!--<t t-set="printout_icon" t-value="'/tt_report_common/static/images/activity-white.png'"/>-->
                 </t><t t-elif="doc_type == 'expenses'">
-                    <span style="margin-top: 10px; margin-left: 10px; color: #DC5413; font-size: 20px;">Expenses</span><br/>
+                    <span t-att-style="'margin-top: 10px; margin-left: 10px; color: '+ base_color +'; font-size: 20px;'">Expenses</span><br/>
                     <t t-set="printout_icon" t-value="'/tt_report_common/static/images/bill-white.png'"/>
                 </t><t t-elif="doc_type == 'itin'">
-                    <span style="margin-top: 10px; margin-left: 10px; color: #DC5413; font-size: 20px;">Itinerary Form</span><br/>
+                    <span t-att-style="'margin-top: 10px; margin-left: 10px; color: '+ base_color +'; font-size: 20px;'">Itinerary Form</span><br/>
                     <t t-set="printout_icon" t-value="'/tt_report_common/static/images/bill-white.png'"/>
                 </t><t t-elif="doc_model == 'tt.reservation.hotel'">
-                    <span style="margin-top: 10px; margin-left: 10px; color: #DC5413; font-size: 20px;">Hotel Voucher</span><br/>
+                    <span t-att-style="'margin-top: 10px; margin-left: 10px; color: '+ base_color +'; font-size: 20px;'">Hotel Voucher</span><br/>
                     <t t-set="printout_icon" t-value="'/tt_report_common/static/images/hotel-white.png'"/>
                 </t><t t-else="">
-                    <span style="margin-top: 10px; margin-left: 10px; color: #DC5413; font-size: 20px;">Other</span><br/>
+                    <span t-att-style="'margin-top: 10px; margin-left: 10px; color: '+ base_color +'; font-size: 20px;'">Other</span><br/>
                 </t>
                 <div style="height: 105px; margin-left: 0px">
-                    <div id="circle" style="width: 60px; height: 60px; background: #DC5413; border-radius: 100%; position: absolute; z-index: 1;">
+                    <div id="circle" t-att-style="'width: 60px; height: 60px; background: '+ base_color +'; border-radius: 100%; position: absolute; z-index: 1;'">
                         <img t-att-src="printout_icon" style="max-height: 35px; max-width: 35px; margin: 12px 0px 0px 0px;"/>
                     </div>
                     <div id="rectangle" style="width: 100%; height: 50px; bottom: 15px; background-image:  url('/tt_report_common/static/images/background footer airline.jpg'); border-radius: 25px; position: absolute; z-index: 0;">
                         <div style="padding-left: 60px; padding-bottom: 10px; vertical-align: middle; text-align: center; border-radius: 25px; background-color: rgba(39,62,84,0.76); padding-top: 5px;">
                             <div style="vertical-align: middle; display: flex; letter-spacing: 0.05em; font-size: 24px; color: white; font-weight: 600; margin-top: 0px; margin-left: -10px;">
                                 <t t-if="doc_type == 'itin'">
-                                    <span t-esc="'Itinerary'" style="margin-top: 5px;"/>
+                                    <t t-if="doc.pnr">
+                                        <span t-field="doc.pnr" style="margin-top: 5px;"/>
+                                    </t><t t-else="">
+                                        <span t-esc="'Itinerary'" style="margin-top: 5px;"/>
+                                    </t>
                                 </t>
                                 <t t-elif="doc_model == 'tt.reservation.hotel'">
                                     <span t-field="doc.pnr" style="margin-top: 5px;"/>
@@ -554,7 +558,7 @@
             <span style="font-size: 24px; font-weight: 730">INVOICE DETAILS</span><br/>
         </div>
         <table style="width: 100%; line-height: normal; border-collapse: separate; border-spacing: 0; font-family: 'DeJavu Sans'">  <!--border-radius: 20px; border: 1px solid #CCC; border-spacing: 0; margin-bottom: 30px; padding: 5px 0px 5px 0px;-->
-            <tr style="background-color: #DC5413; padding-top: 5px; padding-bottom: 5px; font-size: 16px">
+            <tr t-att-style="'background-color: ' + base_color + '; padding-top: 5px; padding-bottom: 5px; font-size: 16px'">
                 <th style="width: 20%; padding: 7px 7px 7px 20px; border-left: 1px solid #CCC; border-top-left-radius: 20px; color: white; font-weight: 800">
                     <span>Ref. Number</span>
                 </th>

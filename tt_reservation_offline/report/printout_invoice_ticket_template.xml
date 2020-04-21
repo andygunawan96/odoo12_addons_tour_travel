@@ -70,7 +70,7 @@
 
                     </div>
                     <div class="col-5 text-center" style="margin-top: 10px">
-                        <span style="margin-top: 10px; margin-left: 10px; color: #DC5413; font-size: 20px;">eTicket Itinerary</span><br/>
+                        <span t-att-style="'margin-top: 10px; margin-left: 10px; color: '+base_color+'; font-size: 20px;'">eTicket Itinerary</span><br/>
                         <div style="height: 105px; margin-left: 0px">
 <!--                            <div id="circle" style="width: 70px; height: 70px; background: #e9337c; border-radius: 100%; display: inline-block"/>-->
                             <div id="circle" style="width: 60px; height: 60px; background: #F15A22; border-radius: 100%; position: absolute; z-index: 1;">

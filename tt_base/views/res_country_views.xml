@@ -1,5 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
+    <record id="res_country_filter_alias_view" model="ir.ui.view">
+        <field name="name">res.country.filter.alias.view</field>
+        <field name="model">res.country</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="other_name_ids" filter_domain="['|', ('name','ilike',self), ('other_name_ids','ilike',self),]"/>
+                <field name="name"/>
+                <field name="code"/>
+                <field name="currency_id"/>
+            </search>
+        </field>
+    </record>
+
     <record id="res_country_form_view" model="ir.ui.view">
         <field name="name">res.country.form.view</field>
         <field name="model">res.country</field>
@@ -62,6 +75,7 @@
         <field name="res_model">res.country</field>
         <field name="view_type">form</field>
         <field name="view_mode">tree,form</field>
+        <field name="search_view_id" ref="res_country_filter_alias_view"/>
         <field name="domain">[]</field>
         <field name="context">
             {

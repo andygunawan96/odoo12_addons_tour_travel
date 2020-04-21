@@ -116,6 +116,14 @@ class ReservationAirline(models.Model):
     #
     #     return res
 
+    def action_reverse_airline(self,context):
+        super(ReservationAirline, self).action_reverse_airline(context)
+        for rec in self.invoice_line_ids:
+            try:
+                rec.invoice_id.action_cancel_invoice()
+            except Exception as e:
+                print(str(e))
+
     def action_issued_airline(self,co_uid,customer_parent_id,acquirer_id):
         super(ReservationAirline, self).action_issued_airline(co_uid,customer_parent_id)
         self.action_create_invoice(acquirer_id,co_uid,customer_parent_id)

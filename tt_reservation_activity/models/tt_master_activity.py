@@ -1701,9 +1701,14 @@ class MasterActivity(models.Model):
                 for category_obj in category_objs:
                     cat_temp = {
                         'category_name': category_obj.name,
-                        'category_uuid': category_obj.line_ids.uuid,
+                        'category_uuid': '',
                         'category_id': category_obj.id,
                     }
+                    for cat_line in category_obj.line_ids:
+                        if cat_line.provider_id.id == res_provider.id:
+                            cat_temp.update({
+                                'category_uuid': cat_line.uuid,
+                            })
                     category_temp.append(cat_temp)
                 result.update({
                     'categories': category_temp,

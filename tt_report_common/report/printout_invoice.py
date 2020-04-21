@@ -66,6 +66,7 @@ class PrintoutTicketForm(models.AbstractModel):
             'price_lines': values,
             'ssr_list': ssr_list,
             'date_now': fields.Date.today().strftime('%d %b %Y'),
+            'base_color': self.env['ir.config_parameter'].get_param('tt_base.website_default_color', default='#FFFFFF'),
         }
         if 'is_with_price' in data:
             vals.update({
@@ -118,6 +119,7 @@ class PrintoutTicketTrainForm(models.AbstractModel):
             'docs': self.env[data['context']['active_model']].browse(data['context']['active_ids']),
             'price_lines': values,
             'date_now': fields.Date.today().strftime('%d %b %Y'),
+            'base_color': self.env['ir.config_parameter'].get_param('tt_base.website_default_color', default='#FFFFFF'),
         }
         if 'is_with_price' in data:
             vals.update({
@@ -170,6 +172,7 @@ class PrintoutVoucherHotelForm(models.AbstractModel):
             'docs': self.env[data['context']['active_model']].browse(data['context']['active_ids']),
             'price_lines': values,
             'date_now': fields.Date.today().strftime('%d %b %Y'),
+            'base_color': self.env['ir.config_parameter'].get_param('tt_base.website_default_color', default='#FFFFFF'),
         }
         if 'is_with_price' in data:
             vals.update({
@@ -453,7 +456,8 @@ class PrintoutInvoiceHO(models.AbstractModel):
             'terbilang': self.compute_terbilang_from_objs(
                 self.env[data['context']['active_model']].browse(data['context']['active_ids'])),
             'date_now': fields.Date.today().strftime('%d %b %Y'),
-            'ho_obj': ho_obj[0]
+            'ho_obj': ho_obj[0],
+            'base_color': self.env['ir.config_parameter'].get_param('tt_base.website_default_color', default='#FFFFFF'),
         }
         return vals
 
@@ -812,6 +816,7 @@ class PrintoutInvoice(models.AbstractModel):
             'inv_lines': values,
             'terbilang': self.compute_terbilang_from_objs(
                 self.env[data['context']['active_model']].browse(data['context']['active_ids'])),
+            'base_color': self.env['ir.config_parameter'].get_param('tt_base.website_default_color', default='#FFFFFF'),
         }
         return val
 
@@ -879,6 +884,7 @@ class PrintoutExpenses(models.AbstractModel):
             # 'terbilang': self.compute_terbilang_from_objs(
             #     self.env[data['context']['active_model']].browse(data['context']['active_ids'])),
             'date_now': fields.Date.today().strftime('%d %b %Y'),
+            'base_color': self.env['ir.config_parameter'].get_param('tt_base.website_default_color', default='#FFFFFF'),
         }
         return vals
 
@@ -932,7 +938,8 @@ class PrintoutIteneraryForm(models.AbstractModel):
             'doc_type': 'itin',
             'docs': self.env[data['context']['active_model']].browse(data['context']['active_ids']),
             'price_lines': values,
-            'date_now': fields.Date.today().strftime('%d %b %Y')
+            'date_now': fields.Date.today().strftime('%d %b %Y'),
+            'base_color': self.env['ir.config_parameter'].get_param('tt_base.website_default_color', default='#FFFFFF'),
         }
 
 
@@ -984,7 +991,8 @@ class PrintoutActivityIteneraryForm(models.AbstractModel):
             'doc_type': 'itin',
             'docs': self.env[data['context']['active_model']].browse(data['context']['active_ids']),
             'price_lines': values,
-            'date_now': fields.Date.today().strftime('%d %b %Y')
+            'date_now': fields.Date.today().strftime('%d %b %Y'),
+            'base_color': self.env['ir.config_parameter'].get_param('tt_base.website_default_color', default='#FFFFFF'),
         }
 
 
@@ -1036,7 +1044,8 @@ class PrintoutTourIteneraryForm(models.AbstractModel):
             'doc_type': 'itin',
             'docs': self.env[data['context']['active_model']].browse(data['context']['active_ids']),
             'price_lines': values,
-            'date_now': fields.Date.today().strftime('%d %b %Y')
+            'date_now': fields.Date.today().strftime('%d %b %Y'),
+            'base_color': self.env['ir.config_parameter'].get_param('tt_base.website_default_color', default='#FFFFFF'),
         }
 
 
@@ -1088,7 +1097,8 @@ class PrintoutPassportItineraryForm(models.AbstractModel):
             'doc_type': 'itin',
             'docs': self.env[data['context']['active_model']].browse(data['context']['active_ids']),
             'price_lines': values,
-            'date_now': fields.Date.today().strftime('%d %b %Y')
+            'date_now': fields.Date.today().strftime('%d %b %Y'),
+            'base_color': self.env['ir.config_parameter'].get_param('tt_base.website_default_color', default='#FFFFFF'),
         }
 
 
@@ -1140,7 +1150,8 @@ class PrintoutVisaItineraryForm(models.AbstractModel):
             'doc_type': 'itin',
             'docs': self.env[data['context']['active_model']].browse(data['context']['active_ids']),
             'price_lines': values,
-            'date_now': fields.Date.today().strftime('%d %b %Y')
+            'date_now': fields.Date.today().strftime('%d %b %Y'),
+            'base_color': self.env['ir.config_parameter'].get_param('tt_base.website_default_color', default='#FFFFFF'),
         }
 
 
@@ -1236,6 +1247,7 @@ class PrintoutJSONIteneraryForm(models.AbstractModel):
             'docs': [values,],
             'date_now': fields.Date.today().strftime('%d %b %Y'),
             'currency_id': self.env.user.company_id.currency_id,
+            'base_color': self.env['ir.config_parameter'].get_param('tt_base.website_default_color', default='#FFFFFF'),
         }
 
 
@@ -1265,6 +1277,7 @@ class PrintoutBilling(models.AbstractModel):
                 self.env[data['context']['active_model']].browse(data['context']['active_ids'])),
             # 'last_billing': self.last_billing(
             #     self.env[data['context']['active_model']].browse(data['context']['active_ids'])),
+            'base_color': self.env['ir.config_parameter'].get_param('tt_base.website_default_color', default='#FFFFFF'),
         }
 
 
@@ -1293,7 +1306,8 @@ class PrintoutTopUp(models.AbstractModel):
             'docs': self.env[data['context']['active_model']].browse(data['context']['active_ids']),
             'terbilang': self.compute_terbilang_from_objs(
                 self.env[data['context']['active_model']].browse(data['context']['active_ids'])),
-            'ho_obj': ho_obj[0]
+            'ho_obj': ho_obj[0],
+            'base_color': self.env['ir.config_parameter'].get_param('tt_base.website_default_color', default='#FFFFFF'),
         }
 
 
@@ -1328,6 +1342,7 @@ class PrintoutRefund(models.AbstractModel):
             'is_est': data['data'].get('is_est') and data['data']['is_est'] or False,
             'terbilang': self.compute_terbilang_from_objs(
                 self.env[data['context']['active_model']].browse(data['context']['active_ids']), data['data'].get('is_ho')),
+            'base_color': self.env['ir.config_parameter'].get_param('tt_base.website_default_color', default='#FFFFFF'),
         }
 
         if data['data'].get('is_ho'):
@@ -1359,4 +1374,5 @@ class PrintoutReschedule(models.AbstractModel):
             'doc_ids': data['context']['active_ids'],
             'doc_model': data['context']['active_model'],
             'docs': temp_docs,
+            'base_color': self.env['ir.config_parameter'].get_param('tt_base.website_default_color', default='#FFFFFF'),
         }

@@ -77,6 +77,35 @@
         </field>
     </record>
 
+    <record model="ir.ui.view" id="tt_provider_code_form_view" >
+        <field name="name">tt.provider.code.form.view</field>
+        <field name="model">tt.provider.code</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <button string="Find Country or City" name="find_city_country" type="object" states=""/>
+                    <button string="Clear" name="clear_rel" type="object" states=""/>
+                    <group>
+                        <group>
+                            <field name="name"/>
+                            <field name="country_id"/>
+                            <field name="state_id"/>
+                            <field name="city_id"/>
+                            <!--<field name="facility_id"/>-->
+                            <!--<field name="hotel_id"/>-->
+                        </group>
+                        <group>
+                            <field name="code"/>
+                            <field name="provider_id"/>
+                            <field name="provider_type_id"/>
+                            <!--<field name="confidence"/>-->
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
     <record model="ir.actions.act_window" id="tt_provider_code_action_view">
         <field name="name">Provider Code</field>
         <field name="res_model">tt.provider.code</field>

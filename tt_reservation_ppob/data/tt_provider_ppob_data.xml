@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <record id="tt_provider_ppob_mkm" model="tt.provider">
+            <field name="name">MKM</field>
+            <field name="code">mkm</field>
+            <field name="active" eval="True"/>
+            <field name="provider_type_id" ref="tt_provider_type_ppob"/>
+        </record>
+    </data>
+</odoo>

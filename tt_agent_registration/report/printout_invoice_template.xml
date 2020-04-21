@@ -12,9 +12,9 @@
                 </div>
                 <div class="col-5 text-center">
                     <t t-set="printout_icon" t-value="'/tt_report_common/static/images/airfreight-white.svg'"/>
-                    <span style="margin-top: 10px; margin-left: 10px; color: #DC5413; font-size: 20px;">Other</span><br/>
+                    <span t-att-style="'margin-top: 10px; margin-left: 10px; color: '+ base_color +'; font-size: 20px;'">Other</span><br/>
                     <div style="height: 105px; margin-left: 0px">
-                        <div id="circle" style="width: 60px; height: 60px; background: #DC5413; border-radius: 100%; position: absolute; z-index: 1;">
+                        <div id="circle" t-att-style="'width: 60px; height: 60px; background: ' + base_color+ '; border-radius: 100%; position: absolute; z-index: 1;'">
                             <img t-att-src="printout_icon" style="max-height: 35px; max-width: 35px; margin: 12px 0px 0px 0px;"/>
                         </div>
                         <div id="rectangle" style="width: 100%; height: 50px; bottom: 15px; background-image:  url('/tt_report_common/static/images/background footer airline.jpg'); border-radius: 25px; position: absolute; z-index: 0;">
