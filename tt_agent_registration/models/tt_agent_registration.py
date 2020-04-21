@@ -58,7 +58,7 @@ class AgentRegistration(models.Model):
         promotions_list = []
         promotion_objs = self.env['tt.agent.registration.promotion'].search([])
         for rec in promotion_objs:
-            if rec.agent_type_id.id == self.parent_agent_id.agent_type_id.id:
+            if rec.agent_type_id.id == self.reference_id.agent_type_id.id:
                 if rec.start_date <= date.today() <= rec.end_date:
                     promotions_list.append(rec.id)
         return [('id', 'in', promotions_list)]
@@ -81,8 +81,6 @@ class AgentRegistration(models.Model):
     # agent_type_id = fields.Many2one('tt.agent.type', 'Agent Type', readonly=True, required=True,
     #                                 states={'draft': [('readonly', False)]})
     reference_id = fields.Many2one('tt.agent', 'Reference', readonly=True, default=lambda self: self.env.user.agent_id)
-    # parent_agent_id = fields.Many2one('tt.agent', 'Parent Agent', readonly=True, store=True,
-    #                                   compute='default_parent_agent_id')
     agent_level = fields.Integer('Agent Level', readonly=True)
 
     issued_uid = fields.Many2one('res.users', 'Issued by', readonly=True)
@@ -90,8 +88,6 @@ class AgentRegistration(models.Model):
 
     ledger_ids = fields.One2many('tt.ledger', 'res_id', 'Ledger', readonly=True,
                                  domain=[('res_model', '=', 'tt.agent.registration')])
-
-    # contact_ids = fields.One2many('tt.customer', 'agent_registration_id', 'Contact Information')
 
     agent_registration_customer_ids = fields.One2many('tt.agent.registration.customer', 'agent_registration_id',
                                                       'Agent Registration Contact')
@@ -838,7 +834,7 @@ class AgentRegistration(models.Model):
                     'reference_id': reference_id,
                     'parent_agent_id': parent_agent_id,
                     'tac': agent_type.terms_and_condition,
-                    'create_uid': self.env.user.id
+                    'create_uid': context['co_uid']
                 })
                 create_obj = self.create(header)
                 regis_doc_ids = create_obj.input_regis_document_data(regis_doc)

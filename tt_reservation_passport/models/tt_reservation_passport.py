@@ -51,7 +51,6 @@ class TtPassport(models.Model):
     country_id = fields.Many2one('res.country', 'Country', ondelete="cascade", readonly=True,
                                  states={'draft': [('readonly', False)]},
                                  default=lambda self: self.default_country_id())
-    # duration = fields.Char('Duration', readonly=True, states={'draft': [('readonly', False)]})
     total_cost_price = fields.Monetary('Total Cost Price', default=0, readonly=True)
 
     state_passport = fields.Selection(STATE_PASSPORT, 'State', default='draft', help='''draft = requested
@@ -512,37 +511,6 @@ class TtPassport(models.Model):
                     provider_type_id=rec.provider_type_id.id,
                     display_provider_name=provider_code,
                 )
-
-    @api.one
-    def action_issued_passport(self, data, api_context=None):
-        """ Mengubah state menjadi issued / state passport menjadi in process """
-        if not api_context:  # Jika dari call from backend
-            api_context = {
-                'co_uid': self.env.user.id
-            }
-        if not api_context.get('co_uid'):
-            api_context.update({
-                'co_uid': self.env.user.id
-            })
-
-        vals = {}
-
-        if self.name == 'New':
-            vals.update({
-                'state': 'partial_booked',
-            })
-
-        vals.update({
-            'state': 'issued',
-            'issued_uid': api_context['co_uid'],
-            'issued_date': datetime.now(),
-            'confirmed_uid': api_context['co_uid'],
-            'confirmed_date': datetime.now(),
-        })
-
-        self.write(vals)
-
-        self._compute_commercial_state()
 
     ######################################################################################################
     # PRINTOUT
@@ -1616,17 +1584,16 @@ class TtPassport(models.Model):
                 'refund_uid': context['co_uid'],
                 'refund_date': datetime.now()
             })
+        elif all(rec.state == 'fail_refunded' for rec in self.provider_booking_ids):
+            self.write({
+                'state':  'fail_refunded',
+                'refund_uid': context['co_uid'],
+                'refund_date': datetime.now()
+            })
         else:
             # entah status apa
             _logger.error('Entah status apa')
             raise RequestException(1006)
-
-    @api.onchange('state')
-    @api.depends('state')
-    def _compute_expired_passport(self):
-        for rec in self:
-            if rec.state == 'expired':
-                rec.state_passport = 'expired'
 
     @api.multi
     @api.depends('passenger_ids')

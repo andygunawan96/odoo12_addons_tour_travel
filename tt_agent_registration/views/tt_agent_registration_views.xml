@@ -70,7 +70,7 @@
                                 <field name="opening_balance"/>
                                 <field name="total_fee"/>
                                 <field name="registration_date"/>
-                                <field name="expired_date"/>
+<!--                                <field name="expired_date"/>-->
                                 <field name="social_media_ids"/>
                             </group>
                         </group>

@@ -396,46 +396,42 @@ class TtCustomer(models.Model):
 
     def create_customer_user_api(self, data):
         try:
-            agent_id = self.env.ref('tt_base.agent_b2c')
-            user_dict = self.env['res.users'].search([('name', 'ilike', 'Customer Template')], limit=1).read()
+            # Create Agent B2C
             name = (data['first_name'] or '') + ' ' + (data.get('last_name') or '')
+            vals_list = {
+                'agent_type_id': self.env.ref('tt_base.agent_type_btc').id,
+                'parent_agent_id': self.env.ref('tt_base.rodex_ho').id,
+                'name': name
+            }
+            agent_id = self.env['tt.agent'].create(vals_list)
 
-            data.update({
-                'agent_id': agent_id.id,
-                'nationality_id': self.env['res.country'].search([('code', '=', data.get('nationality_code'))],
-                                                                 limit=1).id
-            })
-
-            # create customer id
-            customer_obj = self.env['tt.customer'].sudo().create(data)
+            # Load Template User B2C
+            user_dict = self.env.ref('tt_base.agent_b2c_user').read()
 
             # user id vals
             vals = {
                 'name': name,
                 'login': data.get('email'),
                 'email': data.get('email'),
-                'password': data.get('password'),
-                'agent_id': agent_id.id,
-                'customer_id': customer_obj.id,
-                # 'customer_parent_id':
+                'password': '2ebaebb25402547966930e235e93c004',
+                'agent_id': agent_id.id
             }
 
+            # Set Groups & Frontend Security
             if user_dict:
                 vals.update({
                     'groups_id': [(6, 0, user_dict[0]['groups_id'])],
                     'frontend_security_ids': [(6, 0, user_dict[0]['frontend_security_ids'])]
                 })
 
+            # Create User
             user_res = self.create_user_res(vals)
             if user_res['error_code'] != 0:
                 raise RequestException(500, additional_message=user_res['error_msg'])
 
-            # create user id
+            # Create User B2C
             print('User ' + user_res['response'].name + ' Created!')
-            response = {
-                'error_msg': 'Create user success!'
-            }
-            res = Response().get_no_error(response)
+            res = ERR.get_no_error()
         except RequestException as e:
             _logger.error(traceback.format_exc())
             return e.error_dict()
