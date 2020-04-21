@@ -23,11 +23,13 @@
         </record>
 
         <menuitem
-            id="menu_agent_report_billing"
-            name="Billing Report"
-            parent="tt_billing_statement.menu_billing_statement_billing_statement"
-            action="action_agent_report_billing_wz"
-            sequence="16"
-            />
+                id="menu_agent_report_billing"
+                name="Billing Report"
+                parent="tt_billing_statement.menu_billing_statement_billing_statement"
+                action="action_agent_report_billing_wz"
+                sequence="16"
+                groups="tt_base.group_tt_tour_travel_operator,
+                    tt_base.group_tt_sub_agent_user_supervisor"
+        />
     </data>
 </odoo>
