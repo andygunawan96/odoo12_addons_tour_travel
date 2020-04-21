@@ -296,7 +296,7 @@ class TtTopUp(models.Model):
             next_cron = False
             try:
                 next_cron = False
-                if 1 <= datetime.today().hour < 13:
+                if 20 <= datetime.today().hour < 14:
                     cron_bank_transaction_obj = self.env.ref("tt_bank_transaction.cron_auto_get_bank_transaction")
                     if cron_bank_transaction_obj.active:
                         d_time = cron_bank_transaction_obj.nextcall - datetime.now()
