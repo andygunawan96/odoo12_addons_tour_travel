@@ -20,7 +20,7 @@ class ttCronTopUpValidator(models.Model):
     _inherit = 'tt.cron.log'
 
     def cron_auto_top_up_validator(self):
-        if 1 <= datetime.today().hour < 13:
+        if 20 <= datetime.today().hour < 14:
             try:
                 # get data from top up
                 data = self.env['tt.top.up'].sudo().search([('state', '=', 'request')])
@@ -131,7 +131,7 @@ class ttCronTopUpValidator(models.Model):
             _logger.error("Cron only works between 0800 to 2000 UTC +7")
 
     def cron_auto_get_bank_transaction(self):
-        if 1 <= datetime.today().hour < 13:
+        if 20 <= datetime.today().hour < 14:
             try:
                 get_bank_account = self.env.ref('tt_bank_transaction.bank_account_bca_1')
                 #can be modified to respected account

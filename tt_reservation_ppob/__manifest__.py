@@ -13,6 +13,8 @@ TT_TRANSPORT
     'images' : [],
     'depends' : ['base_setup','tt_base','tt_reservation','base_address_city','tt_in_api_connector'],
     'data': [
+        'security/ir.model.access.csv',
+        'security/ir_rule_data.xml',
         'data/tt_provider_type_data.xml',
         'data/tt_provider_ppob_data.xml',
         'data/tt_transport_carrier_ppob_data.xml'

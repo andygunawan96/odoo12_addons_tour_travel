@@ -16,6 +16,7 @@ TT_PAYMENT
         # 'data/ir_sequence_data.xml',
         'views/tt_monthly_fee_views.xml',
         'security/ir.model.access.csv',
+        'security/ir_rule_data.xml',
     ],
     'demo': [],
     'qweb': [],
