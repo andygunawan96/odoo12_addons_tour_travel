@@ -9,7 +9,7 @@ class TtCronLogInhResv(models.Model):
 
     def cron_expire_top_up(self):
         try:
-            new_top_up = self.env['tt.top.up'].search([('state', 'in', ['request','expired']),])
+            new_top_up = self.env['tt.top.up'].search([('state', 'in', ['confirm','request','expired']),])
             for top_up in new_top_up:
                 try:
                     if datetime.now() >= (top_up.due_date or datetime.min):
