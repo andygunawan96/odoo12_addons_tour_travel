@@ -295,9 +295,13 @@ class TtTopUp(models.Model):
             top_up_obj.action_request_top_up(context) # ubah ke status cancel
             next_cron = False
             try:
-                d_time = self.env.ref("tt_bank_transaction.cron_auto_get_bank_transaction").nextcall - datetime.now()
-                list_d_time = str(d_time).split(':')
-                next_cron = "{} minutes {} seconds".format(int(list_d_time[1]),int(list_d_time[2][:2]))
+                next_cron = False
+                if 1 <= datetime.today().hour < 13:
+                    cron_bank_transaction_obj = self.env.ref("tt_bank_transaction.cron_auto_get_bank_transaction")
+                    if cron_bank_transaction_obj.active:
+                        d_time = cron_bank_transaction_obj.nextcall - datetime.now()
+                        list_d_time = str(d_time).split(':')
+                        next_cron = "{} minutes {} seconds".format(int(list_d_time[1]),int(list_d_time[2][:2]))
             except Exception as e :
                 _logger.error("{}\n{}".format("Top Up Request Next Cron Call Error",traceback.format_exc()))
 

@@ -117,6 +117,13 @@ class ReservationAirline(models.Model):
     def action_issued_api_airline(self,acquirer_id,customer_parent_id,context):
         self.action_issued_airline(context['co_uid'],customer_parent_id,acquirer_id)
 
+    def action_reverse_airline(self,context):
+        self.write({
+            'state':  'fail_refunded',
+            'refund_uid': context['co_uid'],
+            'refund_date': datetime.now()
+        })
+
     def action_issued_airline(self,co_uid,customer_parent_id,acquirer_id = False):
         self.write({
             'state': 'issued',
@@ -659,11 +666,7 @@ class ReservationAirline(models.Model):
                 'refund_date': datetime.now()
             })
         elif all(rec.state == 'fail_refunded' for rec in self.provider_booking_ids):
-            self.write({
-                'state':  'fail_refunded',
-                'refund_uid': context['co_uid'],
-                'refund_date': datetime.now()
-            })
+            self.action_reverse_airline(context)
         elif any(rec.state == 'issued' for rec in self.provider_booking_ids):
             # partial issued
             acquirer_id,customer_parent_id = self.get_acquirer_n_c_parent_id(req)

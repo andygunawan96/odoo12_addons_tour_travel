@@ -15,6 +15,8 @@ class TtCustomerApiCon(models.Model):
             res = table_obj.get_customer_customer_parent_list_api(data, context)
         elif action == 'create_customer':
             res = table_obj.create_or_update_customer_api(data['passengers'], context)
+        elif action == 'parse_bitrix_webhook':
+            res = table_obj.create_or_update_customer_bitrix(data, context)
             # self.env['tt.reservation'].create_customer_api(data['passengers'],context)
         else:
             raise RequestException(999)

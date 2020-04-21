@@ -23,11 +23,12 @@
         </record>
 
         <menuitem
-            id="menu_agent_report_invoice"
-            name="Invoice Report"
-            parent="tt_agent_sales.menu_agent_invoice"
-            action="action_agent_report_invoice_wz"
-            sequence="1"
+                id="menu_agent_report_invoice"
+                name="Invoice Report"
+                parent="tt_agent_sales.menu_agent_invoice"
+                action="action_agent_report_invoice_wz"
+                sequence="1"
+                groups="tt_base.group_tt_tour_travel_operator,tt_base.group_tt_sub_agent_user_supervisor"
         />
     </data>
 </odoo>

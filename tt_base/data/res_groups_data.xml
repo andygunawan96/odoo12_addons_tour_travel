@@ -134,7 +134,7 @@
     </record>
 
     <!--TOUR AND TRAVEL SYSTEM GROUP-->
-        <record id="group_tt_tour_travel_operator" model="res.groups">
+    <record id="group_tt_tour_travel_operator" model="res.groups">
         <field name="name">Operator</field>
         <field name="category_id" ref="tt_base.module_category_tour_travel_system"/>
         <field name="implied_ids" eval="[(4, ref('base.group_user'))]"/>

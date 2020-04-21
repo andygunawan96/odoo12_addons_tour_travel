@@ -30,7 +30,7 @@ class TtReservationTrain(models.Model):
     journey_ids = fields.One2many('tt.journey.train', 'booking_id', 'Journeys', readonly=True, states={'draft': [('readonly', False)]})
 
     provider_type_id = fields.Many2one('tt.provider.type','Provider Type',
-                                    default= lambda self: self.env.ref('tt_reservation_train.tt_provider_type_train'))
+                                       default= lambda self: self.env.ref('tt_reservation_train.tt_provider_type_train'))
 
     @api.multi
     def action_set_as_draft(self):
@@ -96,6 +96,13 @@ class TtReservationTrain(models.Model):
 
     def action_issued_api_train(self,acquirer_id,customer_parent_id,context):
         self.action_issued_train(context['co_uid'],customer_parent_id,acquirer_id)
+
+    def action_reverse_train(self,context):
+        self.write({
+            'state': 'fail_refunded',
+            'refund_uid': context['co_uid'],
+            'refund_date': datetime.now()
+        })
 
     def action_issued_train(self,co_uid,customer_parent_id,acquirer_id = False):
         self.write({
@@ -416,11 +423,7 @@ class TtReservationTrain(models.Model):
                 'refund_date': datetime.now()
             })
         elif all(rec.state == 'fail_refunded' for rec in self.provider_booking_ids):
-            self.write({
-                'state':  'fail_refunded',
-                'refund_uid': context['co_uid'],
-                'refund_date': datetime.now()
-            })
+            self.action_reverse_train(context)
         elif any(rec.state == 'issued' for rec in self.provider_booking_ids):
             # partial issued
             acquirer_id, customer_parent_id = self.get_acquirer_n_c_parent_id(req)
@@ -639,8 +642,8 @@ class TtReservationTrain(models.Model):
                 'balance_due': provider['balance_due']
             })
             for journey in provider['journeys']:
-                    for fare in journey['fares']:
-                        provider_obj.create_service_charge(fare['service_charges'])
+                for fare in journey['fares']:
+                    provider_obj.create_service_charge(fare['service_charges'])
 
         book_obj = self.get_book_obj(req.get('book_id'),req.get('order_number'))
         book_obj.calculate_service_charge()

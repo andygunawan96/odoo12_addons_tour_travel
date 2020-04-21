@@ -1382,6 +1382,41 @@ class MasterTour(models.Model):
             for rec in result_objs:
                 cities.append({
                     'name': rec.name,
+                    'uuid': rec.id,
+                })
+            return ERR.get_no_error(cities)
+        except RequestException as e:
+            _logger.error(traceback.format_exc())
+            return e.error_dict()
+        except Exception as e:
+            _logger.error(traceback.format_exc())
+            return ERR.get_error(1021)
+
+    def get_states_by_api(self, id):
+        try:
+            result_objs = self.env['res.country.state'].sudo().search([('country_id', '=', int(id))])
+            states = []
+            for rec in result_objs:
+                states.append({
+                    'name': rec.name,
+                    'uuid': rec.id,
+                })
+            return ERR.get_no_error(states)
+        except RequestException as e:
+            _logger.error(traceback.format_exc())
+            return e.error_dict()
+        except Exception as e:
+            _logger.error(traceback.format_exc())
+            return ERR.get_error(1021)
+
+    def get_cities_state_by_api(self, id):
+        try:
+            result_objs = self.env['res.city'].sudo().search([('state_id', '=', int(id))])
+            cities = []
+            for rec in result_objs:
+                cities.append({
+                    'name': rec.name,
+                    'uuid': rec.id,
                 })
             return ERR.get_no_error(cities)
         except RequestException as e:

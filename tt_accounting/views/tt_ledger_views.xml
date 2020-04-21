@@ -251,7 +251,9 @@
     </record>
 
     <menuitem id="top_transaction_ledger" parent="tt_base.main_transaction"
-              name="Ledger" sequence="20"/>
+              name="Ledger" sequence="20"
+              groups="tt_base.group_tt_tour_travel_operator,tt_base.group_tt_sub_agent_user_supervisor"
+    />
 
     <menuitem id="menu_transaction_ledger" parent="tt_accounting.top_transaction_ledger"
               name="Ledger" action="tt_ledger_action" sequence="10"/>

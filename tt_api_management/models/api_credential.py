@@ -4,7 +4,7 @@ from ...tools import variables
 from ...tools.ERR import RequestException
 from ...tools.db_connector import BackendConnector
 from ...tools.api import Response
-from datetime import datetime
+from datetime import datetime,timedelta
 import uuid, base64
 import logging, traceback
 
@@ -81,7 +81,7 @@ class ApiManagement(models.Model):
             if _user.is_banned:
                 additional_msg = ""
                 try:
-                    additional_msg = 'Until %s.' % datetime.strftime(self.env['tt.ban.user'].search([('user_id', '=', _user.id)], limit=1).end_datetime, '%Y-%m-%d %I %p')
+                    additional_msg = 'Until %s.' % datetime.strftime(self.env['tt.ban.user'].search([('user_id', '=', _user.id)], limit=1).end_datetime+timedelta(hours=7), '%Y-%m-%d %I %p')
                 except:
                     pass
                 raise RequestException(1029,additional_message=additional_msg)
@@ -116,7 +116,7 @@ class ApiManagement(models.Model):
                     try:
                         addtional_msg = 'Until %s.' % datetime.strftime(
                             self.env['tt.ban.user'].search([('user_id', '=', _co_user.id)],
-                                                           limit=1).end_datetime,
+                                                           limit=1).end_datetime+timedelta(hours=7),
                             '%Y-%m-%d %I %p')
                     except:
                         pass
@@ -129,6 +129,11 @@ class ApiManagement(models.Model):
                 _co_user = self.env['res.users'].sudo().browse(int(data['co_uid']))
                 values.update(_co_user.get_credential(prefix='co_'))
             response.update(values)
+
+            # April 9, 2019 - SAM
+            # Menambahkan uplines dari user
+            co_user_info = self.env['tt.agent'].sudo().get_agent_level(response['co_agent_id'])
+            response['co_user_info'] = co_user_info
             res = Response().get_no_error(response)
         except RequestException as e:
             _logger.error(traceback.format_exc())
