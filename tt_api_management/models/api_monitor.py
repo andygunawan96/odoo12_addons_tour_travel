@@ -1,5 +1,10 @@
 from odoo import api,models,fields
 from ...tools import ERR
+import traceback, logging
+
+
+_logger = logging.getLogger(__name__)
+
 
 class ApiMonitor(models.Model):
     _name = 'tt.api.monitor'
@@ -51,6 +56,7 @@ class ApiMonitor(models.Model):
                     'hit_count': monitor_data_obj.unverified_counter
                 })
         except:
+            _logger.error('Error Create Monitor API, %s' % traceback.format_exc())
             return ERR.get_error()
         return ERR.get_no_error({})
 
