@@ -9,5 +9,3 @@ tt_limiter_rule_for_supervisor,tt.limiter.rule.for.supervisor,model_tt_limiter_r
 tt_whitelisted_name_for_operator,tt.whitelisted.name.for.operator,model_tt_whitelisted_name,tt_base.group_tt_tour_travel_operator,1,1,1,1
 
 tt_whitelisted_passport_for_operator,tt.whitelisted.passport.for.operator,model_tt_whitelisted_passport,tt_base.group_tt_tour_travel_operator,1,1,1,1
-
-tt_reservation_waiting_list_for_public,tt.reservation.waiting.list.for.public,model_tt_reservation_waiting_list,,1,1,1,0
