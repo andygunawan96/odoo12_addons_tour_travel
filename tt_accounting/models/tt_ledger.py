@@ -87,9 +87,10 @@ class Ledger(models.Model):
         self.env.cr.execute(sql_query)
         balance = self.env.cr.dictfetchall()
         if balance:
-            current_balance = balance[0]['balance'] + vals['debit'] - vals['credit']
+            current_balance = balance[0]['balance']
         else:
             current_balance = 0
+        current_balance += vals['debit'] - vals['credit']
         _logger.info("### CALC BALANCE, old balance: %s, current_balance: %s, debit: %s ###" % (balance,current_balance,vals.get('debit',0)))
         return current_balance
 
