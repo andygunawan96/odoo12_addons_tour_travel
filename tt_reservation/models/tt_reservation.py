@@ -724,7 +724,7 @@ class TtReservation(models.Model):
 
     def get_btc_hold_date(self):
         if (self.booked_date + timedelta(hours=1)) >= self.hold_date:
-            final_time = ((self.hold_date + timedelta(hours=7)) - timedelta(minutes=10)).strftime('%Y-%m-%d %H:%M:%S')
+            final_time = (self.hold_date + timedelta(hours=7)).strftime('%Y-%m-%d %H:%M:%S')
         else:
             final_time = (self.booked_date + timedelta(hours=8)).strftime('%Y-%m-%d %H:%M:%S')
         return final_time + ' (GMT +7)'
