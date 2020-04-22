@@ -547,7 +547,7 @@ class TestSearch(models.Model):
 
     def prepare_resv_value(self, backend_hotel_obj, hotel_obj, check_in, check_out, room_rates,
                            cust_partner_obj, provider_data, special_req, guest_list,
-                           agent_id, cancellation_policy):
+                           agent_id, cancellation_policy, hold_date):
         room_count = 0
         for rec in room_rates:
             room_count += sum(int(a['qty']) or 1 for a in rec['rooms'])
@@ -577,7 +577,8 @@ class TestSearch(models.Model):
             # 'sub_agent_id': cust_partner_obj.agent_id.id,
             'child': len(list(filter(lambda i: i['pax_type'] == 'CHD', guest_list))),
             'infant': len(list(filter(lambda i: i['pax_type'] == 'INF', guest_list))),
-            'cancellation_policy_str': cancellation_policy
+            'cancellation_policy_str': cancellation_policy,
+            'hold_date': hold_date,
         }
         return vals
 
@@ -624,11 +625,17 @@ class TestSearch(models.Model):
         backend_hotel_obj = self.get_backend_object(room_rates[0]['provider'], hotel_obj['id'])
         vals = self.prepare_resv_value(backend_hotel_obj, hotel_obj, check_in, check_out, room_rates,
                                        cust_partner_obj, provider_data, special_req, cust_names,
-                                       context['agent_id'], cancellation_policy)
+                                       context['agent_id'], cancellation_policy, context.get('hold_date', False))
         # Set Customer Type by Payment
-        acq_obj = self.env['payment.acquirer'].search([('seq_id', '=', acquirer_id['seq_id'])])
+        if acquirer_id:
+            acq_obj = self.env['payment.acquirer'].search([('seq_id', '=', acquirer_id['seq_id'])])
+        else:
+            acq_obj = False
+
         if acq_obj:
             customer_parent_id = self.env['tt.agent'].sudo().browse(context['agent_id']).customer_parent_walkin_id.id  ##fpo
+        elif not acquirer_id:
+            customer_parent_id = False
         else:
             customer_parent_id = self.env['tt.customer.parent'].search([('seq_id', '=', acquirer_id['seq_id'])], limit=1).id
 
