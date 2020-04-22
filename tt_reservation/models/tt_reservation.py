@@ -131,6 +131,21 @@ class TtReservation(models.Model):
             pass
         return super(TtReservation, self).create(vals_list)
 
+    def write(self, vals):
+        if vals.get('hold_date'):
+            if self.agent_type_id.id == self.env.ref('tt_base.agent_type_btc').id:
+                vals.pop('hold_date')
+                if not self.hold_date:
+                    if vals.get('booked_date'):
+                        vals['hold_date'] = vals['booked_date'] + timedelta(minutes=45)
+                    elif self.booked_date:
+                        vals['hold_date'] = self.booked_date + timedelta(minutes=45)
+                    elif self.create_date:
+                        vals['hold_date'] = self.create_date + timedelta(minutes=45)
+                    else:
+                        vals['hold_date'] = datetime.now() + timedelta(minutes=45)
+        super(TtReservation, self).write(vals)
+
     def create_booker_api(self, vals, context):
         booker_obj = self.env['tt.customer'].sudo()
         get_booker_seq_id = util.get_without_empty(vals,'booker_seq_id')
