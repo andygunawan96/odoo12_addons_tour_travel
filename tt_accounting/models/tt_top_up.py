@@ -5,7 +5,7 @@ from ...tools import ERR
 from ...tools.ERR import RequestException
 import logging,traceback
 import json
-import base64
+import base64,pytz
 
 _logger = logging.getLogger(__name__)
 
@@ -296,7 +296,7 @@ class TtTopUp(models.Model):
             next_cron = False
             try:
                 next_cron = False
-                if 20 <= datetime.today().hour < 14:
+                if 3 <= datetime.now(pytz.timezone('Asia/Jakarta')).hour < 21:
                     cron_bank_transaction_obj = self.env.ref("tt_bank_transaction.cron_auto_get_bank_transaction")
                     if cron_bank_transaction_obj.active:
                         d_time = cron_bank_transaction_obj.nextcall - datetime.now()
