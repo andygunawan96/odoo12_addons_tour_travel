@@ -75,6 +75,7 @@ class TtPaymentApiCon(models.Model):
                             'virtual_account': data['virtual_account'],
                             'name': res['response']['name'],
                             'payment_ref': data['payment_ref'],
+                            'fee': data['fee']
                         }
                         res = self.env['tt.top.up'].action_va_top_up(request, context)
 
