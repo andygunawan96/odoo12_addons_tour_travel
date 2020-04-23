@@ -7,7 +7,7 @@
                 <t t-raw="0"/>
                 <t t-if="doc_model == 'tt.agent.invoice'">
                     <div style="margin: 0 20px">
-                    <t t-call="tt_report_common.price_and_sign"/>
+                        <t t-call="tt_report_common.price_and_sign"/>
                     </div>
                 </t>
                 <t t-call="tt_report_common.external_layout_footer"/>
@@ -16,55 +16,55 @@
     </template>
 
     <template id="address_layout">
-            <!--USAGE : <t t-set="o_addr" t-value="o.partner_id"/> =-->
-            <!--partner_id is a pertner instance class from res.partner-->
-            <address t-ignore="true" class="mb0" itemscope="itemscope" itemtype="http://schema.org/Organization">
-                <div>
-                    <strong><span t-esc="o_addr.name"/></strong>
-                    <t t-if="not is_cor">
-                        <t t-if="o_addr.customer_parent_ids">
-                            (<span t-esc="o_addr.customer_parent_ids[0].name"/>)
-                        </t>
+        <!--USAGE : <t t-set="o_addr" t-value="o.partner_id"/> =-->
+        <!--partner_id is a pertner instance class from res.partner-->
+        <address t-ignore="true" class="mb0" itemscope="itemscope" itemtype="http://schema.org/Organization">
+            <div>
+                <strong><span t-esc="o_addr.name"/></strong>
+                <t t-if="not is_cor">
+                    <t t-if="o_addr.customer_parent_ids">
+                        (<span t-esc="o_addr.customer_parent_ids[0].name"/>)
                     </t>
-                </div>
-
-                <t t-if="o_addr.address_ids">
-                    <div>
-                        <div>
-                            <!--<i t-if="not options.get('no_marker')" class='fa fa-map-marker'/> -->
-                            <t t-set="add_obj" t-value="o_addr.address_ids[0]"/>
-                            <span t-esc="add_obj.address"/>
-                            <!--<t t-if="o_addr.street2">-->
-                            <!--, <span t-esc="o_addr.street2"/>-->
-                            <!--</t>-->
-                            <t t-if="add_obj.city_id">
-                                , <span t-esc="add_obj.city_id.name"/>
-                            </t>
-                        </div>
-
-                        <div>
-                            <t t-if="add_obj.state_id">
-                                <span t-esc="add_obj.state_id.name"/>
-                            </t>
-                            <t t-if="add_obj.country_id">
-                                <t t-if="add_obj.state_id">
-                                    -
-                                </t>
-                                <span t-esc="add_obj.country_id.name"/>
-                            </t>
-
-                        </div>
-
-                        <div>
-                            <t t-if="o_addr.phone_ids">
-                                <span>Phone: </span>
-                                <span t-esc="o_addr.phone_ids[0].phone_number"/>
-                            </t>
-                        </div>
-                    </div>
                 </t>
-            </address>
-        </template>
+            </div>
+
+            <t t-if="o_addr.address_ids">
+                <div>
+                    <div>
+                        <!--<i t-if="not options.get('no_marker')" class='fa fa-map-marker'/> -->
+                        <t t-set="add_obj" t-value="o_addr.address_ids[0]"/>
+                        <span t-esc="add_obj.address"/>
+                        <!--<t t-if="o_addr.street2">-->
+                        <!--, <span t-esc="o_addr.street2"/>-->
+                        <!--</t>-->
+                        <t t-if="add_obj.city_id">
+                            , <span t-esc="add_obj.city_id.name"/>
+                        </t>
+                    </div>
+
+                    <div>
+                        <t t-if="add_obj.state_id">
+                            <span t-esc="add_obj.state_id.name"/>
+                        </t>
+                        <t t-if="add_obj.country_id">
+                            <t t-if="add_obj.state_id">
+                                -
+                            </t>
+                            <span t-esc="add_obj.country_id.name"/>
+                        </t>
+
+                    </div>
+
+                    <div>
+                        <t t-if="o_addr.phone_ids">
+                            <span>Phone: </span>
+                            <span t-esc="o_addr.phone_ids[0].phone_number"/>
+                        </t>
+                    </div>
+                </div>
+            </t>
+        </address>
+    </template>
 
     <template id="address_layout_bill_to">
         <address t-ignore="true" class="mb0" itemscope="itemscope" itemtype="http://schema.org/Organization">
@@ -275,38 +275,38 @@
                     <span t-att-style="'margin-top: 10px; margin-left: 10px; color: '+ base_color +'; font-size: 20px;'">Invoice</span><br/>
                     <t t-set="printout_icon" t-value="'/tt_report_common/static/images/bill-white.png'"/>
                 </t><t t-elif="doc_model == 'tt.billing.statement'">
-                    <span t-att-style="'margin-top: 10px; margin-left: 10px; color: '+ base_color +'; font-size: 20px;'">Billing</span><br/>
+                <span t-att-style="'margin-top: 10px; margin-left: 10px; color: '+ base_color +'; font-size: 20px;'">Billing</span><br/>
+                <t t-set="printout_icon" t-value="'/tt_report_common/static/images/bill-white.png'"/>
+            </t><t t-elif="doc_model == 'tt.top.up'">
+                <t t-if="doc.state in ['draft','request','confirm']">
+                    <span t-att-style="'margin-top: 10px; margin-left: 10px; color: '+ base_color +'; font-size: 20px;'">Proforma Top Up</span><br/>  <!--Proforma HO Invoice-->
                     <t t-set="printout_icon" t-value="'/tt_report_common/static/images/bill-white.png'"/>
-                </t><t t-elif="doc_model == 'tt.top.up'">
-                    <t t-if="doc.state in ['draft','request','confirm']">
-                        <span t-att-style="'margin-top: 10px; margin-left: 10px; color: '+ base_color +'; font-size: 20px;'">Proforma Top Up</span><br/>  <!--Proforma HO Invoice-->
-                        <t t-set="printout_icon" t-value="'/tt_report_common/static/images/bill-white.png'"/>
-                    </t>
-                    <t t-if="doc.state in ['validated','approved']">  <!--['valid','done']-->
-                        <span t-att-style="'margin-top: 10px; margin-left: 10px; color: '+ base_color +'; font-size: 20px;'">Top Up</span><br/>  <!--HO Invoice-->
-                        <t t-set="printout_icon" t-value="'/tt_report_common/static/images/bill-white.png'"/>
-                    </t>
-                </t><t t-elif="doc_model == 'tt.refund'">
-                    <span t-att-style="'margin-top: 10px; margin-left: 10px; color: '+ base_color +'; font-size: 20px;'">Refund</span><br/>
-                    <t t-set="printout_icon" t-value="'/tt_report_common/static/images/refund-white.png'"/>
-                </t><t t-elif="doc_model == 'tt.reschedule'">
-                    <span t-att-style="'margin-top: 10px; margin-left: 10px; color: '+ base_color +'; font-size: 20px;'">After Sales</span><br/>
-                    <t t-set="printout_icon" t-value="'/tt_report_common/static/images/refund-white.png'"/>
-                <!--</t><t t-elif="doc_model == 'tt.reservation.activity'">-->
-                    <!--<span style="margin-top: 10px; margin-left: 10px; color: #DC5413; font-size: 20px;">Itinerary</span><br/>-->
-                    <!--<t t-set="printout_icon" t-value="'/tt_report_common/static/images/activity-white.png'"/>-->
-                </t><t t-elif="doc_type == 'expenses'">
-                    <span t-att-style="'margin-top: 10px; margin-left: 10px; color: '+ base_color +'; font-size: 20px;'">Expenses</span><br/>
-                    <t t-set="printout_icon" t-value="'/tt_report_common/static/images/bill-white.png'"/>
-                </t><t t-elif="doc_type == 'itin'">
-                    <span t-att-style="'margin-top: 10px; margin-left: 10px; color: '+ base_color +'; font-size: 20px;'">Itinerary Form</span><br/>
-                    <t t-set="printout_icon" t-value="'/tt_report_common/static/images/bill-white.png'"/>
-                </t><t t-elif="doc_model == 'tt.reservation.hotel'">
-                    <span t-att-style="'margin-top: 10px; margin-left: 10px; color: '+ base_color +'; font-size: 20px;'">Hotel Voucher</span><br/>
-                    <t t-set="printout_icon" t-value="'/tt_report_common/static/images/hotel-white.png'"/>
-                </t><t t-else="">
-                    <span t-att-style="'margin-top: 10px; margin-left: 10px; color: '+ base_color +'; font-size: 20px;'">Other</span><br/>
                 </t>
+                <t t-if="doc.state in ['validated','approved']">  <!--['valid','done']-->
+                    <span t-att-style="'margin-top: 10px; margin-left: 10px; color: '+ base_color +'; font-size: 20px;'">Top Up</span><br/>  <!--HO Invoice-->
+                    <t t-set="printout_icon" t-value="'/tt_report_common/static/images/bill-white.png'"/>
+                </t>
+            </t><t t-elif="doc_model == 'tt.refund'">
+                <span t-att-style="'margin-top: 10px; margin-left: 10px; color: '+ base_color +'; font-size: 20px;'">Refund</span><br/>
+                <t t-set="printout_icon" t-value="'/tt_report_common/static/images/refund-white.png'"/>
+            </t><t t-elif="doc_model == 'tt.reschedule'">
+                <span t-att-style="'margin-top: 10px; margin-left: 10px; color: '+ base_color +'; font-size: 20px;'">After Sales</span><br/>
+                <t t-set="printout_icon" t-value="'/tt_report_common/static/images/refund-white.png'"/>
+                <!--</t><t t-elif="doc_model == 'tt.reservation.activity'">-->
+                <!--<span style="margin-top: 10px; margin-left: 10px; color: #DC5413; font-size: 20px;">Itinerary</span><br/>-->
+                <!--<t t-set="printout_icon" t-value="'/tt_report_common/static/images/activity-white.png'"/>-->
+            </t><t t-elif="doc_type == 'expenses'">
+                <span t-att-style="'margin-top: 10px; margin-left: 10px; color: '+ base_color +'; font-size: 20px;'">Expenses</span><br/>
+                <t t-set="printout_icon" t-value="'/tt_report_common/static/images/bill-white.png'"/>
+            </t><t t-elif="doc_type == 'itin'">
+                <span t-att-style="'margin-top: 10px; margin-left: 10px; color: '+ base_color +'; font-size: 20px;'">Itinerary Form</span><br/>
+                <t t-set="printout_icon" t-value="'/tt_report_common/static/images/bill-white.png'"/>
+            </t><t t-elif="doc_model == 'tt.reservation.hotel'">
+                <span t-att-style="'margin-top: 10px; margin-left: 10px; color: '+ base_color +'; font-size: 20px;'">Hotel Voucher</span><br/>
+                <t t-set="printout_icon" t-value="'/tt_report_common/static/images/hotel-white.png'"/>
+            </t><t t-else="">
+                <span t-att-style="'margin-top: 10px; margin-left: 10px; color: '+ base_color +'; font-size: 20px;'">Other</span><br/>
+            </t>
                 <div style="height: 105px; margin-left: 0px">
                     <div id="circle" t-att-style="'width: 60px; height: 60px; background: '+ base_color +'; border-radius: 100%; position: absolute; z-index: 1;'">
                         <img t-att-src="printout_icon" style="max-height: 35px; max-width: 35px; margin: 12px 0px 0px 0px;"/>
@@ -318,8 +318,8 @@
                                     <t t-if="doc.pnr">
                                         <span t-field="doc.pnr" style="margin-top: 5px;"/>
                                     </t><t t-else="">
-                                        <span t-esc="'Itinerary'" style="margin-top: 5px;"/>
-                                    </t>
+                                    <span t-esc="'Itinerary'" style="margin-top: 5px;"/>
+                                </t>
                                 </t>
                                 <t t-elif="doc_model == 'tt.reservation.hotel'">
                                     <span t-field="doc.pnr" style="margin-top: 5px;"/>
@@ -521,16 +521,16 @@
                     <span t-field="doc.date_invoice" t-options ='{"format": "dd/MM/yyyy"}'/>
                 </td>
             </tr>
-<!--            <tr>-->
-<!--                <td style="width:50px;"/>-->
-<!--                <td style="width:10px;"/>-->
-<!--                <td style="width:100px;"/>-->
-<!--                <td style="width:150px;">Due Date</td>-->
-<!--                <td style="width:10px;">:</td>-->
-<!--                <td style="width:400px;">-->
-<!--                    <span t-field="doc.date_invoice" t-options ='{"format": "dd/MM/yyyy"}'/>-->
-<!--                </td>-->
-<!--            </tr>-->
+            <!--            <tr>-->
+            <!--                <td style="width:50px;"/>-->
+            <!--                <td style="width:10px;"/>-->
+            <!--                <td style="width:100px;"/>-->
+            <!--                <td style="width:150px;">Due Date</td>-->
+            <!--                <td style="width:10px;">:</td>-->
+            <!--                <td style="width:400px;">-->
+            <!--                    <span t-field="doc.date_invoice" t-options ='{"format": "dd/MM/yyyy"}'/>-->
+            <!--                </td>-->
+            <!--            </tr>-->
             <tr>
                 <td style="width:50px;"/>
                 <td style="width:10px;"/>
@@ -623,59 +623,59 @@
                 <t t-set="row_idx" t-value="row_idx+1"/>
             </t>
 
-<!--            <span t-esc="inv_lines[doc.id]"/>-->
-<!--            <t t-foreach="inv_lines[doc.id]" t-as="line2_idx">-->
-<!--                <t t-foreach="line2_idx.keys()" t-as="line_idx">-->
-<!--                    <t t-set="line" t-value="line2_idx[line_idx]"/>-->
-<!--                    <t t-set="col_len" t-value="len(line['descs'])"/>-->
-<!--                    <t t-set="pax_count" t-value="0"/>-->
-<!--                    <t t-foreach="line['pax_data']" t-as="pax">-->
-<!--                        <tr valign="top" style="padding-top: 5px; padding-bottom: 5px;">-->
-<!--                            <t t-if="pax_count == 0">-->
-<!--                                <t t-if="row_idx == len(line2_idx)-1">-->
-<!--                                    <td t-att-rowspan="len(line['pax_data'])" style="background: #F0F0F0; width: 16.667%; border-left: 1px solid #ccc; border-bottom: 1px solid #ccc; border-right: 1px solid #ccc; border-radius: 0px 0px 0px 20px; border-color: #CCC; padding: 7px 7px 7px 20px;">-->
-<!--                                        <span t-esc="line_idx"/>-->
-<!--                                    </td>-->
-<!--                                </t>-->
-<!--                                <t t-else="">-->
-<!--                                    <td t-att-rowspan="len(line['pax_data'])" style="background: #F0F0F0; width: 16.667%; border-left: 1px solid #ccc; border-bottom: 1px solid #ccc; border-right: 1px solid #ccc; border-radius: 0px 0px 0px 0px; border-color: #CCC; padding: 7px 7px 7px 20px;">-->
-<!--                                        <span t-esc="line_idx"/>-->
-<!--                                    </td>-->
-<!--                                </t>-->
-<!--                            </t>-->
-<!--                            <td style="width: 25%; padding: 7px 7px 7px 20px; border-bottom: 1px solid #CCC; border-right: 1px solid #ccc;">  &lt;!&ndash;width: 25%; padding: 7px 7px 7px 20px; border-bottom: 1px solid #ccc;&ndash;&gt;-->
-<!--                                <ul style="padding-left:15px;">-->
-<!--                                    <li><span t-esc="pax['name']"/></li>-->
-<!--                                </ul>-->
-<!--                            </td>-->
-<!--                            <t t-if="pax_count == 0">-->
-<!--                                <td t-att-rowspan="len(line['pax_data'])" style="width: 25%; padding: 7px 7px 7px 20px; border-bottom: 1px solid #ccc; border-right: 1px solid #ccc;">-->
-<!--                                    <t t-foreach="line['descs']" t-as="desc">-->
-<!--                                        <span t-raw="desc"/>-->
-<!--                                        <br/>-->
-<!--                                    </t>-->
-<!--                                </td>-->
-<!--                            </t>-->
-<!--                            <t t-if="row_idx == len(line2_idx)-1 and pax_count == len(line['pax_data'])-1">-->
-<!--                                <td style="width: 16.667%; border-color: #CCC; padding: 7px 20px 7px 7px; border-bottom: 1px solid #ccc; border-right: 1px solid #ccc; border-bottom-right-radius: 20px; text-align: right">-->
-<!--                                    <ul style="list-style-type: none;">-->
-<!--                                        <li><span t-esc="pax['total']"/></li>  &lt;!&ndash; t-options='{"widget": "monetary", "display_currency": doc.currency_id}'&ndash;&gt;-->
-<!--                                    </ul>-->
-<!--                                </td>-->
-<!--                            </t>-->
-<!--                            <t t-else="">-->
-<!--                                <td style="width: 16.667%; border-color: #CCC; padding: 7px 20px 7px 7px; border-bottom: 1px solid #ccc; border-right: 1px solid #ccc; text-align: right">-->
-<!--                                    <ul style="list-style-type: none;">-->
-<!--                                        <li><span t-esc="pax['total']"/></li>  &lt;!&ndash; t-options='{"widget": "monetary", "display_currency": doc.currency_id}'&ndash;&gt;-->
-<!--                                    </ul>-->
-<!--                                </td>-->
-<!--                            </t>-->
-<!--                        </tr>-->
-<!--                        <t t-set="pax_count" t-value="pax_count+1"/>-->
-<!--                    </t>-->
-<!--                    <t t-set="row_idx" t-value="row_idx+1"/>-->
-<!--                </t>-->
-<!--            </t>-->
+            <!--            <span t-esc="inv_lines[doc.id]"/>-->
+            <!--            <t t-foreach="inv_lines[doc.id]" t-as="line2_idx">-->
+            <!--                <t t-foreach="line2_idx.keys()" t-as="line_idx">-->
+            <!--                    <t t-set="line" t-value="line2_idx[line_idx]"/>-->
+            <!--                    <t t-set="col_len" t-value="len(line['descs'])"/>-->
+            <!--                    <t t-set="pax_count" t-value="0"/>-->
+            <!--                    <t t-foreach="line['pax_data']" t-as="pax">-->
+            <!--                        <tr valign="top" style="padding-top: 5px; padding-bottom: 5px;">-->
+            <!--                            <t t-if="pax_count == 0">-->
+            <!--                                <t t-if="row_idx == len(line2_idx)-1">-->
+            <!--                                    <td t-att-rowspan="len(line['pax_data'])" style="background: #F0F0F0; width: 16.667%; border-left: 1px solid #ccc; border-bottom: 1px solid #ccc; border-right: 1px solid #ccc; border-radius: 0px 0px 0px 20px; border-color: #CCC; padding: 7px 7px 7px 20px;">-->
+            <!--                                        <span t-esc="line_idx"/>-->
+            <!--                                    </td>-->
+            <!--                                </t>-->
+            <!--                                <t t-else="">-->
+            <!--                                    <td t-att-rowspan="len(line['pax_data'])" style="background: #F0F0F0; width: 16.667%; border-left: 1px solid #ccc; border-bottom: 1px solid #ccc; border-right: 1px solid #ccc; border-radius: 0px 0px 0px 0px; border-color: #CCC; padding: 7px 7px 7px 20px;">-->
+            <!--                                        <span t-esc="line_idx"/>-->
+            <!--                                    </td>-->
+            <!--                                </t>-->
+            <!--                            </t>-->
+            <!--                            <td style="width: 25%; padding: 7px 7px 7px 20px; border-bottom: 1px solid #CCC; border-right: 1px solid #ccc;">  &lt;!&ndash;width: 25%; padding: 7px 7px 7px 20px; border-bottom: 1px solid #ccc;&ndash;&gt;-->
+            <!--                                <ul style="padding-left:15px;">-->
+            <!--                                    <li><span t-esc="pax['name']"/></li>-->
+            <!--                                </ul>-->
+            <!--                            </td>-->
+            <!--                            <t t-if="pax_count == 0">-->
+            <!--                                <td t-att-rowspan="len(line['pax_data'])" style="width: 25%; padding: 7px 7px 7px 20px; border-bottom: 1px solid #ccc; border-right: 1px solid #ccc;">-->
+            <!--                                    <t t-foreach="line['descs']" t-as="desc">-->
+            <!--                                        <span t-raw="desc"/>-->
+            <!--                                        <br/>-->
+            <!--                                    </t>-->
+            <!--                                </td>-->
+            <!--                            </t>-->
+            <!--                            <t t-if="row_idx == len(line2_idx)-1 and pax_count == len(line['pax_data'])-1">-->
+            <!--                                <td style="width: 16.667%; border-color: #CCC; padding: 7px 20px 7px 7px; border-bottom: 1px solid #ccc; border-right: 1px solid #ccc; border-bottom-right-radius: 20px; text-align: right">-->
+            <!--                                    <ul style="list-style-type: none;">-->
+            <!--                                        <li><span t-esc="pax['total']"/></li>  &lt;!&ndash; t-options='{"widget": "monetary", "display_currency": doc.currency_id}'&ndash;&gt;-->
+            <!--                                    </ul>-->
+            <!--                                </td>-->
+            <!--                            </t>-->
+            <!--                            <t t-else="">-->
+            <!--                                <td style="width: 16.667%; border-color: #CCC; padding: 7px 20px 7px 7px; border-bottom: 1px solid #ccc; border-right: 1px solid #ccc; text-align: right">-->
+            <!--                                    <ul style="list-style-type: none;">-->
+            <!--                                        <li><span t-esc="pax['total']"/></li>  &lt;!&ndash; t-options='{"widget": "monetary", "display_currency": doc.currency_id}'&ndash;&gt;-->
+            <!--                                    </ul>-->
+            <!--                                </td>-->
+            <!--                            </t>-->
+            <!--                        </tr>-->
+            <!--                        <t t-set="pax_count" t-value="pax_count+1"/>-->
+            <!--                    </t>-->
+            <!--                    <t t-set="row_idx" t-value="row_idx+1"/>-->
+            <!--                </t>-->
+            <!--            </t>-->
         </table>
 
         <!-- SubTotal -->
@@ -718,10 +718,16 @@
                             <span t-esc="tax" style="padding: 10px 25px;" t-options="{&quot;widget&quot;: &quot;monetary&quot;, &quot;display_currency&quot;: doc.currency_id}"/>
                         </td>
                     </tr>
+                    <tr>
+                        <td><strong>Admin Fee</strong></td>
+                        <td class="text-right">
+                            <span style="padding: 10px 25px;" t-field="doc.admin_fee" t-options="{&quot;widget&quot;: &quot;monetary&quot;, &quot;display_currency&quot;: doc.currency_id}"/>
+                        </td>
+                    </tr>
                     <tr class="border-black">
                         <td><strong>Grand Total</strong></td>
                         <td class="text-right">
-                            <span style="padding: 10px 25px;" t-field="doc.total_after_tax" t-options="{&quot;widget&quot;: &quot;monetary&quot;, &quot;display_currency&quot;: doc.currency_id}"/>
+                            <span style="padding: 10px 25px;" t-field="doc.grand_total" t-options="{&quot;widget&quot;: &quot;monetary&quot;, &quot;display_currency&quot;: doc.currency_id}"/>
                         </td>
                     </tr>
                 </table>
@@ -746,8 +752,8 @@
     </template>
 
     <template id="printout_invoice">
-<!--        <t t-set="data_report_header_spacing" t-value="20"/>-->
-<!--        <t t-set="data_report_margin_top" t-value="2"/>-->
+        <!--        <t t-set="data_report_header_spacing" t-value="20"/>-->
+        <!--        <t t-set="data_report_margin_top" t-value="2"/>-->
         <t t-set="data_report_header_spacing" t-value="0"/>
         <t t-set="data_report_margin_top" t-value="10"/>
         <t t-set="data_report_margin_bottom" t-value="26"/>
