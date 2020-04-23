@@ -816,7 +816,7 @@ class PrintoutInvoice(models.AbstractModel):
             'inv_lines': values,
             'terbilang': self.compute_terbilang_from_objs(
                 self.env[data['context']['active_model']].browse(data['context']['active_ids'])),
-            'base_color': self.env['ir.config_parameter'].get_param('tt_base.website_default_color', default='#FFFFFF'),
+            'base_color': self.sudo().env['ir.config_parameter'].get_param('tt_base.website_default_color', default='#FFFFFF'),
         }
         return val
 
