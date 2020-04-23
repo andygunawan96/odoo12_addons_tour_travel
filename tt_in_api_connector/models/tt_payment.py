@@ -171,21 +171,7 @@ class TtPaymentApiCon(models.Model):
             'proxy_co_uid': req.get('user_id', False),
         }
         provider = req.get('provider_type')
-        action = ''
-        if provider == 'activity':
-            action = "issued_booking"
-        elif provider == 'airline':
-            action = "issued"
-        elif provider == 'hotel':
-            action = "issued"
-        elif provider == 'passport':
-            action = "issued"
-        elif provider == 'tour':
-            action = "issued_booking"
-        elif provider == 'train':
-            action = "issued"
-        elif provider == 'visa':
-            action = "issued"
+        action = 'issued'
         return self.send_request_to_gateway('%s/booking/%s' % (self.url, provider),
                                             request,
                                             action,
