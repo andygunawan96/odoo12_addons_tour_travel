@@ -655,32 +655,16 @@ class ReservationTour(models.Model):
                     book_obj.sudo().write(book_update_vals)
                     self.env.cr.commit()
 
-                response = {
-                    'booker_seq_id': book_obj.booker_id.seq_id,
-                    'contacts': {
-                        'email': book_obj.contact_email,
-                        'name': book_obj.contact_name,
-                        'phone': book_obj.contact_phone,
-                        'gender': contact.gender and contact.gender or '',
-                        'marital_status': contact.marital_status and contact.marital_status or False,
-                    },
+                response = book_obj.to_dict()
+                response.update({
                     'passengers': passengers,
-                    'pnr': book_obj.pnr,
-                    'state': data.get('state') and data['state'] or book_obj.state,
-                    'adult': book_obj.adult,
-                    'child': book_obj.child,
-                    'infant': book_obj.infant,
-                    'departure_date': book_obj.departure_date,
-                    'arrival_date': book_obj.arrival_date,
-                    'order_number': book_obj.name,
                     'booking_uuid': book_obj.booking_uuid and book_obj.booking_uuid or False,
-                    'hold_date': book_obj.hold_date,
                     'provider': master.provider_id.code,
                     'tour_details': tour_package,
                     'rooms': rooms,
                     'payment_rules': payment_rules,
                     'grand_total': book_obj.total,
-                }
+                })
                 return ERR.get_no_error(response)
             else:
                 raise RequestException(1001)
