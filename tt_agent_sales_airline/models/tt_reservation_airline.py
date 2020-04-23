@@ -99,7 +99,7 @@ class ReservationAirline(models.Model):
         self.env['tt.payment.invoice.rel'].create({
             'invoice_id': invoice_id.id,
             'payment_id': payment_obj.id,
-            'pay_amount': invoice_id.grand_total,
+            'pay_amount': invoice_id.grand_total
         })
 
 

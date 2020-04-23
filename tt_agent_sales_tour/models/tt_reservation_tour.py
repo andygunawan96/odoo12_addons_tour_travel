@@ -58,7 +58,8 @@ class ReservationTour(models.Model):
                 'res_id_resv': self.id,
                 'invoice_id': invoice_id.id,
                 'reference': self.name,
-                'desc': 'Full Payment\n' + self.get_tour_description()
+                'desc': 'Full Payment\n' + self.get_tour_description(),
+                'admin_fee': self.payment_acquirer_number_id.fee_amount
             })
 
             invoice_line_id = inv_line_obj.id
@@ -86,7 +87,7 @@ class ReservationTour(models.Model):
             payment_obj = self.env['tt.payment'].create({
                 'agent_id': self.agent_id.id,
                 'acquirer_id': acquirer_id,
-                'real_total_amount': inv_line_obj.total_after_tax,
+                'real_total_amount': invoice_id.grand_total,
                 'customer_parent_id': customer_parent_id,
                 'confirm_uid': co_uid,
                 'confirm_date': datetime.now()
@@ -95,7 +96,7 @@ class ReservationTour(models.Model):
             self.env['tt.payment.invoice.rel'].create({
                 'invoice_id': invoice_id.id,
                 'payment_id': payment_obj.id,
-                'pay_amount': inv_line_obj.total_after_tax,
+                'pay_amount': invoice_id.grand_total
             })
         else:
             invoice_id = self.env['tt.agent.invoice'].create({
@@ -111,7 +112,8 @@ class ReservationTour(models.Model):
                 'res_model_resv': self._name,
                 'res_id_resv': self.id,
                 'invoice_id': invoice_id.id,
-                'desc': 'Down Payment\n' + self.get_tour_description()
+                'desc': 'Down Payment\n' + self.get_tour_description(),
+                'admin_fee': self.payment_acquirer_number_id.fee_amount
             })
             invoice_line_id = inv_line_obj.id
 
@@ -138,7 +140,7 @@ class ReservationTour(models.Model):
             payment_obj = self.env['tt.payment'].create({
                 'agent_id': self.agent_id.id,
                 'acquirer_id': acquirer_id,
-                'real_total_amount': inv_line_obj.total_after_tax,
+                'real_total_amount': invoice_id.grand_total,
                 'customer_parent_id': customer_parent_id,
                 'confirm_uid': co_uid,
                 'confirm_date': datetime.now()
@@ -147,7 +149,7 @@ class ReservationTour(models.Model):
             self.env['tt.payment.invoice.rel'].create({
                 'invoice_id': invoice_id.id,
                 'payment_id': payment_obj.id,
-                'pay_amount': inv_line_obj.total_after_tax,
+                'pay_amount': invoice_id.grand_total
             })
 
             self.env['tt.installment.invoice'].create({
