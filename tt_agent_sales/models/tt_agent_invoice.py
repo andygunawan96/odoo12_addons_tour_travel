@@ -131,7 +131,7 @@ class AgentInvoice(models.Model):
         if self.state not in ['cancel','paid']:
             legal = True
             for i in self.payment_ids:
-                if i.state != 'confirm':
+                if i.state not in ['confirm','cancel']:
                     legal = False
             if legal:
                 self.state = "cancel"
