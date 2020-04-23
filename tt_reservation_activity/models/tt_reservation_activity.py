@@ -1039,36 +1039,22 @@ class ReservationActivity(models.Model):
                     })
                     self.env.cr.commit()
 
-                response = {
-                    'booker_seq_id': activity_booking.booker_id.seq_id,
-                    'contacts': {
-                        'email': activity_booking.contact_email,
-                        'name': activity_booking.contact_name,
-                        'phone': activity_booking.contact_phone,
-                        'gender': contact.gender and contact.gender or '',
-                        'marital_status': contact.marital_status and contact.marital_status or False,
-                    },
+                response = activity_booking.to_dict()
+                response.update({
                     'activity': {
                         'name': master.name,
                         'type': master_line.name,
                     },
                     'provider': master.provider_id.code,
-                    'adults': activity_booking.adult,
-                    'children': activity_booking.child,
-                    'seniors': activity_booking.senior,
-                    'pnr': activity_booking.pnr,
-                    'hold_date': activity_booking.hold_date,
                     'visit_date': str(activity_booking.visit_date)[:10],
                     'timeslot': activity_booking.timeslot and activity_booking.timeslot or False,
                     'passengers': passengers,
-                    'order_number': order_number,
                     'activity_details': activity_details,
                     'voucher_detail': voucher_detail,
                     'uuid': res.get('uuid') and res['uuid'] or '',
-                    'status': activity_booking.state,
                     'booking_options': book_option_ids,
                     'voucher_url': voucher_url_parsed and voucher_url_parsed or []
-                }
+                })
                 result = ERR.get_no_error(response)
                 return result
             else:
