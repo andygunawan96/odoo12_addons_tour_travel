@@ -4,7 +4,7 @@ class TtAgent(models.Model):
     _inherit = 'tt.customer.parent'
 
     ledger_ids = fields.One2many('tt.ledger', 'customer_parent_id', 'Ledger(s)')
-    balance = fields.Monetary(string="Balance", compute="_compute_balance_agent",store=True)
+    balance = fields.Monetary(string="Balance", compute="_compute_balance_customer_parent",store=True)
     adjustment_ids = fields.One2many('tt.adjustment','res_id','Adjustment',domain=[('res_model','=','tt.customer.parent')])
 
     def action_view_ledgers(self):
@@ -21,8 +21,12 @@ class TtAgent(models.Model):
             },
         }
 
+    def compute_all_customer_parent_balance(self):
+        for rec in self.search([]):
+            rec._compute_balance_customer_parent()
+
     @api.depends('ledger_ids','ledger_ids.balance')
-    def _compute_balance_agent(self):
+    def _compute_balance_customer_parent(self):
         for rec in self:
             if len(rec.ledger_ids)>0:
                 rec.balance = rec.ledger_ids[0].balance

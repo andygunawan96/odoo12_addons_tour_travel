@@ -44,7 +44,7 @@ class TtPaymentInvoiceRel(models.Model):
         invoice_obj = self.env['tt.agent.invoice'].sudo().browse(vals_list.get('invoice_id'))
 
         #pengecekan overpaid
-        missing_ammount = invoice_obj.total_after_tax - invoice_obj.paid_amount
+        missing_ammount = invoice_obj.grand_total - invoice_obj.paid_amount
         if payment_obj.available_amount >= missing_ammount and vals_list['pay_amount'] > missing_ammount:
             vals_list['pay_amount'] = missing_ammount
 
@@ -95,7 +95,7 @@ class TtPaymentInvoiceRel(models.Model):
 
         if self.invoice_id:
             # pengecekan overpaid
-            missing_ammount = self.invoice_id.total_after_tax - self.invoice_id.paid_amount
+            missing_ammount = self.invoice_id.grand_total - self.invoice_id.paid_amount
             if self.payment_id.available_amount >= missing_ammount and self.pay_amount > missing_ammount:
                 self.pay_amount = missing_ammount
                 # raise exceptions.UserError("Pay amount c8hanged to missing amount")
