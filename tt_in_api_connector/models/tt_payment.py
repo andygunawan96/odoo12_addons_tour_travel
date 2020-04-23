@@ -66,7 +66,8 @@ class TtPaymentApiCon(models.Model):
                         'seq_id': self.env.ref('tt_base.payment_acquirer_ho_payment_gateway').seq_id,
                         'currency_code': data['ccy'],
                         'payment_ref': data['payment_ref'],
-                        'payment_seq_id': self.env.ref('tt_base.payment_acquirer_ho_payment_gateway').seq_id
+                        'payment_seq_id': self.env.ref('tt_base.payment_acquirer_ho_payment_gateway').seq_id,
+                        'fee': data['fee']
                     }
 
                     res = self.env['tt.top.up'].create_top_up_api(request,context, True)
