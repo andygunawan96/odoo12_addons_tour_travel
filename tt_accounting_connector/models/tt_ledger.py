@@ -62,7 +62,7 @@ class TtLedger(models.Model):
                     ledger_objs.append(temp_dict)
 
             if is_last_ledger:
-                url = self.env['ir.config_parameter'].get_param('web.base.url')
+                url = self.env['ir.config_parameter'].sudo().get_param('web.base.url')
                 submitted_data = []
                 for current_ledger in ledger_objs:
                     temp_debit = current_ledger['obj'].debit and current_ledger['obj'].debit or 0
