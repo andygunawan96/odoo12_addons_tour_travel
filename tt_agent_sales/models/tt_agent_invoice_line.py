@@ -9,8 +9,9 @@ class AgentInvoice(models.Model):
 
     name = fields.Char('Name')
 
-    total = fields.Monetary('Total',compute='_compute_total', store=True)
+    total = fields.Monetary('Subtotal',compute='_compute_total', store=True)
     total_after_tax = fields.Monetary('Total (After Tax)', compute="_compute_total_tax", store=True)
+    admin_fee = fields.Monetary('Admin Fee')
 
     res_model_resv = fields.Char(
         'Related Reservation Name', required=True, index=True)

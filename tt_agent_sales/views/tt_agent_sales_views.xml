@@ -127,8 +127,8 @@
                                         <field name="model_type_id"/>
                                         <field name="total"/>
                                         <field name="total_after_tax"/>
+                                        <field name="admin_fee"/>
                                         <field name="currency_id" invisible="1"/>
-                                        <button string="Go to Reservation" name="open_reservation" type="object"/>
                                     </tree>
                                 </field>
                             </page>
@@ -148,6 +148,8 @@
                         </div>
                         <field name="total" nolabel="1" class="oe_subtotal_footer_separator" widget='monetary' options="{'currency_field': 'currency_id'}"/>
                         <field name="total_after_tax" class="oe_subtotal_footer_separator" widget='monetary' options="{'currency_field': 'currency_id'}"/>
+                        <field name="admin_fee" class="oe_subtotal_footer_separator" widget='monetary' options="{'currency_field': 'currency_id'}"/>
+                        <field name="grand_total" class="oe_subtotal_footer_separator" widget='monetary' options="{'currency_field': 'currency_id'}"/>
                         <field name="paid_amount" class="oe_subtotal_footer_separator" widget='monetary' options="{'currency_field': 'currency_id'}"/>
                     </group>
                 </sheet>

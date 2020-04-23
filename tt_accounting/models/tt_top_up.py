@@ -167,6 +167,8 @@ class TtTopUp(models.Model):
         #update pay
         top_up = self.search([('name', '=', data['name'])])
         top_up.state = 'request'
+        top_up.fees = data['fee']
+        # top_up.fees = 6666
         top_up.payment_id.reference = data['payment_ref']
         top_up.payment_id.action_validate_from_button()
         top_up.payment_id.action_approve_from_button()

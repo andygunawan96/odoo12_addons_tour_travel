@@ -19,8 +19,11 @@ class AgentInvoice(models.Model):
     _order = 'id desc'
 
     name = fields.Char('Name', default='New', readonly=True)
-    total = fields.Monetary('Total', compute="_compute_total",store=True)
+    total = fields.Monetary('Subtotal', compute="_compute_total",store=True)
     total_after_tax = fields.Monetary('Total (After Tax)', compute="_compute_total_tax",store=True)
+    admin_fee = fields.Monetary('Admin Fee',compute="_compute_admin_fee",store=True)
+    grand_total = fields.Monetary('Grand Total',compute="_compute_grand_total",store=True)
+
     paid_amount = fields.Monetary('Paid Amount', compute="_compute_paid_amount")
     invoice_line_ids = fields.One2many('tt.agent.invoice.line','invoice_id','Invoice Line', readonly=True,
                                        states={'draft': [('readonly', False)]})
@@ -181,6 +184,21 @@ class AgentInvoice(models.Model):
             for rec in inv.invoice_line_ids:
                 total += rec.total_after_tax
             inv.total_after_tax = total
+
+    @api.multi
+    @api.depends('invoice_line_ids.admin_fee', 'invoice_line_ids')
+    def _compute_admin_fee(self):
+        for inv in self:
+            total = 0
+            for rec in inv.invoice_line_ids:
+                total += rec.admin_fee
+            inv.admin_fee = total
+
+    @api.multi
+    @api.depends('total_after_tax','admin_fee')
+    def _compute_grand_total(self):
+        for inv in self:
+            inv.grand_total = inv.total_after_tax + inv.admin_fee
 
     @api.multi
     def _compute_paid_amount(self):

@@ -56,7 +56,8 @@ class ReservationHotel(models.Model):
             'res_id_resv': self.id,
             'invoice_id': invoice_id.id,
             'reference': self.name,
-            'desc': self.get_segment_description()
+            'desc': self.get_segment_description(),
+            'admin_fee': self.payment_acquirer_number_id.fee_amount
         })
 
         for room_obj in self.room_detail_ids:
@@ -73,7 +74,7 @@ class ReservationHotel(models.Model):
         payment_obj = self.env['tt.payment'].create({
             'agent_id': self.agent_id.id,
             'acquirer_id': self.env['payment.acquirer'].search([('seq_id', '=', acquirer_id['seq_id'])], limit=1).id,
-            'real_total_amount': inv_line_obj.total_after_tax,
+            'real_total_amount': invoice_id.grand_total,
             'customer_parent_id': self.customer_parent_id.id,
             'confirm_uid': co_uid,
             'confirm_date': datetime.now()
@@ -82,5 +83,5 @@ class ReservationHotel(models.Model):
         self.env['tt.payment.invoice.rel'].create({
             'invoice_id': invoice_id.id,
             'payment_id': payment_obj.id,
-            'pay_amount': inv_line_obj.total_after_tax,
+            'pay_amount': invoice_id.grand_total
         })

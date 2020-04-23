@@ -60,7 +60,8 @@ class ReservationOffline(models.Model):
             'res_id_resv': self.id,
             'invoice_id': invoice_id.id,
             'reference': self.name,
-            'desc': line_desc
+            'desc': line_desc,
+            'admin_fee': self.payment_acquirer_number_id.fee_amount
         })
 
         model_type_id = self.env['tt.provider.type'].search([('code', '=', self.offline_provider_type)], limit=1)
@@ -108,7 +109,7 @@ class ReservationOffline(models.Model):
         ##membuat payment dalam draft
         payment_obj = self.env['tt.payment'].create({
             'agent_id': self.agent_id.id,
-            'real_total_amount': inv_line_obj.total_after_tax,
+            'real_total_amount': invoice_id.grand_total,
             'customer_parent_id': self.customer_parent_id.id,
             'confirm_uid': invoice_id.confirmed_uid.id,
             'confirm_date': datetime.now()
@@ -121,7 +122,7 @@ class ReservationOffline(models.Model):
         self.env['tt.payment.invoice.rel'].create({
             'invoice_id': invoice_id.id,
             'payment_id': payment_obj.id,
-            'pay_amount': inv_line_obj.total_after_tax,
+            'pay_amount': invoice_id.grand_total
         })
 
     def action_done(self):
