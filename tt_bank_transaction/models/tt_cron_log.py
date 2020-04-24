@@ -112,7 +112,7 @@ class ttCronTopUpValidator(models.Model):
                                     #login gateway, payment
                                     req = {
                                         'order_number': book_obj.name,
-                                        'user_id': book_obj.booked_uid.id,
+                                        'user_id': book_obj.user_id.id,
                                         'provider_type': provider_type[book_obj.name.split('.')[0]]
                                     }
                                     res = self.env['tt.payment.api.con'].send_payment(req)
