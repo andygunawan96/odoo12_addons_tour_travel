@@ -88,7 +88,7 @@ class ttCronTopUpValidator(models.Model):
                                         'co_uid': self.env.ref('tt_base.base_top_up_admin').id
                                     }
                                     request = {
-                                        'amount': i.amount - i.unique_amount,
+                                        'amount': i.amount,
                                         'seq_id': self.env.ref('tt_base.payment_acquirer_ho_payment_gateway_bca').seq_id,
                                         'currency_code': result.currency_id.name,
                                         'payment_ref': reference_code,
