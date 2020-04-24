@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="tt_bill_ppob_form_views" model="ir.ui.view">
+        <field name="name">tt.bill.ppob.form.view</field>
+        <field name="model">tt.bill.ppob</field>
+        <field name="arch" type="xml">
+            <form string="">
+                <group>
+                    <header>
+
+                    </header>
+                    <sheet>
+                        <div class="oe_title">
+                            <h1>
+                                <field name="carrier_name"/>
+                            </h1>
+                        </div>
+                        <group>
+                            <group>
+                                <field name="carrier_id"/>
+                                <field name="carrier_code"/>
+                                <field name="pnr"/>
+                                <field name="provider_id"/>
+                            </group>
+                            <group>
+                                <field name="period"/>
+                                <field name="amount_of_month"/>
+                                <field name="period_end_date"/>
+                                <field name="meter_read_date"/>
+                            </group>
+                        </group>
+                    </sheet>
+                </group>
+            </form>
+        </field>
+    </record>
+
+    <record id="tt_bill_ppob_tree_views" model="ir.ui.view">
+        <field name="name">tt.bill.ppob.tree.view</field>
+        <field name="model">tt.bill.ppob</field>
+        <field name="arch" type="xml">
+            <tree create="false">
+                <field name="carrier_id"/>
+                <field name="carrier_code"/>
+                <field name="pnr"/>
+                <field name="provider_id"/>
+                <field name="period"/>
+                <field name="amount_of_month"/>
+                <field name="period_end_date"/>
+                <field name="meter_read_date"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="tt_bill_ppob_action_views" model="ir.actions.act_window" >
+        <field name="name">Bill PPOB</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">tt.bill.ppob</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+        <field name="domain">[]</field>
+        <field name="context">
+            {
+            'form_view_ref': 'tt_reservation_ppob.tt_bill_ppob_form_views',
+            'tree_view_ref': 'tt_reservation_ppob.tt_bill_ppob_tree_views',
+            }
+        </field>
+    </record>
+</odoo>

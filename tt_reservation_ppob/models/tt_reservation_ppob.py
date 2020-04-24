@@ -17,8 +17,7 @@ class ReservationPpob(models.Model):
     _order = "id desc"
     _description = "Reservation PPOB"
 
-    product_code = fields.Integer('Product Code', readonly=True)
-    session_id = fields.Char('Session ID', readonly=True)
-    customer_number = fields.Char('Customer Number', readonly=True)
-
-    # segment_ids = fields.One2many('tt.bill.ppob', 'booking_id', string='Segments', readonly=True, states={'draft': [('readonly', False)]})
+    sale_service_charge_ids = fields.One2many('tt.service.charge', 'booking_ppob_id', 'Service Charge',
+                                              readonly=True, states={'draft': [('readonly', False)]})
+    provider_booking_ids = fields.One2many('tt.provider.ppob', 'booking_id', string='Provider Booking',
+                                           readonly=True, states={'draft': [('readonly', False)]})
