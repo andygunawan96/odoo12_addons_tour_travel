@@ -21,4 +21,4 @@ class ReservationPpob(models.Model):
     session_id = fields.Char('Session ID', readonly=True)
     customer_number = fields.Char('Customer Number', readonly=True)
 
-    segment_ids = fields.One2many('tt.bill.ppob', 'booking_id', string='Segments', readonly=True, states={'draft': [('readonly', False)]})
+    # segment_ids = fields.One2many('tt.bill.ppob', 'booking_id', string='Segments', readonly=True, states={'draft': [('readonly', False)]})
