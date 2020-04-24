@@ -101,6 +101,7 @@ class ttCronTopUpValidator(models.Model):
                                             'virtual_account': '',
                                             'name': res['response']['name'],
                                             'payment_ref': reference_code,
+                                            'fee': 0
                                         }
                                         res = self.env['tt.top.up'].action_va_top_up(request, context)
                                         self._cr.commit()
