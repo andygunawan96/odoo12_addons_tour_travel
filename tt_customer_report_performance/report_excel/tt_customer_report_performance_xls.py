@@ -1,5 +1,5 @@
 from odoo import models
-from ...tools import tools_excel
+from ...tools import tools_excel, variables
 from io import BytesIO
 import xlsxwriter
 import base64
@@ -41,12 +41,17 @@ class CustomerReportPerformanceXls(models.TransientModel):
         sheet.set_column('H:I', 15)
 
         customer_names = self.get_customer_names(values)
-
+        if values['provider_type'] == 'all':
+            queue = variables.PROVIDER_TYPE
+            queue.sort()
+        else:
+            queue = values['provider_type']
         result = []
         for i in customer_names:
             temp_array = list(filter(lambda x: x['customer_name'] == i, values['lines']))
             temp_result = {
                 'customer_name': i,
+                'customer_id': temp_array[0]['customer_seq_id'],
                 'number_of_sales': 0,
                 'total_spent': 0,
                 'average_spent_per_order': 0,
@@ -56,12 +61,24 @@ class CustomerReportPerformanceXls(models.TransientModel):
                 'train_order': 0,
                 'train_spent': 0,
                 'average_train_spent_per_order': 0,
+                'hotel_order': 0,
+                'hotel_spent': 0,
+                'average_hotel_spent_per_order': 0,
                 'activity_order': 0,
                 'activity_spent': 0,
                 'average_activity_spent_per_order': 0,
                 'tour_order': 0,
                 'tour_spent': 0,
-                'average_tour_spent_per_order': 0
+                'average_tour_spent_per_order': 0,
+                'visa_order': 0,
+                'visa_spent': 0,
+                'average_visa_spent_per_order': 0,
+                'passport_order': 0,
+                'passport_spent': 0,
+                'average_passport_spent_per_order': 0,
+                'offline_order': 0,
+                'offline_spent': 0,
+                'average_offline_spent_per_order': 0
             }
             for j in temp_array:
                 if j['provider_type_name'].lower() == 'airline':
@@ -88,6 +105,13 @@ class CustomerReportPerformanceXls(models.TransientModel):
                         temp_result['tour_spent'] += float(j['charge_total'])
                     except:
                         temp_result['airline_spent'] += 0.0
+                if j['provider_type_name'].lower() == 'hotel':
+                    temp_result['hotel_order'] += 1
+                    try:
+                        temp_result['hotel_spent'] += float(j['charge_total'])
+                    except:
+                        temp_result['hotel_spent'] += 0.0
+
                 temp_result['number_of_sales'] += 1
                 try:
                     temp_result['total_spent'] += float(j['charge_total'])
@@ -117,32 +141,47 @@ class CustomerReportPerformanceXls(models.TransientModel):
                 temp_result['average_tour_spent_per_order'] = temp_result['tour_spent'] / float(temp_result['tour_order'])
             else:
                 temp_result['average_tour_spent_per_order'] = 0
-                
-            result.append(temp_result)
 
+            if temp_result['hotel_order'] > 0:
+                temp_result['average_hotel_spent_per_order'] = temp_result['hotel_spent'] / float(temp_result['hotel_order'])
+            else:
+                temp_result['average_hotel_spent_per_order'] = 0
+
+            result.append(temp_result)
+        column = 6
         result.sort(key=lambda x: x['number_of_sales'], reverse=True)
 
         sheet.write('A9', 'No.', style.table_head_center)
-        sheet.write('B9', 'Customer name', style.table_head_center)
-        sheet.write('C9', 'Number of sales', style.table_head_center)
-        sheet.write('D9', 'Total Spent', style.table_head_center)
-        sheet.write('E9', 'Average spent', style.table_head_center)
-        sheet.write('F9', 'Airline ordered', style.table_head_center)
-        sheet.write('G9', 'Airline Spent', style.table_head_center)
-        sheet.write('H9', 'Average airline spent', style.table_head_center)
-        sheet.write('I9', 'Train ordered', style.table_head_center)
-        sheet.write('J9', 'Train Spent', style.table_head_center)
-        sheet.write('K9', 'Average train spent', style.table_head_center)
-        sheet.write('L9', 'Activity ordered', style.table_head_center)
-        sheet.write('M9', 'Activity Spent', style.table_head_center)
-        sheet.write('N9', 'Average activity spent', style.table_head_center)
-        sheet.write('O9', 'Tour ordered', style.table_head_center)
-        sheet.write('P9', 'Tour spent', style.table_head_center)
-        sheet.write('Q9', 'Average tour spent', style.table_head_center)
+        sheet.write('B9', 'Customer ID', style.table_head_center)
+        sheet.write('C9', 'Customer name', style.table_head_center)
+        sheet.write('D9', 'Number of sales', style.table_head_center)
+        sheet.write('E9', 'Total Spent', style.table_head_center)
+        sheet.write('F9', 'Average spent', style.table_head_center)
+        if isinstance(queue, list):
+            for i in queue:
+                self.print_provider(i, column, sheet, style)
+                column += 3
+        else:
+            self.print_provider(queue, column, sheet, style)
+        # sheet.write('F9', 'Airline ordered', style.table_head_center)
+        # sheet.write('G9', 'Airline Spent', style.table_head_center)
+        # sheet.write('H9', 'Average airline spent', style.table_head_center)
+        # sheet.write('I9', 'Train ordered', style.table_head_center)
+        # sheet.write('J9', 'Train Spent', style.table_head_center)
+        # sheet.write('K9', 'Average train spent', style.table_head_center)
+        # sheet.write('L9', 'Activity ordered', style.table_head_center)
+        # sheet.write('M9', 'Activity Spent', style.table_head_center)
+        # sheet.write('N9', 'Average activity spent', style.table_head_center)
+        # sheet.write('O9', 'Tour ordered', style.table_head_center)
+        # sheet.write('P9', 'Tour spent', style.table_head_center)
+        # sheet.write('Q9', 'Average tour spent', style.table_head_center)
+        # sheet.write('R9', 'Hotel order', style.table_head_center)
+        # sheet.write('S9', 'Hotel Spent', style.table_head_center)
 
         row_data = 8
         for i in result:
             row_data += 1
+            column = 6
             sty_table_data_center = style.table_data_center
             sty_table_data = style.table_data
             sty_datetime = style.table_data_datetime
@@ -156,22 +195,31 @@ class CustomerReportPerformanceXls(models.TransientModel):
                 sty_amount = style.table_data_amount_even
 
             sheet.write(row_data, 0, row_data - 8, sty_table_data)
-            sheet.write(row_data, 1, i['customer_name'], sty_table_data)
-            sheet.write(row_data, 2, i['number_of_sales'], sty_amount)
-            sheet.write(row_data, 3, i['total_spent'], sty_amount)
-            sheet.write(row_data, 4, i['average_spent_per_order'], sty_amount)
-            sheet.write(row_data, 5, i['airline_order'], sty_amount)
-            sheet.write(row_data, 6, i['airline_spent'], sty_amount)
-            sheet.write(row_data, 7, i['average_airline_spent_per_order'], sty_amount)
-            sheet.write(row_data, 8, i['train_order'], sty_amount)
-            sheet.write(row_data, 9, i['train_spent'], sty_amount)
-            sheet.write(row_data, 10, i['average_train_spent_per_order'], sty_amount)
-            sheet.write(row_data, 11, i['activity_order'], sty_amount)
-            sheet.write(row_data, 12, i['activity_spent'], sty_amount)
-            sheet.write(row_data, 13, i['average_activity_spent_per_order'], sty_amount)
-            sheet.write(row_data, 14, i['tour_order'], sty_amount)
-            sheet.write(row_data, 15, i['tour_spent'], sty_amount)
-            sheet.write(row_data, 16, i['average_tour_spent_per_order'], sty_amount)
+            sheet.write(row_data, 1, i['customer_id'], sty_table_data)
+            sheet.write(row_data, 2, i['customer_name'], sty_table_data)
+            sheet.write(row_data, 3, i['number_of_sales'], sty_amount)
+            sheet.write(row_data, 4, i['total_spent'], sty_amount)
+            sheet.write(row_data, 5, i['average_spent_per_order'], sty_amount)
+            if isinstance(queue, list):
+                for j in queue:
+                    self.print_data(row_data, column, i, j, sheet, sty_amount)
+                    column += 3
+            else:
+                self.print_data(row_data, column, i, queue, sheet, sty_amount)
+            # sheet.write(row_data, 5, i['airline_order'], sty_amount)
+            # sheet.write(row_data, 6, i['airline_spent'], sty_amount)
+            # sheet.write(row_data, 7, i['average_airline_spent_per_order'], sty_amount)
+            # sheet.write(row_data, 8, i['train_order'], sty_amount)
+            # sheet.write(row_data, 9, i['train_spent'], sty_amount)
+            # sheet.write(row_data, 10, i['average_train_spent_per_order'], sty_amount)
+            # sheet.write(row_data, 11, i['activity_order'], sty_amount)
+            # sheet.write(row_data, 12, i['activity_spent'], sty_amount)
+            # sheet.write(row_data, 13, i['average_activity_spent_per_order'], sty_amount)
+            # sheet.write(row_data, 14, i['tour_order'], sty_amount)
+            # sheet.write(row_data, 15, i['tour_spent'], sty_amount)
+            # sheet.write(row_data, 16, i['average_tour_spent_per_order'], sty_amount)
+            # sheet.write(row_data, 17, i['hotel_order'], sty_amount)
+            # sheet.write(row_data, 18, i['hotel_spent'], sty_amount)
 
         workbook.close()
 
@@ -194,3 +242,13 @@ class CustomerReportPerformanceXls(models.TransientModel):
                 customer_names.append(i['customer_name'])
 
         return customer_names
+
+    def print_provider(self, provider, column, sheet, style):
+        sheet.write(8, column, '{} order'.format(provider.capitalize()), style.table_head_center)
+        sheet.write(8, column + 1, '{} spent'.format(provider.capitalize()), style.table_head_center)
+        sheet.write(8, column + 2, 'Average {} spent'.format(provider), style.table_head_center)
+
+    def print_data(self, row, column, data, provider, sheet, style):
+        sheet.write(row, column, data['{}_order'.format(provider)], style)
+        sheet.write(row, column + 1, data['{}_spent'.format(provider)], style)
+        sheet.write(row, column + 2, data['average_{}_spent_per_order'.format(provider)], style)
