@@ -18,13 +18,15 @@ class CustomerRerportBirthday(models.Model):
         EXTRACT (MONTH FROM customer.birth_date) as customer_birthmonth, 
         EXTRACT (YEAR FROM customer.birth_date) as customer_birthyear,
         customer.gender as customer_gender,
+        customer.seq_id as customer_seq_id,
         customer.active as customer_active,
-        customer.agent_id as agent_id
+        customer.agent_id as agent_id,
+        agent.name as agent_name
         """
 
     @staticmethod
     def _from():
-        return """tt_customer customer
+        return """tt_customer customer LEFT JOIN tt_agent agent ON customer.agent_id = agent.id
         """
 
     @staticmethod
