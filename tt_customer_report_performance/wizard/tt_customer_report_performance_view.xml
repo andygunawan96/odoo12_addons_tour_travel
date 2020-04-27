@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record model="ir.ui.view" id="detail_customer_report_performance_form">
+            <field name="name">Detail Customer Report Performance Form</field>
+            <field name="model">tt.customer.report.performance.wizard</field>
+            <field name="inherit_id" ref="tt_agent_report.agent_common_report_view"/>
+            <field name="arch" type="xml">
+                <field name="all_agent" position="after">
+                    <field name="provider_type"/>
+                </field>
+            </field>
+        </record>
+
+        <record id="action_customer_report_performance_wz" model="ir.actions.act_window">
+            <field name="name">Report Performance</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">tt.customer.report.performance.wizard</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">form</field>
+            <field name="view_id" ref="detail_customer_report_performance_form"/>
+            <field name="target">new</field>
+        </record>
+
+        <menuitem id="sub_menu_customer_report_performance"
+              name="Customer Performance Report"
+              sequence="1"
+              parent="tt_base.top_tour_travel_report"
+              action="action_customer_report_performance_wz"
+        />
+    </data>
+</odoo>

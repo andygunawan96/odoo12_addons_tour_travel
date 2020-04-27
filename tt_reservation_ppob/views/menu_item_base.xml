@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <!-- Top Menu -->
+        <!-- PPOB -->
+        <menuitem id="top_reservations_ppob"
+                  parent="tt_reservation.main_reservations"
+                  name="PPOB"
+                  sequence="100"
+                  groups="base.group_user"/>
+        
+        <menuitem id="menu_reservations_ppob"
+                  parent="tt_reservation_ppob.top_reservations_ppob"
+                  name="Inquiry"
+                  sequence="1"/>
+
+    </data>
+</odoo>
