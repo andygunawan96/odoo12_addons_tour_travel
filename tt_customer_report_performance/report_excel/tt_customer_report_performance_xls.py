@@ -111,12 +111,30 @@ class CustomerReportPerformanceXls(models.TransientModel):
                         temp_result['hotel_spent'] += float(j['charge_total'])
                     except:
                         temp_result['hotel_spent'] += 0.0
+                if j['provider_type_name'].lower() == 'visa':
+                    temp_result['visa_order'] += 1
+                    try:
+                        temp_result['visa_spent'] += float(j['charge_total'])
+                    except:
+                        temp_result['visa_spent'] += 0.0
+                if j['provider_type_name'].lower() == 'passport':
+                    temp_result['passport_order'] += 1
+                    try:
+                        temp_result['passport_spent'] += float(j['charge_total'])
+                    except:
+                        temp_result['passport_spent'] += 0.0
+                if j['provider_type_name'].lower() == 'offline':
+                    temp_result['offline_order'] += 1
+                    try:
+                        temp_result['offline_spent'] += float(j['charge_total'])
+                    except:
+                        temp_result['offline_spent'] += 0.0
 
                 temp_result['number_of_sales'] += 1
                 try:
                     temp_result['total_spent'] += float(j['charge_total'])
                 except:
-                    temp_result['airline_spent'] += 0.0
+                    temp_result['total_spent'] += 0.0
             if temp_result['number_of_sales'] > 0:
                 temp_result['average_spent_per_order'] = temp_result['total_spent'] / float(temp_result['number_of_sales'])
             else:
@@ -146,6 +164,17 @@ class CustomerReportPerformanceXls(models.TransientModel):
                 temp_result['average_hotel_spent_per_order'] = temp_result['hotel_spent'] / float(temp_result['hotel_order'])
             else:
                 temp_result['average_hotel_spent_per_order'] = 0
+
+            if temp_result['offline_order'] > 0:
+                temp_result['average_offline_spent_per_order'] = temp_result['offline_spent'] / float(temp_result['offline_order'])
+            else:
+                temp_result['average_offline_spent_per_order'] = 0
+
+            if temp_result['passport_order'] > 0:
+                temp_result['average_passport_spent_per_order'] = temp_result['passport_spent'] / float(temp_result['passport_order'])
+
+            if temp_result['visa_order'] > 0:
+                temp_result['average_visa_spent_per_order'] = temp_result['visa_spent'] / float(temp_result['visa_order'])
 
             result.append(temp_result)
         column = 6
