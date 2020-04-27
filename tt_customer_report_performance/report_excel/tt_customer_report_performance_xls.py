@@ -120,6 +120,8 @@ class CustomerReportPerformanceXls(models.TransientModel):
                 
             result.append(temp_result)
 
+        result.sort(key=lambda x: x['number_of_sales'], reverse=True)
+
         sheet.write('A9', 'No.', style.table_head_center)
         sheet.write('B9', 'Customer name', style.table_head_center)
         sheet.write('C9', 'Number of sales', style.table_head_center)
