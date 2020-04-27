@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data nonupdate="0">
+        <report
+            id="action_customer_report_performance"
+            model="tt.customer.report.performance.wizard"
+            string="Performance Report"
+            report_type="qweb-html"
+            name="tt_customer_report_performance.cust_report_prf"
+            file="tt_customer_report_performance.cust_report_prf"
+            paper-format="tt_report_common.paperformat_A4"
+            />
+    </data>
+</odoo>
