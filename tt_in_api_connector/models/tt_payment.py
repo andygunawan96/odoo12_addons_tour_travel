@@ -87,7 +87,7 @@ class TtPaymentApiCon(models.Model):
                         values = {
                             "amount": book_obj.total,
                             "currency": book_obj.currency_id.name,
-                            "co_uid": book_obj.booked_uid.id
+                            "co_uid": book_obj.user_id.id
                         }
                         res = ERR.get_no_error(values)
                     else:
