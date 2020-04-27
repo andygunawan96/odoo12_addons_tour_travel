@@ -233,6 +233,7 @@
                             <!--<field name="carrier_name"/>-->
                         </group>
                         <group>
+                            <field name="hold_date"/>
                             <label for="booked_uid" string="Confirm by" attrs="{'invisible': [('booked_uid', '=', False)]}"/>
                             <div attrs="{'invisible': [('booked_uid', '=', False)]}">
                                 <field name="booked_uid" readonly="1" class="oe_inline"/> -
@@ -246,6 +247,7 @@
                             <field name="sid_booked" readonly="1"/>
                             <field name="sid_issued" readonly="1"/>
                             <field name="sid_cancel" readonly="1"/>
+                            <field name="payment_acquirer_number_id"/>
                         </group>
                     </group>
                     <separator string="Trip Information"/>
