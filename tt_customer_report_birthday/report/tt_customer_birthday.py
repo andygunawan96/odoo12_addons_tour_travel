@@ -35,7 +35,8 @@ class CustomerRerportBirthday(models.Model):
         else:
             where = """EXTRACT (MONTH FROM customer.birth_date) >= '%s' AND EXTRACT (month FROM customer.birth_date) <= '%s'""" % (month_from, month_to)
         where += """ AND customer.active = True"""
-        where += """ AND customer.agent_id = %s""" % agent_id
+        if agent_id:
+            where += """ AND customer.agent_id = %s""" % agent_id
         return where
 
     @staticmethod
@@ -48,7 +49,10 @@ class CustomerRerportBirthday(models.Model):
         data_form['title'] = 'Birthday Report: ' + data_form['subtitle']
 
     def _lines(self, month_from, month_to, agent_id):
-        query = "SELECT {} FROM {} WHERE {} ORDER BY {}".format(self._select(), self._from(), self._where(month_from, month_to, agent_id), self._order_by())
+        query = "SELECT {} ".format(self._select())
+        query += "FROM {} ".format(self._from())
+        query += "WHERE {} ".format(self._where(month_from, month_to, agent_id))
+        query += "ORDER BY {}".format(self._order_by())
 
         self.env.cr.execute(query)
         _logger.info(query)
