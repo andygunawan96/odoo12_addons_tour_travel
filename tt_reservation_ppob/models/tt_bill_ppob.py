@@ -67,6 +67,7 @@ class TtBillPPOB(models.Model):
             'fine_amount': self.fine_amount and self.fine_amount or 0,
             'kwh_amount': self.kwh_amount and self.kwh_amount or 0,
             'installment': self.installment and self.installment or 0,
+            'total': self.total and self.total or 0,
             'token': self.token and self.token or '',
         }
         return res
