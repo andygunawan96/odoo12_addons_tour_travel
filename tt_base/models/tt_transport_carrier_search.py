@@ -56,7 +56,8 @@ class TransportCarrier(models.Model):
         res.update({
             'display_name': self.name,
             'provider': provider_ids,
-            'is_favorite': self.is_favorite
+            'is_favorite': self.is_favorite,
+            'is_excluded_from_b2c': self.is_excluded_from_b2c
         })
         return res
 
