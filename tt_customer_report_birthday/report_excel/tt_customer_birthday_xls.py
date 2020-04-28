@@ -71,7 +71,7 @@ class CustomerReportBirthday(models.TransientModel):
                 sty_table_data = style.table_data_even
                 sty_date = style.table_data_date_even
 
-            sheet.write(row_data, 0, row_data - 8, sty_table_data)
+            sheet.write(row_data, 0, row_data - 5, sty_table_data)
             sheet.write(row_data, 1, i['customer_birthday'], sty_table_data)
             sheet.write(row_data, 2, months[int(i['customer_birthmonth']) - 1], sty_table_data)
             sheet.write(row_data, 3, i['customer_name'], sty_table_data)
