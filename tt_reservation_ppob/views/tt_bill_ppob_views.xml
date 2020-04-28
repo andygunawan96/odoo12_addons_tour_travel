@@ -29,6 +29,24 @@
                                 <field name="meter_read_date"/>
                             </group>
                         </group>
+                        <separator string="Payment Details"/>
+                        <group>
+                            <group>
+                                <field name="currency_id"/>
+                                <field name="fare_amount"/>
+                                <field name="fine_amount"/>
+                                <field name="admin_fee"/>
+                                <field name="stamp_fee"/>
+                                <field name="incentive"/>
+                                <field name="ppn_tax_amount"/>
+                                <field name="ppj_tax_amount"/>
+                            </group>
+                            <group>
+                                <field name="token"/>
+                                <field name="kwh_amount"/>
+                                <field name="installment"/>
+                            </group>
+                        </group>
                     </sheet>
                 </group>
             </form>

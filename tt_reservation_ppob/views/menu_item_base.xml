@@ -6,7 +6,7 @@
         <!-- PPOB -->
         <menuitem id="top_reservations_ppob"
                   parent="tt_reservation.main_reservations"
-                  name="PPOB"
+                  name="Bills"
                   sequence="100"
                   groups="base.group_user"/>
         
