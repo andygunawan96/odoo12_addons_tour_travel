@@ -210,7 +210,7 @@ class HotelInformation(models.Model):
     def compare_hotel(self):
         compare_id = self.env['tt.hotel.compare'].create({'hotel_id': self.id,})
 
-        base_url = self.env['ir.config_parameter'].get_param('web.base.url')
+        base_url = self.sudo().env['ir.config_parameter'].get_param('web.base.url')
         client_action = {
             'type': 'ir.actions.act_url',
             'target': 'self',
