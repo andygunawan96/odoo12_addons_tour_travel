@@ -17,6 +17,7 @@ class TransportCarrier(models.Model):
     provider_type_id = fields.Many2one('tt.provider.type', 'Provider Type',related="carrier_id.provider_type_id")
     is_default = fields.Boolean("Default Search", help="Usually on ALL")
     is_favorite = fields.Boolean("Favorite Search", help="Will make this search appear on top of the list")
+    is_excluded_from_b2c = fields.Boolean('Excluded From B2C', help='Will Make this search disappear from B2C')
     sequence = fields.Integer("Sequence",default=200)
     dummy_generate_provider_domain = fields.Boolean("Generate Provider")
 
@@ -83,3 +84,6 @@ class TransportCarrier(models.Model):
 
     def toggle_favorite(self):
         self.is_favorite = not self.is_favorite
+
+    def toggle_b2c(self):
+        self.is_excluded_from_b2c = not self.is_excluded_from_b2c

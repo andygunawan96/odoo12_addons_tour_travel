@@ -9,6 +9,11 @@
                 </header>
                 <sheet>
                     <div class="oe_button_box" name="button_box">
+                        <button name="toggle_b2c" type="object" groups="base.group_user"
+                                class="oe_stat_button" icon="fa-ban">
+                            <field name="is_excluded_from_b2c" widget="boolean_button"
+                                   options='{"terminology": "default"}'/>
+                        </button>
                         <button name="toggle_default" type="object" groups="base.group_user"
                                 class="oe_stat_button" icon="fa-copy">
                             <field name="is_default" widget="boolean_button"
@@ -63,11 +68,11 @@
         <field name="name">transport.carrier.view.search</field>
         <field name="model">tt.transport.carrier.search</field>
         <field name="arch" type="xml">
-        <search>
-            <field name="carrier_id"/>
-            <field name="provider_type_id"/>
-            <filter name="inactive" string="Archived" domain="[('active','=',False)]"/>
-        </search>
+            <search>
+                <field name="carrier_id"/>
+                <field name="provider_type_id"/>
+                <filter name="inactive" string="Archived" domain="[('active','=',False)]"/>
+            </search>
         </field>
     </record>
 
