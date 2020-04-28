@@ -52,7 +52,7 @@ class CustomerReportBirthday(models.TransientModel):
             data['form']['agent_id'] = ''
             data['form']['agent_name'] = ''
         else:
-            agent_id = data['form']['agent_id'][0] if 'agent_id' in data['form'] else False
+            agent_id = data['form']['agent_id'][0] if 'agent_id' in data['form'].keys() else False
             if agent_id != self.env.user.agent_id.id and self.env.user.agent_id.agent_type_id.id != self.env.ref(
                     'tt_base.agent_type_ho').id:
                 agent_id = self.env.user.agent_id.id
@@ -90,7 +90,7 @@ class CustomerReportBirthday(models.TransientModel):
         self.ensure_one()
         data = ({
             'model': self.env.context.get('active_model', 'ir.ui.menu'),
-            'form': self.read(['month_from', 'month_to'])[0]
+            'form': self.read(['month_from', 'month_to', 'agent_id', 'all_agent'])[0]
         })
         self._prepare_form(data)
         used_context = self._build_contexts(data)
