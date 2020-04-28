@@ -20,26 +20,60 @@ class TtBillPPOB(models.Model):
     carrier_name = fields.Char('Product Name')
     sequence = fields.Integer('Sequence')
 
-    period = fields.Char('Period')
-    amount_of_month = fields.Integer('Amount of Months')
+    period = fields.Date('Period')
+    amount_of_month = fields.Integer('Amount of Months', default=0)
     period_end_date = fields.Date('Period End Date')
     meter_read_date = fields.Date('Meter Read Date')
     meter_history_ids = fields.One2many('tt.ppob.meter.history', 'bill_ppob_id', 'Meter History')
 
+    currency_id = fields.Many2one('res.currency', default=lambda self: self.env.user.company_id.currency_id.id, string='Currency')
+    admin_fee = fields.Monetary('Admin Fee', default=0)
+    stamp_fee = fields.Monetary('Stamp Fee', default=0)
+    ppn_tax_amount = fields.Monetary('PPN', default=0)
+    ppj_tax_amount = fields.Monetary('PPJ', default=0)
+    incentive = fields.Monetary('Incentive', default=0)
+    fare_amount = fields.Monetary('Fare Amount (for Electricity)', default=0)
+    fine_amount = fields.Monetary('Fine Amount', default=0)
+    kwh_amount = fields.Integer('KWH Amount Upon Payment', default=0)
+    installment = fields.Integer('Installment Amount', default=0)
+    total = fields.Integer('Total', readonly=True, default=0)
+    token = fields.Char('Token Number')
+
     def to_dict(self):
+        history_list = []
+        for rec in self.meter_history_ids:
+            history_list.append({
+                'before_meter': rec.before_meter,
+                'after_meter': rec.after_meter
+            })
         res = {
-            'pnr': self.pnr,
-            'carrier_name': self.carrier_id.name,
-            'carrier_code': self.carrier_code,
-            'provider': self.provider_id.code,
-            'sequence': self.sequence,
+            'pnr': self.pnr and self.pnr or '',
+            'carrier_name': self.carrier_id and self.carrier_id.name or '',
+            'carrier_code': self.carrier_id and self.carrier_id.code or '',
+            'provider': self.provider_id and self.provider_id.code or '',
+            'sequence': self.sequence and self.sequence or 0,
+            'period': self.period and self.period.strftime('%Y%m') or '',
+            'amount_of_month': self.amount_of_month and self.amount_of_month or 0,
+            'period_end_date': self.period_end_date and self.period_end_date.strftime('%Y-%m-%d') or '',
+            'meter_read_date': self.meter_read_date and self.meter_read_date.strftime('%Y-%m-%d') or '',
+            'meter_history': history_list,
+            'currency': self.currency_id and self.currency_id.name or '',
+            'admin_fee': self.admin_fee and self.admin_fee or 0,
+            'stamp_fee': self.stamp_fee and self.stamp_fee or 0,
+            'ppn_tax_amount': self.ppn_tax_amount and self.ppn_tax_amount or 0,
+            'ppj_tax_amount': self.ppj_tax_amount and self.ppj_tax_amount or 0,
+            'incentive': self.incentive and self.incentive or 0,
+            'fare_amount': self.fare_amount and self.fare_amount or 0,
+            'fine_amount': self.fine_amount and self.fine_amount or 0,
+            'kwh_amount': self.kwh_amount and self.kwh_amount or 0,
+            'installment': self.installment and self.installment or 0,
+            'token': self.token and self.token or '',
         }
         return res
 
 
 class TtPPOBMeterHistory(models.Model):
     _name = 'tt.ppob.meter.history'
-    _rec_name = 'carrier_name'
     _description = 'Rodex Model'
 
     before_meter = fields.Integer('Before Meter')
