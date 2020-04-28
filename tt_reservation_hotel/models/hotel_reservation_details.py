@@ -39,6 +39,7 @@ class HotelReservationDetails(models.Model):
     room_info_id = fields.Many2one('tt.room.info', 'Room Info')
     room_rate_id = fields.Many2one('tt.room.rate', 'Room Rate')
     room_name = fields.Char('Room Name')
+    room_vendor_code = fields.Char('Room Code')
     date = fields.Datetime('Date Start')
     date_end = fields.Datetime('Date End')
     room_type = fields.Char('Type')

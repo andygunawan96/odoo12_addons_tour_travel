@@ -642,11 +642,11 @@ class TestSearch(models.Model):
         vals.update({
             'customer_parent_id': customer_parent_id,
             'sid_booked': context['signature'],
-            'sid_issued': context['signature']
         })
         passenger_objs = self.env['tt.reservation.hotel'].create_customer_api(cust_names, context, booker_obj.id, cust_partner_obj.id)  # create passenger
 
-        resv_id = self.env['tt.reservation.hotel'].sudo().create(vals)
+        resv_id = self.env['tt.reservation.hotel'].create(vals)
+        resv_id.hold_date = context.get('hold_date', False)
         # resv_id.write({'passenger_ids': [(6, 0, [rec[0].id for rec in passenger_objs])]})
         for rec in passenger_objs:
             self.env['tt.reservation.passenger.hotel'].create({
@@ -849,6 +849,7 @@ class TestSearch(models.Model):
                 'provider': room.provider_id.code,
                 'date': room.date,
                 'room_name': room.room_info_id and room.room_info_id.name or room.room_name,
+                'room_vendor_code': room.room_vendor_code,
                 'room_type': room.room_type,
                 'room_rate': room.sale_price,
                 'person': room.room_info_id and room.room_info_id.max_guest or 2,
@@ -879,7 +880,13 @@ class TestSearch(models.Model):
             resv_obj = resv_obj[0]
         rooms = self.sudo().prepare_booking_room(resv_obj.room_detail_ids, resv_obj.passenger_ids)
         passengers = self.sudo().prepare_passengers(resv_obj.passenger_ids)
+        bookers = self.sudo().prepare_bookers(resv_obj.booker_id)
         vals = {
+            'adult': resv_obj.adult,
+            'checkin_date': resv_obj.checkin_date,
+            'checkout_date': resv_obj.checkout_date,
+            'child': resv_obj.child,
+            'room_count': resv_obj.room_count,
             'booking_id': resv_obj.id,
             'booking_name': resv_obj.name,
             'os_res_no': resv_obj.name, #resv_obj.number,
@@ -899,12 +906,15 @@ class TestSearch(models.Model):
             'hotel_city_name': resv_obj.hotel_city,
             'hotel_rooms': rooms,
             'passengers': passengers,
-
+            'sid_booked': resv_obj.sid_booked,
+            'uid_booked': self.sudo().env.ref('tt_base.agent_b2c_user').id,
+            'uname_booked': self.sudo().env.ref('tt_base.agent_b2c_user').name,
             'hotel_rating': 0,
             'images': [],
             'cancellation_policy': [],
             'lat': '',
             'long': '',
+            'bookers': bookers,
         }
         return vals
 
@@ -984,8 +994,9 @@ class TestSearch(models.Model):
         resv_obj = self.env['tt.reservation.hotel'].browse(book_id)
         return resv_obj.sudo().action_failed(msg)
 
-    def action_done_hotel_api(self, book_id, issued_res, acq_id, co_uid):
+    def action_done_hotel_api(self, book_id, issued_res, acq_id, co_uid, context):
         resv_obj = self.env['tt.reservation.hotel'].browse(book_id)
+        resv_obj.sid_issued = context['signature']
         if resv_obj.state not in ['issued', 'fail_issued']:
             resv_obj.sudo().action_issued(acq_id, co_uid)
         return resv_obj.sudo().action_done(issued_res)

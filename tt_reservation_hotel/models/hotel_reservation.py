@@ -392,6 +392,26 @@ class HotelReservation(models.Model):
         self.name = self.name == 'New' and self.env['ir.sequence'].next_by_code('tt.reservation.hotel') or self.name
         self.provider_name = self.get_provider_list()
 
+        try:
+            if self.agent_type_id.is_send_email_issued:
+                mail_created = self.env['tt.email.queue'].sudo().search([('res_id', '=', self.id), ('res_model', '=', self._name), ('type', '=', 'booked_hotel')], limit=1)
+                if not mail_created:
+                    temp_data = {
+                        'provider_type': 'hotel',
+                        'order_number': self.name,
+                        'type': 'booked',
+                    }
+                    temp_context = {
+                        'co_agent_id': self.agent_id.id
+                    }
+                    self.env['tt.email.queue'].create_email_queue(temp_data, temp_context)
+                else:
+                    _logger.info('Booked email for {} is already created!'.format(self.name))
+                    raise Exception('Booked email for {} is already created!'.format(self.name))
+        except Exception as e:
+            _logger.info('Error Create Email Queue')
+
+
     @api.one
     def action_booked(self):
         self.state = 'booked'
@@ -825,6 +845,16 @@ class HotelReservation(models.Model):
         else:
             return True
 
+    def test_payment_hotel_b2c(self):
+        book_obj = self
+        #login gateway, payment
+        req = {
+            'order_number': book_obj.name,
+            'user_id': book_obj.booked_uid.id,
+            'provider_type': 'hotel'
+        }
+        res = self.env['tt.payment.api.con'].send_payment(req)
+        #tutup payment acq number
 
 class ServiceCharge(models.Model):
     _inherit = "tt.service.charge"
