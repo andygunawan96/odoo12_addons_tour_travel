@@ -249,10 +249,15 @@ class ReservationPpob(models.Model):
             for rec in resv_obj.provider_booking_ids:
                 bill_list = []
                 for rec2 in rec.ppob_bill_ids:
+                    temp_carrier_code = rec2.carrier_id and rec2.carrier_id.code or ''
+                    if int(temp_carrier_code) == 522:
+                        temp_total = data.get('total', 0)
+                    else:
+                        temp_total = rec2.total and rec2.total or 0
                     bill_list.append({
-                        'carrier_code': rec2.carrier_id and rec2.carrier_id.code or '',
+                        'carrier_code': temp_carrier_code,
                         'period': rec2.period and rec2.period.strftime('%Y%m') or '',
-                        'total': rec2.total and rec2.total or 0
+                        'total': temp_total
                     })
 
                 provider_list.append({
