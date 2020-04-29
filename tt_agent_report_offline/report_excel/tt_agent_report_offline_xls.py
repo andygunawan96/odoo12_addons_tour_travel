@@ -107,30 +107,33 @@ class AgentReportOfflineXls(models.TransientModel):
                 sheet.write(row_data, 1, datetime.strptime(i['create_date'], "%Y-%m-%d %H:%M:%S") if i['create_date'] else '', sty_date)
                 sheet.write(row_data, 2, i['ro_name'], sty_table_data)
                 sheet.write(row_data, 3, i['agent_name'], sty_table_data)
-                sheet.write(row_data, 4, i['customer_first_name'] + ' ' + i['customer_last_name'], sty_table_data)
+                sheet.write(row_data, 4, (i['customer_first_name'] if i['customer_first_name'] else '') + ' ' +
+                            (i['customer_last_name'] if i['customer_last_name'] else ''), sty_table_data)
                 sheet.write(row_data, 5, i['provider_type_name'] + ' - ' + i['ro_offline_provider_type'], sty_table_data)
                 if values['data_form']['provider_type'] == 'airline':
-                    sheet.write(row_data, 6, i['provider_name'] + '/' + i['carrier_name'], sty_table_data)
+                    sheet.write(row_data, 6, (i['provider_name'] if i['provider_name'] else '') + '/' +
+                                (i['carrier_name'] if i['carrier_name'] else ''), sty_table_data)
                 else:
-                    sheet.write(row_data, 6, i['provider_name'], sty_table_data)
-                sheet.write(row_data, 7, i['start_point'] + ' - ' + i['end_point'], sty_table_data)
-                sheet.write(row_data, 8, i['ro_pnr'], sty_table_data)
-                sheet.write(row_data, 9, i['ro_description'], sty_table_data)
+                    sheet.write(row_data, 6, (i['provider_name'] if i['provider_name'] else ''), sty_table_data)
+                sheet.write(row_data, 7, (i['start_point'] if i['start_point'] else '') + ' - ' +
+                            (i['end_point'] if i['end_point'] else ''), sty_table_data)
+                sheet.write(row_data, 8, (i['ro_pnr'] if i['ro_pnr'] else ''), sty_table_data)
+                sheet.write(row_data, 9, (i['ro_description'] if i['ro_description'] else ''), sty_table_data)
                 if i['ro_confirm_date']:  # Confirm Date
                     sheet.write(row_data, 10, i['ro_confirm_date'], sty_datetime)
                 else:
                     sheet.write(row_data, 10, '', sty_datetime)
-                sheet.write(row_data, 11, i['confirm_name'], sty_table_data)
+                sheet.write(row_data, 11, (i['confirm_name'] if i['confirm_name'] else ''), sty_table_data)
                 if i['ro_issued_date']:  # Issued Date
                     sheet.write(row_data, 12, i['ro_issued_date'], sty_datetime)
                 else:
                     sheet.write(row_data, 12, '', sty_datetime)
-                sheet.write(row_data, 13, i['issuer_name'], sty_table_data)
-                sheet.write(row_data, 14, i['ro_total'], sty_amount)
-                sheet.write(row_data, 15, i['ro_total_commission'], sty_amount)
+                sheet.write(row_data, 13, (i['issuer_name'] if i['issuer_name'] else ''), sty_table_data)
+                sheet.write(row_data, 14, (i['ro_total'] if i['ro_total'] else ''), sty_amount)
+                sheet.write(row_data, 15, (i['ro_total_commission'] if i['ro_total_commission'] else ''), sty_amount)
                 # sheet.write(row_data, 15, '', sty_amount)
-                sheet.write(row_data, 16, i['ro_total_nta'], sty_amount)
-                sheet.write(row_data, 17, i['ro_state'], sty_table_data_center)
+                sheet.write(row_data, 16, (i['ro_total_nta'] if i['ro_total_nta'] else ''), sty_amount)
+                sheet.write(row_data, 17, (i['ro_state'] if i['ro_state'] else ''), sty_table_data_center)
                 sheet.set_row(row_data, row_height)
 
         else:
@@ -156,10 +159,10 @@ class AgentReportOfflineXls(models.TransientModel):
                 sheet.write(row_data, 3, i['agent_name'], sty_table_data)
                 sheet.write(row_data, 4, (i['customer_first_name'] if i['customer_first_name'] else '') + ' ' +
                             (i['customer_last_name'] if i['customer_last_name'] else ''), sty_table_data)
-                sheet.write(row_data, 5, i['provider_type_name'], sty_table_data)
-                sheet.write(row_data, 6, i['provider_name'], sty_table_data)
-                sheet.write(row_data, 7, i['ro_pnr'], sty_table_data)
-                sheet.write(row_data, 8, i['ro_description'], sty_table_data)
+                sheet.write(row_data, 5, (i['provider_type_name'] if i['provider_type_name'] else ''), sty_table_data)
+                sheet.write(row_data, 6, (i['provider_name'] if i['provider_name'] else ''), sty_table_data)
+                sheet.write(row_data, 7, (i['ro_pnr'] if i['ro_pnr'] else ''), sty_table_data)
+                sheet.write(row_data, 8, (i['ro_description'] if i['ro_description'] else ''), sty_table_data)
                 if i['ro_confirm_date']:  # Confirm Date
                     sheet.write(row_data, 9, i['ro_confirm_date'], sty_datetime)
                 else:
@@ -169,12 +172,12 @@ class AgentReportOfflineXls(models.TransientModel):
                     sheet.write(row_data, 11, i['ro_issued_date'], sty_datetime)
                 else:
                     sheet.write(row_data, 11, '', sty_datetime)
-                sheet.write(row_data, 12, i['issuer_name'], sty_table_data)
-                sheet.write(row_data, 13, i['ro_total'], sty_amount)
-                sheet.write(row_data, 14, i['ro_total_commission'], sty_amount)
+                sheet.write(row_data, 12, (i['issuer_name'] if i['issuer_name'] else ''), sty_table_data)
+                sheet.write(row_data, 13, (i['ro_total'] if i['ro_total'] else ''), sty_amount)
+                sheet.write(row_data, 14, (i['ro_total_commission'] if i['ro_total_commission'] else ''), sty_amount)
                 # sheet.write(row_data, 14, '', sty_amount)
-                sheet.write(row_data, 15, i['ro_total_nta'], sty_amount)
-                sheet.write(row_data, 16, i['ro_state'], sty_table_data_center)
+                sheet.write(row_data, 15, (i['ro_total_nta'] if i['ro_total_nta'] else ''), sty_amount)
+                sheet.write(row_data, 16, (i['ro_state'] if i['ro_state'] else ''), sty_table_data_center)
                 sheet.set_row(row_data, row_height)
         workbook.close()
 
