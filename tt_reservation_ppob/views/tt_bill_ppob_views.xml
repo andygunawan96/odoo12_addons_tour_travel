@@ -4,51 +4,49 @@
         <field name="name">tt.bill.ppob.form.view</field>
         <field name="model">tt.bill.ppob</field>
         <field name="arch" type="xml">
-            <form string="">
-                <group>
-                    <header>
+            <form>
+                <header>
 
-                    </header>
-                    <sheet>
-                        <div class="oe_title">
-                            <h1>
-                                <field name="carrier_name"/>
-                            </h1>
-                        </div>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <h1>
+                            <field name="carrier_name"/>
+                        </h1>
+                    </div>
+                    <group>
                         <group>
-                            <group>
-                                <field name="carrier_id"/>
-                                <field name="carrier_code"/>
-                                <field name="pnr"/>
-                                <field name="provider_id"/>
-                            </group>
-                            <group>
-                                <field name="period"/>
-                                <field name="amount_of_month"/>
-                                <field name="period_end_date"/>
-                                <field name="meter_read_date"/>
-                            </group>
+                            <field name="carrier_id"/>
+                            <field name="carrier_code"/>
+                            <field name="pnr"/>
+                            <field name="provider_id"/>
                         </group>
-                        <separator string="Payment Details"/>
                         <group>
-                            <group>
-                                <field name="currency_id"/>
-                                <field name="fare_amount"/>
-                                <field name="fine_amount"/>
-                                <field name="admin_fee"/>
-                                <field name="stamp_fee"/>
-                                <field name="incentive"/>
-                                <field name="ppn_tax_amount"/>
-                                <field name="ppj_tax_amount"/>
-                            </group>
-                            <group>
-                                <field name="token"/>
-                                <field name="kwh_amount"/>
-                                <field name="installment"/>
-                            </group>
+                            <field name="period"/>
+                            <field name="amount_of_month"/>
+                            <field name="period_end_date"/>
+                            <field name="meter_read_date"/>
                         </group>
-                    </sheet>
-                </group>
+                    </group>
+                    <separator string="Payment Details"/>
+                    <group>
+                        <group>
+                            <field name="currency_id"/>
+                            <field name="fare_amount"/>
+                            <field name="fine_amount"/>
+                            <field name="admin_fee"/>
+                            <field name="stamp_fee"/>
+                            <field name="incentive"/>
+                            <field name="ppn_tax_amount"/>
+                            <field name="ppj_tax_amount"/>
+                        </group>
+                        <group>
+                            <field name="token"/>
+                            <field name="kwh_amount"/>
+                            <field name="installment"/>
+                        </group>
+                    </group>
+                </sheet>
             </form>
         </field>
     </record>
