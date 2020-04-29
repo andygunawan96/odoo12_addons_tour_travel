@@ -4,7 +4,7 @@ STATE = [
     ('all', 'All'),
     ('booked', 'Booked'),
     ('issued', 'Issued'),
-    ('expired', 'Expired'),
+    ('cancel2', 'Expired'),
     ('issue-expired', 'Issue and Expired'),
     ('others', 'Others')
 ]

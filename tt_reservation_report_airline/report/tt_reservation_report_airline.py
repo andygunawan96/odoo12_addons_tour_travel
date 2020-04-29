@@ -55,7 +55,9 @@ class ReservationReportAirline(models.Model):
     @staticmethod
     def _where(date_from, date_to, agent_id, state):
         where = """airline.create_date >= '%s' and airline.create_date <= '%s'""" % (date_from, date_to)
-        if state != 'all':
+        if state == 'issue-expired':
+            where += """ AND airline.state = 'issued' OR airline.state = 'cancel2'"""
+        elif state != 'all':
             where += """ AND airline.state = '%s'""" %(state)
         return where
 
