@@ -52,14 +52,46 @@
                     </group>
                     <group string="Inquiry Info">
                         <group>
+                            <field name="session_id"/>
                             <field name="customer_number"/>
+                            <field name="customer_name"/>
+                            <field name="customer_id_number"/>
+                            <field name="power"/>
+                            <field name="is_family"/>
+                            <field name="meter_number"/>
+                            <field name="max_kwh"/>
+                            <field name="transaction_code"/>
+                            <field name="transaction_name"/>
+                            <field name="distribution_code"/>
                         </group>
                         <group>
-
+                            <field name="registration_number"/>
+                            <field name="registration_date"/>
+                            <field name="unit_code"/>
+                            <field name="unit_name"/>
+                            <field name="unit_phone_number"/>
+                            <field name="unit_address"/>
                         </group>
                     </group>
                     <separator string="Bills"/>
                     <field name="ppob_bill_ids"/>
+                    <separator string="Allowed Denominations"/>
+                    <field name="allowed_denomination_ids">
+                        <form>
+                            <group>
+                                <group>
+                                    <field name="currency_id"/>
+                                </group>
+                                <group>
+                                    <field name="nominal"/>
+                                </group>
+                            </group>
+                        </form>
+                        <tree>
+                            <field name="currency_id"/>
+                            <field name="nominal"/>
+                        </tree>
+                    </field>
                     <separator string="Service Charges"/>
                     <field name="cost_service_charge_ids" context="{'form_view_ref':'tt_reservation_ppob.tt_service_charge_ppob_inherit_form_view'}">
                         <tree>
@@ -96,11 +128,9 @@
             <tree>
                 <field name="pnr"/>
                 <field name="provider_id" groups="tt_base.group_tt_tour_travel_operator"/>
-                <field name="origin_id"/>
-                <field name="destination_id"/>
-                <field name="departure_date"/>
-                <field name="arrival_date"/>
-                <!--<field name="total"/>-->
+                <field name="session_id"/>
+                <field name="customer_number"/>
+                <field name="customer_name"/>
                 <field name="state"/>
             </tree>
         </field>

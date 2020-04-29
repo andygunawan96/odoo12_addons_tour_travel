@@ -532,6 +532,7 @@
             <field name="carrier_id" ref="tt_reservation_airline.tt_transport_carrier_airline_ak"/>
             <field name="is_default" eval="True"/>
             <field name="is_favorite" eval="False"/>
+            <field name="is_excluded_from_b2c" eval="True"/>
             <field name="sequence">151</field>
             <field name="provider_ids" eval="[
                 (4, ref('tt_reservation_airline.tt_provider_airline_airasia'))

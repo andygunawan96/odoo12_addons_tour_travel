@@ -198,6 +198,7 @@
                     <!-- Remove latter -->
 <!--                    <button string="Calc Passenger Data" groups="base.group_no_one" name="action_calc_passenger_data" type="object"/>-->
 <!--                    <button string="Calc PNR + Provider" groups="base.group_no_one" name="action_calc_pnr" type="object"/>-->
+<!--                    <button string="Test Payment B2C" groups="base.group_no_one" name="test_payment_hotel_b2c" type="object"/>-->
 
                     <!--<field name="state" widget="statusbar" statusbar_visible="draft,confirm,issued,done" clickable='1' groups="tt_base.group_no_one"/>-->
                     <field name="state" widget="statusbar" statusbar_visible="draft,confirm,issued"/>

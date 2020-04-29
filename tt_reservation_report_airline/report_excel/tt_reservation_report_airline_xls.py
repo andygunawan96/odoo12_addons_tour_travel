@@ -91,7 +91,10 @@ class ReservationReportAirlineXls(models.TransientModel):
                 #print the title
                 sheet.write(row_data, 0, counter, sty_table_data_center)
                 sheet.write(row_data, 1, i['airline_number'], sty_table_data)
-                sheet.write(row_data, 2, i['airline_state'], sty_table_data)
+                if i['airline_state'] == 'cancel2':
+                    sheet.write(row_data, 2, 'expired', sty_table_data)
+                else:
+                    sheet.write(row_data, 2, i['airline_state'], sty_table_data)
                 sheet.write(row_data, 3, i['airline_issued_date'], sty_date)
                 sheet.write(row_data, 4, i['booker_name'], sty_table_data)
                 sheet.write(row_data, 5, i['adult'], sty_amount)

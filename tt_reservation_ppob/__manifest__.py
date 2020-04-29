@@ -15,9 +15,17 @@ TT_TRANSPORT
     'data': [
         'security/ir.model.access.csv',
         'security/ir_rule_data.xml',
+        'data/ir_sequence_data.xml',
         'data/tt_provider_type_data.xml',
         'data/tt_provider_ppob_data.xml',
-        'data/tt_transport_carrier_ppob_data.xml'
+        'data/tt_transport_carrier_ppob_data.xml',
+        'wizard/force_issued_wizard_views.xml',
+        'views/menu_item_base.xml',
+        'views/tt_bill_ppob_views.xml',
+        'views/tt_provider_views.xml',
+        'views/tt_reservation_passenger_ppob.xml',
+        'views/tt_service_charge_views.xml',
+        'views/tt_reservation_ppob.xml'
     ],
     'demo': [],
     'qweb': [],

@@ -12,8 +12,6 @@
                 context="{
                     'form_view_ref': 'tt_reservation_ppob.tt_service_charge_ppob_inherit_form_view'
                 }"/>
-                <separator string="SSR"/>
-                <field name="fee_ids"/>
                 <separator string="Channel Repricing"/>
                 <field name="channel_service_charge_ids"/>
             </xpath>

@@ -17,7 +17,7 @@ class TtProviderPPOB(models.Model):
     pnr2 = fields.Char('PNR2')
     provider_id = fields.Many2one('tt.provider','Provider')
     state = fields.Selection(variables.BOOKING_STATE, 'Status', default='draft')
-    booking_id = fields.Many2one('tt.reservation.airline', 'Order Number', ondelete='cascade')
+    booking_id = fields.Many2one('tt.reservation.ppob', 'Order Number', ondelete='cascade')
     sequence = fields.Integer('Sequence')
     balance_due = fields.Float('Balance Due')
     session_id = fields.Char('Session ID', readonly=True, states={'draft': [('readonly', False)]})
@@ -37,12 +37,13 @@ class TtProviderPPOB(models.Model):
     meter_number = fields.Char('Meter Number', readonly=True, states={'draft': [('readonly', False)]})
     distribution_code = fields.Char('Distribution Code', readonly=True, states={'draft': [('readonly', False)]})
     max_kwh = fields.Integer('Max KWH', readonly=True, states={'draft': [('readonly', False)]})
+    payment_message = fields.Text('Payment Message', readonly=True)
     allowed_denomination_ids = fields.Many2many('tt.master.nominal.ppob', 'reservation_ppob_nominal_rel', 'booking_id',
                                                 'nominal_id', string='Allowed Denominations', readonly=True,
                                                 states={'draft': [('readonly', False)]})
     ppob_bill_ids = fields.One2many('tt.bill.ppob', 'booking_id', string='Bills', readonly=True,
                                     states={'draft': [('readonly', False)]})
-    cost_service_charge_ids = fields.One2many('tt.service.charge', 'provider_airline_booking_id', 'Cost Service Charges')
+    cost_service_charge_ids = fields.One2many('tt.service.charge', 'provider_ppob_booking_id', 'Cost Service Charges')
 
     currency_id = fields.Many2one('res.currency', 'Currency', readonly=True, states={'draft': [('readonly', False)]},
                                   default=lambda self: self.env.user.company_id.currency_id)
@@ -61,8 +62,8 @@ class TtProviderPPOB(models.Model):
     #
     # is_ledger_created = fields.Boolean('Ledger Created', default=False, readonly=True, states={'draft': [('readonly', False)]})
 
-    error_history_ids = fields.One2many('tt.reservation.err.history','res_id','Error History', domain=[('res_model','=','tt.provider.airline')])
-    # , domain = [('res_model', '=', 'tt.provider.airline')]
+    error_history_ids = fields.One2many('tt.reservation.err.history','res_id','Error History', domain=[('res_model','=','tt.provider.ppob')])
+    # , domain = [('res_model', '=', 'tt.provider.ppob')]
 
     ##button function
     def action_set_to_issued_from_button(self, payment_data={}):
@@ -94,7 +95,7 @@ class TtProviderPPOB(models.Model):
             'co_agent_type_id': self.booking_id.agent_type_id.id,
             'co_uid': self.env.user.id
         }
-        payment_res = self.booking_id.payment_reservation_api('airline',req,context)
+        payment_res = self.booking_id.payment_reservation_api('ppob',req,context)
         if payment_res['error_code'] != 0:
             raise UserError(payment_res['error_msg'])
 
@@ -178,7 +179,7 @@ class TtProviderPPOB(models.Model):
                 'balance_due': 0
             })
 
-    def action_cancel_api_airline(self,context):
+    def action_cancel_api_ppob(self,context):
         for rec in self:
             rec.write({
                 'state': 'cancel',
@@ -228,96 +229,28 @@ class TtProviderPPOB(models.Model):
         self.cancel_uid = self.env.user.id
         self.state = 'cancel'
 
-    def action_refund(self, check_provider_state=False):
-        self.state = 'refund'
-        if check_provider_state:
-            self.booking_id.check_provider_state({'co_uid': self.env.user.id})
-
-    def create_ticket_api(self,passengers,pnr=""):
-        ticket_list = []
-        ticket_not_found = []
-
-        #################
-        for passenger in self.booking_id.passenger_ids:
-            passenger.is_ticketed = False
-        #################
-
-        for psg in passengers:
-            psg_obj = self.booking_id.passenger_ids.filtered(lambda x: x.name.replace(' ', '').lower() ==
-                                                                ('%s%s' % (psg.get('first_name', ''),
-                                                                           psg.get('last_name', ''))).lower().replace(' ',''))
-
-            if not psg_obj:
-                psg_obj = self.booking_id.passenger_ids.filtered(lambda x: x.name.replace(' ', '').lower()*2 ==
-                                                                           ('%s%s' % (psg.get('first_name', ''),
-                                                                                      psg.get('last_name',
-                                                                                              ''))).lower().replace(' ',''))
-
-            if psg_obj:
-                _logger.info(json.dumps(psg_obj.ids))
-                if len(psg_obj.ids) > 1:
-                    for psg_o in psg_obj:
-                        if not psg_o.is_ticketed:
-                            psg_obj = psg_o
-                            break
-
-                _logger.info(str(psg_obj))
-                ticket_list.append((0, 0, {
-                    'pax_type': psg.get('pax_type'),
-                    'ticket_number': psg.get('ticket_number'),
-                    'passenger_id': psg_obj.id
-                }))
-                psg_obj.is_ticketed = True
-                psg_obj.create_ssr(psg['fees'],pnr,self.id)
-            else:
-                _logger.info("psg not found :" + json.dumps(psg))
-                _logger.info("psg info: %s " % (
-                    ','.join([rec.name.replace(' ', '').lower() for rec in self.booking_id.passenger_ids])
-                ))
-                ticket_not_found.append(psg)
-
-        psg_with_no_ticket = self.booking_id.passenger_ids.filtered(lambda x: x.is_ticketed == False)
-        for idx, psg in enumerate(ticket_not_found):
-            if idx >= len(psg_with_no_ticket):
-                ticket_list.append((0, 0, {
-                    'pax_type': psg.get('pax_type'),
-                    'ticket_number': psg.get('ticket_number'),
-                }))
-            else:
-                ticket_list.append((0, 0, {
-                    'pax_type': psg.get('pax_type'),
-                    'ticket_number': psg.get('ticket_number'),
-                    'passenger_id': psg_with_no_ticket[idx].id
-                }))
-                psg_with_no_ticket[idx].is_ticketed = True
-
-        self.write({
-            'ticket_ids': ticket_list
-        })
-
-    def update_ticket_api(self,passengers):##isi ticket number
-        ticket_not_found = []
-        for psg in passengers:
-            ticket_found = False
-            for ticket in self.ticket_ids:
-                psg_name = ticket.passenger_id.name.replace(' ','').lower()
-                if ('%s%s' % (psg['first_name'], psg['last_name'])).replace(' ','').lower() in [psg_name, psg_name*2] and not ticket.ticket_number or ticket.ticket_number == psg.get('ticket_number'):
-                    ticket.write({
-                        'ticket_number': psg.get('ticket_number','')
-                    })
-                    ticket_found = True
-                    ticket.passenger_id.is_ticketed = True
-                    break
-            if not ticket_found:
-                ticket_not_found.append(psg)
-
-        for psg in ticket_not_found:
-            self.write({
-                'ticket_ids': [(0,0,{
-                    'ticket_number': psg.get('ticket_number'),
-                    'pax_type': psg.get('pax_type'),
-                })]
+    def update_status_api_ppob(self, data, context):
+        for rec in self:
+            rec.sudo().write({
+                'pnr': data['pnr'],
+                'payment_message': data['message'],
             })
+            if data.get('bill_data'):
+                for rec2 in data['bill_data']:
+                    bill_obj = self.env['tt.bill.ppob'].sudo().search([('provider_booking_id', '=', int(rec.id)), ('period', '=', datetime.strptime(rec2['period'], '%Y%m'))], limit=1)
+                    if bill_obj:
+                        bill_obj[0].sudo().write({
+                            'admin_fee': rec2.get('admin_fee') and rec2['admin_fee'] or 0,
+                            'stamp_fee': rec2.get('stamp_fee') and rec2['stamp_fee'] or 0,
+                            'ppn_tax_amount': rec2.get('ppn_tax_amount') and rec2['ppn_tax_amount'] or 0,
+                            'ppj_tax_amount': rec2.get('ppj_tax_amount') and rec2['ppj_tax_amount'] or 0,
+                            'installment': rec2.get('installment') and rec2['installment'] or 0,
+                            'fare_amount': rec2.get('fare_amount') and rec2['fare_amount'] or 0,
+                            'kwh_amount': rec2.get('kwh_amount') and rec2['kwh_amount'] or 0,
+                            'token': rec2.get('token') and rec2['token'] or '',
+                        })
+
+            rec.action_issued_api_ppob(context)
 
     def create_service_charge(self, service_charge_vals):
         service_chg_obj = self.env['tt.service.charge']
@@ -384,12 +317,9 @@ class TtProviderPPOB(models.Model):
         #     raise UserError("Cannot create ledger, ledger has been created before.")
 
     def to_dict(self):
-        journey_list = []
-        for rec in self.journey_ids:
-            journey_list.append(rec.to_dict())
-        ticket_list = []
-        for rec in self.ticket_ids:
-            ticket_list.append(rec.to_dict())
+        bill_list = []
+        for rec in self.ppob_bill_ids:
+            bill_list.append(rec.to_dict())
 
         service_charges = []
         for rec in self.cost_service_charge_ids:
@@ -397,36 +327,44 @@ class TtProviderPPOB(models.Model):
                 continue
             service_charges.append(rec.to_dict())
 
+        allowed_denominations = []
+        for rec in self.allowed_denomination_ids:
+            allowed_denominations.append({
+                'currency': rec.currency_id.name,
+                'nominal': rec.nominal,
+            })
+
         res = {
             'pnr': self.pnr and self.pnr or '',
             'pnr2': self.pnr2 and self.pnr2 or '',
-            'provider': self.provider_id.code,
+            'provider': self.provider_id and self.provider_id.code or '',
             'provider_id': self.id,
-            'state': self.state,
-            'state_description': variables.BOOKING_STATE_STR[self.state],
-            'sequence': self.sequence,
-            'balance_due': self.balance_due,
-            'origin': self.origin_id.code,
-            'destination': self.destination_id.code,
-            'departure_date': self.departure_date,
-            'arrival_date': self.arrival_date,
-            'journeys': journey_list,
-            'currency': self.currency_id.name,
-            'hold_date': self.hold_date and self.hold_date or '',
-            'tickets': ticket_list,
+            'balance_due': self.balance_due and self.balance_due or 0,
+            'bill_data': bill_list,
+            'currency': self.currency_id and self.currency_id.name or '',
             'error_msg': self.error_history_ids and self.error_history_ids[-1].error_msg or '',
             'service_charges': service_charges,
+            'max_kwh': self.max_kwh and self.max_kwh or 0,
+            'customer_number': self.customer_number and self.customer_number or '',
+            'customer_name': self.customer_name and self.customer_name or '',
+            'customer_id_number': self.customer_id_number and self.customer_id_number or '',
+            'unit_code': self.unit_code and self.unit_code or '',
+            'unit_name': self.unit_name and self.unit_name or '',
+            'unit_phone_number': self.unit_phone_number and self.unit_phone_number or '',
+            'unit_address': self.unit_address and self.unit_address or '',
+            'power': self.power and self.power or 0,
+            'is_family': self.is_family and self.is_family or False,
+            'registration_number': self.registration_number and self.registration_number or '',
+            'registration_date': self.registration_date and self.registration_date.strftime('%Y-%m-%d') or '',
+            'transaction_code': self.transaction_code and self.transaction_code or '',
+            'transaction_name': self.transaction_name and self.transaction_name or '',
+            'meter_number': self.meter_number and self.meter_number or '',
+            'distribution_code': self.distribution_code and self.distribution_code or '',
+            'session_id': self.session_id and self.session_id or '',
+            'allowed_denominations': allowed_denominations,
         }
 
         return res
-
-    def get_carrier_name(self):
-        carrier_names = set([])
-        for journey in self.journey_ids:
-            for segment in journey.segment_ids:
-                if segment.carrier_id:
-                    carrier_names.add(segment.carrier_id.name)
-        return carrier_names
 
     # def get_cost_service_charges(self):
     #     sc_value = {}

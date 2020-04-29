@@ -71,9 +71,15 @@ class ReservationHotel(models.Model):
             })
 
         ##membuat payment dalam draft
+        if acquirer_id:
+            # B2B
+            acquirer_obj = self.env['payment.acquirer'].search([('seq_id', '=', acquirer_id['seq_id'])], limit=1)
+        else:
+            # B2C
+            acquirer_obj = self.payment_acquirer_number_id.payment_acquirer_id
         payment_obj = self.env['tt.payment'].create({
             'agent_id': self.agent_id.id,
-            'acquirer_id': self.env['payment.acquirer'].search([('seq_id', '=', acquirer_id['seq_id'])], limit=1).id,
+            'acquirer_id': acquirer_obj.id,
             'real_total_amount': invoice_id.grand_total,
             'customer_parent_id': self.customer_parent_id.id,
             'confirm_uid': co_uid,
