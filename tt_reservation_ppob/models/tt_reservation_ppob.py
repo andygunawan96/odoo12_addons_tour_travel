@@ -519,3 +519,57 @@ class ReservationPpob(models.Model):
         except Exception as e:
             _logger.error(traceback.format_exc())
             return ERR.get_error(1005)
+
+    def print_eticket(self, data, ctx=None):
+        # jika panggil dari backend
+        if 'order_number' not in data:
+            data['order_number'] = self.name
+        if 'provider_type' not in data:
+            data['provider_type'] = self.provider_type_id.name
+
+        book_obj = self.env['tt.reservation.ppob'].search([('name', '=', data['order_number'])], limit=1)
+        datas = {'ids': book_obj.env.context.get('active_ids', [])}
+        # res = self.read(['price_list', 'qty1', 'qty2', 'qty3', 'qty4', 'qty5'])
+        res = book_obj.read()
+        res = res and res[0] or {}
+        datas['form'] = res
+        ppob_ticket_id = book_obj.env.ref('tt_report_common.action_report_printout_reservation_ppob')
+
+        if not book_obj.printout_ticket_id:
+            if book_obj.agent_id:
+                co_agent_id = book_obj.agent_id.id
+            else:
+                co_agent_id = self.env.user.agent_id.id
+
+            if book_obj.user_id:
+                co_uid = book_obj.user_id.id
+            else:
+                co_uid = self.env.user.id
+
+            pdf_report = ppob_ticket_id.report_action(book_obj, data=datas)
+            pdf_report['context'].update({
+                'active_model': book_obj._name,
+                'active_id': book_obj.id
+            })
+            pdf_report_bytes = ppob_ticket_id.render_qweb_pdf(data=pdf_report)
+            res = book_obj.env['tt.upload.center.wizard'].upload_file_api(
+                {
+                    'filename': 'PPOB Bills %s.pdf' % book_obj.name,
+                    'file_reference': 'PPOB Bills',
+                    'file': base64.b64encode(pdf_report_bytes[0]),
+                    'delete_date': datetime.today() + timedelta(minutes=10)
+                },
+                {
+                    'co_agent_id': co_agent_id,
+                    'co_uid': co_uid
+                }
+            )
+            upc_id = book_obj.env['tt.upload.center'].search([('seq_id', '=', res['response']['seq_id'])], limit=1)
+            book_obj.printout_ticket_id = upc_id.id
+        url = {
+            'type': 'ir.actions.act_url',
+            'name': "ZZZ",
+            'target': 'new',
+            'url': book_obj.printout_ticket_id.url,
+        }
+        return url

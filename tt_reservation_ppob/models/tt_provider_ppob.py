@@ -10,7 +10,7 @@ _logger = logging.getLogger(__name__)
 class TtProviderPPOB(models.Model):
     _name = 'tt.provider.ppob'
     _rec_name = 'pnr'
-    _order = 'departure_date'
+    # _order = 'departure_date'
     _description = 'Rodex Model'
 
     pnr = fields.Char('PNR')
