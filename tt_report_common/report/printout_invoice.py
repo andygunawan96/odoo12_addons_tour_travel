@@ -189,6 +189,34 @@ class PrintoutVoucherHotelForm(models.AbstractModel):
         return vals
 
 
+class PrintoutPPOBBillsForm(models.AbstractModel):
+    _name = 'report.tt_report_common.printout_ppob_bills'
+    _description = 'Rodex Model'
+
+    @api.model
+    def _get_report_values(self, docids, data=None):
+        if not data.get('context'):
+            # internal_model_id = docids.pop(0)
+            data['context'] = {}
+            data['context']['active_model'] = 'tt.reservation.hotel'
+            data['context']['active_ids'] = docids
+        values = {}
+        # Get line values
+        for rec in self.env[data['context']['active_model']].browse(data['context']['active_ids']):
+            values[rec.id] = []
+            a = {}
+        vals = {
+            'doc_ids': data['context']['active_ids'],
+            'doc_model': data['context']['active_model'],
+            'docs': self.env[data['context']['active_model']].browse(data['context']['active_ids']),
+            'price_lines': values,
+            'date_now': fields.Date.today().strftime('%d %b %Y'),
+            'base_color': self.sudo().env['ir.config_parameter'].get_param('tt_base.website_default_color',
+                                                                           default='#FFFFFF'),
+        }
+        return vals
+
+
 class PrintoutInvoiceHO(models.AbstractModel):
     _name = 'report.tt_report_common.printout_invoice_ho'
     _description = 'Rodex Model'
