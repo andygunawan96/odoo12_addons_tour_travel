@@ -421,6 +421,9 @@ class IssuedOffline(models.Model):
                     #     'transaction_type': self.provider_type_id_name,
                     #     'description': rec.description
                     # })
+            for provider in self.provider_booking_ids:
+                for scs in provider.cost_service_charge_ids:
+                    scs.is_ledger_created = False
             self.state = 'cancel'
             self.state_offline = 'cancel'
             self.cancel_date = fields.Datetime.now()
@@ -482,6 +485,9 @@ class IssuedOffline(models.Model):
         for provider in self.provider_booking_ids:
             provider.issued_date = self.issued_date
             provider.issued_uid = self.issued_uid
+
+            for scs in provider.cost_service_charge_ids:
+                scs.is_ledger_created = True
         try:
             self.env['tt.offline.api.con'].send_approve_notification(self.name, self.env.user.name,
                                                                      self.get_total_amount())
@@ -518,6 +524,11 @@ class IssuedOffline(models.Model):
             raise UserError(_('Offline has been validated. You cannot go back to Sent. Please refresh the page.'))
         if self.state_offline == 'done':
             raise UserError(_('Offline has been done. You cannot go back to Sent. Please refresh the page.'))
+        for provider in self.provider_booking_ids:
+            for scs in provider.cost_service_charge_ids:
+                if scs.is_ledger_created is True:
+                    raise UserError('Error. Ledger created is True')
+                scs.unlink()
         self.state_offline = 'sent'
         self.sent_date = fields.Datetime.now()
         self.sent_uid = self.env.user.id
