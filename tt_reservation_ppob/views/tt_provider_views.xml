@@ -56,6 +56,7 @@
                             <field name="customer_number"/>
                             <field name="customer_name"/>
                             <field name="customer_id_number"/>
+                            <field name="fare_type"/>
                             <field name="power"/>
                             <field name="is_family"/>
                             <field name="meter_number"/>
@@ -63,6 +64,7 @@
                             <field name="transaction_code"/>
                             <field name="transaction_name"/>
                             <field name="distribution_code"/>
+                            <field name="unpaid_bill"/>
                         </group>
                         <group>
                             <field name="registration_number"/>
@@ -75,6 +77,29 @@
                     </group>
                     <separator string="Bills"/>
                     <field name="ppob_bill_ids"/>
+                    <separator string="Bill Details"/>
+                    <field name="ppob_bill_detail_ids">
+                        <form>
+                            <group>
+                                <group>
+                                    <field name="customer_number"/>
+                                    <field name="customer_name"/>
+                                    <field name="total"/>
+                                </group>
+                                <group>
+                                    <field name="unit_code"/>
+                                    <field name="unit_name"/>
+                                </group>
+                            </group>
+                        </form>
+                        <tree>
+                            <field name="customer_number"/>
+                            <field name="customer_name"/>
+                            <field name="unit_code"/>
+                            <field name="unit_name"/>
+                            <field name="total"/>
+                        </tree>
+                    </field>
                     <separator string="Allowed Denominations"/>
                     <field name="allowed_denomination_ids">
                         <form>
