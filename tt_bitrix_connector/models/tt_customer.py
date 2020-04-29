@@ -10,6 +10,15 @@ _logger = logging.getLogger(__name__)
 class TtCustomer(models.Model):
     _inherit = 'tt.customer'
 
+    def calc_birthdate(self, birth_date):
+        str_birth_date = False
+        if birth_date:
+            if isinstance(birth_date, str):
+                str_birth_date = birth_date
+            else:
+                str_birth_date = birth_date.strftime('%Y-%m-%d')
+        return str_birth_date
+
     @api.model
     def create(self, vals):
         cust_obj = super(TtCustomer, self).create(vals)
@@ -114,7 +123,7 @@ class TtCustomer(models.Model):
                     'ADDRESS_COUNTRY': address_list and address_list[0]['country'] or '',
                     'ADDRESS_COUNTRY_CODE': address_list and address_list[0]['country_code'] or '',
                     'UF_CRM_1529548344555': address_list and (address_list[0]['address'] + ' ' + address_list[0]['postal_code'] + ', ' + address_list[0]['city'] + ', ' + address_list[0]['state'] + ', ' + address_list[0]['country']) or '',
-                    'BIRTHDATE': vals.get('birth_date') and vals['birth_date'].strftime('%Y-%m-%d') or False,
+                    'BIRTHDATE': self.calc_birthdate(vals.get('birth_date')),
                     'EMAIL': emailfield,
                     'UF_CRM_1529549610946': nationality and nationality.name or '',
                     'UF_CRM_1587010972': nationality and nationality.id or 0,

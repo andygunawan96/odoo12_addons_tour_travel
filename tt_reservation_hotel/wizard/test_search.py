@@ -673,6 +673,7 @@ class TestSearch(models.Model):
                 'prov_sale_price': float(room_rate['price_total_currency']),
                 'prov_currency_id': vendor_currency_id,
                 'room_name': room_rate['description'],
+                'room_vendor_code': room_rates[0]['price_code'],
                 'room_type': room_rate['type'],
                 'commission_amount': float(room_rate.get('commission', 0)),
             })
@@ -869,6 +870,22 @@ class TestSearch(models.Model):
             'birth_date': cust['customer_id']['birth_date'],
         } for cust in customers]
 
+    def prepare_bookers(self, bookers):
+        return {
+            'booker_seq_id': bookers['id'],
+            'calling_code': bookers['nationality_id']['phone_code'],
+            'country_code': bookers['nationality_id']['code'],
+            'email': bookers['email'],
+            'first_name': bookers['first_name'],
+            'last_name': bookers['last_name'] or '',
+            'mobile': bookers['phone_ids'] and bookers['phone_ids'][0]['calling_number'] or '',
+            'nationality_code': bookers['nationality_id']['code'],
+            'nationality_name': bookers['nationality_id']['name'],
+            'title': bookers['gender'] == 'male' and 'MR' or bookers['marital_status'] in ['married','widowed'] and 'MRS' or 'MS',
+            'work_phone': bookers['phone_ids'] and bookers['phone_ids'][0]['calling_number'] or '',
+        }
+
+    # TODO: ganti ke get_booking default
     def get_booking_result(self, resv_id, context=False):
         if isinstance(resv_id, int):
             resv_obj = self.env['tt.reservation.hotel'].browse(resv_id)
