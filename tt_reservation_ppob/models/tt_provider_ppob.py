@@ -20,6 +20,9 @@ class TtProviderPPOB(models.Model):
     booking_id = fields.Many2one('tt.reservation.ppob', 'Order Number', ondelete='cascade')
     sequence = fields.Integer('Sequence')
     balance_due = fields.Float('Balance Due')
+    carrier_id = fields.Many2one('tt.transport.carrier', 'Product')
+    carrier_code = fields.Char('Product Code')
+    carrier_name = fields.Char('Product Name')
     session_id = fields.Char('Session ID', readonly=True, states={'draft': [('readonly', False)]})
     customer_number = fields.Char('Customer Number', readonly=True, states={'draft': [('readonly', False)]})
     customer_name = fields.Char('Customer Name', readonly=True, states={'draft': [('readonly', False)]})
@@ -350,6 +353,8 @@ class TtProviderPPOB(models.Model):
             'currency': self.currency_id and self.currency_id.name or '',
             'error_msg': self.error_history_ids and self.error_history_ids[-1].error_msg or '',
             'service_charges': service_charges,
+            'carrier_name': self.carrier_id and self.carrier_id.name or '',
+            'carrier_code': self.carrier_id and self.carrier_id.code or '',
             'max_kwh': self.max_kwh and self.max_kwh or 0,
             'customer_number': self.customer_number and self.customer_number or '',
             'customer_name': self.customer_name and self.customer_name or '',
