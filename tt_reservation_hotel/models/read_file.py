@@ -2152,6 +2152,7 @@ class HotelInformation(models.Model):
                 break
         new_hotel['images'] = fac_list
 
+        new_fac = []
         for fac in new_hotel.get('facilities') or []:
             if isinstance(fac, dict):
                 if not fac.get('facility_name'):
@@ -2163,6 +2164,7 @@ class HotelInformation(models.Model):
                     'facility_name': fac,
                     'facility_id': False,
                 }
+            new_fac.append(fac)
             # for fac_det in fac_name.split('/'):
             #     facility = self.env['tt.hotel.facility'].search([('name', '=ilike', fac_det)])
             #     if facility:
@@ -2179,6 +2181,7 @@ class HotelInformation(models.Model):
             #             writer = csv.writer(csvFile)
             #             writer.writerows([[provider, fac_det]])
             #         csvFile.close()
+        new_hotel['facilities'] = new_fac
         return new_hotel
 
     def formating_homas_jupiter(self, hotel_id, hotel_rec, providers):
