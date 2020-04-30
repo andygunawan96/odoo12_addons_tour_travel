@@ -65,8 +65,12 @@
                             <field name="transaction_name"/>
                             <field name="distribution_code"/>
                             <field name="unpaid_bill"/>
+                            <field name="unpaid_bill_display"/>
                         </group>
                         <group>
+                            <field name="carrier_id"/>
+                            <field name="carrier_name"/>
+                            <field name="carrier_code"/>
                             <field name="registration_number"/>
                             <field name="registration_date"/>
                             <field name="unit_code"/>
@@ -153,6 +157,8 @@
             <tree>
                 <field name="pnr"/>
                 <field name="provider_id" groups="tt_base.group_tt_tour_travel_operator"/>
+                <field name="carrier_id"/>
+                <field name="carrier_code"/>
                 <field name="session_id"/>
                 <field name="customer_number"/>
                 <field name="customer_name"/>

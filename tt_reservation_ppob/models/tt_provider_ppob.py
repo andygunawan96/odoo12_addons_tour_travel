@@ -20,6 +20,9 @@ class TtProviderPPOB(models.Model):
     booking_id = fields.Many2one('tt.reservation.ppob', 'Order Number', ondelete='cascade')
     sequence = fields.Integer('Sequence')
     balance_due = fields.Float('Balance Due')
+    carrier_id = fields.Many2one('tt.transport.carrier', 'Product')
+    carrier_code = fields.Char('Product Code')
+    carrier_name = fields.Char('Product Name')
     session_id = fields.Char('Session ID', readonly=True, states={'draft': [('readonly', False)]})
     customer_number = fields.Char('Customer Number', readonly=True, states={'draft': [('readonly', False)]})
     customer_name = fields.Char('Customer Name', readonly=True, states={'draft': [('readonly', False)]})
@@ -55,6 +58,7 @@ class TtProviderPPOB(models.Model):
 
     promotion_code = fields.Char(string='Promotion Code')
     unpaid_bill = fields.Integer(string='Unpaid Bill Amount')
+    unpaid_bill_display = fields.Integer(string='Unpaid Bill Displayed')
 
     # Booking Progress
     booked_uid = fields.Many2one('res.users', 'Booked By')
@@ -237,26 +241,27 @@ class TtProviderPPOB(models.Model):
 
     def update_status_api_ppob(self, data, context):
         for rec in self:
-            rec.sudo().write({
-                'pnr': data['pnr'],
-                'payment_message': data['message'],
-            })
-            if data.get('bill_data'):
-                for rec2 in data['bill_data']:
-                    bill_obj = self.env['tt.bill.ppob'].sudo().search([('provider_booking_id', '=', int(rec.id)), ('period', '=', datetime.strptime(rec2['period'], '%Y%m'))], limit=1)
-                    if bill_obj:
-                        bill_obj[0].sudo().write({
-                            'admin_fee': rec2.get('admin_fee') and rec2['admin_fee'] or 0,
-                            'stamp_fee': rec2.get('stamp_fee') and rec2['stamp_fee'] or 0,
-                            'ppn_tax_amount': rec2.get('ppn_tax_amount') and rec2['ppn_tax_amount'] or 0,
-                            'ppj_tax_amount': rec2.get('ppj_tax_amount') and rec2['ppj_tax_amount'] or 0,
-                            'installment': rec2.get('installment') and rec2['installment'] or 0,
-                            'fare_amount': rec2.get('fare_amount') and rec2['fare_amount'] or 0,
-                            'kwh_amount': rec2.get('kwh_amount') and rec2['kwh_amount'] or 0,
-                            'token': rec2.get('token') and rec2['token'] or '',
-                        })
+            if rec.state != 'issued':
+                rec.sudo().write({
+                    'pnr': data['pnr'],
+                    'payment_message': data['message'],
+                })
+                if data.get('bill_data'):
+                    for rec2 in data['bill_data']:
+                        bill_obj = self.env['tt.bill.ppob'].sudo().search([('provider_booking_id', '=', int(rec.id)), ('period', '=', datetime.strptime(rec2['period'], '%Y%m'))], limit=1)
+                        if bill_obj:
+                            bill_obj[0].sudo().write({
+                                'admin_fee': rec2.get('admin_fee') and rec2['admin_fee'] or 0,
+                                'stamp_fee': rec2.get('stamp_fee') and rec2['stamp_fee'] or 0,
+                                'ppn_tax_amount': rec2.get('ppn_tax_amount') and rec2['ppn_tax_amount'] or 0,
+                                'ppj_tax_amount': rec2.get('ppj_tax_amount') and rec2['ppj_tax_amount'] or 0,
+                                'installment': rec2.get('installment') and rec2['installment'] or 0,
+                                'fare_amount': rec2.get('fare_amount') and rec2['fare_amount'] or 0,
+                                'kwh_amount': rec2.get('kwh_amount') and rec2['kwh_amount'] or 0,
+                                'token': rec2.get('token') and rec2['token'] or '',
+                            })
 
-            rec.action_issued_api_ppob(context)
+                rec.action_issued_api_ppob(context)
 
     def create_service_charge(self, service_charge_vals):
         service_chg_obj = self.env['tt.service.charge']
@@ -350,6 +355,8 @@ class TtProviderPPOB(models.Model):
             'currency': self.currency_id and self.currency_id.name or '',
             'error_msg': self.error_history_ids and self.error_history_ids[-1].error_msg or '',
             'service_charges': service_charges,
+            'carrier_name': self.carrier_id and self.carrier_id.name or '',
+            'carrier_code': self.carrier_id and self.carrier_id.code or '',
             'max_kwh': self.max_kwh and self.max_kwh or 0,
             'customer_number': self.customer_number and self.customer_number or '',
             'customer_name': self.customer_name and self.customer_name or '',
@@ -367,6 +374,8 @@ class TtProviderPPOB(models.Model):
             'transaction_name': self.transaction_name and self.transaction_name or '',
             'meter_number': self.meter_number and self.meter_number or '',
             'distribution_code': self.distribution_code and self.distribution_code or '',
+            'unpaid_bill': self.unpaid_bill and self.unpaid_bill or 0,
+            'unpaid_bill_display': self.unpaid_bill_display and self.unpaid_bill_display or 0,
             'session_id': self.session_id and self.session_id or '',
             'allowed_denominations': allowed_denominations,
         }
