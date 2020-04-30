@@ -65,6 +65,7 @@
                             <field name="transaction_name"/>
                             <field name="distribution_code"/>
                             <field name="unpaid_bill"/>
+                            <field name="unpaid_bill_display"/>
                         </group>
                         <group>
                             <field name="carrier_id"/>

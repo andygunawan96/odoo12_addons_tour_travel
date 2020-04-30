@@ -9,7 +9,9 @@ class TtPPOBApiCon(models.Model):
 
     def action_call(self,table_obj,action,data,context):
 
-        if action == 'get_inquiry':
+        if action == 'search_inquiry':
+            res = table_obj.search_inquiry_api(data,context)
+        elif action == 'get_inquiry':
             res = table_obj.get_inquiry_api(data,context)
         elif action == 'create_inquiry':
             res = table_obj.create_inquiry_api(data,context)
