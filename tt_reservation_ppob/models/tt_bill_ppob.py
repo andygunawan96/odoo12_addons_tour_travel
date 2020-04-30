@@ -14,7 +14,7 @@ class TtBillPPOB(models.Model):
     provider_id = fields.Many2one('tt.provider', related='provider_booking_id.provider_id', store=True)
     pnr = fields.Char('PNR', related='provider_booking_id.pnr', store=True)
 
-    booking_id = fields.Many2one('tt.reservation.ppob', 'Order Number')
+    booking_id = fields.Many2one('tt.reservation.ppob', 'Order Number', related='provider_booking_id.booking_id', store=True)
     carrier_id = fields.Many2one('tt.transport.carrier', 'Product')
     carrier_code = fields.Char('Product Code')
     carrier_name = fields.Char('Product Name')
@@ -80,10 +80,24 @@ class TtPPOBMeterHistory(models.Model):
     before_meter = fields.Integer('Before Meter')
     after_meter = fields.Integer('After Meter')
     name = fields.Char('Name', compute='_fill_name')
-    bill_ppob_id = fields.Many2one('tt.bill.ppob', 'PPOB Bill')
+    bill_ppob_id = fields.Many2one('tt.bill.ppob', 'PPOB Bill', ondelete='cascade')
 
     @api.multi
     @api.depends('before_meter', 'after_meter')
     def _fill_name(self):
         for rec in self:
             rec.name = "%s - %s" % (str(rec.before_meter), str(rec.after_meter))
+
+
+class TtBillDetailPPOB(models.Model):
+    _name = 'tt.bill.detail.ppob'
+    _rec_name = 'customer_number'
+    _order = 'sequence'
+    _description = 'Rodex Model'
+
+    provider_booking_id = fields.Many2one('tt.provider.ppob', 'Provider Booking', ondelete='cascade')
+    customer_number = fields.Char('Customer Number', readonly=True, states={'draft': [('readonly', False)]})
+    customer_name = fields.Char('Customer Name', readonly=True, states={'draft': [('readonly', False)]})
+    unit_code = fields.Char('Unit Code', readonly=True, states={'draft': [('readonly', False)]})
+    unit_name = fields.Char('Unit Name', readonly=True, states={'draft': [('readonly', False)]})
+    total = fields.Integer('Total', readonly=True, default=0)

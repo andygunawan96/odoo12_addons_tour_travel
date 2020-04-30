@@ -10,7 +10,7 @@ _logger = logging.getLogger(__name__)
 class TtProviderPPOB(models.Model):
     _name = 'tt.provider.ppob'
     _rec_name = 'pnr'
-    _order = 'departure_date'
+    # _order = 'departure_date'
     _description = 'Rodex Model'
 
     pnr = fields.Char('PNR')
@@ -28,20 +28,25 @@ class TtProviderPPOB(models.Model):
     unit_name = fields.Char('Unit Name', readonly=True, states={'draft': [('readonly', False)]})
     unit_phone_number = fields.Char('Unit Phone Number', readonly=True, states={'draft': [('readonly', False)]})
     unit_address = fields.Char('Unit Address', readonly=True, states={'draft': [('readonly', False)]})
+    fare_type = fields.Char('Fare Type', readonly=True, states={'draft': [('readonly', False)]})
     power = fields.Integer('Power', readonly=True, states={'draft': [('readonly', False)]})
     is_family = fields.Boolean('Is Family', readonly=True, states={'draft': [('readonly', False)]})
     registration_number = fields.Char('Registration Number', readonly=True, states={'draft': [('readonly', False)]})
     registration_date = fields.Date('Registration Date', readonly=True, states={'draft': [('readonly', False)]})
+    bill_expired_date = fields.Date('Bill Expired Date', readonly=True, states={'draft': [('readonly', False)]})
     transaction_code = fields.Char('Transaction Code', readonly=True, states={'draft': [('readonly', False)]})
     transaction_name = fields.Char('Transaction Name', readonly=True, states={'draft': [('readonly', False)]})
     meter_number = fields.Char('Meter Number', readonly=True, states={'draft': [('readonly', False)]})
     distribution_code = fields.Char('Distribution Code', readonly=True, states={'draft': [('readonly', False)]})
     max_kwh = fields.Integer('Max KWH', readonly=True, states={'draft': [('readonly', False)]})
     payment_message = fields.Text('Payment Message', readonly=True)
-    allowed_denomination_ids = fields.Many2many('tt.master.nominal.ppob', 'reservation_ppob_nominal_rel', 'booking_id',
+    allowed_denomination_ids = fields.Many2many('tt.master.nominal.ppob', 'reservation_ppob_nominal_rel', 'provider_booking_id',
                                                 'nominal_id', string='Allowed Denominations', readonly=True,
                                                 states={'draft': [('readonly', False)]})
-    ppob_bill_ids = fields.One2many('tt.bill.ppob', 'booking_id', string='Bills', readonly=True,
+    total = fields.Integer('Total Bill Amount', readonly=True, default=0)
+    ppob_bill_ids = fields.One2many('tt.bill.ppob', 'provider_booking_id', string='Bills', readonly=True,
+                                    states={'draft': [('readonly', False)]})
+    ppob_bill_detail_ids = fields.One2many('tt.bill.detail.ppob', 'provider_booking_id', string='Bills', readonly=True,
                                     states={'draft': [('readonly', False)]})
     cost_service_charge_ids = fields.One2many('tt.service.charge', 'provider_ppob_booking_id', 'Cost Service Charges')
 
@@ -49,6 +54,7 @@ class TtProviderPPOB(models.Model):
                                   default=lambda self: self.env.user.company_id.currency_id)
 
     promotion_code = fields.Char(string='Promotion Code')
+    unpaid_bill = fields.Integer(string='Unpaid Bill Amount')
 
     # Booking Progress
     booked_uid = fields.Many2one('res.users', 'Booked By')
@@ -356,6 +362,7 @@ class TtProviderPPOB(models.Model):
             'is_family': self.is_family and self.is_family or False,
             'registration_number': self.registration_number and self.registration_number or '',
             'registration_date': self.registration_date and self.registration_date.strftime('%Y-%m-%d') or '',
+            'bill_expired_date': self.bill_expired_date and self.bill_expired_date.strftime('%Y-%m-%d') or '',
             'transaction_code': self.transaction_code and self.transaction_code or '',
             'transaction_name': self.transaction_name and self.transaction_name or '',
             'meter_number': self.meter_number and self.meter_number or '',
