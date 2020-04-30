@@ -635,7 +635,10 @@ class TestSearch(models.Model):
         if acq_obj:
             customer_parent_id = self.env['tt.agent'].sudo().browse(context['agent_id']).customer_parent_walkin_id.id  ##fpo
         elif not acquirer_id:
-            customer_parent_id = False
+            if context['hold_date']:
+                customer_parent_id = self.env['tt.agent'].sudo().browse(context['agent_id']).customer_parent_walkin_id.id
+            else:
+                customer_parent_id = False
         else:
             customer_parent_id = self.env['tt.customer.parent'].search([('seq_id', '=', acquirer_id['seq_id'])], limit=1).id
 

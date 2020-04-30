@@ -188,6 +188,7 @@
                                             </div>
                                             <div class="col-2" style="text-align: center;">
                                                 <img t-att-src="'/tt_report_common/static/images/airfreight-orange.svg'" style="max-height:65px; max-width:65px; margin-top:25%; transform: rotate(45deg); -webkit-transform: rotate(45deg);"/>
+<!--                                                <img src="/tt_report_common/static/images/airfreight-white.svg" t-att-style="'max-height:65px; max-width:65px; margin-top:25%; transform: rotate(45deg); -webkit-transform: rotate(45deg); background:'+ base_color +';'"/>-->
                                                 <span style="font-size: 15px; font-weight: 400;"><span t-field="segment_obj.elapsed_time"/></span>
                                             </div>
                                             <div class="col-5">
@@ -236,6 +237,7 @@
                                             </div>
                                             <div class="col-2" style="text-align: center;">
                                                 <img t-att-src="'/tt_report_common/static/images/airfreight-orange.svg'" style="max-height:65px; max-width:65px; margin-top:25%; transform: rotate(45deg); -webkit-transform: rotate(45deg);"/>
+                                                <!--<img src="/tt_report_common/static/images/airfreight-orange.svg" t-att-style="'max-height:65px; max-width:65px; margin-top:25%; transform: rotate(45deg); -webkit-transform: rotate(45deg); background:' + backgounrd_color + ';"/>-->
                                                 <span style="font-size: 15px; font-weight: 400;"><span t-field="segment_obj.elapsed_time"/></span>
                                             </div>
                                             <div class="col-5">
