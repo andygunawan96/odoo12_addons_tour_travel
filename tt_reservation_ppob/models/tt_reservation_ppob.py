@@ -289,11 +289,13 @@ class ReservationPpob(models.Model):
 
         for rec in data['bill_data']:
             meter_history_list = []
-            for rec2 in rec['meter_histories']:
-                meter_history_list.append({
+            for idx, rec2 in enumerate(rec['meter_histories']):
+                meter_history_obj = self.env['tt.ppob.meter.history'].create({
                     'before_meter': rec2.get('before_meter') and int(rec2['before_meter']) or 0,
                     'after_meter': rec2.get('after_meter') and int(rec2['after_meter']) or 0,
+                    'sequence': idx + 1
                 })
+                meter_history_list.append(meter_history_obj.id)
             bill_vals = {
                 'provider_booking_id': prov_obj and prov_obj.id or False,
                 'period': rec.get('period') and datetime.strptime(rec['period'], '%Y%m') or False,

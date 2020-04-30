@@ -43,6 +43,25 @@
                             <field name="installment"/>
                         </group>
                     </group>
+                    <separator string="Meter History"/>
+                    <field name="meter_history_ids">
+                        <tree>
+                            <field name="sequence"/>
+                            <field name="before_meter"/>
+                            <field name="after_meter"/>
+                        </tree>
+                        <form>
+                            <group>
+                                <group>
+                                    <field name="before_meter"/>
+                                </group>
+                                <group>
+                                    <field name="after_meter"/>
+                                    <field name="sequence"/>
+                                </group>
+                            </group>
+                        </form>
+                    </field>
                 </sheet>
             </form>
         </field>
