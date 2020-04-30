@@ -70,11 +70,13 @@ class TtBillPPOB(models.Model):
 
 class TtPPOBMeterHistory(models.Model):
     _name = 'tt.ppob.meter.history'
+    _order = 'sequence'
     _description = 'Rodex Model'
 
     before_meter = fields.Integer('Before Meter')
     after_meter = fields.Integer('After Meter')
     name = fields.Char('Name', compute='_fill_name')
+    sequence = fields.Integer('Sequence')
     bill_ppob_id = fields.Many2one('tt.bill.ppob', 'PPOB Bill', ondelete='cascade')
 
     @api.multi
