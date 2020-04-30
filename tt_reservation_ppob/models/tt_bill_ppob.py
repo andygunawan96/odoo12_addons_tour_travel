@@ -6,7 +6,7 @@ from datetime import datetime
 
 class TtBillPPOB(models.Model):
     _name = 'tt.bill.ppob'
-    _rec_name = 'carrier_name'
+    _rec_name = 'period'
     _order = 'sequence'
     _description = 'Rodex Model'
 
@@ -15,9 +15,6 @@ class TtBillPPOB(models.Model):
     pnr = fields.Char('PNR', related='provider_booking_id.pnr', store=True)
 
     booking_id = fields.Many2one('tt.reservation.ppob', 'Order Number', related='provider_booking_id.booking_id', store=True)
-    carrier_id = fields.Many2one('tt.transport.carrier', 'Product')
-    carrier_code = fields.Char('Product Code')
-    carrier_name = fields.Char('Product Name')
     sequence = fields.Integer('Sequence')
 
     period = fields.Date('Period')
@@ -48,8 +45,6 @@ class TtBillPPOB(models.Model):
             })
         res = {
             'pnr': self.pnr and self.pnr or '',
-            'carrier_name': self.carrier_id and self.carrier_id.name or '',
-            'carrier_code': self.carrier_id and self.carrier_id.code or '',
             'provider': self.provider_id and self.provider_id.code or '',
             'sequence': self.sequence and self.sequence or 0,
             'period': self.period and self.period.strftime('%Y%m') or '',
@@ -92,7 +87,6 @@ class TtPPOBMeterHistory(models.Model):
 class TtBillDetailPPOB(models.Model):
     _name = 'tt.bill.detail.ppob'
     _rec_name = 'customer_number'
-    _order = 'sequence'
     _description = 'Rodex Model'
 
     provider_booking_id = fields.Many2one('tt.provider.ppob', 'Provider Booking', ondelete='cascade')

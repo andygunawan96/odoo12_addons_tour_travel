@@ -188,7 +188,15 @@ class ReservationPpob(models.Model):
 
     def get_inquiry_api(self, data, context):
         try:
-            if data.get('order_number'):
+            if data.get('order_id'):
+                inq_obj = self.env['tt.reservation.ppob'].sudo().browse(int(data['order_id']))
+                if inq_obj:
+                    inq_prov_obj = []
+                    for prov in inq_obj.provider_booking_ids:
+                        inq_prov_obj.append(prov)
+                else:
+                    raise RequestException(1003)
+            elif data.get('order_number'):
                 inq_obj = self.env['tt.reservation.ppob'].sudo().search([('name', '=', data['order_number'])], limit=1)
                 if inq_obj:
                     inq_prov_obj = []
@@ -197,7 +205,7 @@ class ReservationPpob(models.Model):
                 else:
                     raise RequestException(1003)
             else:
-                inq_prov_obj = self.env['tt.provider.ppob'].sudo().search([('product_code', '=', data['product_code']), ('customer_number', '=', data['customer_number']), ('state', 'in', ['booked', 'issued'])], limit=1)
+                inq_prov_obj = self.env['tt.provider.ppob'].sudo().search([('carrier_code', '=', data['product_code']), ('customer_number', '=', data['customer_number']), ('state', 'in', ['booked', 'issued'])], limit=1)
             if inq_prov_obj:
                 inq_prov_obj = inq_prov_obj[0]
                 res = inq_prov_obj.booking_id.to_dict()
@@ -226,6 +234,8 @@ class ReservationPpob(models.Model):
             nominal_id_list.append(new_nominal_obj.id)
 
         provider_type_id = self.env.ref('tt_reservation_ppob.tt_provider_type_ppob')
+        product_code = data['product_code']
+        carrier_obj = self.env['tt.transport.carrier'].sudo().search([('code', '=', product_code), ('provider_type_id', '=', provider_type_id.id)])
         provider_vals = {
             'state': 'booked',
             'booked_uid': context['co_uid'],
@@ -233,6 +243,9 @@ class ReservationPpob(models.Model):
             'hold_date': fields.Datetime.now() + timedelta(days=1),
             'balance_due': data['total_amount'],
             'sequence': 1,
+            'carrier_id': carrier_obj and carrier_obj.id or False,
+            'carrier_code': carrier_obj and carrier_obj.code or False,
+            'carrier_name': carrier_obj and carrier_obj.name or False,
             'session_id': data.get('session_id') and data['session_id'] or '',
             'customer_number': data.get('customer_number') and data['customer_number'] or '',
             'customer_name': data.get('customer_name') and data['customer_name'] or '',
@@ -259,8 +272,6 @@ class ReservationPpob(models.Model):
         }
         prov_obj = self.env['tt.provider.ppob'].create(provider_vals)
 
-        product_code = data['product_code']
-        carrier_obj = self.env['tt.transport.carrier'].sudo().search([('code', '=', product_code), ('provider_type_id', '=', provider_type_id.id)])
         for rec in data['bill_data']:
             meter_history_list = []
             for rec2 in rec['meter_histories']:
@@ -270,9 +281,6 @@ class ReservationPpob(models.Model):
                 })
             bill_vals = {
                 'provider_booking_id': prov_obj and prov_obj.id or False,
-                'carrier_id': carrier_obj and carrier_obj.id or False,
-                'carrier_code': carrier_obj and carrier_obj.code or False,
-                'carrier_name': carrier_obj and carrier_obj.name or False,
                 'period': rec.get('period') and datetime.strptime(rec['period'], '%Y%m') or False,
                 'total': rec.get('total') and rec['total'] or 0,
                 'amount_of_month': rec.get('amount_of_month') and rec['amount_of_month'] or 0,
