@@ -146,6 +146,7 @@ class ReservationPpob(models.Model):
         if all(rec.state == 'booked' for rec in self.provider_booking_ids):
             # booked
             self.calculate_service_charge()
+            hold_date = datetime.today() + timedelta(days=1)
             self.action_booked_api_ppob(context, pnr_list, hold_date)
         elif all(rec.state == 'issued' for rec in self.provider_booking_ids):
             # issued
@@ -190,7 +191,7 @@ class ReservationPpob(models.Model):
         try:
             search_req = data['search_RQ']
             inq_prov_obj = self.env['tt.provider.ppob'].sudo().search([('carrier_code', '=', search_req['product_code']), ('customer_number', '=', search_req['customer_number']), ('state', '=', 'booked')], limit=1)
-            if inq_prov_obj:
+            if inq_prov_obj and inq_prov_obj.booking_id:
                 inq_prov_obj = inq_prov_obj[0]
                 vals = {
                     'order_number': inq_prov_obj.booking_id.name,
@@ -249,14 +250,16 @@ class ReservationPpob(models.Model):
 
         provider_type_id = self.env.ref('tt_reservation_ppob.tt_provider_type_ppob')
         product_code = data['product_code']
+        provider_obj = self.env['tt.provider'].sudo().search([('code', '=', data['provider']), ('provider_type_id', '=', provider_type_id.id)])
         carrier_obj = self.env['tt.transport.carrier'].sudo().search([('code', '=', product_code), ('provider_type_id', '=', provider_type_id.id)])
         provider_vals = {
             'state': 'booked',
             'booked_uid': context['co_uid'],
             'booked_date': fields.Datetime.now(),
             'hold_date': fields.Datetime.now() + timedelta(days=1),
-            'balance_due': data['total_amount'],
+            'balance_due': data['total'],
             'sequence': 1,
+            'provider_id': provider_obj and provider_obj.id or False,
             'carrier_id': carrier_obj and carrier_obj.id or False,
             'carrier_code': carrier_obj and carrier_obj.code or False,
             'carrier_name': carrier_obj and carrier_obj.name or False,
@@ -319,7 +322,7 @@ class ReservationPpob(models.Model):
                 'customer_name': rec.get('customer_name', ''),
                 'unit_code': rec.get('unit_code', ''),
                 'unit_name': rec.get('unit_name', ''),
-                'total': rec.get('total_amount', 0),
+                'total': rec.get('total', 0),
             }
             self.env['tt.bill.detail.ppob'].create(bill_detail_vals)
         prov_obj.create_service_charge(data['service_charges'])
@@ -492,6 +495,8 @@ class ReservationPpob(models.Model):
                 for rec2 in rec.ppob_bill_ids:
                     if int(temp_carrier_code) == 522:
                         temp_total = data.get('total', 0)
+                        if data.get('service_charges'):
+                            rec.prepaid_update_service_charge(data['service_charges'])
                     else:
                         temp_total = rec2.total and rec2.total or 0
                     bill_list.append({
