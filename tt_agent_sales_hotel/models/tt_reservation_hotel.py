@@ -12,9 +12,7 @@ class ReservationHotel(models.Model):
 
     @api.depends('invoice_line_ids')
     def set_agent_invoice_state(self):
-
         states = []
-
         for rec in self.invoice_line_ids:
             states.append(rec.state)
 
@@ -91,3 +89,12 @@ class ReservationHotel(models.Model):
             'payment_id': payment_obj.id,
             'pay_amount': invoice_id.grand_total
         })
+
+    def action_done(self, issued_response={}):
+        a = super(ReservationHotel, self).action_done(issued_response)
+        # Calc PNR untuk agent_invoice + agent_invoice_line
+        for rec in self.invoice_line_ids:
+            rec._compute_invoice_line_pnr()
+            rec.invoice_id._compute_invoice_pnr()
+        return a
+
