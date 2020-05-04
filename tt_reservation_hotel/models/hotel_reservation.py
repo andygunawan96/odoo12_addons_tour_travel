@@ -478,7 +478,7 @@ class HotelReservation(models.Model):
         if not self.ensure_one():
             return False
         # Jika cukup Potong Saldo
-        self.pnr = self.get_pnr_list()
+        # self.pnr = self.get_pnr_list()
         self.issued_date = fields.Datetime.now()
         self.issued_uid = co_uid
 
