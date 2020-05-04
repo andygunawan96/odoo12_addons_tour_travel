@@ -193,6 +193,149 @@ class PrintoutPPOBBillsForm(models.AbstractModel):
     _name = 'report.tt_report_common.printout_ppob_bills'
     _description = 'Rodex Model'
 
+    def get_pln_postpaid_values(self, rec):
+        values = {}
+
+        # Variables
+        period = []
+        admin_bank = 0
+        before_meter = -1
+        after_meter = -1
+        tarif = 0
+        total_tagihan_pln = 0
+
+        # Get PLN Postpaid Data
+        if rec.provider_booking_ids:
+            # Admin Bank (ambil dari ROC service charge)
+            provider = rec.provider_booking_ids[0]
+            for scs in provider.cost_service_charge_ids:
+                if scs.charge_code == 'roc':
+                    admin_bank += scs.total
+
+            if provider.ppob_bill_ids:
+                for bill in provider.ppob_bill_ids:
+                    # Period
+                    if bill.period:
+                        period.append(bill.period.strftime('%m/%y'))
+                    # Tarif & Total Bayar
+                    tarif += bill.fare_amount
+                    total_tagihan_pln += bill.fare_amount + bill.fine_amount + bill.admin_fee + bill.stamp_fee + bill.incentive + bill.ppn_tax_amount + bill.ppj_tax_amount
+                    # Stand Meter
+                    if bill.meter_history_ids:
+                        for meter in bill.meter_history_ids:
+                            if before_meter == -1:
+                                before_meter = meter.before_meter
+                            else:
+                                if meter.before_meter < before_meter:
+                                    before_meter = meter.before_meter
+                            if after_meter == -1:
+                                after_meter = meter.after_meter
+                            else:
+                                if meter.after_meter > after_meter:
+                                    after_meter = meter.after_meter
+
+        # Set Values
+        values.update({
+            'tarif': tarif,
+            'total_tagihan_pln': total_tagihan_pln,
+            'before_meter': before_meter,
+            'after_meter': after_meter,
+            'period': ', '.join(period),
+            'admin_bank': admin_bank
+        })
+        return values
+
+    def get_pln_prepaid_values(self, rec):
+        values = {}
+
+        # Variables
+        tarif = 0
+        stamp_fee = 0
+        ppn = 0
+        ppj = 0
+        admin_bank = 0
+        total_tagihan_pln = 0
+        jumlah_kwh = 0
+
+        # Get PLN Prepaid Data
+        if rec.provider_booking_ids:
+            # Admin Bank (ambil dari ROC service charge)
+            provider = rec.provider_booking_ids[0]
+            for scs in provider.cost_service_charge_ids:
+                if scs.charge_code == 'roc':
+                    admin_bank += scs.total
+
+            if provider.ppob_bill_ids:
+                for bill in provider.ppob_bill_ids:
+                    # Tarif & Total Bayar
+                    tarif += bill.fare_amount
+                    total_tagihan_pln += bill.fare_amount + bill.fine_amount + bill.admin_fee + bill.stamp_fee + bill.incentive + bill.ppn_tax_amount + bill.ppj_tax_amount
+                    stamp_fee += bill.stamp_fee
+                    ppn += bill.ppn_tax_amount
+                    ppj += bill.ppj_tax_amount
+                    jumlah_kwh += bill.kwh_amount
+
+        # Set Values
+        values.update({
+            'tarif': tarif,
+            'total_tagihan_pln': total_tagihan_pln,
+            'stamp_fee': stamp_fee,
+            'ppn': ppn,
+            'ppj': ppj,
+            'jumlah_kwh': jumlah_kwh,
+            'admin_bank': admin_bank
+        })
+        return values
+
+    def get_non_electricity_bills(self, rec):
+        values = {}
+
+        # Variables
+        admin_bank = 0
+        total_tagihan_pln = 0
+
+        # Get Non Electricity Bills
+        if rec.provider_booking_ids:
+            # Admin Bank (ambil dari ROC service charge)
+            provider = rec.provider_booking_ids[0]
+            for scs in provider.cost_service_charge_ids:
+                if scs.charge_code == 'roc':
+                    admin_bank += scs.total
+
+            if provider.ppob_bill_ids:
+                for bill in provider.ppob_bill_ids:
+                    total_tagihan_pln += bill.fare_amount + bill.fine_amount + bill.admin_fee + bill.stamp_fee + bill.incentive + bill.ppn_tax_amount + bill.ppj_tax_amount
+
+        values.update({
+            'total_tagihan_pln': total_tagihan_pln,
+            'admin_bank': admin_bank
+        })
+        return values
+
+    def get_bpjs_kesehatan_values(self, rec):
+        values = {}
+
+        # Variables
+        admin_fee = 0
+        period = 0
+        tarif = 0
+
+        # Get BPJS Kesehatan Data
+        if rec.provider_booking_ids:
+            provider = rec.provider_booking_ids[0]
+            if provider.ppob_bill_ids:
+                for bill in provider.ppob_bill_ids:
+                    period += 1
+                    tarif += bill.fare_amount
+                    admin_fee += bill.admin_fee
+
+        values.update({
+            'period': str(period),
+            'tarif': tarif,
+            'admin_fee': admin_fee
+        })
+        return values
+
     @api.model
     def _get_report_values(self, docids, data=None):
         if not data.get('context'):
@@ -201,15 +344,33 @@ class PrintoutPPOBBillsForm(models.AbstractModel):
             data['context']['active_model'] = 'tt.reservation.hotel'
             data['context']['active_ids'] = docids
         values = {}
-        # Get line values
         for rec in self.env[data['context']['active_model']].browse(data['context']['active_ids']):
-            values[rec.id] = []
-            a = {}
+            # Get PPOB Type & Values
+            ppob_type = ''
+            if rec.provider_booking_ids[0].carrier_id:
+                # Carrier berguna untuk menentukan jenis tagihan
+                ppob_carrier = rec.provider_booking_ids[0].carrier_id
+                if ppob_carrier.code == self.env.ref('tt_reservation_ppob.tt_transport_carrier_ppob_bpjs').code:
+                    ppob_type = 'bpjs'
+                    values = self.get_bpjs_kesehatan_values(rec)
+                elif ppob_carrier.code == self.env.ref('tt_reservation_ppob.tt_transport_carrier_ppob_postpln').code:
+                    ppob_type = 'postpln'
+                    values = self.get_pln_postpaid_values(rec)
+                elif ppob_carrier.code == self.env.ref('tt_reservation_ppob.tt_transport_carrier_ppob_prepln').code:
+                    ppob_type = 'prepln'
+                    values = self.get_pln_prepaid_values(rec)
+                elif ppob_carrier.code == self.env.ref('tt_reservation_ppob.tt_transport_carrier_ppob_notaglispln').code:
+                    ppob_type = 'notaglispln'
+                    values = self.get_non_electricity_bills(rec)
+
+            values.update({
+                'ppob_type': ppob_type
+            })
         vals = {
             'doc_ids': data['context']['active_ids'],
             'doc_model': data['context']['active_model'],
             'docs': self.env[data['context']['active_model']].browse(data['context']['active_ids']),
-            'price_lines': values,
+            'values': values,
             'date_now': fields.Date.today().strftime('%d %b %Y'),
             'base_color': self.sudo().env['ir.config_parameter'].get_param('tt_base.website_default_color',
                                                                            default='#FFFFFF'),
