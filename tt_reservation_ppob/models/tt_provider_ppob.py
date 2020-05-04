@@ -2,6 +2,7 @@ from odoo import api, fields, models
 from odoo.exceptions import UserError
 from ...tools import variables
 from datetime import datetime
+from datetime import datetime, timedelta
 import json, logging
 
 _logger = logging.getLogger(__name__)
@@ -59,6 +60,7 @@ class TtProviderPPOB(models.Model):
     promotion_code = fields.Char(string='Promotion Code')
     unpaid_bill = fields.Integer(string='Unpaid Bill Amount')
     unpaid_bill_display = fields.Integer(string='Unpaid Bill Displayed')
+    ticket_ids = fields.One2many('tt.ticket.ppob', 'provider_id', 'Ticket Number')
 
     # Booking Progress
     booked_uid = fields.Many2one('res.users', 'Booked By')
@@ -175,7 +177,7 @@ class TtProviderPPOB(models.Model):
                 'state': 'booked',
                 'booked_uid': api_context['co_uid'],
                 'booked_date': fields.Datetime.now(),
-                'hold_date': datetime.strptime(provider_data['hold_date'],"%Y-%m-%d %H:%M:%S"),
+                'hold_date': datetime.today() + timedelta(days=1),
                 'balance_due': provider_data['balance_due']
             })
 
@@ -282,8 +284,6 @@ class TtProviderPPOB(models.Model):
                     # scs['pax_count'] += 1
                     scs_pax_count += 1
                     scs['total'] += scs['amount']
-            scs.pop('currency')
-            scs.pop('foreign_currency')
             scs['passenger_ppob_ids'] = [(6,0,scs['passenger_ppob_ids'])]
             scs['description'] = self.pnr
             service_chg_obj.create(scs)
@@ -326,6 +326,40 @@ class TtProviderPPOB(models.Model):
         return self.env['tt.ledger'].action_create_ledger(self,issued_uid)
         # else:
         #     raise UserError("Cannot create ledger, ledger has been created before.")
+
+    def create_ticket_api(self,passengers):
+        ticket_list = []
+        ticket_found = []
+        ticket_not_found = []
+        for psg in passengers:
+            psg_obj = self.booking_id.passenger_ids.filtered(lambda x: x.name.replace(' ', '').lower() ==
+                                                                ('%s%s' % (psg.get('first_name', ''),
+                                                                           psg.get('last_name', ''))).lower().replace(' ',''))
+
+            if not psg_obj:
+                psg_obj = self.booking_id.passenger_ids.filtered(lambda x: x.name.replace(' ', '').lower()*2 ==
+                                                                           ('%s%s' % (psg.get('first_name', ''),
+                                                                                      psg.get('last_name',
+                                                                                              ''))).lower().replace(' ',''))
+            if psg_obj:
+                ticket_list.append((0, 0, {
+                    'pax_type': psg.get('pax_type'),
+                    'ticket_number': '',
+                    'passenger_id': psg_obj.id
+                }))
+                ticket_found.append(psg_obj.id)
+            else:
+                ticket_not_found.append(psg)
+
+        self.write({
+            'ticket_ids': ticket_list
+        })
+
+    def prepaid_update_service_charge(self, service_charge_vals):
+        for rec in self.cost_service_charge_ids:
+            rec.sudo().unlink()
+
+        self.create_service_charge(service_charge_vals)
 
     def to_dict(self):
         bill_list = []
