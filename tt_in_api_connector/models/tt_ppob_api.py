@@ -9,7 +9,9 @@ class TtReservationPPOBApiCon(models.Model):
 
     def action_call(self,table_obj,action,data,context):
 
-        if action == 'search_inquiry':
+        if action == 'get_config':
+            res = table_obj.get_config_api(data,context)
+        elif action == 'search_inquiry':
             res = table_obj.search_inquiry_api(data,context)
         elif action == 'get_inquiry':
             res = table_obj.get_inquiry_api(data,context)

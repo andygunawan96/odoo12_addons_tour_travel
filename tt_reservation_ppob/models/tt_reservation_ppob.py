@@ -27,6 +27,27 @@ class ReservationPpob(models.Model):
                                        default=lambda self: self.env.ref('tt_reservation_ppob.tt_provider_type_ppob'))
     is_prepaid_updated = fields.Boolean('Is Prepaid Updated', default=False)
 
+    def get_config_api(self, data, context):
+        try:
+            carrier_list = self.env['tt.transport.carrier'].search([('provider_type_id', '=', self.env.ref('tt_reservation_ppob.tt_provider_type_ppob').id)])
+            res = {}
+            for rec in carrier_list:
+                if not res.get(str(rec.icao)):
+                    res[str(rec.icao)] = []
+                res[str(rec.icao)].append({
+                    'name': rec.name,
+                    'code': rec.code,
+                    'category': rec.icao,
+                    'provider_type': rec.provider_type_id.name,
+                })
+            return ERR.get_no_error(res)
+        except RequestException as e:
+            _logger.error(traceback.format_exc())
+            return e.error_dict()
+        except Exception as e:
+            _logger.error(traceback.format_exc())
+            return ERR.get_error(1021)
+
     def calculate_service_charge(self):
         for service_charge in self.sale_service_charge_ids:
             service_charge.unlink()
