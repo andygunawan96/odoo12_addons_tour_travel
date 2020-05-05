@@ -30,16 +30,21 @@ class ReservationPpob(models.Model):
     def get_config_api(self, data, context):
         try:
             carrier_list = self.env['tt.transport.carrier'].search([('provider_type_id', '=', self.env.ref('tt_reservation_ppob.tt_provider_type_ppob').id)])
-            res = {}
+            product_data = {}
             for rec in carrier_list:
-                if not res.get(str(rec.icao)):
-                    res[str(rec.icao)] = []
-                res[str(rec.icao)].append({
+                if not product_data.get(str(rec.icao)):
+                    product_data[str(rec.icao)] = []
+                product_data[str(rec.icao)].append({
                     'name': rec.name,
                     'code': rec.code,
                     'category': rec.icao,
                     'provider_type': rec.provider_type_id.name,
                 })
+            allowed_denominations = [20000, 50000, 100000, 200000, 500000, 1000000, 5000000, 10000000, 50000000]
+            res = {
+                'product_data': product_data,
+                'allowed_denominations': allowed_denominations
+            }
             return ERR.get_no_error(res)
         except RequestException as e:
             _logger.error(traceback.format_exc())
@@ -264,6 +269,7 @@ class ReservationPpob(models.Model):
             res = inq_obj.to_dict()
             res.update({
                 'provider_booking': provider_list,
+                'state': inq_obj.state,
                 'provider': provider_code
             })
             return ERR.get_no_error(res)
