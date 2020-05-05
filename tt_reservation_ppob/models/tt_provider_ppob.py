@@ -365,6 +365,10 @@ class TtProviderPPOB(models.Model):
         for rec in self.ppob_bill_ids:
             bill_list.append(rec.to_dict())
 
+        bill_detail_list = []
+        for rec in self.ppob_bill_detail_ids:
+            bill_detail_list.append(rec.to_dict())
+
         service_charges = []
         for rec in self.cost_service_charge_ids:
             if rec.charge_type == 'RAC' and not rec.charge_code == 'rac':
@@ -385,6 +389,7 @@ class TtProviderPPOB(models.Model):
             'provider_id': self.provider_id.id,
             'balance_due': self.balance_due and self.balance_due or 0,
             'bill_data': bill_list,
+            'bill_details': bill_detail_list,
             'currency': self.currency_id and self.currency_id.name or '',
             'error_msg': self.error_history_ids and self.error_history_ids[-1].error_msg or '',
             'service_charges': service_charges,
