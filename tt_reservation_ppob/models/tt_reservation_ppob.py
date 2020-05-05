@@ -25,6 +25,7 @@ class ReservationPpob(models.Model):
                                            readonly=True, states={'draft': [('readonly', False)]})
     provider_type_id = fields.Many2one('tt.provider.type', 'Provider Type',
                                        default=lambda self: self.env.ref('tt_reservation_ppob.tt_provider_type_ppob'))
+    is_prepaid_updated = fields.Boolean('Is Prepaid Updated', default=False)
 
     def calculate_service_charge(self):
         for service_charge in self.sale_service_charge_ids:
@@ -115,11 +116,21 @@ class ReservationPpob(models.Model):
             rec.state = 'cancel'
 
     def action_issued_ppob(self,co_uid,customer_parent_id,acquirer_id = False):
+        pnr_list = []
+        provider_list = []
+        carrier_list = []
+        for rec in self.provider_booking_ids:
+            pnr_list.append(rec.pnr)
+            provider_list.append(rec.provider_id.name)
+            carrier_list.append(rec.carrier_id.name)
         self.write({
             'state': 'issued',
             'issued_date': datetime.now(),
             'issued_uid': co_uid,
-            'customer_parent_id': customer_parent_id
+            'customer_parent_id': customer_parent_id,
+            'pnr': ', '.join(pnr_list),
+            'provider_name': ','.join(provider_list),
+            'carrier_name': ','.join(carrier_list),
         })
 
     def action_booked_api_ppob(self,context,pnr_list,hold_date):
@@ -190,7 +201,7 @@ class ReservationPpob(models.Model):
     def search_inquiry_api(self, data, context):
         try:
             search_req = data['search_RQ']
-            inq_prov_obj = self.env['tt.provider.ppob'].sudo().search([('carrier_code', '=', search_req['product_code']), ('customer_number', '=', search_req['customer_number']), ('state', '=', 'booked')], limit=1)
+            inq_prov_obj = self.env['tt.provider.ppob'].sudo().search([('carrier_code', '=', str(search_req['product_code'])), ('customer_number', '=', str(search_req['customer_number'])), ('state', '=', 'booked')], limit=1)
             if inq_prov_obj and inq_prov_obj.booking_id:
                 inq_prov_obj = inq_prov_obj[0]
                 vals = {
@@ -224,12 +235,15 @@ class ReservationPpob(models.Model):
             if not inq_obj:
                 raise RequestException(1003)
 
+            provider_code = ''
             provider_list = []
             for rec in inq_obj.provider_booking_ids:
+                provider_code = rec.provider_id and rec.provider_id.code or ''
                 provider_list.append(rec.to_dict())
             res = inq_obj.to_dict()
             res.update({
-                'provider_booking': provider_list
+                'provider_booking': provider_list,
+                'provider': provider_code
             })
             return ERR.get_no_error(res)
         except RequestException as e:
@@ -325,7 +339,7 @@ class ReservationPpob(models.Model):
                 'total': rec.get('total', 0),
             }
             self.env['tt.bill.detail.ppob'].create(bill_detail_vals)
-        prov_obj.create_service_charge(data['service_charges'])
+
         booking_tmp = {
             'provider_booking_ids': [(6,0,[prov_obj.id])],
             'provider_type_id': provider_type_id.id,
@@ -432,6 +446,9 @@ class ReservationPpob(models.Model):
             })
 
             resv_obj = self.env['tt.reservation.ppob'].create(values)
+            for prov_obj in resv_obj.provider_booking_ids:
+                prov_obj.create_ticket_api(passengers)
+                prov_obj.create_service_charge(data['data']['service_charges'])
             resv_obj.check_provider_state(context)
             provider_list = []
             for rec in resv_obj.provider_booking_ids:
@@ -455,16 +472,39 @@ class ReservationPpob(models.Model):
                 raise RequestException(1003)
 
             resv_obj = resv_obj[0]
-            if resv_obj.state != 'issued':
+            if resv_obj.state != 'issued' and not resv_obj.is_prepaid_updated:
                 for rec in resv_obj.provider_booking_ids:
                     rec.sudo().unlink()
+
+                psg_dict = {
+                    'pax_type': "ADT",
+                    'first_name': "PPOB",
+                    'last_name': "Customer",
+                    'title': "MR",
+                    'gender': "male",
+                    'birth_date': "1990-01-01",
+                    'sequence': 1,
+                    'is_also_booker': True,
+                    'is_also_contact': True,
+                    'nationality_name': "Indonesia",
+                    'nationality_code': "ID",
+                    'passenger_id': "PSG_1",
+                }
+                passengers = [psg_dict]
+
                 values = self._prepare_booking_api(data['data'], context)
                 resv_obj.write(values)
+                provider_list = []
+                for rec in resv_obj.provider_booking_ids:
+                    rec.create_ticket_api(passengers)
+                    rec.create_service_charge(data['data']['service_charges'])
+                    provider_list.append(rec.to_dict())
                 resv_obj.check_provider_state(context)
+            else:
+                provider_list = []
+                for rec in resv_obj.provider_booking_ids:
+                    provider_list.append(rec.to_dict())
 
-            provider_list = []
-            for rec in resv_obj.provider_booking_ids:
-                provider_list.append(rec.to_dict())
             res = resv_obj.to_dict()
             res.update({
                 'provider_booking': provider_list
@@ -477,7 +517,33 @@ class ReservationPpob(models.Model):
             _logger.error(traceback.format_exc())
             return ERR.get_error(1005)
 
-    def issued_payment_api(self, data, context):
+    def get_provider_api(self, data, context):
+        try:
+            if data.get('order_id'):
+                resv_obj = self.env['tt.reservation.ppob'].sudo().browse(int(data['order_id']))
+            else:
+                resv_objs = self.env['tt.reservation.ppob'].sudo().search([('name', '=', data['order_number'])], limit=1)
+                resv_obj = resv_objs and resv_objs[0] or False
+
+            if not resv_obj:
+                raise RequestException(1003)
+
+            provider_code = ''
+            for rec in resv_obj.provider_booking_ids:
+                provider_code = rec.provider_id and rec.provider_id.code or ''
+
+            res = {
+                'provider': provider_code
+            }
+            return ERR.get_no_error(res)
+        except RequestException as e:
+            _logger.error(traceback.format_exc())
+            return e.error_dict()
+        except Exception as e:
+            _logger.error(traceback.format_exc())
+            return ERR.get_error(1013)
+
+    def update_pay_amount_api(self, data, context):
         try:
             if data.get('order_id'):
                 resv_obj = self.env['tt.reservation.ppob'].sudo().browse(int(data['order_id']))
@@ -491,17 +557,69 @@ class ReservationPpob(models.Model):
             provider_list = []
             for rec in resv_obj.provider_booking_ids:
                 temp_carrier_code = rec.carrier_id and rec.carrier_id.code or ''
+                if int(temp_carrier_code) == 522:
+                    rec.write({
+                        'total': data.get('total', 0)
+                    })
+                    for rec2 in rec.ppob_bill_ids:
+                        rec2.write({
+                            'total': data.get('total', 0)
+                        })
+                    if data.get('service_charges'):
+                        psg_dict = {
+                            'pax_type': "ADT",
+                            'first_name': "PPOB",
+                            'last_name': "Customer",
+                            'title': "MR",
+                            'gender': "male",
+                            'birth_date': "1990-01-01",
+                            'sequence': 1,
+                            'is_also_booker': True,
+                            'is_also_contact': True,
+                            'nationality_name': "Indonesia",
+                            'nationality_code': "ID",
+                            'passenger_id': "PSG_1",
+                        }
+                        passengers = [psg_dict]
+                        rec.prepaid_update_service_charge(passengers, data['service_charges'])
+                provider_list.append(rec.to_dict())
+            resv_obj.calculate_service_charge()
+            resv_obj.write({
+                'is_prepaid_updated': True
+            })
+            res = resv_obj.to_dict()
+            res.update({
+                'provider_booking': provider_list
+            })
+            return ERR.get_no_error(res)
+        except RequestException as e:
+            _logger.error(traceback.format_exc())
+            return e.error_dict()
+        except Exception as e:
+            _logger.error(traceback.format_exc())
+            return ERR.get_error(1006)
+
+    def issued_payment_api(self, data, context):
+        try:
+            if data.get('order_id'):
+                resv_obj = self.env['tt.reservation.ppob'].sudo().browse(int(data['order_id']))
+            else:
+                resv_objs = self.env['tt.reservation.ppob'].sudo().search([('name', '=', data['order_number'])], limit=1)
+                resv_obj = resv_objs and resv_objs[0] or False
+
+            if not resv_obj:
+                raise RequestException(1003)
+
+            provider_code = ''
+            provider_list = []
+            for rec in resv_obj.provider_booking_ids:
+                provider_code = rec.provider_id and rec.provider_id.code or ''
+                temp_carrier_code = rec.carrier_id and rec.carrier_id.code or ''
                 bill_list = []
                 for rec2 in rec.ppob_bill_ids:
-                    if int(temp_carrier_code) == 522:
-                        temp_total = data.get('total', 0)
-                        if data.get('service_charges'):
-                            rec.prepaid_update_service_charge(data['service_charges'])
-                    else:
-                        temp_total = rec2.total and rec2.total or 0
                     bill_list.append({
                         'period': rec2.period and rec2.period.strftime('%Y%m') or '',
-                        'total': temp_total
+                        'total': rec2.total and rec2.total or 0
                     })
 
                 provider_list.append({
@@ -514,7 +632,8 @@ class ReservationPpob(models.Model):
             res = {
                 'order_number': resv_obj.name,
                 'total_commission': resv_obj.total_commission,
-                'provider_booking': provider_list
+                'provider_booking': provider_list,
+                'provider': provider_code
             }
             return ERR.get_no_error(res)
         except RequestException as e:

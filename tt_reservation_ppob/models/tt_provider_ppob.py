@@ -285,7 +285,6 @@ class TtProviderPPOB(models.Model):
                     scs_pax_count += 1
                     scs['total'] += scs['amount']
             scs['passenger_ppob_ids'] = [(6,0,scs['passenger_ppob_ids'])]
-            scs['description'] = self.pnr
             service_chg_obj.create(scs)
 
         # "sequence": 1,
@@ -355,10 +354,10 @@ class TtProviderPPOB(models.Model):
             'ticket_ids': ticket_list
         })
 
-    def prepaid_update_service_charge(self, service_charge_vals):
+    def prepaid_update_service_charge(self, passenger_vals, service_charge_vals):
         for rec in self.cost_service_charge_ids:
             rec.sudo().unlink()
-
+        self.create_ticket_api(passenger_vals)
         self.create_service_charge(service_charge_vals)
 
     def to_dict(self):
@@ -383,7 +382,7 @@ class TtProviderPPOB(models.Model):
             'pnr': self.pnr and self.pnr or '',
             'pnr2': self.pnr2 and self.pnr2 or '',
             'provider': self.provider_id and self.provider_id.code or '',
-            'provider_id': self.id,
+            'provider_id': self.provider_id.id,
             'balance_due': self.balance_due and self.balance_due or 0,
             'bill_data': bill_list,
             'currency': self.currency_id and self.currency_id.name or '',
