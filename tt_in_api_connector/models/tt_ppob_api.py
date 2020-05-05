@@ -19,6 +19,10 @@ class TtReservationPPOBApiCon(models.Model):
             res = table_obj.update_inquiry_api(data,context)
         elif action == 'issued_payment_ppob':
             res = table_obj.issued_payment_api(data,context)
+        elif action == 'get_provider_booking_ppob':
+            res = table_obj.get_provider_api(data,context)
+        elif action == 'update_pay_amount_ppob':
+            res = table_obj.update_pay_amount_api(data, context)
         elif action == 'update_inquiry_status':
             res = table_obj.update_inquiry_status_api(data,context)
         elif action == 'payment':

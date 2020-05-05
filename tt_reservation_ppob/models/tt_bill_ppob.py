@@ -7,7 +7,7 @@ from datetime import datetime
 class TtBillPPOB(models.Model):
     _name = 'tt.bill.ppob'
     _rec_name = 'period'
-    _order = 'sequence'
+    _order = 'period'
     _description = 'Rodex Model'
 
     provider_booking_id = fields.Many2one('tt.provider.ppob', 'Provider Booking', ondelete='cascade')
