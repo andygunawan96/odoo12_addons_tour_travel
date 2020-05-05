@@ -912,7 +912,7 @@ class AgentRegistration(models.Model):
     def get_config_api(self):
         try:
             agent_type = []
-            for rec in self.env['tt.agent.type'].search([('id', '!=', self.env.ref('tt_base.agent_type_ho').id)]):
+            for rec in self.env['tt.agent.type'].search([('can_be_registered','=',True)]):
                 agent_type.append({
                     'name': rec.name,
                     'is_allow_regis': rec.can_register_agent,
