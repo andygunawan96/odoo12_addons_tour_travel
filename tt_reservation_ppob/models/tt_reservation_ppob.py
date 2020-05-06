@@ -678,7 +678,7 @@ class ReservationPpob(models.Model):
 
             total_admin = 0
             for serv in resv_obj.sale_service_charge_ids:
-                if serv.charge_code == 'roc':
+                if serv.charge_type == 'ROC':
                     total_admin += serv.amount
 
             res = {
