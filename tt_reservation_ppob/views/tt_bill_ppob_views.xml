@@ -36,11 +36,11 @@
                             <field name="incentive"/>
                             <field name="ppn_tax_amount"/>
                             <field name="ppj_tax_amount"/>
+                            <field name="installment"/>
                         </group>
                         <group>
                             <field name="token"/>
                             <field name="kwh_amount"/>
-                            <field name="installment"/>
                         </group>
                     </group>
                     <separator string="Meter History"/>

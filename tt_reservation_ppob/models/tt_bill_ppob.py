@@ -31,8 +31,8 @@ class TtBillPPOB(models.Model):
     incentive = fields.Monetary('Incentive', default=0)
     fare_amount = fields.Monetary('Fare Amount (for Electricity)', default=0)
     fine_amount = fields.Monetary('Fine Amount', default=0)
+    installment = fields.Monetary('Installment Amount', default=0)
     kwh_amount = fields.Integer('KWH Amount Upon Payment', default=0)
-    installment = fields.Integer('Installment Amount', default=0)
     total = fields.Monetary('Total', readonly=True, default=0)
     token = fields.Char('Token Number')
 
