@@ -201,7 +201,6 @@ class PrintoutPPOBBillsForm(models.AbstractModel):
         admin_bank = 0
         before_meter = -1
         after_meter = -1
-        tarif = 0
         total_tagihan_pln = 0
 
         # Get PLN Postpaid Data
@@ -218,8 +217,7 @@ class PrintoutPPOBBillsForm(models.AbstractModel):
                     if bill.period:
                         period.append(bill.period.strftime('%m/%y'))
                     # Tarif & Total Bayar
-                    tarif += bill.fare_amount
-                    total_tagihan_pln += bill.fare_amount + bill.fine_amount + bill.admin_fee + bill.stamp_fee + bill.incentive + bill.ppn_tax_amount + bill.ppj_tax_amount
+                    total_tagihan_pln += bill.fare_amount  # Cukup ambil fare amount. gak perlu jumlahkan semuanya
                     # Stand Meter
                     if bill.meter_history_ids:
                         for meter in bill.meter_history_ids:
@@ -236,7 +234,6 @@ class PrintoutPPOBBillsForm(models.AbstractModel):
 
         # Set Values
         values.update({
-            'tarif': tarif,
             'total_tagihan_pln': total_tagihan_pln,
             'before_meter': before_meter,
             'after_meter': after_meter,
@@ -256,6 +253,7 @@ class PrintoutPPOBBillsForm(models.AbstractModel):
         admin_bank = 0
         total_tagihan_pln = 0
         jumlah_kwh = 0
+        installment = 0
 
         # Get PLN Prepaid Data
         if rec.provider_booking_ids:
@@ -269,11 +267,12 @@ class PrintoutPPOBBillsForm(models.AbstractModel):
                 for bill in provider.ppob_bill_ids:
                     # Tarif & Total Bayar
                     tarif += bill.fare_amount
-                    total_tagihan_pln += bill.fare_amount + bill.fine_amount + bill.admin_fee + bill.stamp_fee + bill.incentive + bill.ppn_tax_amount + bill.ppj_tax_amount
+                    total_tagihan_pln += bill.fare_amount + bill.fine_amount + bill.admin_fee + bill.stamp_fee + bill.incentive + bill.ppn_tax_amount + bill.ppj_tax_amount + bill.installment
                     stamp_fee += bill.stamp_fee
                     ppn += bill.ppn_tax_amount
                     ppj += bill.ppj_tax_amount
                     jumlah_kwh += bill.kwh_amount
+                    installment += bill.installment
 
         # Set Values
         values.update({
@@ -283,7 +282,8 @@ class PrintoutPPOBBillsForm(models.AbstractModel):
             'ppn': ppn,
             'ppj': ppj,
             'jumlah_kwh': jumlah_kwh,
-            'admin_bank': admin_bank
+            'admin_bank': admin_bank,
+            'installment': installment
         })
         return values
 
@@ -320,20 +320,28 @@ class PrintoutPPOBBillsForm(models.AbstractModel):
         period = 0
         tarif = 0
         jumlah_peserta = 0
+        date = ''
 
         # Get BPJS Kesehatan Data
         if rec.provider_booking_ids:
             provider = rec.provider_booking_ids[0]
+            date = provider.issued_date.strftime('%d-%m-%Y')
+
+            for scs in provider.cost_service_charge_ids:
+                if scs.charge_code == 'roc':
+                    admin_fee += scs.total
+
             if provider.ppob_bill_ids:
                 for bill in provider.ppob_bill_ids:
                     period += 1
-                    tarif += bill.fare_amount
-                    admin_fee += bill.admin_fee
 
             if provider.ppob_bill_detail_ids:
                 jumlah_peserta = len(provider.ppob_bill_detail_ids)
+                for bill_detail in provider.ppob_bill_detail_ids:
+                    tarif += bill_detail.total
 
         values.update({
+            'date': date,
             'period': str(period),
             'tarif': tarif,
             'admin_fee': admin_fee,
