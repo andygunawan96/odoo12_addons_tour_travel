@@ -92,8 +92,18 @@ class TtBillDetailPPOB(models.Model):
     _description = 'Rodex Model'
 
     provider_booking_id = fields.Many2one('tt.provider.ppob', 'Provider Booking', ondelete='cascade')
-    customer_number = fields.Char('Customer Number', readonly=True, states={'draft': [('readonly', False)]})
-    customer_name = fields.Char('Customer Name', readonly=True, states={'draft': [('readonly', False)]})
-    unit_code = fields.Char('Unit Code', readonly=True, states={'draft': [('readonly', False)]})
-    unit_name = fields.Char('Unit Name', readonly=True, states={'draft': [('readonly', False)]})
+    customer_number = fields.Char('Customer Number', readonly=True)
+    customer_name = fields.Char('Customer Name', readonly=True)
+    unit_code = fields.Char('Unit Code', readonly=True)
+    unit_name = fields.Char('Unit Name', readonly=True)
     total = fields.Integer('Total', readonly=True, default=0)
+
+    def to_dict(self):
+        res = {
+            'customer_number': self.customer_number and self.customer_number or '',
+            'customer_name': self.customer_name and self.customer_name or '',
+            'unit_code': self.unit_code and self.unit_code or '',
+            'unit_name': self.unit_name and self.unit_name or '',
+            'total': self.total and self.total or 0,
+        }
+        return res
