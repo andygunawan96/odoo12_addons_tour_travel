@@ -721,6 +721,12 @@ class ReservationPpob(models.Model):
             _logger.error(traceback.format_exc())
             return ERR.get_error(1005)
 
+    def get_filename(self):
+        provider = self.provider_booking_ids[0]
+        if provider.carrier_id:
+            return provider.carrier_id.name
+        return 'PPOB Bills'
+
     def print_eticket(self, data, ctx=None):
         # jika panggil dari backend
         if 'order_number' not in data:
@@ -747,6 +753,8 @@ class ReservationPpob(models.Model):
             else:
                 co_uid = self.env.user.id
 
+            filename = book_obj.get_filename()
+
             pdf_report = ppob_ticket_id.report_action(book_obj, data=datas)
             pdf_report['context'].update({
                 'active_model': book_obj._name,
@@ -755,8 +763,8 @@ class ReservationPpob(models.Model):
             pdf_report_bytes = ppob_ticket_id.render_qweb_pdf(data=pdf_report)
             res = book_obj.env['tt.upload.center.wizard'].upload_file_api(
                 {
-                    'filename': 'PPOB Bills %s.pdf' % book_obj.name,
-                    'file_reference': 'PPOB Bills',
+                    'filename': '%s %s.pdf' % (filename, book_obj.name),
+                    'file_reference': filename,
                     'file': base64.b64encode(pdf_report_bytes[0]),
                     'delete_date': datetime.today() + timedelta(minutes=10)
                 },
@@ -772,5 +780,53 @@ class ReservationPpob(models.Model):
             'name': "ZZZ",
             'target': 'new',
             'url': book_obj.printout_ticket_id.url,
+        }
+        return url
+
+    def print_ho_invoice(self):
+        datas = {
+            'ids': self.env.context.get('active_ids', []),
+            'model': self._name
+        }
+        res = self.read()
+        res = res and res[0] or {}
+        datas['form'] = res
+        ppob_ho_invoice_id = self.env.ref('tt_report_common.action_report_printout_invoice_ho_ppob')
+        if not self.printout_ho_invoice_id:
+            if self.agent_id:
+                co_agent_id = self.agent_id.id
+            else:
+                co_agent_id = self.env.user.agent_id.id
+
+            if self.user_id:
+                co_uid = self.user_id.id
+            else:
+                co_uid = self.env.user.id
+
+            pdf_report = ppob_ho_invoice_id.report_action(self, data=datas)
+            pdf_report['context'].update({
+                'active_model': self._name,
+                'active_id': self.id
+            })
+            pdf_report_bytes = ppob_ho_invoice_id.render_qweb_pdf(data=pdf_report)
+            res = self.env['tt.upload.center.wizard'].upload_file_api(
+                {
+                    'filename': 'PPOB HO Invoice %s.pdf' % self.name,
+                    'file_reference': 'PPOB HO Invoice',
+                    'file': base64.b64encode(pdf_report_bytes[0]),
+                    'delete_date': datetime.today() + timedelta(minutes=10)
+                },
+                {
+                    'co_agent_id': co_agent_id,
+                    'co_uid': co_uid,
+                }
+            )
+            upc_id = self.env['tt.upload.center'].search([('seq_id', '=', res['response']['seq_id'])], limit=1)
+            self.printout_ho_invoice_id = upc_id.id
+        url = {
+            'type': 'ir.actions.act_url',
+            'name': "ZZZ",
+            'target': 'new',
+            'url': self.printout_ho_invoice_id.url,
         }
         return url

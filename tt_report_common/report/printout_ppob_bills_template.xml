@@ -300,12 +300,12 @@
                         <span>:</span><br/>
                     </div>
                     <div class="col-7">
-                        <span t-field="provider.pnr"/><br/>
+                        <span t-field="provider.session_id"/><br/>
                         <span t-field="provider.issued_date"/><br/>
-                        <span/><br/>
-                        <span t-field="provider.customer_name"/><br/>
-                        <span/><br/>
                         <span t-field="provider.customer_number"/><br/>
+                        <span t-field="provider.customer_name"/><br/>
+                        <span t-esc="values['jumlah_peserta']"/><br/>
+                        <span t-field="provider.pnr"/><br/>
                         <span t-field="provider.unpaid_bill_display" t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/><br/>
                         <span t-esc="values['period']"/><br/>
                         <span t-esc="int(values['tarif'])" t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/><br/>
