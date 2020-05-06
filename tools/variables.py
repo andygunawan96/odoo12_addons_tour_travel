@@ -208,3 +208,14 @@ ROUNDING_AMOUNT_TYPE = (
     ('floor', 'Floor'),
     ('round', 'Round'),
 )
+
+PROVIDER_TYPE_PREFIX = {
+    'AL': 'airline',
+    'TN': 'train',
+    'PS': 'passport',
+    'VS': 'visa',
+    'AT': 'activity',
+    'TR': 'tour',
+    'RESV': 'hotel',
+    'BT': 'ppob'
+}
