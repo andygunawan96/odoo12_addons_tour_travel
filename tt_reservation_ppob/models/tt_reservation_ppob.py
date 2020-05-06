@@ -25,7 +25,7 @@ class ReservationPpob(models.Model):
                                            readonly=True, states={'draft': [('readonly', False)]})
     provider_type_id = fields.Many2one('tt.provider.type', 'Provider Type',
                                        default=lambda self: self.env.ref('tt_reservation_ppob.tt_provider_type_ppob'))
-    is_prepaid_updated = fields.Boolean('Is Prepaid Updated', default=False)
+    prepaid_value = fields.Integer('Prepaid Value', default=0)
 
     def get_config_api(self, data, context):
         try:
@@ -263,13 +263,17 @@ class ReservationPpob(models.Model):
 
             provider_code = ''
             provider_list = []
+            total_price = 0
             for rec in inq_obj.provider_booking_ids:
                 provider_code = rec.provider_id and rec.provider_id.code or ''
+                total_price += rec.total
                 provider_list.append(rec.to_dict())
             res = inq_obj.to_dict()
             res.update({
                 'provider_booking': provider_list,
                 'state': inq_obj.state,
+                'prepaid_value': inq_obj.prepaid_value and inq_obj.prepaid_value or 0,
+                'total_price': total_price,
                 'provider': provider_code
             })
             return ERR.get_no_error(res)
@@ -376,6 +380,10 @@ class ReservationPpob(models.Model):
             'agent_id': context['co_agent_id'],
             'user_id': context['co_uid'],
         }
+        if data.get('prepaid_value'):
+            booking_tmp.update({
+                'prepaid_value': data['prepaid_value']
+            })
 
         return booking_tmp
 
@@ -473,16 +481,19 @@ class ReservationPpob(models.Model):
             })
 
             resv_obj = self.env['tt.reservation.ppob'].create(values)
+            total_price = 0
             for prov_obj in resv_obj.provider_booking_ids:
                 prov_obj.create_ticket_api(passengers)
                 prov_obj.create_service_charge(data['data']['service_charges'])
+                total_price += prov_obj.total
             resv_obj.check_provider_state(context)
             provider_list = []
             for rec in resv_obj.provider_booking_ids:
                 provider_list.append(rec.to_dict())
             res = resv_obj.to_dict()
             res.update({
-                'provider_booking': provider_list
+                'provider_booking': provider_list,
+                'total_price': total_price
             })
             return ERR.get_no_error(res)
         except RequestException as e:
@@ -499,7 +510,7 @@ class ReservationPpob(models.Model):
                 raise RequestException(1003)
 
             resv_obj = resv_obj[0]
-            if resv_obj.state != 'issued' and not resv_obj.is_prepaid_updated:
+            if resv_obj.state != 'issued':
                 for rec in resv_obj.provider_booking_ids:
                     rec.sudo().unlink()
 
@@ -522,19 +533,24 @@ class ReservationPpob(models.Model):
                 values = self._prepare_booking_api(data['data'], context)
                 resv_obj.write(values)
                 provider_list = []
+                total_price = 0
                 for rec in resv_obj.provider_booking_ids:
                     rec.create_ticket_api(passengers)
                     rec.create_service_charge(data['data']['service_charges'])
+                    total_price += rec.total
                     provider_list.append(rec.to_dict())
                 resv_obj.check_provider_state(context)
             else:
                 provider_list = []
+                total_price = 0
                 for rec in resv_obj.provider_booking_ids:
+                    total_price += rec.total
                     provider_list.append(rec.to_dict())
 
             res = resv_obj.to_dict()
             res.update({
-                'provider_booking': provider_list
+                'provider_booking': provider_list,
+                'total_price': total_price
             })
             return ERR.get_no_error(res)
         except RequestException as e:
@@ -581,16 +597,18 @@ class ReservationPpob(models.Model):
             if not resv_obj:
                 raise RequestException(1003)
 
+            new_total = data.get('total', 0)
             provider_list = []
+            total_price = 0
             for rec in resv_obj.provider_booking_ids:
                 temp_carrier_code = rec.carrier_id and rec.carrier_id.code or ''
                 if int(temp_carrier_code) == 522:
                     rec.write({
-                        'total': data.get('total', 0)
+                        'total': new_total
                     })
                     for rec2 in rec.ppob_bill_ids:
                         rec2.write({
-                            'total': data.get('total', 0)
+                            'total': new_total
                         })
                     if data.get('service_charges'):
                         psg_dict = {
@@ -609,14 +627,16 @@ class ReservationPpob(models.Model):
                         }
                         passengers = [psg_dict]
                         rec.prepaid_update_service_charge(passengers, data['service_charges'])
+                total_price += rec.total
                 provider_list.append(rec.to_dict())
             resv_obj.calculate_service_charge()
             resv_obj.write({
-                'is_prepaid_updated': True
+                'prepaid_value': new_total
             })
             res = resv_obj.to_dict()
             res.update({
-                'provider_booking': provider_list
+                'provider_booking': provider_list,
+                'total_price': total_price
             })
             return ERR.get_no_error(res)
         except RequestException as e:
@@ -656,9 +676,14 @@ class ReservationPpob(models.Model):
                     'bill_data': bill_list,
                 })
 
+            total_admin = 0
+            for serv in resv_obj.sale_service_charge_ids:
+                if serv.charge_code == 'roc':
+                    total_admin += serv.amount
+
             res = {
                 'order_number': resv_obj.name,
-                'total_commission': resv_obj.total_commission,
+                'total_admin': total_admin,
                 'provider_booking': provider_list,
                 'provider': provider_code
             }
