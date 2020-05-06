@@ -319,6 +319,7 @@ class PrintoutPPOBBillsForm(models.AbstractModel):
         admin_fee = 0
         period = 0
         tarif = 0
+        jumlah_peserta = 0
 
         # Get BPJS Kesehatan Data
         if rec.provider_booking_ids:
@@ -329,10 +330,14 @@ class PrintoutPPOBBillsForm(models.AbstractModel):
                     tarif += bill.fare_amount
                     admin_fee += bill.admin_fee
 
+            if provider.ppob_bill_detail_ids:
+                jumlah_peserta = len(provider.ppob_bill_detail_ids)
+
         values.update({
             'period': str(period),
             'tarif': tarif,
-            'admin_fee': admin_fee
+            'admin_fee': admin_fee,
+            'jumlah_peserta': jumlah_peserta
         })
         return values
 
@@ -478,7 +483,7 @@ class PrintoutInvoiceHO(models.AbstractModel):
     def get_pax_dict(self, rec, provider):
         pax_dict = {}
         for cost_charge in provider.cost_service_charge_ids:
-            if cost_charge.charge_type != 'RAC':
+            # if cost_charge.charge_type != 'RAC':
                 if rec._name == 'tt.reservation.airline':
                     for psg in cost_charge.passenger_airline_ids:
                         if psg.name not in pax_dict:
@@ -545,6 +550,25 @@ class PrintoutInvoiceHO(models.AbstractModel):
                             pax_dict[psg.name]['total'] = cost_charge.amount
                         else:
                             pax_dict[psg.name]['total'] += cost_charge.amount
+        if rec._name == 'tt.reservation.ppob':
+            ppob_carrier = provider.carrier_id
+            if ppob_carrier.code == self.env.ref('tt_reservation_ppob.tt_transport_carrier_ppob_bpjs').code:
+                for bill_detail in provider.ppob_bill_detail_ids:
+                    pax_dict[bill_detail.customer_number] = {}
+                    pax_dict[bill_detail.customer_number]['name'] = bill_detail.customer_name
+                    pax_dict[bill_detail.customer_number]['total'] = bill_detail.total
+            elif ppob_carrier.code == self.env.ref('tt_reservation_ppob.tt_transport_carrier_ppob_postpln').code:
+                for bill in provider.ppob_bill_ids:
+                    period = bill.period.strftime('%d/%m/%Y')
+                    pax_dict[period] = {}
+                    pax_dict[period]['name'] = 'Periode ' + period
+                    pax_dict[period]['total'] = bill.fare_amount
+            elif ppob_carrier.code == self.env.ref('tt_reservation_ppob.tt_transport_carrier_ppob_prepln').code:
+                for bill in provider.ppob_bill_ids:
+                    period = bill.period.strftime('%d/%m/%Y')
+                    pax_dict[period] = {}
+                    pax_dict[period]['name'] = 'Periode ' + period
+                    pax_dict[period]['total'] = bill.fare_amount
         return pax_dict
 
     def get_pax_data(self):
@@ -558,7 +582,6 @@ class PrintoutInvoiceHO(models.AbstractModel):
             for channel_charge in psg.channel_service_charge_ids:
                 price_unit += channel_charge.amount
 
-    # Get Terbilang dkk di hapus
     def compute_terbilang_from_objs(self, recs, currency_str='rupiah'):
         a = {}
         for rec2 in recs:
@@ -612,6 +635,29 @@ class PrintoutInvoiceHO(models.AbstractModel):
                 desc += str(idx + 1) + '. ' + guest.name + '\n'
             # spc = rec.special_request or '-'
             # desc += 'Special Request: ' + spc + '\n'
+        elif data['context']['active_model'] == 'tt.reservation.ppob':
+            ppob_carrier = rec.carrier_id
+            desc += 'PPOB : ' + ppob_carrier.name + '<br/>'
+            if ppob_carrier.code == self.env.ref('tt_reservation_ppob.tt_transport_carrier_ppob_bpjs').code:
+                # desc += 'MKM Ref : ' + rec.session_id + '<br/>'
+                desc += 'BPJS Ref : ' + rec.pnr + '<br/>'
+                desc += 'Nama : ' + rec.customer_name + '<br/>'
+                desc += 'Jumlah Peserta : ' + str(len(rec.ppob_bill_detail_ids)) + '<br/>'
+            elif ppob_carrier.code == self.env.ref('tt_reservation_ppob.tt_transport_carrier_ppob_postpln').code:
+                desc += 'IDPel : ' + rec.customer_id_number + '<br/>'
+                desc += 'Nama : ' + rec.customer_name + '<br/>'
+                desc += 'Tarif/Daya : ' + (rec.fare_type if rec.fare_type else '') + ' / ' + str(rec.power if rec.power else '') + 'VA <br/>'
+            elif ppob_carrier.code == self.env.ref('tt_reservation_ppob.tt_transport_carrier_ppob_prepln').code:
+                desc += 'No. Meter : ' + rec.meter_number + '<br/>'
+                desc += 'IDPel : ' + rec.customer_id_number + '<br/>'
+                desc += 'Nama : ' + rec.customer_name + '<br/>'
+                desc += 'Tarif/Daya : ' + (rec.fare_type if rec.fare_type else '') + ' / ' + str(rec.power if rec.power else '') + 'VA <br/>'
+            elif ppob_carrier.code == self.env.ref('tt_reservation_ppob.tt_transport_carrier_ppob_notaglispln').code:
+                desc += 'Transaksi : ' + rec.transaction_code + '<br/>'
+                desc += 'No. Registrasi : ' + rec.registration_number + '<br/>'
+                desc += 'Tgl. Registrasi : ' + rec.registration_date.strftime('%d/%m/%Y') + '<br/>'
+                desc += 'IDPel : ' + rec.customer_id_number + '<br/>'
+                desc += 'Nama : ' + rec.customer_name + '<br/>'
         return desc
 
     def _get_report_values(self, docids, data=None):

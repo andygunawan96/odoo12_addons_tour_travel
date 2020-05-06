@@ -329,7 +329,7 @@
                                 </t>
                                 <t t-elif="doc_model == 'tt.reservation.ppob'">
                                     <t t-if="doc.provider_booking_ids">
-                                        <span t-field="doc.provider_booking_ids[0].customer_id_number" style="margin-top: 5px;"/>
+                                        <span t-field="doc.provider_booking_ids[0].customer_number" style="margin-top: 5px;"/>
                                     </t>
                                     <t t-else="">
                                         <span style="margin-top: 5px;">-</span>
