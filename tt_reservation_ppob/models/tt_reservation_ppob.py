@@ -38,6 +38,9 @@ class ReservationPpob(models.Model):
                     'name': rec.name,
                     'code': rec.code,
                     'category': rec.icao,
+                    'adult_length_name': rec.adult_length_name,
+                    'child_length_name': rec.child_length_name,
+                    'infant_length_name': rec.infant_length_name,
                     'provider_type': rec.provider_type_id.name,
                 })
             allowed_denominations = [20000, 50000, 100000, 200000, 500000, 1000000, 5000000, 10000000, 50000000]
