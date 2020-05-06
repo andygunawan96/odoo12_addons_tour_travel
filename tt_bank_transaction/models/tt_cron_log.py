@@ -6,17 +6,6 @@ import json,pytz
 from datetime import datetime, timedelta
 _logger = logging.getLogger(__name__)
 
-provider_type = {
-    'AL': 'airline',
-    'TN': 'train',
-    'PS': 'passport',
-    'VS': 'visa',
-    'AT': 'activity',
-    'TR': 'tour',
-    'RESV': 'hotel',
-    'BT': 'ppob'
-}
-
 class ttCronTopUpValidator(models.Model):
     _inherit = 'tt.cron.log'
 
@@ -81,7 +70,7 @@ class ttCronTopUpValidator(models.Model):
                                     reference_code = result.transaction_code
                                 else:
                                     reference_code = result.transaction_message
-                                agent_id = self.env['tt.reservation.%s' % provider_type[i['number'].split('.')[0]]].search([('name', '=', '%s.%s' %(i['number'].split('.')[0], i['number'].split('.')[1]))]).agent_id
+                                agent_id = self.env['tt.reservation.%s' % variables.PROVIDER_TYPE_PREFIX[i['number'].split('.')[0]]].search([('name', '=', '%s.%s' %(i['number'].split('.')[0], i['number'].split('.')[1]))]).agent_id
                                 if not self.env['tt.payment'].search([('reference', '=', reference_code)]):
                                     # topup
                                     context = {
@@ -107,14 +96,14 @@ class ttCronTopUpValidator(models.Model):
                                         res = self.env['tt.top.up'].action_va_top_up(request, context)
                                         self._cr.commit()
                                         result.top_up_validated(i.id)
-                                book_obj = self.env['tt.reservation.%s' % provider_type[i['number'].split('.')[0]]].search([('name', '=', '%s.%s' % (i['number'].split('.')[0], i['number'].split('.')[1])), ('state', 'in', ['booked'])], limit=1)
+                                book_obj = self.env['tt.reservation.%s' % variables.PROVIDER_TYPE_PREFIX[i['number'].split('.')[0]]].search([('name', '=', '%s.%s' % (i['number'].split('.')[0], i['number'].split('.')[1])), ('state', 'in', ['booked'])], limit=1)
 
                                 if book_obj:
                                     #login gateway, payment
                                     req = {
                                         'order_number': book_obj.name,
                                         'user_id': book_obj.user_id.id,
-                                        'provider_type': provider_type[book_obj.name.split('.')[0]]
+                                        'provider_type': variables.PROVIDER_TYPE_PREFIX[book_obj.name.split('.')[0]]
                                     }
                                     res = self.env['tt.payment.api.con'].send_payment(req)
                                     i.state = 'done'
