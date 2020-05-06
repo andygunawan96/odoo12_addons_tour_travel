@@ -9,11 +9,12 @@
                 <span t-field="doc.name" style="font-size: 18px; font-weight: 730"/><br/>
             </div>
 
-            <!-- Content -->
+            <!-- Header -->
             <div class="title" t-att-style="'background-color: '+base_color+'; border-radius: 20px 20px 0 0; border-color: #CCC; padding-top: 5px; padding-bottom: 5px'">
                 <span style="text-align: center; padding-left: 20px; color: white; font-weight: 600; font-size: 20px">Struk Pembayaran Tagihan Listrik :</span><br/>
             </div>
 
+            <!-- Body -->
             <t t-foreach="doc.provider_booking_ids" t-as="provider">
                 <div class="row" style="margin: 0px; margin-bottom: 40px; padding-top:10px; padding-bottom: 10px; font-size: 17px; border-radius: 0 0 20px 20px; border: 1px solid #BBB;">
                     <div class="col-3">
@@ -41,13 +42,14 @@
                         <span t-field="provider.customer_name"/><br/>
                         <span t-field="provider.fare_type"/>/<span t-field="provider.power"/> VA<br/>
                         <span t-esc="int(values['total_tagihan_pln'])" t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/><br/>
-                        <span t-field="provider.customer_number"/><br/>
+                        <span t-field="provider.pnr"/><br/>
                         <span t-esc="values['period']"/><br/>
                         <span t-esc="int(values['before_meter'])"/> - <span t-esc="int(values['after_meter'])"/><br/>
                     </div>
                 </div>
             </t>
 
+            <!-- Notes -->
             <h3 style="padding-left: 20px; text-align:center; font-weight: 600; font-size: 18px">PLN menyatakan struk ini sebagai bukti pembayaran yang sah.</h3><br/>
 
             <!-- Total -->
@@ -66,7 +68,7 @@
                 </div>
             </div>
 
-            <!-- Notes -->
+            <!-- Footer -->
             <div class="row" style="">
                 <div class="col-2"/>
                 <div class="col-8">
@@ -146,7 +148,7 @@
                         <span t-esc="int(values['stamp_fee'])" t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/><br/>
                         <span t-esc="int(values['ppn'])" t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/><br/>
                         <span t-esc="int(values['ppj'])" t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/><br/>
-                        <span t-field="doc.total" t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/><br/>
+                        <span t-esc="int(values['installment'])" t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/><br/>
                         <span t-esc="int(values['tarif'])" t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/><br/>
                         <span t-esc="values['jumlah_kwh']"/><br/>
                         <span t-esc="int(values['admin_bank'])" t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/>
@@ -264,11 +266,12 @@
                 <span t-field="doc.name" style="font-size: 18px; font-weight: 730"/><br/>
             </div>
 
-            <!-- Content -->
+            <!-- Header -->
             <div class="title" t-att-style="'background-color: '+base_color+'; border-radius: 20px 20px 0 0; border-color: #CCC; padding-top: 5px; padding-bottom: 5px'">
                 <span style="text-align: center; padding-left: 20px; color: white; font-weight: 600; font-size: 20px">Struk Pembayaran Iuran BPJS Kesehatan :</span><br/>
             </div>
 
+            <!-- Content -->
             <t t-foreach="doc.provider_booking_ids" t-as="provider">
                 <div class="row" style="margin: 0px; margin-bottom: 40px; padding-top:10px; padding-bottom: 10px; font-size: 17px; border-radius: 0 0 20px 20px; border: 1px solid #BBB;">
                     <div class="col-3">
@@ -301,7 +304,7 @@
                     </div>
                     <div class="col-7">
                         <span t-field="provider.session_id"/><br/>
-                        <span t-field="provider.issued_date"/><br/>
+                        <span t-esc="values['date']"/><br/>
                         <span t-field="provider.customer_number"/><br/>
                         <span t-field="provider.customer_name"/><br/>
                         <span t-esc="values['jumlah_peserta']"/><br/>
@@ -315,7 +318,7 @@
                 </div>
             </t>
 
-            <!-- Notes -->
+            <!-- Footer -->
             <div class="row" style="">
                 <div class="col-1"/>
                 <div class="col-10">
