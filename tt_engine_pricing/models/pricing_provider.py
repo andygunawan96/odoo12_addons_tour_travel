@@ -42,12 +42,18 @@ class PricingProvider(models.Model):
             # name_list.append('Provider %s' % rec.provider_access_type)
             if rec.provider_access_type != 'all':
                 name_list.append(','.join([provider.code.title() for provider in rec.provider_ids]))
+            else:
+                name_list.append('All Providers')
             # name_list.append('Carrier %s' % rec.carrier_access_type)
             if rec.carrier_access_type != 'all':
                 name_list.append(','.join(['%s' % rec.carrier_access_type.title()] + [carrier.code for carrier in rec.carrier_ids]))
+            else:
+                name_list.append('All Carriers')
             # name_list.append('Agent Type %s' % rec.agent_type_access_type)
             if rec.agent_type_access_type != 'all':
                 name_list.append(','.join(['%s' % rec.agent_type_access_type.title()] + [agent_type.code for agent_type in rec.agent_type_ids]))
+            else:
+                name_list.append('All Agent Type')
             rec.name = ' - '.join(name_list)
 
     @api.multi

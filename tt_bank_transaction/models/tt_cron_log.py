@@ -13,7 +13,8 @@ provider_type = {
     'VS': 'visa',
     'AT': 'activity',
     'TR': 'tour',
-    'RESV': 'hotel'
+    'RESV': 'hotel',
+    'BT': 'ppob'
 }
 
 class ttCronTopUpValidator(models.Model):
