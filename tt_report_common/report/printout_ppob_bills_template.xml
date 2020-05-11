@@ -22,10 +22,10 @@
                             <span>IDPEL</span><br/>
                             <span>NAMA</span><br/>
                             <span>TARIF/DAYA</span><br/>
-                            <span>RP TAG PLN</span><br/>
                             <span>NO REF *)</span><br/>
                             <span>BL/TH</span><br/>
                             <span>STAND METER</span><br/>
+                            <span>RP TAG PLN</span><br/>
                         </b>
                     </div>
                     <div class="col-1">
@@ -41,10 +41,10 @@
                         <span t-field="provider.customer_number"/><br/>
                         <span t-field="provider.customer_name"/><br/>
                         <span t-field="provider.fare_type"/>/<span t-field="provider.power"/> VA<br/>
-                        <span t-esc="int(values['total_tagihan_pln'])" t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/><br/>
                         <span t-field="provider.pnr"/><br/>
                         <span t-esc="values['period']"/><br/>
                         <span t-esc="int(values['before_meter'])"/> - <span t-esc="int(values['after_meter'])"/><br/>
+                        <span t-esc="int(values['total_tagihan_pln'])" t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/><br/>
                     </div>
                 </div>
             </t>
@@ -96,11 +96,12 @@
                 <span t-field="doc.name" style="font-size: 18px; font-weight: 730"/><br/>
             </div>
 
-            <!-- Content -->
+            <!-- Header -->
             <div class="title" t-att-style="'background-color: '+base_color+'; border-radius: 20px 20px 0 0; border-color: #CCC; padding-top: 5px; padding-bottom: 5px'">
                 <span style="text-align: center; padding-left: 20px; color: white; font-weight: 600; font-size: 20px">Struk Pembelian Listrik Prabayar :</span><br/>
             </div>
 
+            <!-- Content -->
             <t t-foreach="doc.provider_booking_ids" t-as="provider">
                 <div class="row" style="margin: 0px; margin-bottom: 40px; padding-top:10px; padding-bottom: 10px; font-size: 17px; border-radius: 0 0 20px 20px; border: 1px solid #BBB;">
                     <div class="col-3">
@@ -108,17 +109,20 @@
                             <span>NO METER</span><br/>
                             <span>IDPEL</span><br/>
                             <span>NAMA</span><br/>
-                            <span>TARIF/DAYA</span><br/>
-                            <span>RP TAG PLN</span><br/>
                             <span>NO REF *)</span><br/>
-                            <span>RP BAYAR</span><br/>
+                            <span>TARIF/DAYA</span><br/>
+                            <span>JML KWH</span><br/><br/>
+
+                            <span>RP STROOM/TOKEN</span><br/>
                             <span>METERAI</span><br/>
                             <span>PPN</span><br/>
                             <span>PPJ</span><br/>
-                            <span>ANGSURAN</span><br/>
-                            <span>RP STROOM/TOKEN</span><br/>
-                            <span>JML KWH</span><br/>
-                            <span>ADMIN CA *)</span><br/>
+                            <span>ANGSURAN</span><br/><br/>
+
+                            <span>RP TAG PLN</span><br/>
+                            <span>ADMIN CA *)</span><br/><br/>
+
+                            <span>RP BAYAR</span><br/>
                         </b>
                     </div>
                     <div class="col-1">
@@ -127,31 +131,37 @@
                         <span>:</span><br/>
                         <span>:</span><br/>
                         <span>:</span><br/>
+                        <span>:</span><br/><br/>
+
                         <span>:</span><br/>
                         <span>:</span><br/>
                         <span>:</span><br/>
                         <span>:</span><br/>
+                        <span>:</span><br/><br/>
+
                         <span>:</span><br/>
-                        <span>:</span><br/>
-                        <span>:</span><br/>
-                        <span>:</span><br/>
+                        <span>:</span><br/><br/>
+
                         <span>:</span><br/>
                     </div>
                     <div class="col-7">
                         <span t-field="provider.meter_number"/><br/>
                         <span t-field="provider.customer_number"/><br/>
                         <span t-field="provider.customer_name"/><br/>
-                        <span t-field="provider.fare_type"/>/<span t-field="provider.power"/> VA<br/>
-                        <span t-esc="int(values['total_tagihan_pln'])" t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/><br/>
                         <span t-field="provider.pnr"/><br/>
-                        <span t-field="doc.total" t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/><br/>
+                        <span t-field="provider.fare_type"/>/<span t-field="provider.power"/> VA<br/>
+                        <span t-esc="values['jumlah_kwh']"/><br/><br/>
+
+                        <span t-esc="int(values['tarif'])" t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/><br/>
                         <span t-esc="int(values['stamp_fee'])" t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/><br/>
                         <span t-esc="int(values['ppn'])" t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/><br/>
                         <span t-esc="int(values['ppj'])" t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/><br/>
-                        <span t-esc="int(values['installment'])" t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/><br/>
-                        <span t-esc="int(values['tarif'])" t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/><br/>
-                        <span t-esc="values['jumlah_kwh']"/><br/>
-                        <span t-esc="int(values['admin_bank'])" t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/>
+                        <span t-esc="int(values['installment'])" t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/><br/><br/>
+
+                        <span t-esc="int(values['total_tagihan_pln'])" t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/><br/>
+                        <span t-esc="int(values['admin_bank'])" t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/><br/><br/>
+
+                        <span t-field="doc.total" t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/><br/>
                     </div>
                 </div>
             </t>
@@ -187,22 +197,23 @@
                 <span t-field="doc.name" style="font-size: 18px; font-weight: 730"/><br/>
             </div>
 
-            <!-- Content -->
+            <!-- Header -->
             <div class="title" t-att-style="'background-color: '+base_color+'; border-radius: 20px 20px 0 0; border-color: #CCC; padding-top: 5px; padding-bottom: 5px'">
                 <span style="text-align: center; padding-left: 20px; color: white; font-weight: 600; font-size: 20px">Struk Non Tagihan Listrik :</span><br/>
             </div>
 
+            <!-- Content -->
             <t t-foreach="doc.provider_booking_ids" t-as="provider">
                 <div class="row" style="margin: 0px; margin-bottom: 40px; padding-top:10px; padding-bottom: 10px; font-size: 17px; border-radius: 0 0 20px 20px; border: 1px solid #BBB;">
                     <div class="col-3">
                         <b>
+                            <span>IDPEL</span><br/>
+                            <span>NAMA</span><br/>
                             <span>TRANSAKSI</span><br/>
                             <span>NO REGISTRASI</span><br/>
                             <span>TGL REGISTRASI</span><br/>
-                            <span>NAMA</span><br/>
-                            <span>IDPEL</span><br/>
-                            <span>BIAYA PLN</span><br/>
                             <span>NO REF **)</span><br/>
+                            <span>BIAYA PLN</span><br/>
                         </b>
                     </div>
                     <div class="col-1">
@@ -215,17 +226,18 @@
                         <span>:</span><br/>
                     </div>
                     <div class="col-7">
+                        <span t-field="provider.customer_number"/><br/>
+                        <span t-field="provider.customer_name"/><br/>
                         <span t-field="provider.transaction_code"/><br/>  <!-- Sementara. gtw pake name atau code -->
                         <span t-field="provider.registration_number"/><br/>
                         <span t-field="provider.registration_date"/><br/>
-                        <span t-field="provider.customer_name"/><br/>
-                        <span t-field="provider.customer_number"/><br/>
-                        <span t-esc="int(values['total_tagihan_pln'])" t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/><br/>
                         <span t-field="provider.pnr"/><br/>
+                        <span t-esc="int(values['total_tagihan_pln'])" t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/><br/>
                     </div>
                 </div>
             </t>
 
+            <!-- Footer -->
             <h3 style="padding-left: 20px; text-align:center; font-weight: 600; font-size: 18px">PLN menyatakan struk ini sebagai bukti pembayaran yang sah.</h3><br/>
 
             <!-- Total -->
