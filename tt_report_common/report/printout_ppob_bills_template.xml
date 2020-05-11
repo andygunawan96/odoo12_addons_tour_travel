@@ -38,7 +38,7 @@
                         <span>:</span><br/>
                     </div>
                     <div class="col-7">
-                        <span t-field="provider.customer_id_number"/><br/>
+                        <span t-field="provider.customer_number"/><br/>
                         <span t-field="provider.customer_name"/><br/>
                         <span t-field="provider.fare_type"/>/<span t-field="provider.power"/> VA<br/>
                         <span t-esc="int(values['total_tagihan_pln'])" t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/><br/>
@@ -80,7 +80,7 @@
                     </t>
                     <h3 style="padding-left: 20px; text-align:center; font-weight: 600; font-size: 18px">Rincian pelanggan dapat diakses di www.pln.co.id</h3>
                     <h3 style="padding-left: 20px; text-align:center; font-weight: 600; font-size: 18px">Informasi hubungi Contact Center : 123</h3>
-                    <h3 style="padding-left: 20px; text-align:center; font-weight: 600; font-size: 18px">Atau hub. PLN Terdekat : [no.telp Rayon] *)</h3>
+                    <h3 style="padding-left: 20px; text-align:center; font-weight: 600; font-size: 18px">Atau hub. PLN Terdekat : <span t-field="doc.provider_booking_ids[0].unit_phone_number"/> *)</h3>
                 </div>
                 <div class="col-2"/>
             </div>
@@ -139,11 +139,11 @@
                     </div>
                     <div class="col-7">
                         <span t-field="provider.meter_number"/><br/>
-                        <span t-field="provider.customer_id_number"/><br/>
+                        <span t-field="provider.customer_number"/><br/>
                         <span t-field="provider.customer_name"/><br/>
                         <span t-field="provider.fare_type"/>/<span t-field="provider.power"/> VA<br/>
                         <span t-esc="int(values['total_tagihan_pln'])" t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/><br/>
-                        <span t-field="provider.customer_number"/><br/>
+                        <span t-field="provider.pnr"/><br/>
                         <span t-field="doc.total" t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/><br/>
                         <span t-esc="int(values['stamp_fee'])" t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/><br/>
                         <span t-esc="int(values['ppn'])" t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/><br/>
@@ -171,7 +171,7 @@
                 <div class="col-8">
                     <h3 style="padding-left: 20px; text-align:center; font-weight: 600; font-size: 18px">Informasi hubungi Contact Center 123</h3>
                     <h3 style="padding-left: 20px; text-align:center; font-weight: 600; font-size: 18px">Atau</h3>
-                    <h3 style="padding-left: 20px; text-align:center; font-weight: 600; font-size: 18px">Hub. PLN Terdekat : no. telp Rayon</h3>
+                    <h3 style="padding-left: 20px; text-align:center; font-weight: 600; font-size: 18px">Hub. PLN Terdekat : <span t-field="doc.provider_booking_ids[0].unit_phone_number"/></h3>
                 </div>
                 <div class="col-2"/>
             </div>
@@ -219,9 +219,9 @@
                         <span t-field="provider.registration_number"/><br/>
                         <span t-field="provider.registration_date"/><br/>
                         <span t-field="provider.customer_name"/><br/>
-                        <span t-field="provider.customer_id_number"/><br/>
-                        <span t-esc="int(values['total_tagihan_pln'])" t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/><br/>
                         <span t-field="provider.customer_number"/><br/>
+                        <span t-esc="int(values['total_tagihan_pln'])" t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/><br/>
+                        <span t-field="provider.pnr"/><br/>
                     </div>
                 </div>
             </t>
@@ -250,7 +250,7 @@
                 <div class="col-8">
                     <h3 style="padding-left: 20px; text-align:center; font-weight: 600; font-size: 18px">Informasi hubungi Contact Center 123</h3>
                     <h3 style="padding-left: 20px; text-align:center; font-weight: 600; font-size: 18px">Atau</h3>
-                    <h3 style="padding-left: 20px; text-align:center; font-weight: 600; font-size: 18px">Hub. PLN Terdekat : no. telp Rayon</h3>
+                    <h3 style="padding-left: 20px; text-align:center; font-weight: 600; font-size: 18px">Hub. PLN Terdekat : <span t-field="doc.provider_booking_ids[0].unit_phone_number"/></h3>
                 </div>
                 <div class="col-2"/>
             </div>
