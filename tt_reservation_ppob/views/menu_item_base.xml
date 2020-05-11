@@ -7,7 +7,7 @@
         <menuitem id="top_reservations_ppob"
                   parent="tt_reservation.main_reservations"
                   name="Bills"
-                  sequence="100"
+                  sequence="40"
                   groups="base.group_user"/>
         
         <menuitem id="menu_reservations_ppob"
