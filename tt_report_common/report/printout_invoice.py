@@ -193,6 +193,10 @@ class PrintoutPPOBBillsForm(models.AbstractModel):
     _name = 'report.tt_report_common.printout_ppob_bills'
     _description = 'Rodex Model'
 
+    def format_token_number(self, token):
+        token = token.replace(" ", "")
+        return '-'.join(token[i:i+4] for i in range(0, len(token), 4))
+
     def get_pln_postpaid_values(self, rec):
         values = {}
 
@@ -254,11 +258,14 @@ class PrintoutPPOBBillsForm(models.AbstractModel):
         total_tagihan_pln = 0
         jumlah_kwh = 0
         installment = 0
+        token_number = ''
 
         # Get PLN Prepaid Data
         if rec.provider_booking_ids:
             # Admin Bank (ambil dari ROC service charge)
             provider = rec.provider_booking_ids[0]
+            token_number = self.format_token_number(provider.ppob_bill_ids[0].token)
+
             for scs in provider.cost_service_charge_ids:
                 if scs.charge_code == 'roc':
                     admin_bank += scs.total
@@ -276,6 +283,7 @@ class PrintoutPPOBBillsForm(models.AbstractModel):
 
         # Set Values
         values.update({
+            'token_number': token_number,
             'tarif': tarif,
             'total_tagihan_pln': total_tagihan_pln,
             'stamp_fee': stamp_fee,
