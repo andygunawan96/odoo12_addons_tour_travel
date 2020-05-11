@@ -193,7 +193,8 @@ class PrintoutPPOBBillsForm(models.AbstractModel):
     _name = 'report.tt_report_common.printout_ppob_bills'
     _description = 'Rodex Model'
 
-    def format_token_number(self, token):
+    @staticmethod
+    def format_token_number(token):
         token = token.replace(" ", "")
         return '-'.join(token[i:i+4] for i in range(0, len(token), 4))
 
@@ -264,13 +265,13 @@ class PrintoutPPOBBillsForm(models.AbstractModel):
         if rec.provider_booking_ids:
             # Admin Bank (ambil dari ROC service charge)
             provider = rec.provider_booking_ids[0]
-            token_number = self.format_token_number(provider.ppob_bill_ids[0].token)
 
             for scs in provider.cost_service_charge_ids:
                 if scs.charge_code == 'roc':
                     admin_bank += scs.total
 
             if provider.ppob_bill_ids:
+                token_number = self.format_token_number(provider.ppob_bill_ids[0].token)
                 for bill in provider.ppob_bill_ids:
                     # Tarif & Total Bayar
                     tarif += bill.fare_amount
