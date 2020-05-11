@@ -515,6 +515,10 @@ class ReservationPpob(models.Model):
             if resv_obj.state != 'issued':
                 for rec in resv_obj.provider_booking_ids:
                     rec.sudo().unlink()
+                for rec in resv_obj.passenger_ids:
+                    rec.update({
+                        'cost_service_charge_ids': [(6, 0, [])]
+                    })
 
                 psg_dict = {
                     'pax_type': "ADT",
