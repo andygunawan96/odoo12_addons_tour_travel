@@ -221,8 +221,8 @@ class PrintoutPPOBBillsForm(models.AbstractModel):
                     # Period
                     if bill.period:
                         period.append(bill.period.strftime('%b %y'))
-                    # Tarif & Total Bayar
-                    total_tagihan_pln += bill.fare_amount  # Cukup ambil fare amount. gak perlu jumlahkan semuanya
+                    # Tarif & Denda
+                    total_tagihan_pln += bill.fare_amount + bill.fine_amount
                     # Stand Meter
                     if bill.meter_history_ids:
                         for meter in bill.meter_history_ids:
