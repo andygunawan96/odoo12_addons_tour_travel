@@ -3,7 +3,7 @@
     <record id="tt_reservation_ppob_sales_form_view" model="ir.ui.view">
         <field name="name">tt.reservation.ppob.sales.form.view</field>
         <field name="model">tt.reservation.ppob</field>
-        <field name="inherit_id" ref="tt_reservation_ppob.tt_reservation_ppob_view_form"/>
+        <field name="inherit_id" ref="tt_reservation_ppob.tt_reservation_ppob_form_views"/>
         <field name="arch" type="xml">
 
             <field name="contact_id" position="after">

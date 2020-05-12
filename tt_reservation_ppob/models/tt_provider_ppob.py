@@ -42,7 +42,7 @@ class TtProviderPPOB(models.Model):
     transaction_name = fields.Char('Transaction Name', readonly=True, states={'draft': [('readonly', False)]})
     meter_number = fields.Char('Meter Number', readonly=True, states={'draft': [('readonly', False)]})
     distribution_code = fields.Char('Distribution Code', readonly=True, states={'draft': [('readonly', False)]})
-    max_kwh = fields.Integer('Max KWH', readonly=True, states={'draft': [('readonly', False)]})
+    max_kwh = fields.Float('Max KWH', readonly=True, states={'draft': [('readonly', False)]})
     payment_message = fields.Text('Payment Message', readonly=True)
     allowed_denomination_ids = fields.Many2many('tt.master.nominal.ppob', 'reservation_ppob_nominal_rel', 'provider_booking_id',
                                                 'nominal_id', string='Allowed Denominations', readonly=True,
