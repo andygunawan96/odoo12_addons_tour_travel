@@ -18,7 +18,8 @@ class AgentReportPerformance(models.Model):
         agent.name as agent_name, agent.email as agent_email,
         parent_agent.name as parent_agent_name,
         agent_type.name as agent_type_name,
-        agent_type.code as agent_type_code
+        agent_type.code as agent_type_code,
+        phone.phone_number as phone_number
         """
     @staticmethod
     def _from():
@@ -27,6 +28,7 @@ class AgentReportPerformance(models.Model):
         LEFT JOIN tt_agent agent ON sales.agent_id = agent.id
         LEFT JOIN tt_agent parent_agent ON agent.parent_agent_id = parent_agent.id
         LEFT JOIN tt_agent_type agent_type ON agent.agent_type_id = agent_type.id
+        LEFT JOIN phone_detail phone ON phone.agent_id = agent.id
         """
 
     @staticmethod
