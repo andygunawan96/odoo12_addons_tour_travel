@@ -47,6 +47,7 @@ BOOKING_STATE = [
     ('cancel2', 'Expired'),
     ('cancel_pending', 'Cancel Pending'),
     ('fail_cancel', 'Failed (Cancel)'),
+    ('fail_paid', 'Failed (Paid)'),
     ('error', 'Connection Loss'), #diganti failed issue
     ('fail_booked', 'Failed (Book)'),
     ('booked', 'Booked'),
@@ -74,6 +75,7 @@ BOOKING_STATE_STR = {
     'cancel2': 'Expired',
     'cancel_pending': 'Cancel Pending',
     'fail_cancel': 'Failed (Cancel)',
+    'fail_paid': 'Failed (Paid)',
     'error': 'Connection Loss', #diganti failed issue
     'fail_booked': 'Failed (Book)',
     'booked': 'Booked',
@@ -208,3 +210,14 @@ ROUNDING_AMOUNT_TYPE = (
     ('floor', 'Floor'),
     ('round', 'Round'),
 )
+
+PROVIDER_TYPE_PREFIX = {
+    'AL': 'airline',
+    'TN': 'train',
+    'PS': 'passport',
+    'VS': 'visa',
+    'AT': 'activity',
+    'TR': 'tour',
+    'RESV': 'hotel',
+    'BT': 'ppob'
+}

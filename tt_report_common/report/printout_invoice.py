@@ -193,6 +193,11 @@ class PrintoutPPOBBillsForm(models.AbstractModel):
     _name = 'report.tt_report_common.printout_ppob_bills'
     _description = 'Rodex Model'
 
+    @staticmethod
+    def format_token_number(token):
+        token = token.replace(" ", "")
+        return '-'.join(token[i:i+4] for i in range(0, len(token), 4))
+
     def get_pln_postpaid_values(self, rec):
         values = {}
 
@@ -201,7 +206,6 @@ class PrintoutPPOBBillsForm(models.AbstractModel):
         admin_bank = 0
         before_meter = -1
         after_meter = -1
-        tarif = 0
         total_tagihan_pln = 0
 
         # Get PLN Postpaid Data
@@ -216,10 +220,9 @@ class PrintoutPPOBBillsForm(models.AbstractModel):
                 for bill in provider.ppob_bill_ids:
                     # Period
                     if bill.period:
-                        period.append(bill.period.strftime('%m/%y'))
+                        period.append(bill.period.strftime('%b %y'))
                     # Tarif & Total Bayar
-                    tarif += bill.fare_amount
-                    total_tagihan_pln += bill.fare_amount + bill.fine_amount + bill.admin_fee + bill.stamp_fee + bill.incentive + bill.ppn_tax_amount + bill.ppj_tax_amount
+                    total_tagihan_pln += bill.fare_amount  # Cukup ambil fare amount. gak perlu jumlahkan semuanya
                     # Stand Meter
                     if bill.meter_history_ids:
                         for meter in bill.meter_history_ids:
@@ -236,12 +239,12 @@ class PrintoutPPOBBillsForm(models.AbstractModel):
 
         # Set Values
         values.update({
-            'tarif': tarif,
-            'total_tagihan_pln': total_tagihan_pln,
+            'total': "{:,.0f}".format(rec.total),
+            'total_tagihan_pln': "{:,.0f}".format(total_tagihan_pln),
             'before_meter': before_meter,
             'after_meter': after_meter,
             'period': ', '.join(period),
-            'admin_bank': admin_bank
+            'admin_bank': "{:,.0f}".format(admin_bank)
         })
         return values
 
@@ -256,34 +259,41 @@ class PrintoutPPOBBillsForm(models.AbstractModel):
         admin_bank = 0
         total_tagihan_pln = 0
         jumlah_kwh = 0
+        installment = 0
+        token_number = ''
 
         # Get PLN Prepaid Data
         if rec.provider_booking_ids:
             # Admin Bank (ambil dari ROC service charge)
             provider = rec.provider_booking_ids[0]
+
             for scs in provider.cost_service_charge_ids:
                 if scs.charge_code == 'roc':
                     admin_bank += scs.total
 
             if provider.ppob_bill_ids:
+                token_number = self.format_token_number(provider.ppob_bill_ids[0].token)
                 for bill in provider.ppob_bill_ids:
                     # Tarif & Total Bayar
                     tarif += bill.fare_amount
-                    total_tagihan_pln += bill.fare_amount + bill.fine_amount + bill.admin_fee + bill.stamp_fee + bill.incentive + bill.ppn_tax_amount + bill.ppj_tax_amount
+                    total_tagihan_pln += bill.fare_amount + bill.fine_amount + bill.admin_fee + bill.stamp_fee + bill.incentive + bill.ppn_tax_amount + bill.ppj_tax_amount + bill.installment
                     stamp_fee += bill.stamp_fee
                     ppn += bill.ppn_tax_amount
                     ppj += bill.ppj_tax_amount
                     jumlah_kwh += bill.kwh_amount
+                    installment += bill.installment
 
         # Set Values
         values.update({
-            'tarif': tarif,
-            'total_tagihan_pln': total_tagihan_pln,
-            'stamp_fee': stamp_fee,
-            'ppn': ppn,
-            'ppj': ppj,
+            'token_number': token_number,
             'jumlah_kwh': jumlah_kwh,
-            'admin_bank': admin_bank
+            'total': "{:,.0f}".format(rec.total),
+            'tarif': "{:,.0f}".format(tarif),
+            'stamp_fee': "{:,.0f}".format(stamp_fee),
+            'ppn': "{:,.0f}".format(ppn),
+            'ppj': "{:,.0f}".format(ppj),
+            'admin_bank': "{:,.0f}".format(admin_bank),
+            'installment': "{:,.0f}".format(installment)
         })
         return values
 
@@ -293,11 +303,13 @@ class PrintoutPPOBBillsForm(models.AbstractModel):
         # Variables
         admin_bank = 0
         total_tagihan_pln = 0
+        tgl_registrasi = ''
 
         # Get Non Electricity Bills
         if rec.provider_booking_ids:
             # Admin Bank (ambil dari ROC service charge)
             provider = rec.provider_booking_ids[0]
+            tgl_registrasi = provider.registration_date.strftime('%d %b %y')
             for scs in provider.cost_service_charge_ids:
                 if scs.charge_code == 'roc':
                     admin_bank += scs.total
@@ -307,8 +319,10 @@ class PrintoutPPOBBillsForm(models.AbstractModel):
                     total_tagihan_pln += bill.fare_amount + bill.fine_amount + bill.admin_fee + bill.stamp_fee + bill.incentive + bill.ppn_tax_amount + bill.ppj_tax_amount
 
         values.update({
-            'total_tagihan_pln': total_tagihan_pln,
-            'admin_bank': admin_bank
+            'tgl_registrasi': tgl_registrasi,
+            'total': "{:,.0f}".format(rec.total),
+            'total_tagihan_pln': "{:,.0f}".format(total_tagihan_pln),
+            'admin_bank': "{:,.0f}".format(admin_bank)
         })
         return values
 
@@ -319,20 +333,37 @@ class PrintoutPPOBBillsForm(models.AbstractModel):
         admin_fee = 0
         period = 0
         tarif = 0
+        jumlah_peserta = 0
+        unpaid_bill_display = 0
+        date = ''
 
         # Get BPJS Kesehatan Data
         if rec.provider_booking_ids:
             provider = rec.provider_booking_ids[0]
+            unpaid_bill_display = provider.unpaid_bill_display
+            date = provider.issued_date.strftime('%d-%m-%Y')
+
+            for scs in provider.cost_service_charge_ids:
+                if scs.charge_code == 'roc':
+                    admin_fee += scs.total
+
             if provider.ppob_bill_ids:
                 for bill in provider.ppob_bill_ids:
                     period += 1
-                    tarif += bill.fare_amount
-                    admin_fee += bill.admin_fee
+
+            if provider.ppob_bill_detail_ids:
+                jumlah_peserta = len(provider.ppob_bill_detail_ids)
+                for bill_detail in provider.ppob_bill_detail_ids:
+                    tarif += bill_detail.total
 
         values.update({
+            'date': date,
             'period': str(period),
-            'tarif': tarif,
-            'admin_fee': admin_fee
+            'unpaid_bill_display': "{:,.0f}".format(unpaid_bill_display),
+            'total': "{:,.0f}".format(rec.total),
+            'tarif': "{:,.0f}".format(tarif),
+            'admin_fee': "{:,.0f}".format(admin_fee),
+            'jumlah_peserta': jumlah_peserta
         })
         return values
 
@@ -478,7 +509,7 @@ class PrintoutInvoiceHO(models.AbstractModel):
     def get_pax_dict(self, rec, provider):
         pax_dict = {}
         for cost_charge in provider.cost_service_charge_ids:
-            if cost_charge.charge_type != 'RAC':
+            # if cost_charge.charge_type != 'RAC':
                 if rec._name == 'tt.reservation.airline':
                     for psg in cost_charge.passenger_airline_ids:
                         if psg.name not in pax_dict:
@@ -545,6 +576,32 @@ class PrintoutInvoiceHO(models.AbstractModel):
                             pax_dict[psg.name]['total'] = cost_charge.amount
                         else:
                             pax_dict[psg.name]['total'] += cost_charge.amount
+        if rec._name == 'tt.reservation.ppob':
+            ppob_carrier = provider.carrier_id
+            if ppob_carrier.code == self.env.ref('tt_reservation_ppob.tt_transport_carrier_ppob_bpjs').code:
+                for bill_detail in provider.ppob_bill_detail_ids:
+                    pax_dict[bill_detail.customer_number] = {}
+                    pax_dict[bill_detail.customer_number]['name'] = bill_detail.customer_name
+                    pax_dict[bill_detail.customer_number]['total'] = bill_detail.total
+            elif ppob_carrier.code == self.env.ref('tt_reservation_ppob.tt_transport_carrier_ppob_postpln').code:
+                for bill in provider.ppob_bill_ids:
+                    period = bill.period.strftime('%d/%m/%Y')
+                    pax_dict[period] = {}
+                    pax_dict[period]['name'] = 'Periode ' + period
+                    pax_dict[period]['total'] = bill.fare_amount
+            elif ppob_carrier.code == self.env.ref('tt_reservation_ppob.tt_transport_carrier_ppob_prepln').code:
+                for bill in provider.ppob_bill_ids:
+                    period = bill.period.strftime('%d/%m/%Y')
+                    total = bill.fare_amount + bill.fine_amount + bill.admin_fee + bill.stamp_fee + bill.ppn_tax_amount\
+                            + bill.ppj_tax_amount + bill.installment
+                    pax_dict[period] = {}
+                    pax_dict[period]['name'] = 'Periode ' + period
+                    pax_dict[period]['total'] = total
+            elif ppob_carrier.code == self.env.ref('tt_reservation_ppob.tt_transport_carrier_ppob_notaglispln').code:
+                period = provider.registration_date.strftime('%d/%m/%y')
+                pax_dict[period] = {}
+                pax_dict[period]['name'] = provider.transaction_name
+                pax_dict[period]['total'] = provider.ppob_bill_ids[0].fare_amount
         return pax_dict
 
     def get_pax_data(self):
@@ -558,7 +615,6 @@ class PrintoutInvoiceHO(models.AbstractModel):
             for channel_charge in psg.channel_service_charge_ids:
                 price_unit += channel_charge.amount
 
-    # Get Terbilang dkk di hapus
     def compute_terbilang_from_objs(self, recs, currency_str='rupiah'):
         a = {}
         for rec2 in recs:
@@ -612,6 +668,30 @@ class PrintoutInvoiceHO(models.AbstractModel):
                 desc += str(idx + 1) + '. ' + guest.name + '\n'
             # spc = rec.special_request or '-'
             # desc += 'Special Request: ' + spc + '\n'
+        elif data['context']['active_model'] == 'tt.reservation.ppob':
+            ppob_carrier = rec.carrier_id
+            desc += 'PPOB : ' + ppob_carrier.name + '<br/>'
+            if ppob_carrier.code == self.env.ref('tt_reservation_ppob.tt_transport_carrier_ppob_bpjs').code:
+                # desc += 'MKM Ref : ' + rec.session_id + '<br/>'
+                desc += 'BPJS Ref : ' + rec.pnr + '<br/>'
+                desc += 'Nama : ' + rec.customer_name + '<br/>'
+                desc += 'Jumlah Peserta : ' + str(len(rec.ppob_bill_detail_ids)) + '<br/>'
+                desc += 'Jumlah Periode : ' + str(len(rec.ppob_bill_ids)) + '<br/>'
+            elif ppob_carrier.code == self.env.ref('tt_reservation_ppob.tt_transport_carrier_ppob_postpln').code:
+                desc += 'IDPel : ' + rec.customer_id_number + '<br/>'
+                desc += 'Nama : ' + rec.customer_name + '<br/>'
+                desc += 'Tarif/Daya : ' + (rec.fare_type if rec.fare_type else '') + ' / ' + str(rec.power if rec.power else '') + 'VA <br/>'
+            elif ppob_carrier.code == self.env.ref('tt_reservation_ppob.tt_transport_carrier_ppob_prepln').code:
+                desc += 'No. Meter : ' + rec.meter_number + '<br/>'
+                desc += 'IDPel : ' + rec.customer_id_number + '<br/>'
+                desc += 'Nama : ' + rec.customer_name + '<br/>'
+                desc += 'Tarif/Daya : ' + (rec.fare_type if rec.fare_type else '') + ' / ' + str(rec.power if rec.power else '') + 'VA <br/>'
+            elif ppob_carrier.code == self.env.ref('tt_reservation_ppob.tt_transport_carrier_ppob_notaglispln').code:
+                desc += 'Transaksi : ' + rec.transaction_code + '<br/>'
+                desc += 'No. Registrasi : ' + rec.registration_number + '<br/>'
+                desc += 'Tgl. Registrasi : ' + rec.registration_date.strftime('%d/%m/%Y') + '<br/>'
+                desc += 'IDPel : ' + rec.customer_id_number + '<br/>'
+                desc += 'Nama : ' + rec.customer_name + '<br/>'
         return desc
 
     def _get_report_values(self, docids, data=None):

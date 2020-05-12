@@ -9,11 +9,12 @@
                 <span t-field="doc.name" style="font-size: 18px; font-weight: 730"/><br/>
             </div>
 
-            <!-- Content -->
+            <!-- Header -->
             <div class="title" t-att-style="'background-color: '+base_color+'; border-radius: 20px 20px 0 0; border-color: #CCC; padding-top: 5px; padding-bottom: 5px'">
-                <span style="text-align: center; padding-left: 20px; color: white; font-weight: 600; font-size: 20px">Struk Pembayaran Tagihan Listrik :</span><br/>
+                <span style="text-align: center; padding-left: 20px; color: white; font-weight: 600; font-size: 20px">STRUK PEMBAYARAN TAGIHAN LISTRIK :</span><br/>
             </div>
 
+            <!-- Body -->
             <t t-foreach="doc.provider_booking_ids" t-as="provider">
                 <div class="row" style="margin: 0px; margin-bottom: 40px; padding-top:10px; padding-bottom: 10px; font-size: 17px; border-radius: 0 0 20px 20px; border: 1px solid #BBB;">
                     <div class="col-3">
@@ -21,10 +22,10 @@
                             <span>IDPEL</span><br/>
                             <span>NAMA</span><br/>
                             <span>TARIF/DAYA</span><br/>
-                            <span>RP TAG PLN</span><br/>
-                            <span>NO REF *)</span><br/>
                             <span>BL/TH</span><br/>
                             <span>STAND METER</span><br/>
+                            <span>RP TAG PLN</span><br/>
+                            <span>NO REF</span><br/>
                         </b>
                     </div>
                     <div class="col-1">
@@ -37,36 +38,37 @@
                         <span>:</span><br/>
                     </div>
                     <div class="col-7">
-                        <span t-field="provider.customer_id_number"/><br/>
+                        <span t-field="provider.customer_number"/><br/>
                         <span t-field="provider.customer_name"/><br/>
                         <span t-field="provider.fare_type"/>/<span t-field="provider.power"/> VA<br/>
-                        <span t-esc="int(values['total_tagihan_pln'])" t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/><br/>
-                        <span t-field="provider.customer_number"/><br/>
                         <span t-esc="values['period']"/><br/>
                         <span t-esc="int(values['before_meter'])"/> - <span t-esc="int(values['after_meter'])"/><br/>
+                        <span t-field="doc.currency_id.symbol"/> <span t-esc="values['total_tagihan_pln']"/><br/>
+                        <span t-field="provider.pnr"/><br/>
                     </div>
                 </div>
             </t>
 
+            <!-- Notes -->
             <h3 style="padding-left: 20px; text-align:center; font-weight: 600; font-size: 18px">PLN menyatakan struk ini sebagai bukti pembayaran yang sah.</h3><br/>
 
             <!-- Total -->
             <div class="row" style="padding-top: 15px;">
-                <div class="col-3" style="max-width: 27.5%;"><span style="font-weight: 600;">Admin CA *)</span></div>
+                <div class="col-3" style="max-width: 27.5%;"><span style="font-weight: 600;">Admin Bank</span></div>
                 <div class="col-1" style="max-width: 6%; padding: 0px;">:<span style="color: white;">..</span></div>
                 <div class="col-8" style="padding: 0px; text-transform:uppercase;">
-                     <span t-esc="int(values['admin_bank'])" t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/>
+                     <span t-field="doc.currency_id.symbol"/> <span t-esc="values['admin_bank']"/>
                 </div>
             </div>
             <div class="row" style="margin-bottom: 50px;">
                 <div class="col-3" style="max-width: 27.5%;"><span style="font-weight: 600;">Total Bayar</span></div>
                 <div class="col-1" style="max-width: 6%; padding: 0px;">:<span style="color: white;">..</span></div>
                 <div class="col-8" style="padding: 0px; text-transform:uppercase;">
-                     <span t-field="doc.total" t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/>
+                     <span t-field="doc.currency_id.symbol"/> <span t-esc="values['total']"/>
                 </div>
             </div>
 
-            <!-- Notes -->
+            <!-- Footer -->
             <div class="row" style="">
                 <div class="col-2"/>
                 <div class="col-8">
@@ -76,9 +78,9 @@
                     <t t-else="">
                         <h3 style="padding-left: 20px; text-align:center; font-weight: 600; font-size: 18px">Anda masih memiliki sisa tunggakan <span t-esc="doc.provider_booking_ids[0].unpaid_bill_display"/> bulan</h3>
                     </t>
-                    <h3 style="padding-left: 20px; text-align:center; font-weight: 600; font-size: 18px">Rincian pelanggan dapat diakses di www.pln.co.id</h3>
-                    <h3 style="padding-left: 20px; text-align:center; font-weight: 600; font-size: 18px">Informasi hubungi Contact Center : 123</h3>
-                    <h3 style="padding-left: 20px; text-align:center; font-weight: 600; font-size: 18px">Atau hub. PLN Terdekat : [no.telp Rayon] *)</h3>
+                    <h3 style="padding-left: 20px; text-align:center; font-weight: 600; font-size: 18px">
+                        <span t-field="doc.provider_booking_ids[0].payment_message"/>
+                    </h3>
                 </div>
                 <div class="col-2"/>
             </div>
@@ -94,11 +96,12 @@
                 <span t-field="doc.name" style="font-size: 18px; font-weight: 730"/><br/>
             </div>
 
-            <!-- Content -->
+            <!-- Header -->
             <div class="title" t-att-style="'background-color: '+base_color+'; border-radius: 20px 20px 0 0; border-color: #CCC; padding-top: 5px; padding-bottom: 5px'">
-                <span style="text-align: center; padding-left: 20px; color: white; font-weight: 600; font-size: 20px">Struk Pembelian Listrik Prabayar :</span><br/>
+                <span style="text-align: center; padding-left: 20px; color: white; font-weight: 600; font-size: 20px">STRUK PEMBELIAN LISTRIK PRABAYAR :</span><br/>
             </div>
 
+            <!-- Content -->
             <t t-foreach="doc.provider_booking_ids" t-as="provider">
                 <div class="row" style="margin: 0px; margin-bottom: 40px; padding-top:10px; padding-bottom: 10px; font-size: 17px; border-radius: 0 0 20px 20px; border: 1px solid #BBB;">
                     <div class="col-3">
@@ -107,8 +110,7 @@
                             <span>IDPEL</span><br/>
                             <span>NAMA</span><br/>
                             <span>TARIF/DAYA</span><br/>
-                            <span>RP TAG PLN</span><br/>
-                            <span>NO REF *)</span><br/>
+                            <span>NO REF</span><br/>
                             <span>RP BAYAR</span><br/>
                             <span>METERAI</span><br/>
                             <span>PPN</span><br/>
@@ -116,7 +118,8 @@
                             <span>ANGSURAN</span><br/>
                             <span>RP STROOM/TOKEN</span><br/>
                             <span>JML KWH</span><br/>
-                            <span>ADMIN CA *)</span><br/>
+                            <span>STROOM/TOKEN</span><br/>
+                            <span>ADMIN BANK</span><br/>
                         </b>
                     </div>
                     <div class="col-1">
@@ -137,39 +140,30 @@
                     </div>
                     <div class="col-7">
                         <span t-field="provider.meter_number"/><br/>
-                        <span t-field="provider.customer_id_number"/><br/>
+                        <span t-field="provider.customer_number"/><br/>
                         <span t-field="provider.customer_name"/><br/>
                         <span t-field="provider.fare_type"/>/<span t-field="provider.power"/> VA<br/>
-                        <span t-esc="int(values['total_tagihan_pln'])" t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/><br/>
-                        <span t-field="provider.customer_number"/><br/>
-                        <span t-field="doc.total" t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/><br/>
-                        <span t-esc="int(values['stamp_fee'])" t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/><br/>
-                        <span t-esc="int(values['ppn'])" t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/><br/>
-                        <span t-esc="int(values['ppj'])" t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/><br/>
-                        <span t-field="doc.total" t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/><br/>
-                        <span t-esc="int(values['tarif'])" t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/><br/>
+                        <span t-field="provider.pnr"/><br/>
+                        <span t-field="doc.currency_id.symbol"/> <span t-esc="values['total']"/><br/>
+                        <span t-field="doc.currency_id.symbol"/> <span t-esc="values['stamp_fee']"/><br/>
+                        <span t-field="doc.currency_id.symbol"/> <span t-esc="values['ppn']"/><br/>
+                        <span t-field="doc.currency_id.symbol"/> <span t-esc="values['ppj']"/><br/>
+                        <span t-field="doc.currency_id.symbol"/> <span t-esc="values['installment']"/><br/>
+                        <span t-field="doc.currency_id.symbol"/> <span t-esc="values['tarif']"/><br/>
                         <span t-esc="values['jumlah_kwh']"/><br/>
-                        <span t-esc="int(values['admin_bank'])" t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/>
+                        <span t-esc="values['token_number']"/><br/>
+                        <span t-field="doc.currency_id.symbol"/> <span t-esc="values['admin_bank']"/><br/>
                     </div>
                 </div>
             </t>
-
-            <!-- Stroom/Token -->
-            <div class="row" style="padding-top: 15px; margin-bottom: 50px;">
-                <div class="col-3" style="max-width: 27.5%;"><span style="font-weight: 600;">STROOM/TOKEN</span></div>
-                <div class="col-1" style="max-width: 6%; padding: 0px;">:<span style="color: white;">..</span></div>
-                <div class="col-8" style="padding: 0px; text-transform:uppercase; font-weight: 600;">
-                     <span t-field="doc.provider_booking_ids[0].ppob_bill_ids[0].token"/>
-                </div>
-            </div>
 
             <!-- Notes -->
             <div class="row" style="">
                 <div class="col-2"/>
                 <div class="col-8">
-                    <h3 style="padding-left: 20px; text-align:center; font-weight: 600; font-size: 18px">Informasi hubungi Contact Center 123</h3>
-                    <h3 style="padding-left: 20px; text-align:center; font-weight: 600; font-size: 18px">Atau</h3>
-                    <h3 style="padding-left: 20px; text-align:center; font-weight: 600; font-size: 18px">Hub. PLN Terdekat : no. telp Rayon</h3>
+                    <h3 style="padding-left: 20px; text-align:center; font-weight: 600; font-size: 18px">
+                        <span t-field="doc.provider_booking_ids[0].payment_message"/>
+                    </h3>
                 </div>
                 <div class="col-2"/>
             </div>
@@ -185,11 +179,12 @@
                 <span t-field="doc.name" style="font-size: 18px; font-weight: 730"/><br/>
             </div>
 
-            <!-- Content -->
+            <!-- Header -->
             <div class="title" t-att-style="'background-color: '+base_color+'; border-radius: 20px 20px 0 0; border-color: #CCC; padding-top: 5px; padding-bottom: 5px'">
-                <span style="text-align: center; padding-left: 20px; color: white; font-weight: 600; font-size: 20px">Struk Non Tagihan Listrik :</span><br/>
+                <span style="text-align: center; padding-left: 20px; color: white; font-weight: 600; font-size: 20px">STRUK NON TAGIHAN LISTRIK :</span><br/>
             </div>
 
+            <!-- Content -->
             <t t-foreach="doc.provider_booking_ids" t-as="provider">
                 <div class="row" style="margin: 0px; margin-bottom: 40px; padding-top:10px; padding-bottom: 10px; font-size: 17px; border-radius: 0 0 20px 20px; border: 1px solid #BBB;">
                     <div class="col-3">
@@ -200,7 +195,7 @@
                             <span>NAMA</span><br/>
                             <span>IDPEL</span><br/>
                             <span>BIAYA PLN</span><br/>
-                            <span>NO REF **)</span><br/>
+                            <span>NO REF</span><br/>
                         </b>
                     </div>
                     <div class="col-1">
@@ -215,30 +210,31 @@
                     <div class="col-7">
                         <span t-field="provider.transaction_code"/><br/>  <!-- Sementara. gtw pake name atau code -->
                         <span t-field="provider.registration_number"/><br/>
-                        <span t-field="provider.registration_date"/><br/>
+                        <span t-esc="values['tgl_registrasi']"/><br/>
                         <span t-field="provider.customer_name"/><br/>
-                        <span t-field="provider.customer_id_number"/><br/>
-                        <span t-esc="int(values['total_tagihan_pln'])" t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/><br/>
                         <span t-field="provider.customer_number"/><br/>
+                        <span t-field="doc.currency_id.symbol"/> <span t-esc="values['total_tagihan_pln']"/><br/>
+                        <span t-field="provider.pnr"/><br/>
                     </div>
                 </div>
             </t>
 
+            <!-- Footer -->
             <h3 style="padding-left: 20px; text-align:center; font-weight: 600; font-size: 18px">PLN menyatakan struk ini sebagai bukti pembayaran yang sah.</h3><br/>
 
             <!-- Total -->
             <div class="row" style="padding-top: 15px;">
-                <div class="col-3" style="max-width: 27.5%;"><span style="font-weight: 600;">Admin CA *)</span></div>
+                <div class="col-3" style="max-width: 27.5%;"><span style="font-weight: 600;">Admin Bank</span></div>
                 <div class="col-1" style="max-width: 6%; padding: 0px;">:<span style="color: white;">..</span></div>
                 <div class="col-8" style="padding: 0px; text-transform:uppercase;">
-                     <span t-esc="int(values['admin_bank'])" t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/>
+                     <span t-field="doc.currency_id.symbol"/> <span t-esc="values['admin_bank']"/>
                 </div>
             </div>
             <div class="row" style="margin-bottom: 50px;">
                 <div class="col-3" style="max-width: 27.5%;"><span style="font-weight: 600;">Total Bayar</span></div>
                 <div class="col-1" style="max-width: 6%; padding: 0px;">:<span style="color: white;">..</span></div>
                 <div class="col-8" style="padding: 0px; text-transform:uppercase;">
-                    <span t-field="doc.total" t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/>
+                    <span t-field="doc.currency_id.symbol"/> <span t-esc="values['total']"/>
                 </div>
             </div>
 
@@ -246,9 +242,9 @@
             <div class="row" style="">
                 <div class="col-2"/>
                 <div class="col-8">
-                    <h3 style="padding-left: 20px; text-align:center; font-weight: 600; font-size: 18px">Informasi hubungi Contact Center 123</h3>
-                    <h3 style="padding-left: 20px; text-align:center; font-weight: 600; font-size: 18px">Atau</h3>
-                    <h3 style="padding-left: 20px; text-align:center; font-weight: 600; font-size: 18px">Hub. PLN Terdekat : no. telp Rayon</h3>
+                    <h3 style="padding-left: 20px; text-align:center; font-weight: 600; font-size: 18px">
+                        <span t-field="doc.provider_booking_ids[0].payment_message"/>
+                    </h3>
                 </div>
                 <div class="col-2"/>
             </div>
@@ -264,11 +260,12 @@
                 <span t-field="doc.name" style="font-size: 18px; font-weight: 730"/><br/>
             </div>
 
-            <!-- Content -->
+            <!-- Header -->
             <div class="title" t-att-style="'background-color: '+base_color+'; border-radius: 20px 20px 0 0; border-color: #CCC; padding-top: 5px; padding-bottom: 5px'">
-                <span style="text-align: center; padding-left: 20px; color: white; font-weight: 600; font-size: 20px">Struk Pembayaran Iuran BPJS Kesehatan :</span><br/>
+                <span style="text-align: center; padding-left: 20px; color: white; font-weight: 600; font-size: 20px">STRUK PEMBAYARAN IURAN BPJS KESEHATAN :</span><br/>
             </div>
 
+            <!-- Content -->
             <t t-foreach="doc.provider_booking_ids" t-as="provider">
                 <div class="row" style="margin: 0px; margin-bottom: 40px; padding-top:10px; padding-bottom: 10px; font-size: 17px; border-radius: 0 0 20px 20px; border: 1px solid #BBB;">
                     <div class="col-3">
@@ -300,22 +297,22 @@
                         <span>:</span><br/>
                     </div>
                     <div class="col-7">
-                        <span t-field="provider.pnr"/><br/>
-                        <span t-field="provider.issued_date"/><br/>
-                        <span/><br/>
-                        <span t-field="provider.customer_name"/><br/>
-                        <span/><br/>
+                        <span t-field="provider.payment_session_id"/><br/>
+                        <span t-esc="values['date']"/><br/>
                         <span t-field="provider.customer_number"/><br/>
-                        <span t-field="provider.unpaid_bill_display" t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/><br/>
+                        <span t-field="provider.customer_name"/><br/>
+                        <span t-esc="values['jumlah_peserta']"/><br/>
+                        <span t-field="provider.pnr"/><br/>
+                        <span t-field="doc.currency_id.symbol"/> <span t-esc="values['unpaid_bill_display']"/><br/>
                         <span t-esc="values['period']"/><br/>
-                        <span t-esc="int(values['tarif'])" t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/><br/>
-                        <span t-esc="int(values['admin_fee'])" t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/><br/>
-                        <span t-field="doc.total" t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/>
+                        <span t-field="doc.currency_id.symbol"/> <span t-esc="values['tarif']"/><br/>
+                        <span t-field="doc.currency_id.symbol"/> <span t-esc="values['admin_fee']"/><br/>
+                        <span t-field="doc.currency_id.symbol"/> <span t-esc="values['total']"/>
                     </div>
                 </div>
             </t>
 
-            <!-- Notes -->
+            <!-- Footer -->
             <div class="row" style="">
                 <div class="col-1"/>
                 <div class="col-10">

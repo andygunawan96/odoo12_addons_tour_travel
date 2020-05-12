@@ -564,6 +564,11 @@ class TtReservation(models.Model):
             'state': 'fail_issued'
         })
 
+    def action_failed_paid(self):
+        self.write({
+            'state': 'fail_paid'
+        })
+
     ##override fungsi ini untuk melakukan action extra jika expired
     def action_expired(self):
         self.state = 'cancel2'

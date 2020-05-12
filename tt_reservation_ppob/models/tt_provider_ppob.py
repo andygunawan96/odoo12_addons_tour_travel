@@ -25,6 +25,7 @@ class TtProviderPPOB(models.Model):
     carrier_code = fields.Char('Product Code')
     carrier_name = fields.Char('Product Name')
     session_id = fields.Char('Session ID', readonly=True, states={'draft': [('readonly', False)]})
+    payment_session_id = fields.Char('Payment Session ID', readonly=True, states={'draft': [('readonly', False)]})
     customer_number = fields.Char('Customer Number', readonly=True, states={'draft': [('readonly', False)]})
     customer_name = fields.Char('Customer Name', readonly=True, states={'draft': [('readonly', False)]})
     customer_id_number = fields.Char('Customer ID', readonly=True, states={'draft': [('readonly', False)]})
@@ -42,7 +43,7 @@ class TtProviderPPOB(models.Model):
     transaction_name = fields.Char('Transaction Name', readonly=True, states={'draft': [('readonly', False)]})
     meter_number = fields.Char('Meter Number', readonly=True, states={'draft': [('readonly', False)]})
     distribution_code = fields.Char('Distribution Code', readonly=True, states={'draft': [('readonly', False)]})
-    max_kwh = fields.Integer('Max KWH', readonly=True, states={'draft': [('readonly', False)]})
+    max_kwh = fields.Float('Max KWH', readonly=True, states={'draft': [('readonly', False)]})
     payment_message = fields.Text('Payment Message', readonly=True)
     allowed_denomination_ids = fields.Many2many('tt.master.nominal.ppob', 'reservation_ppob_nominal_rel', 'provider_booking_id',
                                                 'nominal_id', string='Allowed Denominations', readonly=True,
@@ -233,6 +234,18 @@ class TtProviderPPOB(models.Model):
                 })]
             })
 
+    def action_failed_paid_api_ppob(self,err_code,err_msg):
+        for rec in self:
+            rec.write({
+                'state': 'fail_paid',
+                'error_history_ids': [(0,0,{
+                    'res_model': self._name,
+                    'res_id': self.id,
+                    'error_code': err_code,
+                    'error_msg': err_msg
+                })]
+            })
+
     def action_expired(self):
         self.state = 'cancel2'
 
@@ -243,27 +256,36 @@ class TtProviderPPOB(models.Model):
 
     def update_status_api_ppob(self, data, context):
         for rec in self:
-            if rec.state != 'issued':
-                rec.sudo().write({
-                    'pnr': data['pnr'],
-                    'payment_message': data['message'],
-                })
-                if data.get('bill_data'):
-                    for rec2 in data['bill_data']:
-                        bill_obj = self.env['tt.bill.ppob'].sudo().search([('provider_booking_id', '=', int(rec.id)), ('period', '=', datetime.strptime(rec2['period'], '%Y%m'))], limit=1)
-                        if bill_obj:
-                            bill_obj[0].sudo().write({
-                                'admin_fee': rec2.get('admin_fee') and rec2['admin_fee'] or 0,
-                                'stamp_fee': rec2.get('stamp_fee') and rec2['stamp_fee'] or 0,
-                                'ppn_tax_amount': rec2.get('ppn_tax_amount') and rec2['ppn_tax_amount'] or 0,
-                                'ppj_tax_amount': rec2.get('ppj_tax_amount') and rec2['ppj_tax_amount'] or 0,
-                                'installment': rec2.get('installment') and rec2['installment'] or 0,
-                                'fare_amount': rec2.get('fare_amount') and rec2['fare_amount'] or 0,
-                                'kwh_amount': rec2.get('kwh_amount') and rec2['kwh_amount'] or 0,
-                                'token': rec2.get('token') and rec2['token'] or '',
-                            })
+            if data.get('fail_state'):
+                if data['fail_state'] == 'fail_issued':
+                    error_dat = data['error_data']
+                    rec.action_failed_issued_api_ppob(error_dat['error_code'], error_dat['error_msg'])
+                elif data['fail_state'] == 'fail_paid':
+                    error_dat = data['error_data']
+                    rec.action_failed_paid_api_ppob(error_dat['error_code'], error_dat['error_msg'])
+            else:
+                if rec.state != 'issued':
+                    rec.sudo().write({
+                        'pnr': data['pnr'],
+                        'payment_message': data['message'],
+                        'payment_session_id': data['session_id'],
+                    })
+                    if data.get('bill_data'):
+                        for rec2 in data['bill_data']:
+                            bill_obj = self.env['tt.bill.ppob'].sudo().search([('provider_booking_id', '=', int(rec.id)), ('period', '=', datetime.strptime(rec2['period'], '%Y%m'))], limit=1)
+                            if bill_obj:
+                                bill_obj[0].sudo().write({
+                                    'admin_fee': rec2.get('admin_fee') and rec2['admin_fee'] or 0,
+                                    'stamp_fee': rec2.get('stamp_fee') and rec2['stamp_fee'] or 0,
+                                    'ppn_tax_amount': rec2.get('ppn_tax_amount') and rec2['ppn_tax_amount'] or 0,
+                                    'ppj_tax_amount': rec2.get('ppj_tax_amount') and rec2['ppj_tax_amount'] or 0,
+                                    'installment': rec2.get('installment') and rec2['installment'] or 0,
+                                    'fare_amount': rec2.get('fare_amount') and rec2['fare_amount'] or 0,
+                                    'kwh_amount': rec2.get('kwh_amount') and rec2['kwh_amount'] or 0,
+                                    'token': rec2.get('token') and rec2['token'] or '',
+                                })
 
-                rec.action_issued_api_ppob(context)
+                    rec.action_issued_api_ppob(context)
 
     def create_service_charge(self, service_charge_vals):
         service_chg_obj = self.env['tt.service.charge']
@@ -415,6 +437,7 @@ class TtProviderPPOB(models.Model):
             'unpaid_bill': self.unpaid_bill and self.unpaid_bill or 0,
             'unpaid_bill_display': self.unpaid_bill_display and self.unpaid_bill_display or 0,
             'session_id': self.session_id and self.session_id or '',
+            'payment_session_id': self.payment_session_id and self.payment_session_id or '',
             'allowed_denominations': allowed_denominations,
         }
 

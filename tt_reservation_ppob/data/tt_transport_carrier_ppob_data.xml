@@ -6,6 +6,8 @@
             <field name="name">BPJS Kesehatan</field>
             <field name="code">3200</field>
             <field name="icao">bpjs</field>
+            <field name="adult_length_name">11</field>
+            <field name="child_length_name">16</field>
             <field name="active">1</field>
             <field name="provider_type_id" ref="tt_reservation_ppob.tt_provider_type_ppob"/>
         </record>
@@ -14,6 +16,8 @@
             <field name="name">PLN Postpaid</field>
             <field name="code">521</field>
             <field name="icao">pln</field>
+            <field name="adult_length_name">12</field>
+            <field name="child_length_name">12</field>
             <field name="active">1</field>
             <field name="provider_type_id" ref="tt_reservation_ppob.tt_provider_type_ppob"/>
         </record>
@@ -22,6 +26,8 @@
             <field name="name">PLN Prepaid</field>
             <field name="code">522</field>
             <field name="icao">pln</field>
+            <field name="adult_length_name">11</field>
+            <field name="child_length_name">12</field>
             <field name="active">1</field>
             <field name="provider_type_id" ref="tt_reservation_ppob.tt_provider_type_ppob"/>
         </record>
@@ -30,9 +36,10 @@
             <field name="name">PLN Non Tagihan</field>
             <field name="code">524</field>
             <field name="icao">pln</field>
+            <field name="adult_length_name">13</field>
+            <field name="child_length_name">13</field>
             <field name="active">1</field>
             <field name="provider_type_id" ref="tt_reservation_ppob.tt_provider_type_ppob"/>
         </record>
     </data>
 </odoo>
-    

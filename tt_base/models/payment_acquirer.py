@@ -7,16 +7,6 @@ from ...tools.ERR import RequestException
 from datetime import datetime, timedelta
 _logger = logging.getLogger(__name__)
 
-PROVIDER_TYPE = {
-    'AL': 'airline',
-    'TN': 'train',
-    'PS': 'passport',
-    'VS': 'visa',
-    'AT': 'activity',
-    'TR': 'tour',
-    'RESV': 'hotel'
-}
-
 class PaymentAcquirer(models.Model):
     _inherit = 'payment.acquirer'
 
@@ -230,7 +220,7 @@ class PaymentAcquirerNumber(models.Model):
             rec.display_name_payment = "{} - {}".format(rec.payment_acquirer_id.name if rec.payment_acquirer_id.name != False else '',rec.number)
 
     def create_payment_acq_api(self, data):
-        provider_type = 'tt.reservation.%s' % PROVIDER_TYPE[data['order_number'].split('.')[0]]
+        provider_type = 'tt.reservation.%s' % variables.PROVIDER_TYPE_PREFIX[data['order_number'].split('.')[0]]
         booking_obj = self.env[provider_type].search([('name','=',data['order_number'])])
 
         if not booking_obj:

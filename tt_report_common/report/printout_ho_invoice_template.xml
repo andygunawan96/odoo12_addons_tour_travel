@@ -294,9 +294,9 @@
                         </td>
                     </tr>
                     <tr>
-                        <td><strong>Agent NTA</strong></td>
+                        <td><strong>NTA</strong></td>
                         <td class="text-right">
-                            <span style="padding: 10px 25px;" t-field="doc.agent_nta" t-options="{&quot;widget&quot;: &quot;monetary&quot;, &quot;display_currency&quot;: doc.currency_id}"/>
+                            <span style="padding: 10px 25px;" t-field="doc.total_nta" t-options="{&quot;widget&quot;: &quot;monetary&quot;, &quot;display_currency&quot;: doc.currency_id}"/>
                         </td>
                     </tr>
                     <tr>

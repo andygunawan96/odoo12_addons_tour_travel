@@ -31,9 +31,9 @@ class TtBillPPOB(models.Model):
     incentive = fields.Monetary('Incentive', default=0)
     fare_amount = fields.Monetary('Fare Amount (for Electricity)', default=0)
     fine_amount = fields.Monetary('Fine Amount', default=0)
-    kwh_amount = fields.Integer('KWH Amount Upon Payment', default=0)
-    installment = fields.Integer('Installment Amount', default=0)
-    total = fields.Integer('Total', readonly=True, default=0)
+    installment = fields.Monetary('Installment Amount', default=0)
+    kwh_amount = fields.Float('KWH Amount Upon Payment', default=0)
+    total = fields.Monetary('Total', readonly=True, default=0)
     token = fields.Char('Token Number')
 
     def to_dict(self):
@@ -96,7 +96,8 @@ class TtBillDetailPPOB(models.Model):
     customer_name = fields.Char('Customer Name', readonly=True)
     unit_code = fields.Char('Unit Code', readonly=True)
     unit_name = fields.Char('Unit Name', readonly=True)
-    total = fields.Integer('Total', readonly=True, default=0)
+    currency_id = fields.Many2one('res.currency', default=lambda self: self.env.user.company_id.currency_id.id, string='Currency')
+    total = fields.Monetary('Total', readonly=True, default=0)
 
     def to_dict(self):
         res = {
@@ -104,6 +105,7 @@ class TtBillDetailPPOB(models.Model):
             'customer_name': self.customer_name and self.customer_name or '',
             'unit_code': self.unit_code and self.unit_code or '',
             'unit_name': self.unit_name and self.unit_name or '',
+            'currency': self.currency_id and self.currency_id.name or '',
             'total': self.total and self.total or 0,
         }
         return res
