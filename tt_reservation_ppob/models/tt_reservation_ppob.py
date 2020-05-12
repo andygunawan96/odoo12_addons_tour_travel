@@ -211,6 +211,9 @@ class ReservationPpob(models.Model):
         elif all(rec.state == 'fail_issued' for rec in self.provider_booking_ids):
             # failed issue
             self.action_failed_issue()
+        elif all(rec.state == 'fail_paid' for rec in self.provider_booking_ids):
+            # failed issue
+            self.action_failed_paid()
         elif all(rec.state == 'fail_booked' for rec in self.provider_booking_ids):
             # failed book
             self.action_failed_book()
@@ -229,8 +232,10 @@ class ReservationPpob(models.Model):
     def search_inquiry_api(self, data, context):
         try:
             search_req = data['search_RQ']
-            inq_prov_obj = self.env['tt.provider.ppob'].sudo().search([('carrier_code', '=', str(search_req['product_code'])), ('customer_number', '=', str(search_req['customer_number'])), ('state', '=', 'booked')], limit=1)
-            if inq_prov_obj and inq_prov_obj.booking_id:
+            inq_prov_obj = self.env['tt.provider.ppob'].sudo().search([('carrier_code', '=', str(search_req['product_code'])),
+                                                                       ('customer_number', '=', str(search_req['customer_number'])),
+                                                                       ('state', '=', 'booked')], limit=1)
+            if inq_prov_obj and inq_prov_obj.booking_id and inq_prov_obj.booking_id.agent_id.id == context['co_agent_id']:
                 inq_prov_obj = inq_prov_obj[0]
                 vals = {
                     'order_number': inq_prov_obj.booking_id.name,
@@ -310,7 +315,6 @@ class ReservationPpob(models.Model):
             'carrier_id': carrier_obj and carrier_obj.id or False,
             'carrier_code': carrier_obj and carrier_obj.code or False,
             'carrier_name': carrier_obj and carrier_obj.name or False,
-            'session_id': data.get('session_id') and data['session_id'] or '',
             'customer_number': data.get('customer_number') and data['customer_number'] or '',
             'customer_name': data.get('customer_name') and data['customer_name'] or '',
             'customer_id_number': data.get('customer_id_number') and data['customer_id_number'] or '',
@@ -512,7 +516,7 @@ class ReservationPpob(models.Model):
                 raise RequestException(1003)
 
             resv_obj = resv_obj[0]
-            if resv_obj.state != 'issued':
+            if resv_obj.state == 'booked':
                 for rec in resv_obj.provider_booking_ids:
                     rec.sudo().unlink()
                 for rec in resv_obj.passenger_ids:
@@ -666,6 +670,10 @@ class ReservationPpob(models.Model):
             provider_code = ''
             provider_list = []
             for rec in resv_obj.provider_booking_ids:
+                if data.get('session_id'):
+                    rec.write({
+                        'session_id': data['session_id']
+                    })
                 provider_code = rec.provider_id and rec.provider_id.code or ''
                 temp_carrier_code = rec.carrier_id and rec.carrier_id.code or ''
                 bill_list = []
@@ -677,7 +685,7 @@ class ReservationPpob(models.Model):
 
                 provider_list.append({
                     'carrier_code': temp_carrier_code,
-                    'session_id': rec.session_id,
+                    'session_id': rec.session_id and rec.session_id or '',
                     'customer_number': rec.customer_number,
                     'bill_data': bill_list,
                 })
