@@ -73,7 +73,7 @@ class AgentReportPerformanceXls(models.TransientModel):
                 to_print.append(dictionary)
                 current_id = i['agent_id']
 
-
+        to_print.sort(key=lambda x: x['number_of_sales'], reverse=True)
         row_data = 8
         counter = 0
         for i in to_print:

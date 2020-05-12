@@ -32,7 +32,7 @@ class AgentReportPerformance(models.Model):
     @staticmethod
     def _where(date_from, date_to, agent_type):
         where = """sales.create_date >= '{}' AND sales.create_date <= '{}' """.format(date_from, date_to)
-        where += """AND sales.state = 'paid'"""
+        where += """AND sales.state != 'cancel'"""
         if agent_type != 'all':
             where += """ AND agent_type.code = '{}'""".format(agent_type)
         return where
