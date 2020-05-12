@@ -58,16 +58,16 @@
                     <button name="print_eticket"
                             class="oe_stat_button" states="issued,done"
                             string="Print E-Ticket" type="object" icon="fa-print"/>
-                    <button name="print_eticket_with_price"
-                            class="oe_stat_button" states="issued,done"
-                            string="Print E-Ticket (Price)" type="object" icon="fa-print"/>
+<!--                    <button name="print_eticket_with_price"-->
+<!--                            class="oe_stat_button" states="issued,done"-->
+<!--                            string="Print E-Ticket (Price)" type="object" icon="fa-print"/>-->
                     <button name="print_ho_invoice"
                             class="oe_stat_button" states="issued,done"
                             string="Print Invoice (HO)" type="object" icon="fa-print"
                             groups="tt_base.group_tt_tour_travel_operator"/>
-                    <button name="print_itinerary"
-                            class="oe_stat_button" states="booked,issued,done"
-                            string="Print Itinerary" type="object" icon="fa-print"/>
+<!--                    <button name="print_itinerary"-->
+<!--                            class="oe_stat_button" states="booked,issued,done"-->
+<!--                            string="Print Itinerary" type="object" icon="fa-print"/>-->
                 </div>
             </xpath>
 

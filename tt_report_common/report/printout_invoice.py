@@ -193,7 +193,8 @@ class PrintoutPPOBBillsForm(models.AbstractModel):
     _name = 'report.tt_report_common.printout_ppob_bills'
     _description = 'Rodex Model'
 
-    def format_token_number(self, token):
+    @staticmethod
+    def format_token_number(token):
         token = token.replace(" ", "")
         return '-'.join(token[i:i+4] for i in range(0, len(token), 4))
 
@@ -219,7 +220,7 @@ class PrintoutPPOBBillsForm(models.AbstractModel):
                 for bill in provider.ppob_bill_ids:
                     # Period
                     if bill.period:
-                        period.append(bill.period.strftime('%m/%y'))
+                        period.append(bill.period.strftime('%b %y'))
                     # Tarif & Total Bayar
                     total_tagihan_pln += bill.fare_amount  # Cukup ambil fare amount. gak perlu jumlahkan semuanya
                     # Stand Meter
@@ -238,11 +239,12 @@ class PrintoutPPOBBillsForm(models.AbstractModel):
 
         # Set Values
         values.update({
-            'total_tagihan_pln': total_tagihan_pln,
+            'total': "{:,.0f}".format(rec.total),
+            'total_tagihan_pln': "{:,.0f}".format(total_tagihan_pln),
             'before_meter': before_meter,
             'after_meter': after_meter,
             'period': ', '.join(period),
-            'admin_bank': admin_bank
+            'admin_bank': "{:,.0f}".format(admin_bank)
         })
         return values
 
@@ -264,13 +266,13 @@ class PrintoutPPOBBillsForm(models.AbstractModel):
         if rec.provider_booking_ids:
             # Admin Bank (ambil dari ROC service charge)
             provider = rec.provider_booking_ids[0]
-            token_number = self.format_token_number(provider.ppob_bill_ids[0].token)
 
             for scs in provider.cost_service_charge_ids:
                 if scs.charge_code == 'roc':
                     admin_bank += scs.total
 
             if provider.ppob_bill_ids:
+                token_number = self.format_token_number(provider.ppob_bill_ids[0].token)
                 for bill in provider.ppob_bill_ids:
                     # Tarif & Total Bayar
                     tarif += bill.fare_amount
@@ -284,14 +286,14 @@ class PrintoutPPOBBillsForm(models.AbstractModel):
         # Set Values
         values.update({
             'token_number': token_number,
-            'tarif': tarif,
-            'total_tagihan_pln': total_tagihan_pln,
-            'stamp_fee': stamp_fee,
-            'ppn': ppn,
-            'ppj': ppj,
             'jumlah_kwh': jumlah_kwh,
-            'admin_bank': admin_bank,
-            'installment': installment
+            'total': "{:,.0f}".format(rec.total),
+            'tarif': "{:,.0f}".format(tarif),
+            'stamp_fee': "{:,.0f}".format(stamp_fee),
+            'ppn': "{:,.0f}".format(ppn),
+            'ppj': "{:,.0f}".format(ppj),
+            'admin_bank': "{:,.0f}".format(admin_bank),
+            'installment': "{:,.0f}".format(installment)
         })
         return values
 
@@ -301,11 +303,13 @@ class PrintoutPPOBBillsForm(models.AbstractModel):
         # Variables
         admin_bank = 0
         total_tagihan_pln = 0
+        tgl_registrasi = ''
 
         # Get Non Electricity Bills
         if rec.provider_booking_ids:
             # Admin Bank (ambil dari ROC service charge)
             provider = rec.provider_booking_ids[0]
+            tgl_registrasi = provider.registration_date.strftime('%d %b %y')
             for scs in provider.cost_service_charge_ids:
                 if scs.charge_code == 'roc':
                     admin_bank += scs.total
@@ -315,8 +319,10 @@ class PrintoutPPOBBillsForm(models.AbstractModel):
                     total_tagihan_pln += bill.fare_amount + bill.fine_amount + bill.admin_fee + bill.stamp_fee + bill.incentive + bill.ppn_tax_amount + bill.ppj_tax_amount
 
         values.update({
-            'total_tagihan_pln': total_tagihan_pln,
-            'admin_bank': admin_bank
+            'tgl_registrasi': tgl_registrasi,
+            'total': "{:,.0f}".format(rec.total),
+            'total_tagihan_pln': "{:,.0f}".format(total_tagihan_pln),
+            'admin_bank': "{:,.0f}".format(admin_bank)
         })
         return values
 
@@ -328,11 +334,13 @@ class PrintoutPPOBBillsForm(models.AbstractModel):
         period = 0
         tarif = 0
         jumlah_peserta = 0
+        unpaid_bill_display = 0
         date = ''
 
         # Get BPJS Kesehatan Data
         if rec.provider_booking_ids:
             provider = rec.provider_booking_ids[0]
+            unpaid_bill_display = provider.unpaid_bill_display
             date = provider.issued_date.strftime('%d-%m-%Y')
 
             for scs in provider.cost_service_charge_ids:
@@ -351,8 +359,10 @@ class PrintoutPPOBBillsForm(models.AbstractModel):
         values.update({
             'date': date,
             'period': str(period),
-            'tarif': tarif,
-            'admin_fee': admin_fee,
+            'unpaid_bill_display': "{:,.0f}".format(unpaid_bill_display),
+            'total': "{:,.0f}".format(rec.total),
+            'tarif': "{:,.0f}".format(tarif),
+            'admin_fee': "{:,.0f}".format(admin_fee),
             'jumlah_peserta': jumlah_peserta
         })
         return values
@@ -582,9 +592,16 @@ class PrintoutInvoiceHO(models.AbstractModel):
             elif ppob_carrier.code == self.env.ref('tt_reservation_ppob.tt_transport_carrier_ppob_prepln').code:
                 for bill in provider.ppob_bill_ids:
                     period = bill.period.strftime('%d/%m/%Y')
+                    total = bill.fare_amount + bill.fine_amount + bill.admin_fee + bill.stamp_fee + bill.ppn_tax_amount\
+                            + bill.ppj_tax_amount + bill.installment
                     pax_dict[period] = {}
                     pax_dict[period]['name'] = 'Periode ' + period
-                    pax_dict[period]['total'] = bill.fare_amount
+                    pax_dict[period]['total'] = total
+            elif ppob_carrier.code == self.env.ref('tt_reservation_ppob.tt_transport_carrier_ppob_notaglispln').code:
+                period = provider.registration_date.strftime('%d/%m/%y')
+                pax_dict[period] = {}
+                pax_dict[period]['name'] = provider.transaction_name
+                pax_dict[period]['total'] = provider.ppob_bill_ids[0].fare_amount
         return pax_dict
 
     def get_pax_data(self):
@@ -659,6 +676,7 @@ class PrintoutInvoiceHO(models.AbstractModel):
                 desc += 'BPJS Ref : ' + rec.pnr + '<br/>'
                 desc += 'Nama : ' + rec.customer_name + '<br/>'
                 desc += 'Jumlah Peserta : ' + str(len(rec.ppob_bill_detail_ids)) + '<br/>'
+                desc += 'Jumlah Periode : ' + str(len(rec.ppob_bill_ids)) + '<br/>'
             elif ppob_carrier.code == self.env.ref('tt_reservation_ppob.tt_transport_carrier_ppob_postpln').code:
                 desc += 'IDPel : ' + rec.customer_id_number + '<br/>'
                 desc += 'Nama : ' + rec.customer_name + '<br/>'

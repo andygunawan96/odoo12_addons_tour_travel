@@ -735,10 +735,14 @@ class IssuedOffline(models.Model):
         for provider in self.provider_booking_ids:
             for scs in provider.cost_service_charge_ids:
                 psg_list = []
-                for psg in self.passenger_ids:
-                    if scs.pax_type == psg.pax_type:
-                        psg_list.append(psg.id)
-                scs.passenger_offline_ids = [(6, 0, psg_list)]
+                if self.offline_provider_type == 'hotel':
+                    psg_list = [self.passenger_ids[0].id]
+                    scs.passenger_offline_ids = [(6, 0, psg_list)]
+                else:
+                    for psg in self.passenger_ids:
+                        if scs.pax_type == psg.pax_type:
+                            psg_list.append(psg.id)
+                    scs.passenger_offline_ids = [(6, 0, psg_list)]
 
     def sync_all_service_charge(self):
         book_objs = self.env['tt.reservation.offline'].search([('state_offline', 'in', ['sent', 'validate', 'done']),
