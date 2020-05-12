@@ -45,9 +45,10 @@ class AgentReportPerformanceXls(models.TransientModel):
         sheet.write('C9', 'Agent Name', style.table_head_center)
         sheet.write('D9', 'Parent Agent', style.table_head_center)
         sheet.write('E9', 'Email', style.table_head_center)
-        sheet.write('F9', 'Total Revenue', style.table_head_center)
+        sheet.write('F9', 'Phone', style.table_head_center)
+        sheet.write('G9', 'Total Revenue', style.table_head_center)
         # sheet.write('G9', 'Revenue with Tax', style.table_head_center)
-        sheet.write('G9', 'Number of Sales', style.table_head_center)
+        sheet.write('H9', 'Number of Sales', style.table_head_center)
 
         to_print = []
         current_id = ""
@@ -56,11 +57,13 @@ class AgentReportPerformanceXls(models.TransientModel):
             temp_total_w_tax = 0
             number_of_sales = 0
             if current_id != i['agent_id']:
-                filtered_data = filter(lambda x: x['agent_id'] == i['agent_id'], values['lines'])
+                filtered_data = list(filter(lambda x: x['agent_id'] == i['agent_id'], values['lines']))
+                phone_number = filtered_data[0]['phone_number']
                 for j in filtered_data:
-                    temp_total_w_tax += j['sales_total_after_tax']
-                    temp_total_wo_tax += j['sales_total']
-                    number_of_sales += 1
+                    if phone_number == j['phone_number']:
+                        temp_total_w_tax += j['sales_total_after_tax']
+                        temp_total_wo_tax += j['sales_total']
+                        number_of_sales += 1
                 dictionary = {
                     'agent_name': i['agent_name'],
                     'agent_type': i['agent_type_name'],
@@ -69,6 +72,7 @@ class AgentReportPerformanceXls(models.TransientModel):
                     'total_tax': temp_total_w_tax,
                     'number_of_sales': number_of_sales,
                     'parent': i['parent_agent_name'],
+                    'phone': phone_number
                 }
                 to_print.append(dictionary)
                 current_id = i['agent_id']
@@ -96,9 +100,10 @@ class AgentReportPerformanceXls(models.TransientModel):
             sheet.write(row_data, 2, i['agent_name'], sty_table_data)
             sheet.write(row_data, 3, i['parent'], sty_table_data)
             sheet.write(row_data, 4, i['email'], sty_table_data)
-            sheet.write(row_data, 5, i['total'], sty_amount)
+            sheet.write(row_data, 5, i['phone'], sty_table_data)
+            sheet.write(row_data, 6, i['total'], sty_amount)
             # sheet.write(row_data, 6, i['total_tax'], sty_amount)
-            sheet.write(row_data, 6, i['number_of_sales'], sty_amount)
+            sheet.write(row_data, 7, i['number_of_sales'], sty_amount)
 
         workbook.close()
 
