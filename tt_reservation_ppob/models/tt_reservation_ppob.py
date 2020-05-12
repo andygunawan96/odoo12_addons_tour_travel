@@ -817,6 +817,8 @@ class ReservationPpob(models.Model):
             else:
                 co_uid = self.env.user.id
 
+            filename = self.get_filename()
+
             pdf_report = ppob_ho_invoice_id.report_action(self, data=datas)
             pdf_report['context'].update({
                 'active_model': self._name,
@@ -825,8 +827,8 @@ class ReservationPpob(models.Model):
             pdf_report_bytes = ppob_ho_invoice_id.render_qweb_pdf(data=pdf_report)
             res = self.env['tt.upload.center.wizard'].upload_file_api(
                 {
-                    'filename': 'PPOB HO Invoice %s.pdf' % self.name,
-                    'file_reference': 'PPOB HO Invoice',
+                    'filename': '%s HO Invoice %s.pdf' % (filename, self.name),
+                    'file_reference': '%s HO Invoice' % filename,
                     'file': base64.b64encode(pdf_report_bytes[0]),
                     'delete_date': datetime.today() + timedelta(minutes=10)
                 },
