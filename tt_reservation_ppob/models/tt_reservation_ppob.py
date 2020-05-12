@@ -181,6 +181,48 @@ class ReservationPpob(models.Model):
     def action_issued_api_ppob(self,acquirer_id,customer_parent_id,context):
         self.action_issued_ppob(context['co_uid'],customer_parent_id,acquirer_id)
 
+    def action_resync_api(self, data, context):
+        try:
+            if data.get('order_id'):
+                resv_obj = self.env['tt.reservation.ppob'].sudo().browse(int(data['order_id']))
+            else:
+                resv_objs = self.env['tt.reservation.ppob'].sudo().search([('name', '=', data['order_number'])], limit=1)
+                resv_obj = resv_objs and resv_objs[0] or False
+
+            if not resv_obj:
+                raise RequestException(1003)
+
+            provider_list = []
+            for rec in resv_obj.provider_booking_ids:
+                if resv_obj.state == 'fail_issued':
+                    rec.write({
+                        'state': 'booked',
+                        'booked_uid': context['co_uid'],
+                        'booked_date': fields.Datetime.now(),
+                        'hold_date': datetime.today() + timedelta(days=1),
+                    })
+                provider_list.append(rec.to_dict())
+
+            if resv_obj.state == 'fail_issued':
+                resv_obj.write({
+                    'state': 'booked',
+                    'booked_uid': context['co_uid'],
+                    'booked_date': datetime.now(),
+                    'hold_date': datetime.today() + timedelta(days=1)
+                })
+
+            res = resv_obj.to_dict()
+            res.update({
+                'provider_booking': provider_list
+            })
+            return ERR.get_no_error(res)
+        except RequestException as e:
+            _logger.error(traceback.format_exc())
+            return e.error_dict()
+        except Exception as e:
+            _logger.error(traceback.format_exc())
+            return ERR.get_error(1005)
+
     def check_provider_state(self, context, pnr_list=[], hold_date=False, req={}):
         if all(rec.state == 'booked' for rec in self.provider_booking_ids):
             # booked
