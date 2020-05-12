@@ -150,7 +150,7 @@
                         <span t-field="doc.currency_id.symbol"/> <span t-esc="values['ppj']"/><br/>
                         <span t-field="doc.currency_id.symbol"/> <span t-esc="values['installment']"/><br/>
                         <span t-field="doc.currency_id.symbol"/> <span t-esc="values['tarif']"/><br/>
-                        <span t-esc="values['jumlah_kwh']"/><br/>
+                        <span t-esc="values['jumlah_kwh']" t-options='{"widget": "float", "precision": 1 }'/><br/>
                         <span t-esc="values['token_number']"/><br/>
                         <span t-field="doc.currency_id.symbol"/> <span t-esc="values['admin_bank']"/><br/>
                     </div>
