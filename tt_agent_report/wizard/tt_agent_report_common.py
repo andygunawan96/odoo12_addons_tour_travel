@@ -125,7 +125,7 @@ class AgentReportCommon(models.TransientModel):
         self.ensure_one()
         data = ({
             'model': self.env.context.get('active_model', 'ir.ui.menu'),
-            'form': self.read(['date_from', 'date_to', 'period', 'agent_id', 'state', 'provider_type', 'chart_frequency', 'agent_type_id'])[0]
+            'form': self.read(['date_from', 'date_to', 'period', 'agent_id', 'state', 'provider_type', 'chart_frequency', 'agent_type_id', 'agent_type'])[0]
         })
         self._prepare_form(data)
         used_context = self._build_contexts(data)
