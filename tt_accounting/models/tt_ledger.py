@@ -204,9 +204,6 @@ class Ledger(models.Model):
         }
 
 
-    ##fungsi return tuple
-    ## [0] ada key apa
-    ## [1]
     @api.multi
     def write(self, vals):
         allowed_list = []
