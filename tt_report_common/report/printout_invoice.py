@@ -257,7 +257,6 @@ class PrintoutPPOBBillsForm(models.AbstractModel):
         ppn = 0
         ppj = 0
         admin_bank = 0
-        total_tagihan_pln = 0
         jumlah_kwh = 0
         installment = 0
         token_number = ''
@@ -276,7 +275,6 @@ class PrintoutPPOBBillsForm(models.AbstractModel):
                 for bill in provider.ppob_bill_ids:
                     # Tarif & Total Bayar
                     tarif += bill.fare_amount
-                    total_tagihan_pln += bill.fare_amount + bill.fine_amount + bill.admin_fee + bill.stamp_fee + bill.incentive + bill.ppn_tax_amount + bill.ppj_tax_amount + bill.installment
                     stamp_fee += bill.stamp_fee
                     ppn += bill.ppn_tax_amount
                     ppj += bill.ppj_tax_amount
@@ -588,12 +586,12 @@ class PrintoutInvoiceHO(models.AbstractModel):
                     period = bill.period.strftime('%d/%m/%Y')
                     pax_dict[period] = {}
                     pax_dict[period]['name'] = 'Periode ' + period
-                    pax_dict[period]['total'] = bill.fare_amount
+                    pax_dict[period]['total'] = bill.fare_amount + bill.fine_amount
             elif ppob_carrier.code == self.env.ref('tt_reservation_ppob.tt_transport_carrier_ppob_prepln').code:
                 for bill in provider.ppob_bill_ids:
                     period = bill.period.strftime('%d/%m/%Y')
-                    total = bill.fare_amount + bill.fine_amount + bill.admin_fee + bill.stamp_fee + bill.ppn_tax_amount\
-                            + bill.ppj_tax_amount + bill.installment
+                    total = bill.fare_amount + bill.fine_amount + bill.admin_fee + bill.stamp_fee + \
+                            + bill.incentive + bill.ppn_tax_amount + bill.ppj_tax_amount + bill.installment
                     pax_dict[period] = {}
                     pax_dict[period]['name'] = 'Periode ' + period
                     pax_dict[period]['total'] = total
