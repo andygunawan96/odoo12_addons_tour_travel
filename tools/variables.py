@@ -219,5 +219,14 @@ PROVIDER_TYPE_PREFIX = {
     'AT': 'activity',
     'TR': 'tour',
     'RESV': 'hotel',
-    'BT': 'ppob'
+    'BT': 'ppob',
+    'VT': 'event'
 }
+
+PRODUCT_STATE = [
+    ('draft', 'Draft'),
+    ('confirm', 'Confirm'),
+    ('cancel', 'Cancel'),
+    ('postpone', 'Postpone'),
+    ('sold-out', 'Sold Out')
+]
