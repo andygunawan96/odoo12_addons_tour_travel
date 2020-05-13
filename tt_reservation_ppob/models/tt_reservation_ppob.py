@@ -181,6 +181,48 @@ class ReservationPpob(models.Model):
     def action_issued_api_ppob(self,acquirer_id,customer_parent_id,context):
         self.action_issued_ppob(context['co_uid'],customer_parent_id,acquirer_id)
 
+    def action_resync_api(self, data, context):
+        try:
+            if data.get('order_id'):
+                resv_obj = self.env['tt.reservation.ppob'].sudo().browse(int(data['order_id']))
+            else:
+                resv_objs = self.env['tt.reservation.ppob'].sudo().search([('name', '=', data['order_number'])], limit=1)
+                resv_obj = resv_objs and resv_objs[0] or False
+
+            if not resv_obj:
+                raise RequestException(1003)
+
+            provider_list = []
+            for rec in resv_obj.provider_booking_ids:
+                if resv_obj.state == 'fail_issued':
+                    rec.write({
+                        'state': 'booked',
+                        'booked_uid': context['co_uid'],
+                        'booked_date': fields.Datetime.now(),
+                        'hold_date': datetime.today() + timedelta(days=1),
+                    })
+                provider_list.append(rec.to_dict())
+
+            if resv_obj.state == 'fail_issued':
+                resv_obj.write({
+                    'state': 'booked',
+                    'booked_uid': context['co_uid'],
+                    'booked_date': datetime.now(),
+                    'hold_date': datetime.today() + timedelta(days=1)
+                })
+
+            res = resv_obj.to_dict()
+            res.update({
+                'provider_booking': provider_list
+            })
+            return ERR.get_no_error(res)
+        except RequestException as e:
+            _logger.error(traceback.format_exc())
+            return e.error_dict()
+        except Exception as e:
+            _logger.error(traceback.format_exc())
+            return ERR.get_error(1005)
+
     def check_provider_state(self, context, pnr_list=[], hold_date=False, req={}):
         if all(rec.state == 'booked' for rec in self.provider_booking_ids):
             # booked
@@ -211,6 +253,9 @@ class ReservationPpob(models.Model):
         elif all(rec.state == 'fail_issued' for rec in self.provider_booking_ids):
             # failed issue
             self.action_failed_issue()
+        elif all(rec.state == 'fail_paid' for rec in self.provider_booking_ids):
+            # failed issue
+            self.action_failed_paid()
         elif all(rec.state == 'fail_booked' for rec in self.provider_booking_ids):
             # failed book
             self.action_failed_book()
@@ -229,8 +274,10 @@ class ReservationPpob(models.Model):
     def search_inquiry_api(self, data, context):
         try:
             search_req = data['search_RQ']
-            inq_prov_obj = self.env['tt.provider.ppob'].sudo().search([('carrier_code', '=', str(search_req['product_code'])), ('customer_number', '=', str(search_req['customer_number'])), ('state', '=', 'booked')], limit=1)
-            if inq_prov_obj and inq_prov_obj.booking_id:
+            inq_prov_obj = self.env['tt.provider.ppob'].sudo().search([('carrier_code', '=', str(search_req['product_code'])),
+                                                                       ('customer_number', '=', str(search_req['customer_number'])),
+                                                                       ('state', '=', 'booked')], limit=1)
+            if inq_prov_obj and inq_prov_obj.booking_id and inq_prov_obj.booking_id.agent_id.id == context['co_agent_id']:
                 inq_prov_obj = inq_prov_obj[0]
                 vals = {
                     'order_number': inq_prov_obj.booking_id.name,
@@ -310,7 +357,6 @@ class ReservationPpob(models.Model):
             'carrier_id': carrier_obj and carrier_obj.id or False,
             'carrier_code': carrier_obj and carrier_obj.code or False,
             'carrier_name': carrier_obj and carrier_obj.name or False,
-            'session_id': data.get('session_id') and data['session_id'] or '',
             'customer_number': data.get('customer_number') and data['customer_number'] or '',
             'customer_name': data.get('customer_name') and data['customer_name'] or '',
             'customer_id_number': data.get('customer_id_number') and data['customer_id_number'] or '',
@@ -512,7 +558,7 @@ class ReservationPpob(models.Model):
                 raise RequestException(1003)
 
             resv_obj = resv_obj[0]
-            if resv_obj.state != 'issued':
+            if resv_obj.state == 'booked':
                 for rec in resv_obj.provider_booking_ids:
                     rec.sudo().unlink()
                 for rec in resv_obj.passenger_ids:
@@ -666,6 +712,10 @@ class ReservationPpob(models.Model):
             provider_code = ''
             provider_list = []
             for rec in resv_obj.provider_booking_ids:
+                if data.get('session_id'):
+                    rec.write({
+                        'session_id': data['session_id']
+                    })
                 provider_code = rec.provider_id and rec.provider_id.code or ''
                 temp_carrier_code = rec.carrier_id and rec.carrier_id.code or ''
                 bill_list = []
@@ -677,7 +727,7 @@ class ReservationPpob(models.Model):
 
                 provider_list.append({
                     'carrier_code': temp_carrier_code,
-                    'session_id': rec.session_id,
+                    'session_id': rec.session_id and rec.session_id or '',
                     'customer_number': rec.customer_number,
                     'bill_data': bill_list,
                 })
@@ -809,6 +859,8 @@ class ReservationPpob(models.Model):
             else:
                 co_uid = self.env.user.id
 
+            filename = self.get_filename()
+
             pdf_report = ppob_ho_invoice_id.report_action(self, data=datas)
             pdf_report['context'].update({
                 'active_model': self._name,
@@ -817,8 +869,8 @@ class ReservationPpob(models.Model):
             pdf_report_bytes = ppob_ho_invoice_id.render_qweb_pdf(data=pdf_report)
             res = self.env['tt.upload.center.wizard'].upload_file_api(
                 {
-                    'filename': 'PPOB HO Invoice %s.pdf' % self.name,
-                    'file_reference': 'PPOB HO Invoice',
+                    'filename': '%s HO Invoice %s.pdf' % (filename, self.name),
+                    'file_reference': '%s HO Invoice' % filename,
                     'file': base64.b64encode(pdf_report_bytes[0]),
                     'delete_date': datetime.today() + timedelta(minutes=10)
                 },

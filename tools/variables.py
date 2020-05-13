@@ -47,6 +47,7 @@ BOOKING_STATE = [
     ('cancel2', 'Expired'),
     ('cancel_pending', 'Cancel Pending'),
     ('fail_cancel', 'Failed (Cancel)'),
+    ('fail_paid', 'Failed (Paid)'),
     ('error', 'Connection Loss'), #diganti failed issue
     ('fail_booked', 'Failed (Book)'),
     ('booked', 'Booked'),
@@ -74,6 +75,7 @@ BOOKING_STATE_STR = {
     'cancel2': 'Expired',
     'cancel_pending': 'Cancel Pending',
     'fail_cancel': 'Failed (Cancel)',
+    'fail_paid': 'Failed (Paid)',
     'error': 'Connection Loss', #diganti failed issue
     'fail_booked': 'Failed (Book)',
     'booked': 'Booked',
@@ -217,5 +219,14 @@ PROVIDER_TYPE_PREFIX = {
     'AT': 'activity',
     'TR': 'tour',
     'RESV': 'hotel',
-    'BT': 'ppob'
+    'BT': 'ppob',
+    'VT': 'event'
 }
+
+PRODUCT_STATE = [
+    ('draft', 'Draft'),
+    ('confirm', 'Confirm'),
+    ('cancel', 'Cancel'),
+    ('postpone', 'Postpone'),
+    ('sold-out', 'Sold Out')
+]

@@ -304,7 +304,7 @@ class ProviderOffline(models.Model):
         days_int = int(days.days)
 
         fee_amount_vals = book_obj.get_fee_amount(book_obj.agent_id, provider_type_id,
-                                                  book_obj.total_commission_amount)
+                                                  book_obj.total_commission_amount, self.booking_id.passenger_ids[0])
         fee_amount_vals['provider_offline_booking_id'] = self.id
         fee_amount_vals['amount'] = fee_amount_vals.get('amount')
         fee_amount_vals['total'] = fee_amount_vals.get('total') * line_obj.obj_qty * days_int
@@ -318,7 +318,7 @@ class ProviderOffline(models.Model):
             days_int = int(days.days)
 
             fee_amount_vals = book_obj.get_fee_amount(book_obj.agent_id, provider_type_id,
-                                                      book_obj.total_commission_amount)
+                                                      book_obj.total_commission_amount, )
             fee_amount_vals['provider_offline_booking_id'] = self.id
             fee_amount_vals['amount'] = fee_amount_vals.get('amount')
             fee_amount_vals['total'] = fee_amount_vals.get('total') * line.obj_qty * days_int
@@ -335,9 +335,11 @@ class ProviderOffline(models.Model):
             'pax_type': 'ADT',
             'currency_id': self.currency_id.id,
             'provider_offline_booking_id': self.id,
+            'passenger_offline_ids': [],
             'pax_count': 1,
             'total': sale_price,
         }
+        vals['passenger_offline_ids'].append(self.booking_id.passenger_ids[0].id)
         scs_list.append(vals)
         commission_list = pricing_obj.get_commission(real_comm_amount, book_obj.agent_id, provider_type_id)
         for comm in commission_list:
@@ -349,13 +351,16 @@ class ProviderOffline(models.Model):
                     'amount': comm['amount'] * -1 / len(book_obj.line_ids),
                     'charge_code': comm['code'],
                     'charge_type': 'RAC',
+                    'passenger_offline_ids': [],
                 })
+                vals2['passenger_offline_ids'].append(self.booking_id.passenger_ids[0].id)
                 scs_list.append(vals2)
 
         # Insert into cost service charge
         scs_list_3 = []
         service_chg_obj = self.env['tt.service.charge']
         for scs_2 in scs_list:
+            scs_2['passenger_offline_ids'] = [(6, 0, scs_2['passenger_offline_ids'])]
             scs_obj = service_chg_obj.create(scs_2)
             scs_list_3.append(scs_obj.id)
 
