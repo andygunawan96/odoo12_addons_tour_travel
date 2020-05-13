@@ -217,10 +217,10 @@ class Ledger(models.Model):
 
         for key, value in vals.items():
             if key not in allowed_list:
-                raise Exception('TETOT 1')
+                raise Exception('Cannot Write Ledger.')
             if getattr(self, key):
                 if key not in allowed_replace_list:
-                    raise Exception('TETOT 2')
+                    raise Exception('Cannot Write Ledger.')
         return super(Ledger, self).write(vals)
 
     @api.multi
