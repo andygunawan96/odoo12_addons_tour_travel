@@ -58,6 +58,7 @@ class HotelInformation(models.Model):
         ('fb', 'Free Breakfast'),
         ('dc', 'Discount Today'),
     ], 'Ribbon', default='no', help='Using to give promo mark')
+    file_number = fields.Text('File Number')
 
     @api.one
     def action_confirm(self):
@@ -105,6 +106,7 @@ class HotelInformation(models.Model):
 
     def render_cache_city(self):
         self.env['test.search'].update_cache_city()
+
 
 class HotelImage(models.Model):
     _inherit = 'tt.hotel.image'

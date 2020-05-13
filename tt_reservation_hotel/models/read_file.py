@@ -1715,32 +1715,37 @@ class HotelInformation(models.Model):
         api_context = {
             'co_uid': self.env.user.id
         }
-        i = 75
-        limit = 100
-        all_obj = (i*limit)+1
-        while i*limit < all_obj:
-            search_req = {
-                'provider': 'oyo',
-                'type': 'hotel',
-                'limit': limit,
-                'offset': i*limit,
-                'codes': 'IN', #Country Code
-            }
-            hotel_fmt = []
-            _logger.info("Get offset " + str(i*limit) + " Hotel(s) ")
-            try:
-                hotel_objs = API_CN_HOTEL.get_record_by_api(search_req, api_context)
-                all_obj = hotel_objs['response'][0]
-                hotel_fmt = hotel_objs['response'][1]
-            except:
-                all_obj = 0
+        # country_list = [rec.code for rec in self.env['res.country'].search([]) if rec.code]
+        country_list = ['ID']
+        for rec in country_list:
+            i = 1
+            limit = 100
+            all_obj = (i*limit)+1
+            while i*limit < all_obj:
+                search_req = {
+                    'provider': 'oyo',
+                    'type': 'hotel',
+                    'limit': limit,
+                    'offset': i*limit,
+                    'codes': rec, #Country Code
+                }
+                hotel_fmt = []
 
-            filename = "/var/log/cache_hotel/oyo/master/" + 'IN' + '_' + str(i) + ".json"
-            i += 1
-            # Create Record Hotel per City
-            file = open(filename, 'w')
-            file.write(json.dumps(hotel_fmt))
-            file.close()
+                try:
+                    hotel_objs = API_CN_HOTEL.get_record_by_api(search_req, api_context)
+                    all_obj = hotel_objs[0]
+                    hotel_fmt = hotel_objs[1]
+                except:
+                    _logger.info("Error while Processing Country " + rec)
+                    all_obj = 0
+
+                filename = "/var/log/cache_hotel/oyo/master/" + rec + '_' + str(i) + ".json"
+                i += 1
+                # Create Record Hotel per City
+                file = open(filename, 'w')
+                file.write(json.dumps(hotel_fmt))
+                file.close()
+            _logger.info("Get Hotel for Country " + rec + " END get " + str(all_obj) + "Hotel(s)")
         return True
 
     # OYO TMC
@@ -1758,6 +1763,7 @@ class HotelInformation(models.Model):
             except:
                 continue
             for rec in hotel_list:
+                rec['city'] = rec['city'].replace('Kabupaten ', '')
                 if not city_ids.get(rec['city']):
                     city_ids.update({
                         rec['city']: [],
@@ -3044,4 +3050,86 @@ class HotelInformation(models.Model):
         csvFile.close()
         return True
 
+    # ====================== Cache Hotel ke Backend(jadi record di db backend) ====================
+    def move_from_cache_to_odoo(self):
+        hotel_per_cities = glob.glob("/var/log/tour_travel/cache_hotel/*.txt")
+        hotel_per_cities.sort()
+        for hotel_per_city in hotel_per_cities[0:10]:
+            _logger.info('Open File ' + hotel_per_city)
+            with open(hotel_per_city, 'r') as f:
+                hotel_objs = f.read()
+                hotel_objs = json.loads(hotel_objs)
+            f.close()
 
+            _logger.info('Creating ' + str(len(hotel_objs)) + ' Hotel(s)')
+            for hotel_obj in hotel_objs:
+                create_hotel_id = self.env['tt.hotel'].create({
+                    'name': hotel_obj['name'],
+                    'rating': hotel_obj['rating'],
+                    'ribbon': hotel_obj['ribbon'],
+                    'email': hotel_obj.get('email'),
+                    'website': hotel_obj.get('website'),
+                    'provider': ', '.join([self.env['tt.provider'].search([('alias', '=', xxx)], limit=1).name or '' for xxx in hotel_obj['external_code'].keys()]),
+                    'description': hotel_obj['description'],
+                    'lat': hotel_obj['lat'],
+                    'long': hotel_obj['long'],
+                    'phone': hotel_obj['telephone'],
+                    'address': hotel_obj['location']['address'],
+                    'address2': False,
+                    'address3': hotel_obj['location']['city'],
+                    'zip': hotel_obj['location']['zipcode'],
+                    'city_id': hotel_obj['location']['city_id'], #Todo search City
+                    'state_id': hotel_obj['location']['state'],
+                    'country_id': False,
+                    'file_number': hotel_per_city.split('/')[-1][12:-4],
+                })
+
+                # Create Image
+                for img in hotel_obj['images']:
+                    img.update({
+                        'hotel_id': create_hotel_id.id
+                    })
+                    self.env['tt.hotel.image'].create(img)
+
+                # Create Facility
+                fac_link_ids = []
+                for fac in hotel_obj['facilities']:
+                    if fac['facility_id']:
+                        fac_link_ids.append(int(fac['facility_id']))
+                    else:
+                        parse_name = fac['facility_name'].replace('(s)', '').replace("`s", '').replace('facilities', 'facility').replace('(chargeable)', '')
+                        fac_id = self.env['tt.hotel.facility'].search([('name', '=ilike', parse_name)], limit=1)
+                        if fac_id:
+                            fac_link_ids.append(fac_id.id)
+                        else:
+                            found_obj = False
+                            for fac_master in self.env['tt.hotel.facility'].search([]):
+                                if fac['facility_name'].lower() in [a.code.lower() for a in fac_master.provider_ids]:
+                                    found_obj = True
+                                    fac_link_ids.append(fac_master.id)
+                                    break
+                            if not found_obj:
+                                _logger.info(msg='Need to add ' + fac['facility_name'].lower())
+                create_hotel_id.update({'facility_ids': [(6,0, fac_link_ids)] })
+
+                # Create Landmark
+                for landmark in hotel_obj['near_by_facility']:
+                    continue
+
+                # Create Provider IDS
+                for vendor in hotel_obj['external_code'].keys():
+                    self.env['tt.provider.code'].create({
+                        'provider_id': self.env['tt.provider'].search([('alias', '=', vendor)], limit=1).id,
+                        'code': hotel_obj['external_code'][vendor],
+                        'hotel_id': create_hotel_id.id,
+                        'name': hotel_obj['name'],
+                    })
+
+    def remove_data_created_from_cache(self):
+        for rec in self.env['tt.hotel'].search([('id', '>', 5)]):
+            for rec1 in rec.provider_hotel_ids:
+                rec1.sudo().unlink()
+            rec.facility_ids = [(6,0,[])]
+            for rec1 in rec.image_ids:
+                rec1.sudo().unlink()
+            rec.sudo().unlink()
