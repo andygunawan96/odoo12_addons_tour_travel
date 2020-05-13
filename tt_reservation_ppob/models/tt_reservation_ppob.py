@@ -725,6 +725,13 @@ class ReservationPpob(models.Model):
                         'total': rec2.total and rec2.total or 0
                     })
 
+                if temp_carrier_code == '522':
+                    allowed_list = []
+                    for rec2 in rec.allowed_denomination_ids:
+                        allowed_list.append(rec2.nominal)
+                    if rec.total not in allowed_list:
+                        raise RequestException(1011, additional_message='Invalid Payment Amount. Please check the allowed denominations list.')
+
                 provider_list.append({
                     'carrier_code': temp_carrier_code,
                     'session_id': rec.session_id and rec.session_id or '',
