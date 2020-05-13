@@ -25,6 +25,9 @@ class tt_ledger(models.Model):
     def get_allowed_list(self):
         a = super(tt_ledger, self).get_allowed_list()
         a.update({
-            'pnr': ['pnr',]
+            'pnr': (
+                True,
+                ('pnr',)
+            )
         })
         return a
