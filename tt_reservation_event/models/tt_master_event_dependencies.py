@@ -60,6 +60,9 @@ class EventOptions(models.Model):
     timeslot_ids = fields.One2many('tt.event.timeslot', 'event_option_id')
     # additionalInformation = fields.Many2many('')
 
+    quota = fields.Integer('Quota')
+    sales = fields.Integer('Sales', readonly=True)
+
     cancellation_policies = fields.Text("Cancellation Policies")
     is_non_refundable = fields.Boolean(' is Non Refundable')
     advance_booking_days = fields.Integer("Advance Booking Days", default=0)
