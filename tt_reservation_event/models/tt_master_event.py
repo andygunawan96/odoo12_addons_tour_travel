@@ -23,8 +23,8 @@ class MasterEvent(models.Model):
     category_ids = fields.Many2many('tt.event.category', 'tt_event_category_rel', 'event_id', 'category_id', string='Category', readonly=True, states={'draft': [('readonly', False)]})
     categories = fields.Char('Categories', readonly=True)
     event_type = fields.Selection([('offline', 'Offline'), ('online', 'Online')], readonly=True, states={'draft': [('readonly', False)]})
-    quota = fields.Integer('Quota', readonly=True, states={'draft': [('readonly', False)]})
-    sales = fields.Integer('Sold', readonly=True)
+    # quota = fields.Integer('Quota', readonly=True, states={'draft': [('readonly', False)]})
+    # sales = fields.Integer('Sold', readonly=True)
     # basePrice = fields.Many2one('Base Price', digits=(16, 2), readonly=True)
     includes = fields.Html('Price Includes', readonly=True, states={'draft': [('readonly', False)]})
     excludes = fields.Html('Price Excludes', readonly=True, states={'draft': [('readonly', False)]})
@@ -234,7 +234,29 @@ class MasterEvent(models.Model):
             _logger.error(traceback.format_exc())
             return ERR.get_error(1021)
 
-    # def get_config_by_api(self):
+    def get_form_api(self, req, context):
+        try:
+            event_id = req.get('event_id') and '%' + req['event_id'] + '%' or ''
+
+            result = self.env['tt.master.event'].sudo().search([('id', '=', event_id)])
+            result[0].update({
+                'extra_question_ids': self.env['tt.event.extra.question'].sudo().search([('event_id', '=', result[0]['id'])]),
+                'event_option_ids': self.env['tt.event.option'].sudo().search([('event_id', '=', result[0]['id'])])
+            })
+            for i in result[0]['event_option_ids']:
+                i.update({
+                    'timeslot_ids': self.env['tt.event.timeslot'].sudo().search([('event_option_id', '=', i['id'])])
+                })
+
+            return ERR.get_no_error(result)
+        except RequestException as e:
+            _logger.error(traceback.format_exc())
+            return e.error_dict()
+        except Exception as e:
+            _logger.error(traceback.format_exc())
+            return ERR.get_error(1021)
+
+    # def get_detail_by_api(self, req, context):
     #     try:
     #         result_objs = self.env['tt.master.event.category'].sudo().search([])
     #         categories = result_objs.filtered(lambda x: x.type == ' category' and not x.parent_id)
