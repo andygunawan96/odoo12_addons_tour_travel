@@ -286,12 +286,12 @@ class PrintoutPPOBBillsForm(models.AbstractModel):
             'token_number': token_number,
             'jumlah_kwh': jumlah_kwh,
             'total': "{:,.0f}".format(rec.total),
-            'tarif': "{:,.0f}".format(tarif),
-            'stamp_fee': "{:,.0f}".format(stamp_fee),
-            'ppn': "{:,.0f}".format(ppn),
-            'ppj': "{:,.0f}".format(ppj),
+            'tarif': "{:,.2f}".format(tarif),
+            'stamp_fee': "{:,.2f}".format(stamp_fee),
+            'ppn': "{:,.2f}".format(ppn),
+            'ppj': "{:,.2f}".format(ppj),
             'admin_bank': "{:,.0f}".format(admin_bank),
-            'installment': "{:,.0f}".format(installment)
+            'installment': "{:,.2f}".format(installment)
         })
         return values
 

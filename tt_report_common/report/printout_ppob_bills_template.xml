@@ -11,7 +11,7 @@
 
             <!-- Header -->
             <div class="title" t-att-style="'background-color: '+base_color+'; border-radius: 20px 20px 0 0; border-color: #CCC; padding-top: 5px; padding-bottom: 5px'">
-                <span style="text-align: center; padding-left: 20px; color: white; font-weight: 600; font-size: 20px">STRUK PEMBAYARAN TAGIHAN LISTRIK :</span><br/>
+                <span style="text-align: center; padding-left: 20px; color: white; font-weight: 600; font-size: 20px">STRUK PEMBAYARAN TAGIHAN LISTRIK</span><br/>
             </div>
 
             <!-- Body -->
@@ -98,7 +98,7 @@
 
             <!-- Header -->
             <div class="title" t-att-style="'background-color: '+base_color+'; border-radius: 20px 20px 0 0; border-color: #CCC; padding-top: 5px; padding-bottom: 5px'">
-                <span style="text-align: center; padding-left: 20px; color: white; font-weight: 600; font-size: 20px">STRUK PEMBELIAN LISTRIK PRABAYAR :</span><br/>
+                <span style="text-align: center; padding-left: 20px; color: white; font-weight: 600; font-size: 20px">STRUK PEMBELIAN LISTRIK PRABAYAR</span><br/>
             </div>
 
             <!-- Content -->
@@ -181,7 +181,7 @@
 
             <!-- Header -->
             <div class="title" t-att-style="'background-color: '+base_color+'; border-radius: 20px 20px 0 0; border-color: #CCC; padding-top: 5px; padding-bottom: 5px'">
-                <span style="text-align: center; padding-left: 20px; color: white; font-weight: 600; font-size: 20px">STRUK NON TAGIHAN LISTRIK :</span><br/>
+                <span style="text-align: center; padding-left: 20px; color: white; font-weight: 600; font-size: 20px">STRUK NON TAGIHAN LISTRIK</span><br/>
             </div>
 
             <!-- Content -->
@@ -208,7 +208,7 @@
                         <span>:</span><br/>
                     </div>
                     <div class="col-7">
-                        <span t-field="provider.transaction_code"/><br/>  <!-- Sementara. gtw pake name atau code -->
+                        <span t-field="provider.transaction_name"/><br/>  <!-- Sementara. gtw pake name atau code -->
                         <span t-field="provider.registration_number"/><br/>
                         <span t-esc="values['tgl_registrasi']"/><br/>
                         <span t-field="provider.customer_name"/><br/>
@@ -262,7 +262,7 @@
 
             <!-- Header -->
             <div class="title" t-att-style="'background-color: '+base_color+'; border-radius: 20px 20px 0 0; border-color: #CCC; padding-top: 5px; padding-bottom: 5px'">
-                <span style="text-align: center; padding-left: 20px; color: white; font-weight: 600; font-size: 20px">STRUK PEMBAYARAN IURAN BPJS KESEHATAN :</span><br/>
+                <span style="text-align: center; padding-left: 20px; color: white; font-weight: 600; font-size: 20px">STRUK PEMBAYARAN IURAN BPJS KESEHATAN</span><br/>
             </div>
 
             <!-- Content -->
@@ -316,8 +316,8 @@
             <div class="row" style="">
                 <div class="col-1"/>
                 <div class="col-10">
-                    <h3 style="padding-left: 20px; text-align:center; font-weight: 600; font-size: 18px">BPJS KESEHATAN MENYATAKAN STRUK INI SEBAGAI BUKTI YANG SAH</h3>
-                    <h3 style="padding-left: 20px; text-align:center; font-weight: 600; font-size: 18px">Rincian tagihan dapat diakses di: daftar.bpjs-kesehatan.go.id/bpjs-checking</h3>
+                    <h3 style="padding-left: 20px; text-align:center; font-weight: 600; font-size: 18px">Mulai 1 September 2020 pembayaran iuran JKN wajib Autodebit.</h3>
+                    <h3 style="padding-left: 20px; text-align:center; font-weight: 600; font-size: 18px">Segera daftar di Kanal yang tersedia. Info 1500400</h3>
                 </div>
                 <div class="col-1"/>
             </div>
