@@ -22,9 +22,12 @@ class tt_ledger(models.Model):
     #             vals['provider_type_id'] = self.env[vals['res_model']].browse(vals['res_id']).provider_type_id.id
     #     return super(tt_ledger, self).create(vals)
 
-    def get_allowed_list(self):
-        a = super(tt_ledger, self).get_allowed_list()
+    def get_allowed_rule(self):
+        a = super(tt_ledger, self).get_allowed_rule()
         a.update({
-            'pnr': ['pnr',]
+            'pnr': (
+                True,
+                ('pnr',)
+            )
         })
         return a
