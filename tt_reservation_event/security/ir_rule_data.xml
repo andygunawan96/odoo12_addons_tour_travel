@@ -1,0 +1,8 @@
+<odoo>
+    <record id="rule_event_for_vendor" model="ir.rule">
+        <field name="name">Master Event for vendor</field>
+        <field name="model_id" ref="model_tt_master_event"/>
+        <field name="domain_force">[('event_vendor_id','=',user.vendor_id.id)]</field>
+        <field name="groups" eval="[(4,ref('tt_base.group_tt_external_vendor_operator'))]"/>
+    </record>
+</odoo>

@@ -6,5 +6,46 @@
             <field name="code">event</field>
             <field name="active" eval="True"/>
         </record>
+
+        <record id="event_category_music" model="tt.event.category">
+            <field name="name">Festival Electronice Dance Music</field>
+        </record>
+        <record id="event_category_festival" model="tt.event.category">
+            <field name="name">Festival General</field>
+        </record>
+        <record id="event_category_concert" model="tt.event.category">
+            <field name="name">Concert</field>
+        </record>
+        <record id="event_category_sport" model="tt.event.category">
+            <field name="name">Sport</field>
+        </record>
+        <record id="event_category_exhibition" model="tt.event.category">
+            <field name="name">Exhibition</field>
+        </record>
+        <record id="event_category_conference" model="tt.event.category">
+            <field name="name">Conference</field>
+        </record>
+        <record id="event_category_workshop" model="tt.event.category">
+            <field name="name">Workshop</field>
+        </record>
+        <record id="event_category_theater" model="tt.event.category">
+            <field name="name">Theater</field>
+        </record>
+        <record id="event_category_drama" model="tt.event.category">
+            <field name="name">Drama</field>
+        </record>
+        <record id="event_category_musical_drama" model="tt.event.category">
+            <field name="name">Musical Drama</field>
+        </record>
+        <record id="event_category_attraction" model="tt.event.category">
+            <field name="name">Attraction</field>
+        </record>
+        <record id="event_category_accommodation" model="tt.event.category">
+            <field name="name">Accommodation</field>
+        </record>
+        <record id="event_category_transportation" model="tt.event.category">
+            <field name="name">Transportation</field>
+        </record>
+
     </data>
 </odoo>
