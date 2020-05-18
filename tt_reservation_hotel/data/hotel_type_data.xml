@@ -135,7 +135,7 @@
         <record id="hotel_facility_front-desk" model="tt.hotel.facility">
             <field name="name">24 Hours Front Desk</field>
             <field name="facility_type_id" ref="tt_reservation_hotel.hotel_facility_type_basic"/>
-            <field name="description">24 Hours Front Desk</field>
+            <field name="description">24 Hours Front Desk / Receptionist</field>
             <field name="is_room_facility" eval="False"/>
             <field name="is_hotel_facility" eval="True"/>
             <field name="currency_id" ref="base.IDR"/>
@@ -232,9 +232,9 @@
             <field name="internal_code">rdx_fac_16</field>
         </record>
         <record id="hotel_facility_desk" model="tt.hotel.facility">
-            <field name="name">Desk</field>
+            <field name="name">In Room Working Desk</field>
             <field name="facility_type_id" ref="tt_reservation_hotel.hotel_facility_type_room"/>
-            <field name="description">Desk</field>
+            <field name="description">In Room Working Desk</field>
             <field name="is_room_facility" eval="True"/>
             <field name="is_hotel_facility" eval="False"/>
             <field name="currency_id" ref="base.IDR"/>
@@ -464,6 +464,618 @@
             <field name="is_hotel_facility" eval="True"/>
             <field name="currency_id" ref="base.IDR"/>
             <field name="internal_code">rdx_fac_42</field>
+        </record>
+        <record id="hotel_facility_park" model="tt.hotel.facility">
+            <field name="name">Parking Lot</field>
+            <field name="facility_type_id" ref="tt_reservation_hotel.hotel_facility_type_basic"/>
+            <field name="description">Parking Lot</field>
+            <field name="is_room_facility" eval="True"/>
+            <field name="is_hotel_facility" eval="True"/>
+            <field name="currency_id" ref="base.IDR"/>
+            <field name="internal_code">rdx_fac_43</field>
+        </record>
+        <record id="hotel_facility_breakfast_room" model="tt.hotel.facility">
+            <field name="name">Breakfast Room</field>
+            <field name="facility_type_id" ref="tt_reservation_hotel.hotel_facility_type_basic"/>
+            <field name="description">Breakfast Room</field>
+            <field name="is_room_facility" eval="True"/>
+            <field name="is_hotel_facility" eval="True"/>
+            <field name="currency_id" ref="base.IDR"/>
+            <field name="internal_code">rdx_fac_44</field>
+        </record>
+        <record id="hotel_facility_garden" model="tt.hotel.facility">
+            <field name="name">Garden</field>
+            <field name="facility_type_id" ref="tt_reservation_hotel.hotel_facility_type_basic"/>
+            <field name="description">Garden</field>
+            <field name="is_room_facility" eval="True"/>
+            <field name="is_hotel_facility" eval="True"/>
+            <field name="currency_id" ref="base.IDR"/>
+            <field name="internal_code">rdx_fac_45</field>
+        </record>
+        <record id="hotel_facility_concierge" model="tt.hotel.facility">
+            <field name="name">Concierge Desk</field>
+            <field name="facility_type_id" ref="tt_reservation_hotel.hotel_facility_type_basic"/>
+            <field name="description">Concierge Desk</field>
+            <field name="is_room_facility" eval="True"/>
+            <field name="is_hotel_facility" eval="True"/>
+            <field name="currency_id" ref="base.IDR"/>
+            <field name="internal_code">rdx_fac_46</field>
+        </record>
+        <record id="hotel_facility_terrace" model="tt.hotel.facility">
+            <field name="name">Terrace / Patio</field>
+            <field name="facility_type_id" ref="tt_reservation_hotel.hotel_facility_type_basic"/>
+            <field name="description">Terracce / Patio</field>
+            <field name="is_room_facility" eval="True"/>
+            <field name="is_hotel_facility" eval="True"/>
+            <field name="currency_id" ref="base.IDR"/>
+            <field name="internal_code">rdx_fac_47</field>
+        </record>
+        <record id="hotel_facility_terrace" model="tt.hotel.facility">
+            <field name="name">Terrace / Patio</field>
+            <field name="facility_type_id" ref="tt_reservation_hotel.hotel_facility_type_basic"/>
+            <field name="description">Terracce / Patio</field>
+            <field name="is_room_facility" eval="True"/>
+            <field name="is_hotel_facility" eval="True"/>
+            <field name="currency_id" ref="base.IDR"/>
+            <field name="internal_code">rdx_fac_47</field>
+        </record>
+        <record id="hotel_facility_cater_women" model="tt.hotel.facility">
+            <field name="name">caters to women only</field>
+            <field name="facility_type_id" ref="tt_reservation_hotel.hotel_facility_type_basic"/>
+            <field name="description">caters to women only</field>
+            <field name="is_room_facility" eval="True"/>
+            <field name="is_hotel_facility" eval="True"/>
+            <field name="currency_id" ref="base.IDR"/>
+            <field name="internal_code">rdx_fac_48</field>
+        </record>
+        <record id="hotel_facility_massage" model="tt.hotel.facility">
+            <field name="name">Massage</field>
+            <field name="facility_type_id" ref="tt_reservation_hotel.hotel_facility_type_basic"/>
+            <field name="description">Massage</field>
+            <field name="is_room_facility" eval="True"/>
+            <field name="is_hotel_facility" eval="True"/>
+            <field name="currency_id" ref="base.IDR"/>
+            <field name="internal_code">rdx_fac_49</field>
+        </record>
+        <record id="hotel_facility_coffee_shop" model="tt.hotel.facility">
+            <field name="name">Coffee Shop</field>
+            <field name="facility_type_id" ref="tt_reservation_hotel.hotel_facility_type_basic"/>
+            <field name="description">Coffee Shop</field>
+            <field name="is_room_facility" eval="True"/>
+            <field name="is_hotel_facility" eval="True"/>
+            <field name="currency_id" ref="base.IDR"/>
+            <field name="internal_code">rdx_fac_50</field>
+        </record>
+        <record id="hotel_facility_water_heater" model="tt.hotel.facility">
+            <field name="name">Water Heater</field>
+            <field name="facility_type_id" ref="tt_reservation_hotel.hotel_facility_type_basic"/>
+            <field name="description">Water Heater</field>
+            <field name="is_room_facility" eval="True"/>
+            <field name="is_hotel_facility" eval="True"/>
+            <field name="currency_id" ref="base.IDR"/>
+            <field name="internal_code">rdx_fac_51</field>
+        </record>
+        <record id="hotel_facility_game_room" model="tt.hotel.facility">
+            <field name="name">Game Room</field>
+            <field name="facility_type_id" ref="tt_reservation_hotel.hotel_facility_type_basic"/>
+            <field name="description">Game Room</field>
+            <field name="is_room_facility" eval="True"/>
+            <field name="is_hotel_facility" eval="True"/>
+            <field name="currency_id" ref="base.IDR"/>
+            <field name="internal_code">rdx_fac_52</field>
+        </record>
+        <record id="hotel_facility_luggage_storage" model="tt.hotel.facility">
+            <field name="name">Luggage Storage</field>
+            <field name="facility_type_id" ref="tt_reservation_hotel.hotel_facility_type_basic"/>
+            <field name="description">Luggage Storage</field>
+            <field name="is_room_facility" eval="True"/>
+            <field name="is_hotel_facility" eval="True"/>
+            <field name="currency_id" ref="base.IDR"/>
+            <field name="internal_code">rdx_fac_53</field>
+        </record>
+        <record id="hotel_facility_parasols" model="tt.hotel.facility">
+            <field name="name">Parasols</field>
+            <field name="facility_type_id" ref="tt_reservation_hotel.hotel_facility_type_basic"/>
+            <field name="description">Parasols</field>
+            <field name="is_room_facility" eval="True"/>
+            <field name="is_hotel_facility" eval="True"/>
+            <field name="currency_id" ref="base.IDR"/>
+            <field name="internal_code">rdx_fac_54</field>
+        </record>
+        <record id="hotel_facility_multilingual_staff" model="tt.hotel.facility">
+            <field name="name">Multilingual Staff</field>
+            <field name="facility_type_id" ref="tt_reservation_hotel.hotel_facility_type_basic"/>
+            <field name="description">Multilingual Staff</field>
+            <field name="is_room_facility" eval="True"/>
+            <field name="is_hotel_facility" eval="True"/>
+            <field name="currency_id" ref="base.IDR"/>
+            <field name="internal_code">rdx_fac_55</field>
+        </record>
+        <record id="hotel_facility_golf_course" model="tt.hotel.facility">
+            <field name="name">Golf Course</field>
+            <field name="facility_type_id" ref="tt_reservation_hotel.hotel_facility_type_basic"/>
+            <field name="description">Golf Course</field>
+            <field name="is_room_facility" eval="True"/>
+            <field name="is_hotel_facility" eval="True"/>
+            <field name="currency_id" ref="base.IDR"/>
+            <field name="internal_code">rdx_fac_56</field>
+        </record>
+        <record id="hotel_facility_bicycle_rentals" model="tt.hotel.facility">
+            <field name="name">Bicycle Rentals</field>
+            <field name="facility_type_id" ref="tt_reservation_hotel.hotel_facility_type_basic"/>
+            <field name="description">Bicycle Rentals</field>
+            <field name="is_room_facility" eval="True"/>
+            <field name="is_hotel_facility" eval="True"/>
+            <field name="currency_id" ref="base.IDR"/>
+            <field name="internal_code">rdx_fac_56</field>
+        </record>
+        <record id="hotel_facility_money_changer" model="tt.hotel.facility">
+            <field name="name">Money Changer</field>
+            <field name="facility_type_id" ref="tt_reservation_hotel.hotel_facility_type_basic"/>
+            <field name="description">Money Changer</field>
+            <field name="is_room_facility" eval="True"/>
+            <field name="is_hotel_facility" eval="True"/>
+            <field name="currency_id" ref="base.IDR"/>
+            <field name="internal_code">rdx_fac_56</field>
+        </record>
+        <record id="hotel_facility_cater_men" model="tt.hotel.facility">
+            <field name="name">caters to men only</field>
+            <field name="facility_type_id" ref="tt_reservation_hotel.hotel_facility_type_basic"/>
+            <field name="description">caters to men only</field>
+            <field name="is_room_facility" eval="True"/>
+            <field name="is_hotel_facility" eval="True"/>
+            <field name="currency_id" ref="base.IDR"/>
+            <field name="internal_code">rdx_fac_57</field>
+        </record>
+        <record id="hotel_facility_visa" model="tt.hotel.facility">
+            <field name="name">Visa</field>
+            <field name="facility_type_id" ref="tt_reservation_hotel.hotel_facility_type_basic"/>
+            <field name="description">Accept payment using visa</field>
+            <field name="is_room_facility" eval="True"/>
+            <field name="is_hotel_facility" eval="True"/>
+            <field name="currency_id" ref="base.IDR"/>
+            <field name="internal_code">rdx_fac_58</field>
+        </record>
+        <record id="hotel_facility_mastercard" model="tt.hotel.facility">
+            <field name="name">Mastercard</field>
+            <field name="facility_type_id" ref="tt_reservation_hotel.hotel_facility_type_basic"/>
+            <field name="description">Accept payment using mastercard</field>
+            <field name="is_room_facility" eval="True"/>
+            <field name="is_hotel_facility" eval="True"/>
+            <field name="currency_id" ref="base.IDR"/>
+            <field name="internal_code">rdx_fac_59</field>
+        </record>
+        <record id="hotel_facility_american_express" model="tt.hotel.facility">
+            <field name="name">American Express</field>
+            <field name="facility_type_id" ref="tt_reservation_hotel.hotel_facility_type_basic"/>
+            <field name="description">Accept payment using American Express</field>
+            <field name="is_room_facility" eval="True"/>
+            <field name="is_hotel_facility" eval="True"/>
+            <field name="currency_id" ref="base.IDR"/>
+            <field name="internal_code">rdx_fac_59</field>
+        </record>
+        <record id="hotel_facility_private_bathroom" model="tt.hotel.facility">
+            <field name="name">Private Bathroom</field>
+            <field name="facility_type_id" ref="tt_reservation_hotel.hotel_facility_type_basic"/>
+            <field name="description">Private Bathroom</field>
+            <field name="is_room_facility" eval="True"/>
+            <field name="is_hotel_facility" eval="True"/>
+            <field name="currency_id" ref="base.IDR"/>
+            <field name="internal_code">rdx_fac_60</field>
+        </record>
+        <record id="hotel_facility_wedding_service" model="tt.hotel.facility">
+            <field name="name">Wedding Service</field>
+            <field name="facility_type_id" ref="tt_reservation_hotel.hotel_facility_type_basic"/>
+            <field name="description">Wedding Service</field>
+            <field name="is_room_facility" eval="True"/>
+            <field name="is_hotel_facility" eval="True"/>
+            <field name="currency_id" ref="base.IDR"/>
+            <field name="internal_code">rdx_fac_61</field>
+        </record>
+        <record id="hotel_facility_garage" model="tt.hotel.facility">
+            <field name="name">Garage</field>
+            <field name="facility_type_id" ref="tt_reservation_hotel.hotel_facility_type_basic"/>
+            <field name="description">Wedding Service</field>
+            <field name="is_room_facility" eval="True"/>
+            <field name="is_hotel_facility" eval="True"/>
+            <field name="currency_id" ref="base.IDR"/>
+            <field name="internal_code">rdx_fac_61</field>
+        </record>
+        <record id="hotel_facility_shared_bathroom" model="tt.hotel.facility">
+            <field name="name">Shared Bathroom</field>
+            <field name="facility_type_id" ref="tt_reservation_hotel.hotel_facility_type_basic"/>
+            <field name="description">Shared Bathroom</field>
+            <field name="is_room_facility" eval="True"/>
+            <field name="is_hotel_facility" eval="True"/>
+            <field name="currency_id" ref="base.IDR"/>
+            <field name="internal_code">rdx_fac_62</field>
+        </record>
+        <record id="hotel_facility_nursery" model="tt.hotel.facility">
+            <field name="name">Nursery</field>
+            <field name="facility_type_id" ref="tt_reservation_hotel.hotel_facility_type_basic"/>
+            <field name="description">Nursery / Babysitting services</field>
+            <field name="is_room_facility" eval="True"/>
+            <field name="is_hotel_facility" eval="True"/>
+            <field name="currency_id" ref="base.IDR"/>
+            <field name="internal_code">rdx_fac_63</field>
+        </record>
+        <record id="hotel_facility_child_pool" model="tt.hotel.facility">
+            <field name="name">Children Pool</field>
+            <field name="facility_type_id" ref="tt_reservation_hotel.hotel_facility_type_basic"/>
+            <field name="description">Children Pool</field>
+            <field name="is_room_facility" eval="True"/>
+            <field name="is_hotel_facility" eval="True"/>
+            <field name="currency_id" ref="base.IDR"/>
+            <field name="internal_code">rdx_fac_64</field>
+        </record>
+        <record id="hotel_facility_jcb_card" model="tt.hotel.facility">
+            <field name="name">JCB Card</field>
+            <field name="facility_type_id" ref="tt_reservation_hotel.hotel_facility_type_basic"/>
+            <field name="description">JCB Card</field>
+            <field name="is_room_facility" eval="True"/>
+            <field name="is_hotel_facility" eval="True"/>
+            <field name="currency_id" ref="base.IDR"/>
+            <field name="internal_code">rdx_fac_65</field>
+        </record>
+        <record id="hotel_facility_soundproof" model="tt.hotel.facility">
+            <field name="name">Sound Proof</field>
+            <field name="facility_type_id" ref="tt_reservation_hotel.hotel_facility_type_basic"/>
+            <field name="description">Sound Proof</field>
+            <field name="is_room_facility" eval="True"/>
+            <field name="is_hotel_facility" eval="True"/>
+            <field name="currency_id" ref="base.IDR"/>
+            <field name="internal_code">rdx_fac_66</field>
+        </record>
+        <record id="hotel_facility_billiard" model="tt.hotel.facility">
+            <field name="name">Billiard</field>
+            <field name="facility_type_id" ref="tt_reservation_hotel.hotel_facility_type_basic"/>
+            <field name="description">billiards / pool table</field>
+            <field name="is_room_facility" eval="True"/>
+            <field name="is_hotel_facility" eval="True"/>
+            <field name="currency_id" ref="base.IDR"/>
+            <field name="internal_code">rdx_fac_67</field>
+        </record>
+        <record id="hotel_facility_express_checkin" model="tt.hotel.facility">
+            <field name="name">Express check in / check out</field>
+            <field name="facility_type_id" ref="tt_reservation_hotel.hotel_facility_type_basic"/>
+            <field name="description">Express check in / check out</field>
+            <field name="is_room_facility" eval="True"/>
+            <field name="is_hotel_facility" eval="True"/>
+            <field name="currency_id" ref="base.IDR"/>
+            <field name="internal_code">rdx_fac_68</field>
+        </record>
+        <record id="hotel_facility_car_rental" model="tt.hotel.facility">
+            <field name="name">Car Rental</field>
+            <field name="facility_type_id" ref="tt_reservation_hotel.hotel_facility_type_basic"/>
+            <field name="description">Car Rental</field>
+            <field name="is_room_facility" eval="True"/>
+            <field name="is_hotel_facility" eval="True"/>
+            <field name="currency_id" ref="base.IDR"/>
+            <field name="internal_code">rdx_fac_69</field>
+        </record>
+        <record id="hotel_facility_lockers" model="tt.hotel.facility">
+            <field name="name">Lockers</field>
+            <field name="facility_type_id" ref="tt_reservation_hotel.hotel_facility_type_basic"/>
+            <field name="description">Lockers</field>
+            <field name="is_room_facility" eval="True"/>
+            <field name="is_hotel_facility" eval="True"/>
+            <field name="currency_id" ref="base.IDR"/>
+            <field name="internal_code">rdx_fac_70</field>
+        </record>
+        <record id="hotel_facility_karaoke" model="tt.hotel.facility">
+            <field name="name">Karaoke</field>
+            <field name="facility_type_id" ref="tt_reservation_hotel.hotel_facility_type_basic"/>
+            <field name="description">Karaoke</field>
+            <field name="is_room_facility" eval="True"/>
+            <field name="is_hotel_facility" eval="True"/>
+            <field name="currency_id" ref="base.IDR"/>
+            <field name="internal_code">rdx_fac_71</field>
+        </record>
+        <record id="hotel_facility_hot_tub" model="tt.hotel.facility">
+            <field name="name">Hot Tub</field>
+            <field name="facility_type_id" ref="tt_reservation_hotel.hotel_facility_type_basic"/>
+            <field name="description">Hot Tub</field>
+            <field name="is_room_facility" eval="True"/>
+            <field name="is_hotel_facility" eval="True"/>
+            <field name="currency_id" ref="base.IDR"/>
+            <field name="internal_code">rdx_fac_72</field>
+        </record>
+        <record id="hotel_facility_basketball" model="tt.hotel.facility">
+            <field name="name">Basket Ball</field>
+            <field name="facility_type_id" ref="tt_reservation_hotel.hotel_facility_type_basic"/>
+            <field name="description">Basket Ball</field>
+            <field name="is_room_facility" eval="True"/>
+            <field name="is_hotel_facility" eval="True"/>
+            <field name="currency_id" ref="base.IDR"/>
+            <field name="internal_code">rdx_fac_73</field>
+        </record>
+        <record id="hotel_facility_diving" model="tt.hotel.facility">
+            <field name="name">Diving</field>
+            <field name="facility_type_id" ref="tt_reservation_hotel.hotel_facility_type_basic"/>
+            <field name="description">Diving</field>
+            <field name="is_room_facility" eval="True"/>
+            <field name="is_hotel_facility" eval="True"/>
+            <field name="currency_id" ref="base.IDR"/>
+            <field name="internal_code">rdx_fac_74</field>
+        </record>
+        <record id="hotel_facility_scuba_diving" model="tt.hotel.facility">
+            <field name="name">Scuba Diving</field>
+            <field name="facility_type_id" ref="tt_reservation_hotel.hotel_facility_type_basic"/>
+            <field name="description">Scuba Diving</field>
+            <field name="is_room_facility" eval="True"/>
+            <field name="is_hotel_facility" eval="True"/>
+            <field name="currency_id" ref="base.IDR"/>
+            <field name="internal_code">rdx_fac_75</field>
+        </record>
+        <record id="hotel_facility_casino" model="tt.hotel.facility">
+            <field name="name">Casino</field>
+            <field name="facility_type_id" ref="tt_reservation_hotel.hotel_facility_type_basic"/>
+            <field name="description">Casino</field>
+            <field name="is_room_facility" eval="True"/>
+            <field name="is_hotel_facility" eval="True"/>
+            <field name="currency_id" ref="base.IDR"/>
+            <field name="internal_code">rdx_fac_76</field>
+        </record>
+        <record id="hotel_facility_pet_not_allowed" model="tt.hotel.facility">
+            <field name="name">Pet not allowed</field>
+            <field name="facility_type_id" ref="tt_reservation_hotel.hotel_facility_type_basic"/>
+            <field name="description">Pet not allowed</field>
+            <field name="is_room_facility" eval="True"/>
+            <field name="is_hotel_facility" eval="True"/>
+            <field name="currency_id" ref="base.IDR"/>
+            <field name="internal_code">rdx_fac_77</field>
+        </record>
+        <record id="hotel_facility_squash" model="tt.hotel.facility">
+            <field name="name">Squash</field>
+            <field name="facility_type_id" ref="tt_reservation_hotel.hotel_facility_type_basic"/>
+            <field name="description">Squad Court</field>
+            <field name="is_room_facility" eval="True"/>
+            <field name="is_hotel_facility" eval="True"/>
+            <field name="currency_id" ref="base.IDR"/>
+            <field name="internal_code">rdx_fac_78</field>
+        </record>
+        <record id="hotel_facility_sailing" model="tt.hotel.facility">
+            <field name="name">Sailing</field>
+            <field name="facility_type_id" ref="tt_reservation_hotel.hotel_facility_type_basic"/>
+            <field name="description">saliling</field>
+            <field name="is_room_facility" eval="True"/>
+            <field name="is_hotel_facility" eval="True"/>
+            <field name="currency_id" ref="base.IDR"/>
+            <field name="internal_code">rdx_fac_79</field>
+        </record>
+        <record id="hotel_facility_poolside_bar" model="tt.hotel.facility">
+            <field name="name">Poolside bar</field>
+            <field name="facility_type_id" ref="tt_reservation_hotel.hotel_facility_type_basic"/>
+            <field name="description">Poolside bar</field>
+            <field name="is_room_facility" eval="True"/>
+            <field name="is_hotel_facility" eval="True"/>
+            <field name="currency_id" ref="base.IDR"/>
+            <field name="internal_code">rdx_fac_79</field>
+        </record>
+        <record id="hotel_facility_beach" model="tt.hotel.facility">
+            <field name="name">Beach</field>
+            <field name="facility_type_id" ref="tt_reservation_hotel.hotel_facility_type_basic"/>
+            <field name="description">Beach</field>
+            <field name="is_room_facility" eval="True"/>
+            <field name="is_hotel_facility" eval="True"/>
+            <field name="currency_id" ref="base.IDR"/>
+            <field name="internal_code">rdx_fac_80</field>
+        </record>
+        <record id="hotel_facility_library" model="tt.hotel.facility">
+            <field name="name">Library</field>
+            <field name="facility_type_id" ref="tt_reservation_hotel.hotel_facility_type_basic"/>
+            <field name="description">Library</field>
+            <field name="is_room_facility" eval="True"/>
+            <field name="is_hotel_facility" eval="True"/>
+            <field name="currency_id" ref="base.IDR"/>
+            <field name="internal_code">rdx_fac_81</field>
+        </record>
+        <record id="hotel_facility_valet_parking" model="tt.hotel.facility">
+            <field name="name">Valet Parking</field>
+            <field name="facility_type_id" ref="tt_reservation_hotel.hotel_facility_type_basic"/>
+            <field name="description">Valet Parking</field>
+            <field name="is_room_facility" eval="True"/>
+            <field name="is_hotel_facility" eval="True"/>
+            <field name="currency_id" ref="base.IDR"/>
+            <field name="internal_code">rdx_fac_82</field>
+        </record>
+        <record id="hotel_facility_smoking_area" model="tt.hotel.facility">
+            <field name="name">Smoking Area</field>
+            <field name="facility_type_id" ref="tt_reservation_hotel.hotel_facility_type_basic"/>
+            <field name="description">Smoking Area</field>
+            <field name="is_room_facility" eval="True"/>
+            <field name="is_hotel_facility" eval="True"/>
+            <field name="currency_id" ref="base.IDR"/>
+            <field name="internal_code">rdx_fac_83</field>
+        </record>
+        <record id="hotel_facility_bellboy" model="tt.hotel.facility">
+            <field name="name">Porter / Bellboy</field>
+            <field name="facility_type_id" ref="tt_reservation_hotel.hotel_facility_type_basic"/>
+            <field name="description">Smoking Area</field>
+            <field name="is_room_facility" eval="True"/>
+            <field name="is_hotel_facility" eval="True"/>
+            <field name="currency_id" ref="base.IDR"/>
+            <field name="internal_code">rdx_fac_83</field>
+        </record>
+        <record id="hotel_facility_barbecue_area" model="tt.hotel.facility">
+            <field name="name">Barbecue Area</field>
+            <field name="facility_type_id" ref="tt_reservation_hotel.hotel_facility_type_basic"/>
+            <field name="description">Barbecue Area</field>
+            <field name="is_room_facility" eval="True"/>
+            <field name="is_hotel_facility" eval="True"/>
+            <field name="currency_id" ref="base.IDR"/>
+            <field name="internal_code">rdx_fac_84</field>
+        </record>
+        <record id="hotel_facility_night_club" model="tt.hotel.facility">
+            <field name="name">Night Club</field>
+            <field name="facility_type_id" ref="tt_reservation_hotel.hotel_facility_type_basic"/>
+            <field name="description">Night Club</field>
+            <field name="is_room_facility" eval="True"/>
+            <field name="is_hotel_facility" eval="True"/>
+            <field name="currency_id" ref="base.IDR"/>
+            <field name="internal_code">rdx_fac_85</field>
+        </record>
+        <record id="hotel_facility_fishing" model="tt.hotel.facility">
+            <field name="name">Fishing</field>
+            <field name="facility_type_id" ref="tt_reservation_hotel.hotel_facility_type_basic"/>
+            <field name="description">Fishing</field>
+            <field name="is_room_facility" eval="True"/>
+            <field name="is_hotel_facility" eval="True"/>
+            <field name="currency_id" ref="base.IDR"/>
+            <field name="internal_code">rdx_fac_86</field>
+        </record>
+        <record id="hotel_facility_dinner_club" model="tt.hotel.facility">
+            <field name="name">Dinner Club</field>
+            <field name="facility_type_id" ref="tt_reservation_hotel.hotel_facility_type_basic"/>
+            <field name="description">Dinner Club</field>
+            <field name="is_room_facility" eval="True"/>
+            <field name="is_hotel_facility" eval="True"/>
+            <field name="currency_id" ref="base.IDR"/>
+            <field name="internal_code">rdx_fac_87</field>
+        </record>
+        <record id="hotel_facility_sunloungers" model="tt.hotel.facility">
+            <field name="name">Sun Loungers</field>
+            <field name="facility_type_id" ref="tt_reservation_hotel.hotel_facility_type_basic"/>
+            <field name="description">Sun Loungers</field>
+            <field name="is_room_facility" eval="True"/>
+            <field name="is_hotel_facility" eval="True"/>
+            <field name="currency_id" ref="base.IDR"/>
+            <field name="internal_code">rdx_fac_88</field>
+        </record>
+        <record id="hotel_facility_kettle" model="tt.hotel.facility">
+            <field name="name">kettle / boiler</field>
+            <field name="facility_type_id" ref="tt_reservation_hotel.hotel_facility_type_basic"/>
+            <field name="description">kettle / boiler</field>
+            <field name="is_room_facility" eval="True"/>
+            <field name="is_hotel_facility" eval="True"/>
+            <field name="currency_id" ref="base.IDR"/>
+            <field name="internal_code">rdx_fac_89</field>
+        </record>
+        <record id="hotel_facility_child_care" model="tt.hotel.facility">
+            <field name="name">Child care service</field>
+            <field name="facility_type_id" ref="tt_reservation_hotel.hotel_facility_type_basic"/>
+            <field name="description">Child Care Service</field>
+            <field name="is_room_facility" eval="True"/>
+            <field name="is_hotel_facility" eval="True"/>
+            <field name="currency_id" ref="base.IDR"/>
+            <field name="internal_code">rdx_fac_90</field>
+        </record>
+        <record id="hotel_facility_jacuzzi" model="tt.hotel.facility">
+            <field name="name">Jacuzzi</field>
+            <field name="facility_type_id" ref="tt_reservation_hotel.hotel_facility_type_basic"/>
+            <field name="description">jacuzzi (jetted bathtub) inroom</field>
+            <field name="is_room_facility" eval="True"/>
+            <field name="is_hotel_facility" eval="True"/>
+            <field name="currency_id" ref="base.IDR"/>
+            <field name="internal_code">rdx_fac_91</field>
+        </record>
+        <record id="hotel_facility_gift_shop" model="tt.hotel.facility">
+            <field name="name">Souvenirs / Gift Shop</field>
+            <field name="facility_type_id" ref="tt_reservation_hotel.hotel_facility_type_basic"/>
+            <field name="description">souvenirs / gift shop</field>
+            <field name="is_room_facility" eval="True"/>
+            <field name="is_hotel_facility" eval="True"/>
+            <field name="currency_id" ref="base.IDR"/>
+            <field name="internal_code">rdx_fac_92</field>
+        </record>
+        <record id="hotel_facility_sauna" model="tt.hotel.facility">
+            <field name="name">Sauna</field>
+            <field name="facility_type_id" ref="tt_reservation_hotel.hotel_facility_type_basic"/>
+            <field name="description">sauna / steam bath</field>
+            <field name="is_room_facility" eval="True"/>
+            <field name="is_hotel_facility" eval="True"/>
+            <field name="currency_id" ref="base.IDR"/>
+            <field name="internal_code">rdx_fac_92</field>
+        </record>
+        <record id="hotel_facility_connecting_room" model="tt.hotel.facility">
+            <field name="name">Connection Room</field>
+            <field name="facility_type_id" ref="tt_reservation_hotel.hotel_facility_type_basic"/>
+            <field name="description">Connection Room</field>
+            <field name="is_room_facility" eval="True"/>
+            <field name="is_hotel_facility" eval="True"/>
+            <field name="currency_id" ref="base.IDR"/>
+            <field name="internal_code">rdx_fac_93</field>
+        </record>
+        <record id="hotel_facility_beauty_salon" model="tt.hotel.facility">
+            <field name="name">Beauty Salon</field>
+            <field name="facility_type_id" ref="tt_reservation_hotel.hotel_facility_type_basic"/>
+            <field name="description">Beauty Salon</field>
+            <field name="is_room_facility" eval="True"/>
+            <field name="is_hotel_facility" eval="True"/>
+            <field name="currency_id" ref="base.IDR"/>
+            <field name="internal_code">rdx_fac_94</field>
+        </record>
+        <record id="hotel_facility_beach_towels" model="tt.hotel.facility">
+            <field name="name">Beach Towels</field>
+            <field name="facility_type_id" ref="tt_reservation_hotel.hotel_facility_type_basic"/>
+            <field name="description">Beach Towels</field>
+            <field name="is_room_facility" eval="True"/>
+            <field name="is_hotel_facility" eval="True"/>
+            <field name="currency_id" ref="base.IDR"/>
+            <field name="internal_code">rdx_fac_95</field>
+        </record>
+        <record id="hotel_facility_premium_bedding" model="tt.hotel.facility">
+            <field name="name">Premium Bedding</field>
+            <field name="facility_type_id" ref="tt_reservation_hotel.hotel_facility_type_basic"/>
+            <field name="description">Premium Bedding</field>
+            <field name="is_room_facility" eval="True"/>
+            <field name="is_hotel_facility" eval="True"/>
+            <field name="currency_id" ref="base.IDR"/>
+            <field name="internal_code">rdx_fac_96</field>
+        </record>
+        <record id="hotel_facility_breakfast" model="tt.hotel.facility">
+            <field name="name">Breakfast Included</field>
+            <field name="facility_type_id" ref="tt_reservation_hotel.hotel_facility_type_basic"/>
+            <field name="description">Breakfast Included</field>
+            <field name="is_room_facility" eval="True"/>
+            <field name="is_hotel_facility" eval="True"/>
+            <field name="currency_id" ref="base.IDR"/>
+            <field name="internal_code">rdx_fac_97</field>
+        </record>
+        <record id="hotel_facility_tour_desk" model="tt.hotel.facility">
+            <field name="name">Tour Desk</field>
+            <field name="facility_type_id" ref="tt_reservation_hotel.hotel_facility_type_basic"/>
+            <field name="description">Tour Desk</field>
+            <field name="is_room_facility" eval="True"/>
+            <field name="is_hotel_facility" eval="True"/>
+            <field name="currency_id" ref="base.IDR"/>
+            <field name="internal_code">rdx_fac_98</field>
+        </record>
+        <record id="hotel_facility_shower" model="tt.hotel.facility">
+            <field name="name">Shower</field>
+            <field name="facility_type_id" ref="tt_reservation_hotel.hotel_facility_type_basic"/>
+            <field name="description">Shower</field>
+            <field name="is_room_facility" eval="True"/>
+            <field name="is_hotel_facility" eval="True"/>
+            <field name="currency_id" ref="base.IDR"/>
+            <field name="internal_code">rdx_fac_99</field>
+        </record>
+        <record id="hotel_facility_child_play_area" model="tt.hotel.facility">
+            <field name="name">Children's play area</field>
+            <field name="facility_type_id" ref="tt_reservation_hotel.hotel_facility_type_basic"/>
+            <field name="description">Children's play area</field>
+            <field name="is_room_facility" eval="True"/>
+            <field name="is_hotel_facility" eval="True"/>
+            <field name="currency_id" ref="base.IDR"/>
+            <field name="internal_code">rdx_fac_100</field>
+        </record>
+        <record id="hotel_facility_conference" model="tt.hotel.facility">
+            <field name="name">Conference Room</field>
+            <field name="facility_type_id" ref="tt_reservation_hotel.hotel_facility_type_basic"/>
+            <field name="description">conference/banquet facilities</field>
+            <field name="is_room_facility" eval="True"/>
+            <field name="is_hotel_facility" eval="True"/>
+            <field name="currency_id" ref="base.IDR"/>
+            <field name="internal_code">rdx_fac_101</field>
+        </record>
+        <record id="hotel_facility_suites" model="tt.hotel.facility">
+            <field name="name">Suites</field>
+            <field name="facility_type_id" ref="tt_reservation_hotel.hotel_facility_type_basic"/>
+            <field name="description">suites/banquet facilities</field>
+            <field name="is_room_facility" eval="True"/>
+            <field name="is_hotel_facility" eval="True"/>
+            <field name="currency_id" ref="base.IDR"/>
+            <field name="internal_code">rdx_fac_102</field>
         </record>
 
         <record id="hotel_no_refund_policy" model="cancellation.policy">

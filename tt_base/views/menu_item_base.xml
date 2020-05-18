@@ -42,6 +42,13 @@
                   sequence="3"
                   groups="base.group_user"/>
 
+        <!--External Vendor Login-->
+        <menuitem id="main_external_vendor"
+                  name="Vendor"
+                  web_icon="hr,static/description/icon.png"
+                  sequence="30"
+                  groups="group_tt_external_vendor_operator"/>
+
         <!--Top Menu-->
         <!--Customers (Menu Customers)-->
         <menuitem id="top_tour_travel_customers"
@@ -52,7 +59,6 @@
 
         <menuitem id="top_customers_customers"
                   parent="tt_base.main_customers"
-
                   name="Customers"
                   sequence="10"
                   groups="base.group_user"/>
@@ -61,6 +67,12 @@
                   parent="tt_base.main_customers"
 
                   name="Agent"
+                  sequence="20"
+                  groups="base.group_user"/>
+
+        <menuitem id="top_customers_vendor"
+                  parent="tt_base.main_customers"
+                  name="External Vendor"
                   sequence="20"
                   groups="base.group_user"/>
 
@@ -115,6 +127,25 @@
                   name="Refund and After Sales"
                   sequence="25"
                   groups="base.group_user"/>
+
+        <!--External Vendor Login-->
+        <menuitem id="top_external_vendor_transaction"
+                  parent="tt_base.main_external_vendor"
+                  name="Transaction"
+                  sequence="10"
+                  groups="tt_base.group_tt_external_vendor_operator"/>
+
+        <menuitem id="top_external_vendor_master_product"
+                  parent="tt_base.main_external_vendor"
+                  name="Master Product"
+                  sequence="50"
+                  groups="tt_base.group_tt_external_vendor_operator"/>
+
+        <menuitem id="top_external_vendor_configuration"
+                  parent="tt_base.main_external_vendor"
+                  name="Configuration"
+                  sequence="90"
+                  groups="tt_base.group_tt_external_vendor_operator"/>
 
         <!--Menu (tag) Inside Top Menu-->
         <!--Admin Fee-->
@@ -213,5 +244,11 @@
                   parent="tt_base.top_tour_travel_configuration"
                   sequence = "110"/>
 
+        <!--External Vendor Login-->
+        <menuitem id="menu_external_vendor_user"
+                  name="User"
+                  groups="tt_base.group_tt_external_vendor_operator"
+                  parent="tt_base.top_customers_vendor"
+                  sequence = "110"/>
     </data>
 </odoo>

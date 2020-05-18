@@ -90,6 +90,7 @@ Key Features
         'wizard/create_user_wizard_view.xml',
         'wizard/notification_pop_up_wizard.xml',
         'views/tt_upload_center_views.xml',
+        'views/tt_vendor_views.xml',
 
         'views/ir_ui_menu_views.xml',
     ],

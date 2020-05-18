@@ -112,10 +112,10 @@ class Ledger(models.Model):
     def create_ledger_vanilla(self, res_model,res_id,name, ref, ledger_date, ledger_type, currency_id, issued_uid,agent_id,customer_parent_id, debit=0, credit=0,description = '',**kwargs):
         self.waiting_list_process([agent_id],customer_parent_id,debit)
         vals = self.prepare_vals(res_model,
-                          res_id,name, ref,
-                          ledger_date, ledger_type,
-                          currency_id, issued_uid,
-                          debit, credit,description)
+                                 res_id,name, ref,
+                                 ledger_date, ledger_type,
+                                 currency_id, issued_uid,
+                                 debit, credit,description)
         if customer_parent_id:
             vals['customer_parent_id'] = customer_parent_id
         else:
@@ -166,9 +166,9 @@ class Ledger(models.Model):
         try:
             vals_list['balance'] = self.calc_balance(vals_list)
             ledger_obj = super(Ledger, self).create(vals_list)
-                #     successfully_created = True
-                # except Exception as e:
-                #     _logger.error(traceback.format_exc())
+            #     successfully_created = True
+            # except Exception as e:
+            #     _logger.error(traceback.format_exc())
         except Exception as e:
             # raise Exception(traceback.format_exc())
             _logger.error(traceback.format_exc())
@@ -195,22 +195,32 @@ class Ledger(models.Model):
             'target': 'current',
         }
 
-    def get_allowed_list(self):
+    def get_allowed_rule(self):
         return {
-            'is_reversed': ['is_reversed', 'reverse_id']
+            'is_reversed': (
+                False,
+                ('is_reversed', 'reverse_id')
+            )
         }
 
 
-    ##fungsi return tuple
-    ## [0] ada key apa
-    ## [1]
     @api.multi
     def write(self, vals):
-        for check_key, restriction in self.get_allowed_list().items():
-            if getattr(self, check_key):
-                for item in restriction:
-                    if item in vals.keys():
-                        raise UserError('Error not allowed to edit ledger')
+        allowed_list = []
+        allowed_replace_list = []
+        for rules, values in self.get_allowed_rule().items():
+            if values[0]:
+                allowed_replace_list += values[1]
+            allowed_list += values[1]
+        allowed_list = set(allowed_list)
+        allowed_replace_list = set(allowed_replace_list)
+
+        for key, value in vals.items():
+            if key not in allowed_list:
+                raise Exception('Cannot Write Ledger.')
+            if getattr(self, key):
+                if key not in allowed_replace_list:
+                    raise Exception('Cannot Write Ledger.')
         return super(Ledger, self).write(vals)
 
     @api.multi
@@ -346,7 +356,7 @@ class Ledger(models.Model):
         list_of_waiting_list = []
         for rec in list_of_waiting_id:
             current_search = self.env['tt.ledger.waiting.list'].search(['|',('agent_id','=', rec[0]),('customer_parent_id','=', rec[1]),
-                                                                           ('is_in_transaction', '=', True),
+                                                                        ('is_in_transaction', '=', True),
                                                                         ('waiting_number','<',rec[2].waiting_number)])
             if current_search:
                 list_of_waiting_list.append(current_search)

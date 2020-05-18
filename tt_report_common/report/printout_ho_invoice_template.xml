@@ -88,6 +88,9 @@
                                 <t t-elif="doc_model == 'tt.reschedule'">
                                     <span t-field="doc.name" style="margin-top: 5px;"/>
                                 </t>
+                                <t t-elif="doc_model == 'tt.reservation.ppob'">
+                                    <span t-field="doc.provider_booking_ids[0].customer_number" style="margin-top: 5px;"/>
+                                </t>
                                 <t t-else="">
                                     <span t-field="doc.pnr" style="margin-top: 5px;"/>
                                 </t>
@@ -237,8 +240,8 @@
                                 </ul>
                             </t>
                         </td>
-                        <t t-if="row_idx == len(line2_idx)-1 and pax_count == len(line['pax_data'])-1">
-                            <td style="width: 16.667%; border-color: #CCC; padding: 7px 20px 7px 7px; border-bottom: 1px solid #ccc; border-right: 1px solid #ccc; border-bottom-right-radius: 20px; text-align: right">
+                        <t t-if="row_idx == len(line2_idx)-1">
+                            <td style="width: 16.667%; border-left: 1px solid #ccc; border-bottom: 1px solid #ccc; border-right: 1px solid #ccc; border-radius: 0px 0px 20px 0px; border-color: #CCC; padding: 7px 7px 7px 20px;">
                                 <t t-foreach="line['pax_data']" t-as="pax">
                                     <ul style="list-style-type: none;">
                                         <li><span t-esc="pax['total']" t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/></li>
@@ -247,7 +250,7 @@
                             </td>
                         </t>
                         <t t-else="">
-                            <td style="width: 16.667%; border-color: #CCC; padding: 7px 20px 7px 7px; border-bottom: 1px solid #ccc; border-right: 1px solid #ccc; text-align: right">
+                            <td style="width: 16.667%; border-color: #CCC; padding: 7px 20px 7px 7px; border-bottom: 1px solid #ccc; border-right: 1px solid #ccc; border-radius: 0px 0px 0px 0px; text-align: right">
                                 <t t-foreach="line['pax_data']" t-as="pax">
                                     <ul style="list-style-type: none;">
                                         <li><span t-esc="pax['total']" t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/></li>
@@ -260,12 +263,6 @@
                     <t t-set="row_idx" t-value="row_idx+1"/>
                 </t>
             </t>
-<!--            <td style="width: 30.555667%; padding: 7px 7px 7px 20px; border-bottom: 1px solid #CCC; border-right: 1px solid #ccc;">-->
-
-<!--            </td>-->
-<!--            <td style="width: 30.555667%; padding: 7px 7px 7px 20px; border-bottom: 1px solid #CCC; border-right: 1px solid #ccc;">-->
-<!--                <span t-esc="values['desc']"/>-->
-<!--            </td>-->
         </table>
 
         <!-- SubTotal -->
@@ -290,13 +287,13 @@
                     <tr>
                         <td><strong>Commission</strong></td>
                         <td class="text-right">
-                            <span style="padding: 10px 25px;" t-field="doc.total_commission" t-options="{&quot;widget&quot;: &quot;monetary&quot;, &quot;display_currency&quot;: doc.currency_id}"/>
+                            <span style="padding: 10px 10px;" t-field="doc.total_commission" t-options="{&quot;widget&quot;: &quot;monetary&quot;, &quot;display_currency&quot;: doc.currency_id}"/>
                         </td>
                     </tr>
                     <tr>
                         <td><strong>NTA</strong></td>
                         <td class="text-right">
-                            <span style="padding: 10px 25px;" t-field="doc.total_nta" t-options="{&quot;widget&quot;: &quot;monetary&quot;, &quot;display_currency&quot;: doc.currency_id}"/>
+                            <span style="padding: 10px 10px;" t-field="doc.total_nta" t-options="{&quot;widget&quot;: &quot;monetary&quot;, &quot;display_currency&quot;: doc.currency_id}"/>
                         </td>
                     </tr>
                     <tr>
@@ -308,25 +305,25 @@
                     <tr>
                         <td><strong>Total Fare</strong></td>
                         <td class="text-right">
-                            <span style="padding: 10px 25px;" t-field="doc.total_fare" t-options="{&quot;widget&quot;: &quot;monetary&quot;, &quot;display_currency&quot;: doc.currency_id}"/>
+                            <span style="padding: 10px 10px;" t-field="doc.total_fare" t-options="{&quot;widget&quot;: &quot;monetary&quot;, &quot;display_currency&quot;: doc.currency_id}"/>
                         </td>
                     </tr>
                     <tr>
                         <td><strong>Total Discount</strong></td>
                         <td class="text-right">
-                            <span style="padding: 10px 25px;" t-field="doc.total_discount" t-options="{&quot;widget&quot;: &quot;monetary&quot;, &quot;display_currency&quot;: doc.currency_id}"/>
+                            <span style="padding: 10px 10px;" t-field="doc.total_discount" t-options="{&quot;widget&quot;: &quot;monetary&quot;, &quot;display_currency&quot;: doc.currency_id}"/>
                         </td>
                     </tr>
                     <tr>
                         <td><strong>Total Tax</strong></td>
                         <td class="text-right">
-                            <span style="padding: 10px 25px;" t-field="doc.total_tax" t-options="{&quot;widget&quot;: &quot;monetary&quot;, &quot;display_currency&quot;: doc.currency_id}"/>
+                            <span style="padding: 10px 10px;" t-field="doc.total_tax" t-options="{&quot;widget&quot;: &quot;monetary&quot;, &quot;display_currency&quot;: doc.currency_id}"/>
                         </td>
                     </tr>
                     <tr>
                         <td><strong>Total</strong></td>
                         <td class="text-right">
-                            <span style="padding: 10px 25px;" t-field="doc.total" t-options="{&quot;widget&quot;: &quot;monetary&quot;, &quot;display_currency&quot;: doc.currency_id}"/>
+                            <span style="padding: 10px 10px;" t-field="doc.total" t-options="{&quot;widget&quot;: &quot;monetary&quot;, &quot;display_currency&quot;: doc.currency_id}"/>
                         </td>
                     </tr>
                 </table>
