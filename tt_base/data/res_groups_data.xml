@@ -191,6 +191,24 @@
         <field name="implied_ids" eval="[(4, ref('group_tt_tour_division_supervisor'))]"/>
     </record>
 
+    <!--External Vendor SYSTEM GROUP-->
+    <record id="group_tt_external_vendor_operator" model="res.groups">
+        <field name="name">Operator</field>
+        <field name="category_id" ref="tt_base.module_category_external_vendor_system"/>
+        <field name="implied_ids" eval="[(4, ref('base.group_user'))]"/>
+    </record>
+
+    <record id="group_tt_external_vendor_supervisor" model="res.groups">
+        <field name="name">Supervisor</field>
+        <field name="category_id" ref="tt_base.module_category_external_vendor_system"/>
+        <field name="implied_ids" eval="[(4, ref('group_tt_external_vendor_operator'))]"/>
+    </record>
+
+    <record id="group_tt_external_vendor_manager" model="res.groups">
+        <field name="name">Manager</field>
+        <field name="category_id" ref="tt_base.module_category_external_vendor_system"/>
+        <field name="implied_ids" eval="[(4, ref('group_tt_external_vendor_supervisor'))]"/>
+    </record>
 <!--     LINK kan group yg baru dibuat dengan ADMIN-->
 
     <record id="base.user_admin" model="res.users">

@@ -41,4 +41,4 @@ from . import tt_pnr_quota_usage
 from . import tt_pnr_quota_price_list
 from . import tt_pnr_quota_price_package
 from . import tt_email_queue
-
+from . import tt_vendor

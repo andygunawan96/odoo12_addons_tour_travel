@@ -321,3 +321,7 @@ access_for_tt_pnr_quota_usage_for_admin,tt_base.access_for_tt_pnr_quota_usage_fo
 
 access_for_tt_email_queue_for_public,tt_base.access_for_tt_email_queue_for_public,model_tt_email_queue,,1,0,0,0
 access_for_tt_email_queue_for_admin,tt_base.access_for_tt_email_queue_for_admin,model_tt_email_queue,base.user_admin,1,1,1,1
+
+access_tt_vendor_for_public,tt.agent.type.for.public,model_tt_vendor,,1,0,0,0
+access_tt_vendor_for_agent_management_operator,tt.vendor.for.agent.man.operator,model_tt_vendor,group_tt_agent_management_operator,1,1,1,0
+access_tt_vendor_for_tour_travel_operator,tt.vendor.for.tour.travel.operator,model_tt_vendor,group_tt_tour_travel_operator,1,1,0,0

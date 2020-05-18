@@ -22,6 +22,7 @@ class TtProviderEvent(models.Model):
     event_product_uuid = fields.Char('Product Type Uuid')
     event_date = fields.Datetime('Event Date')
 
+    sid_booked = fields.Char('SID Booked')
     sid_issued = fields.Char('SID Issued')
 
     cost_service_charge_ids = fields.One2many('tt.service.charge', 'provider_event_booking_id', 'Cost Service Charges')

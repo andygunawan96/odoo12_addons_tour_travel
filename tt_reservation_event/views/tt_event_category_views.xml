@@ -4,7 +4,6 @@
         <field name="model">tt.event.category</field>
         <field name="arch" type="xml">
             <form string="">
-                <!--<header></header>-->
                 <sheet>
                     <div class="oe_title">
                         <h1>
@@ -13,17 +12,11 @@
                     </div>
                     <group>
                         <group>
-                            <!--<field name="uuid"/>-->
-<!--                            <field name="name"/>-->
                             <field name="parent_id"/>
                             <field name="child_ids"/>
-                            <!--<field name="provider_id"/>-->
-                            <field name="event_ids">
-                                <tree>
-                                    <field name="id"/>
-                                    <field name="name"/>
-                                </tree>
-                            </field>
+                        </group>
+                        <group>
+                            <field name="event_ids"/>
                         </group>
                     </group>
                 </sheet>
@@ -37,17 +30,9 @@
         <field name="arch" type="xml">
             <tree>
                 <field name="name"/>
-                <!--<field name="uuid"/>-->
-<!--                <field name="type"/>-->
                 <field name="parent_id"/>
                 <field name="child_ids"/>
-                <!--<field name="provider_id"/>-->
-                <field name="event_ids">
-                    <tree>
-                        <field name="id"/>
-                        <field name="name"/>
-                    </tree>
-                </field>
+                <field name="event_ids"/>
             </tree>
         </field>
     </record>
