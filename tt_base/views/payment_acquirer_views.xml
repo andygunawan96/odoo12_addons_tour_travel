@@ -185,24 +185,24 @@
             </field>
         </record>
 
-        <menuitem id="top_menu_accounting"
-                  parent="tt_base.main_transaction"
-                  groups="tt_base.group_tt_tour_travel_operator,account.group_account_user,tt_base.group_tt_agent_user_operator"
-                  name="Accounting"
+        <menuitem id="menu_transaction_accounting_payment_acquirer"
+                  parent="tt_base.top_menu_accounting"
+                  groups="tt_base.group_tt_tour_travel_operator"
+                  name="Payment Acquirer"
                   sequence="10"/>
 
-        <menuitem id="sub_menu_tour_travel_payment_acquirer"
-                  parent="tt_base.top_menu_accounting"
+        <menuitem id="sub_menu_transaction_payment_acquirer"
+                  parent="tt_base.menu_transaction_accounting_payment_acquirer"
                   groups="tt_base.group_tt_tour_travel_operator"
                   name="Payment Acquirer"
                   sequence="10"
                   action="payment_acquirer_action_view"/>
 
-        <menuitem id="sub_menu_tour_travel_payment_acquirer_number_action_view"
-                  parent="tt_base.top_menu_accounting"
+        <menuitem id="sub_menu_transaction_payment_acquirer_number"
+                  parent="tt_base.menu_transaction_accounting_payment_acquirer"
                   groups="tt_base.group_tt_tour_travel_operator"
                   name="Payment Acquirer Number"
-                  sequence="10"
+                  sequence="20"
                   action="payment_acquirer_number_action_view"/>
 
         <record id="unique_amount_form_views" model="ir.ui.view">

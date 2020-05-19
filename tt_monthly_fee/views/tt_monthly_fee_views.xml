@@ -207,20 +207,20 @@
     </record>
 
     <!-- Monthly Fee -->
-    <menuitem id="top_monthly_fee"
-              parent="tt_base.main_transaction"
+    <menuitem id="menu_transaction_accounting_monthly_fee"
+              parent="tt_base.top_menu_accounting"
               name="Monthly Fee"
-              sequence="50"
+              sequence="60"
               groups="base.group_user"/>
 
     <menuitem id="menu_monthly_fee"
-              parent="tt_monthly_fee.top_monthly_fee"
+              parent="tt_monthly_fee.menu_transaction_accounting_monthly_fee"
               name="Monthly Management Fee"
               action="tt_monthly_fee_action"
               sequence="10"/>
 
     <menuitem id="menu_monthly_fee_rule"
-              parent="tt_monthly_fee.top_monthly_fee"
+              parent="tt_monthly_fee.menu_transaction_accounting_monthly_fee"
               name="Monthly Fee Rule"
               action="tt_monthly_fee_rule_action"
               groups="tt_base.group_tt_tour_travel_operator"

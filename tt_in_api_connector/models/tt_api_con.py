@@ -111,3 +111,9 @@ class TtApiCon(models.Model):
 
     def send_webhook_to_children(self, request):
         return self.send_request_to_gateway('%s/content' % self.url, request, 'send_webhook_to_children', timeout=300)
+
+    def send_reconcile_request(self,request):
+        return self.send_request_to_gateway('%s/account/%s' % (self.url,request['provider_type']),
+                                            request['data'],
+                                            'reconcile',
+                                            timeout=60)
