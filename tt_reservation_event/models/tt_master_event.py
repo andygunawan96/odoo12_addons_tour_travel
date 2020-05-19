@@ -135,15 +135,24 @@ class MasterEvent(models.Model):
         return {'response': result,}
 
     def get_config_api(self):
-        try:
-            result = {
-                'event': self.search_event_api({'event_name': ' '}, {})['response'],
-                'category': self.env['tt.event.category'].get_from_api(False, False, []),
+        result = {
+            'event': [],
+            'category': self.env['tt.event.category'].get_from_api('', False, [])
+        }
+        # get all data
+        event_obj = self.env['tt.master.event'].sudo().search([])
+        for i in event_obj:
+            temp_dict = {
+                'name': i.name,
+                'locations': i.locations,
+                'category': i.categories,
+                'image_url': []
             }
-            return ERR.get_no_error(result)
-        except Exception as e:
-            _logger.error(traceback.format_exc())
-            return ERR.get_error(1021)
+            for j in i.image_ids:
+                temp_dict['image_url'].append(j.url)
+            result['event'].append(temp_dict)
+
+        return ERR.get_no_error(result)
 
     def format_api_image(self, img):
         return {
