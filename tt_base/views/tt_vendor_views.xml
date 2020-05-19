@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="tt_vendor_view_search" model="ir.ui.view">
+        <field name="name">tt.vendor.view.search</field>
+        <field name="model">tt.vendor</field>
+        <field name="arch" type="xml">
+            <search string="Search Vendor">
+                <field name="name"/>
+                <field name="website"/>
+                <field name="email"/>
+            </search>
+        </field>
+    </record>
+
+    <record id="tt_vendor_form_view" model="ir.ui.view">
+        <field name="name">tt.vendor.form.view</field>
+        <field name="model">tt.vendor</field>
+        <field name="arch" type="xml">
+            <form create="false">
+                <header>
+<!--                    <button name="get_current_agent_target" type="object" string="Calc Target" groups="base.user_admin"/>-->
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="toggle_active" type="object" groups="tt_base.group_tt_agent_management_operator"
+                                class="oe_stat_button" icon="fa-archive">
+                            <field name="active" widget="boolean_button"
+                                   options='{"terminology": "archive"}'/>
+                        </button>
+                    </div>
+                    <field name="logo" widget='image' class="oe_avatar"/>  <!-- options='{"preview_image":"logo_thumb"}'-->
+                    <div class="oe_title">
+                        <label for="name" class="oe_edit_only"/>
+                        <h1>
+                            <field name="name" placeholder="Vendor Name" required="True" /><br/>
+                        </h1>
+                        <h3>
+                            <field name="seq_id"/>
+                        </h3>
+                    </div>
+                    <group>
+                        <group string="Information">
+                            <field name="currency_id" />
+                            <field name="est_date" />
+                        </group>
+
+                        <group string="Contact">
+                            <field name="email" placeholder="Agent's Email" />
+                            <field name="website" />
+                            <field name="npwp" />
+                        </group>
+                    </group>
+                    <notebook colspan="3">
+                        <page string="Addresses">
+                            <field name="address_ids" />
+                        </page>
+                        <page string="Phones">
+                            <field name="phone_ids" />
+                        </page>
+                        <page string="Social Media">
+                            <field name="social_media_ids" />
+                        </page>
+                    </notebook>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids" widget="mail_followers"/>
+                    <field name="message_ids" widget="mail_thread"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <record id="tt_vendor_tree_view" model="ir.ui.view">
+        <field name="name">tt.vendor.tree.view</field>
+        <field name="model">tt.vendor</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="name"/>
+                <field name="email"/>
+                <field name="active"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="tt_vendor_all_action_view" model="ir.actions.act_window">
+        <field name="name">Vendor</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">tt.vendor</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+        <field name="search_view_id" ref="tt_vendor_view_search"/>
+        <field name="domain">[]</field>
+        <field name="context">
+            {
+            'form_view_ref': 'tt_base.tt_vendor_form_view',
+            'tree_view_ref': 'tt_base.tt_vendor_tree_view',
+            'search_default_all':1
+            }
+        </field>
+    </record>
+
+    <menuitem id="menu_tour_travel_vendor"
+              parent="tt_base.top_tour_travel_customers"
+              groups="group_tt_tour_travel_operator"
+              name="Vendor"
+              sequence="2"/>
+
+    <menuitem id="submenu_tour_travel_vendor"
+              parent="tt_base.menu_tour_travel_vendor"
+              groups="group_tt_tour_travel_operator"
+              name="All"
+              sequence="1"
+              action="tt_vendor_all_action_view"/>
+</odoo>

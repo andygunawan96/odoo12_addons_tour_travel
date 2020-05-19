@@ -485,6 +485,270 @@
         </div>
     </template>
 
+    <template id="ppob_itinerary_view">
+        <div class="row">
+            <div class="col-12">
+                <span style="font-size: 28px; font-weight: 730">Itinerary Detail(s)</span><br/>
+            </div>
+        </div>
+
+        <t t-if="len(doc.provider_booking_ids) > 0">
+            <t t-if="doc.provider_booking_ids[0].carrier_id.name == 'PLN Postpaid'">
+                <div class="row">
+                    <div class="col-12">
+                        <t t-foreach="doc.provider_booking_ids" t-as="provider_itin_id">
+                            <table class="table table-sm" style="text-align:center;">
+                                <thead>
+                                    <tr>
+                                        <th>Period</th>
+                                        <th>Tarif/Daya</th>
+                                        <th>Before Meter-After Meter</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <t t-foreach="provider_itin_id.ppob_bill_ids" t-as="bill">
+                                        <tr>
+                                            <td><span t-field="bill.period" t-options='{"format": "MMM yy"}'/></td>
+                                            <td><span t-field="provider_itin_id.fare_type"/>/<span t-field="provider_itin_id.power"/> VA</td>
+                                            <t t-if="len(bill.meter_history_ids) > 0">
+                                                <t t-set="before_meter" t-value="-1"/>
+                                                <t t-set="after_meter" t-value="-1"/>
+                                                <t t-foreach="bill.meter_history_ids" t-as="meter">
+                                                    <t t-if="before_meter == -1">
+                                                        <t t-set="before_meter" t-value="meter.before_meter"/>
+                                                    </t>
+                                                    <t t-else="">
+                                                        <t t-if="meter.before_meter &lt; before_meter">
+                                                            <t t-set="before_meter" t-value="meter.before_meter"/>
+                                                        </t>
+                                                    </t>
+                                                    <t t-if="after_meter == -1">
+                                                        <t t-set="after_meter" t-value="meter.after_meter"/>
+                                                    </t>
+                                                    <t t-else="">
+                                                        <t t-if="meter.after_meter &gt; after_meter">
+                                                            <t t-set="after_meter" t-value="meter.after_meter"/>
+                                                        </t>
+                                                    </t>
+                                                </t>
+                                                <td>
+                                                    <span t-esc="before_meter"/>-<span t-esc="after_meter"/>
+                                                </td>
+                                            </t>
+                                            <t t-else="">
+                                                <td>-</td>
+                                            </t>
+                                        </tr>
+                                    </t>
+                                </tbody>
+                            </table>
+
+                            <span style="font-size: 28px; font-weight: 730">Customer Detail(s)</span><br/>
+                            <div class="box" style="margin: 20px 20px 20px 20px; border-style: solid; border-width: 1px; border-color: #BBB; border-radius: 20px">
+                                <div class="row" style="margin-left: 0px; margin-right: 0px; margin-top: 5px; margin-bottom: 5px">
+                                    <div class="col-1" style="text-align: center; font-size:17px;">
+                                        No.
+                                    </div>
+                                    <div class="col-6" style="text-align: center; font-size:17px;">
+                                        Customer Name
+                                    </div>
+                                    <div class="col-5" style="text-align: center; font-size:17px;">
+                                        Customer Number
+                                    </div>
+                                </div>
+                                <div style="border: 1px solid #BBB; margin-bottom: 5px; margin-left: 15px; margin-right: 15px"/>
+                                <div class="row" style="margin-left: 0px; margin-right: 0px">
+                                    <div class="col-1" style="text-align: center">
+                                        <label style="font-weight:450; font-size:17px; margin-bottom: 0px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">1.</label>
+                                    </div>
+                                    <div class="col-6" style="text-align: left">
+                                        <label style="font-weight:450; font-size:17px; margin-bottom: 0px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"><span t-field="provider_itin_id.customer_name"/></label>
+                                    </div>
+                                    <div class="col-5" style="text-align: center">
+                                        <label style="font-weight:450; font-size:17px; margin-bottom: 0px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"><span t-field="provider_itin_id.customer_number"/></label>
+                                    </div>
+                                </div>
+                            </div>
+                        </t>
+                    </div>
+                </div>
+            </t>
+            <t t-elif="doc.provider_booking_ids[0].carrier_id.name == 'PLN Prepaid'">
+                <div class="row">
+                    <div class="col-12">
+                        <t t-foreach="doc.provider_booking_ids" t-as="provider_itin_id">
+                            <table class="table table-sm" style="text-align:center;">
+                                <thead>
+                                    <tr>
+                                        <th>Date</th>
+                                        <th>Meter Number</th>
+                                        <th>Token Number</th>
+                                        <th>KWh Amount</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <t t-foreach="provider_itin_id.ppob_bill_ids" t-as="bill">
+                                        <tr>
+                                            <td><span t-field="bill.period" t-options="{'format': 'MM/dd/yyyy'}"/></td>
+                                            <td><span t-field="provider_itin_id.meter_number"/></td>
+                                            <td><span t-field="bill.token"/></td>
+                                            <td><span t-field="bill.kwh_amount"/></td>
+                                        </tr>
+                                    </t>
+                                </tbody>
+                            </table>
+
+                            <span style="font-size: 28px; font-weight: 730">Customer Detail(s)</span><br/>
+                            <div class="box" style="margin: 20px 20px 20px 20px; border-style: solid; border-width: 1px; border-color: #BBB; border-radius: 20px">
+                                <div class="row" style="margin-left: 0px; margin-right: 0px; margin-top: 5px; margin-bottom: 5px">
+                                    <div class="col-1" style="text-align: center; font-size:17px;">
+                                        No.
+                                    </div>
+                                    <div class="col-6" style="text-align: center; font-size:17px;">
+                                        Customer Name
+                                    </div>
+                                    <div class="col-5" style="text-align: center; font-size:17px;">
+                                        Customer Number
+                                    </div>
+                                </div>
+                                <div style="border: 1px solid #BBB; margin-bottom: 5px; margin-left: 15px; margin-right: 15px"/>
+                                <div class="row" style="margin-left: 0px; margin-right: 0px">
+                                    <div class="col-1" style="text-align: center">
+                                        <label style="font-weight:450; font-size:17px; margin-bottom: 0px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">1.</label>
+                                    </div>
+                                    <div class="col-6" style="text-align: left">
+                                        <label style="font-weight:450; font-size:17px; margin-bottom: 0px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"><span t-field="provider_itin_id.customer_name"/></label>
+                                    </div>
+                                    <div class="col-5" style="text-align: center">
+                                        <label style="font-weight:450; font-size:17px; margin-bottom: 0px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"><span t-field="provider_itin_id.customer_number"/></label>
+                                    </div>
+                                </div>
+                            </div>
+                        </t>
+                    </div>
+                </div>
+            </t>
+            <t t-elif="doc.provider_booking_ids[0].carrier_id.name == 'PLN Non Tagihan'">
+                <div class="row">
+                    <div class="col-12">
+                        <t t-foreach="doc.provider_booking_ids" t-as="provider_itin_id">
+                            <table class="table table-sm" style="text-align:center;">
+                                <thead>
+                                    <tr>
+                                        <th>Transaction Code</th>
+                                        <th>Transaction Name</th>
+                                        <th>Registration Date</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td><span t-field="provider_itin_id.transaction_code"/></td>
+                                        <td><span t-field="provider_itin_id.transaction_name"/></td>
+                                        <td><span t-field="provider_itin_id.registration_date"/></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+
+                            <span style="font-size: 28px; font-weight: 730">Customer Detail(s)</span><br/>
+                            <div class="box" style="margin: 20px 20px 20px 20px; border-style: solid; border-width: 1px; border-color: #BBB; border-radius: 20px">
+                                <div class="row" style="margin-left: 0px; margin-right: 0px; margin-top: 5px; margin-bottom: 5px">
+                                    <div class="col-1" style="text-align: center; font-size:17px;">
+                                        No.
+                                    </div>
+                                    <div class="col-6" style="text-align: center; font-size:17px;">
+                                        Customer Name
+                                    </div>
+                                    <div class="col-5" style="text-align: center; font-size:17px;">
+                                        Customer Number
+                                    </div>
+                                </div>
+                                <div style="border: 1px solid #BBB; margin-bottom: 5px; margin-left: 15px; margin-right: 15px"/>
+                                <div class="row" style="margin-left: 0px; margin-right: 0px">
+                                    <div class="col-1" style="text-align: center">
+                                        <label style="font-weight:450; font-size:17px; margin-bottom: 0px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">1.</label>
+                                    </div>
+                                    <div class="col-6" style="text-align: left">
+                                        <label style="font-weight:450; font-size:17px; margin-bottom: 0px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"><span t-field="provider_itin_id.customer_name"/></label>
+                                    </div>
+                                    <div class="col-5" style="text-align: center">
+                                        <label style="font-weight:450; font-size:17px; margin-bottom: 0px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"><span t-field="provider_itin_id.customer_number"/></label>
+                                    </div>
+                                </div>
+                            </div>
+                        </t>
+                    </div>
+                </div>
+            </t>
+            <t t-elif="doc.provider_booking_ids[0].carrier_id.name == 'BPJS Kesehatan'">
+                <div class="row">
+                    <div class="col-12">
+                        <t t-foreach="doc.provider_booking_ids" t-as="provider_itin_id">
+                            <table class="table table-sm" style="text-align:center;">
+                                <thead>
+                                    <tr>
+                                        <th>BPJS Ref</th>
+                                        <th>VA Number</th>
+                                        <th>Number of Participants</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td><span t-field="provider_itin_id.pnr"/></td>
+                                        <td><span t-field="provider_itin_id.customer_number"/></td>
+                                        <td><span t-esc="len(provider_itin_id.ppob_bill_detail_ids)"/></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+
+                            <span style="font-size: 28px; font-weight: 730">Customer Detail(s)</span><br/>
+                            <div class="box" style="margin: 20px 20px 20px 20px; border-style: solid; border-width: 1px; border-color: #BBB; border-radius: 20px">
+                                <div class="row" style="margin-left: 0px; margin-right: 0px; margin-top: 5px; margin-bottom: 5px">
+                                    <div class="col-1" style="text-align: center; font-size:17px;">
+                                        No.
+                                    </div>
+                                    <div class="col-4" style="text-align: center; font-size:17px;">
+                                        Customer Name
+                                    </div>
+                                    <div class="col-3" style="text-align: center; font-size:17px;">
+                                        Customer Number
+                                    </div>
+                                    <div class="col-2" style="text-align: center; font-size:17px;">
+                                        Unit Code
+                                    </div>
+                                    <div class="col-2" style="text-align: center; font-size:17px;">
+                                        Unit Name
+                                    </div>
+                                </div>
+                                <div style="border: 1px solid #BBB; margin-bottom: 5px; margin-left: 15px; margin-right: 15px"/>
+                                <t t-set="psg_index" t-value="0"/>
+                                <t t-foreach="provider_itin_id.ppob_bill_detail_ids" t-as="bill">
+                                    <div class="row" style="margin-left: 0px; margin-right: 0px">
+                                        <div class="col-1" style="text-align: center">
+                                            <label style="font-weight:450; font-size:17px; margin-bottom: 0px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"><span t-esc="psg_index+1"/>.</label>
+                                        </div>
+                                        <div class="col-4" style="text-align: center">
+                                            <label style="font-weight:450; font-size:17px; margin-bottom: 0px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"><span t-field="bill.customer_name"/></label>
+                                        </div>
+                                        <div class="col-3" style="text-align: center">
+                                            <label style="font-weight:450; font-size:17px; margin-bottom: 0px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"><span t-field="bill.customer_number"/></label>
+                                        </div>
+                                        <div class="col-2" style="text-align: center">
+                                            <label style="font-weight:450; font-size:17px; margin-bottom: 0px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"><span t-field="bill.unit_code"/></label>
+                                        </div>
+                                        <div class="col-2" style="text-align: center">
+                                            <label style="font-weight:450; font-size:17px; margin-bottom: 0px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"><span t-field="bill.unit_name"/></label>
+                                        </div>
+                                    </div>
+                                    <t t-set="psg_index" t-value="psg_index + 1"/>
+                                </t>
+                            </div>
+                        </t>
+                    </div>
+                </div>
+            </t>
+        </t>
+    </template>
+
     <template id="visa_itinerary_view">
         <!-- Main Params -->
         <div class="row">
@@ -794,6 +1058,28 @@
                 <div class="page">
                     <t t-call="tt_report_common.external_layout">
                         <t t-call="tt_report_common.passport_itinerary_view"/>
+                        <t t-call="tt_report_common.itinerary_price_detail"/>
+                        <br/>
+                        <t t-call="tt_report_common.itinerary_signature"/>
+                    </t>
+                </div>
+            </t>
+        </t>
+    </template>
+
+    <template id="printout_ppob_itinerary">
+        <t t-set="data_report_header_spacing" t-value="20"/>
+        <t t-set="data_report_margin_top" t-value="2"/>
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="doc">
+                <div class="page">
+                    <t t-call="tt_report_common.external_layout">
+                        <div style="margin-bottom: 10px; margin-top: 10px;">
+                            <span style="font-size: 18px; font-weight: 730">No. Booking : </span>
+                            <span t-field="doc.name" style="font-size: 18px; font-weight: 730"/><br/>
+                        </div>
+
+                        <t t-call="tt_report_common.ppob_itinerary_view"/>
                         <t t-call="tt_report_common.itinerary_price_detail"/>
                         <br/>
                         <t t-call="tt_report_common.itinerary_signature"/>

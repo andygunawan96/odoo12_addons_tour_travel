@@ -2,6 +2,7 @@ from odoo import api, fields, models
 from odoo.http import request
 from ...tools import util, variables, ERR, session
 from ...tools.ERR import RequestException
+from dateutil.relativedelta import relativedelta
 import logging, traceback
 import json
 import base64
@@ -18,42 +19,51 @@ class MasterEvent(models.Model):
     _name = "tt.master.event"
     _description = "Rodex Event Model"
 
-    uuid = fields.Char('Uuid', readonly=True)
+    uuid = fields.Char('Uuid', readonly=True, states={'draft': [('readonly', False)]})
     name = fields.Char('Event Name', readonly=True, states={'draft': [('readonly', False)]})
+
     category_ids = fields.Many2many('tt.event.category', 'tt_event_category_rel', 'event_id', 'category_id', string='Category', readonly=True, states={'draft': [('readonly', False)]})
     categories = fields.Char('Categories', readonly=True)
+
     event_type = fields.Selection([('offline', 'Offline'), ('online', 'Online')], readonly=True, states={'draft': [('readonly', False)]})
-    # quota = fields.Integer('Quota', readonly=True, states={'draft': [('readonly', False)]})
-    # sales = fields.Integer('Sold', readonly=True)
-    # basePrice = fields.Many2one('Base Price', digits=(16, 2), readonly=True)
     includes = fields.Html('Price Includes', readonly=True, states={'draft': [('readonly', False)]})
     excludes = fields.Html('Price Excludes', readonly=True, states={'draft': [('readonly', False)]})
 
     description = fields.Html('Description', readonly=True, states={'draft': [('readonly', False)]})
-    # highlights = fields.Html('Highlights', readonly=True)
     additional_info = fields.Html('Additional Info', readonly=True, states={'draft': [('readonly', False)]})
     kid_friendly = fields.Boolean('Kids Friendly', default=False)
     itinerary = fields.Html('Itinerary', readonly=True, states={'draft': [('readonly', False)]})
     to_notice = fields.Html('Warnings', readonly=True, states={'draft': [('readonly', False)]})
     extra_question_ids = fields.One2many('tt.event.extra.question', 'event_id', readonly=True, states={'draft':[('readonly', False)]})
-    # safety = fields.Html('Safety', readonly=True)
 
     location_ids = fields.One2many('tt.event.location', 'event_id', readonly=True, states={'draft': [('readonly', False)]})
     locations = fields.Char('Locations', readonly=True)
 
+    # event_by_id = fields.Many2one('tt.event.by', 'Event By', readonly=True, states={'draft': [('readonly', False)]})
     event_date_start = fields.Datetime(string="Starting Time", readonly=True, states={'draft': [('readonly', False)]})
     event_date_end = fields.Datetime(string="Finish", readonly=True, states={'draft': [('readonly', False)]})
     number_of_days = fields.Integer("Number of days", readonly=True, states={'draft': [('readonly', False)]})
 
     option_ids = fields.One2many('tt.event.option', 'event_id', readonly=True, states={'draft': [('readonly', False)]})
-    image_ids = fields.One2many('tt.master.event.image', 'event_id', readonly=True, states={'draft': [('readonly', False)]})
-    video_ids = fields.One2many('tt.master.event.video', 'event_id', readonly=True, states={'draft': [('readonly', False)]})
-    provider_id = fields.Many2one('tt.provider', 'Provider', readonly=True, states={'draft': [('readonly', False)]})
-    provider_code = fields.Char('Provider Code', readonly=True)
-    provider_fare_code = fields.Char('Provider Fare Code', readonly=True)
-    # can_hold_booking = fields.Boolean('Can Hold Booking', default=False)
+    image_ids = fields.Many2many('tt.upload.center', 'event_images_rel', 'event_id', 'image_id', 'Images')
     active = fields.Boolean('Active', default=True)
     state = fields.Selection(variables.PRODUCT_STATE, 'Product State', readonly=True, default='draft')
+
+    provider_id = fields.Many2one('tt.provider', 'Provider', readonly=True, states={'draft': [('readonly', False)]}, domain=[('provider_type_id', '=', lambda self: self.env.ref('tt_reservation_event.tt_provider_type_event') )])
+    provider_code = fields.Char('Provider Code', readonly=True)
+    provider_fare_code = fields.Char('Provider Fare Code', readonly=True)
+
+    event_vendor_id = fields.Many2one('tt.vendor', 'Vendor ID')
+    booking_event_ids = fields.One2many('tt.event.reservation', 'event_id')
+
+    @api.model
+    def create(self, vals_list):
+        try:
+            vals_list['uuid'] = self.env['ir.sequence'].next_by_code(self._name)
+            vals_list['event_vendor_id'] = self.env.user.vendor_id.id or False
+        except:
+            pass
+        return super(MasterEvent, self).create(vals_list)
 
     @api.depends('provider_id')
     @api.onchange('provider_id')
@@ -72,31 +82,13 @@ class MasterEvent(models.Model):
     def _onchange_category_ids(self):
         self.categories = ','.join([rec.name for rec in self.category_ids])
 
-    # def reprice_currency(self, req,  context):
-    #     _logger.info('REPRICE CURRENCY EVENT')
-    #     _logger.info(json.dumps(req))
-    #     provider = req['provider']
-    #     from_currency = req['from_currency']
-    #     base_amount = req['base_amount']
-    #     to_currency = req.get('to_currency') and req['to_currency'] or 'IDR'
-    #     from_currency_id = self.env['res_currency'].sudo().search([('name', '=', from_currency)], limit=1)
-    #     from_currency_id = from_currency_id and from_currency_id[0] or False
-    #     try:
-    #         provider_id = self.env['tt.provider'].sudo().search([('code', '=', provider)], limit=1)
-    #         provider_id = provider_id[0]
-    #         multiplier = self.env['tt.provider.rate'].sudo().search([('provider_id', '=', provider_id.id), ('date', '<=', datetime.now()), ('currency_id', '=', from_currency_id.id)], limit=1)
-    #         computed_amount = base_amount * multiplier[0].sell_rate
-    #     except Exception as e:
-    #         computed_amount = self.env['res.currency'].compute(from_currency_id, self.env.user.company_id.currency_id, base_amount)
-    #         _logger.info("Cannot convert to vendor price: " + str(e))
-    #     return computed_amount
-
-    def search_by_api(self, req, context):
+    def search_event_api_1(self, req, context):
         try:
             name = req.get('event_name') and '%' + req['event_game'] + '%' or ''
             city = req.get('city') and '%' + req['city'] or ''
             category = req.get('category') and '%' + req['category'] + '%' or ''
             online = req.get('online') and '%' + req['online'] + '%' or ''
+            vendor = req.get('vendor') and '%' + req['vendor'] + '%' or ''
 
             limitation = []
             if name != '':
@@ -107,9 +99,24 @@ class MasterEvent(models.Model):
                 limitation.append(('categories', '=ilike', category))
             if online != '':
                 limitation.append(('event_type', '=', online))
+            if vendor != '':
+                limitation.append(('vendor_id', '=', vendor))
+
 
             result = self.env['tt.master.event'].sudo().search(limitation)
+            for i in result:
+                i.update({
+                    'image_ids': self.env['tt.master.event.image'].sudo().search([('event_id', '=', i.id)]),
+                    'video_ids': self.env['tt.master.event.video'].sudo().search([('event_id', '=', i.id)]),
+                    'location_ids': self.env['tt.event.location'].sudo().search([('event_id', '=', i.id)]),
+                    'option_ids': self.env['tt.event.option'].sudo().search([('event_id', '=', i.id)]),
+                })
 
+                for j in i['option_ids']:
+                    j.update({
+                        'timeslot_ids': self.env['tt.event.timeslot'].sudo().search([('event_option_id', '=', j.id)])
+                    })
+            return ERR.get_no_error(result)
             #built the return response
 
         except RequestException as e:
@@ -119,11 +126,38 @@ class MasterEvent(models.Model):
             _logger.error(traceback.format_exc())
             return ERR.get_error(1021)
 
+    # Temp
+    def search_event_api(self, req, context):
+        limit = context.get('limit') or 100
+        result = []
+        for rec in self.search(['|',('name', 'ilike', req['event_name']),('locations', 'ilike', req['event_name'])], limit=limit):
+            result.append(rec.format_api())
+        return {'response': result,}
+
+    def get_config_api(self):
+        result = {
+            'event': [],
+            'category': self.env['tt.event.category'].get_from_api('', False, [])
+        }
+        # get all data
+        event_obj = self.env['tt.master.event'].sudo().search([])
+        for i in event_obj:
+            temp_dict = {
+                'name': i.name,
+                'locations': i.locations,
+                'category': i.categories,
+                'image_url': []
+            }
+            for j in i.image_ids:
+                temp_dict['image_url'].append(j.url)
+            result['event'].append(temp_dict)
+
+        return ERR.get_no_error(result)
 
     def format_api_image(self, img):
         return {
-            'url': img.image_url or img.image_path,
-            'description': img.desc,
+            'url': img.path or img.url,
+            'description': img.file_reference,
         }
 
     def format_api_timeslot(self, timeslot_id):
@@ -159,95 +193,43 @@ class MasterEvent(models.Model):
             'location_name': location.name,
             'location_address': location.address,
             'city_name': location.city_name,
+            'country_name': location.country_name,
+            'lat': '',
+            'long': '',
+        }
+
+    def format_api_extra_question(self, location_id):
+        location = self.env['tt.event.location'].browse(location_id)
+        return {
+            'location_name': location.name,
+            'location_address': location.address,
+            'city_name': location.city_name,
+            'country_name': location.country_name,
             'lat': '',
             'long': '',
         }
 
     def format_api(self):
         return {
+            'id': self.uuid, # Todo Sequence
             'name': self.name,
-            'tags': self.categories and self.categories.split(',') or [],
+            'tags': [rec.name for rec in self.category_ids],
             'images': [self.format_api_image(img) for img in self.image_ids],
             'terms_and_condition': self.additional_info,
             'detail': self.description,
             'option': [self.format_api_option(opt.id) for opt in self.option_ids],
             'locations': [self.format_api_location(loc.id) for loc in self.location_ids],
+            'vendor_obj': {
+                'vendor_name': self.event_vendor_id.name,
+                'vendor_logo': self.event_vendor_id.logo or False,
+            },
+            'provider': self.provider_id.name,
         }
-
-
-    def search_event_api(self, req, context):
-        limit = context.get('limit') or 100
-        result = []
-        for rec in self.search(['|',('name', 'ilike', req['event_name']),('locations', 'ilike', req['event_name'])], limit=limit):
-            result.append(rec.format_api())
-        return {'response': result,}
-
-
-    def get_cities_by_api(self, id):
-        try:
-            result_objs = self.env['res.city'].sudo().search([('country_id', '=', int(id))])
-            cities = []
-            for i in result_objs:
-                cities.append({
-                    'name': i.name,
-                    'uuid': i.id
-                })
-            return ERR.get_no_error(cities)
-        except RequestException as e:
-            _logger.error(traceback.format_exc())
-            return e.error_dict()
-        except Exception as e:
-            _logger.error(traceback.format_exc())
-            return ERR.get_error(1021)
-
-    def get_states_by_api(self, id):
-        try:
-            result_objs = self.env['res.country.state'].sudo().search([('country_id', '=', int(id))])
-            states = []
-            for i in result_objs:
-                states.append({
-                    'name': i.name,
-                    'uuid': i.id
-                })
-            return ERR.get_no_error(states)
-        except RequestException as e:
-            _logger.error(traceback.format_exc())
-            return e.error_dict()
-        except Exception as e:
-            _logger.error(traceback.format_exc())
-            return ERR.get_error(1021)
-
-    def get_cities_state_by_api(self, id):
-        try:
-            result_objs = self.env['res.city'].sudo().search([('state_id', '=', int(id))])
-            cities = []
-            for i in result_objs:
-                cities.append({
-                    'name': i.name,
-                    'uuid': i.id
-                })
-                return ERR.get_no_error(cities)
-        except RequestException as e:
-            _logger.error(traceback.format_exc())
-            return e.error_dict()
-        except Exception as e:
-            _logger.error(traceback.format_exc())
-            return ERR.get_error(1021)
 
     def get_form_api(self, req, context):
         try:
-            event_id = req.get('event_id') and '%' + req['event_id'] + '%' or ''
-
-            result = self.env['tt.master.event'].sudo().search([('id', '=', event_id)])
-            result[0].update({
-                'extra_question_ids': self.env['tt.event.extra.question'].sudo().search([('event_id', '=', result[0]['id'])]),
-                'event_option_ids': self.env['tt.event.option'].sudo().search([('event_id', '=', result[0]['id'])])
-            })
-            for i in result[0]['event_option_ids']:
-                i.update({
-                    'timeslot_ids': self.env['tt.event.timeslot'].sudo().search([('event_option_id', '=', i['id'])])
-                })
-
+            res = self.env['tt.master.event'].sudo().search(['|',('uuid', '=', req['event_code']),('id', '=', req['event_code'])])
+            result = [{'question': rec.question, 'type': rec.answer_type, 'required': rec.is_required} for rec in res.extra_question_ids]
             return ERR.get_no_error(result)
         except RequestException as e:
             _logger.error(traceback.format_exc())
@@ -256,177 +238,46 @@ class MasterEvent(models.Model):
             _logger.error(traceback.format_exc())
             return ERR.get_error(1021)
 
-    # def get_detail_by_api(self, req, context):
-    #     try:
-    #         result_objs = self.env['tt.master.event.category'].sudo().search([])
-    #         categories = result_objs.filtered(lambda x: x.type == ' category' and not x.parent_id)
-    #         categories_list = []
-    #         for i in categories:
-    #             child_list = []
-    #             for j in i.child_ids:
-    #                 child_list.append({
-    #                     'name': j.name,
-    #                     'uuid': i.id
-    #                 })
-    #             categories_list.append({
-    #                 'name': i.name,
-    #                 'uuid': i.id,
-    #                 'children': child_list
-    #             })
-    #         types = result_objs.filtered(lambda x: x.type == 'type')
-    #         type_list = []
-    #         for type in types:
-    #             type_list.append({
-    #                 'name': type.name,
-    #                 'uuid': type.id
-    #             })
-    #
-    #         country_list = []
-    #         country_objs = self.env['res.country'].sudo().search([('provider_city_ids', '!=', False)])
-    #         for country in country_objs:
-    #             state = self.get_states_by_api(country.id)
-    #             if state.get('error_code'):
-    #                 _logger.info(state['error_msg'])
-    #                 raise Exception(state['error_msg'])
-    #             if len(state['response']) > 0:
-    #                 state_list = []
-    #                 for temp_state in state['response']:
-    #                     city = self.get_cities_state_by_api(int(temp_state['uuid']))
-    #                     if city.get('error_code'):
-    #                         _logger.info(city['error_msg'])
-    #                         raise Exception(city['error_msg'])
-    #                     city_list = []
-    #                     for temp_city in city['response']:
-    #                         city_list.append(temp_city)
-    #                     temp_state['cities'] = city_list
-    #                     state_list.append(temp_state)
-    #             else:
-    #                 city = self.get_cities_by_api(country.id)
-    #                 if city.get('error_code'):
-    #                     _logger.info(city['error_msg'])
-    #                     raise Exception(city['error_msg'])
-    #                 city_list = []
-    #                 for i in city['response']:
-    #                     city_list.append(i)
-    #                 state_list = [{
-    #                     'name': False,
-    #                     'uuid': False,
-    #                     'cities': city_list
-    #                 }]
-    #
-    #             country_list.append({
-    #                 'name': country.name,
-    #                 'code': country.code,
-    #                 'uuid': country.id,
-    #                 'states': state_list
-    #             })
-    #
-    #         values = {
-    #             'categories': {
-    #                 'data': categories_list
-    #             },
-    #             'types': {
-    #                 'data': type_list
-    #             },
-    #             'locations': [{
-    #                 'countries': country_list
-    #             }]
-    #         }
-    #         return ERR.get_no_error(values)
-    #     except RequestException as e:
-    #         _logger.error(traceback.format_exc())
-    #         return e.error_dict()
-    #     except Exception as e:
-    #         _logger.error(traceback.format_exc())
-    #         return ERR.get_error(1021)
+    def booking_master_event_from_api(self, req, context):
+        event_id = self.sudo().search([('uuid', '=', req['event_code'])], limit=1)
+        # Check apakah Order Number yg dikirim sdah pernah ada di DB kita?
+        if self.env['tt.event.reservation'].sudo().search([('order_number', '=', req['order_number'])]):
+            return 'Error'
+        for rec in req['event_option_codes']:
+            opt_id = self.env['tt.event.option'].search([('event_id','=',event_id.id), ('option_code','=',rec['option_code'])], limit=1)
+            temp_event_reservation_dict = {
+                'event_id': event_id.id,
+                'event_option_id': opt_id.id,
+                'order_number': req['order_number'],
+            }
+            # Check apa kah order_number yg dikirim ada di resv event
+            book_id = self.env['tt.reservation.event'].search([('name', '=', req['order_number'])], limit=1)
+            if book_id:
+                temp_event_reservation_dict.update({
+                    'booker_id': book_id.booker_id.id,
+                    'reservation_id': book_id.id
+                })
+                pnr = 'E' + book_id.name
+            else:
+                pnr = 'E' + req['order_number']
+            self.env['tt.event.reservation'].sudo().create(temp_event_reservation_dict)
+        return ERR.get_no_error({'pnr': pnr, 'hold_date': str(datetime.now() + relativedelta(minutes=45))[:16]+':00' })
 
-    # def search_by_api(self, req, context):
+    # def reprice_currency(self, req,  context):
+    #     _logger.info('REPRICE CURRENCY EVENT')
+    #     _logger.info(json.dumps(req))
+    #     provider = req['provider']
+    #     from_currency = req['from_currency']
+    #     base_amount = req['base_amount']
+    #     to_currency = req.get('to_currency') and req['to_currency'] or 'IDR'
+    #     from_currency_id = self.env['res_currency'].sudo().search([('name', '=', from_currency)], limit=1)
+    #     from_currency_id = from_currency_id and from_currency_id[0] or False
     #     try:
-    #         query = req.get('query') and '%' + req['query'] + '%' or ''
-    #         country = req.get('country') and req['country'] or ''
-    #         city = req.get('city') and req['city'] or ''
-    #         type_id = 0
-    #         if req.get('type'):
-    #             temp_type_id = req['type'] != '0' and self.env['tt.master.event.category'].sudo().search([('id', '=', req['type']), ('type', '=', 'type')]) or ''
-    #             type_id = temp_type_id and temp_type_id[0].id or 0
-    #
-    #         get_cat_instead = 0
-    #         category = ''
-    #         if req.get('sub_category'):
-    #             if req['sub_category'] != '0':
-    #                 category = req['sub_category']
-    #             else:
-    #                 get_cat_instead = 1
-    #         else:
-    #             get_cat_instead = 1
-    #
-    #         if get_cat_instead:
-    #             if req.get('category'):
-    #                 category = req['category'] != '0' and req['category'] or ''
-    #             else:
-    #                 category = ''
-    #
-    #         provider = req.get('provider', 'all')
     #         provider_id = self.env['tt.provider'].sudo().search([('code', '=', provider)], limit=1)
-    #         provider_id = provider_id and provider_id[0] or False
-    #         provider_code = provider_id and provider_id[0].code or ''
-    #
-    #         sql_query = """
-    #         SELECT event.*
-    #         FROM tt_master_event event
-    #         LEFT JOIN tt_event_location_rel locrel ON locrel.event_id = event.id
-    #         LEFT JOIN tt_master_event_location location ON locrel.location_id = location.id
-    #         """
-    #
-    #         if category:
-    #             sql_query += """
-    #             LEFT JOIN tt_event_category_rel catrel ON catrel.event_id = event.id
-    #             """
-    #         sql_query += "WHERE "
-    #
-    #         if query:
-    #             sql_query += """
-    #             event.name ILIKE '""" + str(query) + """'
-    #             """
-    #         else:
-    #             sql_query += """
-    #             event.active = TRUE AND event."basePrice" > 0
-    #             """
-    #
-    #         if category:
-    #             sql_query += """
-    #             AND catrel.category_id = """ + str(category) + """
-    #             """
-    #
-    #         if req.get('country') and not req.get('city'):
-    #             sql_query += "AND (location.country_id = {}) ".format(str(country))
-    #
-    #         if req.get('city'):
-    #             sql_query += "and (location.country_id = {} and location.city_id = {}) ".format(str(country), str(city))
-    #
-    #         if query:
-    #             sql_query += 'AND event.active = True AND event."basePrice" > 0'
-    #         sql_query += 'GROUP BY event.id'
-    #
-    #         self.env.cr.execute(sql_query)
-    #
-    #         result_id_list = self.env.cr.dictfetchall()
-    #         result_list = []
-    #
-    #     except RequestException as e:
-    #         _logger.error(traceback.format_exc())
-    #         return e.error_dict()
+    #         provider_id = provider_id[0]
+    #         multiplier = self.env['tt.provider.rate'].sudo().search([('provider_id', '=', provider_id.id), ('date', '<=', datetime.now()), ('currency_id', '=', from_currency_id.id)], limit=1)
+    #         computed_amount = base_amount * multiplier[0].sell_rate
     #     except Exception as e:
-    #         _logger.error(traceback.format_exc())
-    #         return ERR.get_error(1021)
-
-    # def get_detail_by_api(self, req, context):
-    #     try:
-    #         print("HelloWorld")
-    #     except RequestException as e:
-    #         _logger.error(traceback.format_exc())
-    #         return e.error_dict()
-    #     except Exception as e:
-    #         _logger.error(traceback.format_exc())
-    #         return ERR.get_error(1022)
-
+    #         computed_amount = self.env['res.currency'].compute(from_currency_id, self.env.user.company_id.currency_id, base_amount)
+    #         _logger.info("Cannot convert to vendor price: " + str(e))
+    #     return computed_amount

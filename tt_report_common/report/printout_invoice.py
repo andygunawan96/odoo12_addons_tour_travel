@@ -286,12 +286,12 @@ class PrintoutPPOBBillsForm(models.AbstractModel):
             'token_number': token_number,
             'jumlah_kwh': jumlah_kwh,
             'total': "{:,.0f}".format(rec.total),
-            'tarif': "{:,.0f}".format(tarif),
-            'stamp_fee': "{:,.0f}".format(stamp_fee),
-            'ppn': "{:,.0f}".format(ppn),
-            'ppj': "{:,.0f}".format(ppj),
+            'tarif': "{:,.2f}".format(tarif),
+            'stamp_fee': "{:,.2f}".format(stamp_fee),
+            'ppn': "{:,.2f}".format(ppn),
+            'ppj': "{:,.2f}".format(ppj),
             'admin_bank': "{:,.0f}".format(admin_bank),
-            'installment': "{:,.0f}".format(installment)
+            'installment': "{:,.2f}".format(installment)
         })
         return values
 
@@ -1366,6 +1366,60 @@ class PrintoutPassportItineraryForm(models.AbstractModel):
             'price_lines': values,
             'date_now': fields.Date.today().strftime('%d %b %Y'),
             'base_color': self.sudo().env['ir.config_parameter'].get_param('tt_base.website_default_color', default='#FFFFFF'),
+        }
+
+
+class PrintoutPPOBItineraryForm(models.AbstractModel):
+    _name = 'report.tt_report_common.printout_ppob_itinerary'
+    _description = 'Rodex Model'
+
+    @api.model
+    def _get_report_values(self, docids, data=None):
+        if not data.get('context'):
+            internal_model_id = docids.pop(0)
+            data['context'] = {}
+            if internal_model_id == 1:
+                data['context']['active_model'] = 'tt.reservation.airline'
+            elif internal_model_id == 2:
+                data['context']['active_model'] = 'tt.reservation.train'
+            elif internal_model_id == 3:
+                data['context']['active_model'] = 'tt.reservation.hotel'
+            elif internal_model_id == 4:
+                data['context']['active_model'] = 'tt.reservation.activity'
+            elif internal_model_id == 5:
+                data['context']['active_model'] = 'tt.reservation.tour'
+            else:
+                data['context']['active_model'] = 'tt.agent.invoice'
+
+            data['context']['active_ids'] = docids
+        values = {}
+        for rec in self.env[data['context']['active_model']].browse(data['context']['active_ids']):
+            values[rec.id] = []
+            a = {}
+            for rec2 in rec.sale_service_charge_ids:
+                if rec2.pax_type not in a.keys():
+                    a[rec2.pax_type] = {
+                        'pax_type': rec2.pax_type,
+                        'fare': 0,
+                        'tax': 0,
+                        'qty': 0,
+                    }
+
+                if rec2.charge_type.lower() == 'fare':
+                    a[rec2.pax_type]['fare'] += rec2.amount
+                    a[rec2.pax_type]['qty'] += rec2.pax_count
+                elif rec2.charge_type.lower() in ['roc', 'tax']:
+                    a[rec2.pax_type]['tax'] += rec2.amount
+            values[rec.id] = [a[new_a] for new_a in a]
+        return {
+            'doc_ids': data['context']['active_ids'],
+            'doc_model': data['context']['active_model'],
+            'doc_type': 'itin',
+            'docs': self.env[data['context']['active_model']].browse(data['context']['active_ids']),
+            'price_lines': values,
+            'date_now': fields.Date.today().strftime('%d %b %Y'),
+            'base_color': self.sudo().env['ir.config_parameter'].get_param('tt_base.website_default_color',
+                                                                           default='#FFFFFF'),
         }
 
 

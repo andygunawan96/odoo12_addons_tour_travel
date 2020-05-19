@@ -31,6 +31,12 @@
                             <field name="active" widget="boolean_button"
                                    options='{"terminology": "archive"}'/>
                         </button>
+                        <button name="%(tt_base.tt_upload_center_wizard_action_view)d"
+                                string="Upload Image" type="action"
+                                class="oe_stat_button" icon="fa-upload"
+                                groups="tt_base.group_tt_tour_division_operator,base.user_admin"
+                                context="{'default_target_field_name': 'image_ids'}"
+                        />
                     </div>
                     <div class="oe_title">
                         <h1>
@@ -39,7 +45,38 @@
                     </div>
                     <group>
                         <group>
-                            <field name="location_ids">
+<!--                            <field name="latitude"/>-->
+<!--                            <field name="longitude"/>-->
+<!--                            <label for="businessHoursFrom" string="Business Hours"/>-->
+<!--                            <div>-->
+<!--                                <field name="businessHoursFrom" class="oe_inline"/> - -->
+<!--                                <field name="businessHoursTo" class="oe_inline"/>-->
+<!--                            </div>-->
+<!--                            <label for="minPax" string="Passenger Limit"/>-->
+<!--                            <div>-->
+<!--                                <field name="minPax" class="oe_inline"/> - -->
+<!--                                <field name="maxPax" class="oe_inline"/>-->
+<!--                            </div>-->
+<!--                            <label for="reviewAverageScore" string="Average Score"/>-->
+<!--                            <div>-->
+<!--                                <field name="reviewAverageScore" class="oe_inline"/> from-->
+<!--                                <field name="reviewCount" class="oe_inline"/> users-->
+<!--                            </div>-->
+                            <field name="uuid"/>
+                            <field name="event_type"/>
+<!--                            <field name="quota"/>-->
+                            <field name="kid_friendly"/>
+                        </group>
+                        <group>
+                            <field name="provider_id" groups="tt_base.group_tt_tour_travel_operator"/>
+                            <field name="event_vendor_id" groups="tt_base.group_tt_tour_travel_operator"/>
+                            <field name="provider_fare_code"/>
+<!--                            <field name="type_ids"/>-->
+<!--                            <field name="currency_id"/>-->
+<!--                            <field name="basePrice"/>-->
+
+                        </group>
+                        <group><field name="location_ids">
                                 <tree>
                                     <field name="name"/>
                                     <field name="city_id"/>
@@ -58,44 +95,15 @@
                                         </group>
                                     </group>
                                 </form>
-                            </field>
-<!--                            <field name="latitude"/>-->
-<!--                            <field name="longitude"/>-->
-<!--                            <label for="businessHoursFrom" string="Business Hours"/>-->
-<!--                            <div>-->
-<!--                                <field name="businessHoursFrom" class="oe_inline"/> - -->
-<!--                                <field name="businessHoursTo" class="oe_inline"/>-->
-<!--                            </div>-->
-<!--                            <label for="minPax" string="Passenger Limit"/>-->
-<!--                            <div>-->
-<!--                                <field name="minPax" class="oe_inline"/> - -->
-<!--                                <field name="maxPax" class="oe_inline"/>-->
-<!--                            </div>-->
-<!--                            <label for="reviewAverageScore" string="Average Score"/>-->
-<!--                            <div>-->
-<!--                                <field name="reviewAverageScore" class="oe_inline"/> from-->
-<!--                                <field name="reviewCount" class="oe_inline"/> users-->
-<!--                            </div>-->
-                            <field name="event_type"/>
-                            <field name="quota"/>
-                            <field name="kid_friendly"/>
-                        </group>
-                        <group>
-                            <field name="provider_id" groups="tt_base.group_tt_tour_travel_operator"/>
-                            <field name="provider_fare_code" invisible="1"/>
-                            <field name="uuid"/>
-<!--                            <field name="type_ids"/>-->
-                            <field name="category_ids">
+                            </field></group>
+                        <group><field name="category_ids">
                                 <tree>
                                     <field name="parent_id"/>
                                     <field name="name"/>
                                 </tree>
-                            </field>
-<!--                            <field name="currency_id"/>-->
-<!--                            <field name="basePrice"/>-->
-                            <field name="includes"/>
-                            <field name="excludes"/>
-                        </group>
+                            </field></group>
+                        <group><field name="includes"/></group>
+                        <group><field name="excludes"/></group>
                     </group>
 
                     <seperator string="Additional Requirement"/>
@@ -110,6 +118,11 @@
                                 <field name="question"/>
                                 <field name="answer_type"/>
                                 <field name="is_required"/>
+                                <field name="answer_ids" attrs="{'invisible': [('answer_type','not in',['boolean','selection'])]}">
+                                    <tree>
+                                        <field name="answer"/>
+                                    </tree>
+                                </field>
                             </group>
                         </form>
                     </field>
@@ -121,6 +134,7 @@
                             <field name="grade"/>
                             <field name="currency_id"/>
                             <field name="price"/>
+                            <field name="quota"/>
                             <field name="is_non_refundable"/>
                             <field name="active"/>
                         </tree>
@@ -137,8 +151,10 @@
                                 <group>
 <!--                                    <field name="event_id"/>-->
                                     <field name="grade"/>
+                                    <field name="option_code"/>
                                     <field name="currency_id"/>
                                     <field name="price"/>
+                                    <field name="quota"/>
                                     <field name="cancellation_policies"/>
                                     <field name="is_non_refundable"/>
 <!--                                    <label for="durationDays" string="Duration"/>-->
@@ -244,17 +260,19 @@
                     </field>
 
                     <separator string="Product Images"/>
-                    <field name="image_ids">
-                        <tree>
-                            <field name="image_path"/>
-                        </tree>
+                    <field name="image_ids" context="{
+                     'tree_view_ref': 'tt_base.tt_upload_center_handle_tree_view',
+                    }">
+<!--                        <tree>-->
+<!--                            <field name="image_path"/>-->
+<!--                        </tree>-->
                     </field>
-                    <separator string="Product Videos"/>
-                    <field name="video_ids">
-                        <tree>
-                            <field name="video_url"/>
-                        </tree>
-                    </field>
+<!--                    <separator string="Product Videos"/>-->
+<!--                    <field name="video_ids">-->
+<!--                        <tree>-->
+<!--                            <field name="video_url"/>-->
+<!--                        </tree>-->
+<!--                    </field>-->
                     <separator string="Details"/>
                     <notebook colspan="6">
 <!--                        <page string="Description">-->
@@ -289,8 +307,8 @@
                 <field name="name"/>
 <!--                <field name="type_ids"/>-->
                 <field name="event_type"/>
-                <field name="quota"/>
-                <field name="sales"/>
+<!--                <field name="quota"/>-->
+<!--                <field name="sales"/>-->
                 <field name="kid_friendly"/>
 <!--                <field name="provider_id" groups="tt_base.group_tt_tour_travel_operator"/>-->
                 <field name="active"/>
@@ -298,8 +316,22 @@
             </tree>
         </field>
     </record>
+    <record model="ir.ui.view" id="tt_master_event_ho_view_tree" >
+        <field name="name">tt.master.event.view.tree</field>
+        <field name="model">tt.master.event</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="name"/>
+                <field name="event_type"/>
+                <field name="provider_id"/>
+                <field name="event_vendor_id"/>
+                <field name="active"/>
+                <field name="state"/>
+            </tree>
+        </field>
+    </record>
 
-    <record model="ir.actions.act_window" id="tt_master_event_view_action">
+    <record model="ir.actions.act_window" id="tt_master_event_ho_view_action">
         <field name="name">Master Event</field>
         <field name="res_model">tt.master.event</field>
         <field name="view_type">form</field>
@@ -308,7 +340,20 @@
         <field name="context">
             {
             'form_view_ref': 'tt_reservation_event.tt_master_event_view_form',
-            'tree_view_ref': 'tt_reservation_event.tt_master_event_view_tree',
+            'tree_view_ref': 'tt_reservation_event.tt_master_event_ho_view_tree',
+            }
+        </field>
+    </record>
+    <record model="ir.actions.act_window" id="tt_master_event_view_action">
+        <field name="name">Master Event</field>
+        <field name="res_model">tt.master.event</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+        <field name="domain">[]</field>
+        <field name="context">
+            {
+                'form_view_ref': 'tt_reservation_event.tt_master_event_view_form',
+                'tree_view_ref': 'tt_reservation_event.tt_master_event_view_tree',
             }
         </field>
     </record>
@@ -316,5 +361,5 @@
     <menuitem id="submenu_tour_travel_event_master"
               parent="tt_reservation_event.menu_tour_travel_event_master"
               name="Event"
-              action="tt_reservation_event.tt_master_event_view_action"/>
+              action="tt_reservation_event.tt_master_event_ho_view_action"/>
 </odoo>

@@ -48,7 +48,7 @@ class TtProviderPPOB(models.Model):
     allowed_denomination_ids = fields.Many2many('tt.master.nominal.ppob', 'reservation_ppob_nominal_rel', 'provider_booking_id',
                                                 'nominal_id', string='Allowed Denominations', readonly=True,
                                                 states={'draft': [('readonly', False)]})
-    total = fields.Integer('Total Bill Amount', readonly=True, default=0)
+    total = fields.Monetary('Total Bill Amount', readonly=True, default=0)
     ppob_bill_ids = fields.One2many('tt.bill.ppob', 'provider_booking_id', string='Bills', readonly=True,
                                     states={'draft': [('readonly', False)]})
     ppob_bill_detail_ids = fields.One2many('tt.bill.detail.ppob', 'provider_booking_id', string='Bills', readonly=True,
