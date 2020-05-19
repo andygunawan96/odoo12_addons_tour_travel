@@ -147,11 +147,11 @@
         </field>
     </record>
 
-    <menuitem id="top_transaction_adjustment" parent="tt_base.main_transaction"
+    <menuitem id="menu_transaction_accounting_transaction_adjustment" parent="tt_base.top_menu_accounting"
               name="Adjustment" sequence="20"
                 groups="tt_base.group_tt_tour_travel_operator"/>
 
-    <menuitem id="menu_transaction_adjustment" parent="tt_accounting.top_transaction_adjustment"
+    <menuitem id="menu_transaction_adjustment" parent="tt_accounting.menu_transaction_accounting_transaction_adjustment"
               name="Adjustment" action="tt_adjustment_action" sequence="10"/>
 
 </odoo>

@@ -61,6 +61,34 @@ class MasterEventCategory(models.Model):
     child_ids = fields.One2many('tt.event.category', 'parent_id', 'Child')
     event_ids = fields.Many2many('tt.master.event','tt_event_category_rel', 'category_id', 'event_id', string='Event', readonly=True)
 
+    def parse_format(self):
+        return {
+            'category_id': self.id,
+            'category_name': self.name,
+            'child_category': []
+        }
+
+    def get_from_api(self, search_str, parent_objs, inc_list):
+        parsed_obj = []
+        if not parent_objs:
+            parent_objs = search_str and self.search([('name','=ilike',search_str)]) or self.search([])
+        for rec in parent_objs:
+            if rec.id not in inc_list:
+                new_dict = rec.parse_format()
+                inc_list.append(rec.id)
+                for child in rec.child_ids:
+                    new_dict['child_category'].append(child.get_from_api('', child, inc_list)[0])
+                parsed_obj.append(new_dict)
+        return parsed_obj
+
+    def parse_format_api(self, data):
+        return {'response': self.get_from_api(data['name'], False, []),}
+
+    # Todo Delete Later setelah part edo jalan
+    def test_parse_format_api(self):
+        a = self.parse_format_api({'name': self.name})
+        return a
+
 class EventOptions(models.Model):
     _name = 'tt.event.option'
     _description = 'Rodex Event Model'

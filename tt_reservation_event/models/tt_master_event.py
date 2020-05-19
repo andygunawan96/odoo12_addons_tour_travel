@@ -134,10 +134,30 @@ class MasterEvent(models.Model):
             result.append(rec.format_api())
         return {'response': result,}
 
+    def get_config_api(self):
+        result = {
+            'event': [],
+            'category': self.env['tt.event.category'].get_from_api('', False, [])
+        }
+        # get all data
+        event_obj = self.env['tt.master.event'].sudo().search([])
+        for i in event_obj:
+            temp_dict = {
+                'name': i.name,
+                'locations': i.locations,
+                'category': i.categories,
+                'image_url': []
+            }
+            for j in i.image_ids:
+                temp_dict['image_url'].append(j.url)
+            result['event'].append(temp_dict)
+
+        return ERR.get_no_error(result)
+
     def format_api_image(self, img):
         return {
-            'url': img.image_url or img.image_path,
-            'description': img.desc,
+            'url': img.path or img.url,
+            'description': img.file_reference,
         }
 
     def format_api_timeslot(self, timeslot_id):
