@@ -91,10 +91,10 @@ class ReservationEvent(models.Model):
 
     @api.model
     def create(self, vals_list):
-        # try:
-        #     vals_list['uuid'] = self.env['ir.sequence'].next_by_code(self._name)
-        # except:
-        #     pass
+        try:
+            vals_list['user_id'] = self.env.user.id
+        except:
+            pass
         return super(ReservationEvent, self).create(vals_list)
 
     def _calc_grand_total(self):
@@ -124,8 +124,8 @@ class ReservationEvent(models.Model):
         self.name = order_number
         self.write({
             'state': 'booked',
-            'date': datetime.now(),
-            'booked_uid': self.env.user.id
+            'booked_uid': self.env.user.id,
+            'booked_date': datetime.now(),
         })
 
     def get_datetime(self, utc=0):
@@ -330,22 +330,23 @@ class ReservationEvent(models.Model):
 
     def response_parser(self):
         return {
-            'order_number': self.order_number,
+            'order_number': self.name,
             'providers': [{'provider': rec.provider_id.code, 'pnr': self.pnr} for rec in self.provider_booking_ids],
             'event_name': self.event_name,
-            'event_location': [{
+            'event_location': self.event_id and [{
                 'name': rec.name,
                 'address': rec.address,
                 'city': rec.city_name,
                 'country': rec.country_name,
                 'lat': '',
                 'long': '',
-            } for rec in self.location_ids],
+            } for rec in self.event_id.location_ids] or [],
             'description': self.event_id and self.event_id.description or '',
             'options': [],
             'notes': '',
-            'booker': self.booker_id.format(),
-            'contact': self.contact_id.format(),
+            'booker': self.booker_id.read(),
+            'contact': self.contact_id.read(),
+            'status': self.state,
         }
 
     def get_booking_from_backend(self, data, context):
