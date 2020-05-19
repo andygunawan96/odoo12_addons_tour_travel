@@ -26,7 +26,10 @@ class TtReconcileTransactionWizard(models.TransientModel):
                 'date_to': self.date_to and datetime.strftime(self.date_to,'%Y-%m-%d') or ''
             }
         }
-        self.env['tt.api.con'].send_reconcile_request(request)
+        response = self.env['tt.api.con'].send_reconcile_request(request)
+        if response['error_code'] != 0:
+            raise UserError(response['error_msg'])
+        self.save_reconcile_data(response['response'])
 
     def dummy_send_recon(self):
         request = {
@@ -49,7 +52,7 @@ class TtReconcileTransactionWizard(models.TransientModel):
 
         for period in data['transaction_periods']:
             existing_recon_data = self.env['tt.reconcile.transaction'].search([('provider_id','=',provider_obj.id),
-                                                         ('transaction_date','=',period['transaction_date'])])
+                                                                               ('transaction_date','=',period['transaction_date'])])
             if existing_recon_data:
                 recon_data = existing_recon_data
             else:
