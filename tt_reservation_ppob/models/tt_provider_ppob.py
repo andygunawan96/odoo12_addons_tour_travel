@@ -286,7 +286,7 @@ class TtProviderPPOB(models.Model):
                                     'token': rec2.get('token') and rec2['token'] or '',
                                 })
 
-                    if rec.state == 'fail_refunded':
+                    if any(not rec2.is_ledger_created for rec2 in rec.booking_id.sale_service_charge_ids):
                         payment_req = {
                             'book_id': rec.booking_id.id,
                             'member': rec.booking_id.is_member,
