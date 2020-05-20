@@ -633,8 +633,8 @@ class TtReservation(models.Model):
 
                 agent_check_amount = book_obj.get_nta_amount(payment_method)
 
-                if agent_check_amount <= 0:
-                    raise Exception("Cannot Payment 0 or lower.")
+                # if agent_check_amount <= 0:
+                #     raise Exception("Cannot Payment 0 or lower.")
 
                 voucher = ''
                 ### voucher agent here##
