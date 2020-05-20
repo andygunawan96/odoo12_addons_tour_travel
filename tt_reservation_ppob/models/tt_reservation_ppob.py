@@ -26,7 +26,7 @@ class ReservationPpob(models.Model):
     provider_type_id = fields.Many2one('tt.provider.type', 'Provider Type',
                                        default=lambda self: self.env.ref('tt_reservation_ppob.tt_provider_type_ppob'))
     prepaid_value = fields.Integer('Prepaid Value', default=0)
-    is_ticket_printed = fields.Boolean('Ticket Already Printed', default=False)
+    is_ticket_printed = fields.Integer('Ticket Already Printed', default=0)
 
     def get_config_api(self, data, context):
         try:
@@ -860,7 +860,7 @@ class ReservationPpob(models.Model):
         datas['form'] = res
         ppob_ticket_id = book_obj.env.ref('tt_report_common.action_report_printout_reservation_ppob')
 
-        if not book_obj.printout_ticket_id:
+        if not book_obj.printout_ticket_id or book_obj.is_ticket_printed < 2:
             if book_obj.agent_id:
                 co_agent_id = book_obj.agent_id.id
             else:
@@ -899,7 +899,8 @@ class ReservationPpob(models.Model):
             'target': 'new',
             'url': book_obj.printout_ticket_id.url,
         }
-        book_obj.is_ticket_printed = True
+        if book_obj.is_ticket_printed < 2:
+            book_obj.is_ticket_printed += 1
         return url
 
     def print_ho_invoice(self):
