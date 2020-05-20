@@ -17,6 +17,10 @@ class TtReconcileTransactionWizard(models.TransientModel):
             'provider_id': "[('provider_type_id', '=', provider_type_id)]"
         }}
 
+    @api.onchange('date_from')
+    def _onchange_date_from(self):
+        self.date_to = self.date_from
+
     def send_recon_request_data(self):
         request = {
             'provider_type': self.provider_type_id.code,
@@ -65,7 +69,7 @@ class TtReconcileTransactionWizard(models.TransientModel):
             for transaction in period['transactions']:
                 trans_lines = recon_data.reconcile_lines_ids.filtered(lambda x: x.pnr == transaction['pnr'])
                 if trans_lines:
-                    if trans_lines[0].total == transaction['total'] or transaction['state'] == 'match':
+                    if trans_lines[0].total == transaction['total'] or trans_lines[0].state == 'match':
                         continue
                     else:
                         write_data.append((1,trans_lines[0].id,transaction))
@@ -75,6 +79,7 @@ class TtReconcileTransactionWizard(models.TransientModel):
                     else:
                         transaction['state'] = 'done'
                     write_data.append((0,0,transaction))
+
             recon_data.write({
                 'reconcile_lines_ids': write_data
             })
