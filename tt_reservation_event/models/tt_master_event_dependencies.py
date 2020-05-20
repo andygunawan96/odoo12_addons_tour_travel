@@ -103,12 +103,16 @@ class EventOptions(models.Model):
     on_hold = fields.Integer('On Hold')
     sales = fields.Integer('Sales', readonly=True)
 
+    date_start = fields.Datetime('Date Selling Start')
+    date_end = fields.Datetime('Date Selling End')
+    description = fields.Char('Description')
+
     cancellation_policies = fields.Text("Cancellation Policies")
     is_non_refundable = fields.Boolean(' is Non Refundable')
     advance_booking_days = fields.Integer("Advance Booking Days", default=0)
 
     # minimumSellingPrice = fields.Integer("Minimum Selling Price", default=0)
-    currency_id = fields.Many2one('res.currency', 'Currency')
+    currency_id = fields.Many2one('res.currency', 'Currency', default=lambda self: self.env.user.company_id.currency_id)
     price = fields.Monetary('Price')
     # sku_ids = fields.One2many("tt.master.event.sku", 'event_option_id')
     active = fields.Boolean('Active', default=True)

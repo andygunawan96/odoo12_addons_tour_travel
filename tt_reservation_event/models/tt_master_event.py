@@ -146,10 +146,8 @@ class MasterEvent(models.Model):
                 'name': i.name,
                 'locations': i.locations,
                 'category': i.categories,
-                'image_url': []
+                'image_url': i.image_ids and i.image_ids[0].url
             }
-            for j in i.image_ids:
-                temp_dict['image_url'].append(j.url)
             result['event'].append(temp_dict)
 
         return ERR.get_no_error(result)
@@ -228,7 +226,7 @@ class MasterEvent(models.Model):
 
     def get_form_api(self, req, context):
         try:
-            res = self.env['tt.master.event'].sudo().search(['|',('uuid', '=', req['event_code']),('id', '=', req['event_code'])])
+            res = self.env['tt.master.event'].sudo().search([('uuid', '=', req['event_code'])])
             result = [{'question': rec.question, 'type': rec.answer_type, 'required': rec.is_required} for rec in res.extra_question_ids]
             return ERR.get_no_error(result)
         except RequestException as e:
