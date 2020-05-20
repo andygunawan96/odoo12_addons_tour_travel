@@ -266,6 +266,16 @@ class TtProviderPPOB(models.Model):
                     rec.action_failed_paid_api_ppob(error_dat['error_code'], error_dat['error_msg'])
             else:
                 if rec.state != 'issued':
+                    if any(not rec2.is_ledger_created for rec2 in rec.cost_service_charge_ids):
+                        payment_req = {
+                            'book_id': rec.booking_id.id,
+                            'member': rec.booking_id.is_member,
+                            'acquirer_seq_id': rec.booking_id.payment_method,
+                        }
+                        payment_res = rec.booking_id.payment_reservation_api('ppob', payment_req, context)
+                        if payment_res['error_code'] != 0:
+                            raise UserError(payment_res['error_msg'])
+
                     rec.sudo().write({
                         'pnr': data['pnr'],
                         'payment_message': data['message'],
@@ -285,16 +295,6 @@ class TtProviderPPOB(models.Model):
                                     'kwh_amount': rec2.get('kwh_amount') and rec2['kwh_amount'] or 0,
                                     'token': rec2.get('token') and rec2['token'] or '',
                                 })
-
-                    if any(not rec2.is_ledger_created for rec2 in rec.booking_id.sale_service_charge_ids):
-                        payment_req = {
-                            'book_id': rec.booking_id.id,
-                            'member': rec.booking_id.is_member,
-                            'acquirer_seq_id': rec.booking_id.payment_method,
-                        }
-                        payment_res = rec.booking_id.payment_reservation_api('ppob', payment_req, context)
-                        if payment_res['error_code'] != 0:
-                            raise UserError(payment_res['error_msg'])
 
                     rec.action_issued_api_ppob(context)
 
