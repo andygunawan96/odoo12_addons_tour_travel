@@ -140,7 +140,7 @@
                     </div>
                     <div class="col-7">
                         <span t-field="provider.meter_number"/><br/>
-                        <span t-field="provider.customer_number"/><br/>
+                        <span t-field="provider.customer_id_number"/><br/>
                         <span t-field="provider.customer_name"/><br/>
                         <span t-field="provider.fare_type"/>/<span t-field="provider.power"/> VA<br/>
                         <span t-field="provider.pnr"/><br/>
