@@ -26,6 +26,7 @@ class ReservationPpob(models.Model):
     provider_type_id = fields.Many2one('tt.provider.type', 'Provider Type',
                                        default=lambda self: self.env.ref('tt_reservation_ppob.tt_provider_type_ppob'))
     prepaid_value = fields.Integer('Prepaid Value', default=0)
+    is_ticket_printed = fields.Integer('Ticket Already Printed', default=0)
 
     def get_config_api(self, data, context):
         try:
@@ -194,7 +195,7 @@ class ReservationPpob(models.Model):
 
             provider_list = []
             for rec in resv_obj.provider_booking_ids:
-                if resv_obj.state == 'fail_issued':
+                if resv_obj.state in ['fail_issued', 'fail_refunded']:
                     rec.write({
                         'state': 'booked',
                         'booked_uid': context['co_uid'],
@@ -203,7 +204,7 @@ class ReservationPpob(models.Model):
                     })
                 provider_list.append(rec.to_dict())
 
-            if resv_obj.state == 'fail_issued':
+            if resv_obj.state in ['fail_issued', 'fail_refunded']:
                 resv_obj.write({
                     'state': 'booked',
                     'booked_uid': context['co_uid'],
@@ -396,7 +397,7 @@ class ReservationPpob(models.Model):
                 'provider_booking_id': prov_obj and prov_obj.id or False,
                 'period': rec.get('period') and datetime.strptime(rec['period'], '%Y%m') or False,
                 'total': rec.get('total') and rec['total'] or 0,
-                'amount_of_month': rec.get('amount_of_month') and rec['amount_of_month'] or 0,
+                'amount_of_month': rec.get('amount_of_month') and rec['amount_of_month'] or 1,
                 'fare_amount': rec.get('fare_amount') and rec['fare_amount'] or 0,
                 'admin_fee': rec.get('admin_fee') and rec['admin_fee'] or 0,
                 'period_end_date': rec.get('period_end_date') and datetime.strptime(rec['period_end_date'], '%d%m%Y') or False,
@@ -859,7 +860,7 @@ class ReservationPpob(models.Model):
         datas['form'] = res
         ppob_ticket_id = book_obj.env.ref('tt_report_common.action_report_printout_reservation_ppob')
 
-        if not book_obj.printout_ticket_id:
+        if not book_obj.printout_ticket_id or book_obj.is_ticket_printed < 2:
             if book_obj.agent_id:
                 co_agent_id = book_obj.agent_id.id
             else:
@@ -898,6 +899,8 @@ class ReservationPpob(models.Model):
             'target': 'new',
             'url': book_obj.printout_ticket_id.url,
         }
+        if book_obj.is_ticket_printed < 2:
+            book_obj.is_ticket_printed += 1
         return url
 
     def print_ho_invoice(self):

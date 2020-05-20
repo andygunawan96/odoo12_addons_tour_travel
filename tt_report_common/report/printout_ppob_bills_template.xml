@@ -4,9 +4,18 @@
     <template id="reservation_ppob_pln_postpaid_content_view">
         <div class="box" style="margin: 0px 20px 20px 20px">
             <!-- No. Booking -->
-            <div style="margin-bottom: 10px; margin-top: 5px;">
-                <span style="font-size: 18px; font-weight: 730">No. Booking : </span>
-                <span t-field="doc.name" style="font-size: 18px; font-weight: 730"/><br/>
+            <div style="margin-bottom: 30px; margin-top: 30px;">
+                <div class="row" style="">
+                    <div class="col-6">
+                        <span style="font-size: 18px; font-weight: 730">No. Booking : </span>
+                        <span t-field="doc.name" style="font-size: 18px; font-weight: 730"/><br/>
+                    </div>
+                    <div class="col-6" style="text-align: right;">
+                        <t t-if="doc.is_ticket_printed >= 1">
+                            <span style="font-size: 24px; font-weight: 730; white-space: nowrap; width: 200px; border: 3px solid #000000; overflow: hidden; text-overflow: clip; padding: 6px 10px 6px 10px;">CETAK ULANG</span>
+                        </t>
+                    </div>
+                </div>
             </div>
 
             <!-- Header -->
@@ -91,9 +100,18 @@
     <template id="reservation_ppob_pln_prepaid_content_view">
         <div class="box" style="margin: 0px 20px 20px 20px">
             <!-- No. Booking -->
-            <div style="margin-bottom: 10px; margin-top: 5px;">
-                <span style="font-size: 18px; font-weight: 730">No. Booking : </span>
-                <span t-field="doc.name" style="font-size: 18px; font-weight: 730"/><br/>
+            <div style="margin-bottom: 30px; margin-top: 30px;">
+                <div class="row" style="">
+                    <div class="col-6">
+                        <span style="font-size: 18px; font-weight: 730">No. Booking : </span>
+                        <span t-field="doc.name" style="font-size: 18px; font-weight: 730"/><br/>
+                    </div>
+                    <div class="col-6" style="text-align: right;">
+                        <t t-if="doc.is_ticket_printed >= 1">
+                            <span style="font-size: 24px; font-weight: 730; white-space: nowrap; width: 200px; border: 3px solid #000000; overflow: hidden; text-overflow: clip; padding: 6px 10px 6px 10px;">CETAK ULANG</span>
+                        </t>
+                    </div>
+                </div>
             </div>
 
             <!-- Header -->
@@ -140,7 +158,7 @@
                     </div>
                     <div class="col-7">
                         <span t-field="provider.meter_number"/><br/>
-                        <span t-field="provider.customer_number"/><br/>
+                        <span t-field="provider.customer_id_number"/><br/>
                         <span t-field="provider.customer_name"/><br/>
                         <span t-field="provider.fare_type"/>/<span t-field="provider.power"/> VA<br/>
                         <span t-field="provider.pnr"/><br/>
@@ -174,9 +192,18 @@
     <template id="reservation_ppob_non_pln_content_view">
         <div class="box" style="margin: 0px 20px 20px 20px">
             <!-- No. Booking -->
-            <div style="margin-bottom: 10px; margin-top: 5px;">
-                <span style="font-size: 18px; font-weight: 730">No. Booking : </span>
-                <span t-field="doc.name" style="font-size: 18px; font-weight: 730"/><br/>
+            <div style="margin-bottom: 30px; margin-top: 30px;">
+                <div class="row" style="">
+                    <div class="col-6">
+                        <span style="font-size: 18px; font-weight: 730">No. Booking : </span>
+                        <span t-field="doc.name" style="font-size: 18px; font-weight: 730"/><br/>
+                    </div>
+                    <div class="col-6" style="text-align: right;">
+                        <t t-if="doc.is_ticket_printed >= 1">
+                            <span style="font-size: 24px; font-weight: 730; white-space: nowrap; width: 200px; border: 3px solid #000000; overflow: hidden; text-overflow: clip; padding: 6px 10px 6px 10px;">CETAK ULANG</span>
+                        </t>
+                    </div>
+                </div>
             </div>
 
             <!-- Header -->
@@ -255,9 +282,18 @@
     <template id="reservation_ppob_bpjs_kesehatan_content_view">
         <div class="box" style="margin: 0px 20px 20px 20px">
             <!-- No. Booking -->
-            <div style="margin-bottom: 10px; margin-top: 5px;">
-                <span style="font-size: 18px; font-weight: 730">No. Booking : </span>
-                <span t-field="doc.name" style="font-size: 18px; font-weight: 730"/><br/>
+            <div style="margin-bottom: 30px; margin-top: 30px;">
+                <div class="row" style="">
+                    <div class="col-6">
+                        <span style="font-size: 18px; font-weight: 730">No. Booking : </span>
+                        <span t-field="doc.name" style="font-size: 18px; font-weight: 730"/><br/>
+                    </div>
+                    <div class="col-6" style="text-align: right;">
+                        <t t-if="doc.is_ticket_printed >= 1">
+                            <span style="font-size: 24px; font-weight: 730; white-space: nowrap; width: 200px; border: 3px solid #000000; overflow: hidden; text-overflow: clip; padding: 6px 10px 6px 10px;">CETAK ULANG</span>
+                        </t>
+                    </div>
+                </div>
             </div>
 
             <!-- Header -->

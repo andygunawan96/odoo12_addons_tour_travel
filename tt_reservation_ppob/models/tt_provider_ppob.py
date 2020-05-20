@@ -260,11 +260,22 @@ class TtProviderPPOB(models.Model):
                 if data['fail_state'] == 'fail_issued':
                     error_dat = data['error_data']
                     rec.action_failed_issued_api_ppob(error_dat['error_code'], error_dat['error_msg'])
+                    rec.action_reverse_ledger_from_button()
                 elif data['fail_state'] == 'fail_paid':
                     error_dat = data['error_data']
                     rec.action_failed_paid_api_ppob(error_dat['error_code'], error_dat['error_msg'])
             else:
                 if rec.state != 'issued':
+                    if any(not rec2.is_ledger_created for rec2 in rec.cost_service_charge_ids):
+                        payment_req = {
+                            'book_id': rec.booking_id.id,
+                            'member': rec.booking_id.is_member,
+                            'acquirer_seq_id': rec.booking_id.payment_method,
+                        }
+                        payment_res = rec.booking_id.payment_reservation_api('ppob', payment_req, context)
+                        if payment_res['error_code'] != 0:
+                            raise UserError(payment_res['error_msg'])
+
                     rec.sudo().write({
                         'pnr': data['pnr'],
                         'payment_message': data['message'],
