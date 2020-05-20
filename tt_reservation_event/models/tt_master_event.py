@@ -31,7 +31,8 @@ class MasterEvent(models.Model):
 
     description = fields.Html('Description', readonly=True, states={'draft': [('readonly', False)]})
     additional_info = fields.Html('Additional Info', readonly=True, states={'draft': [('readonly', False)]})
-    kid_friendly = fields.Boolean('Kids Friendly', default=False)
+    kid_friendly = fields.Boolean('Age Restriction', default=False, readonly=True, states={'draft': [('readonly', False)]})
+    eligible_age = fields.Integer('Eligible Age', default=1, readonly=True, states={'draft': ['readonly', False]})
     itinerary = fields.Html('Itinerary', readonly=True, states={'draft': [('readonly', False)]})
     to_notice = fields.Html('Warnings', readonly=True, states={'draft': [('readonly', False)]})
     extra_question_ids = fields.One2many('tt.event.extra.question', 'event_id', readonly=True, states={'draft':[('readonly', False)]})
@@ -47,7 +48,7 @@ class MasterEvent(models.Model):
     option_ids = fields.One2many('tt.event.option', 'event_id', readonly=True, states={'draft': [('readonly', False)]})
     image_ids = fields.Many2many('tt.upload.center', 'event_images_rel', 'event_id', 'image_id', 'Images')
     active = fields.Boolean('Active', default=True)
-    state = fields.Selection(variables.PRODUCT_STATE, 'Product State', readonly=True, default='draft')
+    state = fields.Selection(variables.PRODUCT_STATE, 'Product State', default='draft')
 
     provider_id = fields.Many2one('tt.provider', 'Provider', readonly=True, states={'draft': [('readonly', False)]}, domain=[('provider_type_id', '=', lambda self: self.env.ref('tt_reservation_event.tt_provider_type_event') )])
     provider_code = fields.Char('Provider Code', readonly=True)
@@ -82,21 +83,31 @@ class MasterEvent(models.Model):
     def _onchange_category_ids(self):
         self.categories = ','.join([rec.name for rec in self.category_ids])
 
-    def search_event_api_1(self, req, context):
+    def action_draft(self):
+        self.write({
+            'state': 'draft'
+        })
+
+    def action_confirm(self):
+        self.write({
+            'state': 'confirm'
+        })
+
+    def search_event_api(self, req, context):
         try:
-            name = req.get('event_name') and '%' + req['event_game'] + '%' or ''
-            city = req.get('city') and '%' + req['city'] or ''
-            category = req.get('category') and '%' + req['category'] + '%' or ''
-            online = req.get('online') and '%' + req['online'] + '%' or ''
-            vendor = req.get('vendor') and '%' + req['vendor'] + '%' or ''
+            name = req.get('event_name') and req['event_name'] or ''
+            city = req.get('city') and req['city'] or ''
+            category = req.get('category') and req['category'] or ''
+            online = req.get('online') and req['online'] or ''
+            vendor = req.get('vendor') and req['vendor'] or ''
 
             limitation = []
             if name != '':
-                limitation.append(('name', '=ilike', name))
+                limitation.append(('name', 'ilike', name))
             if city != '':
-                limitation.append(('locations', '=ilike', city))
+                limitation.append(('locations', 'ilike', city))
             if category != '':
-                limitation.append(('categories', '=ilike', category))
+                limitation.append(('categories', 'ilike', category))
             if online != '':
                 limitation.append(('event_type', '=', online))
             if vendor != '':
@@ -104,19 +115,37 @@ class MasterEvent(models.Model):
 
 
             result = self.env['tt.master.event'].sudo().search(limitation)
+            to_return = []
             for i in result:
-                i.update({
-                    'image_ids': self.env['tt.master.event.image'].sudo().search([('event_id', '=', i.id)]),
-                    'video_ids': self.env['tt.master.event.video'].sudo().search([('event_id', '=', i.id)]),
-                    'location_ids': self.env['tt.event.location'].sudo().search([('event_id', '=', i.id)]),
-                    'option_ids': self.env['tt.event.option'].sudo().search([('event_id', '=', i.id)]),
-                })
-
-                for j in i['option_ids']:
-                    j.update({
-                        'timeslot_ids': self.env['tt.event.timeslot'].sudo().search([('event_option_id', '=', j.id)])
-                    })
-            return ERR.get_no_error(result)
+                temp_dict = {
+                    'id': i.uuid,
+                    'name': i.name,
+                    'category': [rec.name for rec in i.category_ids],
+                    'locations': [self.format_api_location(loc.id) for loc in i.location_ids],
+                    'detail': i.description,
+                    'terms_and_condition': i.additional_info,
+                    'provider': i.provider_id.name,
+                    'option': [i.format_api_option(opt.id) for opt in i.option_ids],
+                    'vendor_obj': {
+                        'vendor_name': i.event_vendor_id.name,
+                        'vendor_logo': i.event_vendor_id.logo or False
+                    },
+                    'images': [i.format_api_image(img) for img in self.image_ids],
+                }
+                # temp_dict = i.format_api()
+                to_return.append(temp_dict)
+                # i.update({
+                #     'image_ids': self.env['tt.master.event.image'].sudo().search([('event_id', '=', i.id)]),
+                #     'video_ids': self.env['tt.master.event.video'].sudo().search([('event_id', '=', i.id)]),
+                #     'location_ids': self.env['tt.event.location'].sudo().search([('event_id', '=', i.id)]),
+                #     'option_ids': self.env['tt.event.option'].sudo().search([('event_id', '=', i.id)]),
+                # })
+                #
+                # for j in i['option_ids']:
+                #     j.update({
+                #         'timeslot_ids': self.env['tt.event.timeslot'].sudo().search([('event_option_id', '=', j.id)])
+                #     })
+            return ERR.get_no_error(to_return)
             #built the return response
 
         except RequestException as e:
@@ -127,30 +156,12 @@ class MasterEvent(models.Model):
             return ERR.get_error(1021)
 
     # Temp
-    def search_event_api(self, req, context):
-        limit = context.get('limit') or 100
-        result = []
-        for rec in self.search(['|',('name', 'ilike', req['event_name']),('locations', 'ilike', req['event_name'])], limit=limit):
-            result.append(rec.format_api())
-        return {'response': result,}
-
-    def get_config_api(self):
-        result = {
-            'event': [],
-            'category': self.env['tt.event.category'].get_from_api('', False, [])
-        }
-        # get all data
-        event_obj = self.env['tt.master.event'].sudo().search([])
-        for i in event_obj:
-            temp_dict = {
-                'name': i.name,
-                'locations': i.locations,
-                'category': i.categories,
-                'image_url': i.image_ids and i.image_ids[0].url
-            }
-            result['event'].append(temp_dict)
-
-        return ERR.get_no_error(result)
+    # def search_event_api(self, req, context):
+    #     limit = context.get('limit') or 100
+    #     result = []
+    #     for rec in self.search(['|',('name', 'ilike', req['event_name']),('locations', 'ilike', req['event_name'])], limit=limit):
+    #         result.append(rec.format_api())
+    #     return {'response': result,}
 
     def format_api_image(self, img):
         return {
@@ -226,8 +237,15 @@ class MasterEvent(models.Model):
 
     def get_form_api(self, req, context):
         try:
-            res = self.env['tt.master.event'].sudo().search([('uuid', '=', req['event_code'])])
-            result = [{'question': rec.question, 'type': rec.answer_type, 'required': rec.is_required} for rec in res.extra_question_ids]
+            res = self.env['tt.master.event'].sudo().search(['|',('uuid', '=', req['event_code']),('id', '=', req['event_code'])])
+            result = [{
+                'question': rec.question,
+                'type': rec.answer_type,
+                'required': rec.is_required,
+                'answers': [{
+                    'answer': aws.answer
+                } for aws in rec.answer_ids]
+            } for rec in res.extra_question_ids]
             return ERR.get_no_error(result)
         except RequestException as e:
             _logger.error(traceback.format_exc())
@@ -235,6 +253,26 @@ class MasterEvent(models.Model):
         except Exception as e:
             _logger.error(traceback.format_exc())
             return ERR.get_error(1021)
+
+    def get_config_api(self):
+        result = {
+            'event': [],
+            'category': self.env['tt.event.category'].get_from_api('', False, [])
+        }
+        #get all data
+        event_obj = self.env['tt.master.event'].sudo().search([])
+        for i in event_obj:
+            temp_dict = {
+                'name': i.name,
+                'locations': i.locations,
+                'category': i.categories,
+                'image_url': []
+            }
+            for j in i.image_ids:
+                temp_dict['image_url'].append(j.url)
+            result['event'].append(temp_dict)
+
+        return ERR.get_no_error(result)
 
     def booking_master_event_from_api(self, req, context):
         event_id = self.sudo().search([('uuid', '=', req['event_code'])], limit=1)
@@ -255,10 +293,13 @@ class MasterEvent(models.Model):
                     'booker_id': book_id.booker_id.id,
                     'reservation_id': book_id.id
                 })
-                pnr = 'E' + book_id.name
+                pnr = self.env['ir.sequence'].next_by_code('pnr_sequence')
             else:
                 pnr = 'E' + req['order_number']
             self.env['tt.event.reservation'].sudo().create(temp_event_reservation_dict)
+        for i in req['event_option_codes']:
+            option_obj = self.env['tt.event.option'].sudo().search([('option_code', '=', i['option_code'])])
+            option_obj.action_hold_book(1)
         return ERR.get_no_error({'pnr': pnr, 'hold_date': str(datetime.now() + relativedelta(minutes=45))[:16]+':00' })
 
     # def reprice_currency(self, req,  context):
