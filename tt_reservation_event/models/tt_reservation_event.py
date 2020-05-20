@@ -272,15 +272,21 @@ class ReservationEvent(models.Model):
                     }
                     self.env['tt.reservation.event.extra.question'].create(temp_extra_question_dict)
 
-                #create for a friend
-                # Vin: Part ini di panggil di fungsi ke vendor
-                # temp_event_reservation_dict = {
-                #     'event_id': event_id.id,
-                #     'event_option_id': opt_obj.id,
-                #     'booker_id': booker_obj.id,
-                #     'reservation_id': book_obj.id
-                # }
-                # self.env['tt.event.reservation'].create(temp_event_reservation_dict)
+                #Create Service Charge
+                for scs1 in req.get('service_charges') or []:
+                    for scs in scs1:
+                        self.env['tt.service.charge'].create({
+                            'booking_event_id': book_obj.id,
+                            'charge_code': scs['charge_code'],
+                            'charge_type': scs['charge_type'],
+                            'pax_type': scs['pax_type'],
+                            'pax_count': scs['pax_count'],
+                            'amount': scs['amount'],
+                            'foreign_amount': scs['foreign_amount'],
+                            'total': scs['amount'] * scs['pax_count']   ,
+                            'description': book_obj.pnr and book_obj.pnr or '',
+                            'commission_agent_id': scs['commission_agent_id'],
+                        })
 
             book_obj.action_booked()
             response = {
@@ -342,7 +348,14 @@ class ReservationEvent(models.Model):
                 'long': '',
             } for rec in self.event_id.location_ids] or [],
             'description': self.event_id and self.event_id.description or '',
-            'options': [],
+            'options': [self.option_ids and {
+                'image_url': '',
+                'name': rec.event_option_id.grade,
+                'description': rec.event_option_id.description,
+                'qty': 1,
+                'currency': rec.event_option_id.currency_id.name,
+                'price': rec.event_option_id.price,
+            } for rec in self.option_ids] or [],
             'notes': '',
             'booker': self.booker_id.read(),
             'contact': self.contact_id.read(),
