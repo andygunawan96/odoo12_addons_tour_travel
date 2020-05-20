@@ -396,7 +396,7 @@ class ReservationPpob(models.Model):
                 'provider_booking_id': prov_obj and prov_obj.id or False,
                 'period': rec.get('period') and datetime.strptime(rec['period'], '%Y%m') or False,
                 'total': rec.get('total') and rec['total'] or 0,
-                'amount_of_month': rec.get('amount_of_month') and rec['amount_of_month'] or 0,
+                'amount_of_month': rec.get('amount_of_month') and rec['amount_of_month'] or 1,
                 'fare_amount': rec.get('fare_amount') and rec['fare_amount'] or 0,
                 'admin_fee': rec.get('admin_fee') and rec['admin_fee'] or 0,
                 'period_end_date': rec.get('period_end_date') and datetime.strptime(rec['period_end_date'], '%d%m%Y') or False,
