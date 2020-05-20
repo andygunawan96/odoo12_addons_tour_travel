@@ -347,7 +347,7 @@ class PrintoutPPOBBillsForm(models.AbstractModel):
 
             if provider.ppob_bill_ids:
                 for bill in provider.ppob_bill_ids:
-                    period += 1
+                    period += bill.amount_of_month
 
             if provider.ppob_bill_detail_ids:
                 jumlah_peserta = len(provider.ppob_bill_detail_ids)

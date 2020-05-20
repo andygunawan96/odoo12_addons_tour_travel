@@ -30,6 +30,14 @@
                     <!--                            <field name="name"/>-->
                     <!--                        </h1>-->
                     <!--                    </div>-->
+                    <div class="oe_button_box" name="button_box">
+                        <button name="compare_reconcile_data" type="object" groups="tt_base.group_tt_accounting_operator"
+                                string="Match Data" class="oe_stat_button" icon="fa-rocket"/>
+                        <button name="view_filter_tree" type="object" groups="tt_base.group_tt_accounting_operator"
+                                string="Filter View" class="oe_stat_button" icon="fa-list"/>
+                        <button name="print_report_excel" type="object" groups="tt_base.group_tt_accounting_operator"
+                                string="Print Excel" class="oe_stat_button" icon="fa-file"/>
+                    </div>
                     <group>
                         <field name="provider_type_id"/>
                         <field name="provider_id"/>
@@ -56,13 +64,17 @@
     </record>
 
     <record id="tt_reconcile_transaction_lines_form_view" model="ir.ui.view">
-        <field name="name">tt.reconcile.transaction.lines.form.view</field>
+        <field name="name">tt.reconile.transaction.lines.form.view</field>
         <field name="model">tt.reconcile.transaction.lines</field>
         <field name="arch" type="xml">
             <form create="false">
-                <!--                <header>-->
-                <!--                    <field name="state" widget="statusbar" statusbar_visible="open"/>-->
-                <!--                </header>-->
+                <header>
+                    <button name="ignore_recon_line_from_button" type="object" string="Ignore"
+                            groups="tt_base.group_tt_accounting_operator"/>
+                    <button name="unignore_recon_line_from_button" type="object" string="Unignore"
+                            groups="tt_base.group_tt_accounting_operator"/>
+                    <field name="state" widget="statusbar" statusbar_visible="not_match,match"/>
+                </header>
                 <sheet>
                     <group>
                         <group>
@@ -74,7 +86,6 @@
                         <group>
                             <field name="booking_time"/>
                             <field name="issued_time"/>
-                            <field name="state"/>
                         </group>
                     </group>
                     <group>
@@ -90,8 +101,8 @@
                             <field name="vendor_end_balance"/>
                         </group>
                     </group>
-                    <separator string="Ticket Number"/>
-                    <field name="ticket_number"/>
+                    <separator string="Ticket Number(s)"/>
+                    <field name="ticket_numbers"/>
                     <separator string="Description"/>
                     <field name="description"/>
                 </sheet>
@@ -103,7 +114,7 @@
         <field name="name">tt.reconcile.transaction.lines.tree.page</field>
         <field name="model">tt.reconcile.transaction.lines</field>
         <field name="arch" type="xml">
-            <tree create="false">
+            <tree create="false" decoration-danger="state=='done'" decoration-success="state=='match'">
                 <field name="pnr"/>
                 <field name="type"/>
                 <field name="issued_time"/>

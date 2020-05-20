@@ -13,8 +13,9 @@ class MasterEventReservation(models.Model):
 
     event_id = fields.Many2one('tt.master.event', 'Event ID')
     event_option_id = fields.Many2one('tt.event.option', 'Event option ID')
-    reservation_id = fields.Many2one('tt.reservation.event', 'Reservation ID')
+    pnr = fields.Char('PNR')
     booker_id = fields.Many2one('tt.customer', 'Booker')
+    contact_id = fields.Many2one('tt.customer', 'Contact')
     sales_date = fields.Datetime('Sold Date')
     order_number = fields.Char('Client Order Number', help='Code must be distinct')
 
@@ -41,6 +42,7 @@ class MasterEventExtraQuestion(models.Model):
     answer_type = fields.Selection([('text', 'Text'), ('password', 'Password'), ('number', 'Number'), ('email', 'Email'), ('boolean', 'Boolean'), ('selection', 'Selection'), ('date', 'Date')], default="text", required="1")
     # answer = fields.Char('Answer')
     is_required = fields.Boolean('Is Required', default=False)
+    max_length = fields.Integer('Max Length', default=255)
     answer_ids = fields.One2many('tt.event.extra.question.answer', 'extra_question_id')
     reservation_answer_ids = fields.One2many('tt.reservation.event.extra.question', 'extra_question_id')
 
@@ -71,7 +73,7 @@ class MasterEventCategory(models.Model):
     def get_from_api(self, search_str, parent_objs, inc_list):
         parsed_obj = []
         if not parent_objs:
-            parent_objs = search_str and self.search([('name','=ilike',search_str)]) or self.search([])
+            parent_objs = search_str and self.search([('name', '=ilike', search_str)]) or self.search([])
         for rec in parent_objs:
             if rec.id not in inc_list:
                 new_dict = rec.parse_format()
@@ -82,12 +84,9 @@ class MasterEventCategory(models.Model):
         return parsed_obj
 
     def parse_format_api(self, data):
-        return {'response': self.get_from_api(data['name'], False, []),}
-
-    # Todo Delete Later setelah part edo jalan
-    def test_parse_format_api(self):
-        a = self.parse_format_api({'name': self.name})
-        return a
+        return {
+            'response': self.get_from_api(data['name'], False, []),
+        }
 
 class EventOptions(models.Model):
     _name = 'tt.event.option'
@@ -103,12 +102,16 @@ class EventOptions(models.Model):
     on_hold = fields.Integer('On Hold')
     sales = fields.Integer('Sales', readonly=True)
 
+    date_start = fields.Datetime('Date Selling Start')
+    date_end = fields.Datetime('Date Selling End')
+    description = fields.Char('Description')
+
     cancellation_policies = fields.Text("Cancellation Policies")
     is_non_refundable = fields.Boolean(' is Non Refundable')
     advance_booking_days = fields.Integer("Advance Booking Days", default=0)
 
     # minimumSellingPrice = fields.Integer("Minimum Selling Price", default=0)
-    currency_id = fields.Many2one('res.currency', 'Currency')
+    currency_id = fields.Many2one('res.currency', 'Currency', default=lambda self: self.env.user.company_id.currency_id)
     price = fields.Monetary('Price')
     # sku_ids = fields.One2many("tt.master.event.sku", 'event_option_id')
     active = fields.Boolean('Active', default=True)

@@ -264,29 +264,38 @@ class ReservationEvent(models.Model):
                 }
                 option_obj = self.env['tt.reservation.event.option'].create(temp_option_dict)
 
-                for j in i['extra_question']:
-                    temp_extra_question_dict = {
-                        'reservation_event_option_id': book_obj.id,
-                        'extra_question_id': j['question_id'],
-                        'answer': j['answer']
-                    }
-                    self.env['tt.reservation.event.extra.question'].create(temp_extra_question_dict)
+                # a = 0
+                # for j in opt_obj:
+                #     new_j = req['event_option_codes'][a]['extra_question']
+                #     temp_extra_question_dict = {
+                #         'reservation_event_option_id': book_obj.id,
+                #         'extra_question_id': j['question_id'],
+                #         'answer': j['answer']
+                #     }
+                #     self.env['tt.reservation.event.extra.question'].create(temp_extra_question_dict)
+                #     a += 1
 
-                #create for a friend
-                # Vin: Part ini di panggil di fungsi ke vendor
-                # temp_event_reservation_dict = {
-                #     'event_id': event_id.id,
-                #     'event_option_id': opt_obj.id,
-                #     'booker_id': booker_obj.id,
-                #     'reservation_id': book_obj.id
-                # }
-                # self.env['tt.event.reservation'].create(temp_event_reservation_dict)
+            #Create Service Charge
+            for scs1 in req.get('service_charges') or []:
+                for scs in scs1:
+                    self.env['tt.service.charge'].create({
+                        'booking_event_id': book_obj.id,
+                        'charge_code': scs['charge_code'],
+                        'charge_type': scs['charge_type'],
+                        'pax_type': scs['pax_type'],
+                        'pax_count': scs['pax_count'],
+                        'amount': scs['amount'],
+                        'foreign_amount': scs['foreign_amount'],
+                        'total': scs['amount'] * scs['pax_count'],
+                        'description': book_obj.pnr and book_obj.pnr or '',
+                        'commission_agent_id': scs['commission_agent_id'],
+                    })
 
             book_obj.action_booked()
             response = {
                 'book_id': book_obj.id,
                 'order_number': book_obj.name,
-                'provider_id': provider_id.id
+                'provider_ids': provider_id.id,
             }
             return ERR.get_no_error(response)
         except RequestException as e:
@@ -328,7 +337,7 @@ class ReservationEvent(models.Model):
         else:
             return ERR.get_error(1004)
 
-    def response_parser(self):
+    def to_dict(self):
         return {
             'order_number': self.name,
             'providers': [{'provider': rec.provider_id.code, 'pnr': self.pnr} for rec in self.provider_booking_ids],
@@ -342,7 +351,14 @@ class ReservationEvent(models.Model):
                 'long': '',
             } for rec in self.event_id.location_ids] or [],
             'description': self.event_id and self.event_id.description or '',
-            'options': [],
+            'options': [self.option_ids and {
+                'image_url': '',
+                'name': rec.event_option_id.grade,
+                'description': rec.event_option_id.description,
+                'qty': 1,
+                'currency': rec.event_option_id.currency_id.name,
+                'price': rec.event_option_id.price,
+            } for rec in self.option_ids] or [],
             'notes': '',
             'booker': self.booker_id.read(),
             'contact': self.contact_id.read(),
@@ -353,7 +369,7 @@ class ReservationEvent(models.Model):
         try:
             resv_obj = self.get_book_obj(data.get('order_id'), data.get('order_number'))
             if resv_obj:
-                res = resv_obj.response_parser()
+                res = resv_obj.to_dict()
                 return ERR.get_no_error(res)
             else:
                 raise RequestException(1003)
@@ -361,6 +377,7 @@ class ReservationEvent(models.Model):
         except RequestException as e:
             _logger.error(traceback.format_exc())
             return e.error_dict()
+
 
 class TtReservationEventOption(models.Model):
     _name = 'tt.reservation.event.option'

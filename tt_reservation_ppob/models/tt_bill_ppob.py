@@ -18,7 +18,7 @@ class TtBillPPOB(models.Model):
     sequence = fields.Integer('Sequence')
 
     period = fields.Date('Period')
-    amount_of_month = fields.Integer('Amount of Months', default=0)
+    amount_of_month = fields.Integer('Amount of Months', default=1)
     period_end_date = fields.Date('Period End Date')
     meter_read_date = fields.Date('Meter Read Date')
     meter_history_ids = fields.One2many('tt.ppob.meter.history', 'bill_ppob_id', 'Meter History')
@@ -48,7 +48,7 @@ class TtBillPPOB(models.Model):
             'provider': self.provider_id and self.provider_id.code or '',
             'sequence': self.sequence and self.sequence or 0,
             'period': self.period and self.period.strftime('%Y%m') or '',
-            'amount_of_month': self.amount_of_month and self.amount_of_month or 0,
+            'amount_of_month': self.amount_of_month and self.amount_of_month or 1,
             'period_end_date': self.period_end_date and self.period_end_date.strftime('%Y-%m-%d') or '',
             'meter_read_date': self.meter_read_date and self.meter_read_date.strftime('%Y-%m-%d') or '',
             'meter_history': history_list,
