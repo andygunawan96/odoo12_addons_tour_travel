@@ -56,6 +56,7 @@ class MasterEvent(models.Model):
 
     event_vendor_id = fields.Many2one('tt.vendor', 'Vendor ID')
     booking_event_ids = fields.One2many('tt.event.reservation', 'event_id')
+    email_content = fields.Char('Temp untuk email')
 
     @api.model
     def create(self, vals_list):
@@ -131,6 +132,8 @@ class MasterEvent(models.Model):
                         'vendor_logo': i.event_vendor_id.logo or False
                     },
                     'images': [i.format_api_image(img) for img in self.image_ids],
+                    'age_restriction': i.age_restriction,
+                    'eligible_age': i.eligible_age
                 }
                 # temp_dict = i.format_api()
                 to_return.append(temp_dict)
@@ -301,6 +304,28 @@ class MasterEvent(models.Model):
             option_obj = self.env['tt.event.option'].sudo().search([('option_code', '=', i['option_code'])])
             option_obj.action_hold_book(1)
         return ERR.get_no_error({'pnr': pnr, 'hold_date': str(datetime.now() + relativedelta(minutes=45))[:16]+':00' })
+
+    def action_issued(self, pnr):
+        #search all of the reservation
+        booking_event_obj = self.sudo().search([('pnr', '=', pnr)])
+
+        order_unmbers = []
+        for i in booking_event_obj:
+            i.making_sales(1)
+            order_unmbers.append(i.order_number)
+
+        email_content  = "<ul>"
+        for i in order_unmbers:
+            email_content += "<li>{}</li>".format(i)
+        email_content += "</ul>"
+
+        #notificate the vendor
+        template = self.env.ref('tt_reservation_event.template_mail_vendor_notification')
+        mail = self.env['mail.template'].browse(template.id)
+        mail.send_mail(self.id)
+
+        email_content = False
+        return ERR.get_no_error()
 
     # def reprice_currency(self, req,  context):
     #     _logger.info('REPRICE CURRENCY EVENT')
