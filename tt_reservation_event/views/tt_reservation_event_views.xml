@@ -5,6 +5,7 @@
         <field name="arch" type="xml">
             <search string="Search Event Booking">
                 <field name="name"/>
+                <field name="event_name"/>
                 <field name="pnr"/>
                 <field name="provider_name" groups="tt_base.group_tt_tour_travel_operator"/>
                 <field name="agent_id" groups="tt_base.group_tt_tour_travel_operator"/>
