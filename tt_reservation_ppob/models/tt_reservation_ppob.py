@@ -195,7 +195,7 @@ class ReservationPpob(models.Model):
 
             provider_list = []
             for rec in resv_obj.provider_booking_ids:
-                if resv_obj.state == 'fail_issued':
+                if resv_obj.state in ['fail_issued', 'fail_refunded']:
                     rec.write({
                         'state': 'booked',
                         'booked_uid': context['co_uid'],
@@ -204,7 +204,7 @@ class ReservationPpob(models.Model):
                     })
                 provider_list.append(rec.to_dict())
 
-            if resv_obj.state == 'fail_issued':
+            if resv_obj.state in ['fail_issued', 'fail_refunded']:
                 resv_obj.write({
                     'state': 'booked',
                     'booked_uid': context['co_uid'],

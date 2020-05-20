@@ -41,6 +41,7 @@ class MasterEventExtraQuestion(models.Model):
     answer_type = fields.Selection([('text', 'Text'), ('password', 'Password'), ('number', 'Number'), ('email', 'Email'), ('boolean', 'Boolean'), ('selection', 'Selection'), ('date', 'Date')], default="text", required="1")
     # answer = fields.Char('Answer')
     is_required = fields.Boolean('Is Required', default=False)
+    max_length = fields.Integer('Max Length', default=255)
     answer_ids = fields.One2many('tt.event.extra.question.answer', 'extra_question_id')
     reservation_answer_ids = fields.One2many('tt.reservation.event.extra.question', 'extra_question_id')
 
@@ -71,7 +72,7 @@ class MasterEventCategory(models.Model):
     def get_from_api(self, search_str, parent_objs, inc_list):
         parsed_obj = []
         if not parent_objs:
-            parent_objs = search_str and self.search([('name','=ilike',search_str)]) or self.search([])
+            parent_objs = search_str and self.search([('name', '=ilike', search_str)]) or self.search([])
         for rec in parent_objs:
             if rec.id not in inc_list:
                 new_dict = rec.parse_format()
@@ -82,12 +83,9 @@ class MasterEventCategory(models.Model):
         return parsed_obj
 
     def parse_format_api(self, data):
-        return {'response': self.get_from_api(data['name'], False, []),}
-
-    # Todo Delete Later setelah part edo jalan
-    def test_parse_format_api(self):
-        a = self.parse_format_api({'name': self.name})
-        return a
+        return {
+            'response': self.get_from_api(data['name'], False, []),
+        }
 
 class EventOptions(models.Model):
     _name = 'tt.event.option'
