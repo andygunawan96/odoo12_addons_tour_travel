@@ -74,6 +74,7 @@
                             <field name="event_type"/>
 <!--                            <field name="quota"/>-->
                             <field name="kid_friendly"/>
+                            <field name="eligible_age" attrs="{'invisible': [('kid_friendly', '=', False)]}"/>
                         </group>
                         <group>
                             <field name="provider_id" groups="tt_base.group_tt_tour_travel_operator"/>

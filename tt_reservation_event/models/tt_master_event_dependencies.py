@@ -13,8 +13,9 @@ class MasterEventReservation(models.Model):
 
     event_id = fields.Many2one('tt.master.event', 'Event ID')
     event_option_id = fields.Many2one('tt.event.option', 'Event option ID')
-    reservation_id = fields.Many2one('tt.reservation.event', 'Reservation ID')
+    pnr = fields.Char('PNR')
     booker_id = fields.Many2one('tt.customer', 'Booker')
+    contact_id = fields.Many2one('tt.customer', 'Contact')
     sales_date = fields.Datetime('Sold Date')
     order_number = fields.Char('Client Order Number', help='Code must be distinct')
 
