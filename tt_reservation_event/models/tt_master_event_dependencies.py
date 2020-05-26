@@ -89,6 +89,7 @@ class MasterEventCategory(models.Model):
             'response': self.get_from_api(data['name'], False, []),
         }
 
+
 class EventOptions(models.Model):
     _name = 'tt.event.option'
     _description = 'Rodex Event Model'
@@ -101,6 +102,7 @@ class EventOptions(models.Model):
 
     quota = fields.Integer('Quota')
     on_hold = fields.Integer('On Hold')
+    max_ticket = fields.Integer('Max Ticket', help='Max Ticket purchase per reservation; if -1 then it will give current quota', default=-1)
     sales = fields.Integer('Sales', readonly=True)
 
     date_start = fields.Datetime('Date Selling Start')

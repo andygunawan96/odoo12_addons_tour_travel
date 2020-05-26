@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <odoo>
     <data>
-
         <record model="mail.template" id="template_mail_vendor_notification">
             <field name="name">Template Email Vendor Notification</field>
             <field name="email_form">${user.email}</field>
