@@ -19,4 +19,5 @@ from . import tt_bank_api
 from . import tt_printout_api
 from . import tt_monitor_data
 from . import tt_ledger_api
+from . import tt_event_api
 from . import email_api

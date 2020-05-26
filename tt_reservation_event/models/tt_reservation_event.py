@@ -245,17 +245,6 @@ class ReservationEvent(models.Model):
             }
             book_obj = self.create(temp_main_dictionary)
 
-            # Create Provider Ids
-            self.env['tt.provider.event'].create({
-                'provider_id': provider_id.id,
-                'booking_id': book_obj.id,
-                'balance_due': book_obj.id, #di PNR
-                'event_id': event_id and event_id.id or False,
-                'event_product_id': event_id.id,
-                'event_product': event_id and event_id.name or req.get('event_name'),
-                'event_product_uuid': event_id and event_id.uuid or req.get('event_id'),
-            })
-
             #fill child table of resrevation event
             for opt_obj in event_options:
                 temp_option_dict = {
@@ -275,9 +264,24 @@ class ReservationEvent(models.Model):
                 #     self.env['tt.reservation.event.extra.question'].create(temp_extra_question_dict)
                 #     a += 1
 
+            # Create Provider Ids
+            self.env['tt.provider.event'].create({
+                'provider_id': provider_id.id,
+                'booking_id': book_obj.id,
+                'balance_due': 0,  # di PNR
+                'event_id': event_id and event_id.id or False,
+                'event_product_id': event_id.id,
+                'event_product': event_id and event_id.name or req.get('event_name'),
+                'event_product_uuid': event_id and event_id.uuid or req.get('event_id'),
+            })
+
+            balance_due = 0
             #Create Service Charge
             for scs1 in req.get('service_charges') or []:
                 for scs in scs1:
+                    if scs['charge_type'] not in ['rac', 'rox']:
+                        balance_due += scs['amount'] * scs['pax_count']
+                    # Sale Service Charge
                     self.env['tt.service.charge'].create({
                         'booking_event_id': book_obj.id,
                         'charge_code': scs['charge_code'],
@@ -291,6 +295,21 @@ class ReservationEvent(models.Model):
                         'commission_agent_id': scs['commission_agent_id'],
                     })
 
+                    # Cost Service Charge
+                    self.env['tt.service.charge'].create({
+                        'provider_event_booking_id': book_obj.provider_booking_ids[0].id,
+                        'charge_code': scs['charge_code'],
+                        'charge_type': scs['charge_type'],
+                        'pax_type': scs['pax_type'],
+                        'pax_count': scs['pax_count'],
+                        'amount': scs['amount'],
+                        'foreign_amount': scs['foreign_amount'],
+                        'total': scs['amount'] * scs['pax_count'],
+                        'description': book_obj.pnr and book_obj.pnr or '',
+                        'commission_agent_id': scs['commission_agent_id'],
+                    })
+
+            book_obj.provider_booking_ids[0].balance_due = balance_due
             book_obj.action_booked()
             response = {
                 'book_id': book_obj.id,
@@ -318,14 +337,15 @@ class ReservationEvent(models.Model):
         if booking_obj:
             booking_obj.update({'pnr': req['pnr'], 'hold_date': req['hold_date']})
             for rec in req['providers']:
-                for prov in booking_obj.provider_booking_ids.filtered(lambda x: x.provider_id.name == rec):
+                for prov in booking_obj.provider_booking_ids.filtered(lambda x: x.provider_id.code == rec):
                     prov.update({
-                        'pnr': '',
-                        'pnr2': '',
-                        'status': 'booked',
-                        'sid_booked': '',
-                        'booked_uid': '',
-                        'booked_date': '',
+                        'pnr': req['pnr'],
+                        'pnr2': req['pnr'],
+                        'state': 'booked',
+                        'hold_date': req['hold_date'],
+                        'sid_booked': context['sid'],
+                        'booked_uid': context['co_uid'],
+                        'booked_date': datetime.now(),
                     })
             return ERR.get_no_error({
                 'book_id': booking_obj.id,
@@ -378,6 +398,71 @@ class ReservationEvent(models.Model):
             _logger.error(traceback.format_exc())
             return e.error_dict()
 
+    def payment_event_api(self, data, context):
+        return self.payment_reservation_api('event', data, context)
+
+    def action_issued_event(self, context):
+        self.state = 'issued'
+        self.issued_uid = context['co_uid']
+        self.issued_date = datetime.now()
+
+    def action_create_invoice(self, acq_id, uid, customer_parent_id):
+        return True
+
+    def issued_booking_api(self, data, context):
+        try:
+            if data.get('order_id'):
+                book_obj = self.env['tt.reservation.event'].sudo().browse(int(data['order_id']))
+            else:
+                book_objs = self.env['tt.reservation.event'].sudo().search([('name', '=', data['order_number'])],
+                                                                          limit=1)
+                book_obj = book_objs[0]
+
+            acquirer_id, customer_parent_id = book_obj.get_acquirer_n_c_parent_id(data)
+
+            book_obj.sudo().write({
+                'customer_parent_id': customer_parent_id,
+            })
+            book_obj.action_issued_event(context)
+            self.env.cr.commit()
+
+            if book_obj.state == 'issued':
+                book_obj.action_create_invoice(acquirer_id and acquirer_id.id or False, context['co_uid'], customer_parent_id)
+
+            response = {
+                'order_id': book_obj.id,
+                'order_number': book_obj.name,
+                'state': book_obj.state,
+                'pnr': book_obj.pnr,
+                'provider': [{
+                    'provider': opt.event_option_id.event_id.provider_id.code or 'event_internal',
+                    'booking_code': opt.event_option_id.event_id.provider_id.code,
+                    'option': opt.event_option_id.option_code,
+                } for opt in book_obj.option_ids],
+            }
+            return ERR.get_no_error(response)
+        except:
+            raise RequestException(1003)
+
+    def set_provider_issued_event_api(self, req, context):
+        booking_obj = self.search([('name', '=', req['order_number'])], limit=1)
+        if booking_obj:
+            for rec in req['providers']:
+                for prov in booking_obj.provider_booking_ids.filtered(lambda x: x.provider_id.code == rec):
+                    prov.update({
+                        'pnr2': req['pnr'],
+                        'state': 'issued',
+                        'sid_issued': context['sid'],
+                        'issued_uid': context['co_uid'],
+                        'issued_date': datetime.now(),
+                    })
+            return ERR.get_no_error({
+                'book_id': booking_obj.id,
+                'order_number': booking_obj.name,
+                'status': booking_obj.state,
+                'hold_date': booking_obj.hold_date,
+                'PNR': booking_obj.pnr,
+            })
 
 class TtReservationEventOption(models.Model):
     _name = 'tt.reservation.event.option'

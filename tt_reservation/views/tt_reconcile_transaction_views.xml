@@ -64,7 +64,7 @@
     </record>
 
     <record id="tt_reconcile_transaction_lines_form_view" model="ir.ui.view">
-        <field name="name">tt.reconile.transaction.lines.form.view</field>
+        <field name="name">tt.reconcile.transaction.lines.form.view</field>
         <field name="model">tt.reconcile.transaction.lines</field>
         <field name="arch" type="xml">
             <form create="false">

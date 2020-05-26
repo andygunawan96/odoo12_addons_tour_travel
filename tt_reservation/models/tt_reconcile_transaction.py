@@ -15,7 +15,6 @@ class TtReconcileTransaction(models.Model):
     transaction_date = fields.Date('Transaction Date', readonly=True)
     state = fields.Selection([('open','Open')],'State', default='open', readonly=True)
 
-
     @api.depends('provider_id','transaction_date')
     def _compute_display_reconcile_name(self):
         for rec in self:
