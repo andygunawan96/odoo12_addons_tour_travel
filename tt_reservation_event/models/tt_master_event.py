@@ -191,9 +191,9 @@ class MasterEvent(models.Model):
             'currency': timeslot.currency_id.name,
             'is_non_refundable': timeslot.is_non_refundable,
             'advance_booking_days': timeslot.advance_booking_days,
-            'qty_available': '1',
+            'qty_available': timeslot.quota,
             'min_qty': '1',
-            'max_qty': '5',
+            'max_qty': timeslot.max_ticket == -1 and timeslot.quota or timeslot.max_ticket,
             'description': timeslot.cancellation_policies,
             # 'timeslot': [self.format_api_timeslot(slot.id) for slot in timeslot.timeslot_ids]
             'timeslot': []
@@ -315,7 +315,7 @@ class MasterEvent(models.Model):
 
             email_content = "<ul>"
             for i in booking_event_obj:
-                i.making_sales(1)
+                i.event_option_id.making_sales(1)
                 email_content += "<li>{}</li>".format(i.order_number)
             email_content += "</ul>"
 
