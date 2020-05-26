@@ -1,7 +1,7 @@
 from odoo import api, fields, models
 from odoo.exceptions import UserError
 from ...tools import variables
-from datetime import datetime
+from datetime import datetime, timedelta
 import json, logging
 
 _logger = logging.getLogger(__name__)
