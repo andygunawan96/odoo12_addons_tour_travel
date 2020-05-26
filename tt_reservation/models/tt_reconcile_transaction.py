@@ -4,6 +4,7 @@ from odoo.exceptions import UserError
 from io import BytesIO
 import xlsxwriter
 import base64
+import pytz
 from ...tools import tools_excel
 
 class TtReconcileTransaction(models.Model):
@@ -184,9 +185,18 @@ class PrintoutReconcile(models.AbstractModel):
         sheet.set_landscape()
         sheet.hide_gridlines(2)  # Hide screen and printed gridlines.
 
-        # ======= TITLE & SUBTITLE ============
+        user_tz = pytz.timezone(self.env.context.get('tz') or self.env.user.tz or 'UTC')
+        date_now = fields.datetime.now(tz=user_tz)
+
+        # ======= TITLE, SUBTITLE & FILENAME ============
+        filename = 'Reconcile Report ' + values['data']['form']['display_reconcile_name']
+        filename_str_list = filename.split(' ')
+        filename_str = '_'.join(filename_str_list)
+
         sheet.merge_range('A1:L2', 'Reconcile Report', style.title)  # set merge cells for agent name
         sheet.merge_range('A3:L4', values['data']['form']['display_reconcile_name'], style.title2)  # set merge cells for title
+        sheet.write('O5', 'Printing Date :' + date_now.strftime('%d-%b-%Y %H:%M'),
+                    style.print_date)  # print date print
         sheet.freeze_panes(9, 0)  # freeze panes mulai dari row 1-10
 
         # ======= TABLE HEAD ==========
@@ -322,7 +332,7 @@ class PrintoutReconcile(models.AbstractModel):
 
         return {
             'type': 'ir.actions.act_url',
-            'url': 'web/content/?model=tt.reconcile.transaction&field=excel_file&download=true&id=%s&filename=reconcile_report.xlsx' % (data['id']),
+            'url': 'web/content/?model=tt.reconcile.transaction&field=excel_file&download=true&id=%s&filename=%s.xlsx' % (data['id'], filename_str),
             'target': 'new',
             'value': stream.getvalue()
         }
