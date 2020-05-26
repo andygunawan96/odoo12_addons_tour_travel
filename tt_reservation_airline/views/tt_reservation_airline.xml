@@ -107,6 +107,8 @@
                         <field name="destination_id" string="Destination" options="{'no_create': True}"/>
                     </group>
                     <group>
+                        <field name="is_force_issued"/>
+                        <field name="is_halt_process"/>
                         <field name="sector_type"/>
                         <field name="direction"/>
                         <field name="departure_date" string="Departure Date"/>

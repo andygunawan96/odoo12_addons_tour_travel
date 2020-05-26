@@ -11,9 +11,11 @@ class TtTicketAirline(models.Model):
     ticket_number = fields.Char('Ticket Number')
 
     def to_dict(self):
+        fees = [fee.to_dict() for fee in self.passenger_id.fee_ids]
         res = {
             'passenger': self.passenger_id.name,
             'pax_type': self.pax_type,
-            'ticket_number': self.ticket_number
+            'ticket_number': self.ticket_number,
+            'fees': fees,
         }
         return res

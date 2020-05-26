@@ -44,6 +44,11 @@ class ReservationAirline(models.Model):
 
     is_get_booking_from_vendor = fields.Boolean('Get Booking From Vendor')
 
+    # April 21, 2020 - SAM
+    is_force_issued = fields.Boolean('Force Issued', default=False)
+    is_halt_process = fields.Boolean('Halt Process', default=False)
+    # END
+
     def get_form_id(self):
         return self.env.ref("tt_reservation_airline.tt_reservation_airline_form_views")
 
@@ -78,20 +83,27 @@ class ReservationAirline(models.Model):
         for rec in self:
             rec.state = 'issued'
 
-    def action_booked_api_airline(self,context,pnr_list,hold_date):
+    def action_booked_api_airline(self,context,pnr_list=[],hold_date=False):
         if type(hold_date) != datetime:
             hold_date = False
 
         write_values = {
             'state': 'booked',
-            'pnr': ', '.join(pnr_list),
-            'hold_date': hold_date,
+            # 'pnr': ', '.join(pnr_list),
+            # 'hold_date': hold_date,
             'booked_uid': context['co_uid'],
             'booked_date': datetime.now()
         }
+        # May 11, 20202 - SAM
+        # Bisa di comment, karena fungsi mengisi hold dan pnr telah dipisahkan
+        if hold_date:
+            write_values['hold_date'] = hold_date
+        if pnr_list:
+            write_values['pnr'] = ', '.join(pnr_list)
+        # END
 
-        if write_values['pnr'] == '':
-            write_values.pop('pnr')
+        # if write_values['pnr'] == '':
+        #     write_values.pop('pnr')
 
         self.write(write_values)
 
@@ -151,16 +163,27 @@ class ReservationAirline(models.Model):
         except Exception as e:
             _logger.info('Error Create Email Queue')
 
-    def action_partial_booked_api_airline(self,context,pnr_list,hold_date):
+    def action_partial_booked_api_airline(self,context,pnr_list=[],hold_date=False):
         if type(hold_date) != datetime:
             hold_date = False
-        self.write({
+
+        values = {
             'state': 'partial_booked',
             'booked_uid': context['co_uid'],
             'booked_date': datetime.now(),
-            'hold_date': hold_date,
-            'pnr': ','.join(pnr_list)
-        })
+            # 'hold_date': hold_date,
+            # 'pnr': ','.join(pnr_list)
+        }
+
+        # May 11, 2020 - SAM
+        # Bisa di comment karena fungsi mengisi pnr list dan hold date dipindahkan ke fungsi lain
+        if pnr_list:
+            values['pnr'] = ', '.join(pnr_list)
+        if hold_date:
+            values['hold_date'] = hold_date
+        # END
+
+        self.write(values)
 
     def action_partial_issued_api_airline(self,co_uid,customer_parent_id):
         self.write({
@@ -290,7 +313,12 @@ class ReservationAirline(models.Model):
         booker = req['booker']
         contacts = req['contacts']
         passengers = req['passengers']
-        schedules = req['schedules']
+        # April 20, 2020 - SAM
+        # schedules = req['schedules']
+        booking_states = req['booking_state_provider']
+        is_force_issued = req['force_issued']
+        is_halt_process = req.get('halt_process', False)
+        # END
 
         try:
             values = self._prepare_booking_api(search_RQ,context)
@@ -303,8 +331,6 @@ class ReservationAirline(models.Model):
 
             list_passenger_value = self.create_passenger_value_api_test(passengers)
             list_customer_id = self.create_customer_api(passengers,context,booker_obj.seq_id,contact_obj.seq_id)
-
-
 
             #fixme diasumsikan idxny sama karena sama sama looping by rec['psg']
             for idx,rec in enumerate(list_passenger_value):
@@ -325,10 +351,43 @@ class ReservationAirline(models.Model):
                 'contact_email': contact_obj.email,
                 'contact_phone': contact_obj.phone_ids and "%s - %s" % (contact_obj.phone_ids[0].calling_code,contact_obj.phone_ids[0].calling_number) or '-',
                 'passenger_ids': list_passenger_value,
+                # April 21, 2020 - SAM
+                'is_force_issued': is_force_issued,
+                'is_halt_process': is_halt_process,
+                # END
             })
 
             book_obj = self.create(values)
-            provider_ids,name_ids = book_obj._create_provider_api(schedules,context)
+            provider_ids, name_ids = book_obj._create_provider_api(booking_states, context)
+
+            # May 6, 2020 - SAM
+            for idx, psg in enumerate(book_obj.passenger_ids):
+                passengers[idx]['passenger_id'] = psg.id
+            # if is_force_issued:
+            #     if not is_halt_process:
+            #         for vendor_obj in provider_ids:
+            #             vendor_obj.action_issued_api_airline(context)
+            #         req['book_id'] = book_obj.id
+            #         book_obj.check_provider_state(context, req=req)
+            #         [vendor_obj.write({'state': 'draft'}) for vendor_obj in provider_ids]
+            #         book_obj.write({'state': 'draft'})
+            #     else:
+            #         for vendor_obj in provider_ids:
+            #             vendor_obj.write({'state': 'halt_issued'})
+            #         book_obj.write({
+            #             'state': 'halt_issued',
+            #             'hold_date': datetime.now() + timedelta(minutes=30),
+            #         })
+            if is_halt_process:
+                if is_force_issued:
+                    for vendor_obj in provider_ids:
+                        vendor_obj.action_halt_issued_api_airline(context)
+                else:
+                    for vendor_obj in provider_ids:
+                        vendor_obj.action_halt_booked_api_airline(context)
+                book_obj.calculate_service_charge()
+                book_obj.check_provider_state(context)
+            # END
 
             response_provider_ids = []
             for provider in provider_ids:
@@ -441,9 +500,9 @@ class ReservationAirline(models.Model):
             except:
                 raise RequestException(1001)
 
-            book_status = []
-            pnr_list = []
-            hold_date = datetime.max.replace(year=2020)
+            # book_status = []
+            # pnr_list = []
+            # hold_date = datetime.max.replace(year=2020)
             any_provider_changed = False
             any_pnr_changed = False
 
@@ -453,32 +512,42 @@ class ReservationAirline(models.Model):
                     provider_obj.create_date
                 except:
                     raise RequestException(1002)
-                book_status.append(provider['status'])
+                # book_status.append(provider['status'])
 
                 if provider['status'] == 'BOOKED' and not provider.get('error_code'):
-                    default_hold_date = datetime.now().replace(microsecond=0) + timedelta(minutes=30)
-                    curr_hold_date = datetime.strptime(util.get_without_empty(provider,'hold_date',str(default_hold_date)), '%Y-%m-%d %H:%M:%S')
-                    if curr_hold_date == default_hold_date:
-                        provider['hold_date'] = str(curr_hold_date)
-                    if curr_hold_date < hold_date:
-                        hold_date = curr_hold_date
-                    if provider_obj.state == 'booked' and hold_date == provider_obj.hold_date:
-                        continue
+                    # default_hold_date = datetime.now().replace(microsecond=0) + timedelta(minutes=30)
+                    # curr_hold_date = datetime.strptime(util.get_without_empty(provider,'hold_date',str(default_hold_date)), '%Y-%m-%d %H:%M:%S')
+                    # if curr_hold_date == default_hold_date:
+                    #     provider['hold_date'] = str(curr_hold_date)
+                    # if curr_hold_date < hold_date:
+                    #     hold_date = curr_hold_date
+                    # if provider_obj.state == 'booked' and hold_date == provider_obj.hold_date:
+                    #     continue
                     self.update_pnr_booked(provider_obj,provider,context)
                     any_provider_changed = True
                 elif provider['status'] == 'ISSUED' and not provider.get('error_code'):
                     if provider_obj.state == 'issued':
                         continue
-                    if req.get('force_issued'):
-                        self.update_pnr_booked(provider_obj,provider,context)
-                    if provider.get('pnr', '') != provider_obj.pnr:
-                        provider_obj.write({'pnr': provider['pnr']})
-                        for sc in provider_obj.cost_service_charge_ids:
-                            sc.description = provider['pnr']
-                        any_pnr_changed = True
+                    # May 20, 2020 - SAM
+                    # Testing di comment
+                    # # if req.get('force_issued'):
+                    # if provider_obj.state != 'booked':
+                    #     self.update_pnr_booked(provider_obj,provider,context)
+                    # END
+
+                    # May 13, 2020 - SAM
+                    # if provider.get('pnr', '') != provider_obj.pnr:
+                    #     provider_obj.write({'pnr': provider['pnr']})
+                    #     for sc in provider_obj.cost_service_charge_ids:
+                    #         sc.description = provider['pnr']
+                    #     any_pnr_changed = True
+                    # END
 
                     #action issued dan create ticket number
-                    provider_obj.action_issued_api_airline(context)
+                    # May 20, 2020 - SAM
+                    # provider_obj.action_issued_api_airline(context)
+                    provider_obj.action_issued_api_airline(provider, context)
+                    # END
                     provider_obj.update_ticket_api(provider['passengers'])
                     any_provider_changed = True
 
@@ -504,16 +573,31 @@ class ReservationAirline(models.Model):
                 elif provider['status'] == 'CANCEL_PENDING':
                     provider_obj.action_cancel_pending_api_airline(context)
                     any_provider_changed = True
+                elif provider['status'] == 'VOID':
+                    provider_obj.action_void_api_airline(context)
+                    any_provider_changed = True
+                elif provider['status'] == 'VOID_PENDING':
+                    provider_obj.action_void_pending_api_airline(context)
+                    any_provider_changed = True
+                elif provider['status'] == 'REFUND':
+                    provider_obj.action_refund_api_airline(context)
+                    any_provider_changed = True
+                elif provider['status'] == 'FAIL_VOID':
+                    provider_obj.action_failed_void_api_airline(provider_obj['error_code'], provider_obj['error_msg'])
+                    any_provider_changed = True
+                elif provider['status'] == 'FAIL_REFUNDED':
+                    provider_obj.action_failed_refund_api_airline(provider_obj['error_code'], provider_obj['error_msg'])
+                    any_provider_changed = True
 
-            for rec in book_obj.provider_booking_ids:
-                if rec.pnr:
-                    pnr_list.append(rec.pnr)
+            # for rec in book_obj.provider_booking_ids:
+            #     if rec.pnr:
+            #         pnr_list.append(rec.pnr)
 
             if any_provider_changed:
-                book_obj.check_provider_state(context,pnr_list,hold_date,req)
+                book_obj.check_provider_state(context, req=req)
 
-            if any_pnr_changed:
-                book_obj.write({'pnr': ','.join(pnr_list)})
+            # if any_pnr_changed:
+            #     book_obj.write({'pnr': ','.join(pnr_list)})
 
             return ERR.get_no_error({
                 'order_number': book_obj.name,
@@ -585,16 +669,40 @@ class ReservationAirline(models.Model):
                     provider_obj.create_date
                 except:
                     raise RequestException(1002)
-                provider_obj.write({
-                    'balance_due': provider['balance_due']
-                })
+
+                # May 12, 2020 - SAM
+                if not provider.get('total_price') or provider_obj.total_price == provider['total_price']:
+                    continue
+                # provider_obj.write({
+                    # 'pnr': provider['pnr'],
+                    # 'balance_due': provider['balance_due'],
+                    # 'total_price': provider['total_price'],
+                # })
+                # END
                 ledger_created = provider_obj.delete_service_charge()
+                # May 13, 2020 - SAM
                 if ledger_created:
-                    raise RequestException(1027)
+                    if not req.get('force_issued'):
+                        raise RequestException(1027)
+                    provider_obj.action_reverse_ledger()
+                    provider_obj.delete_service_charge()
+
+                provider_obj.delete_passenger_fees()
+                provider_obj.delete_passenger_tickets()
+                # END
+
+                # May 14, 2020 - SAM
+                # Rencana awal mau melakukan compare passenger sequence
+                # Dilapangan sequence passenger pada tiap provider bisa berbeda beda, tidak bisa digunakan sebagai acuan
+                provider_obj.create_ticket_api(provider['passengers'], provider['pnr'])
                 for journey in provider['journeys']:
                     for segment in journey['segments']:
                         for fare in segment['fares']:
                             provider_obj.create_service_charge(fare['service_charges'])
+                # May 13, 2020 - SAM
+                if ledger_created and req.get('force_issued'):
+                    provider_obj.action_create_ledger(context['co_uid'])
+                # END
 
             book_obj = self.get_book_obj(req.get('book_id'),req.get('order_number'))
             book_obj.calculate_service_charge()
@@ -635,7 +743,119 @@ class ReservationAirline(models.Model):
 
         return booking_tmp
 
+    # April 24, 2020 - SAM
     def check_provider_state(self,context,pnr_list=[],hold_date=False,req={}):
+        if all(rec.state == 'issued' for rec in self.provider_booking_ids):
+            # issued
+            ##credit limit
+            acquirer_id,customer_parent_id = self.get_acquirer_n_c_parent_id(req)
+
+            # May 13, 2020 - SAM
+            # if req.get('force_issued'):
+            #     self.calculate_service_charge()
+            #     self.action_booked_api_airline(context, pnr_list, hold_date)
+            #     payment_res = self.payment_airline_api({'book_id': req['book_id'],
+            #                                             'member': req.get('member', False),
+            #                                             'acquirer_seq_id': req.get('acquirer_seq_id', False)}, context)
+            #     if payment_res['error_code'] != 0:
+            #         try:
+            #             self.env['tt.airline.api.con'].send_force_issued_not_enough_balance_notification(self.name, context)
+            #         except Exception as e:
+            #             _logger.error("Send TOP UP Approve Notification Telegram Error\n" + traceback.format_exc())
+            #         raise RequestException(payment_res['error_code'],additional_message=payment_res['error_msg'])
+            # END
+
+            self.action_issued_api_airline(acquirer_id and acquirer_id.id or False, customer_parent_id, context)
+        elif any(rec.state == 'issued' for rec in self.provider_booking_ids):
+            # partial issued
+            acquirer_id,customer_parent_id = self.get_acquirer_n_c_parent_id(req)
+            self.action_partial_issued_api_airline(context['co_uid'],customer_parent_id)
+        elif all(rec.state == 'booked' for rec in self.provider_booking_ids):
+            # booked
+            self.calculate_service_charge()
+            # self.action_booked_api_airline(context, pnr_list, hold_date)
+            self.action_booked_api_airline(context)
+        elif any(rec.state == 'booked' for rec in self.provider_booking_ids):
+            # partial booked
+            self.calculate_service_charge()
+            # self.action_partial_booked_api_airline(context, pnr_list, hold_date)
+            self.action_partial_booked_api_airline(context)
+        elif all(rec.state == 'rescheduled' for rec in self.provider_booking_ids):
+            self.write({
+                'state': 'rescheduled',
+                'reschedule_uid': context['co_uid'],
+                'reschedule_date': datetime.now()
+            })
+        elif any(rec.state == 'rescheduled' for rec in self.provider_booking_ids):
+            self.write({
+                'state': 'partial_rescheduled',
+                'reschedule_uid': context['co_uid'],
+                'reschedule_date': datetime.now()
+            })
+        elif all(rec.state == 'refund' for rec in self.provider_booking_ids):
+            self.write({
+                'state': 'refund',
+                'refund_uid': context['co_uid'],
+                'refund_date': datetime.now()
+            })
+        elif any(rec.state == 'partial_refund' for rec in self.provider_booking_ids):
+            self.write({
+                'state': 'partial_refund',
+                'refund_uid': context['co_uid'],
+                'refund_date': datetime.now()
+            })
+        elif all(rec.state == 'void' for rec in self.provider_booking_ids):
+            self.write({
+                'state': 'void',
+                'cancel_uid': context['co_uid'],
+                'cancel_date': datetime.now()
+            })
+        elif any(rec.state == 'partial_void' for rec in self.provider_booking_ids):
+            self.write({
+                'state': 'partial_void',
+                'cancel_uid': context['co_uid'],
+                'cancel_date': datetime.now()
+            })
+        elif any(rec.state == 'fail_issued' for rec in self.provider_booking_ids):
+            # failed issue
+            self.action_failed_issue()
+        elif any(rec.state == 'fail_refunded' for rec in self.provider_booking_ids):
+            self.action_reverse_airline(context)
+        elif any(rec.state == 'fail_booked' for rec in self.provider_booking_ids):
+            # failed book
+            self.action_failed_book()
+        elif all(rec.state == 'cancel' for rec in self.provider_booking_ids):
+            # failed book
+            self.action_set_as_cancel()
+        # elif all(rec.state == 'refund_pending' for rec in self.provider_booking_ids):
+        #     # refund pending
+        #     self.action_set_as_refund_pending()
+        # elif all(rec.state == 'cancel_pending' for rec in self.provider_booking_ids):
+        #     # cancel pending
+        #     self.action_set_as_cancel_pending()
+        elif self.provider_booking_ids:
+            provider_obj = self.provider_booking_ids[0]
+            self.write({
+                'state': provider_obj.state,
+            })
+        else:
+            self.write({
+                'state': 'draft',
+            })
+            # raise RequestException(1006)
+
+        self.set_provider_detail_info()
+
+        # FIXME Error provider_sequence sudah di remove
+        # if self.ledger_ids:
+        #     for rec in self.ledger_ids:
+        #         if not rec.pnr and rec.provider_sequence >= 0:
+        #             rec.write({
+        #                 'pnr': self.provider_booking_ids[rec.provider_sequence].pnr
+        #             })
+    # END
+
+    def check_provider_state_backup(self,context,pnr_list=[],hold_date=False,req={}):
         if all(rec.state == 'booked' for rec in self.provider_booking_ids):
             # booked
             self.calculate_service_charge()
@@ -649,8 +869,8 @@ class ReservationAirline(models.Model):
                 self.calculate_service_charge()
                 self.action_booked_api_airline(context, pnr_list, hold_date)
                 payment_res = self.payment_airline_api({'book_id': req['book_id'],
-                                                        'member': req['member'],
-                                                        'acquirer_seq_id': req['acquirer_seq_id']}, context)
+                                                        'member': req.get('member', False),
+                                                        'acquirer_seq_id': req.get('acquirer_seq_id', False)}, context)
                 if payment_res['error_code'] != 0:
                     try:
                         self.env['tt.airline.api.con'].send_force_issued_not_enough_balance_notification(self.name, context)
@@ -700,19 +920,50 @@ class ReservationAirline(models.Model):
         provider_airline_obj = self.env['tt.provider.airline']
         carrier_obj = self.env['tt.transport.carrier']
         provider_obj = self.env['tt.provider']
+        currency_obj = self.env['res.currency']
 
         _destination_type = self.provider_type_id
+
+        # April 23, 2020 - SAM
+        passenger_id_src = {}
+        for psg_id, psg in enumerate(self.passenger_ids):
+            passenger_id_src[psg_id] = psg.id
+        # END
 
         #lis of providers ID
         res = []
         name = {'provider':[],'carrier':[]}
         sequence = 0
-        for schedule in schedules:
+        for idx, schedule in enumerate(schedules):
             provider_id = provider_obj.get_provider_id(schedule['provider'],_destination_type)
             name['provider'].append(schedule['provider'])
             _logger.info(schedule['provider'])
             this_pnr_journey = []
             journey_sequence = 0
+            total_price = 0.0
+            # April 20, 2020 - SAM
+            this_service_charges = []
+            passenger_seat_src = {}
+            for psg_seq, psg in enumerate(schedule.get('passengers', [])):
+                psg_id = passenger_id_src[psg_seq]
+                for fee in psg.get('fees', []):
+                    for sc in fee['service_charges']:
+                        if sc['charge_type'] not in ['ROC', 'RAC']:
+                            total_price += sc['total']
+
+                    if not fee['fee_type'] == 'SEAT':
+                        continue
+                    leg_key_list = []
+                    for leg in fee['legs']:
+                        leg_key_list.append('{carrier_code}{carrier_number}{origin}{departure_date}'.format(**leg))
+                    leg_key = ';'.join(leg_key_list)
+                    fee.update({
+                        'passenger_id': psg_id
+                    })
+                    if not passenger_seat_src.get(leg_key):
+                        passenger_seat_src[leg_key] = []
+                    passenger_seat_src[leg_key].append(fee)
+            # END
             for journey in schedule['journeys']:
                 ##create journey
                 this_journey_seg = []
@@ -726,7 +977,61 @@ class ReservationAirline(models.Model):
                     name['carrier'].append(carrier_id and carrier_id.name or '{} Not Found'.format(segment['carrier_code']))
 
                     this_journey_seg_sequence += 1
-                    this_journey_seg.append((0,0,{
+
+                    # April 23, 2020 - SAM
+                    this_segment_legs = []
+                    this_segment_fare_details = []
+                    this_segment_seats = []
+                    leg_key_list = []
+                    for leg_seq_id, leg in enumerate(segment.get('legs', []), 1):
+                        leg_org = dest_obj.get_id(leg['origin'], _destination_type)
+                        leg_dest = dest_obj.get_id(leg['destination'], _destination_type)
+                        leg_prov = provider_obj.get_provider_id(leg['provider'], _destination_type)
+                        leg_values = {
+                            'sequence': leg_seq_id,
+                            'leg_code': leg['leg_code'],
+                            'origin_terminal': leg['origin_terminal'],
+                            'destination_terminal': leg['destination_terminal'],
+                            'origin_id': leg_org,
+                            'destination_id': leg_dest,
+                            'departure_date': leg['departure_date'],
+                            'arrival_date': leg['arrival_date'],
+                            'provider_id': leg_prov
+                        }
+                        this_segment_legs.append((0, 0, leg_values))
+                        leg_key_list.append('{carrier_code}{carrier_number}{origin}{departure_date}'.format(**leg))
+                    leg_key = ';'.join(leg_key_list)
+
+                    for ps in passenger_seat_src.get(leg_key, []):
+                        seat_values = {
+                            'seat': ps['fee_value'],
+                            'passenger_id': ps['passenger_id'],
+                        }
+                        this_segment_seats.append((0, 0, seat_values))
+                    # END
+
+                    # April 20, 2020 - SAM
+                    fare_data = {}
+                    if segment.get('fares'):
+                        fare_data = segment['fares'][0]
+                        this_service_charges += fare_data['service_charges']
+                        for sc in fare_data['service_charges']:
+                            if sc['charge_type'] not in ['ROC', 'RAC']:
+                                total_price += sc['total']
+                        #     currency_code = sc.pop('currency')
+                        #     foreign_currency_code = sc.pop('foreign_currency')
+                        #     sc.update({
+                        #         'currency_id': currency_obj.get_id(currency_code, default_param_idr=True),
+                        #         'foreign_currency_id': currency_obj.get_id(foreign_currency_code, default_param_idr=True),
+                        #     })
+                        #     this_service_charges.append((0, 0, sc))
+
+                        for addons in fare_data.get('fare_details', []):
+                            addons['description'] = json.dumps(addons['description'])
+                            this_segment_fare_details.append((0, 0, addons))
+                    # END
+
+                    segment_values = {
                         'segment_code': segment['segment_code'],
                         'fare_code': segment.get('fare_code', ''),
                         'carrier_id': carrier_id and carrier_id.id or False,
@@ -739,8 +1044,15 @@ class ReservationAirline(models.Model):
                         # 'destination_terminal': segment['destination_terminal'],
                         'departure_date': segment['departure_date'],
                         'arrival_date': segment['arrival_date'],
-                        'sequence': this_journey_seg_sequence
-                    }))
+                        'sequence': this_journey_seg_sequence,
+                        # April 23, 2020 - SAM
+                        'leg_ids': this_segment_legs,
+                        'segment_addons_ids': this_segment_fare_details,
+                        'seat_ids': this_segment_seats,
+                        # END
+                    }
+                    segment_values.update(fare_data)
+                    this_journey_seg.append((0, 0, segment_values))
                 journey_sequence+=1
 
                 dest_idx = self.pick_destination(this_journey_seg)
@@ -787,10 +1099,18 @@ class ReservationAirline(models.Model):
 
                 'booked_uid': api_context['co_uid'],
                 'booked_date': datetime.now(),
-                'journey_ids': this_pnr_journey
+                'journey_ids': this_pnr_journey,
+                'total_price': total_price,
+                # April 20, 2020 - SAM
+                # 'cost_service_charge_ids': this_service_charges,
+                # END
             }
 
             vendor_obj = provider_airline_obj.create(values)
+            # April 27, 2020 - SAM
+            vendor_obj.create_ticket_api(schedule['passengers'], vendor_obj.pnr and vendor_obj.pnr or str(vendor_obj.sequence))
+            vendor_obj.create_service_charge(this_service_charges)
+            # END
             res.append(vendor_obj)
 
             if not hasattr(vendor_obj, 'promo_code_ids'):
@@ -819,68 +1139,74 @@ class ReservationAirline(models.Model):
         provider_obj.action_booked_api_airline(provider, context)
         # _logger.info("%s ACTION BOOKED AIRLINE END" % (provider['pnr']))
 
-        if old_state != 'draft':
-            return
+        # May 11, 2020 - SAM
 
-        # _logger.info("%s CREATING TICKET START" % (provider['pnr']))
-        provider_obj.create_ticket_api(provider['passengers'],provider['pnr'])
-        # _logger.info("%s CREATING TICKET END" % (provider['pnr']))
-        # August 16, 2019 - SAM
-        # Mengubah mekanisme update booking backend
-        segment_dict = provider['segment_dict']
-
-        # update leg dan create service charge
-        # _logger.info("%s LOOP JOURNEY START" % (provider['pnr']))
-        for idx, journey in enumerate(provider_obj.journey_ids):
-            # _logger.info("%s LOOP SEGMENT START" % (provider['pnr']))
-            for idx1, segment in enumerate(journey.segment_ids):
-                # param_segment = provider['journeys'][idx]['segments'][idx1]
-                param_segment = segment_dict[segment.segment_code]
-                if segment.segment_code == param_segment['segment_code']:
-                    this_segment_legs = []
-                    this_segment_fare_details = []
-                    # _logger.info("%s LOOP LEG START" % (provider['pnr']))
-                    for idx2, leg in enumerate(param_segment['legs']):
-                        leg_org = self.env['tt.destinations'].get_id(leg['origin'], provider_type)
-                        leg_dest = self.env['tt.destinations'].get_id(leg['destination'], provider_type)
-                        leg_prov = self.env['tt.provider'].get_provider_id(leg['provider'], provider_type)
-                        this_segment_legs.append((0, 0, {
-                            'sequence': idx2,
-                            'leg_code': leg['leg_code'],
-                            'origin_terminal': leg['origin_terminal'],
-                            'destination_terminal': leg['destination_terminal'],
-                            'origin_id': leg_org,
-                            'destination_id': leg_dest,
-                            'departure_date': leg['departure_date'],
-                            'arrival_date': leg['arrival_date'],
-                            'provider_id': leg_prov
-                        }))
-                    # _logger.info("%s LOOP LEG END" % (provider['pnr']))
-
-                    # _logger.info("%s LOOP FARES START" % (provider['pnr']))
-                    for fare in param_segment['fares']:
-                        provider_obj.create_service_charge(fare['service_charges'])
-                        for addons in fare['fare_details']:
-                            addons['description'] = json.dumps(addons['description'])
-                            addons['segment_id'] = segment.id
-                            this_segment_fare_details.append((0,0,addons))
-                    # _logger.info("%s LOOP FARES END" % (provider['pnr']))
-                    segment.write({
-                        'leg_ids': this_segment_legs,
-                        'cabin_class': param_segment.get('fares')[0].get('cabin_class',''),
-                        'class_of_service': param_segment.get('fares')[0].get('class_of_service',''),
-                        'segment_addons_ids': this_segment_fare_details
-                    })
-                    # _logger.info("%s SEGMENT WRITE FINISH" % (provider['pnr']))
-            # _logger.info("%s LOOP SEGMENT END" % (provider['pnr']))
-        # _logger.info("%s LOOP JOURNEY END" % (provider['pnr']))
+        # if old_state != 'draft':
+        #     return
+        #
+        # # _logger.info("%s CREATING TICKET START" % (provider['pnr']))
+        # provider_obj.create_ticket_api(provider['passengers'],provider['pnr'])
+        # # _logger.info("%s CREATING TICKET END" % (provider['pnr']))
+        # # August 16, 2019 - SAM
+        # # Mengubah mekanisme update booking backend
+        # segment_dict = provider['segment_dict']
+        #
+        # # update leg dan create service charge
+        # # _logger.info("%s LOOP JOURNEY START" % (provider['pnr']))
+        # for idx, journey in enumerate(provider_obj.journey_ids):
+        #     # _logger.info("%s LOOP SEGMENT START" % (provider['pnr']))
+        #     for idx1, segment in enumerate(journey.segment_ids):
+        #         # param_segment = provider['journeys'][idx]['segments'][idx1]
+        #         param_segment = segment_dict[segment.segment_code]
+        #         if segment.segment_code == param_segment['segment_code']:
+        #             this_segment_legs = []
+        #             this_segment_fare_details = []
+        #             # _logger.info("%s LOOP LEG START" % (provider['pnr']))
+        #             for idx2, leg in enumerate(param_segment['legs']):
+        #                 leg_org = self.env['tt.destinations'].get_id(leg['origin'], provider_type)
+        #                 leg_dest = self.env['tt.destinations'].get_id(leg['destination'], provider_type)
+        #                 leg_prov = self.env['tt.provider'].get_provider_id(leg['provider'], provider_type)
+        #                 this_segment_legs.append((0, 0, {
+        #                     'sequence': idx2,
+        #                     'leg_code': leg['leg_code'],
+        #                     'origin_terminal': leg['origin_terminal'],
+        #                     'destination_terminal': leg['destination_terminal'],
+        #                     'origin_id': leg_org,
+        #                     'destination_id': leg_dest,
+        #                     'departure_date': leg['departure_date'],
+        #                     'arrival_date': leg['arrival_date'],
+        #                     'provider_id': leg_prov
+        #                 }))
+        #             # _logger.info("%s LOOP LEG END" % (provider['pnr']))
+        #
+        #             # _logger.info("%s LOOP FARES START" % (provider['pnr']))
+        #             for fare in param_segment['fares']:
+        #                 provider_obj.create_service_charge(fare['service_charges'])
+        #                 for addons in fare['fare_details']:
+        #                     addons['description'] = json.dumps(addons['description'])
+        #                     addons['segment_id'] = segment.id
+        #                     this_segment_fare_details.append((0,0,addons))
+        #             # _logger.info("%s LOOP FARES END" % (provider['pnr']))
+        #             segment.write({
+        #                 'leg_ids': this_segment_legs,
+        #                 'cabin_class': param_segment.get('fares')[0].get('cabin_class',''),
+        #                 'class_of_service': param_segment.get('fares')[0].get('class_of_service',''),
+        #                 'segment_addons_ids': this_segment_fare_details
+        #             })
+        #             # _logger.info("%s SEGMENT WRITE FINISH" % (provider['pnr']))
+        #     # _logger.info("%s LOOP SEGMENT END" % (provider['pnr']))
+        # # _logger.info("%s LOOP JOURNEY END" % (provider['pnr']))
+        # END
 
     #to generate sale service charge
     def calculate_service_charge(self):
         for service_charge in self.sale_service_charge_ids:
             service_charge.unlink()
 
-        for provider in self.provider_booking_ids:
+        # April 30, 2020 - SAM
+        this_service_charges = []
+        # END
+        for idx, provider in enumerate(self.provider_booking_ids):
             sc_value = {}
             for p_sc in provider.cost_service_charge_ids:
                 p_charge_code = p_sc.charge_code
@@ -888,6 +1214,7 @@ class ReservationAirline(models.Model):
                 p_pax_type = p_sc.pax_type
                 if not sc_value.get(p_pax_type):
                     sc_value[p_pax_type] = {}
+                c_code = ''
                 if p_charge_type != 'RAC':
                     if not sc_value[p_pax_type].get(p_charge_type):
                         sc_value[p_pax_type][p_charge_type] = {}
@@ -919,19 +1246,58 @@ class ReservationAirline(models.Model):
                     'foreign_amount': sc_value[p_pax_type][c_type]['foreign_amount'] + p_sc.foreign_amount,
                 })
 
-            values = []
+            # values = []
             for p_type,p_val in sc_value.items():
                 for c_type,c_val in p_val.items():
-                    curr_dict = {}
-                    curr_dict['pax_type'] = p_type
-                    curr_dict['booking_airline_id'] = self.id
-                    curr_dict['description'] = provider.pnr
+                    # April 27, 2020 - SAM
+                    curr_dict = {
+                        'pax_type': p_type,
+                        'booking_airline_id': self.id,
+                        'description': provider.pnr,
+                    }
+                    # curr_dict['pax_type'] = p_type
+                    # curr_dict['booking_airline_id'] = self.id
+                    # curr_dict['description'] = provider.pnr
+                    # END
                     curr_dict.update(c_val)
-                    values.append((0,0,curr_dict))
+                    # values.append((0,0,curr_dict))
+                    # April 30, 2020 - SAM
+                    this_service_charges.append((0,0,curr_dict))
+                    # END
+        # April 2020 - SAM
+        #     self.write({
+        #         'sale_service_charge_ids': values
+        #     })
+        self.write({
+            'sale_service_charge_ids': this_service_charges
+        })
+        #END
 
-            self.write({
-                'sale_service_charge_ids': values
-            })
+    # May 11, 2020 - SAM
+    def set_provider_detail_info(self):
+        hold_date = None
+        pnr_list = []
+        values = {}
+        for rec in self.provider_booking_ids:
+            if rec.hold_date:
+                rec_hold_date = datetime.strptime(rec.hold_date[:19], '%Y-%m-%d %H:%M:%S')
+                if not hold_date or rec_hold_date < hold_date:
+                    hold_date = rec_hold_date
+            if rec.pnr:
+                pnr_list.append(rec.pnr)
+
+        if hold_date:
+            hold_date_str = hold_date.strftime('%Y-%m-%d %H:%M:%S')
+            if self.hold_date != hold_date_str:
+                values['hold_date'] = hold_date_str
+        if pnr_list:
+            pnr = ', '.join(pnr_list)
+            if self.pnr != pnr:
+                values['pnr'] = pnr
+
+        if values:
+            self.write(values)
+    # END
 
     #retrieve booking utk samakan info dengan vendor
     def sync_booking_with_vendor(self):
@@ -1205,3 +1571,28 @@ class ReservationAirline(models.Model):
             desc_txt += 'Departure: ' + rec.origin_id.display_name+ ' (' + datetime.strptime(rec.departure_date, '%Y-%m-%d %H:%M:%S').strftime('%d %b %Y %H:%M') + ')<br/>'
             desc_txt += 'Arrival: ' + rec.destination_id.display_name+ ' (' + datetime.strptime(rec.arrival_date, '%Y-%m-%d %H:%M:%S').strftime('%d %b %Y %H:%M') + ')<br/><br/>'
         return desc_txt
+
+    # May 13, 2020 - SAM
+    def get_nta_amount(self, method='full'):
+        # res = super().get_nta_amount(method=method)
+        nta_amount = 0.0
+        for provider_obj in self.provider_booking_ids:
+            # if provider_obj.state == 'issued':
+            #     continue
+            for sc in provider_obj.cost_service_charge_ids:
+                if sc.is_ledger_created or (sc.charge_type == 'RAC' and sc.charge_code != 'rac'):
+                    continue
+                nta_amount += sc.total
+        return nta_amount
+
+    def get_total_amount(self, method='full'):
+        total_amount = 0.0
+        for provider_obj in self.provider_booking_ids:
+            # if provider_obj.state == 'issued':
+            #     continue
+            for sc in provider_obj.cost_service_charge_ids:
+                if sc.is_ledger_created or sc.charge_type == 'RAC':
+                    continue
+                total_amount += sc.total
+        return total_amount
+    # END

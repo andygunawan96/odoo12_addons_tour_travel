@@ -35,8 +35,10 @@ class TtLegAirline(models.Model):
     def to_dict(self):
         res = {
             'leg_code': self.leg_code,
-            'origin': self.origin_id.code,
-            'destination': self.destination_id.code,
+            'origin': self.origin_id and self.origin_id.code or '',
+            'destination': self.destination_id and self.destination_id.code or '',
+            'origin_terminal': self.origin_terminal and self.origin_terminal or '',
+            'destination_terminal': self.destination_terminal and self.destination_terminal or '',
             'departure_date': self.departure_date,
             'arrival_date': self.arrival_date,
             'elapsed_time': self.elapsed_time and self.elapsed_time or '',
