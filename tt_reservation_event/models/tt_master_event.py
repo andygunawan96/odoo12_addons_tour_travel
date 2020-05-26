@@ -32,7 +32,7 @@ class MasterEvent(models.Model):
     description = fields.Html('Description', readonly=True, states={'draft': [('readonly', False)]})
     additional_info = fields.Html('Additional Info', readonly=True, states={'draft': [('readonly', False)]})
     kid_friendly = fields.Boolean('Age Restriction', default=False, readonly=True, states={'draft': [('readonly', False)]})
-    eligible_age = fields.Integer('Eligible Age', default=1, readonly=True, states={'draft': ['readonly', False]})
+    eligible_age = fields.Integer('Eligible Age', default=1, readonly=True, states={'draft': [('readonly', False)]})
     itinerary = fields.Html('Itinerary', readonly=True, states={'draft': [('readonly', False)]})
     to_notice = fields.Html('Warnings', readonly=True, states={'draft': [('readonly', False)]})
     extra_question_ids = fields.One2many('tt.event.extra.question', 'event_id', readonly=True, states={'draft':[('readonly', False)]})
