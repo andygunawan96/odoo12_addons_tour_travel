@@ -8,7 +8,7 @@ class TtEventApiCon(models.Model):
     _name = 'tt.event.api.con'
     _inherit = 'tt.api.con'
 
-    table_name = 'tt.reservation.tour'
+    table_name = 'tt.reservation.event'
 
     def action_call(self,table_obj,action,data,context):
         if action == 'update_passenger':
@@ -24,7 +24,7 @@ class TtEventApiCon(models.Model):
         elif action == 'update_booking':
             res = table_obj.update_booking_api(data,context)
         elif action == 'payment':
-            res = table_obj.payment_tour_api(data,context)
+            res = table_obj.payment_event_api(data, context)
         else:
             raise RequestException(999)
 
