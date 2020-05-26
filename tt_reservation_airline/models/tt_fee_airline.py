@@ -15,6 +15,11 @@ class TtSsrAirline(models.Model):
     amount = fields.Monetary("Amount")
     currency_id = fields.Many2one("res.currency","Currency",default=lambda self:self.env.user.company_id.currency_id)
     passenger_id = fields.Many2one("tt.reservation.passenger.airline","Currency")
+    pnr = fields.Char('PNR', default='')
+    # May 18, 2020 - SAM
+    provider_id = fields.Many2one('tt.provider.airline', 'Provider', default=None)
+    journey_code = fields.Char('Journey Code', default='')
+    # END
 
     @api.depends('category')
     def _compute_category_icon(self):
@@ -33,5 +38,15 @@ class TtSsrAirline(models.Model):
             'fee_category': self.category,
             'description': json.loads(self.description),
             'amount': self.amount,
-            'currency': self.currency_id.name
+            'currency': self.currency_id.name,
+            'journey_code': self.journey_code and self.journey_code or '',
         }
+
+
+class TtProviderAirlineInherit(models.Model):
+    _inherit = 'tt.provider.airline'
+    _description = 'Provider Airline Model Inherit'
+
+    # May 18, 2020 - SAM
+    fee_ids = fields.One2many('tt.fee.airline', 'provider_id', 'Fees')
+    # END

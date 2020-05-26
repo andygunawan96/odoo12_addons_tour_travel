@@ -1,7 +1,7 @@
 from odoo import api, fields, models
 from odoo.exceptions import UserError
 from ...tools import variables
-from datetime import datetime
+from datetime import datetime, timedelta
 import json, logging
 
 _logger = logging.getLogger(__name__)
@@ -14,6 +14,7 @@ class TtProviderAirline(models.Model):
 
     pnr = fields.Char('PNR')
     pnr2 = fields.Char('PNR2')
+    reference = fields.Char('Reference', default='', help='PNR Reference if the airline provides another pnr reference number')
     provider_id = fields.Many2one('tt.provider','Provider')
     state = fields.Selection(variables.BOOKING_STATE, 'Status', default='draft')
     booking_id = fields.Many2one('tt.reservation.airline', 'Order Number', ondelete='cascade')
@@ -56,6 +57,13 @@ class TtProviderAirline(models.Model):
 
     error_history_ids = fields.One2many('tt.reservation.err.history','res_id','Error History', domain=[('res_model','=','tt.provider.airline')])
     # , domain = [('res_model', '=', 'tt.provider.airline')]
+
+    # April 23, 2020 - SAM
+    penalty_amount = fields.Float('Penalty Amount', default=0)
+    reschedule_uid = fields.Many2one('res.users', 'Rescheduled By')
+    reschedule_date = fields.Datetime('Rescheduled Date')
+    total_price = fields.Float('Total Price', default=0)
+    # END
 
     ##button function
     def action_set_to_issued_from_button(self, payment_data={}):
@@ -165,28 +173,185 @@ class TtProviderAirline(models.Model):
             'tag': 'reload',
         }
 
-    ###
+    # May 13, 2020 - SAM
+    def action_reverse_ledger(self):
+        for rec in self.booking_id.ledger_ids:
+            pnr_text = self.pnr if self.pnr else str(self.sequence)
+            if rec.pnr == pnr_text and not rec.is_reversed:
+                rec.reverse_ledger()
+
+        for rec in self.cost_service_charge_ids:
+            rec.is_ledger_created = False
+    # END
+
+    # May 11, 2020 - SAM
+    def set_provider_detail_info(self, provider_data):
+        values = {}
+        for key in ['pnr', 'pnr2', 'reference', 'balance_due', 'balance_due_str', 'total_price']:
+            if not provider_data.get(key):
+                continue
+            values[key] = provider_data[key]
+            if key == 'pnr':
+                pnr = provider_data[key]
+                provider_sequence = str(self.sequence)
+                for sc in self.cost_service_charge_ids:
+                    if sc.description != provider_data[key]:
+                        sc.write({'description': pnr})
+
+                for ledger in self.booking_id.ledger_ids:
+                    if ledger.pnr == provider_sequence:
+                        ledger.write({'pnr': pnr})
+
+        if provider_data.get('hold_date'):
+            values['hold_date'] = datetime.strptime(provider_data['hold_date'], "%Y-%m-%d %H:%M:%S")
+        return values
+    # END
+
+    # April 24, 2020 - SAM
     def action_booked_api_airline(self, provider_data, api_context):
         for rec in self:
-            rec.write({
-                'pnr': provider_data['pnr'],
-                'pnr2': provider_data['pnr2'],
+            values = {
                 'state': 'booked',
                 'booked_uid': api_context['co_uid'],
                 'booked_date': fields.Datetime.now(),
-                'hold_date': datetime.strptime(provider_data['hold_date'],"%Y-%m-%d %H:%M:%S"),
-                'balance_due': provider_data['balance_due']
-            })
+            }
 
-    def action_issued_api_airline(self,context):
+            provider_values = rec.set_provider_detail_info(provider_data)
+            if provider_values:
+                values.update(provider_values)
+
+            rec.write(values)
+
+    # def action_booked_api_airline(self, api_context):
+    #     for rec in self:
+    #         rec.write({
+    #             'state': 'booked',
+    #             'booked_uid': api_context['co_uid'],
+    #             'booked_date': fields.Datetime.now(),
+    #         })
+
+    def action_booked_pending_api_airline(self, api_context):
         for rec in self:
             rec.write({
+                'state': 'booked_pending',
+                'booked_uid': api_context['co_uid'],
+                'booked_date': fields.Datetime.now(),
+            })
+
+    def action_void_pending_api_airline(self, api_context):
+        for rec in self:
+            rec.write({
+                'state': 'void_pending',
+                'cancel_uid': api_context['co_uid'],
+                'cancel_date': fields.Datetime.now(),
+            })
+
+    def action_void_api_airline(self, api_context):
+        for rec in self:
+            rec.write({
+                'state': 'void',
+                'cancel_uid': api_context['co_uid'],
+                'cancel_date': fields.Datetime.now(),
+            })
+
+    def action_issued_pending_api_airline(self, api_context):
+        for rec in self:
+            rec.write({
+                'state': 'issued_pending',
+                'issued_uid': api_context['co_uid'],
+                'issued_date': fields.Datetime.now(),
+            })
+
+    def action_refund_api_airline(self, api_context):
+        for rec in self:
+            rec.write({
+                'state': 'refund',
+                'refund_uid': api_context['co_uid'],
+                'refund_date': fields.Datetime.now(),
+            })
+
+    def action_rescheduled_api_airline(self, api_context):
+        for rec in self:
+            rec.write({
+                'state': 'rescheduled',
+                'rescheduled_uid': api_context['co_uid'],
+                'rescheduled_date': fields.Datetime.now(),
+            })
+
+    def action_rescheduled_pending_api_airline(self, api_context):
+        for rec in self:
+            rec.write({
+                'state': 'rescheduled_pending',
+                'rescheduled_uid': api_context['co_uid'],
+                'rescheduled_date': fields.Datetime.now(),
+            })
+
+    def action_halt_booked_api_airline(self, api_context):
+        for rec in self:
+            rec.write({
+                'state': 'halt_booked',
+                'hold_date': datetime.now() + timedelta(minutes=30)
+            })
+
+    def action_halt_issued_api_airline(self, api_context):
+        for rec in self:
+            rec.write({
+                'state': 'halt_issued',
+                'hold_date': datetime.now() + timedelta(minutes=30)
+            })
+
+    def action_failed_void_api_airline(self,err_code,err_msg):
+        for rec in self:
+            rec.write({
+                'state': 'fail_void',
+                'error_history_ids': [(0,0,{
+                    'res_model': self._name,
+                    'res_id': self.id,
+                    'error_code': err_code,
+                    'error_msg': err_msg
+                })]
+            })
+
+    def action_failed_refund_api_airline(self,err_code,err_msg):
+        for rec in self:
+            rec.write({
+                'state': 'fail_refunded',
+                'error_history_ids': [(0,0,{
+                    'res_model': self._name,
+                    'res_id': self.id,
+                    'error_code': err_code,
+                    'error_msg': err_msg
+                })]
+            })
+
+    def action_failed_rescheduled_api_airline(self,err_code,err_msg):
+        for rec in self:
+            rec.write({
+                'state': 'fail_rescheduled',
+                'error_history_ids': [(0,0,{
+                    'res_model': self._name,
+                    'res_id': self.id,
+                    'error_code': err_code,
+                    'error_msg': err_msg
+                })]
+            })
+    # END
+
+    # May 20, 2020 - SAM
+    # def action_issued_api_airline(self,context):
+    def action_issued_api_airline(self, provider_data, context):
+        for rec in self:
+            values = {
                 'state': 'issued',
                 'issued_date': datetime.now(),
                 'issued_uid': context['co_uid'],
                 'sid_issued': context['signature'],
-                'balance_due': 0
-            })
+            }
+            provider_values = rec.set_provider_detail_info(provider_data)
+            if provider_values:
+                values.update(provider_values)
+            rec.write(values)
+    # END
 
     def action_cancel_api_airline(self,context):
         for rec in self:
@@ -331,12 +496,23 @@ class TtProviderAirline(models.Model):
                 ticket_not_found.append(psg)
 
         for psg in ticket_not_found:
+            # April 21, 2020 - SAM
+            # self.write({
+            #     'ticket_ids': [(0,0,{
+            #         'ticket_number': psg.get('ticket_number'),
+            #         'pax_type': psg.get('pax_type'),
+            #     })]
+            # })
+            ticket_values = {
+                'ticket_number': psg.get('ticket_number'),
+                'pax_type': psg.get('pax_type'),
+            }
+            if psg.get('passenger_id'):
+                ticket_values['passenger_id'] = psg['passenger_id']
             self.write({
-                'ticket_ids': [(0,0,{
-                    'ticket_number': psg.get('ticket_number'),
-                    'pax_type': psg.get('pax_type'),
-                })]
+                'ticket_ids': [(0, 0, ticket_values)]
             })
+            # END
 
     def create_service_charge(self, service_charge_vals):
         service_chg_obj = self.env['tt.service.charge']
@@ -345,22 +521,38 @@ class TtProviderAirline(models.Model):
         for scs in service_charge_vals:
             # update 19 Feb 2020 maximum per pax sesuai dengan pax_count dari service charge
             # scs['pax_count'] = 0
+            # April 28, 2020 - SAM
+            currency_id = currency_obj.get_id(scs.get('currency'),default_param_idr=True)
+            foreign_currency_id = currency_obj.get_id(scs.get('foreign_currency'),default_param_idr=True)
             scs_pax_count = 0
-            scs['passenger_airline_ids'] = []
-            scs['total'] = 0
-            scs['currency_id'] = currency_obj.get_id(scs.get('currency'),default_param_idr=True)
-            scs['foreign_currency_id'] = currency_obj.get_id(scs.get('foreign_currency'),default_param_idr=True)
-            scs['provider_airline_booking_id'] = self.id
+            total = 0
+            # scs['passenger_airline_ids'] = []
+            # scs['total'] = 0
+            # scs['currency_id'] = currency_obj.get_id(scs.get('currency'),default_param_idr=True)
+            # scs['foreign_currency_id'] = currency_obj.get_id(scs.get('foreign_currency'),default_param_idr=True)
+            # scs['provider_airline_booking_id'] = self.id
+            passenger_airline_ids = []
             for psg in self.ticket_ids:
                 if scs['pax_type'] == psg.pax_type and scs_pax_count < scs['pax_count']:
-                    scs['passenger_airline_ids'].append(psg.passenger_id.id)
+                    # scs['passenger_airline_ids'].append(psg.passenger_id.id)
+                    passenger_airline_ids.append(psg.passenger_id.id)
                     # scs['pax_count'] += 1
                     scs_pax_count += 1
-                    scs['total'] += scs['amount']
+                    # scs['total'] += scs['amount']
+                    total += scs['amount']
+            scs.update({
+                'passenger_airline_ids': [(6, 0, passenger_airline_ids)],
+                'total': total,
+                'currency_id': currency_id,
+                'foreign_currency_id': foreign_currency_id,
+                'provider_airline_booking_id': self.id,
+                'description': self.pnr and self.pnr or str(self.sequence),
+            })
             scs.pop('currency')
             scs.pop('foreign_currency')
-            scs['passenger_airline_ids'] = [(6,0,scs['passenger_airline_ids'])]
-            scs['description'] = self.pnr
+            # scs['passenger_airline_ids'] = [(6,0,scs['passenger_airline_ids'])]
+            # scs['description'] = self.pnr
+            # END
             service_chg_obj.create(scs)
 
         # "sequence": 1,
@@ -376,12 +568,30 @@ class TtProviderAirline(models.Model):
 
     def delete_service_charge(self):
         ledger_created = False
-        for rec in self.cost_service_charge_ids.filtered(lambda x: x.is_extra_fees == False):
+        # May 13, 2020 - SAM
+        # for rec in self.cost_service_charge_ids.filtered(lambda x: x.is_extra_fees == False):
+        for rec in self.cost_service_charge_ids:
             if rec.is_ledger_created:
                 ledger_created = True
             else:
                 rec.unlink()
+        # END
         return ledger_created
+
+    # May 14, 2020 - SAM
+    def delete_passenger_fees(self):
+        pnr_text = self.pnr if self.pnr else str(self.sequence)
+        for psg in self.booking_id.passenger_ids:
+            for fee in psg.fee_ids:
+                if fee.pnr != pnr_text:
+                    continue
+                fee.unlink()
+
+    def delete_passenger_tickets(self):
+        for ticket in self.ticket_ids:
+            ticket.unlink()
+    # END
+
     # @api.depends('cost_service_charge_ids')
     # def _compute_total(self):
     #     for rec in self:
@@ -435,8 +645,14 @@ class TtProviderAirline(models.Model):
             'tickets': ticket_list,
             'error_msg': self.error_history_ids and self.error_history_ids[-1].error_msg or '',
             'service_charges': service_charges,
+            # April 29, 2020 - SAM
+            'reference': self.reference,
+            'total_price': self.total_price,
+            'penalty_amount': self.penalty_amount,
+            'is_force_issued': self.booking_id.is_force_issued,
+            'is_halt_process': self.booking_id.is_halt_process,
+            # END
         }
-
         return res
 
     def get_carrier_name(self):

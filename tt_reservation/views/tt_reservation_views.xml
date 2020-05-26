@@ -106,6 +106,12 @@
                                 <field name="refund_uid" readonly="1" class="oe_inline"/> -
                                 <field name="refund_date" readonly="1" class="oe_inline"/>
                             </div>
+                            <label for="reschedule_uid" string="Rescheduled By"/>
+                            <div>
+                                <field name="reschedule_uid" readonly="1" class="oe_inline"/>
+                                <field name="reschedule_date" readonly="1" class="oe_inline"/>
+                            </div>
+                            <field name="penalty_amount" readonly="1"/>
                             <field name="voucher_code" readonly="1"/>
                             <field name="is_member" readonly="1" groups="tt_base.group_tt_tour_travel_operator"/>
                             <field name="payment_method" readonly="1" groups="tt_base.group_tt_tour_travel_operator"/>
