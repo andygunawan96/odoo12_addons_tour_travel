@@ -13,9 +13,9 @@ class TtTicketAirline(models.Model):
     def to_dict(self):
         fees = [fee.to_dict() for fee in self.passenger_id.fee_ids]
         res = {
-            'passenger': self.passenger_id.name,
+            'passenger': self.passenger_id and self.passenger_id.name or '',
             'pax_type': self.pax_type,
-            'ticket_number': self.ticket_number,
+            'ticket_number': self.ticket_number and self.ticket_number or '',
             'fees': fees,
         }
         return res
