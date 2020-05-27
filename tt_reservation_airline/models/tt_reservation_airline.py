@@ -132,12 +132,18 @@ class ReservationAirline(models.Model):
         })
 
     def action_issued_airline(self,co_uid,customer_parent_id,acquirer_id = False):
-        self.write({
+        values = {
             'state': 'issued',
             'issued_date': datetime.now(),
             'issued_uid': co_uid,
             'customer_parent_id': customer_parent_id
-        })
+        }
+        if not self.booked_date:
+            values.update({
+                'booked_date': values['issued_date'],
+                'booked_uid': values['issued_uid'],
+            })
+        self.write(values)
 
         try:
             if self.agent_type_id.is_send_email_issued:
@@ -759,11 +765,12 @@ class ReservationAirline(models.Model):
             #             _logger.error("Send TOP UP Approve Notification Telegram Error\n" + traceback.format_exc())
             #         raise RequestException(payment_res['error_code'],additional_message=payment_res['error_msg'])
             # END
-
+            self.calculate_service_charge()
             self.action_issued_api_airline(acquirer_id and acquirer_id.id or False, customer_parent_id, context)
         elif any(rec.state == 'issued' for rec in self.provider_booking_ids):
             # partial issued
             acquirer_id,customer_parent_id = self.get_acquirer_n_c_parent_id(req)
+            self.calculate_service_charge()
             self.action_partial_issued_api_airline(context['co_uid'],customer_parent_id)
         elif all(rec.state == 'booked' for rec in self.provider_booking_ids):
             # booked
