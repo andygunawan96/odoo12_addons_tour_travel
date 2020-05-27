@@ -38,7 +38,6 @@
                     </group>
                     <group string="Inquiry Info">
                         <group>
-                            <field name="payment_session_id" attrs="{'invisible': [('state', '!=', 'issued')]}"/>
                             <field name="payment_message" attrs="{'invisible': [('state', '!=', 'issued')]}"/>
                             <field name="session_id"/>
                             <field name="customer_number"/>
@@ -144,11 +143,11 @@
         <field name="arch" type="xml">
             <tree>
                 <field name="pnr"/>
+                <field name="pnr2"/>
                 <field name="provider_id" groups="tt_base.group_tt_tour_travel_operator"/>
                 <field name="carrier_id"/>
                 <field name="carrier_code"/>
                 <field name="session_id"/>
-                <field name="payment_session_id"/>
                 <field name="customer_number"/>
                 <field name="customer_name"/>
                 <field name="state"/>
