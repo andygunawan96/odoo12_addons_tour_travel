@@ -347,6 +347,11 @@ class TtProviderAirline(models.Model):
                 'issued_uid': context['co_uid'],
                 'sid_issued': context['signature'],
             }
+            if not rec.booked_date:
+                values.update({
+                    'booked_date': values['issued_date'],
+                    'booked_uid': values['issued_uid'],
+                })
             provider_values = rec.set_provider_detail_info(provider_data)
             if provider_values:
                 values.update(provider_values)
