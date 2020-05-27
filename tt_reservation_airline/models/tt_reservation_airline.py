@@ -44,11 +44,6 @@ class ReservationAirline(models.Model):
 
     is_get_booking_from_vendor = fields.Boolean('Get Booking From Vendor')
 
-    # April 21, 2020 - SAM
-    is_force_issued = fields.Boolean('Force Issued', default=False)
-    is_halt_process = fields.Boolean('Halt Process', default=False)
-    # END
-
     def get_form_id(self):
         return self.env.ref("tt_reservation_airline.tt_reservation_airline_form_views")
 

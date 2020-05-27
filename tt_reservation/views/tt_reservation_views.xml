@@ -117,6 +117,8 @@
                             <field name="payment_method" readonly="1" groups="tt_base.group_tt_tour_travel_operator"/>
                             <field name="sid_booked" groups="tt_base.group_tt_tour_travel_operator"/>
                             <field name="payment_acquirer_number_id" groups="base.user_admin"/>
+                            <field name="is_force_issued" groups="base.user_admin"/>
+                            <field name="is_halt_process" groups="base.user_admin"/>
                         </group>
                     </group>
 

@@ -128,6 +128,11 @@ class TtReservation(models.Model):
 
     payment_acquirer_number_id = fields.Many2one('payment.acquirer.number','Payment Acquier Number')
 
+    # April 21, 2020 - SAM
+    is_force_issued = fields.Boolean('Force Issued', default=False)
+    is_halt_process = fields.Boolean('Halt Process', default=False)
+    # END
+
     @api.model
     def create(self, vals_list):
         try:

@@ -114,7 +114,7 @@
         <field name="name">tt.reconcile.transaction.lines.tree.page</field>
         <field name="model">tt.reconcile.transaction.lines</field>
         <field name="arch" type="xml">
-            <tree create="false" decoration-danger="state=='done'" decoration-success="state=='match'">
+            <tree create="false" decoration-info="state=='done'" decoration-success="state=='match'" deocration-danger="state=='ignore'">
                 <field name="pnr"/>
                 <field name="type"/>
                 <field name="issued_time"/>
