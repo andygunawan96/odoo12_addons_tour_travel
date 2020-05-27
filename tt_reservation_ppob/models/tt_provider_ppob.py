@@ -277,9 +277,9 @@ class TtProviderPPOB(models.Model):
                             raise UserError(payment_res['error_msg'])
 
                     rec.sudo().write({
-                        'pnr': data['pnr'],
+                        'pnr': data['session_id'],
+                        'pnr2': data['pnr'],
                         'payment_message': data['message'],
-                        'payment_session_id': data['session_id'],
                     })
                     if data.get('bill_data'):
                         for rec2 in data['bill_data']:
@@ -448,7 +448,6 @@ class TtProviderPPOB(models.Model):
             'unpaid_bill': self.unpaid_bill and self.unpaid_bill or 0,
             'unpaid_bill_display': self.unpaid_bill_display and self.unpaid_bill_display or 0,
             'session_id': self.session_id and self.session_id or '',
-            'payment_session_id': self.payment_session_id and self.payment_session_id or '',
             'allowed_denominations': allowed_denominations,
         }
 
