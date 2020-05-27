@@ -41,7 +41,7 @@ class MasterEvent(models.Model):
     locations = fields.Char('Locations', readonly=True)
 
     # event_by_id = fields.Many2one('tt.event.by', 'Event By', readonly=True, states={'draft': [('readonly', False)]})
-    event_date_start = fields.Datetime(string="Starting Time", readonly=True, states={'draft': [('readonly', False)]})
+    event_date_start = fields.Datetime(string="Starting Time", readonly=True, states={'draft': [('readonly', False)]}, required=True)
     event_date_end = fields.Datetime(string="Finish", readonly=True, states={'draft': [('readonly', False)]})
     number_of_days = fields.Integer("Number of days", readonly=True, states={'draft': [('readonly', False)]})
 
@@ -121,9 +121,14 @@ class MasterEvent(models.Model):
                 temp_dict = {
                     'id': i.uuid,
                     'name': i.name,
+                    'start_date': i.event_date_start and datetime.strftime(i.event_date_start, '%d %b %Y') or False,
+                    'end_date': i.event_date_end and datetime.strftime(i.event_date_end, '%d %b %Y') or False,
+                    'start_time': i.event_date_start and datetime.strftime(i.event_date_start, '%H:%M') or False,
+                    'end_time': i.event_date_end and datetime.strftime(i.event_date_end, '%H:%M') or False,
                     'category': [rec.name for rec in i.category_ids],
                     'locations': [self.format_api_location(loc.id) for loc in i.location_ids],
-                    'detail': i.description,
+                    'description': i.description,
+                    'itinerary': i.itinerary,
                     'terms_and_condition': i.additional_info,
                     'provider': i.provider_id.name,
                     'option': [i.format_api_option(opt.id) for opt in i.option_ids],
@@ -131,7 +136,7 @@ class MasterEvent(models.Model):
                         'vendor_name': i.event_vendor_id.name,
                         'vendor_logo': i.event_vendor_id.logo or False
                     },
-                    'images': [i.format_api_image(img) for img in self.image_ids],
+                    'images': [i.format_api_image(img) for img in i.image_ids],
                     # 'age_restriction': i.age_restriction,
                     'eligible_age': i.eligible_age
                 }
@@ -168,7 +173,7 @@ class MasterEvent(models.Model):
 
     def format_api_image(self, img):
         return {
-            'url': img.path or img.url,
+            'url': img.url or img.path,
             'description': img.file_reference,
         }
 
