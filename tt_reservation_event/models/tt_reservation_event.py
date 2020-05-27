@@ -220,6 +220,7 @@ class ReservationEvent(models.Model):
             event_code = req.get('event_code') and req['event_code'] or False
             event_option_codes = req.get('event_option_codes') and req['event_option_codes'] or False
             provider = req.get('provider') and req['provider'] or False
+            event_answer = req.get('event_answer') and req['event_answer'] or False
 
             #create all dependencies
             booker_obj = self.create_booker_api(booker_data, context)
@@ -230,7 +231,8 @@ class ReservationEvent(models.Model):
             event_id = self.env['tt.master.event'].sudo().search([('uuid', '=', event_code)], limit=1)
             event_options = []
             for i in event_option_codes:
-                event_options.append( self.env['tt.event.option'].sudo().search([('option_code', '=', i['option_code'])]))
+                for j in range(i['qty']):
+                    event_options.append( self.env['tt.event.option'].sudo().search([('option_code', '=', i['option_code'])]))
 
             #build temporary dict
             temp_main_dictionary = {
@@ -253,16 +255,15 @@ class ReservationEvent(models.Model):
                 }
                 option_obj = self.env['tt.reservation.event.option'].create(temp_option_dict)
 
-                # a = 0
-                # for j in opt_obj:
-                #     new_j = req['event_option_codes'][a]['extra_question']
-                #     temp_extra_question_dict = {
-                #         'reservation_event_option_id': book_obj.id,
-                #         'extra_question_id': j['question_id'],
-                #         'answer': j['answer']
-                #     }
-                #     self.env['tt.reservation.event.extra.question'].create(temp_extra_question_dict)
-                #     a += 1
+                for j in event_answer:
+                    for j1 in j['answer']:
+                        temp_extra_question_dict = {
+                            'reservation_event_option_id': option_obj.id,
+                            # 'extra_question_id': j1['question_id'],
+                            'question': j1['que'],
+                            'answer': j1['ans']
+                        }
+                        self.env['tt.reservation.event.extra.question'].create(temp_extra_question_dict)
 
             # Create Provider Ids
             self.env['tt.provider.event'].create({
@@ -482,13 +483,16 @@ class TtReservationEventVoucher(models.Model):
     name = fields.Char('URL')
     booking_id = fields.Many2one('tt.reservation.event', 'Reservation')
 
+
 class TtReservationExtraQuestion(models.Model):
     _name = 'tt.reservation.event.extra.question'
     _description = 'Rodex Event Model'
 
-    reservation_event_option_id = fields.Many2one('tt.reservation.event', 'Reservation ID')
+    reservation_event_option_id = fields.Many2one('tt.reservation.event.option', 'Option')
     extra_question_id = fields.Many2one('tt.event.extra.question', 'Extra Question')
+    question = fields.Char('Question')
     answer = fields.Char('answer')
+
 
 class PrinoutEventInvoice(models.AbstractModel):
     _name = 'report.tt_reservation_event.printout_event_invoice'
