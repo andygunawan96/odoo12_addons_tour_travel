@@ -26,6 +26,7 @@ class TtVendor(models.Model):
     seq_id = fields.Char('Sequence ID', index=True, readonly=True)
     npwp = fields.Char(string="NPWP", required=False, )
     est_date = fields.Datetime(string="Est. Date", required=False, )
+    join_date = fields.Datetime(string="Join Date")
     website = fields.Char(string="Website", required=False, )
     email = fields.Char(string="Email", required=False, )
     currency_id = fields.Many2one('res.currency', string='Currency', default=lambda self: self.env.user.company_id.currency_id)
@@ -36,3 +37,5 @@ class TtVendor(models.Model):
     user_ids = fields.One2many('res.users', 'vendor_id', 'Users')
     payment_acquirer_ids = fields.One2many('payment.acquirer','agent_id',string="Payment Acquirer")  # payment_acquirer
     active = fields.Boolean('Active', default='True')
+
+    description = fields.Char('Description', default='')
