@@ -18,15 +18,26 @@
                                 <field name="name" required="True"/>
                             </h1>
                         </div>
-                        <field name="sequence"/>
+                        <group>
+                            <group>
+                                <field name="sequence"/>
+                            </group>
+                            <group></group>
+                        </group>
                         <separator string="Providers"/>
                         <group>
-                            <field name="provider_access_type"/>
+                            <group>
+                                <field name="provider_access_type"/>
+                            </group>
+                            <group></group>
                         </group>
                         <field name="provider_ids"/>
                         <separator string="Carriers"/>
                         <group>
-                            <field name="carrier_access_type"/>
+                            <group>
+                                <field name="carrier_access_type"/>
+                            </group>
+                            <group></group>
                         </group>
                         <field name="carrier_ids"/>
                         <separator string="Loyalty Programs"/>
@@ -41,7 +52,7 @@
             <field name="model">tt.frequent.flyer.airline</field>
             <field name="arch" type="xml">
                 <tree string="Frequent Flyer Airline">
-                    <field name="sequence"/>
+                    <field name="sequence" widget="handle"/>
                     <field name="name"/>
                     <field name="provider_access_type"/>
                     <field name="display_providers"/>
