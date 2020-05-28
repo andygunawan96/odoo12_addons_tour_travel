@@ -36,6 +36,17 @@
             </field>
         </record>
 
+        <record id="tt_loyalty_program_view_search" model="ir.ui.view">
+            <field name="name">tt.loyalty.program.view.search</field>
+            <field name="model">tt.loyalty.program</field>
+            <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+                <filter name="inactive" string="Archived" domain="[('active','=',False)]"/>
+            </search>
+            </field>
+        </record>
+
         <record id="tt_loyalty_program_action_view" model="ir.actions.act_window">
             <field name="name">Loyalty Program</field>
             <field name="view_type">form</field>
