@@ -609,6 +609,22 @@ class TtReservation(models.Model):
     def get_total_amount(self,method='full'):
         return self.total
 
+    # May 28, 2020 - SAM
+    def get_balance_due(self):
+        return self.agent_nta - self.get_ledger_amount()
+
+    def get_ledger_amount(self):
+        total_debit = 0.0
+        total_credit = 0.0
+        for ledger in self.ledger_ids:
+            if ledger.debit != 0:
+                total_debit += ledger.debit
+            if ledger.credit != 0:
+                total_credit += ledger.credit
+        result = total_credit - total_debit
+        return result
+    # END
+
     ## Digunakan untuk mengupdate PNR seluruh ledger untuk resv ini
     # Digunakan di hotel dan activity
     def update_ledger_pnr(self, new_pnr):
@@ -652,8 +668,11 @@ class TtReservation(models.Model):
 
                 agent_check_amount = book_obj.get_nta_amount(payment_method)
 
-                if agent_check_amount <= 0:
+                # May 28, 2020 - SAM
+                # Sementara ditambahkan untuk pengecekkan state apabila ditemukan agent check amount <= 0
+                if agent_check_amount <= 0 and book_obj.state in ['issued', 'partial_issued']:
                     raise Exception("Cannot Payment 0 or lower.")
+                # END
 
                 voucher = ''
                 ### voucher agent here##

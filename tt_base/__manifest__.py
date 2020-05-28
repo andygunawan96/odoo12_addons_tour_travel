@@ -93,6 +93,7 @@ Key Features
         'views/tt_vendor_views.xml',
 
         'views/ir_ui_menu_views.xml',
+        'views/tt_loyalty_program_views.xml',
     ],
     'demo': [],
     'qweb': [],

@@ -1581,6 +1581,7 @@ class ReservationAirline(models.Model):
         for provider_obj in self.provider_booking_ids:
             # if provider_obj.state == 'issued':
             #     continue
+
             for sc in provider_obj.cost_service_charge_ids:
                 if sc.is_ledger_created or (sc.charge_type == 'RAC' and sc.charge_code != 'rac'):
                     continue
