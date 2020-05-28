@@ -21,7 +21,7 @@
         <field name="arch" type="xml">
             <form string="">
                 <header>
-                    <button name="action_draft" class="object" string="Draft"></button>
+                    <button name="action_draft" type="object" string="Draft"></button>
                     <button name="action_confirm" type="object" string="Confirm"></button>
                     <field name="state" widget="statusbar" statusbar_visible="draft,confirm"/>
                 </header>
