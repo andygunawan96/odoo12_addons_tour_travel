@@ -242,7 +242,8 @@ class Ledger(models.Model):
         ledger_values = self.prepare_vals(booking_obj._name,booking_obj.id,'Order : ' + booking_obj.name, booking_obj.name, datetime.now()+relativedelta(hours=7),
                                           2, booking_obj.currency_id.id, issued_uid, 0, amount)
 
-        ledger_values = self.prepare_vals_for_resv(booking_obj,provider_obj.pnr,ledger_values,provider_obj.provider_id.code)
+        pnr_text = provider_obj.pnr if provider_obj.pnr else str(provider_obj.sequence)
+        ledger_values = self.prepare_vals_for_resv(booking_obj,pnr_text,ledger_values,provider_obj.provider_id.code)
         self.create(ledger_values)
         ledger_created = True
         return ledger_created
@@ -271,7 +272,8 @@ class Ledger(models.Model):
             ledger_values.update({
                 'agent_id': abs(agent_id),
             })
-            values = self.prepare_vals_for_resv(booking_obj,provider_obj.pnr,ledger_values,provider_obj.provider_id.code)
+            pnr_text = provider_obj.pnr if provider_obj.pnr else str(provider_obj.sequence)
+            values = self.prepare_vals_for_resv(booking_obj,pnr_text,ledger_values,provider_obj.provider_id.code)
             self.sudo().create(values)
             ledger_created = True
         return ledger_created
@@ -284,6 +286,50 @@ class Ledger(models.Model):
         commission_created = self.create_commission_ledger(provider_obj,issued_uid)
         ledger_created = self.create_ledger(provider_obj,issued_uid)
         return commission_created or ledger_created
+
+    # May 12, 2020 - SAM
+    def action_adjustment_ledger(self, provider, provider_obj, issued_uid):
+        agent_id = provider_obj.booking_id.agent_id.id
+        pnr = provider['pnr']
+        provider_sequence = str(provider_obj.sequence)
+
+        # Calculate Vendor Amount
+        provider_total_price = 0.0
+        provider_total_commission_parent_dict = {}
+        provider_total_commission_agent = 0.0
+        for journey in provider['journeys']:
+            for seg in journey['segments']:
+                for fare in seg['fares']:
+                    for sc in fare['service_charges']:
+                        if sc['charge_type'] == 'RAC':
+                            if not sc.get('commission_agent_id') or sc['commission_agent_id'] != agent_id:
+                                commission_agent_id = sc['commission_agent_id']
+                                if not provider_total_commission_parent_dict.get(commission_agent_id):
+                                    provider_total_commission_parent_dict[commission_agent_id] = 0.0
+                                provider_total_commission_parent_dict[commission_agent_id] += sc['total']
+                            else:
+                                provider_total_commission_agent += sc['total']
+                        else:
+                            provider_total_price += sc['total']
+
+        for psg in provider['passengers']:
+            for fee in psg['fees']:
+                for sc in fee['service_charges']:
+                    if sc['charge_type'] == 'RAC':
+                        if not sc.get('commission_agent_id') or sc['commission_agent_id'] != agent_id:
+                            commission_agent_id = sc['commission_agent_id']
+                            if not provider_total_commission_parent_dict.get(commission_agent_id):
+                                provider_total_commission_parent_dict[commission_agent_id] = 0.0
+                            provider_total_commission_parent_dict[commission_agent_id] += sc['total']
+                        else:
+                            provider_total_commission_agent += sc['total']
+                    else:
+                        provider_total_price += sc['total']
+
+        # Calculate Reservation Amount
+        for led in provider_obj.booking_id.ledger_ids:
+            ledger_pnr = led.pnr
+    # END
 
     def re_compute_ledger_balance(self):
         if not self.customer_parent_id:

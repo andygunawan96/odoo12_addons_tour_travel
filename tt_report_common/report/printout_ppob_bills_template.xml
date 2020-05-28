@@ -53,7 +53,7 @@
                         <span t-esc="values['period']"/><br/>
                         <span t-esc="int(values['before_meter'])"/> - <span t-esc="int(values['after_meter'])"/><br/>
                         <span t-field="doc.currency_id.symbol"/> <span t-esc="values['total_tagihan_pln']"/><br/>
-                        <span t-field="provider.pnr"/><br/>
+                        <span t-field="provider.pnr2"/><br/>
                     </div>
                 </div>
             </t>
@@ -161,7 +161,7 @@
                         <span t-field="provider.customer_id_number"/><br/>
                         <span t-field="provider.customer_name"/><br/>
                         <span t-field="provider.fare_type"/>/<span t-field="provider.power"/> VA<br/>
-                        <span t-field="provider.pnr"/><br/>
+                        <span t-field="provider.pnr2"/><br/>
                         <span t-field="doc.currency_id.symbol"/> <span t-esc="values['total']"/><br/>
                         <span t-field="doc.currency_id.symbol"/> <span t-esc="values['stamp_fee']"/><br/>
                         <span t-field="doc.currency_id.symbol"/> <span t-esc="values['ppn']"/><br/>
@@ -241,7 +241,7 @@
                         <span t-field="provider.customer_name"/><br/>
                         <span t-field="provider.customer_number"/><br/>
                         <span t-field="doc.currency_id.symbol"/> <span t-esc="values['total_tagihan_pln']"/><br/>
-                        <span t-field="provider.pnr"/><br/>
+                        <span t-field="provider.pnr2"/><br/>
                     </div>
                 </div>
             </t>
@@ -333,12 +333,12 @@
                         <span>:</span><br/>
                     </div>
                     <div class="col-7">
-                        <span t-field="provider.payment_session_id"/><br/>
+                        <span t-field="provider.pnr"/><br/>
                         <span t-esc="values['date']"/><br/>
                         <span t-field="provider.customer_number"/><br/>
                         <span t-field="provider.customer_name"/><br/>
                         <span t-esc="values['jumlah_peserta']"/><br/>
-                        <span t-field="provider.pnr"/><br/>
+                        <span t-field="provider.pnr2"/><br/>
                         <span t-field="doc.currency_id.symbol"/> <span t-esc="values['unpaid_bill_display']"/><br/>
                         <span t-esc="values['period']"/><br/>
                         <span t-field="doc.currency_id.symbol"/> <span t-esc="values['tarif']"/><br/>

@@ -64,7 +64,7 @@
     </record>
 
     <record id="tt_reconcile_transaction_lines_form_view" model="ir.ui.view">
-        <field name="name">tt.reconile.transaction.lines.form.view</field>
+        <field name="name">tt.reconcile.transaction.lines.form.view</field>
         <field name="model">tt.reconcile.transaction.lines</field>
         <field name="arch" type="xml">
             <form create="false">
@@ -114,7 +114,8 @@
         <field name="name">tt.reconcile.transaction.lines.tree.page</field>
         <field name="model">tt.reconcile.transaction.lines</field>
         <field name="arch" type="xml">
-            <tree create="false" decoration-danger="state=='done'" decoration-success="state=='match'">
+<!--            <tree>-->
+            <tree create="false" decoration-info="state=='done'" decoration-success="state=='match'" decoration-danger="state=='ignore'">
                 <field name="pnr"/>
                 <field name="type"/>
                 <field name="issued_time"/>

@@ -22,16 +22,6 @@
                         </group>
                     </group>
                     <group>
-                        <group>
-                            <!--<field name="agent_id"/>-->
-                            <field name="name"/>
-                            <field name="provider_id"/>
-                        </group>
-                        <group>
-
-                        </group>
-                    </group>
-                    <group>
                         <separator colspan="6" string="Booking"/>
                         <group>
                             <field name="origin_id"/>
@@ -44,10 +34,15 @@
                     </group>
                     <group>
                         <group>
+                            <field name="name"/>
+                            <field name="provider_id"/>
                         </group>
                         <group>
                             <field name="cabin_class"/>
                             <field name="class_of_service"/>
+                            <field name="fare_basis_code"/>
+                            <field name="fare_class"/>
+                            <field name="fare_name"/>
                         </group>
                     </group>
                     <separator colspan="6" string="Legs"/>

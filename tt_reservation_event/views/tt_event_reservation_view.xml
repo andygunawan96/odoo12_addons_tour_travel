@@ -1,0 +1,74 @@
+<odoo>
+    <record id="tt_master_event_reservation_view_filter" model="ir.ui.view">
+        <field name="name">tt.master.event.reservation.view.filter</field>
+        <field name="model">tt.event.reservation</field>
+        <field name="arch" type="xml">
+            <search string="Search Event">
+                <field name="pnr"/>
+                <field name="sales_date"/>
+                <field name="event_id"/>
+
+                <group expand="0" string="Group By">
+                    <filter name="group_by_event_id" string="Event" domain="[]" context="{'group_by':'event_id'}"/>
+                    <filter name="group_by_option_id" string="Option" domain="[]" context="{'group_by':'event_option_id'}"/>
+                    <filter name="group_by_sales_date" string="Sales" domain="[]" context="{'group_by':'sales_date'}"/>
+                    <filter name="group_by_order_number" string="Order Number" domain="[]" context="{'group_by':'order_number'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record model="ir.ui.view" id="tt_event_reservation_view_form">
+        <field name="name">tt.master.event.reservation.view.form</field>
+        <field name="model">tt.event.reservation</field>
+        <field name="arch" type="xml">
+            <form string="">
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="event_id"/>
+                            <field name="event_option_id"/>
+                            <field name="pnr"/>
+                        </group>
+                        <group>
+                            <field name="booker_id"/>
+                            <field name="contact_id"/>
+                            <field name="sales_date"/>
+                            <field name="order_number"/>
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record model="ir.ui.view" id="tt_event_reservation_view_tree">
+        <field name="name">tt.master.event.reservation.view.tree</field>
+        <field name="model">tt.event.reservation</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="pnr"/>
+                <field name="event_id"/>
+                <field name="booker_id"/>
+                <field name="sales_date"/>
+            </tree>
+        </field>
+    </record>
+
+    <record model="ir.actions.act_window" id="tt_master_event_reservation_view_action">
+        <field name="name">Event Reservation</field>
+        <field name="res_model">tt.event.reservation</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+        <field name="domain">[]</field>
+        <field name="context">{}</field>
+    </record>
+
+    <menuitem id="top_external_vendor_event_reservation"
+              parent="tt_base.top_external_vendor_transaction"
+              name="Event Reservation"
+              groups="tt_base.group_tt_external_vendor_operator"
+              action="tt_reservation_event.tt_master_event_reservation_view_action"
+    />
+
+</odoo>

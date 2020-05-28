@@ -19,7 +19,7 @@ class MasterEvent(models.Model):
     _name = "tt.master.event"
     _description = "Rodex Event Model"
 
-    uuid = fields.Char('Uuid', readonly=True, states={'draft': [('readonly', False)]})
+    uuid = fields.Char('UUID', readonly=True, required=False, states={'draft': [('readonly', False)]})
     name = fields.Char('Event Name', readonly=True, states={'draft': [('readonly', False)]})
 
     category_ids = fields.Many2many('tt.event.category', 'tt_event_category_rel', 'event_id', 'category_id', string='Category', readonly=True, states={'draft': [('readonly', False)]})
@@ -32,7 +32,7 @@ class MasterEvent(models.Model):
     description = fields.Html('Description', readonly=True, states={'draft': [('readonly', False)]})
     additional_info = fields.Html('Additional Info', readonly=True, states={'draft': [('readonly', False)]})
     kid_friendly = fields.Boolean('Age Restriction', default=False, readonly=True, states={'draft': [('readonly', False)]})
-    eligible_age = fields.Integer('Eligible Age', default=1, readonly=True, states={'draft': ['readonly', False]})
+    eligible_age = fields.Integer('Eligible Age', default=1, readonly=True, states={'draft': [('readonly', False)]})
     itinerary = fields.Html('Itinerary', readonly=True, states={'draft': [('readonly', False)]})
     to_notice = fields.Html('Warnings', readonly=True, states={'draft': [('readonly', False)]})
     extra_question_ids = fields.One2many('tt.event.extra.question', 'event_id', readonly=True, states={'draft':[('readonly', False)]})
@@ -41,7 +41,7 @@ class MasterEvent(models.Model):
     locations = fields.Char('Locations', readonly=True)
 
     # event_by_id = fields.Many2one('tt.event.by', 'Event By', readonly=True, states={'draft': [('readonly', False)]})
-    event_date_start = fields.Datetime(string="Starting Time", readonly=True, states={'draft': [('readonly', False)]})
+    event_date_start = fields.Datetime(string="Starting Time", readonly=True, states={'draft': [('readonly', False)]}, required=True)
     event_date_end = fields.Datetime(string="Finish", readonly=True, states={'draft': [('readonly', False)]})
     number_of_days = fields.Integer("Number of days", readonly=True, states={'draft': [('readonly', False)]})
 
@@ -121,9 +121,14 @@ class MasterEvent(models.Model):
                 temp_dict = {
                     'id': i.uuid,
                     'name': i.name,
+                    'start_date': i.event_date_start and datetime.strftime(i.event_date_start, '%d %b %Y') or False,
+                    'end_date': i.event_date_end and datetime.strftime(i.event_date_end, '%d %b %Y') or False,
+                    'start_time': i.event_date_start and datetime.strftime(i.event_date_start, '%H:%M') or False,
+                    'end_time': i.event_date_end and datetime.strftime(i.event_date_end, '%H:%M') or False,
                     'category': [rec.name for rec in i.category_ids],
                     'locations': [self.format_api_location(loc.id) for loc in i.location_ids],
-                    'detail': i.description,
+                    'description': i.description,
+                    'itinerary': i.itinerary,
                     'terms_and_condition': i.additional_info,
                     'provider': i.provider_id.name,
                     'option': [i.format_api_option(opt.id) for opt in i.option_ids],
@@ -131,8 +136,8 @@ class MasterEvent(models.Model):
                         'vendor_name': i.event_vendor_id.name,
                         'vendor_logo': i.event_vendor_id.logo or False
                     },
-                    'images': [i.format_api_image(img) for img in self.image_ids],
-                    'age_restriction': i.age_restriction,
+                    'images': [i.format_api_image(img) for img in i.image_ids],
+                    # 'age_restriction': i.age_restriction,
                     'eligible_age': i.eligible_age
                 }
                 # temp_dict = i.format_api()
@@ -168,7 +173,7 @@ class MasterEvent(models.Model):
 
     def format_api_image(self, img):
         return {
-            'url': img.path or img.url,
+            'url': img.url or img.path,
             'description': img.file_reference,
         }
 
@@ -191,9 +196,9 @@ class MasterEvent(models.Model):
             'currency': timeslot.currency_id.name,
             'is_non_refundable': timeslot.is_non_refundable,
             'advance_booking_days': timeslot.advance_booking_days,
-            'qty_available': '1',
+            'qty_available': timeslot.quota,
             'min_qty': '1',
-            'max_qty': '5',
+            'max_qty': timeslot.max_ticket == -1 and timeslot.quota or timeslot.max_ticket,
             'description': timeslot.cancellation_policies,
             # 'timeslot': [self.format_api_timeslot(slot.id) for slot in timeslot.timeslot_ids]
             'timeslot': []
@@ -240,11 +245,12 @@ class MasterEvent(models.Model):
 
     def get_form_api(self, req, context):
         try:
-            res = self.env['tt.master.event'].sudo().search(['|',('uuid', '=', req['event_code']),('id', '=', req['event_code'])])
+            res = self.env['tt.master.event'].sudo().search([('uuid', '=', req['event_code'])])
             result = [{
                 'question': rec.question,
                 'type': rec.answer_type,
                 'required': rec.is_required,
+                'is_add_other': rec.is_add_other, #Checkbox
                 'answers': [{
                     'answer': aws.answer
                 } for aws in rec.answer_ids]
@@ -299,33 +305,34 @@ class MasterEvent(models.Model):
                 pnr = self.env['ir.sequence'].next_by_code('pnr_sequence')
             else:
                 pnr = 'E' + req['order_number']
+
+            temp_event_reservation_dict.update({'pnr': pnr,})
             self.env['tt.event.reservation'].sudo().create(temp_event_reservation_dict)
         for i in req['event_option_codes']:
             option_obj = self.env['tt.event.option'].sudo().search([('option_code', '=', i['option_code'])])
             option_obj.action_hold_book(1)
         return ERR.get_no_error({'pnr': pnr, 'hold_date': str(datetime.now() + relativedelta(minutes=45))[:16]+':00' })
 
-    def action_issued(self, pnr):
-        #search all of the reservation
-        booking_event_obj = self.sudo().search([('pnr', '=', pnr)])
+    def issued_master_event_from_api(self, pnr):
+        try:
+            #search all of the reservation
+            booking_event_obj = self.env['tt.event.reservation'].sudo().search([('pnr', '=', pnr)])
 
-        order_unmbers = []
-        for i in booking_event_obj:
-            i.making_sales(1)
-            order_unmbers.append(i.order_number)
+            email_content = "<ul>"
+            for i in booking_event_obj:
+                i.event_option_id.making_sales(1)
+                email_content += "<li>{}</li>".format(i.order_number)
+            email_content += "</ul>"
 
-        email_content  = "<ul>"
-        for i in order_unmbers:
-            email_content += "<li>{}</li>".format(i)
-        email_content += "</ul>"
-
-        #notificate the vendor
-        template = self.env.ref('tt_reservation_event.template_mail_vendor_notification')
-        mail = self.env['mail.template'].browse(template.id)
-        mail.send_mail(self.id)
-
-        email_content = False
-        return ERR.get_no_error()
+            #notificate the vendor
+            self.email_content = email_content
+            template = self.env.ref('tt_reservation_event.template_mail_vendor_notification')
+            mail = self.env['mail.template'].browse(template.id)
+            mail.send_mail(self.id)
+            self.email_content = False
+            return ERR.get_no_error()
+        except:
+            return ERR.get_no_error()
 
     # def reprice_currency(self, req,  context):
     #     _logger.info('REPRICE CURRENCY EVENT')

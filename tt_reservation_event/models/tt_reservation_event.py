@@ -220,6 +220,7 @@ class ReservationEvent(models.Model):
             event_code = req.get('event_code') and req['event_code'] or False
             event_option_codes = req.get('event_option_codes') and req['event_option_codes'] or False
             provider = req.get('provider') and req['provider'] or False
+            event_answer = req.get('event_answer') and req['event_answer'] or False
 
             #create all dependencies
             booker_obj = self.create_booker_api(booker_data, context)
@@ -230,7 +231,8 @@ class ReservationEvent(models.Model):
             event_id = self.env['tt.master.event'].sudo().search([('uuid', '=', event_code)], limit=1)
             event_options = []
             for i in event_option_codes:
-                event_options.append( self.env['tt.event.option'].sudo().search([('option_code', '=', i['option_code'])]))
+                for j in range(i['qty']):
+                    event_options.append( self.env['tt.event.option'].sudo().search([('option_code', '=', i['option_code'])]))
 
             #build temporary dict
             temp_main_dictionary = {
@@ -245,17 +247,6 @@ class ReservationEvent(models.Model):
             }
             book_obj = self.create(temp_main_dictionary)
 
-            # Create Provider Ids
-            self.env['tt.provider.event'].create({
-                'provider_id': provider_id.id,
-                'booking_id': book_obj.id,
-                'balance_due': book_obj.id, #di PNR
-                'event_id': event_id and event_id.id or False,
-                'event_product_id': event_id.id,
-                'event_product': event_id and event_id.name or req.get('event_name'),
-                'event_product_uuid': event_id and event_id.uuid or req.get('event_id'),
-            })
-
             #fill child table of resrevation event
             for opt_obj in event_options:
                 temp_option_dict = {
@@ -264,20 +255,37 @@ class ReservationEvent(models.Model):
                 }
                 option_obj = self.env['tt.reservation.event.option'].create(temp_option_dict)
 
-                # a = 0
-                # for j in opt_obj:
-                #     new_j = req['event_option_codes'][a]['extra_question']
-                #     temp_extra_question_dict = {
-                #         'reservation_event_option_id': book_obj.id,
-                #         'extra_question_id': j['question_id'],
-                #         'answer': j['answer']
-                #     }
-                #     self.env['tt.reservation.event.extra.question'].create(temp_extra_question_dict)
-                #     a += 1
+                for idx, j in enumerate(event_answer):
+                    if opt_obj.option_code == j['option_code']:
+                        for j1 in j['answer']:
+                            temp_extra_question_dict = {
+                                'reservation_event_option_id': option_obj.id,
+                                # 'extra_question_id': j1['question_id'],
+                                'question': j1['que'],
+                                'answer': j1['ans']
+                            }
+                            self.env['tt.reservation.event.extra.question'].create(temp_extra_question_dict)
+                        event_answer.pop(idx)
+                        break
 
+            # Create Provider Ids
+            self.env['tt.provider.event'].create({
+                'provider_id': provider_id.id,
+                'booking_id': book_obj.id,
+                'balance_due': 0,  # di PNR
+                'event_id': event_id and event_id.id or False,
+                'event_product_id': event_id.id,
+                'event_product': event_id and event_id.name or req.get('event_name'),
+                'event_product_uuid': event_id and event_id.uuid or req.get('event_id'),
+            })
+
+            balance_due = 0
             #Create Service Charge
             for scs1 in req.get('service_charges') or []:
                 for scs in scs1:
+                    if scs['charge_type'] not in ['rac', 'rox']:
+                        balance_due += scs['amount'] * scs['pax_count']
+                    # Sale Service Charge
                     self.env['tt.service.charge'].create({
                         'booking_event_id': book_obj.id,
                         'charge_code': scs['charge_code'],
@@ -291,6 +299,21 @@ class ReservationEvent(models.Model):
                         'commission_agent_id': scs['commission_agent_id'],
                     })
 
+                    # Cost Service Charge
+                    self.env['tt.service.charge'].create({
+                        'provider_event_booking_id': book_obj.provider_booking_ids[0].id,
+                        'charge_code': scs['charge_code'],
+                        'charge_type': scs['charge_type'],
+                        'pax_type': scs['pax_type'],
+                        'pax_count': scs['pax_count'],
+                        'amount': scs['amount'],
+                        'foreign_amount': scs['foreign_amount'],
+                        'total': scs['amount'] * scs['pax_count'],
+                        'description': book_obj.pnr and book_obj.pnr or '',
+                        'commission_agent_id': scs['commission_agent_id'],
+                    })
+
+            book_obj.provider_booking_ids[0].balance_due = balance_due
             book_obj.action_booked()
             response = {
                 'book_id': book_obj.id,
@@ -318,14 +341,15 @@ class ReservationEvent(models.Model):
         if booking_obj:
             booking_obj.update({'pnr': req['pnr'], 'hold_date': req['hold_date']})
             for rec in req['providers']:
-                for prov in booking_obj.provider_booking_ids.filtered(lambda x: x.provider_id.name == rec):
+                for prov in booking_obj.provider_booking_ids.filtered(lambda x: x.provider_id.code == rec):
                     prov.update({
-                        'pnr': '',
-                        'pnr2': '',
-                        'status': 'booked',
-                        'sid_booked': '',
-                        'booked_uid': '',
-                        'booked_date': '',
+                        'pnr': req['pnr'],
+                        'pnr2': req['pnr'],
+                        'state': 'booked',
+                        'hold_date': req['hold_date'],
+                        'sid_booked': context['sid'],
+                        'booked_uid': context['co_uid'],
+                        'booked_date': datetime.now(),
                     })
             return ERR.get_no_error({
                 'book_id': booking_obj.id,
@@ -378,6 +402,72 @@ class ReservationEvent(models.Model):
             _logger.error(traceback.format_exc())
             return e.error_dict()
 
+    def payment_event_api(self, data, context):
+        return self.payment_reservation_api('event', data, context)
+
+    def action_issued_event(self, context):
+        self.state = 'issued'
+        self.issued_uid = context['co_uid']
+        self.issued_date = datetime.now()
+
+    def action_create_invoice(self, acq_id, uid, customer_parent_id):
+        return True
+
+    def issued_booking_api(self, data, context):
+        try:
+            if data.get('order_id'):
+                book_obj = self.env['tt.reservation.event'].sudo().browse(int(data['order_id']))
+            else:
+                book_objs = self.env['tt.reservation.event'].sudo().search([('name', '=', data['order_number'])],
+                                                                          limit=1)
+                book_obj = book_objs[0]
+
+            acquirer_id, customer_parent_id = book_obj.get_acquirer_n_c_parent_id(data)
+
+            book_obj.sudo().write({
+                'customer_parent_id': customer_parent_id,
+            })
+            book_obj.action_issued_event(context)
+            self.env.cr.commit()
+
+            if book_obj.state == 'issued':
+                book_obj.action_create_invoice(acquirer_id and acquirer_id.id or False, context['co_uid'], customer_parent_id)
+
+            response = {
+                'order_id': book_obj.id,
+                'order_number': book_obj.name,
+                'state': book_obj.state,
+                'pnr': book_obj.pnr,
+                'provider': [{
+                    'provider': opt.event_option_id.event_id.provider_id.code or 'event_internal',
+                    'booking_code': opt.event_option_id.event_id.provider_id.code,
+                    'option': opt.event_option_id.option_code,
+                } for opt in book_obj.option_ids],
+            }
+            return ERR.get_no_error(response)
+        except:
+            raise RequestException(1003)
+
+    def set_provider_issued_event_api(self, req, context):
+        booking_obj = self.search([('name', '=', req['order_number'])], limit=1)
+        if booking_obj:
+            for rec in req['providers']:
+                for prov in booking_obj.provider_booking_ids.filtered(lambda x: x.provider_id.code == rec):
+                    prov.update({
+                        'pnr2': req['pnr'],
+                        'state': 'issued',
+                        'sid_issued': context['sid'],
+                        'issued_uid': context['co_uid'],
+                        'issued_date': datetime.now(),
+                    })
+            return ERR.get_no_error({
+                'book_id': booking_obj.id,
+                'order_number': booking_obj.name,
+                'status': booking_obj.state,
+                'hold_date': booking_obj.hold_date,
+                'PNR': booking_obj.pnr,
+            })
+
 
 class TtReservationEventOption(models.Model):
     _name = 'tt.reservation.event.option'
@@ -397,13 +487,16 @@ class TtReservationEventVoucher(models.Model):
     name = fields.Char('URL')
     booking_id = fields.Many2one('tt.reservation.event', 'Reservation')
 
+
 class TtReservationExtraQuestion(models.Model):
     _name = 'tt.reservation.event.extra.question'
     _description = 'Rodex Event Model'
 
-    reservation_event_option_id = fields.Many2one('tt.reservation.event', 'Reservation ID')
+    reservation_event_option_id = fields.Many2one('tt.reservation.event.option', 'Option')
     extra_question_id = fields.Many2one('tt.event.extra.question', 'Extra Question')
+    question = fields.Char('Question')
     answer = fields.Char('answer')
+
 
 class PrinoutEventInvoice(models.AbstractModel):
     _name = 'report.tt_reservation_event.printout_event_invoice'

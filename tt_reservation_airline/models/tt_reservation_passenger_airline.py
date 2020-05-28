@@ -22,7 +22,7 @@ class TtReservationCustomer(models.Model):
             fee_list.append(rec.to_dict())
         res.update({
             'sale_service_charges': self.get_service_charges(),
-            'fees': fee_list
+            'fees': fee_list,
         })
         if len(self.channel_service_charge_ids.ids)>0:
             res['channel_service_charges'] = self.get_channel_service_charges()
@@ -54,6 +54,9 @@ class TtReservationCustomer(models.Model):
                 'description': json.dumps(ssr['description']),
                 'amount': amount,
                 'passenger_id': self.id,
+                'pnr': pnr,
+                'provider_id': provider_id,
+                'journey_code': ssr['journey_code'],
             }
             if currency_id:
                 ssr_values['currency_id'] = currency_id

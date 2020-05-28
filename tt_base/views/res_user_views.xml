@@ -10,6 +10,7 @@
             </xpath>
             <xpath expr="//div[hasclass('oe_title')]/group/field[@name='partner_id']" position="after">
                 <field name='agent_id' groups="base.group_user" readonly="False"/>
+                <field name='vendor_id' groups="base.group_user" readonly="False"/>
             </xpath>
             <xpath expr="//notebook/page[last()]" position="after">
                 <page string="User Info" name="skytors">

@@ -10,6 +10,7 @@ SESSION_NT = session.Session()
 class MasterEventReservation(models.Model):
     _name = "tt.event.reservation"
     _description = "Rodex Event Model"
+    _order = 'id desc'
 
     event_id = fields.Many2one('tt.master.event', 'Event ID')
     event_option_id = fields.Many2one('tt.event.option', 'Event option ID')
@@ -39,12 +40,13 @@ class MasterEventExtraQuestion(models.Model):
 
     event_id = fields.Many2one('tt.master.event', 'Event ID', ondelete="cascade")
     question = fields.Char('Question')
-    answer_type = fields.Selection([('text', 'Text'), ('password', 'Password'), ('number', 'Number'), ('email', 'Email'), ('boolean', 'Boolean'), ('selection', 'Selection'), ('date', 'Date')], default="text", required="1")
+    answer_type = fields.Selection([('text', 'Text'), ('password', 'Password'), ('number', 'Number'), ('email', 'Email'), ('boolean', 'Boolean'), ('selection', 'Selection'), ('date', 'Date'), ('checkbox', 'CheckBox')], default="text", required="1")
     # answer = fields.Char('Answer')
     is_required = fields.Boolean('Is Required', default=False)
     max_length = fields.Integer('Max Length', default=255)
     answer_ids = fields.One2many('tt.event.extra.question.answer', 'extra_question_id')
     reservation_answer_ids = fields.One2many('tt.reservation.event.extra.question', 'extra_question_id')
+    is_add_other = fields.Boolean('Other', default=False, help="When using checkbox you can add empty field to accept other answer from your customer")
 
 class MasterEventExtraQuestionAnswer(models.Model):
     _name = 'tt.event.extra.question.answer'
@@ -88,9 +90,11 @@ class MasterEventCategory(models.Model):
             'response': self.get_from_api(data['name'], False, []),
         }
 
+
 class EventOptions(models.Model):
     _name = 'tt.event.option'
     _description = 'Rodex Event Model'
+    _rec_name = 'grade'
 
     event_id = fields.Many2one('tt.master.event', 'Event ID')
     option_code = fields.Char('Code')
@@ -100,6 +104,7 @@ class EventOptions(models.Model):
 
     quota = fields.Integer('Quota')
     on_hold = fields.Integer('On Hold')
+    max_ticket = fields.Integer('Max Ticket', help='Max Ticket purchase per reservation; if -1 then it will give current quota', default=-1)
     sales = fields.Integer('Sales', readonly=True)
 
     date_start = fields.Datetime('Date Selling Start')

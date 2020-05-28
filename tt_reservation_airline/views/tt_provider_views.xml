@@ -36,8 +36,11 @@
                             <field name="booking_id"/>
                             <field name="pnr"/>
                             <field name="pnr2"/>
+                            <field name="reference"/>
                             <field name="provider_id"/>
                             <field name="balance_due"/>
+                            <field name="total_price"/>
+                            <field name="penalty_amount"/>
                         </group>
                         <group>
                             <field name="hold_date"/>
@@ -50,6 +53,8 @@
                             <field name="cancel_date"/>
                             <field name="refund_uid"/>
                             <field name="refund_date"/>
+                            <field name="reschedule_uid"/>
+                            <field name="reschedule_date"/>
                         </group>
                     </group>
                     <group string="Itinerary Info">

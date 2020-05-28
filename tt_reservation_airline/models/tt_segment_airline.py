@@ -48,6 +48,12 @@ class TtSegmentAirline(models.Model):
 
     segment_addons_ids = fields.One2many('tt.segment.addons.airline','segment_id','Addons')
 
+    # April 22, 2020 - SAM
+    fare_basis_code = fields.Char('Fare Basis Code', default='')
+    fare_class = fields.Char('Fare Class', default='')
+    fare_name = fields.Char('Fare Name', default='')
+    # END
+
     @api.multi
     @api.depends('carrier_id')
     def _fill_name(self):
@@ -61,15 +67,15 @@ class TtSegmentAirline(models.Model):
         res = {
             'segment_code': self.segment_code,
             'fare_code': self.fare_code,
-            'pnr': self.pnr,
+            'pnr': self.pnr and self.pnr or '',
             'carrier_name': self.carrier_id.name,
             'carrier_code': self.carrier_code,
             'carrier_number': self.carrier_number,
             'provider': self.provider_id.code,
             'origin': self.origin_id.code,
-            'origin_terminal': self.origin_terminal,
+            'origin_terminal': self.origin_terminal and self.origin_terminal or '',
             'destination': self.destination_id.code,
-            'destination_terminal': self.destination_terminal,
+            'destination_terminal': self.destination_terminal and self.destination_terminal or '',
             'departure_date': self.departure_date,
             'arrival_date': self.arrival_date,
             'elapsed_time': self.elapsed_time and self.elapsed_time or '',
@@ -77,7 +83,12 @@ class TtSegmentAirline(models.Model):
             'cabin_class': self.cabin_class and self.cabin_class or '',
             'sequence': self.sequence,
             'seats': [],
-            'legs': leg_list
+            'legs': leg_list,
+            # April 20, 2022 - SAM
+            'fare_basis_code': self.fare_basis_code and self.fare_basis_code or '',
+            'fare_class': self.fare_class and self.fare_class or '',
+            'fare_name': self.fare_name and self.fare_name or '',
+            # END
         }
 
         return res

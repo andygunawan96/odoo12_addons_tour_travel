@@ -68,6 +68,12 @@ class TtReservation(models.Model):
 
     provider_type_id = fields.Many2one('tt.provider.type','Provider Type',readonly=True)
 
+    # April 24, 2020 - SAM
+    penalty_amount = fields.Float('Penalty Amount', default=0)
+    reschedule_uid = fields.Many2one('res.users', 'Rescheduled By')
+    reschedule_date = fields.Datetime('Rescheduled Date')
+    # END
+
     def _get_res_model_domain(self):
         return [('res_model', '=', self._name)]
 
@@ -121,6 +127,11 @@ class TtReservation(models.Model):
     printout_ho_invoice_id = fields.Many2one('tt.upload.center', 'Voucher', readonly=True)
 
     payment_acquirer_number_id = fields.Many2one('payment.acquirer.number','Payment Acquier Number')
+
+    # April 21, 2020 - SAM
+    is_force_issued = fields.Boolean('Force Issued', default=False)
+    is_halt_process = fields.Boolean('Halt Process', default=False)
+    # END
 
     @api.model
     def create(self, vals_list):
@@ -471,7 +482,7 @@ class TtReservation(models.Model):
         res = {
             'order_number': self.name,
             'book_id': self.id,
-            'pnr': self.pnr,
+            'pnr': self.pnr and self.pnr or '',
             'state': self.state,
             'state_description': variables.BOOKING_STATE_STR[self.state],
             'hold_date': self.hold_date and self.hold_date.strftime('%Y-%m-%d %H:%M:%S') or '',
@@ -485,11 +496,16 @@ class TtReservation(models.Model):
                 'email': self.contact_email,
                 'phone': self.contact_phone
             },
+            'contact_id': self.contact_id.to_dict(),
             'booker': self.booker_id.to_dict(),
             'departure_date': self.departure_date and self.departure_date or '',
             'arrival_date': self.arrival_date and self.arrival_date or '',
             'provider_type': self.provider_type_id.code,
-            'payment_acquirer_number': payment_acquirer_number
+            'payment_acquirer_number': payment_acquirer_number,
+            # May 19, 2020 - SAM
+            'is_force_issued': self.is_force_issued,
+            'is_halt_process': self.is_halt_process,
+            # END
         }
 
         return res
@@ -625,9 +641,12 @@ class TtReservation(models.Model):
                 if book_obj.state == 'issued':
                     _logger.error('Transaction Has been paid.')
                     raise RequestException(1009)
-                if book_obj.state != 'booked':
-                    _logger.error('Cannot issue not [Booked] State.')
-                    raise RequestException(1020)
+                # May 13, 2020 - SAM
+                # if book_obj.state not in ['booked']:
+                #     # _logger.error('Cannot issue not [Booked] State.')
+                #     _logger.error('Cannot issue state, %s' % book_obj.state)
+                #     raise RequestException(1020)
+                # END
 
                 payment_method = req.get('payment_method', 'full')
 
