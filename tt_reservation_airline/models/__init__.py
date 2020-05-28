@@ -10,3 +10,4 @@ from . import tt_reservation_passenger_airline
 from . import tt_segment_addons_airline
 from . import tt_fee_airline
 from . import tt_promo_code_airline
+from . import tt_frequent_flyer_airline

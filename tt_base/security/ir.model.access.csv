@@ -325,3 +325,8 @@ access_for_tt_email_queue_for_admin,tt_base.access_for_tt_email_queue_for_admin,
 access_tt_vendor_for_public,tt.agent.type.for.public,model_tt_vendor,,1,0,0,0
 access_tt_vendor_for_agent_management_operator,tt.vendor.for.agent.man.operator,model_tt_vendor,group_tt_agent_management_operator,1,1,1,0
 access_tt_vendor_for_tour_travel_operator,tt.vendor.for.tour.travel.operator,model_tt_vendor,group_tt_tour_travel_operator,1,1,0,0
+
+tt_loyalty_program_for_public,tt.loyalty.program.for.public,model_tt_loyalty_program,,1,0,0,0
+tt_loyalty_program_for_tour_travel_operator,tt.loyalty.program.for.tour.travel.operator,model_tt_loyalty_program,tt_base.group_tt_tour_travel_operator,1,0,0,0
+tt_loyalty_program_for_tour_travel_supervisor,tt.loyalty.program.for.tour.travel.supervisor,model_tt_loyalty_program,tt_base.group_tt_tour_travel_supervisor,1,0,1,0
+tt_loyalty_program_for_tour_travel_manager,tt.loyalty.program.for.tour.travel.manager,model_tt_loyalty_program,tt_base.group_tt_tour_travel_manager,1,1,1,1
