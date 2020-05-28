@@ -255,15 +255,18 @@ class ReservationEvent(models.Model):
                 }
                 option_obj = self.env['tt.reservation.event.option'].create(temp_option_dict)
 
-                for j in event_answer:
-                    for j1 in j['answer']:
-                        temp_extra_question_dict = {
-                            'reservation_event_option_id': option_obj.id,
-                            # 'extra_question_id': j1['question_id'],
-                            'question': j1['que'],
-                            'answer': j1['ans']
-                        }
-                        self.env['tt.reservation.event.extra.question'].create(temp_extra_question_dict)
+                for idx, j in enumerate(event_answer):
+                    if opt_obj.option_code == j['option_code']:
+                        for j1 in j['answer']:
+                            temp_extra_question_dict = {
+                                'reservation_event_option_id': option_obj.id,
+                                # 'extra_question_id': j1['question_id'],
+                                'question': j1['que'],
+                                'answer': j1['ans']
+                            }
+                            self.env['tt.reservation.event.extra.question'].create(temp_extra_question_dict)
+                        event_answer.pop(idx)
+                        break
 
             # Create Provider Ids
             self.env['tt.provider.event'].create({
@@ -464,6 +467,7 @@ class ReservationEvent(models.Model):
                 'hold_date': booking_obj.hold_date,
                 'PNR': booking_obj.pnr,
             })
+
 
 class TtReservationEventOption(models.Model):
     _name = 'tt.reservation.event.option'

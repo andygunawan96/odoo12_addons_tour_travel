@@ -3,7 +3,7 @@
         <field name="name">tt.master.event.view.filter</field>
         <field name="model">tt.master.event</field>
         <field name="arch" type="xml">
-            <search string="Search Activity">
+            <search string="Search Event">
                 <field name="name"/>
                 <field name="uuid"/>
                 <field name="provider_id"/>
@@ -85,7 +85,8 @@
 <!--                            <field name="basePrice"/>-->
 
                         </group>
-                        <group><field name="location_ids">
+                        <group>
+                            <field name="location_ids">
                                 <tree>
                                     <field name="name"/>
                                     <field name="city_id"/>
@@ -104,7 +105,10 @@
                                         </group>
                                     </group>
                                 </form>
-                            </field></group>
+                            </field>
+                            <field name="event_date_start"/>
+                            <field name="event_date_end"/>
+                        </group>
                         <group><field name="category_ids">
                                 <tree>
                                     <field name="parent_id"/>
@@ -127,7 +131,7 @@
                                 <field name="question"/>
                                 <field name="answer_type"/>
                                 <field name="is_required"/>
-                                <field name="answer_ids" attrs="{'invisible': [('answer_type','not in',['boolean','selection'])]}">
+                                <field name="answer_ids" attrs="{'invisible': [('answer_type','not in',['boolean','selection','checkbox'])]}">
                                     <tree>
                                         <field name="answer"/>
                                     </tree>
@@ -285,9 +289,9 @@
 <!--                    </field>-->
                     <separator string="Details"/>
                     <notebook colspan="6">
-<!--                        <page string="Description">-->
-<!--                            <field name="description"/>-->
-<!--                        </page>-->
+                        <page string="Description">
+                            <field name="description"/>
+                        </page>
 <!--                        <page string="Highlights">-->
 <!--                            <field name="highlights"/>-->
 <!--                        </page>-->
@@ -304,6 +308,14 @@
 <!--                            <field name="safety"/>-->
 <!--                        </page>-->
                     </notebook>
+                    <separator string="Reservation"/>
+                    <field name="booking_event_ids">
+                        <tree>
+                            <field name="pnr"/>
+                            <field name="booker_id"/>
+                            <field name="sales_date"/>
+                        </tree>
+                    </field>
                 </sheet>
             </form>
         </field>
