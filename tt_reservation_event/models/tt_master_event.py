@@ -102,7 +102,7 @@ class MasterEvent(models.Model):
             online = req.get('online') and req['online'] or ''
             vendor = req.get('vendor') and req['vendor'] or ''
 
-            limitation = []
+            limitation = [('state', '=', 'confirm')]
             if name != '':
                 limitation.append(('name', 'ilike', name))
             if city != '':
