@@ -34,6 +34,7 @@ Key Features
         'data/agent_b2c_data.xml',
         'data/tt_agent_ho_data.xml',
         'data/payment_acquirer_ho_data.xml',
+        'data/tt.loyalty.program.csv',
         'security/ir.model.access.csv',
         'security/ir_rule_data.xml',
 

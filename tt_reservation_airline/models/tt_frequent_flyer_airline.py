@@ -5,6 +5,8 @@ from datetime import datetime, timedelta
 from ...tools import variables
 from ...tools.api import Response
 import json, logging
+from ...tools import ERR
+import traceback
 
 
 _logger = logging.getLogger(__name__)
@@ -12,6 +14,8 @@ _logger = logging.getLogger(__name__)
 
 class TtFrequentFlyerAirline(models.Model):
     _name = 'tt.frequent.flyer.airline'
+    _inherit = 'tt.history'
+    _order = 'sequence'
     _description = 'Rodex Model'
 
     name = fields.Char('Name', required=True)
@@ -38,3 +42,15 @@ class TtFrequentFlyerAirline(models.Model):
         for rec in self:
             res = '%s' % ','.join([carrier.code for carrier in rec.carrier_ids])
             rec.display_carriers = res
+
+    def get_frequent_flyer_airline_list_api(self):
+        try:
+            frequent_flyer_airline_list = []
+            result = {
+                'frequent_flyer_airline_list': frequent_flyer_airline_list,
+            }
+            res = ERR.get_no_error(result)
+        except:
+            _logger.error('Error Get Frequent Flyer Airline List API, %s' % traceback.format_exc())
+            res = ERR.get_error(500)
+        return res
