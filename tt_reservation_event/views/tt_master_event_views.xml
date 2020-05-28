@@ -176,7 +176,9 @@
 <!--                                        <field name="durationHours" class="oe_inline"/> hours-->
 <!--                                        <field name="durationMinutes" class="oe_inline"/> minutes-->
 <!--                                    </div>-->
-                                    <field name="advance_booking_days"/>
+<!--                                    <field name="advance_booking_days"/>-->
+                                    <field name="date_start"/>
+                                    <field name="date_end"/>
                                     <field name="description"/>
                                 </group>
                                 <group>
