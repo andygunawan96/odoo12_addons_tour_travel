@@ -42,6 +42,7 @@
                         <group string="Information">
                             <field name="currency_id" />
                             <field name="est_date" />
+                            <field name="join_date" />
                         </group>
 
                         <group string="Contact">
@@ -51,6 +52,9 @@
                         </group>
                     </group>
                     <notebook colspan="3">
+                        <page string="Description">
+                            <field name="description" />
+                        </page>
                         <page string="Addresses">
                             <field name="address_ids" />
                         </page>

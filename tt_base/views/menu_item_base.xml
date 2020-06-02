@@ -256,5 +256,12 @@
                   groups="tt_base.group_tt_external_vendor_operator"
                   parent="tt_base.top_customers_vendor"
                   sequence = "110"/>
+
+        <!--Loyalty Program-->
+        <menuitem id="menu_tour_travel_loyalty_program"
+                  name="Loyalty Program"
+                  groups="tt_base.group_tt_tour_travel_operator"
+                  parent="tt_base.top_tour_travel_master_data"
+                  sequence="300"/>
     </data>
 </odoo>

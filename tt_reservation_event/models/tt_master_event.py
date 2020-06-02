@@ -100,9 +100,11 @@ class MasterEvent(models.Model):
             city = req.get('city') and req['city'] or ''
             category = req.get('category') and req['category'] or ''
             online = req.get('online') and req['online'] or ''
-            vendor = req.get('vendor') and req['vendor'] or ''
+            vendor = req.get('vendor') and int(req['vendor']) or ''
 
-            limitation = []
+            limitation = [('state', '=', 'confirm')]
+            if vendor != '':
+                limitation = [('state', 'in', ['confirm', 'expired']), ('event_vendor_id', '=', vendor)]
             if name != '':
                 limitation.append(('name', 'ilike', name))
             if city != '':
@@ -111,9 +113,6 @@ class MasterEvent(models.Model):
                 limitation.append(('categories', 'ilike', category))
             if online != '':
                 limitation.append(('event_type', '=', online))
-            if vendor != '':
-                limitation.append(('vendor_id', '=', vendor))
-
 
             result = self.env['tt.master.event'].sudo().search(limitation)
             to_return = []
@@ -133,8 +132,12 @@ class MasterEvent(models.Model):
                     'provider': i.provider_id.name,
                     'option': [i.format_api_option(opt.id) for opt in i.option_ids],
                     'vendor_obj': {
+                        'vendor_id': i.event_vendor_id.id,
                         'vendor_name': i.event_vendor_id.name,
-                        'vendor_logo': i.event_vendor_id.logo or False
+                        'vendor_logo': i.event_vendor_id.logo or 'https://scontent-cgk1-1.xx.fbcdn.net/v/t1.0-0/c18.0.518.518a/s180x540/185989_166029930116444_3734083_n.jpg?_nc_cat=111&_nc_sid=174925&_nc_ohc=xm9Q9Pbt5fUAX9Trnv-&_nc_ht=scontent-cgk1-1.xx&oh=c15d2a1bf3f35bef744ec4a70780cb95&oe=5EF345FC',
+                        'description': i.event_vendor_id.description or False,
+                        'est_date': i.event_vendor_id.est_date or False,
+                        'join_date': i.event_vendor_id.join_date or False,
                     },
                     'images': [i.format_api_image(img) for img in i.image_ids],
                     # 'age_restriction': i.age_restriction,
@@ -178,12 +181,17 @@ class MasterEvent(models.Model):
         }
 
     def format_api_timeslot(self, timeslot_id):
+        def str_time_std(str_time):
+            if not str_time:
+                return '00'
+            return '0' + str_time if len(str_time) < 2 else str_time
+
         timeslot = self.env['tt.event.timeslot'].browse(timeslot_id)
         return {
-            'start_date': timeslot.date,
+            'start_date': timeslot.date and datetime.strftime(timeslot.date, '%d %B %Y') or '',
             'end_date': '',
-            'start_hour': str(timeslot.start_hour) + ':' + str(timeslot.start_minute),
-            'end_hour': str(timeslot.end_hour) + ':' + str(timeslot.end_minute),
+            'start_hour': str_time_std(str(timeslot.start_hour)) + ':' + str_time_std(str(timeslot.start_minute)),
+            'end_hour': str_time_std(str(timeslot.end_hour)) + ':' + str_time_std(str(timeslot.end_minute)),
         }
 
     def format_api_option(self, option_id):
@@ -199,9 +207,13 @@ class MasterEvent(models.Model):
             'qty_available': timeslot.quota,
             'min_qty': '1',
             'max_qty': timeslot.max_ticket == -1 and timeslot.quota or timeslot.max_ticket,
-            'description': timeslot.cancellation_policies,
-            # 'timeslot': [self.format_api_timeslot(slot.id) for slot in timeslot.timeslot_ids]
-            'timeslot': []
+            'cancellation_policy': timeslot.cancellation_policies,
+            'description': timeslot.description,
+            'timeslot': [self.format_api_timeslot(slot.id) for slot in timeslot.timeslot_ids],
+            'ticket_sale_start_day': timeslot.date_start and datetime.strftime(timeslot.date_start, '%d %B %Y') or '',
+            'ticket_sale_start_hour': timeslot.date_start and datetime.strftime(timeslot.date_start, '%H:%M') or '',
+            'ticket_sale_end_day': timeslot.date_end and datetime.strftime(timeslot.date_end, '%d %B %Y') or '',
+            'ticket_sale_end_hour': timeslot.date_end and datetime.strftime(timeslot.date_end, '%H:%M') or '',
         }
 
     def format_api_location(self, location_id):

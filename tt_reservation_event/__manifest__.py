@@ -36,7 +36,7 @@ TT_TRANSPORT
         'views/tt_service_charge_views.xml',
         'views/tt_reservation_passenger_event_form_views.xml',
         'views/tt_external_vendor.xml',
-        'views/tt_event_reservation_view.xml'
+        'views/tt_event_reservation_view.xml',
         # 'views/tt_event_printout_menu.xml',
     ],
     'demo': [],
