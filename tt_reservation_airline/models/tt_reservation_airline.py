@@ -672,7 +672,7 @@ class ReservationAirline(models.Model):
                     raise RequestException(1002)
 
                 # May 12, 2020 - SAM
-                if not provider.get('total_price') or provider_obj.total_price == provider['total_price']:
+                if not provider.get('force_update_service_charge') and (not provider.get('total_price') or provider_obj.total_price == provider['total_price']):
                     continue
                 # provider_obj.write({
                     # 'pnr': provider['pnr'],
