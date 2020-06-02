@@ -215,12 +215,12 @@ class ReservationEvent(models.Model):
     def create_booking_event_api(self, req, context):
         try:
             #recieve and handling data
-            booker_data = req.get('booker') and req['booker'] or False
-            contacts_data = req.get('contact') and req['contact'] or False
-            event_code = req.get('event_code') and req['event_code'] or False
-            event_option_codes = req.get('event_option_codes') and req['event_option_codes'] or False
-            provider = req.get('provider') and req['provider'] or False
-            event_answer = req.get('event_answer') and req['event_answer'] or False
+            booker_data = req.get('booker')
+            contacts_data = req.get('contact')
+            event_code = req.get('event_code')
+            event_option_codes = req.get('event_option_codes')
+            provider = req.get('provider')
+            event_answer = req.get('event_answer', [])
 
             #create all dependencies
             booker_obj = self.create_booker_api(booker_data, context)
