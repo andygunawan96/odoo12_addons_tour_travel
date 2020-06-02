@@ -1574,28 +1574,29 @@ class ReservationAirline(models.Model):
             desc_txt += 'Arrival: ' + rec.destination_id.display_name+ ' (' + datetime.strptime(rec.arrival_date, '%Y-%m-%d %H:%M:%S').strftime('%d %b %Y %H:%M') + ')<br/><br/>'
         return desc_txt
 
+    # June 2, 2020 - SAM
     # May 13, 2020 - SAM
-    def get_nta_amount(self, method='full'):
-        # res = super().get_nta_amount(method=method)
-        nta_amount = 0.0
-        for provider_obj in self.provider_booking_ids:
-            # if provider_obj.state == 'issued':
-            #     continue
+    # def get_nta_amount(self, method='full'):
+    #     # res = super().get_nta_amount(method=method)
+    #     nta_amount = 0.0
+    #     for provider_obj in self.provider_booking_ids:
+    #         # if provider_obj.state == 'issued':
+    #         #     continue
+    #
+    #         for sc in provider_obj.cost_service_charge_ids:
+    #             if sc.is_ledger_created or (sc.charge_type == 'RAC' and sc.charge_code != 'rac'):
+    #                 continue
+    #             nta_amount += sc.total
+    #     return nta_amount
 
-            for sc in provider_obj.cost_service_charge_ids:
-                if sc.is_ledger_created or (sc.charge_type == 'RAC' and sc.charge_code != 'rac'):
-                    continue
-                nta_amount += sc.total
-        return nta_amount
-
-    def get_total_amount(self, method='full'):
-        total_amount = 0.0
-        for provider_obj in self.provider_booking_ids:
-            # if provider_obj.state == 'issued':
-            #     continue
-            for sc in provider_obj.cost_service_charge_ids:
-                if sc.is_ledger_created or sc.charge_type == 'RAC':
-                    continue
-                total_amount += sc.total
-        return total_amount
+    # def get_total_amount(self, method='full'):
+    #     total_amount = 0.0
+    #     for provider_obj in self.provider_booking_ids:
+    #         # if provider_obj.state == 'issued':
+    #         #     continue
+    #         for sc in provider_obj.cost_service_charge_ids:
+    #             if sc.is_ledger_created or sc.charge_type == 'RAC':
+    #                 continue
+    #             total_amount += sc.total
+    #     return total_amount
     # END
