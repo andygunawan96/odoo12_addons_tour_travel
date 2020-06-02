@@ -19,6 +19,10 @@ class MasterEvent(models.Model):
     _name = "tt.master.event"
     _description = "Rodex Event Model"
 
+    def get_domain(self):
+        domain_id = self.env.ref('tt_reservation_event.tt_provider_type_event').id
+        return [('provider_type_id.id', '=', int(domain_id))]
+
     uuid = fields.Char('UUID', readonly=True, required=False, states={'draft': [('readonly', False)]})
     name = fields.Char('Event Name', readonly=True, states={'draft': [('readonly', False)]})
 
@@ -50,7 +54,7 @@ class MasterEvent(models.Model):
     active = fields.Boolean('Active', default=True)
     state = fields.Selection(variables.PRODUCT_STATE, 'Product State', default='draft')
 
-    provider_id = fields.Many2one('tt.provider', 'Provider', readonly=True, states={'draft': [('readonly', False)]}, domain=[('provider_type_id', '=', lambda self: self.env.ref('tt_reservation_event.tt_provider_type_event') )])
+    provider_id = fields.Many2one('tt.provider', 'Provider', readonly=True, states={'draft': [('readonly', False)]}, domain=get_domain, default=lambda self: self.env.ref('tt_reservation_event.tt_event_provider_internal'))
     provider_code = fields.Char('Provider Code', readonly=True)
     provider_fare_code = fields.Char('Provider Fare Code', readonly=True)
 
@@ -194,14 +198,21 @@ class MasterEvent(models.Model):
             'end_hour': str_time_std(str(timeslot.end_hour)) + ':' + str_time_std(str(timeslot.end_minute)),
         }
 
-    def format_api_option(self, option_id):
+    def format_currency(self, price, orig_currency, new_currency, provider):
+        provider_obj = self.env['tt.provider'].browse(provider)
+        for rate in provider_obj.rate_ids:
+            if rate.currency_id.name == orig_currency:
+                return rate.sell_rate * price
+        return price
+
+    def format_api_option(self, option_id, currency='IDR'):
         timeslot = self.env['tt.event.option'].sudo().browse(option_id)
         return {
             'option_id': timeslot.option_code,
             'grade': timeslot.grade,
             'images': [],
-            'price': timeslot.price,
-            'currency': timeslot.currency_id.name,
+            'price': timeslot.currency_id.name == currency and timeslot.price or self.format_currency(timeslot.price, timeslot.currency_id.name, currency, timeslot.event_id.provider_id.id),
+            'currency': currency,
             'is_non_refundable': timeslot.is_non_refundable,
             'advance_booking_days': timeslot.advance_booking_days,
             'qty_available': timeslot.quota,
