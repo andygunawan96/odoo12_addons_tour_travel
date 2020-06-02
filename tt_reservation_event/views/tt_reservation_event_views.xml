@@ -116,6 +116,14 @@
                                     <field name="description"/>
                                 </group>
                             </group>
+                            <group>
+                                <field name="extra_question_ids">
+                                    <tree>
+                                        <field name="question"/>
+                                        <field name="answer"/>
+                                    </tree>
+                                </field>
+                            </group>
                         </form>
                     </field>
                 </page>

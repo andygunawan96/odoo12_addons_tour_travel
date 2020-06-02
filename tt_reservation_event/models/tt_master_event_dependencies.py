@@ -10,6 +10,7 @@ SESSION_NT = session.Session()
 class MasterEventReservation(models.Model):
     _name = "tt.event.reservation"
     _description = "Rodex Event Model"
+    _order = 'id desc'
 
     event_id = fields.Many2one('tt.master.event', 'Event ID')
     event_option_id = fields.Many2one('tt.event.option', 'Event option ID')
@@ -93,6 +94,7 @@ class MasterEventCategory(models.Model):
 class EventOptions(models.Model):
     _name = 'tt.event.option'
     _description = 'Rodex Event Model'
+    _rec_name = 'grade'
 
     event_id = fields.Many2one('tt.master.event', 'Event ID')
     option_code = fields.Char('Code')

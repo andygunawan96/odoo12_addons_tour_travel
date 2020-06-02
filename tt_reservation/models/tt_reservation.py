@@ -604,10 +604,39 @@ class TtReservation(models.Model):
     def get_nta_amount(self,method='full'):
         return self.agent_nta
 
+    # June 2, 2020 - SAM
+    def get_unpaid_nta_amount(self, method='full'):
+        unpaid_nta_amount = 0.0
+        for provider_obj in self.provider_booking_ids:
+            # if provider_obj.state == 'issued':
+            #     continue
+            for sc in provider_obj.cost_service_charge_ids:
+                if sc.is_ledger_created or (sc.charge_type == 'RAC' and sc.charge_code != 'rac'):
+                    continue
+                unpaid_nta_amount += sc.total
+        return unpaid_nta_amount
+    # END
+
     # def get_installment_dp_amount_cor(self):
     ##overwrite this method for installment
     def get_total_amount(self,method='full'):
         return self.total
+
+    # May 28, 2020 - SAM
+    def get_balance_due(self):
+        return self.agent_nta - self.get_ledger_amount()
+
+    def get_ledger_amount(self):
+        total_debit = 0.0
+        total_credit = 0.0
+        for ledger in self.ledger_ids:
+            if ledger.debit != 0:
+                total_debit += ledger.debit
+            if ledger.credit != 0:
+                total_credit += ledger.credit
+        result = total_credit - total_debit
+        return result
+    # END
 
     ## Digunakan untuk mengupdate PNR seluruh ledger untuk resv ini
     # Digunakan di hotel dan activity
@@ -650,10 +679,13 @@ class TtReservation(models.Model):
 
                 payment_method = req.get('payment_method', 'full')
 
-                agent_check_amount = book_obj.get_nta_amount(payment_method)
+                # agent_check_amount = book_obj.get_nta_amount(payment_method)
+                agent_check_amount = book_obj.get_unpaid_nta_amount(payment_method)
 
-                if agent_check_amount <= 0:
+                # June 2, 2020 - SAM
+                if book_obj.get_nta_amount(payment_method) <= 0:
                     raise Exception("Cannot Payment 0 or lower.")
+                # END
 
                 voucher = ''
                 ### voucher agent here##
