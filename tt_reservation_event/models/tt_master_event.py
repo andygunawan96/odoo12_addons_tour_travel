@@ -292,7 +292,7 @@ class MasterEvent(models.Model):
             'category': self.env['tt.event.category'].get_from_api('', False, [])
         }
         #get all data
-        event_obj = self.env['tt.master.event'].sudo().search([])
+        event_obj = self.env['tt.master.event'].sudo().search([('state','=','confirm')])
         for i in event_obj:
             temp_dict = {
                 'name': i.name,
