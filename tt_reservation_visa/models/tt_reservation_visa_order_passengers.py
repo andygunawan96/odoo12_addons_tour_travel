@@ -90,6 +90,7 @@ class VisaOrderPassengers(models.Model):
     visa_id = fields.Many2one('tt.reservation.visa', 'Visa', readonly=1)  # readonly=1
     passenger_id = fields.Many2one('tt.customer', 'Passenger', readonly=1)  # readonly=1
     pricelist_id = fields.Many2one('tt.reservation.visa.pricelist', 'Visa Pricelist', readonly=1)  # readonly=1
+    pricelist_id_str = fields.Char('Visa Pricelist', readonly=True, compute="_compute_visa_pricelist_id_str")
     passenger_type = fields.Selection(PASSENGER_TYPE, 'Pax Type', readonly=1)  # readonly=1
     age = fields.Char('Age', readonly=1, compute="_compute_age", store=True)
     passport_number = fields.Char(string='Passport Number')
@@ -151,6 +152,12 @@ class VisaOrderPassengers(models.Model):
                                                 accepted = Accepted by the Consulate
                                                 rejected = Rejected by the Consulate
                                                 done = Document at agent or picked up by customer''')
+
+    @api.depends('pricelist_id')
+    @api.onchange('pricelist_id')
+    def _compute_visa_pricelist_id_str(self):
+        for rec in self:
+            rec.pricelist_id_str = rec.pricelist_id and rec.pricelist_id.name or ''
 
     def action_send_email_interview(self):
         """Dijalankan, jika user menekan tombol 'Send Email Interview'"""
