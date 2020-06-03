@@ -207,6 +207,7 @@ class MasterEvent(models.Model):
 
     def format_api_option(self, option_id, currency='IDR'):
         timeslot = self.env['tt.event.option'].sudo().browse(option_id)
+        ticket_qty = timeslot.quota == -1 and 99 or timeslot.quota
         return {
             'option_id': timeslot.option_code,
             'grade': timeslot.grade,
@@ -215,9 +216,9 @@ class MasterEvent(models.Model):
             'currency': currency,
             'is_non_refundable': timeslot.is_non_refundable,
             'advance_booking_days': timeslot.advance_booking_days,
-            'qty_available': timeslot.quota,
+            'qty_available': ticket_qty,
             'min_qty': '1',
-            'max_qty': timeslot.max_ticket == -1 and timeslot.quota or timeslot.max_ticket,
+            'max_qty': timeslot.max_ticket == -1 and ticket_qty or timeslot.max_ticket,
             'cancellation_policy': timeslot.cancellation_policies,
             'description': timeslot.description,
             'timeslot': [self.format_api_timeslot(slot.id) for slot in timeslot.timeslot_ids],
@@ -292,7 +293,7 @@ class MasterEvent(models.Model):
             'category': self.env['tt.event.category'].get_from_api('', False, [])
         }
         #get all data
-        event_obj = self.env['tt.master.event'].sudo().search([])
+        event_obj = self.env['tt.master.event'].sudo().search([('state','=','confirm')])
         for i in event_obj:
             temp_dict = {
                 'name': i.name,

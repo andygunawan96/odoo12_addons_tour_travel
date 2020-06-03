@@ -245,6 +245,7 @@ class ReservationEvent(models.Model):
                 'contact_title': contact_obj.name,
                 'contact_email': contact_obj.email,
                 'contact_phone': contact_obj.phone_ids[0].phone_number,
+                'agent_id': context['co_agent_id'],
             }
             book_obj = self.create(temp_main_dictionary)
 
