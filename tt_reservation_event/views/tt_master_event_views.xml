@@ -152,6 +152,7 @@
                             <field name="active"/>
                         </tree>
                         <form>
+                            <sheet>
                             <div class="oe_button_box" name="button_box">
                                 <button name="toggle_active" type="object"
                                         class="oe_stat_button" icon="fa-archive"
@@ -214,6 +215,9 @@
                                         </form>
                                     </field>
                                 </group>
+                                <group>
+                                    <field name="option_image_ids"/>
+                                </group>
                             </group>
 <!--                            <group>-->
 <!--                                <field name="voucherUse"/>-->
@@ -272,6 +276,7 @@
 <!--                                    </group>-->
 <!--                                </form>-->
 <!--                            </field>-->
+                            </sheet>
                         </form>
                     </field>
 

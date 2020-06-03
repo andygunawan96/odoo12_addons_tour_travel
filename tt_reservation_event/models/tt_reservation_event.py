@@ -233,7 +233,7 @@ class ReservationEvent(models.Model):
             event_options = []
             for i in event_option_codes:
                 for j in range(i['qty']):
-                    event_options.append( self.env['tt.event.option'].sudo().search([('option_code', '=', i['option_code'])]))
+                    event_options.append( self.env['tt.event.option'].sudo().search([('event_id', '=', event_id.id),('option_code', '=', i['option_code'])], limit=1))
 
             #build temporary dict
             temp_main_dictionary = {

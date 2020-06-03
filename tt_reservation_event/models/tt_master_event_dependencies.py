@@ -121,6 +121,8 @@ class EventOptions(models.Model):
     # sku_ids = fields.One2many("tt.master.event.sku", 'event_option_id')
     active = fields.Boolean('Active', default=True)
 
+    option_image_ids = fields.Many2many('tt.upload.center', 'event_option_images_rel', 'event_option_id', 'image_id', 'Option Images')
+
     @api.model
     def create(self, val_list):
         try:
