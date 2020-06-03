@@ -210,7 +210,7 @@ class MasterEvent(models.Model):
         return {
             'option_id': timeslot.option_code,
             'grade': timeslot.grade,
-            'images': [],
+            'images': [self.format_api_image(i) for i in timeslot.option_image_ids],
             'price': timeslot.currency_id.name == currency and timeslot.price or self.format_currency(timeslot.price, timeslot.currency_id.name, currency, timeslot.event_id.provider_id.id),
             'currency': currency,
             'is_non_refundable': timeslot.is_non_refundable,
