@@ -221,6 +221,7 @@ class ReservationEvent(models.Model):
             event_option_codes = req.get('event_option_codes')
             provider = req.get('provider')
             event_answer = req.get('event_answer', [])
+            special_request = req.get('special_request', 'No Special Request')
 
             #create all dependencies
             booker_obj = self.create_booker_api(booker_data, context)
