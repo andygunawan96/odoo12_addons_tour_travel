@@ -428,6 +428,7 @@ class TtProviderPPOB(models.Model):
             'service_charges': service_charges,
             'carrier_name': self.carrier_id and self.carrier_id.name or '',
             'carrier_code': self.carrier_id and self.carrier_id.code or '',
+            'fare_type': self.fare_type and self.fare_type or '',
             'max_kwh': self.max_kwh and self.max_kwh or 0,
             'customer_number': self.customer_number and self.customer_number or '',
             'customer_name': self.customer_name and self.customer_name or '',
