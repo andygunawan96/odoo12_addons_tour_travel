@@ -232,7 +232,7 @@ class ReservationEvent(models.Model):
             event_options = []
             for i in event_option_codes:
                 for j in range(i['qty']):
-                    event_options.append( self.env['tt.event.option'].sudo().search([('option_code', '=', i['option_code'])]))
+                    event_options.append( self.env['tt.event.option'].sudo().search([('event_id', '=', event_id.id),('option_code', '=', i['option_code'])], limit=1))
 
             #build temporary dict
             temp_main_dictionary = {
@@ -274,9 +274,9 @@ class ReservationEvent(models.Model):
                 'booking_id': book_obj.id,
                 'balance_due': 0,  # di PNR
                 'event_id': event_id and event_id.id or False,
-                'event_product_id': event_id.id,
-                'event_product': event_id and event_id.name or req.get('event_name'),
-                'event_product_uuid': event_id and event_id.uuid or req.get('event_id'),
+                'event_product_id': opt_obj.id,
+                'event_product': opt_obj and opt_obj.grade or req.get('event_name'),
+                'event_product_uuid': opt_obj and opt_obj.option_code or req.get('event_id'),
             })
 
             balance_due = 0
