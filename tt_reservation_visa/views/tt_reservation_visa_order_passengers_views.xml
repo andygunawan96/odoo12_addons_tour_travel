@@ -50,7 +50,8 @@
                         <group>
                             <field name="booking_state"/>
                             <field name="passenger_type"/>
-                            <field name="pricelist_id"/>
+                            <field name="pricelist_id" groups="tt_base.group_tt_tour_travel_operator"/>
+                            <field name="pricelist_id_str" groups="tt_base.group_tt_agent_user_operator"/>
                             <field name="sequence"/>
                         </group>
                         <group>

@@ -21,7 +21,7 @@
         <record id="seq_event_option" model="ir.sequence">
             <field name="name">Event Master</field>
             <field name="code">tt.event.option</field>
-            <field name="prefix">OPT.%</field>
+            <field name="prefix">OPT.%(sec)s</field>
             <field name="padding">2</field>
             <field name="company_id" eval="False"/>
         </record>

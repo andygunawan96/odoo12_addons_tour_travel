@@ -124,10 +124,10 @@ class EventOptions(models.Model):
     @api.model
     def create(self, val_list):
         try:
-            parent_id = str(self.event_id.id)
+            parent_id = self.event_id and str(self.event_id.id) or str(val_list['event_id'])
             val_list['option_code'] = "EVT.{}.{}".format(parent_id, self.env['ir.sequence'].next_by_code(self._name))
         except:
-            pass
+            _logger.info('error while updating event option')
         return super(EventOptions, self).create(val_list)
 
     def action_hold_book(self, number_of_people):

@@ -16,6 +16,7 @@ class TtProviderPPOB(models.Model):
 
     pnr = fields.Char('PNR')
     pnr2 = fields.Char('PNR2')
+    original_pnr = fields.Char('Original PNR')
     provider_id = fields.Many2one('tt.provider','Provider')
     state = fields.Selection(variables.BOOKING_STATE, 'Status', default='draft')
     booking_id = fields.Many2one('tt.reservation.ppob', 'Order Number', ondelete='cascade')
@@ -175,6 +176,7 @@ class TtProviderPPOB(models.Model):
             rec.write({
                 'pnr': provider_data['pnr'],
                 'pnr2': provider_data['pnr2'],
+                'original_pnr': provider_data['original_pnr'],
                 'state': 'booked',
                 'booked_uid': api_context['co_uid'],
                 'booked_date': fields.Datetime.now(),
@@ -278,7 +280,8 @@ class TtProviderPPOB(models.Model):
 
                     rec.sudo().write({
                         'pnr': data['session_id'],
-                        'pnr2': data['pnr'],
+                        'pnr2': data['vendor_pnr'],
+                        'original_pnr': data['pnr'],
                         'payment_message': data['message'],
                     })
                     if data.get('bill_data'):
@@ -418,8 +421,10 @@ class TtProviderPPOB(models.Model):
         res = {
             'pnr': self.pnr and self.pnr or '',
             'pnr2': self.pnr2 and self.pnr2 or '',
+            'original_pnr': self.original_pnr and self.original_pnr or '',
             'provider': self.provider_id and self.provider_id.code or '',
             'provider_id': self.provider_id.id,
+            'payment_message': self.payment_message and self.payment_message or '',
             'balance_due': self.balance_due and self.balance_due or 0,
             'bill_data': bill_list,
             'bill_details': bill_detail_list,
@@ -428,6 +433,7 @@ class TtProviderPPOB(models.Model):
             'service_charges': service_charges,
             'carrier_name': self.carrier_id and self.carrier_id.name or '',
             'carrier_code': self.carrier_id and self.carrier_id.code or '',
+            'fare_type': self.fare_type and self.fare_type or '',
             'max_kwh': self.max_kwh and self.max_kwh or 0,
             'customer_number': self.customer_number and self.customer_number or '',
             'customer_name': self.customer_name and self.customer_name or '',
