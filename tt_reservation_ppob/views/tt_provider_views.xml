@@ -144,7 +144,7 @@
         <field name="arch" type="xml">
             <tree>
                 <field name="pnr"/>
-                <field name="pnr2"/>
+                <field name="original_pnr"/>
                 <field name="provider_id" groups="tt_base.group_tt_tour_travel_operator"/>
                 <field name="carrier_id"/>
                 <field name="carrier_code"/>
