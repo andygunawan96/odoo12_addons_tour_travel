@@ -368,7 +368,7 @@ class ReservationPpob(models.Model):
             'fare_type': data.get('fare_type') and data['fare_type'] or '',
             'power': data.get('power') and data['power'] or 0,
             'is_family': data.get('is_family') and data['is_family'] or False,
-            'pnr': data.get('pnr') and data['pnr'] or '',
+            'original_pnr': data.get('pnr') and data['pnr'] or '',
             'total': data.get('total') and data['total'] or 0,
             'registration_number': data.get('registration_number') and data['registration_number'] or '',
             'registration_date': data.get('registration_date') and datetime.strptime(data['registration_date'], '%Y%m%d') or False,
