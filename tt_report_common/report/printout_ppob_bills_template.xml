@@ -239,7 +239,7 @@
                         <span t-field="provider.registration_number"/><br/>
                         <span t-esc="values['tgl_registrasi']"/><br/>
                         <span t-field="provider.customer_name"/><br/>
-                        <span t-field="provider.customer_number"/><br/>
+                        <span t-field="provider.customer_id_number"/><br/>
                         <span t-field="doc.currency_id.symbol"/> <span t-esc="values['total_tagihan_pln']"/><br/>
                         <span t-field="provider.original_pnr"/><br/>
                     </div>
