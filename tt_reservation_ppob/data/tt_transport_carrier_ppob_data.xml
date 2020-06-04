@@ -24,7 +24,7 @@
 
         <record id="tt_transport_carrier_ppob_prepln" model="tt.transport.carrier">
             <field name="name">PLN Prepaid</field>
-            <field name="code">522</field>
+            <field name="code">532</field>
             <field name="icao">pln</field>
             <field name="adult_length_name">11</field>
             <field name="child_length_name">12</field>
