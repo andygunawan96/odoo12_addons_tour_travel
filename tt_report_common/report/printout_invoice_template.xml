@@ -568,21 +568,21 @@
         <div style="margin-bottom: 10px; margin-top: 20px; font-family: 'DeJavu Sans'">
             <span style="font-size: 24px; font-weight: 730">INVOICE DETAILS</span><br/>
         </div>
-        <table style="width: 100%; line-height: normal; border-collapse: separate; border-spacing: 0; font-family: 'DeJavu Sans'">  <!--border-radius: 20px; border: 1px solid #CCC; border-spacing: 0; margin-bottom: 30px; padding: 5px 0px 5px 0px;-->
+        <table style="width: 100%; line-height: normal; border-collapse: separate; border-spacing: 0; font-family: 'DeJavu Sans'; table-layout: fixed;">  <!--border-radius: 20px; border: 1px solid #CCC; border-spacing: 0; margin-bottom: 30px; padding: 5px 0px 5px 0px;-->
             <tr t-att-style="'background-color: ' + base_color + '; padding-top: 5px; padding-bottom: 5px; font-size: 16px'">
-                <th style="width: 20%; padding: 7px 7px 7px 20px; border-left: 1px solid #CCC; border-top-left-radius: 20px; color: white; font-weight: 800">
+                <th style="width: 20%; padding: 7px 7px 7px 20px; border-left: 1px solid #CCC; border-top-left-radius: 20px; color: white; font-weight: 800; overflow-wrap:break-word;">
                     <span>Ref. Number</span>
                 </th>
-                <th style="width: 25%; padding: 7px 7px 7px 20px; color: white; font-weight: 800">
+                <th style="width: 25%; padding: 7px 7px 7px 20px; color: white; font-weight: 800; overflow-wrap:break-word;">
                     <span>Descriptions</span>
                 </th>
-                <th style="width: 20%; padding: 7px 7px 7px 20px; color: white; font-weight: 800">
+                <th style="width: 20%; padding: 7px 7px 7px 20px; color: white; font-weight: 800; overflow-wrap:break-word;">
                     <span>Details</span>
                 </th>
-                <th style="width: 17.5%; padding: 7px 7px 7px 20px; color: white; font-weight: 800">
+                <th style="width: 17.5%; padding: 7px 7px 7px 20px; color: white; font-weight: 800; overflow-wrap:break-word;">
                     <span>Amount</span>
                 </th>
-                <th style="width: 17.5%; padding: 7px 7px 7px 20px; border-right: 1px solid #CCC; border-top-right-radius: 20px; color: white; font-weight: 800;">
+                <th style="width: 17.5%; padding: 7px 7px 7px 20px; border-right: 1px solid #CCC; border-top-right-radius: 20px; color: white; font-weight: 800; overflow-wrap:break-word;">
                     <span>Total (After Tax)</span>
                 </th>
             </tr>
@@ -593,37 +593,37 @@
                     <tr valign="top" style="padding-top: 5px; padding-bottom: 5px; font-size: 14px;">
                         <t t-if="line_detail_idx == 0">
                             <t t-if="row_idx == len(inv_lines[doc.id])-1">
-                                <td t-att-rowspan="len(line2_idx['line_detail'])" style="background: #F0F0F0; width: 20%; padding: 7px 7px 7px 20px; border-bottom: 1px solid #ccc; border-left: 1px solid #ccc; border-right: 1px solid #ccc; border-radius: 0px 0px 0px 20px;">
+                                <td t-att-rowspan="len(line2_idx['line_detail'])" style="background: #F0F0F0; width: 20%; padding: 7px 7px 7px 20px; border-bottom: 1px solid #ccc; border-left: 1px solid #ccc; border-right: 1px solid #ccc; border-radius: 0px 0px 0px 20px; overflow-wrap: break-word;">
                                     <t t-foreach="line2_idx['pnr']" t-as="pnr">
                                         <span t-esc="pnr"/><br/>
                                     </t>
                                 </td>
                             </t>
                             <t t-else="">
-                                <td t-att-rowspan="len(line2_idx['line_detail'])" style="background: #F0F0F0; width: 20%; padding: 7px 7px 7px 20px; border-bottom: 1px solid #ccc; border-left: 1px solid #ccc; border-right: 1px solid #ccc; border-radius: 0px 0px 0px 0px;">
+                                <td t-att-rowspan="len(line2_idx['line_detail'])" style="background: #F0F0F0; width: 20%; padding: 7px 7px 7px 20px; border-bottom: 1px solid #ccc; border-left: 1px solid #ccc; border-right: 1px solid #ccc; border-radius: 0px 0px 0px 0px; overflow-wrap: break-word;">
                                     <t t-foreach="line2_idx['pnr']" t-as="pnr">
                                         <span t-esc="pnr"/><br/>
                                     </t>
                                 </td>
                             </t>
-                            <td t-att-rowspan="len(line2_idx['line_detail'])" style="width: 25%; padding: 7px 7px 7px 20px; border-bottom: 1px solid #ccc; border-right: 1px solid #ccc;">
+                            <td t-att-rowspan="len(line2_idx['line_detail'])" style="width: 25%; padding: 7px 7px 7px 20px; border-bottom: 1px solid #ccc; border-right: 1px solid #ccc; overflow-wrap: break-word;">
                                 <span t-esc="line2_idx['descs']"/>
                             </td>
                         </t>
-                        <td style="width: 20%; height: 50px; padding: 7px 7px 7px 20px; border-bottom: 1px solid #ccc; border-right: 1px solid #ccc;">
+                        <td style="width: 20%; height: 50px; padding: 7px 7px 7px 20px; border-bottom: 1px solid #ccc; border-right: 1px solid #ccc; overflow: hidden;">
                             <span t-esc="line_detail['name']" style="height: 100%;"/>
                         </td>
-                        <td style="width: 17.5%; height: 50px; padding: 7px 7px 7px 20px; border-bottom: 1px solid #ccc; border-right: 1px solid #ccc; border-radius: 0px 0px 0px 0px; text-align: right; padding-right: 25px;">
+                        <td style="width: 17.5%; height: 50px; padding: 7px 7px 7px 20px; border-bottom: 1px solid #ccc; border-right: 1px solid #ccc; border-radius: 0px 0px 0px 0px; text-align: right; padding-right: 25px; overflow-wrap: break-word;">
                             <span t-esc="line_detail['amount']" t-options="{&quot;widget&quot;: &quot;monetary&quot;, &quot;display_currency&quot;: doc.currency_id}"/>
                         </td>
                         <t t-if="line_detail_idx == 0">
                             <t t-if="row_idx == len(inv_lines[doc.id])-1">
-                                <td t-att-rowspan="len(line2_idx['line_detail'])" style="width: 17.5%; height: 50px; padding: 7px 7px 7px 20px; border-bottom: 1px solid #ccc; border-right: 1px solid #ccc; text-align: right; padding-right: 25px; border-radius: 0px 0px 20px 0px;">
+                                <td t-att-rowspan="len(line2_idx['line_detail'])" style="width: 17.5%; height: 50px; padding: 7px 7px 7px 20px; border-bottom: 1px solid #ccc; border-right: 1px solid #ccc; text-align: right; padding-right: 25px; border-radius: 0px 0px 20px 0px; overflow-wrap: break-word;">
                                     <span t-esc="line2_idx['total_after_tax']" t-options="{&quot;widget&quot;: &quot;monetary&quot;, &quot;display_currency&quot;: doc.currency_id}" style="height: 100%;"/>
                                 </td>
                             </t>
                             <t t-else="">
-                                <td t-att-rowspan="len(line2_idx['line_detail'])" style="width: 17.5%; height: 50px; padding: 7px 7px 7px 20px; border-bottom: 1px solid #ccc; border-right: 1px solid #ccc; text-align: right; padding-right: 25px; border-radius: 0px 0px 0px 0px;">
+                                <td t-att-rowspan="len(line2_idx['line_detail'])" style="width: 17.5%; height: 50px; padding: 7px 7px 7px 20px; border-bottom: 1px solid #ccc; border-right: 1px solid #ccc; text-align: right; padding-right: 25px; border-radius: 0px 0px 0px 0px; overflow-wrap: break-word;">
                                     <span t-esc="line2_idx['total_after_tax']" t-options="{&quot;widget&quot;: &quot;monetary&quot;, &quot;display_currency&quot;: doc.currency_id}" style="height: 100%;"/>
                                 </td>
                             </t>
