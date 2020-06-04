@@ -655,7 +655,7 @@ class ReservationPpob(models.Model):
             total_price = 0
             for rec in resv_obj.provider_booking_ids:
                 temp_carrier_code = rec.carrier_id and rec.carrier_id.code or ''
-                if int(temp_carrier_code) == 522:
+                if int(temp_carrier_code) == 532:
                     rec.write({
                         'total': new_total
                     })
@@ -726,7 +726,7 @@ class ReservationPpob(models.Model):
                         'total': rec2.total and rec2.total or 0
                     })
 
-                if temp_carrier_code == '522':
+                if temp_carrier_code == '532':
                     allowed_list = []
                     for rec2 in rec.allowed_denomination_ids:
                         allowed_list.append(rec2.nominal)
