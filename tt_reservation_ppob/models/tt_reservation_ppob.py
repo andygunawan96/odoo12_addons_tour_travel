@@ -374,7 +374,7 @@ class ReservationPpob(models.Model):
             'registration_date': int(util.get_without_empty(data, 'registration_date')) and datetime.strptime(data['registration_date'], '%Y%m%d') or False,
             'transaction_code': data.get('transaction_code') and data['transaction_code'] or '',
             'transaction_name': data.get('transaction_name') and data['transaction_name'] or '',
-            'bill_expired_date': int(util.get_without_empty(data, 'bill_expired_date')) and datetime.strptime(data['bill_expired_date'], '%Y%m%d') or False,
+            'bill_expired_date': int(util.get_without_empty(data, 'bill_expired_date')) and datetime.strptime(data['bill_expired_date'], '%d%m%Y') or False,
             'meter_number': data.get('meter_number') and data['meter_number'] or '',
             'distribution_code': data.get('distribution_code') and data['distribution_code'] or '',
             'max_kwh': data.get('max_kwh') and data['max_kwh'] or 0,
