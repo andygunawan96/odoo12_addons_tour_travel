@@ -630,11 +630,14 @@ class ReservationPpob(models.Model):
                 raise RequestException(1003)
 
             provider_code = ''
+            carrier_code = ''
             for rec in resv_obj.provider_booking_ids:
                 provider_code = rec.provider_id and rec.provider_id.code or ''
+                carrier_code = rec.carrier_id and str(rec.carrier_id.code) or ''
 
             res = {
-                'provider': provider_code
+                'provider': provider_code,
+                'carrier': carrier_code
             }
             return ERR.get_no_error(res)
         except RequestException as e:
