@@ -75,6 +75,8 @@
                     <field name="ticket_ids">
                         <tree>
                             <field name="passenger_id"/>
+                            <field name="ff_number"/>
+                            <field name="ff_code"/>
                             <field name="ticket_number"/>
                         </tree>
                     </field>

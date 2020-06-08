@@ -204,6 +204,22 @@ class TtProviderAirline(models.Model):
 
         if provider_data.get('hold_date'):
             values['hold_date'] = datetime.strptime(provider_data['hold_date'], "%Y-%m-%d %H:%M:%S")
+
+        # June 4, 2020 - SAM
+        # Menambahkan info warning dari bookingan
+        if provider_data.get('messages'):
+            messages = provider_data['messages']
+            if not type(messages) != list:
+                messages = [str(messages)]
+            error_msg = ', '.join(messages)
+            error_history_ids = [(0, 0, {
+                'res_model': self._name,
+                'res_id': self.id,
+                'error_code': 0,
+                'error_msg': error_msg
+            })]
+            values['error_history_ids'] = error_history_ids
+        # END
         return values
     # END
 
@@ -492,7 +508,9 @@ class TtProviderAirline(models.Model):
                 psg_name = ticket.passenger_id.name.replace(' ','').lower()
                 if ('%s%s' % (psg['first_name'], psg['last_name'])).replace(' ','').lower() in [psg_name, psg_name*2] and not ticket.ticket_number or ticket.ticket_number == psg.get('ticket_number'):
                     ticket.write({
-                        'ticket_number': psg.get('ticket_number','')
+                        'ticket_number': psg.get('ticket_number',''),
+                        'ff_number': psg.get('ff_number',''),
+                        'ff_code': psg.get('ff_code',''),
                     })
                     ticket_found = True
                     ticket.passenger_id.is_ticketed = True
@@ -510,6 +528,8 @@ class TtProviderAirline(models.Model):
             # })
             ticket_values = {
                 'ticket_number': psg.get('ticket_number'),
+                'ff_number': psg.get('ff_number', ''),
+                'ff_code': psg.get('ff_code', ''),
                 'pax_type': psg.get('pax_type'),
             }
             if psg.get('passenger_id'):
