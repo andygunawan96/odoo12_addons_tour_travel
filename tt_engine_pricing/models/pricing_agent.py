@@ -36,7 +36,6 @@ class PricingAgent(models.Model):
     line_ids = fields.One2many('tt.pricing.agent.line', 'pricing_id', 'Pricing')
     active = fields.Boolean('Active', default=True)
     commission_charge_type = fields.Selection(variables.COMMISSION_CHARGE_TYPE, 'Commission Charge Type', default='pricing')
-    is_per_pnr = fields.Boolean('Is per PNR', default=False)
 
     origin_type = fields.Selection(variables.ACCESS_TYPE, 'Origin Type', required=True, default='all')
     origin_ids = fields.Many2many('tt.destinations', 'tt_pricing_agent_origin_rel', 'pricing_id', 'origin_id', string='Origins')
@@ -208,7 +207,6 @@ class PricingAgent(models.Model):
             'is_per_route': self.is_per_route,
             'is_per_segment': self.is_per_segment,
             'is_per_pax': self.is_per_pax,
-            'is_per_pnr': self.is_per_pnr,
             'loop_level': self.loop_level,
             'is_compute_infant_fee': self.is_compute_infant_fee,
             # 'line_ids': line_ids,
