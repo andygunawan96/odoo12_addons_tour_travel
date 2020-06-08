@@ -516,10 +516,11 @@ class AgentRegistration(models.Model):
             })
         partner_obj = self.env['tt.agent'].create(vals)
 
-        for address in self.address_ids:
+        for idx, address in enumerate(self.address_ids):
             partner_obj.write({
                 'address_ids': [(0, 0, {
                     'type': address.type if address.type else '',
+                    'name': address.name if address.name else '',
                     'address': address.address if address.address else '',
                     'rt': address.rt if address.rt else '',
                     'rw': address.rw if address.rw else '',
