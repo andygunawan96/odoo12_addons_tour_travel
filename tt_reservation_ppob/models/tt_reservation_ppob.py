@@ -441,9 +441,10 @@ class ReservationPpob(models.Model):
 
     def create_inquiry_api(self, data, context):
         try:
+            cust_first_name = data['data'].get('customer_name') and data['data']['customer_name'] or 'Customer'
             booker = {
-                'first_name': "PPOB",
-                'last_name': "Customer",
+                'first_name': cust_first_name,
+                'last_name': "PPOB",
                 'title': "MR",
                 'nationality_name': "Indonesia",
                 'nationality_code': "ID",
@@ -453,8 +454,8 @@ class ReservationPpob(models.Model):
                 'mobile': "315662000",
             }
             contacts = [{
-                'first_name': "PPOB",
-                'last_name': "Customer",
+                'first_name': cust_first_name,
+                'last_name': "PPOB",
                 'title': "MR",
                 'nationality_name': "Indonesia",
                 'nationality_code': "ID",
@@ -469,8 +470,8 @@ class ReservationPpob(models.Model):
             nationality_id = self.env['res.country'].search([('code', '=ilike', 'ID')], limit=1).id
             psg_dict = {
                 'pax_type': "ADT",
-                'first_name': "PPOB",
-                'last_name': "Customer",
+                'first_name': cust_first_name,
+                'last_name': "PPOB",
                 'title': "MR",
                 'gender': "male",
                 'birth_date': "1990-01-01",
@@ -483,7 +484,7 @@ class ReservationPpob(models.Model):
             }
             passengers = [psg_dict]
             values = self._prepare_booking_api(data['data'], context)
-            ppob_cust = self.env['tt.customer'].search([('first_name', '=', 'PPOB'), ('last_name', '=', 'Customer'), ('agent_id', '=', context['co_agent_id'])], limit=1)
+            ppob_cust = self.env['tt.customer'].search([('first_name', '=', psg_dict['first_name']), ('last_name', '=', psg_dict['last_name']), ('agent_id', '=', context['co_agent_id'])], limit=1)
             if ppob_cust:
                 cust_dict = {
                     'name': "%s %s" % (psg_dict['first_name'], psg_dict['last_name']),
@@ -570,10 +571,11 @@ class ReservationPpob(models.Model):
                         'cost_service_charge_ids': [(6, 0, [])]
                     })
 
+                cust_first_name = data['data'].get('customer_name') and data['data']['customer_name'] or 'Customer'
                 psg_dict = {
                     'pax_type': "ADT",
-                    'first_name': "PPOB",
-                    'last_name': "Customer",
+                    'first_name': cust_first_name,
+                    'last_name': "PPOB",
                     'title': "MR",
                     'gender': "male",
                     'birth_date': "1990-01-01",
@@ -667,10 +669,15 @@ class ReservationPpob(models.Model):
                             'total': new_total
                         })
                     if data.get('service_charges'):
+                        temp_first_name = ''
+                        temp_last_name = ''
+                        for temp_psg in resv_obj.passenger_ids:
+                            temp_first_name = temp_psg.first_name and temp_psg.first_name or ''
+                            temp_last_name = temp_psg.last_name and temp_psg.last_name or ''
                         psg_dict = {
                             'pax_type': "ADT",
-                            'first_name': "PPOB",
-                            'last_name': "Customer",
+                            'first_name': temp_first_name,
+                            'last_name': temp_last_name,
                             'title': "MR",
                             'gender': "male",
                             'birth_date': "1990-01-01",
