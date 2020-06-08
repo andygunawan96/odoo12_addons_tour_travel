@@ -22,6 +22,7 @@ class TtProviderPPOB(models.Model):
     booking_id = fields.Many2one('tt.reservation.ppob', 'Order Number', ondelete='cascade')
     sequence = fields.Integer('Sequence')
     balance_due = fields.Float('Balance Due')
+    total_price = fields.Float('Total Price')
     carrier_id = fields.Many2one('tt.transport.carrier', 'Product')
     carrier_code = fields.Char('Product Code')
     carrier_name = fields.Char('Product Name')
@@ -426,6 +427,7 @@ class TtProviderPPOB(models.Model):
             'provider_id': self.provider_id.id,
             'payment_message': self.payment_message and self.payment_message or '',
             'balance_due': self.balance_due and self.balance_due or 0,
+            'total_price': self.total_price and self.total_price or 0,
             'bill_data': bill_list,
             'bill_details': bill_detail_list,
             'currency': self.currency_id and self.currency_id.name or '',

@@ -356,6 +356,7 @@ class ReservationPpob(models.Model):
             'booked_date': fields.Datetime.now(),
             'hold_date': fields.Datetime.now() + timedelta(days=1),
             'balance_due': data['total'],
+            'total_price': data['total'],
             'sequence': 1,
             'provider_id': provider_obj and provider_obj.id or False,
             'carrier_id': carrier_obj and carrier_obj.id or False,
