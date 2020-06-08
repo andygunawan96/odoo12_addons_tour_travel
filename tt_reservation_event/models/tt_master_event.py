@@ -50,7 +50,7 @@ class MasterEvent(models.Model):
     number_of_days = fields.Integer("Number of days", readonly=True, states={'draft': [('readonly', False)]})
 
     option_ids = fields.One2many('tt.event.option', 'event_id', readonly=True, states={'draft': [('readonly', False)]})
-    image_ids = fields.Many2many('tt.upload.center', 'event_images_rel', 'event_id', 'image_id', 'Images')
+    image_ids = fields.Many2many('tt.upload.center', 'event_images_rel', 'event_id', 'image_id', 'Images', readonly=True, states={'draft': [('readonly', False)]})
     active = fields.Boolean('Active', default=True)
     state = fields.Selection(variables.PRODUCT_STATE, 'Product State', default='draft')
 
@@ -66,7 +66,8 @@ class MasterEvent(models.Model):
     def create(self, vals_list):
         try:
             vals_list['uuid'] = self.env['ir.sequence'].next_by_code(self._name)
-            vals_list['event_vendor_id'] = self.env.user.vendor_id.id or False
+            if not vals_list.get('event_vendor_id'):
+                vals_list['event_vendor_id'] = self.env.user.vendor_id.id or False
         except:
             pass
         return super(MasterEvent, self).create(vals_list)
@@ -109,12 +110,14 @@ class MasterEvent(models.Model):
             limitation = [('state', '=', 'confirm')]
             if vendor != '':
                 limitation = [('state', 'in', ['confirm', 'expired']), ('event_vendor_id', '=', vendor)]
-            if name != '':
+            if category != '':
+                categ_id = self.env['tt.event.category'].search([('name', '=ilike', category)], limit=1)
+                limitation.append(('category_ids', 'ilike', categ_id.id))
+            elif name != '': #Check by name jika category tidak di kirim
                 limitation.append(('name', 'ilike', name))
             if city != '':
                 limitation.append(('locations', 'ilike', city))
-            if category != '':
-                limitation.append(('categories', 'ilike', category))
+
             if online != '':
                 limitation.append(('event_type', '=', online))
 
@@ -139,6 +142,15 @@ class MasterEvent(models.Model):
                         'vendor_id': i.event_vendor_id.id,
                         'vendor_name': i.event_vendor_id.name,
                         'vendor_logo': i.event_vendor_id.logo or 'https://scontent-cgk1-1.xx.fbcdn.net/v/t1.0-0/c18.0.518.518a/s180x540/185989_166029930116444_3734083_n.jpg?_nc_cat=111&_nc_sid=174925&_nc_ohc=xm9Q9Pbt5fUAX9Trnv-&_nc_ht=scontent-cgk1-1.xx&oh=c15d2a1bf3f35bef744ec4a70780cb95&oe=5EF345FC',
+                        'vendor_address': i.event_vendor_id.address_ids and {
+                            'address': i.event_vendor_id.address_ids[0].address or False,
+                            'city': i.event_vendor_id.address_ids[0].city_id and i.event_vendor_id.address_ids[0].city_id.name or False,
+                            'country': i.event_vendor_id.address_ids[0].country_id and i.event_vendor_id.address_ids[0].country_id.name or False,
+                        } or {
+                            'address': False,
+                            'city': False,
+                            'country': False,
+                        },
                         'description': i.event_vendor_id.description or False,
                         'est_date': i.event_vendor_id.est_date or False,
                         'join_date': i.event_vendor_id.join_date or False,
@@ -208,6 +220,7 @@ class MasterEvent(models.Model):
     def format_api_option(self, option_id, currency='IDR'):
         timeslot = self.env['tt.event.option'].sudo().browse(option_id)
         ticket_qty = timeslot.quota == -1 and 99 or timeslot.quota
+        utc = 7
         return {
             'option_id': timeslot.option_code,
             'grade': timeslot.grade,
@@ -222,10 +235,11 @@ class MasterEvent(models.Model):
             'cancellation_policy': timeslot.cancellation_policies,
             'description': timeslot.description,
             'timeslot': [self.format_api_timeslot(slot.id) for slot in timeslot.timeslot_ids],
-            'ticket_sale_start_day': timeslot.date_start and datetime.strftime(timeslot.date_start, '%d %B %Y') or '',
-            'ticket_sale_start_hour': timeslot.date_start and datetime.strftime(timeslot.date_start, '%H:%M') or '',
-            'ticket_sale_end_day': timeslot.date_end and datetime.strftime(timeslot.date_end, '%d %B %Y') or '',
-            'ticket_sale_end_hour': timeslot.date_end and datetime.strftime(timeslot.date_end, '%H:%M') or '',
+            'ticket_sale_start_day': timeslot.date_start and datetime.strftime(timeslot.date_start + relativedelta(hours=utc), '%d %B %Y') or '',
+            'ticket_sale_start_hour': timeslot.date_start and datetime.strftime(timeslot.date_start + relativedelta(hours=utc), '%H:%M') or '',
+            'ticket_sale_end_day': timeslot.date_end and datetime.strftime(timeslot.date_end + relativedelta(hours=utc), '%d %B %Y') or '',
+            'ticket_sale_end_hour': timeslot.date_end and datetime.strftime(timeslot.date_end + relativedelta(hours=utc), '%H:%M') or '',
+            'utc': utc
         }
 
     def format_api_location(self, location_id):

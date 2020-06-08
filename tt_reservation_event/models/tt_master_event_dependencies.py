@@ -72,7 +72,7 @@ class MasterEventCategory(models.Model):
     _name = 'tt.event.category'
     _description = 'Rodex Event Model'
 
-    uid = fields.Char('UID', readonly=True)
+    uid = fields.Char('UID')
     name = fields.Char('Category Name')
     parent_id = fields.Many2one('tt.event.category', 'Parent ID')
     child_ids = fields.One2many('tt.event.category', 'parent_id', 'Child')
@@ -111,12 +111,12 @@ class EventOptions(models.Model):
 
     event_id = fields.Many2one('tt.master.event', 'Event ID')
     option_code = fields.Char('Code', readonly=True)
-    grade = fields.Char('Options')
+    grade = fields.Char('Options', required=True)
     timeslot_ids = fields.One2many('tt.event.timeslot', 'event_option_id')
     # additionalInformation = fields.Many2many('')
 
     quota = fields.Integer('Quota', default=-1)
-    on_hold = fields.Integer('On Hold', readonly=True)
+    on_hold = fields.Integer('On Hold')
     max_ticket = fields.Integer('Max Ticket', help='Max Ticket purchase per reservation; if -1 then it will give current quota', default=-1)
     sales = fields.Integer('Sales', readonly=True)
 
