@@ -13,12 +13,25 @@ class MasterEventReservation(models.Model):
     _order = 'id desc'
 
     event_id = fields.Many2one('tt.master.event', 'Event ID')
-    event_option_id = fields.Many2one('tt.event.option', 'Event option ID')
-    pnr = fields.Char('PNR')
-    booker_id = fields.Many2one('tt.customer', 'Booker')
-    contact_id = fields.Many2one('tt.customer', 'Contact')
+    # vendor_id = fields.Many2one('tt.vendor', related="event_id.event_vendor_id", store=True)
+    event_option_id = fields.Many2one('tt.event.option', 'Event option ID', readonly=True)
+    event_ticket_price = fields.Char(compute='compute_ticket_price', store=True)
+    pnr = fields.Char('PNR', readonly=True)
+    booker_id = fields.Many2one('tt.customer', 'Booker', readonly=True)
+    contact_id = fields.Many2one('tt.customer', 'Contact', readonly=True)
     sales_date = fields.Datetime('Sold Date')
-    order_number = fields.Char('Client Order Number', help='Code must be distinct')
+    order_number = fields.Char('Client Order Number', help='Code must be distinct', readonly=True)
+    state = fields.Selection([('request', 'Request'), ('confirm', 'Confirm'), ('done', 'Paid')])
+
+    def compute_ticket_price(self):
+        for i in self:
+            i.event_ticket_price = i.event_option_id.price
+
+    def action_confirm(self):
+        self.state = "confirm"
+
+    def action_paid(self):
+        self.state = "paid"
 
 class MasterLocations(models.Model):
     _name = 'tt.event.location'
@@ -59,7 +72,7 @@ class MasterEventCategory(models.Model):
     _name = 'tt.event.category'
     _description = 'Rodex Event Model'
 
-    uid = fields.Char('UID')
+    uid = fields.Char('UID', readonly=True)
     name = fields.Char('Category Name')
     parent_id = fields.Many2one('tt.event.category', 'Parent ID')
     child_ids = fields.One2many('tt.event.category', 'parent_id', 'Child')
@@ -97,13 +110,13 @@ class EventOptions(models.Model):
     _rec_name = 'grade'
 
     event_id = fields.Many2one('tt.master.event', 'Event ID')
-    option_code = fields.Char('Code')
+    option_code = fields.Char('Code', readonly=True)
     grade = fields.Char('Options')
     timeslot_ids = fields.One2many('tt.event.timeslot', 'event_option_id')
     # additionalInformation = fields.Many2many('')
 
-    quota = fields.Integer('Quota')
-    on_hold = fields.Integer('On Hold')
+    quota = fields.Integer('Quota', default=-1)
+    on_hold = fields.Integer('On Hold', readonly=True)
     max_ticket = fields.Integer('Max Ticket', help='Max Ticket purchase per reservation; if -1 then it will give current quota', default=-1)
     sales = fields.Integer('Sales', readonly=True)
 
