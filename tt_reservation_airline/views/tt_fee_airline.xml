@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <odoo>
-    <record id="api_provider_carrier_view_form_inherit" model="ir.ui.view">
+    <record id="tt_provider_airline_view_form_inherit" model="ir.ui.view">
         <field name="name">tt.provider.airline.view.form.inherit</field>
         <field name="model">tt.provider.airline</field>
         <field name="inherit_id" ref="tt_reservation_airline.tt_reservation_airline_provider_form_view"/>

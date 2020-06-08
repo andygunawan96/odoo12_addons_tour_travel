@@ -361,6 +361,34 @@ class ReservationAirline(models.Model):
             book_obj = self.create(values)
             provider_ids, name_ids = book_obj._create_provider_api(booking_states, context)
 
+            # June 4, 2020 - SAM
+            # Create passenger frequent flyer pada reservasi (di create setelah object passenger dan provider tercreate
+            # Karena dibutuhkan provider id saat create ff dan sementara schedule id disamakan dengan array provider
+            for prov_idx, prov in enumerate(provider_ids):
+                for psg_idx, psg in enumerate(passengers):
+                    if not psg.get('ff_numbers') or type(psg['ff_numbers']) != list:
+                        continue
+
+                    for ff in psg['ff_numbers']:
+                        if ff['schedule_id'] != prov_idx:
+                            continue
+
+                        psg_obj = book_obj.passenger_ids[psg_idx]
+                        name = '%s %s' % (psg['first_name'], psg['last_name'])
+                        name = name.strip()
+                        ff_values = {
+                            'name': name,
+                            'first_name': psg['first_name'],
+                            'last_name': psg['last_name'],
+                            'ff_number': ff['ff_number'],
+                            'ff_code': ff['ff_code'],
+                            'schedule_id': ff['schedule_id'],
+                            'passenger_id': psg_obj.id,
+                            'provider_id': prov.id,
+                        }
+                        psg_obj.frequent_flyer_ids.create(ff_values)
+            # END
+
             # May 6, 2020 - SAM
             for idx, psg in enumerate(book_obj.passenger_ids):
                 passengers[idx]['passenger_id'] = psg.id
@@ -386,8 +414,9 @@ class ReservationAirline(models.Model):
                 else:
                     for vendor_obj in provider_ids:
                         vendor_obj.action_halt_booked_api_airline(context)
-                book_obj.calculate_service_charge()
-                book_obj.check_provider_state(context)
+
+            book_obj.calculate_service_charge()
+            book_obj.check_provider_state(context)
             # END
 
             response_provider_ids = []
