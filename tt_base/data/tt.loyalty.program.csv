@@ -1,29 +1,29 @@
-id,name,description,active
-tt_loyalty_program_1,AAdvantage,,1
-tt_loyalty_program_2,Aeroplan,,1
-tt_loyalty_program_3,Airpoints,,1
-tt_loyalty_program_4,ANA Mileage Club,,1
-tt_loyalty_program_5,Asia Miles,,1
-tt_loyalty_program_6,Asiana Club,,1
-tt_loyalty_program_7,Avios Travel Rewards,,1
-tt_loyalty_program_8,Egyptair Plus,,1
-tt_loyalty_program_9,Enrich Miles,,1
-tt_loyalty_program_10,Etihad Guest,,1
-tt_loyalty_program_11,Finnair Plus,,1
-tt_loyalty_program_12,Flyer Bonus,,1
-tt_loyalty_program_13,Flying Blue,,1
-tt_loyalty_program_14,Fly Smiles,,1
-tt_loyalty_program_15,Infinity MileageLands,,1
-tt_loyalty_program_16,JAL Mileage Bank,,1
-tt_loyalty_program_17,JetPrivilege,,1
-tt_loyalty_program_18,KrisFlyer,,1
-tt_loyalty_program_19,Mileage Plus,,1
-tt_loyalty_program_20,Miles and More,,1
-tt_loyalty_program_21,Miles and Smiles,,1
-tt_loyalty_program_22,Phoenix Miles,,1
-tt_loyalty_program_23,Qantas Airways Privilege Club,,1
-tt_loyalty_program_24,Qantas Frequent Flyer,,1
-tt_loyalty_program_25,Royal Orchid Plus,,1
-tt_loyalty_program_26,Royal Plus,,1
-tt_loyalty_program_27,Skywards,,1
-tt_loyalty_program_28,Velocity Frequent Flyer,,1
+id,name,code,description,active
+tt_loyalty_program_1,AAdvantage,aadvantage,,1
+tt_loyalty_program_2,Aeroplan,aeroplan,,1
+tt_loyalty_program_3,Airpoints,airpoints,,1
+tt_loyalty_program_4,ANA Mileage Club,ana_mileage,,1
+tt_loyalty_program_5,Asia Miles,asia_miles,,1
+tt_loyalty_program_6,Asiana Club,asiana_club,,1
+tt_loyalty_program_7,Avios Travel Rewards,avios_rewards,,1
+tt_loyalty_program_8,Egyptair Plus,egyptair_plus,,1
+tt_loyalty_program_9,Enrich Miles,enrich_miles,,1
+tt_loyalty_program_10,Etihad Guest,etihad_guest,,1
+tt_loyalty_program_11,Finnair Plus,finnair_plus,,1
+tt_loyalty_program_12,Flyer Bonus,flyer_bonus,,1
+tt_loyalty_program_13,Flying Blue,flying_blue,,1
+tt_loyalty_program_14,Fly Smiles,fly_smiles,,1
+tt_loyalty_program_15,Infinity MileageLands,infinity_mileage,,1
+tt_loyalty_program_16,JAL Mileage Bank,jal_mileage,,1
+tt_loyalty_program_17,JetPrivilege,jet_privilege,,1
+tt_loyalty_program_18,KrisFlyer,krisflyer,,1
+tt_loyalty_program_19,Mileage Plus,mileage_plus,,1
+tt_loyalty_program_20,Miles and More,miles_and_more,,1
+tt_loyalty_program_21,Miles and Smiles,miles_and_smiles,,1
+tt_loyalty_program_22,Phoenix Miles,phoenix_miles,,1
+tt_loyalty_program_23,Qantas Airways Privilege Club,qantas_privilege,,1
+tt_loyalty_program_24,Qantas Frequent Flyer,qantas,,1
+tt_loyalty_program_25,Royal Orchid Plus,royal_orchid_plus,,1
+tt_loyalty_program_26,Royal Plus,royal_plus,,1
+tt_loyalty_program_27,Skywards,skywards,,1
+tt_loyalty_program_28,Velocity Frequent Flyer,velocity,,1

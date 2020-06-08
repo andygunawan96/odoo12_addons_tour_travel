@@ -554,6 +554,7 @@ class ReservationAirline(models.Model):
                     # if provider_obj.state == 'booked' and hold_date == provider_obj.hold_date:
                     #     continue
                     self.update_pnr_booked(provider_obj,provider,context)
+                    provider_obj.update_ticket_api(provider['passengers'])
                     any_provider_changed = True
                 elif provider['status'] == 'ISSUED' and not provider.get('error_code'):
                     if provider_obj.state == 'issued':
