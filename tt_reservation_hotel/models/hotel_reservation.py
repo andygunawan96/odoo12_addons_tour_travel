@@ -84,6 +84,9 @@ class HotelReservation(models.Model):
     # Voucher
     # voucher_name = fields.Char('Voucher', store=True)
 
+    def get_form_id(self):
+        return self.env.ref("tt_reservation_hotel.tt_hotel_reservation_form")
+
     def calc_voucher_name(self):
         for rec in self.search([('state', '=', 'issued')]):
             rec.voucher_name = ''

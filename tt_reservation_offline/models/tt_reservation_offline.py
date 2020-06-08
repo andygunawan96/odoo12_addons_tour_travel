@@ -152,6 +152,9 @@ class IssuedOffline(models.Model):
     split_from_resv_id = fields.Many2one('tt.reservation.offline', 'Splitted From', readonly=1)
     split_to_resv_ids = fields.One2many('tt.reservation.offline', 'split_from_resv_id', 'Splitted To', readonly=1)
 
+    def get_form_id(self):
+        return self.env.ref("tt_reservation_offline.issued_offline_view_form")
+
     def date_format_check(self, provider_type, vals=None):
         """ Cek format tanggal line """
         if vals is not False:

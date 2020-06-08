@@ -95,7 +95,7 @@
                                 <form>
                                     <group>
                                         <group>
-                                            <field name="name"/>
+                                            <field name="name" string="Place Name"/>
                                             <field name="address"/>
                                         </group>
                                         <group>
@@ -140,7 +140,7 @@
                         </form>
                     </field>
 
-                    <separator string="Options"/>
+                    <separator string="Ticket Type"/>
                     <field name="option_ids">
                         <tree>
 <!--                            <field name="uuid"/>-->
@@ -160,6 +160,12 @@
                                     <field name="active" widget="boolean_button"
                                            options='{"terminology": "archive"}'/>
                                 </button>
+                                <button name="%(tt_base.tt_upload_center_wizard_action_view)d"
+                                    string="Upload Image" type="action"
+                                    class="oe_stat_button" icon="fa-upload"
+                                    groups="tt_base.group_tt_tour_division_operator,base.user_admin"
+                                    context="{'default_target_field_name': 'option_image_ids'}"
+                                />
                             </div>
                             <group>
                                 <group>
@@ -181,6 +187,11 @@
                                     <field name="date_start"/>
                                     <field name="date_end"/>
                                     <field name="description"/>
+                                    <field name="option_image_ids">
+                                        <tree>
+
+                                        </tree>
+                                    </field>
                                 </group>
                                 <group>
 <!--                                    <label for="minPax" string="Booking Limit"/>-->

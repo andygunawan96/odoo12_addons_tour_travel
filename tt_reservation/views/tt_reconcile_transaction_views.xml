@@ -70,8 +70,10 @@
             <form create="false">
                 <header>
                     <button name="ignore_recon_line_from_button" type="object" string="Ignore"
+                            attrs="{'invisible':[('state','!=', 'not_match')]}"
                             groups="tt_base.group_tt_accounting_operator"/>
                     <button name="unignore_recon_line_from_button" type="object" string="Unignore"
+                            attrs="{'invisible':[('state','!=', 'ignore')]}"
                             groups="tt_base.group_tt_accounting_operator"/>
                     <field name="state" widget="statusbar" statusbar_visible="not_match,match"/>
                 </header>
@@ -99,6 +101,10 @@
                         <group>
                             <field name="vendor_start_balance"/>
                             <field name="vendor_end_balance"/>
+                            <field name="res_model"/>
+                            <field name="res_id"/>
+                            <button string="Go to linked data" type="object" name="open_reference"
+                            attrs="{'invisible':[('state','!=','match')]}"/>
                         </group>
                     </group>
                     <separator string="Ticket Number(s)"/>

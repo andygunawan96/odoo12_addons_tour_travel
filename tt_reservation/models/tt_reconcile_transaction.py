@@ -31,8 +31,8 @@ class TtReconcileTransaction(models.Model):
 
     def compare_reconcile_data(self):
         for rec in self.reconcile_lines_ids.filtered(lambda x: x.state == 'not_match'):
-            found_rec = self.env['tt.reservation.%s' % (self.provider_type_id.code)].search([('pnr','=',rec.pnr),
-                                                                                 ('total_nta','=',rec.total)],limit=1)
+            found_rec = self.env['tt.provider.%s' % (self.provider_type_id.code)].search([('pnr','=',rec.pnr),
+                                                                                 ('total_price','=',rec.total)],limit=1)
             if found_rec:
                 rec.write({
                     'res_model': found_rec._name,
@@ -67,6 +67,7 @@ class TtReconcileTransaction(models.Model):
 class TtReconcileTransactionLines(models.Model):
     _name = 'tt.reconcile.transaction.lines'
     _description = 'Rodex Model Reconcile Lines'
+    _rec_name = 'pnr'
 
     reconcile_transaction_id = fields.Many2one('tt.reconcile.transaction','Reconcile Transaction',readonly=True, ondelete='cascade' )
     agent_name = fields.Char('Agent Name',readonly=True)
@@ -90,9 +91,29 @@ class TtReconcileTransactionLines(models.Model):
     state = fields.Selection([('match','Match'),
                               ('not_match','Not Match'),
                               ('done','Done'),
-                              ('ignore','Ignore')],'State')
+                              ('ignore','Ignore')],'State',default='not_match')
     res_model = fields.Char('Ref Model', readonly=True)
     res_id = fields.Char('Ref ID', readonly=True)
+
+    def open_reference(self):
+        # try:
+        #     form_id = self.env[self.res_model].get_form_id()
+        # except:
+        form_id = self.env['ir.ui.view'].search([('type', '=', 'form'), ('model', '=', self.res_model)], limit=1)
+        form_id = form_id[0] if form_id else False
+
+        return {
+            'type': 'ir.actions.act_window',
+            'name': 'Reservation',
+            'res_model': self.res_model,
+            'res_id': self.res_id,
+            'view_type': 'form',
+            'view_mode': 'form',
+            'view_id': form_id.id,
+            'context': {},
+            'target': 'current',
+        }
+
 
     def ignore_recon_line_from_button(self):
         if self.state == 'not_match':

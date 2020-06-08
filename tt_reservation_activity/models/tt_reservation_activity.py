@@ -116,6 +116,9 @@ class ReservationActivity(models.Model):
     provider_type_id = fields.Many2one('tt.provider.type', 'Provider Type', default=lambda self: self.env.ref('tt_reservation_activity.tt_provider_type_activity'))
     option_ids = fields.One2many('tt.reservation.activity.option', 'booking_id', 'Options')
 
+    def get_form_id(self):
+        return self.env.ref("tt_reservation_activity.tt_reservation_activity_form_view")
+
     def _calc_grand_total(self):
         for rec in self:
             rec.total = 0

@@ -33,6 +33,7 @@
         <field name="model">tt.agent.registration.address</field>
         <field name="arch" type="xml">
             <tree create="true">
+                <field name="name"/>
                 <field name="address"/>
                 <field name="rt"/>
                 <field name="rw"/>

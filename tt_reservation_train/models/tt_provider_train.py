@@ -57,6 +57,8 @@ class TtProviderTrain(models.Model):
 
     error_history_ids = fields.One2many('tt.reservation.err.history','res_id','Error History', domain=[('res_model','=','tt.provider.train')])
 
+    total_price = fields.Float('Total Price', default=0)
+
     ##button function
     def action_set_to_issued_from_button(self, payment_data={}):
         if self.state == 'issued':
@@ -157,7 +159,8 @@ class TtProviderTrain(models.Model):
                 'booked_uid': api_context['co_uid'],
                 'booked_date': fields.Datetime.now(),
                 'hold_date': datetime.strptime(provider_data['hold_date'],"%Y-%m-%d %H:%M:%S"),
-                'balance_due': provider_data['balance_due']
+                'balance_due': provider_data['balance_due'],
+                'total_price': provider_data['total_price']
             })
 
     def action_issued_api_train(self,context):
@@ -333,6 +336,7 @@ class TtProviderTrain(models.Model):
             'state_description': variables.BOOKING_STATE_STR[self.state],
             'sequence': self.sequence,
             'balance_due': self.balance_due,
+            'total_price': self.total_price,
             'origin': self.origin_id.code,
             'destination': self.destination_id.code,
             'departure_date': self.departure_date,

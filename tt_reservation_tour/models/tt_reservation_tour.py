@@ -51,6 +51,9 @@ class ReservationTour(models.Model):
     installment_invoice_ids = fields.One2many('tt.installment.invoice', 'booking_id', 'Installments')
     is_already_issued = fields.Boolean('Already Issued', default=False)
 
+    def get_form_id(self):
+        return self.env.ref("tt_reservation_tour.tt_reservation_tour_form_view")
+
     @api.depends('tour_id')
     @api.onchange('tour_id')
     def _compute_tour_id_str(self):

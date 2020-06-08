@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <record id="tt_ff_passenger_airline_view_form_inherit" model="ir.ui.view">
+        <field name="name">tt_ff_passenger_airline_view_form_inherit</field>
+        <field name="model">tt.reservation.passenger.airline</field>
+        <field name="inherit_id" ref="tt_reservation_airline.tt_reservation_passenger_airline_inherit_form_view"/>
+        <field name="arch" type="xml">
+            <xpath expr="//separator" position="before">
+                <separator string="Frequent Flyers"/>
+                <field name="frequent_flyer_ids"/>
+            </xpath>
+        </field>
+    </record>
+    <record id="tt_ff_passenger_airline_tree_view" model="ir.ui.view">
+        <field name="name">tt.ff.passenger.airline.tree.view</field>
+        <field name="model">tt.ff.passenger.airline</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="name"/>
+                <field name="passenger_id"/>
+                <field name="provider_id"/>
+                <field name="provider_sequence"/>
+                <field name="ff_number"/>
+                <field name="ff_code"/>
+            </tree>
+        </field>
+    </record>
+</odoo>

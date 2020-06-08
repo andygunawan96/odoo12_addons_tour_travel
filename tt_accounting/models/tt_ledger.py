@@ -365,7 +365,7 @@ class Ledger(models.Model):
         # sleep_time = ((new_waiting_list.id%10))
         # print(sleep_time)
         # time.sleep(sleep_time)
-        last_digit = (new_list_of_waiting_list[0][2].id % 20)
+        last_digit = (new_list_of_waiting_list and new_list_of_waiting_list[0][2].id % 20 or 1)
 
         if last_digit == 0:
             last_digit = 19

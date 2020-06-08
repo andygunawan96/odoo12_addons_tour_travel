@@ -29,6 +29,24 @@ class TtFrequentFlyerAirline(models.Model):
     display_carriers = fields.Char('Display Carriers', compute='_compute_display_carriers', store=True, readonly=1)
     loyalty_program_ids = fields.Many2many('tt.loyalty.program', 'frequent_flyer_airline_loyalty_program_rel', 'frequent_flyer_airline_id', 'loyalty_program_id', 'Loyalty Programs')
 
+    def to_dict(self):
+        # providers = [{'name': rec.name, 'code': rec.code} for rec in self.provider_ids if rec.active]
+        # carriers = [{'name': rec.name, 'code': rec.code} for rec in self.carrier_ids if rec.active]
+        provider_codes = [rec.code for rec in self.provider_ids if rec.active]
+        carrier_codes = [rec.code for rec in self.carrier_ids if rec.active]
+        loyalty_programs = [rec.to_dict() for rec in self.loyalty_program_ids if rec.active]
+        res = {
+            'name': self.name,
+            'provider_access_type': self.provider_access_type,
+            'carrier_access_type': self.carrier_access_type,
+            # 'providers': providers,
+            # 'carriers': carriers,
+            'provider_codes': provider_codes,
+            'carrier_codes': carrier_codes,
+            'loyalty_programs': loyalty_programs
+        }
+        return res
+
     @api.multi
     @api.depends('provider_ids')
     def _compute_display_providers(self):
@@ -43,9 +61,10 @@ class TtFrequentFlyerAirline(models.Model):
             res = '%s' % ','.join([carrier.code for carrier in rec.carrier_ids])
             rec.display_carriers = res
 
-    def get_frequent_flyer_airline_list_api(self):
+    def get_frequent_flyer_airline_list_api(self, data, context):
         try:
-            frequent_flyer_airline_list = []
+            _objs = self.env['tt.frequent.flyer.airline'].sudo().search([('active', '=', 1)])
+            frequent_flyer_airline_list = [rec.to_dict() for rec in _objs]
             result = {
                 'frequent_flyer_airline_list': frequent_flyer_airline_list,
             }

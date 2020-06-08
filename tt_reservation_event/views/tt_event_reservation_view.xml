@@ -23,6 +23,11 @@
         <field name="model">tt.event.reservation</field>
         <field name="arch" type="xml">
             <form string="">
+                <header>
+                    <button name="action_confirm" type="object" string="Confirm"></button>
+                    <button name="action_paid" type="object" string="Paid"></button>
+                    <field name="state" widget="statusbar" statusbar_visible="request,confirm,paid"/>
+                </header>
                 <sheet>
                     <group>
                         <group>

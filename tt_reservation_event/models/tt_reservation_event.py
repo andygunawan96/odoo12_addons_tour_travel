@@ -89,6 +89,9 @@ class ReservationEvent(models.Model):
     option_ids = fields.One2many('tt.reservation.event.option', 'booking_id', 'Options')
     # extra_question_ids = fields.One2many('tt.reservation.event.extra.question', 'reservation_id', 'Extra Question')
 
+    def get_form_id(self):
+        return self.env.ref("tt_reservation_event.tt_reservation_event_form_view")
+
     @api.model
     def create(self, vals_list):
         try:
@@ -378,7 +381,7 @@ class ReservationEvent(models.Model):
             } for rec in self.event_id.location_ids] or [],
             'description': self.event_id and self.event_id.description or '',
             'options': [self.option_ids and {
-                'image_url': '',
+                'image_url': rec.event_option_id.option_image_ids and rec.event_option_id.option_image_ids[0].url or '',
                 'name': rec.event_option_id.grade,
                 'description': rec.event_option_id.description,
                 'qty': 1,

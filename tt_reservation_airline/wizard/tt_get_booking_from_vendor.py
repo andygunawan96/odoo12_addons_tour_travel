@@ -263,33 +263,35 @@ class TtGetBookingFromVendorReview(models.TransientModel):
         booker_res = json.loads(self.booker_data)
 
         searchRQ_journey_list = []
-        journey_req_list = []
+        # journey_req_list = []
         for journey in retrieve_res['journeys']:
             searchRQ_journey_list.append({
                 'origin': journey['origin'],
                 'destination': journey['destination'],
                 'departure_date': journey['departure_date'][:10]
             })
-            segment_req_list = []
-            for segment in journey['segments']:
-                segment_req_list.append({
-                    'segment_code': segment['segment_code'],
-                    "fare_code": "EMPTY",
-                    "carrier_code": segment['carrier_code'],
-                    "carrier_number": segment['carrier_number'],
-                    "origin": segment['origin'],
-                    "departure_date": segment['departure_date'],
-                    "destination": segment['destination'],
-                    "arrival_date": segment['arrival_date'],
-                    "provider": segment['provider']
-                })
-            journey_req_list.append({
-                'segments': segment_req_list
-            })
+            ## comment before create booking changes for force issued
+            # segment_req_list = []
+            # for segment in journey['segments']:
+            #     segment_req_list.append({
+            #         'segment_code': segment['segment_code'],
+            #         "fare_code": "EMPTY",
+            #         "carrier_code": segment['carrier_code'],
+            #         "carrier_number": segment['carrier_number'],
+            #         "origin": segment['origin'],
+            #         "departure_date": segment['departure_date'],
+            #         "destination": segment['destination'],
+            #         "arrival_date": segment['arrival_date'],
+            #         "provider": segment['provider']
+            #     })
+            # journey_req_list.append({
+            #     'segments': segment_req_list
+            # })
 
         schedules_req_list = []
         schedules_req_list.append({
-            "journeys": journey_req_list,
+            "journeys": retrieve_res['journeys'], ## ini itu schedule
+            "passengers": retrieve_res['passengers'], ## yg ini untuk fees passenger
             "provider": retrieve_res['provider'],
             "paxs": {
                 "ADT": pax_type_res.get('ADT',0),
@@ -323,7 +325,7 @@ class TtGetBookingFromVendorReview(models.TransientModel):
             "adult": pax_type_res.get('ADT',0),
             "child": pax_type_res.get('CHD',0),
             "infant": pax_type_res.get('INF',0),
-            "schedules": schedules_req_list,
+            "booking_state_provider": schedules_req_list, ## ini itu schedule
             "promo_codes": [],
         }
 

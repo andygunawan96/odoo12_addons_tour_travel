@@ -12,8 +12,8 @@ class AddressDetail(models.Model):
     _order = 'sequence'
     _description = 'Tour & Travel - Address Detail'
 
-    type = fields.Selection(ADDRESS_TYPE, 'Address Type', required=True)
-    name = fields.Char('Type Name')
+    type = fields.Selection(ADDRESS_TYPE, 'Address Type', required=True)                         
+    name = fields.Char('Type Name', store=True, readonly=False)
     sequence = fields.Integer('Sequence')
     address = fields.Char('Address', required=True)
     rt = fields.Char('RT')
@@ -29,15 +29,18 @@ class AddressDetail(models.Model):
     agent_id = fields.Many2one('tt.agent', string='Agent')
     active = fields.Boolean('Active', default=True)
 
-    @api.onchange('type')
-    def _onchange_type(self):
-        if self.type == 'work':
-            self.name = "Work"
-        elif self.type == 'home':
-            self.name = "Home"
-        elif self.type == 'custom':
-            self.name = ""
-
     # @api.onchange('agent_id')
     # def _onchange_agent_id(self):
     #     self.agent_id = self.env.user.agent_id.id
+
+    @api.onchange('type')
+    def compute_address_name(self):
+        for rec in self:
+            if rec.type != 'custom':
+                rec.name = rec.type
+    
+    @api.model
+    def create(self, vals_list):
+        if not vals_list.get('name'):
+            vals_list['name'] = vals_list['type']
+        return super(AddressDetail, self).create(vals_list)

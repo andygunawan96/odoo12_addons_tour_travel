@@ -36,6 +36,7 @@
                             <field name="pnr"/>
                             <field name="provider_id"/>
                             <field name="balance_due"/>
+                            <field name="total_price"/>
                         </group>
                         <group>
                             <field name="hold_date"/>
