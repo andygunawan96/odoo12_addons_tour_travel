@@ -106,6 +106,9 @@ class TtPassport(models.Model):
     # STATE
     ######################################################################################################
 
+    def get_form_id(self):
+        return self.env.ref("tt_reservation_passport.tt_reservation_passport_view_form")
+
     # Jika pax belum menentukan tujuan negara, default country di isi singapore
     def default_country_id(self):
         return self.env['res.country'].search([('name', '=', 'Singapore')], limit=1).id

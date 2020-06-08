@@ -28,6 +28,9 @@ class ReservationPpob(models.Model):
     prepaid_value = fields.Integer('Prepaid Value', default=0)
     is_ticket_printed = fields.Integer('Ticket Already Printed', default=0)
 
+    def get_form_id(self):
+        return self.env.ref("tt_reservation_ppob.tt_reservation_ppob_form_views")
+
     def get_config_api(self, data, context):
         try:
             carrier_list = self.env['tt.transport.carrier'].search([('provider_type_id', '=', self.env.ref('tt_reservation_ppob.tt_provider_type_ppob').id)])

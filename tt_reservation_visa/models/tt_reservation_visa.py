@@ -113,6 +113,9 @@ class TtVisa(models.Model):
     # STATE
     ######################################################################################################
 
+    def get_form_id(self):
+        return self.env.ref("tt_reservation_visa.tt_reservation_visa_view_form")
+
     @api.multi
     def _compute_commercial_state(self):
         for rec in self:

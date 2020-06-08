@@ -89,6 +89,9 @@ class ReservationEvent(models.Model):
     option_ids = fields.One2many('tt.reservation.event.option', 'booking_id', 'Options')
     # extra_question_ids = fields.One2many('tt.reservation.event.extra.question', 'reservation_id', 'Extra Question')
 
+    def get_form_id(self):
+        return self.env.ref("tt_reservation_event.tt_reservation_event_form_view")
+
     @api.model
     def create(self, vals_list):
         try:
