@@ -56,6 +56,7 @@ class MasterEventExtraQuestion(models.Model):
     answer_type = fields.Selection([('text', 'Text'), ('password', 'Password'), ('number', 'Number'), ('email', 'Email'), ('boolean', 'Boolean'), ('selection', 'Selection'), ('date', 'Date'), ('checkbox', 'CheckBox')], default="text", required="1")
     # answer = fields.Char('Answer')
     is_required = fields.Boolean('Is Required', default=False)
+    is_active = fields.Boolean('Is Active', default=True)
     max_length = fields.Integer('Max Length', default=255)
     answer_ids = fields.One2many('tt.event.extra.question.answer', 'extra_question_id')
     reservation_answer_ids = fields.One2many('tt.reservation.event.extra.question', 'extra_question_id')
@@ -72,7 +73,7 @@ class MasterEventCategory(models.Model):
     _name = 'tt.event.category'
     _description = 'Rodex Event Model'
 
-    uid = fields.Char('UID')
+    uid = fields.Char('UID', readonly=True)
     name = fields.Char('Category Name')
     parent_id = fields.Many2one('tt.event.category', 'Parent ID')
     child_ids = fields.One2many('tt.event.category', 'parent_id', 'Child')
