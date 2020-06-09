@@ -1,0 +1,806 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="0">
+        <record id="tt_loyalty_program_aeroplan" model="tt.loyalty.program">
+            <field name="name">Aeroplan</field>
+            <field name="code">aeroplan</field>
+        </record>
+        <record id="tt_loyalty_program_altitude" model="tt.loyalty.program">
+            <field name="name">Altitude</field>
+            <field name="code">altitude</field>
+        </record>
+        <record id="tt_loyalty_program_isaruukrewards" model="tt.loyalty.program">
+            <field name="name">Isaruuk Rewards</field>
+            <field name="code">isaruukrewards</field>
+        </record>
+        <record id="tt_loyalty_program_aurorarewards" model="tt.loyalty.program">
+            <field name="name">Aurora Rewards</field>
+            <field name="code">aurorarewards</field>
+        </record>
+        <record id="tt_loyalty_program_viporter" model="tt.loyalty.program">
+            <field name="name">VIPorter</field>
+            <field name="code">viporter</field>
+        </record>
+        <record id="tt_loyalty_program_westjetrewards" model="tt.loyalty.program">
+            <field name="name">WestJet Rewards</field>
+            <field name="code">westjetrewards</field>
+        </record>
+        <record id="tt_loyalty_program_clubpremier" model="tt.loyalty.program">
+            <field name="name">Club Premier</field>
+            <field name="code">clubpremier</field>
+        </record>
+        <record id="tt_loyalty_program_mileageplus" model="tt.loyalty.program">
+            <field name="name">Mileage Plus</field>
+            <field name="code">mileageplus</field>
+        </record>
+        <record id="tt_loyalty_program_clubinterjet" model="tt.loyalty.program">
+            <field name="name">Club Interjet</field>
+            <field name="code">clubinterjet</field>
+        </record>
+        <record id="tt_loyalty_program_mileageplan" model="tt.loyalty.program">
+            <field name="name">Mileage Plan</field>
+            <field name="code">mileageplan</field>
+        </record>
+        <record id="tt_loyalty_program_aadvantage" model="tt.loyalty.program">
+            <field name="name">AAdvantage</field>
+            <field name="code">aadvantage</field>
+        </record>
+        <record id="tt_loyalty_program_skymiles" model="tt.loyalty.program">
+            <field name="name">SkyMiles</field>
+            <field name="code">skymiles</field>
+        </record>
+        <record id="tt_loyalty_program_earlyreturns" model="tt.loyalty.program">
+            <field name="name">EarlyReturns</field>
+            <field name="code">earlyreturns</field>
+        </record>
+        <record id="tt_loyalty_program_hawaiianmiles" model="tt.loyalty.program">
+            <field name="name">HawaiianMiles</field>
+            <field name="code">hawaiianmiles</field>
+        </record>
+        <record id="tt_loyalty_program_islandmiles" model="tt.loyalty.program">
+            <field name="name">Island Miles</field>
+            <field name="code">islandmiles</field>
+        </record>
+        <record id="tt_loyalty_program_trueblue" model="tt.loyalty.program">
+            <field name="name">TrueBlue</field>
+            <field name="code">trueblue</field>
+        </record>
+        <record id="tt_loyalty_program_flyawayrewards" model="tt.loyalty.program">
+            <field name="name">FlyAway Rewards</field>
+            <field name="code">flyawayrewards</field>
+        </record>
+        <record id="tt_loyalty_program_rapidrewards" model="tt.loyalty.program">
+            <field name="name">Rapid Rewards</field>
+            <field name="code">rapidrewards</field>
+        </record>
+        <record id="tt_loyalty_program_freespirit" model="tt.loyalty.program">
+            <field name="name">FREE SPIRIT</field>
+            <field name="code">freespirit</field>
+        </record>
+        <record id="tt_loyalty_program_uflyrewardsplus" model="tt.loyalty.program">
+            <field name="name">Ufly Rewards Plus</field>
+            <field name="code">uflyrewardsplus</field>
+        </record>
+        <record id="tt_loyalty_program_centralamerica" model="tt.loyalty.program">
+            <field name="name">Central America</field>
+            <field name="code">centralamerica</field>
+        </record>
+        <record id="tt_loyalty_program_caribbeanregion" model="tt.loyalty.program">
+            <field name="name">Caribbean Region</field>
+            <field name="code">caribbeanregion</field>
+        </record>
+        <record id="tt_loyalty_program_bahamasairflyer" model="tt.loyalty.program">
+            <field name="name">BahamasAir Flyer</field>
+            <field name="code">bahamasairflyer</field>
+        </record>
+        <record id="tt_loyalty_program_sirturtlerewards" model="tt.loyalty.program">
+            <field name="name">Sir Turtle Rewards</field>
+            <field name="code">sirturtlerewards</field>
+        </record>
+        <record id="tt_loyalty_program_lifemiles" model="tt.loyalty.program">
+            <field name="name">LifeMiles</field>
+            <field name="code">lifemiles</field>
+        </record>
+        <record id="tt_loyalty_program_préférence" model="tt.loyalty.program">
+            <field name="name">Préférence</field>
+            <field name="code">préférence</field>
+        </record>
+        <record id="tt_loyalty_program_7thheaven" model="tt.loyalty.program">
+            <field name="name">7th Heaven</field>
+            <field name="code">7thheaven</field>
+        </record>
+        <record id="tt_loyalty_program_connectmiles" model="tt.loyalty.program">
+            <field name="name">ConnectMiles</field>
+            <field name="code">connectmiles</field>
+        </record>
+        <record id="tt_loyalty_program_airmiles" model="tt.loyalty.program">
+            <field name="name">Airmiles</field>
+            <field name="code">airmiles</field>
+        </record>
+        <record id="tt_loyalty_program_caribbeanmiles" model="tt.loyalty.program">
+            <field name="name">Caribbean Miles</field>
+            <field name="code">caribbeanmiles</field>
+        </record>
+        <record id="tt_loyalty_program_aerolíneasplus" model="tt.loyalty.program">
+            <field name="name">Aerolíneas Plus</field>
+            <field name="code">aerolíneasplus</field>
+        </record>
+        <record id="tt_loyalty_program_latampass" model="tt.loyalty.program">
+            <field name="name">LATAM Pass</field>
+            <field name="code">latampass</field>
+        </record>
+        <record id="tt_loyalty_program_tudoazul" model="tt.loyalty.program">
+            <field name="name">TudoAzul</field>
+            <field name="code">tudoazul</field>
+        </record>
+        <record id="tt_loyalty_program_amigo" model="tt.loyalty.program">
+            <field name="name">Amigo</field>
+            <field name="code">amigo</field>
+        </record>
+        <record id="tt_loyalty_program_latampass" model="tt.loyalty.program">
+            <field name="name">LATAM PASS</field>
+            <field name="code">latampass</field>
+        </record>
+        <record id="tt_loyalty_program_smiles" model="tt.loyalty.program">
+            <field name="name">Smiles</field>
+            <field name="code">smiles</field>
+        </record>
+        <record id="tt_loyalty_program_loyalwings" model="tt.loyalty.program">
+            <field name="name">Loyal Wings</field>
+            <field name="code">loyalwings</field>
+        </record>
+        <record id="tt_loyalty_program_aeropass" model="tt.loyalty.program">
+            <field name="name">Aeropass</field>
+            <field name="code">aeropass</field>
+        </record>
+        <record id="tt_loyalty_program_privilege" model="tt.loyalty.program">
+            <field name="name">Privilege</field>
+            <field name="code">privilege</field>
+        </record>
+        <record id="tt_loyalty_program_aviorplus" model="tt.loyalty.program">
+            <field name="name">Avior Plus</field>
+            <field name="code">aviorplus</field>
+        </record>
+        <record id="tt_loyalty_program_milesandmore" model="tt.loyalty.program">
+            <field name="name">Miles and More</field>
+            <field name="code">milesandmore</field>
+        </record>
+        <record id="tt_loyalty_program_leader" model="tt.loyalty.program">
+            <field name="name">Leader</field>
+            <field name="code">leader</field>
+        </record>
+        <record id="tt_loyalty_program_loops" model="tt.loyalty.program">
+            <field name="name">LOOPs</field>
+            <field name="code">loops</field>
+        </record>
+        <record id="tt_loyalty_program_flymore" model="tt.loyalty.program">
+            <field name="name">Fly More</field>
+            <field name="code">flymore</field>
+        </record>
+        <record id="tt_loyalty_program_okplus" model="tt.loyalty.program">
+            <field name="name">OK Plus</field>
+            <field name="code">okplus</field>
+        </record>
+        <record id="tt_loyalty_program_eurobonus" model="tt.loyalty.program">
+            <field name="name">EuroBonus</field>
+            <field name="code">eurobonus</field>
+        </record>
+        <record id="tt_loyalty_program_executiveclub" model="tt.loyalty.program">
+            <field name="name">Executive Club</field>
+            <field name="code">executiveclub</field>
+        </record>
+        <record id="tt_loyalty_program_súlubonus" model="tt.loyalty.program">
+            <field name="name">Súlubonus</field>
+            <field name="code">súlubonus</field>
+        </record>
+        <record id="tt_loyalty_program_finnairplus" model="tt.loyalty.program">
+            <field name="name">Finnair Plus</field>
+            <field name="code">finnairplus</field>
+        </record>
+        <record id="tt_loyalty_program_flyingblue" model="tt.loyalty.program">
+            <field name="name">Flying Blue</field>
+            <field name="code">flyingblue</field>
+        </record>
+        <record id="tt_loyalty_program_clubcorsair" model="tt.loyalty.program">
+            <field name="name">Club Corsair</field>
+            <field name="code">clubcorsair</field>
+        </record>
+        <record id="tt_loyalty_program_miles+bonus" model="tt.loyalty.program">
+            <field name="name">Miles+Bonus</field>
+            <field name="code">miles+bonus</field>
+        </record>
+        <record id="tt_loyalty_program_wizzdiscountclub" model="tt.loyalty.program">
+            <field name="name">Wizz Discount Club</field>
+            <field name="code">wizzdiscountclub</field>
+        </record>
+        <record id="tt_loyalty_program_sagaclub" model="tt.loyalty.program">
+            <field name="name">Saga Club</field>
+            <field name="code">sagaclub</field>
+        </record>
+        <record id="tt_loyalty_program_aerclub" model="tt.loyalty.program">
+            <field name="name">AER Club</field>
+            <field name="code">aerclub</field>
+        </record>
+        <record id="tt_loyalty_program_millemiglia" model="tt.loyalty.program">
+            <field name="name">MilleMiglia</field>
+            <field name="code">millemiglia</field>
+        </record>
+        <record id="tt_loyalty_program_meridianaclub" model="tt.loyalty.program">
+            <field name="name">Meridiana Club</field>
+            <field name="code">meridianaclub</field>
+        </record>
+        <record id="tt_loyalty_program_pins" model="tt.loyalty.program">
+            <field name="name">PINS</field>
+            <field name="code">pins</field>
+        </record>
+        <record id="tt_loyalty_program_flypass" model="tt.loyalty.program">
+            <field name="name">Flypass</field>
+            <field name="code">flypass</field>
+        </record>
+        <record id="tt_loyalty_program_airmoldovaclub" model="tt.loyalty.program">
+            <field name="name">Air Moldova Club</field>
+            <field name="code">airmoldovaclub</field>
+        </record>
+        <record id="tt_loyalty_program_visionteam" model="tt.loyalty.program">
+            <field name="name">Vision Team</field>
+            <field name="code">visionteam</field>
+        </record>
+        <record id="tt_loyalty_program_norwegianreward" model="tt.loyalty.program">
+            <field name="name">Norwegian Reward</field>
+            <field name="code">norwegianreward</field>
+        </record>
+        <record id="tt_loyalty_program_tapmilesandgo" model="tt.loyalty.program">
+            <field name="name">TAP Miles and Go</field>
+            <field name="code">tapmilesandgo</field>
+        </record>
+        <record id="tt_loyalty_program_carpatairfrequentflyer" model="tt.loyalty.program">
+            <field name="name">Carpatair Frequent Flyer</field>
+            <field name="code">carpatairfrequentflyer</field>
+        </record>
+        <record id="tt_loyalty_program_myblueair" model="tt.loyalty.program">
+            <field name="name">My Blue Air</field>
+            <field name="code">myblueair</field>
+        </record>
+        <record id="tt_loyalty_program_aeroflotbonus" model="tt.loyalty.program">
+            <field name="name">Aeroflot Bonus</field>
+            <field name="code">aeroflotbonus</field>
+        </record>
+        <record id="tt_loyalty_program_s7priority" model="tt.loyalty.program">
+            <field name="name">S7 Priority</field>
+            <field name="code">s7priority</field>
+        </record>
+        <record id="tt_loyalty_program_goldenmile" model="tt.loyalty.program">
+            <field name="name">Golden Mile</field>
+            <field name="code">goldenmile</field>
+        </record>
+        <record id="tt_loyalty_program_wings" model="tt.loyalty.program">
+            <field name="name">Wings</field>
+            <field name="code">wings</field>
+        </record>
+        <record id="tt_loyalty_program_status" model="tt.loyalty.program">
+            <field name="name">Status</field>
+            <field name="code">status</field>
+        </record>
+        <record id="tt_loyalty_program_etihadguest" model="tt.loyalty.program">
+            <field name="name">Etihad Guest</field>
+            <field name="code">etihadguest</field>
+        </record>
+        <record id="tt_loyalty_program_suma" model="tt.loyalty.program">
+            <field name="name">Suma</field>
+            <field name="code">suma</field>
+        </record>
+        <record id="tt_loyalty_program_avios" model="tt.loyalty.program">
+            <field name="name">Avios</field>
+            <field name="code">avios</field>
+        </record>
+        <record id="tt_loyalty_program_bintermás" model="tt.loyalty.program">
+            <field name="name">Binter Más</field>
+            <field name="code">bintermás</field>
+        </record>
+        <record id="tt_loyalty_program_aviosiberaplus" model="tt.loyalty.program">
+            <field name="name">Avios IBERA PLUS</field>
+            <field name="code">aviosiberaplus</field>
+        </record>
+        <record id="tt_loyalty_program_aviosandpunto" model="tt.loyalty.program">
+            <field name="name">Avios and Punto</field>
+            <field name="code">aviosandpunto</field>
+        </record>
+        <record id="tt_loyalty_program_bravänner" model="tt.loyalty.program">
+            <field name="name">BRA Vänner</field>
+            <field name="code">bravänner</field>
+        </record>
+        <record id="tt_loyalty_program_panoramaclub" model="tt.loyalty.program">
+            <field name="name">Panorama Club</field>
+            <field name="code">panoramaclub</field>
+        </record>
+        <record id="tt_loyalty_program_bonusclub" model="tt.loyalty.program">
+            <field name="name">Bonus Club</field>
+            <field name="code">bonusclub</field>
+        </record>
+        <record id="tt_loyalty_program_aurignyfrequentflyer" model="tt.loyalty.program">
+            <field name="name">Aurigny Frequent Flyer</field>
+            <field name="code">aurignyfrequentflyer</field>
+        </record>
+        <record id="tt_loyalty_program_flightclub" model="tt.loyalty.program">
+            <field name="name">Flight Club</field>
+            <field name="code">flightclub</field>
+        </record>
+        <record id="tt_loyalty_program_easyjetplus" model="tt.loyalty.program">
+            <field name="name">easyJet Plus</field>
+            <field name="code">easyjetplus</field>
+        </record>
+        <record id="tt_loyalty_program_myjet2travelclub" model="tt.loyalty.program">
+            <field name="name">My Jet2 Travel Club</field>
+            <field name="code">myjet2travelclub</field>
+        </record>
+        <record id="tt_loyalty_program_flyingclub" model="tt.loyalty.program">
+            <field name="name">Flying Club</field>
+            <field name="code">flyingclub</field>
+        </record>
+        <record id="tt_loyalty_program_arianamiles" model="tt.loyalty.program">
+            <field name="name">Ariana Miles</field>
+            <field name="code">arianamiles</field>
+        </record>
+        <record id="tt_loyalty_program_goorange" model="tt.loyalty.program">
+            <field name="name">Go Orange</field>
+            <field name="code">goorange</field>
+        </record>
+        <record id="tt_loyalty_program_saffronrewards" model="tt.loyalty.program">
+            <field name="name">Saffron Rewards</field>
+            <field name="code">saffronrewards</field>
+        </record>
+        <record id="tt_loyalty_program_azalmiles" model="tt.loyalty.program">
+            <field name="name">AZAL Miles</field>
+            <field name="code">azalmiles</field>
+        </record>
+        <record id="tt_loyalty_program_falconflyer" model="tt.loyalty.program">
+            <field name="name">Falconflyer</field>
+            <field name="code">falconflyer</field>
+        </record>
+        <record id="tt_loyalty_program_egyptairplus" model="tt.loyalty.program">
+            <field name="name">Egyptair Plus</field>
+            <field name="code">egyptairplus</field>
+        </record>
+        <record id="tt_loyalty_program_mahanandmiles" model="tt.loyalty.program">
+            <field name="name">Mahan and Miles</field>
+            <field name="code">mahanandmiles</field>
+        </record>
+        <record id="tt_loyalty_program_skygift" model="tt.loyalty.program">
+            <field name="name">SkyGift</field>
+            <field name="code">skygift</field>
+        </record>
+        <record id="tt_loyalty_program_matmidclub" model="tt.loyalty.program">
+            <field name="name">Matmid Club</field>
+            <field name="code">matmidclub</field>
+        </record>
+        <record id="tt_loyalty_program_royalclub" model="tt.loyalty.program">
+            <field name="name">Royal Club</field>
+            <field name="code">royalclub</field>
+        </record>
+        <record id="tt_loyalty_program_oasisclub" model="tt.loyalty.program">
+            <field name="name">Oasis Club</field>
+            <field name="code">oasisclub</field>
+        </record>
+        <record id="tt_loyalty_program_cedarmiles" model="tt.loyalty.program">
+            <field name="name">Cedar Miles</field>
+            <field name="code">cedarmiles</field>
+        </record>
+        <record id="tt_loyalty_program_sindbad" model="tt.loyalty.program">
+            <field name="name">Sindbad</field>
+            <field name="code">sindbad</field>
+        </record>
+        <record id="tt_loyalty_program_privilegeclub" model="tt.loyalty.program">
+            <field name="name">Privilege Club</field>
+            <field name="code">privilegeclub</field>
+        </record>
+        <record id="tt_loyalty_program_alfursan" model="tt.loyalty.program">
+            <field name="name">Alfursan</field>
+            <field name="code">alfursan</field>
+        </record>
+        <record id="tt_loyalty_program_nasmiles" model="tt.loyalty.program">
+            <field name="name">Nasmiles</field>
+            <field name="code">nasmiles</field>
+        </record>
+        <record id="tt_loyalty_program_saudigulfclub" model="tt.loyalty.program">
+            <field name="name">SaudiGulf Club</field>
+            <field name="code">saudigulfclub</field>
+        </record>
+        <record id="tt_loyalty_program_syrianairfrequentflyer" model="tt.loyalty.program">
+            <field name="name">SyrianAir Frequent Flyer</field>
+            <field name="code">syrianairfrequentflyer</field>
+        </record>
+        <record id="tt_loyalty_program_milesandsmiles" model="tt.loyalty.program">
+            <field name="name">Miles and Smiles</field>
+            <field name="code">milesandsmiles</field>
+        </record>
+        <record id="tt_loyalty_program_onurextra" model="tt.loyalty.program">
+            <field name="name">Onur Extra</field>
+            <field name="code">onurextra</field>
+        </record>
+        <record id="tt_loyalty_program_pegasusplus" model="tt.loyalty.program">
+            <field name="name">Pegasus Plus</field>
+            <field name="code">pegasusplus</field>
+        </record>
+        <record id="tt_loyalty_program_sunpoints" model="tt.loyalty.program">
+            <field name="name">SunPoints</field>
+            <field name="code">sunpoints</field>
+        </record>
+        <record id="tt_loyalty_program_skywards" model="tt.loyalty.program">
+            <field name="name">Skywards</field>
+            <field name="code">skywards</field>
+        </record>
+        <record id="tt_loyalty_program_openrewards" model="tt.loyalty.program">
+            <field name="name">OPEN rewards</field>
+            <field name="code">openrewards</field>
+        </record>
+        <record id="tt_loyalty_program_samaclub" model="tt.loyalty.program">
+            <field name="name">Sama Club</field>
+            <field name="code">samaclub</field>
+        </record>
+        <record id="tt_loyalty_program_bimanloyaltyclub" model="tt.loyalty.program">
+            <field name="name">Biman Loyalty Club</field>
+            <field name="code">bimanloyaltyclub</field>
+        </record>
+        <record id="tt_loyalty_program_myhappinessreward" model="tt.loyalty.program">
+            <field name="name">My Happiness Reward</field>
+            <field name="code">myhappinessreward</field>
+        </record>
+        <record id="tt_loyalty_program_royalskies" model="tt.loyalty.program">
+            <field name="name">Royal skies</field>
+            <field name="code">royalskies</field>
+        </record>
+        <record id="tt_loyalty_program_angkorwards" model="tt.loyalty.program">
+            <field name="name">AngkorWards</field>
+            <field name="code">angkorwards</field>
+        </record>
+        <record id="tt_loyalty_program_phoenixmiles" model="tt.loyalty.program">
+            <field name="name">Phoenix Miles</field>
+            <field name="code">phoenixmiles</field>
+        </record>
+        <record id="tt_loyalty_program_fortunewingsclub" model="tt.loyalty.program">
+            <field name="name">Fortune Wings Club</field>
+            <field name="code">fortunewingsclub</field>
+        </record>
+        <record id="tt_loyalty_program_easternmiles" model="tt.loyalty.program">
+            <field name="name">Eastern Miles</field>
+            <field name="code">easternmiles</field>
+        </record>
+        <record id="tt_loyalty_program_skypearlclub" model="tt.loyalty.program">
+            <field name="name">Sky Pearl Club</field>
+            <field name="code">skypearlclub</field>
+        </record>
+        <record id="tt_loyalty_program_seagullclub" model="tt.loyalty.program">
+            <field name="name">Seagull Club</field>
+            <field name="code">seagullclub</field>
+        </record>
+        <record id="tt_loyalty_program_egretclub" model="tt.loyalty.program">
+            <field name="name">Egret Club</field>
+            <field name="code">egretclub</field>
+        </record>
+        <record id="tt_loyalty_program_juneyaoairclub" model="tt.loyalty.program">
+            <field name="name">Juneyao Air Club</field>
+            <field name="code">juneyaoairclub</field>
+        </record>
+        <record id="tt_loyalty_program_zunxiangclub" model="tt.loyalty.program">
+            <field name="name">Zunxiang Club</field>
+            <field name="code">zunxiangclub</field>
+        </record>
+        <record id="tt_loyalty_program_luckycloudsclub" model="tt.loyalty.program">
+            <field name="name">Lucky Clouds Club</field>
+            <field name="code">luckycloudsclub</field>
+        </record>
+        <record id="tt_loyalty_program_tianhaizhiyunclub" model="tt.loyalty.program">
+            <field name="name">Tianhaizhiyun Club</field>
+            <field name="code">tianhaizhiyunclub</field>
+        </record>
+        <record id="tt_loyalty_program_goldenpandaclub" model="tt.loyalty.program">
+            <field name="name">Golden Panda Club</field>
+            <field name="code">goldenpandaclub</field>
+        </record>
+        <record id="tt_loyalty_program_springpass" model="tt.loyalty.program">
+            <field name="name">Spring Pass</field>
+            <field name="code">springpass</field>
+        </record>
+        <record id="tt_loyalty_program_asiamiles" model="tt.loyalty.program">
+            <field name="name">Asia Miles</field>
+            <field name="code">asiamiles</field>
+        </record>
+        <record id="tt_loyalty_program_themarcopoloclub" model="tt.loyalty.program">
+            <field name="name">The Marco Polo Club</field>
+            <field name="code">themarcopoloclub</field>
+        </record>
+        <record id="tt_loyalty_program_big" model="tt.loyalty.program">
+            <field name="name">BIG</field>
+            <field name="code">big</field>
+        </record>
+        <record id="tt_loyalty_program_flyingreturns" model="tt.loyalty.program">
+            <field name="name">Flying Returns</field>
+            <field name="code">flyingreturns</field>
+        </record>
+        <record id="tt_loyalty_program_clubvistara" model="tt.loyalty.program">
+            <field name="name">Club Vistara</field>
+            <field name="code">clubvistara</field>
+        </record>
+        <record id="tt_loyalty_program_spiceclub" model="tt.loyalty.program">
+            <field name="name">Spice Club</field>
+            <field name="code">spiceclub</field>
+        </record>
+        <record id="tt_loyalty_program_batikfrequentflyer" model="tt.loyalty.program">
+            <field name="name">Batik Frequent Flyer</field>
+            <field name="code">batikfrequentflyer</field>
+        </record>
+        <record id="tt_loyalty_program_garudamiles" model="tt.loyalty.program">
+            <field name="name">GarudaMiles</field>
+            <field name="code">garudamiles</field>
+        </record>
+        <record id="tt_loyalty_program_lionpassport" model="tt.loyalty.program">
+            <field name="name">Lion Passport</field>
+            <field name="code">lionpassport</field>
+        </record>
+        <record id="tt_loyalty_program_anamileageclub" model="tt.loyalty.program">
+            <field name="name">ANA Mileage Club</field>
+            <field name="code">anamileageclub</field>
+        </record>
+        <record id="tt_loyalty_program_myairdo" model="tt.loyalty.program">
+            <field name="name">My AirDo</field>
+            <field name="code">myairdo</field>
+        </record>
+        <record id="tt_loyalty_program_amxpointcard" model="tt.loyalty.program">
+            <field name="name">AMX Point Card</field>
+            <field name="code">amxpointcard</field>
+        </record>
+        <record id="tt_loyalty_program_jalmileagebank" model="tt.loyalty.program">
+            <field name="name">JAL Mileage Bank</field>
+            <field name="code">jalmileagebank</field>
+        </record>
+        <record id="tt_loyalty_program_qantasfrequentflyer" model="tt.loyalty.program">
+            <field name="name">Qantas Frequent Flyer</field>
+            <field name="code">qantasfrequentflyer</field>
+        </record>
+        <record id="tt_loyalty_program_solaseedsmileclub" model="tt.loyalty.program">
+            <field name="name">Solaseed Smile Club</field>
+            <field name="code">solaseedsmileclub</field>
+        </record>
+        <record id="tt_loyalty_program_starlinkmembers" model="tt.loyalty.program">
+            <field name="name">Starlink Members</field>
+            <field name="code">starlinkmembers</field>
+        </record>
+        <record id="tt_loyalty_program_nomadclub" model="tt.loyalty.program">
+            <field name="name">Nomad Club</field>
+            <field name="code">nomadclub</field>
+        </record>
+        <record id="tt_loyalty_program_belekbonus" model="tt.loyalty.program">
+            <field name="name">Belek Bonus</field>
+            <field name="code">belekbonus</field>
+        </record>
+        <record id="tt_loyalty_program_champamuanglao" model="tt.loyalty.program">
+            <field name="name">Champa Muang Lao</field>
+            <field name="code">champamuanglao</field>
+        </record>
+        <record id="tt_loyalty_program_bonuslink" model="tt.loyalty.program">
+            <field name="name">BonusLink</field>
+            <field name="code">bonuslink</field>
+        </record>
+        <record id="tt_loyalty_program_enrich" model="tt.loyalty.program">
+            <field name="name">Enrich</field>
+            <field name="code">enrich</field>
+        </record>
+        <record id="tt_loyalty_program_malindomiles" model="tt.loyalty.program">
+            <field name="name">Malindo Miles</field>
+            <field name="code">malindomiles</field>
+        </record>
+        <record id="tt_loyalty_program_hunnuclub" model="tt.loyalty.program">
+            <field name="name">Hunnu Club</field>
+            <field name="code">hunnuclub</field>
+        </record>
+        <record id="tt_loyalty_program_blueskymongolia" model="tt.loyalty.program">
+            <field name="name">Blue Sky Mongolia</field>
+            <field name="code">blueskymongolia</field>
+        </record>
+        <record id="tt_loyalty_program_royallotusplus" model="tt.loyalty.program">
+            <field name="name">Royal Lotus Plus</field>
+            <field name="code">royallotusplus</field>
+        </record>
+        <record id="tt_loyalty_program_skysmilesclub" model="tt.loyalty.program">
+            <field name="name">Sky Smiles Club</field>
+            <field name="code">skysmilesclub</field>
+        </record>
+        <record id="tt_loyalty_program_eliteclub" model="tt.loyalty.program">
+            <field name="name">Elite Club</field>
+            <field name="code">eliteclub</field>
+        </record>
+        <record id="tt_loyalty_program_highflyerclub" model="tt.loyalty.program">
+            <field name="name">High Flyer Club</field>
+            <field name="code">highflyerclub</field>
+        </record>
+        <record id="tt_loyalty_program_skyclub" model="tt.loyalty.program">
+            <field name="name">SkyClub</field>
+            <field name="code">skyclub</field>
+        </record>
+        <record id="tt_loyalty_program_getgo" model="tt.loyalty.program">
+            <field name="name">Getgo</field>
+            <field name="code">getgo</field>
+        </record>
+        <record id="tt_loyalty_program_mabuhaymiles" model="tt.loyalty.program">
+            <field name="name">Mabuhay Miles</field>
+            <field name="code">mabuhaymiles</field>
+        </record>
+        <record id="tt_loyalty_program_piaawardsplus+" model="tt.loyalty.program">
+            <field name="name">PIA Awards Plus+</field>
+            <field name="code">piaawardsplus+</field>
+        </record>
+        <record id="tt_loyalty_program_bluemiles" model="tt.loyalty.program">
+            <field name="name">Blue Miles</field>
+            <field name="code">bluemiles</field>
+        </record>
+        <record id="tt_loyalty_program_indusmiles" model="tt.loyalty.program">
+            <field name="name">Indus Miles</field>
+            <field name="code">indusmiles</field>
+        </record>
+        <record id="tt_loyalty_program_krisflyer" model="tt.loyalty.program">
+            <field name="name">KrisFlyer</field>
+            <field name="code">krisflyer</field>
+        </record>
+        <record id="tt_loyalty_program_ppsclub" model="tt.loyalty.program">
+            <field name="name">PPS Club</field>
+            <field name="code">ppsclub</field>
+        </record>
+        <record id="tt_loyalty_program_flyandstamp" model="tt.loyalty.program">
+            <field name="name">Fly and Stamp</field>
+            <field name="code">flyandstamp</field>
+        </record>
+        <record id="tt_loyalty_program_asianaclub" model="tt.loyalty.program">
+            <field name="name">Asiana Club</field>
+            <field name="code">asianaclub</field>
+        </record>
+        <record id="tt_loyalty_program_refreshpoint" model="tt.loyalty.program">
+            <field name="name">Refresh Point</field>
+            <field name="code">refreshpoint</field>
+        </record>
+        <record id="tt_loyalty_program_skypass" model="tt.loyalty.program">
+            <field name="name">SKYPASS</field>
+            <field name="code">skypass</field>
+        </record>
+        <record id="tt_loyalty_program_flysmiles" model="tt.loyalty.program">
+            <field name="name">FlySmiLes</field>
+            <field name="code">flysmiles</field>
+        </record>
+        <record id="tt_loyalty_program_dynastyflyer" model="tt.loyalty.program">
+            <field name="name">Dynasty Flyer</field>
+            <field name="code">dynastyflyer</field>
+        </record>
+        <record id="tt_loyalty_program_infinitymileagelands" model="tt.loyalty.program">
+            <field name="name">Infinity MileageLands</field>
+            <field name="code">infinitymileagelands</field>
+        </record>
+        <record id="tt_loyalty_program_cosmile" model="tt.loyalty.program">
+            <field name="name">Cosmile</field>
+            <field name="code">cosmile</field>
+        </record>
+        <record id="tt_loyalty_program_flyerbonus" model="tt.loyalty.program">
+            <field name="name">FlyerBonus</field>
+            <field name="code">flyerbonus</field>
+        </record>
+        <record id="tt_loyalty_program_royalorchidplus" model="tt.loyalty.program">
+            <field name="name">Royal Orchid Plus</field>
+            <field name="code">royalorchidplus</field>
+        </record>
+        <record id="tt_loyalty_program_nokfanclub" model="tt.loyalty.program">
+            <field name="name">Nok Fan Club</field>
+            <field name="code">nokfanclub</field>
+        </record>
+        <record id="tt_loyalty_program_uzairplus" model="tt.loyalty.program">
+            <field name="name">UzAirPlus</field>
+            <field name="code">uzairplus</field>
+        </record>
+        <record id="tt_loyalty_program_bambooclub" model="tt.loyalty.program">
+            <field name="name">Bamboo Club</field>
+            <field name="code">bambooclub</field>
+        </record>
+        <record id="tt_loyalty_program_vietjetskyclub" model="tt.loyalty.program">
+            <field name="name">Vietjet SkyClub</field>
+            <field name="code">vietjetskyclub</field>
+        </record>
+        <record id="tt_loyalty_program_lotusmiles" model="tt.loyalty.program">
+            <field name="name">Lotusmiles</field>
+            <field name="code">lotusmiles</field>
+        </record>
+        <record id="tt_loyalty_program_umbiumbiclub" model="tt.loyalty.program">
+            <field name="name">Umbi Umbi Club</field>
+            <field name="code">umbiumbiclub</field>
+        </record>
+        <record id="tt_loyalty_program_airalgérieplus" model="tt.loyalty.program">
+            <field name="name">Air Algérie Plus</field>
+            <field name="code">airalgérieplus</field>
+        </record>
+        <record id="tt_loyalty_program_shebamiles" model="tt.loyalty.program">
+            <field name="name">Sheba Miles</field>
+            <field name="code">shebamiles</field>
+        </record>
+        <record id="tt_loyalty_program_smilesprogram" model="tt.loyalty.program">
+            <field name="name">sMiles Program</field>
+            <field name="code">smilesprogram</field>
+        </record>
+        <record id="tt_loyalty_program_rahal" model="tt.loyalty.program">
+            <field name="name">Rahal</field>
+            <field name="code">rahal</field>
+        </record>
+        <record id="tt_loyalty_program_namako" model="tt.loyalty.program">
+            <field name="name">Namako</field>
+            <field name="code">namako</field>
+        </record>
+        <record id="tt_loyalty_program_kestrelflyer" model="tt.loyalty.program">
+            <field name="name">Kestrel Flyer</field>
+            <field name="code">kestrelflyer</field>
+        </record>
+        <record id="tt_loyalty_program_safarflyer" model="tt.loyalty.program">
+            <field name="name">Safar Flyer</field>
+            <field name="code">safarflyer</field>
+        </record>
+        <record id="tt_loyalty_program_flamingoclub" model="tt.loyalty.program">
+            <field name="name">Flamingo Club</field>
+            <field name="code">flamingoclub</field>
+        </record>
+        <record id="tt_loyalty_program_rewards" model="tt.loyalty.program">
+            <field name="name">Rewards</field>
+            <field name="code">rewards</field>
+        </record>
+        <record id="tt_loyalty_program_capricorneprogram" model="tt.loyalty.program">
+            <field name="name">Capricorne Program</field>
+            <field name="code">capricorneprogram</field>
+        </record>
+        <record id="tt_loyalty_program_dreammiles" model="tt.loyalty.program">
+            <field name="name">Dream Miles</field>
+            <field name="code">dreammiles</field>
+        </record>
+        <record id="tt_loyalty_program_voyager" model="tt.loyalty.program">
+            <field name="name">Voyager</field>
+            <field name="code">voyager</field>
+        </record>
+        <record id="tt_loyalty_program_paaroyal" model="tt.loyalty.program">
+            <field name="name">PAA Royal</field>
+            <field name="code">paaroyal</field>
+        </record>
+        <record id="tt_loyalty_program_askyclub" model="tt.loyalty.program">
+            <field name="name">ASKY Club</field>
+            <field name="code">askyclub</field>
+        </record>
+        <record id="tt_loyalty_program_fidelys" model="tt.loyalty.program">
+            <field name="name">Fidelys</field>
+            <field name="code">fidelys</field>
+        </record>
+        <record id="tt_loyalty_program_rainbowclub" model="tt.loyalty.program">
+            <field name="name">Rainbow Club</field>
+            <field name="code">rainbowclub</field>
+        </record>
+        <record id="tt_loyalty_program_qffrequentflyer" model="tt.loyalty.program">
+            <field name="name">QF Frequent Flyer</field>
+            <field name="code">qffrequentflyer</field>
+        </record>
+        <record id="tt_loyalty_program_velocity" model="tt.loyalty.program">
+            <field name="name">Velocity</field>
+            <field name="code">velocity</field>
+        </record>
+        <record id="tt_loyalty_program_tabuaclub" model="tt.loyalty.program">
+            <field name="name">Tabua Club</field>
+            <field name="code">tabuaclub</field>
+        </record>
+        <record id="tt_loyalty_program_clubtiare" model="tt.loyalty.program">
+            <field name="name">Club Tiare</field>
+            <field name="code">clubtiare</field>
+        </record>
+        <record id="tt_loyalty_program_airpoints" model="tt.loyalty.program">
+            <field name="name">Airpoints</field>
+            <field name="code">airpoints</field>
+        </record>
+        <record id="tt_loyalty_program_destinations" model="tt.loyalty.program">
+            <field name="name">Destinations</field>
+            <field name="code">destinations</field>
+        </record>
+        <record id="tt_loyalty_program_belamaclub" model="tt.loyalty.program">
+            <field name="name">Belama Club</field>
+            <field name="code">belamaclub</field>
+        </record>
+    </data>
+</odoo>
+    

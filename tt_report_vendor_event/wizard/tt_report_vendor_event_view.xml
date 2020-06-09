@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record model="ir.ui.view" id="report_vendor_event_form">
+        <field name="name">Vendor Report Transaction</field>
+        <field name="model">tt.report.vendor.event.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Event Transaction Report">
+                <sheet>
+                    <group>
+                        <field name="event_name" required="1"/>
+                        <field name="transaction_state" required="1"/>
+                    </group>
+                </sheet>
+                <footer>
+                    <button name="action_print_excel" string="Print in Excel" type="object" class="oe_highlight"/>
+                    or
+                    <button string="Cancel" class="oe_link" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_report_vendor_event_menu" model="ir.actions.act_window">
+        <field name="name">Transaction Report</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">tt.report.vendor.event.wizard</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">form</field>
+        <field name="view_id" ref="report_vendor_event_form"/>
+        <field name="target">new</field>
+    </record>
+
+    <menuitem
+        id="sub_menu_report_transaction"
+        name="Printout Report"
+        parent="tt_base.top_external_vendor_transaction"
+        action="action_report_vendor_event_menu"
+        sequence="10"
+        />
+</odoo>
