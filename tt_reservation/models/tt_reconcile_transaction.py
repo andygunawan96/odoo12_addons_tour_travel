@@ -93,7 +93,7 @@ class TtReconcileTransactionLines(models.Model):
                               ('done','Done'),
                               ('ignore','Ignore')],'State',default='not_match')
     res_model = fields.Char('Ref Model', readonly=True)
-    res_id = fields.Char('Ref ID', readonly=True)
+    res_id = fields.Integer('Ref ID', readonly=True)
 
     def open_reference(self):
         # try:

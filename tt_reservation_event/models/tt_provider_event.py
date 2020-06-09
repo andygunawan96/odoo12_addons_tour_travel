@@ -46,5 +46,7 @@ class TtProviderEvent(models.Model):
 
     notes = fields.Text('Notes', readonly=True, states={'draft': [('readonly', False)]})
 
+    total_price = fields.Float('Total Price', readonly=True, default=0)
+
     def action_create_ledger(self, issued_uid, pay_method=None):
         return self.env['tt.ledger'].action_create_ledger(self, issued_uid)

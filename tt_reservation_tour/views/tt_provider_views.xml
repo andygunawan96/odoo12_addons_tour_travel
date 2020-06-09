@@ -29,6 +29,7 @@
                             <field name="notes"/>
                             <field name="error_msg"/>
                             <field name="balance_due"/>
+                            <field name="total_price"/>
                         </group>
                         <group>
                             <field name="hold_date"/>

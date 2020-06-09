@@ -81,6 +81,8 @@ class TtProviderVisa(models.Model):
 
     passenger_ids = fields.One2many('tt.provider.visa.passengers', 'provider_id', 'Passengers')
 
+    total_price = fields.Float('Total Price', default=0)
+
     def action_booked_api_visa(self, provider_data, api_context, hold_date):
         for rec in self:
             rec.write({
