@@ -79,7 +79,7 @@ class ReservationEvent(models.Model):
 
     sale_service_charge_ids = fields.One2many('tt.service.charge', 'booking_event_id', string="Service Charge", readonly=True, states={'draft': [('readonly', False)]})
     provider_booking_ids = fields.One2many('tt.provider.event', 'booking_id', string="Provider Booking", readonly=True, states={'draft': [('readonly', False)]})
-    # passenger_ids = fields.One2many('tt.reservation.passenger.event', 'booking_id', string="Passengers")
+    passenger_ids = fields.One2many('tt.reservation.passenger.event', 'booking_id', string="Passengers")
 
     information = fields.Text('Additional Information')
     file_upload = fields.Text('File Upload')
@@ -220,6 +220,7 @@ class ReservationEvent(models.Model):
             #recieve and handling data
             booker_data = req.get('booker')
             contacts_data = req.get('contact')
+            passengers = req.get('passengers')
             event_code = req.get('event_code')
             event_option_codes = req.get('event_option_codes')
             provider = req.get('provider')
@@ -229,6 +230,7 @@ class ReservationEvent(models.Model):
             #create all dependencies
             booker_obj = self.create_booker_api(booker_data, context)
             contact_obj = self.create_contact_api(contacts_data[0], booker_obj, context)
+            pax_ids = self.create_customer_api(passengers, context, booker_obj.seq_id, contact_obj.seq_id)
 
             #get all necessary data
             provider_id = self.env['tt.provider'].sudo().search([('code', '=', provider)], limit=1)
@@ -247,7 +249,7 @@ class ReservationEvent(models.Model):
                 'contact_id': contact_obj.id,
                 'contact_title': contact_obj.name,
                 'contact_email': contact_obj.email,
-                'contact_phone': contact_obj.phone_ids[0].phone_number,
+                'contact_phone': contact_obj.phone_ids and contact_obj.phone_ids[0].phone_number or False,
                 'agent_id': context['co_agent_id'],
             }
             book_obj = self.create(temp_main_dictionary)
@@ -387,6 +389,11 @@ class ReservationEvent(models.Model):
                 'qty': 1,
                 'currency': rec.event_option_id.currency_id.name,
                 'price': rec.event_option_id.price,
+                'answers': [{
+                    'question': rec1.question,
+                    'answer': rec1.answer or '',
+                } for rec1 in rec.extra_question_ids],
+                'ticket_number': rec.ticket_number,
             } for rec in self.option_ids] or [],
             'notes': '',
             'booker': self.booker_id.read(),
