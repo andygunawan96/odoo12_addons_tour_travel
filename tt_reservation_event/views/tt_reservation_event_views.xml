@@ -100,7 +100,7 @@
             </xpath>
             <xpath expr="//page[@name='anchor']" position="before">
                 <page string="Booking Options">
-                    <field name="option_ids" readonly="0">
+                    <field name="option_ids" readonly="1">
                         <tree>
                             <field name="ticket_number"/>
                             <field name="event_option_id"/>
