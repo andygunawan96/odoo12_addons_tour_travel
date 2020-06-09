@@ -53,7 +53,7 @@ class TtProviderPPOB(models.Model):
     total = fields.Monetary('Total Bill Amount', readonly=True, default=0)
     ppob_bill_ids = fields.One2many('tt.bill.ppob', 'provider_booking_id', string='Bills', readonly=True,
                                     states={'draft': [('readonly', False)]})
-    ppob_bill_detail_ids = fields.One2many('tt.bill.detail.ppob', 'provider_booking_id', string='Bills', readonly=True,
+    ppob_bill_detail_ids = fields.One2many('tt.bill.detail.ppob', 'provider_booking_id', string='Bill Details', readonly=True,
                                     states={'draft': [('readonly', False)]})
     cost_service_charge_ids = fields.One2many('tt.service.charge', 'provider_ppob_booking_id', 'Cost Service Charges')
 

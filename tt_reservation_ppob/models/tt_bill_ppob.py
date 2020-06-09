@@ -11,10 +11,10 @@ class TtBillPPOB(models.Model):
     _description = 'Rodex Model'
 
     provider_booking_id = fields.Many2one('tt.provider.ppob', 'Provider Booking', ondelete='cascade')
+    booking_id = fields.Many2one('tt.reservation.ppob', 'Order Number', related='provider_booking_id.booking_id', store=True)
     provider_id = fields.Many2one('tt.provider', related='provider_booking_id.provider_id', store=True)
     pnr = fields.Char('PNR', related='provider_booking_id.pnr', store=True)
 
-    booking_id = fields.Many2one('tt.reservation.ppob', 'Order Number', related='provider_booking_id.booking_id', store=True)
     sequence = fields.Integer('Sequence')
 
     period = fields.Date('Period')
@@ -92,6 +92,7 @@ class TtBillDetailPPOB(models.Model):
     _description = 'Rodex Model'
 
     provider_booking_id = fields.Many2one('tt.provider.ppob', 'Provider Booking', ondelete='cascade')
+    booking_id = fields.Many2one('tt.reservation.ppob', 'Order Number', related='provider_booking_id.booking_id', store=True)
     customer_number = fields.Char('Customer Number', readonly=True)
     customer_name = fields.Char('Customer Name', readonly=True)
     unit_code = fields.Char('Unit Code', readonly=True)
