@@ -131,6 +131,8 @@
                     <field name="validate_date" readonly="1" class="oe_inline"/>
                 </div>
             </xpath>
+            <xpath expr="//label[@for='reschedule_uid']" position="replace"/>
+            <field name="penalty_amount" position="replace"/>
             <xpath expr="//label[@for='issued_uid']" position="before">
                 <field name="to_vendor_date" readonly="1" attrs="{'invisible': [('use_vendor', '!=', True)]}"/>
                 <field name="vendor_process_date" readonly="1" attrs="{'invisible': [('use_vendor', '!=', True)]}"/>

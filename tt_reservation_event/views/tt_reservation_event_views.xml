@@ -68,7 +68,7 @@
                             class="oe_stat_button"
                             icon="fa-print"
                             attrs="{'invisible': [('state', '!=', 'issued')]}"/>
-                    <button name="print_to_invoice"
+                    <button name="print_ho_invoice"
                             class="oe_stat_button" states="issued,done"
                             string="Print Invoice (HO)" type="object" icon="fa-print"
                             groups="tt_base.group_tt_tour_travel_operator"/>
@@ -100,7 +100,7 @@
             </xpath>
             <xpath expr="//page[@name='anchor']" position="before">
                 <page string="Booking Options">
-                    <field name="option_ids" readonly="1">
+                    <field name="option_ids" readonly="0">
                         <tree>
                             <field name="ticket_number"/>
                             <field name="event_option_id"/>
