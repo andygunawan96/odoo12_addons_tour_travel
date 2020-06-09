@@ -1,0 +1,95 @@
+<odoo>
+    <record id="tt_provider_event_view_form_view" model="ir.ui.view">
+        <field name="name">tt.provider.event.form.view</field>
+        <field name="model">tt.provider.event</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <button string="Set To Booked" name="action_set_to_book_from_button" groups="tt_base.group_tt_ticketing_operator" states="cancel2,issued,fail_issued" type="object"/>
+                    <button string="Issued Locally" name="%(tt_reservation_airline.force_issued_wizard_action_view)d" states="booked" type="action"
+                            groups="tt_base.group_tt_ticketing_operator"
+                            context="{
+                        'default_provider_id': id,
+                   }"/>
+                    <button string="Reverse Ledger" name="action_reverse_ledger_from_button" states="issued" type="object"/>
+                    <button string="Sync Refund Status" name="action_sync_refund_status" states="refund_pending" type="object"/>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,booked,issued"/>
+                </header>
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="sequence"/>
+                            <field name="booking_id"/>
+                            <field name="pnr"/>
+                            <field name="pnr2"/>
+                            <field name="reference"/>
+                            <field name="provider_id"/>
+                            <field name="balance_due"/>
+                            <field name="total_price"/>
+                        </group>
+                        <group>
+                            <field name="hold_date"/>
+                            <field name="expired_date"/>
+                            <field name="booked_uid"/>
+                            <field name="booked_date"/>
+                            <field name="issued_uid"/>
+                            <field name="issued_date"/>
+                        </group>
+                    </group>
+                    <separator string="Service Charges"/>
+                    <field name="cost_service_charge_ids" context="{'form_view_ref':'tt_reservation_airline.tt_service_charge_airline_inherit_form_view'}">
+                        <tree>
+                            <field name="charge_code"/>
+                            <field name="charge_type"/>
+                            <field name="pax_type"/>
+                            <field name="pax_count"/>
+                            <field name="currency_id" invisible="1"/>
+                            <field name="amount"/>
+                            <field name="total"/>
+                            <field name="passenger_airline_ids"/>
+                        </tree>
+                    </field>
+<!--                    <separator string="Passengers"/>-->
+<!--                    <field name="ticket_ids">-->
+<!--                        <tree>-->
+<!--                            <field name="passenger_id"/>-->
+<!--                            <field name="ticket_number"/>-->
+<!--                        </tree>-->
+<!--                    </field>-->
+                    <separator string="Error History"/>
+                    <field name="error_history_ids">
+                        <tree>
+                            <field name="error_code"/>
+                            <field name="error_msg"/>
+                        </tree>
+                    </field>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="tt_reservation_event_provider_tree_view" model="ir.ui.view">
+        <field name="name">tt.provider.event.tree.view</field>
+        <field name="model">tt.provider.event</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="pnr"/>
+                <field name="provider_id"/>
+                <field name="event_id"/>
+                <field name="state"/>
+            </tree>
+        </field>
+    </record>
+
+    <record model="ir.actions.act_window" id="tt_provider_event_action_views">
+        <field name="name">Provider Event</field>
+        <field name="res_model">tt.provider.event</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+    <menuitem id="submenu_tour_travel_provider_event"
+              parent="tt_reservation_event.menu_tour_travel_event_master"
+              name="Provider Event"
+              action="tt_reservation_event.tt_provider_event_action_views"/>
+</odoo>
