@@ -532,6 +532,55 @@ class ReservationEvent(models.Model):
         }
         return url
 
+    def print_ho_invoice(self):
+        datas = {
+            'ids': self.env.context.get('active_ids', []),
+            'model': self._name
+        }
+        res = self.read()
+        res = res and res[0] or {}
+        datas['form'] = res
+        event_ho_invoice_id = self.env.ref('tt_report_common.action_report_printout_invoice_ho_event')
+        if not self.printout_ho_invoice_id:
+            if self.agent_id:
+                co_agent_id = self.agent_id.id
+            else:
+                co_agent_id = self.env.user.agent_id.id
+
+            if self.user_id:
+                co_uid = self.user_id.id
+            else:
+                co_uid = self.env.user.id
+
+            pdf_report = event_ho_invoice_id.report_action(self, data=datas)
+            pdf_report['context'].update({
+                'active_model': self._name,
+                'active_id': self.id
+            })
+            pdf_report_bytes = event_ho_invoice_id.render_qweb_pdf(data=pdf_report)
+            res = self.env['tt.upload.center.wizard'].upload_file_api(
+                {
+                    'filename': 'Event HO Invoice %s.pdf' % self.name,
+                    'file_reference': 'Event HO Invoice',
+                    'file': base64.b64encode(pdf_report_bytes[0]),
+                    'delete_date': datetime.today() + timedelta(minutes=10)
+                },
+                {
+                    'co_agent_id': co_agent_id,
+                    'co_uid': co_uid,
+                }
+            )
+            upc_id = self.env['tt.upload.center'].search([('seq_id', '=', res['response']['seq_id'])], limit=1)
+            self.printout_ho_invoice_id = upc_id.id
+        url = {
+            'type': 'ir.actions.act_url',
+            'name': "ZZZ",
+            'target': 'new',
+            'url': self.printout_ho_invoice_id.url,
+        }
+        return url
+
+
 class TtReservationEventOption(models.Model):
     _name = 'tt.reservation.event.option'
     _description = 'Rodex Event Model'
