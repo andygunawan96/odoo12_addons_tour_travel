@@ -125,6 +125,7 @@
                             <field name="question"/>
                             <field name="answer_type"/>
                             <field name="is_required"/>
+                            <field name="is_active"/>
                         </tree>
                         <form>
                             <group>
@@ -136,6 +137,7 @@
                                         <field name="answer"/>
                                     </tree>
                                 </field>
+                                <field name="is_active"/>
                             </group>
                         </form>
                     </field>
