@@ -26,6 +26,8 @@ TT_TRANSPORT
         'data/tt_transport_carrier_search_airline.xml',
         'data/tt_psg_limiter_rule_data.xml',
         'data/ir_send_email.xml',
+        'data/tt_loyalty_program_data.xml',
+        'data/tt_frequent_flyer_airline_data.xml',
 
         # 'data/test_destination/tt_destination_airline_26_feb_2020_0.xml',
         # 'data/test_destination/tt_destination_airline_26_feb_2020_1.xml',
