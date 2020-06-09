@@ -59,6 +59,8 @@ class TtProviderTour(models.Model):
 
     notes = fields.Text('Notes', readonly=True, states={'draft': [('readonly', False)]})
 
+    total_price = fields.Float('Total Price', readonly=True, default=0)
+
     def action_reverse_ledger_from_button(self):
         if self.state == 'fail_refunded':
             raise UserError("Cannot refund, this PNR has been refunded.")
