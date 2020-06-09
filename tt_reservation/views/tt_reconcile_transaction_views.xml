@@ -101,8 +101,8 @@
                         <group>
                             <field name="vendor_start_balance"/>
                             <field name="vendor_end_balance"/>
-                            <field name="res_model"/>
-                            <field name="res_id"/>
+                            <field name="res_model" groups="base.user_admin"/>
+                            <field name="res_id" groups="base.user_admin"/>
                             <button string="Go to linked data" type="object" name="open_reference"
                             attrs="{'invisible':[('state','!=','match')]}"/>
                         </group>

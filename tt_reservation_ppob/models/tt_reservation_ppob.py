@@ -27,6 +27,10 @@ class ReservationPpob(models.Model):
                                        default=lambda self: self.env.ref('tt_reservation_ppob.tt_provider_type_ppob'))
     prepaid_value = fields.Integer('Prepaid Value', default=0)
     is_ticket_printed = fields.Integer('Ticket Already Printed', default=0)
+    ppob_bill_ids = fields.One2many('tt.bill.ppob', 'booking_id', string='Bills',
+                                  readonly=True, states={'draft': [('readonly', False)]})
+    ppob_bill_detail_ids = fields.One2many('tt.bill.detail.ppob', 'booking_id', string='Bill Details',
+                                  readonly=True, states={'draft': [('readonly', False)]})
 
     def get_form_id(self):
         return self.env.ref("tt_reservation_ppob.tt_reservation_ppob_form_views")

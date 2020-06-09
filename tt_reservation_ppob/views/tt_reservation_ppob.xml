@@ -58,9 +58,9 @@
                     <button name="print_eticket"
                             class="oe_stat_button" states="issued,done"
                             string="Print E-Ticket" type="object" icon="fa-print"/>
-<!--                    <button name="print_eticket_with_price"-->
-<!--                            class="oe_stat_button" states="issued,done"-->
-<!--                            string="Print E-Ticket (Price)" type="object" icon="fa-print"/>-->
+                    <!--                    <button name="print_eticket_with_price"-->
+                    <!--                            class="oe_stat_button" states="issued,done"-->
+                    <!--                            string="Print E-Ticket (Price)" type="object" icon="fa-print"/>-->
                     <button name="print_ho_invoice"
                             class="oe_stat_button" states="issued,done"
                             string="Print Invoice (HO)" type="object" icon="fa-print"
@@ -107,20 +107,35 @@
             </xpath>
 
             <xpath expr="//page[@name='anchor']" position="before">
+                <page string="Bills" name="bills">
+                    <field name="ppob_bill_ids"/>
+                </page>
+                <page string="Bill Details" name="bill_details">
+                    <field name="ppob_bill_detail_ids">
+                        <form>
+                            <group>
+                                <group>
+                                    <field name="customer_number"/>
+                                    <field name="customer_name"/>
+                                    <field name="total"/>
+                                </group>
+                                <group>
+                                    <field name="unit_code"/>
+                                    <field name="unit_name"/>
+                                </group>
+                            </group>
+                        </form>
+                        <tree>
+                            <field name="customer_number"/>
+                            <field name="customer_name"/>
+                            <field name="unit_code"/>
+                            <field name="unit_name"/>
+                            <field name="total"/>
+                        </tree>
+                    </field>
+                </page>
                 <page string="Vendor" name="vendor" groups="tt_base.group_tt_tour_travel_operator">
                     <field name="provider_booking_ids"/>
-                    <!--                        &lt;!&ndash;<tree>&ndash;&gt;-->
-                    <!--                        &lt;!&ndash;<field name="pnr"/>&ndash;&gt;-->
-                    <!--                        &lt;!&ndash;<field name="direction"/>&ndash;&gt;-->
-                    <!--                        &lt;!&ndash;<field name="provider" groups="tt_base.group_tt_tour_travel_operator"/>&ndash;&gt;-->
-                    <!--                        &lt;!&ndash;<field name="origin"/>&ndash;&gt;-->
-                    <!--                        &lt;!&ndash;<field name="destination"/>&ndash;&gt;-->
-                    <!--                        &lt;!&ndash;<field name="departure_date"/>&ndash;&gt;-->
-                    <!--                        &lt;!&ndash;<field name="arrival_date"/>&ndash;&gt;-->
-                    <!--                        &lt;!&ndash;&lt;!&ndash;<field name="total"/>&ndash;&gt;&ndash;&gt;-->
-                    <!--                        &lt;!&ndash;<field name="state"/>&ndash;&gt;-->
-                    <!--                        &lt;!&ndash;</tree>&ndash;&gt;-->
-                    <!--                    </field>-->
                 </page>
             </xpath>
         </field>
