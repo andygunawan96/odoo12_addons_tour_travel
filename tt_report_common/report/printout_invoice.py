@@ -407,6 +407,42 @@ class PrintoutPPOBBillsForm(models.AbstractModel):
         return vals
 
 
+class PrintoutInvoiceVendor(models.AbstractModel):
+    _name = 'report.tt_report_common.printout_invoice_vendor'
+    _description = 'Rodex Model'
+
+    def _get_report_values(self, docids, data=None):
+        if not data.get('context'):
+            internal_model_id = docids.pop(0)
+            data['context'] = {}
+            if internal_model_id == 1:
+                data['context']['active_model'] = 'tt.reservation.airline'
+            elif internal_model_id == 2:
+                data['context']['active_model'] = 'tt.reservation.train'
+            elif internal_model_id == 3:
+                data['context']['active_model'] = 'tt.reservation.hotel'
+            elif internal_model_id == 4:
+                data['context']['active_model'] = 'tt.reservation.activity'
+            elif internal_model_id == 5:
+                data['context']['active_model'] = 'tt.reservation.tour'
+            data['context']['active_ids'] = docids
+        values = {}
+        for rec in self.env[data['context']['active_model']].browse(data['context']['active_ids']):
+            values[rec.id] = []
+            a = {}
+            # pax_data = self.get_invoice_data(rec, data.get('context'), data)
+            # values[rec.id].append(pax_data)
+        vals = {
+            'doc_ids': data['context']['active_ids'],
+            'doc_model': data['context']['active_model'],
+            'doc_type': 'vendor_invoice',
+            'docs': self.env[data['context']['active_model']].browse(data['context']['active_ids']),
+            'base_color': self.sudo().env['ir.config_parameter'].get_param('tt_base.website_default_color',
+                                                                           default='#FFFFFF'),
+        }
+        return vals
+
+
 class PrintoutInvoiceHO(models.AbstractModel):
     _name = 'report.tt_report_common.printout_invoice_ho'
     _description = 'Rodex Model'
@@ -601,10 +637,12 @@ class PrintoutInvoiceHO(models.AbstractModel):
                 pax_dict[period]['name'] = provider.transaction_name
                 pax_dict[period]['total'] = provider.ppob_bill_ids[0].fare_amount
         if rec._name == 'tt.reservation.event':
-            for option in rec.option_ids:
-                pax_dict[option.id] = {}
-                pax_dict[option.id]['name'] = option.event_option_id.grade
-                pax_dict[option.id]['total'] = option.event_option_id.price
+            # for option in rec.option_ids:
+            #     pax_dict[option.id] = {}
+            #     pax_dict[option.id]['name'] = option.event_option_id.grade
+            #     pax_dict[option.id]['total'] = option.event_option_id.price
+            for psg in rec.passenger_ids:
+                pass
         return pax_dict
 
     def compute_terbilang_from_objs(self, recs, currency_str='rupiah'):
@@ -723,6 +761,7 @@ class PrintoutInvoiceHO(models.AbstractModel):
         vals = {
             'doc_ids': data['context']['active_ids'],
             'doc_model': data['context']['active_model'],
+            'doc_type': 'ho_invoice',
             'docs': self.env[data['context']['active_model']].browse(data['context']['active_ids']),
             'price_lines': values,
             'inv_lines': values,

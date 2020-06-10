@@ -125,6 +125,7 @@ class TtReservation(models.Model):
     printout_itinerary_id = fields.Many2one('tt.upload.center', 'Itinerary', readonly=True)
     printout_voucher_id = fields.Many2one('tt.upload.center', 'Voucher', readonly=True)
     printout_ho_invoice_id = fields.Many2one('tt.upload.center', 'Voucher', readonly=True)
+    printout_vendor_invoice_id = fields.Many2one('tt.upload.center', 'Vendor Invoice', readonly=True)
 
     payment_acquirer_number_id = fields.Many2one('payment.acquirer.number','Payment Acquier Number')
 

@@ -1,107 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <template id="external_layout_ho">
-        <div class="container">
-            <div class="article" style="margin: 0px !important; padding: 0px !important">
-                <t t-call="tt_report_common.external_layout_header_ho"/>
-                <t t-raw="0"/>
-                <!--                <t t-if="doc_model == 'tt.agent.invoice'">-->
-                <!--                    <div style="margin: 0 20px">-->
-                <!--                    <t t-call="tt_report_common.price_and_sign"/>-->
-                <!--                    </div>-->
-                <!--                </t>-->
-                <t t-call="tt_report_common.external_layout_footer_ho"/>
-            </div>
-        </div>
-    </template>
-
-    <template id="external_layout_header_ho">
-        <div class="row" style="height:100px;">
-            <t t-if="ho_obj.logo">
-                <div class="col-4" style="margin-left: 30px">
-                    <img t-att-src="'data:image/png;base64,%s' % to_text(ho_obj.logo)" height="200" border="1" width="300" style="max-height:100px; max-width:165px; margin-bottom: 20px"/><br/>
-                </div>
-            </t>
-            <t t-else="">
-                <div class="col-4" style="margin-left: 30px margin-left: 30px; text-align: center; display: inline-flex; align-items: center;">
-<!--                    <img t-att-src="'/tt_report_common/static/images/tors_logo.png'" height="200" border="1" width="300" style="max-height:100px; max-width:165px; margin-bottom: 20px"/><br/>-->
-                    <span t-field="ho_obj.name" style="font-size: 28px;"/>
-                </div>
-            </t>
-            <div class="col-2">
-
-            </div>
-            <div class="col-5 text-center">
-                <t t-if="doc_model == 'tt.agent.invoice'">
-                    <span t-att-style="'margin-top: 10px; margin-left: 10px; color: ' + base_color + '; font-size: 20px;'">HO Invoice</span><br/>
-                    <!-- <span style="margin-top: 10px; margin-left: 10px; color: #DC5413; font-size: 20px;">HO Invoice</span><br/>-->
-                    <t t-set="printout_icon" t-value="'/tt_report_common/static/images/bill-white.png'"/>
-                </t><t t-elif="doc_model == 'tt.billing.statement'">
-                    <span t-att-style="'margin-top: 10px; margin-left: 10px; color: ' + base_color + '; font-size: 20px;'">Billing</span><br/>
-                    <t t-set="printout_icon" t-value="'/tt_report_common/static/images/bill-white.png'"/>
-                </t><t t-elif="doc_model == 'tt.top.up'">
-                    <t t-if="doc.state in ['draft','request','confirm']">
-                        <span t-att-style="'margin-top: 10px; margin-left: 10px; color: ' + base_color + '; font-size: 20px;'">Proforma Top Up</span><br/>  <!--Proforma HO Invoice-->
-                        <t t-set="printout_icon" t-value="'/tt_report_common/static/images/bill-white.png'"/>
-                    </t>
-                    <t t-if="doc.state in ['validated','approved']">  <!--['valid','done']-->
-                        <span t-att-style="'margin-top: 10px; margin-left: 10px; color: ' + base_color + '; font-size: 20px;'">Top Up</span><br/>  <!--HO Invoice-->
-                        <t t-set="printout_icon" t-value="'/tt_report_common/static/images/bill-white.png'"/>
-                    </t>
-                </t><t t-elif="doc_model == 'tt.refund'">
-                        <span t-att-style="'margin-top: 10px; margin-left: 10px; color: ' + base_color + '; font-size: 20px;'">Refund</span><br/>
-                        <t t-set="printout_icon" t-value="'/tt_report_common/static/images/refund-white.png'"/>
-                </t><t t-elif="doc_model == 'tt.reschedule'">
-                        <span t-att-style="'margin-top: 10px; margin-left: 10px; color: ' + base_color + '; font-size: 20px;'">After Sales</span><br/>
-                        <t t-set="printout_icon" t-value="'/tt_report_common/static/images/refund-white.png'"/>
-                </t><t t-elif="doc_type == 'itin'">
-                    <span t-att-style="'margin-top: 10px; margin-left: 10px; color: ' + base_color + '; font-size: 20px;'">Itinerary</span><br/>
-                    <t t-if="doc_model == 'tt.reservation.activity'">
-                        <t t-set="printout_icon" t-value="'/tt_report_common/static/images/activity-white.png'"/>
-                    </t>
-                    <t t-elif="doc_model == 'tt.reservation.hotel'">
-                        <t t-set="printout_icon" t-value="'/tt_report_common/static/images/hotel-white.png'"/>
-                    </t>
-                </t><t t-elif="doc_type == 'expenses'">
-                    <span t-att-style="'margin-top: 10px; margin-left: 10px; color: ' + base_color + '; font-size: 20px;'">Expenses</span><br/>
-                    <t t-set="printout_icon" t-value="'/tt_report_common/static/images/bill-white.png'"/>
-                </t><t t-else="">
-                    <span t-att-style="'margin-top: 10px; margin-left: 10px; color: ' + base_color + '; font-size: 20px;'">HO Invoice</span><br/>
-                    <t t-set="printout_icon" t-value="'/tt_report_common/static/images/bill-white.png'"/>
-                </t>
-                <div style="height: 105px; margin-left: 0px">
-                    <div id="circle" t-att-style="'width: 60px; height: 60px; background: ' + base_color + '; border-radius: 100%; position: absolute; z-index: 1;'">
-                        <img t-att-src="printout_icon" style="max-height: 35px; max-width: 35px; margin: 12px 0px 0px 0px;"/>
-                    </div>
-                    <div id="rectangle" style="width: 100%; height: 50px; bottom: 15px; background-image:  url('/tt_report_common/static/images/background footer airline.jpg'); border-radius: 25px; position: absolute; z-index: 0;">
-                        <div style="padding-left: 60px; padding-bottom: 10px; vertical-align: middle; text-align: center; border-radius: 25px; background-color: rgba(39,62,84,0.76); padding-top: 5px;">
-                            <div style="vertical-align: middle; display: flex; letter-spacing: 0.05em; font-size: 24px; color: white; font-weight: 600; margin-top: 0px; margin-left: -10px;">
-                                <t t-if="doc_type == 'itin'">
-                                    <span style="margin-top: 5px;">Itinerary Form</span>
-                                </t>
-                                <t t-elif="doc_model == 'tt.top.up'">
-                                    <span t-field="doc.name" style="margin-top: 5px;"/>
-                                </t>
-                                <t t-elif="doc_model == 'tt.refund'">
-                                    <span t-field="doc.name" style="margin-top: 5px;"/>
-                                </t>
-                                <t t-elif="doc_model == 'tt.reschedule'">
-                                    <span t-field="doc.name" style="margin-top: 5px;"/>
-                                </t>
-                                <t t-elif="doc_model == 'tt.reservation.ppob'">
-                                    <span t-field="doc.provider_booking_ids[0].customer_number" style="margin-top: 5px;"/>
-                                </t>
-                                <t t-else="">
-                                    <span t-field="doc.pnr" style="margin-top: 5px;"/>
-                                </t>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div style="width: 100%; border-bottom: 1px solid black; margin:20px 0px 0px 0px;"/>  <!---15px -15px-->
-    </template>
 
     <template id="ho_invoice_content_view">
         <!-- Base Info Booker dkk -->
@@ -233,7 +131,7 @@
                                 <br/>
                             </t>
                         </td>
-                        <td style="width: 30.555667%; padding: 7px 7px 7px 20px; border-bottom: 1px solid #CCC; overflow-wrap:break-word; border-right: 1px solid #ccc;">  <!--width: 25%; padding: 7px 7px 7px 20px; border-bottom: 1px solid #ccc;-->
+                        <td style="width: 25%; padding: 7px 7px 7px 20px; border-bottom: 1px solid #CCC; overflow-wrap:break-word; border-right: 1px solid #ccc;">  <!--width: 25%; padding: 7px 7px 7px 20px; border-bottom: 1px solid #ccc;-->
                             <t t-foreach="line['pax_data']" t-as="pax">
                                 <ul style="padding-left:15px;">
                                     <li><span t-esc="pax['name']"/></li>
@@ -330,71 +228,6 @@
         </div>
     </template>
 
-    <template id="external_layout_footer_ho">
-        <div class="footer" style="position: absolute; left: 0; right: 0; background-image: url('/tt_reservation_offline/static/images/background footer airline.jpg');">
-            <div class="box-footer" style="padding: 0px; width: 100%; height: 120px; background: rgba(39,62,84,0.82);">  <!--rgba(70,70,70,0.8);-->
-                <div class="row">
-                    <div class="col-6" style="margin-top:15px; margin-left: 15px; padding: 0 30px;">
-                        <div>
-                            <span style="font-weight: 600; color: white" t-field="ho_obj.name"/>
-                        </div>
-                        <div>
-                            <t t-if="ho_obj.address_ids">
-                                <span style="color: white" t-field="ho_obj.address_ids[0].address"/>
-                            </t>
-                            <t t-else="">
-                                <span style="color: white">-</span>
-                            </t>
-                        </div>
-                    </div>
-                    <div class="col-5" style="margin-top:10px;">
-                        <div>
-                            <span style="font-weight: 500; color: white">Contact Customer Care</span>
-                        </div>
-                        <div class="row">
-                            <div class="col-5">
-                                <div style="margin-top: 5px;">
-                                    <span style="color: white"><img t-att-src="'/tt_report_common/static/images/call-answer.png'" height="200" border="1" width="300" style="max-height:24px; max-width:24px;"/>
-                                        <t t-if="ho_obj.phone_ids">
-                                            <span style="color: white; font-size: 14px" t-field="ho_obj.phone_ids[0].calling_code"/> <span style="color: white; font-size: 14px" t-field="ho_obj.phone_ids[0].calling_number"/>
-                                        </t>
-                                        <t t-else=""><span style="color: white; font-size: 14px">-</span></t>
-                                    </span>
-                                </div>
-                                <div style="margin-top: 5px;">
-                                    <span style="color: white"><img t-att-src="'/tt_report_common/static/images/whatsapp.png'" height="200" border="1" width="300" style="max-height:24px; max-width:24px;"/>
-                                        <t t-if="ho_obj.social_media_ids.filtered(lambda x: x.type_id.name == 'WhatApps')">
-                                            <span style="color: white; font-size: 14px" t-field="ho_obj.social_media_ids.filtered(lambda x: x.type_id.name == 'WhatApps')[0].name"/>
-                                        </t>
-                                        <t t-else=""><span style="color: white; font-size: 14px">-</span></t>
-                                    </span>
-                                </div>
-                            </div>
-                            <div class="col-7">
-                                <div style="margin-top: 5px;">
-                                    <span style="color: white"><img t-att-src="'/tt_report_common/static/images/telegram.png'" height="200" border="1" width="300" style="max-height:24px; max-width:24px;"/>
-                                        <t t-if="ho_obj.social_media_ids.filtered(lambda x: x.type_id.name == 'Telegram')">
-                                            <span style="color: white; font-size: 14px" t-field="ho_obj.social_media_ids.filtered(lambda x: x.type_id.name == 'Telegram')[0].name"/>
-                                        </t>
-                                        <t t-else=""><span style="color: white; font-size: 14px">-</span></t>
-                                    </span>
-                                </div>
-                                <div style="margin-top: 5px;">
-                                    <span style="color: white"><img t-att-src="'/tt_report_common/static/images/line.png'" height="200" border="1" width="300" style="max-height:24px; max-width:24px;"/>
-                                        <t t-if="ho_obj.social_media_ids.filtered(lambda x: x.type_id.name == 'Line')">
-                                            <span style="color: white; font-size: 14px" t-field="ho_obj.social_media_ids.filtered(lambda x: x.type_id.name == 'Line')[0].name"/>
-                                        </t>
-                                        <t t-else=""><span style="color: white; font-size: 14px">-</span></t>
-                                    </span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </template>
-
     <template id="printout_invoice_ho">
 <!--        <t t-set="data_report_header_spacing" t-value="20"/>-->
 <!--        <t t-set="data_report_margin_top" t-value="2"/>-->
@@ -404,7 +237,7 @@
         <t t-call="web.html_container">
             <t t-foreach="docs" t-as="doc">
                 <div class="page">
-                    <t t-call="tt_report_common.external_layout_ho">
+                    <t t-call="tt_report_common.external_layout">
                         <br/>
                         <div style="margin: 0 20px">
                             <t t-call="tt_report_common.ho_invoice_content_view"/>
