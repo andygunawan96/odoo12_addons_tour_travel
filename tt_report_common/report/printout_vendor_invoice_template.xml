@@ -187,6 +187,18 @@
                             <span style="padding: 10px 10px;" t-field="doc.total_nta" t-options="{&quot;widget&quot;: &quot;monetary&quot;, &quot;display_currency&quot;: doc.currency_id}"/>
                         </td>
                     </tr>
+                    <tr>
+                        <td/>
+                        <td>
+                            <br/>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><strong>Total Fare</strong></td>
+                        <td class="text-right">
+                            <span style="padding: 10px 10px;" t-field="doc.total_fare" t-options="{&quot;widget&quot;: &quot;monetary&quot;, &quot;display_currency&quot;: doc.currency_id}"/>
+                        </td>
+                    </tr>
                 </table>
             </div>
         </div>
