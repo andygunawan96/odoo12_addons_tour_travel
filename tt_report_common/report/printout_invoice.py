@@ -449,7 +449,8 @@ class PrintoutInvoiceVendor(models.AbstractModel):
                 pax_dict[psg.id]['name'] = psg.option_id.event_option_name
                 pax_dict[psg.id]['total'] = 0
                 for csc in psg.cost_service_charge_ids:
-                    pax_dict[psg.id]['total'] += csc.total
+                    if csc.charge_type != 'RAC':
+                        pax_dict[psg.id]['total'] += csc.total
         return pax_dict
 
     def compute_terbilang_from_objs(self, recs, currency_str='rupiah'):
