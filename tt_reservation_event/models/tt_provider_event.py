@@ -51,5 +51,10 @@ class TtProviderEvent(models.Model):
 
     total_price = fields.Float('Total Price', readonly=True, default=0)
 
+    #reconcile purpose#
+    reconcile_line_id = fields.Many2one('tt.reconcile.transaction.lines','Reconciled')
+    reconcile_time = fields.Datetime('Reconcile Time')
+    ##
+
     def action_create_ledger(self, issued_uid, pay_method=None):
         return self.env['tt.ledger'].action_create_ledger(self, issued_uid)

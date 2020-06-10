@@ -155,6 +155,15 @@ class IssuedOffline(models.Model):
     def get_form_id(self):
         return self.env.ref("tt_reservation_offline.issued_offline_view_form")
 
+    @api.depends('provider_booking_ids','provider_booking_ids.reconcile_line_id')
+    def _compute_reconcile_state(self):
+        for rec in self:
+            if all(rec1.reconcile_line_id != False for rec1 in rec.provider_booking_ids):
+                rec.reconcile_state = 'reconciled'
+            elif any(rec1.reconcile_line_id != False for rec1 in rec.provider_booking_ids):
+                rec.reconcile_state = 'partial'
+            rec.reconcile_state = 'not_reconciled'
+
     def date_format_check(self, provider_type, vals=None):
         """ Cek format tanggal line """
         if vals is not False:

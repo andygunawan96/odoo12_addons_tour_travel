@@ -32,7 +32,8 @@ class TtReconcileTransaction(models.Model):
     def compare_reconcile_data(self):
         for rec in self.reconcile_lines_ids.filtered(lambda x: x.state == 'not_match'):
             found_rec = self.env['tt.provider.%s' % (self.provider_type_id.code)].search([('pnr','=',rec.pnr),
-                                                                                 ('total_price','=',rec.total)],limit=1)
+                                                                                 ('total_price','=',rec.total),
+                                                                                ('reconcile_line_id','=',False)],limit=1)
             if found_rec:
                 rec.write({
                     'res_model': found_rec._name,

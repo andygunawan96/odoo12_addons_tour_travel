@@ -81,7 +81,12 @@ class TtProviderVisa(models.Model):
 
     passenger_ids = fields.One2many('tt.provider.visa.passengers', 'provider_id', 'Passengers')
 
-    total_price = fields.Float('Total Price', default=0)
+    total_price = fields.Float('Total Price', readonly=True, default=0)
+
+    #reconcile purpose#
+    reconcile_line_id = fields.Many2one('tt.reconcile.transaction.lines','Reconciled')
+    reconcile_time = fields.Datetime('Reconcile Time')
+    ##
 
     def action_booked_api_visa(self, provider_data, api_context, hold_date):
         for rec in self:
