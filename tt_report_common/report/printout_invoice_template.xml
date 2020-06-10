@@ -301,6 +301,12 @@
             </t><t t-elif="doc_type == 'itin'">
                 <span t-att-style="'margin-top: 10px; margin-left: 10px; color: '+ base_color +'; font-size: 20px;'">Itinerary Form</span><br/>
                 <t t-set="printout_icon" t-value="'/tt_report_common/static/images/bill-white.png'"/>
+            </t><t t-elif="doc_type == 'ho_invoice'">
+                <span t-att-style="'margin-top: 10px; margin-left: 10px; color: '+ base_color +'; font-size: 20px;'">HO Invoice</span><br/>
+                <t t-set="printout_icon" t-value="'/tt_report_common/static/images/bill-white.png'"/>
+            </t><t t-elif="doc_type == 'vendor_invoice'">
+                <span t-att-style="'margin-top: 10px; margin-left: 10px; color: '+ base_color +'; font-size: 20px;'">Vendor Invoice</span><br/>
+                <t t-set="printout_icon" t-value="'/tt_report_common/static/images/bill-white.png'"/>
             </t><t t-elif="doc_model == 'tt.reservation.hotel'">
                 <span t-att-style="'margin-top: 10px; margin-left: 10px; color: '+ base_color +'; font-size: 20px;'">Hotel Voucher</span><br/>
                 <t t-set="printout_icon" t-value="'/tt_report_common/static/images/hotel-white.png'"/>

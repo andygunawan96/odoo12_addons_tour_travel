@@ -89,8 +89,6 @@ class ReservationEvent(models.Model):
     option_ids = fields.One2many('tt.reservation.event.option', 'booking_id', 'Options')
     # extra_question_ids = fields.One2many('tt.reservation.event.extra.question', 'reservation_id', 'Extra Question')
 
-    printout_vendor_invoice_id = fields.Many2one('tt.upload.center', 'Vendor Invoice', readonly=True)
-
     def get_form_id(self):
         return self.env.ref("tt_reservation_event.tt_reservation_event_form_view")
 
@@ -648,7 +646,7 @@ class ReservationEvent(models.Model):
                 }
             )
             upc_id = self.env['tt.upload.center'].search([('seq_id', '=', res['response']['seq_id'])], limit=1)
-            self.printout_vendor_invoice_id = upc_id.id
+            self.sudo().printout_vendor_invoice_id = upc_id.id
         url = {
             'type': 'ir.actions.act_url',
             'name': "ZZZ",
@@ -657,6 +655,7 @@ class ReservationEvent(models.Model):
         }
         return url
         # return event_vendor_invoice_id.report_action(self, data=datas)
+
 
 class TtReservationEventOption(models.Model):
     _name = 'tt.reservation.event.option'

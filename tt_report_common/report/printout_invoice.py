@@ -430,8 +430,17 @@ class PrintoutInvoiceVendor(models.AbstractModel):
         for rec in self.env[data['context']['active_model']].browse(data['context']['active_ids']):
             values[rec.id] = []
             a = {}
-            pax_data = self.get_invoice_data(rec, data.get('context'), data)
-            values[rec.id].append(pax_data)
+            # pax_data = self.get_invoice_data(rec, data.get('context'), data)
+            # values[rec.id].append(pax_data)
+        vals = {
+            'doc_ids': data['context']['active_ids'],
+            'doc_model': data['context']['active_model'],
+            'doc_type': 'vendor_invoice',
+            'docs': self.env[data['context']['active_model']].browse(data['context']['active_ids']),
+            'base_color': self.sudo().env['ir.config_parameter'].get_param('tt_base.website_default_color',
+                                                                           default='#FFFFFF'),
+        }
+        return vals
 
 
 class PrintoutInvoiceHO(models.AbstractModel):
@@ -628,10 +637,12 @@ class PrintoutInvoiceHO(models.AbstractModel):
                 pax_dict[period]['name'] = provider.transaction_name
                 pax_dict[period]['total'] = provider.ppob_bill_ids[0].fare_amount
         if rec._name == 'tt.reservation.event':
-            for option in rec.option_ids:
-                pax_dict[option.id] = {}
-                pax_dict[option.id]['name'] = option.event_option_id.grade
-                pax_dict[option.id]['total'] = option.event_option_id.price
+            for psg in rec.passenger_ids:
+                pax_dict[psg.id] = {}
+                pax_dict[psg.id]['name'] = psg.option_id.event_option_name
+                pax_dict[psg.id]['total'] = 0
+                for csc in psg.cost_service_charge_ids:
+                    pax_dict[psg.id]['total'] += csc.total
         return pax_dict
 
     def compute_terbilang_from_objs(self, recs, currency_str='rupiah'):
@@ -750,6 +761,7 @@ class PrintoutInvoiceHO(models.AbstractModel):
         vals = {
             'doc_ids': data['context']['active_ids'],
             'doc_model': data['context']['active_model'],
+            'doc_type': 'ho_invoice',
             'docs': self.env[data['context']['active_model']].browse(data['context']['active_ids']),
             'price_lines': values,
             'inv_lines': values,

@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <template id="vendor_invoice_content_view">
+        <!-- Base Info Booker dkk -->
+        <table style="margin: 1px; 1px; 15px;">
+            <tr>
+                <td style="width:150px;">No. Booking</td>
+                <td style="width:10px;">:</td>
+                <td style="width:400px;">
+                    <span t-field="doc.name"/>
+                </td>
+            </tr>
+            <tr>
+                <td style="width:50px;">To</td>
+                <td style="width:10px;">:</td>
+                <td style="width:400px; vertical-align: top;" rowspan="5">
+                    <!--<t t-set="o_addr" t-value="doc.booker_id"/>-->
+                    <!--<t t-call="tt_report_common.address_layout"/>-->
+                    <span t-field="doc.agent_id.name"/><br/>
+                    <t t-if="doc.agent_id.address_ids">
+                        <span t-field="doc.agent_id.address_ids[0].address"/><span>, </span>
+                        <t t-if="doc.agent_id.address_ids[0].district_id">
+                            <span t-field="doc.agent_id.address_ids[0].district_id.name"/><span>, </span>
+                        </t>
+                        <t t-if="doc.agent_id.address_ids[0].sub_district_id">
+                            <span t-field="doc.agent_id.address_ids[0].sub_district_id.name"/><span>, </span>
+                        </t>
+                        <t t-if="doc.agent_id.address_ids[0].city_id">
+                            <span t-field="doc.agent_id.address_ids[0].city_id.name"/><span>, </span>
+                        </t>
+                        <t t-if="doc.agent_id.address_ids[0].zip">
+                            <span t-field="doc.agent_id.address_ids[0].zip"/>
+                        </t><br/>
+                        <t t-if="doc.agent_id.address_ids[0].state_id">
+                            <span t-field="doc.agent_id.address_ids[0].state_id.name"/><span> - </span>
+                        </t>
+                        <t t-if="doc.agent_id.address_ids[0].country_id">
+                            <span t-field="doc.agent_id.address_ids[0].country_id.name"/>
+                        </t>
+                    </t>
+                </td>
+                <td style="width:100px;"/>
+                <td style="width:150px;">Invoice Date</td>
+                <td style="width:10px;">:</td>
+                <td style="width:400px;text-align: right;">
+                    <span t-field="doc.date" t-options ='{"format": "dd/MM/yyyy"}'/>
+                </td>
+            </tr>
+            <tr>
+                <td style="width:50px;"/>
+                <td style="width:10px;"/>
+                <td style="width:100px;"/>
+                <td style="width:150px;">Issued Date</td>
+                <td style="width:10px;">:</td>
+                <td style="width:400px;text-align: right;">
+                    <i t-field="doc.issued_date"/>
+                </td>
+            </tr>
+            <tr>
+                <td style="width:50px;"/>
+                <td style="width:10px;"/>
+                <td style="width:100px;"/>
+                <td style="width:150px;">Issued By</td>
+                <td style="width:10px;">:</td>
+                <td style="width:400px;text-align: right;">
+                    <i t-field="doc.issued_uid.name"/>
+                </td>
+            </tr>
+            <tr>
+                <td style="width:50px;"/>
+                <td style="width:10px;"/>
+                <td style="width:100px;"/>
+                <td style="width:150px;">Customer</td>
+                <td style="width:10px;">:</td>
+                <td style="width:400px;text-align: right;">
+                    <i t-field="doc.customer_parent_id.name"/>
+                </td>
+            </tr>
+            <tr>
+                <td style="width:50px;"/>
+                <td style="width:10px;"/>
+                <td style="width:100px;"/>
+                <td style="width:150px;">Booker</td>
+                <td style="width:10px;">:</td>
+                <td style="width:400px;text-align: right;">
+                    <i t-field="doc.booker_id.name"/>
+                </td>
+            </tr>
+        </table>
+
+        <!-- Issued Code + Line Info -->
+        <div style="margin-bottom: 10px; margin-top: 20px;">
+            <span style="font-size: 28px; font-weight: 730">INVOICE DETAILS</span><br/>
+        </div>
+        <table style="width: 100%; line-height: normal; border-collapse: separate; border-spacing: 0; table-layout: fixed;">  <!--border-radius: 20px; border: 1px solid #CCC; border-spacing: 0; margin-bottom: 30px; padding: 5px 0px 5px 0px;-->
+            <tr t-att-style="'background-color: '+base_color+'; padding-top: 5px; padding-bottom: 5px;'">
+                <th style="width: 25%; padding: 7px 7px 7px 20px; border-left: 1px solid #CCC; overflow-wrap:break-word; border-top-left-radius: 20px; color: white; font-weight: 800; font-size: 18px">
+                    <span>Ref. Number</span>
+                </th>
+                <th style="width: 25%; padding: 7px 7px 7px 20px; color: white; font-weight: 800; overflow-wrap:break-word; font-size: 18px">
+                    <span>Descriptions</span>
+                </th>
+                <th style="width: 25%; padding: 7px 7px 7px 20px; color: white; font-weight: 800; overflow-wrap:break-word; font-size: 18px">
+                    <span>Details</span>
+                </th>
+                <th style="width: 25%; padding: 7px 7px 7px 20px; border-right: 1px solid #CCC; overflow-wrap:break-word; border-top-right-radius: 20px; color: white; font-weight: 800; font-size: 18px">
+                    <span>Amount</span>
+                </th>
+            </tr>
+        </table>
+    </template>
+
+    <template id="printout_invoice_vendor">
+        <t t-set="data_report_header_spacing" t-value="0"/>
+        <t t-set="data_report_margin_top" t-value="10"/>
+        <t t-set="data_report_margin_bottom" t-value="26"/>
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="doc">
+                <div class="page">
+                    <t t-call="tt_report_common.external_layout">
+                        <br/>
+                        <div style="margin: 0 20px">
+                            <t t-call="tt_report_common.vendor_invoice_content_view"/>
+                        </div>
+                    </t>
+                </div>
+            </t>
+        </t>
+    </template>
+
+</odoo>
