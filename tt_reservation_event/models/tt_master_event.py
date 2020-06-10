@@ -314,14 +314,11 @@ class MasterEvent(models.Model):
         for i in event_obj:
             temp_dict = {
                 'name': i.name,
-                'locations': i.locations,
-                'category': i.categories,
-                'image_url': []
+                'locations': [self.format_api_location(loc.id) for loc in i.location_ids],
+                'category': [rec.name for rec in i.category_ids],
+                'image_url': [j.url for j in i.image_ids]
             }
-            for j in i.image_ids:
-                temp_dict['image_url'].append(j.url)
             result['event'].append(temp_dict)
-
         return ERR.get_no_error(result)
 
     def booking_master_event_from_api(self, req, context):

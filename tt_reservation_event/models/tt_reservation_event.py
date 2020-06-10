@@ -89,6 +89,8 @@ class ReservationEvent(models.Model):
     option_ids = fields.One2many('tt.reservation.event.option', 'booking_id', 'Options')
     # extra_question_ids = fields.One2many('tt.reservation.event.extra.question', 'reservation_id', 'Extra Question')
 
+    printout_vendor_invoice_id = fields.Many2one('tt.upload.center', 'Vendor Invoice', readonly=True)
+
     def get_form_id(self):
         return self.env.ref("tt_reservation_event.tt_reservation_event_form_view")
 
@@ -230,15 +232,11 @@ class ReservationEvent(models.Model):
             #create all dependencies
             booker_obj = self.create_booker_api(booker_data, context)
             contact_obj = self.create_contact_api(contacts_data[0], booker_obj, context)
-            pax_ids = self.create_customer_api(passengers, context, booker_obj.seq_id, contact_obj.seq_id)
+
 
             #get all necessary data
             provider_id = self.env['tt.provider'].sudo().search([('code', '=', provider)], limit=1)
             event_id = self.env['tt.master.event'].sudo().search([('uuid', '=', event_code)], limit=1)
-            event_options = []
-            for i in event_option_codes:
-                for j in range(i['qty']):
-                    event_options.append( self.env['tt.event.option'].sudo().search([('event_id', '=', event_id.id),('option_code', '=', i['option_code'])], limit=1))
 
             #build temporary dict
             temp_main_dictionary = {
@@ -251,76 +249,98 @@ class ReservationEvent(models.Model):
                 'contact_email': contact_obj.email,
                 'contact_phone': contact_obj.phone_ids and contact_obj.phone_ids[0].phone_number or False,
                 'agent_id': context['co_agent_id'],
+                # 'passenger_ids': [6,0,[x.id for x in pax_ids]]
             }
             book_obj = self.create(temp_main_dictionary)
 
-            #fill child table of resrevation event
-            for opt_obj in event_options:
-                temp_option_dict = {
-                    'booking_id': book_obj.id,
-                    'event_option_id': opt_obj.id,
-                }
-                option_obj = self.env['tt.reservation.event.option'].create(temp_option_dict)
-
-                for idx, j in enumerate(event_answer):
-                    if opt_obj.option_code == j['option_code']:
-                        for j1 in j['answer']:
-                            temp_extra_question_dict = {
-                                'reservation_event_option_id': option_obj.id,
-                                # 'extra_question_id': j1['question_id'],
-                                'question': j1['que'],
-                                'answer': j1['ans']
-                            }
-                            self.env['tt.reservation.event.extra.question'].create(temp_extra_question_dict)
-                        event_answer.pop(idx)
-                        break
-
+            balance_due = 0
             # Create Provider Ids
-            self.env['tt.provider.event'].create({
+            prov_event_id = self.env['tt.provider.event'].create({
                 'provider_id': provider_id.id,
                 'booking_id': book_obj.id,
-                'balance_due': 0,  # di PNR
+                'balance_due': balance_due,  # di PNR
                 'event_id': event_id and event_id.id or False,
-                'event_product_id': opt_obj.id,
-                'event_product': opt_obj and opt_obj.grade or req.get('event_name'),
-                'event_product_uuid': opt_obj and opt_obj.option_code or req.get('event_id'),
             })
+            #fill child table of resrevation event
+            cust_id = self.create_customer_api(passengers, context, booker_obj.seq_id, contact_obj.seq_id)
+            cust_id = cust_id[0]
+            for opt_obj in event_option_codes:
+                for i in range(opt_obj['qty']):
+                    event_option_id = self.env['tt.event.option'].sudo().search([('event_id', '=', event_id.id),('option_code', '=', opt_obj['option_code'])], limit=1)
+                    temp_option_dict = {
+                        'booking_id': book_obj.id,
+                        'event_option_id': event_option_id and event_option_id.id or False,
+                    }
+                    option_obj = self.env['tt.reservation.event.option'].create(temp_option_dict)
 
-            balance_due = 0
-            #Create Service Charge
-            for scs1 in req.get('service_charges') or []:
-                for scs in scs1:
-                    if scs['charge_type'] not in ['rac', 'rox']:
-                        balance_due += scs['amount'] * scs['pax_count']
-                    # Sale Service Charge
-                    self.env['tt.service.charge'].create({
-                        'booking_event_id': book_obj.id,
-                        'charge_code': scs['charge_code'],
-                        'charge_type': scs['charge_type'],
-                        'pax_type': scs['pax_type'],
-                        'pax_count': scs['pax_count'],
-                        'amount': scs['amount'],
-                        'foreign_amount': scs['foreign_amount'],
-                        'total': scs['amount'] * scs['pax_count'],
-                        'description': book_obj.pnr and book_obj.pnr or '',
-                        'commission_agent_id': scs['commission_agent_id'],
+                    for idx, j in enumerate(event_answer):
+                        if opt_obj['option_code'] == j['option_code']:
+                            for j1 in j['answer']:
+                                temp_extra_question_dict = {
+                                    'reservation_event_option_id': option_obj.id,
+                                    # 'extra_question_id': j1['question_id'],
+                                    'question': j1['que'],
+                                    'answer': j1['ans']
+                                }
+                                self.env['tt.reservation.event.extra.question'].create(temp_extra_question_dict)
+                            event_answer.pop(idx)
+                            break
+
+                    pax_event_id = self.env['tt.reservation.passenger.event'].create({
+                        'booking_id': book_obj.id,
+                        'pax_type': 'ADT',
+                        'option_id': option_obj.id,
+                        'customer_id': cust_id.id,
+                        'first_name': cust_id.first_name,
+                        'last_name': cust_id.last_name,
+                        'name': cust_id.name,
+                        'birth_date': cust_id.birth_date,
+                        'nationality_id': cust_id.nationality_id and cust_id.nationality_id.id or False,
+                        # 'sequence': cust_id.sequence,
+                        # 'title': cust_id.title,
+                        # 'gender': cust_id.gender,
+                        # 'identity_type': cust_id.identity_type,
+                        # 'identity_number': cust_id.identity_number,
+                        # 'identity_expdate': cust_id.identity_expdate,
+                        # 'identity_country_of_issued_id': cust_id.identity_country_of_issued_id and cust_id.identity_country_of_issued_id.id or False,
                     })
 
-                    # Cost Service Charge
-                    self.env['tt.service.charge'].create({
-                        'provider_event_booking_id': book_obj.provider_booking_ids[0].id,
-                        'charge_code': scs['charge_code'],
-                        'charge_type': scs['charge_type'],
-                        'pax_type': scs['pax_type'],
-                        'pax_count': scs['pax_count'],
-                        'amount': scs['amount'],
-                        'foreign_amount': scs['foreign_amount'],
-                        'total': scs['amount'] * scs['pax_count'],
-                        'description': book_obj.pnr and book_obj.pnr or '',
-                        'commission_agent_id': scs['commission_agent_id'],
-                    })
+                    for scs in opt_obj['service_charges']:
+                        if scs['charge_type'] not in ['rac', 'roc']:
+                            balance_due += scs['amount'] * scs['pax_count']
 
-            book_obj.provider_booking_ids[0].balance_due = balance_due
+                            # Cost Service Charge
+                            self.env['tt.service.charge'].create({
+                                'provider_event_booking_id': book_obj.provider_booking_ids[0].id,
+                                'charge_code': scs['charge_code'],
+                                'charge_type': scs['charge_type'],
+                                'pax_type': scs['pax_type'],
+                                'pax_count': scs['pax_count'],
+                                'amount': scs['amount'],
+                                'foreign_amount': scs['foreign_amount'],
+                                'total': scs['amount'] * scs['pax_count'],
+                                'description': book_obj.pnr and book_obj.pnr or '',
+                                'commission_agent_id': scs['commission_agent_id'],
+                            })
+
+                        # Sale Service Charge
+                        sc_id = self.env['tt.service.charge'].create({
+                            'booking_event_id': book_obj.id,
+                            # 'cost_service_charge_ids': [(4, pax_event_id.id)],
+                            'charge_code': scs['charge_code'],
+                            'charge_type': scs['charge_type'],
+                            'pax_type': scs['pax_type'],
+                            'pax_count': scs['pax_count'],
+                            'amount': scs['amount'],
+                            'foreign_amount': scs['foreign_amount'],
+                            'total': scs['amount'] * scs['pax_count'],
+                            'description': book_obj.pnr and book_obj.pnr or '',
+                            'commission_agent_id': scs['commission_agent_id'],
+                        })
+                        pax_event_id.update({'cost_service_charge_ids': [(4, sc_id.id)]})
+
+            # Create Provider Ids
+            prov_event_id['balance_due'] = balance_due  # di PNR
             book_obj.action_booked()
             response = {
                 'book_id': book_obj.id,
@@ -580,6 +600,54 @@ class ReservationEvent(models.Model):
         }
         return url
 
+    def print_vendor_invoice(self):
+        datas = {
+            'ids': self.env.context.get('active_ids', []),
+            'model': self._name
+        }
+        res = self.read()
+        res = res and res[0] or {}
+        datas['form'] = res
+        event_vendor_invoice_id = self.env.ref('tt_report_common.action_report_printout_invoice_vendor_event')
+        if not self.printout_vendor_invoice_id:
+            if self.agent_id:
+                co_agent_id = self.agent_id.id
+            else:
+                co_agent_id = self.env.user.agent_id.id
+
+            if self.user_id:
+                co_uid = self.user_id.id
+            else:
+                co_uid = self.env.user.id
+
+            pdf_report = event_vendor_invoice_id.report_action(self, data=datas)
+            pdf_report['context'].update({
+                'active_model': self._name,
+                'active_id': self.id
+            })
+            pdf_report_bytes = event_vendor_invoice_id.render_qweb_pdf(data=pdf_report)
+            res = self.env['tt.upload.center.wizard'].upload_file_api(
+                {
+                    'filename': 'Event Vendor Invoice %s.pdf' % self.name,
+                    'file_reference': 'Event Vendor Invoice',
+                    'file': base64.b64encode(pdf_report_bytes[0]),
+                    'delete_date': datetime.today() + timedelta(minutes=10)
+                },
+                {
+                    'co_agent_id': co_agent_id,
+                    'co_uid': co_uid,
+                }
+            )
+            upc_id = self.env['tt.upload.center'].search([('seq_id', '=', res['response']['seq_id'])], limit=1)
+            self.printout_vendor_invoice_id = upc_id.id
+        url = {
+            'type': 'ir.actions.act_url',
+            'name': "ZZZ",
+            'target': 'new',
+            'url': self.printout_vendor_invoice_id.url,
+        }
+        return url
+        # return event_vendor_invoice_id.report_action(self, data=datas)
 
 class TtReservationEventOption(models.Model):
     _name = 'tt.reservation.event.option'
@@ -587,6 +655,7 @@ class TtReservationEventOption(models.Model):
 
     booking_id = fields.Many2one('tt.reservation.event', "Reservation ID")
     event_option_id = fields.Many2one('tt.event.option', 'Event Option')
+    event_option_name = fields.Char('Option Name', related='event_option_id.grade', store=True)
     description = fields.Char('Description')
     extra_question_ids = fields.One2many('tt.reservation.event.extra.question', 'reservation_event_option_id', 'Extra Question')
     ticket_number = fields.Char('Ticket Number')

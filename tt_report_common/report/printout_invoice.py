@@ -407,6 +407,33 @@ class PrintoutPPOBBillsForm(models.AbstractModel):
         return vals
 
 
+class PrintoutInvoiceVendor(models.AbstractModel):
+    _name = 'report.tt_report_common.printout_invoice_vendor'
+    _description = 'Rodex Model'
+
+    def _get_report_values(self, docids, data=None):
+        if not data.get('context'):
+            internal_model_id = docids.pop(0)
+            data['context'] = {}
+            if internal_model_id == 1:
+                data['context']['active_model'] = 'tt.reservation.airline'
+            elif internal_model_id == 2:
+                data['context']['active_model'] = 'tt.reservation.train'
+            elif internal_model_id == 3:
+                data['context']['active_model'] = 'tt.reservation.hotel'
+            elif internal_model_id == 4:
+                data['context']['active_model'] = 'tt.reservation.activity'
+            elif internal_model_id == 5:
+                data['context']['active_model'] = 'tt.reservation.tour'
+            data['context']['active_ids'] = docids
+        values = {}
+        for rec in self.env[data['context']['active_model']].browse(data['context']['active_ids']):
+            values[rec.id] = []
+            a = {}
+            pax_data = self.get_invoice_data(rec, data.get('context'), data)
+            values[rec.id].append(pax_data)
+
+
 class PrintoutInvoiceHO(models.AbstractModel):
     _name = 'report.tt_report_common.printout_invoice_ho'
     _description = 'Rodex Model'

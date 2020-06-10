@@ -60,13 +60,20 @@ class ReservationEvent(models.Model):
             'customer_parent_id': customer_parent_id
         })
 
-        for opt_obj in self.option_ids:
-            ticket = opt_obj.ticket_number and ' (' + opt_obj.ticket_number + ') ' or ''
+        for opt_obj in self.passenger_ids:
+            price_unit = 0
+            for cost_charge in opt_obj.cost_service_charge_ids:
+                if cost_charge.charge_type != 'RAC':
+                    price_unit += cost_charge.amount
+            for channel_charge in opt_obj.channel_service_charge_ids:
+                price_unit += channel_charge.amount
+
+            ticket = opt_obj.option_id.ticket_number and ' (' + opt_obj.option_id.ticket_number + ') ' or ''
             self.env['tt.agent.invoice.line.detail'].create({
-                'desc': opt_obj.event_option_id.grade + ticket,
+                # 'desc': opt_obj.option_id.event_option_id.grade + ticket,
+                'desc': opt_obj.option_id.event_option_name + ticket,
                 'invoice_line_id': inv_line_obj.id,
-                'price_unit': opt_obj.event_option_id.price, #pertimbangkan jika ada price change
-                'discount': 0,
+                'price_unit': price_unit, # Channel + Cost Service Charge
                 'quantity': 1,
             })
 
