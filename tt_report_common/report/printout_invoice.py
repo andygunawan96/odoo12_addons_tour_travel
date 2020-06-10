@@ -411,6 +411,53 @@ class PrintoutInvoiceVendor(models.AbstractModel):
     _name = 'report.tt_report_common.printout_invoice_vendor'
     _description = 'Rodex Model'
 
+    def get_invoice_data(self, rec, context, data):
+        invoice_data = {}
+        if rec.provider_booking_ids:
+            for provider in rec.provider_booking_ids:
+                pnr = provider.pnr if provider.pnr else '-'
+                if not invoice_data.get(pnr):
+                    invoice_data[pnr] = {'model': rec._name, 'pax_data': [], 'descs': [], 'provider_type': ''}
+                invoice_data[pnr]['descs'].append(self.get_description(provider, data))
+                invoice_data[pnr]['provider_type'] = rec.provider_type_id.name
+                pax_dict = self.get_pax_dict(rec, provider)
+                for psg in pax_dict:
+                    invoice_data[pnr]['pax_data'].append(pax_dict[psg])
+        return invoice_data
+
+    def get_description(self, rec, data, line=None):
+        desc = ''
+        if data['context']['active_model'] == 'tt.reservation.event':
+            desc += 'Event : ' + rec.event_id.name + '<br/>'
+            desc += 'Location : ' + '<br/>'
+            for location in rec.event_id.location_ids:
+                desc += (location.name if location.name else '') + ', ' + \
+                        (location.address if location.address else '') + ', ' + \
+                        (location.city_id.name if location.city_id.name else '') + ', ' + \
+                        (location.country_id.name if location.country_id.name else '') + '<br/>'
+            desc += 'Booker : ' + (rec.booking_id.booker_id.name if rec.booking_id.booker_id.name else '') + '<br/>'
+            desc += 'Contact Person : ' + (rec.booking_id.contact_title if rec.booking_id.contact_title else '') + '<br/>'
+            desc += 'Contact Email : ' + (rec.booking_id.contact_email if rec.booking_id.contact_email else '') + '<br/>'
+            desc += 'Contact Phone : ' + (rec.booking_id.contact_phone if rec.booking_id.contact_phone else '') + '<br/>'
+        return desc
+
+    def get_pax_dict(self, rec, provider, add=None):
+        pax_dict = {}
+        if rec._name == 'tt.reservation.event':
+            for psg in rec.passenger_ids:
+                pax_dict[psg.id] = {}
+                pax_dict[psg.id]['name'] = psg.option_id.event_option_name
+                pax_dict[psg.id]['total'] = 0
+                for csc in psg.cost_service_charge_ids:
+                    pax_dict[psg.id]['total'] += csc.total
+        return pax_dict
+
+    def compute_terbilang_from_objs(self, recs, currency_str='rupiah'):
+        a = {}
+        for rec2 in recs:
+            a.update({rec2.name: num2words(rec2.total) + ' Rupiah'})
+        return a
+
     def _get_report_values(self, docids, data=None):
         if not data.get('context'):
             internal_model_id = docids.pop(0)
@@ -430,13 +477,17 @@ class PrintoutInvoiceVendor(models.AbstractModel):
         for rec in self.env[data['context']['active_model']].browse(data['context']['active_ids']):
             values[rec.id] = []
             a = {}
-            # pax_data = self.get_invoice_data(rec, data.get('context'), data)
-            # values[rec.id].append(pax_data)
+            pax_data = self.get_invoice_data(rec, data.get('context'), data)
+            values[rec.id].append(pax_data)
         vals = {
             'doc_ids': data['context']['active_ids'],
             'doc_model': data['context']['active_model'],
             'doc_type': 'vendor_invoice',
             'docs': self.env[data['context']['active_model']].browse(data['context']['active_ids']),
+            'price_lines': values,
+            'inv_lines': values,
+            'terbilang': self.compute_terbilang_from_objs(
+                self.env[data['context']['active_model']].browse(data['context']['active_ids'])),
             'base_color': self.sudo().env['ir.config_parameter'].get_param('tt_base.website_default_color',
                                                                            default='#FFFFFF'),
         }

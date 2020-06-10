@@ -17,26 +17,26 @@
                 <td style="width:400px; vertical-align: top;" rowspan="5">
                     <!--<t t-set="o_addr" t-value="doc.booker_id"/>-->
                     <!--<t t-call="tt_report_common.address_layout"/>-->
-                    <span t-field="doc.agent_id.name"/><br/>
-                    <t t-if="doc.agent_id.address_ids">
-                        <span t-field="doc.agent_id.address_ids[0].address"/><span>, </span>
-                        <t t-if="doc.agent_id.address_ids[0].district_id">
-                            <span t-field="doc.agent_id.address_ids[0].district_id.name"/><span>, </span>
+                    <span t-field="doc.event_vendor_id.name"/><br/>
+                    <t t-if="doc.event_vendor_id.address_ids">
+                        <span t-field="doc.event_vendor_id.address_ids[0].address"/><span>, </span>
+                        <t t-if="doc.event_vendor_id.address_ids[0].district_id">
+                            <span t-field="doc.event_vendor_id.address_ids[0].district_id.name"/><span>, </span>
                         </t>
-                        <t t-if="doc.agent_id.address_ids[0].sub_district_id">
-                            <span t-field="doc.agent_id.address_ids[0].sub_district_id.name"/><span>, </span>
+                        <t t-if="doc.event_vendor_id.address_ids[0].sub_district_id">
+                            <span t-field="doc.event_vendor_id.address_ids[0].sub_district_id.name"/><span>, </span>
                         </t>
-                        <t t-if="doc.agent_id.address_ids[0].city_id">
-                            <span t-field="doc.agent_id.address_ids[0].city_id.name"/><span>, </span>
+                        <t t-if="doc.event_vendor_id.address_ids[0].city_id">
+                            <span t-field="doc.event_vendor_id.address_ids[0].city_id.name"/><span>, </span>
                         </t>
-                        <t t-if="doc.agent_id.address_ids[0].zip">
-                            <span t-field="doc.agent_id.address_ids[0].zip"/>
+                        <t t-if="doc.event_vendor_id.address_ids[0].zip">
+                            <span t-field="doc.event_vendor_id.address_ids[0].zip"/>
                         </t><br/>
-                        <t t-if="doc.agent_id.address_ids[0].state_id">
-                            <span t-field="doc.agent_id.address_ids[0].state_id.name"/><span> - </span>
+                        <t t-if="doc.event_vendor_id.address_ids[0].state_id">
+                            <span t-field="doc.event_vendor_id.address_ids[0].state_id.name"/><span> - </span>
                         </t>
-                        <t t-if="doc.agent_id.address_ids[0].country_id">
-                            <span t-field="doc.agent_id.address_ids[0].country_id.name"/>
+                        <t t-if="doc.event_vendor_id.address_ids[0].country_id">
+                            <span t-field="doc.event_vendor_id.address_ids[0].country_id.name"/>
                         </t>
                     </t>
                 </td>
@@ -108,7 +108,82 @@
                     <span>Amount</span>
                 </th>
             </tr>
+            <t t-set="row_idx" t-value="0"/>
+            <t t-foreach="inv_lines[doc.id]" t-as="line2_idx">
+                <t t-foreach="line2_idx.keys()" t-as="line_idx">
+                    <t t-set="line" t-value="line2_idx[line_idx]"/>
+                    <t t-set="col_len" t-value="len(line['descs'])"/>
+                    <t t-set="pax_count" t-value="0"/>
+                    <tr valign="top" style="padding-top: 5px; padding-bottom: 5px;">
+                        <t t-if="row_idx == len(line2_idx)-1">
+                            <td style="background: #F0F0F0; width: 25%; border-left: 1px solid #ccc; overflow-wrap:break-word; border-bottom: 1px solid #ccc; border-right: 1px solid #ccc; border-radius: 0px 0px 0px 20px; border-color: #CCC; padding: 7px 7px 7px 20px;">
+                                <span t-esc="line_idx"/>
+                            </td>
+                        </t>
+                        <t t-else="">
+                            <td style="background: #F0F0F0; width: 25%; border-left: 1px solid #ccc; overflow-wrap:break-word; border-bottom: 1px solid #ccc; border-right: 1px solid #ccc; border-radius: 0px 0px 0px 0px; border-color: #CCC; padding: 7px 7px 7px 20px;">
+                                <span t-esc="line_idx"/>
+                            </td>
+                        </t>
+                        <td style="width: 25%; padding: 7px 7px 7px 20px; border-bottom: 1px solid #ccc; overflow-wrap:break-word; border-right: 1px solid #ccc;">
+                            <t t-foreach="line['descs']" t-as="desc">
+                                <span t-raw="desc"/>
+                                <br/>
+                            </t>
+                        </td>
+                        <td style="width: 25%; padding: 7px 7px 7px 20px; border-bottom: 1px solid #CCC; overflow-wrap:break-word; border-right: 1px solid #ccc;">  <!--width: 25%; padding: 7px 7px 7px 20px; border-bottom: 1px solid #ccc;-->
+                            <t t-foreach="line['pax_data']" t-as="pax">
+                                <ul style="padding-left:15px;">
+                                    <li><span t-esc="pax['name']"/></li>
+                                </ul>
+                            </t>
+                        </td>
+                        <t t-if="row_idx == len(line2_idx)-1">
+                            <td style="width: 25%; border-left: 1px solid #ccc; border-bottom: 1px solid #ccc; overflow-wrap:break-word; border-right: 1px solid #ccc; border-radius: 0px 0px 20px 0px; border-color: #CCC; padding: 7px 7px 7px 7px; text-align: right;">
+                                <t t-foreach="line['pax_data']" t-as="pax">
+                                    <ul style="list-style-type: none;">
+                                        <li><span t-esc="pax['total']" t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/></li>
+                                    </ul>
+                                </t>
+                            </td>
+                        </t>
+                        <t t-else="">
+                            <td style="width: 25%; border-color: #CCC; padding: 7px 7px 7px 7px; border-bottom: 1px solid #ccc; overflow-wrap:break-word; border-right: 1px solid #ccc; border-radius: 0px 0px 0px 0px; text-align: right">
+                                <t t-foreach="line['pax_data']" t-as="pax">
+                                    <ul style="list-style-type: none;">
+                                        <li><span t-esc="pax['total']" t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/></li>
+                                    </ul>
+                                </t>
+                            </td>
+                        </t>
+                    </tr>
+                    <t t-set="pax_count" t-value="pax_count+1"/>
+                    <t t-set="row_idx" t-value="row_idx+1"/>
+                </t>
+            </t>
         </table>
+
+        <!-- SubTotal -->
+        <div class="row mt4 mb2" style="padding-top: 20px; page-break-inside: avoid">
+            <div class="col-8">
+                <table style="width:80%;">
+                    <tr valign="top">
+                        <td style="width:100px;">In Words</td>
+                        <td style="width:20px;">:</td>
+                        <td style=""><t t-esc="terbilang[doc.name]"/></td>
+                    </tr>
+                    <tr>
+                        <td>Remarks</td>
+                        <td>:</td>
+                        <td/>
+                    </tr>
+                </table>
+            </div>
+            <div class="col-4">
+                <table style="width:100%">
+                </table>
+            </div>
+        </div>
     </template>
 
     <template id="printout_invoice_vendor">

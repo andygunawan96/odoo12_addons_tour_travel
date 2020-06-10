@@ -326,9 +326,26 @@
                                 <t t-if="doc_type == 'itin'">
                                     <t t-if="doc.pnr">
                                         <span t-field="doc.pnr" style="margin-top: 5px;"/>
-                                    </t><t t-else="">
-                                    <span t-esc="'Itinerary'" style="margin-top: 5px;"/>
+                                    </t>
+                                    <t t-else="">
+                                        <span t-esc="'Itinerary'" style="margin-top: 5px;"/>
+                                    </t>
                                 </t>
+                                <t t-if="doc_type == 'ho_invoice'">
+                                    <t t-if="doc.pnr">
+                                        <span t-field="doc.pnr" style="margin-top: 5px;"/>
+                                    </t>
+                                    <t t-else="">
+                                        <span t-esc="'doc.name'" style="margin-top: 5px;"/>
+                                    </t>
+                                </t>
+                                <t t-if="doc_type == 'vendor_invoice'">
+                                    <t t-if="doc.pnr">
+                                        <span t-field="doc.pnr" style="margin-top: 5px;"/>
+                                    </t>
+                                    <t t-else="">
+                                        <span t-esc="'doc.name'" style="margin-top: 5px;"/>
+                                    </t>
                                 </t>
                                 <t t-elif="doc_model == 'tt.reservation.hotel'">
                                     <span t-field="doc.pnr" style="margin-top: 5px;"/>
