@@ -22,6 +22,7 @@ import requests
 # from Ap
 _logger = logging.getLogger(__name__)
 
+
 class EventResendVoucher(models.TransientModel):
     _name = "event.voucher.wizard"
     _description = 'Rodex Event Model'
@@ -58,6 +59,7 @@ class EventResendVoucher(models.TransientModel):
         else:
             raise UserError(_('Resend voucher failed!'))
 
+
 class ReservationEvent(models.Model):
     _inherit = ['tt.reservation']
     _name = 'tt.reservation.event'
@@ -74,6 +76,8 @@ class ReservationEvent(models.Model):
 
     event_id = fields.Many2one('tt.master.event', 'Event ID')
     event_name = fields.Char('Event Name')
+    event_vendor_id = fields.Many2one('tt.vendor', 'Vendor')
+    event_vendor = fields.Char('Event Vendor')
     event_product_uuid = fields.Char('Product Type UUID')
     # visit_date = fields.Datetime('Visit Date')
 
@@ -249,6 +253,9 @@ class ReservationEvent(models.Model):
             temp_main_dictionary = {
                 'event_id': event_id.id,
                 'event_name': event_id and event_id.name or req.get('event_name'),
+                'event_vendor_id': event_id and event_id.event_vendor_id.id or False,
+                'event_vendor': event_id and event_id.event_vendor_id.name or req.get('provider'),
+                'event_product_uuid': event_id and event_id.uuid or req.get('event_id'),
                 'provider_name': ','.join([provider_id.name,]),
                 'booker_id': booker_obj.id,
                 'contact_id': contact_obj.id,
@@ -295,6 +302,7 @@ class ReservationEvent(models.Model):
 
                     pax_event_id = self.env['tt.reservation.passenger.event'].create({
                         'booking_id': book_obj.id,
+                        'provider_id': prov_event_id.id,
                         'pax_type': 'ADT',
                         'option_id': option_obj.id,
                         'customer_id': cust_id.id,
@@ -668,6 +676,7 @@ class TtReservationEventOption(models.Model):
     extra_question_ids = fields.One2many('tt.reservation.event.extra.question', 'reservation_event_option_id', 'Extra Question')
     ticket_number = fields.Char('Ticket Number')
     ticket_file_ids = fields.Many2many('tt.upload.center', 'reservation_event_ticket_rel', 'reservation_event_id', 'ticket_id', 'Tickets')
+
 
 class TtReservationEventVoucher(models.Model):
     _name = 'tt.reservation.event.voucher'

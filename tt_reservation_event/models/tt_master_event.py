@@ -292,9 +292,7 @@ class MasterEvent(models.Model):
                 'type': rec.answer_type,
                 'required': rec.is_required,
                 'is_add_other': rec.is_add_other, #Checkbox
-                'answers': [{
-                    'answer': aws.answer
-                } for aws in rec.answer_ids]
+                'answers': rec.answer_type != 'boolean' and [aws.answer for aws in rec.answer_ids] or ['True', 'False'],
             } for rec in res.extra_question_ids]
             return ERR.get_no_error(result)
         except RequestException as e:

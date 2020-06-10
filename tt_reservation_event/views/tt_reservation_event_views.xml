@@ -97,8 +97,10 @@
                 </group>
                 <separator string="Event Information"/>
                 <group>
-                    <field name="event_id" string="Event" readonly="0"/>
-                    <field name="event_name" string="Name"/>
+                    <field name="event_id" string="Event" readonly="0" attrs="{'invisible': [('event_id', '!=', False)]}"/>
+                    <field name="event_name" string="Event" attrs="{'invisible': [('event_id', '!=', False)]}"/>
+                    <field name="event_vendor_id" string="Vendor" attrs="{'invisible': [('event_vendor_id', '!=', False)]}"/>
+                    <field name="event_vendor" string="Vendor" attrs="{'invisible': [('event_vendor_id', '!=', False)]}"/>
                     <field name="event_product_uuid" string="Event UUID" groups="tt_base.group_tt_tour_travel_operator"/>
                 </group>
             </xpath>
