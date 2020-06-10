@@ -21,9 +21,9 @@
         <field name="arch" type="xml">
             <form string="">
                 <header>
-                    <button name="action_draft" type="object" string="Draft"></button>
-                    <button name="action_confirm" type="object" string="Confirm"></button>
-                    <field name="state" widget="statusbar" statusbar_visible="draft,confirm"/>
+                    <button name="action_draft" type="object" string="Draft" states="confirm"/>
+                    <button name="action_confirm" type="object" string="Confirm" states="draft"/>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,confirm,sold-out"/>
                 </header>
                 <sheet>
                     <div class="oe_button_box" name="button_box">
@@ -70,7 +70,7 @@
 <!--                                <field name="reviewAverageScore" class="oe_inline"/> from-->
 <!--                                <field name="reviewCount" class="oe_inline"/> users-->
 <!--                            </div>-->
-                            <field name="uuid"/>
+                            <field name="uuid" readonly="True"/>
                             <field name="event_type"/>
 <!--                            <field name="quota"/>-->
                             <field name="kid_friendly"/>
@@ -132,8 +132,8 @@
                                 <field name="question"/>
                                 <field name="answer_type"/>
                                 <field name="is_required"/>
-                                <field name="answer_ids" attrs="{'invisible': [('answer_type','not in',['boolean','selection','checkbox'])]}">
-                                    <tree>
+                                <field name="answer_ids" attrs="{'invisible': [('answer_type','not in',['selection','checkbox'])], 'required': [('answer_type','in',['selection','checkbox'])]}">
+                                    <tree editable="bottom">
                                         <field name="answer"/>
                                     </tree>
                                 </field>
