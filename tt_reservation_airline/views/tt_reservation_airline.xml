@@ -67,10 +67,11 @@
                         groups="base.user_admin"/>
                 <!--                <button name="CR8" string="CR8" type="object" groups="base.user_admin"/>-->
             </xpath>
-            <xpath expr="//div[hasclass('oe_button_box')]" position="inside">
+            <xpath expr="//div[hasclass('oe_title')]" position="inside">
                 <label for="is_get_booking_from_vendor" string="Retrieved From Vendor" attrs="{'invisible': [('is_get_booking_from_vendor','=',False)]}"/>
                 <field name="is_get_booking_from_vendor" invisible="1"/>
-                <div class="oe_button_box" name="button_box">
+            </xpath>
+            <xpath expr="//div[hasclass('oe_button_box')]" position="inside">
                     <button name="print_eticket"
                             class="oe_stat_button" states="issued,done"
                             string="Print E-Ticket" type="object" icon="fa-print"/>
@@ -84,7 +85,6 @@
                     <button name="print_itinerary"
                             class="oe_stat_button" states="booked,issued,done"
                             string="Print Itinerary" type="object" icon="fa-print"/>
-                </div>
             </xpath>
 
             <xpath expr="//group[@name='paxgroup']" position="before">

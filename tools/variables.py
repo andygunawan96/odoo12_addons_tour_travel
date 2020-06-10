@@ -260,3 +260,8 @@ PRODUCT_STATE = [
     ('postpone', 'Postpone'),
     ('sold-out', 'Sold Out')
 ]
+RESV_RECONCILE_STATE = [
+    ('not_reconciled','Not Reconciled'),
+    ('partial','Partially Reconciled'),
+    ('reconciled','Reconciled')
+]

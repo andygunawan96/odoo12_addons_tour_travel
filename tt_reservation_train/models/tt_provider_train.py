@@ -59,6 +59,11 @@ class TtProviderTrain(models.Model):
 
     total_price = fields.Float('Total Price', default=0)
 
+    #reconcile purpose#
+    reconcile_line_id = fields.Many2one('tt.reconcile.transaction.lines','Reconciled')
+    reconcile_time = fields.Datetime('Reconcile Time')
+    ##
+
     ##button function
     def action_set_to_issued_from_button(self, payment_data={}):
         if self.state == 'issued':

@@ -47,10 +47,18 @@ class ReservationAirline(models.Model):
     def get_form_id(self):
         return self.env.ref("tt_reservation_airline.tt_reservation_airline_form_views")
 
+    @api.depends('provider_booking_ids','provider_booking_ids.reconcile_line_id')
+    def _compute_reconcile_state(self):
+        for rec in self:
+            if all(rec1.reconcile_line_id != False for rec1 in rec.provider_booking_ids):
+                rec.reconcile_state = 'reconciled'
+            elif any(rec1.reconcile_line_id != False for rec1 in rec.provider_booking_ids):
+                rec.reconcile_state = 'partial'
+            rec.reconcile_state = 'not_reconciled'
+
     @api.depends('segment_ids')
     def _compute_sector_type(self):
         for rec in self:
-            sector_type = "Domestic"
             destination_country_list = []
             for segment in rec.segment_ids:
                 destination_country_list.append(segment.origin_id.country_id.id)
