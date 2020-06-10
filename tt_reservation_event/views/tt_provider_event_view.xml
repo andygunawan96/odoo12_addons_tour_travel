@@ -36,6 +36,15 @@
                             <field name="issued_date"/>
                         </group>
                     </group>
+                    <separator string="Passengers"/>
+                    <field name="passenger_ids">
+                        <tree>
+                            <field name="first_name"/>
+                            <field name="last_name"/>
+                            <field name="pax_type"/>
+                            <field name="option_id"/>
+                        </tree>
+                    </field>
                     <separator string="Service Charges"/>
                     <field name="cost_service_charge_ids" context="{'form_view_ref':'tt_reservation_airline.tt_service_charge_airline_inherit_form_view'}">
                         <tree>
@@ -49,13 +58,6 @@
                             <field name="passenger_airline_ids"/>
                         </tree>
                     </field>
-<!--                    <separator string="Passengers"/>-->
-<!--                    <field name="ticket_ids">-->
-<!--                        <tree>-->
-<!--                            <field name="passenger_id"/>-->
-<!--                            <field name="ticket_number"/>-->
-<!--                        </tree>-->
-<!--                    </field>-->
                     <separator string="Error History"/>
                     <field name="error_history_ids">
                         <tree>
