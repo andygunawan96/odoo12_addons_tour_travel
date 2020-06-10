@@ -526,12 +526,11 @@ class TtProviderAirline(models.Model):
                     ticket_values = {
                         'ticket_number': psg.get('ticket_number', ''),
                         'ff_number': psg.get('ff_number', ''),
-                        'ff_code': psg.get('ff_code', ''),
                     }
-                    if ticket_values['ff_code']:
-                        loyalty_id = self.env['tt.loyalty.program'].sudo().get_id(ticket_values['ff_code'])
-                        if loyalty_id:
-                            ticket_values['loyalty_program_id'] = loyalty_id
+                    # if ticket_values['ff_code']:
+                    #     loyalty_id = self.env['tt.loyalty.program'].sudo().get_id(ticket_values['ff_code'])
+                    #     if loyalty_id:
+                    #         ticket_values['loyalty_program_id'] = loyalty_id
                     ticket.write(ticket_values)
                     ticket_found = True
                     ticket.passenger_id.is_ticketed = True
@@ -550,15 +549,14 @@ class TtProviderAirline(models.Model):
             ticket_values = {
                 'ticket_number': psg.get('ticket_number'),
                 'ff_number': psg.get('ff_number', ''),
-                'ff_code': psg.get('ff_code', ''),
                 'pax_type': psg.get('pax_type'),
             }
             if psg.get('passenger_id'):
                 ticket_values['passenger_id'] = psg['passenger_id']
-            if ticket_values['ff_code']:
-                loyalty_id = self.env['tt.loyalty.program'].sudo().get_id(ticket_values['ff_code'])
-                if loyalty_id:
-                    ticket_values['loyalty_program_id'] = loyalty_id
+            # if ticket_values['ff_code']:
+            #     loyalty_id = self.env['tt.loyalty.program'].sudo().get_id(ticket_values['ff_code'])
+            #     if loyalty_id:
+            #         ticket_values['loyalty_program_id'] = loyalty_id
             self.write({
                 'ticket_ids': [(0, 0, ticket_values)]
             })
