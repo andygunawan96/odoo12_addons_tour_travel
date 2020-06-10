@@ -159,8 +159,6 @@ class TtProviderActivity(models.Model):
             ticket_list.append((0, 0, {
                 'pax_type': psg.get('pax_type'),
                 'ticket_number': psg.get('ticket_number', ''),
-                'ff_number': psg.get('ff_number', ''),
-                'ff_code': psg.get('ff_code', ''),
                 'passenger_id': psg_with_no_ticket[idx].id
             }))
 
@@ -187,8 +185,6 @@ class TtProviderActivity(models.Model):
             self.write({
                 'ticket_ids': [(0,0,{
                     'ticket_number': psg.get('ticket_number', ''),
-                    'ff_number': psg.get('ff_number', ''),
-                    'ff_code': psg.get('ff_code', ''),
                     'pax_type': psg.get('pax_type'),
                 })]
             })

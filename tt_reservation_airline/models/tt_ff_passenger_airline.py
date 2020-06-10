@@ -9,6 +9,7 @@ class TtFfPassengerAirline(models.Model):
     first_name = fields.Char('First Name', default='')
     last_name = fields.Char('Last Name', default='')
     passenger_id = fields.Many2one('tt.reservation.passenger.airline', 'Passenger')
+    loyalty_program_id = fields.Many2one('tt.loyalty.program', 'Loyalty Program')
     provider_id = fields.Many2one('tt.provider.airline', 'Provider')
     provider_sequence = fields.Integer('Provider Sequence', related='provider_id.sequence')
     ff_number = fields.Char('Frequent Flyer Number', default='')
@@ -22,6 +23,7 @@ class TtFfPassengerAirline(models.Model):
             'last_name': self.last_name and self.last_name or '',
             'provider_sequence': self.provider_sequence,
             'ff_code': self.ff_code and self.ff_code or '',
+            'ff_name': self.loyalty_program_id and self.loyalty_program_id.name or '',
             'ff_number': self.ff_number and self.ff_number or '',
             'schedule_id': self.schedule_id and self.schedule_id or '',
         }
