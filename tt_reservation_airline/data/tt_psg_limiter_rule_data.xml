@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <odoo>
-    <data>
+    <data noupdate="1">
         <record id="tt_limiter_rule_sq" model="tt.limiter.rule">
             <field name="carrier_id" ref="tt_reservation_airline.tt_transport_carrier_airline_sq"/>
             <field name="rebooking_limit">2</field>
