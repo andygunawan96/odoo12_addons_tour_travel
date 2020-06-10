@@ -41,6 +41,8 @@
                             <field name="balance_due"/>
                             <field name="total_price"/>
                             <field name="penalty_amount"/>
+                            <field name="reconcile_line_id"/>
+                            <field name="reconcile_time"/>
                         </group>
                         <group>
                             <field name="hold_date"/>

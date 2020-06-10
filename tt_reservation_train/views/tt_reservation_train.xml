@@ -59,10 +59,6 @@
                     <button name="print_eticket"
                             class="oe_stat_button" states="issued,done"
                             string="Print E-Ticket" type="object" icon="fa-print"/>
-                    <button name="ban_user"
-                            class="oe_stat_button"
-                            string="Ban User" type="object" icon="fa-print"/>
-
                     <button name="print_eticket_with_price"
                             class="oe_stat_button" states="issued,done"
                             string="Print E-Ticket (Price)" type="object" icon="fa-print"/>

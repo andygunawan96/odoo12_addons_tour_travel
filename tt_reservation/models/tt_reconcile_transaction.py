@@ -39,6 +39,10 @@ class TtReconcileTransaction(models.Model):
                     'res_id': found_rec.id,
                     'state': 'match'
                 })
+                found_rec.write({
+                    'reconcile_line_id': rec.id,
+                    'reconcile_time': datetime.now()
+                })
 
     def view_filter_tree(self):
         tree_id = self.env.ref('tt_reservation.tt_reconcile_transaction_lines_tree_view')

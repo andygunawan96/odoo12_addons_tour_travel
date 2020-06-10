@@ -51,13 +51,19 @@
                     <field name="state" widget="statusbar" statusbar_visible="draft,booked,issued"/>
                 </header>
                 <sheet>
-                    <div class="oe_button_box" name="button_box">
-                    </div>
+                    <div class="oe_button_box" name="button_box"/>
                     <div class="oe_title">
                         <label for="name" class="oe_edit_only"/>
                         <h1>
                             <field name="name"/>
                         </h1>
+                        <h6>
+                            <field name="reconcile_state"
+                                   decoration-danger="reconcile_state == 'not_reconciled'"
+                                   decoration-info="reconcile_state == 'partial'"
+                                   decoration-success="reconcile_state == 'reconciled'"
+                                   groups="tt_base.group_tt_accounting_operator"/>
+                        </h6>
                     </div>
                     <group>
                         <group>
