@@ -85,7 +85,8 @@ class ReservationEvent(models.Model):
     provider_booking_ids = fields.One2many('tt.provider.event', 'booking_id', string="Provider Booking", readonly=True, states={'draft': [('readonly', False)]})
     passenger_ids = fields.One2many('tt.reservation.passenger.event', 'booking_id', string="Passengers")
 
-    information = fields.Text('Additional Information')
+    information = fields.Text('Additional Information', help='Information from vendor to customer / agent')
+    special_request = fields.Text('Special Request', help='Request / Notes from customer')
     file_upload = fields.Text('File Upload')
     voucher_url = fields.Text('Voucher URL')
     voucher_url_ids = fields.One2many('tt.reservation.event.voucher', 'booking_id')
@@ -256,7 +257,8 @@ class ReservationEvent(models.Model):
                 'contact_email': contact_obj.email,
                 'contact_phone': contact_obj.phone_ids and contact_obj.phone_ids[0].phone_number or False,
                 'agent_id': context['co_agent_id'],
-                # 'passenger_ids': [6,0,[x.id for x in pax_ids]]
+                # 'passenger_ids': [6,0,[x.id for x in pax_ids]],
+                'special_request': special_request,
             }
             book_obj = self.create(temp_main_dictionary)
 
@@ -424,8 +426,8 @@ class ReservationEvent(models.Model):
                 'ticket_number': rec.ticket_number,
             } for rec in self.option_ids] or [],
             'notes': '',
-            'booker': self.booker_id.read(),
-            'contact': self.contact_id.read(),
+            'booker': self.booker_id.to_dict(),
+            'contact': self.contact_id.to_dict(),
             'status': self.state,
         }
 
@@ -434,6 +436,12 @@ class ReservationEvent(models.Model):
             resv_obj = self.get_book_obj(data.get('order_id'), data.get('order_number'))
             if resv_obj:
                 res = resv_obj.to_dict()
+                psg_list = []
+                for i in resv_obj.passenger_ids:
+                    psg_list.append(i.to_dict())
+                res.update({
+                    'passenger': psg_list
+                })
                 return ERR.get_no_error(res)
             else:
                 raise RequestException(1003)
