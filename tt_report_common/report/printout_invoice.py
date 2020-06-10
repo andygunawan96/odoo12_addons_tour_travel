@@ -637,12 +637,10 @@ class PrintoutInvoiceHO(models.AbstractModel):
                 pax_dict[period]['name'] = provider.transaction_name
                 pax_dict[period]['total'] = provider.ppob_bill_ids[0].fare_amount
         if rec._name == 'tt.reservation.event':
-            # for option in rec.option_ids:
-            #     pax_dict[option.id] = {}
-            #     pax_dict[option.id]['name'] = option.event_option_id.grade
-            #     pax_dict[option.id]['total'] = option.event_option_id.price
-            for psg in rec.passenger_ids:
-                pass
+            for option in rec.option_ids:
+                pax_dict[option.id] = {}
+                pax_dict[option.id]['name'] = option.event_option_id.grade
+                pax_dict[option.id]['total'] = option.event_option_id.price
         return pax_dict
 
     def compute_terbilang_from_objs(self, recs, currency_str='rupiah'):
@@ -1349,7 +1347,6 @@ class PrintoutEventIteneraryForm(models.AbstractModel):
                     a[rec2.pax_type]['qty'] = rec2.pax_count
                 elif rec2.charge_type.lower() in ['roc', 'tax']:
                     a[rec2.pax_type]['tax'] += rec2.amount
-            values[rec.id] = [a[new_a] for new_a in a]
         return {
             'doc_ids': data['context']['active_ids'],
             'doc_model': data['context']['active_model'],

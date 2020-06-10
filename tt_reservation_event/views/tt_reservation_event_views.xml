@@ -131,8 +131,7 @@
                         </form>
                     </field>
                 </page>
-            </xpath>
-            <xpath expr="//page[@name='anchor']" position="before">
+
                 <page string="Prices" name="prices">
                     <field name="sale_service_charge_ids" context="{'form_view_ref': 'tt_reservation_event.tt_service_charge_event_inherit_form_view'}">
                         <tree>
@@ -147,8 +146,9 @@
                         </tree>
                     </field>
                 </page>
-            </xpath>
-            <xpath expr="//page[@name='anchor']" position="before">
+                <page string="Passengers" name="passenger">
+                    <field name="passenger_ids"/>
+                </page>
                 <page string="Vendor" name="vendor" groups="tt_base.group_tt_tour_travel_operator">
                     <field name="provider_booking_ids">
                         <tree>

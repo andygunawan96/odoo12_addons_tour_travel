@@ -43,6 +43,7 @@ class TtProviderEvent(models.Model):
     expired_date = fields.Datetime('Expired Date')
 
     # ticket_ids = fields.One2many('tt.ticket.event', 'provider_id', 'Ticket Number')
+    passenger_ids = fields.One2many('tt.reservation.passenger.event', 'provider_id', 'Passenger(s)')
 
     error_history_ids = fields.One2many('tt.reservation.err.history', 'res_id', 'Error history')
 
