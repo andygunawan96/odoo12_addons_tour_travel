@@ -177,7 +177,7 @@
                     </div>
                     <div class="row">
                         <div class="col-12" style="font-size: 20px; padding-left: 0px;">
-                            <div class="row" style="margin-left:0px; width: 75%; border-top: 1px solid black; border-bottom: 1px solid #CCCCCC; padding-bottom: 2px">
+                            <div class="row" style="margin-left:0px; width: 80%; border-top: 1px solid black; border-bottom: 1px solid #CCCCCC; padding-bottom: 2px">
                                 <div class="col-4">
                                     <span>Nama Penumpang</span>
                                 </div>
@@ -193,7 +193,7 @@
                             </div>
                             <t t-if="provider.journey_ids.seat_ids">
                                 <t t-foreach="provider.journey_ids.seat_ids" t-as="psg">
-                                    <div class="row" style="margin-left:0px; width: 75%;">
+                                    <div class="row" style="margin-left:0px; width: 80%;">
                                         <div class="col-4">
                                             <span t-field="psg.passenger_id.first_name"/><span style="color: white;">.</span><span t-field="psg.passenger_id.last_name"/>
                                         </div>

@@ -449,8 +449,7 @@ class PrintoutInvoiceVendor(models.AbstractModel):
                 pax_dict[psg.id]['name'] = psg.option_id.event_option_name
                 pax_dict[psg.id]['total'] = 0
                 for csc in psg.cost_service_charge_ids:
-                    if csc.charge_type != 'RAC':
-                        pax_dict[psg.id]['total'] += csc.total
+                    pax_dict[psg.id]['total'] += csc.total
         return pax_dict
 
     def compute_terbilang_from_objs(self, recs, currency_str='rupiah'):
@@ -694,7 +693,11 @@ class PrintoutInvoiceHO(models.AbstractModel):
                 pax_dict[psg.id]['name'] = psg.option_id.event_option_name
                 pax_dict[psg.id]['total'] = 0
                 for csc in psg.cost_service_charge_ids:
-                    pax_dict[psg.id]['total'] += csc.total
+                    if csc.charge_type == 'RAC':
+                        if csc.charge_code == 'rac':
+                            pax_dict[psg.id]['total'] += csc.total
+                    else:
+                        pax_dict[psg.id]['total'] += csc.total
         return pax_dict
 
     def compute_terbilang_from_objs(self, recs, currency_str='rupiah'):
@@ -708,34 +711,43 @@ class PrintoutInvoiceHO(models.AbstractModel):
         if data['context']['active_model'] == 'tt.reservation.airline':
             for journey in rec.journey_ids:
                 desc += '%s(%s) - %s(%s), ' % (
-                    journey.origin_id.city, journey.origin_id.code, journey.destination_id.city, journey.destination_id.code)
+                    (journey.origin_id.city if journey.origin_id.city else ''),
+                    (journey.origin_id.code if journey.origin_id.code else ''),
+                    (journey.destination_id.city if journey.destination_id.city else ''),
+                    (journey.destination_id.code if journey.destination_id.code else ''))
                 desc += '%s - %s\n ' % (journey.departure_date[:16], journey.arrival_date[:16])
         elif data['context']['active_model'] == 'tt.reservation.train':
             for journey in rec.journey_ids:
                 desc += '%s(%s) - %s(%s),' % (
-                    journey.origin_id.city, journey.origin_id.code, journey.destination_id.city, journey.destination_id.code)
+                    (journey.origin_id.city if journey.origin_id.city else ''),
+                    (journey.origin_id.code if journey.origin_id.code else ''),
+                    journey.destination_id.city if journey.destination_id.city else '',
+                    journey.destination_id.code if journey.destination_id.code else '')
                 desc += '%s - %s\n ' % (journey.departure_date[:16], journey.arrival_date[:16])
         elif data['context']['active_model'] == 'tt.reservation.activity':
             desc = ''
-            desc += '%s (%s), ' % (rec.booking_id.activity_id.name, rec.booking_id.activity_product_id.name,)
-            desc += '%s ' % (rec.booking_id.visit_date,)
+            desc += '%s (%s), ' % (
+                rec.booking_id.activity_id.name if rec.booking_id.activity_id.name else '',
+                rec.booking_id.activity_product_id.name if rec.booking_id.activity_product_id.name else '')
+            desc += '%s ' % (rec.booking_id.visit_date if rec.booking_id.visit_date else '')
             if rec.booking_id.timeslot:
-                desc += '(%s) ' % (rec.booking_id.timeslot,)
+                desc += '(%s) ' % (rec.booking_id.timeslot if rec.booking_id.timeslot else '')
             desc += '\n '
             return desc
         elif data['context']['active_model'] == 'tt.reservation.tour':
             desc = ''
-            desc += '%s' % (rec.tour_id.name,)
+            desc += '%s' % (rec.tour_id.name if rec.tour_id.name else '')
             desc += '\n'
-            desc += '%s - %s ' % (rec.departure_date, rec.arrival_date,)
+            desc += '%s - %s ' % (rec.departure_date if rec.departure_date else '',
+                                  rec.arrival_date if rec.arrival_date else '')
             desc += '\n'
         elif data['context']['active_model'] == 'tt.reservation.visa':
-            desc = ''
-            desc = 'Reservation Visa Country : ' + rec.booking_id.country_id.name + ' ' + 'Consulate : ' + \
-                        rec.booking_id.immigration_consulate + ' ' + 'Journey Date : ' + str(rec.booking_id.departure_date)
+            desc = 'Reservation Visa Country : ' + (rec.booking_id.country_id.name if rec.booking_id.country_id.name else '') + \
+                   ' ' + 'Consulate : ' + (rec.booking_id.immigration_consulate if rec.booking_id.immigration_consulate else '') + ' ' + \
+                   'Journey Date : ' + str(rec.booking_id.departure_date) if rec.booking_id.departure_date else ''
         elif data['context']['active_model'] == 'tt.reservation.passport':
             desc = ''
-            desc = 'Reservation Passport Consulate : ' + rec.booking_id.immigration_consulate
+            desc = 'Reservation Passport Consulate : ' + (rec.booking_id.immigration_consulate if rec.booking_id.immigration_consulate else '')
         elif data['context']['active_model'] == 'tt.reservation.offline':
             desc = ''
             if rec.provider_type_id_name != 'hotel':
@@ -747,33 +759,33 @@ class PrintoutInvoiceHO(models.AbstractModel):
             desc += 'Date  : %s - %s\n' % (str(rec.checkin_date)[:10], str(rec.checkout_date)[:10])
             desc += 'Guest :\n'
             for idx, guest in enumerate(rec.passenger_ids):
-                desc += str(idx + 1) + '. ' + guest.name + '\n'
+                desc += str(idx + 1) + '. ' + (guest.name if guest.name else '') + '\n'
             # spc = rec.special_request or '-'
             # desc += 'Special Request: ' + spc + '\n'
         elif data['context']['active_model'] == 'tt.reservation.ppob':
             ppob_carrier = rec.carrier_id
-            desc += 'PPOB : ' + ppob_carrier.name + '<br/>'
+            desc += 'PPOB : ' + (ppob_carrier.name if ppob_carrier.name else '') + '<br/>'
             if ppob_carrier.code == self.env.ref('tt_reservation_ppob.tt_transport_carrier_ppob_bpjs').code:
                 # desc += 'MKM Ref : ' + rec.session_id + '<br/>'
-                desc += 'BPJS Ref : ' + rec.pnr + '<br/>'
-                desc += 'Nama : ' + rec.customer_name + '<br/>'
-                desc += 'Jumlah Peserta : ' + str(len(rec.ppob_bill_detail_ids)) + '<br/>'
-                desc += 'Jumlah Periode : ' + str(len(rec.ppob_bill_ids)) + '<br/>'
+                desc += 'BPJS Ref : ' + (rec.pnr if rec.pnr else '') + '<br/>'
+                desc += 'Nama : ' + (rec.customer_name if rec.customer_name else '') + '<br/>'
+                desc += 'Jumlah Peserta : ' + (str(len(rec.ppob_bill_detail_ids)) if rec.ppob_bill_detail_ids else '') + '<br/>'
+                desc += 'Jumlah Periode : ' + (str(len(rec.ppob_bill_ids)) if rec.ppob_bill_ids else '') + '<br/>'
             elif ppob_carrier.code == self.env.ref('tt_reservation_ppob.tt_transport_carrier_ppob_postpln').code:
-                desc += 'IDPel : ' + rec.customer_id_number + '<br/>'
-                desc += 'Nama : ' + rec.customer_name + '<br/>'
+                desc += 'IDPel : ' + (rec.customer_id_number if rec.customer_id_number else '') + '<br/>'
+                desc += 'Nama : ' + (rec.customer_name if rec.customer_name else '') + '<br/>'
                 desc += 'Tarif/Daya : ' + (rec.fare_type if rec.fare_type else '') + ' / ' + str(rec.power if rec.power else '') + 'VA <br/>'
             elif ppob_carrier.code == self.env.ref('tt_reservation_ppob.tt_transport_carrier_ppob_prepln').code:
-                desc += 'No. Meter : ' + rec.meter_number + '<br/>'
-                desc += 'IDPel : ' + rec.customer_id_number + '<br/>'
-                desc += 'Nama : ' + rec.customer_name + '<br/>'
+                desc += 'No. Meter : ' + (rec.meter_number if rec.meter_number else '') + '<br/>'
+                desc += 'IDPel : ' + (rec.customer_id_number if rec.customer_id_number else '') + '<br/>'
+                desc += 'Nama : ' + (rec.customer_name if rec.customer_name else '') + '<br/>'
                 desc += 'Tarif/Daya : ' + (rec.fare_type if rec.fare_type else '') + ' / ' + str(rec.power if rec.power else '') + 'VA <br/>'
             elif ppob_carrier.code == self.env.ref('tt_reservation_ppob.tt_transport_carrier_ppob_notaglispln').code:
-                desc += 'Transaksi : ' + rec.transaction_code + '<br/>'
-                desc += 'No. Registrasi : ' + rec.registration_number + '<br/>'
-                desc += 'Tgl. Registrasi : ' + rec.registration_date.strftime('%d/%m/%Y') + '<br/>'
-                desc += 'IDPel : ' + rec.customer_id_number + '<br/>'
-                desc += 'Nama : ' + rec.customer_name + '<br/>'
+                desc += 'Transaksi : ' + (rec.transaction_code if rec.transaction_code else '') + '<br/>'
+                desc += 'No. Registrasi : ' + (rec.registration_number if rec.registration_number else '') + '<br/>'
+                desc += 'Tgl. Registrasi : ' + rec.registration_date.strftime('%d/%m/%Y') if rec.registration_date else '' + '<br/>'
+                desc += 'IDPel : ' + (rec.customer_id_number if rec.customer_id_number else '') + '<br/>'
+                desc += 'Nama : ' + (rec.customer_name if rec.customer_name else '') + '<br/>'
         elif data['context']['active_model'] == 'tt.reservation.event':
             desc += 'Event : ' + rec.event_id.name + '<br/>'
             desc += 'Location : ' + '<br/>'
