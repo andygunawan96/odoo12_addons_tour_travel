@@ -181,18 +181,35 @@
             </div>
             <div class="col-4">
                 <table style="width:100%">
-                    <tr>
-                        <td><strong>Commission</strong></td>
-                        <td class="text-right">
-                            <span style="padding: 10px 10px;" t-field="doc.total_commission" t-options="{&quot;widget&quot;: &quot;monetary&quot;, &quot;display_currency&quot;: doc.currency_id}"/>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td><strong>NTA</strong></td>
-                        <td class="text-right">
-                            <span style="padding: 10px 10px;" t-field="doc.total_nta" t-options="{&quot;widget&quot;: &quot;monetary&quot;, &quot;display_currency&quot;: doc.currency_id}"/>
-                        </td>
-                    </tr>
+                    <t t-if="doc._name == 'tt.reservation.event'">
+                        <tr>
+                            <td><strong>Commission</strong></td>
+                            <td class="text-right">
+                                <t t-set="commission" t-value="doc.total_fare-doc.agent_nta"/>
+                                <span style="padding: 10px 10px;" t-esc="commission" t-options="{&quot;widget&quot;: &quot;monetary&quot;, &quot;display_currency&quot;: doc.currency_id}"/>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><strong>NTA</strong></td>
+                            <td class="text-right">
+                                <span style="padding: 10px 10px;" t-field="doc.agent_nta" t-options="{&quot;widget&quot;: &quot;monetary&quot;, &quot;display_currency&quot;: doc.currency_id}"/>
+                            </td>
+                        </tr>
+                    </t>
+                    <t t-else="">
+                        <tr>
+                            <td><strong>Commission</strong></td>
+                            <td class="text-right">
+                                <span style="padding: 10px 10px;" t-field="doc.total_commission" t-options="{&quot;widget&quot;: &quot;monetary&quot;, &quot;display_currency&quot;: doc.currency_id}"/>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><strong>NTA</strong></td>
+                            <td class="text-right">
+                                <span style="padding: 10px 10px;" t-field="doc.total_nta" t-options="{&quot;widget&quot;: &quot;monetary&quot;, &quot;display_currency&quot;: doc.currency_id}"/>
+                            </td>
+                        </tr>
+                    </t>
                     <tr>
                         <td/>
                         <td>
@@ -215,6 +232,12 @@
                         <td><strong>Total Tax</strong></td>
                         <td class="text-right">
                             <span style="padding: 10px 10px;" t-field="doc.total_tax" t-options="{&quot;widget&quot;: &quot;monetary&quot;, &quot;display_currency&quot;: doc.currency_id}"/>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td/>
+                        <td>
+                            <br/>
                         </td>
                     </tr>
                     <tr>

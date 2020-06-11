@@ -132,7 +132,7 @@
                             <div id="circle" t-att-style="'width: 60px; height: 60px; background: '+ base_color+'; border-radius: 100%; position: absolute; z-index: 1;'">
                                 <img t-att-src="'/tt_report_common/static/images/airfreight-white.svg'" style="max-height: 35px; max-width: 35px; margin: 12px 0px 0px 0px;"/>
                             </div>
-                            <div id="rectangle" style="width: 420px; height: 50px; bottom: 15px; background-image:  url('/tt_report_common/static/images/background footer airline.jpg'); border-radius: 25px; position: absolute; z-index: 0; margin-right:10px;">
+                            <div id="rectangle" style="width: 100%; height: 50px; bottom: 15px; background-image:  url('/tt_report_common/static/images/background footer airline.jpg'); border-radius: 25px; position: absolute; z-index: 0; margin-right:10px;">
                                 <div style="padding-left: 60px; padding-bottom: 10px; vertical-align: middle; text-align: center; border-radius: 25px; background-color: rgba(39,62,84,0.76); padding-top: 5px;">
                                     <div style="vertical-align: middle; display: flex; letter-spacing: 0.05em; font-size: 24px; color: white; font-weight: 600; margin-top: 0px; margin-left: -10px;">
                                         <span t-field="doc.pnr" style="margin-top: 5px;"/>
@@ -339,7 +339,7 @@
 
     <template id="printout_ticket">
         <t t-set="data_report_header_spacing" t-value="20"/>
-        <t t-set="data_report_margin_top" t-value="2"/>
+        <t t-set="data_report_margin_top" t-value="10"/>
         <t t-call="web.html_container">
             <t t-foreach="docs" t-as="doc">
                 <div class="page">
