@@ -98,7 +98,7 @@ class TtReservation(models.Model):
     # total_commission = fields.Monetary(string='Total Commission', default=0, compute="_compute_total_booking", store=True)
     # total_nta = fields.Monetary(string='NTA Amount', compute="_compute_total_booking", store=True)
 
-    sale_service_charge_ids = fields.Char('dummy sale')
+    sale_service_charge_ids = fields.Char('Agent View Service Charge')
 
     total_fare = fields.Monetary(string='Total Fare', default=0, compute="_compute_total_fare",store=True)
     total_tax = fields.Monetary(string='Total Tax', default=0, compute='_compute_total_tax',store=True)
@@ -125,6 +125,7 @@ class TtReservation(models.Model):
     printout_itinerary_id = fields.Many2one('tt.upload.center', 'Itinerary', readonly=True)
     printout_voucher_id = fields.Many2one('tt.upload.center', 'Voucher', readonly=True)
     printout_ho_invoice_id = fields.Many2one('tt.upload.center', 'Voucher', readonly=True)
+    printout_vendor_invoice_id = fields.Many2one('tt.upload.center', 'Vendor Invoice', readonly=True)
 
     payment_acquirer_number_id = fields.Many2one('payment.acquirer.number','Payment Acquier Number')
 
@@ -132,6 +133,9 @@ class TtReservation(models.Model):
     is_force_issued = fields.Boolean('Force Issued', default=False)
     is_halt_process = fields.Boolean('Halt Process', default=False)
     # END
+
+    reconcile_state = fields.Selection(variables.RESV_RECONCILE_STATE, 'Reconcile State',default='not_reconciled',
+                                       compute='_compute_reconcile_state', store=True )
 
     @api.model
     def create(self, vals_list):
@@ -371,6 +375,11 @@ class TtReservation(models.Model):
             }))
 
         return list_passenger_value
+
+    def _compute_reconcile_state(self):
+        for rec in self:
+            if not rec.reconcile_state:
+                rec.reconcile_state = 'not_reconciled'
 
     @api.depends("refund_ids", "state")
     @api.onchange("refund_ids", "state")
@@ -799,3 +808,13 @@ class TtReservation(models.Model):
 
     def get_btc_issued_date(self):
         return (self.issued_date + timedelta(hours=7)).strftime('%Y-%m-%d %H:%M:%S') + ' (GMT +7)'
+
+    def compute_all_provider_total_price(self):
+        provider_obj = self.env['tt.provider.%s' % self.provider_type_id.code]
+        for rec in provider_obj.search([]):
+            if rec.total_price == 0 or rec.total_price == False:
+                price = 0
+                for sc in rec.cost_service_charge_ids:
+                    if sc.charge_type != 'ROC' and sc.charge_type != 'RAC':
+                        price += sc.total
+                rec.total_price = price

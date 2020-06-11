@@ -29,6 +29,9 @@
                             <field name="notes"/>
                             <field name="error_msg"/>
                             <field name="balance_due"/>
+                            <field name="total_price"/>
+                            <field name="reconcile_line_id"/>
+                            <field name="reconcile_time"/>
                         </group>
                         <group>
                             <field name="hold_date"/>
@@ -55,6 +58,9 @@
                             <field name="arrival_date"/>
                         </group>
                         <group>
+                            <field name="carrier_id"/>
+                            <field name="carrier_name"/>
+                            <field name="carrier_code"/>
                             <field name="currency_id"/>
                             <field name="sid_issued"/>
                             <field name="promotion_code"/>

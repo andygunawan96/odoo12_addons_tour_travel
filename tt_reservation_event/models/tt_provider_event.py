@@ -12,10 +12,12 @@ class TtProviderEvent(models.Model):
 
     pnr = fields.Char('PNR')
     pnr2 = fields.Char('PNR2')
+    reference = fields.Char('Reference', default='')
     provider_id = fields.Many2one('tt.provider', 'Provider')
     state = fields.Selection(variables.BOOKING_STATE, 'Status', default='draft')
     booking_id = fields.Many2one('tt.reservation.event', 'Order Number', ondelete='cascade')
     balance_due = fields.Float('Balance Due')
+    sequence = fields.Integer('Sequence')
     event_id = fields.Many2one('tt.master.event', 'Event')
     event_product_id = fields.Many2one('tt.event.option', 'Event Product')
     event_product = fields.Char('Product Type')
@@ -40,11 +42,19 @@ class TtProviderEvent(models.Model):
     hold_date = fields.Char('Hold Date')
     expired_date = fields.Datetime('Expired Date')
 
-    ticket_ids = fields.One2many('tt.ticket.event', 'provider_id', 'Ticket Number')
+    # ticket_ids = fields.One2many('tt.ticket.event', 'provider_id', 'Ticket Number')
+    passenger_ids = fields.One2many('tt.reservation.passenger.event', 'provider_id', 'Passenger(s)')
 
-    error_msg = fields.Text('Message Error', readonly=True, states={'draft': [('readonly', False)]})
+    error_history_ids = fields.One2many('tt.reservation.err.history', 'res_id', 'Error history')
 
     notes = fields.Text('Notes', readonly=True, states={'draft': [('readonly', False)]})
+
+    total_price = fields.Float('Total Price', readonly=True, default=0)
+
+    #reconcile purpose#
+    reconcile_line_id = fields.Many2one('tt.reconcile.transaction.lines','Reconciled')
+    reconcile_time = fields.Datetime('Reconcile Time')
+    ##
 
     def action_create_ledger(self, issued_uid, pay_method=None):
         return self.env['tt.ledger'].action_create_ledger(self, issued_uid)

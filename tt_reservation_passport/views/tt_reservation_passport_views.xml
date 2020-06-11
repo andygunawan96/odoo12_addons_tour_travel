@@ -121,6 +121,8 @@
                     <field name="validate_date" readonly="1" class="oe_inline"/>
                 </div>
             </xpath>
+            <xpath expr="//label[@for='reschedule_uid']" position="replace"/>
+            <field name="penalty_amount" position="replace"/>
             <field name="sid_booked" position="replace">
                 <field name="in_process_date"/>
                 <field name="estimate_date"/>

@@ -1,14 +1,34 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <odoo>
-    <record id="tt_ff_passenger_airline_view_form_inherit" model="ir.ui.view">
-        <field name="name">tt_ff_passenger_airline_view_form_inherit</field>
-        <field name="model">tt.reservation.passenger.airline</field>
-        <field name="inherit_id" ref="tt_reservation_airline.tt_reservation_passenger_airline_inherit_form_view"/>
+    <record id="tt_ff_passenger_airline_form_view" model="ir.ui.view">
+        <field name="name">tt.ff.passenger.airline.form.view</field>
+        <field name="model">tt.ff.passenger.airline</field>
         <field name="arch" type="xml">
-            <xpath expr="//separator" position="before">
-                <separator string="Frequent Flyers"/>
-                <field name="frequent_flyer_ids"/>
-            </xpath>
+            <form>
+                <sheet>
+                    <div class="oe_title">
+                        <label for="name" class="oe_edit_only" string="Name"/>
+                        <h1>
+                            <field name="name"/>
+                        </h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="first_name"/>
+                            <field name="last_name"/>
+                            <field name="ff_number"/>
+                            <field name="ff_code"/>
+                            <field name="schedule_id"/>
+                            <field name="provider_sequence"/>
+                        </group>
+                        <group>
+                            <field name="passenger_id"/>
+                            <field name="loyalty_program_id"/>
+                            <field name="provider_id"/>
+                        </group>
+                    </group>
+                </sheet>
+            </form>
         </field>
     </record>
     <record id="tt_ff_passenger_airline_tree_view" model="ir.ui.view">
@@ -19,9 +39,8 @@
                 <field name="name"/>
                 <field name="passenger_id"/>
                 <field name="provider_id"/>
-                <field name="provider_sequence"/>
+                <field name="loyalty_program_id"/>
                 <field name="ff_number"/>
-                <field name="ff_code"/>
             </tree>
         </field>
     </record>

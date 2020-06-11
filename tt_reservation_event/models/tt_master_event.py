@@ -123,25 +123,29 @@ class MasterEvent(models.Model):
 
             result = self.env['tt.master.event'].sudo().search(limitation)
             to_return = []
+            utc = 7
+            base_url = self.env['ir.config_parameter'].sudo().get_param('web.base.url')
             for i in result:
                 temp_dict = {
                     'id': i.uuid,
                     'name': i.name,
-                    'start_date': i.event_date_start and datetime.strftime(i.event_date_start, '%d %b %Y') or False,
-                    'end_date': i.event_date_end and datetime.strftime(i.event_date_end, '%d %b %Y') or False,
-                    'start_time': i.event_date_start and datetime.strftime(i.event_date_start, '%H:%M') or False,
-                    'end_time': i.event_date_end and datetime.strftime(i.event_date_end, '%H:%M') or False,
+                    'start_date': i.event_date_start and datetime.strftime(i.event_date_start + relativedelta(hours=utc), '%d %b %Y') or False,
+                    'end_date': i.event_date_end and datetime.strftime(i.event_date_end + relativedelta(hours=utc), '%d %b %Y') or False,
+                    'start_time': i.event_date_start and datetime.strftime(i.event_date_start + relativedelta(hours=utc), '%H:%M') or False,
+                    'end_time': i.event_date_end and datetime.strftime(i.event_date_end + relativedelta(hours=utc), '%H:%M') or False,
                     'category': [rec.name for rec in i.category_ids],
                     'locations': [self.format_api_location(loc.id) for loc in i.location_ids],
                     'description': i.description,
                     'itinerary': i.itinerary,
                     'terms_and_condition': i.additional_info,
+                    'includes': i.includes,
+                    'excludes': i.excludes,
                     'provider': i.provider_id.name,
                     'option': [i.format_api_option(opt.id) for opt in i.option_ids],
                     'vendor_obj': {
                         'vendor_id': i.event_vendor_id.id,
                         'vendor_name': i.event_vendor_id.name,
-                        'vendor_logo': i.event_vendor_id.logo or 'https://scontent-cgk1-1.xx.fbcdn.net/v/t1.0-0/c18.0.518.518a/s180x540/185989_166029930116444_3734083_n.jpg?_nc_cat=111&_nc_sid=174925&_nc_ohc=xm9Q9Pbt5fUAX9Trnv-&_nc_ht=scontent-cgk1-1.xx&oh=c15d2a1bf3f35bef744ec4a70780cb95&oe=5EF345FC',
+                        'vendor_logo': i.event_vendor_id.logo and '{}/web/image?model={}&id={}&field={}'.format(base_url, i.event_vendor_id._name, str(i.event_vendor_id.id), 'logo') or '',
                         'vendor_address': i.event_vendor_id.address_ids and {
                             'address': i.event_vendor_id.address_ids[0].address or False,
                             'city': i.event_vendor_id.address_ids[0].city_id and i.event_vendor_id.address_ids[0].city_id.name or False,
@@ -157,7 +161,8 @@ class MasterEvent(models.Model):
                     },
                     'images': [i.format_api_image(img) for img in i.image_ids],
                     # 'age_restriction': i.age_restriction,
-                    'eligible_age': i.eligible_age
+                    'eligible_age': i.eligible_age,
+                    'utc': utc,
                 }
                 # temp_dict = i.format_api()
                 to_return.append(temp_dict)
@@ -289,9 +294,7 @@ class MasterEvent(models.Model):
                 'type': rec.answer_type,
                 'required': rec.is_required,
                 'is_add_other': rec.is_add_other, #Checkbox
-                'answers': [{
-                    'answer': aws.answer
-                } for aws in rec.answer_ids]
+                'answers': rec.answer_type != 'boolean' and [aws.answer for aws in rec.answer_ids] or ['True', 'False'],
             } for rec in res.extra_question_ids]
             return ERR.get_no_error(result)
         except RequestException as e:
@@ -311,14 +314,11 @@ class MasterEvent(models.Model):
         for i in event_obj:
             temp_dict = {
                 'name': i.name,
-                'locations': i.locations,
-                'category': i.categories,
-                'image_url': []
+                'locations': [self.format_api_location(loc.id) for loc in i.location_ids],
+                'category': [rec.name for rec in i.category_ids],
+                'image_url': [j.url for j in i.image_ids]
             }
-            for j in i.image_ids:
-                temp_dict['image_url'].append(j.url)
             result['event'].append(temp_dict)
-
         return ERR.get_no_error(result)
 
     def booking_master_event_from_api(self, req, context):

@@ -21,6 +21,9 @@
                             <field name="booking_id" readonly="1"/>
                             <field name="pnr" readonly="1"/>
                             <field name="provider_id" readonly="1"/>
+                            <field name="total_price"/>
+                            <field name="reconcile_line_id"/>
+                            <field name="reconcile_time"/>
                         </group>
                         <group>
                             <field name="booked_uid" readonly="1"/>

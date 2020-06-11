@@ -3,7 +3,7 @@
 {
     'name' : 'tt_reservation_airline',
     'version' : 'beta',
-    'summary': 'transport dummy airline',
+    'summary': 'Transport Reservation Airline',
     'sequence': 2,
     'description': """
 TT_TRANSPORT

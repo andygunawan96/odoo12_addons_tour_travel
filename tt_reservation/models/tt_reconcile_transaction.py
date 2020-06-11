@@ -32,12 +32,17 @@ class TtReconcileTransaction(models.Model):
     def compare_reconcile_data(self):
         for rec in self.reconcile_lines_ids.filtered(lambda x: x.state == 'not_match'):
             found_rec = self.env['tt.provider.%s' % (self.provider_type_id.code)].search([('pnr','=',rec.pnr),
-                                                                                 ('total_price','=',rec.total)],limit=1)
+                                                                                 ('total_price','=',rec.total),
+                                                                                ('reconcile_line_id','=',False)],limit=1)
             if found_rec:
                 rec.write({
                     'res_model': found_rec._name,
                     'res_id': found_rec.id,
                     'state': 'match'
+                })
+                found_rec.write({
+                    'reconcile_line_id': rec.id,
+                    'reconcile_time': datetime.now()
                 })
 
     def view_filter_tree(self):
@@ -75,7 +80,7 @@ class TtReconcileTransactionLines(models.Model):
     transaction_code = fields.Char('Transaction Code',readonly=True)
     type = fields.Selection([('nta','NTA'),
                              ('insentif','Insentif'),
-                             ('top_up','Top Up')],'Type')
+                             ('top_up','Top Up')],'Type', readonly=True)
     booking_time = fields.Datetime('Booking Time',readonly=True)
     issued_time = fields.Datetime('Issued Time',readonly=True)
     base_price = fields.Monetary('Base Price',readonly=True)
@@ -93,7 +98,7 @@ class TtReconcileTransactionLines(models.Model):
                               ('done','Done'),
                               ('ignore','Ignore')],'State',default='not_match')
     res_model = fields.Char('Ref Model', readonly=True)
-    res_id = fields.Char('Ref ID', readonly=True)
+    res_id = fields.Integer('Ref ID', readonly=True)
 
     def open_reference(self):
         # try:

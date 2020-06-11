@@ -282,15 +282,21 @@
                     <table class="table table-sm" style="text-align:center;">
                         <thead>
                             <tr>
-                                <th>Field 1</th>
-                                <th>Field 2</th>
-                                <th>Field 3</th>
-                                <th>Field 4</th>
-                                <th>Field 5</th>
+                                <th>PNR</th>
+                                <th>Event Name</th>
+                                <th>Event Type</th>
+                                <th>Event Time</th>
                             </tr>
                         </thead>
                         <tbody>
                             <tr>
+                                <td><span t-field="provider_itin_id.pnr"/></td>
+                                <td><span t-field="provider_itin_id.event_id.name"/></td>
+                                <td><span t-field="provider_itin_id.event_id.event_type"/></td>
+                                <td>
+                                    <span t-field="provider_itin_id.event_id.event_date_start" t-options ='{"format": "dd-mm-yyyy HH:MM:SS"}'/>
+                                    - <span t-field="provider_itin_id.event_id.event_date_end" t-options ='{"format": "dd-mm-yyyy HH:MM:SS"}'/>
+                                </td>
                             </tr>
                         </tbody>
                     </table>
@@ -308,6 +314,27 @@
                                 Description
                             </div>
                         </div>
+                        <div style="border: 1px solid #BBB; margin-bottom: 5px; margin-left: 15px; margin-right: 15px"/>
+                        <t t-foreach="doc.option_ids" t-as="option">
+                            <div class="row" style="margin-left: 0px; margin-right: 0px">
+                                <div class="col-5" style="text-align: center;">
+                                    <label style="font-weight:450; font-size:17px; margin-bottom: 0px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                                        <span t-field="option.ticket_number"/>
+                                    </label>
+                                </div>
+                                <div class="col-3" style="text-align: center;">
+                                    <label style="font-weight:450; font-size:17px; margin-bottom: 0px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                                        <span t-field="option.event_option_id.grade"/>
+                                    </label>
+                                </div>
+                                <div class="col-4" style="text-align: center;">
+                                    <label style="font-weight:450; font-size:17px; margin-bottom: 0px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                                        <span t-field="option.description"/>
+                                    </label>
+                                </div>
+                            </div>
+                        </t>
+                        <div style="margin-bottom: 5px"/>
                     </div>
                 </t>
             </div>

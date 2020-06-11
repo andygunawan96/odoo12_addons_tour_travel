@@ -10,7 +10,7 @@
                     <group>
                         <field name="current_invoice_line" invisible="1"/>
                         <field name="current_invoice_name"/>
-                        <field name="dummy_target_invoice" class="oe_edit_only" attrs="{'invisible':[('dummy_target_invoice','=', True)]}"/>
+                        <field name="current_invoice_line_reference" invisible="1"/>
                         <field name="target_invoice_line"/>
                     </group>
                 </group>

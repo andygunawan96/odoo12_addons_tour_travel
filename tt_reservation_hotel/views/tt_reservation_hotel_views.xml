@@ -417,6 +417,7 @@
                 <field name="room_count"/>
                 <!--<field name="nights"/>-->
                 <field name="state"/>
+                <field name="reconcile_state" groups="tt_base.group_tt_accounting_operator"/>
             </tree>
         </field>
     </record>
