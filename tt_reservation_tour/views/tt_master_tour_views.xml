@@ -14,6 +14,7 @@
                     <filter name="group_by_tour_route" string="Tour Route" domain="[]" context="{'group_by':'tour_route'}"/>
                     <filter name="group_by_country_str" string="Countries" domain="[]" context="{'group_by':'country_str'}"/>
                     <filter name="group_by_provider_id" string="Provider" domain="[]" context="{'group_by':'provider_id'}"/>
+                    <filter name="group_by_carrier_id" string="Carrier" domain="[]" context="{'group_by':'carrier_id'}"/>
                     <filter name="group_by_state" string="State" domain="[]" context="{'group_by':'state'}"/>
                 </group>
             </search>
@@ -86,6 +87,7 @@
                         <group>
                             <field name="tour_code" attrs="{'readonly': [('provider_id', '!=', %(tt_reservation_tour.tt_provider_tour_internal)d)]}"/>
                             <field name="provider_id" groups="tt_base.group_tt_tour_travel_operator"/>
+                            <field name="carrier_id" groups="tt_base.group_tt_tour_travel_operator"/>
                             <field name="provider_fare_code" invisible="1" attrs="{'readonly': [('provider_id', '!=', %(tt_reservation_tour.tt_provider_tour_internal)d)]}"/>
                             <field name="currency_id" attrs="{'readonly': [('provider_id', '!=', %(tt_reservation_tour.tt_provider_tour_internal)d)]}"/>
                             <field name="description" attrs="{'readonly': [('provider_id', '!=', %(tt_reservation_tour.tt_provider_tour_internal)d)]}"/>
