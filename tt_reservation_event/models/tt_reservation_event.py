@@ -447,11 +447,17 @@ class ReservationEvent(models.Model):
                 res = resv_obj.to_dict()
                 psg_list = []
                 for i in resv_obj.passenger_ids:
-                    new_i = i.to_dict()
-                    new_i.update({'name': i.option_id.event_option_name})
-                    psg_list.append(new_i)
+                    if list(filter(lambda x: x['name'] == i.option_id.event_option_name, psg_list)):
+                        list(filter(lambda x: x['name'] == i.option_id.event_option_name, psg_list))[0]['qty'] += 1
+                    else:
+                        new_i = i.to_dict()
+                        new_i.update({
+                            'name': i.option_id.event_option_name,
+                            'qty': 1
+                        })
+                        psg_list.append(new_i)
                 res.update({
-                    'passenger': psg_list
+                    'passenger': psg_list,
                 })
                 return ERR.get_no_error(res)
             else:
@@ -460,6 +466,32 @@ class ReservationEvent(models.Model):
         except RequestException as e:
             _logger.error(traceback.format_exc())
             return e.error_dict()
+
+    # def get_booking_from_backend(self, data, context):
+    #     try:
+    #         resv_obj = self.get_book_obj(data.get('order_id'), data.get('order_number'))
+    #         if resv_obj:
+    #             res = resv_obj.to_dict()
+    #             # psg_list = []
+    #             ticket_quantity = {}
+    #             for i in resv_obj.passenger_ids:
+    #                 if ticket_quantity.get(i.option_id.event_option_name):
+    #                     ticket_quantity[str(i.option_id.event_option_name)].append(i.to_dict())
+    #                 else:
+    #                     ticket_quantity[i.option_id.event_option_name] = []
+    #                     ticket_quantity[i.option_id.event_option_name].append(i.to_dict())
+    #                 # psg_list.append(i.to_dict())
+    #             res.update({
+    #                 'passenger': ticket_quantity,
+    #                 # 'ticket': ticket_quantity
+    #             })
+    #             return ERR.get_no_error(res)
+    #         else:
+    #             raise RequestException(1003)
+    #
+    #     except RequestException as e:
+    #         _logger.error(traceback.format_exc())
+    #         return e.error_dict()
 
     def payment_event_api(self, data, context):
         return self.payment_reservation_api('event', data, context)
