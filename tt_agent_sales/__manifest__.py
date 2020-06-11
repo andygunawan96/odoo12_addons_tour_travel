@@ -34,7 +34,7 @@
         'wizard/tt_split_wizard_view.xml',
         'wizard/tt_merge_wizard_view.xml',
         'views/tt_agent_invoice_line.xml',
-        'views/tt_agent_sales_views.xml',
+        'views/tt_agent_invoice.xml',
         'views/tt_payment.xml',
         'data/ir_cron_data.xml'
 

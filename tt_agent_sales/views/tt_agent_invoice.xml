@@ -56,7 +56,7 @@
                     <button name="action_cancel_invoice" string="Cancel Invoice" type="object"
                             groups="tt_base.group_tt_accounting_operator,tt_base.group_tt_agent_finance_manager,base.user_admin"
                             states="confirm,bill,bill2"
-                        confirm="Are you sure you want to cancel?"/>
+                            confirm="Are you sure you want to cancel?"/>
                     <button string="Adjustment" name="%(tt_accounting.tt_adjustment_wizard_action_view)d" type="action"
                             groups="tt_base.group_tt_accounting_operator"
                             context="{
@@ -133,8 +133,12 @@
                                 </field>
                             </page>
                             <page string="Payments">
+                                <field name="id" invisible="1"/>
                                 <field name="payment_ids"
-                                       context="{'tree_view_ref':'tt_agent_sales.tt_payment_invoice_rel_invoice_tree_view'}"/>
+                                       context="{
+                                       'tree_view_ref':'tt_agent_sales.tt_payment_invoice_rel_invoice_tree_view',
+                                       'default_invoice_id': id
+                                       }"/>
                             </page>
                             <page string="Ledgers">
                                 <field name="ledger_ids" context="{'tree_view_ref': 'tt_accounting.tt_ledger_cor_tree_view'}"/>

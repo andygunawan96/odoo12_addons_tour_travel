@@ -204,6 +204,7 @@
                 <field name="issued_date"/>
                 <field name="state_visa"/>
                 <field name="state" invisible="1"/>
+                <field name="reconcile_state" groups="tt_base.group_tt_accounting_operator"/>
             </tree>
         </field>
     </record>

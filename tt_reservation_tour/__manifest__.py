@@ -2,7 +2,7 @@
 {
     'name' : 'tt_reservation_tour',
     'version' : 'beta',
-    'summary': 'transport dummy tour',
+    'summary': 'Transport Reservation Tour',
     'sequence': 2,
 
     'description': """

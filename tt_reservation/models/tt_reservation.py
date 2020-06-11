@@ -98,7 +98,7 @@ class TtReservation(models.Model):
     # total_commission = fields.Monetary(string='Total Commission', default=0, compute="_compute_total_booking", store=True)
     # total_nta = fields.Monetary(string='NTA Amount', compute="_compute_total_booking", store=True)
 
-    sale_service_charge_ids = fields.Char('dummy sale')
+    sale_service_charge_ids = fields.Char('Agent View Service Charge')
 
     total_fare = fields.Monetary(string='Total Fare', default=0, compute="_compute_total_fare",store=True)
     total_tax = fields.Monetary(string='Total Tax', default=0, compute='_compute_total_tax',store=True)

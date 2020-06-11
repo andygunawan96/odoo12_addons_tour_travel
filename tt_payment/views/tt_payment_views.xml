@@ -90,8 +90,6 @@
                             <field name="agent_id"/>
                             <field name="customer_parent_id"/>
                             <field name="create_date"/>
-                            <field name="dummy_acquirer_field" class="oe_edit_only" attrs="{'invisible':[('dummy_acquirer_field','=', True)]}"/>
-                            <!--                            <field name="acquirer_id" domain="acquirer_domain"/>-->
                             <field name="acquirer_id" context="{'form_view_ref':'tt_base.payment_acquirer_form_view_readonly'}"/>
                         </group>
                         <group string="User">
@@ -192,9 +190,6 @@
         <field name="groups_id" eval="[(6, 0, [ref('tt_base.group_tt_agent_user_operator') ])]" />
         <field name="priority">40</field>
         <field name="arch" type="xml">
-            <field name="dummy_acquirer_field" position="replace">
-                <field name="dummy_acquirer_field" class="oe_edit_only" attrs="{'invisible':[('dummy_acquirer_field','=', True)], 'readonly':['|', ('top_up_id','!=', False), ('state','in', ['validated', 'validated2', 'approved'])]}"/>
-            </field>
             <field name="acquirer_id" position="replace">
                 <field name="acquirer_id" context="{'form_view_ref':'tt_base.payment_acquirer_form_view_readonly'}" attrs="{'readonly':['|', ('top_up_id','!=', False), ('state','in', ['validated', 'validated2', 'approved'])]}"/>
             </field>

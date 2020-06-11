@@ -2,7 +2,7 @@
 {
     'name': "tt_reservation_offline",
     'version': 'beta',
-    'summary': 'transport dummy offline',
+    'summary': 'Transport Reservation Offline',
     'sequence': 2,
     'description': """
         Module for Reservation Offline

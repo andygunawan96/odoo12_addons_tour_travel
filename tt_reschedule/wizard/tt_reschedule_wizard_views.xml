@@ -41,7 +41,7 @@
     </record>
 
     <record id="tt_reschedule_wizard_action_view" model="ir.actions.act_window">
-        <field name="name">tt.reschedule.wizard.action.view</field>
+        <field name="name">Reschedule Preview Wizard</field>
         <field name="res_model">tt.reschedule.wizard</field>
         <field name="view_type">form</field>
         <field name="view_mode">form</field>

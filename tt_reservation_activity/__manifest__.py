@@ -3,7 +3,7 @@
 {
     'name' : 'tt_reservation_activity',
     'version' : 'beta',
-    'summary': 'transport dummy activity',
+    'summary': 'Transport Reservation Activity',
     'sequence': 2,
     'description': """
 TT_TRANSPORT

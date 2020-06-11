@@ -19,23 +19,9 @@ class TransportCarrier(models.Model):
     is_favorite = fields.Boolean("Favorite Search", help="Will make this search appear on top of the list")
     is_excluded_from_b2c = fields.Boolean('Excluded From B2C', help='Will Make this search disappear from B2C')
     sequence = fields.Integer("Sequence",default=200)
-    dummy_generate_provider_domain = fields.Boolean("Generate Provider")
-
-    def write(self, vals):
-        vals['dummy_generate_provider_domain'] = False
-        super(TransportCarrier, self).write(vals)
-
-    @api.onchange('dummy_generate_provider_domain', 'carrier_id')
-    def _onchange_domain_target_invoice(self):
-        return {'domain': {
-            'provider_ids': self.get_provider_type_domain()
-        }}
-
-    def get_provider_type_domain(self):
-        return [('provider_type_id','=',self.provider_type_id.id)]
 
     provider_ids = fields.Many2many('tt.provider','tt_transport_provider_rel','search_carrier_id','provider_id','Provider',
-                                    domain=get_provider_type_domain)
+                                    domain="[('provider_type_id','=',provider_type_id)]")
 
     active = fields.Boolean('Active', default=True)
 
@@ -43,12 +29,6 @@ class TransportCarrier(models.Model):
     def _onchange_search_display_name(self):
         if self.carrier_id:
             self.name = self.carrier_id.name
-
-    @api.onchange('carrier_id')
-    def _onchange_domain_agent_id(self):
-        return {'domain': {
-            'provider_ids': self.get_provider_type_domain()
-        }}
 
     def to_dict(self):
         res = self.carrier_id and self.carrier_id.to_dict() or {}
