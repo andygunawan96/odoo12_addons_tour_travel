@@ -138,6 +138,8 @@ class MasterEvent(models.Model):
                     'description': i.description,
                     'itinerary': i.itinerary,
                     'terms_and_condition': i.additional_info,
+                    'includes': i.includes,
+                    'excludes': i.excludes,
                     'provider': i.provider_id.name,
                     'option': [i.format_api_option(opt.id) for opt in i.option_ids],
                     'vendor_obj': {
