@@ -94,6 +94,8 @@ class ReservationEvent(models.Model):
     option_ids = fields.One2many('tt.reservation.event.option', 'booking_id', 'Options')
     # extra_question_ids = fields.One2many('tt.reservation.event.extra.question', 'reservation_id', 'Extra Question')
 
+    printout_vendor_invoice_id = fields.Many2one('tt.upload.center', 'Vendor Invoice', readonly=True)
+
     def get_form_id(self):
         return self.env.ref("tt_reservation_event.tt_reservation_event_form_view")
 
@@ -445,7 +447,9 @@ class ReservationEvent(models.Model):
                 res = resv_obj.to_dict()
                 psg_list = []
                 for i in resv_obj.passenger_ids:
-                    psg_list.append(i.to_dict())
+                    new_i = i.to_dict()
+                    new_i.update({'name': i.option_id.event_option_name})
+                    psg_list.append(new_i)
                 res.update({
                     'passenger': psg_list
                 })
