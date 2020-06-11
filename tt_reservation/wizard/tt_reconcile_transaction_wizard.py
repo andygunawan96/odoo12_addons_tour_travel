@@ -7,15 +7,13 @@ class TtReconcileTransactionWizard(models.TransientModel):
     _description = 'Rodex Wizard Reconcile Transaction Wizard'
 
     provider_type_id = fields.Many2one('tt.provider.type', 'Provider Type')
-    provider_id = fields.Many2one('tt.provider', 'Provider')
+    provider_id = fields.Many2one('tt.provider', 'Provider', domain="[('provider_type_id', '=', provider_type_id)]")
     date_from = fields.Date('Date')
     date_to = fields.Date('Date')
 
     @api.onchange('provider_type_id')
     def _onchange_domain_agent_id(self):
-        return {'domain': {
-            'provider_id': "[('provider_type_id', '=', provider_type_id)]"
-        }}
+        self.provider_id = False
 
     @api.onchange('date_from')
     def _onchange_date_from(self):

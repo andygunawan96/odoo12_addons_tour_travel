@@ -1,20 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
 
-    <record id="tt_reconcile_transaction_wizard_form_view" model="ir.ui.view">
-        <field name="name">Reconcile Transaction Wizard</field>
-        <field name="model">tt.reconcile.transaction.wizard</field>
+    <record id="tt_reconcile_manual_match_wizard_form_view" model="ir.ui.view">
+        <field name="name">Reconcile Manual Match Wizard</field>
+        <field name="model">tt.reconcile.manual.match.wizard</field>
         <field name="arch" type="xml">
-            <form string="Reconcile Transaction Wizard">
+            <form string="Reconcile Manual Match Wizard">
                 <group>
-                    <field name="provider_type_id"/>
-                    <field name="provider_id"/>
-                    <field name="date_from"/>
-                    <field name="date_to"/>
+                    <field name="current_record_pnr"/>
+                    <field name="current_total_price"/>
+                    <field name="provider_selection"/>
+<!--                    <button name="open_reference" type="object" string="Open Reference"/>-->
                 </group>
                 <footer>
-                    <button name="send_recon_request_data" string="Submit" type="object" default_focus="1" class="oe_highlight"/>
-<!--                    <button name="dummy_send_recon" string="Dummy Send" type="object"/>-->
+                    <button name="match_data" string="Submit" type="object" default_focus="1" class="oe_highlight"/>
+                    <!--                    <button name="dummy_send_recon" string="Dummy Send" type="object"/>-->
                     or
                     <button string="Cancel" class="oe_link" special="cancel" />
                 </footer>
@@ -22,18 +22,18 @@
         </field>
     </record>
 
-    <record id="tt_reconcile_transaction_wizard_action_view" model="ir.actions.act_window">
-        <field name="name">Reconcile Transaction Wizard</field>
-        <field name="res_model">tt.reconcile.transaction.wizard</field>
+    <record id="tt_reconcile_manual_match_wizard_action_view" model="ir.actions.act_window">
+        <field name="name">Reconcile Manual Match Wizard</field>
+        <field name="res_model">tt.reconcile.manual.match.wizard</field>
         <field name="view_type">form</field>
         <field name="view_mode">form</field>
         <field name="target">new</field>
     </record>
 
-    <menuitem id="tt_reconcile_transaction_wizard"
-              parent="tt_reservation.menu_transaction_accounting_reconcile"
-              groups="tt_base.group_tt_accounting_operator"
-              name="Get Reconcile Data"
-              sequence="40"
-              action="tt_reconcile_transaction_wizard_action_view"/>
+<!--    <menuitem id="tt_reconcile_manual_match_wizard"-->
+<!--              parent="tt_reservation.menu_transaction_accounting_reconcile"-->
+<!--              groups="tt_base.group_tt_accounting_operator"-->
+<!--              name="Get Reconcile Data"-->
+<!--              sequence="40"-->
+<!--              action="tt_reconcile_transaction_wizard_action_view"/>-->
 </odoo>

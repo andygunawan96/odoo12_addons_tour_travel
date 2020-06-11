@@ -2,84 +2,59 @@ from odoo import api,models,fields
 from datetime import datetime
 from odoo.exceptions import UserError
 
-class TtReconcileTransactionWizard(models.TransientModel):
-    _name = "tt.reconcile.transaction.wizard"
-    _description = 'Rodex Wizard Reconcile Transaction Wizard'
+class TtReconcileManualMatchWizard(models.TransientModel):
+    _name = "tt.reconcile.manual.match.wizard"
+    _description = 'Rodex Wizard Reconcile Manual Match Wizard'
 
-    current_record_pnr = fields.Char('Current PNR')
-    current_total_price = fields.Monetary('Current Total Price')
-    provider_type_id = fields.Many2one('tt.provider.type')
-    
+    current_record_pnr = fields.Char('Current PNR', readonly=True)
+    current_total_price = fields.Monetary('Current Total Price',readonly=True)
+    currency_id = fields.Many2one('res.currency', default=lambda self: self.env.user.company_id.currency_id)
 
-    @api.onchange('provider_type_id')
-    def _onchange_domain_agent_id(self):
-        return {'domain': {
-            'provider_id': "[('provider_type_id', '=', provider_type_id)]"
-        }}
+    provider_selection = fields.Selection(lambda self: self._compute_provider_selection(),'Provider Selection')
 
-    @api.onchange('date_from')
-    def _onchange_date_from(self):
-        self.date_to = self.date_from
+    def _compute_provider_selection(self):
+        try:
+            provider_type = self.env['tt.provider.%s' % (self._context['default_provider_type_code'])].search([
+                ('reconcile_line_id','=',False)
+            ])
+            selection = []
+            for rec in provider_type:
+                selection.append((rec.id,'%s - %s' % (rec.pnr or '######',rec.total_price)))
+            return selection
+        except:
+            return []
 
-    def send_recon_request_data(self):
-        request = {
-            'provider_type': self.provider_type_id.code,
-            'data': {
-                'provider': self.provider_id.code,
-                'date_from': self.date_from and datetime.strftime(self.date_from,'%Y-%m-%d') or '',
-                'date_to': self.date_to and datetime.strftime(self.date_to,'%Y-%m-%d') or ''
-            }
+    # def match_data(self):
+    #     if not self.provider_selection:
+    #         raise UserError('Please Select Provider First')
+    #
+    #     self.write({
+    #         'res_model': found_rec._name,
+    #         'res_id': found_rec.id,
+    #         'state': 'match'
+    #     })
+    #     found_rec.write({
+    #         'reconcile_line_id': rec.id,
+    #         'reconcile_time': datetime.now()
+    #     })
+
+    def open_reference(self):
+        if not self.provider_selection:
+            raise UserError('Please Select Provider First')
+
+        res_model = 'tt.provider.%s' % (self._context['default_provider_type_code'])
+        form_id = self.env['ir.ui.view'].search([('type', '=', 'form'),
+                                                 ('model', '=', res_model)], limit=1)
+        form_id = form_id[0] if form_id else False
+
+        return {
+            'type': 'ir.actions.act_window',
+            'name': 'Provider',
+            'res_model': res_model,
+            'res_id': int(self.provider_selection),
+            'view_type': 'form',
+            'view_mode': 'form',
+            'view_id': form_id.id,
+            'context': {},
+            'target': 'new',
         }
-        response = self.env['tt.api.con'].send_reconcile_request(request)
-        if response['error_code'] != 0:
-            raise UserError(response['error_msg'])
-        self.save_reconcile_data(response['response'])
-
-    def dummy_send_recon(self):
-        request = {
-            'provider_type': 'train',
-            'data': {
-                'provider': 'kai',
-                'date_from': '2020-02-10',
-                'date_to': '2020-02-11'
-            }
-        }
-        recon_resp = self.env['tt.api.con'].send_reconcile_request(request)
-        if recon_resp['error_code'] != 0:
-            raise UserError("Failed")
-        self.save_reconcile_data(recon_resp['response'])
-
-    def save_reconcile_data(self,data):
-        provider_obj = self.env['tt.provider'].search([('code','=',data['provider_code'])])
-        if not provider_obj:
-            raise UserError("Provider Not Found")
-
-        for period in data['transaction_periods']:
-            existing_recon_data = self.env['tt.reconcile.transaction'].search([('provider_id','=',provider_obj.id),
-                                                                               ('transaction_date','=',period['transaction_date'])])
-            if existing_recon_data:
-                recon_data = existing_recon_data
-            else:
-                recon_data = self.env['tt.reconcile.transaction'].create({
-                    'provider_id': provider_obj.id,
-                    'transaction_date': period['transaction_date']
-                })
-
-            write_data = []
-            for transaction in period['transactions']:
-                trans_lines = recon_data.reconcile_lines_ids.filtered(lambda x: x.pnr == transaction['pnr'])
-                if trans_lines:
-                    if trans_lines[0].total == transaction['total'] or trans_lines[0].state == 'match':
-                        continue
-                    else:
-                        write_data.append((1,trans_lines[0].id,transaction))
-                else:
-                    if transaction['type'] == 'nta':
-                        transaction['state'] = 'not_match'
-                    else:
-                        transaction['state'] = 'done'
-                    write_data.append((0,0,transaction))
-
-            recon_data.write({
-                'reconcile_lines_ids': write_data
-            })

@@ -75,11 +75,20 @@
                     <button name="unignore_recon_line_from_button" type="object" string="Unignore"
                             attrs="{'invisible':[('state','!=', 'ignore')]}"
                             groups="tt_base.group_tt_accounting_operator"/>
+                    <button name="%(tt_reservation.tt_reconcile_manual_match_wizard_action_view)d"
+                            string="Manual Match" type="action" states="not_match"
+                    context="{
+                        'default_current_record_pnr': pnr,
+                        'default_current_total_price': total,
+                        'default_currency_id': currency_id,
+                        'default_provider_type_code': provider_type_code
+                    }"/>
                     <field name="state" widget="statusbar" statusbar_visible="not_match,match"/>
                 </header>
                 <sheet>
                     <group>
                         <group>
+                            <field name="provider_type_code" invisible="1"/>
                             <field name="agent_name"/>
                             <field name="pnr"/>
                             <field name="transaction_code"/>
