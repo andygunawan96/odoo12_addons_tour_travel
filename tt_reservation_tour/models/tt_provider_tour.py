@@ -20,6 +20,9 @@ class TtProviderTour(models.Model):
     pnr = fields.Char('PNR')
     pnr2 = fields.Char('PNR2')
     provider_id = fields.Many2one('tt.provider','Provider')
+    carrier_id = fields.Many2one('tt.transport.carrier', 'Carrier')
+    carrier_code = fields.Char('Carrier Code')
+    carrier_name = fields.Char('Carrier Name')
     state = fields.Selection(variables.BOOKING_STATE, 'Status', default='draft')
     booking_id = fields.Many2one('tt.reservation.tour', 'Order Number', ondelete='cascade')
     balance_due = fields.Float('Balance Due')
@@ -363,9 +366,6 @@ class TtProviderTour(models.Model):
             return ERR.get_error(1013)
 
     def to_dict(self):
-        journey_list = []
-        for rec in self.journey_ids:
-            journey_list.append(rec.to_dict())
         ticket_list = []
         for rec in self.ticket_ids:
             ticket_list.append(rec.to_dict())
@@ -374,7 +374,8 @@ class TtProviderTour(models.Model):
             'pnr2': self.pnr2 and self.pnr2 or '',
             'provider': self.provider_id.code,
             'provider_id': self.id,
-            'state': self.state,
+            'tour_name': self.tour_id.name,
+            'tour_code': self.tour_id.tour_code,
             'state_description': variables.BOOKING_STATE_STR[self.state],
             'sequence': self.sequence,
             'balance_due': self.balance_due,
@@ -383,7 +384,6 @@ class TtProviderTour(models.Model):
             'destination': self.destination_id.code,
             'departure_date': self.departure_date,
             'arrival_date': self.arrival_date,
-            'journeys': journey_list,
             'currency': self.currency_id.name,
             'hold_date': self.hold_date and self.hold_date or '',
             'tickets': ticket_list,

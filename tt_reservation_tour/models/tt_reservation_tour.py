@@ -387,6 +387,7 @@ class ReservationTour(models.Model):
             tour_data = tour_data[0]
             pricelist_id = tour_data.id
             provider_id = tour_data.provider_id
+            carrier_id = tour_data.carrier_id
             total_all_pax = int(data.get('adult')) + int(data.get('child')) + int(data.get('infant'))
             if tour_data.seat - total_all_pax < 0:
                 raise RequestException(1004, additional_message='Not enough seats. Seats available: %s/%s' % (tour_data.seat, tour_data.quota,))
@@ -451,13 +452,22 @@ class ReservationTour(models.Model):
                     })
                     self.env['tt.reservation.tour.room'].sudo().create(room)
 
+                balance_due = 0
+                for temp_sc in pricing:
+                    if temp_sc['charge_type'] not in ['ROC', 'RAC']:
+                        balance_due += temp_sc['pax_count'] * temp_sc['amount']
+
                 provider_tour_vals = {
                     'booking_id': booking_obj.id,
                     'tour_id': pricelist_id,
                     'provider_id': provider_id.id,
-                    'departure_date': tour_data['departure_date'],
-                    'arrival_date': tour_data['arrival_date'],
-                    # 'balance_due': req['amount'],
+                    'carrier_id': carrier_id.id,
+                    'carrier_code': carrier_id.code,
+                    'carrier_name': carrier_id.name,
+                    'departure_date': tour_data.departure_date,
+                    'arrival_date': tour_data.arrival_date,
+                    'balance_due': balance_due,
+                    'total_price': balance_due,
                 }
 
                 provider_tour_obj = self.env['tt.provider.tour'].sudo().create(provider_tour_vals)
