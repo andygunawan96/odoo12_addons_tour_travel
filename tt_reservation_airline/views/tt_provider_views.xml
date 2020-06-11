@@ -41,6 +41,9 @@
                             <field name="balance_due"/>
                             <field name="total_price"/>
                             <field name="penalty_amount"/>
+                            <field name="penalty_currency"/>
+                            <field name="reconcile_line_id"/>
+                            <field name="reconcile_time"/>
                         </group>
                         <group>
                             <field name="hold_date"/>
@@ -75,8 +78,8 @@
                     <field name="ticket_ids">
                         <tree>
                             <field name="passenger_id"/>
+                            <field name="loyalty_program_id"/>
                             <field name="ff_number"/>
-                            <field name="ff_code"/>
                             <field name="ticket_number"/>
                         </tree>
                     </field>

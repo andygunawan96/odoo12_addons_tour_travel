@@ -55,6 +55,11 @@ class TtProviderActivity(models.Model):
 
     total_price = fields.Float('Total Price', readonly=True, default=0)
 
+    #reconcile purpose#
+    reconcile_line_id = fields.Many2one('tt.reconcile.transaction.lines','Reconciled')
+    reconcile_time = fields.Datetime('Reconcile Time')
+    ##
+
     def action_reverse_ledger_from_button(self):
         if self.state == 'fail_refunded':
             raise UserError("Cannot refund, this PNR has been refunded.")
@@ -154,8 +159,6 @@ class TtProviderActivity(models.Model):
             ticket_list.append((0, 0, {
                 'pax_type': psg.get('pax_type'),
                 'ticket_number': psg.get('ticket_number', ''),
-                'ff_number': psg.get('ff_number', ''),
-                'ff_code': psg.get('ff_code', ''),
                 'passenger_id': psg_with_no_ticket[idx].id
             }))
 
@@ -182,8 +185,6 @@ class TtProviderActivity(models.Model):
             self.write({
                 'ticket_ids': [(0,0,{
                     'ticket_number': psg.get('ticket_number', ''),
-                    'ff_number': psg.get('ff_number', ''),
-                    'ff_code': psg.get('ff_code', ''),
                     'pax_type': psg.get('pax_type'),
                 })]
             })

@@ -138,6 +138,8 @@ class MasterEvent(models.Model):
                     'description': i.description,
                     'itinerary': i.itinerary,
                     'terms_and_condition': i.additional_info,
+                    'includes': i.includes,
+                    'excludes': i.excludes,
                     'provider': i.provider_id.name,
                     'option': [i.format_api_option(opt.id) for opt in i.option_ids],
                     'vendor_obj': {
@@ -292,9 +294,7 @@ class MasterEvent(models.Model):
                 'type': rec.answer_type,
                 'required': rec.is_required,
                 'is_add_other': rec.is_add_other, #Checkbox
-                'answers': [{
-                    'answer': aws.answer
-                } for aws in rec.answer_ids]
+                'answers': rec.answer_type != 'boolean' and [aws.answer for aws in rec.answer_ids] or ['True', 'False'],
             } for rec in res.extra_question_ids]
             return ERR.get_no_error(result)
         except RequestException as e:
@@ -314,14 +314,11 @@ class MasterEvent(models.Model):
         for i in event_obj:
             temp_dict = {
                 'name': i.name,
-                'locations': i.locations,
-                'category': i.categories,
-                'image_url': []
+                'locations': [self.format_api_location(loc.id) for loc in i.location_ids],
+                'category': [rec.name for rec in i.category_ids],
+                'image_url': [j.url for j in i.image_ids]
             }
-            for j in i.image_ids:
-                temp_dict['image_url'].append(j.url)
             result['event'].append(temp_dict)
-
         return ERR.get_no_error(result)
 
     def booking_master_event_from_api(self, req, context):

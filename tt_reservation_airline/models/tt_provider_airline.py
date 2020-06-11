@@ -63,7 +63,13 @@ class TtProviderAirline(models.Model):
     reschedule_uid = fields.Many2one('res.users', 'Rescheduled By')
     reschedule_date = fields.Datetime('Rescheduled Date')
     total_price = fields.Float('Total Price', readonly=True, default=0)
+    penalty_currency = fields.Char('Penalty Currency', default='')
     # END
+
+    #reconcile purpose#
+    reconcile_line_id = fields.Many2one('tt.reconcile.transaction.lines','Reconciled')
+    reconcile_time = fields.Datetime('Reconcile Time')
+    ##
 
     ##button function
     def action_set_to_issued_from_button(self, payment_data={}):
@@ -187,8 +193,10 @@ class TtProviderAirline(models.Model):
     # May 11, 2020 - SAM
     def set_provider_detail_info(self, provider_data):
         values = {}
-        for key in ['pnr', 'pnr2', 'reference', 'balance_due', 'balance_due_str', 'total_price']:
-            if not provider_data.get(key):
+        provider_data_keys = [key for key in provider_data.keys()]
+        for key in ['pnr', 'pnr2', 'reference', 'balance_due', 'balance_due_str', 'total_price', 'penalty_amount', 'penalty_currency']:
+            # if not provider_data.get(key):
+            if key not in provider_data_keys:
                 continue
             values[key] = provider_data[key]
             if key == 'pnr':
@@ -262,13 +270,17 @@ class TtProviderAirline(models.Model):
                 'cancel_date': fields.Datetime.now(),
             })
 
-    def action_void_api_airline(self, api_context):
+    def action_void_api_airline(self, provider_data, api_context):
         for rec in self:
-            rec.write({
+            values = {
                 'state': 'void',
                 'cancel_uid': api_context['co_uid'],
                 'cancel_date': fields.Datetime.now(),
-            })
+            }
+            provider_values = rec.set_provider_detail_info(provider_data)
+            if provider_values:
+                values.update(provider_values)
+            rec.write(values)
 
     def action_issued_pending_api_airline(self, api_context):
         for rec in self:
@@ -278,13 +290,17 @@ class TtProviderAirline(models.Model):
                 'issued_date': fields.Datetime.now(),
             })
 
-    def action_refund_api_airline(self, api_context):
+    def action_refund_api_airline(self, provider_data, api_context):
         for rec in self:
-            rec.write({
+            values = {
                 'state': 'refund',
                 'refund_uid': api_context['co_uid'],
                 'refund_date': fields.Datetime.now(),
-            })
+            }
+            provider_values = rec.set_provider_detail_info(provider_data)
+            if provider_values:
+                values.update(provider_values)
+            rec.write(values)
 
     def action_rescheduled_api_airline(self, api_context):
         for rec in self:
@@ -507,11 +523,15 @@ class TtProviderAirline(models.Model):
             for ticket in self.ticket_ids:
                 psg_name = ticket.passenger_id.name.replace(' ','').lower()
                 if ('%s%s' % (psg['first_name'], psg['last_name'])).replace(' ','').lower() in [psg_name, psg_name*2] and not ticket.ticket_number or (psg.get('ticket_number') and ticket.ticket_number == psg.get('ticket_number')):
-                    ticket.write({
-                        'ticket_number': psg.get('ticket_number',''),
-                        'ff_number': psg.get('ff_number',''),
-                        'ff_code': psg.get('ff_code',''),
-                    })
+                    ticket_values = {
+                        'ticket_number': psg.get('ticket_number', ''),
+                        'ff_number': psg.get('ff_number', ''),
+                    }
+                    # if ticket_values['ff_code']:
+                    #     loyalty_id = self.env['tt.loyalty.program'].sudo().get_id(ticket_values['ff_code'])
+                    #     if loyalty_id:
+                    #         ticket_values['loyalty_program_id'] = loyalty_id
+                    ticket.write(ticket_values)
                     ticket_found = True
                     ticket.passenger_id.is_ticketed = True
                     break
@@ -529,11 +549,14 @@ class TtProviderAirline(models.Model):
             ticket_values = {
                 'ticket_number': psg.get('ticket_number'),
                 'ff_number': psg.get('ff_number', ''),
-                'ff_code': psg.get('ff_code', ''),
                 'pax_type': psg.get('pax_type'),
             }
             if psg.get('passenger_id'):
                 ticket_values['passenger_id'] = psg['passenger_id']
+            # if ticket_values['ff_code']:
+            #     loyalty_id = self.env['tt.loyalty.program'].sudo().get_id(ticket_values['ff_code'])
+            #     if loyalty_id:
+            #         ticket_values['loyalty_program_id'] = loyalty_id
             self.write({
                 'ticket_ids': [(0, 0, ticket_values)]
             })
@@ -674,6 +697,7 @@ class TtProviderAirline(models.Model):
             'reference': self.reference,
             'total_price': self.total_price,
             'penalty_amount': self.penalty_amount,
+            'penalty_currency': self.penalty_currency and self.penalty_currency or '',
             'is_force_issued': self.booking_id.is_force_issued,
             'is_halt_process': self.booking_id.is_halt_process,
             # END

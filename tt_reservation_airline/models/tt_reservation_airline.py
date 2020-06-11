@@ -47,10 +47,19 @@ class ReservationAirline(models.Model):
     def get_form_id(self):
         return self.env.ref("tt_reservation_airline.tt_reservation_airline_form_views")
 
+    @api.depends('provider_booking_ids','provider_booking_ids.reconcile_line_id')
+    def _compute_reconcile_state(self):
+        for rec in self:
+            if all(rec1.reconcile_line_id.id != False for rec1 in rec.provider_booking_ids):
+                rec.reconcile_state = 'reconciled'
+            elif any(rec1.reconcile_line_id.id != False for rec1 in rec.provider_booking_ids):
+                rec.reconcile_state = 'partial'
+            else:
+                rec.reconcile_state = 'not_reconciled'
+
     @api.depends('segment_ids')
     def _compute_sector_type(self):
         for rec in self:
-            sector_type = "Domestic"
             destination_country_list = []
             for segment in rec.segment_ids:
                 destination_country_list.append(segment.origin_id.country_id.id)
@@ -386,6 +395,10 @@ class ReservationAirline(models.Model):
                             'passenger_id': psg_obj.id,
                             'provider_id': prov.id,
                         }
+                        if ff['ff_code']:
+                            loyalty_id = self.env['tt.loyalty.program'].sudo().get_id(ff_values['ff_code'])
+                            if loyalty_id:
+                                ff_values['loyalty_program_id'] = loyalty_id
                         psg_obj.frequent_flyer_ids.create(ff_values)
             # END
 
@@ -605,13 +618,13 @@ class ReservationAirline(models.Model):
                     provider_obj.action_cancel_pending_api_airline(context)
                     any_provider_changed = True
                 elif provider['status'] == 'VOID':
-                    provider_obj.action_void_api_airline(context)
+                    provider_obj.action_void_api_airline(provider, context)
                     any_provider_changed = True
                 elif provider['status'] == 'VOID_PENDING':
                     provider_obj.action_void_pending_api_airline(context)
                     any_provider_changed = True
                 elif provider['status'] == 'REFUND':
-                    provider_obj.action_refund_api_airline(context)
+                    provider_obj.action_refund_api_airline(provider, context)
                     any_provider_changed = True
                 elif provider['status'] == 'FAIL_VOID':
                     provider_obj.action_failed_void_api_airline(provider_obj['error_code'], provider_obj['error_msg'])

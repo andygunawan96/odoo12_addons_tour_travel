@@ -407,6 +407,94 @@ class PrintoutPPOBBillsForm(models.AbstractModel):
         return vals
 
 
+class PrintoutInvoiceVendor(models.AbstractModel):
+    _name = 'report.tt_report_common.printout_invoice_vendor'
+    _description = 'Rodex Model'
+
+    def get_invoice_data(self, rec, context, data):
+        invoice_data = {}
+        if rec.provider_booking_ids:
+            for provider in rec.provider_booking_ids:
+                pnr = provider.pnr if provider.pnr else '-'
+                if not invoice_data.get(pnr):
+                    invoice_data[pnr] = {'model': rec._name, 'pax_data': [], 'descs': [], 'provider_type': ''}
+                invoice_data[pnr]['descs'].append(self.get_description(provider, data))
+                invoice_data[pnr]['provider_type'] = rec.provider_type_id.name
+                pax_dict = self.get_pax_dict(rec, provider)
+                for psg in pax_dict:
+                    invoice_data[pnr]['pax_data'].append(pax_dict[psg])
+        return invoice_data
+
+    def get_description(self, rec, data, line=None):
+        desc = ''
+        if data['context']['active_model'] == 'tt.reservation.event':
+            desc += 'Event : ' + rec.event_id.name + '<br/>'
+            desc += 'Location : ' + '<br/>'
+            for location in rec.event_id.location_ids:
+                desc += (location.name if location.name else '') + ', ' + \
+                        (location.address if location.address else '') + ', ' + \
+                        (location.city_id.name if location.city_id.name else '') + ', ' + \
+                        (location.country_id.name if location.country_id.name else '') + '<br/>'
+            desc += 'Booker : ' + (rec.booking_id.booker_id.name if rec.booking_id.booker_id.name else '') + '<br/>'
+            desc += 'Contact Person : ' + (rec.booking_id.contact_title if rec.booking_id.contact_title else '') + '<br/>'
+            desc += 'Contact Email : ' + (rec.booking_id.contact_email if rec.booking_id.contact_email else '') + '<br/>'
+            desc += 'Contact Phone : ' + (rec.booking_id.contact_phone if rec.booking_id.contact_phone else '') + '<br/>'
+        return desc
+
+    def get_pax_dict(self, rec, provider, add=None):
+        pax_dict = {}
+        if rec._name == 'tt.reservation.event':
+            for psg in rec.passenger_ids:
+                pax_dict[psg.id] = {}
+                pax_dict[psg.id]['name'] = psg.option_id.event_option_name
+                pax_dict[psg.id]['total'] = 0
+                for csc in psg.cost_service_charge_ids:
+                    if csc.charge_type != 'RAC':
+                        pax_dict[psg.id]['total'] += csc.total
+        return pax_dict
+
+    def compute_terbilang_from_objs(self, recs, currency_str='rupiah'):
+        a = {}
+        for rec2 in recs:
+            a.update({rec2.name: num2words(rec2.total) + ' Rupiah'})
+        return a
+
+    def _get_report_values(self, docids, data=None):
+        if not data.get('context'):
+            internal_model_id = docids.pop(0)
+            data['context'] = {}
+            if internal_model_id == 1:
+                data['context']['active_model'] = 'tt.reservation.airline'
+            elif internal_model_id == 2:
+                data['context']['active_model'] = 'tt.reservation.train'
+            elif internal_model_id == 3:
+                data['context']['active_model'] = 'tt.reservation.hotel'
+            elif internal_model_id == 4:
+                data['context']['active_model'] = 'tt.reservation.activity'
+            elif internal_model_id == 5:
+                data['context']['active_model'] = 'tt.reservation.tour'
+            data['context']['active_ids'] = docids
+        values = {}
+        for rec in self.env[data['context']['active_model']].browse(data['context']['active_ids']):
+            values[rec.id] = []
+            a = {}
+            pax_data = self.get_invoice_data(rec, data.get('context'), data)
+            values[rec.id].append(pax_data)
+        vals = {
+            'doc_ids': data['context']['active_ids'],
+            'doc_model': data['context']['active_model'],
+            'doc_type': 'vendor_invoice',
+            'docs': self.env[data['context']['active_model']].browse(data['context']['active_ids']),
+            'price_lines': values,
+            'inv_lines': values,
+            'terbilang': self.compute_terbilang_from_objs(
+                self.env[data['context']['active_model']].browse(data['context']['active_ids'])),
+            'base_color': self.sudo().env['ir.config_parameter'].get_param('tt_base.website_default_color',
+                                                                           default='#FFFFFF'),
+        }
+        return vals
+
+
 class PrintoutInvoiceHO(models.AbstractModel):
     _name = 'report.tt_report_common.printout_invoice_ho'
     _description = 'Rodex Model'
@@ -601,10 +689,12 @@ class PrintoutInvoiceHO(models.AbstractModel):
                 pax_dict[period]['name'] = provider.transaction_name
                 pax_dict[period]['total'] = provider.ppob_bill_ids[0].fare_amount
         if rec._name == 'tt.reservation.event':
-            for option in rec.option_ids:
-                pax_dict[option.id] = {}
-                pax_dict[option.id]['name'] = option.event_option_id.grade
-                pax_dict[option.id]['total'] = option.event_option_id.price
+            for psg in rec.passenger_ids:
+                pax_dict[psg.id] = {}
+                pax_dict[psg.id]['name'] = psg.option_id.event_option_name
+                pax_dict[psg.id]['total'] = 0
+                for csc in psg.cost_service_charge_ids:
+                    pax_dict[psg.id]['total'] += csc.total
         return pax_dict
 
     def compute_terbilang_from_objs(self, recs, currency_str='rupiah'):
@@ -723,6 +813,7 @@ class PrintoutInvoiceHO(models.AbstractModel):
         vals = {
             'doc_ids': data['context']['active_ids'],
             'doc_model': data['context']['active_model'],
+            'doc_type': 'ho_invoice',
             'docs': self.env[data['context']['active_model']].browse(data['context']['active_ids']),
             'price_lines': values,
             'inv_lines': values,
@@ -1310,6 +1401,7 @@ class PrintoutEventIteneraryForm(models.AbstractModel):
                     a[rec2.pax_type]['qty'] = rec2.pax_count
                 elif rec2.charge_type.lower() in ['roc', 'tax']:
                     a[rec2.pax_type]['tax'] += rec2.amount
+            values[rec.id] = [a[new_a] for new_a in a]
         return {
             'doc_ids': data['context']['active_ids'],
             'doc_model': data['context']['active_model'],

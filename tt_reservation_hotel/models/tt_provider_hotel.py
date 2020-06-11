@@ -51,6 +51,11 @@ class TransportBookingProvider(models.Model):
 
     total_price = fields.Float('Total Price', readonly=True, default=0)
 
+    #reconcile purpose#
+    reconcile_line_id = fields.Many2one('tt.reconcile.transaction.lines','Reconciled')
+    reconcile_time = fields.Datetime('Reconcile Time')
+    ##
+
     def action_reverse_ledger_from_button(self):
         if self.state == 'fail_refunded':
             raise UserError("Cannot refund, this PNR has been refunded.")

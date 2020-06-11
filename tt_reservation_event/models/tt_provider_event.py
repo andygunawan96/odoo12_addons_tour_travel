@@ -43,12 +43,18 @@ class TtProviderEvent(models.Model):
     expired_date = fields.Datetime('Expired Date')
 
     # ticket_ids = fields.One2many('tt.ticket.event', 'provider_id', 'Ticket Number')
+    passenger_ids = fields.One2many('tt.reservation.passenger.event', 'provider_id', 'Passenger(s)')
 
     error_history_ids = fields.One2many('tt.reservation.err.history', 'res_id', 'Error history')
 
     notes = fields.Text('Notes', readonly=True, states={'draft': [('readonly', False)]})
 
     total_price = fields.Float('Total Price', readonly=True, default=0)
+
+    #reconcile purpose#
+    reconcile_line_id = fields.Many2one('tt.reconcile.transaction.lines','Reconciled')
+    reconcile_time = fields.Datetime('Reconcile Time')
+    ##
 
     def action_create_ledger(self, issued_uid, pay_method=None):
         return self.env['tt.ledger'].action_create_ledger(self, issued_uid)

@@ -53,6 +53,14 @@ class ProviderOffline(models.Model):
 
     notes = fields.Text('Notes', readonly=True, states={'draft': [('readonly', False)]})
 
+    total_price = fields.Float('Total Price', readonly=True, default=0)
+
+    #reconcile purpose#
+    reconcile_line_id = fields.Many2one('tt.reconcile.transaction.lines','Reconciled')
+    reconcile_time = fields.Datetime('Reconcile Time')
+    ##
+
+
     def action_refund(self, check_provider_state=False):
         self.state = 'refund'
         if check_provider_state:

@@ -72,6 +72,10 @@
                             class="oe_stat_button" states="issued,done"
                             string="Print Invoice (HO)" type="object" icon="fa-print"
                             groups="tt_base.group_tt_tour_travel_operator"/>
+                    <button name="print_vendor_invoice"
+                            class="oe_stat_button" states="issued,done"
+                            string="Print Invoice (Vendor)" type="object" icon="fa-print"
+                            groups="tt_base.group_tt_external_vendor_operator"/>
                     <button name="print_itinerary"
                             class="oe_stat_button" states="paid,pending,issued"
                             string="Print Itinerary" type="object" icon="fa-print"/>
@@ -93,8 +97,10 @@
                 </group>
                 <separator string="Event Information"/>
                 <group>
-                    <field name="event_id" string="Event" readonly="0"/>
-                    <field name="event_name" string="Name"/>
+                    <field name="event_id" string="Event" readonly="0" attrs="{'invisible': [('event_id', '!=', False)]}"/>
+                    <field name="event_name" string="Event" attrs="{'invisible': [('event_id', '!=', False)]}"/>
+                    <field name="event_vendor_id" string="Vendor" attrs="{'invisible': [('event_vendor_id', '!=', False)]}"/>
+                    <field name="event_vendor" string="Vendor" attrs="{'invisible': [('event_vendor_id', '!=', False)]}"/>
                     <field name="event_product_uuid" string="Event UUID" groups="tt_base.group_tt_tour_travel_operator"/>
                 </group>
             </xpath>
@@ -127,8 +133,7 @@
                         </form>
                     </field>
                 </page>
-            </xpath>
-            <xpath expr="//page[@name='anchor']" position="before">
+
                 <page string="Prices" name="prices">
                     <field name="sale_service_charge_ids" context="{'form_view_ref': 'tt_reservation_event.tt_service_charge_event_inherit_form_view'}">
                         <tree>
@@ -143,8 +148,9 @@
                         </tree>
                     </field>
                 </page>
-            </xpath>
-            <xpath expr="//page[@name='anchor']" position="before">
+                <page string="Passengers" name="passenger">
+                    <field name="passenger_ids"/>
+                </page>
                 <page string="Vendor" name="vendor" groups="tt_base.group_tt_tour_travel_operator">
                     <field name="provider_booking_ids">
                         <tree>

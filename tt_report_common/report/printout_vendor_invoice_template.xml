@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
 
-    <template id="ho_invoice_content_view">
+    <template id="vendor_invoice_content_view">
         <!-- Base Info Booker dkk -->
         <table style="margin: 1px; 1px; 15px;">
             <tr>
@@ -17,26 +17,26 @@
                 <td style="width:400px; vertical-align: top;" rowspan="5">
                     <!--<t t-set="o_addr" t-value="doc.booker_id"/>-->
                     <!--<t t-call="tt_report_common.address_layout"/>-->
-                    <span t-field="doc.agent_id.name"/><br/>
-                    <t t-if="doc.agent_id.address_ids">
-                        <span t-field="doc.agent_id.address_ids[0].address"/><span>, </span>
-                        <t t-if="doc.agent_id.address_ids[0].district_id">
-                            <span t-field="doc.agent_id.address_ids[0].district_id.name"/><span>, </span>
+                    <span t-field="doc.event_vendor_id.name"/><br/>
+                    <t t-if="doc.event_vendor_id.address_ids">
+                        <span t-field="doc.event_vendor_id.address_ids[0].address"/><span>, </span>
+                        <t t-if="doc.event_vendor_id.address_ids[0].district_id">
+                            <span t-field="doc.event_vendor_id.address_ids[0].district_id.name"/><span>, </span>
                         </t>
-                        <t t-if="doc.agent_id.address_ids[0].sub_district_id">
-                            <span t-field="doc.agent_id.address_ids[0].sub_district_id.name"/><span>, </span>
+                        <t t-if="doc.event_vendor_id.address_ids[0].sub_district_id">
+                            <span t-field="doc.event_vendor_id.address_ids[0].sub_district_id.name"/><span>, </span>
                         </t>
-                        <t t-if="doc.agent_id.address_ids[0].city_id">
-                            <span t-field="doc.agent_id.address_ids[0].city_id.name"/><span>, </span>
+                        <t t-if="doc.event_vendor_id.address_ids[0].city_id">
+                            <span t-field="doc.event_vendor_id.address_ids[0].city_id.name"/><span>, </span>
                         </t>
-                        <t t-if="doc.agent_id.address_ids[0].zip">
-                            <span t-field="doc.agent_id.address_ids[0].zip"/>
+                        <t t-if="doc.event_vendor_id.address_ids[0].zip">
+                            <span t-field="doc.event_vendor_id.address_ids[0].zip"/>
                         </t><br/>
-                        <t t-if="doc.agent_id.address_ids[0].state_id">
-                            <span t-field="doc.agent_id.address_ids[0].state_id.name"/><span> - </span>
+                        <t t-if="doc.event_vendor_id.address_ids[0].state_id">
+                            <span t-field="doc.event_vendor_id.address_ids[0].state_id.name"/><span> - </span>
                         </t>
-                        <t t-if="doc.agent_id.address_ids[0].country_id">
-                            <span t-field="doc.agent_id.address_ids[0].country_id.name"/>
+                        <t t-if="doc.event_vendor_id.address_ids[0].country_id">
+                            <span t-field="doc.event_vendor_id.address_ids[0].country_id.name"/>
                         </t>
                     </t>
                 </td>
@@ -182,12 +182,6 @@
             <div class="col-4">
                 <table style="width:100%">
                     <tr>
-                        <td><strong>Commission</strong></td>
-                        <td class="text-right">
-                            <span style="padding: 10px 10px;" t-field="doc.total_commission" t-options="{&quot;widget&quot;: &quot;monetary&quot;, &quot;display_currency&quot;: doc.currency_id}"/>
-                        </td>
-                    </tr>
-                    <tr>
                         <td><strong>NTA</strong></td>
                         <td class="text-right">
                             <span style="padding: 10px 10px;" t-field="doc.total_nta" t-options="{&quot;widget&quot;: &quot;monetary&quot;, &quot;display_currency&quot;: doc.currency_id}"/>
@@ -205,32 +199,12 @@
                             <span style="padding: 10px 10px;" t-field="doc.total_fare" t-options="{&quot;widget&quot;: &quot;monetary&quot;, &quot;display_currency&quot;: doc.currency_id}"/>
                         </td>
                     </tr>
-                    <tr>
-                        <td><strong>Total Discount</strong></td>
-                        <td class="text-right">
-                            <span style="padding: 10px 10px;" t-field="doc.total_discount" t-options="{&quot;widget&quot;: &quot;monetary&quot;, &quot;display_currency&quot;: doc.currency_id}"/>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td><strong>Total Tax</strong></td>
-                        <td class="text-right">
-                            <span style="padding: 10px 10px;" t-field="doc.total_tax" t-options="{&quot;widget&quot;: &quot;monetary&quot;, &quot;display_currency&quot;: doc.currency_id}"/>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td><strong>Total</strong></td>
-                        <td class="text-right">
-                            <span style="padding: 10px 10px;" t-field="doc.total" t-options="{&quot;widget&quot;: &quot;monetary&quot;, &quot;display_currency&quot;: doc.currency_id}"/>
-                        </td>
-                    </tr>
                 </table>
             </div>
         </div>
     </template>
 
-    <template id="printout_invoice_ho">
-<!--        <t t-set="data_report_header_spacing" t-value="20"/>-->
-<!--        <t t-set="data_report_margin_top" t-value="2"/>-->
+    <template id="printout_invoice_vendor">
         <t t-set="data_report_header_spacing" t-value="0"/>
         <t t-set="data_report_margin_top" t-value="10"/>
         <t t-set="data_report_margin_bottom" t-value="26"/>
@@ -240,11 +214,12 @@
                     <t t-call="tt_report_common.external_layout">
                         <br/>
                         <div style="margin: 0 20px">
-                            <t t-call="tt_report_common.ho_invoice_content_view"/>
+                            <t t-call="tt_report_common.vendor_invoice_content_view"/>
                         </div>
                     </t>
                 </div>
             </t>
         </t>
     </template>
+
 </odoo>

@@ -125,6 +125,7 @@ class TtReservation(models.Model):
     printout_itinerary_id = fields.Many2one('tt.upload.center', 'Itinerary', readonly=True)
     printout_voucher_id = fields.Many2one('tt.upload.center', 'Voucher', readonly=True)
     printout_ho_invoice_id = fields.Many2one('tt.upload.center', 'Voucher', readonly=True)
+    printout_vendor_invoice_id = fields.Many2one('tt.upload.center', 'Vendor Invoice', readonly=True)
 
     payment_acquirer_number_id = fields.Many2one('payment.acquirer.number','Payment Acquier Number')
 
@@ -132,6 +133,9 @@ class TtReservation(models.Model):
     is_force_issued = fields.Boolean('Force Issued', default=False)
     is_halt_process = fields.Boolean('Halt Process', default=False)
     # END
+
+    reconcile_state = fields.Selection(variables.RESV_RECONCILE_STATE, 'Reconcile State',default='not_reconciled',
+                                       compute='_compute_reconcile_state', store=True )
 
     @api.model
     def create(self, vals_list):
@@ -371,6 +375,11 @@ class TtReservation(models.Model):
             }))
 
         return list_passenger_value
+
+    def _compute_reconcile_state(self):
+        for rec in self:
+            if not rec.reconcile_state:
+                rec.reconcile_state = 'not_reconciled'
 
     @api.depends("refund_ids", "state")
     @api.onchange("refund_ids", "state")
