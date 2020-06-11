@@ -75,6 +75,7 @@ class TtReconcileTransactionLines(models.Model):
     _rec_name = 'pnr'
 
     reconcile_transaction_id = fields.Many2one('tt.reconcile.transaction','Reconcile Transaction',readonly=True, ondelete='cascade' )
+    provider_type_code = fields.Char('Provider Type',related='reconcile_transaction_id.provider_type_id.code',readonly=True)
     agent_name = fields.Char('Agent Name',readonly=True)
     pnr = fields.Char('PNR',readonly=True)
     transaction_code = fields.Char('Transaction Code',readonly=True)

@@ -18,6 +18,9 @@
         'security/ir.model.access.csv',
         'security/ir_rule_data.xml',
         'data/ir_cron_data.xml',
+
+        'wizard/tt_reconcile_manual_match_wizard_view.xml',
+
         'views/tt_reservation_views.xml',
         'views/tt_reservation_psg_limiter.xml',
         'views/tt_ledger.xml',
@@ -26,6 +29,7 @@
         'views/tt_reconcile_transaction_views.xml',
 
         'wizard/tt_reconcile_transaction_wizard_view.xml'
+
     ],
     'demo': [],
     'qweb': [],
