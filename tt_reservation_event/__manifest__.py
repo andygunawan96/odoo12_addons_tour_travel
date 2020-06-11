@@ -3,7 +3,7 @@
 {
     'name' : 'tt_reservation_event',
     'version' : 'beta',
-    'summary': 'transport dummy event',
+    'summary': 'Transport Reservation Event',
     'sequence': 2,
     'description': """
 TT_TRANSPORT

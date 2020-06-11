@@ -5,15 +5,11 @@ class TtPaymentInvoiceRel(models.Model):
     _name = 'tt.payment.invoice.rel'
     _description = 'Rodex Model'
 
-    invoice_id = fields.Many2one('tt.agent.invoice', 'Invoice')
-    dummy_payment_field = fields.Boolean('Gen', default=False, help="Generate Payment List")
+    invoice_id = fields.Many2one('tt.agent.invoice', 'Invoice', readonly="True")
+    inv_customer_parent_id = fields.Many2one('tt.customer.parent','Invoice Customer Parent',related='invoice_id.customer_parent_id',store=True)
+    payment_id = fields.Many2one('tt.payment', 'Payment', required=True,
+                                 domain="[('is_full','=',False),('state','=','approved'),('customer_parent_id','!=',False),('customer_parent_id', '=', inv_customer_parent_id)]")
 
-    def get_payment_domain(self):
-        cust_par_id = self.invoice_id.customer_parent_id.id
-        domain = [('is_full','=',False),('state','=','approved'),('customer_parent_id', '=', cust_par_id)]
-        return domain
-
-    payment_id = fields.Many2one('tt.payment', 'Payment', required=True, domain=[('id', '=', -1)])
     payment_state = fields.Selection("Payment State",related="payment_id.state")
     pay_amount = fields.Monetary('Pay Amount', required=True)
     available_amount = fields.Monetary('Available Ammount', related="payment_id.available_amount")
@@ -25,13 +21,6 @@ class TtPaymentInvoiceRel(models.Model):
                               ('approved','Approved'),
                               ('cancel','Cancelled')],'State',readonly=True)
     payment_acquirer = fields.Char("Payment Acquirer", compute="_compute_payment_acquirer",store=True)
-
-    @api.depends('invoice_id', 'dummy_payment_field')
-    @api.onchange('invoice_id', 'dummy_payment_field')
-    def _onchange_domain_payment(self):
-        return {'domain': {
-            'payment_id': self.get_payment_domain()
-        }}
 
     @api.model
     def create(self, vals_list):
@@ -74,13 +63,6 @@ class TtPaymentInvoiceRel(models.Model):
             return new_rel
         else:
             raise exceptions.UserError('Payment not enough to pay nominal amount. Please choose another payment or reduce tha pay amount')
-
-    @api.multi
-    def write(self, vals_list):
-        vals_list.update({
-            'dummy_payment_field': False
-        })
-        return super(TtPaymentInvoiceRel, self).write(vals_list)
 
     @api.depends('payment_id.acquirer_id.name')
     def _compute_payment_acquirer(self):

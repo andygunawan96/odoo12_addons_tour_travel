@@ -44,7 +44,6 @@
                         <form>
                             <group>
                                 <group>
-                                    <field name="dummy_field" attrs="{'invisible':[('dummy_field','=', True)]}"/>
                                     <field name="segment_id" invisible="1"/>
                                     <field name="passenger_id"/>
                                 </group>

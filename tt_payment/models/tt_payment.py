@@ -47,40 +47,6 @@ class PaymentTransaction(models.Model):
     def unlink_image_ids(self):
         self.payment_image_ids[0].unlink()
 
-    def _get_c_parent_domain(self):
-        # if self.agent_id:
-        #     return [('parent_agent_id','=',self.agent_id.id)]
-        # else:
-        return "[('parent_agent_id', '=', agent_id)]"
-
-    @api.onchange('agent_id')
-    def _onchange_domain_agent_id(self):
-        return {'domain': {
-            'customer_parent_id': self._get_c_parent_domain()
-        }}
-
-    # def _get_acquirer_domain(self):
-    #     if self.customer_parent_id:
-    #         return "[('agent_id', '=', agent_id)]"
-    #     # if self.customer_parent_id:
-    #     #     return [('agent_id','=',self.agent_id.id)]
-    #     else:
-    #         ho_id = self.env.ref('tt_base.rodex_ho').id
-    #         return [('agent_id','=', ho_id )]
-
-    @api.onchange('customer_parent_id')
-    def _onchange_domain_customer_parent_id(self):
-        if self.customer_parent_id:
-            dom = [('agent_id', '=', self.agent_id.id)]
-        else:
-            ho_id = self.env.ref('tt_base.rodex_ho').id
-            dom = [('agent_id','=', ho_id )]
-        return {
-            'domain':{
-                'acquirer_id': dom
-            }
-        }
-
     # Tambahan
     confirm_uid = fields.Many2one('res.users', 'Confirm by',readonly=True)
     confirm_date = fields.Datetime('Confirm Date',readonly=True)
@@ -92,21 +58,16 @@ class PaymentTransaction(models.Model):
     cancel_date = fields.Datetime('Cancel Date',readonly=True)
     reference = fields.Char('Validate Ref.', help='Transaction Reference / Approval number', states={'validated': [('readonly', True)], 'validated2': [('readonly', True)], 'approved': [('readonly', True)]})
     agent_id = fields.Many2one('tt.agent', 'Agent', required=True,readonly=True,states={'draft': [('readonly', False)]})
-    customer_parent_id = fields.Many2one('tt.customer.parent', 'Customer',readonly=True,states={'draft': [('readonly', False)]}, domain=_get_c_parent_domain)
+    customer_parent_id = fields.Many2one('tt.customer.parent', 'Customer',readonly=True,states={'draft': [('readonly', False)]}, domain="[('parent_agent_id', '=', agent_id)]")
     # acquirer_id = fields.Many2one('payment.acquirer', 'Acquirer', domain=_get_acquirer_domain,states={'validated': [('readonly', True)]})
-    dummy_acquirer_field = fields.Boolean('Generate Acquirer List', default=False,copy=False)
 
     is_full = fields.Boolean('Is Full')
 
-    def get_payment_acquirer_domain(self):
-        if self.customer_parent_id:
-            dom = [('agent_id','=',self.agent_id.id)]
-        else:
-            ho_id = self.env.ref('tt_base.rodex_ho').id
-            dom = [('agent_id','=', ho_id)]
-        return dom
-
-    acquirer_id = fields.Many2one('payment.acquirer', 'Acquirer', states={'validated': [('readonly', True)], 'validated2': [('readonly', True)], 'approved': [('readonly', True)]}, domain=[('id', '=', -1)])
+    acquirer_id = fields.Many2one('payment.acquirer', 'Acquirer',
+                                  states={'validated': [('readonly', True)],
+                                          'validated2': [('readonly', True)],
+                                          'approved': [('readonly', True)]},
+                                  domain="[('agent_id','=',customer_parent_id)]")
 
     # #Todo:
     # # 1. Pertimbangkan penggunaan monetary field untuk integer field (pertimbangkan multi currency juga)
@@ -116,13 +77,14 @@ class PaymentTransaction(models.Model):
     # # 5. Ganti payment_uid dengan agent_id
     # # 6. Tambahkan Payment Acquirer metode pembayaran e
 
+    @api.onchange('agent_id')
+    def _onchange_agent(self):
+        self.customer_parent_id = False
+        self.acquirer_id = False
 
-    @api.depends('customer_parent_id', 'agent_id', 'dummy_acquirer_field')
-    @api.onchange('customer_parent_id', 'agent_id', 'dummy_acquirer_field')
-    def _onchange_domain_payment_acquirer(self):
-        return {'domain': {
-            'acquirer_id': self.get_payment_acquirer_domain()
-        }}
+    @api.onchange('customer_parent_id')
+    def _onchange_agent_customer_parent(self):
+        self.acquirer_id = False
 
     def _compute_fee_payment(self):
         for rec in self:
@@ -182,9 +144,6 @@ class PaymentTransaction(models.Model):
 
     @api.multi
     def write(self, vals_list):
-        vals_list.update({
-            'dummy_acquirer_field': False
-        })
         if 'real_total_amount' in vals_list:
             if vals_list['real_total_amount'] < self.used_amount and not self.top_up_id:
                 raise exceptions.UserError("Total amount on %s is less than the used amount." % (self.name))
@@ -211,7 +170,7 @@ class PaymentTransaction(models.Model):
             raise exceptions.UserError('Can only validate [Validated] state Payment.')
         if self.top_up_id:
             if ({self.env.ref('tt_base.group_tt_tour_travel_operator').id,
-                self.env.ref('tt_base.group_tt_accounting_operator').id}.intersection(
+                 self.env.ref('tt_base.group_tt_accounting_operator').id}.intersection(
                 set(self.env.user.groups_id.ids))):
                 ## 3 Januari 2020 di minta hapuskan by desy
                 # if self.top_up_id.total != self.real_total_amount and datetime.now().day == self.create_date.day:
