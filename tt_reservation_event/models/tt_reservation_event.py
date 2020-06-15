@@ -536,8 +536,20 @@ class ReservationEvent(models.Model):
                 } for opt in book_obj.option_ids],
             }
             return ERR.get_no_error(response)
-        except:
-            raise RequestException(1003)
+        except RequestException as e:
+            _logger.error(traceback.format_exc())
+            try:
+                book_obj.notes += str(datetime.now()) + '\n' + traceback.format_exc() + '\n'
+            except:
+                _logger.error('Creating Notes Error')
+            return e.error_dict()
+        except Exception as e:
+            _logger.error(traceback.format_exc())
+            try:
+                book_obj.notes += str(datetime.now()) + '\n' + traceback.format_exc() + '\n'
+            except:
+                _logger.error('Creating Notes Error')
+            return ERR.get_error(1004)
 
     def set_provider_issued_event_api(self, req, context):
         booking_obj = self.search([('name', '=', req['order_number'])], limit=1)
