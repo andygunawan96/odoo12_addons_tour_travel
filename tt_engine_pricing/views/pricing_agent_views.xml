@@ -4,6 +4,9 @@
         <field name="model">tt.pricing.agent</field>
         <field name="arch" type="xml">
             <form>
+                <header>
+                    <button string="Do Compute Sequence" type="object" name="do_compute_sequence" class="btn-default" />
+                </header>
                 <sheet>
                     <div class="oe_button_box" name="button_box">
                         <button name="toggle_active" type="object" class="oe_stat_button" icon="fa-archive">

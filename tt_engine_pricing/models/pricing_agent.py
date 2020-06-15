@@ -58,6 +58,18 @@ class PricingAgent(models.Model):
     charge_code_ids = fields.Many2many('tt.pricing.charge.code', 'tt_pricing_provider_line_charge_code_rel', 'pricing_line_id', 'charge_code_id', string='Charge Codes')
     display_charge_codes = fields.Char('Charge Codes', compute='_compute_display_charge_codes', store=True, readonly=1)
 
+    def do_compute_sequence(self):
+        _objs = self.sudo().with_context(active_test=False).search([], order='sequence')
+        count = 10
+        line_count = 10
+        for rec in _objs:
+            rec.update({'sequence': count})
+            count += 10
+            line_objs = self.env['tt.pricing.agent.line'].sudo().with_context(active_test=False).search([('pricing_id', '=', rec.id)], order='sequence')
+            for line in line_objs:
+                line.update({'sequence': line_count})
+                line_count += 10
+
     @api.multi
     @api.depends('origin_ids')
     def _compute_display_origins(self):
