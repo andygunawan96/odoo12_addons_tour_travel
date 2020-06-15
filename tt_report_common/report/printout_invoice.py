@@ -23,6 +23,8 @@ class PrintoutTicketForm(models.AbstractModel):
                 data['context']['active_model'] = 'tt.reservation.activity'
             elif internal_model_id == 5:
                 data['context']['active_model'] = 'tt.reservation.tour'
+            elif internal_model_id == 6:
+                data['context']['active_model'] = 'tt.reservation.event'
             data['context']['active_ids'] = docids
         values = {}
         ssr_list = []
