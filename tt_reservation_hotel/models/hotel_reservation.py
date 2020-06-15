@@ -296,7 +296,6 @@ class HotelReservation(models.Model):
             # pdfhttpheaders.append(('Content-Disposition', 'attachment; filename="Itinerary.pdf"'))
             # self.make_response(pdf, headers=pdfhttpheaders)
 
-
         res = self.env['tt.upload.center.wizard'].upload_file_api(
             {
                 'filename': 'Hotel Itinerary %s.pdf' % book_name,
