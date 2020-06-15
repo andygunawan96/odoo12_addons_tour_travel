@@ -486,6 +486,77 @@
 <!--                            </table>-->
 <!--                        </div>-->
 <!--                    </div>-->
+                <div class="row" style="font-size: 20px; margin-top: 30px; font-weight: 300">
+                    <div class="col-12">
+                        Protokol Kesehatan KAI di masa New Normal:
+                        <table style="width: 100%; line-height: normal; page-break-inside:auto">
+                            <tr style="page-break-inside:avoid; page-break-after:auto">
+                                <td valign="top" style="width: 4%;">
+                                    1.
+                                </td>
+                                <td style="width: 96%;">
+                                    1. Menunjukkan surat keterangan uji tes PCR dengan hasil negatif yang berlaku 7 hari atau surat keterangan uji Rapid-Test dengan hasil non reaktif yang berlaku 3 hari pada saat keberangkatan.
+                                </td>
+                            </tr>
+                            <tr style="page-break-inside:avoid; page-break-after:auto">
+                                <td valign="top" style="width: 4%;">
+                                    2.
+                                </td>
+                                <td style="width: 96%;">
+                                    Menunjukkan surat keterangan bebas gejala seperti influenza yang dikeluarkan oleh dokter rumah sakit/puskesmas bagi daerah yang tidak memliki fasilitas test PCR dan/atau Rapid-Test.
+                                </td>
+                            </tr>
+                            <tr style="page-break-inside:avoid; page-break-after:auto">
+                                <td valign="top" style="width: 4%;">
+                                    3.
+                                </td>
+                                <td style="width: 96%;">
+                                    Penumpang dari/ke tujuan Jakarta wajib memiliki Surat Ijin Keluar Masuk (SIKM) wilayah DKI Jakarta, kecuali bagi sektor yang dikecualikan berdasarkan Pergub DKI Jakarta No 47 Tahun 2020
+                                </td>
+                            </tr>
+                            <tr style="page-break-inside:avoid; page-break-after:auto">
+                                <td valign="top" style="width: 4%;">
+                                    4.
+                                </td>
+                                <td style="width: 96%;">
+                                    Penumpang dalam kondisi sehat tidak menderita flu, pilek batuk dan demam
+                                </td>
+                            </tr>
+                            <tr style="page-break-inside:avoid; page-break-after:auto">
+                                <td valign="top" style="width: 4%;">
+                                    5.
+                                </td>
+                                <td style="width: 96%;">
+                                    Penumpang Wajib menggunakan masker
+                                </td>
+                            </tr>
+                            <tr style="page-break-inside:avoid; page-break-after:auto">
+                                <td valign="top" style="width: 4%;">
+                                    6.
+                                </td>
+                                <td style="width: 96%;">
+                                    Suhu badan penumpang tidak lebih dari 37,3 °C*
+                                </td>
+                            </tr>
+                            <tr style="page-break-inside:avoid; page-break-after:auto">
+                                <td valign="top" style="width: 4%;">
+                                    7.
+                                </td>
+                                <td style="width: 96%;">
+                                    Penumpang menggunakan pakaian pelindung (jaket atau pakaian lengan panjang)
+                                </td>
+                            </tr>
+                            <tr style="page-break-inside:avoid; page-break-after:auto">
+                                <td valign="top" style="width: 4%;">
+                                    8.
+                                </td>
+                                <td style="width: 96%;">
+                                    Apabila pada saat proses boarding terdapat penumpang yang tidak memenuhi syarat dan ketentuan diatas maka penumpang tersebut tidak diperkenakan melakukan perjalanan kereta api dan tiket dapat dibatalkan melalui loket stasiun dan mendapatkan bea pembatalan penuh secara tunai
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
             </div>
             <t t-call="tt_report_common.train_footer"/>
         </div>

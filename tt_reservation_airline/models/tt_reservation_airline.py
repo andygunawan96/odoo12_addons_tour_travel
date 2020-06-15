@@ -140,6 +140,11 @@ class ReservationAirline(models.Model):
             'refund_date': datetime.now()
         })
 
+    def action_refund_failed_airline(self,context):
+        self.write({
+            'state':  'refund_failed',
+        })
+
     def action_issued_airline(self,co_uid,customer_parent_id,acquirer_id = False):
         values = {
             'state': 'issued',
@@ -216,7 +221,7 @@ class ReservationAirline(models.Model):
     @api.multi
     def action_set_as_cancel_pending(self):
         for rec in self:
-            rec.state = 'refund_pending'
+            rec.state = 'cancel_pending'
 
     def action_cancel(self):
         super(ReservationAirline, self).action_cancel()
@@ -603,10 +608,10 @@ class ReservationAirline(models.Model):
                         except Exception as e:
                             _logger.error(traceback.format_exc())
                 elif provider['status'] == 'FAIL_BOOKED':
-                    provider_obj.action_failed_booked_api_airline(provider.get('error_code'),provider.get('error_msg'))
+                    provider_obj.action_failed_booked_api_airline(provider.get('error_code', -1),provider.get('error_msg', ''))
                     any_provider_changed = True
                 elif provider['status'] == 'FAIL_ISSUED':
-                    provider_obj.action_failed_issued_api_airline(provider.get('error_code'),provider.get('error_msg'))
+                    provider_obj.action_failed_issued_api_airline(provider.get('error_code', -1),provider.get('error_msg', ''))
                     any_provider_changed = True
                 elif provider['status'] == 'CANCELLED':
                     provider_obj.action_cancel_api_airline(context)
@@ -626,11 +631,11 @@ class ReservationAirline(models.Model):
                 elif provider['status'] == 'REFUND':
                     provider_obj.action_refund_api_airline(provider, context)
                     any_provider_changed = True
-                elif provider['status'] == 'FAIL_VOID':
-                    provider_obj.action_failed_void_api_airline(provider_obj['error_code'], provider_obj['error_msg'])
+                elif provider['status'] == 'VOID_FAILED':
+                    provider_obj.action_failed_void_api_airline(provider.get('error_code', -1), provider_obj['error_msg'])
                     any_provider_changed = True
-                elif provider['status'] == 'FAIL_REFUNDED':
-                    provider_obj.action_failed_refund_api_airline(provider_obj['error_code'], provider_obj['error_msg'])
+                elif provider['status'] == 'REFUND_FAILED':
+                    provider_obj.action_refund_failed_api_airline(provider.get('error_code', -1), provider.get('error_msg', ''))
                     any_provider_changed = True
 
             # for rec in book_obj.provider_booking_ids:
@@ -866,6 +871,8 @@ class ReservationAirline(models.Model):
             self.action_failed_issue()
         elif any(rec.state == 'fail_refunded' for rec in self.provider_booking_ids):
             self.action_reverse_airline(context)
+        elif any(rec.state == 'refund_failed' for rec in self.provider_booking_ids):
+            self.action_refund_failed_airline(context)
         elif any(rec.state == 'fail_booked' for rec in self.provider_booking_ids):
             # failed book
             self.action_failed_book()
@@ -932,6 +939,8 @@ class ReservationAirline(models.Model):
             })
         elif all(rec.state == 'fail_refunded' for rec in self.provider_booking_ids):
             self.action_reverse_airline(context)
+        elif all(rec.state == 'refund_failed' for rec in self.provider_booking_ids):
+            self.action_refund_failed_airline(context)
         elif any(rec.state == 'issued' for rec in self.provider_booking_ids):
             # partial issued
             acquirer_id,customer_parent_id = self.get_acquirer_n_c_parent_id(req)
