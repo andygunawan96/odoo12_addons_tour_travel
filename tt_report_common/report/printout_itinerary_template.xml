@@ -1095,6 +1095,11 @@
             <t t-foreach="docs" t-as="doc">
                 <div class="page">
                     <t t-call="tt_report_common.external_layout">
+                        <div style="margin-bottom: 10px; margin-top: 10px;">
+                            <span style="font-size: 18px; font-weight: 730">No. Booking : </span>
+                            <span t-field="doc.name" style="font-size: 18px; font-weight: 730"/><br/>
+                        </div>
+
                         <t t-call="tt_report_common.activity_itinerary_view"/>
                         <t t-call="tt_report_common.itinerary_price_detail"/>
                         <br/>
@@ -1112,6 +1117,11 @@
             <t t-foreach="docs" t-as="doc">
                 <div class="page">
                     <t t-call="tt_report_common.external_layout">
+                        <div style="margin-bottom: 10px; margin-top: 10px;">
+                            <span style="font-size: 18px; font-weight: 730">No. Booking : </span>
+                            <span t-field="doc.name" style="font-size: 18px; font-weight: 730"/><br/>
+                        </div>
+
                         <t t-call="tt_report_common.event_itinerary_view"/>
                         <t t-call="tt_report_common.itinerary_price_detail"/>
                         <br/>
@@ -1129,6 +1139,11 @@
             <t t-foreach="docs" t-as="doc">
                 <div class="page">
                     <t t-call="tt_report_common.external_layout">
+                        <div style="margin-bottom: 10px; margin-top: 10px;">
+                            <span style="font-size: 18px; font-weight: 730">No. Booking : </span>
+                            <span t-field="doc.name" style="font-size: 18px; font-weight: 730"/><br/>
+                        </div>
+
                         <t t-call="tt_report_common.tour_itinerary_view"/>
                         <t t-call="tt_report_common.itinerary_price_detail"/>
                         <br/>
@@ -1146,6 +1161,11 @@
             <t t-foreach="docs" t-as="doc">
                 <div class="page">
                     <t t-call="tt_report_common.external_layout">
+                        <div style="margin-bottom: 10px; margin-top: 10px;">
+                            <span style="font-size: 18px; font-weight: 730">No. Booking : </span>
+                            <span t-field="doc.name" style="font-size: 18px; font-weight: 730"/><br/>
+                        </div>
+
                         <t t-call="tt_report_common.passport_itinerary_view"/>
                         <t t-call="tt_report_common.itinerary_price_detail"/>
                         <br/>
@@ -1185,6 +1205,11 @@
             <t t-foreach="docs" t-as="doc">
                 <div class="page">
                     <t t-call="tt_report_common.external_layout">
+                        <div style="margin-bottom: 10px; margin-top: 10px;">
+                            <span style="font-size: 18px; font-weight: 730">No. Booking : </span>
+                            <span t-field="doc.name" style="font-size: 18px; font-weight: 730"/><br/>
+                        </div>
+
                         <t t-call="tt_report_common.visa_itinerary_view"/>
                         <t t-call="tt_report_common.itinerary_price_detail"/>
                         <br/>
@@ -1202,6 +1227,11 @@
             <t t-foreach="docs" t-as="doc">
                 <div class="page">
                     <t t-call="tt_report_common.external_layout">
+                        <div style="margin-bottom: 10px; margin-top: 10px;">
+                            <span style="font-size: 18px; font-weight: 730">No. Booking : </span>
+                            <span t-field="doc.name" style="font-size: 18px; font-weight: 730"/><br/>
+                        </div>
+
                         <t t-call="tt_report_common.json_itinerary_content_view"/>
                         <t t-call="tt_report_common.itinerary_price_detail"/>
                         <br/>
