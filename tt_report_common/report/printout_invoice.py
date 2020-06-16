@@ -215,7 +215,7 @@ class PrintoutPPOBBillsForm(models.AbstractModel):
             # Admin Bank (ambil dari ROC service charge)
             provider = rec.provider_booking_ids[0]
             for scs in provider.cost_service_charge_ids:
-                if scs.charge_code == 'roc':
+                if scs.charge_code == 'rfc':
                     admin_bank += scs.total
 
             if provider.ppob_bill_ids:
@@ -269,7 +269,7 @@ class PrintoutPPOBBillsForm(models.AbstractModel):
             provider = rec.provider_booking_ids[0]
 
             for scs in provider.cost_service_charge_ids:
-                if scs.charge_code == 'roc':
+                if scs.charge_code == 'rfc':
                     admin_bank += scs.total
 
             if provider.ppob_bill_ids:
@@ -311,7 +311,7 @@ class PrintoutPPOBBillsForm(models.AbstractModel):
             provider = rec.provider_booking_ids[0]
             tgl_registrasi = provider.registration_date.strftime('%d %b %y')
             for scs in provider.cost_service_charge_ids:
-                if scs.charge_code == 'roc':
+                if scs.charge_code == 'rfc':
                     admin_bank += scs.total
 
             if provider.ppob_bill_ids:
@@ -344,7 +344,7 @@ class PrintoutPPOBBillsForm(models.AbstractModel):
             date = provider.issued_date.strftime('%d-%m-%Y')
 
             for scs in provider.cost_service_charge_ids:
-                if scs.charge_code == 'roc':
+                if scs.charge_code == 'rfc':
                     admin_fee += scs.total
 
             if provider.ppob_bill_ids:

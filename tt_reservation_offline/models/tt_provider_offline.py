@@ -318,9 +318,9 @@ class ProviderOffline(models.Model):
         fee_amount_vals = book_obj.get_fee_amount(book_obj.agent_id, provider_type_id,
                                                   book_obj.total_commission_amount, self.booking_id.passenger_ids[0])
         fee_amount_vals['provider_offline_booking_id'] = self.id
-        fee_amount_vals['amount'] = fee_amount_vals.get('amount')
+        fee_amount_vals['amount'] = fee_amount_vals.get('amount') * line_obj.obj_qty * days_int
         fee_amount_vals['total'] = fee_amount_vals.get('total') * line_obj.obj_qty * days_int
-        fee_amount_vals['pax_count'] = pax_count
+        fee_amount_vals['pax_count'] = 1
         scs_list.append(fee_amount_vals)
 
         """ Get total fee amount """
@@ -341,7 +341,7 @@ class ProviderOffline(models.Model):
 
         # Get all pricing per pax
         vals = {
-            'amount': sale_price / pax_count,
+            'amount': sale_price,
             'charge_code': 'fare',
             'charge_type': 'FARE',
             'description': '',
@@ -349,7 +349,7 @@ class ProviderOffline(models.Model):
             'currency_id': self.currency_id.id,
             'provider_offline_booking_id': self.id,
             'passenger_offline_ids': [],
-            'pax_count': pax_count,
+            'pax_count': 1,
             'total': sale_price,
         }
         vals['passenger_offline_ids'].append(self.booking_id.passenger_ids[0].id)
@@ -361,7 +361,7 @@ class ProviderOffline(models.Model):
                 vals2.update({
                     'commission_agent_id': comm['commission_agent_id'],
                     'total': comm['amount'] * -1 / len(book_obj.line_ids),
-                    'amount': comm['amount'] * -1 / len(book_obj.line_ids) / pax_count,
+                    'amount': comm['amount'] * -1 / len(book_obj.line_ids),
                     'charge_code': comm['code'],
                     'charge_type': 'RAC',
                     'passenger_offline_ids': [],
