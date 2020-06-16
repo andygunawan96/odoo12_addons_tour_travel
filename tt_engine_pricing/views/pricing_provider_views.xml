@@ -6,6 +6,7 @@
             <form>
                 <header>
                     <button string="Do Compute Name" type="object" name="do_compute_name" class="btn-default" />
+                    <button string="Do Compute Sequence" type="object" name="do_compute_sequence" class="btn-default" />
                 </header>
                 <sheet>
                     <div class="oe_button_box" name="button_box">

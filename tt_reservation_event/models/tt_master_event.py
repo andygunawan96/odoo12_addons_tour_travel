@@ -108,16 +108,15 @@ class MasterEvent(models.Model):
             vendor = req.get('vendor') and int(req['vendor']) or ''
 
             limitation = [('state', '=', 'confirm')]
+            if name != '': #Check by name jika category tidak di kirim
+                limitation.append(('name', 'ilike', name))
             if vendor != '':
                 limitation = [('state', 'in', ['confirm', 'expired']), ('event_vendor_id', '=', vendor)]
-            if category != '':
+            if category != '' and category != 'all':
                 categ_id = self.env['tt.event.category'].search([('name', '=ilike', category)], limit=1)
                 limitation.append(('category_ids', 'ilike', categ_id.id))
-            elif name != '': #Check by name jika category tidak di kirim
-                limitation.append(('name', 'ilike', name))
             if city != '':
                 limitation.append(('locations', 'ilike', city))
-
             if online != '':
                 limitation.append(('event_type', '=', online))
 

@@ -297,6 +297,8 @@ class ProviderOffline(models.Model):
 
         book_obj = self.booking_id
 
+        pax_count = 0
+
         scs_list = []
         scs_list_2 = []
         pricing_obj = self.env['tt.pricing.agent'].sudo()
@@ -311,11 +313,14 @@ class ProviderOffline(models.Model):
         days = check_out - check_in
         days_int = int(days.days)
 
+        pax_count = days_int * (int(line_obj.obj_qty) if line_obj.obj_qty else 1)
+
         fee_amount_vals = book_obj.get_fee_amount(book_obj.agent_id, provider_type_id,
                                                   book_obj.total_commission_amount, self.booking_id.passenger_ids[0])
         fee_amount_vals['provider_offline_booking_id'] = self.id
-        fee_amount_vals['amount'] = fee_amount_vals.get('amount')
+        fee_amount_vals['amount'] = fee_amount_vals.get('amount') * line_obj.obj_qty * days_int
         fee_amount_vals['total'] = fee_amount_vals.get('total') * line_obj.obj_qty * days_int
+        fee_amount_vals['pax_count'] = 1
         scs_list.append(fee_amount_vals)
 
         """ Get total fee amount """

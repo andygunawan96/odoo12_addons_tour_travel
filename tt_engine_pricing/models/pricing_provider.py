@@ -34,6 +34,18 @@ class PricingProvider(models.Model):
         for rec in objs:
             rec._compute_name()
 
+    def do_compute_sequence(self):
+        _objs = self.sudo().with_context(active_test=False).search([], order='sequence')
+        count = 10
+        line_count = 10
+        for rec in _objs:
+            rec.update({'sequence': count})
+            count += 10
+            line_objs = self.env['tt.pricing.provider.line'].sudo().with_context(active_test=False).search([('pricing_id', '=', rec.id)], order='sequence')
+            for line in line_objs:
+                line.update({'sequence': line_count})
+                line_count += 10
+
     @api.multi
     @api.depends('provider_ids.code','provider_ids','carrier_ids','carrier_ids.code', 'agent_type_ids')
     def _compute_name(self):
@@ -116,6 +128,7 @@ class PricingProvider(models.Model):
         providers = [rec.code for rec in self.provider_ids]
         agent_types = [rec.code for rec in self.agent_type_ids]
         res = {
+            'id': self.id,
             'provider_type': self.provider_type_id and self.provider_type_id.code or '',
             # 'provider': self.provider_id and self.provider_id.code,
             'provider_access_type': self.provider_access_type,
@@ -314,6 +327,7 @@ class PricingProviderLine(models.Model):
         charge_codes = [rec.code for rec in self.charge_code_ids]
         class_of_services = [rec.code for rec in self.class_of_service_ids]
         res = {
+            'id': self.id,
             'sequence': self.sequence,
             'date_from': self.date_from,
             'date_to': self.date_to,

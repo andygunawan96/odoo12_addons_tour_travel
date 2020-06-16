@@ -335,7 +335,7 @@ class TtProviderAirline(models.Model):
     def action_failed_void_api_airline(self,err_code,err_msg):
         for rec in self:
             rec.write({
-                'state': 'fail_void',
+                'state': 'void_failed',
                 'error_history_ids': [(0,0,{
                     'res_model': self._name,
                     'res_id': self.id,
@@ -344,10 +344,10 @@ class TtProviderAirline(models.Model):
                 })]
             })
 
-    def action_failed_refund_api_airline(self,err_code,err_msg):
+    def action_refund_failed_api_airline(self,err_code,err_msg):
         for rec in self:
             rec.write({
-                'state': 'fail_refunded',
+                'state': 'refund_failed',
                 'error_history_ids': [(0,0,{
                     'res_model': self._name,
                     'res_id': self.id,
@@ -359,7 +359,7 @@ class TtProviderAirline(models.Model):
     def action_failed_rescheduled_api_airline(self,err_code,err_msg):
         for rec in self:
             rec.write({
-                'state': 'fail_rescheduled',
+                'state': 'rescheduled_failed',
                 'error_history_ids': [(0,0,{
                     'res_model': self._name,
                     'res_id': self.id,
