@@ -522,7 +522,7 @@ class ReservationEvent(models.Model):
             self.env.cr.commit()
 
             if book_obj.state == 'issued':
-                book_obj.action_create_invoice(acquirer_id and acquirer_id.id or False, context['co_uid'], customer_parent_id)
+                book_obj.action_create_invoice(acquirer_id, context['co_uid'], customer_parent_id)
 
             response = {
                 'order_id': book_obj.id,
