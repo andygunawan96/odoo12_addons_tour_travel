@@ -293,7 +293,7 @@ class TtReschedule(models.Model):
                     [('agent_type_id.id', '=', self.env.ref('tt_base.agent_type_ho').id)], limit=1)
                 credit = 0
                 debit = rec.admin_fee
-                self.env['tt.ledger'].create_ledger_vanilla(
+                self.env['tt.ledger'].sudo().create_ledger_vanilla(
                     self._name,
                     self.id,
                     'After Sales Admin Fee: %s' % (self.name),

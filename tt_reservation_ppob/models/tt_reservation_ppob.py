@@ -178,6 +178,25 @@ class ReservationPpob(models.Model):
             'carrier_name': ','.join(carrier_list),
         })
 
+        try:
+            if self.agent_type_id.is_send_email_issued:
+                mail_created = self.env['tt.email.queue'].sudo().search([('res_id', '=', self.id), ('res_model', '=', self._name), ('type', '=', 'issued_ppob')], limit=1)
+                if not mail_created:
+                    temp_data = {
+                        'provider_type': 'ppob',
+                        'order_number': self.name,
+                        'type': 'issued',
+                    }
+                    temp_context = {
+                        'co_agent_id': self.agent_id.id
+                    }
+                    self.env['tt.email.queue'].create_email_queue(temp_data, temp_context)
+                else:
+                    _logger.info('Issued email for {} is already created!'.format(self.name))
+                    raise Exception('Issued email for {} is already created!'.format(self.name))
+        except Exception as e:
+            _logger.info('Error Create Email Queue')
+
     def action_booked_api_ppob(self,context,pnr_list,hold_date):
         if type(hold_date) != datetime:
             hold_date = False
@@ -194,6 +213,25 @@ class ReservationPpob(models.Model):
             write_values.pop('pnr')
 
         self.write(write_values)
+
+        try:
+            if self.agent_type_id.is_send_email_booked:
+                mail_created = self.env['tt.email.queue'].sudo().search([('res_id', '=', self.id), ('res_model', '=', self._name), ('type', '=', 'booked_ppob')], limit=1)
+                if not mail_created:
+                    temp_data = {
+                        'provider_type': 'ppob',
+                        'order_number': self.name,
+                        'type': 'booked',
+                    }
+                    temp_context = {
+                        'co_agent_id': self.agent_id.id
+                    }
+                    self.env['tt.email.queue'].create_email_queue(temp_data, temp_context)
+                else:
+                    _logger.info('Booking email for {} is already created!'.format(self.name))
+                    raise Exception('Booking email for {} is already created!'.format(self.name))
+        except Exception as e:
+            _logger.info('Error Create Email Queue')
 
     def action_issued_api_ppob(self,acquirer_id,customer_parent_id,context):
         self.action_issued_ppob(context['co_uid'],customer_parent_id,acquirer_id)
@@ -456,6 +494,7 @@ class ReservationPpob(models.Model):
     def create_inquiry_api(self, data, context):
         try:
             cust_first_name = data['data'].get('customer_name') and data['data']['customer_name'] or 'Customer'
+            cust_email = data['data'].get('customer_email') and data['data']['customer_email'] or 'booking@rodextravel.tours'
             booker = {
                 'first_name': cust_first_name,
                 'last_name': "PPOB",
@@ -463,7 +502,7 @@ class ReservationPpob(models.Model):
                 'nationality_name': "Indonesia",
                 'nationality_code': "ID",
                 'gender': "male",
-                'email': "booking@rodextravel.tours",
+                'email': cust_email,
                 'calling_code': "62",
                 'mobile': "315662000",
             }
@@ -475,7 +514,7 @@ class ReservationPpob(models.Model):
                 'nationality_code': "ID",
                 'is_also_booker': True,
                 'gender': "male",
-                'email': "booking@rodextravel.tours",
+                'email': cust_email,
                 'calling_code': "62",
                 'mobile': "315662000",
                 'contact_id': "CTC_1",
