@@ -58,6 +58,7 @@ class TtTopUp(models.Model):
                                     help='''Unique amount for identification agent top-up via wire transfer''')
     fees = fields.Monetary('Fees',  default=0, help='Fees amount; set by the system because depends on the acquirer',readonly=True, states={'draft': [('readonly', False)]})
     validated_amount = fields.Monetary('Validated Amount', readonly=True)
+    subsidy = fields.Monetary('Subsidy',readonly=True, default=0)
     total = fields.Monetary('Total', compute='_compute_amount', store=True, readonly=True)
     total_with_fees = fields.Monetary('Total + fees', compute='_compute_amount', store=False)
     ledger_id = fields.Many2one('tt.ledger', string='Ledger', readonly=True, copy=False)
@@ -147,7 +148,16 @@ class TtTopUp(models.Model):
             raise UserError('Can only approve [validate] state Top Up.')
 
         ledger_obj = self.env['tt.ledger']
-        vals = ledger_obj.prepare_vals(self._name,self.id,'Top Up : %s' % (self.name),self.name,datetime.now(),1,self.currency_id.id,self.env.user.id,self.get_total_amount(),description='Top Up Ledger for %s' % self.name)
+        vals = ledger_obj.prepare_vals(self._name,
+                                       self.id,
+                                       'Top Up : %s' % (self.name),
+                                       self.name,
+                                       datetime.now(),
+                                       1,
+                                       self.currency_id.id,
+                                       self.env.user.id,
+                                       self.get_total_amount(),
+                                       description='Top Up Ledger for %s' % self.name)
         vals['agent_id'] = self.agent_id.id
         new_aml = ledger_obj.create(vals)
         self.write({
@@ -173,10 +183,10 @@ class TtTopUp(models.Model):
         top_up.payment_id.action_validate_from_button()
         top_up.payment_id.action_approve_from_button()
 
-        return ERR.get_no_error()
+        return ERR.get_no_error({'top_up_id':top_up.id})
 
     def get_total_amount(self):
-        return self.total_with_fees
+        return self.total_with_fees + self.subsidy
 
     def to_dict(self):
         res = {
