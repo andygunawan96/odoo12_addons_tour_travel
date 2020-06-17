@@ -128,6 +128,7 @@ class MasterEvent(models.Model):
                 temp_dict = {
                     'id': i.uuid,
                     'name': i.name,
+                    'active': i.active,
                     'start_date': i.event_date_start and datetime.strftime(i.event_date_start + relativedelta(hours=utc), '%d %b %Y') or False,
                     'end_date': i.event_date_end and datetime.strftime(i.event_date_end + relativedelta(hours=utc), '%d %b %Y') or False,
                     'start_time': i.event_date_start and datetime.strftime(i.event_date_start + relativedelta(hours=utc), '%H:%M') or False,
@@ -332,6 +333,8 @@ class MasterEvent(models.Model):
                 'event_id': event_id.id,
                 'event_option_id': opt_id.id,
                 'order_number': req['order_number'],
+                'sales_date': datetime.now(),
+                'state': "request",
             }
             # Check apa kah order_number yg dikirim ada di resv event
             book_id = self.env['tt.reservation.event'].search([('name', '=', req['order_number'])], limit=1)
@@ -345,7 +348,21 @@ class MasterEvent(models.Model):
                 pnr = 'E' + req['order_number']
 
             temp_event_reservation_dict.update({'pnr': pnr,})
-            self.env['tt.event.reservation'].sudo().create(temp_event_reservation_dict)
+            opt_obj = self.env['tt.event.reservation'].sudo().create(temp_event_reservation_dict)
+
+            for idx, j in enumerate(rec['event_answer']):
+                if opt_obj['option_code'] == j['option_code']:
+                    for j1 in j['answer']:
+                        temp_extra_question_dict = {
+                            'event_reservation_id': opt_obj.id,
+                            # 'extra_question_id': j1['question_id'],
+                            'question': j1['que'],
+                            'answer': j1['ans']
+                        }
+                        self.env['tt.reservation.event.extra.question'].create(temp_extra_question_dict)
+                    # event_answer.pop(idx)
+                    break
+
         for i in req['event_option_codes']:
             option_obj = self.env['tt.event.option'].sudo().search([('option_code', '=', i['option_code'])])
             option_obj.action_hold_book(1)

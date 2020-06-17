@@ -189,11 +189,6 @@
                                     <field name="date_start"/>
                                     <field name="date_end"/>
                                     <field name="description"/>
-                                    <field name="option_image_ids">
-                                        <tree>
-
-                                        </tree>
-                                    </field>
                                 </group>
                                 <group>
 <!--                                    <label for="minPax" string="Booking Limit"/>-->
