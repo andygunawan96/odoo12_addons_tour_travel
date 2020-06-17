@@ -797,11 +797,7 @@ class TtReservation(models.Model):
     def get_btc_url(self):
         try:
             base_url = tools.config.get('frontend_url', '')
-            # sementara, nanti dihapus
-            if self.provider_type_id.code == 'ppob':
-                final_url = base_url + '/bills/booking/' + (base64.b64encode(str(self.name).encode())).decode()
-            else:
-                final_url = base_url + '/' + str(self.provider_type_id.code) + '/booking/' + (base64.b64encode(str(self.name).encode())).decode()
+            final_url = base_url + '/' + str(self.provider_type_id.code) + '/booking/' + (base64.b64encode(str(self.name).encode())).decode()
         except Exception as e:
             _logger.info(str(e))
             final_url = '#'
