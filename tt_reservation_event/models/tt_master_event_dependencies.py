@@ -13,7 +13,7 @@ class MasterEventReservation(models.Model):
     _order = 'id desc'
 
     event_id = fields.Many2one('tt.master.event', 'Event ID')
-    # vendor_id = fields.Many2one('tt.vendor', related="event_id.event_vendor_id", store=True)
+    vendor_id = fields.Many2one('tt.vendor', related="event_id.event_vendor_id", store=True)
     event_option_id = fields.Many2one('tt.event.option', 'Event option ID', readonly=True)
     event_ticket_price = fields.Char(compute='compute_ticket_price', store=True)
     pnr = fields.Char('PNR', readonly=True)
