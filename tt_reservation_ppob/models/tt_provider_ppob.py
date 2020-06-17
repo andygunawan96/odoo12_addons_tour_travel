@@ -402,6 +402,26 @@ class TtProviderPPOB(models.Model):
         self.create_ticket_api(passenger_vals)
         self.create_service_charge(service_charge_vals)
 
+    def get_description(self):
+        desc = ''
+        if self.carrier_id.code == '521':
+            desc += 'Fare Type: %s <br/>' % (self.fare_type,)
+            desc += 'Power: %s <br/>' % (self.power,)
+            for rec in self.ppob_bill_ids:
+                if rec.meter_history_ids:
+                    desc += 'Meter (%s): %s <br/>' % (rec.period.strftime('%b %Y'), rec.meter_history_ids[-1].after_meter)
+        elif self.carrier_id.code == '532':
+            desc += 'Fare Type: %s <br/>' % (self.fare_type,)
+            desc += 'Power: %s <br/>' % (self.power,)
+            for rec in self.ppob_bill_ids:
+                desc += 'Token (%s): %s <br/>' % (rec.period.strftime('%b %Y'), rec.token)
+                desc += 'KWH Amount (%s): %s <br/>' % (rec.period.strftime('%b %Y'), rec.kwh_amount)
+        elif self.carrier_id.code == '524':
+            desc += 'Transaction: %s <br/>' % (self.transaction_name,)
+        elif self.carrier_id.code == '3200':
+            desc += ''
+        return desc
+
     def to_dict(self):
         bill_list = []
         for rec in self.ppob_bill_ids:
@@ -462,6 +482,7 @@ class TtProviderPPOB(models.Model):
             'unpaid_bill_display': self.unpaid_bill_display and self.unpaid_bill_display or 0,
             'session_id': self.session_id and self.session_id or '',
             'allowed_denominations': allowed_denominations,
+            'description': self.get_description()
         }
 
         return res
