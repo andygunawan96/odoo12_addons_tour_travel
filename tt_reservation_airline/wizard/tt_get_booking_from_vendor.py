@@ -366,6 +366,7 @@ class TtGetBookingFromVendorReview(models.TransientModel):
             "state_description": retrieve_res['status'],
             "sequence": 1,
             "balance_due": retrieve_res['balance_due'],
+            "total_price": retrieve_res['total_price'],
             "origin": retrieve_res['journeys'][0]['origin'],
             "destination": retrieve_res['journeys'][-1]['destination'],
             "departure_date": retrieve_res['journeys'][0]['departure_date'],

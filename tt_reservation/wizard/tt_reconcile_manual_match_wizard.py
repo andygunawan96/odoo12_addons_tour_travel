@@ -6,7 +6,7 @@ class TtReconcileManualMatchWizard(models.TransientModel):
     _name = "tt.reconcile.manual.match.wizard"
     _description = 'Rodex Wizard Reconcile Manual Match Wizard'
 
-    current_record_pnr = fields.Char('Current PNR', readonly=True)
+    reconcile_transaction_line_id = fields.Many2one('tt.reconcile.transaction.lines','Transaction Line',readonly=True)
     current_total_price = fields.Monetary('Current Total Price',readonly=True)
     currency_id = fields.Many2one('res.currency', default=lambda self: self.env.user.company_id.currency_id)
 
@@ -14,29 +14,37 @@ class TtReconcileManualMatchWizard(models.TransientModel):
 
     def _compute_provider_selection(self):
         try:
+            recon_line_obj = self.env['tt.reconcile.transaction.lines'].browse(int(self._context['default_reconcile_transaction_line_id']))
             provider_type = self.env['tt.provider.%s' % (self._context['default_provider_type_code'])].search([
-                ('reconcile_line_id','=',False)
+                ('reconcile_line_id','=',False),
+                '|',
+                ('pnr','=',recon_line_obj.pnr),
+                ('issued_date','=',recon_line_obj.reconcile_transaction_id.transaction_date)
             ])
             selection = []
             for rec in provider_type:
-                selection.append((rec.id,'%s - %s' % (rec.pnr or '######',rec.total_price)))
+                selection.append((rec.id,'{}  |  {:,}  |  {}'.format(rec.pnr or '######',rec.total_price and int(rec.total_price) or 0,rec.issued_date and str(rec.issued_date)[:19] or 'No Date')))
             return selection
         except:
             return []
 
-    # def match_data(self):
-    #     if not self.provider_selection:
-    #         raise UserError('Please Select Provider First')
-    #
-    #     self.write({
-    #         'res_model': found_rec._name,
-    #         'res_id': found_rec.id,
-    #         'state': 'match'
-    #     })
-    #     found_rec.write({
-    #         'reconcile_line_id': rec.id,
-    #         'reconcile_time': datetime.now()
-    #     })
+    def select_provider(self):
+        if not self.provider_selection:
+            raise UserError('Please Select Provider First')
+        found_rec = self.env['tt.provider.%s' % (self._context['default_provider_type_code'])].browse(int(self.provider_selection))
+        try:
+            found_rec.create_date
+        except:
+            raise UserError('Provider Not Found')
+        self.reconcile_transaction_line_id.write({
+            'res_model': found_rec._name,
+            'res_id': found_rec.id,
+            'state': 'match'
+        })
+        found_rec.write({
+            'reconcile_line_id': self.reconcile_transaction_line_id.id,
+            'reconcile_time': datetime.now()
+        })
 
     def open_reference(self):
         if not self.provider_selection:

@@ -37,6 +37,23 @@ class VendorReportEvent(models.TransientModel):
         return result
 
     @api.multi
+    def action_print(self):
+        self.ensure_one()
+        event_name = self.read(['event_name'])[0]
+        transaction_state = self.read(['transaction_state'])[0]
+        limitation = [('vendor_id', '=', self.env.user.id)]
+        if event_name['event_name'] != 'all':
+            limitation.append(('event_name', '=', event_name))
+        if transaction_state['transaction_state'] != 'all':
+            limitation.append(('transaction_state', '=', transaction_state))
+        data = self.env['tt.event.reservation'].sudo().search(limitation)
+        for i in data:
+            temp_dict = {
+                'event_reservation_id': i['id']
+            }
+            self.env['tt.event.reservation.temporary.payment'].sodu().create(temp_dict)
+
+    @api.multi
     def action_print_excel(self):
         self.ensure_one()
         data = ({

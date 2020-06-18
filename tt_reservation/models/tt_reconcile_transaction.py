@@ -94,8 +94,8 @@ class TtReconcileTransactionLines(models.Model):
     ticket_numbers = fields.Text('Ticket')
     description = fields.Text('Description')
 
-    state = fields.Selection([('match','Match'),
-                              ('not_match','Not Match'),
+    state = fields.Selection([('not_match','Not Match'),
+                              ('match','Match'),
                               ('done','Done'),
                               ('ignore','Ignore')],'State',default='not_match')
     res_model = fields.Char('Ref Model', readonly=True)

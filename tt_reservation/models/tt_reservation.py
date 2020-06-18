@@ -812,9 +812,16 @@ class TtReservation(models.Model):
     def compute_all_provider_total_price(self):
         provider_obj = self.env['tt.provider.%s' % self.provider_type_id.code]
         for rec in provider_obj.search([]):
-            if rec.total_price == 0 or rec.total_price == False:
+            # if rec.total_price == 0 or rec.total_price == False:
+            price = 0
+            roc_found = False
+            for sc in rec.cost_service_charge_ids:
+                if sc.charge_type != 'ROC' and sc.charge_type != 'RAC':
+                    price += sc.total
+                if sc.charge_type == 'ROC':
+                    roc_found = True
+            if not roc_found:
                 price = 0
                 for sc in rec.cost_service_charge_ids:
-                    if sc.charge_type != 'ROC' and sc.charge_type != 'RAC':
-                        price += sc.total
-                rec.total_price = price
+                    price += sc.total
+            rec.total_price = price
