@@ -14,12 +14,16 @@ class TtReconcileManualMatchWizard(models.TransientModel):
 
     def _compute_provider_selection(self):
         try:
+            recon_line_obj = self.env['tt.reconcile.transaction.lines'].browse(int(self._context['default_reconcile_transaction_line_id']))
             provider_type = self.env['tt.provider.%s' % (self._context['default_provider_type_code'])].search([
-                ('reconcile_line_id','=',False)
+                ('reconcile_line_id','=',False),
+                '|',
+                ('pnr','=',recon_line_obj.pnr),
+                ('issued_date','=',recon_line_obj.reconcile_transaction_id.transaction_date)
             ])
             selection = []
             for rec in provider_type:
-                selection.append((rec.id,'%s - %s' % (rec.pnr or '######',rec.total_price)))
+                selection.append((rec.id,'{}  |  {:,}  |  {}'.format(rec.pnr or '######',rec.total_price and int(rec.total_price) or 0,rec.issued_date and str(rec.issued_date)[:19] or 'No Date')))
             return selection
         except:
             return []
