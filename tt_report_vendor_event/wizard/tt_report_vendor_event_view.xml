@@ -12,6 +12,7 @@
                     </group>
                 </sheet>
                 <footer>
+                    <button name="action_print" string="Wizard" type="object" class="oe_highlight"/>
                     <button name="action_print_excel" string="Print in Excel" type="object" class="oe_highlight"/>
                     or
                     <button string="Cancel" class="oe_link" special="cancel"/>

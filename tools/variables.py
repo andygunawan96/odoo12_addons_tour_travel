@@ -260,7 +260,8 @@ PRODUCT_STATE = [
     ('confirm', 'Confirm'),
     ('cancel', 'Cancel'),
     ('postpone', 'Postpone'),
-    ('sold-out', 'Sold Out')
+    ('sold-out', 'Sold Out'),
+    ('expired', 'Expired')
 ]
 RESV_RECONCILE_STATE = [
     ('not_reconciled','Not Reconciled'),
