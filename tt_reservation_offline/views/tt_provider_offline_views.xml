@@ -7,7 +7,7 @@
             <field name="model">tt.provider.offline</field>
             <field name="arch" type="xml">
                 <form string="">
-                    <field name="state" readonly="1"/>
+                    <field name="state" readonly="1" widget="statusbar" statusbar_visible="draft,booked,issued"/>
                     <sheet>
                         <group>
                             <group>
