@@ -391,3 +391,12 @@ class ProviderOffline(models.Model):
 
     def get_carrier_name(self):
         return []
+
+    def set_total_price(self):
+        for rec in self:
+            rec.total_price = 0
+            for scs in rec.cost_service_charge_ids:
+                if scs.charge_code in ['hoc']:
+                    rec.total_price -= scs.total
+                else:
+                    rec.total_price += scs.total

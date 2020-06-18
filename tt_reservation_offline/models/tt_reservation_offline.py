@@ -562,6 +562,8 @@ class IssuedOffline(models.Model):
                 provider.create_service_charge_hotel(idx)
             else:
                 provider.create_service_charge()
+            # create total price
+            provider.set_total_price()
         self.round_offline_pricing()
         self.calculate_service_charge()
 
