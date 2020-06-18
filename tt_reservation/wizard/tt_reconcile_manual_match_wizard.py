@@ -15,12 +15,16 @@ class TtReconcileManualMatchWizard(models.TransientModel):
     def _compute_provider_selection(self):
         try:
             recon_line_obj = self.env['tt.reconcile.transaction.lines'].browse(int(self._context['default_reconcile_transaction_line_id']))
-            provider_type = self.env['tt.provider.%s' % (self._context['default_provider_type_code'])].search([
-                ('reconcile_line_id','=',False),
+            search_domain = [
+                ('reconcile_line_id', '=', False),
                 '|',
-                ('pnr','=',recon_line_obj.pnr),
-                ('issued_date','=',recon_line_obj.reconcile_transaction_id.transaction_date)
-            ])
+                ('pnr', '=', recon_line_obj.pnr),
+                ('issued_date', '=', recon_line_obj.reconcile_transaction_id.transaction_date)
+            ]
+            if self._context.get('offline_provider'):
+                provider_type = self.env['tt.provider.offline'].search(search_domain)
+            else:
+                provider_type = self.env['tt.provider.%s' % (self._context['default_provider_type_code'])].search(search_domain)
             selection = []
             for rec in provider_type:
                 selection.append((rec.id,'{}  |  {:,}  |  {}'.format(rec.pnr or '######',rec.total_price and int(rec.total_price) or 0,rec.issued_date and str(rec.issued_date)[:19] or 'No Date')))
@@ -31,7 +35,10 @@ class TtReconcileManualMatchWizard(models.TransientModel):
     def select_provider(self):
         if not self.provider_selection:
             raise UserError('Please Select Provider First')
-        found_rec = self.env['tt.provider.%s' % (self._context['default_provider_type_code'])].browse(int(self.provider_selection))
+        if self._context.get('offline_provider'):
+            found_rec = self.env['tt.provider.offline'].browse(int(self.provider_selection))
+        else:
+            found_rec = self.env['tt.provider.%s' % (self._context['default_provider_type_code'])].browse(int(self.provider_selection))
         try:
             found_rec.create_date
         except:
