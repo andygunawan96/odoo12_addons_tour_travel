@@ -114,7 +114,8 @@ class ReservationEvent(models.Model):
                 rec.reconcile_state = 'reconciled'
             elif any(rec1.reconcile_line_id != False for rec1 in rec.provider_booking_ids):
                 rec.reconcile_state = 'partial'
-            rec.reconcile_state = 'not_reconciled'
+            else:
+                rec.reconcile_state = 'not_reconciled'
 
     def _calc_grand_total(self):
         for i in self:
