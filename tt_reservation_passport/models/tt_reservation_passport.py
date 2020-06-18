@@ -116,7 +116,8 @@ class TtPassport(models.Model):
                 rec.reconcile_state = 'reconciled'
             elif any(rec1.reconcile_line_id != False for rec1 in rec.provider_booking_ids):
                 rec.reconcile_state = 'partial'
-            rec.reconcile_state = 'not_reconciled'
+            else:
+                rec.reconcile_state = 'not_reconciled'
 
     # Jika pax belum menentukan tujuan negara, default country di isi singapore
     def default_country_id(self):

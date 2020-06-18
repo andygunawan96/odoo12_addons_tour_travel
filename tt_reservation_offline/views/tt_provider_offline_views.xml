@@ -18,6 +18,8 @@
                                 <field name="pnr" readonly="1"/>
                                 <field name="provider_id" readonly="1"/>
                                 <field name="total_price" readonly="1"/>
+                                <field name="reconcile_line_id" readonly="1"/>
+                                <field name="reconcile_time" readonly="1"/>
                             </group>
                             <group>
                                 <field name="confirm_uid" readonly="1"/>
