@@ -41,6 +41,12 @@
                             <field name="sales_date"/>
                             <field name="order_number"/>
                         </group>
+                        <field name="event_reservation_answer">
+                            <tree>
+                                <field name="question"/>
+                                <field name="answer"/>
+                            </tree>
+                        </field>
                     </group>
                 </sheet>
             </form>
@@ -56,6 +62,7 @@
                 <field name="event_id"/>
                 <field name="booker_id"/>
                 <field name="sales_date"/>
+                <field name="state"/>
             </tree>
         </field>
     </record>
