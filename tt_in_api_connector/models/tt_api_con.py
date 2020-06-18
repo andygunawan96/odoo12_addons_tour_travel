@@ -116,4 +116,4 @@ class TtApiCon(models.Model):
         return self.send_request_to_gateway('%s/account/%s' % (self.url,request['provider_type']),
                                             request['data'],
                                             'reconcile',
-                                            timeout=60)
+                                            timeout=120)
