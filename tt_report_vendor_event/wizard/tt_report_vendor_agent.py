@@ -46,18 +46,22 @@ class VendorReportEvent(models.TransientModel):
         if event_name['event_name'] != 'all':
             limitation.append(('event_id', '=', int(event_name['event_name'])))
         if transaction_state['transaction_state'] != 'all':
-            limitation.append(('transaction_state', '=', transaction_state['transaction_state']))
+            limitation.append(('state', '=', transaction_state['transaction_state']))
         data = self.env['tt.event.reservation'].sudo().search(limitation)
-        for i in data:
-            temp_dict = {
-                'event_reservation_ids': [(6,0,[i['id']])],
-                'user_id': self.env.user.id
-            }
-            self.env['tt.event.reservation.temporary.payment'].sudo().create(temp_dict)
-        # self.env['tt.event.reservation.temporary.payment'].sudo().create({
-        #     'event_reservation_ids': [(6, 0, data.ids)],
-        #     'user_id': self.env.user.id
-        # })
+
+        # Opsi 1 Print 1 Data as 1 Record
+        # for i in data:
+        #     temp_dict = {
+        #         'event_reservation_ids': [(6,0,[i['id']])],
+        #         'user_id': self.env.user.id
+        #     }
+        #     self.env['tt.event.reservation.temporary.payment'].sudo().create(temp_dict)
+
+        # Opsi 2 Print 1 Data as multi Record bisa dipakai untuk rekapan dan tag bukti bayar
+        self.env['tt.event.reservation.temporary.payment'].sudo().create({
+            'event_reservation_ids': [(6, 0, data.ids)],
+            'user_id': self.env.user.id
+        })
 
     @api.multi
     def action_print_excel(self):

@@ -372,14 +372,14 @@ class MasterEvent(models.Model):
             'hold_date': str(datetime.now() + relativedelta(minutes=45))[:16]+':00',
         })
 
-    def issued_master_event_from_api(self, pnr):
+    def issued_master_event_from_api(self, pnr, context={}):
         try:
             #search all of the reservation
             booking_event_obj = self.env['tt.event.reservation'].sudo().search([('pnr', '=', pnr)])
 
             email_content = "<ul>"
             for i in booking_event_obj:
-                i.action_set_to_request()
+                i.action_request_by_api(context.get('co_uid'))
                 i.event_option_id.making_sales(1)
                 email_content += "<li>{}</li>".format(i.order_number)
             email_content += "</ul>"

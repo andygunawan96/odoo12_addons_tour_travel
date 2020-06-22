@@ -23,3 +23,8 @@ class temporaryPayment(models.Model):
         for i in data:
             i['event_reservation_id'].action_paid()
             i.unlink()
+
+    def action_paid(self):
+        for rec in self.event_reservation_ids:
+            if rec.state in ['confirm']:
+                rec.action_paid()

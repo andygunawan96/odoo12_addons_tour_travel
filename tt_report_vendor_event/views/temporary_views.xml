@@ -5,8 +5,15 @@
         <field name="model">tt.event.reservation.temporary.payment</field>
         <field name="arch" type="xml">
             <form string="Temporary Views">
-                <field name="user_id"/>
-                <field name="event_reservation_ids"/>
+                <header>
+                    <button name="action_paid" type="object" string="Paid"/>
+                </header>
+                <sheet>
+                    <group>
+                        <field name="user_id"/>
+                        <field name="event_reservation_ids"/>
+                    </group>
+                </sheet>
             </form>
         </field>
     </record>
