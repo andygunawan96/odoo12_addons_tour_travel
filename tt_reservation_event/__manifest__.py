@@ -14,7 +14,7 @@ TT_TRANSPORT
     'depends' : ['base_setup','tt_base','tt_reservation','base_address_city','tt_agent_sales'],
     'data': [
         'data/ir_sequence_data.xml',
-        # 'data/ir_cron_data.xml',
+        'data/ir_cron_data.xml',
         'data/tt_provider_type_data.xml',
         'data/tt_provider_data.xml',
         # 'data/tt_provider_activity.xml',
