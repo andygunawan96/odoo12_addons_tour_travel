@@ -158,15 +158,16 @@ class IssuedOffline(models.Model):
     @api.depends('provider_booking_ids','provider_booking_ids.reconcile_line_id')
     def _compute_reconcile_state(self):
         for rec in self:
-            if not rec.provider_booking_ids:
-                rec.reconcile_state = 'not_reconciled'
-            else:
-                if all(rec1.reconcile_line_id != False for rec1 in rec.provider_booking_ids):
+            reconcile_id_list = [rec1.reconcile_line_id.id != False for rec1 in rec.provider_booking_ids]
+            if reconcile_id_list:
+                if all(reconcile_id_list):
                     rec.reconcile_state = 'reconciled'
-                elif any(rec1.reconcile_line_id != False for rec1 in rec.provider_booking_ids):
+                elif any(reconcile_id_list):
                     rec.reconcile_state = 'partial'
                 else:
                     rec.reconcile_state = 'not_reconciled'
+            else:
+                rec.reconcile_state = 'not_reconciled'
 
     def date_format_check(self, provider_type, vals=None):
         """ Cek format tanggal line """
