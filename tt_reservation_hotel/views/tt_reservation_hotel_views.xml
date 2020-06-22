@@ -149,6 +149,7 @@
                     <button string="Set to Draft" groups="tt_base.group_tt_agent_user_manager,tt_base.group_tt_tour_travel_operator" name="action_draft" type="object" states="cancel"/>
                     <button string="Confirm" groups="tt_base.group_tt_agent_user_operator,tt_base.group_tt_tour_travel_operator" name="action_confirm" type="object" states="draft" class="oe_highlight"/>
                     <button string="Issued" groups="tt_base.group_tt_agent_user_operator,tt_base.group_tt_tour_travel_operator" name="action_issued_backend" states="confirm" type="object" class="oe_highlight"/>
+                    <button string="Force Issued" groups="tt_base.group_tt_tour_travel_operator" name="action_force_issued" states="fail_issued" type="object" class="oe_highlight"/>
 <!--                    <button string="Issued" groups="tt_base.group_tt_agent_user_operator,tt_base.group_tt_tour_travel_operator" name="action_issued_backend" states="draft"-->
 <!--                            help="Issued to Vendor" type="object" class="oe_highlight"/>-->
 

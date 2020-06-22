@@ -3,6 +3,7 @@ from odoo.http import request
 import logging
 import json
 from ...tools import session
+from datetime import datetime, timedelta
 
 _logger = logging.getLogger(__name__)
 SESSION_NT = session.Session()
@@ -15,23 +16,40 @@ class MasterEventReservation(models.Model):
     event_id = fields.Many2one('tt.master.event', 'Event ID')
     vendor_id = fields.Many2one('tt.vendor', related="event_id.event_vendor_id", store=True)
     event_option_id = fields.Many2one('tt.event.option', 'Event option ID', readonly=True)
-    event_ticket_price = fields.Char(compute='compute_ticket_price', store=True)
+    event_ticket_price = fields.Monetary(compute='compute_ticket_price', store=True)
+    currency_id = fields.Many2one('res.currency', string='Currency', compute='compute_ticket_price', store=True)
     pnr = fields.Char('PNR', readonly=True)
+    validator_sequence = fields.Char('Sequence')
     booker_id = fields.Many2one('tt.customer', 'Booker', readonly=True)
     contact_id = fields.Many2one('tt.customer', 'Contact', readonly=True)
     sales_date = fields.Datetime('Sold Date')
     order_number = fields.Char('Client Order Number', help='Code must be distinct', readonly=True)
-    state = fields.Selection([('request', 'Request'), ('confirm', 'Confirm'), ('done', 'Paid')])
+    state = fields.Selection([('draft', 'Draft'), ('request', 'Request'), ('confirm', 'Confirm'), ('done', 'Paid')], default='draft')
+    event_reservation_answer_ids = fields.One2many('tt.event.reservation.answer', 'event_reservation_id')
+    ticket_number = fields.Char('Ticket Number')
 
     def compute_ticket_price(self):
         for i in self:
             i.event_ticket_price = i.event_option_id.price
+            i.currency_id = i.event_option_id.currency_id
 
     def action_confirm(self):
         self.state = "confirm"
 
     def action_paid(self):
         self.state = "paid"
+
+    def action_set_to_request(self):
+        self.state = "request"
+
+class EventReservationQuestionAnswer(models.Model):
+    _name = "tt.event.reservation.answer"
+    _description = "Rodex Event Model"
+
+    event_reservation_id = fields.Many2one('tt.event.reservation', 'Event Option ID')
+    extra_question_id = fields.Many2one("tt.event.extra.question", 'Event extra Question')
+    question = fields.Char('Question')
+    answer = fields.Char("Answer")
 
 class MasterLocations(models.Model):
     _name = 'tt.event.location'
@@ -103,7 +121,6 @@ class MasterEventCategory(models.Model):
         return {
             'response': self.get_from_api(data['name'], False, []),
         }
-
 
 class EventOptions(models.Model):
     _name = 'tt.event.option'

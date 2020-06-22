@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record model="ir.ui.view" id="event_temporary_form_view">
+        <field name="name">temporary.view.form</field>
+        <field name="model">tt.event.reservation.temporary.payment</field>
+        <field name="arch" type="xml">
+            <form string="Temporary Views">
+                <field name="user_id"/>
+                <field name="event_reservation_ids"/>
+            </form>
+        </field>
+    </record>
+
+    <record model="ir.ui.view" id="event_temporary_tree_View">
+        <field name="name">temporary.view.tree</field>
+        <field name="model">tt.event.reservation.temporary.payment</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="user_id"/>
+                <field name="event_reservation_ids"/>
+            </tree>
+        </field>
+    </record>
+
+    <record model="ir.actions.act_window" id="action_event_temporary_view">
+        <field name="name">Temporary Report</field>
+        <field name="res_model">tt.event.reservation.temporary.payment</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+        <field name="domain">[]</field>
+        <field name="context">{}</field>
+        <field name="target">current</field>
+    </record>
+
+    <menuitem
+        id="sub_menu_report_transaction_temporary"
+        name="Temporary report"
+        parent="tt_base.top_external_vendor_transaction"
+        action="action_event_temporary_view"
+        sequence="20"
+        />
+</odoo>
