@@ -27,6 +27,7 @@
         'security/ir.model.access.csv',
         'wizard/tt_report_vendor_event_view.xml',
         'report/tt_report_vendor_event_menu.xml',
+        'views/temporary_views.xml',
     ],
     # only loaded in demonstration mode
     'demo': [],
