@@ -91,7 +91,7 @@
 
     <!-- Content Version 2 -->
     <template id="reservation_hotel_content_view">
-        <div class="box" style="margin: 0px 20px 20px 20px">
+        <div class="box" style="margin: 0px 20px 20px 20px; font-family: 'LiberationSans'">
             <!-- No. Booking -->
             <div style="margin-bottom: 10px; margin-top: 5px;">
                 <span style="font-size: 18px; font-weight: 730">No. Booking : </span>

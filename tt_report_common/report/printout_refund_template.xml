@@ -25,7 +25,7 @@
                     <t t-if="is_ho == true">
                         <t t-call="tt_report_common.external_layout">
                             <br/>
-                            <div style="margin: 0 20px">
+                            <div style="margin: 0 20px; font-family: 'LiberationSans'">
                                 <t t-call="tt_report_common.refund_ho_content_view"/>
                             </div>
                         </t>
@@ -33,7 +33,7 @@
                     <t t-if="is_est == true">
                         <t t-call="tt_report_common.external_layout">
                             <br/>
-                            <div style="margin: 0 20px">
+                            <div style="margin: 0 20px; font-family: 'LiberationSans'">
                                 <t t-call="tt_report_common.refund_est_content_view"/>
                             </div>
                         </t>
@@ -41,7 +41,7 @@
                     <t t-if="not is_est == true and not is_ho == true">
                         <t t-call="tt_report_common.external_layout">
                             <br/>
-                            <div style="margin: 0 20px">
+                            <div style="margin: 0 20px; font-family: 'LiberationSans'">
                                 <t t-call="tt_report_common.refund_content_view"/>
                             </div>
                         </t>
