@@ -32,10 +32,10 @@
                 <sheet>
                     <group>
                         <group>
-                            <field name="event_id"/>
+                            <field name="event_id" readonly="1"/>
                             <field name="event_option_id"/>
                             <field name="pnr"/>
-                            <field name="validator_sequence"/>
+                            <field name="validator_sequence" readonly="1"/>
                             <field name="ticket_number"/>
                         </group>
                         <group>
@@ -68,7 +68,8 @@
                         </group>
                         <group>
                             <field name="event_ticket_price"/>
-                            <field name="currency_id"/>
+                            <field name="currency_id" readonly="1"/>
+                            <field name="special_request"/>
                         </group>
                         <field name="event_reservation_answer_ids">
                             <tree>

@@ -71,7 +71,7 @@ class ReservationEvent(models.Model):
             ticket = opt_obj.option_id.ticket_number and ' (' + opt_obj.option_id.ticket_number + ') ' or ''
             self.env['tt.agent.invoice.line.detail'].create({
                 # 'desc': opt_obj.option_id.event_option_id.grade + ticket,
-                'desc': opt_obj.option_id.event_option_name + ticket,
+                'desc': opt_obj.option_id.event_option_name and opt_obj.option_id.event_option_name + ticket or ticket,
                 'invoice_line_id': inv_line_obj.id,
                 'price_unit': price_unit, # Channel + Cost Service Charge
                 'quantity': 1,

@@ -25,6 +25,9 @@ TT_RESERVATION_HOTEL
         # 'data/res.country.district.csv',
         'security/ir.model.access.csv',
         'security/ir_rule_data.xml',
+
+        'wizard/force_issued_wizard_views.xml',
+
         # 'views/charge_rule_views.xml',
         'views/hotel_information_views.xml',
         'views/hotel_type_views.xml',

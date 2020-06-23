@@ -4,6 +4,7 @@ import logging
 import json
 from ...tools import session
 from datetime import datetime, timedelta
+from odoo.exceptions import UserError
 
 _logger = logging.getLogger(__name__)
 SESSION_NT = session.Session()
@@ -28,6 +29,7 @@ class MasterEventReservation(models.Model):
     state = fields.Selection([('draft', 'Draft'),('request', 'Request'), ('confirm', 'Confirm'), ('done', 'Paid')], default='draft')
     event_reservation_answer_ids = fields.One2many('tt.event.reservation.answer', 'event_reservation_id')
     ticket_number = fields.Char('Ticket Number')
+    special_request = fields.Text('Special Request', help='Request / Notes from customer')
 
     request_date = fields.Datetime('Request Date')
     request_uid = fields.Many2one('res.users', 'User Request')
@@ -43,7 +45,7 @@ class MasterEventReservation(models.Model):
 
     def action_confirm(self):
         if not self.ticket_number and self.state == 'request':
-            raise UserWarning('Ticket Number Required to set this  Resv to Confirm')
+            raise UserError('Ticket Number Required to set this  Resv to Confirm')
         self.state = "confirm"
         self.confirm_date = datetime.now()
         self.confirm_uid = self.env.user.id
