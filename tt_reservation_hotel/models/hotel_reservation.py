@@ -532,18 +532,18 @@ class HotelReservation(models.Model):
     #     else:
     #         raise UserError('Order has been issued')
 
-    def action_force_issued(self):
-        for rec in self:
-            for prov in rec.provider_booking_ids:
-                prov.action_force_issued(self.pnr)
-                prov.action_create_ledger(self.issued_uid.id)
-                prov.action_issued_api_hotel({'co_uid': self.env.user.id, 'signature': self.sid_issued or self.sid_booked})
-
-            if rec.invoice_line_ids:
-                # Jika Error dan sdah buat invoice tidak kita create invoice lagi
-                rec.state = 'issued'
-            else:
-                rec.action_issued()
+    # def action_force_issued(self):
+    #     for rec in self:
+    #         for prov in rec.provider_booking_ids:
+    #             prov.action_force_issued(self.pnr)
+    #             prov.action_create_ledger(self.issued_uid.id)
+    #             prov.action_issued_api_hotel({'co_uid': self.env.user.id, 'signature': self.sid_issued or self.sid_booked})
+    #
+    #         if rec.invoice_line_ids:
+    #             # Jika Error dan sdah buat invoice tidak kita create invoice lagi
+    #             rec.state = 'issued'
+    #         else:
+    #             rec.action_issued()
 
     @api.one
     def action_done(self, issued_response={}):

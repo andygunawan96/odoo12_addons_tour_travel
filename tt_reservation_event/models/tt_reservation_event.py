@@ -194,7 +194,7 @@ class ReservationEvent(models.Model):
             'expired_date': datetime.now()
         })
 
-    def check_provider_state(self, context, pnr_list = [], hold_sate = False, req = {}):
+    def check_provider_state(self, context, pnr_list=[], hold_sate=False, req={}):
         if all(i.state == 'booked' for i in self.provider_booking_ids):
             #booked
             pass

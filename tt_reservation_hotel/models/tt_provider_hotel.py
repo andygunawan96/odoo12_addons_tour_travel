@@ -131,6 +131,20 @@ class TransportBookingProvider(models.Model):
         for rec in self.cost_service_charge_ids:
             rec.is_ledger_created = False
 
+    def action_force_issued(self):
+        self.action_force_issued(self.pnr)
+        self.action_create_ledger(self.issued_uid.id)
+        self.action_issued_api_hotel({
+            'co_uid': self.env.user.id,
+            'signature': self.booking_id.sid_issued or self.booking_id.sid_booked
+        })
+
+        if self.booking_id.invoice_line_ids:
+            # Jika Error dan sdah buat invoice tidak kita create invoice lagi
+            self.booking_id.state = 'issued'
+        else:
+            self.booking_id.action_issued()
+
     # TODO START
     def create_service_charge(self):
         service_chg_obj = self.env['tt.service.charge']
