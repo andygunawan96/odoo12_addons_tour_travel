@@ -2,7 +2,7 @@
 <odoo>
     <!-- Template struk pembayaran listrik postpaid -->
     <template id="reservation_ppob_pln_postpaid_content_view">
-        <div class="box" style="margin: 0px 20px 20px 20px">
+        <div class="box" style="margin: 0px 20px 20px 20px; font-family: 'LiberationSans'">
             <!-- No. Booking -->
             <div style="margin-bottom: 30px; margin-top: 30px;">
                 <div class="row" style="">
@@ -98,7 +98,7 @@
 
     <!-- Template struk pembayaran listrik prepaid -->
     <template id="reservation_ppob_pln_prepaid_content_view">
-        <div class="box" style="margin: 0px 20px 20px 20px">
+        <div class="box" style="margin: 0px 20px 20px 20px; font-family: 'LiberationSans'">
             <!-- No. Booking -->
             <div style="margin-bottom: 30px; margin-top: 30px;">
                 <div class="row" style="">
@@ -190,7 +190,7 @@
 
     <!-- Template struk pembayaran non listrik -->
     <template id="reservation_ppob_non_pln_content_view">
-        <div class="box" style="margin: 0px 20px 20px 20px">
+        <div class="box" style="margin: 0px 20px 20px 20px; font-family: 'LiberationSans'">
             <!-- No. Booking -->
             <div style="margin-bottom: 30px; margin-top: 30px;">
                 <div class="row" style="">
@@ -280,7 +280,7 @@
 
     <!-- Template struk pembayaran BPJS Kesehatan -->
     <template id="reservation_ppob_bpjs_kesehatan_content_view">
-        <div class="box" style="margin: 0px 20px 20px 20px">
+        <div class="box" style="margin: 0px 20px 20px 20px; font-family: 'LiberationSans'">
             <!-- No. Booking -->
             <div style="margin-bottom: 30px; margin-top: 30px;">
                 <div class="row" style="">

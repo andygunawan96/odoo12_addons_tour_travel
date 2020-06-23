@@ -765,7 +765,7 @@
                                 </thead>
                                 <tbody>
                                     <tr>
-                                        <td><span t-field="provider_itin_id.pnr"/></td>
+                                        <td><span t-field="provider_itin_id.original_pnr"/></td>
                                         <td><span t-field="provider_itin_id.customer_number"/></td>
                                         <td><span t-esc="len(provider_itin_id.ppob_bill_detail_ids)"/></td>
                                     </tr>

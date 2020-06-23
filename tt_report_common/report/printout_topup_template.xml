@@ -124,7 +124,7 @@
         <t t-call="web.html_container">
             <t t-foreach="docs" t-as="doc">
                 <div class="page">
-                    <t t-call="tt_report_common.external_layout_ho">
+                    <t t-call="tt_report_common.external_layout">
                         <br/>
                         <t t-call="tt_report_common.printout_topup_content"/>
                     </t>
