@@ -110,7 +110,7 @@
     <template id="printout_ticket_airline_template">
         <t t-set="pnr_index" t-value="0"/>
         <t t-foreach="doc.provider_booking_ids" t-as="length">
-            <div class="article" style="margin: 0px !important; padding: 0px !important">
+            <div class="article" style="margin: 0px !important; padding: 0px !important; font-family: 'LiberationSans'">
                 <div class="row" style="height:100px;">
                     <t t-if="doc.agent_id.logo">
                         <div class="col-4" style="margin-left: 30px">

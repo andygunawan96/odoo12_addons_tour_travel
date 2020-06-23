@@ -248,7 +248,7 @@ class ReservationEvent(models.Model):
             booker_data = req.get('booker')
             contacts_data = req.get('contact')
             passengers = req.get('passengers')
-            event_code = req.get('event_code')
+            event_uuid = req.get('event_code')
             event_option_codes = req.get('event_option_codes')
             provider = req.get('provider')
             event_answer = req.get('event_answer', [])
@@ -261,7 +261,7 @@ class ReservationEvent(models.Model):
 
             #get all necessary data
             provider_id = self.env['tt.provider'].sudo().search([('code', '=', provider)], limit=1)
-            event_id = self.env['tt.master.event'].sudo().search([('uuid', '=', event_code)], limit=1)
+            event_id = self.env['tt.master.event'].sudo().search([('uuid', '=', event_uuid)], limit=1)
 
             #build temporary dict
             temp_main_dictionary = {
@@ -269,7 +269,7 @@ class ReservationEvent(models.Model):
                 'event_name': event_id and event_id.name or req.get('event_name'),
                 'event_vendor_id': event_id and event_id.event_vendor_id.id or False,
                 'event_vendor': event_id and event_id.event_vendor_id.name or req.get('provider'),
-                'event_product_uuid': event_id and event_id.uuid or req.get('event_id'),
+                'event_product_uuid': event_id and event_id.uuid or req.get('event_code'),
                 'provider_name': ','.join([provider_id.name,]),
                 'booker_id': booker_obj.id,
                 'contact_id': contact_obj.id,
