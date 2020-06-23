@@ -6,6 +6,8 @@
             <field name="sequence">10</field>
             <field name="provider_ids" eval="[
                 (4, ref('tt_reservation_airline.tt_provider_airline_singaporeairlines')),
+                (4, ref('tt_reservation_airline.tt_provider_airline_rodextrip_airline')),
+                (4, ref('tt_reservation_airline.tt_provider_airline_amadeus')),
             ]"/>
             <field name="carrier_ids" eval="[
                 (4, ref('tt_reservation_airline.tt_transport_carrier_airline_sq')),
@@ -20,6 +22,8 @@
             <field name="sequence">20</field>
             <field name="provider_ids" eval="[
                 (4, ref('tt_reservation_airline.tt_provider_airline_singaporeairlines')),
+                (4, ref('tt_reservation_airline.tt_provider_airline_rodextrip_airline')),
+                (4, ref('tt_reservation_airline.tt_provider_airline_amadeus')),
             ]"/>
             <field name="carrier_ids" eval="[
                 (4, ref('tt_reservation_airline.tt_transport_carrier_airline_sq')),
@@ -34,6 +38,7 @@
             <field name="sequence">30</field>
             <field name="provider_ids" eval="[
                 (4, ref('tt_reservation_airline.tt_provider_airline_lionair')),
+                (4, ref('tt_reservation_airline.tt_provider_airline_rodextrip_airline')),
             ]"/>
             <field name="carrier_ids" eval="[
                 (4, ref('tt_reservation_airline.tt_transport_carrier_airline_jt')),
@@ -42,6 +47,22 @@
             ]"/>
             <field name="loyalty_program_ids" eval="[
                 (4, ref('tt_reservation_airline.tt_loyalty_program_batikfrequentflyer')),
+            ]"/>
+        </record>
+        <record id="tt_frequent_flyer_airline_garudamiles" model="tt.frequent.flyer.airline">
+            <field name="name">Garuda Miles Frequent Flyer</field>
+            <field name="sequence">40</field>
+            <field name="provider_ids" eval="[
+                (4, ref('tt_reservation_airline.tt_provider_airline_garuda')),
+                (4, ref('tt_reservation_airline.tt_provider_airline_rodextrip_airline')),
+                (4, ref('tt_reservation_airline.tt_provider_airline_amadeus')),
+                (4, ref('tt_reservation_airline.tt_provider_airline_altea')),
+            ]"/>
+            <field name="carrier_ids" eval="[
+                (4, ref('tt_reservation_airline.tt_transport_carrier_airline_ga')),
+            ]"/>
+            <field name="loyalty_program_ids" eval="[
+                (4, ref('tt_reservation_airline.tt_loyalty_program_garudamiles')),
             ]"/>
         </record>
     </data>
