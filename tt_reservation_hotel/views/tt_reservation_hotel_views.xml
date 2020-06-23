@@ -354,72 +354,7 @@
                             </field>
                         </page>
                         <page string="Provider">
-                            <field name="provider_booking_ids">
-                                <tree>
-                                    <field name="pnr"/>
-                                    <field name="hotel_name"/>
-                                    <field name="hotel_address"/>
-                                    <field name="state"/>
-                                </tree>
-                                <form>
-                                    <header>
-                                        <button string="Force Issued" groups="tt_base.group_tt_tour_travel_operator" name="action_force_issued" type="object" class="oe_highlight"/>
-                                    </header>
-                                    <sheet>
-                                        <group>
-                                            <group>
-                                                <field name="sequence"/>
-                                                <field name="booking_id"/>
-                                                <field name="pnr"/>
-                                                <field name="pnr2"/>
-                                                <field name="provider_id"/>
-                                                <field name="balance_due"/>
-                                                <field name="total_price"/>
-                                            </group>
-                                            <group>
-                                                <field name="hold_date"/>
-                                                <field name="expired_date"/>
-                                                <label for="booked_uid" string="Booked By"/>
-                                                <div>
-                                                    <field name="booked_uid" readonly="1" class="oe_inline"/> -
-                                                    <field name="booked_date" readonly="1" class="oe_inline"/>
-                                                </div>
-                                                <label for="issued_uid" string="Issued By"/>
-                                                <div>
-                                                    <field name="issued_uid" readonly="1" class="oe_inline"/> -
-                                                    <field name="issued_date" readonly="1" class="oe_inline"/>
-                                                </div>
-                                            </group>
-                                        </group>
-                                        <group string="Hotel Info">
-                                            <group>
-                                                <field name="checkin_date"/>
-                                                <field name="checkout_date"/>
-                                                <field name="hotel_id"/>
-                                                <field name="hotel_name"/>
-                                                <field name="hotel_address"/>
-                                                <field name="hotel_city"/>
-                                                <field name="hotel_phone"/>
-                                            </group>
-                                            <group>
-                                                <field name="currency_id"/>
-                                            </group>
-                                        </group>
-                                        <separator string="Service Charges"/>
-                                        <field name="cost_service_charge_ids">
-                                            <tree>
-                                                <field name="charge_code"/>
-                                                <field name="charge_type"/>
-                                                <field name="pax_type"/>
-                                                <field name="pax_count"/>
-                                                <field name="currency_id" invisible="1"/>
-                                                <field name="amount"/>
-                                                <field name="total"/>
-                                            </tree>
-                                        </field>
-                                    </sheet>
-                                </form>
-                            </field>
+                            <field name="provider_booking_ids"/>
                         </page>
                         <page string="Ledgers" name="ledger_page">
 <!--                            groups="tt_base.group_tt_agent_user_operator,tt_base.group_tt_tour_travel_operator"-->
