@@ -5,7 +5,12 @@
         <field name="arch" type="xml">
             <form>
                 <header>
-                    <button string="Force Issued" groups="tt_base.group_tt_tour_travel_operator" name="action_force_issued" type="object" class="oe_highlight"/>
+                    <button string="Issued Locally" name="%(tt_reservation_hotel.force_issued_wizard_action_view)d" states="" type="action"
+                            groups="tt_base.group_tt_ticketing_operator"
+                            context="{
+                        'default_provider_id': id,
+                   }"/>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,booked,issued"/>
                 </header>
                 <sheet>
                     <group>
