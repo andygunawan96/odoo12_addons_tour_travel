@@ -131,8 +131,11 @@ class TransportBookingProvider(models.Model):
         for rec in self.cost_service_charge_ids:
             rec.is_ledger_created = False
 
-    def action_force_issued(self):
-        # self.action_force_issued(self.pnr)
+    def action_force_issued_from_button(self, payment_data={}):
+        if self.state == 'issued':
+            raise UserError("Has been Issued.")
+
+        self.action_force_issued(self.pnr)
         self.action_create_ledger(self.issued_uid.id)
         self.action_issued_api_hotel({
             'co_uid': self.env.user.id,
@@ -143,7 +146,17 @@ class TransportBookingProvider(models.Model):
             # Jika Error dan sdah buat invoice tidak kita create invoice lagi
             self.booking_id.state = 'issued'
         else:
-            self.booking_id.action_issued()
+            self.booking_id.action_issued(payment_data, self.issued_uid.id)
+
+    def action_set_to_issued_from_button(self, payment_data={}):
+        if self.state == 'issued':
+            raise UserError("Has been Issued.")
+
+        if self.booking_id.invoice_line_ids:
+            # Jika Error dan sdah buat invoice tidak kita create invoice lagi
+            self.booking_id.state = 'issued'
+        else:
+            self.booking_id.action_issued(payment_data, self.issued_uid.id)
 
     # TODO START
     def create_service_charge(self):

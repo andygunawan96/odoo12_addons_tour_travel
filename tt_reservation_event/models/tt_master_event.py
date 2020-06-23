@@ -17,6 +17,7 @@ SESSION_NT = session.Session()
 
 class MasterEvent(models.Model):
     _name = "tt.master.event"
+    _inherit = ['tt.history']
     _description = "Rodex Event Model"
 
     def get_domain(self):
@@ -62,6 +63,20 @@ class MasterEvent(models.Model):
     booking_event_ids = fields.One2many('tt.event.reservation', 'event_id')
     email_content = fields.Char('Temp untuk email')
 
+    draft_date = fields.Datetime('Draft at')
+    draft_uid = fields.Many2one('res.users', 'User Draft')
+    confirm_date = fields.Datetime('Confirm at')
+    confirm_uid = fields.Many2one('res.users', 'User Confirm')
+    cancel_date = fields.Datetime('Cancel at')
+    cancel_uid = fields.Many2one('res.users', 'User Cancel')
+    postpone_date = fields.Datetime('Postpone at')
+    postpone_uid = fields.Many2one('res.users', 'User Cancel')
+    soldout_date = fields.Datetime('Sold-out at')
+    soldout_uid = fields.Many2one('res.users', 'User sold-out')
+    expired_date = fields.Datetime('Expired at')
+    expired_uid = fields.Many2one('res.users', 'User Expired')
+
+
     @api.model
     def create(self, vals_list):
         try:
@@ -71,6 +86,19 @@ class MasterEvent(models.Model):
         except:
             pass
         return super(MasterEvent, self).create(vals_list)
+
+    @api.onchange('eligible_age')
+    @api.depends('eligible_age')
+    def event_date_validation(self):
+        if self.eligible_age < 0:
+            raise UserError('Eligible Age Minimum is 0')
+
+    @api.onchange('event_date_start', 'event_date_end')
+    @api.depends('event_date_start', 'event_date_end')
+    def event_age_validation(self):
+        if self.event_date_start and self.event_date_end:
+            if self.event_date_start > self.event_date_end:
+                raise UserError('End Date must Higher then Start Date')
 
     @api.depends('provider_id')
     @api.onchange('provider_id')
@@ -91,12 +119,47 @@ class MasterEvent(models.Model):
 
     def action_draft(self):
         self.write({
-            'state': 'draft'
+            'state': 'draft',
+            'draft_date': datetime.now(),
+            'draft_uid': self.env.user.id,
         })
 
     def action_confirm(self):
+        if not self.option_ids:
+            raise UserError('Ticket Option(s) Must be filled')
+
         self.write({
-            'state': 'confirm'
+            'state': 'confirm',
+            'confirm_date': datetime.now(),
+            'confirm_uid': self.env.user.id,
+        })
+
+    def action_cancel(self):
+        self.write({
+            'state': 'cancel',
+            'cancel_date': datetime.now(),
+            'cancel_uid': self.env.user.id,
+        })
+
+    def action_postpone(self):
+        self.write({
+            'state': 'postpone',
+            'postpone_date': datetime.now(),
+            'postpone_uid': self.env.user.id,
+        })
+
+    def action_soldout(self):
+        self.write({
+            'state': 'sold-out',
+            'soldout_date': datetime.now(),
+            'soldout_uid': self.env.user.id,
+        })
+
+    def action_expired(self):
+        self.write({
+            'state': 'expired',
+            'expired_date': datetime.now(),
+            'expired_uid': self.env.user.id,
         })
 
     def search_event_api(self, req, context):
