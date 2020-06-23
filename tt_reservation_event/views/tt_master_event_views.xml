@@ -74,7 +74,7 @@
                             <field name="event_type"/>
 <!--                            <field name="quota"/>-->
                             <field name="kid_friendly"/>
-                            <field name="eligible_age" attrs="{'invisible': [('kid_friendly', '=', False)]}"/>
+                            <field name="eligible_age" attrs="{'invisible': [('kid_friendly', '=', False)], 'required': [('kid_friendly', '!=', False)]}"/>
                         </group>
                         <group>
                             <field name="provider_id" groups="tt_base.group_tt_tour_travel_operator"/>
@@ -83,7 +83,31 @@
 <!--                            <field name="type_ids"/>-->
 <!--                            <field name="currency_id"/>-->
 <!--                            <field name="basePrice"/>-->
-
+                            <label for="confirm_uid" string="Confirm By"/>
+                            <div>
+                                <field name="confirm_uid" readonly="1" class="oe_inline"/> -
+                                <field name="confirm_date" readonly="1" class="oe_inline"/>
+                            </div>
+                            <label for="cancel_uid" string="Cancel By" attrs="{'invisible': [('cancel_uid', '=', False)]}"/>
+                            <div attrs="{'invisible': [('cancel_uid', '=', False)]}">
+                                <field name="cancel_uid" readonly="1" class="oe_inline"/> -
+                                <field name="cancel_date" readonly="1" class="oe_inline"/>
+                            </div>
+                            <label for="postpone_uid" string="Postponed By" attrs="{'invisible': [('postpone_uid', '=', False)]}"/>
+                            <div attrs="{'invisible': [('postpone_uid', '=', False)]}">
+                                <field name="postpone_uid" readonly="1" class="oe_inline"/> -
+                                <field name="postpone_date" readonly="1" class="oe_inline"/>
+                            </div>
+                            <label for="soldout_uid" string="Sold-out By" attrs="{'invisible': [('soldout_uid', '=', False)]}"/>
+                            <div attrs="{'invisible': [('soldout_uid', '=', False)]}">
+                                <field name="soldout_uid" readonly="1" class="oe_inline"/> -
+                                <field name="soldout_date" readonly="1" class="oe_inline"/>
+                            </div>
+                            <label for="expired_uid" string="Expired By" attrs="{'invisible': [('expired_uid', '=', False)]}"/>
+                            <div attrs="{'invisible': [('expired_uid', '=', False)]}">
+                                <field name="expired_uid" readonly="1" class="oe_inline"/> -
+                                <field name="expired_date" readonly="1" class="oe_inline"/>
+                            </div>
                         </group>
                         <group>
                             <field name="location_ids">
@@ -332,6 +356,10 @@
                         </tree>
                     </field>
                 </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids" widget="mail_followers"/>
+                    <field name="message_ids" widget="mail_thread"/>
+                </div>
             </form>
         </field>
     </record>
