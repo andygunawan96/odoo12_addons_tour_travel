@@ -132,7 +132,7 @@ class TransportBookingProvider(models.Model):
             rec.is_ledger_created = False
 
     def action_force_issued(self):
-        self.action_force_issued(self.pnr)
+        # self.action_force_issued(self.pnr)
         self.action_create_ledger(self.issued_uid.id)
         self.action_issued_api_hotel({
             'co_uid': self.env.user.id,
