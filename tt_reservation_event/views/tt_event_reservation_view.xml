@@ -24,9 +24,10 @@
         <field name="arch" type="xml">
             <form string="">
                 <header>
-                    <button name="action_confirm" type="object" string="Confirm"></button>
-                    <button name="action_paid" type="object" string="Paid"></button>
-                    <field name="state" widget="statusbar" statusbar_visible="request,confirm,paid"/>
+                    <button name="action_request" type="object" string="Request" states="draft"/>
+                    <button name="action_confirm" type="object" string="Confirm" states="request"/>
+                    <button name="action_paid" type="object" string="Paid" states="confirm"/>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,request,confirm,paid"/>
                 </header>
                 <sheet>
                     <group>
@@ -34,6 +35,30 @@
                             <field name="event_id"/>
                             <field name="event_option_id"/>
                             <field name="pnr"/>
+                            <field name="validator_sequence"/>
+                            <field name="ticket_number"/>
+                        </group>
+                        <group>
+                            <label for="create_uid" string="Create By"/>
+                            <div>
+                                <field name="create_uid" readonly="1" class="oe_inline"/> -
+                                <field name="create_date" readonly="1" class="oe_inline"/>
+                            </div>
+                            <label for="request_uid" string="Request By"/>
+                            <div>
+                                <field name="request_uid" readonly="1" class="oe_inline"/> -
+                                <field name="request_date" readonly="1" class="oe_inline"/>
+                            </div>
+                            <label for="confirm_uid" string="Booked By"/>
+                            <div>
+                                <field name="confirm_uid" readonly="1" class="oe_inline"/> -
+                                <field name="confirm_date" readonly="1" class="oe_inline"/>
+                            </div>
+                            <label for="paid_uid" string="Paid By"/>
+                            <div>
+                                <field name="paid_uid" readonly="1" class="oe_inline"/> -
+                                <field name="paid_date" readonly="1" class="oe_inline"/>
+                            </div>
                         </group>
                         <group>
                             <field name="booker_id"/>
@@ -41,7 +66,11 @@
                             <field name="sales_date"/>
                             <field name="order_number"/>
                         </group>
-                        <field name="event_reservation_answer">
+                        <group>
+                            <field name="event_ticket_price"/>
+                            <field name="currency_id"/>
+                        </group>
+                        <field name="event_reservation_answer_ids">
                             <tree>
                                 <field name="question"/>
                                 <field name="answer"/>
@@ -59,9 +88,13 @@
         <field name="arch" type="xml">
             <tree>
                 <field name="pnr"/>
+                <field name="validator_sequence"/>
+                <field name="ticket_number"/>
                 <field name="event_id"/>
-                <field name="booker_id"/>
+                <field name="event_option_id"/>
                 <field name="sales_date"/>
+                <field name="event_ticket_price"/>
+                <field name="currency_id" invisible="1"/>
                 <field name="state"/>
             </tree>
         </field>

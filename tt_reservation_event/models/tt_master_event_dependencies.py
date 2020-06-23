@@ -3,6 +3,7 @@ from odoo.http import request
 import logging
 import json
 from ...tools import session
+from datetime import datetime, timedelta
 
 _logger = logging.getLogger(__name__)
 SESSION_NT = session.Session()
@@ -15,23 +16,71 @@ class MasterEventReservation(models.Model):
     event_id = fields.Many2one('tt.master.event', 'Event ID')
     vendor_id = fields.Many2one('tt.vendor', related="event_id.event_vendor_id", store=True)
     event_option_id = fields.Many2one('tt.event.option', 'Event option ID', readonly=True)
-    event_ticket_price = fields.Char(compute='compute_ticket_price', store=True)
+    quantity = fields.Integer("Quantity")
+    currency_id = fields.Many2one('res.currency', 'Currency ID')
+    event_ticket_price = fields.Monetary(compute='compute_ticket_price', store=True)
     pnr = fields.Char('PNR', readonly=True)
+    validator_sequence = fields.Char('Sequence')
     booker_id = fields.Many2one('tt.customer', 'Booker', readonly=True)
     contact_id = fields.Many2one('tt.customer', 'Contact', readonly=True)
     sales_date = fields.Datetime('Sold Date')
     order_number = fields.Char('Client Order Number', help='Code must be distinct', readonly=True)
-    state = fields.Selection([('request', 'Request'), ('confirm', 'Confirm'), ('done', 'Paid')])
+    state = fields.Selection([('draft', 'Draft'),('request', 'Request'), ('confirm', 'Confirm'), ('done', 'Paid')], default='draft')
+    event_reservation_answer_ids = fields.One2many('tt.event.reservation.answer', 'event_reservation_id')
+    ticket_number = fields.Char('Ticket Number')
+
+    request_date = fields.Datetime('Request Date')
+    request_uid = fields.Many2one('res.users', 'User Request')
+    confirm_date = fields.Datetime('confirm Date')
+    confirm_uid = fields.Many2one('res.users', 'User Confirm')
+    paid_date = fields.Datetime('paid date')
+    paid_uid = fields.Many2one('res.users', 'Paid User')
 
     def compute_ticket_price(self):
         for i in self:
             i.event_ticket_price = i.event_option_id.price
+            i.currency_id = i.event_option_id.currency_id.id
 
     def action_confirm(self):
+        if not self.ticket_number and self.state == 'request':
+            raise UserWarning('Ticket Number Required to set this  Resv to Confirm')
         self.state = "confirm"
+        self.confirm_date = datetime.now()
+        self.confirm_uid = self.env.user.id
+
+        # Little Naughty things here:
+        event_obj = self.env['tt.reservation.event'].sudo().search([('pnr', '=', self.pnr)], limit=1)
+        event_id = event_obj and event_obj[0].id or False
+        val_obj = self.env['tt.reservation.event.option'].sudo().search([('validator_sequence', '=', self.validator_sequence), ('booking_id', '=', event_id)], limit=1)
+        if val_obj:
+            val_obj.sudo().update({'ticket_number': self.ticket_number})
+        else:
+            #TODO Passing ke Gateway
+            val_obj.sudo().update({'ticket_number': self.ticket_number})
 
     def action_paid(self):
-        self.state = "paid"
+        self.state = "done"
+        self.paid_date = datetime.now()
+        self.paid_uid = self.env.user.id
+
+    def action_request(self):
+        self.state = "request"
+        self.request_date = datetime.now()
+        self.request_uid = self.env.user.id
+        self.compute_ticket_price()
+
+    def action_request_by_api(self, co_uid):
+        self.action_request()
+        self.request_uid = co_uid
+
+class EventReservationQuestionAnswer(models.Model):
+    _name = "tt.event.reservation.answer"
+    _description = "Rodex Event Model"
+
+    event_reservation_id = fields.Many2one('tt.event.reservation', 'Event Option ID')
+    extra_question_id = fields.Many2one("tt.event.extra.question", 'Event extra Question')
+    question = fields.Char('Question')
+    answer = fields.Char("Answer")
 
 class MasterLocations(models.Model):
     _name = 'tt.event.location'
@@ -103,7 +152,6 @@ class MasterEventCategory(models.Model):
         return {
             'response': self.get_from_api(data['name'], False, []),
         }
-
 
 class EventOptions(models.Model):
     _name = 'tt.event.option'

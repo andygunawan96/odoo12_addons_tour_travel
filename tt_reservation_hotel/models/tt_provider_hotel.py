@@ -12,12 +12,12 @@ class TransportBookingProvider(models.Model):
     _order = 'checkin_date'
 
     pnr = fields.Char('PNR')
-    pnr2 = fields.Char('PNR #2')
+    pnr2 = fields.Char('PNR2')
     provider_id = fields.Many2one('tt.provider','Provider')
     state = fields.Selection(variables.BOOKING_STATE, 'Status', default='draft')
     booking_id = fields.Many2one('tt.reservation.hotel', 'Order Number', ondelete='cascade')
     balance_due = fields.Float('Balance Due')
-
+    sequence = fields.Integer('Sequence')
     checkin_date = fields.Date('Check In Date', readonly=True, states={'draft': [('readonly', False)]})
     checkout_date = fields.Date('Check Out Date', readonly=True, states={'draft': [('readonly', False)]})
     hotel_id = fields.Many2one('tt.hotel', 'Hotel Information', readonly=True, states={'draft': [('readonly', False)]})
@@ -101,13 +101,13 @@ class TransportBookingProvider(models.Model):
                 'state': 'fail_booked'
             })
 
-    def action_issued_api_hotel(self,context):
+    def action_issued_api_hotel(self, context):
         for rec in self:
             rec.write({
                 'state': 'issued',
                 'issued_date': datetime.now(),
-                'issued_uid': context['co_uid'],
-                'sid_issued': context['signature'],
+                'issued_uid': context.get('co_uid'),
+                'sid_issued': context.get('signature'),
                 'balance_due': 0
             })
 
@@ -124,6 +124,26 @@ class TransportBookingProvider(models.Model):
         self.state = 'refund'
         if check_provider_state:
             self.booking_id.check_provider_state({'co_uid': self.env.user.id})
+
+    def action_force_issued(self, pnr=''):
+        self.pnr =pnr
+        self.pnr2 = pnr
+        for rec in self.cost_service_charge_ids:
+            rec.is_ledger_created = False
+
+    def action_force_issued(self):
+        # self.action_force_issued(self.pnr)
+        self.action_create_ledger(self.issued_uid.id)
+        self.action_issued_api_hotel({
+            'co_uid': self.env.user.id,
+            'signature': self.booking_id.sid_issued or self.booking_id.sid_booked
+        })
+
+        if self.booking_id.invoice_line_ids:
+            # Jika Error dan sdah buat invoice tidak kita create invoice lagi
+            self.booking_id.state = 'issued'
+        else:
+            self.booking_id.action_issued()
 
     # TODO START
     def create_service_charge(self):
