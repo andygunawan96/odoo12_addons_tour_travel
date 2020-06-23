@@ -90,10 +90,14 @@ class HotelReservation(models.Model):
     @api.depends('provider_booking_ids','provider_booking_ids.reconcile_line_id')
     def _compute_reconcile_state(self):
         for rec in self:
-            if all(rec1.reconcile_line_id != False for rec1 in rec.provider_booking_ids):
-                rec.reconcile_state = 'reconciled'
-            elif any(rec1.reconcile_line_id != False for rec1 in rec.provider_booking_ids):
-                rec.reconcile_state = 'partial'
+            reconcile_id_list = [rec1.reconcile_line_id.id != False for rec1 in rec.provider_booking_ids]
+            if reconcile_id_list:
+                if all(reconcile_id_list):
+                    rec.reconcile_state = 'reconciled'
+                elif any(reconcile_id_list):
+                    rec.reconcile_state = 'partial'
+                else:
+                    rec.reconcile_state = 'not_reconciled'
             else:
                 rec.reconcile_state = 'not_reconciled'
 
@@ -527,6 +531,19 @@ class HotelReservation(models.Model):
     #                         str(self.agent_id.balance))
     #     else:
     #         raise UserError('Order has been issued')
+
+    # def action_force_issued(self):
+    #     for rec in self:
+    #         for prov in rec.provider_booking_ids:
+    #             prov.action_force_issued(self.pnr)
+    #             prov.action_create_ledger(self.issued_uid.id)
+    #             prov.action_issued_api_hotel({'co_uid': self.env.user.id, 'signature': self.sid_issued or self.sid_booked})
+    #
+    #         if rec.invoice_line_ids:
+    #             # Jika Error dan sdah buat invoice tidak kita create invoice lagi
+    #             rec.state = 'issued'
+    #         else:
+    #             rec.action_issued()
 
     @api.one
     def action_done(self, issued_response={}):

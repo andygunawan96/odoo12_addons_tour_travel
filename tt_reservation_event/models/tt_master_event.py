@@ -107,7 +107,7 @@ class MasterEvent(models.Model):
             online = req.get('online') and req['online'] or ''
             vendor = req.get('vendor') and int(req['vendor']) or ''
 
-            limitation = [('state', '=', 'confirm')]
+            limitation = [('state', 'in', ['confirm', 'sold-out', 'expired'])]
             if name != '': #Check by name jika category tidak di kirim
                 limitation.append(('name', 'ilike', name))
             if vendor != '':
@@ -142,7 +142,7 @@ class MasterEvent(models.Model):
                     'includes': i.includes,
                     'excludes': i.excludes,
                     'provider': i.provider_id.name,
-                    'option': [i.format_api_option(opt.id) for opt in i.option_ids],
+                    'option': i.state not in ['expired',] and [i.format_api_option(opt.id) for opt in i.option_ids] or [],
                     'vendor_obj': {
                         'vendor_id': i.event_vendor_id.id,
                         'vendor_name': i.event_vendor_id.name,
@@ -323,58 +323,63 @@ class MasterEvent(models.Model):
         return ERR.get_no_error(result)
 
     def booking_master_event_from_api(self, req, context):
+        # def format_idx(idx):
+        #     idx = str(idx)
+        #     for a in range(3 - len(idx)):
+        #         idx = '0' + idx
+        #     return idx
+
         event_id = self.sudo().search([('uuid', '=', req['event_code'])], limit=1)
         # Check apakah Order Number yg dikirim sdah pernah ada di DB kita?
         if self.env['tt.event.reservation'].sudo().search([('order_number', '=', req['order_number'])]):
             return 'Error'
-        for rec in req['event_option_codes']:
-            opt_id = self.env['tt.event.option'].search([('event_id','=',event_id.id), ('option_code','=',rec['option_code'])], limit=1)
+        # Check apa kah order_number yg dikirim ada di resv event
+        book_id = self.env['tt.reservation.event'].search([('name', '=', req['order_number'])], limit=1)
+        pnr = self.env['ir.sequence'].next_by_code('pnr_sequence')
+
+        for rec in req['option_ids']:
+            opt_id = self.env['tt.event.option'].search([('event_id', '=', event_id.id), ('option_code', '=', rec['option']['option_code'])], limit=1)
             temp_event_reservation_dict = {
                 'event_id': event_id.id,
                 'event_option_id': opt_id.id,
                 'order_number': req['order_number'],
-                'sales_date': datetime.now(),
-                'state': "request",
+                'pnr': pnr,
+                'validator_sequence': rec['option']['validator_sequence'],
             }
-            # Check apa kah order_number yg dikirim ada di resv event
-            book_id = self.env['tt.reservation.event'].search([('name', '=', req['order_number'])], limit=1)
             if book_id:
                 temp_event_reservation_dict.update({
                     'booker_id': book_id.booker_id.id,
-                    'reservation_id': book_id.id
+                    'contact_id': book_id.contact_id.id,
+                    'reservation_id': book_id.id,
                 })
-                pnr = self.env['ir.sequence'].next_by_code('pnr_sequence')
-            else:
-                pnr = 'E' + req['order_number']
-
-            temp_event_reservation_dict.update({'pnr': pnr,})
             opt_obj = self.env['tt.event.reservation'].sudo().create(temp_event_reservation_dict)
 
-            for idx, j in enumerate(rec['event_answer']):
-                if opt_obj['option_code'] == j['option_code']:
-                    for j1 in j['answer']:
-                        temp_extra_question_dict = {
-                            'event_reservation_id': opt_obj.id,
-                            # 'extra_question_id': j1['question_id'],
-                            'question': j1['que'],
-                            'answer': j1['ans']
-                        }
-                        self.env['tt.reservation.event.extra.question'].create(temp_extra_question_dict)
-                    # event_answer.pop(idx)
-                    break
+            for j1 in rec['option']['extra_question']:
+                temp_extra_question_dict = {
+                    'event_reservation_id': opt_obj.id,
+                    # 'extra_question_id': j1['question_id'],
+                    'question': j1['question'],
+                    'answer': j1['answer'],
+                }
+                self.env['tt.event.reservation.answer'].create(temp_extra_question_dict)
+            # event_answer.pop(idx)
 
         for i in req['event_option_codes']:
             option_obj = self.env['tt.event.option'].sudo().search([('option_code', '=', i['option_code'])])
-            option_obj.action_hold_book(1)
-        return ERR.get_no_error({'pnr': pnr, 'hold_date': str(datetime.now() + relativedelta(minutes=45))[:16]+':00' })
+            option_obj.action_hold_book(i['qty'])
+        return ERR.get_no_error({
+            'pnr': pnr,
+            'hold_date': str(datetime.now() + relativedelta(minutes=45))[:16]+':00',
+        })
 
-    def issued_master_event_from_api(self, pnr):
+    def issued_master_event_from_api(self, pnr, context={}):
         try:
             #search all of the reservation
             booking_event_obj = self.env['tt.event.reservation'].sudo().search([('pnr', '=', pnr)])
 
             email_content = "<ul>"
             for i in booking_event_obj:
+                i.action_request_by_api(context.get('co_uid'))
                 i.event_option_id.making_sales(1)
                 email_content += "<li>{}</li>".format(i.order_number)
             email_content += "</ul>"

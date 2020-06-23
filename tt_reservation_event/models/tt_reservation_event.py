@@ -110,10 +110,14 @@ class ReservationEvent(models.Model):
     @api.depends('provider_booking_ids','provider_booking_ids.reconcile_line_id')
     def _compute_reconcile_state(self):
         for rec in self:
-            if all(rec1.reconcile_line_id != False for rec1 in rec.provider_booking_ids):
-                rec.reconcile_state = 'reconciled'
-            elif any(rec1.reconcile_line_id != False for rec1 in rec.provider_booking_ids):
-                rec.reconcile_state = 'partial'
+            reconcile_id_list = [rec1.reconcile_line_id.id != False for rec1 in rec.provider_booking_ids]
+            if reconcile_id_list:
+                if all(reconcile_id_list):
+                    rec.reconcile_state = 'reconciled'
+                elif any(reconcile_id_list):
+                    rec.reconcile_state = 'partial'
+                else:
+                    rec.reconcile_state = 'not_reconciled'
             else:
                 rec.reconcile_state = 'not_reconciled'
 
@@ -190,7 +194,7 @@ class ReservationEvent(models.Model):
             'expired_date': datetime.now()
         })
 
-    def check_provider_state(self, context, pnr_list = [], hold_sate = False, req = {}):
+    def check_provider_state(self, context, pnr_list=[], hold_sate=False, req={}):
         if all(i.state == 'booked' for i in self.provider_booking_ids):
             #booked
             pass
@@ -233,6 +237,12 @@ class ReservationEvent(models.Model):
             self.env['tt.reservation.event.extra.question'].create(temp_dict)
 
     def create_booking_event_api(self, req, context):
+        def format_idx(idx):
+            idx = str(idx)
+            for a in range(3 - len(idx)):
+                idx = '0' + idx
+            return idx
+
         try:
             #recieve and handling data
             booker_data = req.get('booker')
@@ -283,12 +293,16 @@ class ReservationEvent(models.Model):
             #fill child table of resrevation event
             cust_id = self.create_customer_api(passengers, context, booker_obj.seq_id, contact_obj.seq_id)
             cust_id = cust_id[0]
+
+            idx1 = 0
             for opt_obj in event_option_codes:
                 for i in range(opt_obj['qty']):
+                    idx1 += 1
                     event_option_id = self.env['tt.event.option'].sudo().search([('event_id', '=', event_id.id),('option_code', '=', opt_obj['option_code'])], limit=1)
                     temp_option_dict = {
                         'booking_id': book_obj.id,
                         'event_option_id': event_option_id and event_option_id.id or False,
+                        'validator_sequence': opt_obj['option_code'] + format_idx(idx1)
                     }
                     option_obj = self.env['tt.reservation.event.option'].create(temp_option_dict)
 
@@ -299,7 +313,7 @@ class ReservationEvent(models.Model):
                                     'reservation_event_option_id': option_obj.id,
                                     # 'extra_question_id': j1['question_id'],
                                     'question': j1['que'],
-                                    'answer': j1['ans']
+                                    'answer': j1['ans'],
                                 }
                                 self.env['tt.reservation.event.extra.question'].create(temp_extra_question_dict)
                             event_answer.pop(idx)
@@ -365,6 +379,7 @@ class ReservationEvent(models.Model):
             response = {
                 'book_id': book_obj.id,
                 'order_number': book_obj.name,
+                'option_ids': [rec.to_dict() for rec in book_obj.passenger_ids],
                 'provider_ids': provider_id.id,
             }
             return ERR.get_no_error(response)
@@ -421,6 +436,7 @@ class ReservationEvent(models.Model):
                 'lat': '',
                 'long': '',
             } for rec in self.event_id.location_ids] or [],
+            'hold_date': self.hold_date,
             'description': self.event_id and self.event_id.description or '',
             'options': [self.option_ids and {
                 'image_url': rec.event_option_id.option_image_ids and rec.event_option_id.option_image_ids[0].url or '',
@@ -733,7 +749,15 @@ class TtReservationEventOption(models.Model):
     extra_question_ids = fields.One2many('tt.reservation.event.extra.question', 'reservation_event_option_id', 'Extra Question')
     ticket_number = fields.Char('Ticket Number')
     ticket_file_ids = fields.Many2many('tt.upload.center', 'reservation_event_ticket_rel', 'reservation_event_id', 'ticket_id', 'Tickets')
+    validator_sequence = fields.Char('Sequence')
 
+    def to_dict(self):
+        a = self.read(['event_option_name', 'description', 'ticket_number', 'validator_sequence'])
+        a[0].update({
+            'option_code': self.event_option_id.option_code,
+            'extra_question': [rec.read(['question', 'answer'])[0] for rec in self.extra_question_ids]
+        })
+        return a[0]
 
 class TtReservationEventVoucher(models.Model):
     _name = 'tt.reservation.event.voucher'

@@ -354,14 +354,7 @@
                             </field>
                         </page>
                         <page string="Provider">
-                            <field name="provider_booking_ids">
-                                <tree>
-                                    <field name="pnr"/>
-                                    <field name="hotel_name"/>
-                                    <field name="hotel_address"/>
-                                    <field name="state"/>
-                                </tree>
-                            </field>
+                            <field name="provider_booking_ids"/>
                         </page>
                         <page string="Ledgers" name="ledger_page">
 <!--                            groups="tt_base.group_tt_agent_user_operator,tt_base.group_tt_tour_travel_operator"-->
