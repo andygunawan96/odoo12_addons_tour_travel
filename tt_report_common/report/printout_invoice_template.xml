@@ -322,7 +322,7 @@
                     </div>
                     <div id="rectangle" style="width: 100%; height: 50px; bottom: 15px; background-image:  url('/tt_report_common/static/images/background footer airline.jpg'); border-radius: 25px; position: absolute; z-index: 0;">
                         <div style="padding-left: 75px; padding-bottom: 10px; vertical-align: middle; text-align: center; border-radius: 25px; background-color: rgba(39,62,84,0.76); padding-top: 5px;">
-                            <div style="vertical-align: middle; display: flex; letter-spacing: 0.05em; font-size: 24px; color: white; font-weight: 600; margin-top: 0px; margin-left: -10px;">
+                            <div style="vertical-align: middle; display: flex; letter-spacing: 0.05em; font-size: 24px; color: white; font-weight: 600; margin-top: 0px; margin-left: -10px; margin-right: 10px;">
                                 <t t-if="doc_type == 'itin'">
                                     <t t-if="doc.pnr">
                                         <t t-if="pnr_length &lt;= 20">
@@ -344,10 +344,32 @@
                                 </t>
                                 <t t-elif="doc_type == 'ho_invoice'">
                                     <t t-if="doc.pnr">
-                                        <span t-field="doc.pnr" style="margin-top: 5px;"/>
+                                        <t t-if="pnr_length &lt;= 20">
+                                            <span t-field="doc.pnr" style="margin-top: 5px;"/>
+                                        </t>
+                                        <t t-elif="pnr_length &gt; 20 and pnr_length &lt;= 25">
+                                            <span t-field="doc.pnr" style="margin-top: 5px; font-size: 20px"/>
+                                        </t>
+                                        <t t-elif="pnr_length &gt; 25 and pnr_length &lt;= 30">
+                                            <span t-field="doc.pnr" style="margin-top: 5px; font-size: 16px"/>
+                                        </t>
+                                        <t t-else="">
+                                            <span t-field="doc.pnr" style="margin-top: 5px; font-size: 15px"/>
+                                        </t>
                                     </t>
                                     <t t-else="">
-                                        <span t-esc="'doc.name'" style="margin-top: 5px;"/>
+                                        <t t-if="pnr_length &lt;= 20">
+                                            <span t-field="doc.name" style="margin-top: 5px;"/>
+                                        </t>
+                                        <t t-elif="pnr_length &gt; 20 and pnr_length &lt;= 25">
+                                            <span t-field="doc.name" style="margin-top: 5px; font-size: 20px"/>
+                                        </t>
+                                        <t t-elif="pnr_length &gt; 25 and pnr_length &lt;= 30">
+                                            <span t-field="doc.name" style="margin-top: 5px; font-size: 16px"/>
+                                        </t>
+                                        <t t-else="">
+                                            <span t-field="doc.name" style="margin-top: 5px; font-size: 15px"/>
+                                        </t>
                                     </t>
                                 </t>
                                 <t t-elif="doc_type == 'vendor_invoice'">

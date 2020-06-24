@@ -818,11 +818,13 @@ class PrintoutInvoiceHO(models.AbstractModel):
                 data['context']['active_model'] = 'tt.reservation.tour'
             data['context']['active_ids'] = docids
         values = {}
+        pnr_length = 0
         for rec in self.env[data['context']['active_model']].browse(data['context']['active_ids']):
             values[rec.id] = []
             a = {}
             pax_data = self.get_invoice_data(rec, data.get('context'), data)
             values[rec.id].append(pax_data)
+            pnr_length = len(rec.pnr) if rec.pnr else len(rec.name)
         ho_obj = self.env['tt.agent'].sudo().search([('agent_type_id', '=', self.env.ref('tt_base.agent_type_ho').id)], limit=1)
         vals = {
             'doc_ids': data['context']['active_ids'],
@@ -831,6 +833,7 @@ class PrintoutInvoiceHO(models.AbstractModel):
             'docs': self.env[data['context']['active_model']].browse(data['context']['active_ids']),
             'price_lines': values,
             'inv_lines': values,
+            'pnr_length': pnr_length,
             'terbilang': self.compute_terbilang_from_objs(
                 self.env[data['context']['active_model']].browse(data['context']['active_ids'])),
             'date_now': fields.Date.today().strftime('%d %b %Y'),
@@ -1273,7 +1276,6 @@ class PrintoutIteneraryForm(models.AbstractModel):
 
     @api.model
     def _get_report_values(self, docids, data=None):
-        values = {}
         if not data.get('context'):
             internal_model_id = docids.pop(0)
             data['context'] = {}
@@ -1292,6 +1294,8 @@ class PrintoutIteneraryForm(models.AbstractModel):
 
             data['context']['active_ids'] = docids
 
+        values = {}
+        pnr_length = 0
         for rec in self.env[data['context']['active_model']].browse(data['context']['active_ids']):
             values[rec.id] = []
             a = {}
@@ -1310,11 +1314,13 @@ class PrintoutIteneraryForm(models.AbstractModel):
                 elif rec2.charge_type.lower() in ['roc', 'tax']:
                     a[rec2.pax_type]['tax'] += rec2.amount
             values[rec.id] = [a[new_a] for new_a in a]
+            pnr_length = len(rec.pnr)
         return {
             'doc_ids': data['context']['active_ids'],
             'doc_model': data['context']['active_model'],
             'doc_type': 'itin',
             'docs': self.env[data['context']['active_model']].browse(data['context']['active_ids']),
+            'pnr_length': pnr_length,
             'price_lines': values,
             'date_now': fields.Date.today().strftime('%d %b %Y'),
             'base_color': self.sudo().env['ir.config_parameter'].get_param('tt_base.website_default_color', default='#FFFFFF'),
@@ -1345,6 +1351,7 @@ class PrintoutActivityIteneraryForm(models.AbstractModel):
 
             data['context']['active_ids'] = docids
         values = {}
+        pnr_length = 0
         for rec in self.env[data['context']['active_model']].browse(data['context']['active_ids']):
             values[rec.id] = []
             a = {}
@@ -1363,11 +1370,13 @@ class PrintoutActivityIteneraryForm(models.AbstractModel):
                 elif rec2.charge_type.lower() in ['roc', 'tax']:
                     a[rec2.pax_type]['tax'] += rec2.amount
             values[rec.id] = [a[new_a] for new_a in a]
+            pnr_length = len(rec.pnr)
         return {
             'doc_ids': data['context']['active_ids'],
             'doc_model': data['context']['active_model'],
             'doc_type': 'itin',
             'docs': self.env[data['context']['active_model']].browse(data['context']['active_ids']),
+            'pnr_length': pnr_length,
             'price_lines': values,
             'date_now': fields.Date.today().strftime('%d %b %Y'),
             'base_color': self.sudo().env['ir.config_parameter'].get_param('tt_base.website_default_color', default='#FFFFFF'),
@@ -1398,6 +1407,7 @@ class PrintoutEventIteneraryForm(models.AbstractModel):
 
             data['context']['active_ids'] = docids
         values = {}
+        pnr_length = 0
         for rec in self.env[data['context']['active_model']].browse(data['context']['active_ids']):
             values[rec.id] = []
             a = {}
@@ -1416,11 +1426,13 @@ class PrintoutEventIteneraryForm(models.AbstractModel):
                 elif rec2.charge_type.lower() in ['roc', 'tax']:
                     a[rec2.pax_type]['tax'] += rec2.amount
             values[rec.id] = [a[new_a] for new_a in a]
+            pnr_length = len(rec.pnr)
         return {
             'doc_ids': data['context']['active_ids'],
             'doc_model': data['context']['active_model'],
             'doc_type': 'itin',
             'docs': self.env[data['context']['active_model']].browse(data['context']['active_ids']),
+            'pnr_length': pnr_length,
             'price_lines': values,
             'date_now': fields.Date.today().strftime('%d %b %Y'),
             'base_color': self.sudo().env['ir.config_parameter'].get_param('tt_base.website_default_color',
@@ -1452,6 +1464,7 @@ class PrintoutTourIteneraryForm(models.AbstractModel):
 
             data['context']['active_ids'] = docids
         values = {}
+        pnr_length = 0
         for rec in self.env[data['context']['active_model']].browse(data['context']['active_ids']):
             values[rec.id] = []
             a = {}
@@ -1470,11 +1483,13 @@ class PrintoutTourIteneraryForm(models.AbstractModel):
                 elif rec2.charge_type.lower() in ['roc', 'tax']:
                     a[rec2.pax_type]['tax'] += rec2.amount
             values[rec.id] = [a[new_a] for new_a in a]
+            pnr_length = len(rec.pnr)
         return {
             'doc_ids': data['context']['active_ids'],
             'doc_model': data['context']['active_model'],
             'doc_type': 'itin',
             'docs': self.env[data['context']['active_model']].browse(data['context']['active_ids']),
+            'pnr_length': pnr_length,
             'price_lines': values,
             'date_now': fields.Date.today().strftime('%d %b %Y'),
             'base_color': self.sudo().env['ir.config_parameter'].get_param('tt_base.website_default_color', default='#FFFFFF'),
@@ -1505,6 +1520,7 @@ class PrintoutPassportItineraryForm(models.AbstractModel):
 
             data['context']['active_ids'] = docids
         values = {}
+        pnr_length = 0
         for rec in self.env[data['context']['active_model']].browse(data['context']['active_ids']):
             values[rec.id] = []
             a = {}
@@ -1523,11 +1539,13 @@ class PrintoutPassportItineraryForm(models.AbstractModel):
                 elif rec2.charge_type.lower() in ['roc', 'tax']:
                     a[rec2.pax_type]['tax'] += rec2.amount
             values[rec.id] = [a[new_a] for new_a in a]
+            pnr_length = len(rec.pnr)
         return {
             'doc_ids': data['context']['active_ids'],
             'doc_model': data['context']['active_model'],
             'doc_type': 'itin',
             'docs': self.env[data['context']['active_model']].browse(data['context']['active_ids']),
+            'pnr_length': pnr_length,
             'price_lines': values,
             'date_now': fields.Date.today().strftime('%d %b %Y'),
             'base_color': self.sudo().env['ir.config_parameter'].get_param('tt_base.website_default_color', default='#FFFFFF'),
@@ -1558,6 +1576,7 @@ class PrintoutPPOBItineraryForm(models.AbstractModel):
 
             data['context']['active_ids'] = docids
         values = {}
+        pnr_length = 0
         for rec in self.env[data['context']['active_model']].browse(data['context']['active_ids']):
             values[rec.id] = []
             a = {}
@@ -1576,11 +1595,13 @@ class PrintoutPPOBItineraryForm(models.AbstractModel):
                 elif rec2.charge_type.lower() in ['roc', 'tax']:
                     a[rec2.pax_type]['tax'] += rec2.amount
             values[rec.id] = [a[new_a] for new_a in a]
+            pnr_length = len(rec.pnr)
         return {
             'doc_ids': data['context']['active_ids'],
             'doc_model': data['context']['active_model'],
             'doc_type': 'itin',
             'docs': self.env[data['context']['active_model']].browse(data['context']['active_ids']),
+            'pnr_length': pnr_length,
             'price_lines': values,
             'date_now': fields.Date.today().strftime('%d %b %Y'),
             'base_color': self.sudo().env['ir.config_parameter'].get_param('tt_base.website_default_color',
@@ -1612,6 +1633,7 @@ class PrintoutVisaItineraryForm(models.AbstractModel):
 
             data['context']['active_ids'] = docids
         values = {}
+        pnr_length = 0
         for rec in self.env[data['context']['active_model']].browse(data['context']['active_ids']):
             values[rec.id] = []
             a = {}
@@ -1630,11 +1652,13 @@ class PrintoutVisaItineraryForm(models.AbstractModel):
                 elif rec2.charge_type.lower() in ['roc', 'tax']:
                     a[rec2.pax_type]['tax'] += rec2.amount
             values[rec.id] = [a[new_a] for new_a in a]
+            pnr_length = len(rec.pnr)
         return {
             'doc_ids': data['context']['active_ids'],
             'doc_model': data['context']['active_model'],
             'doc_type': 'itin',
             'docs': self.env[data['context']['active_model']].browse(data['context']['active_ids']),
+            'pnr_length': pnr_length,
             'price_lines': values,
             'date_now': fields.Date.today().strftime('%d %b %Y'),
             'base_color': self.sudo().env['ir.config_parameter'].get_param('tt_base.website_default_color', default='#FFFFFF'),
