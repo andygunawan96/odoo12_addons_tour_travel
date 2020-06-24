@@ -7,12 +7,14 @@
             <form string="Event Transaction Report">
                 <sheet>
                     <group>
+                        <field name="date_from" required="1"/>
+                        <field name="date_to" required="1"/>
                         <field name="event_name" required="1"/>
                         <field name="transaction_state" required="1"/>
                     </group>
                 </sheet>
                 <footer>
-                    <button name="action_print" string="Wizard" type="object" class="oe_highlight"/>
+                    <button name="action_print" string="Produce Report" type="object" class="oe_highlight"/>
                     <button name="action_print_excel" string="Print in Excel" type="object" class="oe_highlight"/>
                     or
                     <button string="Cancel" class="oe_link" special="cancel"/>
@@ -35,6 +37,14 @@
         id="sub_menu_report_transaction"
         name="Printout Report"
         parent="tt_base.top_external_vendor_transaction"
+        action="action_report_vendor_event_menu"
+        sequence="10"
+        />
+
+    <menuitem
+        id="sub_menu_report_transaction_ho"
+        name="Event Printout Report"
+        parent="tt_base.top_tour_travel_report"
         action="action_report_vendor_event_menu"
         sequence="10"
         />
