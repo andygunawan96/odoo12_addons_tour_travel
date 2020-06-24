@@ -10,6 +10,7 @@
                 </header>
                 <sheet>
                     <group>
+                        <field name="title" readonly="1"/>
                         <field name="user_id"/>
                         <field name="event_reservation_ids"/>
                     </group>
@@ -23,6 +24,7 @@
         <field name="model">tt.event.reservation.temporary.payment</field>
         <field name="arch" type="xml">
             <tree>
+                <field name="title"/>
                 <field name="user_id"/>
                 <field name="event_reservation_ids"/>
             </tree>
@@ -43,6 +45,14 @@
         id="sub_menu_report_transaction_temporary"
         name="Temporary report"
         parent="tt_base.top_external_vendor_transaction"
+        action="action_event_temporary_view"
+        sequence="20"
+        />
+
+    <menuitem
+        id="sub_menu_report_transaction_temporary"
+        name="Event Temporary report"
+        parent="tt_base.top_tour_travel_report"
         action="action_event_temporary_view"
         sequence="20"
         />
