@@ -302,7 +302,6 @@ class ProviderOffline(models.Model):
         scs_list = []
         scs_list_2 = []
         pricing_obj = self.env['tt.pricing.agent'].sudo()
-        sale_price = book_obj.total / len(self.booking_id.line_ids)
 
         """ Get provider fee amount """
         total_fee_amount = 0
@@ -323,6 +322,8 @@ class ProviderOffline(models.Model):
         fee_amount_vals['pax_count'] = 1
         scs_list.append(fee_amount_vals)
 
+        total_line_qty = 0
+
         """ Get total fee amount """
         for line in book_obj.line_ids:
             check_in = datetime.strptime(line.check_in, '%Y-%m-%d')
@@ -337,7 +338,10 @@ class ProviderOffline(models.Model):
             fee_amount_vals['total'] = fee_amount_vals.get('total') * line.obj_qty * days_int
             total_fee_amount += fee_amount_vals.get('total')
 
+            total_line_qty += days_int * line.obj_qty
+
         real_comm_amount = book_obj.total_commission_amount - total_fee_amount
+        sale_price = book_obj.total / total_line_qty * line_obj.obj_qty * days_int
 
         # Get all pricing per pax
         vals = {
@@ -360,8 +364,8 @@ class ProviderOffline(models.Model):
                 vals2 = vals.copy()
                 vals2.update({
                     'commission_agent_id': comm['commission_agent_id'],
-                    'total': comm['amount'] * -1 / len(book_obj.line_ids),
-                    'amount': comm['amount'] * -1 / len(book_obj.line_ids),
+                    'total': comm['amount'] * -1 / total_line_qty * line_obj.obj_qty * days_int,
+                    'amount': comm['amount'] * -1 / total_line_qty * line_obj.obj_qty * days_int,
                     'charge_code': comm['code'],
                     'charge_type': 'RAC',
                     'passenger_offline_ids': [],
