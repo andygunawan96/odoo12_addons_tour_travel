@@ -91,9 +91,4 @@
         <field name="view_type">form</field>
         <field name="view_mode">tree,form</field>
     </record>
-
-    <menuitem id="submenu_tour_travel_provider_event"
-              parent="tt_reservation_event.menu_tour_travel_event_master"
-              name="Provider Event"
-              action="tt_reservation_event.tt_provider_event_action_views"/>
 </odoo>

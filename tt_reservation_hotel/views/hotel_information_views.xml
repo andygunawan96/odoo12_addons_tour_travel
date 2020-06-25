@@ -398,6 +398,7 @@
                             <button name="get_record_by_api14" string="Hotel from web agent" type="object" icon="fa-building"/>
                             <button name="get_record_by_api14d" string="Hotel from excel file" type="object" icon="fa-building"/>
                             <button name="get_record_by_api14e" string="Hotel from excel file New" type="object" icon="fa-building"/>
+                            <button name="get_record_by_api14f" string="Update Hotel" type="object" icon="fa-building"/>
                         </group>
                         <group string="Rodextrip">
                             <button name="get_record_by_api13" string="AutoComplete Cache" type="object" icon="fa-spoon"/>
