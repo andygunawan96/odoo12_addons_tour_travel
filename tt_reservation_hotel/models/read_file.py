@@ -2871,7 +2871,7 @@ class HotelInformation(models.Model):
         # Update CSV Result merger (Nice to have)
         return True
 
-    # GateWay bakal catet data search yg tidak terdaftar dan tidak ada nama
+    # GateWay bakal catet data search yg tidak terdaftar dan tidak lengkap (no address)
     def merge_record_for_with_search_result(self):
         provider_list = ['from_cache',]
 
