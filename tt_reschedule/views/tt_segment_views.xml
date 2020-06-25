@@ -29,6 +29,9 @@
                     </group>
                     <group>
                         <group>
+                            <field name="fare_basis_code"/>
+                            <field name="fare_class"/>
+                            <field name="fare_name"/>
                         </group>
                         <group>
                             <field name="cabin_class"/>
