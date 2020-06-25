@@ -3,6 +3,7 @@ from odoo.http import request
 from ...tools import session
 import logging
 import json
+from odoo.exceptions import UserError
 
 _logger = logging.getLogger(__name__)
 SESSION_NT = session.Session()
@@ -27,6 +28,13 @@ class temporaryPayment(models.Model):
             i.unlink()
 
     def action_paid(self):
+        process = []
+        unprocess = []
         for rec in self.event_reservation_ids:
             if rec.state in ['confirm']:
                 rec.action_paid()
+                process.append(rec.pnr)
+            else:
+                unprocess.append(rec.pnr + '(' + rec.state + ')')
+        self.env.cr.commit()
+        raise UserError('Processed: ' + str(len(process)) + ' Data(s); UnProcessed:' + ', '.join(unprocess) + '.')
