@@ -402,6 +402,17 @@ class TtGetBookingFromVendorReview(models.TransientModel):
                 'acquirer_seq_id': self.customer_parent_id.seq_id
             })
 
+        # June 29, 2020 - SAM
+        # Menambahkan mekanisme untuk create ledger required untuk memanggil fungsi add payment
+        payment_res = self.env['tt.reservation.airline'].payment_reservation_api('airline', update_req,context={
+            'co_uid': self.user_id.id,
+            'co_user_name': self.user_id.name,
+            'co_agent_id': self.agent_id.id,
+            'co_agent_name': self.agent_id.name,
+            'signature': signature
+        })
+        # END
+
         update_res = self.env['tt.reservation.airline'].update_pnr_provider_airline_api(update_req,context={
             'co_uid': self.user_id.id,
             'co_user_name': self.user_id.name,
