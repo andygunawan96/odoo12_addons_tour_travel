@@ -22,7 +22,7 @@
 
     <!--Top Menu Tour & Travel Visa-->
     <menuitem id="top_tour_travel_visa"
-              parent="tt_base.main_tour_travel"
+              parent="tt_base.main_reservation_master_data"
               name="Visa"
               sequence="4"
               groups="base.group_user"/>

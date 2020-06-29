@@ -22,10 +22,16 @@
         <!--Tours and Travel-->
         <menuitem id="main_tour_travel"
                   name="Tours and Travel"
-                  groups="group_tt_tour_travel_operator,group_tt_agent_management_operator,account.group_account_user"
+                  groups="group_tt_tour_travel_operator,group_tt_agent_management_operator"
                   web_icon="hr,static/description/icon.png"
                   sequence="1"/>
 
+        <!--Reservation Master Data-->
+        <menuitem id="main_reservation_master_data"
+                  name="Reservation Master Data"
+                  groups="group_tt_tour_travel_operator"
+                  web_icon="hr,static/description/icon.png"
+                  sequence="2"/>
 
         <!--Customers-->
         <menuitem id="main_customers"
