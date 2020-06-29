@@ -405,6 +405,9 @@
                                         </t>
                                     </t>
                                 </t>
+                                <t t-elif="doc_model == 'tt.reservation.airline'">
+                                    <span t-field="doc.pnr" style="margin-top: 5px;"/>
+                                </t>
                                 <t t-elif="doc_model == 'tt.reservation.hotel'">
                                     <span t-field="doc.pnr" style="margin-top: 5px;"/>
                                 </t>
