@@ -33,8 +33,9 @@ class ReportVendorEvent(models.Model):
         """
 
     @staticmethod
-    def _where(vendor_id, event_id, state):
-        query = "event.event_vendor_id = {} ".format(vendor_id)
+    def _where(date_from, date_to, vendor_id, event_id, state):
+        query = """transaction.create_date >= '%s' and transaction.create_date <= '%s' """ % (date_from, date_to)
+        query += "AND event.event_vendor_id = {} ".format(vendor_id)
         if event_id != 'all':
             query += "AND event.id = {} ".format(event_id)
         if state != 'all':
@@ -63,15 +64,17 @@ class ReportVendorEvent(models.Model):
     def _datetime_user_context(selfself, utc_datetime_string):
         return False
 
-    def _get_lines_data(self, vendor_id, event_name, state):
-        lines = self._lines(vendor_id, event_name, state)
+    def _get_lines_data(self, date_from, date_to, vendor_id, event_name, state):
+        lines = self._lines(date_from, date_to, vendor_id, event_name, state)
         return lines
 
     def _prepared_valued(self, data_form):
+        date_from = data_form['date_from']
+        date_to = data_form['date_to']
         event_id = data_form['event_name']
         state = data_form['transaction_state']
         vendor_id = data_form['vendor_id']
-        line = self._get_lines_data(vendor_id, event_id, state)
+        line = self._get_lines_data(date_from, date_to, vendor_id, event_id, state)
         self._report_title(data_form)
         return {
             'lines': line,

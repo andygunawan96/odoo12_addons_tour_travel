@@ -78,7 +78,7 @@ class IssuedOffline(models.Model):
     ho_commission = fields.Monetary('HO Commission', readonly=True, compute='_get_agent_commission')
     # states={'draft': [('readonly', False)], 'confirm': [('readonly', False)]})
     nta_price = fields.Monetary('NTA Price', readonly=True, compute='_get_nta_price', store=True)
-    agent_nta_price = fields.Monetary('Agent Price', readonly=True, compute='_get_agent_price', store=True)
+    agent_nta_price = fields.Monetary('Agent Price', readonly=True, compute='_get_agent_price')
 
     resv_code = fields.Char('Vendor Order Number')
 

@@ -3,6 +3,7 @@ from odoo.http import request
 from ...tools import session
 import logging
 import json
+from odoo.exceptions import UserError
 
 _logger = logging.getLogger(__name__)
 SESSION_NT = session.Session()
@@ -13,6 +14,8 @@ class temporaryPayment(models.Model):
 
     event_reservation_ids = fields.Many2many('tt.event.reservation', 'rel_event_reservation','event_id', 'temporary_id', 'Event Reservation', readonly=True)
     user_id = fields.Many2one('res.users', 'User ID', readonly=True)
+    transfer_image_path = fields.Char('Image Path')
+    title = fields.Char('title', readonly=True)
 
     def get_data_api(self, user_id):
         data = self.env['tt.event.reservation.temporary.payment'].sudo().search(['user_id', '=', user_id])
@@ -25,6 +28,13 @@ class temporaryPayment(models.Model):
             i.unlink()
 
     def action_paid(self):
+        process = []
+        unprocess = []
         for rec in self.event_reservation_ids:
             if rec.state in ['confirm']:
                 rec.action_paid()
+                process.append(rec.pnr)
+            else:
+                unprocess.append(rec.pnr + '(' + rec.state + ')')
+        self.env.cr.commit()
+        raise UserError('Processed: ' + str(len(process)) + ' Data(s); UnProcessed:' + ', '.join(unprocess) + '.')

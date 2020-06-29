@@ -28,7 +28,7 @@ class MasterEventReservation(models.Model):
     order_number = fields.Char('Client Order Number', help='Code must be distinct', readonly=True)
     state = fields.Selection([('draft', 'Draft'),('request', 'Request'), ('confirm', 'Confirm'), ('done', 'Paid')], default='draft')
     event_reservation_answer_ids = fields.One2many('tt.event.reservation.answer', 'event_reservation_id')
-    ticket_number = fields.Char('Ticket Number')
+    ticket_number = fields.Char('Ticket Number', readonly=True, states={'draft': [('readonly', False)], 'confirm': [('readonly', False)]})
     special_request = fields.Text('Special Request', help='Request / Notes from customer')
 
     request_date = fields.Datetime('Request Date')
@@ -68,6 +68,7 @@ class MasterEventReservation(models.Model):
     def action_request(self):
         self.state = "request"
         self.request_date = datetime.now()
+        self.sales_date = datetime.now()
         self.request_uid = self.env.user.id
         self.compute_ticket_price()
 
