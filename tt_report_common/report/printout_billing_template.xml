@@ -2,7 +2,7 @@
 <odoo>
     <template id="printout_billing_content">
         <!-- Base Info Booker dkk -->
-        <table style="margin: 1px; 1px; 15px;">
+        <table style="margin-bottom: 30px; margin-top: 30px;">
             <tr>
                 <td style="width:50px;">To</td>
                 <td style="width:10px;">:</td>
@@ -118,7 +118,7 @@
             <div class="row" style="margin-left: 0px; margin-right: 0px; margin-bottom: 20px; border-radius: 0 0 20px 20px; border: 1px solid #BBB;">
                 <div class="col-6" style="background: #F0F0F0; border-radius: 0 0 0px 20px; padding: 10px 10px 10px 20px;"/>
                 <div class="col-3 text-right" style="background-color: #F0F0F0; padding: 5px;">Billing Total</div>
-                <div class="col-3 text-right" style="background-color: #f15a22; border-radius: 0 0 20px 0; color: white; padding: 5px 25px;"><span t-field="doc.amount_total"/></div>
+                <div class="col-3 text-right" t-att-style="'background-color: '+ base_color+'; border-radius: 0 0 20px 0; color: white; padding: 5px 25px;'"><span t-field="doc.amount_total"/></div>
             </div>
         </div>
         <!-- Price and Sign -->
@@ -185,7 +185,6 @@
             <t t-foreach="docs" t-as="doc">
                 <div class="page">
                     <t t-call="tt_report_common.external_layout">
-                        <br/>
                         <div style="margin: 0 20px; font-family: 'LiberationSans'">
                             <t t-call="tt_report_common.printout_billing_content"/>
                         </div>

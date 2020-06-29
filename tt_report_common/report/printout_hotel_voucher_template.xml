@@ -91,122 +91,120 @@
 
     <!-- Content Version 2 -->
     <template id="reservation_hotel_content_view">
-        <div class="box" style="margin: 0px 20px 20px 20px; font-family: 'LiberationSans'">
-            <!-- No. Booking -->
-            <div style="margin-bottom: 10px; margin-top: 5px;">
-                <span style="font-size: 18px; font-weight: 730">No. Booking : </span>
-                <span t-field="doc.name" style="font-size: 18px; font-weight: 730"/><br/>
-            </div>
+        <!-- No. Booking -->
+        <div style="margin-bottom: 10px; margin-top: 30px;">
+            <span style="font-size: 18px; font-weight: 730">No. Booking : </span>
+            <span t-field="doc.name" style="font-size: 18px; font-weight: 730"/><br/>
+        </div>
 
-            <!-- Hotel Description -->
+        <!-- Hotel Description -->
+        <div class="title" t-att-style="'background-color: '+base_color+'; border-radius: 20px 20px 0 0; border-color: #CCC; padding-top: 5px; padding-bottom: 5px'">
+            <span style="padding-left: 20px; color: white; font-weight: 600; font-size: 18px">Hotel name: <span t-field="doc.hotel_name"/></span><br/>
+            <span style="padding-left: 20px; color: white; font-weight: 600; font-size: 16px">Address: <span t-field="doc.hotel_address"/></span>
+        </div>
+        <div class="row" style="margin: 0px; margin-bottom: 40px; font-size: 14px;">
+            <div class="col-6" style="border-radius: 0 0 0px 20px; border: 1px solid #BBB; padding: 10px 2px;">
+                <div class="row" style="margin: 0px; padding:0px;">
+                    <div class="col-4">
+                        <b>
+                            <span>Phone</span><br/>
+                            <!--<span>Agent Ref. #</span><br/>-->
+                            <span>Hotel Confirm</span><br/>
+                            <span>CheckIn Date</span><br/>
+                            <span>Numb. Night</span><br/>
+                        </b>
+                    </div>
+                    <div class="col-1">
+                        <span>:</span>
+                        <span>:</span>
+                        <span>:</span>
+                        <span>:</span>
+                    </div>
+                    <div class="col-6">
+                        <t t-if="doc.hotel_phone"><span t-field="doc.hotel_phone"/></t><t t-else="">-</t><br/>
+                        <!--<span t-field="doc.room_detail_ids[0].name"/><br/>-->
+                        <span t-field="doc.room_detail_ids[0].issued_name"/><br/>
+                        <span t-field="doc.checkin_date"/><br/>
+                        <span t-field="doc.nights"/><br/>
+                    </div>
+                </div>
+            </div>
+            <div class="col-6" style="border-radius: 0 0 20px 0px; border: 1px solid #BBB; padding: 10px 2px;">
+                <div class="row" style="margin: 0px; padding:0px;">
+                    <div class="col-4">
+                        <b>
+                            <span>Resv</span><br/>
+                            <span>Room Name</span><br/>
+                            <span>CheckOut Date</span><br/>
+                            <span>Num. Room</span><br/>
+                        </b>
+                    </div>
+                    <div class="col-1">
+                        <span>:</span>
+                        <span>:</span>
+                        <span>:</span>
+                        <span>:</span>
+                    </div>
+                    <div class="col-6">
+                        <span t-field="doc.name"/><br/>
+                        <span t-field="doc.room_detail_ids[0].room_name"/><br/>
+                        <span t-field="doc.checkout_date"/><br/>
+                        <span t-field="doc.room_count"/><br/>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!--Guest Description-->
+        <div class="box" style="margin: 0px; border: 1px solid #BBB; border-radius: 20px">
             <div class="title" t-att-style="'background-color: '+base_color+'; border-radius: 20px 20px 0 0; border-color: #CCC; padding-top: 5px; padding-bottom: 5px'">
-                <span style="padding-left: 20px; color: white; font-weight: 600; font-size: 18px">Hotel name: <span t-field="doc.hotel_name"/></span><br/>
-                <span style="padding-left: 20px; color: white; font-weight: 600; font-size: 16px">Address: <span t-field="doc.hotel_address"/></span>
+                <span style="padding-left: 20px; color: white; font-weight: 600; font-size: 18px">Room Information</span><br/>
             </div>
-            <div class="row" style="margin: 0px; margin-bottom: 40px; font-size: 14px;">
-                <div class="col-6" style="border-radius: 0 0 0px 20px; border: 1px solid #BBB; padding: 10px 2px;">
-                    <div class="row" style="margin: 0px; padding:0px;">
-                        <div class="col-4">
-                            <b>
-                                <span>Phone</span><br/>
-                                <!--<span>Agent Ref. #</span><br/>-->
-                                <span>Hotel Confirm</span><br/>
-                                <span>CheckIn Date</span><br/>
-                                <span>Numb. Night</span><br/>
-                            </b>
-                        </div>
-                        <div class="col-1">
-                            <span>:</span>
-                            <span>:</span>
-                            <span>:</span>
-                            <span>:</span>
-                        </div>
-                        <div class="col-6">
-                            <t t-if="doc.hotel_phone"><span t-field="doc.hotel_phone"/></t><t t-else="">-</t><br/>
-                            <!--<span t-field="doc.room_detail_ids[0].name"/><br/>-->
-                            <span t-field="doc.room_detail_ids[0].issued_name"/><br/>
-                            <span t-field="doc.checkin_date"/><br/>
-                            <span t-field="doc.nights"/><br/>
-                        </div>
-                    </div>
+            <div class="row" style="margin-left: 0px; margin-right: 0px">
+                <div class="col-2" style="text-align: center; border-right: 1px solid #BBB">
+                    <label style="font-weight:450; font-size:17px; margin-bottom: 0px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                        <span>Pax:</span>
+                    </label>
                 </div>
-                <div class="col-6" style="border-radius: 0 0 20px 0px; border: 1px solid #BBB; padding: 10px 2px;">
-                    <div class="row" style="margin: 0px; padding:0px;">
-                        <div class="col-4">
-                            <b>
-                                <span>Resv</span><br/>
-                                <span>Room Name</span><br/>
-                                <span>CheckOut Date</span><br/>
-                                <span>Num. Room</span><br/>
-                            </b>
-                        </div>
-                        <div class="col-1">
-                            <span>:</span>
-                            <span>:</span>
-                            <span>:</span>
-                            <span>:</span>
-                        </div>
-                        <div class="col-6">
-                            <span t-field="doc.name"/><br/>
-                            <span t-field="doc.room_detail_ids[0].room_name"/><br/>
-                            <span t-field="doc.checkout_date"/><br/>
-                            <span t-field="doc.room_count"/><br/>
-                        </div>
-                    </div>
+                <div class="col-9" style="text-align: left">
+                    <t t-foreach="doc.passenger_ids" t-as="psg">
+                        <label style="font-weight:450; font-size:17px; margin-bottom: 0px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"><span t-esc="psg_index+1"/>.</label>
+                        <label style="font-weight:450; font-size:17px; margin-bottom: 0px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"><t t-if="psg.title"><span t-field="psg.title"/>. </t><span t-field="psg.first_name"/> <span t-field="psg.last_name"/></label>
+                        <br/>
+                    </t>
                 </div>
             </div>
-
-            <!--Guest Description-->
-            <div class="box" style="margin: 0px; border: 1px solid #BBB; border-radius: 20px">
-                <div class="title" t-att-style="'background-color: '+base_color+'; border-radius: 20px 20px 0 0; border-color: #CCC; padding-top: 5px; padding-bottom: 5px'">
-                    <span style="padding-left: 20px; color: white; font-weight: 600; font-size: 18px">Room Information</span><br/>
+            <hr/>
+            <div class="row" style="margin-left: 0px; margin-right: 0px">
+                <div class="col-2" style="text-align: center; border-right: 1px solid #BBB">
+                    <label style="font-weight:450; font-size:17px; margin-bottom: 0px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                        <span>Remark(s):</span>
+                    </label>
                 </div>
-                <div class="row" style="margin-left: 0px; margin-right: 0px">
-                    <div class="col-2" style="text-align: center; border-right: 1px solid #BBB">
+                <div class="col-9">
+                    <t t-set="idx" t-value="1"/>
+                    <t t-foreach="doc.room_detail_ids" t-as="room">
                         <label style="font-weight:450; font-size:17px; margin-bottom: 0px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
-                            <span>Pax:</span>
-                        </label>
-                    </div>
-                    <div class="col-9" style="text-align: left">
-                        <t t-foreach="doc.passenger_ids" t-as="psg">
-                            <label style="font-weight:450; font-size:17px; margin-bottom: 0px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"><span t-esc="psg_index+1"/>.</label>
-                            <label style="font-weight:450; font-size:17px; margin-bottom: 0px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"><t t-if="psg.title"><span t-field="psg.title"/>. </t><span t-field="psg.first_name"/> <span t-field="psg.last_name"/></label>
-                            <br/>
-                        </t>
-                    </div>
-                </div>
-                <hr/>
-                <div class="row" style="margin-left: 0px; margin-right: 0px">
-                    <div class="col-2" style="text-align: center; border-right: 1px solid #BBB">
-                        <label style="font-weight:450; font-size:17px; margin-bottom: 0px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
-                            <span>Remark(s):</span>
-                        </label>
-                    </div>
-                    <div class="col-9">
-                        <t t-set="idx" t-value="1"/>
-                        <t t-foreach="doc.room_detail_ids" t-as="room">
-                            <label style="font-weight:450; font-size:17px; margin-bottom: 0px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
-                                Room <t t-esc="idx"/> (<span t-field="room.room_name"/>):
-                                <t t-if="room.meal_type">
-                                    <span t-field="room.meal_type"/>,
-                                </t>
-                                <t t-else="">
-                                    <span> Room Only </span>,
-                                </t>
+                            Room <t t-esc="idx"/> (<span t-field="room.room_name"/>):
+                            <t t-if="room.meal_type">
+                                <span t-field="room.meal_type"/>,
+                            </t>
+                            <t t-else="">
+                                <span> Room Only </span>,
+                            </t>
 
-                                <t t-if="room.special_request">
-                                    <span t-field="room.special_request"/>
-                                </t>
-                                <t t-else="">
-                                    <span> No Special Request </span>
-                                </t>
-                            </label><br/>
-                            <t t-set="idx" t-value="idx + 1"/>
-                        </t>
-                    </div>
+                            <t t-if="room.special_request">
+                                <span t-field="room.special_request"/>
+                            </t>
+                            <t t-else="">
+                                <span> No Special Request </span>
+                            </t>
+                        </label><br/>
+                        <t t-set="idx" t-value="idx + 1"/>
+                    </t>
                 </div>
-                <div style="margin-bottom: 5px"/>
             </div>
+            <div style="margin-bottom: 5px"/>
         </div>
     </template>
 
@@ -218,7 +216,9 @@
                 <div class="page">
                     <t t-call="tt_report_common.external_layout">
 <!--                        <br/>-->
-                        <t t-call="tt_report_common.reservation_hotel_content_view"/>
+                        <div class="box" style="margin: 0px 20px 20px 20px; font-family: 'LiberationSans'">
+                            <t t-call="tt_report_common.reservation_hotel_content_view"/>
+                        </div>
                     </t>
                 </div>
             </t>
