@@ -28,7 +28,7 @@ class MasterEventReservation(models.Model):
     order_number = fields.Char('Client Order Number', help='Code must be distinct', readonly=True)
     state = fields.Selection([('draft', 'Draft'),('request', 'Request'), ('confirm', 'Confirm'), ('done', 'Paid')], default='draft')
     event_reservation_answer_ids = fields.One2many('tt.event.reservation.answer', 'event_reservation_id')
-    ticket_number = fields.Char('Ticket Number', readonly=True, states={'draft': [('readonly', False)], 'confirm': [('readonly', False)]})
+    ticket_number = fields.Char('Ticket Number', readonly=True, states={'draft': [('readonly', False)], 'request': [('readonly', False)]})
     special_request = fields.Text('Special Request', help='Request / Notes from customer')
 
     request_date = fields.Datetime('Request Date')
