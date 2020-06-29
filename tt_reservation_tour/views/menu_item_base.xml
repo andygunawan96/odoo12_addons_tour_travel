@@ -23,7 +23,7 @@
 
         <!--Top Menu Tour & Travel Tour-->
         <menuitem id="top_tour_travel_tour"
-                  parent="tt_base.main_tour_travel"
+                  parent="tt_base.main_reservation_master_data"
                   name="Tour"
                   sequence="5"
                   groups="base.group_user"/>

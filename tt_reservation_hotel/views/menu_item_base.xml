@@ -32,7 +32,7 @@
 
     <!--Top Menu Tour & Travel Hotel-->
     <menuitem id="top_tour_travel_hotel"
-              parent="tt_base.main_tour_travel"
+              parent="tt_base.main_reservation_master_data"
               name="Hotel"
               sequence="2"
               groups="base.group_user"/>

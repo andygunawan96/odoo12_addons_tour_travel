@@ -17,7 +17,7 @@
                   sequence="2"/>
 
     <!--Top Menu Tour & Travel Passport-->
-    <menuitem id="top_tour_travel_passport" parent="tt_base.main_tour_travel"
+    <menuitem id="top_tour_travel_passport" parent="tt_base.main_reservation_master_data"
               name="Passport" sequence="3"/>  <!--groups="base.group_user"-->
               <!--action="tt_reservation_passport.tt_reservation_passport_pricelist_view_action"-->
 

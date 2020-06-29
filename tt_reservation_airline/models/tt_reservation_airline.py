@@ -680,7 +680,7 @@ class ReservationAirline(models.Model):
             except:
                 raise RequestException(1001)
 
-            if book_obj.agent_id.id == context.get('co_agent_id',-1):
+            if book_obj.agent_id.id == context.get('co_agent_id',-1) or context.get('co_agent_id') == self.env.ref('tt_base.rodex_ho').id:
                 res = book_obj.to_dict()
                 psg_list = []
                 for rec in book_obj.sudo().passenger_ids:

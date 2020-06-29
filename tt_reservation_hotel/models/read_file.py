@@ -2048,6 +2048,101 @@ class HotelInformation(models.Model):
             writer.writerows(need_to_add_list)
         csvFile.close()
 
+    # Render from master data Excel
+    # Versi ini hanya untuk updating data jadi dia tidak langsung buat city baru tpi lebih kearah baca
+    # compare ID nya ada tidak jika ada ganti info nya
+    # jika tidak buat record baru
+    # Jika city tidak terdaftar baru buat file kota baru
+    def get_record_by_api14f(self):
+        path = '/var/log/cache_hotel/knb/'
+        _logger.info("========================================")
+        _logger.info("Read File in path " + path)
+        _logger.info("========================================")
+
+        city_ids = {}
+        start_line = 1
+
+        # Baca file
+        import glob
+        file_names = glob.glob(path + "master/RODE_hotel_Indonesia_20200623155519.csv")
+        for file_name in file_names:
+            with open(file_name, 'r') as f:
+                file_content = csv.reader(f, delimiter=';')
+                for idx, rec in enumerate(file_content):
+                    if idx < start_line:
+                        continue
+                    if not city_ids.get(rec[8]):
+                        city_ids[rec[8]] = []
+                    _logger.info(str(idx) + ". Render " + rec[1] + " in City: " + rec[8])
+                    city_ids[rec[8]].append({
+                        'id': rec[0],
+                        'name': rec[1],
+                        'street': rec[3],
+                        'street2': rec[4],
+                        'street3': rec[5],
+                        'description': rec[17] + ' ' + rec[18],
+                        'email': rec[15],
+                        'images': [],
+                        # 'facilities': rec[18], #Ada Kolom facility tapi isie string descripsi,
+                        'facilities': [],  # Jadi isi dari field facility kita masukan ke description
+                        'phone': rec[13],
+                        'fax': rec[14],
+                        'zip': rec[6],
+                        'website': rec[16],
+                        'lat': rec[20],
+                        'long': rec[21],
+                        'rating': rec[19] or 0,
+                        'hotel_type': '',
+                        'city': rec[8],
+                    })
+            f.close()
+
+        need_to_add_list = [['No', 'City', 'Old Rec.', 'New', 'Updated', 'Current Rec.']]
+        for idx, city in enumerate(city_ids.keys()):
+            for city_name in city.split('/'):
+                filename = path + city_name + '.json'
+                old_qty = 0
+                new_qty = 0
+                update_qty = 0
+                total_qty = 0
+                try:
+                    with open(filename, 'r') as file:
+                        file_content = json.loads(file.read())
+                        old_qty = len(file_content)
+                        for hotel_in_file in file_content:
+                            new_hotel = True
+                            for hotel_in_cache in city_ids[city]:
+                                if hotel_in_file['id'] == hotel_in_cache['id']:
+                                    hotel_in_file.update(hotel_in_cache)
+                                    new_hotel = False
+                                    update_qty += 1
+                                    break
+                            if new_hotel:
+                                file_content.append(hotel_in_cache)
+                        file.close()
+                    new_qty = len(file_content) - update_qty
+                    total_qty = len(file_content)
+                    file = open(filename, 'w')
+                    file.write(json.dumps(file_content))
+                    file.close()
+                except:
+                    file = open(filename, 'w')
+                    file.write(json.dumps(city_ids[city]))
+                    file.close()
+                need_to_add_list.append([idx, city_name, old_qty, new_qty, update_qty, total_qty])
+            # if '/' in city:
+            #     city_name = city.replace('/', ' ')
+            #     file = open(path + city_name + '.json', 'w')
+            #     need_to_add_list.append([idx, city_name, len(city_ids[city])])
+            #     file.write(json.dumps(city_ids[city]))
+            #     file.close()
+
+
+        with open('/var/log/cache_hotel/knb_all/result/Result.csv', 'w') as csvFile:
+            writer = csv.writer(csvFile)
+            writer.writerows(need_to_add_list)
+        csvFile.close()
+
     # ====================== TOOLS =====================================================
     def masking_provider(self, provider):
         # Perlu dibuat gini karena cache data bisa berasal dari mana sja
@@ -2776,7 +2871,7 @@ class HotelInformation(models.Model):
         # Update CSV Result merger (Nice to have)
         return True
 
-    # GateWay bakal catet data search yg tidak terdaftar dan tidak ada nama
+    # GateWay bakal catet data search yg tidak terdaftar dan tidak lengkap (no address)
     def merge_record_for_with_search_result(self):
         provider_list = ['from_cache',]
 

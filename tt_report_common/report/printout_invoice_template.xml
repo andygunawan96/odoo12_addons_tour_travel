@@ -374,10 +374,32 @@
                                 </t>
                                 <t t-elif="doc_type == 'vendor_invoice'">
                                     <t t-if="doc.pnr">
-                                        <span t-field="doc.pnr" style="margin-top: 5px;"/>
+                                        <t t-if="pnr_length &lt;= 20">
+                                            <span t-field="doc.pnr" style="margin-top: 5px;"/>
+                                        </t>
+                                        <t t-elif="pnr_length &gt; 20 and pnr_length &lt;= 25">
+                                            <span t-field="doc.pnr" style="margin-top: 5px; font-size: 20px"/>
+                                        </t>
+                                        <t t-elif="pnr_length &gt; 25 and pnr_length &lt;= 30">
+                                            <span t-field="doc.pnr" style="margin-top: 5px; font-size: 16px"/>
+                                        </t>
+                                        <t t-else="">
+                                            <span t-field="doc.pnr" style="margin-top: 5px; font-size: 15px"/>
+                                        </t>
                                     </t>
                                     <t t-else="">
-                                        <span t-esc="'doc.name'" style="margin-top: 5px;"/>
+                                        <t t-if="pnr_length &lt;= 20">
+                                            <span t-field="doc.name" style="margin-top: 5px;"/>
+                                        </t>
+                                        <t t-elif="pnr_length &gt; 20 and pnr_length &lt;= 25">
+                                            <span t-field="doc.name" style="margin-top: 5px; font-size: 20px"/>
+                                        </t>
+                                        <t t-elif="pnr_length &gt; 25 and pnr_length &lt;= 30">
+                                            <span t-field="doc.name" style="margin-top: 5px; font-size: 16px"/>
+                                        </t>
+                                        <t t-else="">
+                                            <span t-field="doc.name" style="margin-top: 5px; font-size: 15px"/>
+                                        </t>
                                     </t>
                                 </t>
                                 <t t-elif="doc_model == 'tt.reservation.hotel'">

@@ -427,7 +427,13 @@ class TtAgent(models.Model):
             else:
                 types = variables.PROVIDER_TYPE
 
-            dom = [('agent_id', '=', agent_obj.id)]
+            if agent_obj.id == self.env.ref('tt_base.rodex_ho').id:
+                print('masuk HO')
+                dom = []
+            else:
+                print('masuk agent')
+                dom = [('agent_id', '=', agent_obj.id)]
+
             if req.get('pnr'):
                 dom.append(('pnr','=ilike',req['pnr']))
             if req.get('booker_name'):

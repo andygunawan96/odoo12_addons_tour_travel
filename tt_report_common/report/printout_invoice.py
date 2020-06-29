@@ -476,11 +476,13 @@ class PrintoutInvoiceVendor(models.AbstractModel):
                 data['context']['active_model'] = 'tt.reservation.tour'
             data['context']['active_ids'] = docids
         values = {}
+        pnr_length = 0
         for rec in self.env[data['context']['active_model']].browse(data['context']['active_ids']):
             values[rec.id] = []
             a = {}
             pax_data = self.get_invoice_data(rec, data.get('context'), data)
             values[rec.id].append(pax_data)
+            pnr_length = len(rec.pnr) if rec.pnr else len(rec.name)
         vals = {
             'doc_ids': data['context']['active_ids'],
             'doc_model': data['context']['active_model'],
@@ -488,6 +490,7 @@ class PrintoutInvoiceVendor(models.AbstractModel):
             'docs': self.env[data['context']['active_model']].browse(data['context']['active_ids']),
             'price_lines': values,
             'inv_lines': values,
+            'pnr_length': pnr_length,
             'terbilang': self.compute_terbilang_from_objs(
                 self.env[data['context']['active_model']].browse(data['context']['active_ids'])),
             'base_color': self.sudo().env['ir.config_parameter'].get_param('tt_base.website_default_color',

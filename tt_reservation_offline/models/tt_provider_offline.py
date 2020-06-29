@@ -302,7 +302,6 @@ class ProviderOffline(models.Model):
         scs_list = []
         scs_list_2 = []
         pricing_obj = self.env['tt.pricing.agent'].sudo()
-        sale_price = book_obj.total / len(self.booking_id.line_ids)
 
         """ Get provider fee amount """
         total_fee_amount = 0
@@ -314,14 +313,7 @@ class ProviderOffline(models.Model):
         days_int = int(days.days)
 
         pax_count = days_int * (int(line_obj.obj_qty) if line_obj.obj_qty else 1)
-
-        fee_amount_vals = book_obj.get_fee_amount(book_obj.agent_id, provider_type_id,
-                                                  book_obj.total_commission_amount, self.booking_id.passenger_ids[0])
-        fee_amount_vals['provider_offline_booking_id'] = self.id
-        fee_amount_vals['amount'] = fee_amount_vals.get('amount') * line_obj.obj_qty * days_int
-        fee_amount_vals['total'] = fee_amount_vals.get('total') * line_obj.obj_qty * days_int
-        fee_amount_vals['pax_count'] = 1
-        scs_list.append(fee_amount_vals)
+        total_line_qty = 0
 
         """ Get total fee amount """
         for line in book_obj.line_ids:
@@ -337,7 +329,46 @@ class ProviderOffline(models.Model):
             fee_amount_vals['total'] = fee_amount_vals.get('total') * line.obj_qty * days_int
             total_fee_amount += fee_amount_vals.get('total')
 
-        real_comm_amount = book_obj.total_commission_amount - total_fee_amount
+            total_line_qty += days_int * line.obj_qty
+
+        if total_fee_amount > book_obj.ho_commission:
+            real_comm_amount = book_obj.ho_commission
+            fee_amount_remaining = book_obj.ho_commission
+        else:
+            real_comm_amount = book_obj.total_commission_amount - total_fee_amount
+            fee_amount_remaining = total_fee_amount
+
+        fee_amount_vals = book_obj.get_fee_amount(book_obj.agent_id, provider_type_id,
+                                                  book_obj.total_commission_amount, self.booking_id.passenger_ids[0])
+        fee_amount_vals['provider_offline_booking_id'] = self.id
+        for line_idx, line in enumerate(book_obj.line_ids):
+            check_in = datetime.strptime(line.check_in, '%Y-%m-%d')
+            check_out = datetime.strptime(line.check_out, '%Y-%m-%d')
+            days = check_out - check_in
+            days_int = int(days.days)
+
+            if line_idx == index:
+                if fee_amount_remaining >= 0:
+                    if fee_amount_remaining < fee_amount_vals.get('amount') * line.obj_qty * days_int:
+                        fee_amount_vals['amount'] = -fee_amount_remaining
+                        fee_amount_vals['total'] = -fee_amount_remaining
+                        fee_amount_vals['pax_count'] = 1
+                        scs_list.append(fee_amount_vals)
+                        fee_amount_remaining -= fee_amount_remaining
+                    else:
+                        fee_amount_vals['amount'] = -fee_amount_vals.get('amount') * line.obj_qty * days_int
+                        fee_amount_vals['total'] = -fee_amount_vals.get('total') * line.obj_qty * days_int
+                        fee_amount_vals['pax_count'] = 1
+                        scs_list.append(fee_amount_vals)
+                        fee_amount_remaining -= fee_amount_vals.get('amount') * line.obj_qty * days_int
+            else:
+                if fee_amount_remaining >= 0:
+                    if fee_amount_remaining < fee_amount_vals.get('amount') * line.obj_qty * days_int:
+                        fee_amount_remaining -= fee_amount_remaining
+                    else:
+                        fee_amount_remaining -= fee_amount_vals.get('amount') * line.obj_qty * days_int
+
+        sale_price = book_obj.total / total_line_qty * line_obj.obj_qty * days_int
 
         # Get all pricing per pax
         vals = {
@@ -354,20 +385,21 @@ class ProviderOffline(models.Model):
         }
         vals['passenger_offline_ids'].append(self.booking_id.passenger_ids[0].id)
         scs_list.append(vals)
-        commission_list = pricing_obj.get_commission(real_comm_amount, book_obj.agent_id, provider_type_id)
-        for comm in commission_list:
-            if comm['amount'] > 0:
-                vals2 = vals.copy()
-                vals2.update({
-                    'commission_agent_id': comm['commission_agent_id'],
-                    'total': comm['amount'] * -1 / len(book_obj.line_ids),
-                    'amount': comm['amount'] * -1 / len(book_obj.line_ids),
-                    'charge_code': comm['code'],
-                    'charge_type': 'RAC',
-                    'passenger_offline_ids': [],
-                })
-                vals2['passenger_offline_ids'].append(self.booking_id.passenger_ids[0].id)
-                scs_list.append(vals2)
+        if total_fee_amount <= book_obj.ho_commission:
+            commission_list = pricing_obj.get_commission(real_comm_amount, book_obj.agent_id, provider_type_id)
+            for comm in commission_list:
+                if comm['amount'] > 0:
+                    vals2 = vals.copy()
+                    vals2.update({
+                        'commission_agent_id': comm['commission_agent_id'],
+                        'total': comm['amount'] * -1 / total_line_qty * line_obj.obj_qty * days_int,
+                        'amount': comm['amount'] * -1 / total_line_qty * line_obj.obj_qty * days_int,
+                        'charge_code': comm['code'],
+                        'charge_type': 'RAC',
+                        'passenger_offline_ids': [],
+                    })
+                    vals2['passenger_offline_ids'].append(self.booking_id.passenger_ids[0].id)
+                    scs_list.append(vals2)
 
         # Insert into cost service charge
         scs_list_3 = []
@@ -396,7 +428,4 @@ class ProviderOffline(models.Model):
         for rec in self:
             rec.total_price = 0
             for scs in rec.cost_service_charge_ids:
-                if scs.charge_code in ['hoc']:
-                    rec.total_price -= scs.total
-                else:
                     rec.total_price += scs.total
