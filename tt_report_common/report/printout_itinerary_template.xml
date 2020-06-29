@@ -4,12 +4,8 @@
         <!-- Main Params -->
         <div class="row">
             <div class="col-12">
-                <span style="font-size: 28px; font-weight: 730">Itinerary Detail(s)</span><br/>
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-12">
                 <t t-foreach="doc.provider_booking_ids" t-as="provider_itin_id">
+                    <span style="font-size: 28px; font-weight: 730">Itinerary Detail(s)</span><br/>
                     <table class="table table-sm" style="text-align:center;">
                         <thead>
                             <tr>
@@ -100,12 +96,8 @@
         <!-- Main Params -->
         <div class="row">
             <div class="col-12">
-                <span style="font-size: 28px; font-weight: 730">Itinerary Detail(s)</span><br/>
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-12">
                 <t t-foreach="doc.provider_booking_ids" t-as="provider_itin_id">
+                    <span style="font-size: 28px; font-weight: 730">Itinerary Detail(s)</span><br/>
                     <table class="table table-sm" style="text-align:center;">
                         <thead>
                             <tr>
@@ -194,12 +186,8 @@
         <!-- Main Params -->
         <div class="row">
             <div class="col-12">
-                <span style="font-size: 28px; font-weight: 730">Reservation Detail(s)</span><br/>
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-12">
                 <t t-foreach="doc.provider_booking_ids" t-as="provider_itin_id">
+                    <span style="font-size: 28px; font-weight: 730">Reservation Detail(s)</span><br/>
                     <table class="table table-sm" style="text-align:center;">
                         <thead>
                             <tr>
@@ -274,12 +262,8 @@
         <!-- Main Params -->
         <div class="row">
             <div class="col-12">
-                <span style="font-size: 28px; font-weight: 730">Reservation Detail(s)</span><br/>
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-12">
                 <t t-foreach="doc.provider_booking_ids" t-as="provider_itin_id">
+                    <span style="font-size: 28px; font-weight: 730">Reservation Detail(s)</span><br/>
                     <table class="table table-sm" style="text-align:center;">
                         <thead>
                             <tr>
@@ -416,12 +400,8 @@
         <!-- Main Params -->
         <div class="row">
             <div class="col-12">
-                <span style="font-size: 28px; font-weight: 730">Reservation Detail(s)</span><br/>
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-12">
                 <t t-foreach="doc.provider_booking_ids" t-as="provider_itin_id">
+                    <span style="font-size: 28px; font-weight: 730">Reservation Detail(s)</span><br/>
                     <table class="table table-sm" style="text-align:center;">
                         <thead>
                             <tr>
@@ -488,12 +468,8 @@
         <!-- Main Params -->
         <div class="row">
             <div class="col-12">
-                <span style="font-size: 28px; font-weight: 730">Reservation Detail(s)</span><br/>
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-12">
                 <t t-foreach="doc.provider_booking_ids" t-as="provider_itin_id">
+                    <span style="font-size: 28px; font-weight: 730">Reservation Detail(s)</span><br/>
                     <table class="table table-sm" style="text-align:center;">
                         <thead>
                             <tr>
@@ -559,17 +535,12 @@
     </template>
 
     <template id="ppob_itinerary_view">
-        <div class="row">
-            <div class="col-12">
-                <span style="font-size: 28px; font-weight: 730">Itinerary Detail(s)</span><br/>
-            </div>
-        </div>
-
         <t t-if="len(doc.provider_booking_ids) > 0">
             <t t-if="doc.provider_booking_ids[0].carrier_id.name == 'PLN Postpaid'">
                 <div class="row">
                     <div class="col-12">
                         <t t-foreach="doc.provider_booking_ids" t-as="provider_itin_id">
+                            <span style="font-size: 28px; font-weight: 730">Itinerary Detail(s)</span><br/>
                             <table class="table table-sm" style="text-align:center;">
                                 <thead>
                                     <tr>
@@ -650,6 +621,7 @@
                 <div class="row">
                     <div class="col-12">
                         <t t-foreach="doc.provider_booking_ids" t-as="provider_itin_id">
+                            <span style="font-size: 28px; font-weight: 730">Itinerary Detail(s)</span><br/>
                             <table class="table table-sm" style="text-align:center;">
                                 <thead>
                                     <tr>
@@ -705,6 +677,7 @@
                 <div class="row">
                     <div class="col-12">
                         <t t-foreach="doc.provider_booking_ids" t-as="provider_itin_id">
+                            <span style="font-size: 28px; font-weight: 730">Itinerary Detail(s)</span><br/>
                             <table class="table table-sm" style="text-align:center;">
                                 <thead>
                                     <tr>
@@ -756,6 +729,7 @@
                 <div class="row">
                     <div class="col-12">
                         <t t-foreach="doc.provider_booking_ids" t-as="provider_itin_id">
+                            <span style="font-size: 28px; font-weight: 730">Itinerary Detail(s)</span><br/>
                             <table class="table table-sm" style="text-align:center;">
                                 <thead>
                                     <tr>
@@ -826,12 +800,8 @@
         <!-- Main Params -->
         <div class="row">
             <div class="col-12">
-                <span style="font-size: 28px; font-weight: 730">Reservation Detail(s)</span><br/>
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-12">
                 <t t-foreach="doc.provider_booking_ids" t-as="provider_itin_id">
+                    <span style="font-size: 28px; font-weight: 730">Itinerary Detail(s)</span><br/>
                     <table class="table table-sm" style="text-align:center;">
                         <thead>
                             <tr>
@@ -899,13 +869,9 @@
     <template id="json_itinerary_content_view">
         <div class="row">
             <div class="col-12">
-                <span style="font-size: 28px; font-weight: 730">Reservation Detail(s)</span><br/>
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-12">
                 <!-- Hotel -->
                 <t t-if="doc['type'] == 'hotel'">
+                    <span style="font-size: 28px; font-weight: 730">Reservation Detail(s)</span><br/>
                     <table class="table table-sm" style="text-align:center;">
                         <thead>
                             <tr>
@@ -933,6 +899,7 @@
                 </t>
                 <!-- Activity -->
                 <t t-if="doc['type'] == 'activity'">
+                    <span style="font-size: 28px; font-weight: 730">Reservation Detail(s)</span><br/>
                     <table class="table table-sm" style="text-align:center;">
                         <thead>
                             <tr>
@@ -958,6 +925,7 @@
                 </t>
                 <!-- Tour -->
                 <t t-if="doc['type'] == 'tour'">
+                    <span style="font-size: 28px; font-weight: 730">Reservation Detail(s)</span><br/>
                     <table class="table table-sm" style="text-align:center;">
                         <thead>
                             <tr>

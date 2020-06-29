@@ -92,6 +92,70 @@
         </div>
     </template>
 
+    <template id="price_detail">
+        <br/>
+        <span style="font-size: 28px; font-weight: 730">Price Detail(s)</span><br/>
+        <table width="100%">
+            <thead style="border-bottom: 1px solid black; font-size:18px; text-align:center;">
+                <td><b>Pax Type</b></td>
+                <td><b>Base Fare</b></td>
+                <td><b>Tax</b></td>
+                <td><b>Total Per Pax</b></td>
+                <td><b>Qty</b></td>
+                <td><b>Total</b></td>
+            </thead>
+            <t t-foreach="price_lines[doc.id]" t-as="price">
+                <t t-if="length.pnr == price['pnr']">
+                    <tr style="border-bottom: 1px solid lightgray">
+                        <td style="text-align:center; border-right: 1px solid lightgray"><t t-esc="price['pax_type']"/></td>
+                        <td style="text-align:right; border-right: 1px solid lightgray"><t t-esc="price['fare']" t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/></td>
+                        <td style="text-align:right; border-right: 1px solid lightgray"><t t-esc="price['tax']" t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/></td>
+                        <td style="text-align:right;"><t t-esc="(float(price['fare']) + float(price['tax']))" t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/></td>
+                        <td style="text-align:right; border-right: 1px solid lightgray"><t t-esc="price['qty']"/></td>
+                        <td style="text-align:right;"><t t-esc="(float(price['fare']) + float(price['tax'])) * price['qty']" t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/></td>
+                    </tr>
+                </t>
+            </t>
+        </table>
+        <t t-if="ssr_list">
+            <br/>
+            <span style="font-size: 28px; font-weight: 730">Addons Detail(s)</span><br/>
+            <table width="100%">
+                <thead style="border-bottom: 1px solid black; font-size:18px; text-align:center;">
+                    <td><b>Passenger(s)</b></td>
+                    <td><b>Description</b></td>
+                    <td><b>Price</b></td>
+                </thead>
+                <tbody>
+                    <t t-foreach="ssr_list" t-as="ssr_obj">
+                        <tr>
+                            <td><t t-esc="ssr_obj['name']"/></td>
+                            <td>
+                                <ul>
+                                    <t t-foreach="ssr_obj['ssr']" t-as="ssr_obj1">
+                                        <t t-if="length.pnr == ssr_obj1['pnr']">
+                                            <li><t t-esc="ssr_obj1['description']"/></li>
+                                        </t>
+                                    </t>
+                                </ul>
+                            </td>
+                            <td>
+                                <ul>
+                                    <t t-foreach="ssr_obj['ssr']" t-as="ssr_obj2">
+                                        <t t-if="length.pnr == ssr_obj2['pnr']">
+                                            <li><t t-esc="ssr_obj2['currency']"/> <t t-esc="ssr_obj2['amount']"/></li>
+                                        </t>
+                                    </t>
+                                </ul>
+                            </td>
+                            <td></td>
+                        </tr>
+                    </t>
+                </tbody>
+            </table>
+        </t>
+    </template>
+
     <template id="airline_pax_ssr">
         <t t-set="data_pax" t-value="psg.passenger_id"/>
         <t t-if="data_pax.fee_ids">
@@ -289,7 +353,7 @@
         <!-- Price & Addons Detail (if with price) -->
         <t t-if="with_price">
             <!--<t t-call="tt_report_common.price_ticket"/>-->
-            <t t-call="tt_report_common.itinerary_price_detail"/>
+            <t t-call="tt_report_common.price_detail"/>
         </t>
 
         <!-- Important Notes -->
