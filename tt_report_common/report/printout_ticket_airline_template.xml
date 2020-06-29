@@ -131,24 +131,19 @@
                         <tr>
                             <td><t t-esc="ssr_obj['name']"/></td>
                             <td>
-                                <ul>
-                                    <t t-foreach="ssr_obj['ssr']" t-as="ssr_obj1">
-                                        <t t-if="length.pnr == ssr_obj1['pnr']">
-                                            <li><t t-esc="ssr_obj1['description']"/></li>
-                                        </t>
+                                <t t-foreach="ssr_obj['ssr']" t-as="ssr_obj1">
+                                    <t t-if="length.pnr == ssr_obj1['pnr']">
+                                        <t t-esc="ssr_obj1['description']"/>
                                     </t>
-                                </ul>
+                                </t>
                             </td>
-                            <td>
-                                <ul>
-                                    <t t-foreach="ssr_obj['ssr']" t-as="ssr_obj2">
-                                        <t t-if="length.pnr == ssr_obj2['pnr']">
-                                            <li><t t-esc="ssr_obj2['currency']"/> <t t-esc="ssr_obj2['amount']"/></li>
-                                        </t>
+                            <td style="text-align: right">
+                                <t t-foreach="ssr_obj['ssr']" t-as="ssr_obj2">
+                                    <t t-if="length.pnr == ssr_obj2['pnr']">
+                                        <t t-esc="ssr_obj2['currency']"/> <t t-esc="ssr_obj2['amount']"/>
                                     </t>
-                                </ul>
+                                </t>
                             </td>
-                            <td></td>
                         </tr>
                     </t>
                 </tbody>
