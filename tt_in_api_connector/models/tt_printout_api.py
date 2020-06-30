@@ -37,7 +37,11 @@ class TtPrintoutApiCon(models.Model):
                     if data['mode'] == 'itinerary':
                         res = self.env['tt.reservation.%s' % data['provider_type']].print_itinerary(data, context)
             elif data['provider_type'] == 'event':
-                if data['mode'] == 'itinerary':
+                if data['mode'] == 'ticket':
+                    res = self.env['tt.reservation.%s' % data['provider_type']].print_eticket(data, context)
+                elif data['mode'] == 'ticket_price':
+                    res = self.env['tt.reservation.%s' % data['provider_type']].print_eticket_with_price(data, context)
+                elif data['mode'] == 'itinerary':
                     res = self.env['tt.reservation.%s' % data['provider_type']].print_itinerary(data)
             else:
                 book_obj = self.env['tt.reservation.%s' % data['provider_type']].search([('name', '=', data['order_number'])])

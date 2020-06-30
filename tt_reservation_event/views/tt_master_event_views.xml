@@ -1,4 +1,182 @@
 <odoo>
+    <record id="tt_option_event_view_search" model="ir.ui.view">
+        <field name="name">option_event_search</field>
+        <field name="model">tt.event.option</field>
+        <field name="arch" type="xml">
+            <search string="Event Option">
+                <field name="grade"/>
+                <field name="option_code"/>
+                <filter string="All" name="all" domain="['|', ('active', '=', False), ('active', '=', True)]" />
+            </search>
+        </field>
+    </record>
+
+    <record model="ir.ui.view" id="tt_option_event_view_tree" >
+        <field name="name">tt.event.option.view.tree</field>
+        <field name="model">tt.event.option</field>
+        <field name="arch" type="xml">
+            <tree decoration-muted="(not active)">
+                <field name="grade"/>
+                <field name="option_code"/>
+                <field name="currency_id" invisible="1"/>
+                <field name="price"/>
+                <field name="quota"/>
+                <field name="date_start"/>
+                <field name="date_end"/>
+                <field name="active"/>
+            </tree>
+        </field>
+    </record>
+    <record model="ir.ui.view" id="tt_option_event_view_form" >
+        <field name="name">tt.event.option.view.tree</field>
+        <field name="model">tt.event.option</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="toggle_active" type="object"
+                                class="oe_stat_button" icon="fa-archive"
+                                groups="tt_base.group_tt_tour_travel_supervisor">
+                            <field name="active" widget="boolean_button"
+                                   options='{"terminology": "archive"}'/>
+                        </button>
+                        <button name="%(tt_base.tt_upload_center_wizard_action_view)d"
+                                string="Upload Image" type="action"
+                                class="oe_stat_button" icon="fa-upload"
+                                groups="tt_base.group_tt_tour_division_operator,base.user_admin"
+                                context="{'default_target_field_name': 'option_image_ids'}"
+                        />
+                    </div>
+                    <group>
+                        <group>
+                            <!--                                    <field name="event_id"/>-->
+                            <field name="grade"/>
+                            <field name="option_code"/>
+                            <field name="currency_id"/>
+                            <field name="price"/>
+                            <field name="quota"/>
+                            <field name="cancellation_policies"/>
+                            <field name="is_non_refundable"/>
+                            <!--                                    <label for="durationDays" string="Duration"/>-->
+                            <!--                                    <div>-->
+                            <!--                                        <field name="durationDays" class="oe_inline"/> days-->
+                            <!--                                        <field name="durationHours" class="oe_inline"/> hours-->
+                            <!--                                        <field name="durationMinutes" class="oe_inline"/> minutes-->
+                            <!--                                    </div>-->
+                            <!--                                    <field name="advance_booking_days"/>-->
+                            <field name="date_start"/>
+                            <field name="date_end"/>
+                            <field name="description"/>
+                        </group>
+                        <group>
+                            <!--                                    <label for="minPax" string="Booking Limit"/>-->
+                            <!--                                    <div>-->
+                            <!--                                        <field name="minPax" class="oe_inline"/> - -->
+                            <!--                                        <field name="maxPax" class="oe_inline"/> person(s)-->
+                            <!--                                    </div>-->
+                            <field name="timeslot_ids">
+                                <tree>
+                                    <field name="start_hour"/>
+                                    <field name="start_minute"/>
+                                    <field name="end_hour"/>
+                                    <field name="end_minute"/>
+                                    <!--                                            <field name="timezone"/>-->
+                                    <field name="date"/>
+                                </tree>
+                                <form>
+                                    <group>
+                                        <field name="date"/>
+                                        <group>
+                                            <field name="start_hour"/>
+                                            <field name="end_hour"/>
+                                        </group>
+                                        <group>
+                                            <field name="start_minute"/>
+                                            <field name="end_minute"/>
+                                        </group>
+                                        <label for="all_day" string="All Day"/>
+                                        <field name="all_day"/>
+                                        <!--                                                <field name="timezone"/>-->
+                                    </group>
+                                </form>
+                            </field>
+                        </group>
+                        <group>
+                            <field name="option_image_ids"/>
+                        </group>
+                    </group>
+                    <!--                            <group>-->
+                    <!--                                <field name="voucherUse"/>-->
+                    <!--                                <field name="voucherRedemptionAddress"/>-->
+                    <!--                            </group>-->
+                    <!--                            <group>-->
+                    <!--                                <group>-->
+                    <!--                                    <field name="voucherRequiresPrinting"/>-->
+                    <!--                                    <field name="voucher_validity_type"/>-->
+                    <!--                                </group>-->
+                    <!--                                <group>-->
+                    <!--                                    <field name="voucher_validity_days"/>-->
+                    <!--                                    <field name="voucher_validity_date"/>-->
+                    <!--                                </group>-->
+                    <!--                            </group>-->
+                    <!--                            <group>-->
+                    <!--                                <field name="meetingLocation"/>-->
+                    <!--                                <field name="meetingAddress"/>-->
+                    <!--                                <field name="meetingTime"/>-->
+                    <!--                                <field name="cancellationPolicies"/>-->
+                    <!--                                <field name="instantConfirmation"/>-->
+                    <!--                            </group>-->
+                    <!--                            <separator string="Stock Keeping Units"/>-->
+                    <!--                            <field name="sku_ids">-->
+                    <!--                                <tree>-->
+                    <!--                                    <field name="sku_id"/>-->
+                    <!--                                    <field name="title"/>-->
+                    <!--                                    <field name="pax_type"/>-->
+                    <!--                                    <field name="minPax"/>-->
+                    <!--                                    <field name="maxPax"/>-->
+                    <!--                                    <field name="minAge"/>-->
+                    <!--                                    <field name="maxAge"/>-->
+                    <!--                                </tree>-->
+                    <!--                                <form>-->
+                    <!--                                    <div class="oe_button_box" name="button_box">-->
+                    <!--                                        <button name="toggle_active" type="object"-->
+                    <!--                                                class="oe_stat_button" icon="fa-archive"-->
+                    <!--                                                groups="tt_base.group_tt_tour_travel_supervisor">-->
+                    <!--                                            <field name="active" widget="boolean_button"-->
+                    <!--                                                   options='{"terminology": "archive"}'/>-->
+                    <!--                                        </button>-->
+                    <!--                                    </div>-->
+                    <!--                                    <group>-->
+                    <!--                                        <group>-->
+                    <!--                                            <field name="sku_id"/>-->
+                    <!--                                            <field name="title"/>-->
+                    <!--                                            <field name="pax_type"/>-->
+                    <!--                                            <field name="add_information"/>-->
+                    <!--                                        </group>-->
+                    <!--                                        <group>-->
+                    <!--                                            <field name="minPax"/>-->
+                    <!--                                            <field name="maxPax"/>-->
+                    <!--                                            <field name="minAge"/>-->
+                    <!--                                            <field name="maxAge"/>-->
+                    <!--                                        </group>-->
+                    <!--                                    </group>-->
+                    <!--                                </form>-->
+                    <!--                            </field>-->
+                </sheet>
+            </form>
+        </field>
+    </record>
+    <record model="ir.actions.act_window" id="tt_option_event_action">
+        <field name="name">Event Option</field>
+        <field name="res_model">tt.event.option</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+        <field name="context">{'search_default_all': 1}</field>
+        <field name="domain">[]</field>
+        <field name="search_view_id" ref="tt_option_event_view_search"/>
+    </record>
+
+
     <record id="tt_master_event_view_filter" model="ir.ui.view">
         <field name="name">tt.master.event.view.filter</field>
         <field name="model">tt.master.event</field>
@@ -143,7 +321,7 @@
                         <group><field name="excludes"/></group>
                     </group>
 
-                    <seperator string="Additional Requirement"/>
+                    <separator string="Additional Requirement"/>
                     <field name="extra_question_ids">
                         <tree>
                             <field name="question"/>
@@ -167,150 +345,7 @@
                     </field>
 
                     <separator string="Ticket Type"/>
-                    <field name="option_ids">
-                        <tree>
-<!--                            <field name="uuid"/>-->
-                            <field name="grade"/>
-                            <field name="currency_id"/>
-                            <field name="price"/>
-                            <field name="quota"/>
-                            <field name="is_non_refundable"/>
-                            <field name="active"/>
-                        </tree>
-                        <form>
-                            <sheet>
-                            <div class="oe_button_box" name="button_box">
-                                <button name="toggle_active" type="object"
-                                        class="oe_stat_button" icon="fa-archive"
-                                        groups="tt_base.group_tt_tour_travel_supervisor">
-                                    <field name="active" widget="boolean_button"
-                                           options='{"terminology": "archive"}'/>
-                                </button>
-                                <button name="%(tt_base.tt_upload_center_wizard_action_view)d"
-                                    string="Upload Image" type="action"
-                                    class="oe_stat_button" icon="fa-upload"
-                                    groups="tt_base.group_tt_tour_division_operator,base.user_admin"
-                                    context="{'default_target_field_name': 'option_image_ids'}"
-                                />
-                            </div>
-                            <group>
-                                <group>
-<!--                                    <field name="event_id"/>-->
-                                    <field name="grade"/>
-                                    <field name="option_code"/>
-                                    <field name="currency_id"/>
-                                    <field name="price"/>
-                                    <field name="quota"/>
-                                    <field name="cancellation_policies"/>
-                                    <field name="is_non_refundable"/>
-<!--                                    <label for="durationDays" string="Duration"/>-->
-<!--                                    <div>-->
-<!--                                        <field name="durationDays" class="oe_inline"/> days-->
-<!--                                        <field name="durationHours" class="oe_inline"/> hours-->
-<!--                                        <field name="durationMinutes" class="oe_inline"/> minutes-->
-<!--                                    </div>-->
-<!--                                    <field name="advance_booking_days"/>-->
-                                    <field name="date_start"/>
-                                    <field name="date_end"/>
-                                    <field name="description"/>
-                                </group>
-                                <group>
-<!--                                    <label for="minPax" string="Booking Limit"/>-->
-<!--                                    <div>-->
-<!--                                        <field name="minPax" class="oe_inline"/> - -->
-<!--                                        <field name="maxPax" class="oe_inline"/> person(s)-->
-<!--                                    </div>-->
-                                    <field name="timeslot_ids">
-                                        <tree>
-                                            <field name="start_hour"/>
-                                            <field name="start_minute"/>
-                                            <field name="end_hour"/>
-                                            <field name="end_minute"/>
-<!--                                            <field name="timezone"/>-->
-                                            <field name="date"/>
-                                        </tree>
-                                        <form>
-                                            <group>
-                                                <field name="date"/>
-                                                <group>
-                                                    <field name="start_hour"/>
-                                                    <field name="end_hour"/>
-                                                </group>
-                                                <group>
-                                                    <field name="start_minute"/>
-                                                    <field name="end_minute"/>
-                                                </group>
-                                                <label for="all_day" string="All Day"/>
-                                                <field name="all_day"/>
-<!--                                                <field name="timezone"/>-->
-                                            </group>
-                                        </form>
-                                    </field>
-                                </group>
-                                <group>
-                                    <field name="option_image_ids"/>
-                                </group>
-                            </group>
-<!--                            <group>-->
-<!--                                <field name="voucherUse"/>-->
-<!--                                <field name="voucherRedemptionAddress"/>-->
-<!--                            </group>-->
-<!--                            <group>-->
-<!--                                <group>-->
-<!--                                    <field name="voucherRequiresPrinting"/>-->
-<!--                                    <field name="voucher_validity_type"/>-->
-<!--                                </group>-->
-<!--                                <group>-->
-<!--                                    <field name="voucher_validity_days"/>-->
-<!--                                    <field name="voucher_validity_date"/>-->
-<!--                                </group>-->
-<!--                            </group>-->
-<!--                            <group>-->
-<!--                                <field name="meetingLocation"/>-->
-<!--                                <field name="meetingAddress"/>-->
-<!--                                <field name="meetingTime"/>-->
-<!--                                <field name="cancellationPolicies"/>-->
-<!--                                <field name="instantConfirmation"/>-->
-<!--                            </group>-->
-<!--                            <separator string="Stock Keeping Units"/>-->
-<!--                            <field name="sku_ids">-->
-<!--                                <tree>-->
-<!--                                    <field name="sku_id"/>-->
-<!--                                    <field name="title"/>-->
-<!--                                    <field name="pax_type"/>-->
-<!--                                    <field name="minPax"/>-->
-<!--                                    <field name="maxPax"/>-->
-<!--                                    <field name="minAge"/>-->
-<!--                                    <field name="maxAge"/>-->
-<!--                                </tree>-->
-<!--                                <form>-->
-<!--                                    <div class="oe_button_box" name="button_box">-->
-<!--                                        <button name="toggle_active" type="object"-->
-<!--                                                class="oe_stat_button" icon="fa-archive"-->
-<!--                                                groups="tt_base.group_tt_tour_travel_supervisor">-->
-<!--                                            <field name="active" widget="boolean_button"-->
-<!--                                                   options='{"terminology": "archive"}'/>-->
-<!--                                        </button>-->
-<!--                                    </div>-->
-<!--                                    <group>-->
-<!--                                        <group>-->
-<!--                                            <field name="sku_id"/>-->
-<!--                                            <field name="title"/>-->
-<!--                                            <field name="pax_type"/>-->
-<!--                                            <field name="add_information"/>-->
-<!--                                        </group>-->
-<!--                                        <group>-->
-<!--                                            <field name="minPax"/>-->
-<!--                                            <field name="maxPax"/>-->
-<!--                                            <field name="minAge"/>-->
-<!--                                            <field name="maxAge"/>-->
-<!--                                        </group>-->
-<!--                                    </group>-->
-<!--                                </form>-->
-<!--                            </field>-->
-                            </sheet>
-                        </form>
-                    </field>
+                    <field name="option_ids" readonly="True"/>
 
                     <separator string="Product Images"/>
                     <field name="image_ids" context="{

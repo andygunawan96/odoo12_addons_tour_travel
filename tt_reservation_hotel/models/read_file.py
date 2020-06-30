@@ -2740,7 +2740,6 @@ class HotelInformation(models.Model):
 
     # Ambil Master record yg telah terbentuk
     # Masukan source yg di mau ke master record
-    # On Progress
     def merge_record_for_some_source(self):
         provider_list = ['tbo',]
         need_to_add_city = {}
