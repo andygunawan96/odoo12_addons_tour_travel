@@ -61,7 +61,6 @@ class MasterEvent(models.Model):
 
     event_vendor_id = fields.Many2one('tt.vendor', 'Vendor ID')
     booking_event_ids = fields.One2many('tt.event.reservation', 'event_id')
-    email_content = fields.Char('Temp untuk email')
 
     draft_date = fields.Datetime('Draft at')
     draft_uid = fields.Many2one('res.users', 'User Draft')
@@ -448,11 +447,11 @@ class MasterEvent(models.Model):
             email_content += "</ul>"
 
             #notificate the vendor
-            self.email_content = email_content
+            booking_event_obj.email_content = email_content
             template = self.env.ref('tt_reservation_event.template_mail_vendor_notification')
             mail = self.env['mail.template'].browse(template.id)
-            mail.send_mail(self.id)
-            self.email_content = False
+            mail.send_mail(booking_event_obj.id)
+            booking_event_obj.email_content = False
             return ERR.get_no_error()
         except:
             return ERR.get_no_error()

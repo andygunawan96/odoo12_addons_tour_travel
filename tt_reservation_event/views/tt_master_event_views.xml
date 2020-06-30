@@ -167,7 +167,7 @@
                     </field>
 
                     <separator string="Ticket Type"/>
-                    <field name="option_ids">
+                    <field name="option_ids" readonly="True">
                         <tree>
 <!--                            <field name="uuid"/>-->
                             <field name="grade"/>
