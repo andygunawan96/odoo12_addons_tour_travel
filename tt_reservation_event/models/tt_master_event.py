@@ -437,7 +437,7 @@ class MasterEvent(models.Model):
     def issued_master_event_from_api(self, pnr, context={}):
         try:
             #search all of the reservation
-            booking_event_obj = self.env['tt.event.reservation'].sudo().search([('pnr', '=', pnr)])
+            booking_event_obj = self.env['tt.event.reservation'].sudo().search([('pnr', '=', pnr)], limit=1)
 
             email_content = "<ul>"
             for i in booking_event_obj:
@@ -450,7 +450,7 @@ class MasterEvent(models.Model):
             booking_event_obj.email_content = email_content
             template = self.env.ref('tt_reservation_event.template_mail_vendor_notification')
             mail = self.env['mail.template'].browse(template.id)
-            mail.send_mail(booking_event_obj.id)
+            mail.send_mail(booking_event_obj.id, force_send=True)
             booking_event_obj.email_content = False
             return ERR.get_no_error()
         except:
