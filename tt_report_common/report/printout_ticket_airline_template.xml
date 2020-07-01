@@ -104,18 +104,22 @@
                 <td><b>Qty</b></td>
                 <td><b>Total</b></td>
             </thead>
-            <t t-foreach="price_lines[doc.id]" t-as="price">
-                <t t-if="length.pnr == price['pnr']">
-                    <tr style="border-bottom: 1px solid lightgray">
-                        <td style="text-align:center; border-right: 1px solid lightgray"><t t-esc="price['pax_type']"/></td>
-                        <td style="text-align:right; border-right: 1px solid lightgray"><t t-esc="price['fare']" t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/></td>
-                        <td style="text-align:right; border-right: 1px solid lightgray"><t t-esc="price['tax']" t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/></td>
-                        <td style="text-align:right;"><t t-esc="(float(price['fare']) + float(price['tax']))" t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/></td>
-                        <td style="text-align:right; border-right: 1px solid lightgray"><t t-esc="price['qty']"/></td>
-                        <td style="text-align:right;"><t t-esc="(float(price['fare']) + float(price['tax'])) * price['qty']" t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/></td>
-                    </tr>
+            <tbody>
+                <t t-foreach="price_lines[doc.id]" t-as="price_list">
+                    <t t-foreach="price_list" t-as="price">
+                        <t t-if="length.pnr == price['pnr']">
+                            <tr style="border-bottom: 1px solid lightgray">
+                                <td style="text-align:center; border-right: 1px solid lightgray"><t t-esc="price['pax_type']"/></td>
+                                <td style="text-align:right; border-right: 1px solid lightgray"><t t-esc="price['fare']" t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/></td>
+                                <td style="text-align:right; border-right: 1px solid lightgray"><t t-esc="price['tax']" t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/></td>
+                                <td style="text-align:right;"><t t-esc="(float(price['fare']) + float(price['tax']))" t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/></td>
+                                <td style="text-align:right; border-right: 1px solid lightgray"><t t-esc="price['qty']"/></td>
+                                <td style="text-align:right;"><t t-esc="(float(price['fare']) + float(price['tax'])) * price['qty']" t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/></td>
+                            </tr>
+                        </t>
+                    </t>
                 </t>
-            </t>
+            </tbody>
         </table>
         <t t-if="ssr_list">
             <br/>
@@ -140,7 +144,7 @@
                             <td style="text-align: right">
                                 <t t-foreach="ssr_obj['ssr']" t-as="ssr_obj2">
                                     <t t-if="length.pnr == ssr_obj2['pnr']">
-                                        <t t-esc="ssr_obj2['currency']"/> <t t-esc="ssr_obj2['amount']"/>
+                                        <t t-esc="ssr_obj2['currency']"/> <t t-esc="ssr_obj2['amount']" t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/>
                                     </t>
                                 </t>
                             </td>

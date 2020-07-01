@@ -13,16 +13,18 @@
                 <td><b>Total</b></td>
             </thead>
             <tbody>
-                <t t-foreach="price_lines[doc.id]" t-as="price">
-                    <t t-if="provider.pnr == price['pnr']">
-                        <tr style="border-bottom: 1px solid lightgray">
-                            <td style="text-align:center; border-right: 1px solid lightgray"><t t-esc="price['pax_type']"/></td>
-                            <td style="text-align:right; border-right: 1px solid lightgray"><t t-esc="price['fare']" t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/></td>
-                            <td style="text-align:right; border-right: 1px solid lightgray"><t t-esc="price['tax']" t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/></td>
-                            <td style="text-align:right;"><t t-esc="(float(price['fare']) + float(price['tax']))" t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/></td>
-                            <td style="text-align:right; border-right: 1px solid lightgray"><t t-esc="price['qty']"/></td>
-                            <td style="text-align:right;"><t t-esc="(float(price['fare']) + float(price['tax'])) * price['qty']" t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/></td>
-                        </tr>
+                <t t-foreach="price_lines[doc.id]" t-as="price_list">
+                    <t t-foreach="price_list" t-as="price">
+                        <t t-if="provider.pnr == price['pnr']">
+                            <tr style="border-bottom: 1px solid lightgray">
+                                <td style="text-align:center; border-right: 1px solid lightgray"><t t-esc="price['pax_type']"/></td>
+                                <td style="text-align:right; border-right: 1px solid lightgray"><t t-esc="price['fare']" t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/></td>
+                                <td style="text-align:right; border-right: 1px solid lightgray"><t t-esc="price['tax']" t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/></td>
+                                <td style="text-align:right;"><t t-esc="(float(price['fare']) + float(price['tax']))" t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/></td>
+                                <td style="text-align:right; border-right: 1px solid lightgray"><t t-esc="price['qty']"/></td>
+                                <td style="text-align:right;"><t t-esc="(float(price['fare']) + float(price['tax'])) * price['qty']" t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/></td>
+                            </tr>
+                        </t>
                     </t>
                 </t>
             </tbody>
@@ -75,10 +77,10 @@
                     <div class="col-6">
                         <span t-field="provider.event_id.event_type"/><br/>
                         <t t-if="provider.event_id.event_date_start">
-                            <span t-field="provider.event_id.event_date_start" t-options='{"format": "d MMMM y hh:mm"}'/><br/>
+                            <span t-field="provider.event_id.event_date_start" t-options='{"format": "d MMMM y HH:mm"}'/><br/>
                         </t>
                         <t t-if="provider.event_id.event_date_end">
-                            <span t-field="provider.event_id.event_date_end" t-options='{"format": "d MMMM y hh:mm"}'/><br/>
+                            <span t-field="provider.event_id.event_date_end" t-options='{"format": "d MMMM y HH:mm"}'/><br/>
                         </t>
                         <span t-field="provider.event_id.event_vendor_id.name"/><br/>
                     </div>
