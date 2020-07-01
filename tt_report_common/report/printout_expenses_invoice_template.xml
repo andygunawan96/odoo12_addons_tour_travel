@@ -3,6 +3,12 @@
     <data>
 
         <template id="expenses_invoice_content_view">
+            <!-- No. Booking -->
+            <div style="margin-bottom: 20px; margin-top: 20px;">
+                <span style="font-size: 18px; font-weight: 730">No. Booking : </span>
+                <span t-field="doc.booking_id.name" style="font-size: 18px; font-weight: 730"/><br/>
+            </div>
+
             <div style="margin-bottom: 10px; margin-top: 20px;">
                 <span style="font-size: 28px; font-weight: 730">INVOICE DETAILS</span><br/>
             </div>
@@ -129,11 +135,9 @@
                 <t t-foreach="docs" t-as="doc">
                     <div class="page">
                         <t t-call="tt_report_common.external_layout">
-                            <br/>
                             <div style="margin: 0 20px; font-family: 'LiberationSans'">
                                 <t t-call="tt_report_common.expenses_invoice_content_view"/>
                             </div>
-
                         </t>
                     </div>
                 </t>

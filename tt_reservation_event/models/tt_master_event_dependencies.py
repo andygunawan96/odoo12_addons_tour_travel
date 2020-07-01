@@ -30,6 +30,7 @@ class MasterEventReservation(models.Model):
     event_reservation_answer_ids = fields.One2many('tt.event.reservation.answer', 'event_reservation_id')
     ticket_number = fields.Char('Ticket Number', readonly=True, states={'draft': [('readonly', False)], 'request': [('readonly', False)]})
     special_request = fields.Text('Special Request', help='Request / Notes from customer')
+    email_content = fields.Html('Temp untuk email')
 
     request_date = fields.Datetime('Request Date')
     request_uid = fields.Many2one('res.users', 'User Request')
@@ -75,6 +76,11 @@ class MasterEventReservation(models.Model):
     def action_request_by_api(self, co_uid):
         self.action_request()
         self.request_uid = co_uid
+
+    # Temporary untuk benarkan data lama sja
+    def action_calc_sales_date(self):
+        for rec in self.search([]):
+            rec.sales_date = rec.request_date
 
 class EventReservationQuestionAnswer(models.Model):
     _name = "tt.event.reservation.answer"

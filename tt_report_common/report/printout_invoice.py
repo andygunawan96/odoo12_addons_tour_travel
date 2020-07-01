@@ -31,20 +31,23 @@ class PrintoutTicketForm(models.AbstractModel):
         for rec in self.env[data['context']['active_model']].browse(data['context']['active_ids']):
             values[rec.id] = []
             a = {}
-            for rec2 in rec.sale_service_charge_ids:
-                if rec2.pax_type not in a.keys():
-                    a[rec2.pax_type] = {
-                        'pax_type': rec2.pax_type,
-                        'fare': 0,
-                        'tax': 0,
-                        'qty': 0,
-                    }
+            for idx, provider in enumerate(rec.provider_booking_ids):
+                a[provider.pnr] = {}
+                for rec2 in provider.cost_service_charge_ids:
+                    if rec2.pax_type not in a[provider.pnr].keys():
+                        a[provider.pnr] = {
+                            'pax_type': rec2.pax_type,
+                            'fare': 0,
+                            'tax': 0,
+                            'qty': 0,
+                            'pnr': provider.pnr
+                        }
 
-                if rec2.charge_type.lower() == 'fare':
-                    a[rec2.pax_type]['fare'] += rec2.amount
-                    a[rec2.pax_type]['qty'] = rec2.pax_count
-                elif rec2.charge_type.lower() in ['roc', 'tax']:
-                    a[rec2.pax_type]['tax'] += rec2.amount
+                    if rec2.charge_type.lower() == 'fare':
+                        a[provider.pnr]['fare'] += rec2.amount
+                        a[provider.pnr]['qty'] = rec2.pax_count
+                    elif rec2.charge_type.lower() in ['roc', 'tax']:
+                        a[provider.pnr]['tax'] += rec2.amount
 
             for ssr_per_pax in rec.passenger_ids:
                 ssr_obj = {
@@ -58,6 +61,7 @@ class PrintoutTicketForm(models.AbstractModel):
                         'category_icon': rec2.category_icon,
                         'currency': rec2.currency_id.name,
                         'description': isinstance(rec2.description, list) and ', '.join(rec2.description) or rec2.description,
+                        'pnr': rec2.provider_id.pnr
                     })
                 ssr_list.append(ssr_obj)
             values[rec.id] = [a[new_a] for new_a in a]

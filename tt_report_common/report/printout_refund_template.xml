@@ -1,20 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <template id="external_layout_ho_refund">
-        <div class="container">
-            <div class="article" style="margin: 0px !important; padding: 0px !important">
-                <t t-call="tt_report_common.external_layout_header_ho_refund"/>
-                <t t-raw="0"/>
-                <!--                <t t-if="doc_model == 'tt.agent.invoice'">-->
-                <!--                    <div style="margin: 0 20px">-->
-                <!--                    <t t-call="tt_report_common.price_and_sign"/>-->
-                <!--                    </div>-->
-                <!--                </t>-->
-                <t t-call="tt_report_common.external_layout_footer_ho_refund"/>
-            </div>
-        </div>
-    </template>
-
     <template id="printout_refund">
         <t t-set="data_report_header_spacing" t-value="0"/>
         <t t-set="data_report_margin_top" t-value="10"/>
@@ -24,7 +9,6 @@
                 <div class="page">
                     <t t-if="is_ho == true">
                         <t t-call="tt_report_common.external_layout">
-                            <br/>
                             <div style="margin: 0 20px; font-family: 'LiberationSans'">
                                 <t t-call="tt_report_common.refund_ho_content_view"/>
                             </div>
@@ -32,7 +16,6 @@
                     </t>
                     <t t-if="is_est == true">
                         <t t-call="tt_report_common.external_layout">
-                            <br/>
                             <div style="margin: 0 20px; font-family: 'LiberationSans'">
                                 <t t-call="tt_report_common.refund_est_content_view"/>
                             </div>
@@ -40,7 +23,6 @@
                     </t>
                     <t t-if="not is_est == true and not is_ho == true">
                         <t t-call="tt_report_common.external_layout">
-                            <br/>
                             <div style="margin: 0 20px; font-family: 'LiberationSans'">
                                 <t t-call="tt_report_common.refund_content_view"/>
                             </div>
@@ -53,7 +35,7 @@
 
     <template id="refund_ho_content_view">
         <!-- Base Info Booker dkk -->
-        <table style="margin: 1px; 1px; 15px;">
+        <table style="margin-bottom: 30px; margin-top: 30px;">
             <tr>
                 <td style="width:50px;">To</td>
                 <td style="width:10px;">:</td>
@@ -292,7 +274,7 @@
 
     <template id="refund_content_view">
         <!-- Base Info Booker dkk -->
-        <table style="margin: 1px; 1px; 15px;">
+        <table style="margin-bottom: 30px; margin-top: 30px;">
             <tr>
                 <td style="width:50px;">To</td>
                 <td style="width:10px;">:</td>
@@ -480,7 +462,7 @@
 
     <template id="refund_est_content_view">
         <!-- Base Info Booker dkk -->
-        <table style="margin: 1px; 1px; 15px;">
+        <table style="margin-bottom: 30px; margin-top: 30px;">
             <tr>
                 <td style="width:50px;">To</td>
                 <td style="width:10px;">:</td>
