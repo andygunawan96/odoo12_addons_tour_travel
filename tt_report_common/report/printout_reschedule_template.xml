@@ -87,7 +87,7 @@
                     <span>Departure Date</span>
                 </th>
                 <th style="width: 19.25%; padding: 7px 7px 7px 20px; border-right: 1px solid #CCC; border-top-right-radius: 20px; color: white; font-weight: 800; font-size: 18px">
-                    <span>Return Date</span>
+                    <span>Arrival Date</span>
                 </th>
             </tr>
             <t t-set="row_idx" t-value="0"/>
@@ -157,7 +157,7 @@
                     <span>Departure Date</span>
                 </th>
                 <th style="width: 19.25%; padding: 7px 7px 7px 20px; border-right: 1px solid #CCC; border-top-right-radius: 20px; color: white; font-weight: 800; font-size: 18px">
-                    <span>Return Date</span>
+                    <span>Arrival Date</span>
                 </th>
             </tr>
             <t t-set="row_idx" t-value="0"/>
