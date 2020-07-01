@@ -745,8 +745,8 @@ class ReservationEvent(models.Model):
         res = self.read()
         res = res and res[0] or {}
         datas['form'] = res
-        event_vendor_invoice_id = self.env.ref('tt_report_common.action_report_printout_invoice_vendor_event')
-        if not self.printout_vendor_invoice_id:
+        event_ticket_id = self.env.ref('tt_report_common.action_report_printout_reservation_event')
+        if not self.printout_ticket_id:
             if self.agent_id:
                 co_agent_id = self.agent_id.id
             else:
@@ -757,16 +757,16 @@ class ReservationEvent(models.Model):
             else:
                 co_uid = self.env.user.id
 
-            pdf_report = event_vendor_invoice_id.report_action(self, data=datas)
+            pdf_report = event_ticket_id.report_action(self, data=datas)
             pdf_report['context'].update({
                 'active_model': self._name,
                 'active_id': self.id
             })
-            pdf_report_bytes = event_vendor_invoice_id.render_qweb_pdf(data=pdf_report)
+            pdf_report_bytes = event_ticket_id.render_qweb_pdf(data=pdf_report)
             res = self.env['tt.upload.center.wizard'].upload_file_api(
                 {
-                    'filename': 'Event Vendor Invoice %s.pdf' % self.name,
-                    'file_reference': 'Event Vendor Invoice',
+                    'filename': 'Event Ticket %s.pdf' % self.name,
+                    'file_reference': 'Event Ticket',
                     'file': base64.b64encode(pdf_report_bytes[0]),
                     'delete_date': datetime.today() + timedelta(minutes=10)
                 },
@@ -776,12 +776,12 @@ class ReservationEvent(models.Model):
                 }
             )
             upc_id = self.env['tt.upload.center'].search([('seq_id', '=', res['response']['seq_id'])], limit=1)
-            self.sudo().printout_vendor_invoice_id = upc_id.id
+            self.sudo().printout_ticket_id = upc_id.id
         url = {
             'type': 'ir.actions.act_url',
             'name': "ZZZ",
             'target': 'new',
-            'url': self.printout_vendor_invoice_id.url,
+            'url': self.printout_ticket_id.url,
         }
         return url
 
@@ -793,8 +793,9 @@ class ReservationEvent(models.Model):
         res = self.read()
         res = res and res[0] or {}
         datas['form'] = res
-        event_vendor_invoice_id = self.env.ref('tt_report_common.action_report_printout_invoice_vendor_event')
-        if not self.printout_vendor_invoice_id:
+        datas['is_with_price'] = True
+        event_ticket_price_id = self.env.ref('tt_report_common.action_report_printout_reservation_event')
+        if not self.printout_ticket_price_id:
             if self.agent_id:
                 co_agent_id = self.agent_id.id
             else:
@@ -805,16 +806,16 @@ class ReservationEvent(models.Model):
             else:
                 co_uid = self.env.user.id
 
-            pdf_report = event_vendor_invoice_id.report_action(self, data=datas)
+            pdf_report = event_ticket_price_id.report_action(self, data=datas)
             pdf_report['context'].update({
                 'active_model': self._name,
                 'active_id': self.id
             })
-            pdf_report_bytes = event_vendor_invoice_id.render_qweb_pdf(data=pdf_report)
+            pdf_report_bytes = event_ticket_price_id.render_qweb_pdf(data=pdf_report)
             res = self.env['tt.upload.center.wizard'].upload_file_api(
                 {
-                    'filename': 'Event Vendor Invoice %s.pdf' % self.name,
-                    'file_reference': 'Event Vendor Invoice',
+                    'filename': 'Event Ticket (Price) %s.pdf' % self.name,
+                    'file_reference': 'Event Ticket with Price',
                     'file': base64.b64encode(pdf_report_bytes[0]),
                     'delete_date': datetime.today() + timedelta(minutes=10)
                 },
@@ -824,14 +825,15 @@ class ReservationEvent(models.Model):
                 }
             )
             upc_id = self.env['tt.upload.center'].search([('seq_id', '=', res['response']['seq_id'])], limit=1)
-            self.sudo().printout_vendor_invoice_id = upc_id.id
+            self.sudo().printout_ticket_price_id = upc_id.id
         url = {
             'type': 'ir.actions.act_url',
             'name': "ZZZ",
             'target': 'new',
-            'url': self.printout_vendor_invoice_id.url,
+            'url': self.printout_ticket_price_id.url,
         }
         return url
+
 
 class TtReservationEventOption(models.Model):
     _name = 'tt.reservation.event.option'

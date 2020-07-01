@@ -416,8 +416,16 @@
                                 <td><span t-field="provider_itin_id.pnr"/></td>
                                 <!--Jadi nya MM/DD/YYYY-->
                                 <!--<td><span t-field="provider_itin_id.visit_date" t-options="{'widget': 'date'}"/></td> -->
-                                <td><span t-esc="provider_itin_id.departure_date.strftime('%d %B %Y')"/></td>
-                                <td><span t-esc="provider_itin_id.arrival_date.strftime('%d %B %Y')"/></td>
+                                <td>
+                                    <t t-if="provider_itin_id.departure_date">
+                                        <span t-esc="provider_itin_id.departure_date.strftime('%d %B %Y')"/>
+                                    </t>
+                                </td>
+                                <td>
+                                    <t t-if="provider_itin_id.arrival_date">
+                                        <span t-esc="provider_itin_id.arrival_date.strftime('%d %B %Y')"/>
+                                    </t>
+                                </td>
                                 <td><span t-field="provider_itin_id.tour_id.name"/><br/></td>
                             </tr>
                         </tbody>

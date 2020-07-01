@@ -56,6 +56,18 @@
         <field name="arch" type="xml">
             <xpath expr="//div[hasclass('oe_button_box')]" position="inside">
                 <div class="oe_button_box" name="button_box">
+                    <button name="print_eticket"
+                            string="Print E-Ticket"
+                            type="object"
+                            class="oe_stat_button"
+                            icon="fa-print"
+                            attrs="{'invisible': [('state', '!=', 'issued')]}"/>
+                    <button name="print_eticket_with_price"
+                            string="Print E-Ticket (Price)"
+                            type="object"
+                            class="oe_stat_button"
+                            icon="fa-print"
+                            attrs="{'invisible': [('state', '!=', 'issued')]}"/>
                     <button name="get_vouchers_button"
                             string="Get Vouchers"
                             type="object"
