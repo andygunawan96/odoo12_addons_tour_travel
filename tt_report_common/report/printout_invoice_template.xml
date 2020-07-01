@@ -726,7 +726,7 @@
                     </tr>
                     <t t-set="line_detail_idx" t-value="line_detail_idx+1"/>
                 </t>
-                <t t-set="row_idx" t-value="row_i   dx+1"/>
+                <t t-set="row_idx" t-value="row_idx+1"/>
             </t>
         </table>
 
