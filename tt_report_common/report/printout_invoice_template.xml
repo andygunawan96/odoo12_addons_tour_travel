@@ -310,6 +310,9 @@
             </t><t t-elif="doc_model == 'tt.reservation.airline'">
                 <span t-att-style="'margin-top: 10px; margin-left: 10px; color: '+ base_color +'; font-size: 20px;'">eTicket Itinerary</span><br/>
                 <t t-set="printout_icon" t-value="'/tt_report_common/static/images/airfreight-white.svg'"/>
+            </t><t t-elif="doc_model == 'tt.reservation.event'">
+                <span t-att-style="'margin-top: 10px; margin-left: 10px; color: '+ base_color +'; font-size: 20px;'">Event eTicket</span><br/>
+                <t t-set="printout_icon" t-value="'/tt_report_common/static/images/ticket-white.png'"/>
             </t><t t-elif="doc_model == 'tt.reservation.hotel'">
                 <span t-att-style="'margin-top: 10px; margin-left: 10px; color: '+ base_color +'; font-size: 20px;'">Hotel Voucher</span><br/>
                 <t t-set="printout_icon" t-value="'/tt_report_common/static/images/hotel-white.png'"/>
@@ -405,11 +408,19 @@
                                         </t>
                                     </t>
                                 </t>
-                                <t t-elif="doc_model == 'tt.reservation.airline'">
-                                    <span t-field="doc.pnr" style="margin-top: 5px;"/>
-                                </t>
-                                <t t-elif="doc_model == 'tt.reservation.hotel'">
-                                    <span t-field="doc.pnr" style="margin-top: 5px;"/>
+                                <t t-elif="doc_model in ['tt.reservation.airline', 'tt.reservation.hotel', 'tt.reservation.event']">
+                                    <t t-if="pnr_length &lt;= 20">
+                                        <span t-field="doc.pnr" style="margin-top: 5px;"/>
+                                    </t>
+                                    <t t-elif="pnr_length &gt; 20 and pnr_length &lt;= 25">
+                                        <span t-field="doc.pnr" style="margin-top: 5px; font-size: 20px"/>
+                                    </t>
+                                    <t t-elif="pnr_length &gt; 25 and pnr_length &lt;= 30">
+                                        <span t-field="doc.pnr" style="margin-top: 5px; font-size: 16px"/>
+                                    </t>
+                                    <t t-else="">
+                                        <span t-field="doc.pnr" style="margin-top: 5px; font-size: 15px"/>
+                                    </t>
                                 </t>
                                 <t t-elif="doc_model == 'tt.reservation.ppob'">
                                     <t t-if="doc.provider_booking_ids">
@@ -715,7 +726,7 @@
                     </tr>
                     <t t-set="line_detail_idx" t-value="line_detail_idx+1"/>
                 </t>
-                <t t-set="row_idx" t-value="row_idx+1"/>
+                <t t-set="row_idx" t-value="row_i   dx+1"/>
             </t>
         </table>
 

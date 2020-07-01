@@ -1,0 +1,184 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="price_detail_event">
+        <br/>
+        <span style="font-size: 28px; font-weight: 730">Price Detail(s)</span><br/>
+        <table width="100%">
+            <thead style="border-bottom: 1px solid black; font-size:18px; text-align:center;">
+                <td><b>Pax Type</b></td>
+                <td><b>Base Fare</b></td>
+                <td><b>Tax</b></td>
+                <td><b>Total Per Pax</b></td>
+                <td><b>Qty</b></td>
+                <td><b>Total</b></td>
+            </thead>
+            <tbody>
+                <t t-foreach="price_lines[doc.id]" t-as="price">
+                    <t t-if="provider.pnr == price['pnr']">
+                        <tr style="border-bottom: 1px solid lightgray">
+                            <td style="text-align:center; border-right: 1px solid lightgray"><t t-esc="price['pax_type']"/></td>
+                            <td style="text-align:right; border-right: 1px solid lightgray"><t t-esc="price['fare']" t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/></td>
+                            <td style="text-align:right; border-right: 1px solid lightgray"><t t-esc="price['tax']" t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/></td>
+                            <td style="text-align:right;"><t t-esc="(float(price['fare']) + float(price['tax']))" t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/></td>
+                            <td style="text-align:right; border-right: 1px solid lightgray"><t t-esc="price['qty']"/></td>
+                            <td style="text-align:right;"><t t-esc="(float(price['fare']) + float(price['tax'])) * price['qty']" t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/></td>
+                        </tr>
+                    </t>
+                </t>
+            </tbody>
+        </table>
+    </template>
+
+    <template id="printout_ticket_event_template">
+        <!-- No. Booking -->
+        <div style="margin-bottom: 20px; margin-top: 20px;">
+            <span style="font-size: 18px; font-weight: 730">No. Booking : </span>
+            <span t-field="doc.name" style="font-size: 18px; font-weight: 730"/><br/>
+        </div>
+
+        <!-- Event Detail(s) (Title) -->
+        <div style="margin-bottom: 10px; margin-top: 20px;">
+            <span style="font-size: 28px; font-weight: 730">Event Detail(s)</span><br/>
+        </div>
+
+        <!-- Event Detail(s) (Content) -->
+        <table style="width: 100%; line-height: normal; border-collapse: separate; border-spacing: 0; table-layout: fixed;">
+            <tr t-att-style="'background-color: ' + base_color + '; padding-top: 5px; padding-bottom: 5px; font-size: 16px'">
+                <td style="width: 11.8%; padding: 7px 7px 7px 20px; border-top-left-radius: 20px; color: white; font-weight: 800; overflow-wrap:break-word;">
+                    <span style="color: white; font-weight: 600; font-size: 18px">Event name</span>
+                </td>
+                <td style="width: 2%; padding: 7px 7px 7px 20px;">
+                    <span style="color: white; font-weight: 600; font-size: 18px">:</span>
+                </td>
+                <td style="width: 60%; padding: 7px 7px 7px 20px; border-top-right-radius: 20px;">
+                    <span t-field="provider.event_id.name" style="color: white; font-weight: 600; font-size: 18px"/>
+                </td>
+            </tr>
+        </table>
+        <div class="row" style="margin: 0px; margin-bottom: 40px; font-size: 14px;">
+            <div class="col-6" style="border-radius: 0 0 0px 20px; border: 1px solid #BBB; padding: 10px 2px;">
+                <div class="row" style="margin: 0px; padding:0px;">
+                    <div class="col-4">
+                        <b>
+                            <span>Event Type</span><br/>
+                            <span>Event Start</span><br/>
+                            <span>Event End</span><br/>
+                            <span>Vendor</span><br/>
+                        </b>
+                    </div>
+                    <div class="col-1">
+                        <span>:</span>
+                        <span>:</span>
+                        <span>:</span>
+                        <span>:</span>
+                    </div>
+                    <div class="col-6">
+                        <span t-field="provider.event_id.event_type"/><br/>
+                        <t t-if="provider.event_id.event_date_start">
+                            <span t-field="provider.event_id.event_date_start" t-options='{"format": "d MMMM y hh:mm"}'/><br/>
+                        </t>
+                        <t t-if="provider.event_id.event_date_end">
+                            <span t-field="provider.event_id.event_date_end" t-options='{"format": "d MMMM y hh:mm"}'/><br/>
+                        </t>
+                        <span t-field="provider.event_id.event_vendor_id.name"/><br/>
+                    </div>
+                </div>
+            </div>
+            <div class="col-6" style="border-radius: 0 0 20px 0px; border: 1px solid #BBB; padding: 10px 2px;">
+                <div class="row" style="margin: 0px; padding:0px;">
+                    <div class="col-4">
+                        <b>
+                            <span>Location(s)</span><br/>
+                        </b>
+                    </div>
+                    <div class="col-1">
+                        <span>:</span>
+                    </div>
+                    <div class="col-6">
+                        <ul>
+                            <t t-if="provider.event_id.location_ids">
+                                <t t-foreach="provider.event_id.location_ids" t-as="location">
+                                    <li><span t-field="location.name"/><br/></li>
+                                </t>
+                            </t>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Event Option(s) (Title) -->
+        <div style="margin-bottom: 10px; margin-top: 20px;">
+            <span style="font-size: 28px; font-weight: 730">Event Option(s)</span><br/>
+        </div>
+
+        <!-- Event Option(s) (Content) -->
+        <t t-set="option_idx" t-value="0"/>
+        <t t-set="option_total" t-value="len(doc.option_ids)"/>
+        <table style="width: 100%; line-height: normal; border-collapse: separate; border-spacing: 0; table-layout: fixed;">
+            <tr t-att-style="'background-color: ' + base_color + '; padding-top: 5px; padding-bottom: 5px; font-size: 16px'">
+                <th style="width: 20%; padding: 7px 7px 7px 20px; border-left: 1px solid #CCC; border-top-left-radius: 20px; color: white; font-weight: 800; overflow-wrap:break-word;">
+                    <span>Ticket Number</span>
+                </th>
+                <th style="width: 25%; padding: 7px 7px 7px 20px; color: white; font-weight: 800; overflow-wrap:break-word;">
+                    <span>Event Option</span>
+                </th>
+                <th style="width: 20%; padding: 7px 7px 7px 20px; border-right: 1px solid #CCC; border-top-right-radius: 20px; color: white; font-weight: 800; overflow-wrap:break-word;">
+                    <span>Description</span>
+                </th>
+            </tr>
+            <t t-foreach="doc.option_ids" t-as="option">
+                <tr valign="top" style="padding-top: 5px; padding-bottom: 5px; font-size: 14px;">
+                    <t t-if="option_idx == option_total-1">
+                        <td style="background: #F0F0F0; width: 20%; padding: 7px 7px 7px 20px; border-bottom: 1px solid #ccc; border-left: 1px solid #ccc; border-right: 1px solid #ccc; border-radius: 0px 0px 0px 20px; overflow-wrap: break-word;">
+                            <label style="font-weight:450; font-size:17px; margin-bottom: 0px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"><span t-esc="option.ticket_number"/></label>
+                        </td>
+                    </t>
+                    <t t-else="">
+                        <td style="background: #F0F0F0; width: 20%; padding: 7px 7px 7px 20px; border-bottom: 1px solid #ccc; border-left: 1px solid #ccc; border-right: 1px solid #ccc; border-radius: 0px 0px 0px 0px; overflow-wrap: break-word;">
+                            <label style="font-weight:450; font-size:17px; margin-bottom: 0px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"><span t-esc="option.ticket_number"/></label>
+                        </td>
+                    </t>
+                    <td style="width: 25%; padding: 7px 7px 7px 20px; border-bottom: 1px solid #ccc; border-right: 1px solid #ccc; overflow-wrap: break-word;">
+                        <label style="font-weight:450; font-size:17px; margin-bottom: 0px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"><span t-esc="option.event_option_id.grade"/></label>
+                    </td>
+                    <t t-if="option_idx == option_total-1">
+                        <td style="width: 20%; height: 50px; padding: 7px 7px 7px 20px; border-bottom: 1px solid #ccc; border-right: 1px solid #ccc; text-align: left; padding-right: 25px; border-radius: 0px 0px 20px 0px; overflow-wrap: break-word;">
+                            <label style="font-weight:450; font-size:17px; margin-bottom: 0px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"><span t-esc="option.description"/></label>
+                        </td>
+                    </t>
+                    <t t-else="">
+                        <td style="width: 20%; height: 50px; padding: 7px 7px 7px 20px; border-bottom: 1px solid #ccc; border-right: 1px solid #ccc; text-align: left; padding-right: 25px; border-radius: 0px 0px 0px 0px; overflow-wrap: break-word;">
+                            <label style="font-weight:450; font-size:17px; margin-bottom: 0px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"><span t-esc="option.description"/></label>
+                        </td>
+                    </t>
+                </tr>
+                <t t-set="option_idx" t-value="option_idx+1"/>
+            </t>
+        </table>
+
+        <!-- Price Details -->
+        <t t-if="with_price">
+            <t t-call="tt_report_common.price_detail_event"/>
+        </t>
+    </template>
+
+    <template id="printout_event_ticket">
+        <t t-set="data_report_header_spacing" t-value="20"/>
+        <t t-set="data_report_margin_top" t-value="10"/>
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="doc">
+                <div class="page">
+                    <t t-set="pnr_index" t-value="0"/>
+                    <t t-foreach="doc.provider_booking_ids" t-as="provider">
+                        <t t-call="tt_report_common.external_layout">
+                            <div class="box" style="margin: 0px 20px; font-family: 'LiberationSans'">
+                                <t t-call="tt_report_common.printout_ticket_event_template"/>
+                            </div>
+                        </t>
+                    </t>
+                </div>
+            </t>
+        </t>
+    </template>
+</odoo>
