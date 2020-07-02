@@ -1713,7 +1713,10 @@ class PrintoutPPOBItineraryForm(models.AbstractModel):
                 elif rec2.charge_type.lower() in ['roc', 'tax']:
                     a[rec2.pax_type]['tax'] += rec2.amount
             values[rec.id] = [a[new_a] for new_a in a]
-            pnr_length = len(rec.pnr)
+            if rec.pnr:
+                pnr_length = len(rec.pnr)
+            else:
+                pnr_length = len(rec.provider_booking_ids[0].customer_number)
         return {
             'doc_ids': data['context']['active_ids'],
             'doc_model': data['context']['active_model'],
