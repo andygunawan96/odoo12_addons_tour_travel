@@ -44,26 +44,45 @@
         </table>
         <!-- Line Info -->
         <br/>
-        <div class="box" style="margin: 0px 0px 20px; text-align:center;">
-            <div class="title" t-att-style="'background-color: '+base_color+'; border-radius: 20px 20px 0 0; border-color: #CCC; padding-top: 5px; padding-bottom: 5px'">
-                <div class="row" style="padding-left: 20px; color: white; font-weight: 600; font-size: 18px">
-                    <div class="col-3">Amount</div>
-                    <div class="col-2">Code</div>
-                    <div class="col-2">Total</div>
-                    <div class="col-2">Fee(s)</div>
-                    <div class="col-3">Total Payment</div>
-                </div>
-            </div>
-            <div class="row" style="margin-left: 0px; margin-right: 0px; border: 1px solid #BBB; border-radius: 0 0 20px 20px;">
-                <div class="col-3 text-right" style="padding: 10px 25px;"><span t-field="doc.amount" t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/></div>
-                <div class="col-2 text-right" style="padding: 10px 25px;"><span t-field="doc.unique_amount" t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/></div>
-                <div class="col-2 text-right" style="padding: 10px 25px;"><span t-field="doc.total" t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/></div>
-                <div class="col-2 text-right" style="padding: 10px 25px;"><span t-field="doc.fees" t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/></div>
-                <div class="col-3 text-right" style="padding: 10px 25px;">
-                    <span t-field="doc.total_with_fees" t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/>
-                </div>
-            </div>
-        </div>
+
+        <table style="width: 100%; margin: 0px 0px 20px; text-align:center; table-layout: fixed; border-collapse: separate;">
+            <tr t-att-style="'background-color: '+base_color+'; padding-top: 5px; padding-bottom: 5px;'">
+                <th style="width: 23%; padding: 7px 7px 7px 20px; border-left: 1px solid #CCC; overflow-wrap:break-word; border-top-left-radius: 20px; color: white; font-weight: 800; font-size: 18px">
+                    <span>Amount</span>
+                </th>
+                <th style="width: 15%; padding: 7px 7px 7px 20px; color: white; font-weight: 800; overflow-wrap:break-word; font-size: 18px">
+                    <span>Code</span>
+                </th>
+                <th style="width: 23%; padding: 7px 7px 7px 20px; color: white; font-weight: 800; overflow-wrap:break-word; font-size: 18px">
+                    <span>Total</span>
+                </th>
+                <th style="width: 15%; padding: 7px 7px 7px 20px; color: white; font-weight: 800; overflow-wrap:break-word; font-size: 18px">
+                    <span>Fee(s)</span>
+                </th>
+                <th style="width: 24%; padding: 7px 7px 7px 20px; border-right: 1px solid #CCC; overflow-wrap:break-word; border-top-right-radius: 20px; color: white; font-weight: 800; font-size: 18px">
+                    <span>Total Payment</span>
+                </th>
+            </tr>
+            <tr valign="top" style="padding-top: 5px; padding-bottom: 5px;">
+                <td style="width: 23%; padding: 7px 7px 7px 20px; border-bottom: 1px solid #ccc; border-left: 1px solid #ccc; border-radius: 0px 0px 0px 20px; overflow-wrap: break-word; text-align: right;">
+                    Rp 1,004,381,715.00
+                </td>
+                <td style="width: 15%; padding: 7px 7px 7px 20px; border-bottom: 1px solid #ccc; overflow-wrap: break-word; text-align: right;">
+                    Rp 0.00
+                </td>
+                <td style="width: 23%; padding: 7px 7px 7px 20px; border-bottom: 1px solid #CCC; overflow-wrap:break-word; text-align: right;">
+                    Rp 1,004,381,715.00
+                </td>
+                <td style="width: 15%; padding: 7px 7px 7px 20px; border-bottom: 1px solid #CCC; overflow-wrap:break-word; text-align: right;">
+                    Rp 0.00
+                </td>
+                <td style="width: 24%; border-bottom: 1px solid #ccc; overflow-wrap:break-word; border-right: 1px solid #ccc; border-radius: 0px 0px 20px 0px; border-color: #CCC; padding: 7px 7px 7px 7px; text-align: right;">
+                    Rp 1,004,381,715.00
+                </td>
+            </tr>
+        </table>
+        <br/>
+
         <!-- SubTotal -->
         <div class="row mt4 mb2">
             <div class="col-8">
