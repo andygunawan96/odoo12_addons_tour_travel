@@ -563,7 +563,7 @@ class PrintoutInvoiceVendor(models.AbstractModel):
         if rec._name == 'tt.reservation.event':
             for psg in rec.passenger_ids:
                 pax_dict[psg.id] = {}
-                pax_dict[psg.id]['name'] = psg.option_id.event_option_name
+                pax_dict[psg.id]['name'] = psg.option_id.event_option_id.grade
                 pax_dict[psg.id]['total'] = 0
                 for csc in psg.cost_service_charge_ids:
                     pax_dict[psg.id]['total'] += csc.total
@@ -810,7 +810,7 @@ class PrintoutInvoiceHO(models.AbstractModel):
         if rec._name == 'tt.reservation.event':
             for psg in rec.passenger_ids:
                 pax_dict[psg.id] = {}
-                pax_dict[psg.id]['name'] = psg.option_id.event_option_name
+                pax_dict[psg.id]['name'] = psg.option_id.event_option_id.grade
                 pax_dict[psg.id]['total'] = 0
                 for csc in psg.cost_service_charge_ids:
                     if csc.charge_type == 'RAC':

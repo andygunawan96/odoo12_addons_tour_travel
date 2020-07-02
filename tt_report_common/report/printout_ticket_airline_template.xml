@@ -144,7 +144,7 @@
                             <td style="text-align: right">
                                 <t t-foreach="ssr_obj['ssr']" t-as="ssr_obj2">
                                     <t t-if="length.pnr == ssr_obj2['pnr']">
-                                        <t t-esc="ssr_obj2['currency']"/> <t t-esc="ssr_obj2['amount']" t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/>
+                                        <t t-esc="ssr_obj2['amount']" t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/>
                                     </t>
                                 </t>
                             </td>
