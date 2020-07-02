@@ -109,55 +109,46 @@
                 </th>
             </tr>
             <t t-set="row_idx" t-value="0"/>
+            <t t-set="line_detail_idx" t-value="0"/>
             <t t-foreach="inv_lines[doc.id]" t-as="line2_idx">
                 <t t-foreach="line2_idx.keys()" t-as="line_idx">
                     <t t-set="line" t-value="line2_idx[line_idx]"/>
-                    <t t-set="col_len" t-value="len(line['descs'])"/>
-                    <t t-set="pax_count" t-value="0"/>
-                    <tr valign="top" style="padding-top: 5px; padding-bottom: 5px;">
-                        <t t-if="row_idx == len(line2_idx)-1">
-                            <td style="background: #F0F0F0; width: 25%; border-left: 1px solid #ccc; overflow-wrap:break-word; border-bottom: 1px solid #ccc; border-right: 1px solid #ccc; border-radius: 0px 0px 0px 20px; border-color: #CCC; padding: 7px 7px 7px 20px;">
-                                <span t-esc="line_idx"/>
-                            </td>
-                        </t>
-                        <t t-else="">
-                            <td style="background: #F0F0F0; width: 25%; border-left: 1px solid #ccc; overflow-wrap:break-word; border-bottom: 1px solid #ccc; border-right: 1px solid #ccc; border-radius: 0px 0px 0px 0px; border-color: #CCC; padding: 7px 7px 7px 20px;">
-                                <span t-esc="line_idx"/>
-                            </td>
-                        </t>
-                        <td style="width: 25%; padding: 7px 7px 7px 20px; border-bottom: 1px solid #ccc; overflow-wrap:break-word; border-right: 1px solid #ccc;">
+                    <t t-foreach="line['pax_data']" t-as="pax">
+                        <tr valign="top" style="padding-top: 5px; padding-bottom: 5px;">
+                            <t t-if="line_detail_idx == 0">
+                                <t t-if="row_idx == len(inv_lines[doc.id])-1">
+                                    <td t-att-rowspan="len(line['pax_data'])" style="background: #F0F0F0; width: 25%; border-left: 1px solid #ccc; overflow-wrap:break-word; border-bottom: 1px solid #ccc; border-right: 1px solid #ccc; border-radius: 0px 0px 0px 20px; border-color: #CCC; padding: 7px 7px 7px 20px;">
+                                        <span t-esc="line_idx"/>
+                                    </td>
+                                </t>
+                                <t t-else="">
+                                    <td t-att-rowspan="len(line['pax_data'])" style="background: #F0F0F0; width: 25%; border-left: 1px solid #ccc; overflow-wrap:break-word; border-bottom: 1px solid #ccc; border-right: 1px solid #ccc; border-radius: 0px 0px 0px 0px; border-color: #CCC; padding: 7px 7px 7px 20px;">
+                                        <span t-esc="line_idx"/>
+                                    </td>
+                                </t>
+                                <td t-att-rowspan="len(line['pax_data'])" style="width: 25%; padding: 7px 7px 7px 20px; border-bottom: 1px solid #ccc; overflow-wrap:break-word; border-right: 1px solid #ccc;">
                             <t t-foreach="line['descs']" t-as="desc">
                                 <span t-raw="desc"/>
                                 <br/>
                             </t>
                         </td>
-                        <td style="width: 25%; padding: 7px 7px 7px 20px; border-bottom: 1px solid #CCC; overflow-wrap:break-word; border-right: 1px solid #ccc;">  <!--width: 25%; padding: 7px 7px 7px 20px; border-bottom: 1px solid #ccc;-->
-                            <t t-foreach="line['pax_data']" t-as="pax">
-                                <ul style="padding-left:15px;">
-                                    <li><span t-esc="pax['name']"/></li>
-                                </ul>
                             </t>
-                        </td>
-                        <t t-if="row_idx == len(line2_idx)-1">
-                            <td style="width: 25%; border-left: 1px solid #ccc; border-bottom: 1px solid #ccc; overflow-wrap:break-word; border-right: 1px solid #ccc; border-radius: 0px 0px 20px 0px; border-color: #CCC; padding: 7px 7px 7px 7px; text-align: right;">
-                                <t t-foreach="line['pax_data']" t-as="pax">
-                                    <ul style="list-style-type: none;">
-                                        <li><span t-esc="pax['total']" t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/></li>
-                                    </ul>
-                                </t>
+                            <td style="width: 25%; padding: 7px 7px 7px 20px; border-bottom: 1px solid #CCC; overflow-wrap:break-word; border-right: 1px solid #ccc;">
+                                <span t-esc="pax['name']"/>
                             </td>
-                        </t>
-                        <t t-else="">
-                            <td style="width: 25%; border-color: #CCC; padding: 7px 7px 7px 7px; border-bottom: 1px solid #ccc; overflow-wrap:break-word; border-right: 1px solid #ccc; border-radius: 0px 0px 0px 0px; text-align: right">
-                                <t t-foreach="line['pax_data']" t-as="pax">
-                                    <ul style="list-style-type: none;">
-                                        <li><span t-esc="pax['total']" t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/></li>
-                                    </ul>
-                                </t>
-                            </td>
-                        </t>
-                    </tr>
-                    <t t-set="pax_count" t-value="pax_count+1"/>
+                            <t t-if="line_detail_idx == len(inv_lines[doc.id])">
+                                <td style="width: 25%; border-left: 1px solid #ccc; border-bottom: 1px solid #ccc; overflow-wrap:break-word; border-right: 1px solid #ccc; border-radius: 0px 0px 20px 0px; border-color: #CCC; padding: 7px 7px 7px 7px; text-align: right;">
+                                    <span t-esc="pax['total']" t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/>
+                                </td>
+                            </t>
+                            <t t-else="">
+                                <td style="width: 25%; border-color: #CCC; padding: 7px 7px 7px 7px; border-bottom: 1px solid #ccc; overflow-wrap:break-word; border-right: 1px solid #ccc; border-radius: 0px 0px 0px 0px; text-align: right">
+                                    <span t-esc="pax['total']" t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/>
+                                </td>
+                            </t>
+                        </tr>
+                        <t t-set="line_detail_idx" t-value="line_detail_idx+1"/>
+                    </t>
                     <t t-set="row_idx" t-value="row_idx+1"/>
                 </t>
             </t>

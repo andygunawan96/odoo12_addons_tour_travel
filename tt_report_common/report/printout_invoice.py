@@ -563,7 +563,7 @@ class PrintoutInvoiceVendor(models.AbstractModel):
         if rec._name == 'tt.reservation.event':
             for psg in rec.passenger_ids:
                 pax_dict[psg.id] = {}
-                pax_dict[psg.id]['name'] = psg.option_id.event_option_name
+                pax_dict[psg.id]['name'] = psg.option_id.event_option_id.grade
                 pax_dict[psg.id]['total'] = 0
                 for csc in psg.cost_service_charge_ids:
                     pax_dict[psg.id]['total'] += csc.total
@@ -810,7 +810,7 @@ class PrintoutInvoiceHO(models.AbstractModel):
         if rec._name == 'tt.reservation.event':
             for psg in rec.passenger_ids:
                 pax_dict[psg.id] = {}
-                pax_dict[psg.id]['name'] = psg.option_id.event_option_name
+                pax_dict[psg.id]['name'] = psg.option_id.event_option_id.grade
                 pax_dict[psg.id]['total'] = 0
                 for csc in psg.cost_service_charge_ids:
                     if csc.charge_type == 'RAC':
@@ -1713,7 +1713,10 @@ class PrintoutPPOBItineraryForm(models.AbstractModel):
                 elif rec2.charge_type.lower() in ['roc', 'tax']:
                     a[rec2.pax_type]['tax'] += rec2.amount
             values[rec.id] = [a[new_a] for new_a in a]
-            pnr_length = len(rec.pnr)
+            if rec.pnr:
+                pnr_length = len(rec.pnr)
+            else:
+                pnr_length = len(rec.provider_booking_ids[0].customer_number)
         return {
             'doc_ids': data['context']['active_ids'],
             'doc_model': data['context']['active_model'],
