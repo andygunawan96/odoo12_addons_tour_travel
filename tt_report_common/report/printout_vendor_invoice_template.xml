@@ -109,10 +109,10 @@
                 </th>
             </tr>
             <t t-set="row_idx" t-value="0"/>
-            <t t-set="line_detail_idx" t-value="0"/>
             <t t-foreach="inv_lines[doc.id]" t-as="line2_idx">
                 <t t-foreach="line2_idx.keys()" t-as="line_idx">
                     <t t-set="line" t-value="line2_idx[line_idx]"/>
+                    <t t-set="line_detail_idx" t-value="0"/>
                     <t t-foreach="line['pax_data']" t-as="pax">
                         <tr valign="top" style="padding-top: 5px; padding-bottom: 5px;">
                             <t t-if="line_detail_idx == 0">
@@ -136,7 +136,7 @@
                             <td style="width: 25%; padding: 7px 7px 7px 20px; border-bottom: 1px solid #CCC; overflow-wrap:break-word; border-right: 1px solid #ccc;">
                                 <span t-esc="pax['name']"/>
                             </td>
-                            <t t-if="line_detail_idx == len(inv_lines[doc.id])">
+                            <t t-if="line_detail_idx == len(line['pax_data'])-1">
                                 <td style="width: 25%; border-left: 1px solid #ccc; border-bottom: 1px solid #ccc; overflow-wrap:break-word; border-right: 1px solid #ccc; border-radius: 0px 0px 20px 0px; border-color: #CCC; padding: 7px 7px 7px 7px; text-align: right;">
                                     <span t-esc="pax['total']" t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/>
                                 </td>
