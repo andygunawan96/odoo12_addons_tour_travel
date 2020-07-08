@@ -322,41 +322,29 @@
             </t><t t-else="">
                 <span t-att-style="'margin-top: 10px; margin-left: 10px; color: '+ base_color +'; font-size: 20px;'">Other</span><br/>
             </t>
-                <div style="height: 105px; margin-left: 0px">
+                <div t-att-style="'height: 105px; width:'+ header_width+'%; float: right'">
                     <div id="circle" t-att-style="'width: 60px; height: 60px; background: '+ base_color +'; border-radius: 100%; position: absolute; z-index: 1;'">
                         <img t-att-src="printout_icon" style="max-height: 35px; max-width: 35px; margin: 12px 0px 0px 0px;"/>
                     </div>
-                    <div id="rectangle" style="width: 100%; height: 50px; bottom: 15px; background-image:  url('/tt_report_common/static/images/background footer airline.jpg'); border-radius: 25px; position: absolute; z-index: 0;">
+                    <div id="rectangle" t-att-style="'width: '+header_width+'%; height: 50px; bottom: 15px; border-radius: 25px; position: absolute; z-index: 0; background-image: ' + img_url">
                         <div style="padding-left: 75px; padding-bottom: 10px; vertical-align: middle; text-align: center; border-radius: 25px; background-color: rgba(39,62,84,0.76); padding-top: 5px;">
                             <div style="vertical-align: middle; display: flex; letter-spacing: 0.05em; font-size: 24px; color: white; font-weight: 600; margin-top: 0px; margin-left: -10px; margin-right: 10px;">
                                 <t t-if="doc_type == 'itin'">
                                     <t t-if="doc.pnr">
-                                        <t t-if="pnr_length &lt;= 20">
+                                        <t t-if="pnr_length &lt;= 23">
                                             <span t-field="doc.pnr" style="margin-top: 5px;"/>
                                         </t>
-                                        <t t-elif="pnr_length &gt; 20 and pnr_length &lt;= 25">
-                                            <span t-field="doc.pnr" style="margin-top: 5px; font-size: 20px"/>
-                                        </t>
-                                        <t t-elif="pnr_length &gt; 25 and pnr_length &lt;= 30">
-                                            <span t-field="doc.pnr" style="margin-top: 5px; font-size: 16px"/>
-                                        </t>
                                         <t t-else="">
-                                            <span t-field="doc.pnr" style="margin-top: 5px; font-size: 15px"/>
+                                            <span t-field="doc.pnr" style="margin-top: 5px; font-size: 20px"/>
                                         </t>
                                     </t>
                                     <t t-else="">
                                         <t t-if="doc_model == 'tt.reservation.ppob'">
-                                            <t t-if="pnr_length &lt;= 20">
+                                            <t t-if="pnr_length &lt;= 23">
                                                 <span t-field="doc.provider_booking_ids[0].customer_number" style="margin-top: 5px;"/>
                                             </t>
-                                            <t t-elif="pnr_length &gt; 20 and pnr_length &lt;= 25">
-                                                <span t-field="doc.provider_booking_ids[0].customer_number" style="margin-top: 5px; font-size: 20px"/>
-                                            </t>
-                                            <t t-elif="pnr_length &gt; 25 and pnr_length &lt;= 30">
-                                                <span t-field="doc.provider_booking_ids[0].customer_number" style="margin-top: 5px; font-size: 16px"/>
-                                            </t>
                                             <t t-else="">
-                                                <span t-field="doc.provider_booking_ids[0].customer_number" style="margin-top: 5px; font-size: 15px"/>
+                                                <span t-field="doc.provider_booking_ids[0].customer_number" style="margin-top: 5px; font-size: 20px"/>
                                             </t>
                                         </t>
                                         <t t-else="">
