@@ -559,6 +559,11 @@ class ReservationPpob(models.Model):
                     'sequence': psg_dict['sequence']
                 }
 
+                if cust_email != 'booking@rodextravel.tours' and ppob_cust[0].email != cust_email:
+                    ppob_cust[0].sudo().write({
+                        'email': cust_email
+                    })
+
                 booker_obj = ppob_cust[0]
                 contact_obj = ppob_cust[0]
                 list_passenger_value = [(0,0,cust_dict)]
