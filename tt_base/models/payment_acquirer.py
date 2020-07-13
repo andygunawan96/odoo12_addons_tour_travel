@@ -5,6 +5,7 @@ from ...tools import variables
 from ...tools import ERR,util
 from ...tools.ERR import RequestException
 from datetime import datetime, timedelta
+import pytz
 _logger = logging.getLogger(__name__)
 
 class PaymentAcquirer(models.Model):
@@ -149,6 +150,7 @@ class PaymentAcquirer(models.Model):
                         values[acq.type].append(acq.acquirer_format(amount,unique))
             #payment gateway
             if util.get_without_empty(req, 'order_number'):
+
                 dom = [('website_published', '=', True), ('company_id', '=', self.env.user.company_id.id)]
                 dom.append(('agent_id', '=', self.env.ref('tt_base.rodex_ho').id))
                 pay_acq_num = self.env['payment.acquirer.number'].search([('number', 'ilike', req['order_number'])])
@@ -164,7 +166,8 @@ class PaymentAcquirer(models.Model):
                         if acq.account_number == '':
                             values[acq.type].append(acq.acquirer_format(amount, 0))
                         else:
-                            values[acq.type].append(acq.acquirer_format(amount, unique))
+                            if 3 <= datetime.now(pytz.timezone('Asia/Jakarta')).hour < 21:
+                                values[acq.type].append(acq.acquirer_format(amount, unique))
             res = {}
             res['non_member'] = values
             res['member'] = {}
