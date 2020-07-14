@@ -159,6 +159,7 @@ class TtRefund(models.Model):
     cancel_message = fields.Text('Cancelation Message', required=False, readonly=True, states={'approve': [('readonly', False)], 'validate': [('readonly', False)]})
 
     printout_refund_ho_id = fields.Many2one('tt.upload.center', 'Refund Printout HO', readonly=True)
+    printout_refund_ho_cust_id = fields.Many2one('tt.upload.center', 'Refund Printout HO Cust', readonly=True)
     printout_refund_id = fields.Many2one('tt.upload.center', 'Refund Printout', readonly=True)
     printout_refund_est_id = fields.Many2one('tt.upload.center', 'Refund Printout Est', readonly=True)
 
@@ -597,6 +598,56 @@ class TtRefund(models.Model):
             'name': "ZZZ",
             'target': 'new',
             'url': self.printout_refund_ho_id.url,
+        }
+        return url
+        # return refund_ho_printout_id.report_action(self, data=datas)
+
+    def print_refund_to_agent_cust(self):
+        datas = {
+            'ids': self.env.context.get('active_ids', []),
+            'model': self._name,
+            'is_agent': True
+        }
+        res = self.read()
+        res = res and res[0] or {}
+        datas['form'] = res
+        refund_ho_cust_printout_action = self.env.ref('tt_report_common.action_report_printout_refund_ho_cust')
+        if not self.printout_refund_ho_cust_id:
+            if self.agent_id:
+                co_agent_id = self.agent_id.id
+            else:
+                co_agent_id = self.env.user.agent_id.id
+
+            # if self.user_id:
+            #     co_uid = self.user_id.id
+            # else:
+            co_uid = self.env.user.id
+
+            pdf_report = refund_ho_cust_printout_action.report_action(self, data=datas)
+            pdf_report['context'].update({
+                'active_model': self._name,
+                'active_id': self.id
+            })
+            pdf_report_bytes = refund_ho_cust_printout_action.render_qweb_pdf(data=pdf_report)
+            res = self.env['tt.upload.center.wizard'].upload_file_api(
+                {
+                    'filename': 'Refund %s.pdf' % self.name,
+                    'file_reference': 'Refund HO Cust Printout',
+                    'file': base64.b64encode(pdf_report_bytes[0]),
+                    'delete_date': datetime.today() + timedelta(minutes=10)
+                },
+                {
+                    'co_agent_id': co_agent_id,
+                    'co_uid': co_uid,
+                }
+            )
+            upc_id = self.env['tt.upload.center'].search([('seq_id', '=', res['response']['seq_id'])], limit=1)
+            self.printout_refund_ho_cust_id = upc_id.id
+        url = {
+            'type': 'ir.actions.act_url',
+            'name': "ZZZ",
+            'target': 'new',
+            'url': self.printout_refund_ho_cust_id.url,
         }
         return url
         # return refund_ho_printout_id.report_action(self, data=datas)
