@@ -13,7 +13,7 @@ class AgentReportRecapTransacion(models.Model):
     @staticmethod
     def _select():
         return """
-            rsv.id, rsv.name as order_number, rsv.issued_date as issued_date, rsv.adult, rsv.child, rsv.infant, rsv.pnr,
+            rsv.id, rsv.name as order_number, creates.id as creator_id, creates_partner.name as create_by, issued_partner.name as issued_by, rsv.issued_date as issued_date, rsv.adult, rsv.child, rsv.infant, rsv.pnr,
             rsv.total as grand_total, rsv.total_commission, rsv.total_nta, rsv.provider_name, rsv.create_date, rsv.state,
             provider_type.name as provider_type, agent.name as agent_name, agent.email as agent_email,
             currency.name as currency_name,
@@ -41,6 +41,10 @@ class AgentReportRecapTransacion(models.Model):
         LEFT JOIN res_currency currency ON currency.id = rsv.currency_id
         LEFT JOIN tt_ledger ledger ON ledger.res_model = rsv.res_model AND ledger.res_id = rsv.id
         LEFT JOIN tt_agent ledger_agent ON ledger_agent.id = ledger.agent_id
+        LEFT JOIN res_users creates ON creates.id = rsv.user_id
+        LEFT JOIN res_partner creates_partner ON creates.partner_id = creates_partner.id
+        LEFT JOIN res_users issued ON issued.id = rsv.issued_uid
+        LEFT JOIN res_partner issued_partner ON issued.partner_id = issued_partner.id
         """
         return query
 
