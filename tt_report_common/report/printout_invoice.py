@@ -2049,6 +2049,7 @@ class PrintoutRefund(models.AbstractModel):
             'doc_model': data['context']['active_model'],
             'docs': temp_docs,
             'is_ho': data['data'].get('is_ho') and data['data']['is_ho'] or False,
+            'is_agent': data['data'].get('is_agent') and data['data']['is_agent'] or False,
             'is_est': data['data'].get('is_est') and data['data']['is_est'] or False,
             'header_width': str(header_width),
             'terbilang': self.compute_terbilang_from_objs(
