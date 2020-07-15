@@ -36,24 +36,26 @@ class AgentReportRecapTransactionXls(models.TransientModel):
         sheet.write('B9', 'Booking Type', style.table_head_center)
         sheet.write('C9', 'Agent Type', style.table_head_center)
         sheet.write('D9', 'Agent Name', style.table_head_center)
-        sheet.write('E9', 'Issued Date', style.table_head_center)
-        sheet.write('F9', 'Agent Email', style.table_head_center)
-        sheet.write('G9', 'Provider', style.table_head_center)
-        sheet.write('H9', 'Order Number', style.table_head_center)
+        sheet.write('E9', 'create by', style.table_head_center)
+        sheet.write('F9', 'issued by', style.table_head_center)
+        sheet.write('G9', 'Issued Date', style.table_head_center)
+        sheet.write('H9', 'Agent Email', style.table_head_center)
+        sheet.write('I9', 'Provider', style.table_head_center)
+        sheet.write('J9', 'Order Number', style.table_head_center)
         # sheet.write('I9', 'Origin', style.table_head_center)
         # sheet.write('J9', 'Sector', style.table_head_center)
-        sheet.write('I9', 'Adult', style.table_head_center)
-        sheet.write('J9', 'Child', style.table_head_center)
-        sheet.write('K9', 'Infant', style.table_head_center)
-        sheet.write('L9', 'State', style.table_head_center)
-        sheet.write('M9', 'PNR', style.table_head_center)
-        sheet.write('N9', 'Ledger Reference', style.table_head_center)
-        sheet.write('O9', 'Booking State', style.table_head_center)
-        sheet.write('P9', 'Currency', style.table_head_center)
-        sheet.write('Q9', 'NTA Amount', style.table_head_center)
-        sheet.write('R9', 'Total Commission', style.table_head_center)
-        sheet.write('S9', 'Grand Total', style.table_head_center)
-        sheet.merge_range('T9:U9', 'Keterangan', style.table_head_center)
+        sheet.write('K9', 'Adult', style.table_head_center)
+        sheet.write('L9', 'Child', style.table_head_center)
+        sheet.write('M9', 'Infant', style.table_head_center)
+        sheet.write('N9', 'State', style.table_head_center)
+        sheet.write('O9', 'PNR', style.table_head_center)
+        sheet.write('P9', 'Ledger Reference', style.table_head_center)
+        sheet.write('Q9', 'Booking State', style.table_head_center)
+        sheet.write('R9', 'Currency', style.table_head_center)
+        sheet.write('S9', 'NTA Amount', style.table_head_center)
+        sheet.write('T9', 'Total Commission', style.table_head_center)
+        sheet.write('U9', 'Grand Total', style.table_head_center)
+        sheet.merge_range('V9:W9', 'Keterangan', style.table_head_center)
 
         # sheet.write('B9', 'Date', style.table_head_center)
         # sheet.write('C9', 'Order Number', style.table_head_center)
@@ -94,6 +96,8 @@ class AgentReportRecapTransactionXls(models.TransientModel):
         filtered_data = []
         temp_order_number = ''
         counter = 0
+        airline_recaps = []
+        hotel_recaps = []
         for i in datas:
             if temp_order_number != i['order_number']:
                 #set checker for order number
@@ -129,23 +133,25 @@ class AgentReportRecapTransactionXls(models.TransientModel):
                         sheet.write(row_data, 1, i['provider_type'], sty_table_data)
                         sheet.write(row_data, 2, i['agent_type_name'], sty_table_data)
                         sheet.write(row_data, 3, i['agent_name'], sty_table_data)
-                        sheet.write(row_data, 4, i['issued_date'], sty_date)
-                        sheet.write(row_data, 5, i['agent_email'], sty_table_data)
-                        sheet.write(row_data, 6, i['provider_name'], sty_table_data)
-                        sheet.write(row_data, 7, i['order_number'], sty_amount)
-                        sheet.write(row_data, 8, i['adult'], sty_amount)
-                        sheet.write(row_data, 9, i['child'], sty_amount)
-                        sheet.write(row_data, 10, i['infant'], sty_amount)
-                        sheet.write(row_data, 11, i['state'], sty_table_data)
-                        sheet.write(row_data, 12, i['pnr'], sty_table_data)
-                        sheet.write(row_data, 13, i['ledger_name'], sty_table_data)
-                        sheet.write(row_data, 14, '', sty_table_data)
-                        sheet.write(row_data, 15, i['currency_name'], sty_table_data_center)
-                        sheet.write(row_data, 16, i['total_nta'], sty_amount)
-                        sheet.write(row_data, 17, i['total_commission'], sty_amount)
-                        sheet.write(row_data, 18, i['grand_total'], sty_amount)
-                        sheet.write(row_data, 19, '', sty_table_data)
-                        sheet.write(row_data, 20, '', sty_amount)
+                        sheet.write(row_data, 4, i['create_by'], sty_table_data)
+                        sheet.write(row_data, 5, i['issued_by'], sty_table_data)
+                        sheet.write(row_data, 6, i['issued_date'], sty_date)
+                        sheet.write(row_data, 7, i['agent_email'], sty_table_data)
+                        sheet.write(row_data, 8, i['provider_name'], sty_table_data)
+                        sheet.write(row_data, 9, i['order_number'], sty_amount)
+                        sheet.write(row_data, 10, i['adult'], sty_amount)
+                        sheet.write(row_data, 11, i['child'], sty_amount)
+                        sheet.write(row_data, 12, i['infant'], sty_amount)
+                        sheet.write(row_data, 13, i['state'], sty_table_data)
+                        sheet.write(row_data, 14, i['pnr'], sty_table_data)
+                        sheet.write(row_data, 15, i['ledger_name'], sty_table_data)
+                        sheet.write(row_data, 16, '', sty_table_data)
+                        sheet.write(row_data, 17, i['currency_name'], sty_table_data_center)
+                        sheet.write(row_data, 18, i['total_nta'], sty_amount)
+                        sheet.write(row_data, 19, i['total_commission'], sty_amount)
+                        sheet.write(row_data, 20, i['grand_total'], sty_amount)
+                        sheet.write(row_data, 21, '', sty_table_data)
+                        sheet.write(row_data, 22, '', sty_amount)
 
                         # filtered data
                         filtered_data = []
@@ -196,26 +202,28 @@ class AgentReportRecapTransactionXls(models.TransientModel):
                             sheet.write(row_data, 1, '', sty_table_data)
                             sheet.write(row_data, 2, '', sty_table_data)
                             sheet.write(row_data, 3, '', sty_table_data)
-                            sheet.write(row_data, 4, '', sty_date)
+                            sheet.write(row_data, 4, '', sty_table_data)
                             sheet.write(row_data, 5, '', sty_table_data)
+                            sheet.write(row_data, 6, '', sty_date)
+                            sheet.write(row_data, 7, '', sty_table_data)
                             if temp_book:
-                                sheet.write(row_data, 6, temp_book[0]['ledger_provider'], sty_table_data)
+                                sheet.write(row_data, 8, temp_book[0]['ledger_provider'], sty_table_data)
                             else:
-                                sheet.write(row_data, 6, '', sty_table_data)
-                            sheet.write(row_data, 7, '', sty_amount)
-                            sheet.write(row_data, 8, '', sty_amount)
+                                sheet.write(row_data, 8, '', sty_table_data)
                             sheet.write(row_data, 9, '', sty_amount)
                             sheet.write(row_data, 10, '', sty_amount)
-                            sheet.write(row_data, 11, i['state'], sty_table_data)
-                            sheet.write(row_data, 12, j, sty_table_data)
-                            sheet.write(row_data, 13, '', sty_table_data_center)
-                            sheet.write(row_data, 14, booking_state, sty_table_data)
+                            sheet.write(row_data, 11, '', sty_amount)
+                            sheet.write(row_data, 12, '', sty_amount)
+                            sheet.write(row_data, 13, i['state'], sty_table_data)
+                            sheet.write(row_data, 14, j, sty_table_data)
                             sheet.write(row_data, 15, '', sty_table_data_center)
-                            sheet.write(row_data, 16, nta_total, sty_amount)
-                            sheet.write(row_data, 17, commission, sty_amount)
-                            sheet.write(row_data, 18, grand_total, sty_amount)
-                            sheet.write(row_data, 19, '', sty_table_data)
-                            sheet.write(row_data, 20, '', sty_amount)
+                            sheet.write(row_data, 16, booking_state, sty_table_data)
+                            sheet.write(row_data, 17, '', sty_table_data_center)
+                            sheet.write(row_data, 18, nta_total, sty_amount)
+                            sheet.write(row_data, 19, commission, sty_amount)
+                            sheet.write(row_data, 20, grand_total, sty_amount)
+                            sheet.write(row_data, 21, '', sty_table_data)
+                            sheet.write(row_data, 22, '', sty_amount)
 
                             for k in temp_book:
                                 if k['ledger_transaction_type'] == 3:
@@ -236,26 +244,60 @@ class AgentReportRecapTransactionXls(models.TransientModel):
                                     sheet.write(row_data, 1, '', sty_table_data)
                                     sheet.write(row_data, 2, '', sty_table_data)
                                     sheet.write(row_data, 3, '', sty_table_data)
-                                    sheet.write(row_data, 4, '', sty_date)
+                                    sheet.write(row_data, 4, '', sty_table_data)
                                     sheet.write(row_data, 5, '', sty_table_data)
-                                    sheet.write(row_data, 6, '', sty_table_data)
-                                    sheet.write(row_data, 7, '', sty_amount)
-                                    sheet.write(row_data, 8, '', sty_amount)
+                                    sheet.write(row_data, 6, '', sty_date)
+                                    sheet.write(row_data, 7, '', sty_table_data)
+                                    sheet.write(row_data, 8, '', sty_table_data)
                                     sheet.write(row_data, 9, '', sty_amount)
                                     sheet.write(row_data, 10, '', sty_amount)
-                                    sheet.write(row_data, 11, i['state'], sty_table_data)
-                                    sheet.write(row_data, 12, '', sty_table_data)
-                                    sheet.write(row_data, 13, '', sty_table_data)
-                                    sheet.write(row_data, 14, '', sty_table_data_center)
-                                    sheet.write(row_data, 15, '', sty_table_data_center)
-                                    sheet.write(row_data, 16, '', sty_amount)
-                                    sheet.write(row_data, 17, '', sty_amount)
+                                    sheet.write(row_data, 11, '', sty_amount)
+                                    sheet.write(row_data, 12, '', sty_amount)
+                                    sheet.write(row_data, 13, i['state'], sty_table_data)
+                                    sheet.write(row_data, 14, '', sty_table_data)
+                                    sheet.write(row_data, 15, '', sty_table_data)
+                                    sheet.write(row_data, 16, '', sty_table_data_center)
+                                    sheet.write(row_data, 17, '', sty_table_data_center)
                                     sheet.write(row_data, 18, '', sty_amount)
-                                    sheet.write(row_data, 19, k['ledger_agent_name'], sty_table_data)
-                                    sheet.write(row_data, 20, k['debit'], sty_amount)
+                                    sheet.write(row_data, 19, '', sty_amount)
+                                    sheet.write(row_data, 20, '', sty_amount)
+                                    sheet.write(row_data, 21, k['ledger_agent_name'], sty_table_data)
+                                    sheet.write(row_data, 22, k['debit'], sty_amount)
                         break;
                     else:
                         continue
+
+                #lets recap
+                if i['provider_type'].lower() == 'airline':
+                    data_index = next((index for (index, d) in enumerate(airline_recaps) if d["id"] == i['creator_id']), -1)
+                    if data_index >= 0:
+                        if i['provider_name'] and 'amadeus' in i['provider_name'] or 'sabre' in i['provider_name']:
+                            airline_recaps[data_index]['amadeus'] += 1
+                        else:
+                            airline_recaps[data_index]['non-amadeus'] += 1
+                    else:
+                        temp_dict = {
+                            'id': i['creator_id'],
+                            'name': i['create_by'],
+                            'amadeus': 0,
+                            'non-amadeus': 0
+                        }
+                        airline_recaps.append(temp_dict)
+                        if i['provider_name'] and 'amadeus' in i['provider_name'] or 'sabre' in i['provider_name']:
+                            airline_recaps[data_index]['amadeus'] += 1
+                        else:
+                            airline_recaps[data_index]['non-amadeus'] += 1
+                if i['provider_type'].lower() == 'hotel':
+                    data_index = next((index for (index, d) in enumerate(hotel_recaps) if d["id"] == i['creator_id']),-1)
+                    if data_index >= 0:
+                        hotel_recaps[data_index]['counter'] += 1
+                    else:
+                        temp_dict = {
+                            'id': i['creator_id'],
+                            'name': i['create_by'],
+                            'counter': 1
+                        }
+                        hotel_recaps.append(temp_dict)
 
         row_data += 1
         sty_table_data_center = style.table_data_center_border
@@ -267,23 +309,46 @@ class AgentReportRecapTransactionXls(models.TransientModel):
         sheet.write(row_data, 1, '', sty_table_data)
         sheet.write(row_data, 2, '', sty_table_data)
         sheet.write(row_data, 3, '', sty_table_data)
-        sheet.write(row_data, 4, '', sty_date)
+        sheet.write(row_data, 4, '', sty_table_data)
         sheet.write(row_data, 5, '', sty_table_data)
-        sheet.write(row_data, 6, '', sty_table_data)
-        sheet.write(row_data, 7, '', sty_amount)
-        sheet.write(row_data, 8, '', sty_amount)
+        sheet.write(row_data, 6, '', sty_date)
+        sheet.write(row_data, 7, '', sty_table_data)
+        sheet.write(row_data, 8, '', sty_table_data)
         sheet.write(row_data, 9, '', sty_amount)
         sheet.write(row_data, 10, '', sty_amount)
-        sheet.write(row_data, 11, '', sty_table_data)
-        sheet.write(row_data, 12, '', sty_table_data)
+        sheet.write(row_data, 11, '', sty_amount)
+        sheet.write(row_data, 12, '', sty_amount)
         sheet.write(row_data, 13, '', sty_table_data)
-        sheet.write(row_data, 14, '', sty_table_data_center)
-        sheet.write(row_data, 15, '', sty_amount)
-        sheet.write(row_data, 16, '', sty_amount)
+        sheet.write(row_data, 14, '', sty_table_data)
+        sheet.write(row_data, 15, '', sty_table_data)
+        sheet.write(row_data, 16, '', sty_table_data_center)
         sheet.write(row_data, 17, '', sty_amount)
-        sheet.write(row_data, 18, '', sty_table_data)
+        sheet.write(row_data, 18, '', sty_amount)
         sheet.write(row_data, 19, '', sty_amount)
-        sheet.write(row_data, 20, '', sty_amount)
+        sheet.write(row_data, 20, '', sty_table_data)
+        sheet.write(row_data, 21, '', sty_amount)
+        sheet.write(row_data, 22, '', sty_amount)
+
+        row_data += 4
+        if values['data_form']['provider_type'] == 'airline' or values['data_form']['provider_type'] == 'all':
+            sheet.write(row_data, 0, 'AIRLINES', style.table_head_center)
+            sheet.write(row_data, 1, 'Nama', style.table_head_center)
+            sheet.write(row_data, 2, 'GDS', style.table_head_center)
+            sheet.write(row_data, 3, 'Non-GDS', style.table_head_center)
+            for i in airline_recaps:
+                row_data += 1
+                sheet.write(row_data, 1, i['name'], sty_table_data)
+                sheet.write(row_data, 2, i['amadeus'], sty_table_data)
+                sheet.write(row_data, 3, i['non-amadeus'], sty_table_data)
+        row_data += 2
+        if values['data_form']['provider_type'] == 'hotel' or values['data_form']['provider_type'] == 'all':
+            sheet.write(row_data, 0, 'HOTELS', style.table_head_center)
+            sheet.write(row_data, 1, 'Nama', style.table_head_center)
+            sheet.write(row_data, 2, 'Number of booked', style.table_head_center)
+            for i in hotel_recaps:
+                row_data += 1
+                sheet.write(row_data, 1, i['name'], sty_table_data)
+                sheet.write(row_data, 2, i['counter'], sty_table_data)
             #proceed
         workbook.close()
 
