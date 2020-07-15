@@ -13,6 +13,7 @@ class TtReservationCustomer(models.Model):
     channel_service_charge_ids = fields.Many2many('tt.service.charge','tt_reservation_hotel_channel_charge_rel', 'passenger_id', 'service_charge_id', 'Channel Service Charges')
     # fee_ids = fields.One2many('tt.fee.airline', 'passenger_id', 'SSR')
     booking_id = fields.Many2one('tt.reservation.hotel')
+    room_id = fields.Many2one('tt.hotel.reservation.details')
 
     def to_dict(self):
         res = super(TtReservationCustomer, self).to_dict()
