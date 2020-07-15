@@ -345,7 +345,7 @@
                     </field>
 
                     <separator string="Ticket Type"/>
-                    <field name="option_ids" readonly="True"/>
+                    <field name="option_ids"/>
 
                     <separator string="Product Images"/>
                     <field name="image_ids" context="{

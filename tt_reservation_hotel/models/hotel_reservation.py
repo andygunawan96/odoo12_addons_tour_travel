@@ -874,6 +874,32 @@ class HotelReservation(models.Model):
         else:
             return True
 
+    def check_provider_state(self, context, pnr_list=[], hold_date=False,req={}):
+        if all(rec.state == 'booked' for rec in self.provider_booking_ids):
+            # booked
+            pass
+        elif all(rec.state == 'issued' for rec in self.provider_booking_ids):
+            # issued
+            pass
+        elif all(rec.state == 'refund' for rec in self.provider_booking_ids):
+            # refund
+            self.write({
+                'state': 'refund',
+                'refund_uid': context['co_uid'],
+                'refund_date': datetime.now()
+            })
+        elif all(rec.state == 'fail_refunded' for rec in self.provider_booking_ids):
+            self.write({
+                'state':  'fail_refunded',
+                'refund_uid': context['co_uid'],
+                'refund_date': datetime.now()
+            })
+        else:
+            # entah status apa
+            self.write({
+                'state': 'draft',
+            })
+
     def test_payment_hotel_b2c(self):
         book_obj = self
         #login gateway, payment
