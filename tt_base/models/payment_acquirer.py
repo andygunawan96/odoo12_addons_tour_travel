@@ -144,10 +144,11 @@ class PaymentAcquirer(models.Model):
             values = {}
             if context['co_user_login'] != self.env.ref('tt_base.agent_b2c_user').login:
                 for acq in self.sudo().search(dom):
-                    if not values.get(acq.type) and acq.type != 'va' and acq.type != 'payment_gateway':
+                    if not values.get(acq.type) and acq.type != 'va' and acq.type != 'payment_gateway' or req['transaction_type'] == 'top_up':
                         values[acq.type] = []
-                    if acq.type != 'va' and acq.type != 'payment_gateway':
+                    if acq.type != 'va' and acq.type != 'payment_gateway' or req['transaction_type'] == 'top_up' and acq.account_number == '':
                         values[acq.type].append(acq.acquirer_format(amount,unique))
+
             #payment gateway
             if util.get_without_empty(req, 'order_number'):
 
@@ -163,9 +164,7 @@ class PaymentAcquirer(models.Model):
                     if not values.get(acq.type):
                         values[acq.type] = []
                     if acq.type == 'payment_gateway':
-                        if acq.account_number == '':
-                            values[acq.type].append(acq.acquirer_format(amount, 0))
-                        else:
+                        if acq.account_number != '':
                             if 3 <= datetime.now(pytz.timezone('Asia/Jakarta')).hour < 21:
                                 values[acq.type].append(acq.acquirer_format(amount, unique))
             res = {}
