@@ -3048,13 +3048,23 @@ class HotelInformation(models.Model):
 
     @api.multi
     def prepare_gateway_destination(self):
-        API_CN_HOTEL.signin()
-        API_CN_HOTEL.send_request('prepare_gateway_cache', {
+        new_cache_dict = {
             'hotel_ids': [],
             'city_ids': self.env['test.search'].render_cache_city(),
             'country_ids': self.env['test.search'].prepare_countries(self.env['res.country'].sudo().search([])),
             'landmark_ids': []
-        })
+        }
+        # Update ke master nya
+        API_CN_HOTEL.signin()
+        API_CN_HOTEL.send_request('prepare_gateway_cache', new_cache_dict)
+
+        # Update ke BTBO2 dkk / Child / subscribers
+        vals = {
+            'provider_type': 'hotel',
+            'action': 'prepare_gateway_cache',
+            'data': new_cache_dict,
+        }
+        self.env['tt.api.webhook.data'].notify_subscriber(vals)
 
     # ====================== Cache Hotel edo ke odoo ==============================================
     def compare_hotel_jupiter(self, curr_hotel, new_hotel):

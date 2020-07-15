@@ -8,6 +8,7 @@ from datetime import datetime, timedelta
 import pytz
 _logger = logging.getLogger(__name__)
 
+
 class PaymentAcquirer(models.Model):
     _inherit = 'payment.acquirer'
 
@@ -117,19 +118,19 @@ class PaymentAcquirer(models.Model):
         return ERR.get_no_error(values)
 
     ##fixmee amount di cache
-    def get_payment_acquirer_api(self, req,context):
+    def get_payment_acquirer_api(self, req, context):
         try:
-            _logger.info("payment acq req\n"+json.dumps(req))
+            _logger.info("payment acq req\n" + json.dumps(req))
 
             agent_obj = self.env['tt.agent'].sudo().browse(context['co_agent_id'])
             if not agent_obj:
                 # Return Error jika agent_id tidak ditemukan
                 return ERR.get_error(1008)
 
-            if util.get_without_empty(req,'order_number'):
-                amount = self.env['tt.reservation.%s' % req['provider_type']].search([('name','=',req['order_number'])],limit=1).total
+            if util.get_without_empty(req, 'order_number'):
+                amount = self.env['tt.reservation.%s' % req['provider_type']].search([('name', '=', req['order_number'])], limit=1).total
             else:
-                amount = req.get('amount',0)
+                amount = req.get('amount', 0)
 
             dom = [('website_published', '=', True), ('company_id', '=', self.env.user.company_id.id)]
 
@@ -144,12 +145,12 @@ class PaymentAcquirer(models.Model):
             values = {}
             if context['co_user_login'] != self.env.ref('tt_base.agent_b2c_user').login:
                 for acq in self.sudo().search(dom):
-                    if not values.get(acq.type) and acq.type != 'va' and acq.type != 'payment_gateway':
+                    if not values.get(acq.type) and acq.type != 'va' and acq.type != 'payment_gateway' or req['transaction_type'] == 'top_up':
                         values[acq.type] = []
-                    if acq.type != 'va' and acq.type != 'payment_gateway':
-                        values[acq.type].append(acq.acquirer_format(amount,unique))
-            #payment gateway
-            if util.get_without_empty(req, 'order_number'):
+                    if acq.type != 'va' and acq.type != 'payment_gateway' or req['transaction_type'] == 'top_up' and acq.account_number == '':
+                        values[acq.type].append(acq.acquirer_format(amount, unique))
+
+                #payment gateway
 
                 dom = [('website_published', '=', True), ('company_id', '=', self.env.user.company_id.id)]
                 dom.append(('agent_id', '=', self.env.ref('tt_base.rodex_ho').id))
@@ -163,17 +164,17 @@ class PaymentAcquirer(models.Model):
                     if not values.get(acq.type):
                         values[acq.type] = []
                     if acq.type == 'payment_gateway':
-                        if acq.account_number == '':
-                            values[acq.type].append(acq.acquirer_format(amount, 0))
-                        else:
+                        if acq.account_number != '' and req['transaction_type'] != 'top_up':
                             if 3 <= datetime.now(pytz.timezone('Asia/Jakarta')).hour < 21:
                                 values[acq.type].append(acq.acquirer_format(amount, unique))
+                        elif acq.account_number == '':
+                            values[acq.type].append(acq.acquirer_format(amount, 0))
             res = {}
             res['non_member'] = values
             res['member'] = {}
             if req.get('booker_seq_id'):
-                res['member']['credit_limit'] = self.generate_credit_limit(req['booker_seq_id'], amount) if util.get_without_empty(req,'booker_seq_id') else []
-            _logger.info("payment acq resp\n"+ json.dumps(res))
+                res['member']['credit_limit'] = self.generate_credit_limit(req['booker_seq_id'], amount) if util.get_without_empty(req, 'booker_seq_id') else []
+            _logger.info("payment acq resp\n" + json.dumps(res))
             return ERR.get_no_error(res)
         except Exception as e:
             _logger.error(str(e) + traceback.format_exc())
