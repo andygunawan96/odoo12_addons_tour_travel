@@ -23,6 +23,12 @@ class AgentReportRecapTransacion(models.Model):
             """
 
     @staticmethod
+    def _offline():
+        return """
+        ,rsv.offline_provider_type as offline_provider
+        """
+
+    @staticmethod
     def _select_join_service_charge():
         return """
             rsv.id, rsv.name as order_number, rsv.pnr, rsv.total as grand_total, rsv.total_commission, rsv.total_nta, rsv.state,
@@ -99,6 +105,8 @@ class AgentReportRecapTransacion(models.Model):
     def _lines(self, date_from, date_to, agent_id, provider_type, state):
         # SELECT
         query = 'SELECT ' + self._select()
+        if provider_type == 'offline':
+            query += self._offline()
 
         # FROM
         query += 'FROM ' + self._from(provider_type)
