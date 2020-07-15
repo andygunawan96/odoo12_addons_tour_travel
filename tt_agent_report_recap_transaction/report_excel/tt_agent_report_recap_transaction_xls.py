@@ -98,6 +98,7 @@ class AgentReportRecapTransactionXls(models.TransientModel):
         counter = 0
         airline_recaps = []
         hotel_recaps = []
+        offline_recaps = []
         for i in datas:
             if temp_order_number != i['order_number']:
                 #set checker for order number
@@ -298,6 +299,40 @@ class AgentReportRecapTransactionXls(models.TransientModel):
                             'counter': 1
                         }
                         hotel_recaps.append(temp_dict)
+                if i['provider_type'].lower() == 'offline':
+                    if i['offline_provider'].lower() == 'airline':
+                        data_index = next(
+                            (index for (index, d) in enumerate(airline_recaps) if d["id"] == i['creator_id']), -1)
+                        if data_index >= 0:
+                            if i['provider_name'] and 'amadeus' in i['provider_name'] or 'sabre' in i['provider_name']:
+                                airline_recaps[data_index]['amadeus'] += 1
+                            else:
+                                airline_recaps[data_index]['non-amadeus'] += 1
+                        else:
+                            temp_dict = {
+                                'id': i['creator_id'],
+                                'name': i['create_by'],
+                                'amadeus': 0,
+                                'non-amadeus': 0
+                            }
+                            airline_recaps.append(temp_dict)
+                            if i['provider_name'] and 'amadeus' in i['provider_name'] or 'sabre' in i['provider_name']:
+                                airline_recaps[data_index]['amadeus'] += 1
+                            else:
+                                airline_recaps[data_index]['non-amadeus'] += 1
+                    if i['provider_type'].lower() == 'hotel':
+                        data_index = next(
+                            (index for (index, d) in enumerate(hotel_recaps) if d["id"] == i['creator_id']), -1)
+                        if data_index >= 0:
+                            hotel_recaps[data_index]['counter'] += 1
+                        else:
+                            temp_dict = {
+                                'id': i['creator_id'],
+                                'name': i['create_by'],
+                                'counter': 1
+                            }
+                            hotel_recaps.append(temp_dict)
+
 
         row_data += 1
         sty_table_data_center = style.table_data_center_border
@@ -330,7 +365,7 @@ class AgentReportRecapTransactionXls(models.TransientModel):
         sheet.write(row_data, 22, '', sty_amount)
 
         row_data += 4
-        if values['data_form']['provider_type'] == 'airline' or values['data_form']['provider_type'] == 'all':
+        if values['data_form']['provider_type'] == 'airline' or values['data_form']['provider_type'] == 'all' or values['data_form']['provider_type'] == 'offline':
             sheet.write(row_data, 0, 'AIRLINES', style.table_head_center)
             sheet.write(row_data, 1, 'Nama', style.table_head_center)
             sheet.write(row_data, 2, 'GDS', style.table_head_center)
@@ -341,7 +376,7 @@ class AgentReportRecapTransactionXls(models.TransientModel):
                 sheet.write(row_data, 2, i['amadeus'], sty_table_data)
                 sheet.write(row_data, 3, i['non-amadeus'], sty_table_data)
         row_data += 2
-        if values['data_form']['provider_type'] == 'hotel' or values['data_form']['provider_type'] == 'all':
+        if values['data_form']['provider_type'] == 'hotel' or values['data_form']['provider_type'] == 'all' or values['data_form']['provider_type'] == 'offline':
             sheet.write(row_data, 0, 'HOTELS', style.table_head_center)
             sheet.write(row_data, 1, 'Nama', style.table_head_center)
             sheet.write(row_data, 2, 'Number of booked', style.table_head_center)
