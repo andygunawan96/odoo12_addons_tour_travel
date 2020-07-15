@@ -150,7 +150,6 @@ class PaymentAcquirer(models.Model):
                         values[acq.type].append(acq.acquirer_format(amount,unique))
 
             #payment gateway
-            if util.get_without_empty(req, 'order_number'):
 
                 dom = [('website_published', '=', True), ('company_id', '=', self.env.user.company_id.id)]
                 dom.append(('agent_id', '=', self.env.ref('tt_base.rodex_ho').id))
@@ -159,14 +158,15 @@ class PaymentAcquirer(models.Model):
                     unique = pay_acq_num[0].unique_amount * -1
                 else:
                     unique = self.generate_unique_amount(amount).lower_number
-
                 for acq in self.sudo().search(dom):
                     if not values.get(acq.type):
                         values[acq.type] = []
                     if acq.type == 'payment_gateway':
-                        if acq.account_number != '':
+                        if acq.account_number != '' and req['transaction_type'] != 'top_up':
                             if 3 <= datetime.now(pytz.timezone('Asia/Jakarta')).hour < 21:
                                 values[acq.type].append(acq.acquirer_format(amount, unique))
+                        elif acq.account_number == '':
+                            values[acq.type].append(acq.acquirer_format(amount, 0))
             res = {}
             res['non_member'] = values
             res['member'] = {}
