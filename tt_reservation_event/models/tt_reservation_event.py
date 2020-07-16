@@ -588,7 +588,7 @@ class ReservationEvent(models.Model):
                 'PNR': booking_obj.pnr,
             })
 
-    def print_itinerary(self, data):
+    def print_itinerary(self, data, ctx=None):
         # jika panggil dari backend
         if 'order_number' not in data:
             data['order_number'] = self.name

@@ -116,7 +116,7 @@
                     <t t-foreach="line['pax_data']" t-as="pax">
                         <tr valign="top" style="padding-top: 5px; padding-bottom: 5px;">
                             <t t-if="line_detail_idx == 0">
-                                <t t-if="row_idx == len(inv_lines[doc.id])">
+                                <t t-if="row_idx == len(line2_idx)-1">
                                     <td t-att-rowspan="len(line['pax_data'])" style="background: #F0F0F0; width: 25%; border-left: 1px solid #ccc; overflow-wrap:break-word; border-bottom: 1px solid #ccc; border-right: 1px solid #ccc; border-radius: 0px 0px 0px 20px; border-color: #CCC; padding: 7px 7px 7px 20px;">
                                         <span t-esc="line_idx"/>
                                     </td>
@@ -136,14 +136,14 @@
                             <td style="width: 25%; padding: 7px 7px 7px 20px; border-bottom: 1px solid #CCC; overflow-wrap:break-word; border-right: 1px solid #ccc;">
                                 <span t-esc="pax['name']"/>
                             </td>
-                            <t t-if="line_detail_idx == len(line['pax_data'])-1 and row_idx == len(inv_lines[doc.id])">
+                            <t t-if="line_detail_idx == len(line['pax_data'])-1 and row_idx == len(line2_idx)-1">
                                 <td style="width: 25%; border-left: 1px solid #ccc; border-bottom: 1px solid #ccc; overflow-wrap:break-word; border-right: 1px solid #ccc; border-radius: 0px 0px 20px 0px; border-color: #CCC; padding: 7px 7px 7px 7px; text-align: right;">
-                                    <span t-esc="pax['total']" t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/>
+                                    <span t-esc="pax['total']" t-options="{&quot;widget&quot;: &quot;monetary&quot;, &quot;display_currency&quot;: doc.currency_id}"/>
                                 </td>
                             </t>
                             <t t-else="">
                                 <td style="width: 25%; border-color: #CCC; padding: 7px 7px 7px 7px; border-bottom: 1px solid #ccc; overflow-wrap:break-word; border-right: 1px solid #ccc; border-radius: 0px 0px 0px 0px; text-align: right">
-                                    <span t-esc="pax['total']" t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/>
+                                    <span t-esc="pax['total']" t-options="{&quot;widget&quot;: &quot;monetary&quot;, &quot;display_currency&quot;: doc.currency_id}"/>
                                 </td>
                             </t>
                         </tr>
