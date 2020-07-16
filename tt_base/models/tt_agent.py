@@ -59,6 +59,7 @@ class TtAgent(models.Model):
     quota_ids = fields.One2many('tt.pnr.quota','agent_id','Quota', readonly=False)
     quota_amount = fields.Integer('Quota', compute='_compute_quota_amount', store=True, readonly=True)
     quota_total_duration = fields.Date('Max Duration', compute='_compute_quota_duration',store=True, readonly=True)
+    is_send_refund_email_cust = fields.Boolean('Send Refund Email to Customer', default=False)
 
     # TODO VIN:tnyakan creator
     # 1. Image ckup 1 ae (logo)

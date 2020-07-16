@@ -262,7 +262,7 @@ class TtReschedule(models.Model):
                 False,
                 debit,
                 credit,
-                temp_desc + ' for %s' % (self.referenced_document),
+                temp_desc + ' for %s (PNR: from %s to %s)' % (self.referenced_document, self.referenced_pnr, self.pnr),
                 **{'reschedule_id': self.id}
             )
 
@@ -285,7 +285,7 @@ class TtReschedule(models.Model):
                     False,
                     debit,
                     credit,
-                    temp_desc + ' Admin Fee for %s' % (self.referenced_document),
+                    temp_desc + ' Admin Fee for %s (PNR: from %s to %s)' % (self.referenced_document, self.referenced_pnr, self.pnr),
                     **{'reschedule_id': self.id}
                 )
 
@@ -306,7 +306,7 @@ class TtReschedule(models.Model):
                     False,
                     debit,
                     credit,
-                    temp_desc + ' Admin Fee for %s' % (self.referenced_document),
+                    temp_desc + ' Admin Fee for %s (PNR: from %s to %s)' % (self.referenced_document, self.referenced_pnr, self.pnr),
                     **{'reschedule_id': self.id}
                 )
 
