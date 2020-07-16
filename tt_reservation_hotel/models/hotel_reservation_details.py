@@ -55,6 +55,7 @@ class HotelReservationDetails(models.Model):
                                         ondelete='cascade')
 
     meal_type = fields.Char('Meal Type')
+    passenger_ids = fields.One2many('tt.reservation.passenger.hotel', 'room_id', string='Passengers')
 
     @api.onchange('room_rate_id')
     def set_domain_voucher(self):
