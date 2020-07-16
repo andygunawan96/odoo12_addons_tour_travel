@@ -73,8 +73,8 @@ class TtEmailQueue(models.Model):
 
             resv = self.env['tt.refund'].search([('name', '=ilike', data.get('order_number')), ('agent_id', '=', context.get('co_agent_id', -1))], limit=1)
             if resv:
-                if data.get('type') == 'approved':
-                    type_str = 'Approved'
+                if data.get('type') == 'done':
+                    type_str = 'Done'
                 elif data.get('type') == 'finalized':
                     type_str = 'Finalized'
                 else:
@@ -213,7 +213,7 @@ class TtEmailQueue(models.Model):
     def prepare_attachment_refund(self):
         attachment_id_list = []
         ref_obj = self.env[self.res_model].sudo().browse(int(self.res_id))
-        if self.type == 'refund_approved' and ref_obj.state in ['approve', 'payment', 'approve_cust', 'done']:
+        if self.type == 'refund_done' and ref_obj.state == 'done':
             printout_data = ref_obj.print_refund_to_cust()
         elif self.type == 'refund_finalized' and ref_obj.state in ['final','approve','payment','approve_cust','done']:
             printout_data = ref_obj.print_refund_to_agent_cust()
@@ -247,7 +247,7 @@ class TtEmailQueue(models.Model):
                 self.prepare_attachment_reservation_issued()
             elif self.type == 'billing_statement':
                 self.prepare_attachment_billing_statement()
-            elif self.type in ['refund_confirmed', 'refund_finalized', 'refund_approved']:
+            elif self.type in ['refund_confirmed', 'refund_finalized', 'refund_done']:
                 self.prepare_attachment_refund()
             else:
                 self.template_id.attachment_ids = [(6, 0, [])]

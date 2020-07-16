@@ -60,8 +60,8 @@
 			</field>
 		</record>
 
-		<record model="mail.template" id="template_mail_refund_approved">
-			<field name="name">Template Mail Refund Approve</field>
+		<record model="mail.template" id="template_mail_refund_done">
+			<field name="name">Template Mail Refund Done</field>
 			<field name="email_from">info@rodextrip.com</field>
 			<field name="subject">Refund Process Completed: ${object.name}</field>
 			<field name="email_to">${object.agent_id.email}</field>
@@ -147,8 +147,8 @@
 			</field>
 		</record>
 
-		<record model="mail.template" id="template_mail_refund_approved_cust">
-			<field name="name">Template Mail Refund Approve Customer</field>
+		<record model="mail.template" id="template_mail_refund_done_cust">
+			<field name="name">Template Mail Refund Done Customer</field>
 			<field name="email_from">info@rodextrip.com</field>
 			<field name="subject">Refund Process Completed: ${object.name}</field>
 			<field name="email_to">${object.booker_id.email}</field>
