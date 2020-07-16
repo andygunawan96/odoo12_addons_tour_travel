@@ -95,7 +95,7 @@
                     </t>
                 </td>
                 <td style="width:100px;"/>
-                <td style="width:150px;">Date</td>
+                <td style="width:150px;">Request Date</td>
                 <td style="width:10px;">:</td>
                 <td style="width:400px;text-align: right;">
                     <i t-field="doc.confirm_date" t-options ='{"format": "dd MMMM yyyy"}'/>
@@ -310,7 +310,7 @@
                 <td style="width:50px;"/>
                 <td style="width:10px;"/>
                 <td style="width:100px;"/>
-                <td style="width:150px;">Date</td>
+                <td style="width:150px;">Request Date</td>
                 <td style="width:10px;">:</td>
                 <td style="width:400px;text-align: right;">
                     <i t-field="doc.confirm_date" t-options ='{"format": "dd MMMM yyyy"}'/>
@@ -505,7 +505,7 @@
                 <td style="width:50px;"/>
                 <td style="width:10px;"/>
                 <td style="width:100px;"/>
-                <td style="width:150px;">Date</td>
+                <td style="width:150px;">Request Date</td>
                 <td style="width:10px;">:</td>
                 <td style="width:400px;text-align: right;">
                     <i t-field="doc.confirm_date" t-options ='{"format": "dd MMMM yyyy"}'/>
@@ -687,7 +687,7 @@
                 <td style="width:50px;"/>
                 <td style="width:10px;"/>
                 <td style="width:100px;"/>
-                <td style="width:150px;">Date</td>
+                <td style="width:150px;">Request Date</td>
                 <td style="width:10px;">:</td>
                 <td style="width:400px;text-align: right;">
                     <i t-field="doc.confirm_date" t-options ='{"format": "dd MMMM yyyy"}'/>
