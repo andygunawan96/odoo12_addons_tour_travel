@@ -350,8 +350,8 @@ class TtRefund(models.Model):
                 }
                 self.env['tt.email.queue'].create_email_queue(temp_data, temp_context)
             else:
-                _logger.info('Refund Confirmed email for {} is already created!'.format(self.name))
-                raise Exception('Refund Confirmed email for {} is already created!'.format(self.name))
+                _logger.info('Refund Finalized email for {} is already created!'.format(self.name))
+                raise Exception('Refund Finalized email for {} is already created!'.format(self.name))
         except Exception as e:
             _logger.info('Error Create Email Queue')
 
@@ -433,26 +433,6 @@ class TtRefund(models.Model):
             'approve_uid': self.env.user.id,
             'approve_date': datetime.now()
         })
-
-        try:
-            mail_created = self.env['tt.email.queue'].sudo().search(
-                [('res_id', '=', self.id), ('res_model', '=', self._name), ('type', '=', 'refund_approved')],
-                limit=1)
-            if not mail_created:
-                temp_data = {
-                    'provider_type': 'refund',
-                    'order_number': self.name,
-                    'type': 'approved',
-                }
-                temp_context = {
-                    'co_agent_id': self.agent_id.id
-                }
-                self.env['tt.email.queue'].create_email_queue(temp_data, temp_context)
-            else:
-                _logger.info('Refund Confirmed email for {} is already created!'.format(self.name))
-                raise Exception('Refund Confirmed email for {} is already created!'.format(self.name))
-        except Exception as e:
-            _logger.info('Error Create Email Queue')
 
     def create_profit_loss_ledger(self):
         value = self.real_refund_amount - self.refund_amount
@@ -585,6 +565,26 @@ class TtRefund(models.Model):
             'done_uid': self.env.user.id,
             'done_date': datetime.now()
         })
+
+        try:
+            mail_created = self.env['tt.email.queue'].sudo().search(
+                [('res_id', '=', self.id), ('res_model', '=', self._name), ('type', '=', 'refund_done')],
+                limit=1)
+            if not mail_created:
+                temp_data = {
+                    'provider_type': 'refund',
+                    'order_number': self.name,
+                    'type': 'done',
+                }
+                temp_context = {
+                    'co_agent_id': self.agent_id.id
+                }
+                self.env['tt.email.queue'].create_email_queue(temp_data, temp_context)
+            else:
+                _logger.info('Refund Done email for {} is already created!'.format(self.name))
+                raise Exception('Refund Done email for {} is already created!'.format(self.name))
+        except Exception as e:
+            _logger.info('Error Create Email Queue')
 
     def cancel_refund_from_button(self):
         if self.state in ['validate', 'final']:
