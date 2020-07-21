@@ -164,7 +164,9 @@ class PaymentAcquirer(models.Model):
                         values[acq.type] = []
                     if acq.type == 'payment_gateway':
                         if acq.account_number != '' and req['transaction_type'] != 'top_up':
-                            if 3 <= datetime.now(pytz.timezone('Asia/Jakarta')).hour < 21:
+                            if 3 <= datetime.now(pytz.timezone('Asia/Jakarta')).hour < 19:
+                                values[acq.type].append(acq.acquirer_format(amount, unique))
+                            elif datetime.now(pytz.timezone('Asia/Jakarta')).hour == 19 and datetime.now(pytz.timezone('Asia/Jakarta')).minute < 50:
                                 values[acq.type].append(acq.acquirer_format(amount, unique))
                         elif acq.account_number == '':
                             values[acq.type].append(acq.acquirer_format(amount, 0))
