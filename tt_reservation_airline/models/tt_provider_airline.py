@@ -310,6 +310,14 @@ class TtProviderAirline(models.Model):
                 'rescheduled_date': fields.Datetime.now(),
             })
 
+    def action_reissue_api_airline(self, api_context):
+        for rec in self:
+            rec.write({
+                'state': 'reissue',
+                'rescheduled_uid': api_context['co_uid'],
+                'rescheduled_date': fields.Datetime.now(),
+            })
+
     def action_rescheduled_pending_api_airline(self, api_context):
         for rec in self:
             rec.write({

@@ -102,6 +102,7 @@ BOOKING_STATE_STR = {
     'done': 'Done',
     'rejected': 'Rejected',
     'reroute': 'Reroute', #diganti reissue
+    'reissue': 'Reissue', #diganti reissue
     # April 21, 2020
     'fail_booked': 'Booking Failed',
     'halt_booked': 'Booking Halt',
@@ -267,4 +268,9 @@ RESV_RECONCILE_STATE = [
     ('not_reconciled','Not Reconciled'),
     ('partial','Partially Reconciled'),
     ('reconciled','Reconciled')
+]
+
+PRICING_PROVIDER_TYPE = [
+    ('main','Main'),
+    ('append','Append'),
 ]
