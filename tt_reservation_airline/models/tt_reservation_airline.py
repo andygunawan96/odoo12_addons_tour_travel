@@ -1687,6 +1687,15 @@ class ReservationAirline(models.Model):
             refund_type = 'regular'
 
             refund_line_ids = []
+
+            # July 21, 2020 - SAM
+            penalty_amount = 0.0
+            for prov_obj in airline_obj.provider_booking_ids:
+                penalty_amount += prov_obj.penalty_amount
+
+            total_pax = len(airline_obj.passenger_ids)
+            charge_fee = penalty_amount / total_pax
+            # END
             for pax in airline_obj.passenger_ids:
                 pax_price = 0
                 for cost in pax.cost_service_charge_ids:
@@ -1696,6 +1705,7 @@ class ReservationAirline(models.Model):
                     'name': (pax.title or '') + ' ' + (pax.name or ''),
                     'birth_date': pax.birth_date,
                     'pax_price': pax_price,
+                    'charge_fee': charge_fee,
                 })
                 refund_line_ids.append(line_obj.id)
 
@@ -1718,6 +1728,9 @@ class ReservationAirline(models.Model):
             }
             res_obj = self.env['tt.refund'].create(res_vals)
             res_obj.confirm_refund_from_button()
+            res_obj.send_refund_from_button()
+            res_obj.validate_refund_from_button()
+            res_obj.finalize_refund_from_button()
             response = {
                 'refund_id': res_obj.id,
                 'refund_number': res_obj.name
