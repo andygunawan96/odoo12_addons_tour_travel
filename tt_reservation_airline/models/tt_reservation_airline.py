@@ -5,7 +5,6 @@ from ...tools.api import Response
 import logging,traceback
 from datetime import datetime, timedelta
 import base64
-
 import json
 
 _logger = logging.getLogger(__name__)
@@ -546,7 +545,12 @@ class ReservationAirline(models.Model):
         _logger.info("Update\n" + json.dumps(req))
         # req = self.param_update_pnr
         try:
-            book_obj = self.env['tt.reservation.airline'].browse(req['book_id'])
+            if req.get('book_id'):
+                book_obj = self.env['tt.reservation.airline'].browse(req['book_id'])
+            elif req.get('order_number'):
+                book_obj = self.env['tt.reservation.airline'].search([('name', '=', req['order_number'])])
+            else:
+                raise Exception('Booking ID or Number not Found')
             try:
                 book_obj.create_date
             except:
@@ -640,6 +644,18 @@ class ReservationAirline(models.Model):
                     any_provider_changed = True
                 elif provider['status'] == 'REFUND_FAILED':
                     provider_obj.action_refund_failed_api_airline(provider.get('error_code', -1), provider.get('error_msg', ''))
+                    any_provider_changed = True
+                elif provider['status'] == 'RESCHEDULED':
+                    provider_obj.action_rescheduled_api_airline(context)
+                    any_provider_changed = True
+                elif provider['status'] == 'RESCHEDULED_PENDING':
+                    provider_obj.action_rescheduled_pending_api_airline(context)
+                    any_provider_changed = True
+                elif provider['status'] == 'RESCHEDULED_FAILED':
+                    provider_obj.action_failed_rescheduled_api_airline(provider.get('error_code', -1), provider.get('error_msg', ''))
+                    any_provider_changed = True
+                elif provider['status'] == 'REISSUE':
+                    provider_obj.action_reissue_api_airline(context)
                     any_provider_changed = True
 
             # for rec in book_obj.provider_booking_ids:
@@ -1655,4 +1671,82 @@ class ReservationAirline(models.Model):
     #                 continue
     #             total_amount += sc.total
     #     return total_amount
+    # END
+
+    # July 15, 2020 - SAM
+    def create_refund_airline_api(self, data, context):
+        try:
+            if data.get('book_id'):
+                airline_obj = self.env['tt.reservation.airline'].browse(data['book_id'])
+            elif data.get('order_number'):
+                airline_obj = self.env['tt.reservation.airline'].search([('name', '=', data['order_number'])])
+            else:
+                raise Exception('Book ID or Order Number is not found')
+
+            admin_fee_obj = self.env.ref('tt_accounting.admin_fee_refund_regular')
+            refund_type = 'regular'
+
+            refund_line_ids = []
+            for pax in airline_obj.passenger_ids:
+                pax_price = 0
+                for cost in pax.cost_service_charge_ids:
+                    if cost.charge_type != 'RAC':
+                        pax_price += cost.amount
+                line_obj = self.env['tt.refund.line'].create({
+                    'name': (pax.title or '') + ' ' + (pax.name or ''),
+                    'birth_date': pax.birth_date,
+                    'pax_price': pax_price,
+                })
+                refund_line_ids.append(line_obj.id)
+
+            res_vals = {
+                'agent_id': airline_obj.agent_id.id,
+                'customer_parent_id': airline_obj.customer_parent_id.id,
+                'booker_id': airline_obj.booker_id.id,
+                'currency_id': airline_obj.currency_id.id,
+                'service_type': airline_obj.provider_type_id.id,
+                'refund_type': refund_type,
+                'admin_fee_id': admin_fee_obj.id,
+                'referenced_document': airline_obj.name,
+                'referenced_pnr': airline_obj.pnr,
+                'res_model': airline_obj._name,
+                'res_id': airline_obj.id,
+                'booking_desc': airline_obj.get_aftersales_desc(),
+                'notes': data.get('notes') and data['notes'] or '',
+                'refund_line_ids': [(6, 0, refund_line_ids)],
+                'created_by_api': True,
+            }
+            res_obj = self.env['tt.refund'].create(res_vals)
+            res_obj.confirm_refund_from_button()
+            response = {
+                'refund_id': res_obj.id,
+                'refund_number': res_obj.name
+            }
+            return ERR.get_no_error(response)
+        except RequestException as e:
+            _logger.error('Error Create Refund Airline API, %s' % traceback.format_exc())
+            return e.error_dict()
+        except Exception as e:
+            _logger.error('Error Create Refund Airline API, %s' % traceback.format_exc())
+            return ERR.get_error(1030)
+
+    def update_refund_airline_api(self, data, context):
+        try:
+            return ERR.get_no_error()
+        except RequestException as e:
+            _logger.error('Error Update Refund Airline API, %s' % traceback.format_exc())
+            return e.error_dict()
+        except Exception as e:
+            _logger.error('Error Update Refund Airline API, %s' % traceback.format_exc())
+            return ERR.get_error(1030)
+
+    def get_refund_airline_api(self, data, context):
+        try:
+            return ERR.get_no_error()
+        except RequestException as e:
+            _logger.error('Error Get Refund Airline API, %s' % traceback.format_exc())
+            return e.error_dict()
+        except Exception as e:
+            _logger.error('Error Get Refund Airline API, %s' % traceback.format_exc())
+            return ERR.get_error(1030)
     # END

@@ -28,6 +28,11 @@ class PricingProvider(models.Model):
     is_provider_commission = fields.Boolean('Is Provider Commission', default=False)
     agent_type_ids = fields.Many2many('tt.agent.type', 'pricing_provider_agent_type_rel', 'pricing_id', 'agent_type_id', string='Agent Types')
     agent_type_access_type = fields.Selection(variables.ACCESS_TYPE, 'Agent Type Access Type', default='all')
+    # provider_agent_ids = fields.Many2many('tt.pricing.provider.agent', 'pricing_provider_agent_rel', 'pricing_id', 'provider_agent_id', string='Provider Agents')
+    # provider_agent_access_type = fields.Selection(variables.ACCESS_TYPE, 'Provider Agent Access Type', default='all')
+    agent_ids = fields.Many2many('tt.agent', 'pricing_provider_agent_rel', 'pricing_id', 'agent_id', string='Agents')
+    agent_access_type = fields.Selection(variables.ACCESS_TYPE, 'Agent Access Type', default='all')
+    provider_pricing_type = fields.Selection(variables.PRICING_PROVIDER_TYPE, 'Pricing Type', default='main')
 
     def do_compute_name(self):
         objs = self.sudo().search([])
@@ -66,6 +71,13 @@ class PricingProvider(models.Model):
                 name_list.append(','.join(['%s' % rec.agent_type_access_type.title()] + [agent_type.code for agent_type in rec.agent_type_ids]))
             else:
                 name_list.append('All Agent Type')
+
+            if rec.agent_access_type != 'all':
+                # name_list.append(','.join(['%s' % rec.agent_access_type.title()] + [agent.id for agent in rec.agent_ids]))
+                name_list.append('Not All Agents')
+            else:
+                name_list.append('All Agents')
+
             rec.name = ' - '.join(name_list)
 
     @api.multi
@@ -127,6 +139,8 @@ class PricingProvider(models.Model):
         carrier_codes = [rec.code for rec in self.carrier_ids]
         providers = [rec.code for rec in self.provider_ids]
         agent_types = [rec.code for rec in self.agent_type_ids]
+        # provider_agents = [rec.get_pricing_data() for rec in self.provider_agent_ids]
+        agent_ids = [rec.id for rec in self.agent_ids]
         res = {
             'id': self.id,
             'provider_type': self.provider_type_id and self.provider_type_id.code or '',
@@ -142,6 +156,11 @@ class PricingProvider(models.Model):
             'line_ids': line_ids,
             'agent_type_access_type': self.agent_type_access_type,
             'agent_types': agent_types,
+            # 'provider_agent_access_type': self.provider_agent_access_type,
+            # 'provider_agents': provider_agents,
+            'agent_access_type': self.agent_access_type,
+            'agent_ids': agent_ids,
+            'provider_pricing_type': self.provider_pricing_type,
         }
         return res
 
@@ -329,8 +348,8 @@ class PricingProviderLine(models.Model):
         res = {
             'id': self.id,
             'sequence': self.sequence,
-            'date_from': self.date_from,
-            'date_to': self.date_to,
+            'date_from': self.date_from.strftime('%Y-%m-%d %H:%M:%S'),
+            'date_to': self.date_to.strftime('%Y-%m-%d %H:%M:%S'),
             'origin_type': self.origin_type,
             'origin_codes': origin_codes,
             'origin_city_ids': origin_city_ids,
