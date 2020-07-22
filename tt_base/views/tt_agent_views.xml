@@ -107,8 +107,6 @@
                         <field name="website" readonly="1"/>
                         <field name="npwp" readonly="1"/>
                         <field name="payment_acquirer_ids" context="{'form_view_ref':'tt_base.payment_acquirer_form_view'}" readonly="0"/>
-                        <field name="agent_bank_detail_ids" readonly="1"/>
-                        <!--<field name="history_ids"/>-->
                     </group>
 
                     <group name="Ledger">
@@ -125,6 +123,9 @@
                         </page>
                         <page string="Payment Acquirer Number">
                             <field name="payment_acq_ids" readonly="1"/>
+                        </page>
+                        <page string="Third Party Key">
+                            <field name="third_party_key_ids" readonly="1"/>
                         </page>
                         <page string="Quota" attrs="{'invisible': [('is_using_pnr_quota','=',False)]}">
                             <group>
@@ -183,9 +184,6 @@
             </field>
             <field name="npwp" position="replace">
                 <field name="npwp" readonly="0"/>
-            </field>
-            <field name="agent_bank_detail_ids" position="replace">
-                <field name="agent_bank_detail_ids" readonly="0"/>
             </field>
             <field name="address_ids" position="replace">
                 <field name="address_ids" readonly="0"/>

@@ -4,6 +4,7 @@ from ...tools import ERR,variables,util
 from odoo.exceptions import UserError
 from datetime import datetime
 from ...tools.ERR import RequestException
+import uuid
 
 _logger = logging.getLogger(__name__)
 
@@ -45,7 +46,6 @@ class TtAgent(models.Model):
     history_ids = fields.Char(string="History", required=False, )  # tt_history
     user_ids = fields.One2many('res.users', 'agent_id', 'User')
     payment_acquirer_ids = fields.One2many('payment.acquirer','agent_id',string="Payment Acquirer")  # payment_acquirer
-    agent_bank_detail_ids = fields.One2many('agent.bank.detail', 'agent_id', 'Agent Bank')  # agent_bank_detail
     tac = fields.Text('Terms and Conditions', readonly=True, states={'draft': [('readonly', False)],
                                                                      'confirm': [('readonly', False)]})
     active = fields.Boolean('Active', default='True')
@@ -59,6 +59,8 @@ class TtAgent(models.Model):
     quota_ids = fields.One2many('tt.pnr.quota','agent_id','Quota', readonly=False)
     quota_amount = fields.Integer('Quota', compute='_compute_quota_amount', store=True, readonly=True)
     quota_total_duration = fields.Date('Max Duration', compute='_compute_quota_duration',store=True, readonly=True)
+
+    third_party_key_ids = fields.One2many('tt.agent.third.party.key','agent_id','Third Party Key')
 
     # TODO VIN:tnyakan creator
     # 1. Image ckup 1 ae (logo)
@@ -568,6 +570,24 @@ class TtAgent(models.Model):
             _logger.error(traceback.format_exc())
             return ERR.get_error(1012,additional_message="PNR Price List")
 
+
+    def generate_rodexshop_key(self):
+        if not self.env.user.agent_id.id == self.id:
+            raise UserError("Can only generate for own agent.")
+        if not self.third_party_key_ids.filtered(lambda x: x.name == 'RodexShop External Key'):
+            key_exist =True
+            key = ''
+            while(key_exist):
+                key = uuid.uuid4().hex
+                exist_key_list = self.env['tt.agent.third.party.key'].sudo().search([('key','=',key)])
+                if not exist_key_list:
+                    key_exist = False
+
+            self.env['tt.agent.third.party.key'].sudo().create({
+                'name': 'RodexShop External Key',
+                'key': key,
+                'agent_id': self.id,
+            })
 
 class AgentTarget(models.Model):
     _inherit = ['tt.history']

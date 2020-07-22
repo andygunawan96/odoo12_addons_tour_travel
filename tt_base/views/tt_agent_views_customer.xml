@@ -7,7 +7,8 @@
             <form>
                 <header>
                     <button name="get_current_agent_target" type="object" string="Calc Target" groups="base.user_admin"/>
-                    <button name="generate_va_number" type="object" string="Generate VA" groups="tt_base.group_tt_accounting_supervisor"/>
+                    <button name="generate_va_number" type="object" string="Generate VA" groups="tt_base.group_tt_agent_finance_supervisor"/>
+                    <button name="generate_rodexshop_key" type="object" string="Generate Rodexshop Key" groups="tt_base.group_tt_agent_finance_supervisor"/>
                 </header>
                 <sheet>
                     <div class="oe_button_box" name="button_box">
@@ -69,7 +70,6 @@
                         <field name="website" readonly="1"/>
                         <field name="npwp" readonly="1"/>
                         <field name="payment_acquirer_ids" context="{'form_view_ref':'tt_base.payment_acquirer_form_view'}" readonly="1"/>
-                        <field name="agent_bank_detail_ids" readonly="1"/>
                         <!--<field name="history_ids"/>-->
                     </group>
 
@@ -87,6 +87,9 @@
                         </page>
                         <page string="Payment Acquirer Number">
                             <field name="payment_acq_ids" readonly="1"/>
+                        </page>
+                        <page string="Third Party Key">
+                            <field name="third_party_key_ids" readonly="1"/>
                         </page>
                     </notebook>
                 </sheet>
@@ -137,9 +140,6 @@
             </field>
             <field name="npwp" position="replace">
                 <field name="npwp" readonly="0"/>
-            </field>
-            <field name="agent_bank_detail_ids" position="replace">
-                <field name="agent_bank_detail_ids" readonly="0"/>
             </field>
             <field name="address_ids" position="replace">
                 <field name="address_ids" readonly="0"/>
