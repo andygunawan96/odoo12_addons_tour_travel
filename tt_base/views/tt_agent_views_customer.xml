@@ -52,6 +52,7 @@
                         </group>
                         <group>
                             <field name="est_date" readonly="1"/>
+                            <field name="agent_bank_detail_ids" invisible="1"/>
                             <!--                            <field name="mou_start"/>-->
                             <!--                            <field name="mou_end"/>-->
                         </group>
