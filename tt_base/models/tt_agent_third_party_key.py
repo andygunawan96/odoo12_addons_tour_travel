@@ -18,32 +18,36 @@ class TtAgentThirdPartyKey(models.Model):
     connected_account_name = fields.Char('Connected Account ID')
     connected_time = fields.Datetime('Connected Time', default=fields.Datetime.now())
 
-    def validate_key(self,req,is_connected=False):
-        found_key = self.search([('key', '=', req['key']), ('is_connected', '=', is_connected)])
+    def validate_key(self,req):
+        found_key = self.search([('key', '=', req['key']), ('is_connected', '=', True)])
         if not found_key:
             raise RequestException(1033)
         return found_key
 
     def external_connect_key_api(self,req,context):
-        key_obj = self.validate_key(req)
-        if key_obj:
-            key_obj.write({
+        found_key = self.search([('key', '=', req['key'])])
+        if found_key.is_connected and found_key.connected_account_id != str(req['id']):
+            raise RequestException(1033)
+        if found_key:
+            found_key.write({
                 'is_connected': True,
                 'connected_account_id': req['id'],
                 'connected_account_name': req['name'],
                 'connected_time': datetime.now()
             })
-            return ERR.get_no_error()
+            return ERR.get_no_error({
+                'connected_agent': found_key.agent_id.name
+            })
         raise RequestException(1033)
 
     def external_get_balance_api(self,req,context):
-        key_obj = self.validate_key(req,True)
+        key_obj = self.validate_key(req)
         if key_obj:
             return ERR.get_no_error({'balance': key_obj.agent_id.balance})
         raise RequestException(1033)
 
     def external_payment_api(self,req,context):
-        key_obj = self.validate_key(req,True)
+        key_obj = self.validate_key(req)
         if key_obj:
             if key_obj.agent_id.balance >= req['payment_amount']:
                 next_seq = self.env['ir.sequence'].next_by_code('tt.agent.third.party.key.payment')
@@ -70,7 +74,7 @@ class TtAgentThirdPartyKey(models.Model):
         raise RequestException(1033)
 
     def external_reverse_payment_api(self,req,context):
-        key_obj = self.validate_key(req,True)
+        key_obj = self.validate_key(req)
         if key_obj:
             ledger_obj = self.env['tt.ledger'].search([('name','=',req['ledger_reference'])])
             if ledger_obj:
