@@ -61,7 +61,7 @@ class TtAgentThirdPartyKey(models.Model):
                     0,
                     req['payment_amount'],
                     'External payment from %s by %s, %s' % (key_obj.name,key_obj.connected_account_name,req['reference']),
-                    {'pnr': req['reference']}
+                    **{'pnr': req['reference']}
                 )
                 return ERR.get_no_error({
                     'ledger_reference': new_ledger.name,
