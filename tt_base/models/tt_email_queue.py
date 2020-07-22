@@ -48,21 +48,58 @@ class TtEmailQueue(models.Model):
             else:
                 raise RequestException(1001)
         elif data.get('provider_type') == 'billing_statement':
-            if self.env.get('tt.billing.statement'):
-                resv = self.env['tt.billing.statement'].search([('name', '=ilike', data.get('order_number')), ('agent_id', '=', context.get('co_agent_id', -1))], limit=1)
-                if resv:
-                    template = self.env.ref('tt_billing_statement.template_mail_billing_statement').id
+            try:
+                self.env.get('tt.billing.statement')._name
+            except:
+                raise Exception('Module tt.billing.statement not found!')
+
+            resv = self.env['tt.billing.statement'].search([('name', '=ilike', data.get('order_number')), ('agent_id', '=', context.get('co_agent_id', -1))], limit=1)
+            if resv:
+                template = self.env.ref('tt_billing_statement.template_mail_billing_statement').id
+                self.env['tt.email.queue'].sudo().create({
+                    'name': resv.agent_id.name + ' e-Billing Statement for ' + resv.customer_parent_id.name,
+                    'type': 'billing_statement',
+                    'template_id': template,
+                    'res_model': resv._name,
+                    'res_id': resv.id,
+                })
+            else:
+                raise RequestException(1001)
+        elif data.get('provider_type') == 'refund':
+            try:
+                self.env.get('tt.refund')._name
+            except:
+                raise Exception('Module tt.refund not found!')
+
+            resv = self.env['tt.refund'].search([('name', '=ilike', data.get('order_number')), ('agent_id', '=', context.get('co_agent_id', -1))], limit=1)
+            if resv:
+                if data.get('type') == 'done':
+                    type_str = 'Done'
+                elif data.get('type') == 'finalized':
+                    type_str = 'Finalized'
+                else:
+                    type_str = 'Confirmed'
+
+                template = self.env.ref('tt_accounting.template_mail_{}_{}'.format(data['provider_type'], data.get('type', 'confirmed'))).id
+                self.env['tt.email.queue'].sudo().create({
+                    'name': 'Refund ' + type_str + ': ' + resv.name,
+                    'type': '{}_{}'.format(data['provider_type'], data.get('type', 'confirmed')),
+                    'template_id': template,
+                    'res_model': resv._name,
+                    'res_id': resv.id,
+                })
+
+                if resv.agent_id.is_send_refund_email_cust:
+                    template = self.env.ref('tt_accounting.template_mail_{}_{}_cust'.format(data['provider_type'], data.get('type', 'confirmed'))).id
                     self.env['tt.email.queue'].sudo().create({
-                        'name': resv.agent_id.name + ' e-Billing Statement for ' + resv.customer_parent_id.name,
-                        'type': 'billing_statement',
+                        'name': 'Refund ' + type_str + ': ' + resv.name,
+                        'type': '{}_{}'.format(data['provider_type'], data.get('type', 'confirmed')),
                         'template_id': template,
                         'res_model': resv._name,
                         'res_id': resv.id,
                     })
-                else:
-                    raise RequestException(1001)
             else:
-                raise Exception('Module tt.billing.statement not found!')
+                raise RequestException(1001)
 
     def open_reference(self):
         try:
@@ -173,12 +210,45 @@ class TtEmailQueue(models.Model):
         else:
             raise Exception(_('Billing is already cancelled!'))
 
+    def prepare_attachment_refund(self):
+        attachment_id_list = []
+        ref_obj = self.env[self.res_model].sudo().browse(int(self.res_id))
+        if self.type == 'refund_done' and ref_obj.state == 'done':
+            printout_data = ref_obj.print_refund_to_cust()
+        elif self.type == 'refund_finalized' and ref_obj.state in ['final','approve','payment','approve_cust','done']:
+            printout_data = ref_obj.print_refund_to_agent_cust()
+        elif self.type == 'refund_confirmed' and ref_obj.state != 'draft':
+            printout_data = ref_obj.print_refund_to_cust_est()
+        else:
+            printout_data = {}
+        if printout_data.get('url'):
+            headers = {
+                'Content-Type': 'application/json',
+            }
+            upload_data = util.send_request(printout_data['url'], data={}, headers=headers, method='GET',
+                                            content_type='content', timeout=600)
+            if upload_data['error_code'] == 0:
+                attachment_obj = self.env['ir.attachment'].create({
+                    'name': 'Refund ' + ref_obj.name + '.pdf',
+                    'datas_fname': 'Refund ' + ref_obj.name + '.pdf',
+                    'datas': upload_data['response'],
+                })
+                attachment_id_list.append(attachment_obj.id)
+            else:
+                _logger.info(upload_data['error_msg'])
+                raise Exception(_('Failed to convert refund attachment!'))
+        else:
+            raise Exception(_('Failed to get refund attachment!'))
+        self.template_id.attachment_ids = [(6, 0, attachment_id_list)]
+
     def action_send_email(self):
         try:
             if self.type in ['issued_airline', 'issued_train', 'issued_activity', 'issued_tour', 'issued_visa', 'issued_passport', 'issued_hotel', 'issued_offline', 'issued_ppob']:
                 self.prepare_attachment_reservation_issued()
             elif self.type == 'billing_statement':
                 self.prepare_attachment_billing_statement()
+            elif self.type in ['refund_confirmed', 'refund_finalized', 'refund_done']:
+                self.prepare_attachment_refund()
             else:
                 self.template_id.attachment_ids = [(6, 0, [])]
 

@@ -150,24 +150,26 @@ class PaymentAcquirer(models.Model):
                     if acq.type != 'va' and acq.type != 'payment_gateway':
                         values[acq.type].append(acq.acquirer_format(amount,unique))
 
-                #payment gateway
-                if util.get_without_empty(req, 'order_number'):
-                    dom = [('website_published', '=', True), ('company_id', '=', self.env.user.company_id.id)]
-                    dom.append(('agent_id', '=', self.env.ref('tt_base.rodex_ho').id))
-                    pay_acq_num = self.env['payment.acquirer.number'].search([('number', 'ilike', req['order_number'])])
-                    if pay_acq_num:
-                        unique = pay_acq_num[0].unique_amount * -1
-                    else:
-                        unique = self.generate_unique_amount(amount).lower_number
-                    for acq in self.sudo().search(dom):
-                        if not values.get(acq.type):
-                            values[acq.type] = []
-                        if acq.type == 'payment_gateway':
-                            if acq.account_number != '' and req['transaction_type'] != 'top_up':
-                                if 3 <= datetime.now(pytz.timezone('Asia/Jakarta')).hour < 21:
-                                    values[acq.type].append(acq.acquirer_format(amount, unique))
-                            elif acq.account_number == '':
-                                values[acq.type].append(acq.acquirer_format(amount, 0))
+            #payment gateway
+            if util.get_without_empty(req, 'order_number'):
+                dom = [('website_published', '=', True), ('company_id', '=', self.env.user.company_id.id)]
+                dom.append(('agent_id', '=', self.env.ref('tt_base.rodex_ho').id))
+                pay_acq_num = self.env['payment.acquirer.number'].search([('number', 'ilike', req['order_number'])])
+                if pay_acq_num:
+                    unique = pay_acq_num[0].unique_amount * -1
+                else:
+                    unique = self.generate_unique_amount(amount).lower_number
+                for acq in self.sudo().search(dom):
+                    if not values.get(acq.type):
+                        values[acq.type] = []
+                    if acq.type == 'payment_gateway':
+                        if acq.account_number != '' and req['transaction_type'] != 'top_up':
+                            if 3 <= datetime.now(pytz.timezone('Asia/Jakarta')).hour < 19:
+                                values[acq.type].append(acq.acquirer_format(amount, unique))
+                            elif datetime.now(pytz.timezone('Asia/Jakarta')).hour == 19 and datetime.now(pytz.timezone('Asia/Jakarta')).minute < 50:
+                                values[acq.type].append(acq.acquirer_format(amount, unique))
+                        elif acq.account_number == '':
+                            values[acq.type].append(acq.acquirer_format(amount, 0))
             res = {}
             res['non_member'] = values
             res['member'] = {}

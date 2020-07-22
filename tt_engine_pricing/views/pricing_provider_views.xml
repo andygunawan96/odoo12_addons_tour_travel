@@ -29,6 +29,7 @@
                             <field name="is_sale"/>
                             <field name="is_commission"/>
                             <field name="is_provider_commission"/>
+                            <field name="provider_pricing_type"/>
                         </group>
                     </group>
                     <group>
@@ -58,6 +59,24 @@
                     </group>
                     <separator string="Agent Types"/>
                     <field name="agent_type_ids"/>
+                    <!--<group>-->
+                        <!--<group>-->
+                            <!--<field name="provider_agent_access_type"/>-->
+                        <!--</group>-->
+                        <!--<group>-->
+                        <!--</group>-->
+                    <!--</group>-->
+                    <!--<separator string="Provider Agents"/>-->
+                    <!--<field name="provider_agent_ids"/>-->
+                    <group>
+                        <group>
+                            <field name="agent_access_type"/>
+                        </group>
+                        <group>
+                        </group>
+                    </group>
+                    <separator string="Agents"/>
+                    <field name="agent_ids"/>
                     <separator string="Details"/>
                     <field name="line_ids"/>
                 </sheet>
@@ -75,11 +94,13 @@
         <field name="arch" type="xml">
         <tree decoration-muted="active == False">
             <field name="sequence" widget="handle"/>
+            <field name="provider_pricing_type"/>
             <field name="name"/>
             <field name="provider_type_id"/>
             <field name="provider_access_type"/>
             <field name="carrier_access_type"/>
             <field name="agent_type_access_type"/>
+            <field name="agent_access_type"/>
             <field name="is_sale"/>
             <field name="is_commission"/>
             <field name="is_provider_commission"/>

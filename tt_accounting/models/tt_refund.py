@@ -4,6 +4,12 @@ from dateutil.relativedelta import relativedelta
 from datetime import datetime, date, timedelta
 from ...tools import variables
 import base64,pytz
+from ...tools.ERR import RequestException
+from ...tools import util,ERR
+import logging,traceback
+import json
+
+_logger = logging.getLogger(__name__)
 
 
 class TtRefundLine(models.Model):
@@ -163,6 +169,8 @@ class TtRefund(models.Model):
     printout_refund_id = fields.Many2one('tt.upload.center', 'Refund Printout', readonly=True)
     printout_refund_est_id = fields.Many2one('tt.upload.center', 'Refund Printout Est', readonly=True)
 
+    created_by_api = fields.Boolean('Created By API', default=False, readonly=True)
+
     @api.model
     def create(self, vals_list):
         vals_list['name'] = self.env['ir.sequence'].next_by_code(self._name)
@@ -264,10 +272,29 @@ class TtRefund(models.Model):
             'confirm_uid': self.env.user.id,
             'confirm_date': datetime.now(),
             'refund_date_ho': estimate_refund_date,
-            'estimate_ho_refund_date': estimate_refund_date,
         })
         for rec in self.refund_line_ids:
             rec.set_to_confirm()
+
+        try:
+            mail_created = self.env['tt.email.queue'].sudo().search(
+                [('res_id', '=', self.id), ('res_model', '=', self._name), ('type', '=', 'refund_confirmed')],
+                limit=1)
+            if not mail_created:
+                temp_data = {
+                    'provider_type': 'refund',
+                    'order_number': self.name,
+                    'type': 'confirmed',
+                }
+                temp_context = {
+                    'co_agent_id': self.agent_id.id
+                }
+                self.env['tt.email.queue'].create_email_queue(temp_data, temp_context)
+            else:
+                _logger.info('Refund Confirmed email for {} is already created!'.format(self.name))
+                raise Exception('Refund Confirmed email for {} is already created!'.format(self.name))
+        except Exception as e:
+            _logger.info('Error Create Email Queue')
 
     def send_refund_from_button(self):
         if self.state != 'confirm':
@@ -312,6 +339,26 @@ class TtRefund(models.Model):
             'final_date': datetime.now()
         })
 
+        try:
+            mail_created = self.env['tt.email.queue'].sudo().search(
+                [('res_id', '=', self.id), ('res_model', '=', self._name), ('type', '=', 'refund_finalized')],
+                limit=1)
+            if not mail_created:
+                temp_data = {
+                    'provider_type': 'refund',
+                    'order_number': self.name,
+                    'type': 'finalized',
+                }
+                temp_context = {
+                    'co_agent_id': self.agent_id.id
+                }
+                self.env['tt.email.queue'].create_email_queue(temp_data, temp_context)
+            else:
+                _logger.info('Refund Finalized email for {} is already created!'.format(self.name))
+                raise Exception('Refund Finalized email for {} is already created!'.format(self.name))
+        except Exception as e:
+            _logger.info('Error Create Email Queue')
+
         if date.today() >= self.refund_date:
             self.action_approve()
 
@@ -339,7 +386,7 @@ class TtRefund(models.Model):
             False,
             debit,
             credit,
-            'Refund for %s' % (self.referenced_document),
+            'Refund for %s (Ref PNR: %s)' % (self.referenced_document, self.referenced_pnr),
             **{'refund_id': self.id}
         )
 
@@ -360,7 +407,7 @@ class TtRefund(models.Model):
                 False,
                 debit,
                 credit,
-                'Refund Admin Fee for %s' % (self.referenced_document),
+                'Refund Admin Fee for %s (Ref PNR: %s)' % (self.referenced_document, self.referenced_pnr),
                 **{'refund_id': self.id}
             )
 
@@ -381,7 +428,7 @@ class TtRefund(models.Model):
                 False,
                 debit,
                 credit,
-                'Refund Admin Fee for %s' % (self.referenced_document),
+                'Refund Admin Fee for %s (Ref PNR: %s)' % (self.referenced_document, self.referenced_pnr),
                 **{'refund_id': self.id}
             )
 
@@ -414,7 +461,7 @@ class TtRefund(models.Model):
                 False,
                 debit,
                 credit,
-                'Profit&Loss for %s Refund' % (self.referenced_document),
+                'Profit&Loss for %s Refund (Ref PNR: %s)' % (self.referenced_document, self.referenced_pnr),
                 **{'refund_id': self.id}
             )
             self.sudo().write({
@@ -490,7 +537,7 @@ class TtRefund(models.Model):
                 False,
                 debit,
                 credit,
-                'Refund Agent Admin Fee for %s' % (self.referenced_document),
+                'Refund Agent Admin Fee for %s (Ref PNR: %s)' % (self.referenced_document, self.referenced_pnr),
                 **{'refund_id': self.id}
             )
 
@@ -510,7 +557,7 @@ class TtRefund(models.Model):
                 False,
                 debit,
                 credit,
-                'Refund Agent Admin Fee for %s' % (self.referenced_document),
+                'Refund Agent Admin Fee for %s (Ref PNR: %s)' % (self.referenced_document, self.referenced_pnr),
                 **{'refund_id': self.id}
             )
 
@@ -522,6 +569,26 @@ class TtRefund(models.Model):
             'done_uid': self.env.user.id,
             'done_date': datetime.now()
         })
+
+        try:
+            mail_created = self.env['tt.email.queue'].sudo().search(
+                [('res_id', '=', self.id), ('res_model', '=', self._name), ('type', '=', 'refund_done')],
+                limit=1)
+            if not mail_created:
+                temp_data = {
+                    'provider_type': 'refund',
+                    'order_number': self.name,
+                    'type': 'done',
+                }
+                temp_context = {
+                    'co_agent_id': self.agent_id.id
+                }
+                self.env['tt.email.queue'].create_email_queue(temp_data, temp_context)
+            else:
+                _logger.info('Refund Done email for {} is already created!'.format(self.name))
+                raise Exception('Refund Done email for {} is already created!'.format(self.name))
+        except Exception as e:
+            _logger.info('Error Create Email Queue')
 
     def cancel_refund_from_button(self):
         if self.state in ['validate', 'final']:
@@ -750,4 +817,3 @@ class TtRefund(models.Model):
         }
         return url
         # return refund_printout_id.report_action(self, data=datas)
-

@@ -580,7 +580,7 @@ class IssuedOffline(models.Model):
 
         try:
             if self.agent_type_id.is_send_email_issued:
-                mail_created = self.env['tt.email.queue'].sudo().search([('res_id', '=', self.id), ('res_model', '=', self._name), ('type', '=', 'issued_offline')], limit=1)
+                mail_created = self.env['tt.email.queue'].sudo().with_context({'active_test':False}).search([('res_id', '=', self.id), ('res_model', '=', self._name), ('type', '=', 'issued_offline')], limit=1)
                 if not mail_created:
                     temp_data = {
                         'provider_type': 'offline',
