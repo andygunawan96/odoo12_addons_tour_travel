@@ -60,5 +60,12 @@
             <field name="prefix">PQP.%(day)s%(sec)s</field>
             <field name="padding">3</field>
         </record>
+
+        <record id="seq_external_payment" model="ir.sequence">
+            <field name="name">External Payment</field>
+            <field name="code">tt.agent.third.party.key.payment</field>
+            <field name="prefix">EXT.%(y)s%(month)s%(day)s%(sec)s</field>
+            <field name="padding">3</field>
+        </record>
     </data>
 </odoo>

@@ -4,7 +4,10 @@ from dateutil.relativedelta import relativedelta
 from datetime import datetime, date, timedelta
 from ...tools import variables
 import base64,pytz
-import logging
+from ...tools.ERR import RequestException
+from ...tools import util,ERR
+import logging,traceback
+import json
 
 _logger = logging.getLogger(__name__)
 
@@ -166,6 +169,8 @@ class TtRefund(models.Model):
     printout_refund_id = fields.Many2one('tt.upload.center', 'Refund Printout', readonly=True)
     printout_refund_est_id = fields.Many2one('tt.upload.center', 'Refund Printout Est', readonly=True)
 
+    created_by_api = fields.Boolean('Created By API', default=False, readonly=True)
+
     @api.model
     def create(self, vals_list):
         vals_list['name'] = self.env['ir.sequence'].next_by_code(self._name)
@@ -268,7 +273,6 @@ class TtRefund(models.Model):
             'confirm_date': datetime.now(),
             'refund_date_ho': estimate_refund_date,
         })
-
         for rec in self.refund_line_ids:
             rec.set_to_confirm()
 
@@ -813,4 +817,3 @@ class TtRefund(models.Model):
         }
         return url
         # return refund_printout_id.report_action(self, data=datas)
-

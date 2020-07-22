@@ -4,6 +4,7 @@ from ...tools import ERR,variables,util
 from odoo.exceptions import UserError
 from datetime import datetime
 from ...tools.ERR import RequestException
+import uuid
 
 _logger = logging.getLogger(__name__)
 
@@ -60,6 +61,8 @@ class TtAgent(models.Model):
     quota_amount = fields.Integer('Quota', compute='_compute_quota_amount', store=True, readonly=True)
     quota_total_duration = fields.Date('Max Duration', compute='_compute_quota_duration',store=True, readonly=True)
     is_send_refund_email_cust = fields.Boolean('Send Refund Email to Customer', default=False)
+
+    third_party_key_ids = fields.One2many('tt.agent.third.party.key','agent_id','Third Party Key')
 
     # TODO VIN:tnyakan creator
     # 1. Image ckup 1 ae (logo)
@@ -569,6 +572,24 @@ class TtAgent(models.Model):
             _logger.error(traceback.format_exc())
             return ERR.get_error(1012,additional_message="PNR Price List")
 
+
+    def generate_rodexshop_key(self):
+        if not self.env.user.agent_id.id == self.id:
+            raise UserError("Can only generate for own agent.")
+        if not self.third_party_key_ids.filtered(lambda x: x.name == 'RodexShop External Key'):
+            key_exist =True
+            key = ''
+            while(key_exist):
+                key = uuid.uuid4().hex
+                exist_key_list = self.env['tt.agent.third.party.key'].sudo().search([('key','=',key)])
+                if not exist_key_list:
+                    key_exist = False
+
+            self.env['tt.agent.third.party.key'].sudo().create({
+                'name': 'RodexShop External Key',
+                'key': key,
+                'agent_id': self.id,
+            })
 
 class AgentTarget(models.Model):
     _inherit = ['tt.history']
