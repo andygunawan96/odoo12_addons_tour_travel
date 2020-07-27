@@ -519,6 +519,14 @@ class PrintoutPPOBBillsForm(models.AbstractModel):
                     ppob_type = 'notaglispln'
                     values = self.get_non_electricity_bills(rec)
 
+            if rec.provider_booking_ids[0].customer_number:
+                va_number = rec.provider_booking_ids[0].customer_number
+                va_length = len(va_number) if rec.pnr else len(va_number)
+                if va_length > 27:
+                    header_width += 3 * (abs(27 - va_length))
+                    if header_width > 105:
+                        header_width = 105
+
             values.update({
                 'ppob_type': ppob_type
             })
@@ -959,6 +967,10 @@ class PrintoutInvoiceHO(models.AbstractModel):
             pax_data = self.get_invoice_data(rec, data.get('context'), data)
             values[rec.id].append(pax_data)
             pnr_length = len(rec.pnr) if rec.pnr else len(rec.name)
+            if pnr_length > 27:
+                header_width += 3 * (abs(27 - pnr_length))
+                if header_width > 105:
+                    header_width = 105
         ho_obj = self.env['tt.agent'].sudo().search([('agent_type_id', '=', self.env.ref('tt_base.agent_type_ho').id)], limit=1)
         vals = {
             'doc_ids': data['context']['active_ids'],
