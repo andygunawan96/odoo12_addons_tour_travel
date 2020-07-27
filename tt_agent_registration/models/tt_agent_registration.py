@@ -36,12 +36,12 @@ class AgentRegistration(models.Model):
     name = fields.Char('Name', default='', readonly=True, states={'draft': [('readonly', False)], 'confirm': [('readonly', False)]})
     image = fields.Binary('Image', store=True)
     state = fields.Selection(STATE, 'State', default='draft',
-                             help='''draft = Requested
-                                     confirm = HO Accepted
-                                     progress = HO Processing
-                                     payment = Payment
-                                     validate = Validate
-                                     done = Done''')
+                             help='''draft = Draft status is used for Agent to make Agent Registration request.
+                                     confirm = Confirm status is used for HO to confirm and process the request.
+                                     surveying = Surveying status is used for HO to survey the location (if needed)
+                                     payment = Payment status is used for HO to make the payment progress
+                                     validate = Validate status is used for HO to validate the request
+                                     done = Done status means the request has been done''')
     active = fields.Boolean('Active', default=True)
     parent_agent_id = fields.Many2one('tt.agent', string="Parent Agent", Help="Agent who became Parent of This Agent",
                                       readonly=True)
@@ -85,8 +85,6 @@ class AgentRegistration(models.Model):
     business_license = fields.Char('Business License')
     tax_identity_number = fields.Char('NPWP')
 
-    # agent_type_id = fields.Many2one('tt.agent.type', 'Agent Type', readonly=True, required=True,
-    #                                 states={'draft': [('readonly', False)]})
     reference_id = fields.Many2one('tt.agent', 'Reference', readonly=True, default=lambda self: self.env.user.agent_id)
     agent_level = fields.Integer('Agent Level', readonly=True)
 
@@ -478,7 +476,7 @@ class AgentRegistration(models.Model):
             self.currency_id.id,
             self.env.user.id,
             self.parent_agent_id.id,
-            self.parent_agent_id.customer_parent_walkin_id.id,
+            False,
             0,
             self.total_fee,
             'Ledger for ' + self.name

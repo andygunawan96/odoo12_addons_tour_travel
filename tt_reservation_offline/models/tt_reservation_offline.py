@@ -73,9 +73,9 @@ class IssuedOffline(models.Model):
                                                                                  'pending': [('readonly', False)]})
 
     # 171121 CANDY: add field pnr, commission 80%, nta, nta 80%
-    agent_commission = fields.Monetary('Agent Commission', readonly=True, compute='_get_agent_commission')
-    parent_agent_commission = fields.Monetary('Parent Agent Commission', readonly=True, compute='_get_agent_commission')
-    ho_commission = fields.Monetary('HO Commission', readonly=True, compute='_get_agent_commission')
+    agent_commission = fields.Monetary('Agent Commission', readonly=True, compute='_get_agent_commission', store=True)
+    parent_agent_commission = fields.Monetary('Parent Agent Commission', readonly=True, compute='_get_agent_commission', store=True)
+    ho_commission = fields.Monetary('HO Commission', readonly=True, compute='_get_agent_commission', store=True)
     # states={'draft': [('readonly', False)], 'confirm': [('readonly', False)]})
     nta_price = fields.Monetary('NTA Price', readonly=True, compute='_get_nta_price', store=True)
     agent_nta_price = fields.Monetary('Agent Price', readonly=True, compute='_get_agent_price')
@@ -1128,6 +1128,10 @@ class IssuedOffline(models.Model):
     def compute_final_ho(self):
         for rec in self:
             rec.ho_final_amount = rec.nta_price - rec.vendor_amount
+
+    def recompute_comm(self):
+        for rec in self:
+            rec._get_agent_commission()
 
     @api.onchange('contact_id')
     def _filter_customer_parent(self):
