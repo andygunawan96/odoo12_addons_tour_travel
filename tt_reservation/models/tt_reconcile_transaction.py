@@ -81,7 +81,8 @@ class TtReconcileTransactionLines(models.Model):
     transaction_code = fields.Char('Transaction Code',readonly=True)
     type = fields.Selection([('nta','NTA'),
                              ('insentif','Insentif'),
-                             ('top_up','Top Up')],'Type', readonly=True)
+                             ('top_up','Top Up'),
+                             ('refund','Refund')],'Type', readonly=True)
     booking_time = fields.Datetime('Booking Time',readonly=True)
     issued_time = fields.Datetime('Issued Time',readonly=True)
     base_price = fields.Monetary('Base Price',readonly=True)
