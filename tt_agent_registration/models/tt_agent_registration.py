@@ -61,6 +61,13 @@ class AgentRegistration(models.Model):
             if rec.agent_type_id.id == self.reference_id.agent_type_id.id:
                 if rec.start_date <= date.today() <= rec.end_date:
                     promotions_list.append(rec.id)
+        if not promotions_list:
+            promotion_obj = self.env['tt.agent.registration.promotion'].search([
+                ('agent_type_id', '=', self.env.ref('tt_base.agent_type_ho').id),
+                ('default', '=', True)
+            ], limit=1)
+            if promotion_obj:
+                promotions_list.append(promotion_obj.id)
         return [('id', 'in', promotions_list)]
 
     promotion_id = fields.Many2one('tt.agent.registration.promotion', 'Promotion', readonly=True, required=False,
@@ -295,14 +302,38 @@ class AgentRegistration(models.Model):
                     _logger.info('Mulai promotion line ids')
                     for commission_line in commission.line_ids:
                         line = {
-                            'agent_type_id': commission_line.agent_type_id.name,
+                            'agent_type_id': commission_line.agent_type_id.id,
+                            'agent_type_name': commission_line.agent_type_id.name,
                             'amount': commission_line.amount
                         }
                         comm['lines'].append(line)
                     _logger.info('Proses promotion line ids selesai')
                     val['commission'].append(comm)
+
                 _logger.info('Proses promotion agent type ids selesai')
                 res.append(val)
+
+            _logger.info('Melakukan pengecekan jika response kosong')
+            if not res:
+                _logger.info('Response kosong. Input Normal Price.')
+                # Jika agent type tidak memiliki promotion, maka hanya return Normal Price (tanpa komisi)
+                normal_price_promotion = promotion_env.search([
+                    ('agent_type_id', '=', self.env.ref('tt_base.agent_type_ho').id),
+                    ('default', '=', True)
+                ], limit=1)
+
+                val = {
+                    'id': normal_price_promotion.id,
+                    'name': normal_price_promotion.name,
+                    'agent_type': normal_price_promotion.agent_type_id.name,
+                    'start_date': normal_price_promotion.start_date.strftime("%Y-%m-%d"),
+                    'end_date': normal_price_promotion.end_date.strftime("%Y-%m-%d"),
+                    'default_commission': normal_price_promotion.default,
+                    'description': normal_price_promotion.description,
+                    'commission': []
+                }
+                res.append(val)
+            print(res)
             res = Response().get_no_error(res)
             return res
         except Exception as e:
@@ -916,6 +947,7 @@ class AgentRegistration(models.Model):
             for rec in self.env['tt.agent.type'].search([('can_be_registered','=',True)]):
                 agent_type.append({
                     'name': rec.name,
+                    'recruitment_fee': rec.recruitment_fee,
                     'is_allow_regis': rec.can_register_agent,
                     'terms_and_condition': rec.terms_and_condition,
                     'product': [{'title': rec2.title, 'benefit': rec2.benefit} for rec2 in rec.benefit]
