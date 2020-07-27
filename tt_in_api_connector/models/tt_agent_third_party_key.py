@@ -18,6 +18,8 @@ class EmailApiCon(models.Model):
             res = table_obj.external_payment_api(data,context)
         elif action == 'reverse_payment':
             res = table_obj.external_reverse_payment_api(data, context)
+        elif action == 'disconnect_key':
+            res = table_obj.external_disconnect_key_api(data, context)
         else:
             raise RequestException(999)
         return res
