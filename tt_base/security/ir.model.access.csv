@@ -28,6 +28,7 @@ access_tt_agent_for_agent_user_supervisor,tt.agent.for.agent.user.supervisor,mod
 access_tt_agent_for_agent_user_manager,tt.agent.for.agent.user.manager,model_tt_agent,group_tt_agent_user_manager,1,1,0,0
 
 access_tt_agent_third_party_key_for_agent_user_operator,access.tt.agent.third.party.key.for.agent.user.operator,model_tt_agent_third_party_key,group_tt_agent_user_operator,1,1,0,0
+access_tt_agent_third_party_key_for_tour_travel_operator,access.tt.agent.third.party.key.for.tour.travel.operator,model_tt_agent_third_party_key,group_tt_tour_travel_operator,1,0,0,0
 access_tt_agent_third_party_key_for_admin,access.tt.agent.third.party.key.for.admin,model_tt_agent_third_party_key,base.user_admin,1,1,1,0
 
 access_tt_customer_for_public,tt.customer.for.public,model_tt_customer,,1,0,0,0

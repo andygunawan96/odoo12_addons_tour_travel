@@ -43,7 +43,10 @@ class TtAgentThirdPartyKey(models.Model):
     def external_get_balance_api(self,req,context):
         key_obj = self.validate_key(req)
         if key_obj:
-            return ERR.get_no_error({'balance': key_obj.agent_id.balance})
+            return ERR.get_no_error({
+                'balance': key_obj.agent_id.balance,
+                'currency_code': key_obj.agent_id.currency_id.name
+            })
         raise RequestException(1033)
 
     def external_payment_api(self,req,context):
