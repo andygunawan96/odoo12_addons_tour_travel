@@ -159,7 +159,7 @@ class TtAdjustment(models.Model):
             self.customer_parent_id.id,
             debit,
             credit,
-            'Adjustment for %s' % (self.referenced_document),
+            'Adjustment for %s, by %s' % (self.referenced_document,self.name),
             **{'adjustment_id': self.id}
         )
 

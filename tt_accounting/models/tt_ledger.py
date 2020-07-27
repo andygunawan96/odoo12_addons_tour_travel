@@ -123,8 +123,8 @@ class Ledger(models.Model):
 
         if kwargs:
             vals.update(kwargs)
-        self.create(vals)
-        return True
+        new_ledger = self.create(vals)
+        return new_ledger
 
     def reverse_ledger(self):
         # 3
@@ -157,6 +157,7 @@ class Ledger(models.Model):
             'reverse_id': reverse_id.id,
             'is_reversed': True,
         })
+        return reverse_id
 
     @api.model
     def create(self, vals_list):

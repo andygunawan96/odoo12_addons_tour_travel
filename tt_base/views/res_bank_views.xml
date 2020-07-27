@@ -76,11 +76,6 @@
             </field>
         </record>
 
-        <!--<menuitem id="menu_action_agent_bank_detail_form"-->
-                  <!--parent="tt_base.sub_menu_tour_travel_configuration"-->
-                  <!--groups="base.group_user"-->
-                  <!--name="Agent Bank" sequence="5" action="agent_bank_detail_action"/>-->
-
         <menuitem id="sub_menu_item_tour_travel_res_bank"
                   parent="tt_base.menu_tour_travel_configuration_bank"
                   groups="base.group_user"
