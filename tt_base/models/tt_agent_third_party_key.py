@@ -40,6 +40,13 @@ class TtAgentThirdPartyKey(models.Model):
             })
         raise RequestException(1033)
 
+    def external_disconnect_key_api(self,req,context):
+        key_obj = self.validate_key(req)
+        if key_obj:
+            key_obj.active = False
+            return ERR.get_no_error()
+        raise RequestException(1033)
+
     def external_get_balance_api(self,req,context):
         key_obj = self.validate_key(req)
         if key_obj:
