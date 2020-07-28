@@ -1130,9 +1130,13 @@ class IssuedOffline(models.Model):
             rec.ho_final_amount = rec.nta_price - rec.vendor_amount
 
     def recompute_comm(self):
-        offline_rec = self.env['tt.reservation.offline'].search([('create_date', '<=', datetime(2020, 7, 22))])
+        self._get_agent_commission()
+
+    def recompute_comm_mass(self):
+        offline_rec = self.env['tt.reservation.offline'].search([('create_date', '<=', datetime(2020, 7, 19))])
         for rec in offline_rec:
             rec._get_agent_commission()
+            _logger.info(rec.id)
 
     @api.onchange('contact_id')
     def _filter_customer_parent(self):

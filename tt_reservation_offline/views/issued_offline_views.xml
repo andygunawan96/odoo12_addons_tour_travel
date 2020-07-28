@@ -108,6 +108,7 @@
                         <!--                        <button string="Print Invoice Ticket" name="print_invoice_ticket" type="object" states="paid,posted"/>-->
                         <!--                        <button string="Get Config API" name="get_config_api" type="object"/>-->
                         <button string="Recompute Commission" name="recompute_comm" type="object" groups="base.user_admin"/>
+                        <button string="Recompute Commission Mass" name="recompute_comm_mass" type="object" groups="base.user_admin"/>
                         <field name="state_offline" widget="statusbar" statusbar_visible="draft,confirm,sent,validate,done"/>
                     </header>
                     <sheet>
