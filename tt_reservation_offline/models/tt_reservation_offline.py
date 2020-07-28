@@ -1020,7 +1020,7 @@ class IssuedOffline(models.Model):
                 else:
                     provider_type_id = self.env['tt.provider.type'].sudo().search([('code', '=', 'offline')], limit=1)
 
-                if not self.split_to_resv_ids:
+                if not rec.split_to_resv_ids:
                     """ hitung fee amount di sini """
                     for line in rec.line_ids:
                         if rec.offline_provider_type in ['airline', 'train']:
@@ -1082,7 +1082,7 @@ class IssuedOffline(models.Model):
                 else:
                     commission_list = []
                     """ Jika belum di split, compute commission dari pricing di provider """
-                    for provider in self.provider_booking_ids:
+                    for provider in rec.provider_booking_ids:
                         for scs in provider.cost_service_charge_ids:
                             scs_val = scs.to_dict()
                             if scs.charge_type != 'FARE':
