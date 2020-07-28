@@ -22,6 +22,7 @@ class TtReconcileManualMatchWizard(models.TransientModel):
                 ('issued_date', '=', recon_line_obj.reconcile_transaction_id.transaction_date)
             ]
             if self._context.get('offline_provider'):
+                search_domain[2] = ('pnr', 'ilike', recon_line_obj.pnr)
                 provider_type = self.env['tt.provider.offline'].search(search_domain)
             else:
                 provider_type = self.env['tt.provider.%s' % (self._context['default_provider_type_code'])].search(search_domain)
