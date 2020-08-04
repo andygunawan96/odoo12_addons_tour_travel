@@ -288,7 +288,11 @@ class PrintoutVoucherHotelForm(models.AbstractModel):
                 elif rec2.charge_type.lower() in ['roc', 'tax']:
                     a[rec2.pax_type]['tax'] += rec2.amount
             values[rec.id] = [a[new_a] for new_a in a]
-            pnr_length = len(rec.pnr)
+            pnr_length = len(rec.pnr) if rec.pnr else len(rec.name)
+            if pnr_length > 27:
+                header_width += 3 * (abs(27 - pnr_length))
+                if header_width > 105:
+                    header_width = 105
         vals = {
             'doc_ids': data['context']['active_ids'],
             'doc_model': data['context']['active_model'],
@@ -535,6 +539,7 @@ class PrintoutPPOBBillsForm(models.AbstractModel):
             'doc_model': data['context']['active_model'],
             'docs': self.env[data['context']['active_model']].browse(data['context']['active_ids']),
             'values': values,
+            'pnr_length': va_length,
             'header_width': str(header_width),
             'date_now': fields.Date.today().strftime('%d %b %Y'),
             'base_color': self.sudo().env['ir.config_parameter'].get_param('tt_base.website_default_color',
