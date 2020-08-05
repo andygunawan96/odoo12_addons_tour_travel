@@ -102,56 +102,87 @@
             <span style="padding-left: 20px; color: white; font-weight: 600; font-size: 18px">Hotel name: <span t-field="doc.hotel_name"/></span><br/>
             <span style="padding-left: 20px; color: white; font-weight: 600; font-size: 16px">Address: <span t-field="doc.hotel_address"/></span>
         </div>
-        <div class="row" style="margin: 0px; margin-bottom: 40px; font-size: 14px;">
-            <div class="col-6" style="border-radius: 0 0 0px 20px; border: 1px solid #BBB; padding: 10px 2px;">
-                <div class="row" style="margin: 0px; padding:0px;">
-                    <div class="col-4">
-                        <b>
-                            <span>Phone</span><br/>
-                            <!--<span>Agent Ref. #</span><br/>-->
-                            <span>Hotel Confirm</span><br/>
-                            <span>CheckIn Date</span><br/>
-                            <span>Numb. Night</span><br/>
-                        </b>
-                    </div>
-                    <div class="col-1">
-                        <span>:</span>
-                        <span>:</span>
-                        <span>:</span>
-                        <span>:</span>
-                    </div>
-                    <div class="col-6">
-                        <t t-if="doc.hotel_phone"><span t-field="doc.hotel_phone"/></t><t t-else="">-</t><br/>
-                        <!--<span t-field="doc.room_detail_ids[0].name"/><br/>-->
-                        <span t-field="doc.room_detail_ids[0].issued_name"/><br/>
-                        <span t-field="doc.checkin_date"/><br/>
-                        <span t-field="doc.nights"/><br/>
-                    </div>
-                </div>
+        <div style="max-width:100%; border:solid 1px #CCC; display:table; height: auto; border-radius: 0px 0px 20px 20px; padding: 10px 2px; margin-bottom: 40px; font-size: 14px;">
+            <div style="display:table-cell; width:50%;">
+                <table style="table-layout: fixed; width: 100%">
+                    <tr style="vertical-align: top;">
+                        <td style="width: 40%;">
+                            <span style="padding-left: 20px; font-weight: 700;">Phone</span>
+                        </td>
+                        <td style="width: 5%;"> : </td>
+                        <td style="width: 55%; word-wrap: break-word">
+                            <t t-if="doc.hotel_phone"><span t-field="doc.hotel_phone"/></t><t t-else="">-</t>
+                        </td>
+                    </tr>
+                    <tr style="vertical-align: top;">
+                        <td style="width: 40%;">
+                            <span style="padding-left: 20px; font-weight: 700;">Hotel Confirm</span>
+                        </td>
+                        <td style="width: 5%;"> : </td>
+                        <td style="width: 55%; word-wrap: break-word">
+                            <span t-field="doc.room_detail_ids[0].issued_name"/>
+                        </td>
+                    </tr>
+                    <tr style="vertical-align: top;">
+                        <td style="width: 40%;">
+                            <span style="padding-left: 20px; font-weight: 700;">CheckIn Date</span>
+                        </td>
+                        <td style="width: 5%;"> : </td>
+                        <td style="width: 55%; word-wrap: break-word">
+                            <span t-field="doc.checkin_date"/>
+                        </td>
+                    </tr>
+                    <tr style="vertical-align: top;">
+                        <td style="width: 40%;">
+                            <span style="padding-left: 20px; font-weight: 700;">Numb. Night</span>
+                        </td>
+                        <td style="width: 5%;"> : </td>
+                        <td style="width: 55%; word-wrap: break-word">
+                            <span t-field="doc.nights"/>
+                        </td>
+                    </tr>
+                </table>
             </div>
-            <div class="col-6" style="border-radius: 0 0 20px 0px; border: 1px solid #BBB; padding: 10px 2px;">
-                <div class="row" style="margin: 0px; padding:0px;">
-                    <div class="col-4">
-                        <b>
-                            <span>Resv</span><br/>
-                            <span>Room Name</span><br/>
-                            <span>CheckOut Date</span><br/>
-                            <span>Num. Room</span><br/>
-                        </b>
-                    </div>
-                    <div class="col-1">
-                        <span>:</span>
-                        <span>:</span>
-                        <span>:</span>
-                        <span>:</span>
-                    </div>
-                    <div class="col-6">
-                        <span t-field="doc.name"/><br/>
-                        <span t-field="doc.room_detail_ids[0].room_name"/><br/>
-                        <span t-field="doc.checkout_date"/><br/>
-                        <span t-field="doc.room_count"/><br/>
-                    </div>
-                </div>
+            <div style="border-left: 1px solid #CCC; height: 100%;"/>
+            <div style="display:table-cell; width: 50%; border-left: 1px solid #CCC;">
+                <table style="table-layout: fixed; width: 100%">
+                    <tr style="vertical-align: top;">
+                        <td style="width: 40%;">
+                            <span style="padding-left: 20px; font-weight: 700;">Resv</span>
+                        </td>
+                        <td style="width: 5%;"> : </td>
+                        <td style="width: 55%; word-wrap: break-word">
+                            <span t-field="doc.name"/>
+                        </td>
+                    </tr>
+                    <tr style="vertical-align: top;">
+                        <td style="width: 40%;">
+                            <span style="padding-left: 20px; font-weight: 700;">Room Name</span>
+                        </td>
+                        <td style="width: 5%;"> : </td>
+                        <td style="width: 55%; word-wrap: break-word">
+                            <span t-field="doc.room_detail_ids[0].room_name"/>
+                        </td>
+                    </tr>
+                    <tr style="vertical-align: top;">
+                        <td style="width: 40%;">
+                            <span style="padding-left: 20px; font-weight: 700;">CheckOut Date</span>
+                        </td>
+                        <td style="width: 5%;"> : </td>
+                        <td style="width: 55%; word-wrap: break-word">
+                            <span t-field="doc.checkout_date"/>
+                        </td>
+                    </tr>
+                    <tr style="vertical-align: top;">
+                        <td style="width: 40%;">
+                            <span style="padding-left: 20px; font-weight: 700;">Num. Room</span>
+                        </td>
+                        <td style="width: 5%;"> : </td>
+                        <td style="width: 55%; word-wrap: break-word">
+                            <span t-field="doc.room_count"/>
+                        </td>
+                    </tr>
+                </table>
             </div>
         </div>
 
@@ -177,14 +208,14 @@
             <hr/>
             <div class="row" style="margin-left: 0px; margin-right: 0px">
                 <div class="col-2" style="text-align: center; border-right: 1px solid #BBB">
-                    <label style="font-weight:450; font-size:17px; margin-bottom: 0px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                    <label style="font-weight:450; font-size:17px; margin-bottom: 0px; overflow: hidden; text-overflow: ellipsis;">
                         <span>Remark(s):</span>
                     </label>
                 </div>
                 <div class="col-9">
                     <t t-set="idx" t-value="1"/>
                     <t t-foreach="doc.room_detail_ids" t-as="room">
-                        <label style="font-weight:450; font-size:17px; margin-bottom: 0px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                        <label style="font-weight:450; font-size:17px; margin-bottom: 0px; overflow: hidden; text-overflow: ellipsis;">
                             Room <t t-esc="idx"/> (<span t-field="room.room_name"/>):
                             <t t-if="room.meal_type">
                                 <span t-field="room.meal_type"/>,
