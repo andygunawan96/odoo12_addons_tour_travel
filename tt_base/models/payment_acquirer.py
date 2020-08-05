@@ -24,8 +24,8 @@ class PaymentAcquirer(models.Model):
     va_fee = fields.Float('VA Fee')
     is_sunday_off = fields.Boolean('Sunday Off')
     is_specific_time = fields.Boolean('Specific Time')
-    start_time = fields.Boolean('Start Time')
-    end_time = fields.Boolean('End Time')
+    start_time = fields.Float(string='Start Time')
+    end_time = fields.Float(string='End Time')
     @api.model
     def create(self, vals_list):
         vals_list['seq_id'] = self.env['ir.sequence'].next_by_code('pay.acq')
