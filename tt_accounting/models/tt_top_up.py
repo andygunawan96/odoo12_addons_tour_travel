@@ -400,7 +400,7 @@ class TtTopUp(models.Model):
             book_obj.printout_top_up_id = upc_id.id
         url = {
             'type': 'ir.actions.act_url',
-            'name': "ZZZ",
+            'name': "Printout",
             'target': 'new',
             'url': book_obj.printout_top_up_id.url,
         }

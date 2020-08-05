@@ -59,7 +59,6 @@ class ResUsers(models.Model):
     _inherit = 'res.users'
 
     agent_id = fields.Many2one('tt.agent', 'Agent', readonly=True)
-    # allowed_customer_ids = fields.Many2many('res.partner', 'Allowed Partners', compute='_compute_allowed_customer_ids')
     language = fields.Selection(LANGUAGE, 'Language')
     transaction_limit = fields.Monetary('Transaction Limit')
     currency_id = fields.Many2one('res.currency', 'Currency')

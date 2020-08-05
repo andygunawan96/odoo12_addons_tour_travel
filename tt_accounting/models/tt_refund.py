@@ -662,7 +662,7 @@ class TtRefund(models.Model):
             self.printout_refund_ho_id = upc_id.id
         url = {
             'type': 'ir.actions.act_url',
-            'name': "ZZZ",
+            'name': "Printout",
             'target': 'new',
             'url': self.printout_refund_ho_id.url,
         }
@@ -712,7 +712,7 @@ class TtRefund(models.Model):
             self.printout_refund_ho_cust_id = upc_id.id
         url = {
             'type': 'ir.actions.act_url',
-            'name': "ZZZ",
+            'name': "Printout",
             'target': 'new',
             'url': self.printout_refund_ho_cust_id.url,
         }
@@ -761,7 +761,7 @@ class TtRefund(models.Model):
             self.printout_refund_id = upc_id.id
         url = {
             'type': 'ir.actions.act_url',
-            'name': "ZZZ",
+            'name': "Printout",
             'target': 'new',
             'url': self.printout_refund_id.url,
         }
@@ -811,7 +811,7 @@ class TtRefund(models.Model):
             self.printout_refund_est_id = upc_id.id
         url = {
             'type': 'ir.actions.act_url',
-            'name': "ZZZ",
+            'name': "Printout",
             'target': 'new',
             'url': self.printout_refund_est_id.url,
         }
