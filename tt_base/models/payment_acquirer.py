@@ -22,7 +22,10 @@ class PaymentAcquirer(models.Model):
     cust_fee = fields.Float('Customer Fee')
     bank_fee = fields.Float('Bank Fee')
     va_fee = fields.Float('VA Fee')
-
+    is_sunday_off = fields.Boolean('Sunday Off')
+    is_specific_time = fields.Boolean('Specific Time')
+    start_time = fields.Boolean('Start Time')
+    end_time = fields.Boolean('End Time')
     @api.model
     def create(self, vals_list):
         vals_list['seq_id'] = self.env['ir.sequence'].next_by_code('pay.acq')
@@ -145,10 +148,17 @@ class PaymentAcquirer(models.Model):
             values = {}
             if context['co_user_login'] != self.env.ref('tt_base.agent_b2c_user').login:
                 for acq in self.sudo().search(dom):
-                    if not values.get(acq.type) and acq.type != 'va' and acq.type != 'payment_gateway':
-                        values[acq.type] = []
-                    if acq.type != 'va' and acq.type != 'payment_gateway':
-                        values[acq.type].append(acq.acquirer_format(amount,unique))
+                    if acq.is_sunday_off == False or acq.is_sunday_off == True and datetime.datetime.now().strftime("%a") == 'Sun':
+                        if acq.is_specific_time == False:
+                            if not values.get(acq.type) and acq.type != 'va' and acq.type != 'payment_gateway':
+                                values[acq.type] = []
+                            if acq.type != 'va' and acq.type != 'payment_gateway':
+                                values[acq.type].append(acq.acquirer_format(amount, unique))
+                        elif acq.start_time <= datetime.now(pytz.timezone('Asia/Jakarta')).hour < acq.end_time:
+                            if not values.get(acq.type) and acq.type != 'va' and acq.type != 'payment_gateway':
+                                values[acq.type] = []
+                            if acq.type != 'va' and acq.type != 'payment_gateway':
+                                values[acq.type].append(acq.acquirer_format(amount,unique))
 
             #payment gateway
             if util.get_without_empty(req, 'order_number'):
@@ -160,16 +170,14 @@ class PaymentAcquirer(models.Model):
                 else:
                     unique = self.generate_unique_amount(amount).lower_number
                 for acq in self.sudo().search(dom):
-                    if not values.get(acq.type):
-                        values[acq.type] = []
-                    if acq.type == 'payment_gateway':
-                        if acq.account_number != '' and req['transaction_type'] != 'top_up':
-                            if 3 <= datetime.now(pytz.timezone('Asia/Jakarta')).hour < 19:
+                    if acq.is_sunday_off == False or acq.is_sunday_off == True and datetime.datetime.now().strftime("%a") == 'Sun':
+                        if not values.get(acq.type):
+                            values[acq.type] = []
+                        if acq.type == 'payment_gateway':
+                            if acq.is_specific_time == False:
                                 values[acq.type].append(acq.acquirer_format(amount, unique))
-                            elif datetime.now(pytz.timezone('Asia/Jakarta')).hour == 19 and datetime.now(pytz.timezone('Asia/Jakarta')).minute < 50:
+                            elif acq.start_time <= datetime.now(pytz.timezone('Asia/Jakarta')).hour < acq.end_time:
                                 values[acq.type].append(acq.acquirer_format(amount, unique))
-                        elif acq.account_number == '':
-                            values[acq.type].append(acq.acquirer_format(amount, 0))
             res = {}
             res['non_member'] = values
             res['member'] = {}
