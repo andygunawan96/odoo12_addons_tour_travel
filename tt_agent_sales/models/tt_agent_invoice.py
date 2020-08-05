@@ -277,7 +277,7 @@ class AgentInvoice(models.Model):
                     invoice.invoice_id.printout_invoice_id = upc_id.id
                 url.append({
                     'type': 'ir.actions.act_url',
-                    'name': "ZZZ",
+                    'name': "Printout",
                     'target': 'new',
                     'url': invoice.invoice_id.printout_invoice_id.url,
                 })
@@ -326,7 +326,7 @@ class AgentInvoice(models.Model):
             self.printout_invoice_id = upc_id.id
         url = {
             'type': 'ir.actions.act_url',
-            'name': "ZZZ",
+            'name': "Printout",
             'target': 'new',
             'url': self.printout_invoice_id.url,
         }

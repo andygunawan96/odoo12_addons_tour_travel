@@ -1895,7 +1895,7 @@ class IssuedOffline(models.Model):
             self.printout_ho_invoice_id = upc_id.id
         url = {
             'type': 'ir.actions.act_url',
-            'name': "ZZZ",
+            'name': "Printout",
             'target': 'new',
             'url': self.printout_ho_invoice_id.url,
         }
