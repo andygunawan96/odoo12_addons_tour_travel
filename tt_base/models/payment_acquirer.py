@@ -1,4 +1,5 @@
 from odoo import api, fields, models, _
+from odoo.exceptions import UserError
 import json,random
 import traceback,logging
 from ...tools import variables
@@ -52,6 +53,12 @@ class PaymentAcquirer(models.Model):
         lost_or_profit = cust_fee-bank_fee
 
         return lost_or_profit,cust_fee, uniq
+
+    @api.onchange('start_time', 'end_time')
+    def check_start_end_time(self):
+        if self.start_time and self.end_time:
+            if self.start_time > self.end_time:
+                raise UserError(_('End Date cannot be lower than Start TIme.'))
 
     def acquirer_format(self, amount,unique):
         # NB:  CASH /payment/cash/feedback?acq_id=41
@@ -154,7 +161,12 @@ class PaymentAcquirer(models.Model):
                                 values[acq.type] = []
                             if acq.type != 'va' and acq.type != 'payment_gateway':
                                 values[acq.type].append(acq.acquirer_format(amount, unique))
-                        elif acq.start_time <= datetime.now(pytz.timezone('Asia/Jakarta')).hour < acq.end_time:
+                        elif int(str(acq.start_time).split('.')[0]) <= datetime.now(pytz.timezone('Asia/Jakarta')).hour < int(str(acq.end_time).split('.')[0]):
+                            if not values.get(acq.type) and acq.type != 'va' and acq.type != 'payment_gateway':
+                                values[acq.type] = []
+                            if acq.type != 'va' and acq.type != 'payment_gateway':
+                                values[acq.type].append(acq.acquirer_format(amount,unique))
+                        elif int(str(acq.end_time).split('.')[0]) == datetime.now(pytz.timezone('Asia/Jakarta')).hour and datetime.now(pytz.timezone('Asia/Jakarta')).minute < int(str(acq.end_time).split('.')[1]):
                             if not values.get(acq.type) and acq.type != 'va' and acq.type != 'payment_gateway':
                                 values[acq.type] = []
                             if acq.type != 'va' and acq.type != 'payment_gateway':
@@ -176,7 +188,9 @@ class PaymentAcquirer(models.Model):
                         if acq.type == 'payment_gateway':
                             if acq.is_specific_time == False:
                                 values[acq.type].append(acq.acquirer_format(amount, unique))
-                            elif acq.start_time <= datetime.now(pytz.timezone('Asia/Jakarta')).hour < acq.end_time:
+                            elif int(str(acq.start_time).split('.')[0]) <= datetime.now(pytz.timezone('Asia/Jakarta')).hour < int(str(acq.end_time).split('.')[0]):
+                                values[acq.type].append(acq.acquirer_format(amount, unique))
+                            elif int(str(acq.end_time).split('.')[0]) == datetime.now(pytz.timezone('Asia/Jakarta')).hour and datetime.now(pytz.timezone('Asia/Jakarta')).minute < int(str(acq.end_time).split('.')[1]):
                                 values[acq.type].append(acq.acquirer_format(amount, unique))
             res = {}
             res['non_member'] = values

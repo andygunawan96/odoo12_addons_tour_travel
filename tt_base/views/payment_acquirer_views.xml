@@ -50,6 +50,16 @@
                                 <field name="va_fee" attrs="{'invisible': [('type','not in',['va','payment_gateway'])]}"/>
                             </group>
                         </group>
+                        <group name="acquirer_base2">
+                            <group>
+                                <field name="is_sunday_off"/>
+                                <field name="is_specific_time"/>
+                            </group>
+                            <group>
+                                <field name="start_time" attrs="{'invisible': [('is_specific_time','=',False)]}" widget="float_time"/>
+                                <field name="end_time" attrs="{'invisible': [('is_specific_time','=',False)]}" widget="float_time"/>
+                            </group>
+                        </group>
                     </sheet>
                 </form>
             </field>
