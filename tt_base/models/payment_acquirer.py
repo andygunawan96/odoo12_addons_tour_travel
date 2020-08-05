@@ -155,7 +155,7 @@ class PaymentAcquirer(models.Model):
             values = {}
             if context['co_user_login'] != self.env.ref('tt_base.agent_b2c_user').login:
                 for acq in self.sudo().search(dom):
-                    if acq.is_sunday_off == False or acq.is_sunday_off == True and datetime.datetime.now().strftime("%a") == 'Sun':
+                    if acq.is_sunday_off == False or (acq.is_sunday_off == True and datetime.now(pytz.timezone('Asia/Jakarta')).strftime("%a") != 'Sun'):
                         if acq.is_specific_time == False:
                             if not values.get(acq.type) and acq.type != 'va' and acq.type != 'payment_gateway':
                                 values[acq.type] = []
@@ -182,7 +182,7 @@ class PaymentAcquirer(models.Model):
                 else:
                     unique = self.generate_unique_amount(amount).lower_number
                 for acq in self.sudo().search(dom):
-                    if acq.is_sunday_off == False or acq.is_sunday_off == True and datetime.datetime.now().strftime("%a") == 'Sun':
+                    if acq.is_sunday_off == False or (acq.is_sunday_off == True and datetime.now(pytz.timezone('Asia/Jakarta')).strftime("%a") != 'Sun'):
                         if not values.get(acq.type):
                             values[acq.type] = []
                         if acq.type == 'payment_gateway':
