@@ -2,14 +2,15 @@ from odoo import api,models,fields
 from datetime import datetime
 from odoo.exceptions import UserError
 
+
 class TtReconcileTransactionWizard(models.TransientModel):
     _name = "tt.reconcile.transaction.wizard"
     _description = 'Rodex Wizard Reconcile Transaction Wizard'
 
     provider_type_id = fields.Many2one('tt.provider.type', 'Provider Type')
-    provider_id = fields.Many2one('tt.provider', 'Provider', domain="[('provider_type_id', '=', provider_type_id)]")
-    date_from = fields.Date('Date')
-    date_to = fields.Date('Date')
+    provider_id = fields.Many2one('tt.provider', 'Provider', domain="[('provider_type_id', '=', provider_type_id),('is_reconcile','=',True)]")
+    date_from = fields.Date('Start Date')
+    date_to = fields.Date('End Date')
 
     @api.onchange('provider_type_id')
     def _onchange_domain_agent_id(self):
@@ -81,3 +82,19 @@ class TtReconcileTransactionWizard(models.TransientModel):
             recon_data.write({
                 'reconcile_lines_ids': write_data
             })
+
+    # TODO: pindah kan ke lokasi yg tepat
+    def reconcile_internal_vendor(self, req):
+        '''
+        :param req:{
+            'type': 'airline', #Opsi = ['airline', 'hotel', 'train', 'event']
+            'from_date': '2020-07-21', #YYYY-MM-DD
+            'to_date': '2020-07-22', #YYYY-MM-DD
+        }
+        :return:
+        '''
+        self.env['tt.reservation.' + req['type']].search([
+            ('issued_date', '<=', req['from_date']), ('issued_date', '>=', req['to_date']),
+            ('reconcile_state', '=', 'reconciled')
+        ])
+        return True

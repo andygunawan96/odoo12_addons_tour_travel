@@ -103,4 +103,17 @@ class TtCronLog(models.Model):
             self.create_cron_log_folder()
             self.write_cron_log('auto-expired payment acquirer number')
 
+    def cron_auto_reconcile(self):
+        try:
+            for provider_obj in self.env['tt.provider'].search([('is_reconcile', '=', True)]):
+                wiz_obj = self.env['tt.reconcile.transaction.wizard'].create({
+                    'provider_type_id': provider_obj.provider_type_id.id,
+                    'provider_id': provider_obj.id,
+                    'date_from': datetime.now() - timedelta(days=1), #klo hari ini tgl 23 Jan 00:00 liat record e 22 Jan
+                    'date_to': datetime.now() - timedelta(days=1),
+                })
+                wiz_obj.send_recon_request_data()
+        except:
+            self.create_cron_log_folder()
+            self.write_cron_log('cron_auto_reconcile')
 
