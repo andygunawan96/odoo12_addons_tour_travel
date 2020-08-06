@@ -221,6 +221,8 @@ class PaymentAcquirer(models.Model):
                     unique = self.generate_unique_amount(amount).lower_number
                 for acq in self.sudo().search(dom):
                     # self.test_validate(acq) utk testing saja
+                    if not values.get(acq.type):
+                        values[acq.type] = []
                     if self.validate_time(acq,now_time):
                         values[acq.type].append(acq.acquirer_format(amount, unique))
 
