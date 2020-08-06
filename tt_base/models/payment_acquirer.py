@@ -203,11 +203,11 @@ class PaymentAcquirer(models.Model):
             now_time = datetime.now(pytz.timezone('Asia/Jakarta'))
             if context['co_user_login'] != self.env.ref('tt_base.agent_b2c_user').login:
                 for acq in self.sudo().search(dom):
-                    if not values.get(acq.type) and acq.type != 'va' and acq.type != 'payment_gateway':
-                        values[acq.type] = []
                     if acq.type != 'va' and acq.type != 'payment_gateway':
                         # self.test_validate(acq) utk testig saja
                         if self.validate_time(acq, now_time):
+                            if not values.get(acq.type):
+                                values[acq.type] = []
                             values[acq.type].append(acq.acquirer_format(amount, unique))
 
             # payment gateway
@@ -221,9 +221,9 @@ class PaymentAcquirer(models.Model):
                     unique = self.generate_unique_amount(amount).lower_number
                 for acq in self.sudo().search(dom):
                     # self.test_validate(acq) utk testing saja
-                    if not values.get(acq.type):
-                        values[acq.type] = []
                     if self.validate_time(acq,now_time):
+                        if not values.get(acq.type):
+                            values[acq.type] = []
                         values[acq.type].append(acq.acquirer_format(amount, unique))
 
             res = {}
