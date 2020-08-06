@@ -142,6 +142,38 @@ class PaymentAcquirer(models.Model):
                 values['va'].append(self.acquirer_format_VA(acq, 0, 0))
         return ERR.get_no_error(values)
 
+    def convert_time_to_float(self,time):
+        str_time = time.strftime("%H:%M").split(':')
+        float_time = int(str_time[0]) + (float(str_time[1])/60)
+        return float_time
+
+    def validate_time(self,acq,now_time):
+        ## yang vlaid adalah yang tidak off mingu atau jika minggu of hari ini bukan hari minggu
+        if acq.is_sunday_off == False or (acq.is_sunday_off == True and now_time.strftime("%a") != 'Sun'):
+            #jika check jam
+            if acq.is_specific_time:
+                #convert jam sekarang %M:%S ke float, 16:41 ke 16.0,683333333
+                now_float_time = self.convert_time_to_float(now_time)
+                overnight = acq.start_time > acq.end_time # jika overnight seperti jam 4 sore hingga 11 pagi, 16 - 11
+                if overnight:
+                    return not acq.end_time < now_float_time < acq.start_time #return True jika di luar jam 11 pagi hingga 16 sore
+                else:
+                    return acq.start_time <= now_float_time <= acq.end_time
+
+            return True
+        return False
+
+    ## test function for payment acquirer
+    def test_validate(self,acq):
+        print(acq.name + " " + str(acq.start_time) + " " + str(acq.end_time))
+        test_case = []
+        for hour in range (24):
+            for minute in range (60):
+                cur_val = datetime.strptime("2020-08-03 %s:%s:30" % (hour,minute),'%Y-%m-%d %H:%M:%S')
+                test_case.append(cur_val)
+                print(str(cur_val) + " : " + str(self.validate_time(acq,cur_val)))
+        print("######################\n\n")
+
     ##fixmee amount di cache
     def get_payment_acquirer_api(self, req, context):
         try:
@@ -168,73 +200,15 @@ class PaymentAcquirer(models.Model):
                 unique = 0
 
             values = {}
+            now_time = datetime.now(pytz.timezone('Asia/Jakarta'))
             if context['co_user_login'] != self.env.ref('tt_base.agent_b2c_user').login:
                 for acq in self.sudo().search(dom):
-                    if acq.is_sunday_off == False or (
-                            acq.is_sunday_off == True and datetime.now(pytz.timezone('Asia/Jakarta')).strftime(
-                            "%a") != 'Sun'):
-                        if acq.is_specific_time == False:
-                            if not values.get(acq.type) and acq.type != 'va' and acq.type != 'payment_gateway':
-                                values[acq.type] = []
-                            if acq.type != 'va' and acq.type != 'payment_gateway':
-                                values[acq.type].append(acq.acquirer_format(amount, unique))
-                        elif int(str(acq.start_time).split('.')[0]) == datetime.now(
-                                pytz.timezone('Asia/Jakarta')).hour < int(
-                                str(acq.end_time).split('.')[0]) and datetime.now(
-                                pytz.timezone('Asia/Jakarta')).minute >= int(str(acq.start_time).split('.')[1]) * 6:
-                            if not values.get(acq.type) and acq.type != 'va' and acq.type != 'payment_gateway':
-                                values[acq.type] = []
-                            if acq.type != 'va' and acq.type != 'payment_gateway':
-                                values[acq.type].append(acq.acquirer_format(amount, unique))
-                        elif int(str(acq.start_time).split('.')[0]) > int(str(acq.end_time).split('.')[0]):
-                            if int(str(acq.start_time).split('.')[0]) == datetime.now(
-                                    pytz.timezone('Asia/Jakarta')).hour and datetime.now(
-                                    pytz.timezone('Asia/Jakarta')).minute >= int(str(acq.start_time).split('.')[1]) * 6:
-                                if not values.get(acq.type) and acq.type != 'va' and acq.type != 'payment_gateway':
-                                    values[acq.type] = []
-                                if acq.type != 'va' and acq.type != 'payment_gateway':
-                                    values[acq.type].append(acq.acquirer_format(amount, unique))
-                            elif int(str(acq.start_time).split('.')[0]) <= datetime.now(
-                                    pytz.timezone('Asia/Jakarta')).hour < 24:
-                                if not values.get(acq.type) and acq.type != 'va' and acq.type != 'payment_gateway':
-                                    values[acq.type] = []
-                                if acq.type != 'va' and acq.type != 'payment_gateway':
-                                    values[acq.type].append(acq.acquirer_format(amount, unique))
-                            elif datetime.now(pytz.timezone('Asia/Jakarta')).hour == int(str(acq.end_time).split('.')[0]) and datetime.now(pytz.timezone('Asia/Jakarta')).minute < int(str(acq.end_time).split('.')[1]) * 60:
-                                if not values.get(acq.type) and acq.type != 'va' and acq.type != 'payment_gateway':
-                                    values[acq.type] = []
-                                if acq.type != 'va' and acq.type != 'payment_gateway':
-                                    values[acq.type].append(acq.acquirer_format(amount, unique))
-                            elif datetime.now(pytz.timezone('Asia/Jakarta')).hour < int(
-                                    str(acq.end_time).split('.')[0]):
-                                if not values.get(acq.type) and acq.type != 'va' and acq.type != 'payment_gateway':
-                                    values[acq.type] = []
-                                if acq.type != 'va' and acq.type != 'payment_gateway':
-                                    values[acq.type].append(acq.acquirer_format(amount, unique))
-
-                        elif int(str(acq.start_time).split('.')[0]) == datetime.now(
-                                pytz.timezone('Asia/Jakarta')).hour == int(
-                                str(acq.end_time).split('.')[0]) and datetime.now(
-                                pytz.timezone('Asia/Jakarta')).minute >= int(
-                                str(acq.start_time).split('.')[1]) * 6 and datetime.now(
-                                pytz.timezone('Asia/Jakarta')).minute <= int(str(acq.end_time).split('.')[1]) * 6:
-                            if not values.get(acq.type) and acq.type != 'va' and acq.type != 'payment_gateway':
-                                values[acq.type] = []
-                            if acq.type != 'va' and acq.type != 'payment_gateway':
-                                values[acq.type].append(acq.acquirer_format(amount, unique))
-                        elif int(str(acq.start_time).split('.')[0]) <= datetime.now(
-                                pytz.timezone('Asia/Jakarta')).hour < int(str(acq.end_time).split('.')[0]):
-                            if not values.get(acq.type) and acq.type != 'va' and acq.type != 'payment_gateway':
-                                values[acq.type] = []
-                            if acq.type != 'va' and acq.type != 'payment_gateway':
-                                values[acq.type].append(acq.acquirer_format(amount, unique))
-                        elif int(str(acq.end_time).split('.')[0]) == datetime.now(
-                                pytz.timezone('Asia/Jakarta')).hour and datetime.now(
-                                pytz.timezone('Asia/Jakarta')).minute < int(str(acq.end_time).split('.')[1]) * 6:
-                            if not values.get(acq.type) and acq.type != 'va' and acq.type != 'payment_gateway':
-                                values[acq.type] = []
-                            if acq.type != 'va' and acq.type != 'payment_gateway':
-                                values[acq.type].append(acq.acquirer_format(amount, unique))
+                    if not values.get(acq.type) and acq.type != 'va' and acq.type != 'payment_gateway':
+                        values[acq.type] = []
+                    if acq.type != 'va' and acq.type != 'payment_gateway':
+                        # self.test_validate(acq) utk testig saja
+                        if self.validate_time(acq, now_time):
+                            values[acq.type].append(acq.acquirer_format(amount, unique))
 
             # payment gateway
             if util.get_without_empty(req, 'order_number'):
@@ -246,47 +220,10 @@ class PaymentAcquirer(models.Model):
                 else:
                     unique = self.generate_unique_amount(amount).lower_number
                 for acq in self.sudo().search(dom):
-                    if acq.is_sunday_off == False or (
-                            acq.is_sunday_off == True and datetime.now(pytz.timezone('Asia/Jakarta')).strftime(
-                            "%a") != 'Sun'):
-                        if not values.get(acq.type):
-                            values[acq.type] = []
-                        if acq.type == 'payment_gateway':
-                            if acq.is_specific_time == False:
-                                values[acq.type].append(acq.acquirer_format(amount, unique))
-                            elif int(str(acq.start_time).split('.')[0]) > int(str(acq.end_time).split('.')[0]):
-                                if int(str(acq.start_time).split('.')[0]) == datetime.now(
-                                        pytz.timezone('Asia/Jakarta')).hour and datetime.now(
-                                        pytz.timezone('Asia/Jakarta')).minute >= int(
-                                        str(acq.start_time).split('.')[1]) * 6:
-                                    values[acq.type].append(acq.acquirer_format(amount, unique))
-                                elif int(str(acq.start_time).split('.')[0]) <= datetime.now(
-                                        pytz.timezone('Asia/Jakarta')).hour < 24:
-                                    values[acq.type].append(acq.acquirer_format(amount, unique))
-                                elif datetime.now(pytz.timezone('Asia/Jakarta')).hour == int(str(acq.end_time).split('.')[0]) and datetime.now(pytz.timezone('Asia/Jakarta')).minute < int(str(acq.end_time).split('.')[1]) * 60:
-                                    values[acq.type].append(acq.acquirer_format(amount, unique))
-                                elif datetime.now(pytz.timezone('Asia/Jakarta')).hour < int(
-                                        str(acq.end_time).split('.')[0]):
-                                    values[acq.type].append(acq.acquirer_format(amount, unique))
-                            elif int(str(acq.start_time).split('.')[0]) == datetime.now(
-                                    pytz.timezone('Asia/Jakarta')).hour < int(
-                                    str(acq.end_time).split('.')[0]) and datetime.now(
-                                    pytz.timezone('Asia/Jakarta')).minute >= int(str(acq.start_time).split('.')[1]) * 6:
-                                values[acq.type].append(acq.acquirer_format(amount, unique))
-                            elif int(str(acq.start_time).split('.')[0]) == datetime.now(
-                                    pytz.timezone('Asia/Jakarta')).hour == int(
-                                    str(acq.end_time).split('.')[0]) and datetime.now(
-                                    pytz.timezone('Asia/Jakarta')).minute >= int(
-                                    str(acq.start_time).split('.')[1]) * 6 and datetime.now(
-                                    pytz.timezone('Asia/Jakarta')).minute <= int(str(acq.end_time).split('.')[1]) * 6:
-                                values[acq.type].append(acq.acquirer_format(amount, unique))
-                            elif int(str(acq.start_time).split('.')[0]) <= datetime.now(
-                                    pytz.timezone('Asia/Jakarta')).hour < int(str(acq.end_time).split('.')[0]):
-                                values[acq.type].append(acq.acquirer_format(amount, unique))
-                            elif int(str(acq.end_time).split('.')[0]) == datetime.now(
-                                    pytz.timezone('Asia/Jakarta')).hour and datetime.now(
-                                    pytz.timezone('Asia/Jakarta')).minute < int(str(acq.end_time).split('.')[1]) * 6:
-                                values[acq.type].append(acq.acquirer_format(amount, unique))
+                    # self.test_validate(acq) utk testing saja
+                    if self.validate_time(acq,now_time):
+                        values[acq.type].append(acq.acquirer_format(amount, unique))
+
             res = {}
             res['non_member'] = values
             res['member'] = {}
