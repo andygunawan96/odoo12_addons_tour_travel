@@ -678,6 +678,7 @@ class TestSearch(models.Model):
                 'room_name': room_rate['description'],
                 'room_vendor_code': room_rates[0]['price_code'],
                 'room_type': room_rate['type'],
+                'meal_type': room_rates[0]['meal_type'],
                 'commission_amount': float(room_rate.get('commission', 0)),
             })
             self.env.cr.commit()
