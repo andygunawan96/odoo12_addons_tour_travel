@@ -28,6 +28,7 @@
                                 <field name="alias"/>
                                 <field name="provider_type_id"/>
                                 <field name="currency_id"/>
+                                <field name="is_reconcile"/>
                             </group>
                             <group>
                                 <label for="create_uid" string="Created By"/>
@@ -40,8 +41,8 @@
                                     <field name="write_uid" class="oe_inline" readonly="True"/> -
                                     <field name="write_date" class="oe_inline" readonly="True"/>
                                 </div>
-                                <field name="track_balance"/>
                                 <field name="balance"/>
+                                <field name="track_balance"/>
                             </group>
                         </group>
                         <notebook colspan="4">
