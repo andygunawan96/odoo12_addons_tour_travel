@@ -201,7 +201,7 @@ class TtBillingStatement(models.Model):
             self.printout_billing_statement_id = upc_id.id
         url = {
             'type': 'ir.actions.act_url',
-            'name': "ZZZ",
+            'name': "Printout",
             'target': 'new',
             'url': self.printout_billing_statement_id.url,
         }

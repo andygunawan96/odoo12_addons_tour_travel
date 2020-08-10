@@ -773,7 +773,7 @@ class TtReservationTrain(models.Model):
 
         url = {
             'type': 'ir.actions.act_url',
-            'name': "ZZZ",
+            'name': "Printout",
             'target': 'new',
             'url': book_obj.printout_ticket_id.url,
         }
@@ -830,7 +830,7 @@ class TtReservationTrain(models.Model):
 
         url = {
             'type': 'ir.actions.act_url',
-            'name': "ZZZ",
+            'name': "Printout",
             'target': 'new',
             'url': book_obj.printout_ticket_price_id.url,
         }
@@ -881,7 +881,7 @@ class TtReservationTrain(models.Model):
             self.printout_ho_invoice_id = upc_id.id
         url = {
             'type': 'ir.actions.act_url',
-            'name': "ZZZ",
+            'name': "Printout",
             'target': 'new',
             'url': self.printout_ho_invoice_id.url,
         }
@@ -935,7 +935,7 @@ class TtReservationTrain(models.Model):
             book_obj.printout_itinerary_id = upc_id.id
         url = {
             'type': 'ir.actions.act_url',
-            'name': "ZZZ",
+            'name': "Printout",
             'target': 'new',
             'url': book_obj.printout_itinerary_id.url,
         }

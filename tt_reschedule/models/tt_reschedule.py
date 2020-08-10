@@ -595,7 +595,7 @@ class TtReschedule(models.Model):
             self.printout_reschedule_id = upc_id.id
         url = {
             'type': 'ir.actions.act_url',
-            'name': "ZZZ",
+            'name': "Printout",
             'target': 'new',
             'url': self.printout_reschedule_id.url,
         }

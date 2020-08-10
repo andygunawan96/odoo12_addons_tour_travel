@@ -102,5 +102,3 @@ class TtCronLog(models.Model):
         except:
             self.create_cron_log_folder()
             self.write_cron_log('auto-expired payment acquirer number')
-
-

@@ -886,7 +886,7 @@ class ReservationActivity(models.Model):
             book_obj.printout_itinerary_id = upc_id.id
         url = {
             'type': 'ir.actions.act_url',
-            'name': "ZZZ",
+            'name': "Printout",
             'target': 'new',
             'url': book_obj.printout_itinerary_id.url,
         }
@@ -936,7 +936,7 @@ class ReservationActivity(models.Model):
             self.printout_ho_invoice_id = upc_id.id
         url = {
             'type': 'ir.actions.act_url',
-            'name': "ZZZ",
+            'name': "Printout",
             'target': 'new',
             'url': self.printout_ho_invoice_id.url,
         }

@@ -21,6 +21,7 @@ class TtProvider(models.Model):
     active = fields.Boolean('Active', default=True)
     balance = fields.Monetary('Balance', related="provider_ledger_ids.balance")
     track_balance = fields.Boolean('Do balance tracking')
+    is_reconcile = fields.Boolean('Can be Reconciled')
 
     #kasus concurrent update
     # def sync_balance(self):

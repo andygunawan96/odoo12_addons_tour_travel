@@ -2049,7 +2049,7 @@ class TtVisa(models.Model):
             self.printout_handling_ho_id = upc_id.id
         url = {
             'type': 'ir.actions.act_url',
-            'name': "ZZZ",
+            'name': "Printout",
             'target': 'new',
             'url': self.printout_handling_ho_id.url,
         }
@@ -2100,7 +2100,7 @@ class TtVisa(models.Model):
             book_obj.printout_handling_customer_id = upc_id.id
         url = {
             'type': 'ir.actions.act_url',
-            'name': "ZZZ",
+            'name': "Printout",
             'target': 'new',
             'url': book_obj.printout_handling_customer_id.url,
         }
@@ -2157,7 +2157,7 @@ class TtVisa(models.Model):
             book_obj.printout_itinerary_visa = upc_id.id
         url = {
             'type': 'ir.actions.act_url',
-            'name': "ZZZ",
+            'name': "Printout",
             'target': 'new',
             'url': book_obj.printout_itinerary_visa.url,
         }
@@ -2205,7 +2205,7 @@ class TtVisa(models.Model):
             self.printout_ho_invoice_id = upc_id.id
         url = {
             'type': 'ir.actions.act_url',
-            'name': "ZZZ",
+            'name': "Printout",
             'target': 'new',
             'url': self.printout_ho_invoice_id.url,
         }
