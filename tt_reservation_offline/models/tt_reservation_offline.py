@@ -530,6 +530,8 @@ class IssuedOffline(models.Model):
 
     @api.one
     def action_sent(self):
+        for line in self.line_ids:
+            self.date_format_check(self.provider_type_id_name, line.to_dict())
         if self.check_provider_empty() is False:
             if self.provider_type_id_name == 'airline' or self.provider_type_id_name == 'train':
                 if self.check_pnr_empty():
