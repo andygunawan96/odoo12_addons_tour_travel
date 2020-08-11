@@ -53,7 +53,7 @@
     </record>
 
     <!--    web_icon="tt_accounting,static/description/account_management.png"-->
-    <menuitem id="submenu_calendar_public_holiday" parent="tt_public_holiday.menu_tour_travel_configuration_calendar"
+    <menuitem id="submenu_calendar_public_holiday" parent="tt_base.menu_tour_travel_configuration_calendar"
               name="Public Holiday" action="tt_public_holiday_action"/>
 </odoo>
 

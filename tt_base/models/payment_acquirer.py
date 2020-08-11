@@ -147,10 +147,21 @@ class PaymentAcquirer(models.Model):
         float_time = int(str_time[0]) + (float(str_time[1])/60)
         return float_time
 
+    def check_is_holiday(self,now_time):
+        holiday_objs = self.env['tt.public.holiday'].search([('country_id','=',self.env.ref('base.id').id),
+                                              ('date','=',now_time.strftime('%Y-%m-%d'))])
+        if holiday_objs:
+            return True
+        return False
+
     def validate_time(self,acq,now_time):
         ## yang vlaid adalah yang tidak off mingu atau jika minggu of hari ini bukan hari minggu
         if acq.is_sunday_off == False or (acq.is_sunday_off == True and now_time.strftime("%a") != 'Sun'):
-            #jika check jam
+            ##pengecekan hari libur, di asumsikan yang hari minggu OFF juga OFF di hari libur
+            if acq.is_sunday_off and self.check_is_holiday(now_time):
+                return False
+
+            ##jika check jam
             if acq.is_specific_time:
                 #convert jam sekarang %M:%S ke float, 16:41 ke 16.0,683333333
                 now_float_time = self.convert_time_to_float(now_time)
