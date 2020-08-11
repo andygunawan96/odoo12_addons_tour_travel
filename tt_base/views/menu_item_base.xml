@@ -208,6 +208,12 @@
                   parent="tt_base.top_tour_travel_master_data"
                   sequence="40"/>
 
+        <menuitem id="menu_tour_travel_configuration_calendar"
+                  name="Calendar"
+                  groups="tt_base.group_tt_tour_travel_operator"
+                  parent="tt_base.top_tour_travel_configuration"
+                  sequence="45"/>
+
         <!--Bank-->
         <menuitem id="menu_tour_travel_configuration_bank"
                   name="Bank"

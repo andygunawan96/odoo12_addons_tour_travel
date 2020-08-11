@@ -95,6 +95,7 @@ Key Features
 
         'views/ir_ui_menu_views.xml',
         'views/tt_loyalty_program_views.xml',
+        'views/tt_public_holiday_views.xml'
     ],
     'demo': [],
     'qweb': [],

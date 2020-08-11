@@ -44,3 +44,4 @@ from . import tt_pnr_quota_price_package
 from . import tt_email_queue
 from . import tt_vendor
 from . import tt_loyalty_program
+from . import tt_public_holiday
