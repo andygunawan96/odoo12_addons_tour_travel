@@ -31,7 +31,7 @@ class TtRefundLine(models.Model):
     def to_dict(self):
         res = {
             'name': self.name,
-            'birth_date': self.birth_date,
+            'birth_date': self.birth_date and self.birth_date.strftime('%Y-%m-%d') or '',
             'currency': self.currency_id.name,
             'pax_price': self.pax_price,
             'charge_fee': self.charge_fee,
@@ -83,7 +83,7 @@ class TtRefundLineCustomer(models.Model):
     def to_dict(self):
         res = {
             'name': self.name,
-            'birth_date': self.birth_date,
+            'birth_date': self.birth_date and self.birth_date.strftime('%Y-%m-%d') or '',
             'currency': self.currency_id.name,
             'refund_amount': self.refund_amount,
             'admin_fee': self.citra_fee,
