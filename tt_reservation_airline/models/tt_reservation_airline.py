@@ -704,6 +704,19 @@ class ReservationAirline(models.Model):
                 prov_list = []
                 for rec in book_obj.provider_booking_ids:
                     prov_list.append(rec.to_dict())
+
+                # July 23, 2020 - SAM
+                refund_list = []
+                for ref in book_obj.refund_ids:
+                    ref_values = ref.get_refund_data()
+                    refund_list.append(ref_values)
+
+                reschedule_list = []
+                for rsch in book_obj.reschedule_ids:
+                    rsch_values = rsch.get_reschedule_data()
+                    reschedule_list.append(rsch_values)
+                # END
+
                 res.update({
                     'direction': book_obj.direction,
                     'origin': book_obj.origin_id.code,
@@ -711,6 +724,8 @@ class ReservationAirline(models.Model):
                     'sector_type': book_obj.sector_type,
                     'passengers': psg_list,
                     'provider_bookings': prov_list,
+                    'refund_list': refund_list,
+                    'reschedule_list': reschedule_list,
                     # 'provider_type': book_obj.provider_type_id.code
                 })
                 # _logger.info("Get resp\n" + json.dumps(res))
