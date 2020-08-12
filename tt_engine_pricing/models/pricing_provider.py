@@ -52,31 +52,46 @@ class PricingProvider(models.Model):
                 line_count += 10
 
     @api.multi
-    @api.depends('provider_ids.code','provider_ids','carrier_ids','carrier_ids.code', 'agent_type_ids')
+    @api.depends('provider_access_type', 'provider_ids', 'carrier_access_type', 'carrier_ids', 'agent_type_access_type', 'agent_type_ids', 'agent_access_type', 'agent_ids')
     def _compute_name(self):
+        field_list = ['provider', 'carrier', 'agent_type', 'agent']
         for rec in self:
             name_list = []
-            # name_list.append('Provider %s' % rec.provider_access_type)
-            if rec.provider_access_type != 'all':
-                name_list.append(','.join([provider.code.title() for provider in rec.provider_ids]))
-            else:
-                name_list.append('All Providers')
-            # name_list.append('Carrier %s' % rec.carrier_access_type)
-            if rec.carrier_access_type != 'all':
-                name_list.append(','.join(['%s' % rec.carrier_access_type.title()] + [carrier.code for carrier in rec.carrier_ids]))
-            else:
-                name_list.append('All Carriers')
-            # name_list.append('Agent Type %s' % rec.agent_type_access_type)
-            if rec.agent_type_access_type != 'all':
-                name_list.append(','.join(['%s' % rec.agent_type_access_type.title()] + [agent_type.code for agent_type in rec.agent_type_ids]))
-            else:
-                name_list.append('All Agent Type')
+            for fld in field_list:
+                access_type = getattr(rec, '%s_access_type' % fld)
+                name_list.append('%s %s' % (access_type.title(), fld.title()))
+                if fld != 'agent':
+                    if access_type != 'all':
+                        obj_ids = getattr(rec, '%s_ids' % fld)
+                        code_list = [obj.code for obj in obj_ids]
+                        name_list.append(','.join(code_list))
+                else:
+                    if access_type != 'all':
+                        obj_ids = getattr(rec, '%s_ids' % fld)
+                        code_list = [str(obj.id) for obj in obj_ids]
+                        name_list.append(','.join(code_list))
 
-            if rec.agent_access_type != 'all':
-                # name_list.append(','.join(['%s' % rec.agent_access_type.title()] + [agent.id for agent in rec.agent_ids]))
-                name_list.append('Not All Agents')
-            else:
-                name_list.append('All Agents')
+            # # name_list.append('Provider %s' % rec.provider_access_type)
+            # if rec.provider_access_type != 'all':
+            #     name_list.append(','.join([provider.code.title() for provider in rec.provider_ids]))
+            # else:
+            #     name_list.append('All Providers')
+            # # name_list.append('Carrier %s' % rec.carrier_access_type)
+            # if rec.carrier_access_type != 'all':
+            #     name_list.append(','.join(['%s' % rec.carrier_access_type.title()] + [carrier.code for carrier in rec.carrier_ids]))
+            # else:
+            #     name_list.append('All Carriers')
+            # # name_list.append('Agent Type %s' % rec.agent_type_access_type)
+            # if rec.agent_type_access_type != 'all':
+            #     name_list.append(','.join(['%s' % rec.agent_type_access_type.title()] + [agent_type.code for agent_type in rec.agent_type_ids]))
+            # else:
+            #     name_list.append('All Agent Type')
+            #
+            # if rec.agent_access_type != 'all':
+            #     # name_list.append(','.join(['%s' % rec.agent_access_type.title()] + [agent.id for agent in rec.agent_ids]))
+            #     name_list.append('Not All Agents')
+            # else:
+            #     name_list.append('All Agents')
 
             rec.name = ' - '.join(name_list)
 

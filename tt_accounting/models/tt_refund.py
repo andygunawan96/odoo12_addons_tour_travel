@@ -28,6 +28,18 @@ class TtRefundLine(models.Model):
     refund_id = fields.Many2one('tt.refund', 'Refund', readonly=True)
     state = fields.Selection([('draft', 'Draft'), ('confirm', 'Confirmed'), ('done', 'Done')], 'State', default='draft', related='')
 
+    def to_dict(self):
+        res = {
+            'name': self.name,
+            'birth_date': self.birth_date and self.birth_date.strftime('%Y-%m-%d') or '',
+            'currency': self.currency_id.name,
+            'pax_price': self.pax_price,
+            'charge_fee': self.charge_fee,
+            'commission_fee': self.commission_fee,
+            'refund_amount': self.refund_amount,
+        }
+        return res
+
     @api.depends('pax_price', 'charge_fee', 'commission_fee')
     @api.onchange('pax_price', 'charge_fee', 'commission_fee')
     def _compute_refund_amount(self):
@@ -67,6 +79,17 @@ class TtRefundLineCustomer(models.Model):
     refund_id = fields.Many2one('tt.refund', 'Refund', readonly=True)
     agent_id = fields.Many2one('tt.agent', 'Agent', related='refund_id.agent_id')
     acquirer_id = fields.Many2one('payment.acquirer', 'Payment Acquirer', domain="[('agent_id','=',agent_id)]")
+
+    def to_dict(self):
+        res = {
+            'name': self.name,
+            'birth_date': self.birth_date and self.birth_date.strftime('%Y-%m-%d') or '',
+            'currency': self.currency_id.name,
+            'refund_amount': self.refund_amount,
+            'admin_fee': self.citra_fee,
+            'total_amount': self.total_amount
+        }
+        return res
 
     @api.depends('refund_amount', 'citra_fee')
     @api.onchange('refund_amount', 'citra_fee')
@@ -817,3 +840,51 @@ class TtRefund(models.Model):
         }
         return url
         # return refund_printout_id.report_action(self, data=datas)
+
+    def get_refund_data(self):
+        resv_obj = self.env[self.res_model].browse(self.res_id)
+
+        refund_lines = []
+        for line in self.refund_line_ids:
+            line_values = line.to_dict()
+            refund_lines.append(line_values)
+
+        refund_line_customers = []
+        for cust in self.refund_line_cust_ids:
+            cust_values = cust.to_dict()
+            refund_line_customers.append(cust_values)
+
+        new_vals = {
+            'reschedule_number': self.name,
+            'agent': self.agent_id.name,
+            'agent_type': self.agent_type_id.name,
+            'customer_parent': self.customer_parent_id.name,
+            'customer_parent_type': self.customer_parent_type_id.name,
+            'booker': self.booker_id.name,
+            'currency': self.currency_id.name,
+            'service_type': self.service_type,
+            'direction': resv_obj.direction,
+            'sector_type': resv_obj.sector_type,
+            'resv_order_number': self.referenced_document,
+            'pnr': self.referenced_pnr,
+
+            'refund_date': self.refund_date.strftime('%Y-%m-%d %H:%M:%S'),
+            'refund_date_ho': self.refund_date_ho.strftime('%Y-%m-%d %H:%M:%S'),
+            'real_refund_date': self.real_refund_date.strftime('%Y-%m-%d %H:%M:%S'),
+            'cust_refund_date': self.cust_refund_date.strftime('%Y-%m-%d %H:%M:%S'),
+            'refund_type': self.refund_type,
+
+            'refund_amount': self.refund_amount,
+            'admin_fee': self.admin_fee,
+            'total_amount': self.total_amount,
+            'total_amount_cust': self.total_amount_cust,
+            'final_admin_fee': self.final_admin_fee,
+            'booking_description': self.booking_desc,
+            'notes': self.notes,
+            'refund_lines': refund_lines,
+            'refund_line_customers': refund_line_customers,
+            'created_by_api': self.created_by_api,
+            'state': self.state
+        }
+
+        return new_vals
