@@ -93,24 +93,14 @@ class TtCustomer(models.Model):
     def toggle_search_allowed(self):
         self.is_search_allowed = not self.is_search_allowed
 
-    def to_dict(self):
+    def to_dict(self,get_customer_parent=False):
         phone_list = []
         for rec in self.phone_ids:
             phone_list.append(rec.to_dict())
         identity_dict = {}
         for rec in self.identity_ids:
             identity_dict.update(rec.to_dict())
-        customer_parent_list = []
-        for rec in self.customer_parent_ids:
-            if rec.credit_limit != 0 and rec.state == 'done':
-                customer_parent_list.append({
-                    'name': rec.name,
-                    'actual_balance': rec.actual_balance,
-                    'credit_limit': rec.credit_limit,
-                    'currency': rec.currency_id.name,
-                    'seq_id': rec.seq_id,
-                    'type': rec.customer_parent_type_id and rec.customer_parent_type_id.name or ''
-                })
+
 
         res = {
             'name': self.name,
@@ -125,9 +115,24 @@ class TtCustomer(models.Model):
             'phones': phone_list,
             'email': self.email and self.email or '',
             'seq_id': self.seq_id,
-            'identities': identity_dict,
-            'customer_parents': customer_parent_list
+            'identities': identity_dict
         }
+        if get_customer_parent:
+            customer_parent_list = []
+            for rec in self.customer_parent_ids:
+                if rec.credit_limit != 0 and rec.state == 'done':
+                    customer_parent_list.append({
+                        'name': rec.name,
+                        'actual_balance': rec.actual_balance,
+                        'credit_limit': rec.credit_limit,
+                        'currency': rec.currency_id.name,
+                        'seq_id': rec.seq_id,
+                        'type': rec.customer_parent_type_id and rec.customer_parent_type_id.name or ''
+                    })
+            res.update({
+                'customer_parents': customer_parent_list
+            })
+
         return res
 
     def copy_to_passenger(self):
@@ -255,7 +260,7 @@ class TtCustomer(models.Model):
                 else:
                     if req.get('type') == 'psg' and req['upper']<12:
                         continue
-                values = cust.to_dict()
+                values = cust.to_dict(get_customer_parent=True)
 
                 customer_list.append(values)
             _logger.info(json.dumps(customer_list))
