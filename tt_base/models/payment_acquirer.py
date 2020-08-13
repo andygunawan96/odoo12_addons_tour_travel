@@ -221,7 +221,7 @@ class PaymentAcquirer(models.Model):
                                 values[acq.type] = []
                             values[acq.type].append(acq.acquirer_format(amount, unique))
 
-            # payment gateway
+            # # payment gateway
             if util.get_without_empty(req, 'order_number'):
                 dom = [('website_published', '=', True), ('company_id', '=', self.env.user.company_id.id)]
                 dom.append(('agent_id', '=', self.env.ref('tt_base.rodex_ho').id))
@@ -232,10 +232,11 @@ class PaymentAcquirer(models.Model):
                     unique = self.generate_unique_amount(amount).lower_number
                 for acq in self.sudo().search(dom):
                     # self.test_validate(acq) utk testing saja
-                    if self.validate_time(acq,now_time):
-                        if not values.get(acq.type):
-                            values[acq.type] = []
-                        values[acq.type].append(acq.acquirer_format(amount, unique))
+                    if acq.type == 'va' or acq.type == 'payment_gateway':
+                        if self.validate_time(acq,now_time):
+                            if not values.get(acq.type):
+                                values[acq.type] = []
+                            values[acq.type].append(acq.acquirer_format(amount, unique))
 
             res = {}
             res['non_member'] = values
