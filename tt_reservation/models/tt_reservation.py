@@ -669,7 +669,14 @@ class TtReservation(models.Model):
                 agent_obj = book_obj.agent_id
             except:
                 raise RequestException(1001)
-            if agent_obj.id == context.get('co_agent_id',-1):
+
+            user_obj = self.env['res.users'].browse(context['co_uid'])
+            try:
+                user_obj.create_date
+            except:
+                raise RequestException(1008)
+
+            if agent_obj.id == context.get('co_agent_id',-1) or self.env.ref('tt_base.group_tt_process_channel_bookings').id in user_obj.groups_id.ids:
                 book_obj.write({
                     'is_member': req.get('member', False),
                     'payment_method': req.get('acquirer_seq_id', False)

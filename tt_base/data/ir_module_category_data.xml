@@ -27,13 +27,13 @@
     <record model="ir.module.category" id="module_category_agent_management">
         <field name="name">Agent Management</field>
         <field name="description">Help you to manage your Agent and customer</field>
-        <field name="sequence">5</field>
+        <field name="sequence">6</field>
     </record>
 
     <record model="ir.module.category" id="module_category_ticketing_system">
         <field name="name">Ticketing System</field>
         <field name="description">Help you to manage ticketing</field>
-        <field name="sequence">6</field>
+        <field name="sequence">7</field>
     </record>
 
     <record model="ir.module.category" id="module_category_tour_travel_system">
@@ -44,7 +44,7 @@
 
     <record model="ir.module.category" id="module_category_admin_system">
         <field name="name">Admin</field>
-        <field name="description">Admin of Skytors App</field>
+        <field name="description">Admin of Rodextrip App</field>
         <field name="sequence">0</field>
     </record>
 
@@ -57,7 +57,7 @@
     <record model="ir.module.category" id="module_category_tour_division_system">
         <field name="name">Tour Management</field>
         <field name="description">For Tour Division</field>
-        <field name="sequence">7</field>
+        <field name="sequence">8</field>
     </record>
 
     <record model="ir.module.category" id="module_category_external_vendor_system">
@@ -70,6 +70,12 @@
         <field name="name">Agent Finance</field>
         <field name="description">Agent Financial Management</field>
         <field name="sequence">2</field>
+    </record>
+
+    <record model="ir.module.category" id="module_category_proceess_channel_booking">
+        <field name="name">Process Channel Booking</field>
+        <field name="description">To manage channel bookings</field>
+        <field name="sequence">5</field>
     </record>
 
 </odoo>

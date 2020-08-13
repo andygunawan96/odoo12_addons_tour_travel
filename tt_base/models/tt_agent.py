@@ -418,7 +418,15 @@ class TtAgent(models.Model):
         try:
             # _logger.info('Get Resv Req:\n'+json.dumps(req))
             agent_obj = self.browse(context['co_agent_id'])
-            if not agent_obj:
+            try:
+                agent_obj.create_date
+            except:
+                return ERR.get_error(1008)
+
+            user_obj = self.env['res.users'].browse(context['co_uid'])
+            try:
+                user_obj.create_date
+            except:
                 return ERR.get_error(1008)
 
             req_provider = util.get_without_empty(req,'provider_type')
@@ -431,11 +439,10 @@ class TtAgent(models.Model):
             else:
                 types = variables.PROVIDER_TYPE
 
-            if agent_obj.id == self.env.ref('tt_base.rodex_ho').id:
-                print('masuk HO')
+
+            if self.env.ref('tt_base.group_tt_process_channel_bookings').id in user_obj.groups_id.ids:
                 dom = []
             else:
-                print('masuk agent')
                 dom = [('agent_id', '=', agent_obj.id)]
 
             if req.get('pnr'):
@@ -590,6 +597,38 @@ class TtAgent(models.Model):
                 'key': key,
                 'agent_id': self.id,
             })
+
+    def get_reconcile_data_api(self, data, context):
+        try:
+            provider_type = data['provider_type']
+            start_date = data['start_date']
+            end_date = data.get('end_date') and data['end_date'] or data['start_date']
+            resv_table = 'tt.reservation.{}'.format(provider_type, )
+
+            resv_data = self.env[resv_table].search([('agent_id', '=', context['co_agent_id']), ('state', '=', 'issued'), ('issued_date', '>=', start_date), ('issued_date', '<=', end_date)])
+            final_data = []
+            for rec in resv_data:
+                latest_ledger = self.env['tt.ledger'].search([('res_id', '=', rec.id), ('res_model', '=', resv_table), ('transaction_type', '=', 2), ('is_reversed', '=', False)], limit=1)
+                end_balance = latest_ledger and latest_ledger[0].balance or 0
+
+                final_data.append({
+                    'order_number': rec.name,
+                    'pnr': rec.pnr,
+                    'issued_date': rec.issued_date,
+                    'nta_price': rec.agent_nta,
+                    'total_price': rec.total,
+                    'end_balance': end_balance
+                })
+            res = {
+                'reservation_data': final_data
+            }
+            return ERR.get_no_error(res)
+        except RequestException as e:
+            _logger.error(traceback.format_exc())
+            return e.error_dict()
+        except Exception as e:
+            _logger.error(traceback.format_exc())
+            return ERR.get_error(1022)
 
 class AgentTarget(models.Model):
     _inherit = ['tt.history']
