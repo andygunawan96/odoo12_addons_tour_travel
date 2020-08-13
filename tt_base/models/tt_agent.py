@@ -598,6 +598,34 @@ class TtAgent(models.Model):
                 'agent_id': self.id,
             })
 
+    def get_reconcile_data_api(self, data, context):
+        try:
+            provider_type = data['provider_type']
+            start_date = data['start_date']
+            end_date = data.get('end_date') and data['end_date'] or data['start_date']
+            resv_table = 'tt.reservation.{}'.format(provider_type, )
+
+            resv_data = self.env[resv_table].search([('agent_id', '=', context['co_agent_id']), ('state', '=', 'issued'), ('issued_date', '>=', start_date), ('issued_date', '<=', end_date)])
+            final_data = []
+            for rec in resv_data:
+                final_data.append({
+                    'order_number': rec.name,
+                    'pnr': rec.pnr,
+                    'issued_date': rec.issued_date,
+                    'nta_price': rec.agent_nta,
+                    'total_price': rec.total
+                })
+            res = {
+                'reservation_data': final_data
+            }
+            return ERR.get_no_error(res)
+        except RequestException as e:
+            _logger.error(traceback.format_exc())
+            return e.error_dict()
+        except Exception as e:
+            _logger.error(traceback.format_exc())
+            return ERR.get_error(1022)
+
 class AgentTarget(models.Model):
     _inherit = ['tt.history']
     _name = 'tt.agent.target'
