@@ -608,12 +608,16 @@ class TtAgent(models.Model):
             resv_data = self.env[resv_table].search([('agent_id', '=', context['co_agent_id']), ('state', '=', 'issued'), ('issued_date', '>=', start_date), ('issued_date', '<=', end_date)])
             final_data = []
             for rec in resv_data:
+                latest_ledger = self.env['tt.ledger'].search([('res_id', '=', rec.id), ('res_model', '=', resv_table), ('transaction_type', '=', 2), ('is_reversed', '=', False)], limit=1)
+                end_balance = latest_ledger and latest_ledger[0].balance or 0
+
                 final_data.append({
                     'order_number': rec.name,
                     'pnr': rec.pnr,
                     'issued_date': rec.issued_date,
                     'nta_price': rec.agent_nta,
-                    'total_price': rec.total
+                    'total_price': rec.total,
+                    'end_balance': end_balance
                 })
             res = {
                 'reservation_data': final_data
