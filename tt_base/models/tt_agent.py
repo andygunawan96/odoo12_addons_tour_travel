@@ -418,7 +418,15 @@ class TtAgent(models.Model):
         try:
             # _logger.info('Get Resv Req:\n'+json.dumps(req))
             agent_obj = self.browse(context['co_agent_id'])
-            if not agent_obj:
+            try:
+                agent_obj.create_date
+            except:
+                return ERR.get_error(1008)
+
+            user_obj = self.env['res.users'].browse(context['co_uid'])
+            try:
+                user_obj.create_date
+            except:
                 return ERR.get_error(1008)
 
             req_provider = util.get_without_empty(req,'provider_type')
@@ -431,11 +439,10 @@ class TtAgent(models.Model):
             else:
                 types = variables.PROVIDER_TYPE
 
-            if agent_obj.id == self.env.ref('tt_base.rodex_ho').id:
-                print('masuk HO')
+
+            if self.env.ref('tt_base.group_tt_process_channel_bookings').id in user_obj.groups_id.ids:
                 dom = []
             else:
-                print('masuk agent')
                 dom = [('agent_id', '=', agent_obj.id)]
 
             if req.get('pnr'):

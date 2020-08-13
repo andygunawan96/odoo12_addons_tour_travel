@@ -114,7 +114,7 @@
         <field name="implied_ids" eval="[(4, ref('group_tt_agent_management_supervisor'))]"/>
     </record>
 
-     <!--TICKETING SYSTEM GROUP-->
+    <!--TICKETING SYSTEM GROUP-->
     <record id="group_tt_ticketing_operator" model="res.groups">
         <field name="name">Operator</field>
         <field name="category_id" ref="tt_base.module_category_ticketing_system"/>
@@ -209,7 +209,15 @@
         <field name="category_id" ref="tt_base.module_category_external_vendor_system"/>
         <field name="implied_ids" eval="[(4, ref('group_tt_external_vendor_supervisor'))]"/>
     </record>
-<!--     LINK kan group yg baru dibuat dengan ADMIN-->
+
+
+    <record id="group_tt_process_channel_bookings" model="res.groups">
+        <field name="name">Operator</field>
+        <field name="category_id" ref="tt_base.module_category_proceess_channel_booking"/>
+        <field name="implied_ids" eval="[(4, ref('base.group_user'))]"/>
+    </record>
+
+    <!--     LINK kan group yg baru dibuat dengan ADMIN-->
 
     <record id="base.user_admin" model="res.users">
         <field name="groups_id" eval="[(4,ref('tt_base.group_tt_tour_travel_manager')),(4,ref('tt_base.group_tt_agent_management_manager')),(4,ref('tt_base.group_tt_agent_invoice_manager')),(4,ref('tt_base.group_tt_billing_statement_manager')),(4,ref('tt_base.group_tt_accounting_manager'))]"/>
