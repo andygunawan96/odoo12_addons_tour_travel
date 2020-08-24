@@ -610,7 +610,7 @@ class TtAgent(models.Model):
             for rec in resv_data:
                 latest_ledger = self.env['tt.ledger'].search([('res_id', '=', rec.id), ('res_model', '=', resv_table), ('transaction_type', '=', 2), ('is_reversed', '=', False)], limit=1)
                 end_balance = latest_ledger and latest_ledger[0].balance or 0
-                str_issued_date = (datetime.strptime(rec.issued_date, '%Y-%m-%d %H:%M:%S')).strftime('%Y-%m-%d')
+                str_issued_date = rec.issued_date.strftime('%Y-%m-%d')
 
                 rec_data = {
                     'order_number': rec.name,
