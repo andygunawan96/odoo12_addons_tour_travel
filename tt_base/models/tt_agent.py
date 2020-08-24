@@ -619,7 +619,8 @@ class TtAgent(models.Model):
                     'nta_price': rec.agent_nta,
                     'total_price': rec.total,
                     'end_balance': end_balance,
-                    'carrier_list': rec.carrier_name
+                    'carrier_list': rec.carrier_name,
+                    'currency': rec.currency_id.name
                 }
 
                 not_found = True
