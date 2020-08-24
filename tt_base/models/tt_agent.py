@@ -606,22 +606,33 @@ class TtAgent(models.Model):
             resv_table = 'tt.reservation.{}'.format(provider_type, )
 
             resv_data = self.env[resv_table].search([('agent_id', '=', context['co_agent_id']), ('state', '=', 'issued'), ('issued_date', '>=', start_date), ('issued_date', '<=', end_date)])
-            final_data = []
+            res = []
             for rec in resv_data:
                 latest_ledger = self.env['tt.ledger'].search([('res_id', '=', rec.id), ('res_model', '=', resv_table), ('transaction_type', '=', 2), ('is_reversed', '=', False)], limit=1)
                 end_balance = latest_ledger and latest_ledger[0].balance or 0
+                str_issued_date = (datetime.strptime(rec.issued_date, '%Y-%m-%d %H:%M:%S')).strftime('%Y-%m-%d')
 
-                final_data.append({
+                rec_data = {
                     'order_number': rec.name,
                     'pnr': rec.pnr,
-                    'issued_date': rec.issued_date,
+                    'issued_time': rec.issued_date,
                     'nta_price': rec.agent_nta,
                     'total_price': rec.total,
-                    'end_balance': end_balance
-                })
-            res = {
-                'reservation_data': final_data
-            }
+                    'end_balance': end_balance,
+                    'carrier_list': rec.carrier_name
+                }
+
+                not_found = True
+                for rec_res in res:
+                    if rec_res['transaction_date'] == str_issued_date:
+                        rec_res['transactions'].append(rec_data)
+                        not_found = False
+                if not_found:
+                    res.append({
+                        'transaction_date': str_issued_date,
+                        'transactions': [rec_data]
+                    })
+
             return ERR.get_no_error(res)
         except RequestException as e:
             _logger.error(traceback.format_exc())
