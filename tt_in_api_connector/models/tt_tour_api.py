@@ -31,6 +31,9 @@ class TtTourApiCon(models.Model):
 
         return res
 
+    def get_balance(self,provider):
+        return self.send_request_to_gateway('%s/account/tour' % (self.url),{'provider': provider},'get_vendor_balance')
+
     def send_tour_payment_expired_notification(self,data,context):
         request = {
             'code': 9901,
