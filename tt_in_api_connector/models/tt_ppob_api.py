@@ -35,9 +35,6 @@ class TtReservationPPOBApiCon(models.Model):
             raise RequestException(999)
         return res
 
-    def get_balance(self,provider):
-        res = self.send_request_to_gateway('%s/booking/ppob' % (self.url),{'provider': provider},'get_balance')
-        if res['error_code'] != 0:
-            raise Exception(res)
-        return res
+    def get_balance(self, provider):
+        return self.send_request_to_gateway('%s/account/ppob' % (self.url), {'provider': provider}, 'get_vendor_balance')
 
