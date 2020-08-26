@@ -69,6 +69,11 @@
                     <button name="set_to_approve" string="Set to Approved" type="object" groups="tt_base.group_tt_accounting_manager" attrs="{'invisible':[('state','!=', 'payment')]}"/>
                     <button name="cancel_refund_from_button" string="Cancel" type="object" attrs="{'invisible':[('state','in', ['approve', 'done', 'cancel', 'payment', 'approve_cust'])]}" confirm="Are you sure you want to cancel?"/>
                     <button name="create_profit_loss_ledger" string="Create Profit Loss" type="object" groups="tt_base.group_tt_accounting_operator" attrs="{'invisible':[('state','not in', ['approve', 'done', 'payment', 'approve_cust'])]}"/>
+                    <button string="Extend Refund" name="%(tt_accounting.tt_refund_extend_wizard_action_view)d" type="action" groups="tt_base.group_tt_accounting_supervisor"
+                            context="{
+                        'default_refund_id': id,
+                        'default_new_refund_date': refund_date_ho
+                   }" attrs="{'invisible':[('state','not in', ['validate', 'final'])]}"/>
                     <button string="Adjustment" name="%(tt_accounting.tt_adjustment_wizard_action_view)d" type="action"
                             groups="tt_base.group_tt_accounting_operator"
                             context="{
