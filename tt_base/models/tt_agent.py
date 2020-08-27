@@ -615,9 +615,9 @@ class TtAgent(models.Model):
                 rec_data = {
                     'order_number': rec.name,
                     'pnr': rec.pnr,
+                    'type': 'nta',
                     'issued_time': rec.issued_date,
                     'nta_price': rec.agent_nta,
-                    'total_price': rec.total,
                     'end_balance': end_balance,
                     'carrier_list': rec.carrier_name,
                     'currency': rec.currency_id.name
