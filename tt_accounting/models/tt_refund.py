@@ -868,10 +868,10 @@ class TtRefund(models.Model):
             'resv_order_number': self.referenced_document,
             'pnr': self.referenced_pnr,
 
-            'refund_date': self.refund_date.strftime('%Y-%m-%d %H:%M:%S'),
-            'refund_date_ho': self.refund_date_ho.strftime('%Y-%m-%d %H:%M:%S'),
-            'real_refund_date': self.real_refund_date.strftime('%Y-%m-%d %H:%M:%S'),
-            'cust_refund_date': self.cust_refund_date.strftime('%Y-%m-%d %H:%M:%S'),
+            'refund_date': self.refund_date and self.refund_date.strftime('%Y-%m-%d %H:%M:%S') or '',
+            'refund_date_ho': self.refund_date_ho and self.refund_date_ho.strftime('%Y-%m-%d %H:%M:%S') or '',
+            'real_refund_date': self.real_refund_date and self.real_refund_date.strftime('%Y-%m-%d %H:%M:%S') or '',
+            'cust_refund_date': self.cust_refund_date and self.cust_refund_date.strftime('%Y-%m-%d %H:%M:%S') or '',
             'refund_type': self.refund_type,
 
             'refund_amount': self.refund_amount,
@@ -879,12 +879,12 @@ class TtRefund(models.Model):
             'total_amount': self.total_amount,
             'total_amount_cust': self.total_amount_cust,
             'final_admin_fee': self.final_admin_fee,
-            'booking_description': self.booking_desc,
-            'notes': self.notes,
+            'booking_description': self.booking_desc and self.booking_desc or '',
+            'notes': self.notes and self.notes or '',
             'refund_lines': refund_lines,
             'refund_line_customers': refund_line_customers,
             'created_by_api': self.created_by_api,
-            'state': self.state
+            'state': self.state,
         }
 
         return new_vals
