@@ -260,6 +260,7 @@
                                     <field name="method"/>
                                     <field name="acquirer_id"/>
                                     <field name="refund_amount"/>
+                                    <field name="admin_fee"/>
                                     <field name="citra_fee"/>
                                     <field name="total_amount"/>
                                 </tree>
@@ -277,6 +278,8 @@
                                         </group>
                                         <group>
                                             <field name="refund_amount"/>
+                                            <field name="admin_fee_id"/>
+                                            <field name="admin_fee"/>
                                             <field name="citra_fee"/>
                                             <field name="total_amount"/>
                                         </group>

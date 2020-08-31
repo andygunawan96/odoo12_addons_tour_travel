@@ -45,7 +45,18 @@ class TtRescheduleLine(models.Model):
     real_reschedule_amount = fields.Integer('Real After Sales Amount from Vendor', default=0, required=True,
                                             readonly=False, states={'draft': [('readonly', True)]})
     reschedule_id = fields.Many2one('tt.reschedule', 'After Sales', readonly=True)
-    admin_fee_id = fields.Many2one('tt.master.admin.fee', 'Admin Fee Type', domain=[('after_sales_type', '=', 'after_sales')], readonly=True, states={'confirm': [('readonly', False)]})
+
+    def get_admin_fee_domain(self):
+        agent_type_adm_ids = self.reschedule_id.agent_id.agent_type_id.admin_fee_ids.ids
+        agent_adm_ids = self.reschedule_id.agent_id.admin_fee_ids.ids
+        return [('after_sales_type', '=', 'after_sales'), ('target', '=', 'ho_to_agent'), '&', '|',
+                ('agent_type_access_type', '=', 'all'), '|', '&', ('agent_type_access_type', '=', 'allow'),
+                ('id', 'in', agent_type_adm_ids), '&', ('agent_type_access_type', '=', 'restrict'),
+                ('id', 'not in', agent_type_adm_ids), '|', ('agent_access_type', '=', 'all'), '|', '&',
+                ('agent_access_type', '=', 'allow'), ('id', 'in', agent_adm_ids), '&',
+                ('agent_access_type', '=', 'restrict'), ('id', 'not in', agent_adm_ids)]
+
+    admin_fee_id = fields.Many2one('tt.master.admin.fee', 'Admin Fee Type', domain=get_admin_fee_domain, readonly=True, states={'confirm': [('readonly', False)]})
     admin_fee = fields.Integer('Admin Fee Amount', default=0, readonly=True, compute="_compute_admin_fee")
     total_amount = fields.Integer('Total Amount', default=0, readonly=True, compute="_compute_total_amount")
     sequence = fields.Integer('Sequence', default=50, states={'draft': [('readonly', False)], 'confirm': [('readonly', False)]}, readonly=True)
@@ -56,14 +67,22 @@ class TtRescheduleLine(models.Model):
     def _compute_admin_fee(self):
         for rec in self:
             if rec.admin_fee_id:
+                book_obj = self.env[rec.reschedule_id.res_model].browse(int(rec.reschedule_id.res_id))
                 if rec.admin_fee_id.type == 'amount':
                     pnr_amount = 0
-                    book_obj = self.env[rec.reschedule_id.res_model].browse(int(rec.reschedule_id.res_id))
                     for rec2 in book_obj.provider_booking_ids:
                         pnr_amount += 1
                 else:
                     pnr_amount = 1
-                rec.admin_fee = rec.admin_fee_id.get_final_adm_fee(rec.reschedule_amount, pnr_amount)
+
+                if rec.admin_fee_id.per_pax_type == 'amount':
+                    pax_amount = 0
+                    for rec2 in book_obj.passenger_ids:
+                        pax_amount += 1
+                else:
+                    pax_amount = 1
+
+                rec.admin_fee = rec.admin_fee_id.get_final_adm_fee(rec.reschedule_amount, pnr_amount, pax_amount)
             else:
                 rec.admin_fee = 0
 

@@ -74,6 +74,19 @@ class TtRefundLineCustomer(models.Model):
                                ('form', 'Form'), ('form_save', 'Form with tokenization')], 'Method', related='acquirer_id.type', readonly=True)
     bank_id = fields.Many2one('tt.bank', 'To Bank')
     refund_amount = fields.Monetary('Refund Amount', default=0, readonly=True)
+
+    def get_admin_fee_domain(self):
+        agent_type_adm_ids = self.agent_id.agent_type_id.admin_fee_ids.ids
+        agent_adm_ids = self.agent_id.admin_fee_ids.ids
+        return [('after_sales_type', '=', 'refund'), ('target', '=', 'agent_to_cust'), '&', '|',
+                ('agent_type_access_type', '=', 'all'), '|', '&', ('agent_type_access_type', '=', 'allow'),
+                ('id', 'in', agent_type_adm_ids), '&', ('agent_type_access_type', '=', 'restrict'),
+                ('id', 'not in', agent_type_adm_ids), '|', ('agent_access_type', '=', 'all'), '|', '&',
+                ('agent_access_type', '=', 'allow'), ('id', 'in', agent_adm_ids), '&',
+                ('agent_access_type', '=', 'restrict'), ('id', 'not in', agent_adm_ids)]
+
+    admin_fee_id = fields.Many2one('tt.master.admin.fee', 'Admin Fee Type', domain=get_admin_fee_domain)
+    admin_fee = fields.Monetary('Admin Fee Amount', default=0, readonly=True, compute="_compute_admin_fee")
     citra_fee = fields.Monetary('Additional Fee', default=0, readonly=False)
     total_amount = fields.Monetary('Total Amount', default=0, required=True, readonly=True, compute='_compute_total_amount')
     refund_id = fields.Many2one('tt.refund', 'Refund', readonly=True)
@@ -91,11 +104,20 @@ class TtRefundLineCustomer(models.Model):
         }
         return res
 
-    @api.depends('refund_amount', 'citra_fee')
-    @api.onchange('refund_amount', 'citra_fee')
+    @api.depends('admin_fee_id', 'refund_amount')
+    @api.onchange('admin_fee_id', 'refund_amount')
+    def _compute_admin_fee(self):
+        for rec in self:
+            if rec.admin_fee_id:
+                rec.admin_fee = rec.admin_fee_id.get_final_adm_fee(rec.refund_amount)
+            else:
+                rec.admin_fee = 0
+
+    @api.depends('refund_amount', 'citra_fee', 'admin_fee')
+    @api.onchange('refund_amount', 'citra_fee', 'admin_fee')
     def _compute_total_amount(self):
         for rec in self:
-            rec.total_amount = rec.refund_amount - rec.citra_fee
+            rec.total_amount = rec.refund_amount - rec.admin_fee - rec.citra_fee
 
 
 class TtRefund(models.Model):
@@ -140,10 +162,21 @@ class TtRefund(models.Model):
 
     refund_type = fields.Selection([('quick', 'Quick Refund (Max. 3 days process)'), ('regular', 'Regular Refund (40 days process)')], 'Refund Type', required=True, default='regular', readonly=True,
                                    states={'draft': [('readonly', False)]})
-    admin_fee_id = fields.Many2one('tt.master.admin.fee', 'Admin Fee Type', domain=[('after_sales_type', '=', 'refund')], compute="")
+
+    def get_admin_fee_domain(self):
+        agent_type_adm_ids = self.agent_id.agent_type_id.admin_fee_ids.ids
+        agent_adm_ids = self.agent_id.admin_fee_ids.ids
+        return [('after_sales_type', '=', 'refund'), ('target', '=', 'ho_to_agent'), '&', '|',
+                ('agent_type_access_type', '=', 'all'), '|', '&', ('agent_type_access_type', '=', 'allow'),
+                ('id', 'in', agent_type_adm_ids), '&', ('agent_type_access_type', '=', 'restrict'),
+                ('id', 'not in', agent_type_adm_ids), '|', ('agent_access_type', '=', 'all'), '|', '&',
+                ('agent_access_type', '=', 'allow'), ('id', 'in', agent_adm_ids), '&',
+                ('agent_access_type', '=', 'restrict'), ('id', 'not in', agent_adm_ids)]
+
+    admin_fee_id = fields.Many2one('tt.master.admin.fee', 'Admin Fee Type', domain=get_admin_fee_domain)
+    admin_fee = fields.Monetary('Admin Fee Amount', default=0, readonly=True, compute="_compute_admin_fee")
     refund_amount = fields.Monetary('Expected Refund Amount', default=0, required=True, readonly=True, compute='_compute_refund_amount', related='')
     real_refund_amount = fields.Monetary('Real Refund Amount from Vendor', default=0, readonly=True, compute='_compute_real_refund_amount')
-    admin_fee = fields.Monetary('Admin Fee Amount', default=0, readonly=True, compute="_compute_admin_fee")
     total_amount = fields.Monetary('Total Amount', default=0, readonly=True, compute="_compute_total_amount")
     total_amount_cust = fields.Monetary('Total Amount (Customer)', default=0, readonly=True, compute="_compute_total_amount_cust")
     final_admin_fee = fields.Monetary('Admin Fee Amount', default=0, readonly=True)
@@ -234,14 +267,22 @@ class TtRefund(models.Model):
     def _compute_admin_fee(self):
         for rec in self:
             if rec.admin_fee_id:
+                book_obj = self.env[rec.res_model].browse(int(rec.res_id))
                 if rec.admin_fee_id.type == 'amount':
                     pnr_amount = 0
-                    book_obj = self.env[rec.res_model].browse(int(rec.res_id))
                     for rec2 in book_obj.provider_booking_ids:
                         pnr_amount += 1
                 else:
                     pnr_amount = 1
-                rec.admin_fee = rec.admin_fee_id.get_final_adm_fee(rec.refund_amount, pnr_amount)
+
+                if rec.admin_fee_id.per_pax_type == 'amount':
+                    pax_amount = 0
+                    for rec2 in book_obj.passenger_ids:
+                        pax_amount += 1
+                else:
+                    pax_amount = 1
+
+                rec.admin_fee = rec.admin_fee_id.get_final_adm_fee(rec.refund_amount, pnr_amount, pax_amount)
             else:
                 rec.admin_fee = 0
 
@@ -387,7 +428,7 @@ class TtRefund(models.Model):
 
     def action_approve(self):
         if self.state != 'final':
-            raise UserError("Cannot appove because state is not 'Final'.")
+            raise UserError("Cannot approve because state is not 'Final'.")
 
         credit = 0
         debit = self.refund_amount
@@ -541,7 +582,7 @@ class TtRefund(models.Model):
 
         tot_citra_fee = 0
         for rec in self.refund_line_cust_ids:
-            tot_citra_fee += rec.citra_fee
+            tot_citra_fee += rec.citra_fee + rec.admin_fee
 
         if tot_citra_fee:
             credit = tot_citra_fee
