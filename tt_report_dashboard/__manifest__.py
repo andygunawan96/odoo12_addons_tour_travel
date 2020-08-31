@@ -20,7 +20,7 @@
     'version': '0.1',
 
     # any module necessary for this one to work correctly
-    'depends': ['base', 'tt_base', 'tt_reservation'],
+    'depends': ['base', 'tt_base', 'tt_reservation', 'tt_report_selling'],
 
     # always loaded
     'data': [
