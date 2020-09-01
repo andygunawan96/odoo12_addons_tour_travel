@@ -832,3 +832,22 @@ class TtReservation(models.Model):
                 for sc in rec.cost_service_charge_ids:
                     price += sc.total
             rec.total_price = price
+
+
+    def fixing_commission_agent_id_prices(self):
+        try:
+            for rec in self.search([]):
+                _logger.info(rec.name)
+                for prices in rec.sale_service_charge_ids:
+                    if prices.charge_type == 'RAC':
+                        if prices.charge_code in ['dif','fac','hoc']:
+                            prices.commission_agent_id = self.env.ref('tt_base.rodex_ho').id
+                        elif prices.charge_code != 'rac':
+                            current_agent = self.agent_id
+                            for loop in range(int(prices.charge_code and prices.charge_code[-1] or 0)):
+                                current_agent = current_agent.parent_agent_id
+                            if current_agent.id != self.agent_id.id:
+                                prices.commission_agent_id = current_agent.id
+        except Exception as e:
+            _logger.info("FIXING PRICES CAUSE %s" % (prices.charge_code))
+            _logger.error(traceback.format_exc())
