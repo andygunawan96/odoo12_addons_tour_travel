@@ -354,7 +354,7 @@ class ReservationEvent(models.Model):
                                 'foreign_amount': scs['foreign_amount'],
                                 'total': scs['amount'] * scs['pax_count'],
                                 'description': book_obj.pnr and book_obj.pnr or '',
-                                'commission_agent_id': scs['commission_agent_id'],
+                                'commission_agent_id': scs['commission_agent_id'] if scs['charge_code'] != 'rac' else False,
                             })
 
                         # Sale Service Charge
@@ -369,7 +369,7 @@ class ReservationEvent(models.Model):
                             'foreign_amount': scs['foreign_amount'],
                             'total': scs['amount'] * scs['pax_count'],
                             'description': book_obj.pnr and book_obj.pnr or '',
-                            'commission_agent_id': scs['commission_agent_id'],
+                            'commission_agent_id': scs['commission_agent_id'] if scs['charge_code'] != 'rac' else False,
                         })
                         pax_event_id.update({'cost_service_charge_ids': [(4, sc_id.id)]})
 
