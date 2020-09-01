@@ -118,6 +118,7 @@ class ReservationPpob(models.Model):
                     'amount': sc_value[p_pax_type][c_type]['amount'] + p_sc.amount,
                     'total': sc_value[p_pax_type][c_type]['total'] + p_sc.total,
                     'foreign_amount': sc_value[p_pax_type][c_type]['foreign_amount'] + p_sc.foreign_amount,
+                    'commission_agent_id': p_sc.commission_agent_id.id
                 })
 
             values = []
