@@ -192,7 +192,7 @@ class ProviderOffline(models.Model):
                         break
             if scs_same is False:
                 vals = {
-                    'commission_agent_id': scs.get('commission_agent_id') if scs.get('commission_agent_id') != 'rac' else False,
+                    'commission_agent_id': scs.get('commission_agent_id') if scs.get('charge_code') != 'rac' else False,
                     'amount': scs['amount'],
                     'charge_code': scs['charge_code'],
                     'charge_type': scs['charge_type'],
