@@ -65,19 +65,24 @@
             </tr>
             <tr valign="top" style="padding-top: 5px; padding-bottom: 5px;">
                 <td style="width: 23%; padding: 7px 7px 7px 20px; border-bottom: 1px solid #ccc; border-left: 1px solid #ccc; border-radius: 0px 0px 0px 20px; overflow-wrap: break-word; text-align: right;">
-                    Rp 1,004,381,715.00
+                    <span t-esc="int(values['amount'])" t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/>
+<!--                    Rp 1,004,381,715.00-->
                 </td>
                 <td style="width: 15%; padding: 7px 7px 7px 20px; border-bottom: 1px solid #ccc; overflow-wrap: break-word; text-align: right;">
-                    Rp 0.00
+                    <span t-esc="int(values['unique_amount'])" t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/>
+<!--                    Rp 0.00-->
                 </td>
                 <td style="width: 23%; padding: 7px 7px 7px 20px; border-bottom: 1px solid #CCC; overflow-wrap:break-word; text-align: right;">
-                    Rp 1,004,381,715.00
+                    <span t-esc="int(values['total'])" t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/>
+<!--                    Rp 1,004,381,715.00-->
                 </td>
                 <td style="width: 15%; padding: 7px 7px 7px 20px; border-bottom: 1px solid #CCC; overflow-wrap:break-word; text-align: right;">
-                    Rp 0.00
+                    <span t-esc="int(values['fees'])" t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/>
+<!--                    Rp 0.00-->
                 </td>
                 <td style="width: 24%; border-bottom: 1px solid #ccc; overflow-wrap:break-word; border-right: 1px solid #ccc; border-radius: 0px 0px 20px 0px; border-color: #CCC; padding: 7px 7px 7px 7px; text-align: right;">
-                    Rp 1,004,381,715.00
+                    <span t-esc="int(values['total_with_fees'])" t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/>
+<!--                    Rp 1,004,381,715.00-->
                 </td>
             </tr>
         </table>
