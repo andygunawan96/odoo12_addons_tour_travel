@@ -842,6 +842,8 @@ class TtReservation(models.Model):
                     if prices.charge_type == 'RAC':
                         if prices.charge_code in ['dif','fac','hoc']:
                             prices.commission_agent_id = self.env.ref('tt_base.rodex_ho').id
+                        elif prices.charge_code == 'rac':
+                            prices.commission_agent_id = False
                         elif prices.charge_code != 'rac':
                             current_agent = self.agent_id
                             for loop in range(int(prices.charge_code and prices.charge_code[-1] or 0)):
