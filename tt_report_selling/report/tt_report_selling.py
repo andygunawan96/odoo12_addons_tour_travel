@@ -438,7 +438,7 @@ class ReportSelling(models.Model):
 
     def _get_lines_data(self, date_from, date_to, agent_id, provider_type):
         if provider_type != 'all':
-            lines = self._lines(date_from, date_to, agent_id, provider_type, provider_type)
+            lines = self._lines(date_from, date_to, agent_id, provider_type)
             if provider_type == 'airline':
                 lines = self._convert_data_airline(lines)
             elif provider_type == 'train':
@@ -477,4 +477,16 @@ class ReportSelling(models.Model):
         return {
             'lines': line,
             'data_form': data_form
+        }
+
+    def _get_reports(self, data):
+        date_from = data['start_date']
+        date_to = data['end_date']
+        provider_type = data['type']
+        if provider_type == 'overall':
+            provider_type = 'all'
+        agent_id = ''
+        line = self._get_lines_data(date_from, date_to, agent_id, provider_type)
+        return {
+            'lines': line
         }
