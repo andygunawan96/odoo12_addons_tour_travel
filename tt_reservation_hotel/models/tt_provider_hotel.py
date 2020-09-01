@@ -173,7 +173,7 @@ class TransportBookingProvider(models.Model):
                 'total': scs.total,
                 'provider_hotel_booking_id': self.id,
                 'description': self.pnr and self.pnr or '',
-                'commission_agent_id': scs.commission_agent_id.id if scs.charge_code != 'rac' else False,
+                'commission_agent_id': scs.commission_agent_id.id,
             })
             # scs_list.append(new_scs)
     # TODO END
