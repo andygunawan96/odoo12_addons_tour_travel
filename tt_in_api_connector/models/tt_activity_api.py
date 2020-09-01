@@ -43,6 +43,9 @@ class TtActivityApiCon(models.Model):
 
         return res
 
+    def get_balance(self,provider):
+        return self.send_request_to_gateway('%s/account/activity' % (self.url),{'provider': provider},'get_vendor_balance')
+
     def resend_voucher(self, data):
         return self.send_request_to_gateway('%s/booking/activity' % (self.url), data, 'resend_voucher')
 

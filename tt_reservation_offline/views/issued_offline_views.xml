@@ -73,7 +73,7 @@
                         <button string="Cancel" name="action_cancel" type="object"  attrs="{'invisible':[('state_offline','!=','draft')]}" confirm="Are you sure want to cancel?"/>
 
 <!--                        hapus setelah fix-->
-                        <button string="ACCOUNTING SET TO ISSUED" name="offline_set_to_issued" type="object" attrs="{'invisible':[('state_offline','in',['draft', 'confirm'])]}" groups="tt_base.group_tt_accounting_supervisor"/>
+                        <button string="ACCOUNTING SET TO ISSUED" name="offline_set_to_issued" type="object" attrs="{'invisible':[('state_offline','in',['draft', 'confirm', 'expired'])]}" groups="tt_base.group_tt_accounting_supervisor"/>
 <!--                        end of hapus-->
 
                         <button string="Adjustment" name="%(tt_accounting.tt_adjustment_wizard_action_view)d" type="action" groups="tt_base.group_tt_accounting_operator"

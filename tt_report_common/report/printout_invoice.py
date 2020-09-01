@@ -2022,12 +2022,22 @@ class PrintoutTopUp(models.AbstractModel):
                 'active_model': 'tt.billing.statement',
                 'active_ids': docids
             }
+        values = {}
+        for rec in self.env[data['context']['active_model']].browse(data['context']['active_ids']):
+            values.update({
+                'amount': rec.amount,
+                'unique_amount': rec.unique_amount,
+                'total': rec.total,
+                'fees': rec.fees,
+                'total_with_fees': rec.total_with_fees
+            })
         ho_obj = self.env['tt.agent'].sudo().search([('agent_type_id', '=', self.env.ref('tt_base.agent_type_ho').id)], limit=1)
         header_width = 90
         return {
             'doc_ids': data['context']['active_ids'],
             'doc_model': data['context']['active_model'],
             'docs': self.env[data['context']['active_model']].browse(data['context']['active_ids']),
+            'values': values,
             'terbilang': self.compute_terbilang_from_objs(
                 self.env[data['context']['active_model']].browse(data['context']['active_ids'])),
             'header_width': str(header_width),

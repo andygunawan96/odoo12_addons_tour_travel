@@ -36,6 +36,9 @@ class TtVisaApiCon(models.Model):
 
         return res
 
+    def get_balance(self,provider):
+        return self.send_request_to_gateway('%s/account/visa' % (self.url),{'provider': provider},'get_vendor_balance')
+
     def get_product_vendor(self, data):
         return self.send_request_to_gateway('%s/booking/visa' % (self.url), data, 'get_product_provider', timeout=600)
 

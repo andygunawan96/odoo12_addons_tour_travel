@@ -8,12 +8,17 @@
                 <field name="display_name"/>
                 <field name="name"/>
                 <field name="after_sales_type"/>
+                <field name="target"/>
                 <field name="type"/>
                 <field name="amount"/>
+                <field name="per_pax_type"/>
+                <field name="per_pax_amount"/>
 
                 <group expand="0" string="Group By">
                     <filter name="group_by_after_sales_type" string="After Sales Type" domain="[]" context="{'group_by':'after_sales_type'}" groups="tt_base.group_tt_tour_travel_operator"/>
-                    <filter name="group_by_type" string="Type" domain="[]" context="{'group_by':'type'}" groups="tt_base.group_tt_tour_travel_operator"/>
+                    <filter name="group_by_target" string="Target" domain="[]" context="{'group_by':'target'}" groups="tt_base.group_tt_tour_travel_operator"/>
+                    <filter name="group_by_type" string="Type (For Amount per PNR)" domain="[]" context="{'group_by':'type'}" groups="tt_base.group_tt_tour_travel_operator"/>
+                    <filter name="group_by_per_pax_type" string="Type (For Amount per Passenger)" domain="[]" context="{'group_by':'per_pax_type'}" groups="tt_base.group_tt_tour_travel_operator"/>
                 </group>
             </search>
         </field>
@@ -38,13 +43,40 @@
                         <group>
                             <field name="name"/>
                             <field name="after_sales_type"/>
-                            <field name="type"/>
                         </group>
                         <group>
-                            <field name="amount"/>
+                            <field name="target"/>
                             <field name="min_amount" attrs="{'invisible':[('type','!=', 'percentage')]}"/>
                         </group>
                     </group>
+                    <group string="Settings">
+                        <group>
+                            <field name="type"/>
+                            <field name="per_pax_type"/>
+                        </group>
+                        <group>
+                            <field name="amount"/>
+                            <field name="per_pax_amount"/>
+                        </group>
+                    </group>
+                    <group>
+                        <group>
+                            <field name="agent_type_access_type"/>
+                        </group>
+                        <group>
+                        </group>
+                    </group>
+                    <separator string="Agent Types"/>
+                    <field name="agent_type_ids"/>
+                    <group>
+                        <group>
+                            <field name="agent_access_type"/>
+                        </group>
+                        <group>
+                        </group>
+                    </group>
+                    <separator string="Agents"/>
+                    <field name="agent_ids"/>
                 </sheet>
                 <div class="oe_chatter">
                     <field name="message_follower_ids" widget="mail_followers"/>
@@ -61,8 +93,11 @@
             <tree>
                 <field name="name"/>
                 <field name="after_sales_type"/>
+                <field name="target"/>
                 <field name="type"/>
                 <field name="amount"/>
+                <field name="per_pax_type"/>
+                <field name="per_pax_amount"/>
             </tree>
         </field>
     </record>

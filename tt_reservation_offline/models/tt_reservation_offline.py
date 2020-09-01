@@ -534,6 +534,8 @@ class IssuedOffline(models.Model):
             for line in self.line_ids:
                 self.date_format_check(self.provider_type_id_name, line.to_dict())
         if self.check_provider_empty() is False:
+            for line in self.line_ids:
+                line.compute_provider_name()
             if self.provider_type_id_name == 'airline' or self.provider_type_id_name == 'train':
                 if self.check_pnr_empty():
                     raise UserError(_('PNR(s) can\'t be Empty'))
