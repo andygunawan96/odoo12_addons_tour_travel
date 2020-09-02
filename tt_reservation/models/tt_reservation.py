@@ -491,6 +491,7 @@ class TtReservation(models.Model):
         res = {
             'order_number': self.name,
             'book_id': self.id,
+            'agent_id': self.agent_id.id if self.agent_id else '',
             'pnr': self.pnr and self.pnr or '',
             'state': self.state,
             'state_description': variables.BOOKING_STATE_STR[self.state],
