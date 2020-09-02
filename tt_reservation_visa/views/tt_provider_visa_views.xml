@@ -4,7 +4,7 @@
         <field name="name">tt.provider.visa.form.view</field>
         <field name="model">tt.provider.visa</field>
         <field name="arch" type="xml">
-            <form>
+            <form edit="false" create="false">
                 <header>
                     <field name="state_visa" readonly="1" invisible="1"/>
                     <field name="state" widget="statusbar" statusbar_visible="booked,issued"/>

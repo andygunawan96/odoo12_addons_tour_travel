@@ -332,17 +332,17 @@ class Ledger(models.Model):
             ledger_pnr = led.pnr
     # END
 
-    def re_compute_ledger_balance(self):
-        if not self.customer_parent_id:
-            ledger_objs = self.search([('agent_id','=',self.agent_id.id),('id','>=',self.id)],order='id')
-        else:
-            ledger_objs = self.search([('customer_parent_id','=',self.customer_parent_id.id),('id','>=',self.id)],order='id')
-
-        cur_balance = 0
-        for idx, rec in enumerate(ledger_objs):
-            if idx > 0:
-                rec.balance = cur_balance+rec.debit-rec.credit
-            cur_balance = rec.balance
+    # def re_compute_ledger_balance(self):
+    #     if not self.customer_parent_id:
+    #         ledger_objs = self.search([('agent_id','=',self.agent_id.id),('id','>=',self.id)],order='id')
+    #     else:
+    #         ledger_objs = self.search([('customer_parent_id','=',self.customer_parent_id.id),('id','>=',self.id)],order='id')
+    #
+    #     cur_balance = 0
+    #     for idx, rec in enumerate(ledger_objs):
+    #         if idx > 0:
+    #             rec.balance = cur_balance+rec.debit-rec.credit
+    #         cur_balance = rec.balance
 
     def waiting_list_process(self,list_agent_id,customer_parent_id,amount_comment):
         start_time = time.time()

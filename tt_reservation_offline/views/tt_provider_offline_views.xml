@@ -6,7 +6,7 @@
             <field name="name">tt.provider.offline.view.form></field>
             <field name="model">tt.provider.offline</field>
             <field name="arch" type="xml">
-                <form string="">
+                <form edit="false" create="false">
                     <header>
                         <field name="state" readonly="1" widget="statusbar" statusbar_visible="draft,booked,issued"/>
                     </header>

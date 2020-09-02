@@ -12,10 +12,9 @@
                     <field name="customer_parent_id"/>
                     <field name="customer_parent_type_id"/>
                     <field name="currency_id"/>
-                    <field name="adj_type"/>
-                    <field name="referenced_document"/>
-                    <field name="res_model"/>
-                    <field name="res_id"/>
+                    <field name="referenced_document" groups="base.user_admin" />
+                    <field name="res_model" groups="base.user_admin" />
+                    <field name="res_id" groups="base.user_admin" />
                     <field name="component_type" invisible="context.get('hide_component_type',False)"/>
                     <field name="adjust_side"/>
                     <field name="adjust_amount"/>
@@ -33,7 +32,7 @@
     </record>
 
     <record id="tt_adjustment_wizard_action_view" model="ir.actions.act_window">
-        <field name="name">tt.adjustment.wizard.action.view</field>
+        <field name="name">Adjustment Wizard</field>
         <field name="res_model">tt.adjustment.wizard</field>
         <field name="view_type">form</field>
         <field name="view_mode">form</field>

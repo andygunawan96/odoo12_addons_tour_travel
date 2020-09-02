@@ -4,7 +4,7 @@
         <field name="name">tt.provider.passport.form.view</field>
         <field name="model">tt.provider.passport</field>
         <field name="arch" type="xml">
-            <form>
+            <form edit="false" create="false">
                 <header>
                     <field name="state_passport" readonly="1" invisible="1"/>
                     <field name="state" widget="statusbar" statusbar_visible="booked,issued"/>
