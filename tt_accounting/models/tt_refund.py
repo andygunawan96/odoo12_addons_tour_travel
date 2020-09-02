@@ -85,13 +85,19 @@ class TtRefundLineCustomer(models.Model):
                 ('agent_access_type', '=', 'allow'), ('id', 'in', agent_adm_ids), '&',
                 ('agent_access_type', '=', 'restrict'), ('id', 'not in', agent_adm_ids)]
 
-    admin_fee_id = fields.Many2one('tt.master.admin.fee', 'Admin Fee Type', domain=get_admin_fee_domain)
+    admin_fee_id = fields.Many2one('tt.master.admin.fee', 'Admin Fee Type', domain=get_admin_fee_domain, readonly=True)
     admin_fee = fields.Monetary('Admin Fee Amount', default=0, readonly=True, compute="_compute_admin_fee")
     citra_fee = fields.Monetary('Additional Fee', default=0, readonly=False)
     total_amount = fields.Monetary('Total Amount', default=0, required=True, readonly=True, compute='_compute_total_amount')
     refund_id = fields.Many2one('tt.refund', 'Refund', readonly=True)
     agent_id = fields.Many2one('tt.agent', 'Agent', related='refund_id.agent_id')
+    agent_type_id = fields.Many2one('tt.agent.type', 'Agent Type', related='agent_id.agent_type_id', readonly=True)
     acquirer_id = fields.Many2one('payment.acquirer', 'Payment Acquirer', domain="[('agent_id','=',agent_id)]")
+    state = fields.Selection([('draft', 'Draft'), ('confirm', 'Confirmed'),
+                              ('sent', 'Sent'), ('validate', 'Validated'), ('final', 'Finalization'),
+                              ('approve', 'Approved'), ('payment', 'Payment'),
+                              ('approve_cust', 'Approved (Cust. Payment)'), ('done', 'Done'), ('cancel', 'Canceled'),
+                              ('expired', 'Expired')], 'Status', default='draft', related='refund_id.state')
 
     def to_dict(self):
         res = {
@@ -173,7 +179,7 @@ class TtRefund(models.Model):
                 ('agent_access_type', '=', 'allow'), ('id', 'in', agent_adm_ids), '&',
                 ('agent_access_type', '=', 'restrict'), ('id', 'not in', agent_adm_ids)]
 
-    admin_fee_id = fields.Many2one('tt.master.admin.fee', 'Admin Fee Type', domain=get_admin_fee_domain)
+    admin_fee_id = fields.Many2one('tt.master.admin.fee', 'Admin Fee Type', domain=get_admin_fee_domain, readonly=True)
     admin_fee = fields.Monetary('Admin Fee Amount', default=0, readonly=True, compute="_compute_admin_fee")
     refund_amount = fields.Monetary('Expected Refund Amount', default=0, required=True, readonly=True, compute='_compute_refund_amount', related='')
     real_refund_amount = fields.Monetary('Real Refund Amount from Vendor', default=0, readonly=True, compute='_compute_real_refund_amount')

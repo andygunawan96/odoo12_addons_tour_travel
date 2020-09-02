@@ -69,6 +69,14 @@
                     <button name="set_to_approve" string="Set to Approved" type="object" groups="tt_base.group_tt_accounting_manager" attrs="{'invisible':[('state','!=', 'payment')]}"/>
                     <button name="cancel_refund_from_button" string="Cancel" type="object" attrs="{'invisible':[('state','in', ['approve', 'done', 'cancel', 'payment', 'approve_cust'])]}" confirm="Are you sure you want to cancel?"/>
                     <button name="create_profit_loss_ledger" string="Create Profit Loss" type="object" groups="tt_base.group_tt_accounting_operator" attrs="{'invisible':[('state','not in', ['approve', 'done', 'payment', 'approve_cust'])]}"/>
+                    <button string="Change Admin Fee" name="%(tt_accounting.tt_change_admin_fee_wizard_action_view)d" type="action"
+                            context="{
+                        'default_res_model': 'tt.refund',
+                        'default_res_id': id,
+                        'default_agent_id': agent_id,
+                        'default_agent_type_id': agent_type_id,
+                        'default_admin_fee_id': admin_fee_id
+                   }" attrs="{'invisible':[('state','!=','confirm')]}"/>
                     <button string="Extend Refund" name="%(tt_accounting.tt_refund_extend_wizard_action_view)d" type="action" groups="tt_base.group_tt_accounting_supervisor"
                             context="{
                         'default_refund_id': id,
@@ -184,7 +192,7 @@
                         <group>
                             <field name="refund_amount"/>
                             <field name="real_refund_amount" groups="tt_base.group_tt_tour_travel_operator"/>
-                            <field name="admin_fee_id" groups="tt_base.group_tt_tour_travel_operator" attrs="{'readonly':[('state','!=','confirm')]}" required="1"/>
+                            <field name="admin_fee_id" groups="tt_base.group_tt_tour_travel_operator" required="1"/>
                             <field name="admin_fee"/>
                             <field name="total_amount"/>
                             <field name="total_amount_cust" attrs="{'invisible':[('refund_line_cust_ids','=', [])]}"/>
@@ -265,25 +273,39 @@
                                     <field name="total_amount"/>
                                 </tree>
                                 <form>
-                                    <group>
+                                    <header>
+                                        <button string="Change Admin Fee" name="%(tt_accounting.tt_change_admin_fee_wizard_action_view)d" type="action"
+                                                context="{
+                                                'default_res_model': 'tt.refund.line.customer',
+                                                'default_res_id': id,
+                                                'default_agent_id': agent_id,
+                                                'default_agent_type_id': agent_type_id,
+                                                'default_admin_fee_id': admin_fee_id
+                                           }" attrs="{'invisible':[('state','!=','payment')]}"/>
+                                    </header>
+                                    <sheet>
                                         <group>
-                                            <field name="refund_id" invisible="1"/>
-                                            <field name="agent_id" invisible="1"/>
-                                            <field name="name"/>
-                                            <field name="birth_date"/>
-                                            <field name="currency_id"/>
-                                            <field name="method"/>
-                                            <field name="acquirer_id"/>
-                                            <field name="bank_id" attrs="{'invisible':[('method','!=', 'transfer')]}"/>
+                                            <group>
+                                                <field name="refund_id" invisible="1"/>
+                                                <field name="agent_id" invisible="1"/>
+                                                <field name="agent_type_id" invisible="1"/>
+                                                <field name="state" invisible="1"/>
+                                                <field name="name"/>
+                                                <field name="birth_date"/>
+                                                <field name="currency_id"/>
+                                                <field name="method"/>
+                                                <field name="acquirer_id"/>
+                                                <field name="bank_id" attrs="{'invisible':[('method','!=', 'transfer')]}"/>
+                                            </group>
+                                            <group>
+                                                <field name="refund_amount"/>
+                                                <field name="admin_fee_id"/>
+                                                <field name="admin_fee"/>
+                                                <field name="citra_fee"/>
+                                                <field name="total_amount"/>
+                                            </group>
                                         </group>
-                                        <group>
-                                            <field name="refund_amount"/>
-                                            <field name="admin_fee_id"/>
-                                            <field name="admin_fee"/>
-                                            <field name="citra_fee"/>
-                                            <field name="total_amount"/>
-                                        </group>
-                                    </group>
+                                    </sheet>
                                 </form>
                             </field>
                             <footer>
