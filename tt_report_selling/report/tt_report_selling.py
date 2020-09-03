@@ -176,6 +176,27 @@ class ReportSelling(models.Model):
         provider_type.name as provider_type_name
         """
 
+    @staticmethod
+    def _select_event():
+        return """
+        reservation.id as reservation_id, 
+        reservation.name as reservation_order_number, 
+        reservation.booked_date as reservation_booked_date_og,
+        reservation.issued_date as reservation_issued_date_og,
+        reservation.create_date as reservation_create_date_og, 
+        reservation.nights as reservation_night, 
+        reservation.provider_name as reservation_provider_name,
+        reservation.total as amount, 
+        reservation.state as reservation_state, 
+        reservation.event_name as reservation_event_name,
+        reservation.elder as reservation_elder, 
+        reservation.adult as reservation_adult, 
+        reservation.child as reservation_child, 
+        reservation.infant as reservation_infant,
+        provider_type.name as provider_type_name,
+        COUNT(reservation_passenger.booking_id) as reservation_passenger
+        """
+
     #for all
     @staticmethod
     def _from(provider_type):
@@ -236,6 +257,13 @@ class ReportSelling(models.Model):
         """
 
     @staticmethod
+    def _from_event():
+        return """tt_reservation_event reservation
+        LEFT JOIN tt_provider_type provider_type ON reservation.provider_type_id = provider_type.id
+        LEFT JOIN tt_reservation_passenger_activity reservation_passenger ON reservation_passenger.booking_id = reservation.id
+        """
+
+    @staticmethod
     def _from_offline():
         return """tt_reservation_offline reservation
         LEFT JOIN tt_provider_type provider_type ON reservation.provider_type_id = provider_type.id
@@ -263,6 +291,10 @@ class ReportSelling(models.Model):
     @staticmethod
     def _group_by_visa():
         return """reservation.id, country.name"""
+
+    @staticmethod
+    def _group_by_event():
+        return """reservation.id, provider_type.name"""
 
     #works with all
     @staticmethod
@@ -296,6 +328,8 @@ class ReportSelling(models.Model):
             query = 'SELECT {} '.format(self._select_visa())
         elif provider_checker == 'offline':
             query = 'SELECT {} '.format(self._select_offline())
+        elif provider_checker == 'event':
+            query = ''
         else:
             query = 'SELECT {}'.format(self._select())
 
@@ -325,6 +359,10 @@ class ReportSelling(models.Model):
         elif provider_checker == 'offline':
             query += 'FROM {} '.format(self._from_offline())
             query += 'WHERE {} '.format(self._where(date_from, date_to))
+        elif provider_checker == 'event':
+            query += 'FROM {} '.format(self._from_event())
+            query += 'WHERE {} '.format(self._where(date_from, date_to))
+            query += 'GROUP BY {} '.format(self._group_by_event())
         else:
             query += 'FROM {} '.format(self._from(provider_type))
             query += 'WHERE {} '.format(self._where(date_from, date_to))
@@ -416,6 +454,15 @@ class ReportSelling(models.Model):
 
         return lines
 
+    def _convert_data_event(self, lines):
+        for i in lines:
+            i['reservation_create_date'] = self._datetime_user_context(i['reservation_create_date_og'])
+            if i['reservation_booked_date_og']:
+                i['reservation_booked_date'] = self._datetime_user_context(i['reservation_booked_date_og'])
+            if i['reservation_issued_date_og']:
+                i['reservation_issued_date'] = self._datetime_user_context(i['reservation_issued_date_og'])
+        return lines
+
     def _seperate_data(self, lines):
         for i in lines:
             try:
@@ -453,6 +500,8 @@ class ReportSelling(models.Model):
                 lines = self._convert_data_visa(lines)
             elif provider_type == 'offline':
                 lines = self._convert_data_offline(lines)
+            elif provider_type == 'event':
+                lines = self._convert_data_event(lines)
             else:
                 lines = self._convert_data(lines)
             lines = self._seperate_data(lines)
