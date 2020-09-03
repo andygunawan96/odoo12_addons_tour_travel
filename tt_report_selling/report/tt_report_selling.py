@@ -329,7 +329,7 @@ class ReportSelling(models.Model):
         elif provider_checker == 'offline':
             query = 'SELECT {} '.format(self._select_offline())
         elif provider_checker == 'event':
-            query = ''
+            query = 'SELECT {} '.format(self._select_event())
         else:
             query = 'SELECT {}'.format(self._select())
 
