@@ -8,6 +8,30 @@ _logger = logging.getLogger(__name__)
 class TtReportDashboard(models.Model):
     _name = 'tt.report.dashboard'
 
+    def check_index(self, arr, key, param):
+        for i, dic in enumerate(arr):
+            if dic[key] == param:
+                return i
+        return -1
+
+    def check_date_index(self, arr, params):
+        for i, dic in enumerate(arr):
+            if dic['year'] == params['year'] and dic['month'] == params['month']:
+                return i
+        return -1
+
+    def check_tour_route_index(self, arr, params):
+        for i, dic in enumerate(arr):
+            if dic['category'] == params['category'] and dic['route'] == params['route']:
+                return i
+        return -1
+
+    def check_offline_provider(self, arr, params):
+        for i, dic in enumerate(arr):
+            if dic['provider_type'] == params['provider_type'] and dic['offline_provider_type'] == params['offline_provider_type']:
+                return i
+        return -1
+
     def get_report_json_api(self, data, context):
         type = data['report_type']
         if type == 'overall':
