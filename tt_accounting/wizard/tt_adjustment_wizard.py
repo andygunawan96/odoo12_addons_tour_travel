@@ -61,7 +61,13 @@ class TtAdjustmentWizard(models.TransientModel):
             'reason_uid': self.reason_uid.id,
             'description': self.description
         })
+        return adjustment_obj
 
+    def submit_and_force_approve_adjustment(self):
+        adj_obj = self.submit_adjustment()
+        adj_obj.confirm_adj_from_button()
+        adj_obj.validate_adj_from_button()
+        adj_obj.approve_adj_from_button()
 
         #
         # form_id = self.env['tt.adjustment'].get_form_id()

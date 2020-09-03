@@ -340,9 +340,15 @@ class ReservationPpob(models.Model):
                                                                        ('state', '=', 'booked')], limit=1)
             if inq_prov_obj and inq_prov_obj.booking_id and inq_prov_obj.booking_id.agent_id.id == context['co_agent_id']:
                 inq_prov_obj = inq_prov_obj[0]
+
+                is_update_sc = False
+                if inq_prov_obj.total_price != data['data'].get('total'):
+                    is_update_sc = True
+
                 vals = {
                     'order_number': inq_prov_obj.booking_id.name,
                     'data': data['data'],
+                    'is_update_sc': is_update_sc
                 }
                 response = self.update_inquiry_api(vals, context)
             else:
@@ -627,8 +633,12 @@ class ReservationPpob(models.Model):
                 raise RequestException(1003)
 
             resv_obj = resv_obj[0]
-            if resv_obj.state == 'booked':
+            if resv_obj.state == 'booked' and data.get('is_update_sc'):
                 for rec in resv_obj.provider_booking_ids:
+                    ledger_created = rec.delete_service_charge()
+                    if ledger_created:
+                        rec.action_reverse_ledger()
+                        rec.delete_service_charge()
                     rec.sudo().unlink()
                 for rec in resv_obj.passenger_ids:
                     rec.update({
