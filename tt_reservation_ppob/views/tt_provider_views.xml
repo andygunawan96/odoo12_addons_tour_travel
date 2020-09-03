@@ -3,7 +3,7 @@
         <field name="name">tt.transport.ppob.provider.form.view</field>
         <field name="model">tt.provider.ppob</field>
         <field name="arch" type="xml">
-            <form>
+            <form edit="false" create="false">
                 <header>
                     <button string="Set To Booked" name="action_set_to_book_from_button" groups="tt_base.group_tt_ticketing_operator" states="cancel2,issued,fail_issued" type="object"/>
                     <button string="Issued Locally" name="%(tt_reservation_ppob.force_issued_wizard_action_view)d" states="booked" type="action"

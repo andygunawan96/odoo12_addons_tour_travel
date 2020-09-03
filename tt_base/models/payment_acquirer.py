@@ -196,9 +196,12 @@ class PaymentAcquirer(models.Model):
                 return ERR.get_error(1008)
 
             if util.get_without_empty(req, 'order_number'):
-                amount = self.env['tt.reservation.%s' % req['provider_type']].search([('name', '=', req['order_number'])], limit=1).total
+                book_obj = self.env['tt.reservation.%s' % req['provider_type']].search([('name', '=', req['order_number'])], limit=1)
+                amount = book_obj.total
+                co_agent_id = book_obj.agent_id.id ## untuk kalau HO issuedkan channel, supaya payment acquirerny tetap punya agentnya
             else:
                 amount = req.get('amount', 0)
+                co_agent_id = context['co_agent_id']
 
             dom = [('website_published', '=', True), ('company_id', '=', self.env.user.company_id.id)]
 
@@ -207,7 +210,7 @@ class PaymentAcquirer(models.Model):
                 dom.append(('agent_id', '=', self.env.ref('tt_base.rodex_ho').id))
                 unique = self.generate_unique_amount(amount).upper_number
             elif req['transaction_type'] == 'billing':
-                dom.append(('agent_id', '=', context['co_agent_id']))
+                dom.append(('agent_id', '=', co_agent_id))
                 unique = 0
 
             values = {}

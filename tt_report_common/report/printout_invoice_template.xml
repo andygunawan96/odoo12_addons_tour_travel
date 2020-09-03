@@ -273,7 +273,7 @@
                     <span t-att-style="'margin-top: 10px; margin-left: 10px; color: '+ base_color +'; font-size: 20px;'">Proforma Top Up</span><br/>  <!--Proforma HO Invoice-->
                     <t t-set="printout_icon" t-value="'/tt_report_common/static/images/bill-white.png'"/>
                 </t>
-                <t t-if="doc.state in ['validated','approved']">  <!--['valid','done']-->
+                <t t-if="doc.state in ['validated','approved','expired','cancel']">  <!--['valid','done']-->
                     <span t-att-style="'margin-top: 10px; margin-left: 10px; color: '+ base_color +'; font-size: 20px;'">Top Up</span><br/>  <!--HO Invoice-->
                     <t t-set="printout_icon" t-value="'/tt_report_common/static/images/bill-white.png'"/>
                 </t>

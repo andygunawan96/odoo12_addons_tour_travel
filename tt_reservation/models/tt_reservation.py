@@ -491,6 +491,7 @@ class TtReservation(models.Model):
         res = {
             'order_number': self.name,
             'book_id': self.id,
+            'agent_id': self.agent_id.id if self.agent_id else '',
             'pnr': self.pnr and self.pnr or '',
             'state': self.state,
             'state_description': variables.BOOKING_STATE_STR[self.state],
@@ -725,7 +726,7 @@ class TtReservation(models.Model):
                             total_discount = total_discount + rec['provider_total_discount']
                     agent_check_amount-=total_discount
 
-                balance_res = self.env['tt.agent'].check_balance_limit_api(context['co_agent_id'],agent_check_amount)
+                balance_res = self.env['tt.agent'].check_balance_limit_api(book_obj.agent_id.id,agent_check_amount)
                 if balance_res['error_code'] != 0:
                     _logger.error('Agent Balance not enough')
                     raise RequestException(1007,additional_message="agent balance")

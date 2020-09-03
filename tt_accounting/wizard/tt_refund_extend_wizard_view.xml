@@ -5,7 +5,7 @@
         <field name="name">Refund Extend Wizard</field>
         <field name="model">tt.refund.extend.wizard</field>
         <field name="arch" type="xml">
-            <form string="Refund ExtendWizard">
+            <form string="Refund Extend Wizard">
                 <group>
                     <field name="refund_id" groups="base.user_admin"/>
                     <field name="new_refund_date"/>

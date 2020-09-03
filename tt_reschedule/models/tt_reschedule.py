@@ -46,21 +46,26 @@ class TtRescheduleLine(models.Model):
                                             readonly=False, states={'draft': [('readonly', True)]})
     reschedule_id = fields.Many2one('tt.reschedule', 'After Sales', readonly=True)
 
-    def get_admin_fee_domain(self):
-        agent_type_adm_ids = self.reschedule_id.agent_id.agent_type_id.admin_fee_ids.ids
-        agent_adm_ids = self.reschedule_id.agent_id.admin_fee_ids.ids
-        return [('after_sales_type', '=', 'after_sales'), ('target', '=', 'ho_to_agent'), '&', '|',
-                ('agent_type_access_type', '=', 'all'), '|', '&', ('agent_type_access_type', '=', 'allow'),
-                ('id', 'in', agent_type_adm_ids), '&', ('agent_type_access_type', '=', 'restrict'),
-                ('id', 'not in', agent_type_adm_ids), '|', ('agent_access_type', '=', 'all'), '|', '&',
-                ('agent_access_type', '=', 'allow'), ('id', 'in', agent_adm_ids), '&',
-                ('agent_access_type', '=', 'restrict'), ('id', 'not in', agent_adm_ids)]
-
-    admin_fee_id = fields.Many2one('tt.master.admin.fee', 'Admin Fee Type', domain=get_admin_fee_domain, readonly=True, states={'confirm': [('readonly', False)]})
+    agent_id = fields.Many2one('tt.agent', 'Agent', related='reschedule_id.agent_id')
+    agent_type_id = fields.Many2one('tt.agent.type', 'Agent Type', related='agent_id.agent_type_id', readonly=True)
+    admin_fee_id = fields.Many2one('tt.master.admin.fee', 'Admin Fee Type', domain=[('id', '=', -1)], readonly=True, states={'confirm': [('readonly', False)]})
     admin_fee = fields.Integer('Admin Fee Amount', default=0, readonly=True, compute="_compute_admin_fee")
     total_amount = fields.Integer('Total Amount', default=0, readonly=True, compute="_compute_total_amount")
     sequence = fields.Integer('Sequence', default=50, states={'draft': [('readonly', False)], 'confirm': [('readonly', False)]}, readonly=True)
     state = fields.Selection([('draft', 'Draft'), ('confirm', 'Confirmed'), ('done', 'Done')], 'State', default='confirm')
+    admin_fee_dummy = fields.Boolean('Generate Admin Fee Options')
+
+    @api.model
+    def create(self, vals):
+        if vals.get('admin_fee_dummy'):
+            vals.pop('admin_fee_dummy')
+        return super(TtRescheduleLine, self).create(vals)
+
+    @api.multi
+    def write(self, vals):
+        if vals.get('admin_fee_dummy'):
+            vals.pop('admin_fee_dummy')
+        return super(TtRescheduleLine, self).write(vals)
 
     @api.depends('admin_fee_id', 'reschedule_amount', 'reschedule_id')
     @api.onchange('admin_fee_id', 'reschedule_amount', 'reschedule_id')
@@ -91,6 +96,19 @@ class TtRescheduleLine(models.Model):
     def _compute_total_amount(self):
         for rec in self:
             rec.total_amount = rec.reschedule_amount + rec.admin_fee
+
+    @api.onchange('admin_fee_dummy')
+    def get_admin_fee_domain(self):
+        agent_type_adm_ids = self.reschedule_id.agent_id.agent_type_id.admin_fee_ids.ids
+        agent_adm_ids = self.reschedule_id.agent_id.admin_fee_ids.ids
+        return {'domain': {
+            'admin_fee_id': [('after_sales_type', '=', 'after_sales'), ('target', '=', 'ho_to_agent'), '&', '|',
+                 ('agent_type_access_type', '=', 'all'), '|', '&', ('agent_type_access_type', '=', 'allow'),
+                 ('id', 'in', agent_type_adm_ids), '&', ('agent_type_access_type', '=', 'restrict'),
+                 ('id', 'not in', agent_type_adm_ids), '|', ('agent_access_type', '=', 'all'), '|', '&',
+                 ('agent_access_type', '=', 'allow'), ('id', 'in', agent_adm_ids), '&',
+                 ('agent_access_type', '=', 'restrict'), ('id', 'not in', agent_adm_ids)]
+        }}
 
     def set_to_draft(self):
         self.write({

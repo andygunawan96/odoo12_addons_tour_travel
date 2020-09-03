@@ -3,7 +3,7 @@
         <field name="name">tt.transport.airline.provider.form.view</field>
         <field name="model">tt.provider.airline</field>
         <field name="arch" type="xml">
-            <form>
+            <form edit="false" create="false">
                 <!--<header>-->
                 <!--<button string="Set to Draft" name="action_set_as_draft" type="object" groups="base.group_no_one" attrs="{'invisible':[('state','=','draft')]}"/>-->
                 <!--<button string="Set to Booked" name="action_set_as_booked" type="object" groups="tt_base.group_tt_tour_travel_operator" attrs="{'invisible':[('state','=','booked')]}"/>-->

@@ -122,7 +122,7 @@ class TtAdjustment(models.Model):
 
     def validate_adj_from_button(self):
         if self.state != 'confirm':
-            raise UserError("Cannot Approve because state is not 'confirm'.")
+            raise UserError("Cannot Approve because state is not 'Confirm'.")
 
         self.write({
             'state': 'validate',
@@ -189,15 +189,15 @@ class TtAdjustment(models.Model):
             'cancel_date': datetime.now()
         })
 
-    def approve_all_adjustment(self):
-        for rec in self.search([('state','=','draft'),
-                                ('create_date','>','2020-02-18 09:30:00')]):
-            _logger.info(rec.name)
-            rec.confirm_adj_from_button()
-            rec.validate_adj_from_button()
-            rec.approve_adj_from_button()
-
-    def approve_all_adjustment_test(self):
-        for rec in self.search([('state','=','draft'),
-                                ('create_date','>','2020-02-20 09:30:00')]):
-            _logger.info(rec.name)
+    # def approve_all_adjustment(self):
+    #     for rec in self.search([('state','=','draft'),
+    #                             ('create_date','>','2020-02-18 09:30:00')]):
+    #         _logger.info(rec.name)
+    #         rec.confirm_adj_from_button()
+    #         rec.validate_adj_from_button()
+    #         rec.approve_adj_from_button()
+    #
+    # def approve_all_adjustment_test(self):
+    #     for rec in self.search([('state','=','draft'),
+    #                             ('create_date','>','2020-02-20 09:30:00')]):
+    #         _logger.info(rec.name)

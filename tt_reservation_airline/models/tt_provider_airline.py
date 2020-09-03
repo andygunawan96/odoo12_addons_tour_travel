@@ -62,7 +62,7 @@ class TtProviderAirline(models.Model):
     penalty_amount = fields.Float('Penalty Amount', default=0)
     reschedule_uid = fields.Many2one('res.users', 'Rescheduled By')
     reschedule_date = fields.Datetime('Rescheduled Date')
-    total_price = fields.Float('Total Price', readonly=True, default=0)
+    total_price = fields.Float('Total Price', default=0)
     penalty_currency = fields.Char('Penalty Currency', default='')
     # END
 
@@ -688,6 +688,7 @@ class TtProviderAirline(models.Model):
             'pnr2': self.pnr2 and self.pnr2 or '',
             'provider': self.provider_id.code,
             'provider_id': self.id,
+            'agent_id': self.booking_id.agent_id.id if self.booking_id and self.booking_id.agent_id else '',
             'state': self.state,
             'state_description': variables.BOOKING_STATE_STR[self.state],
             'sequence': self.sequence,

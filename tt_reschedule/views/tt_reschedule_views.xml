@@ -301,18 +301,21 @@
                                         'default_reschedule_line_id': id,
                                         'default_real_reschedule_amount': real_reschedule_amount,
                                         }" attrs="{'invisible':[('state','=','draft')]}"/>
-                                        <field name="state" invisible="1"/>
                                     </header>
                                     <sheet>
                                         <group>
                                             <group>
+                                                <field name="agent_id" invisible="1"/>
+                                                <field name="agent_type_id" invisible="1"/>
+                                                <field name="state" invisible="1"/>
                                                 <field name="reschedule_type"/>
                                                 <field name="reschedule_amount" groups="tt_base.group_tt_agent_user_operator"/>
                                                 <field name="reschedule_amount_ho" groups="tt_base.group_tt_tour_travel_operator"/>
                                                 <field name="real_reschedule_amount" groups="tt_base.group_tt_tour_travel_operator" attrs="{'invisible':[('state','not in', ['final','done'])]}"/>
                                             </group>
                                             <group>
-                                                <field name="admin_fee_id" groups="tt_base.group_tt_tour_travel_operator" attrs="{'readonly':[('state','!=','confirm')], 'required':[('state','=','confirm')]}"/>
+                                                <field name="admin_fee_dummy"/>
+                                                <field name="admin_fee_id" groups="tt_base.group_tt_tour_travel_operator" attrs="{'required':[('state','=','confirm')]}"/>
                                                 <field name="admin_fee"/>
                                                 <field name="total_amount"/>
                                             </group>

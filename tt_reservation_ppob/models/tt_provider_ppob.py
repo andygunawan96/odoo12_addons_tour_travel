@@ -176,7 +176,15 @@ class TtProviderPPOB(models.Model):
             'tag': 'reload',
         }
 
-    ###
+    def action_reverse_ledger(self):
+        for rec in self.booking_id.ledger_ids:
+            pnr_text = self.pnr if self.pnr else str(self.sequence)
+            if rec.pnr == pnr_text and not rec.is_reversed:
+                rec.reverse_ledger()
+
+        for rec in self.cost_service_charge_ids:
+            rec.is_ledger_created = False
+
     def action_booked_api_ppob(self, provider_data, api_context):
         for rec in self:
             rec.write({
@@ -397,8 +405,11 @@ class TtProviderPPOB(models.Model):
         })
 
     def prepaid_update_service_charge(self, passenger_vals, service_charge_vals):
-        for rec in self.cost_service_charge_ids:
-            rec.sudo().unlink()
+        ledger_created = self.delete_service_charge()
+        if ledger_created:
+            self.action_reverse_ledger()
+            self.delete_service_charge()
+
         self.create_ticket_api(passenger_vals)
         self.create_service_charge(service_charge_vals)
 
