@@ -1,12 +1,36 @@
 from odoo import models, fields, api, _
 from ...tools import variables,util,ERR
 import logging, traceback,pytz
-import datetime
+from datetime import datetime
 
 _logger = logging.getLogger(__name__)
 
 class TtReportDashboard(models.Model):
     _name = 'tt.report.dashboard'
+
+    def check_index(self, arr, key, param):
+        for i, dic in enumerate(arr):
+            if dic[key] == param:
+                return i
+        return -1
+
+    def check_date_index(self, arr, params):
+        for i, dic in enumerate(arr):
+            if dic['year'] == params['year'] and dic['month'] == params['month']:
+                return i
+        return -1
+
+    def check_tour_route_index(self, arr, params):
+        for i, dic in enumerate(arr):
+            if dic['category'] == params['category'] and dic['route'] == params['route']:
+                return i
+        return -1
+
+    def check_offline_provider(self, arr, params):
+        for i, dic in enumerate(arr):
+            if dic['provider_type'] == params['provider_type'] and dic['offline_provider_type'] == params['offline_provider_type']:
+                return i
+        return -1
 
     def get_report_json_api(self, data, context):
         type = data['report_type']
@@ -18,14 +42,16 @@ class TtReportDashboard(models.Model):
             res = self.get_report_event(data)
         elif type == 'train':
             res = self.get_report_train(data)
-        elif type == 'passport':
-            res = self.get_report_passport(data)
-        elif type == 'ppob':
-            res = self.get_report_ppob(data)
+        # elif type == 'passport':
+        #     res = self.get_report_passport(data)
+        # elif type == 'ppob':
+        #     res = self.get_report_ppob(data)
         elif type == 'activity':
             res = self.get_report_activity(data)
         elif type == 'hotel':
             res = self.get_report_hotel(data)
+        elif type == 'tour':
+            res = self.get_report_tour(data)
         else:
             return ERR.get_error(1001, "Cannot find action")
         return ERR.get_no_error(res)
@@ -47,7 +73,7 @@ class TtReportDashboard(models.Model):
         ]
         summary_by_date = []
         result = []
-        for i in values['line']:
+        for i in values['lines']:
             # count for date
             try:
                 month_index = self.check_date_index(summary_by_date, {'year': i['booked_year'],
@@ -116,7 +142,7 @@ class TtReportDashboard(models.Model):
             }
         }
 
-        return ERR.get_no_error(to_return)
+        return to_return
 
     def get_report_airline(self, data):
         temp_dict = {
@@ -527,7 +553,7 @@ class TtReportDashboard(models.Model):
             'domestic_top_route': domestic_top_route_result
         }
 
-        return ERR.get_no_error(to_return)
+        return to_return
 
     def get_report_activity(self, data):
         temp_dict = {
@@ -615,10 +641,16 @@ class TtReportDashboard(models.Model):
             label_data.append(i['reservation_activity_name'])
             data_data.append([i['counter'], i['reservation_passenger']])
 
+        ## create dictionary to return
         to_return = {
-            'overall': product_summary
+            'overall_graph': {
+                'label': label_data,
+                'data': data_data
+            }
         }
-        return ERR.get_no_error(to_return)
+
+        ## return the dictionary
+        return to_return
 
     def get_report_event(self, data):
         temp_dict = {
@@ -627,25 +659,112 @@ class TtReportDashboard(models.Model):
             'type': data['report_type']
         }
         values = self.env['report.tt_report_selling.report_selling']._get_reports(temp_dict)
-        return ERR.get_no_error(values)
 
-    def get_report_passport(self, data):
-        temp_dict = {
-            'start_date': data['start_date'],
-            'end_date': data['end_date'],
-            'type': data['report_type']
-        }
-        values = self.env['report.tt_report_selling.report_selling']._get_reports(temp_dict)
-        return ERR.get_no_error(values)
+        month = [
+            'January', 'February', 'March', 'April', 'May', 'June',
+            'July', 'August', 'September', 'October', 'November', 'December'
+        ]
+        summary_by_date = []
+        product_summary = []
+        for i in values['lines']:
+            # ============= Issued Booked ratio by date ==================
+            try:
+                month_index = self.check_date_index(summary_by_date, {'year': i['booked_year'],
+                                                                      'month': month[int(i['booked_month']) - 1]})
+                if month_index == -1:
+                    temp_dict = {
+                        'year': i['booked_year'],
+                        'month': month[int(i['booked_month']) - 1],
+                        'detail': self.add_month_detail()
+                    }
+                    try:
+                        splits = i['reservation_booked_date'].split("-")
+                        day_index = int(splits[2]) - 1
+                        temp_dict['detail'][day_index]['booked_counter'] += 1
+                    except:
+                        pass
+                    try:
+                        splits = i['reservation_issued_date'].split("-")
+                        day_index = int(splits[2]) - 1
+                        temp_dict['detail'][day_index]['issued_counter'] += 1
+                    except:
+                        pass
+                    summary_by_date.append(temp_dict)
+                else:
+                    try:
+                        splits = i['reservation_booked_date'].split("-")
+                        day_index = int(splits[2]) - 1
+                        summary_by_date[month_index]['detail'][day_index]['booked_counter'] += 1
+                    except:
+                        pass
+                    try:
+                        splits = i['reservation_issued_date'].split("-")
+                        day_index = int(splits[2]) - 1
+                        summary_by_date[month_index]['detail'][day_index]['issued_counter'] += 1
+                    except:
+                        pass
+            except:
+                pass
 
-    def get_report_ppob(self, data):
-        temp_dict = {
-            'start_date': data['start_date'],
-            'end_date': data['end_date'],
-            'type': data['report_type']
+            product_index = self.check_index(product_summary, 'product', i['reservation_activity_name'])
+            if product_index == -1:
+                temp_dict = {
+                    'product': i['reservation_activity_name'],
+                    'counter': 1,
+                    'elder_count': i['reservation_elder'],
+                    'adult_count': i['reservation_adult'],
+                    'child_count': i['reservation_child'],
+                    'infant_count': i['reservation_infant'],
+                    'passenger': i['reservation_passenger'],
+                    'amount': i['amount']
+                }
+                product_summary.append(temp_dict)
+            else:
+                product_summary[product_index]['counter'] += 1
+                product_summary[product_index]['passenger'] += i['reservation_passenger']
+                product_summary[product_index]['amount'] += i['amount']
+                product_summary[product_index]['elder_count'] += i['reservation_elder']
+                product_summary[product_index]['adult_count'] += i['reservation_adult']
+                product_summary[product_index]['child_count'] += i['reservation_child']
+                product_summary[product_index]['infant_count'] += i['reservation_infant']
+
+        ## temporary list
+        label_data = []
+        data_data = []
+
+        ##assign value to list
+        for i in product_summary:
+            label_data.append(i['reservation_activity_name'])
+            data_data.append([i['counter'], i['reservation_passenger']])
+
+        ## create dictionary to return
+        to_return = {
+            'overall_graph': {
+                'label': label_data,
+                'data': data_data
+            }
         }
-        values = self.env['report.tt_report_selling.report_selling']._get_reports(temp_dict)
-        return ERR.get_no_error(values)
+
+        ## return the dictionary
+        return to_return
+
+    # def get_report_passport(self, data):
+    #     temp_dict = {
+    #         'start_date': data['start_date'],
+    #         'end_date': data['end_date'],
+    #         'type': data['report_type']
+    #     }
+    #     values = self.env['report.tt_report_selling.report_selling']._get_reports(temp_dict)
+    #     return ERR.get_no_error(values)
+    #
+    # def get_report_ppob(self, data):
+    #     temp_dict = {
+    #         'start_date': data['start_date'],
+    #         'end_date': data['end_date'],
+    #         'type': data['report_type']
+    #     }
+    #     values = self.env['report.tt_report_selling.report_selling']._get_reports(temp_dict)
+    #     return ERR.get_no_error(values)
 
     def get_report_train(self, data):
         temp_dict = {
@@ -997,7 +1116,7 @@ class TtReportDashboard(models.Model):
             'top_route': top_route_result
         }
 
-        return ERR.get_no_error(to_return)
+        return to_return
 
     def get_report_hotel(self, data):
         temp_dict = {
@@ -1180,7 +1299,7 @@ class TtReportDashboard(models.Model):
             }
         }
 
-        return ERR.get_no_error(to_return)
+        return to_return
 
     def get_report_tour(self, data):
         temp_dict = {
@@ -1334,4 +1453,4 @@ class TtReportDashboard(models.Model):
             }
         }
 
-        return ERR.get_no_error(to_return)
+        return to_return
