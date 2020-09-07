@@ -4,101 +4,57 @@
         <record id="admin_fee_refund_regular" model="tt.master.admin.fee">
             <field name="name">Regular Refund</field>
             <field name="after_sales_type">refund</field>
-            <field name="type">amount</field>
-            <field name="amount">20000</field>
-            <field name="per_pax_type">amount</field>
-            <field name="per_pax_amount">10000</field>
+            <field name="min_amount_ho">0</field>
+            <field name="min_amount_agent">0</field>
             <field name="agent_type_access_type">all</field>
             <field name="agent_access_type">all</field>
-            <field name="target">ho_to_agent</field>
         </record>
         <record id="admin_fee_refund_quick" model="tt.master.admin.fee">
             <field name="name">Quick Refund</field>
             <field name="after_sales_type">refund</field>
-            <field name="type">percentage</field>
-            <field name="amount">8</field>
-            <field name="per_pax_type">amount</field>
-            <field name="per_pax_amount">0</field>
+            <field name="min_amount_ho">0</field>
+            <field name="min_amount_agent">0</field>
             <field name="agent_type_access_type">all</field>
             <field name="agent_access_type">all</field>
-            <field name="target">ho_to_agent</field>
         </record>
-        <record id="admin_fee_free_refund" model="tt.master.admin.fee">
+        <record id="admin_fee_refund_free" model="tt.master.admin.fee">
             <field name="name">No Admin Fee</field>
             <field name="after_sales_type">refund</field>
-            <field name="type">amount</field>
-            <field name="amount">0</field>
-            <field name="per_pax_type">amount</field>
-            <field name="per_pax_amount">0</field>
+            <field name="min_amount">0</field>
             <field name="agent_type_access_type">all</field>
             <field name="agent_access_type">all</field>
-            <field name="target">ho_to_agent</field>
         </record>
         <record id="admin_fee_reschedule" model="tt.master.admin.fee">
             <field name="name">Reschedule</field>
             <field name="after_sales_type">after_sales</field>
-            <field name="type">amount</field>
-            <field name="amount">25000</field>
-            <field name="per_pax_type">amount</field>
-            <field name="per_pax_amount">0</field>
+            <field name="min_amount_ho">0</field>
+            <field name="min_amount_agent">0</field>
             <field name="agent_type_access_type">all</field>
             <field name="agent_access_type">all</field>
-            <field name="target">ho_to_agent</field>
         </record>
         <record id="admin_fee_photo_printing" model="tt.master.admin.fee">
             <field name="name">Photo Printing</field>
             <field name="after_sales_type">after_sales</field>
-            <field name="type">amount</field>
-            <field name="amount">50000</field>
-            <field name="per_pax_type">amount</field>
-            <field name="per_pax_amount">0</field>
+            <field name="min_amount_ho">0</field>
+            <field name="min_amount_agent">0</field>
             <field name="agent_type_access_type">all</field>
             <field name="agent_access_type">all</field>
-            <field name="target">ho_to_agent</field>
         </record>
         <record id="admin_fee_delivery" model="tt.master.admin.fee">
             <field name="name">Delivery</field>
             <field name="after_sales_type">after_sales</field>
-            <field name="type">amount</field>
-            <field name="amount">15000</field>
-            <field name="per_pax_type">amount</field>
-            <field name="per_pax_amount">0</field>
+            <field name="min_amount_ho">0</field>
+            <field name="min_amount_agent">0</field>
             <field name="agent_type_access_type">all</field>
             <field name="agent_access_type">all</field>
-            <field name="target">ho_to_agent</field>
         </record>
         <record id="admin_fee_free" model="tt.master.admin.fee">
             <field name="name">No Admin Fee</field>
             <field name="after_sales_type">after_sales</field>
-            <field name="type">amount</field>
-            <field name="amount">0</field>
-            <field name="per_pax_type">amount</field>
-            <field name="per_pax_amount">0</field>
+            <field name="min_amount_ho">0</field>
+            <field name="min_amount_agent">0</field>
             <field name="agent_type_access_type">all</field>
             <field name="agent_access_type">all</field>
-            <field name="target">ho_to_agent</field>
-        </record>
-        <record id="admin_fee_free_refund_cust" model="tt.master.admin.fee">
-            <field name="name">No Admin Fee</field>
-            <field name="after_sales_type">refund</field>
-            <field name="type">amount</field>
-            <field name="amount">0</field>
-            <field name="per_pax_type">amount</field>
-            <field name="per_pax_amount">0</field>
-            <field name="agent_type_access_type">all</field>
-            <field name="agent_access_type">all</field>
-            <field name="target">agent_to_cust</field>
-        </record>
-        <record id="admin_fee_reschedule_cust" model="tt.master.admin.fee">
-            <field name="name">Reschedule</field>
-            <field name="after_sales_type">after_sales</field>
-            <field name="type">amount</field>
-            <field name="amount">5000</field>
-            <field name="per_pax_type">amount</field>
-            <field name="per_pax_amount">0</field>
-            <field name="agent_type_access_type">all</field>
-            <field name="agent_access_type">all</field>
-            <field name="target">agent_to_cust</field>
         </record>
     </data>
 </odoo>

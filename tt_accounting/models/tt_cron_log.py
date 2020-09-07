@@ -35,7 +35,7 @@ class TtCronLogInhResv(models.Model):
 
     def cron_action_approve_refund(self):
         try:
-            finalized_refunds = self.env['tt.refund'].search([('state', '=', 'final')])
+            finalized_refunds = self.env['tt.refund'].search([('state', '=', 'final'), ('is_vendor_received', '=', True)])
             for rec in finalized_refunds:
                 try:
                     if date.today() >= rec.refund_date:

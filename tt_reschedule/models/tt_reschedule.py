@@ -38,19 +38,22 @@ class TtRescheduleLine(models.Model):
                                        default='reschedule',
                                        states={'draft': [('readonly', False)], 'confirm': [('readonly', False)]},
                                        readonly=True)
-    reschedule_amount = fields.Integer('Expected After Sales Amount', default=0, required=True, readonly=True,
+    reschedule_amount = fields.Monetary('Expected After Sales Amount', default=0, required=True, readonly=True,
                                        related='reschedule_amount_ho')
-    reschedule_amount_ho = fields.Integer('Expected After Sales Amount', default=0, required=True, readonly=True,
+    reschedule_amount_ho = fields.Monetary('Expected After Sales Amount', default=0, required=True, readonly=True,
                                           states={'confirm': [('readonly', False)]})
-    real_reschedule_amount = fields.Integer('Real After Sales Amount from Vendor', default=0, required=True,
+    real_reschedule_amount = fields.Monetary('Real After Sales Amount from Vendor', default=0, required=True,
                                             readonly=False, states={'draft': [('readonly', True)]})
     reschedule_id = fields.Many2one('tt.reschedule', 'After Sales', readonly=True)
 
+    currency_id = fields.Many2one('res.currency', readonly=True, default=lambda self: self.env.user.company_id.currency_id, related='reschedule_id.currency_id')
     agent_id = fields.Many2one('tt.agent', 'Agent', related='reschedule_id.agent_id')
     agent_type_id = fields.Many2one('tt.agent.type', 'Agent Type', related='agent_id.agent_type_id', readonly=True)
     admin_fee_id = fields.Many2one('tt.master.admin.fee', 'Admin Fee Type', domain=[('id', '=', -1)], readonly=True, states={'confirm': [('readonly', False)]})
-    admin_fee = fields.Integer('Admin Fee Amount', default=0, readonly=True, compute="_compute_admin_fee")
-    total_amount = fields.Integer('Total Amount', default=0, readonly=True, compute="_compute_total_amount")
+    admin_fee = fields.Monetary('Admin Fee Amount', default=0, readonly=True, compute="_compute_admin_fee")
+    admin_fee_ho = fields.Monetary('Admin Fee (HO)', default=0, readonly=True, compute="_compute_admin_fee")
+    admin_fee_agent = fields.Monetary('Admin Fee (Agent)', default=0, readonly=True, compute="_compute_admin_fee")
+    total_amount = fields.Monetary('Total Amount', default=0, readonly=True, compute="_compute_total_amount")
     sequence = fields.Integer('Sequence', default=50, states={'draft': [('readonly', False)], 'confirm': [('readonly', False)]}, readonly=True)
     state = fields.Selection([('draft', 'Draft'), ('confirm', 'Confirmed'), ('done', 'Done')], 'State', default='confirm')
     admin_fee_dummy = fields.Boolean('Generate Admin Fee Options')
@@ -73,22 +76,20 @@ class TtRescheduleLine(models.Model):
         for rec in self:
             if rec.admin_fee_id:
                 book_obj = self.env[rec.reschedule_id.res_model].browse(int(rec.reschedule_id.res_id))
-                if rec.admin_fee_id.type == 'amount':
-                    pnr_amount = 0
-                    for rec2 in book_obj.provider_booking_ids:
-                        pnr_amount += 1
-                else:
-                    pnr_amount = 1
+                pnr_amount = 0
+                for rec2 in book_obj.provider_booking_ids:
+                    pnr_amount += 1
 
-                if rec.admin_fee_id.per_pax_type == 'amount':
-                    pax_amount = 0
-                    for rec2 in book_obj.passenger_ids:
-                        pax_amount += 1
-                else:
-                    pax_amount = 1
+                pax_amount = 0
+                for rec2 in book_obj.passenger_ids:
+                    pax_amount += 1
 
-                rec.admin_fee = rec.admin_fee_id.get_final_adm_fee(rec.reschedule_amount, pnr_amount, pax_amount)
+                rec.admin_fee_ho = rec.admin_fee_id.get_final_adm_fee_ho(rec.reschedule_amount, pnr_amount, pax_amount)
+                rec.admin_fee_agent = rec.admin_fee_id.get_final_adm_fee_agent(rec.reschedule_amount, pnr_amount, pax_amount)
+                rec.admin_fee = rec.admin_fee_ho + rec.admin_fee_agent
             else:
+                rec.admin_fee_ho = 0
+                rec.admin_fee_agent = 0
                 rec.admin_fee = 0
 
     @api.depends('admin_fee', 'reschedule_amount')
@@ -102,7 +103,7 @@ class TtRescheduleLine(models.Model):
         agent_type_adm_ids = self.reschedule_id.agent_id.agent_type_id.admin_fee_ids.ids
         agent_adm_ids = self.reschedule_id.agent_id.admin_fee_ids.ids
         return {'domain': {
-            'admin_fee_id': [('after_sales_type', '=', 'after_sales'), ('target', '=', 'ho_to_agent'), '&', '|',
+            'admin_fee_id': [('after_sales_type', '=', 'after_sales'), '&', '|',
                  ('agent_type_access_type', '=', 'all'), '|', '&', ('agent_type_access_type', '=', 'allow'),
                  ('id', 'in', agent_type_adm_ids), '&', ('agent_type_access_type', '=', 'restrict'),
                  ('id', 'not in', agent_type_adm_ids), '|', ('agent_access_type', '=', 'all'), '|', '&',
@@ -201,9 +202,15 @@ class TtReschedule(models.Model):
     def _compute_admin_fee(self):
         for rec in self:
             adm_fee = 0
+            adm_fee_ho = 0
+            adm_fee_agent = 0
             for rec2 in rec.reschedule_line_ids:
                 adm_fee += rec2.admin_fee
+                adm_fee_ho += rec2.admin_fee_ho
+                adm_fee_agent += rec2.admin_fee_agent
             rec.admin_fee = adm_fee
+            rec.admin_fee_ho = adm_fee_ho
+            rec.admin_fee_agent = adm_fee_agent
 
     @api.depends('reschedule_line_ids')
     @api.onchange('reschedule_line_ids')
@@ -306,7 +313,6 @@ class TtReschedule(models.Model):
             if rec.admin_fee:
                 credit = rec.admin_fee
                 debit = 0
-
                 ledger_type = 6
 
                 self.env['tt.ledger'].create_ledger_vanilla(
