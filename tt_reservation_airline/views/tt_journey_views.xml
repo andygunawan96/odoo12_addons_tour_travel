@@ -10,6 +10,7 @@
                             <field name="sequence"/>
                             <field name="booking_id"/>
                             <field name="pnr"/>
+                            <field name="journey_code"/>
                             <field name="provider_id" groups="tt_base.group_tt_tour_travel_operator"/>
                         </group>
                         <group>
