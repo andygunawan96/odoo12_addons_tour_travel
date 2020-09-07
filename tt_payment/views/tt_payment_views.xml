@@ -56,7 +56,7 @@
                             attrs="{'invisible':[('state','!=','confirm')]}"/>
                     <button string="Approve" name="action_approve_from_button"
                             type="object" groups="tt_base.group_tt_accounting_operator"
-                            attrs="{'invisible':[('state','!=','validated')]}" confirm="Are you sure you want to approve?"/>
+                            attrs="{'invisible':[('state','!=','validated')]}"/>
                     <button string="Reject" name="action_reject_from_button"
                             type="object" groups="tt_base.group_tt_accounting_operator"
                             attrs="{'invisible':[('state','not in',['confirm','validated'])]}"/>

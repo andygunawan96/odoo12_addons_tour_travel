@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="tt_refund_type_filter_view" model="ir.ui.view">
+        <field name="name">tt.refund.type.filter.view</field>
+        <field name="model">tt.refund.type</field>
+        <field name="arch" type="xml">
+            <search string="Search Refund Type">
+                <field name="name"/>
+                <field name="days"/>
+            </search>
+        </field>
+    </record>
+
+    <record id="tt_refund_type_form_view" model="ir.ui.view">
+        <field name="name">tt.refund.type.form.view</field>
+        <field name="model">tt.refund.type</field>
+        <field name="arch" type="xml">
+            <form create="false">
+                <header>
+
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="toggle_active" type="object"
+                                class="oe_stat_button" icon="fa-archive">
+                            <field name="active" widget="boolean_button"
+                                options='{"terminology": "archive"}'/>
+                        </button>
+                    </div>
+                    <div class="oe_title">
+                        <label for="Name" class="oe_edit_only" string="Name"/>
+                        <h1>
+                            <field name="name"/>
+                        </h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="days"/>
+                        </group>
+                        <group>
+
+                        </group>
+                    </group>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids" widget="mail_followers"/>
+                    <field name="message_ids" widget="mail_thread"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <record id="tt_refund_type_tree_view" model="ir.ui.view">
+        <field name="name">tt.refund.type.tree.view</field>
+        <field name="model">tt.refund.type</field>
+        <field name="arch" type="xml">
+            <tree create="false">
+                <field name="name"/>
+                <field name="days"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="tt_refund_type_action" model="ir.actions.act_window">
+        <field name="name">Refund Type</field>
+        <field name="res_model">tt.refund.type</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+        <field name="context">
+            {
+            'form_view_ref': 'tt_accounting.tt_refund_type_form_view',
+            'tree_view_ref': 'tt_accounting.tt_refund_type_tree_view'
+            }
+        </field>
+    </record>
+
+    <menuitem id="sub_menu_tour_travel_refund_type"
+              parent="tt_base.menu_tour_travel_configuration_admin_fee"
+              action="tt_accounting.tt_refund_type_action"
+              name="Refund Type"
+              sequence="2"
+              groups="tt_base.group_tt_tour_travel_operator"/>
+
+</odoo>
