@@ -772,8 +772,10 @@ class ReservationAirline(models.Model):
                 ledger_created = provider_obj.delete_service_charge()
                 # May 13, 2020 - SAM
                 if ledger_created:
-                    if not req.get('force_issued'):
-                        raise RequestException(1027)
+                    # September 3, 2020 - SAM
+                    # Apabila terissued di backend dan error di vendor dengan status book dan perubahan harga akan di reverse
+                    # if not req.get('force_issued'):
+                    #     raise RequestException(1027)
                     provider_obj.action_reverse_ledger()
                     provider_obj.delete_service_charge()
 
