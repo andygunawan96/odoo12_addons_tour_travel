@@ -288,9 +288,8 @@ class TtReschedule(models.Model):
             raise UserError("Cannot Validate because state is not 'Sent'.")
 
         for rec in self.reschedule_line_ids:
-            credit = rec.reschedule_amount
+            credit = rec.reschedule_amount + rec.admin_fee_ho + rec.admin_fee_agent
             debit = 0
-
             ledger_type = rec.reschedule_type == 'addons' and 8 or 7
             temp_desc = str(dict(rec._fields['reschedule_type'].selection).get(rec.reschedule_type)) + '\n'
             self.env['tt.ledger'].create_ledger_vanilla(
@@ -310,32 +309,12 @@ class TtReschedule(models.Model):
                 **{'reschedule_id': self.id}
             )
 
-            if rec.admin_fee:
-                credit = rec.admin_fee
-                debit = 0
-                ledger_type = 6
-
-                self.env['tt.ledger'].create_ledger_vanilla(
-                    self._name,
-                    self.id,
-                    'After Sales Admin Fee: %s' % (self.name),
-                    self.name,
-                    datetime.now(pytz.timezone('Asia/Jakarta')).date(),
-                    ledger_type,
-                    self.currency_id.id,
-                    self.env.user.id,
-                    self.agent_id.id,
-                    False,
-                    debit,
-                    credit,
-                    temp_desc + ' Admin Fee for %s (PNR: from %s to %s)' % (self.referenced_document, self.referenced_pnr, self.pnr),
-                    **{'reschedule_id': self.id}
-                )
-
+            if rec.admin_fee_ho:
                 ho_agent = self.env['tt.agent'].sudo().search(
                     [('agent_type_id.id', '=', self.env.ref('tt_base.agent_type_ho').id)], limit=1)
                 credit = 0
-                debit = rec.admin_fee
+                debit = rec.admin_fee_ho
+                ledger_type = 6
                 self.env['tt.ledger'].sudo().create_ledger_vanilla(
                     self._name,
                     self.id,
@@ -350,6 +329,27 @@ class TtReschedule(models.Model):
                     debit,
                     credit,
                     temp_desc + ' Admin Fee for %s (PNR: from %s to %s)' % (self.referenced_document, self.referenced_pnr, self.pnr),
+                    **{'reschedule_id': self.id}
+                )
+
+            if rec.admin_fee_agent:
+                credit = 0
+                debit = rec.admin_fee_agent
+                ledger_type = 3
+                self.env['tt.ledger'].sudo().create_ledger_vanilla(
+                    self._name,
+                    self.id,
+                    'After Sales Agent Admin Fee: %s' % (self.name),
+                    self.name,
+                    datetime.now(pytz.timezone('Asia/Jakarta')).date(),
+                    ledger_type,
+                    self.currency_id.id,
+                    self.env.user.id,
+                    self.agent_id.id,
+                    False,
+                    debit,
+                    credit,
+                    temp_desc + ' Agent Admin Fee for %s (PNR: from %s to %s)' % (self.referenced_document, self.referenced_pnr, self.pnr),
                     **{'reschedule_id': self.id}
                 )
 
