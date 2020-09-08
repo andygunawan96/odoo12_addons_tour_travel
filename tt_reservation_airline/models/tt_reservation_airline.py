@@ -43,6 +43,12 @@ class ReservationAirline(models.Model):
 
     is_get_booking_from_vendor = fields.Boolean('Get Booking From Vendor')
 
+    def compute_journey_code(self):
+        objs = self.env['tt.reservation.airline'].sudo().search([])
+        for rec in objs:
+            for journey in rec.journey_ids:
+                journey._compute_journey_code()
+
     def get_form_id(self):
         return self.env.ref("tt_reservation_airline.tt_reservation_airline_form_views")
 
@@ -772,8 +778,10 @@ class ReservationAirline(models.Model):
                 ledger_created = provider_obj.delete_service_charge()
                 # May 13, 2020 - SAM
                 if ledger_created:
-                    if not req.get('force_issued'):
-                        raise RequestException(1027)
+                    # September 3, 2020 - SAM
+                    # Apabila terissued di backend dan error di vendor dengan status book dan perubahan harga akan di reverse
+                    # if not req.get('force_issued'):
+                    #     raise RequestException(1027)
                     provider_obj.action_reverse_ledger()
                     provider_obj.delete_service_charge()
 
@@ -1159,7 +1167,8 @@ class ReservationAirline(models.Model):
                     'destination_id': this_journey_seg[dest_idx][2]['destination_id'],
                     'departure_date': this_journey_seg[0][2]['departure_date'],
                     'arrival_date': this_journey_seg[-1][2]['arrival_date'],
-                    'segment_ids': this_journey_seg
+                    'segment_ids': this_journey_seg,
+                    'journey_code': journey.get('journey_code',''),
                 }))
 
             JRN_len = len(this_pnr_journey)

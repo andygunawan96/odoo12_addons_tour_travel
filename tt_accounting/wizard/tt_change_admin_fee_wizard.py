@@ -24,16 +24,13 @@ class TtChangeAdminFeeWizard(models.TransientModel):
 
         if self.res_model == 'tt.reschedule.line':
             after_sales_type = 'after_sales'
-            target = ['ho_to_agent', 'agent_to_cust']
         elif self.res_model == 'tt.refund.line.customer':
             after_sales_type = 'refund'
-            target = ['agent_to_cust']
         else:
             after_sales_type = 'refund'
-            target = ['ho_to_agent']
 
         return {'domain': {
-            'admin_fee_id': [('after_sales_type', '=', after_sales_type), ('target', 'in', target), '&', '|',
+            'admin_fee_id': [('after_sales_type', '=', after_sales_type), '&', '|',
                 ('agent_type_access_type', '=', 'all'), '|', '&', ('agent_type_access_type', '=', 'allow'),
                 ('id', 'in', agent_type_adm_ids), '&', ('agent_type_access_type', '=', 'restrict'),
                 ('id', 'not in', agent_type_adm_ids), '|', ('agent_access_type', '=', 'all'), '|', '&',

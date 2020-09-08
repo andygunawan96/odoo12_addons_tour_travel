@@ -20,20 +20,35 @@ class TtJourneyAirline(models.Model):
     destination_id = fields.Many2one('tt.destinations', 'Destination')
     departure_date = fields.Char('Departure Date')
     arrival_date = fields.Char('Arrival Date')
+    journey_code = fields.Char('Journey Code', default='')
 
     segment_ids = fields.One2many('tt.segment.airline', 'journey_id', 'Segments')
+
+    def _compute_journey_code(self):
+        for rec in self:
+            if not rec.journey_code:
+                journey_list = []
+                for seg in rec.segment_ids:
+                    if not seg.segment_code:
+                        continue
+                    journey_list.append(seg.segment_code)
+
+                journey_code = ';'.join(journey_list)
+                rec.write({'journey_code': journey_code})
 
     def to_dict(self):
         segment_list = []
         for rec in self.segment_ids:
             segment_list.append(rec.to_dict())
+
         res ={
             'sequence': self.sequence,
             'origin': self.origin_id.code,
             'destination': self.destination_id.code,
             'departure_date': self.departure_date,
             'arrival_date': self.arrival_date,
-            'segments': segment_list
+            'segments': segment_list,
+            'journey_code': self.journey_code if self.journey_code else ''
         }
 
         return res
