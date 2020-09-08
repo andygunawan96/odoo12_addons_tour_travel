@@ -431,8 +431,8 @@ class TtRefund(models.Model):
         except Exception as e:
             _logger.info('Error Create Email Queue')
 
-        if date.today() >= self.refund_date:
-            self.action_approve()
+        # if date.today() >= self.refund_date:
+        #     self.action_approve()
 
     def action_approve(self):
         if self.state != 'final':
