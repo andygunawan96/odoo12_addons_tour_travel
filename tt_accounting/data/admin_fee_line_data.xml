@@ -9,13 +9,21 @@
             <field name="balance_for">ho</field>
             <field name="master_admin_fee_id" ref="tt_accounting.admin_fee_refund_regular"/>
         </record>
-        <record id="admin_fee_line_refund_regular_agent" model="tt.master.admin.fee.line">
+        <record id="admin_fee_line_refund_regular_special_ho" model="tt.master.admin.fee.line">
+            <field name="type">amount</field>
+            <field name="amount">30000</field>
+            <field name="is_per_pnr">True</field>
+            <field name="is_per_pax">True</field>
+            <field name="balance_for">ho</field>
+            <field name="master_admin_fee_id" ref="tt_accounting.admin_fee_refund_regular_special"/>
+        </record>
+        <record id="admin_fee_line_refund_regular_special_agent" model="tt.master.admin.fee.line">
             <field name="type">amount</field>
             <field name="amount">20000</field>
             <field name="is_per_pnr">True</field>
             <field name="is_per_pax">True</field>
             <field name="balance_for">agent</field>
-            <field name="master_admin_fee_id" ref="tt_accounting.admin_fee_refund_regular"/>
+            <field name="master_admin_fee_id" ref="tt_accounting.admin_fee_refund_regular_special"/>
         </record>
         <record id="admin_fee_line_refund_quick_ho" model="tt.master.admin.fee.line">
             <field name="type">percentage</field>
@@ -33,13 +41,21 @@
             <field name="balance_for">ho</field>
             <field name="master_admin_fee_id" ref="tt_accounting.admin_fee_reschedule"/>
         </record>
-        <record id="admin_fee_line_reschedule_agent" model="tt.master.admin.fee.line">
+        <record id="admin_fee_line_reschedule_special_ho" model="tt.master.admin.fee.line">
+            <field name="type">amount</field>
+            <field name="amount">20000</field>
+            <field name="is_per_pnr">True</field>
+            <field name="is_per_pax">True</field>
+            <field name="balance_for">ho</field>
+            <field name="master_admin_fee_id" ref="tt_accounting.admin_fee_reschedule_special"/>
+        </record>
+        <record id="admin_fee_line_reschedule_special_agent" model="tt.master.admin.fee.line">
             <field name="type">amount</field>
             <field name="amount">10000</field>
             <field name="is_per_pnr">True</field>
             <field name="is_per_pax">True</field>
             <field name="balance_for">agent</field>
-            <field name="master_admin_fee_id" ref="tt_accounting.admin_fee_reschedule"/>
+            <field name="master_admin_fee_id" ref="tt_accounting.admin_fee_reschedule_special"/>
         </record>
         <record id="admin_fee_line_photo_printing_ho" model="tt.master.admin.fee.line">
             <field name="type">amount</field>
