@@ -3,7 +3,7 @@
     <data noupdate="1">
         <record id="admin_fee_line_refund_regular_ho" model="tt.master.admin.fee.line">
             <field name="type">amount</field>
-            <field name="amount">30000</field>
+            <field name="amount">50000</field>
             <field name="is_per_pnr">True</field>
             <field name="is_per_pax">True</field>
             <field name="balance_for">ho</field>
@@ -35,7 +35,7 @@
         </record>
         <record id="admin_fee_line_reschedule_ho" model="tt.master.admin.fee.line">
             <field name="type">amount</field>
-            <field name="amount">20000</field>
+            <field name="amount">30000</field>
             <field name="is_per_pnr">True</field>
             <field name="is_per_pax">True</field>
             <field name="balance_for">ho</field>
