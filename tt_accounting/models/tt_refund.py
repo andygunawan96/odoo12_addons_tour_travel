@@ -29,6 +29,13 @@ class TtRefundLine(models.Model):
     refund_id = fields.Many2one('tt.refund', 'Refund', readonly=True)
     state = fields.Selection([('draft', 'Draft'), ('confirm', 'Confirmed'), ('finalize', 'Finalized'), ('done', 'Done')], 'State', default='draft', related='')
 
+    @api.multi
+    def write(self, vals):
+        if vals.get('extra_charge_amount'):
+            if vals['extra_charge_amount'] > self.refund_amount:
+                raise UserError(_('Extra charge fee cannot be higher than the expected refund amount!'))
+        return super(TtRefundLine, self).write(vals)
+
     def to_dict(self):
         res = {
             'name': self.name,
@@ -246,7 +253,7 @@ class TtRefund(models.Model):
         for rec in self:
             temp_total = 0
             for rec2 in rec.refund_line_ids:
-                temp_total += rec2.refund_amount + rec2.extra_charge_amount
+                temp_total += rec2.refund_amount - rec2.extra_charge_amount
             rec.refund_amount = temp_total
 
     @api.depends('refund_line_ids')
