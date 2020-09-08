@@ -9,6 +9,14 @@
             <field name="agent_type_access_type">all</field>
             <field name="agent_access_type">all</field>
         </record>
+        <record id="admin_fee_refund_regular_special" model="tt.master.admin.fee">
+            <field name="name">Regular Refund (Special Agents)</field>
+            <field name="after_sales_type">refund</field>
+            <field name="min_amount_ho">0</field>
+            <field name="min_amount_agent">0</field>
+            <field name="agent_type_access_type">all</field>
+            <field name="agent_access_type">allow</field>
+        </record>
         <record id="admin_fee_refund_quick" model="tt.master.admin.fee">
             <field name="name">Quick Refund</field>
             <field name="after_sales_type">refund</field>
@@ -31,6 +39,14 @@
             <field name="min_amount_agent">0</field>
             <field name="agent_type_access_type">all</field>
             <field name="agent_access_type">all</field>
+        </record>
+        <record id="admin_fee_reschedule_special" model="tt.master.admin.fee">
+            <field name="name">Reschedule (Special Agents)</field>
+            <field name="after_sales_type">after_sales</field>
+            <field name="min_amount_ho">0</field>
+            <field name="min_amount_agent">0</field>
+            <field name="agent_type_access_type">all</field>
+            <field name="agent_access_type">allow</field>
         </record>
         <record id="admin_fee_photo_printing" model="tt.master.admin.fee">
             <field name="name">Photo Printing</field>

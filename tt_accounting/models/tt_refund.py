@@ -975,3 +975,14 @@ class TtRefund(models.Model):
         }
 
         return new_vals
+
+    # temporary function
+    def convert_refund_type(self):
+        all_refunds = self.env['tt.refund'].sudo().search([])
+        for rec in all_refunds:
+            if rec.refund_type == 'quick':
+                rec.refund_type_id = self.env.ref('tt_accounting.refund_type_quick_refund').id
+            elif rec.refund_type == 'regular':
+                rec.refund_type_id = self.env.ref('tt_accounting.refund_type_regular_refund').id
+            else:
+                rec.refund_type_id = False
