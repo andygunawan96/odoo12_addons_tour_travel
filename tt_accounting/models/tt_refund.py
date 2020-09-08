@@ -27,7 +27,7 @@ class TtRefundLine(models.Model):
     real_refund_amount = fields.Monetary('Real Refund Amount', default=0, readonly=False, states={'draft': [('readonly', True)]})
     extra_charge_amount = fields.Monetary('Extra Charge Fee', default=0, readonly=True, states={'finalize': [('readonly', False)]})
     refund_id = fields.Many2one('tt.refund', 'Refund', readonly=True)
-    state = fields.Selection([('draft', 'Draft'), ('confirm', 'Confirmed'), ('finalize', 'Finalized'), ('done', 'Done')], 'State', default='draft', related='')
+    state = fields.Selection([('draft', 'Draft'), ('confirm', 'Confirmed'), ('sent', 'Sent'), ('finalize', 'Finalized'), ('done', 'Done')], 'State', default='draft', related='')
 
     @api.multi
     def write(self, vals):
@@ -62,6 +62,11 @@ class TtRefundLine(models.Model):
     def set_to_confirm(self):
         self.write({
             'state': 'confirm',
+        })
+
+    def set_to_sent(self):
+        self.write({
+            'state': 'sent',
         })
 
     def set_to_finalize(self):
@@ -369,7 +374,7 @@ class TtRefund(models.Model):
             'hold_date': datetime.now() + relativedelta(days=3),
         })
         for rec in self.refund_line_ids:
-            rec.set_to_done()
+            rec.set_to_sent()
 
     def validate_refund_from_button(self):
         if self.state != 'sent':
@@ -547,6 +552,9 @@ class TtRefund(models.Model):
             'approve_uid': self.env.user.id,
             'approve_date': datetime.now()
         })
+
+        for rec in self.refund_line_ids:
+            rec.set_to_done()
 
     def create_profit_loss_ledger(self):
         value = self.real_refund_amount - self.refund_amount
