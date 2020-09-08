@@ -186,7 +186,7 @@ class TtRefund(models.Model):
                 ('agent_access_type', '=', 'restrict'), ('id', 'not in', agent_adm_ids)]
 
     admin_fee_id = fields.Many2one('tt.master.admin.fee', 'Admin Fee Type', domain=get_admin_fee_domain, readonly=True)
-    admin_fee = fields.Monetary('Admin Fee Amount', default=0, readonly=True, compute="_compute_admin_fee")
+    admin_fee = fields.Monetary('Total Admin Fee', default=0, readonly=True, compute="_compute_admin_fee")
     admin_fee_ho = fields.Monetary('Admin Fee (HO)', default=0, readonly=True, compute="_compute_admin_fee")
     admin_fee_agent = fields.Monetary('Admin Fee (Agent)', default=0, readonly=True, compute="_compute_admin_fee")
     refund_amount = fields.Monetary('Expected Refund Amount', default=0, required=True, readonly=True, compute='_compute_refund_amount', related='')
@@ -430,9 +430,6 @@ class TtRefund(models.Model):
                 raise Exception('Refund Finalized email for {} is already created!'.format(self.name))
         except Exception as e:
             _logger.info('Error Create Email Queue')
-
-        if date.today() >= self.refund_date:
-            self.action_approve()
 
     def action_approve(self):
         if self.state != 'final':
