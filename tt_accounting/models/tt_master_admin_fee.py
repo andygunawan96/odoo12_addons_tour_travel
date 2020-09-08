@@ -21,6 +21,7 @@ class TtMasterAdminFee(models.Model):
     agent_ids = fields.Many2many('tt.agent', 'master_admin_fee_agent_rel', 'admin_fee_id', 'agent_id', string='Agents')
     agent_access_type = fields.Selection([("all", "ALL"),("allow", "Allowed"),("restrict", "Restricted")], 'Agent Access Type', default='all')
     admin_fee_line_ids = fields.One2many('tt.master.admin.fee.line', 'master_admin_fee_id', 'Admin Fee Line(s)')
+    active = fields.Boolean('Active', default=True)
 
     def get_final_adm_fee_ho(self, total=0, pnr_multiplier=1, pax_multiplier=1):
         final_amt = 0
