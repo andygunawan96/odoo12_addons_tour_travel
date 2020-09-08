@@ -25,8 +25,16 @@ class TtRefundLine(models.Model):
     commission_fee = fields.Monetary('Commission Fee', default=0, readonly=True, states={'confirm': [('readonly', False)]})
     refund_amount = fields.Monetary('Expected Refund Amount', default=0, required=True, readonly=True, compute='_compute_refund_amount')
     real_refund_amount = fields.Monetary('Real Refund Amount', default=0, readonly=False, states={'draft': [('readonly', True)]})
+    extra_charge_amount = fields.Monetary('Extra Charge Fee', default=0, readonly=True, states={'finalize': [('readonly', False)]})
     refund_id = fields.Many2one('tt.refund', 'Refund', readonly=True)
-    state = fields.Selection([('draft', 'Draft'), ('confirm', 'Confirmed'), ('done', 'Done')], 'State', default='draft', related='')
+    state = fields.Selection([('draft', 'Draft'), ('confirm', 'Confirmed'), ('sent', 'Sent'), ('finalize', 'Finalized'), ('done', 'Done')], 'State', default='draft', related='')
+
+    @api.multi
+    def write(self, vals):
+        if vals.get('extra_charge_amount'):
+            if vals['extra_charge_amount'] > self.refund_amount:
+                raise UserError(_('Extra charge fee cannot be higher than the expected refund amount!'))
+        return super(TtRefundLine, self).write(vals)
 
     def to_dict(self):
         res = {
@@ -56,6 +64,16 @@ class TtRefundLine(models.Model):
             'state': 'confirm',
         })
 
+    def set_to_sent(self):
+        self.write({
+            'state': 'sent',
+        })
+
+    def set_to_finalize(self):
+        self.write({
+            'state': 'finalize',
+        })
+
     def set_to_done(self):
         self.write({
             'state': 'done',
@@ -74,19 +92,6 @@ class TtRefundLineCustomer(models.Model):
                                ('form', 'Form'), ('form_save', 'Form with tokenization')], 'Method', related='acquirer_id.type', readonly=True)
     bank_id = fields.Many2one('tt.bank', 'To Bank')
     refund_amount = fields.Monetary('Refund Amount', default=0, readonly=True)
-
-    def get_admin_fee_domain(self):
-        agent_type_adm_ids = self.agent_id.agent_type_id.admin_fee_ids.ids
-        agent_adm_ids = self.agent_id.admin_fee_ids.ids
-        return [('after_sales_type', '=', 'refund'), ('target', '=', 'agent_to_cust'), '&', '|',
-                ('agent_type_access_type', '=', 'all'), '|', '&', ('agent_type_access_type', '=', 'allow'),
-                ('id', 'in', agent_type_adm_ids), '&', ('agent_type_access_type', '=', 'restrict'),
-                ('id', 'not in', agent_type_adm_ids), '|', ('agent_access_type', '=', 'all'), '|', '&',
-                ('agent_access_type', '=', 'allow'), ('id', 'in', agent_adm_ids), '&',
-                ('agent_access_type', '=', 'restrict'), ('id', 'not in', agent_adm_ids)]
-
-    admin_fee_id = fields.Many2one('tt.master.admin.fee', 'Admin Fee Type', domain=get_admin_fee_domain, readonly=True)
-    admin_fee = fields.Monetary('Admin Fee Amount', default=0, readonly=True, compute="_compute_admin_fee")
     citra_fee = fields.Monetary('Additional Fee', default=0, readonly=False)
     total_amount = fields.Monetary('Total Amount', default=0, required=True, readonly=True, compute='_compute_total_amount')
     refund_id = fields.Many2one('tt.refund', 'Refund', readonly=True)
@@ -110,20 +115,21 @@ class TtRefundLineCustomer(models.Model):
         }
         return res
 
-    @api.depends('admin_fee_id', 'refund_amount')
-    @api.onchange('admin_fee_id', 'refund_amount')
-    def _compute_admin_fee(self):
-        for rec in self:
-            if rec.admin_fee_id:
-                rec.admin_fee = rec.admin_fee_id.get_final_adm_fee(rec.refund_amount)
-            else:
-                rec.admin_fee = 0
-
-    @api.depends('refund_amount', 'citra_fee', 'admin_fee')
-    @api.onchange('refund_amount', 'citra_fee', 'admin_fee')
+    @api.depends('refund_amount', 'citra_fee')
+    @api.onchange('refund_amount', 'citra_fee')
     def _compute_total_amount(self):
         for rec in self:
-            rec.total_amount = rec.refund_amount - rec.admin_fee - rec.citra_fee
+            rec.total_amount = rec.refund_amount - rec.citra_fee
+
+
+class TtRefundType(models.Model):
+    _name = "tt.refund.type"
+    _inherit = 'tt.history'
+    _description = "Refund Type Model"
+
+    name = fields.Char('Name', default='New')
+    days = fields.Integer('Amount of Days', default=40)
+    active = fields.Boolean('Active', default=True)
 
 
 class TtRefund(models.Model):
@@ -165,14 +171,14 @@ class TtRefund(models.Model):
     cust_refund_date = fields.Date('Expected Cust. Refund Date', readonly=False, states={'done': [('readonly', True)]})
 
     service_type = fields.Selection(lambda self: self.get_service_type(), 'Service Type', required=True, readonly=True)
-
+    refund_type_id = fields.Many2one('tt.refund.type', 'Refund Type', required=True, readonly=True, states={'draft': [('readonly', False)]})
     refund_type = fields.Selection([('quick', 'Quick Refund (Max. 3 days process)'), ('regular', 'Regular Refund (40 days process)')], 'Refund Type', required=True, default='regular', readonly=True,
                                    states={'draft': [('readonly', False)]})
 
     def get_admin_fee_domain(self):
         agent_type_adm_ids = self.agent_id.agent_type_id.admin_fee_ids.ids
         agent_adm_ids = self.agent_id.admin_fee_ids.ids
-        return [('after_sales_type', '=', 'refund'), ('target', '=', 'ho_to_agent'), '&', '|',
+        return [('after_sales_type', '=', 'refund'), '&', '|',
                 ('agent_type_access_type', '=', 'all'), '|', '&', ('agent_type_access_type', '=', 'allow'),
                 ('id', 'in', agent_type_adm_ids), '&', ('agent_type_access_type', '=', 'restrict'),
                 ('id', 'not in', agent_type_adm_ids), '|', ('agent_access_type', '=', 'all'), '|', '&',
@@ -181,11 +187,15 @@ class TtRefund(models.Model):
 
     admin_fee_id = fields.Many2one('tt.master.admin.fee', 'Admin Fee Type', domain=get_admin_fee_domain, readonly=True)
     admin_fee = fields.Monetary('Admin Fee Amount', default=0, readonly=True, compute="_compute_admin_fee")
+    admin_fee_ho = fields.Monetary('Admin Fee (HO)', default=0, readonly=True, compute="_compute_admin_fee")
+    admin_fee_agent = fields.Monetary('Admin Fee (Agent)', default=0, readonly=True, compute="_compute_admin_fee")
     refund_amount = fields.Monetary('Expected Refund Amount', default=0, required=True, readonly=True, compute='_compute_refund_amount', related='')
     real_refund_amount = fields.Monetary('Real Refund Amount from Vendor', default=0, readonly=True, compute='_compute_real_refund_amount')
     total_amount = fields.Monetary('Total Amount', default=0, readonly=True, compute="_compute_total_amount")
     total_amount_cust = fields.Monetary('Total Amount (Customer)', default=0, readonly=True, compute="_compute_total_amount_cust")
     final_admin_fee = fields.Monetary('Admin Fee Amount', default=0, readonly=True)
+    final_admin_fee_ho = fields.Monetary('Admin Fee Amount (HO)', default=0, readonly=True)
+    final_admin_fee_agent = fields.Monetary('Admin Fee Amount (Agent)', default=0, readonly=True)
     booking_desc = fields.Html('Booking Description', readonly=True)
     notes = fields.Text('Notes', readonly=True, states={'draft': [('readonly', False)]})
     refund_line_ids = fields.One2many('tt.refund.line', 'refund_id', 'Refund Line(s)', readonly=False)
@@ -198,6 +208,7 @@ class TtRefund(models.Model):
 
     res_id = fields.Integer('Related Reservation ID', index=True, help='Id of the followed resource', readonly=True)
     profit_loss_created = fields.Boolean('Profit & Loss Created', default=False, readonly=True)
+    is_vendor_received = fields.Boolean('Refund Received from Vendor', default=False, readonly=True, states={'final': [('readonly', False)]})
 
     def _get_res_model_domain(self):
         return [('res_model', '=', self._name)]
@@ -224,7 +235,7 @@ class TtRefund(models.Model):
     done_uid = fields.Many2one('res.users', 'Done by', readonly=True)
     cancel_uid = fields.Many2one('res.users', 'Canceled by', readonly=True)
     cancel_date = fields.Datetime('Cancel Date', readonly=True)
-    cancel_message = fields.Text('Cancelation Message', required=False, readonly=True, states={'approve': [('readonly', False)], 'validate': [('readonly', False)]})
+    cancel_message = fields.Text('Cancelation Message', required=False, readonly=True, states={'validate': [('readonly', False)], 'final': [('readonly', False)]})
 
     printout_refund_ho_id = fields.Many2one('tt.upload.center', 'Refund Printout HO', readonly=True)
     printout_refund_ho_cust_id = fields.Many2one('tt.upload.center', 'Refund Printout HO Cust', readonly=True)
@@ -241,22 +252,13 @@ class TtRefund(models.Model):
 
         return super(TtRefund, self).create(vals_list)
 
-    @api.depends('refund_type')
-    @api.onchange('refund_type')
-    def _compute_admin_fee_id(self):
-        for rec in self:
-            if rec.refund_type == 'quick':
-                rec.admin_fee_id = self.env.ref('tt_accounting.admin_fee_refund_quick').id
-            else:
-                rec.admin_fee_id = self.env.ref('tt_accounting.admin_fee_refund_regular').id
-
     @api.depends('refund_line_ids')
     @api.onchange('refund_line_ids')
     def _compute_refund_amount(self):
         for rec in self:
             temp_total = 0
             for rec2 in rec.refund_line_ids:
-                temp_total += rec2.refund_amount
+                temp_total += rec2.refund_amount - rec2.extra_charge_amount
             rec.refund_amount = temp_total
 
     @api.depends('refund_line_ids')
@@ -274,22 +276,20 @@ class TtRefund(models.Model):
         for rec in self:
             if rec.admin_fee_id:
                 book_obj = self.env[rec.res_model].browse(int(rec.res_id))
-                if rec.admin_fee_id.type == 'amount':
-                    pnr_amount = 0
-                    for rec2 in book_obj.provider_booking_ids:
-                        pnr_amount += 1
-                else:
-                    pnr_amount = 1
+                pnr_amount = 0
+                for rec2 in book_obj.provider_booking_ids:
+                    pnr_amount += 1
 
-                if rec.admin_fee_id.per_pax_type == 'amount':
-                    pax_amount = 0
-                    for rec2 in book_obj.passenger_ids:
-                        pax_amount += 1
-                else:
-                    pax_amount = 1
+                pax_amount = 0
+                for rec2 in book_obj.passenger_ids:
+                    pax_amount += 1
 
-                rec.admin_fee = rec.admin_fee_id.get_final_adm_fee(rec.refund_amount, pnr_amount, pax_amount)
+                rec.admin_fee_ho = rec.admin_fee_id.get_final_adm_fee_ho(rec.refund_amount, pnr_amount, pax_amount)
+                rec.admin_fee_agent = rec.admin_fee_id.get_final_adm_fee_agent(rec.refund_amount, pnr_amount, pax_amount)
+                rec.admin_fee = rec.admin_fee_ho + rec.admin_fee_agent
             else:
+                rec.admin_fee_ho = 0
+                rec.admin_fee_agent = 0
                 rec.admin_fee = 0
 
     @api.depends('admin_fee', 'refund_amount')
@@ -332,10 +332,7 @@ class TtRefund(models.Model):
         if self.state != 'draft':
             raise UserError("Cannot Confirm because state is not 'draft'.")
 
-        if self.refund_type == 'quick':
-            estimate_refund_date = date.today() + relativedelta(days=3)
-        else:
-            estimate_refund_date = date.today() + relativedelta(days=40)
+        estimate_refund_date = date.today() + relativedelta(days=self.refund_type_id.days)
 
         self.write({
             'state': 'confirm',
@@ -377,7 +374,7 @@ class TtRefund(models.Model):
             'hold_date': datetime.now() + relativedelta(days=3),
         })
         for rec in self.refund_line_ids:
-            rec.set_to_done()
+            rec.set_to_sent()
 
     def validate_refund_from_button(self):
         if self.state != 'sent':
@@ -387,7 +384,9 @@ class TtRefund(models.Model):
             'state': 'validate',
             'validate_uid': self.env.user.id,
             'validate_date': datetime.now(),
-            'final_admin_fee': self.admin_fee,
+            'final_admin_fee': self.admin_fee_ho + self.admin_fee_agent,
+            'final_admin_fee_ho': self.admin_fee_ho,
+            'final_admin_fee_agent': self.admin_fee_agent,
             'hold_date': False
         })
 
@@ -408,6 +407,9 @@ class TtRefund(models.Model):
             'final_uid': self.env.user.id,
             'final_date': datetime.now()
         })
+
+        for rec in self.refund_line_ids:
+            rec.set_to_finalize()
 
         try:
             mail_created = self.env['tt.email.queue'].sudo().search(
@@ -435,6 +437,8 @@ class TtRefund(models.Model):
     def action_approve(self):
         if self.state != 'final':
             raise UserError("Cannot approve because state is not 'Final'.")
+        if not self.is_vendor_received:
+            raise UserError("Please wait until you received the refund payment from vendor!")
 
         credit = 0
         debit = self.refund_amount
@@ -460,10 +464,10 @@ class TtRefund(models.Model):
             **{'refund_id': self.id}
         )
 
-        ledger_type = 6
-        if self.final_admin_fee:
+        if self.final_admin_fee_ho:
             debit = 0
-            credit = self.final_admin_fee
+            credit = self.final_admin_fee_ho
+            ledger_type = 6
             self.env['tt.ledger'].create_ledger_vanilla(
                 self.res_model,
                 self.res_id,
@@ -484,7 +488,7 @@ class TtRefund(models.Model):
             ho_agent = self.env['tt.agent'].sudo().search(
                 [('agent_type_id.id', '=', self.env.ref('tt_base.agent_type_ho').id)], limit=1)
             credit = 0
-            debit = self.final_admin_fee
+            debit = self.final_admin_fee_ho
             self.env['tt.ledger'].create_ledger_vanilla(
                 self.res_model,
                 self.res_id,
@@ -502,11 +506,55 @@ class TtRefund(models.Model):
                 **{'refund_id': self.id}
             )
 
+        if self.final_admin_fee_agent:
+            debit = 0
+            credit = self.final_admin_fee_agent
+            ledger_type = 4
+            self.env['tt.ledger'].create_ledger_vanilla(
+                self.res_model,
+                self.res_id,
+                'Refund Agent Admin Fee: %s' % (self.name),
+                self.name,
+                datetime.now(pytz.timezone('Asia/Jakarta')).date(),
+                ledger_type,
+                self.currency_id.id,
+                self.env.user.id,
+                self.agent_id.id,
+                False,
+                debit,
+                credit,
+                'Refund Agent Admin Fee for %s (Ref PNR: %s)' % (self.referenced_document, self.referenced_pnr),
+                **{'refund_id': self.id}
+            )
+
+            credit = 0
+            debit = self.final_admin_fee_agent
+            ledger_type = 3
+            self.env['tt.ledger'].create_ledger_vanilla(
+                self.res_model,
+                self.res_id,
+                'Refund Agent Admin Fee: %s' % (self.name),
+                self.name,
+                datetime.now(pytz.timezone('Asia/Jakarta')).date(),
+                ledger_type,
+                self.currency_id.id,
+                self.env.user.id,
+                self.agent_id.id,
+                False,
+                debit,
+                credit,
+                'Refund Agent Admin Fee for %s (Ref PNR: %s)' % (self.referenced_document, self.referenced_pnr),
+                **{'refund_id': self.id}
+            )
+
         self.write({
             'state': 'approve',
             'approve_uid': self.env.user.id,
             'approve_date': datetime.now()
         })
+
+        for rec in self.refund_line_ids:
+            rec.set_to_done()
 
     def create_profit_loss_ledger(self):
         value = self.real_refund_amount - self.refund_amount
@@ -588,7 +636,7 @@ class TtRefund(models.Model):
 
         tot_citra_fee = 0
         for rec in self.refund_line_cust_ids:
-            tot_citra_fee += rec.citra_fee + rec.admin_fee
+            tot_citra_fee += rec.citra_fee
 
         if tot_citra_fee:
             credit = tot_citra_fee
@@ -597,7 +645,7 @@ class TtRefund(models.Model):
             self.env['tt.ledger'].create_ledger_vanilla(
                 self.res_model,
                 self.res_id,
-                'Refund Agent Admin Fee : %s' % (self.name),
+                'Refund Agent Additional Fee : %s' % (self.name),
                 self.name,
                 datetime.now(pytz.timezone('Asia/Jakarta')).date(),
                 ledger_type,
@@ -607,7 +655,7 @@ class TtRefund(models.Model):
                 False,
                 debit,
                 credit,
-                'Refund Agent Admin Fee for %s (Ref PNR: %s)' % (self.referenced_document, self.referenced_pnr),
+                'Refund Agent Additional Fee for %s (Ref PNR: %s)' % (self.referenced_document, self.referenced_pnr),
                 **{'refund_id': self.id}
             )
 
@@ -617,7 +665,7 @@ class TtRefund(models.Model):
             self.env['tt.ledger'].create_ledger_vanilla(
                 self.res_model,
                 self.res_id,
-                'Refund Agent Admin Fee : %s' % (self.name),
+                'Refund Agent Additional Fee : %s' % (self.name),
                 self.name,
                 datetime.now(pytz.timezone('Asia/Jakarta')).date(),
                 ledger_type,
@@ -627,7 +675,7 @@ class TtRefund(models.Model):
                 False,
                 debit,
                 credit,
-                'Refund Agent Admin Fee for %s (Ref PNR: %s)' % (self.referenced_document, self.referenced_pnr),
+                'Refund Agent Additional Fee for %s (Ref PNR: %s)' % (self.referenced_document, self.referenced_pnr),
                 **{'refund_id': self.id}
             )
 
@@ -688,6 +736,9 @@ class TtRefund(models.Model):
             'context': {},
             'target': 'current',
         }
+
+    def toggle_is_vendor_received(self):
+        self.is_vendor_received = not self.is_vendor_received
 
     def print_refund_to_agent(self):
         datas = {
@@ -919,13 +970,17 @@ class TtRefund(models.Model):
             'refund_date_ho': self.refund_date_ho and self.refund_date_ho.strftime('%Y-%m-%d %H:%M:%S') or '',
             'real_refund_date': self.real_refund_date and self.real_refund_date.strftime('%Y-%m-%d %H:%M:%S') or '',
             'cust_refund_date': self.cust_refund_date and self.cust_refund_date.strftime('%Y-%m-%d %H:%M:%S') or '',
-            'refund_type': self.refund_type,
+            'refund_type': self.refund_type_id.name,
 
             'refund_amount': self.refund_amount,
             'admin_fee': self.admin_fee,
+            'admin_fee_ho': self.admin_fee_ho,
+            'admin_fee_agent': self.admin_fee_agent,
             'total_amount': self.total_amount,
             'total_amount_cust': self.total_amount_cust,
             'final_admin_fee': self.final_admin_fee,
+            'final_admin_fee_ho': self.final_admin_fee_ho,
+            'final_admin_fee_agent': self.final_admin_fee_agent,
             'booking_description': self.booking_desc and self.booking_desc or '',
             'notes': self.notes and self.notes or '',
             'refund_lines': refund_lines,
@@ -935,3 +990,14 @@ class TtRefund(models.Model):
         }
 
         return new_vals
+
+    # temporary function
+    def convert_refund_type(self):
+        all_refunds = self.env['tt.refund'].sudo().search([])
+        for rec in all_refunds:
+            if rec.refund_type == 'quick':
+                rec.refund_type_id = self.env.ref('tt_accounting.refund_type_quick_refund').id
+            elif rec.refund_type == 'regular':
+                rec.refund_type_id = self.env.ref('tt_accounting.refund_type_regular_refund').id
+            else:
+                rec.refund_type_id = False

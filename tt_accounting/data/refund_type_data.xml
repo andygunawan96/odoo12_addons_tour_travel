@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <data noupdate="1">
+        <record id="refund_type_regular_refund" model="tt.refund.type">
+            <field name="name">Regular Refund</field>
+            <field name="days">40</field>
+        </record>
+        <record id="refund_type_quick_refund" model="tt.refund.type">
+            <field name="name">Quick Refund</field>
+            <field name="days">3</field>
+        </record>
+    </data>
+</odoo>

@@ -14,7 +14,7 @@
                     <field name="booker_id"/>
                     <field name="currency_id"/>
                     <field name="service_type"/>
-                    <field name="refund_type"/>
+                    <field name="refund_type_id"/>
                     <field name="referenced_pnr"/>
                     <field name="referenced_document"/>
                     <field name="res_model" groups="base.user_admin"/>

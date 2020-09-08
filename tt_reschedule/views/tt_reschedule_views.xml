@@ -59,7 +59,7 @@
                     <button name="send_reschedule_from_button" string="Send to Agent" type="object" groups="tt_base.group_tt_tour_travel_operator" attrs="{'invisible':[('state','!=', 'confirm')]}"/>
                     <button name="validate_reschedule_from_button" string="Validate" type="object" groups="tt_base.group_tt_agent_user_operator,tt_base.group_tt_tour_travel_operator" attrs="{'invisible':[('state','!=', 'sent')]}"/>
                     <button name="finalize_reschedule_from_button" string="Finalize" type="object" groups="tt_base.group_tt_ticketing_operator,tt_base.group_tt_accounting_operator" attrs="{'invisible':[('state','!=', 'validate')]}"/>
-                    <button name="action_done" string="Approve (Done)" type="object" groups="tt_base.group_tt_ticketing_operator,tt_base.group_tt_accounting_operator" attrs="{'invisible':[('state','!=', 'final')]}" confirm="Are you sure you want to approve?"/>
+                    <button name="action_done" string="Approve (Done)" type="object" groups="tt_base.group_tt_ticketing_operator,tt_base.group_tt_accounting_operator" attrs="{'invisible':[('state','!=', 'final')]}"/>
                     <button name="set_to_confirm" string="Set to Confirm" type="object" groups="tt_base.group_tt_accounting_manager" attrs="{'invisible':[('state','not in', ['sent', 'validate'])]}"/>
                     <button name="cancel_reschedule_from_button" string="Cancel" type="object" attrs="{'invisible':[('state','in', ['done', 'cancel'])]}" confirm="Are you sure you want to cancel?"/>
                     <button string="Adjustment" name="%(tt_accounting.tt_adjustment_wizard_action_view)d" type="action"
@@ -283,12 +283,13 @@
                                 <tree>
                                     <field name="sequence" widget="handle"/>
                                     <field name="reschedule_type"/>
+                                    <field name="currency_id"/>
                                     <field name="reschedule_amount" groups="tt_base.group_tt_agent_user_operator"/>
                                     <field name="reschedule_amount_ho" groups="tt_base.group_tt_tour_travel_operator"/>
                                     <field name="admin_fee_id" groups="tt_base.group_tt_tour_travel_operator"/>
                                     <field name="admin_fee"/>
                                     <field name="total_amount"/>
-                                    <field name="real_reschedule_amount" groups="tt_base.group_tt_tour_travel_operator" attrs="{'invisible':[('state','not in', ['final','done'])]}"/>
+                                    <field name="real_reschedule_amount" groups="tt_base.group_tt_tour_travel_operator" attrs="{'invisible':[('state','not in', ['finalize','done'])]}"/>
                                     <field name="state" invisible="1"/>
                                 </tree>
                                 <form>
@@ -309,14 +310,17 @@
                                                 <field name="agent_type_id" invisible="1"/>
                                                 <field name="state" invisible="1"/>
                                                 <field name="reschedule_type"/>
+                                                <field name="currency_id"/>
                                                 <field name="reschedule_amount" groups="tt_base.group_tt_agent_user_operator"/>
                                                 <field name="reschedule_amount_ho" groups="tt_base.group_tt_tour_travel_operator"/>
-                                                <field name="real_reschedule_amount" groups="tt_base.group_tt_tour_travel_operator" attrs="{'invisible':[('state','not in', ['final','done'])]}"/>
+                                                <field name="real_reschedule_amount" groups="tt_base.group_tt_tour_travel_operator" attrs="{'invisible':[('state','not in', ['finalize','done'])]}"/>
                                             </group>
                                             <group>
-                                                <field name="admin_fee_dummy"/>
+                                                <field name="admin_fee_dummy" groups="tt_base.group_tt_tour_travel_operator"/>
                                                 <field name="admin_fee_id" groups="tt_base.group_tt_tour_travel_operator" attrs="{'required':[('state','=','confirm')]}"/>
                                                 <field name="admin_fee"/>
+                                                <field name="admin_fee_ho" groups="tt_base.group_tt_tour_travel_operator"/>
+                                                <field name="admin_fee_agent" groups="tt_base.group_tt_tour_travel_operator"/>
                                                 <field name="total_amount"/>
                                             </group>
                                         </group>

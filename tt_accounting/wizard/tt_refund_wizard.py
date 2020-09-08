@@ -24,8 +24,7 @@ class TtRefundWizard(models.TransientModel):
     currency_id = fields.Many2one('res.currency', readonly=True)
     service_type = fields.Char('Service Type', required=True, readonly=True)
 
-    refund_type = fields.Selection([('quick', 'Quick Refund (Max. 3 days process)'), ('regular', 'Regular Refund (40 days process)')], 'Refund Type',
-                                   required=True, default='regular')
+    refund_type_id = fields.Many2one('tt.refund.type', 'Refund Type', required=True)
 
     referenced_pnr = fields.Char('Ref. PNR',required=True,readonly=True)
     referenced_document = fields.Char('Ref. Document',required=True,readonly=True)
@@ -50,8 +49,8 @@ class TtRefundWizard(models.TransientModel):
             'booker_id': self.booker_id.id,
             'currency_id': self.currency_id.id,
             'service_type': self.service_type,
-            'refund_type': self.refund_type,
-            'admin_fee_id': self.refund_type == 'quick' and self.env.ref('tt_accounting.admin_fee_refund_quick').id or self.env.ref('tt_accounting.admin_fee_refund_regular').id,
+            'refund_type_id': self.refund_type_id.id,
+            'admin_fee_id': self.env.ref('tt_accounting.admin_fee_refund_regular').id,
             'referenced_document': self.referenced_document,
             'referenced_pnr': self.referenced_pnr,
             'res_model': self.res_model,
