@@ -85,13 +85,19 @@ class TtReconcileTransactionLines(models.Model):
                              ('refund','Refund')],'Type', readonly=True)
     booking_time = fields.Datetime('Booking Time',readonly=True)
     issued_time = fields.Datetime('Issued Time',readonly=True)
-    base_price = fields.Monetary('Base Price',readonly=True)
-    tax = fields.Monetary('Tax',readonly=True)
-    commission = fields.Monetary('Commission',readonly=True)
-    total = fields.Monetary('Total Price',readonly=True)
-    currency_id = fields.Many2one('res.currency','Currency',default=lambda self: self.env.user.company_id.currency_id, readonly=True)
-    vendor_start_balance = fields.Monetary('Vendor Start Balance', readonly=True)
-    vendor_end_balance = fields.Monetary('Vendor End Balance', readonly=True)
+    base_price = fields.Monetary('Base Price', readonly=True, currency_field='currency_id')
+    tax = fields.Monetary('Tax',readonly=True, currency_field='currency_id')
+    commission = fields.Monetary('Commission',readonly=True, currency_field='currency_id')
+    total = fields.Monetary('Total Price',readonly=True, currency_field='currency_id')
+    vendor_start_balance = fields.Monetary('Vendor Start Balance', readonly=True,
+                                           currency_field='vendor_balance_currency_id')
+    vendor_end_balance = fields.Monetary('Vendor End Balance', readonly=True,
+                                         currency_field='vendor_balance_currency_id')
+    currency_id = fields.Many2one('res.currency', 'Currency', default=lambda self: self.env.user.company_id.currency_id,
+                                  readonly=True)
+    vendor_balance_currency_id = fields.Many2one('res.currency', 'Vendor Balance Currency',
+                                                 default=lambda self: self.env.user.company_id.currency_id,
+                                                 readonly=True)
     ticket_numbers = fields.Text('Ticket')
     description = fields.Text('Description')
 

@@ -156,7 +156,7 @@ class TtTopUp(models.Model):
                                        1,
                                        self.currency_id.id,
                                        self.env.user.id,
-                                       self.get_total_amount(),
+                                       self.validated_amount + self.subsidy, ## Buat Ledger Amount sejumlah payment yg di validated + subsidy unique amount jika ada
                                        description='Top Up Ledger for %s' % self.name)
         vals['agent_id'] = self.agent_id.id
         new_aml = ledger_obj.create(vals)
@@ -184,9 +184,6 @@ class TtTopUp(models.Model):
         top_up.payment_id.action_approve_from_button()
 
         return ERR.get_no_error({'top_up_id':top_up.id})
-
-    def get_total_amount(self):
-        return self.total_with_fees + self.subsidy
 
     def to_dict(self):
         res = {

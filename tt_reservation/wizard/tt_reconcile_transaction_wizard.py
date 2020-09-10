@@ -66,6 +66,22 @@ class TtReconcileTransactionWizard(models.TransientModel):
 
             write_data = []
             for transaction in period['transactions']:
+                try:
+                    currency = self.env.ref("base." + transaction['currency']).id
+                    transaction.update({
+                        'currency_id': currency,
+                    })
+                except:
+                    pass
+
+                try:
+                    vendor_balance_currency = self.env.ref("base." + transaction['vendor_balance_currency']).id
+                    transaction.update({
+                        'vendor_balance_currency_id': vendor_balance_currency,
+                    })
+                except:
+                    pass
+
                 trans_lines = recon_data.reconcile_lines_ids.filtered(lambda x: x.pnr == transaction['pnr'])
                 if trans_lines:
                     if trans_lines[0].total == transaction['total'] or trans_lines[0].state == 'match':

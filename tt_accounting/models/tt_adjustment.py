@@ -160,7 +160,11 @@ class TtAdjustment(models.Model):
             debit,
             credit,
             'Adjustment for %s, by %s' % (self.referenced_document,self.name),
-            **{'adjustment_id': self.id}
+            **{
+                'adjustment_id': self.id,
+                'refund_id': self.res_model == 'tt.refund' and self.res_id or False,
+                'reschedule_id': self.res_model == 'tt.reschedule' and self.res_id or False,
+            }
         )
 
         self.write({
