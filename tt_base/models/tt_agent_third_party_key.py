@@ -16,7 +16,7 @@ class TtAgentThirdPartyKey(models.Model):
     is_connected = fields.Boolean('Connected',default=False)
     connected_account_id = fields.Char('Connected Account ID')
     connected_account_name = fields.Char('Connected Account ID')
-    connected_time = fields.Datetime('Connected Time', default=fields.Datetime.now())
+    connected_time = fields.Datetime('Connected Time')
 
     def validate_key(self,req):
         found_key = self.search([('key', '=', req['key']), ('is_connected', '=', True)])
