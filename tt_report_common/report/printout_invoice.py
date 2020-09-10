@@ -8,6 +8,30 @@ class PrintoutTicketForm(models.AbstractModel):
     _name = 'report.tt_report_common.printout_ticket'
     _description = 'Rodex Model'
 
+    def get_refund_fee_amount(self, agent_id):
+        current_refund_env = self.env.ref('tt_accounting.admin_fee_refund_regular')
+        refund_admin_fee_list = self.env['tt.master.admin.fee'].search([('after_sales_type', '=', 'refund')])
+        for admin_fee in refund_admin_fee_list:
+            if agent_id.id in admin_fee.agent_ids.ids:
+                current_refund_env = admin_fee
+
+        refund_fee = 0
+        for line in current_refund_env.admin_fee_line_ids:
+            refund_fee += line.amount
+        return refund_fee
+
+    def get_reschedule_fee_amount(self, agent_id):
+        current_reschedule_env = self.env.ref('tt_accounting.admin_fee_reschedule')
+        reschedule_admin_fee_list = self.env['tt.master.admin.fee'].search([('after_sales_type', '=', 'after_sales')])
+        for admin_fee in reschedule_admin_fee_list:
+            if agent_id.id in admin_fee.agent_ids.ids:
+                current_reschedule_env = admin_fee
+
+        reschedule_fee = 0
+        for line in current_reschedule_env.admin_fee_line_ids:
+            reschedule_fee += line.amount
+        return reschedule_fee
+
     @api.model
     def _get_report_values(self, docids, data=None):
         if not data.get('context'):
@@ -30,6 +54,9 @@ class PrintoutTicketForm(models.AbstractModel):
         pnr_length = 0
         header_width = 90
         ssr_list = []
+        refund_fee = 0
+        reschedule_fee = 0
+
         for rec in self.env[data['context']['active_model']].browse(data['context']['active_ids']):
             values[rec.id] = []
             a = {}
@@ -90,6 +117,10 @@ class PrintoutTicketForm(models.AbstractModel):
                 ssr_list.append(ssr_obj)
             values[rec.id] = [a[new_a] for new_a in a]
             pnr_length = len(rec.pnr)
+            agent_id = rec.agent_id
+
+            refund_fee = self.get_refund_fee_amount(agent_id)
+            reschedule_fee = self.get_reschedule_fee_amount(agent_id)
         vals = {
             'doc_ids': data['context']['active_ids'],
             'doc_model': data['context']['active_model'],
@@ -97,6 +128,8 @@ class PrintoutTicketForm(models.AbstractModel):
             'price_lines': values,
             'pnr_length': pnr_length,
             'header_width': str(header_width),
+            'refund_fee': refund_fee,
+            'reschedule_fee': reschedule_fee,
             'ssr_list': ssr_list,
             'date_now': fields.Date.today().strftime('%d %b %Y'),
             'base_color': self.sudo().env['ir.config_parameter'].get_param('tt_base.website_default_color', default='#FFFFFF'),
