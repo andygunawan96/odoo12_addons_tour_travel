@@ -41,6 +41,7 @@ class TtProviderPPOB(models.Model):
     registration_number = fields.Char('Registration Number', readonly=True, states={'draft': [('readonly', False)]})
     registration_date = fields.Date('Registration Date', readonly=True, states={'draft': [('readonly', False)]})
     bill_expired_date = fields.Date('Bill Expired Date', readonly=True, states={'draft': [('readonly', False)]})
+    is_send_transaction_code = fields.Boolean('Send Transaction Code', default=False, readonly=True)
     transaction_code = fields.Char('Transaction Code', readonly=True, states={'draft': [('readonly', False)]})
     transaction_name = fields.Char('Transaction Name', readonly=True, states={'draft': [('readonly', False)]})
     meter_number = fields.Char('Meter Number', readonly=True, states={'draft': [('readonly', False)]})
@@ -485,6 +486,7 @@ class TtProviderPPOB(models.Model):
             'registration_number': self.registration_number and self.registration_number or '',
             'registration_date': self.registration_date and self.registration_date.strftime('%Y-%m-%d') or '',
             'bill_expired_date': self.bill_expired_date and self.bill_expired_date.strftime('%Y-%m-%d') or '',
+            'is_send_transaction_code': self.is_send_transaction_code and self.is_send_transaction_code or '',
             'transaction_code': self.transaction_code and self.transaction_code or '',
             'transaction_name': self.transaction_name and self.transaction_name or '',
             'meter_number': self.meter_number and self.meter_number or '',
