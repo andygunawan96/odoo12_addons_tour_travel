@@ -385,14 +385,9 @@
             <h4>Reschedule Terms:</h4>
         </div>
         <div>
-            <t t-if="agent_name == 'Rodex Darmo'">
-                <span>* A reschedule fee will be charged to the customer in accordance with airline / hotel regulations plus admin fee of IDR 30,000.</span>
-            </t>
-            <t t-else="">
-                <span>* A reschedule fee will be charged to the customer in accordance with airline / hotel regulations plus admin fee of IDR
-                    <span t-esc="reschedule_fee" t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/>.
-                </span>
-            </t>
+            <span>* A reschedule fee will be charged to the customer in accordance with airline / hotel regulations plus admin fee of IDR
+                <span t-esc="reschedule_fee" t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/>.
+            </span>
         </div>
         <div>
             <span>* Estimated time for reschedule process depends on the airline / hotel.</span>
