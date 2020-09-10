@@ -60,7 +60,7 @@ class TtTopUp(models.Model):
     validated_amount = fields.Monetary('Validated Amount', readonly=True)
     subsidy = fields.Monetary('Subsidy',readonly=True, default=0)
     total = fields.Monetary('Total', compute='_compute_amount', store=True, readonly=True)
-    total_with_fees = fields.Monetary('Total + fees', compute='_compute_amount', store=False)
+    total_with_fees = fields.Monetary('Total + fees', compute='_compute_amount', store=True)
     ledger_id = fields.Many2one('tt.ledger', string='Ledger', readonly=True, copy=False)
     # payment_acquirer_id = fields.Many2one('payment.acquirer','Payment Type')
     request_uid = fields.Many2one('res.users','Request By')
@@ -156,7 +156,7 @@ class TtTopUp(models.Model):
                                        1,
                                        self.currency_id.id,
                                        self.env.user.id,
-                                       self.get_total_amount(),
+                                       self.validated_amount + self.subsidy, ## Buat Ledger Amount sejumlah payment yg di validated + subsidy unique amount jika ada
                                        description='Top Up Ledger for %s' % self.name)
         vals['agent_id'] = self.agent_id.id
         new_aml = ledger_obj.create(vals)
@@ -184,9 +184,6 @@ class TtTopUp(models.Model):
         top_up.payment_id.action_approve_from_button()
 
         return ERR.get_no_error({'top_up_id':top_up.id})
-
-    def get_total_amount(self):
-        return self.total_with_fees + self.subsidy
 
     def to_dict(self):
         res = {
