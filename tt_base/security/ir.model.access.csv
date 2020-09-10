@@ -189,6 +189,7 @@ access_phone_detail_for_public,phone.detail.for.public,model_phone_detail,,1,0,0
 access_phone_detail_for_tour_travel_operator,phone.detail.for.tour.travel.operator,model_phone_detail,tt_base.group_tt_tour_travel_operator,1,0,0,0
 access_phone_detail_for_tour_travel_supervisor,phone.detail.for.tour.travel.supervisor,model_phone_detail,tt_base.group_tt_tour_travel_supervisor,1,0,1,0
 access_phone_detail_for_tour_travel_manager,phone.detail.for.tour.travel.manager,model_phone_detail,tt_base.group_tt_tour_travel_manager,1,1,1,0
+access_phone_detail_for_ticketing_operator,phone.detail.for.ticketing.operator,model_phone_detail,tt_base.group_tt_ticketing_operator,1,1,1,0ss
 access_phone_detail_for_agent_management_operator,phone.detail.for.agent.management.operator,model_phone_detail,tt_base.group_tt_agent_management_operator,1,1,1,0
 access_phone_detail_for_agent_user_operator,phone.detail.for.agent.user.operator,model_phone_detail,tt_base.group_tt_agent_user_operator,1,1,1,0
 access_phone_detail_for_agent_user_supervisor,phone.detail.for.agent.user.supervisor,model_phone_detail,tt_base.group_tt_agent_user_supervisor,1,1,1,0
