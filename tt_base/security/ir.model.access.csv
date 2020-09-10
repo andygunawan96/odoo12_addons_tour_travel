@@ -142,6 +142,7 @@ access_payment_acquirer_for_account_invoice,payment.acquirer.for.account.invoice
 access_payment_acquirer_for_account_manager,payment.acquirer.for.account.manager,model_payment_acquirer,account.group_account_manager,1,1,1,0
 
 access_payment_acquirer_number_for_public,payment.acquirer.for.public,model_payment_acquirer_number,,1,0,0,0
+access_payment_acquirer_number_for_accounting_operator,payment.acquirer.for.accounting.operator,model_payment_acquirer_number,tt_base.group_tt_accounting_operator,1,1,1,0
 access_payment_acquirer_number_for_accounting_manager,payment.acquirer.for.accounting.manager,model_payment_acquirer_number,tt_base.group_tt_accounting_manager,1,1,1,1
 
 access_unique_amount_for_public,unique.amount,model_unique_amount,,1,0,0,0
@@ -189,6 +190,7 @@ access_phone_detail_for_public,phone.detail.for.public,model_phone_detail,,1,0,0
 access_phone_detail_for_tour_travel_operator,phone.detail.for.tour.travel.operator,model_phone_detail,tt_base.group_tt_tour_travel_operator,1,0,0,0
 access_phone_detail_for_tour_travel_supervisor,phone.detail.for.tour.travel.supervisor,model_phone_detail,tt_base.group_tt_tour_travel_supervisor,1,0,1,0
 access_phone_detail_for_tour_travel_manager,phone.detail.for.tour.travel.manager,model_phone_detail,tt_base.group_tt_tour_travel_manager,1,1,1,0
+access_phone_detail_for_ticketing_operator,phone.detail.for.ticketing.operator,model_phone_detail,tt_base.group_tt_ticketing_operator,1,1,1,0ss
 access_phone_detail_for_agent_management_operator,phone.detail.for.agent.management.operator,model_phone_detail,tt_base.group_tt_agent_management_operator,1,1,1,0
 access_phone_detail_for_agent_user_operator,phone.detail.for.agent.user.operator,model_phone_detail,tt_base.group_tt_agent_user_operator,1,1,1,0
 access_phone_detail_for_agent_user_supervisor,phone.detail.for.agent.user.supervisor,model_phone_detail,tt_base.group_tt_agent_user_supervisor,1,1,1,0
