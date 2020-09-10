@@ -9,45 +9,28 @@ class PrintoutTicketForm(models.AbstractModel):
     _description = 'Rodex Model'
 
     def get_refund_fee_amount(self, agent_id):
-        refund_special_env = self.env.ref('tt_accounting.admin_fee_refund_regular_special')
-        agent_refund_found = False
+        current_refund_env = self.env.ref('tt_accounting.admin_fee_refund_regular')
+        refund_admin_fee_list = self.env['tt.master.admin.fee'].search([('after_sales_type', '=', 'refund')])
+        for admin_fee in refund_admin_fee_list:
+            if agent_id.id in admin_fee.agent_ids.ids:
+                current_refund_env = admin_fee
+
         refund_fee = 0
-
-        for refund_agent_id in refund_special_env.agent_ids:
-            if agent_id.id == refund_agent_id.id:
-                agent_refund_found = True
-                refund_fee = 0
-                for line in refund_special_env.admin_fee_line_ids:
-                    refund_fee += line.amount
-                break
-
-        if agent_refund_found:
-            return refund_fee
-        else:
-            refund_regular_env = self.env.ref('tt_accounting.admin_fee_refund_regular')
-            for line in refund_regular_env.admin_fee_line_ids:
-                refund_fee += line.amount
-            return refund_fee
+        for line in current_refund_env.admin_fee_line_ids:
+            refund_fee += line.amount
+        return refund_fee
 
     def get_reschedule_fee_amount(self, agent_id):
-        reschedule_special_env = self.env.ref('tt_accounting.admin_fee_reschedule_special')
-        agent_reschedule_found = False
+        current_reschedule_env = self.env.ref('tt_accounting.admin_fee_reschedule')
+        reschedule_admin_fee_list = self.env['tt.master.admin.fee'].search([('after_sales_type', '=', 'after_sales')])
+        for admin_fee in reschedule_admin_fee_list:
+            if agent_id.id in admin_fee.agent_ids.ids:
+                current_reschedule_env = admin_fee
+
         reschedule_fee = 0
-
-        for reschedule_agent_id in reschedule_special_env.agent_ids:
-            if agent_id.id == reschedule_agent_id.id:
-                agent_reschedule_found = True
-                for line in reschedule_special_env.admin_fee_line_ids:
-                    reschedule_fee += line.amount
-                break
-
-        if agent_reschedule_found:
-            return reschedule_fee
-        else:
-            reschedule_regular_env = self.env.ref('tt_accounting.admin_fee_reschedule')
-            for line in reschedule_regular_env.admin_fee_line_ids:
-                reschedule_fee += line.amount
-            return reschedule_fee
+        for line in current_reschedule_env.admin_fee_line_ids:
+            reschedule_fee += line.amount
+        return reschedule_fee
 
     @api.model
     def _get_report_values(self, docids, data=None):
