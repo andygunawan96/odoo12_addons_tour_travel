@@ -702,6 +702,7 @@ class TestSearch(models.Model):
             total_rate += float(room_rate['price_total'])
             total_commision += float(room_rate['commission'])
 
+        total_commision = abs(total_commision)
         resv_id.total = total_rate
         resv_id.total_commission_amount = total_commision
         resv_id.total_nta = total_rate - total_commision
@@ -710,7 +711,10 @@ class TestSearch(models.Model):
         vend_hotel = self.env['tt.provider.hotel'].create({
             'provider_id': provider_id or '',
             'booking_id': resv_id.id,
-            'balance_due': '',
+            'pnr': '',
+            'pnr2': '',
+            'balance_due': total_rate - total_commision,
+            'total_price': total_rate - total_commision,
             'checkin_date': check_in,
             'checkout_date': check_out,
             'hotel_id': resv_id.hotel_id.id,
