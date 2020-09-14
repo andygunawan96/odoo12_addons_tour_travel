@@ -634,32 +634,37 @@ class HotelInformation(models.Model):
     # Dari CSV Adrian
     def get_record_by_api2_2(self):
         hotel_fmt_list = {}
-        with open('/var/log/cache_hotel/quantum_pool/master/QRHotelInfoDerby20190613.csv', 'r') as f:
+        with open('/var/log/cache_hotel/quantum_pool/master/Hotels20200728.csv', 'r') as f:
             hotel_ids = csv.reader(f, delimiter=';')
             for obj in hotel_ids:
+                add = obj[2]
+                add += ', ' + obj[3] if len(obj[3]) > 1 else ''
+                add += ', ' + obj[4] if len(obj[4]) > 1 else ''
                 # Formatting Hotel
                 hotel_fmt_obj = {
-                    'name': obj[2],
-                    'street': obj[3],
-                    'description': 'Rail:' + obj[16] + ' Distance: ' + obj[17] or '' if obj[16] else '',
-                    'email': obj[13],
+                    'id': obj[0],
+                    'name': obj[1],
+                    'street': add,
+                    # 'address2': obj[3],
+                    # 'address3': obj[4],
+                    'description': 'Rail:' + obj[14] + ' Distance: ' + obj[15] or '' if obj[14] else '',
+                    'email': obj[11],
                     'images': [],
                     'facilities': [],
-                    'phone': obj[11],
-                    'fax': obj[12],
-                    'zip': obj[10],
+                    'phone': obj[17],
+                    'fax': obj[18],
+                    'zip': obj[8],
                     'website': '',
-                    'lat': obj[25],
-                    'long': obj[26],
-                    'rating': obj[23] and obj[23][0] or '',
-                    'street2': 'City: ' + obj[9] + '; Country: ' + obj[6] or '',
-                    'city': obj[9].capitalize(),
-                    'id': obj[1],
+                    'lat': obj[23],
+                    'long': obj[24],
+                    'rating': obj[21] and obj[21][0] or '',
+                    'street2': 'City: ' + obj[25] + '; Country: ' + obj[7] or '',
+                    'city': obj[25].capitalize(),
                 }
-                if not hotel_fmt_list.get(obj[9].capitalize()):
-                    hotel_fmt_list[obj[9].capitalize()] = []
+                if not hotel_fmt_list.get(obj[25].capitalize()):
+                    hotel_fmt_list[obj[25].capitalize()] = []
                 # Add Hotel ke Dict
-                hotel_fmt_list[obj[9].capitalize()].append(hotel_fmt_obj)
+                hotel_fmt_list[obj[25].capitalize()].append(hotel_fmt_obj)
         f.close()
         need_to_add_list = [['No', 'Name', 'Hotel QTY']]
         self.file_log_write('###### Render Start ######')
@@ -2174,6 +2179,8 @@ class HotelInformation(models.Model):
             return 'A12'
         elif provider == 'rodextrip_hotel':
             return 'A13'
+        elif provider == 'from':
+            return 'A3'
         else:
             return provider
 
@@ -2740,8 +2747,9 @@ class HotelInformation(models.Model):
 
     # Ambil Master record yg telah terbentuk
     # Masukan source yg di mau ke master record
+    # C. Merge to Master
     def merge_record_for_some_source(self):
-        provider_list = ['tbo',]
+        provider_list = ['quantum_pool',]
         need_to_add_city = {}
         rendered_city_ids = []
 
@@ -2933,7 +2941,6 @@ class HotelInformation(models.Model):
                     file.close()
 
                     _logger.info(msg='Get ' + str(len(json.loads(vendor_hotel_objs))) + ' From: ' + vendor_city + ' Total: ' + str(len(cache_content)))
-                    break
                 except:
                     _logger.info(msg='Error While Processing ' + master_provider + ' From: ' + vendor_city)
 

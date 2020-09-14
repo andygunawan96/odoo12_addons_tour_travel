@@ -139,7 +139,7 @@ res_country_city_id_221,base.state_id_jt,Magelang,tt_reservation_hotel.city_type
 res_country_city_id_222,base.state_id_jt,Pekalongan,tt_reservation_hotel.city_type_city,base.id
 res_country_city_id_223,base.state_id_jt,Salatiga,tt_reservation_hotel.city_type_city,base.id
 res_country_city_id_224,base.state_id_jt,Semarang,tt_reservation_hotel.city_type_city,base.id
-res_country_city_id_225,base.state_id_jt,Surakarta,tt_reservation_hotel.city_type_city,base.id
+res_country_city_id_225,base.state_id_jt,Solo,tt_reservation_hotel.city_type_city,base.id
 res_country_city_id_226,base.state_id_jt,Tegal,tt_reservation_hotel.city_type_city,base.id
 res_country_city_id_227,base.state_id_yo,Bantul,tt_reservation_hotel.city_type_kab,base.id
 res_country_city_id_228,base.state_id_yo,Gunung Kidul,tt_reservation_hotel.city_type_kab,base.id
