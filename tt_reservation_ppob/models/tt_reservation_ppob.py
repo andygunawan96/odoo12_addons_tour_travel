@@ -490,7 +490,7 @@ class ReservationPpob(models.Model):
             'carrier_code': carrier_obj and carrier_obj.code or False,
             'carrier_name': carrier_obj and carrier_obj.name or False,
             'customer_number': data.get('customer_number') and data['customer_number'] or '',
-            'customer_name': data.get('customer_name') and data['customer_name'] or '',
+            'customer_name': data.get('customer_name') and data['customer_name'] or 'Customer PPOB',
             'customer_id_number': data.get('customer_id_number') and data['customer_id_number'] or '',
             'unit_code': data.get('unit_code') and data['unit_code'] or '',
             'unit_name': data.get('unit_name') and data['unit_name'] or '',
@@ -545,7 +545,7 @@ class ReservationPpob(models.Model):
             bill_detail_vals = {
                 'provider_booking_id': prov_obj.id,
                 'customer_number': rec.get('customer_number', ''),
-                'customer_name': rec.get('customer_name', ''),
+                'customer_name': rec.get('customer_name', 'Customer PPOB'),
                 'unit_code': rec.get('unit_code', ''),
                 'unit_name': rec.get('unit_name', ''),
                 'total': rec.get('total', 0),
