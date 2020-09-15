@@ -149,11 +149,57 @@ class IssuedOffline(models.Model):
 
     acquirer_id = fields.Many2one('payment.acquirer', 'Payment Acquirer', readonly=True)
 
+    def get_admin_fee_domain(self):
+        agent_type_adm_ids = self.agent_id.agent_type_id.admin_fee_ids.ids
+        agent_adm_ids = self.agent_id.admin_fee_ids.ids
+        return [('after_sales_type', '=', 'offline'), '&', '|',
+                ('agent_type_access_type', '=', 'all'), '|', '&', ('agent_type_access_type', '=', 'allow'),
+                ('id', 'in', agent_type_adm_ids), '&', ('agent_type_access_type', '=', 'restrict'),
+                ('id', 'not in', agent_type_adm_ids), '|', ('agent_access_type', '=', 'all'), '|', '&',
+                ('agent_access_type', '=', 'allow'), ('id', 'in', agent_adm_ids), '&',
+                ('agent_access_type', '=', 'restrict'), ('id', 'not in', agent_adm_ids)]
+
+    admin_fee_id = fields.Many2one('tt.master.admin.fee', 'Admin Fee Type', domain=get_admin_fee_domain, readonly=True)
+    admin_fee = fields.Monetary('Total Admin Fee', default=0, readonly=True, compute="_compute_admin_fee")
+    admin_fee_ho = fields.Monetary('Admin Fee (HO)', default=0, readonly=True, compute="_compute_admin_fee")
+    admin_fee_agent = fields.Monetary('Admin Fee (Agent)', default=0, readonly=True, compute="_compute_admin_fee")
+
     split_from_resv_id = fields.Many2one('tt.reservation.offline', 'Splitted From', readonly=1)
     split_to_resv_ids = fields.One2many('tt.reservation.offline', 'split_from_resv_id', 'Splitted To', readonly=1)
 
     def get_form_id(self):
         return self.env.ref("tt_reservation_offline.issued_offline_view_form")
+
+    @api.depends('admin_fee_id', 'total')
+    @api.onchange('admin_fee_id', 'total')
+    def _compute_admin_fee(self):
+        for rec in self:
+            if rec.admin_fee_id:
+                if rec.offline_provider_type == 'hotel':
+                    pnr_amount = 0
+                    pax_amount = 0
+                    for rec2 in rec.line_ids:
+                        pnr_amount += rec2.obj_qty
+                        pax_amount = (datetime.strptime(rec2.check_out, '%Y-%m-%d') - datetime.strptime(rec2.check_in, '%Y-%m-%d')).days
+                else:
+                    pnr_amount = 0
+                    for rec2 in rec.provider_booking_ids:
+                        pnr_amount += 1
+
+                    pax_amount = 0
+                    for rec2 in rec.passenger_ids:
+                        pax_amount += 1
+
+                ho_adm_fee = rec.admin_fee_id.get_final_adm_fee_ho(rec.total, pnr_amount, pax_amount)
+                agent_adm_fee = rec.admin_fee_id.get_final_adm_fee_agent(rec.total, pnr_amount, pax_amount)
+
+                rec.admin_fee_ho = ho_adm_fee
+                rec.admin_fee_agent = agent_adm_fee
+                rec.admin_fee = ho_adm_fee + agent_adm_fee
+            else:
+                rec.admin_fee_ho = 0
+                rec.admin_fee_agent = 0
+                rec.admin_fee = 0
 
     @api.depends('provider_booking_ids','provider_booking_ids.reconcile_line_id')
     def _compute_reconcile_state(self):
