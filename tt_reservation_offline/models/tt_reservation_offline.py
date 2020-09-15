@@ -175,17 +175,23 @@ class IssuedOffline(models.Model):
     def _compute_admin_fee(self):
         for rec in self:
             if rec.admin_fee_id:
-                pnr_amount = 0
-                for rec2 in rec.provider_booking_ids:
-                    pnr_amount += 1
+                if rec.offline_provider_type == 'hotel':
+                    pnr_amount = 0
+                    pax_amount = 0
+                    for rec2 in rec.line_ids:
+                        pnr_amount += rec2.obj_qty
+                        pax_amount = (datetime.strptime(rec2.check_out, '%Y-%m-%d') - datetime.strptime(rec2.check_in, '%Y-%m-%d')).days
+                else:
+                    pnr_amount = 0
+                    for rec2 in rec.provider_booking_ids:
+                        pnr_amount += 1
 
-                pax_amount = 0
-                for rec2 in rec.passenger_ids:
-                    pax_amount += 1
+                    pax_amount = 0
+                    for rec2 in rec.passenger_ids:
+                        pax_amount += 1
 
                 ho_adm_fee = rec.admin_fee_id.get_final_adm_fee_ho(rec.total, pnr_amount, pax_amount)
-                agent_adm_fee = rec.admin_fee_id.get_final_adm_fee_agent(rec.total, pnr_amount,
-                                                                               pax_amount)
+                agent_adm_fee = rec.admin_fee_id.get_final_adm_fee_agent(rec.total, pnr_amount, pax_amount)
 
                 rec.admin_fee_ho = ho_adm_fee
                 rec.admin_fee_agent = agent_adm_fee

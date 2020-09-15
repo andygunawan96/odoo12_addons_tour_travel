@@ -72,5 +72,37 @@
             <field name="agent_type_access_type">all</field>
             <field name="agent_access_type">all</field>
         </record>
+        <record id="admin_fee_offline_airline_gds" model="tt.master.admin.fee">
+            <field name="name">Airline Issued Offline (GDS)</field>
+            <field name="after_sales_type">offline</field>
+            <field name="min_amount_ho">0</field>
+            <field name="min_amount_agent">0</field>
+            <field name="agent_type_access_type">all</field>
+            <field name="agent_access_type">all</field>
+        </record>
+        <record id="admin_fee_offline_airline_nongds" model="tt.master.admin.fee">
+            <field name="name">Airline Issued Offline (Non GDS)</field>
+            <field name="after_sales_type">offline</field>
+            <field name="min_amount_ho">0</field>
+            <field name="min_amount_agent">0</field>
+            <field name="agent_type_access_type">all</field>
+            <field name="agent_access_type">all</field>
+        </record>
+        <record id="admin_fee_offline_hotel" model="tt.master.admin.fee">
+            <field name="name">Hotel Issued Offline</field>
+            <field name="after_sales_type">offline</field>
+            <field name="min_amount_ho">0</field>
+            <field name="min_amount_agent">0</field>
+            <field name="agent_type_access_type">all</field>
+            <field name="agent_access_type">all</field>
+        </record>
+        <record id="admin_fee_offline_free" model="tt.master.admin.fee">
+            <field name="name">No Admin Fee</field>
+            <field name="after_sales_type">offline</field>
+            <field name="min_amount_ho">0</field>
+            <field name="min_amount_agent">0</field>
+            <field name="agent_type_access_type">all</field>
+            <field name="agent_access_type">all</field>
+        </record>
     </data>
 </odoo>
