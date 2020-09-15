@@ -83,7 +83,7 @@
                         'default_agent_id': agent_id,
                         'default_agent_type_id': agent_type_id,
                         'default_admin_fee_id': admin_fee_id
-                    }" groups="tt_base.group_tt_tour_travel_operator" attrs="{'invisible':[('state','!=','confirm')]}"/>
+                    }" groups="tt_base.group_tt_tour_travel_operator" attrs="{'invisible':[('state_offline','!=','confirm')]}"/>
 
                         <button string="Adjustment" name="%(tt_accounting.tt_adjustment_wizard_action_view)d" type="action" groups="tt_base.group_tt_accounting_operator"
                                 context="{
