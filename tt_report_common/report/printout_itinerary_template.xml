@@ -808,6 +808,58 @@
                     </div>
                 </div>
             </t>
+            <t t-elif="doc.provider_booking_ids[0].carrier_id.name == 'Prepaid Mobile'">
+                <div class="row">
+                    <div class="col-12">
+                        <t t-foreach="doc.provider_booking_ids" t-as="provider_itin_id">
+                            <span style="font-size: 28px; font-weight: 730">Itinerary Detail(s)</span><br/>
+                            <table class="table table-sm" style="text-align:center;">
+                                <thead>
+                                    <tr>
+                                        <th>Prepaid Mobile</th>
+                                        <th>Serial Number</th>
+                                        <th>Reference Number</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td><span t-field="provider_itin_id.transaction_name"/></td>
+                                        <td><span t-field="provider_itin_id.original_pnr"/></td>
+                                        <td><span t-esc="provider_itin_id.pnr"/></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+
+                            <span style="font-size: 28px; font-weight: 730">Customer Detail(s)</span><br/>
+                            <div class="box" style="margin: 20px 20px 20px 20px; border-style: solid; border-width: 1px; border-color: #BBB; border-radius: 20px">
+                                <div class="row" style="margin-left: 0px; margin-right: 0px; margin-top: 5px; margin-bottom: 5px">
+                                    <div class="col-1" style="text-align: center; font-size:17px;">
+                                        No.
+                                    </div>
+                                    <div class="col-6" style="text-align: center; font-size:17px;">
+                                        Customer Name
+                                    </div>
+                                    <div class="col-5" style="text-align: center; font-size:17px;">
+                                        Phone Number
+                                    </div>
+                                </div>
+                                <div style="border: 1px solid #BBB; margin-bottom: 5px; margin-left: 15px; margin-right: 15px"/>
+                                <div class="row" style="margin-left: 0px; margin-right: 0px">
+                                    <div class="col-1" style="text-align: center">
+                                        <label style="font-weight:450; font-size:17px; margin-bottom: 0px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">1.</label>
+                                    </div>
+                                    <div class="col-6" style="text-align: left">
+                                        <label style="font-weight:450; font-size:17px; margin-bottom: 0px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"><span t-field="provider_itin_id.customer_name"/></label>
+                                    </div>
+                                    <div class="col-5" style="text-align: center">
+                                        <label style="font-weight:450; font-size:17px; margin-bottom: 0px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"><span t-field="provider_itin_id.customer_number"/></label>
+                                    </div>
+                                </div>
+                            </div>
+                        </t>
+                    </div>
+                </div>
+            </t>
         </t>
     </template>
 
