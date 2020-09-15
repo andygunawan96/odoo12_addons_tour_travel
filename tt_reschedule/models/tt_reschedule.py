@@ -84,9 +84,12 @@ class TtRescheduleLine(models.Model):
                 for rec2 in book_obj.passenger_ids:
                     pax_amount += 1
 
-                rec.admin_fee_ho = rec.admin_fee_id.get_final_adm_fee_ho(rec.reschedule_amount, pnr_amount, pax_amount)
-                rec.admin_fee_agent = rec.admin_fee_id.get_final_adm_fee_agent(rec.reschedule_amount, pnr_amount, pax_amount)
-                rec.admin_fee = rec.admin_fee_ho + rec.admin_fee_agent
+                admin_fee_ho = rec.admin_fee_id.get_final_adm_fee_ho(rec.reschedule_amount, pnr_amount, pax_amount)
+                admin_fee_agent = rec.admin_fee_id.get_final_adm_fee_agent(rec.reschedule_amount, pnr_amount, pax_amount)
+
+                rec.admin_fee_ho = admin_fee_ho
+                rec.admin_fee_agent = admin_fee_agent
+                rec.admin_fee = admin_fee_ho + admin_fee_agent
             else:
                 rec.admin_fee_ho = 0
                 rec.admin_fee_agent = 0
