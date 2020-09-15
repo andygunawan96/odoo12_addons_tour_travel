@@ -239,7 +239,10 @@ class PaymentAcquirer(models.Model):
                         if self.validate_time(acq,now_time):
                             if not values.get(acq.type):
                                 values[acq.type] = []
-                            values[acq.type].append(acq.acquirer_format(amount, unique))
+                            if acq.account_number != '':
+                                values[acq.type].append(acq.acquirer_format(amount, unique))
+                            else:
+                                values[acq.type].append(acq.acquirer_format(amount, 0))
 
             res = {}
             res['non_member'] = values
