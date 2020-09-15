@@ -245,7 +245,6 @@ class ReservationAirline(models.Model):
                 'reschedule_amount_ho': total_amount,
                 'real_reschedule_amount': total_amount,
                 'admin_fee_id': admin_fee_obj.id,
-                'admin_fee': admin_fee_obj.amount,
             }
             rsch_line_obj = self.env['tt.reschedule.line'].sudo().create(rsch_line_values)
             reschedule_line_list = [rsch_line_obj.id]
