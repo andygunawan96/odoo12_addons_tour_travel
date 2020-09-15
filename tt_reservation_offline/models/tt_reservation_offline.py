@@ -77,8 +77,8 @@ class IssuedOffline(models.Model):
     parent_agent_commission = fields.Monetary('Parent Agent Commission', readonly=True, compute='_get_agent_commission', store=True)
     ho_commission = fields.Monetary('HO Commission', readonly=True, compute='_get_agent_commission', store=True)
     # states={'draft': [('readonly', False)], 'confirm': [('readonly', False)]})
-    nta_price = fields.Monetary('NTA Price', readonly=True, compute='_get_nta_price', store=True)
-    agent_nta_price = fields.Monetary('Agent Price', readonly=True, compute='_get_agent_price')
+    nta_price = fields.Monetary('HO NTA', readonly=True, compute='_get_nta_price', store=True)
+    agent_nta_price = fields.Monetary('Agent NTA', readonly=True, compute='_get_agent_price')
 
     resv_code = fields.Char('Vendor Order Number')
 
@@ -160,9 +160,9 @@ class IssuedOffline(models.Model):
                 ('agent_access_type', '=', 'restrict'), ('id', 'not in', agent_adm_ids)]
 
     admin_fee_id = fields.Many2one('tt.master.admin.fee', 'Admin Fee Type', domain=get_admin_fee_domain, readonly=True)
-    admin_fee = fields.Monetary('Total Admin Fee', default=0, readonly=True, compute="_compute_admin_fee")
-    admin_fee_ho = fields.Monetary('Admin Fee (HO)', default=0, readonly=True, compute="_compute_admin_fee")
-    admin_fee_agent = fields.Monetary('Admin Fee (Agent)', default=0, readonly=True, compute="_compute_admin_fee")
+    admin_fee = fields.Monetary('Total Admin Fee', default=0, readonly=True, compute="_compute_admin_fee", store=True)
+    admin_fee_ho = fields.Monetary('Admin Fee (HO)', default=0, readonly=True, compute="_compute_admin_fee", store=True)
+    admin_fee_agent = fields.Monetary('Admin Fee (Agent)', default=0, readonly=True, compute="_compute_admin_fee", store=True)
 
     split_from_resv_id = fields.Many2one('tt.reservation.offline', 'Splitted From', readonly=1)
     split_to_resv_ids = fields.One2many('tt.reservation.offline', 'split_from_resv_id', 'Splitted To', readonly=1)
@@ -172,8 +172,7 @@ class IssuedOffline(models.Model):
     def get_form_id(self):
         return self.env.ref("tt_reservation_offline.issued_offline_view_form")
 
-    @api.depends('admin_fee_id', 'total')
-    @api.onchange('admin_fee_id', 'total')
+    @api.depends('admin_fee_id', 'total', 'passenger_ids.name', 'line_ids.pnr', 'line_ids.check_in', 'line_ids.check_out', 'line_ids.obj_qty')
     def _compute_admin_fee(self):
         for rec in self:
             if rec.admin_fee_id:

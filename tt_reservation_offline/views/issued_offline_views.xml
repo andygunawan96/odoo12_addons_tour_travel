@@ -173,7 +173,7 @@
                                 <field name="nta_price" groups="tt_base.group_tt_tour_travel_operator"/>
                                 <field name="agent_nta_price"/>
                                 <field name="admin_fee_id" groups="tt_base.group_tt_tour_travel_operator"/>
-                                <field name="admin_fee"/>
+                                <field name="admin_fee" groups="tt_base.group_tt_tour_travel_operator"/>
                                 <field name="admin_fee_ho" groups="tt_base.group_tt_tour_travel_operator"/>
                                 <field name="admin_fee_agent" groups="tt_base.group_tt_tour_travel_operator"/>
                                 <field name="total_with_fees"/>
