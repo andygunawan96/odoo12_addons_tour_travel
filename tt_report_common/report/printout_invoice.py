@@ -528,6 +528,15 @@ class PrintoutPPOBBillsForm(models.AbstractModel):
         })
         return values
 
+    def get_mobile_prepaid_values(self, rec):
+        values = {}
+
+        values.update({
+            'total': "{:,.0f}".format(rec.total)
+        })
+
+        return values
+
     @api.model
     def _get_report_values(self, docids, data=None):
         if not data.get('context'):
@@ -537,6 +546,7 @@ class PrintoutPPOBBillsForm(models.AbstractModel):
             data['context']['active_ids'] = docids
         values = {}
         header_width = 90
+        va_length = 0
         for rec in self.env[data['context']['active_model']].browse(data['context']['active_ids']):
             # Get PPOB Type & Values
             ppob_type = ''
@@ -555,6 +565,9 @@ class PrintoutPPOBBillsForm(models.AbstractModel):
                 elif ppob_carrier.code == self.env.ref('tt_reservation_ppob.tt_transport_carrier_ppob_notaglispln').code:
                     ppob_type = 'notaglispln'
                     values = self.get_non_electricity_bills(rec)
+                elif ppob_carrier.code == self.env.ref('tt_reservation_ppob.tt_transport_carrier_ppob_prepaidmobile').code:
+                    ppob_type = 'prepaidmobile'
+                    values = self.get_mobile_prepaid_values(rec)
 
             if rec.provider_booking_ids[0].customer_number:
                 va_number = rec.provider_booking_ids[0].customer_number
