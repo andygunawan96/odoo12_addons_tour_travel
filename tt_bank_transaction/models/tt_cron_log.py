@@ -13,18 +13,19 @@ class ttCronTopUpValidator(models.Model):
         if 3 <= datetime.now(pytz.timezone('Asia/Jakarta')).hour < 21:
             try:
                 # get data from top up
-                data = self.env['tt.top.up'].sudo().search([('state', '=', 'request')])
+                top_up_objs = self.env['tt.top.up'].sudo().search([('state', '=', 'request')])
                 number_checker = re.compile("^[0-9]*$")
-                for i in data:
+                for top_up_obj in top_up_objs:
                     account_number = ""
-                    for j in i.payment_id.acquirer_id.account_number:
-                        if number_checker.match(j):
-                            account_number += j
+                    if top_up_obj.payment_id.acquirer_id.account_number:
+                        for acc_number in top_up_obj.payment_id.acquirer_id.account_number:
+                            if number_checker.match(acc_number):
+                                account_number += acc_number
                     transaction = self.env['tt.bank.accounts'].search([('bank_account_number_without_dot', '=', account_number)])
                     if transaction:
                         date_exist = transaction.bank_transaction_date_ids.filtered(lambda x: x.date == datetime.today().strftime("%Y-%m-%d"))
                         if date_exist:
-                            result = date_exist.transaction_ids.filtered(lambda x: x.transaction_amount == i.total and x.transaction_type == 'C')
+                            result = date_exist.transaction_ids.filtered(lambda x: x.transaction_amount == top_up_obj.total and x.transaction_type == 'C')
                             if result:
                                 if result.transaction_message == '':
                                     reference_code = result.transaction_code
@@ -33,7 +34,7 @@ class ttCronTopUpValidator(models.Model):
                                 transaction_date = result.transaction_date
 
                                 # get payment data
-                                payment_data = self.env['tt.payment'].browse(int(i.payment_id))
+                                payment_data = self.env['tt.payment'].browse(int(top_up_obj.payment_id))
 
                                 # set value for payment data
                                 payment_data.reference = reference_code
@@ -43,34 +44,34 @@ class ttCronTopUpValidator(models.Model):
                                 payment_data.action_validate_from_button()
                                 payment_data.action_approve_from_button()
 
-                                result.top_up_validated(i.id)
+                                result.top_up_validated(top_up_obj.id)
                             else:
-                                _logger.error("%s ID, is not found within transaction" % i.id)
+                                _logger.error("%s ID, is not found within transaction" % top_up_obj.id)
                                 continue
                         else:
                             _logger.error("%s is not found within date inside date" % datetime.today().strftime("%Y-%m-%d"))
                             continue
                     else:
-                        _logger.error("%s ID, bank not found" % i.id)
+                        _logger.error("%s ID, bank not found" % top_up_obj.id)
                         continue
             except Exception as e:
                 self.create_cron_log_folder()
                 self.write_cron_log('auto tup-up validator by system')
             #payment reservation
             try:
-                data = self.env['payment.acquirer.number'].search([('state','=','close')])
-                for i in data:
+                top_up_objs = self.env['payment.acquirer.number'].search([('state','=','close')])
+                for top_up_obj in top_up_objs:
                     transaction = self.env['tt.bank.accounts'].search([])
                     if transaction:
                         date_exist = transaction.bank_transaction_date_ids.filtered(lambda x: x.date == datetime.today().strftime("%Y-%m-%d"))
                         if date_exist:
-                            result = date_exist.transaction_ids.filtered(lambda x: x.transaction_amount == i.amount - i.unique_amount and x.transaction_type == 'C')
+                            result = date_exist.transaction_ids.filtered(lambda x: x.transaction_amount == top_up_obj.amount - top_up_obj.unique_amount and x.transaction_type == 'C')
                             if result:
                                 if result.transaction_message == '':
                                     reference_code = result.transaction_code
                                 else:
                                     reference_code = result.transaction_message
-                                agent_id = self.env['tt.reservation.%s' % variables.PROVIDER_TYPE_PREFIX[i['number'].split('.')[0]]].search([('name', '=', '%s.%s' %(i['number'].split('.')[0], i['number'].split('.')[1]))]).agent_id
+                                agent_id = self.env['tt.reservation.%s' % variables.PROVIDER_TYPE_PREFIX[top_up_obj['number'].split('.')[0]]].search([('name', '=', '%s.%s' %(top_up_obj['number'].split('.')[0], top_up_obj['number'].split('.')[1]))]).agent_id
                                 if not self.env['tt.payment'].search([('reference', '=', reference_code)]):
                                     # topup
                                     context = {
@@ -78,12 +79,12 @@ class ttCronTopUpValidator(models.Model):
                                         'co_uid': self.env.ref('tt_base.base_top_up_admin').id
                                     }
                                     request = {
-                                        'amount': i.amount - i.unique_amount,
+                                        'amount': top_up_obj.amount - top_up_obj.unique_amount,
                                         'seq_id': self.env.ref('tt_base.payment_acquirer_ho_payment_gateway_bca').seq_id,
                                         'currency_code': result.currency_id.name,
                                         'payment_ref': reference_code,
                                         'payment_seq_id': self.env.ref('tt_base.payment_acquirer_ho_payment_gateway_bca').seq_id,
-                                        'subsidy': i.unique_amount
+                                        'subsidy': top_up_obj.unique_amount
                                     }
 
                                     res = self.env['tt.top.up'].create_top_up_api(request, context, True)
@@ -97,7 +98,7 @@ class ttCronTopUpValidator(models.Model):
                                         res = self.env['tt.top.up'].action_va_top_up(request, context)
                                         self._cr.commit()
                                         result.top_up_validated(res['response']['top_up_id'])
-                                book_obj = self.env['tt.reservation.%s' % variables.PROVIDER_TYPE_PREFIX[i['number'].split('.')[0]]].search([('name', '=', '%s.%s' % (i['number'].split('.')[0], i['number'].split('.')[1])), ('state', 'in', ['booked'])], limit=1)
+                                book_obj = self.env['tt.reservation.%s' % variables.PROVIDER_TYPE_PREFIX[top_up_obj['number'].split('.')[0]]].search([('name', '=', '%s.%s' % (top_up_obj['number'].split('.')[0], top_up_obj['number'].split('.')[1])), ('state', 'in', ['booked'])], limit=1)
 
                                 if book_obj:
                                     #login gateway, payment
@@ -107,12 +108,12 @@ class ttCronTopUpValidator(models.Model):
                                         'provider_type': variables.PROVIDER_TYPE_PREFIX[book_obj.name.split('.')[0]]
                                     }
                                     res = self.env['tt.payment.api.con'].send_payment(req)
-                                    i.state = 'done'
+                                    top_up_obj.state = 'done'
                                     _logger.info(json.dumps(res))
                                     #tutup payment acq number
 
                     else:
-                        _logger.error("%s ID, is not found within transaction" % i.id)
+                        _logger.error("%s ID, is not found within transaction" % top_up_obj.id)
                         continue
 
             except Exception as e:
