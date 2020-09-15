@@ -396,7 +396,7 @@
                 <div class="col-7">
                     <span t-field="provider.original_pnr"/><br/>
                     <span t-field="provider.transaction_name"/><br/>
-                    <span t-field="provider.customer_name"/><br/>
+                    <span t-field="provider.customer_number"/><br/>
                     <span t-esc="provider.pnr"/><br/>
                     <span t-field="doc.currency_id.symbol"/> <span t-esc="values['total']"/><br/>
                 </div>
