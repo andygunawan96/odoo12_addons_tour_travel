@@ -101,7 +101,7 @@ class IssuedOffline(models.Model):
     currency_id = fields.Many2one('res.currency', 'Currency', default=lambda self: self.env.user.company_id.currency_id,
                                   readonly=True, states={'draft': [('readonly', False)],
                                                          'pending': [('readonly', False)]})
-    total = fields.Monetary('Total Sale Price', readonly=False, store=True, compute="")
+    total = fields.Monetary('Input Total', readonly=False, store=True, compute="")
     total_commission_amount = fields.Monetary('Total Commission Amount', store=True)
     # total_supplementary_price = fields.Monetary('Total Supplementary', compute='_get_total_supplement')
 
@@ -167,6 +167,8 @@ class IssuedOffline(models.Model):
     split_from_resv_id = fields.Many2one('tt.reservation.offline', 'Splitted From', readonly=1)
     split_to_resv_ids = fields.One2many('tt.reservation.offline', 'split_from_resv_id', 'Splitted To', readonly=1)
 
+    total_with_fees = fields.Monetary('Total Sale Price', compute="_get_total_with_fees", store=True)
+
     def get_form_id(self):
         return self.env.ref("tt_reservation_offline.issued_offline_view_form")
 
@@ -183,8 +185,11 @@ class IssuedOffline(models.Model):
                         pax_amount = (datetime.strptime(rec2.check_out, '%Y-%m-%d') - datetime.strptime(rec2.check_in, '%Y-%m-%d')).days
                 else:
                     pnr_amount = 0
-                    for rec2 in rec.provider_booking_ids:
-                        pnr_amount += 1
+                    pnr_list = []
+                    for rec2 in rec.line_ids:
+                        if rec2.pnr not in pnr_list:
+                            pnr_list.append(rec2.pnr)
+                            pnr_amount += 1
 
                     pax_amount = 0
                     for rec2 in rec.passenger_ids:
@@ -975,17 +980,23 @@ class IssuedOffline(models.Model):
     # Set, Get & Compute
     ####################################################################################################
 
-    @api.onchange('total', 'total_commission_amount')
-    @api.depends('total', 'total_commission_amount')
+    @api.onchange('total', 'admin_fee')
+    @api.depends('total', 'admin_fee')
+    def _get_total_with_fees(self):
+        for rec in self:
+            rec.total_with_fees = rec.total + rec.admin_fee
+
+    @api.onchange('total_with_fees', 'total_commission_amount')
+    @api.depends('total_with_fees', 'total_commission_amount')
     def _get_nta_price(self):
         for rec in self:
-            rec.nta_price = rec.total - rec.total_commission_amount  # - rec.incentive_amount
+            rec.nta_price = rec.total_with_fees - rec.total_commission_amount  # - rec.incentive_amount
 
     @api.onchange('agent_commission')
-    @api.depends('agent_commission', 'total')
+    @api.depends('agent_commission', 'total_with_fees')
     def _get_agent_price(self):
         for rec in self:
-            rec.agent_nta_price = rec.total - rec.total_commission_amount + rec.parent_agent_commission + rec.ho_commission
+            rec.agent_nta_price = rec.total_with_fees - rec.total_commission_amount + rec.parent_agent_commission + rec.ho_commission
 
     def get_display_provider_name(self):
         provider_list = []
@@ -2023,6 +2034,7 @@ class IssuedOffline(models.Model):
             'offline_provider_type': self.offline_provider_type,
             'offline_provider_type_name': self.offline_provider_type_name,
             'total': self.total,
+            'total_with_fees': self.total_with_fees,
             'description': self.description,
             'state': self.state,
             'state_offline': self.state_offline,
