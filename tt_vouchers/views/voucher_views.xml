@@ -54,7 +54,7 @@
                         </page>
                         <page string="Customer">
                             <group>
-                                <field name="customer_id"/>
+                                <field name="voucher_customer_id"/>
                             </group>
                         </page>
                     </notebook>
