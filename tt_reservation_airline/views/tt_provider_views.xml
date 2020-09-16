@@ -110,6 +110,10 @@
                     <!--<field name="total_fare" class="oe_subtotal_footer_seperator"/>-->
                     <!--</group>-->
                 </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids" widget="mail_followers"/>
+                    <field name="message_ids" widget="mail_thread"/>
+                </div>
             </form>
         </field>
     </record>
@@ -131,12 +135,25 @@
         </field>
     </record>
 
-
-    <record id="tt_reservation_airline_provider_action_views" model="ir.actions.act_window">
-        <field name="name">tt.reservation.airline.provider.action.views</field>
+    <record id="tt_reservation_airline_provider_action_views" model="ir.actions.act_window" >
+        <field name="name">Provider Airline</field>
+        <field name="type">ir.actions.act_window</field>
         <field name="res_model">tt.provider.airline</field>
         <field name="view_type">form</field>
         <field name="view_mode">tree,form</field>
+        <field name="domain">[]</field>
+        <field name="context">
+            {
+            'form_view_ref': 'tt_reservation_airline.tt_reservation_airline_provider_form_view',
+            'tree_view_ref': 'tt_reservation_airline.tt_reservation_airline_provider_tree_view',
+            }
+        </field>
     </record>
+
+    <menuitem id="submenu_reservations_airline_provider"
+              parent="tt_reservation_airline.menu_reservations_airline_provider"
+              name="Provider Form"
+              sequence="10"
+              action="tt_reservation_airline.tt_reservation_airline_provider_action_views"/>  <!--groups="tt_base.group_tt_tour_travel_manager"-->
 
 </odoo>

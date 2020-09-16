@@ -20,5 +20,10 @@
                   name="Get Booking"
                   groups="tt_base.group_tt_ticketing_operator,tt_base.group_tt_accounting_operator"
                   sequence="2"/>
+
+        <menuitem id="menu_reservations_airline_provider"
+                  parent="tt_reservation_airline.top_reservations_airline"
+                  name="Provider"
+                  sequence="3"/>
     </data>
 </odoo>
