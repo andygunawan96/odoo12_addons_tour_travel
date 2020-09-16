@@ -33,7 +33,7 @@ class TtVoucher(models.Model):
     #add-ons
     voucher_multi_usage = fields.Boolean("Voucher Multi Usage")
     voucher_usage_value = fields.Monetary("Voucher usage")
-    voucher_customer_id = fields.Many2one('res.customer', 'Customer')
+    voucher_customer_id = fields.Many2one('tt.customer', 'Customer')
 
     #harus di cek sama dengan atasnya
     def create_voucher(self, data):
@@ -355,7 +355,7 @@ class TtVoucher(models.Model):
     def _onchange_action_agent(self):
         domain = {'voucher_customer_id': []}
         if self.voucher_agent_eligibility_ids != False:
-            self.voucher_agent_eligibility_ids = False
+            self.voucher_customer_id = False
             domain = {
                 'voucher_customer_id': [('name', 'in', self.voucher_agent_eligibility_ids.ids)]
             }
