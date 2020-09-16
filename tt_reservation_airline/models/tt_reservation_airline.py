@@ -1716,7 +1716,8 @@ class ReservationAirline(models.Model):
                 raise Exception('Book ID or Order Number is not found')
 
             admin_fee_obj = self.env.ref('tt_accounting.admin_fee_refund_regular')
-            refund_type = 'regular'
+            refund_type = self.env.ref('tt_accounting.refund_type_regular_refund').id
+            # refund_type = 'regular'
 
             refund_line_ids = []
 
@@ -1747,7 +1748,7 @@ class ReservationAirline(models.Model):
                 'booker_id': airline_obj.booker_id.id,
                 'currency_id': airline_obj.currency_id.id,
                 'service_type': airline_obj.provider_type_id.id,
-                'refund_type': refund_type,
+                'refund_type_id': refund_type,
                 'admin_fee_id': admin_fee_obj.id,
                 'referenced_document': airline_obj.name,
                 'referenced_pnr': airline_obj.pnr,
