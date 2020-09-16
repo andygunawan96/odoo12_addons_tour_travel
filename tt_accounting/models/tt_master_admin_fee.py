@@ -13,7 +13,7 @@ class TtMasterAdminFee(models.Model):
     _description = 'Master Admin Fee'
 
     name = fields.Char('Name')
-    after_sales_type = fields.Selection([('after_sales', 'After Sales'), ('refund', 'Refund')], 'After Sales Type', default='after_sales')
+    after_sales_type = fields.Selection([('after_sales', 'After Sales'), ('refund', 'Refund'), ('offline', 'Issued Offline')], 'Transaction Type', default='after_sales')
     min_amount_ho = fields.Float('Minimum Amount (HO)', default=0)
     min_amount_agent = fields.Float('Minimum Amount (Agent)', default=0)
     agent_type_ids = fields.Many2many('tt.agent.type', 'master_admin_fee_agent_type_rel', 'admin_fee_id', 'agent_type_id', string='Agent Types')

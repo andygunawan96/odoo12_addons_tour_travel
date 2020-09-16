@@ -235,7 +235,6 @@ class TtCustomer(models.Model):
 
     def get_customer_list_api(self,req,context):
         try:
-            print("request teropong\n"+json.dumps((req))+json.dumps(context))
             dom = [('agent_id','=',context['co_agent_id']),
                    ('is_search_allowed','=',True)]
 
@@ -245,7 +244,6 @@ class TtCustomer(models.Model):
                 dom.append(('email','=',req['email']))
             if req.get('cust_code'):
                 dom.append(('seq_id','=',req['cust_code']))
-
             customer_list_obj = self.search(dom)
 
             customer_list = []
@@ -263,7 +261,6 @@ class TtCustomer(models.Model):
                 values = cust.to_dict(get_customer_parent=True)
 
                 customer_list.append(values)
-            _logger.info(json.dumps(customer_list))
             return ERR.get_no_error(customer_list)
         except Exception as e:
             _logger.error(traceback.format_exc())

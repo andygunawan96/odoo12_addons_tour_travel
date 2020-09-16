@@ -980,6 +980,13 @@ class PrintoutInvoiceHO(models.AbstractModel):
                 desc += 'Tgl. Registrasi : ' + rec.registration_date.strftime('%d/%m/%Y') if rec.registration_date else '' + '<br/>'
                 desc += 'IDPel : ' + (rec.customer_id_number if rec.customer_id_number else '') + '<br/>'
                 desc += 'Nama : ' + (rec.customer_name if rec.customer_name else '') + '<br/>'
+            elif ppob_carrier.code == self.env.ref('tt_reservation_ppob.tt_transport_carrier_ppob_prepaidmobile').code:
+                desc += 'Serial Number : ' + (rec.original_pnr if rec.original_pnr else '') + '<br/>'
+                desc += 'Nomor HP : ' + (rec.customer_number if rec.customer_number else '') + '<br/>'
+                desc += 'Transaksi : ' + (rec.transaction_code if rec.transaction_code else '') + '<br/>'
+                desc += 'Produk Pulsa : ' + (rec.transaction_name if rec.transaction_name else '') + '<br/>'
+                desc += 'Nama : ' + (rec.customer_name if rec.customer_name else '') + '<br/>'
+
         elif data['context']['active_model'] == 'tt.reservation.event':
             desc += 'Event : ' + rec.event_id.name + '<br/>'
             desc += 'Location : ' + '<br/>'

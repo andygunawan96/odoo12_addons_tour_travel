@@ -206,6 +206,36 @@ class ProviderOffline(models.Model):
                 }
                 scs_list_2.append(vals)
 
+        currency_obj = self.env['res.currency'].sudo().search([('name', '=', 'IDR')], limit=1)
+        scs_list_2.append({
+            'commission_agent_id': False,
+            'amount': self.booking_id.admin_fee_ho,
+            'charge_code': 'adm',
+            'charge_type': 'ROC',
+            'description': '',
+            'pax_type': 'ADT',
+            'currency_id': currency_obj and currency_obj[0] or self.booking_id.agent_id.currency_id.id,
+            'passenger_offline_ids': [],
+            'provider_offline_booking_id': self.id,
+            'pax_count': 1,
+            'total': self.booking_id.admin_fee_ho
+        })
+
+        ho_agent = self.env['tt.agent'].sudo().search([('agent_type_id.id', '=', self.env.ref('tt_base.agent_type_ho').id)], limit=1)
+        scs_list_2.append({
+            'commission_agent_id': ho_agent and ho_agent[0] or False,
+            'amount': self.booking_id.admin_fee_ho,
+            'charge_code': 'hoc',
+            'charge_type': 'RAC',
+            'description': '',
+            'pax_type': 'ADT',
+            'currency_id': currency_obj and currency_obj[0] or self.booking_id.agent_id.currency_id.id,
+            'passenger_offline_ids': [],
+            'provider_offline_booking_id': self.id,
+            'pax_count': 1,
+            'total': self.booking_id.admin_fee_ho
+        })
+
         # Insert into cost service charge
         scs_list_3 = []
         service_chg_obj = self.env['tt.service.charge']

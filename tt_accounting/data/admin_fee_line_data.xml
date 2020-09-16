@@ -73,5 +73,29 @@
             <field name="balance_for">ho</field>
             <field name="master_admin_fee_id" ref="tt_accounting.admin_fee_delivery"/>
         </record>
+        <record id="admin_fee_line_offline_airline_gds_ho" model="tt.master.admin.fee.line">
+            <field name="type">amount</field>
+            <field name="amount">9000</field>
+            <field name="is_per_pnr">True</field>
+            <field name="is_per_pax">True</field>
+            <field name="balance_for">ho</field>
+            <field name="master_admin_fee_id" ref="tt_accounting.admin_fee_offline_airline_gds"/>
+        </record>
+        <record id="admin_fee_line_offline_airline_nongds_ho" model="tt.master.admin.fee.line">
+            <field name="type">amount</field>
+            <field name="amount">3000</field>
+            <field name="is_per_pnr">True</field>
+            <field name="is_per_pax">True</field>
+            <field name="balance_for">ho</field>
+            <field name="master_admin_fee_id" ref="tt_accounting.admin_fee_offline_airline_nongds"/>
+        </record>
+        <record id="admin_fee_line_offline_hotel_ho" model="tt.master.admin.fee.line">
+            <field name="type">amount</field>
+            <field name="amount">6000</field>
+            <field name="is_per_pnr">True</field>
+            <field name="is_per_pax">True</field>
+            <field name="balance_for">ho</field>
+            <field name="master_admin_fee_id" ref="tt_accounting.admin_fee_offline_hotel"/>
+        </record>
     </data>
 </odoo>

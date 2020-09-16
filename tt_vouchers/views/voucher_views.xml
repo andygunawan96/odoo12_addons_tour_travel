@@ -28,6 +28,7 @@
                         <field name="voucher_type"/>
                         <field name="voucher_value"/>
                         <field name="voucher_state"/>
+                        <field name="voucher_multi_usage"/>
                         <field name="currency_id"/>
                     </group>
                     <label for="voucher_detail_ids">Voucher Detail</label>
@@ -49,6 +50,11 @@
                             <group>
                                 <field name="voucher_effect_all"/>
                                 <field name="voucher_effect_base_fare"/>
+                            </group>
+                        </page>
+                        <page string="Customer">
+                            <group>
+                                <field name="voucher_customer_id"/>
                             </group>
                         </page>
                     </notebook>

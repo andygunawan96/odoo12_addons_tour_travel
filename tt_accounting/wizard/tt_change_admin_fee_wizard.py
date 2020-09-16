@@ -24,8 +24,8 @@ class TtChangeAdminFeeWizard(models.TransientModel):
 
         if self.res_model == 'tt.reschedule.line':
             after_sales_type = 'after_sales'
-        elif self.res_model == 'tt.refund.line.customer':
-            after_sales_type = 'refund'
+        elif self.res_model == 'tt.reservation.offline':
+            after_sales_type = 'offline'
         else:
             after_sales_type = 'refund'
 
