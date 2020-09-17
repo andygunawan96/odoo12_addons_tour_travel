@@ -154,6 +154,7 @@
               parent="tt_reservation_airline.menu_reservations_airline_provider"
               name="Provider Form"
               sequence="10"
-              action="tt_reservation_airline.tt_reservation_airline_provider_action_views"/>  <!--groups="tt_base.group_tt_tour_travel_manager"-->
+              groups="tt_base.group_tt_tour_travel_manager"
+              action="tt_reservation_airline.tt_reservation_airline_provider_action_views"/>
 
 </odoo>
