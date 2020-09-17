@@ -6,7 +6,7 @@
         <!-- PPOB -->
         <menuitem id="top_reservations_ppob"
                   parent="tt_reservation.main_reservations"
-                  name="Bills"
+                  name="Bills and Top Up"
                   sequence="40"
                   groups="base.group_user"/>
         
@@ -15,5 +15,17 @@
                   name="Inquiry"
                   sequence="1"/>
 
+        <!--Top Menu Tour & Travel PPOB-->
+        <menuitem id="top_tour_travel_ppob"
+              parent="tt_base.main_reservation_master_data"
+              name="Bills and Top Up"
+              sequence="5"
+              groups="base.group_user"/>
+
+        <!--Menu PPOB-->
+        <menuitem id="menu_tour_travel_ppob_master"
+                  name="Master"
+                  parent="top_tour_travel_ppob"
+                  sequence="1"/>
     </data>
 </odoo>
