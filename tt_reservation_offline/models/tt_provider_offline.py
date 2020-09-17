@@ -206,43 +206,45 @@ class ProviderOffline(models.Model):
                 }
                 scs_list_2.append(vals)
 
-        currency_obj = self.env['res.currency'].sudo().search([('name', '=', 'IDR')], limit=1)
-        scs_list_2.append({
-            'commission_agent_id': False,
-            'amount': self.booking_id.admin_fee_ho,
-            'charge_code': 'adm',
-            'charge_type': 'ROC',
-            'description': '',
-            'pax_type': 'ADT',
-            'currency_id': currency_obj and currency_obj[0] or self.booking_id.agent_id.currency_id.id,
-            'passenger_offline_ids': [],
-            'provider_offline_booking_id': self.id,
-            'pax_count': 1,
-            'total': self.booking_id.admin_fee_ho
-        })
+        if self.booking_id.admin_fee_ho != 0:
+            currency_obj = self.env['res.currency'].sudo().search([('name', '=', 'IDR')], limit=1)
+            scs_list_2.append({
+                'commission_agent_id': False,
+                'currency_id': currency_obj and currency_obj[0].id or self.booking_id.agent_id.currency_id.id,
+                'charge_code': 'adm',
+                'charge_type': 'ROC',
+                'description': '',
+                'pax_type': 'ADT',
+                'passenger_offline_ids': scs_list[0]['passenger_offline_ids'],
+                'provider_offline_booking_id': self.id,
+                'pax_count': len(self.booking_id.passenger_ids),
+                'amount': self.booking_id.admin_fee_ho / len(self.booking_id.line_ids) / len(self.booking_id.passenger_ids),
+                'total': self.booking_id.admin_fee_ho / len(self.booking_id.line_ids)
+            })
 
-        ho_agent = self.env['tt.agent'].sudo().search([('agent_type_id.id', '=', self.env.ref('tt_base.agent_type_ho').id)], limit=1)
-        scs_list_2.append({
-            'commission_agent_id': ho_agent and ho_agent[0] or False,
-            'amount': self.booking_id.admin_fee_ho,
-            'charge_code': 'hoc',
-            'charge_type': 'RAC',
-            'description': '',
-            'pax_type': 'ADT',
-            'currency_id': currency_obj and currency_obj[0] or self.booking_id.agent_id.currency_id.id,
-            'passenger_offline_ids': [],
-            'provider_offline_booking_id': self.id,
-            'pax_count': 1,
-            'total': self.booking_id.admin_fee_ho
-        })
+            ho_agent = self.env['tt.agent'].sudo().search([('agent_type_id.id', '=', self.env.ref('tt_base.agent_type_ho').id)], limit=1)
+            scs_list_2.append({
+                'commission_agent_id': ho_agent and ho_agent[0].id or False,
+                'currency_id': currency_obj and currency_obj[0].id or self.booking_id.agent_id.currency_id.id,
+                'charge_code': 'hsc',
+                'charge_type': 'RAC',
+                'description': '',
+                'pax_type': 'ADT',
+                'passenger_offline_ids': scs_list[0]['passenger_offline_ids'],
+                'provider_offline_booking_id': self.id,
+                'pax_count': len(self.booking_id.passenger_ids),
+                'amount': -self.booking_id.admin_fee_ho / len(self.booking_id.line_ids) / len(self.booking_id.passenger_ids),
+                'total': -self.booking_id.admin_fee_ho / len(self.booking_id.line_ids)
+            })
 
         # Insert into cost service charge
         scs_list_3 = []
         service_chg_obj = self.env['tt.service.charge']
         for scs_2 in scs_list_2:
             scs_2['passenger_offline_ids'] = [(6, 0, scs_2['passenger_offline_ids'])]
-            scs_obj = service_chg_obj.create(scs_2)
-            scs_list_3.append(scs_obj.id)
+            if abs(scs_2['total']) != 0:
+                scs_obj = service_chg_obj.create(scs_2)
+                scs_list_3.append(scs_obj.id)
 
     def create_service_charge_no_line(self):
         self.delete_service_charge()
@@ -337,12 +339,18 @@ class ProviderOffline(models.Model):
         total_fee_amount = 0
         line_obj = book_obj.line_ids[index]
 
-        check_in = datetime.strptime(line_obj.check_in, '%Y-%m-%d')
-        check_out = datetime.strptime(line_obj.check_out, '%Y-%m-%d')
-        days = check_out - check_in
-        days_int = int(days.days)
+        check_in_current = datetime.strptime(line_obj.check_in, '%Y-%m-%d')
+        check_out_current = datetime.strptime(line_obj.check_out, '%Y-%m-%d')
+        days_current = check_out_current - check_in_current
+        days_int_current = int(days_current.days)
 
-        pax_count = days_int * (int(line_obj.obj_qty) if line_obj.obj_qty else 1)
+        pax_count = days_int_current * (int(line_obj.obj_qty) if line_obj.obj_qty else 1)
+        basic_admin_fee = 0
+
+        if book_obj.admin_fee_id:
+            for line in book_obj.admin_fee_id.admin_fee_line_ids:
+                basic_admin_fee += line.amount
+
         total_line_qty = 0
 
         """ Get total fee amount """
@@ -398,7 +406,7 @@ class ProviderOffline(models.Model):
                     else:
                         fee_amount_remaining -= fee_amount_vals.get('amount') * line.obj_qty * days_int
 
-        sale_price = book_obj.total / total_line_qty * line_obj.obj_qty * days_int
+        sale_price = book_obj.total / total_line_qty * line_obj.obj_qty * days_int_current
 
         # Get all pricing per pax
         vals = {
@@ -422,8 +430,8 @@ class ProviderOffline(models.Model):
                     vals2 = vals.copy()
                     vals2.update({
                         'commission_agent_id': comm['commission_agent_id'],
-                        'total': comm['amount'] * -1 / total_line_qty * line_obj.obj_qty * days_int,
-                        'amount': comm['amount'] * -1 / total_line_qty * line_obj.obj_qty * days_int,
+                        'total': comm['amount'] * -1 / total_line_qty * line_obj.obj_qty * days_int_current,
+                        'amount': comm['amount'] * -1 / total_line_qty * line_obj.obj_qty * days_int_current,
                         'charge_code': comm['code'],
                         'charge_type': 'RAC',
                         'passenger_offline_ids': [],
@@ -431,13 +439,46 @@ class ProviderOffline(models.Model):
                     vals2['passenger_offline_ids'].append(self.booking_id.passenger_ids[0].id)
                     scs_list.append(vals2)
 
+        if self.booking_id.admin_fee_ho != 0:
+            currency_obj = self.env['res.currency'].sudo().search([('name', '=', 'IDR')], limit=1)
+            scs_list.append({
+                'commission_agent_id': False,
+                'amount': basic_admin_fee * line_obj.obj_qty * days_int_current,
+                'charge_code': 'adm',
+                'charge_type': 'ROC',
+                'description': '',
+                'pax_type': 'ADT',
+                'currency_id': currency_obj and currency_obj[0].id or self.booking_id.agent_id.currency_id.id,
+                'passenger_offline_ids': scs_list[0]['passenger_offline_ids'],
+                'provider_offline_booking_id': self.id,
+                'pax_count': 1,
+                'total': basic_admin_fee * line_obj.obj_qty * days_int_current,
+            })
+
+            ho_agent = self.env['tt.agent'].sudo().search(
+                [('agent_type_id.id', '=', self.env.ref('tt_base.agent_type_ho').id)], limit=1)
+            scs_list.append({
+                'commission_agent_id': ho_agent and ho_agent[0].id or False,
+                'amount': -basic_admin_fee * line_obj.obj_qty * days_int_current,
+                'charge_code': 'hsc',
+                'charge_type': 'RAC',
+                'description': '',
+                'pax_type': 'ADT',
+                'currency_id': currency_obj and currency_obj[0].id or self.booking_id.agent_id.currency_id.id,
+                'passenger_offline_ids': scs_list[0]['passenger_offline_ids'],
+                'provider_offline_booking_id': self.id,
+                'pax_count': 1,
+                'total': -basic_admin_fee * line_obj.obj_qty * days_int_current,
+            })
+
         # Insert into cost service charge
         scs_list_3 = []
         service_chg_obj = self.env['tt.service.charge']
         for scs_2 in scs_list:
             scs_2['passenger_offline_ids'] = [(6, 0, scs_2['passenger_offline_ids'])]
-            scs_obj = service_chg_obj.create(scs_2)
-            scs_list_3.append(scs_obj.id)
+            if abs(scs_2['total']) != 0:
+                scs_obj = service_chg_obj.create(scs_2)
+                scs_list_3.append(scs_obj.id)
 
     def delete_service_charge(self):
         ledger_created = False
