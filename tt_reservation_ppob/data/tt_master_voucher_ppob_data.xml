@@ -1,0 +1,493 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <record id="tt_master_voucher_ppob_isat5" model="tt.master.voucher.ppob">
+            <field name="name">INDOSAT</field>
+            <field name="code">ISAT5</field>
+            <field name="value">5000</field>
+            <field name="type">prepaid_mobile</field>
+            <field name="sequence">10</field>
+            <field name="active" eval="True"/>
+        </record>
+        <record id="tt_master_voucher_ppob_isat10" model="tt.master.voucher.ppob">
+            <field name="name">INDOSAT</field>
+            <field name="code">ISAT10</field>
+            <field name="value">10000</field>
+            <field name="type">prepaid_mobile</field>
+            <field name="sequence">20</field>
+            <field name="active" eval="True"/>
+        </record>
+        <record id="tt_master_voucher_ppob_isat20" model="tt.master.voucher.ppob">
+            <field name="name">INDOSAT</field>
+            <field name="code">ISAT20</field>
+            <field name="value">20000</field>
+            <field name="type">prepaid_mobile</field>
+            <field name="sequence">30</field>
+            <field name="active" eval="True"/>
+        </record>
+        <record id="tt_master_voucher_ppob_isat25" model="tt.master.voucher.ppob">
+            <field name="name">INDOSAT</field>
+            <field name="code">ISAT25</field>
+            <field name="value">25000</field>
+            <field name="type">prepaid_mobile</field>
+            <field name="sequence">40</field>
+            <field name="active" eval="True"/>
+        </record>
+        <record id="tt_master_voucher_ppob_isat30" model="tt.master.voucher.ppob">
+            <field name="name">INDOSAT</field>
+            <field name="code">ISAT30</field>
+            <field name="value">30000</field>
+            <field name="type">prepaid_mobile</field>
+            <field name="sequence">50</field>
+            <field name="active" eval="True"/>
+        </record>
+        <record id="tt_master_voucher_ppob_isat50" model="tt.master.voucher.ppob">
+            <field name="name">INDOSAT</field>
+            <field name="code">ISAT50</field>
+            <field name="value">50000</field>
+            <field name="type">prepaid_mobile</field>
+            <field name="sequence">60</field>
+            <field name="active" eval="True"/>
+        </record>
+        <record id="tt_master_voucher_ppob_isat100" model="tt.master.voucher.ppob">
+            <field name="name">INDOSAT</field>
+            <field name="code">ISAT100</field>
+            <field name="value">100000</field>
+            <field name="type">prepaid_mobile</field>
+            <field name="sequence">70</field>
+            <field name="active" eval="True"/>
+        </record>
+        <record id="tt_master_voucher_ppob_isatx1" model="tt.master.voucher.ppob">
+            <field name="name">INDOSAT DATA XTRA 1GB</field>
+            <field name="code">ISATX1</field>
+            <field name="value">10000</field>
+            <field name="type">prepaid_mobile</field>
+            <field name="sequence">80</field>
+            <field name="active" eval="True"/>
+        </record>
+        <record id="tt_master_voucher_ppob_isatx2" model="tt.master.voucher.ppob">
+            <field name="name">INDOSAT DATA XTRA 2GB</field>
+            <field name="code">ISATX2</field>
+            <field name="value">20000</field>
+            <field name="type">prepaid_mobile</field>
+            <field name="sequence">90</field>
+            <field name="active" eval="True"/>
+        </record>
+        <record id="tt_master_voucher_ppob_isatx3" model="tt.master.voucher.ppob">
+            <field name="name">INDOSAT DATA XTRA 3GB</field>
+            <field name="code">ISATX3</field>
+            <field name="value">30000</field>
+            <field name="type">prepaid_mobile</field>
+            <field name="sequence">100</field>
+            <field name="active" eval="True"/>
+        </record>
+        <record id="tt_master_voucher_ppob_isatx4" model="tt.master.voucher.ppob">
+            <field name="name">INDOSAT DATA XTRA 4GB</field>
+            <field name="code">ISATX4</field>
+            <field name="value">40000</field>
+            <field name="type">prepaid_mobile</field>
+            <field name="sequence">110</field>
+            <field name="active" eval="True"/>
+        </record>
+        <record id="tt_master_voucher_ppob_isatx5" model="tt.master.voucher.ppob">
+            <field name="name">INDOSAT DATA XTRA 5GB</field>
+            <field name="code">ISATX5</field>
+            <field name="value">50000</field>
+            <field name="type">prepaid_mobile</field>
+            <field name="sequence">120</field>
+            <field name="active" eval="True"/>
+        </record>
+        <record id="tt_master_voucher_ppob_isatx6" model="tt.master.voucher.ppob">
+            <field name="name">INDOSAT DATA XTRA 6GB</field>
+            <field name="code">ISATX6</field>
+            <field name="value">60000</field>
+            <field name="type">prepaid_mobile</field>
+            <field name="sequence">130</field>
+            <field name="active" eval="True"/>
+        </record>
+        <record id="tt_master_voucher_ppob_isatx7" model="tt.master.voucher.ppob">
+            <field name="name">INDOSAT DATA XTRA 7GB</field>
+            <field name="code">ISATX7</field>
+            <field name="value">70000</field>
+            <field name="type">prepaid_mobile</field>
+            <field name="sequence">140</field>
+            <field name="active" eval="True"/>
+        </record>
+        <record id="tt_master_voucher_ppob_isatx8" model="tt.master.voucher.ppob">
+            <field name="name">INDOSAT DATA XTRA 8GB</field>
+            <field name="code">ISATX8</field>
+            <field name="value">80000</field>
+            <field name="type">prepaid_mobile</field>
+            <field name="sequence">150</field>
+            <field name="active" eval="True"/>
+        </record>
+        <record id="tt_master_voucher_ppob_isatx9" model="tt.master.voucher.ppob">
+            <field name="name">INDOSAT DATA XTRA 9GB</field>
+            <field name="code">ISATX9</field>
+            <field name="value">90000</field>
+            <field name="type">prepaid_mobile</field>
+            <field name="sequence">160</field>
+            <field name="active" eval="True"/>
+        </record>
+        <record id="tt_master_voucher_ppob_isatx10" model="tt.master.voucher.ppob">
+            <field name="name">INDOSAT DATA XTRA 10GB</field>
+            <field name="code">ISATX10</field>
+            <field name="value">100000</field>
+            <field name="type">prepaid_mobile</field>
+            <field name="sequence">170</field>
+            <field name="active" eval="True"/>
+        </record>
+        <record id="tt_master_voucher_ppob_isatfr12" model="tt.master.voucher.ppob">
+            <field name="name">INDOSAT Freedom Combo M 12GB, 30Hr</field>
+            <field name="code">ISATFR12</field>
+            <field name="value">65000</field>
+            <field name="type">prepaid_mobile</field>
+            <field name="sequence">180</field>
+            <field name="active" eval="True"/>
+        </record>
+        <record id="tt_master_voucher_ppob_isatfr26" model="tt.master.voucher.ppob">
+            <field name="name">INDOSAT Freedom Combo L 26GB, 30Hr</field>
+            <field name="code">ISATFR26</field>
+            <field name="value">100000</field>
+            <field name="type">prepaid_mobile</field>
+            <field name="sequence">190</field>
+            <field name="active" eval="True"/>
+        </record>
+        <record id="tt_master_voucher_ppob_isatun2" model="tt.master.voucher.ppob">
+            <field name="name">INDOSAT Unlimited 2GB+7.5GB, 30Hr</field>
+            <field name="code">ISATUN2</field>
+            <field name="value">40000</field>
+            <field name="type">prepaid_mobile</field>
+            <field name="sequence">200</field>
+            <field name="active" eval="True"/>
+        </record>
+        <record id="tt_master_voucher_ppob_isatun3" model="tt.master.voucher.ppob">
+            <field name="name">INDOSAT Unlimited 3GB+15GB, 30Hr</field>
+            <field name="code">ISATUN3</field>
+            <field name="value">60000</field>
+            <field name="type">prepaid_mobile</field>
+            <field name="sequence">210</field>
+            <field name="active" eval="True"/>
+        </record>
+        <record id="tt_master_voucher_ppob_isatun7" model="tt.master.voucher.ppob">
+            <field name="name">INDOSAT Unlimited 7GB+20GB, 30Hr</field>
+            <field name="code">ISATUN7</field>
+            <field name="value">80000</field>
+            <field name="type">prepaid_mobile</field>
+            <field name="sequence">220</field>
+            <field name="active" eval="True"/>
+        </record>
+        <record id="tt_master_voucher_ppob_isatun10" model="tt.master.voucher.ppob">
+            <field name="name">INDOSAT Unlimited 10GB+25GB, 30Hr</field>
+            <field name="code">ISATUN10</field>
+            <field name="value">100000</field>
+            <field name="type">prepaid_mobile</field>
+            <field name="sequence">230</field>
+            <field name="active" eval="True"/>
+        </record>
+        <record id="tt_master_voucher_ppob_sm5" model="tt.master.voucher.ppob">
+            <field name="name">SMARTFREN</field>
+            <field name="code">SM5</field>
+            <field name="value">5000</field>
+            <field name="type">prepaid_mobile</field>
+            <field name="sequence">240</field>
+            <field name="active" eval="True"/>
+        </record>
+        <record id="tt_master_voucher_ppob_sm10" model="tt.master.voucher.ppob">
+            <field name="name">SMARTFREN</field>
+            <field name="code">SM10</field>
+            <field name="value">10000</field>
+            <field name="type">prepaid_mobile</field>
+            <field name="sequence">250</field>
+            <field name="active" eval="True"/>
+        </record>
+        <record id="tt_master_voucher_ppob_sm20" model="tt.master.voucher.ppob">
+            <field name="name">SMARTFREN</field>
+            <field name="code">SM20</field>
+            <field name="value">20000</field>
+            <field name="type">prepaid_mobile</field>
+            <field name="sequence">260</field>
+            <field name="active" eval="True"/>
+        </record>
+        <record id="tt_master_voucher_ppob_sm25" model="tt.master.voucher.ppob">
+            <field name="name">SMARTFREN</field>
+            <field name="code">SM25</field>
+            <field name="value">25000</field>
+            <field name="type">prepaid_mobile</field>
+            <field name="sequence">270</field>
+            <field name="active" eval="True"/>
+        </record>
+        <record id="tt_master_voucher_ppob_sm30" model="tt.master.voucher.ppob">
+            <field name="name">SMARTFREN</field>
+            <field name="code">SM30</field>
+            <field name="value">30000</field>
+            <field name="type">prepaid_mobile</field>
+            <field name="sequence">280</field>
+            <field name="active" eval="True"/>
+        </record>
+        <record id="tt_master_voucher_ppob_sm50" model="tt.master.voucher.ppob">
+            <field name="name">SMARTFREN</field>
+            <field name="code">SM50</field>
+            <field name="value">50000</field>
+            <field name="type">prepaid_mobile</field>
+            <field name="sequence">290</field>
+            <field name="active" eval="True"/>
+        </record>
+        <record id="tt_master_voucher_ppob_sm100" model="tt.master.voucher.ppob">
+            <field name="name">SMARTFREN</field>
+            <field name="code">SM100</field>
+            <field name="value">100000</field>
+            <field name="type">prepaid_mobile</field>
+            <field name="sequence">300</field>
+            <field name="active" eval="True"/>
+        </record>
+        <record id="tt_master_voucher_ppob_tsel5" model="tt.master.voucher.ppob">
+            <field name="name">TELKOMSEL</field>
+            <field name="code">TSEL5</field>
+            <field name="value">5000</field>
+            <field name="type">prepaid_mobile</field>
+            <field name="sequence">310</field>
+            <field name="active" eval="True"/>
+        </record>
+        <record id="tt_master_voucher_ppob_tsel10" model="tt.master.voucher.ppob">
+            <field name="name">TELKOMSEL</field>
+            <field name="code">TSEL10</field>
+            <field name="value">10000</field>
+            <field name="type">prepaid_mobile</field>
+            <field name="sequence">320</field>
+            <field name="active" eval="True"/>
+        </record>
+        <record id="tt_master_voucher_ppob_tsel20" model="tt.master.voucher.ppob">
+            <field name="name">TELKOMSEL</field>
+            <field name="code">TSEL20</field>
+            <field name="value">20000</field>
+            <field name="type">prepaid_mobile</field>
+            <field name="sequence">330</field>
+            <field name="active" eval="True"/>
+        </record>
+        <record id="tt_master_voucher_ppob_tsel25" model="tt.master.voucher.ppob">
+            <field name="name">TELKOMSEL</field>
+            <field name="code">TSEL25</field>
+            <field name="value">25000</field>
+            <field name="type">prepaid_mobile</field>
+            <field name="sequence">340</field>
+            <field name="active" eval="True"/>
+        </record>
+        <record id="tt_master_voucher_ppob_tsel50" model="tt.master.voucher.ppob">
+            <field name="name">TELKOMSEL</field>
+            <field name="code">TSEL50</field>
+            <field name="value">50000</field>
+            <field name="type">prepaid_mobile</field>
+            <field name="sequence">350</field>
+            <field name="active" eval="True"/>
+        </record>
+        <record id="tt_master_voucher_ppob_tsel100" model="tt.master.voucher.ppob">
+            <field name="name">TELKOMSEL</field>
+            <field name="code">TSEL100</field>
+            <field name="value">100000</field>
+            <field name="type">prepaid_mobile</field>
+            <field name="sequence">360</field>
+            <field name="active" eval="True"/>
+        </record>
+        <record id="tt_master_voucher_ppob_tseldt3" model="tt.master.voucher.ppob">
+            <field name="name">TELKOMSEL Data 1.2GB+2GB(4G)+3GB, 30Hr</field>
+            <field name="code">TSELDT3</field>
+            <field name="value">50000</field>
+            <field name="type">prepaid_mobile</field>
+            <field name="sequence">370</field>
+            <field name="active" eval="True"/>
+        </record>
+        <record id="tt_master_voucher_ppob_tseldt5" model="tt.master.voucher.ppob">
+            <field name="name">TELKOMSEL Data 3.5GB+5GB(4G)+5GB, 30Hr</field>
+            <field name="code">TSELDT5</field>
+            <field name="value">100000</field>
+            <field name="type">prepaid_mobile</field>
+            <field name="sequence">380</field>
+            <field name="active" eval="True"/>
+        </record>
+        <record id="tt_master_voucher_ppob_tseldt110" model="tt.master.voucher.ppob">
+            <field name="name">TELKOMSEL Data 110MB, 1Hr</field>
+            <field name="code">TSELDT110</field>
+            <field name="value">10000</field>
+            <field name="type">prepaid_mobile</field>
+            <field name="sequence">390</field>
+            <field name="active" eval="True"/>
+        </record>
+        <record id="tt_master_voucher_ppob_tseldt420" model="tt.master.voucher.ppob">
+            <field name="name">TELKOMSEL Data 420MB, 7Hr</field>
+            <field name="code">TSELDT420</field>
+            <field name="value">20000</field>
+            <field name="type">prepaid_mobile</field>
+            <field name="sequence">400</field>
+            <field name="active" eval="True"/>
+        </record>
+        <record id="tt_master_voucher_ppob_tseldt500" model="tt.master.voucher.ppob">
+            <field name="name">TELKOMSEL Data 500MB, 30Hr</field>
+            <field name="code">TSELDT500</field>
+            <field name="value">25000</field>
+            <field name="type">prepaid_mobile</field>
+            <field name="sequence">410</field>
+            <field name="active" eval="True"/>
+        </record>
+        <record id="tt_master_voucher_ppob_tr5" model="tt.master.voucher.ppob">
+            <field name="name">TRI</field>
+            <field name="code">TR5</field>
+            <field name="value">5000</field>
+            <field name="type">prepaid_mobile</field>
+            <field name="sequence">420</field>
+            <field name="active" eval="True"/>
+        </record>
+        <record id="tt_master_voucher_ppob_tr10" model="tt.master.voucher.ppob">
+            <field name="name">TRI</field>
+            <field name="code">TR10</field>
+            <field name="value">10000</field>
+            <field name="type">prepaid_mobile</field>
+            <field name="sequence">430</field>
+            <field name="active" eval="True"/>
+        </record>
+        <record id="tt_master_voucher_ppob_tr20" model="tt.master.voucher.ppob">
+            <field name="name">TRI</field>
+            <field name="code">TR20</field>
+            <field name="value">20000</field>
+            <field name="type">prepaid_mobile</field>
+            <field name="sequence">440</field>
+            <field name="active" eval="True"/>
+        </record>
+        <record id="tt_master_voucher_ppob_tr30" model="tt.master.voucher.ppob">
+            <field name="name">TRI</field>
+            <field name="code">TR30</field>
+            <field name="value">30000</field>
+            <field name="type">prepaid_mobile</field>
+            <field name="sequence">450</field>
+            <field name="active" eval="True"/>
+        </record>
+        <record id="tt_master_voucher_ppob_tr50" model="tt.master.voucher.ppob">
+            <field name="name">TRI</field>
+            <field name="code">TR50</field>
+            <field name="value">50000</field>
+            <field name="type">prepaid_mobile</field>
+            <field name="sequence">460</field>
+            <field name="active" eval="True"/>
+        </record>
+        <record id="tt_master_voucher_ppob_tr100" model="tt.master.voucher.ppob">
+            <field name="name">TRI</field>
+            <field name="code">TR100</field>
+            <field name="value">100000</field>
+            <field name="type">prepaid_mobile</field>
+            <field name="sequence">470</field>
+            <field name="active" eval="True"/>
+        </record>
+        <record id="tt_master_voucher_ppob_xl5" model="tt.master.voucher.ppob">
+            <field name="name">XL</field>
+            <field name="code">XL5</field>
+            <field name="value">5000</field>
+            <field name="type">prepaid_mobile</field>
+            <field name="sequence">480</field>
+            <field name="active" eval="True"/>
+        </record>
+        <record id="tt_master_voucher_ppob_xl10" model="tt.master.voucher.ppob">
+            <field name="name">XL</field>
+            <field name="code">XL10</field>
+            <field name="value">10000</field>
+            <field name="type">prepaid_mobile</field>
+            <field name="sequence">490</field>
+            <field name="active" eval="True"/>
+        </record>
+        <record id="tt_master_voucher_ppob_xl15" model="tt.master.voucher.ppob">
+            <field name="name">XL</field>
+            <field name="code">XL15</field>
+            <field name="value">15000</field>
+            <field name="type">prepaid_mobile</field>
+            <field name="sequence">500</field>
+            <field name="active" eval="True"/>
+        </record>
+        <record id="tt_master_voucher_ppob_xl25" model="tt.master.voucher.ppob">
+            <field name="name">XL</field>
+            <field name="code">XL25</field>
+            <field name="value">25000</field>
+            <field name="type">prepaid_mobile</field>
+            <field name="sequence">510</field>
+            <field name="active" eval="True"/>
+        </record>
+        <record id="tt_master_voucher_ppob_xl30" model="tt.master.voucher.ppob">
+            <field name="name">XL</field>
+            <field name="code">XL30</field>
+            <field name="value">30000</field>
+            <field name="type">prepaid_mobile</field>
+            <field name="sequence">520</field>
+            <field name="active" eval="True"/>
+        </record>
+        <record id="tt_master_voucher_ppob_xl50" model="tt.master.voucher.ppob">
+            <field name="name">XL</field>
+            <field name="code">XL50</field>
+            <field name="value">50000</field>
+            <field name="type">prepaid_mobile</field>
+            <field name="sequence">530</field>
+            <field name="active" eval="True"/>
+        </record>
+        <record id="tt_master_voucher_ppob_xl100" model="tt.master.voucher.ppob">
+            <field name="name">XL</field>
+            <field name="code">XL100</field>
+            <field name="value">100000</field>
+            <field name="type">prepaid_mobile</field>
+            <field name="sequence">540</field>
+            <field name="active" eval="True"/>
+        </record>
+        <record id="tt_master_voucher_ppob_xlhr3" model="tt.master.voucher.ppob">
+            <field name="name">XL Data 3GB, 30Hr</field>
+            <field name="code">XLHR3</field>
+            <field name="value">60000</field>
+            <field name="type">prepaid_mobile</field>
+            <field name="sequence">550</field>
+            <field name="active" eval="True"/>
+        </record>
+        <record id="tt_master_voucher_ppob_xlhr6" model="tt.master.voucher.ppob">
+            <field name="name">XL Data 6GB, 30Hr</field>
+            <field name="code">XLHR6</field>
+            <field name="value">100000</field>
+            <field name="type">prepaid_mobile</field>
+            <field name="sequence">560</field>
+            <field name="active" eval="True"/>
+        </record>
+        <record id="tt_master_voucher_ppob_xlxc5" model="tt.master.voucher.ppob">
+            <field name="name">XL Xtra Combo 5GB+5GB, 30Hr</field>
+            <field name="code">XLXC5</field>
+            <field name="value">59000</field>
+            <field name="type">prepaid_mobile</field>
+            <field name="sequence">570</field>
+            <field name="active" eval="True"/>
+        </record>
+        <record id="tt_master_voucher_ppob_xlxc10" model="tt.master.voucher.ppob">
+            <field name="name">XL Xtra Combo 10GB+10GB, 30Hr</field>
+            <field name="code">XLXC10</field>
+            <field name="value">89000</field>
+            <field name="type">prepaid_mobile</field>
+            <field name="sequence">580</field>
+            <field name="active" eval="True"/>
+        </record>
+        <record id="tt_master_voucher_ppob_xlxc15" model="tt.master.voucher.ppob">
+            <field name="name">XL Xtra Combo 15GB+15GB, 30Hr</field>
+            <field name="code">XLXC15</field>
+            <field name="value">129000</field>
+            <field name="type">prepaid_mobile</field>
+            <field name="sequence">590</field>
+            <field name="active" eval="True"/>
+        </record>
+        <record id="tt_master_voucher_ppob_xlxc20" model="tt.master.voucher.ppob">
+            <field name="name">XL Xtra Combo 20GB+20GB, 30Hr</field>
+            <field name="code">XLXC20</field>
+            <field name="value">179000</field>
+            <field name="type">prepaid_mobile</field>
+            <field name="sequence">600</field>
+            <field name="active" eval="True"/>
+        </record>
+        <record id="tt_master_voucher_ppob_xlxc35" model="tt.master.voucher.ppob">
+            <field name="name">XL Xtra Combo 35GB+35GB, 30Hr</field>
+            <field name="code">XLXC35</field>
+            <field name="value">239000</field>
+            <field name="type">prepaid_mobile</field>
+            <field name="sequence">610</field>
+            <field name="active" eval="True"/>
+        </record>
+    </data>
+</odoo>

@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="tt_master_voucher_ppob_filter_views" model="ir.ui.view">
+        <field name="name">tt.master.voucher.ppob.filter.view</field>
+        <field name="model">tt.master.voucher.ppob</field>
+        <field name="arch" type="xml">
+            <search string="Search PPOB Inquiry">
+                <field name="name"/>
+                <field name="code"/>
+                <field name="value"/>
+                <field name="type"/>
+                <group>
+                    <filter string="All" name="all"/>
+                    <filter string="Prepaid Mobile" name="prepaid_mobile" domain="[('type','=','prepaid_mobile')]"/>
+                    <filter string="Game Voucher" name="game" domain="[('type','=','game')]"/>
+                </group>
+                <separator/>
+                <group expand="0" string="Group By">
+                    <filter name="group_by_value" string="Value" domain="[]" context="{'group_by':'value'}"/>
+                    <filter name="group_by_type" string="Type" domain="[]" context="{'group_by':'type'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="tt_master_voucher_ppob_form_views" model="ir.ui.view">
+        <field name="name">tt.master.voucher.ppob.form.view</field>
+        <field name="model">tt.master.voucher.ppob</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="toggle_active" type="object"
+                                class="oe_stat_button" icon="fa-archive">
+                            <field name="active" widget="boolean_button"
+                                   options='{"terminology": "archive"}'/>
+                        </button>
+                    </div>
+                    <div class="oe_title">
+                        <label for="Name" class="oe_edit_only" string="Name"/>
+                        <h1>
+                            <field name="display_name"/>
+                        </h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="name"/>
+                            <field name="code"/>
+                            <field name="type"/>
+                        </group>
+                        <group>
+                            <field name="value"/>
+                            <field name="sequence"/>
+                        </group>
+                    </group>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids" widget="mail_followers"/>
+                    <field name="message_ids" widget="mail_thread"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <record id="tt_master_voucher_ppob_tree_views" model="ir.ui.view">
+        <field name="name">tt.master.voucher.ppob.tree.view</field>
+        <field name="model">tt.master.voucher.ppob</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="name"/>
+                <field name="code"/>
+                <field name="value"/>
+                <field name="type"/>
+                <field name="sequence"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="tt_master_voucher_ppob_action_views" model="ir.actions.act_window" >
+        <field name="name">Master Voucher PPOB</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">tt.master.voucher.ppob</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+        <field name="domain">[]</field>
+        <field name="context">
+            {
+            'form_view_ref': 'tt_reservation_ppob.tt_master_voucher_ppob_form_views',
+            'tree_view_ref': 'tt_reservation_ppob.tt_master_voucher_ppob_tree_views',
+            }
+        </field>
+    </record>
+
+    <menuitem id="submenu_master_voucher_ppob" parent="tt_reservation_ppob.menu_tour_travel_ppob_master"
+              name="Voucher" action="tt_master_voucher_ppob_action_views"/>
+
+</odoo>

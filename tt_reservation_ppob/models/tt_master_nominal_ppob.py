@@ -17,6 +17,8 @@ class TtMasterNominalPPOB(models.Model):
     currency_id = fields.Many2one('res.currency', default=lambda self: self.env.user.company_id.currency_id.id, string='Currency')
     display_name = fields.Char('Display Name', compute='_compute_display_name')
 
+    @api.depends('currency_id', 'nominal')
+    @api.onchange('currency_id', 'nominal')
     def _compute_display_name(self):
         for rec in self:
             rec.display_name = rec.currency_id.name + ' ' + str(rec.nominal)

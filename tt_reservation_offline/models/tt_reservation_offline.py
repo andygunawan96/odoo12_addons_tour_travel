@@ -180,8 +180,15 @@ class IssuedOffline(models.Model):
                     pnr_amount = 0
                     pax_amount = 0
                     for rec2 in rec.line_ids:
-                        pnr_amount += rec2.obj_qty
+                        pnr_amount = rec2.obj_qty
                         pax_amount = (datetime.strptime(rec2.check_out, '%Y-%m-%d') - datetime.strptime(rec2.check_in, '%Y-%m-%d')).days
+
+                        ho_adm_fee = rec.admin_fee_id.get_final_adm_fee_ho(rec.total, pnr_amount, pax_amount)
+                        agent_adm_fee = rec.admin_fee_id.get_final_adm_fee_agent(rec.total, pnr_amount, pax_amount)
+
+                        rec.admin_fee_ho += ho_adm_fee
+                        rec.admin_fee_agent += agent_adm_fee
+                        rec.admin_fee += ho_adm_fee + agent_adm_fee
                 else:
                     pnr_amount = 0
                     pnr_list = []
@@ -194,12 +201,12 @@ class IssuedOffline(models.Model):
                     for rec2 in rec.passenger_ids:
                         pax_amount += 1
 
-                ho_adm_fee = rec.admin_fee_id.get_final_adm_fee_ho(rec.total, pnr_amount, pax_amount)
-                agent_adm_fee = rec.admin_fee_id.get_final_adm_fee_agent(rec.total, pnr_amount, pax_amount)
+                    ho_adm_fee = rec.admin_fee_id.get_final_adm_fee_ho(rec.total, pnr_amount, pax_amount)
+                    agent_adm_fee = rec.admin_fee_id.get_final_adm_fee_agent(rec.total, pnr_amount, pax_amount)
 
-                rec.admin_fee_ho = ho_adm_fee
-                rec.admin_fee_agent = agent_adm_fee
-                rec.admin_fee = ho_adm_fee + agent_adm_fee
+                    rec.admin_fee_ho = ho_adm_fee
+                    rec.admin_fee_agent = agent_adm_fee
+                    rec.admin_fee = ho_adm_fee + agent_adm_fee
             else:
                 rec.admin_fee_ho = 0
                 rec.admin_fee_agent = 0
@@ -545,7 +552,7 @@ class IssuedOffline(models.Model):
             raise UserError(_(payment['error_msg']))
 
         self.state_offline = 'validate'
-        self.vendor_amount = self.nta_price
+        self.vendor_amount = self.nta_price - self.admin_fee
         self.compute_final_ho()
         self.issued_date = fields.Datetime.now()
         self.issued_uid = kwargs.get('user_id') and kwargs['user_id'] or self.env.user.id
@@ -898,9 +905,9 @@ class IssuedOffline(models.Model):
         """ Get total price & commission from pricing """
         for provider in self.provider_booking_ids:
             for scs in provider.cost_service_charge_ids:
-                if scs.charge_type != 'RAC':
+                if scs.charge_type not in ['RAC', 'ROC']:
                     total_price += scs.total
-                else:
+                elif scs.charge_type == 'RAC':
                     if scs.commission_agent_id.id == self.agent_id.id:
                         agent_comm += abs(scs.total)
                     elif scs.commission_agent_id.id == self.env.ref('tt_base.rodex_ho').id:
@@ -910,8 +917,8 @@ class IssuedOffline(models.Model):
 
         """ Get diff from pricing and from booking """
         diff = self.total - total_price
-        agent_diff = self.agent_commission - agent_comm
-        ho_diff = self.ho_commission - ho_comm
+        agent_diff = self.agent_commission - agent_comm + self.admin_fee_agent
+        ho_diff = self.ho_commission - ho_comm + self.admin_fee_ho
         parent_diff = self.parent_agent_commission - parent_comm
 
         if diff != 0:
@@ -964,16 +971,18 @@ class IssuedOffline(models.Model):
                 for scs in self.provider_booking_ids[0].cost_service_charge_ids:
                     if scs.commission_agent_id.id != self.env.ref(
                             'tt_base.rodex_ho').id and scs.commission_agent_id.id != self.agent_id.id:
-                        scs.amount -= ho_diff
-                        scs.total -= ho_diff
+                        if scs.charge_type != 'FARE':
+                            scs.amount -= ho_diff
+                            scs.total -= ho_diff
                         break
             elif parent_diff > self.parent_agent_commission:
                 for scs in self.provider_booking_ids[0].cost_service_charge_ids:
                     if scs.commission_agent_id.id != self.env.ref(
                             'tt_base.rodex_ho').id and scs.commission_agent_id.id != self.agent_id.id:
-                        scs.amount += parent_diff
-                        scs.total += parent_diff
-                        break
+                        if scs.charge_type != 'FARE':
+                            scs.amount += parent_diff
+                            scs.total += parent_diff
+                            break
 
     ####################################################################################################
     # Set, Get & Compute
@@ -1189,7 +1198,7 @@ class IssuedOffline(models.Model):
     @api.onchange('vendor_amount', 'nta_price')
     def compute_final_ho(self):
         for rec in self:
-            rec.ho_final_amount = rec.nta_price - rec.vendor_amount
+            rec.ho_final_amount = rec.nta_price - rec.vendor_amount - rec.admin_fee
 
     @api.onchange('contact_id')
     def _filter_customer_parent(self):

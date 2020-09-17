@@ -223,7 +223,7 @@ class AgentReportRecapReservationXls(models.TransientModel):
                             sheet.write(row_data, 3, '', sty_table_data)
                             sheet.write(row_data, 4, '', sty_date)
                             sheet.write(row_data, 5, '', sty_table_data)
-                            sheet.write(row_data, 6, '', sty_table_data)
+                            sheet.write(row_data, 6, i['ledger_provider'], sty_table_data)
                             sheet.write(row_data, 7, '', sty_amount)
                             sheet.write(row_data, 8, '', sty_amount)
                             sheet.write(row_data, 9, '', sty_amount)
