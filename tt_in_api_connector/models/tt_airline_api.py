@@ -31,6 +31,8 @@ class TtAirlineApiCon(models.Model):
             res = table_obj.update_refund_airline_api(data,context)
         elif action == 'get_refund':
             res = table_obj.get_refund_airline_api(data,context)
+        elif action == 'split_booking':
+            res = table_obj.split_reservation_airline_api(data,context)
         else:
             raise RequestException(999)
 

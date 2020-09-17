@@ -1796,3 +1796,297 @@ class ReservationAirline(models.Model):
             _logger.error('Error Get Refund Airline API, %s' % traceback.format_exc())
             return ERR.get_error(1030)
     # END
+
+    # September 8, 2020 - SAM
+    def split_reservation_airline_api(self, data, context):
+        try:
+            '''
+            data = {
+                "order_id": 563",
+                "order_number": "AL.2020135484",
+                "provider_bookings": [{
+                    "provider_id": 56,
+                    "pnr": "ABCDEF",
+                    "status": "SUCCEED",
+                    "journeys": [{
+                        "segments": [{
+                            "segment_code": "dfghjskdfghjkljhgfdkjhgfdzxcfgadsfg",
+                        }],
+                    }],
+                    "new_data": {
+                        "pnr": "TYUIOP",
+                        "pnr2": "SQ_TYUIOP",
+                        "reference": "TYUIOP",
+                        "journeys": [],
+                        "passengers": [],
+                        ...
+                        ...
+                    },
+                }, {
+                    "provider_id": 59,
+                    "pnr": "TYUIOP",
+                    "status": "FAILED",
+                    "new_data": {}
+                }],
+                "passengers": [{
+                    "passenger_number": 0
+                }],
+            }
+            '''
+            book_obj = None
+            if data.get('book_id'):
+                book_obj = self.env['tt.reservation.airline'].browse(data['book_id'])
+            elif data.get('order_number'):
+                book_obj = self.env['tt.reservation.airline'].search([('name', '=', data['order_number'])], limit=1)
+
+            if not book_obj:
+                raise Exception('Booking Object not Found')
+
+            passenger_data_sequence_list = []
+            for psg in data['passengers']:
+                passenger_data_sequence_list.append(psg['passenger_number'])
+
+            if not any(prov['status'] == 'SUCCEED' for prov in data['provider_bookings']):
+                raise Exception('No provider information found')
+
+            new_booking_obj = None
+            pnr_list = []
+            new_passenger_id_dict = {}
+            for prov in data['provider_bookings']:
+                if not prov['status'] == 'SUCCEED':
+                    continue
+
+                prov_obj = None
+                if prov.get('provider_id'):
+                    prov_obj = self.env['tt.provider.airline'].browse(prov['provider_id'])
+                elif prov.get('pnr'):
+                    for prov_book_obj in book_obj.provider_booking_ids:
+                        if prov_book_obj.pnr == prov['pnr']:
+                            prov_obj = prov_book_obj
+                            break
+
+                if not prov_obj:
+                    _logger.error('Provider Booking Object not Found, pnr %s' % prov['pnr'])
+                    # raise Exception('Provider Booking Object not Found')
+                    continue
+
+                is_ledger_created = False
+                if any(sc_obj.is_ledger_created for sc_obj in prov_obj.cost_service_charge_ids):
+                    is_ledger_created = True
+                    prov_obj.action_reverse_ledger()
+
+                ticket_object_list = []
+                passenger_id_list = []
+                if data.get('passengers'):
+                    passenger_sequence_list = []
+                    for tkt in prov_obj.ticket_ids:
+                        if not tkt.passenger_id:
+                            continue
+                        passenger_sequence_list.append(tkt.passenger_id.sequence)
+                        if tkt.passenger_id.sequence in passenger_data_sequence_list:
+                            passenger_id_list.append(tkt.passenger_id.id)
+                            ticket_object_list.append(tkt)
+
+                    if all(seq in passenger_data_sequence_list for seq in passenger_sequence_list):
+                        _logger.error('Restricted to split for all passengers in PNR')
+                        continue
+                else:
+                    _logger.error('Restricted to split for all passengers in PNR')
+                    continue
+
+                if not new_booking_obj:
+                    new_booking_obj = book_obj.copy()
+                    new_booking_obj.write({
+                        'split_from_resv_id': book_obj.id,
+                        'split_uid': context['co_uid'],
+                        'split_date': fields.Datetime.now(),
+                        'state': book_obj.state,
+                        'sale_service_charge_ids': [(5,)]
+                    })
+
+                new_prov_obj = prov_obj.copy()
+                for journey_obj in prov_obj.journey_ids:
+                    new_journey_obj = journey_obj.copy()
+                    for segment_obj in journey_obj.segment_ids:
+                        new_segment_obj = segment_obj.copy()
+                        for leg_obj in segment_obj.leg_ids:
+                            new_leg_obj = leg_obj.copy()
+                            new_leg_obj.write({
+                                'segment_id': new_segment_obj.id,
+                                'booking_id': new_booking_obj.id,
+                            })
+
+                        for seg_add_obj in segment_obj.segment_addons_ids:
+                            new_seg_add_obj = seg_add_obj.copy()
+                            new_seg_add_obj.write({
+                                'segment_id': new_segment_obj.id
+                            })
+
+                        for seat_obj in segment_obj.seat_ids:
+                            if seat_obj.passenger_id and seat_obj.passenger_id.id in passenger_id_list:
+                                seat_obj.write({
+                                    'segment_id': new_segment_obj.id,
+                                    'booking_id': new_booking_obj.id,
+                                })
+
+                        new_segment_obj.write({
+                            'journey_id': new_journey_obj.id,
+                            'booking_id': new_booking_obj.id,
+                        })
+
+                    new_journey_obj.write({
+                        'provider_booking_id': new_prov_obj.id
+                    })
+
+                new_prov_obj.write({
+                    'booking_id': new_booking_obj.id,
+                    'hold_date': prov['new_data']['hold_date'],
+                    'pnr': prov['new_data']['pnr'],
+                    'pnr2': prov['new_data']['pnr2'],
+                    'reference': prov['new_data']['reference'],
+                    'balance_due': prov['new_data']['balance_due'],
+                    'total_price': prov['new_data']['total_price'],
+                    'state': prov_obj.state,
+                    'booked_uid': prov_obj.booked_uid and prov_obj.booked_uid.id or False,
+                    'booked_date': prov_obj.booked_date and prov_obj.booked_date or False,
+                    'issued_uid': prov_obj.issued_uid and prov_obj.issued_uid.id or False,
+                    'issued_date': prov_obj.issued_date and prov_obj.issued_date or False,
+                    'cancel_uid': prov_obj.cancel_uid and prov_obj.cancel_uid.id or False,
+                    'cancel_date': prov_obj.cancel_date and prov_obj.cancel_date or False,
+                    'refund_uid': prov_obj.refund_uid and prov_obj.refund_uid.id or False,
+                    'refund_date': prov_obj.refund_date and prov_obj.refund_date or False,
+                    'reschedule_uid': prov_obj.reschedule_uid and prov_obj.reschedule_uid.id or False,
+                    'reschedule_date': prov_obj.reschedule_date and prov_obj.reschedule_date or False,
+                })
+                pnr_list.append(prov['new_data']['pnr'])
+
+                for tkt in ticket_object_list:
+                    ticket_number = tkt.ticket_number
+                    ff_code = tkt.ff_code
+                    ff_number = tkt.ff_number
+                    if not new_passenger_id_dict.get(tkt.passenger_id.id):
+                        new_psg_obj = tkt.passenger_id.copy()
+                        new_psg_obj.update({
+                            'booking_id': new_booking_obj.id,
+                            'cost_service_charge_ids': [(5,)],
+                            'channel_service_charge_ids': [(5,)],
+                        })
+                        new_passenger_id_dict[tkt.passenger_id.id] = new_psg_obj.id
+                        # for ff_obj in tkt.passenger_id.frequent_flyer_ids:
+                        #     new_ff_obj = ff_obj.copy()
+                        #     new_ff_obj.write({
+                        #         'passenger_id': '',
+                        #         'provider_id': '',
+                        #         'provider_sequence': '',
+                        #     })
+
+                    psg_obj = tkt.passenger_id
+                    first_name = psg_obj.first_name and ''.join(psg_obj.first_name.split()) or ''
+                    psg_obj_key_1 = '%s%s' % (first_name, psg_obj.last_name and ''.join(psg_obj.last_name.split()) or '')
+                    psg_obj_key_2 = '%s%s' % (first_name, first_name)
+                    for psg_data in prov['new_data']['passengers']:
+                        psg_data_key = '%s%s' % (''.join(psg_data['first_name'].split()), psg_data['last_name'] and ''.join(psg_data['last_name'].split()) or '')
+                        # if psg_data['first_name'].strip() == psg_data['last_name'].strip():
+                        #     pass
+                        # else:
+                        #     pass
+                        if psg_obj_key_1 == psg_data_key or psg_obj_key_2 == psg_data_key:
+                            ticket_number = psg_data.get('ticket_number', '')
+                            ff_number = psg_data.get('ff_number', '')
+                            ff_code = psg_data.get('ff_code', '')
+                            break
+
+                    tkt.write({
+                        'provider_id': new_prov_obj.id,
+                        'passenger_id': new_passenger_id_dict[tkt.passenger_id.id],
+                        'ticket_number': ticket_number,
+                        'ff_code': ff_code,
+                        'ff_number': ff_number,
+                    })
+
+                for promo_obj in book_obj.promo_code_ids:
+                    new_promo_obj = promo_obj.copy()
+                    new_promo_obj.write({
+                        'booking_id': new_booking_obj.id
+                    })
+
+                new_total_price = 0.0
+                for sc_obj in prov_obj.cost_service_charge_ids:
+                    total_pax = 0
+                    new_sc_obj = None
+                    for psg_obj in sc_obj.passenger_airline_ids:
+                        if psg_obj.id in passenger_id_list:
+                            total_pax += 1
+                            if not new_sc_obj:
+                                new_sc_obj = sc_obj.copy()
+                                new_sc_obj.write({
+                                    'provider_airline_booking_id': new_prov_obj.id,
+                                    'passenger_airline_ids': [(5,)]
+                                })
+                            new_sc_obj.write({
+                                'passenger_airline_ids': [(4, new_passenger_id_dict[psg_obj.id])]
+                            })
+                            psg_obj.write({
+                                'cost_service_charge_ids': [(3, sc_obj.id)]
+                            })
+
+                    if total_pax < 1:
+                        continue
+
+                    new_sc_obj.write({
+                        'pax_count': total_pax,
+                        'total': sc_obj.amount * total_pax,
+                    })
+                    new_pax_count = sc_obj.pax_count - total_pax
+
+                    if new_sc_obj.charge_type not in ['ROC', 'RAC']:
+                        new_total_price += new_sc_obj.total
+
+                    if new_pax_count < 1:
+                        sc_obj.unlink()
+                    else:
+                        sc_obj.write({
+                            'pax_count': new_pax_count
+                        })
+
+                for fee_obj in prov_obj.fee_ids:
+                    if fee_obj.passenger_id and fee_obj.passenger_id.id in passenger_id_list:
+                        fee_obj.write({
+                            'provider_id': new_prov_obj.id,
+                            'passenger_id': new_passenger_id_dict[fee_obj.passenger_id.id]
+                        })
+
+                # FIXME bisa dijalankan ketika proses split ke vendor sudah berjalan
+                # FIXME sementara untuk testing split biasa dari front end
+                # if new_total_price != 0:
+                #     prov_obj.write({
+                #         'total_price': prov_obj.total_price - new_total_price,
+                #         'balance_due': float(prov_obj.balance_due - new_total_price) if prov_obj.state == 'booked' else prov_obj.balance_due
+                #     })
+                #     new_prov_obj.write({
+                #         'total_price': new_total_price,
+                #         'balance_due': new_total_price if prov_obj.state == 'booked' else new_prov_obj.balance_due
+                #     })
+                #
+                # if is_ledger_created:
+                #     prov_obj.action_create_ledger(context['co_uid'])
+                #     new_prov_obj.action_create_ledger(context['co_uid'])
+                # FIXME END
+
+            book_obj.calculate_pnr_provider_carrier()
+            new_booking_obj.calculate_pnr_provider_carrier()
+            book_obj.calculate_service_charge()
+            new_booking_obj.calculate_service_charge()
+            book_obj.check_provider_state(context=context)
+            new_booking_obj.check_provider_state(context=context)
+
+            response = {
+                'order_number': new_booking_obj.name,
+            }
+            return ERR.get_no_error(response)
+        except RequestException as e:
+            _logger.error('Error Split Reservation Airline API, %s' % traceback.format_exc())
+            return e.error_dict()
+        except:
+            _logger.error('Error Split Reservation Airline API, %s' % traceback.format_exc())
+            return ERR.get_error(1034)
