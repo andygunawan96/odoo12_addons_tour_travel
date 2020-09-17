@@ -92,6 +92,6 @@
     </record>
 
     <menuitem id="submenu_master_voucher_ppob" parent="tt_reservation_ppob.menu_tour_travel_ppob_master"
-              name="Tour" action="tt_master_voucher_ppob_action_views"/>
+              name="Voucher" action="tt_master_voucher_ppob_action_views"/>
 
 </odoo>
