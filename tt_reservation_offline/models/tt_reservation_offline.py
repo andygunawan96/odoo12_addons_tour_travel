@@ -1198,7 +1198,7 @@ class IssuedOffline(models.Model):
     @api.onchange('vendor_amount', 'nta_price')
     def compute_final_ho(self):
         for rec in self:
-            rec.ho_final_amount = rec.nta_price - rec.vendor_amount
+            rec.ho_final_amount = rec.nta_price - rec.vendor_amount - rec.admin_fee
 
     @api.onchange('contact_id')
     def _filter_customer_parent(self):
