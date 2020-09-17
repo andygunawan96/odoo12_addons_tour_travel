@@ -48,6 +48,8 @@ class TtMasterVoucherPPOB(models.Model):
         except Exception as e:
             return price
 
+    @api.depends('name', 'value')
+    @api.onchange('name', 'value')
     def _compute_display_name(self):
         for rec in self:
             rec.display_name = rec.name + ' - ' + rec.get_rupiah(rec.value)
