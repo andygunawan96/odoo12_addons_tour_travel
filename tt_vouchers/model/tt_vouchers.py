@@ -1432,6 +1432,7 @@ class TtVoucherDetail(models.Model):
 
             # add result dict to result array
             result_array.append(result_dict)
+        return ERR.get_no_error(result_array)
 
     def simulate_voucher_api(self, data, context):
         # get the order object
@@ -1941,6 +1942,7 @@ class TtVoucherDetail(models.Model):
 
             # add result dict to result array
             result_array.append(result_dict)
+        return ERR.get_no_error(result_array)
 
     #done
     # def simulate_voucher_api(self, data, context):
