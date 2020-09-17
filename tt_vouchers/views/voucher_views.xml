@@ -29,6 +29,7 @@
                         <field name="voucher_value"/>
                         <field name="voucher_state"/>
                         <field name="voucher_multi_usage"/>
+                        <field name="voucher_usage_value"/>
                         <field name="currency_id"/>
                     </group>
                     <label for="voucher_detail_ids">Voucher Detail</label>
