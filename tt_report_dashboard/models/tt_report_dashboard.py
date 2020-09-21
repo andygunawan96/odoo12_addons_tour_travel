@@ -67,7 +67,7 @@ class TtReportDashboard(models.Model):
         }
         values = self.env['report.tt_report_selling.report_selling']._get_reports(temp_dict)
 
-        _logger.error(values)
+        _logger.info(values)
         month = [
             'January', 'February', 'March', 'April', 'May', 'June',
             'July', 'August', 'September', 'October', 'November', 'December'
@@ -132,7 +132,7 @@ class TtReportDashboard(models.Model):
 
         label_data = []
         data_data = []
-        _logger.error(result)
+        _logger.info(result)
         for i in result:
             label_data.append(i['provider'] if i['provider'] else '')
             data_data.append(i['issued'] if i['issued'] else 0)
