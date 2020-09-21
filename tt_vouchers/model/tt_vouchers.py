@@ -968,7 +968,7 @@ class TtVoucherDetail(models.Model):
 
         # if main voucher exist, lets try to get the voucher detail data
         # get voucher detail data
-        voucher_detail = voucher.voucher_detail_ids.filtered(lambda x: x['voucher_reference_period'] == data[
+        voucher_detail = voucher.voucher_detail_ids.filtered(lambda x: x['voucher_period_reference'] == data[
             'voucher_reference_period'])
 
         # check if voucher detail is actually exist
