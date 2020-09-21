@@ -8,6 +8,7 @@ class PrintoutTicketForm(models.AbstractModel):
     _name = 'report.tt_report_common.printout_ticket'
     _description = 'Rodex Model'
 
+    # Dipindah ke tt_refund karena tt_refund, refund by api sma report perlu fungsi ini.
     def get_refund_fee_amount(self, agent_id):
         current_refund_env = self.env.ref('tt_accounting.admin_fee_refund_regular')
         refund_admin_fee_list = self.env['tt.master.admin.fee'].search([('after_sales_type', '=', 'refund')])

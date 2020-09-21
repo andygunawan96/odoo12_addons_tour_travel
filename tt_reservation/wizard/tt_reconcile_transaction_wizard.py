@@ -32,7 +32,8 @@ class TtReconcileTransactionWizard(models.TransientModel):
         response = self.env['tt.api.con'].send_reconcile_request(request)
         if response['error_code'] != 0:
             raise UserError(response['error_msg'])
-        self.save_reconcile_data(response['response'])
+        recon_obj = self.save_reconcile_data(response['response'])
+        return recon_obj
 
     def dummy_send_recon(self):
         request = {
@@ -98,6 +99,7 @@ class TtReconcileTransactionWizard(models.TransientModel):
             recon_data.write({
                 'reconcile_lines_ids': write_data
             })
+        return recon_data
 
     # TODO: pindah kan ke lokasi yg tepat
     def reconcile_internal_vendor(self, req):
