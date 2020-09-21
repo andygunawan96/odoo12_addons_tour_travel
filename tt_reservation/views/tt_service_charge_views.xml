@@ -7,16 +7,21 @@
             <form>
                 <sheet>
                     <group>
-                        <field name="is_ledger_created"/>
-                        <field name="is_extra_fees"/>
-                        <field name="charge_code"/>
-                        <field name="charge_type"/>
-                        <field name="pax_type"/>
-                        <field name="currency_id"/>
-                        <field name="amount"/>
-                        <field name="foreign_currency_id"/>
-                        <field name="foreign_amount"/>
-                        <field name="sequence"/>
+                        <group>
+                            <field name="is_ledger_created"/>
+                            <field name="is_extra_fees"/>
+                            <field name="charge_code"/>
+                            <field name="charge_type"/>
+                            <field name="pax_type"/>
+                            <field name="sequence"/>
+                        </group>
+                        <group>
+                            <field name="currency_id"/>
+                            <field name="amount"/>
+                            <field name="foreign_currency_id"/>
+                            <field name="foreign_amount"/>
+                            <field name="total"/>
+                        </group>
                         <field name="description"/>
                         <field name="commission_agent_id"/>
                     </group>

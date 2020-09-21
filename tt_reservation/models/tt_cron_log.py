@@ -2,6 +2,7 @@ from odoo import api,models,fields
 from ...tools import variables
 import logging,traceback
 from datetime import datetime,timedelta
+import pytz
 
 _logger = logging.getLogger(__name__)
 
@@ -31,10 +32,11 @@ class TtCronLogInhResv(models.Model):
                 wiz_obj = self.env['tt.reconcile.transaction.wizard'].create({
                     'provider_type_id': provider_obj.provider_type_id.id,
                     'provider_id': provider_obj.id,
-                    'date_from': datetime.now() - timedelta(days=1), #klo hari ini tgl 23 Jan 00:00 liat record e 22 Jan
-                    'date_to': datetime.now() - timedelta(days=1),
+                    'date_from': datetime.now(pytz.timezone("Asia/Jakarta")) - timedelta(days=1), #klo hari ini tgl 23 Jan 00:00 liat record e 22 Jan
+                    'date_to': datetime.now(pytz.timezone("Asia/Jakarta")) - timedelta(days=1),
                 })
-                wiz_obj.send_recon_request_data()
+                recon_obj = wiz_obj.send_recon_request_data()
+                recon_obj.compare_reconcile_data()
         except:
             self.create_cron_log_folder()
             self.write_cron_log('cron_auto_reconcile')
