@@ -552,7 +552,7 @@ class IssuedOffline(models.Model):
             raise UserError(_(payment['error_msg']))
 
         self.state_offline = 'validate'
-        self.vendor_amount = self.nta_price - self.admin_fee
+        self.vendor_amount = self.nta_price
         self.compute_final_ho()
         self.issued_date = fields.Datetime.now()
         self.issued_uid = kwargs.get('user_id') and kwargs['user_id'] or self.env.user.id
@@ -998,7 +998,7 @@ class IssuedOffline(models.Model):
     @api.depends('total_with_fees', 'total_commission_amount')
     def _get_nta_price(self):
         for rec in self:
-            rec.nta_price = rec.total_with_fees - rec.total_commission_amount  # - rec.incentive_amount
+            rec.nta_price = rec.total - rec.total_commission_amount  # - rec.incentive_amount
 
     @api.onchange('agent_commission')
     @api.depends('agent_commission', 'total_with_fees')
@@ -1198,7 +1198,7 @@ class IssuedOffline(models.Model):
     @api.onchange('vendor_amount', 'nta_price')
     def compute_final_ho(self):
         for rec in self:
-            rec.ho_final_amount = rec.nta_price - rec.vendor_amount - rec.admin_fee
+            rec.ho_final_amount = rec.nta_price - rec.vendor_amount
 
     @api.onchange('contact_id')
     def _filter_customer_parent(self):
