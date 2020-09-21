@@ -67,6 +67,7 @@ class TtReportDashboard(models.Model):
         }
         values = self.env['report.tt_report_selling.report_selling']._get_reports(temp_dict)
 
+        _logger.info(values)
         month = [
             'January', 'February', 'March', 'April', 'May', 'June',
             'July', 'August', 'September', 'October', 'November', 'December'
@@ -131,9 +132,10 @@ class TtReportDashboard(models.Model):
 
         label_data = []
         data_data = []
+        _logger.info(result)
         for i in result:
-            label_data.append(i['provider'])
-            data_data.append(i['issued'])
+            label_data.append(i['provider'] if i['provider'] else '')
+            data_data.append(i['issued'] if i['issued'] else 0)
 
         to_return = {
             'overall_graph': {
@@ -540,8 +542,8 @@ class TtReportDashboard(models.Model):
         label_data = []
         data_data = []
         for i in sector_dictionary:
-            label_data.append(i['sector'])
-            data_data.append([i['counter'], i['passenger_count']])
+            label_data.append(i['sector'] if i['sector'] else '')
+            data_data.append([i['counter'] if i['counter'] else 0, i['passenger_count'] if i['passenger_count'] else 0])
 
         to_return = {
             'overall_graph': {
@@ -1104,8 +1106,8 @@ class TtReportDashboard(models.Model):
         label_data = []
         data_data = []
         for i in sector_dictionary:
-            label_data.append(i['sector'])
-            data_data.append([i['counter'], i['passenger_count']])
+            label_data.append(i['sector'] if i['sector'] else '')
+            data_data.append([i['counter'] if i['counter'] else 0, i['passenger_count'] if i['passenger_count'] else 0])
 
         to_return = {
             'overall_graph': {
@@ -1290,8 +1292,8 @@ class TtReportDashboard(models.Model):
         label_data = []
         data_data = []
         for i in provider_summary:
-            label_data.append(i['hotel_name'])
-            data_data.append(i['counter'])
+            label_data.append(i['hotel_name'] if i['hotel_name'] else '')
+            data_data.append(i['counter'] if i['counter'] else 0)
         to_return = {
             'overall_graph': {
                 'label': label_data,
@@ -1443,8 +1445,8 @@ class TtReportDashboard(models.Model):
         label_data = []
         data_data = []
         for i in country_summary:
-            label_data.append(i['country'])
-            data_data.append(i['counter'])
+            label_data.append(i['country'] if i['country'] else '')
+            data_data.append(i['counter'] if i['counter'] else 0)
 
         to_return = {
             'overall_graph': {
