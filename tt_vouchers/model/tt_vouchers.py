@@ -475,7 +475,7 @@ class TtVoucherDetail(models.Model):
         else:
 
             #if voucher is multi usage
-            if voucher.voucher_value - voucher.voucher_usage <= 0:
+            if voucher.voucher_value - voucher.voucher_usage_value <= 0:
 
                 #return as voucher is no longer have value
                 _logger.error("%s, voucher Sold Out" % data['voucher_reference'])
@@ -999,7 +999,7 @@ class TtVoucherDetail(models.Model):
             # voucher is multi use
             # check if voucher value is up
             # if voucher value - voucher usage <= 0
-            if voucher.voucher_value - voucher.voucher_usage <= 0:
+            if voucher.voucher_value - voucher.voucher_usage_value <= 0:
                 # voucher value is up
                 # Print logger
                 _logger.error("%s Voucher value is up" % data['voucher_reference'])
@@ -2209,7 +2209,7 @@ class TtVoucherDetail(models.Model):
             else:
                 voucher = self.env['tt.voucher'].search(['voucher_reference_code', '=', data['voucher_reference_code']])
                 if voucher.voucher_multi_usage:
-                    voucher.voucher_usage += data['total_discount']
+                    voucher.voucher_usage_value += data['total_discount']
                 else:
                     number_of_use = voucher_detail.voucher_used + 1
                     voucher_detail.write({
