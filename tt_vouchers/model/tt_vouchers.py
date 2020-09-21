@@ -926,7 +926,7 @@ class TtVoucherDetail(models.Model):
 
     def new_simulate_voucher(self, data, context):
         # get the order object
-        order_obj = self.env['tt.reservation.%s' % (data['provider_type'])].search(['name', '=', data['order_number']])
+        order_obj = self.env['tt.reservation.%s' % (data['provider_type'])].search([('name', '=', data['order_number'])])
 
         # get dependencies object
         dependencies_data = order_obj.provider_booking_ids
@@ -955,7 +955,7 @@ class TtVoucherDetail(models.Model):
 
         # if voucher has reference and reference period
         # get the voucher data
-        voucher = self.env['tt.voucher'].search(['voucher_reference_code', '=', data['voucher_reference_code']])
+        voucher = self.env['tt.voucher'].search([('voucher_reference_code', '=', data['voucher_reference_code'])])
 
         # check if particular voucher do actually exist
         if voucher.id == False:
