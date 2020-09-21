@@ -270,6 +270,35 @@ class TtRefund(models.Model):
                 temp_total += rec2.real_refund_amount
             rec.real_refund_amount = temp_total
 
+    def get_refund_admin_fee_rule(self, agent_id):
+        current_refund_env = self.env.ref('tt_accounting.admin_fee_refund_regular')
+        refund_admin_fee_list = self.env['tt.master.admin.fee'].search([('after_sales_type', '=', 'refund')])
+        for admin_fee in refund_admin_fee_list:
+            if agent_id in admin_fee.agent_ids.ids:
+                current_refund_env = admin_fee
+                # TODO perlu di break disini atau ambil yg paling trakhir?
+        return current_refund_env
+
+    def get_refund_fee_amount(self, agent_id, order_number='', order_type='', refund_amount=0):
+        admin_fee_obj = self.get_refund_admin_fee_rule(agent_id)
+
+        pnr_amount = 1
+        pax_amount = 1
+        if order_number and order_type:
+            book_obj = self.env['tt.reservation.'+order_type].search([('name', '=', order_number)], limit=1)
+
+            pnr_amount = len(book_obj.provider_booking_ids.ids)
+            pax_amount = len(book_obj.passenger_ids.ids)
+
+        admin_fee_ho = admin_fee_obj.get_final_adm_fee_ho(refund_amount, pnr_amount, pax_amount)
+        admin_fee_agent = admin_fee_obj.get_final_adm_fee_agent(refund_amount, pnr_amount, pax_amount)
+        admin_fee = admin_fee_ho + admin_fee_agent
+        return {
+            'admin_fee_ho': admin_fee_ho,
+            'admin_fee_agent': admin_fee_agent,
+            'admin_fee': admin_fee,
+        }
+
     @api.depends('admin_fee_id', 'refund_amount', 'res_model', 'res_id')
     @api.onchange('admin_fee_id', 'refund_amount', 'res_model', 'res_id')
     def _compute_admin_fee(self):
@@ -291,6 +320,10 @@ class TtRefund(models.Model):
                 rec.admin_fee_ho = 0
                 rec.admin_fee_agent = 0
                 rec.admin_fee = 0
+
+    def compute_admin_fee_api(self, req):
+        refund_fee = self.get_refund_fee_amount(req['agent_id'], req['order_number'], req['order_type'], req['refund_amount'])
+        return refund_fee['admin_fee']
 
     @api.depends('admin_fee', 'refund_amount')
     @api.onchange('admin_fee', 'refund_amount')
