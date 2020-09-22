@@ -138,7 +138,7 @@ class TtReportDashboard(models.Model):
             try:
                 data_data.append(i['issued'])
             except:
-                data_data.apped(0)
+                data_data.append(0)
 
         to_return = {
             'overall_graph': {
