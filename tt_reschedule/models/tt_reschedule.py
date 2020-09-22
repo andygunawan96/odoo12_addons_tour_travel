@@ -176,6 +176,7 @@ class TtReschedule(models.Model):
     printout_reschedule_id = fields.Many2one('tt.upload.center', 'Printout Reschedule', readonly=True)
     created_by_api = fields.Boolean('Created By API', default=False, readonly=True)
     refund_type_id = fields.Many2one('tt.refund.type', 'Refund Type', required=False, readonly=True)
+    refund_type = fields.Char('Refund Type', required=False, readonly=True)
 
     @api.depends('invoice_line_ids')
     def set_agent_invoice_state(self):
