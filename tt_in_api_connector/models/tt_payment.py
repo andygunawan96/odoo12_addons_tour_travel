@@ -2,6 +2,7 @@ from odoo import api,models,fields
 from ...tools import ERR
 from ...tools.ERR import RequestException
 import logging
+from datetime import datetime
 import json
 _logger = logging.getLogger(__name__)
 
@@ -106,12 +107,17 @@ class TtPaymentApiCon(models.Model):
         elif action == 'get_amount':
             book_obj = self.env['tt.reservation.%s' % data['provider_type']].search([('name', '=', data['order_number']), ('state', 'in', ['booked'])])
             if book_obj:
+                different_time = book_obj.hold_date - datetime.now()
+                different_time = int(different_time.seconds/60)
+                if different_time > 55:
+                    different_time = 55
                 values = {
                     "amount": book_obj.total,
                     "currency": book_obj.currency_id.name,
                     "phone_number": "".join(book_obj.contact_phone.split(' - ')),
                     "name": book_obj.contact_id.name,
-                    "email": book_obj.contact_email
+                    "email": book_obj.contact_email,
+                    "time_limit": different_time
                 }
                 res = ERR.get_no_error(values)
             else:
