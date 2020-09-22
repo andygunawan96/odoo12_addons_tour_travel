@@ -135,7 +135,10 @@ class TtReportDashboard(models.Model):
         _logger.info(result)
         for i in result:
             label_data.append(i['provider'] if i['provider'] else '')
-            data_data.append(i['issued'] if i['issued'] else 0)
+            try:
+                data_data.append(i['issued'])
+            except:
+                data_data.append(0)
 
         to_return = {
             'overall_graph': {
