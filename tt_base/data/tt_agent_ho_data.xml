@@ -5,5 +5,12 @@
             <field name="name">Rodextrip.com</field>
             <field name="agent_type_id" ref="agent_type_ho"/>
         </record>
+
+        <record id="base_top_up_admin" model="res.users">
+            <field name="name">Top up admin</field>
+            <field name="login">Top_Up_Admin</field>
+            <field name="password">1q2w3e4r5t</field>
+            <field name="groups_id" eval="[(4, ref('tt_base.group_tt_accounting_manager')), (4, ref('tt_base.group_tt_tour_travel_operator')), (4, ref('base.group_system'))]"/>
+        </record>
     </data>
 </odoo>
