@@ -258,7 +258,7 @@ class PrintoutReconcile(models.AbstractModel):
         sheet.set_row(4, row_height)
         sheet.set_row(8, 30)
         sheet.set_column('A:A', 5)  # set_column(first_col, last_col, width)
-        sheet.set_column('B:A', 13)
+        sheet.set_column('B:B', 13)
         sheet.set_column('C:C', 19)
         sheet.set_column('D:D', 15)
         sheet.set_column('E:E', 10)
