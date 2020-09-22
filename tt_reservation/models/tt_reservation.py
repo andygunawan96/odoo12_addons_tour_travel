@@ -481,6 +481,7 @@ class TtReservation(models.Model):
                     'time_limit': (self.payment_acquirer_number_id.create_date + timedelta(hours=1)).strftime("%Y-%m-%d %H:%M:%S"),
                     'nomor_rekening': self.payment_acquirer_number_id.payment_acquirer_id.account_number,
                     'account_name': self.payment_acquirer_number_id.payment_acquirer_id.account_name,
+                    'va_number': self.payment_acquirer_number_id.va_number,
                     'amount': self.payment_acquirer_number_id.amount - self.payment_acquirer_number_id.unique_amount,
                     'order_number': self.payment_acquirer_number_id.number
                 }

@@ -287,6 +287,7 @@ class PaymentAcquirerNumber(models.Model):
     agent_id = fields.Many2one('tt.agent', 'Agent', readonly=True)
     payment_acquirer_id = fields.Many2one('payment.acquirer','Payment Acquirer')
     number = fields.Char('Number')
+    va_number = fields.Char('VA Number')
     unique_amount = fields.Float('Unique Amount')
     fee_amount = fields.Float('Fee Amount')
     amount = fields.Float('Amount')
@@ -362,6 +363,14 @@ class PaymentAcquirerNumber(models.Model):
                 return ERR.get_error(additional_message='Order Has Been Expired')
         else:
             return ERR.get_error(additional_message='Order Number not found')
+
+    def set_va_number_api(self, data):
+        payment_acq_number = self.search([('number', 'ilike', data['order_number'])], order='create_date desc', limit=1)
+        if payment_acq_number:
+            payment_acq_number.va_number = data['va_number']
+            return ERR.get_no_error()
+        else:
+            return ERR.get_error(additional_message='Payment Acquirer not found')
 
 
 class PaymentUniqueAmount(models.Model):
