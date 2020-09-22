@@ -73,7 +73,7 @@ class AgentReportRecapTransactionXls(models.TransientModel):
         sheet.set_row(3, row_height)
         sheet.set_row(4, row_height)
         sheet.set_row(8, 30)
-        sheet.set_column('A:A', 6)
+        sheet.set_column('A:A', 30)
         sheet.set_column('B:B', 10)
         sheet.set_column('C:F', 15)
         sheet.set_column('G:G', 12)

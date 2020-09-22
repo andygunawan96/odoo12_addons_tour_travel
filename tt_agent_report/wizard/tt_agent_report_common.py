@@ -85,7 +85,7 @@ class AgentReportCommon(models.TransientModel):
         # ============= agent id and name ==========
         if self.all_agent == True:
             data['form']['agent_id'] = ''
-            data['form']['agent_name'] = ''
+            data['form']['agent_name'] = 'All Agent'
         else:
             agent_id = data['form']['agent_id'][0] if data['form']['agent_id'] else False
             if agent_id != self.env.user.agent_id.id and self.env.user.agent_id.agent_type_id.id != self.env.ref('tt_base.agent_type_ho').id:

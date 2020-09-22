@@ -67,7 +67,7 @@ class TtReportDashboard(models.Model):
         }
         values = self.env['report.tt_report_selling.report_selling']._get_reports(temp_dict)
 
-        _logger.info(values)
+        # _logger.info(values)
         month = [
             'January', 'February', 'March', 'April', 'May', 'June',
             'July', 'August', 'September', 'October', 'November', 'December'
