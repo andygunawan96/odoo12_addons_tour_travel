@@ -120,6 +120,8 @@ class TtPaymentApiCon(models.Model):
             res = self.env['payment.acquirer.number'].create_payment_acq_api(data)
         elif action == 'get_payment_acquirer_payment_gateway_frontend':
             res = self.env['payment.acquirer.number'].get_payment_acq_api(data)
+        elif action == 'set_va_number':
+            res = self.env['payment.acquirer.number'].set_va_number_api(data)
         else:
             raise RequestException(999)
 
