@@ -1074,7 +1074,7 @@ class TtVoucherDetail(models.Model):
             }
 
             # check if provider is cover by the voucher
-            provider_is_eligible = self.env['tt.vouher'].is_product_eligible(temp_dict)
+            provider_is_eligible = self.env['tt.voucher'].is_product_eligible(temp_dict)
         else:
             provider_is_eligible = []
 
