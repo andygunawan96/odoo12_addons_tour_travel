@@ -108,7 +108,10 @@ class TtPaymentApiCon(models.Model):
             if book_obj:
                 values = {
                     "amount": book_obj.total,
-                    "currency": book_obj.currency_id.name
+                    "currency": book_obj.currency_id.name,
+                    "phone_number": "".join(book_obj.contact_phone.split(' - ')),
+                    "name": book_obj.contact_id.name,
+                    "email": book_obj.contact_email
                 }
                 res = ERR.get_no_error(values)
             else:
