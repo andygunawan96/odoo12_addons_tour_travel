@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <data>
-
+    <data noupdate="1">
         <record model="ir.cron" id="cron_update_passport_booking_status">
             <field name='name'>Update Passport Booking Status</field>
             <field name="user_id" ref="base.user_root"/>
@@ -14,6 +13,5 @@
             <field name="code">model.cron_update_status_booking_passport()</field>
             <field name="state">code</field>
         </record>
-
     </data>
 </odoo>
