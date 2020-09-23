@@ -353,11 +353,11 @@ class PaymentAcquirerNumber(models.Model):
             date_now = datetime.now()
             time_delta = date_now - payment_acq_number[len(payment_acq_number) - 1].create_date
             if divmod(time_delta.seconds, 3600)[0] == 0 or datetime.now() < self.time_limit and self.time_limit:
-                book_obj = self.env['tt.reservation.%s' % data['provider']].search([('name', '=', data['order_number'])], limit=1)
+                book_obj = self.env['tt.reservation.%s' % data['provider']].search([('name', '=', '%s.%s' % (data['order_number'].split('.')[0],data['order_number'].split('.')[1]))], limit=1)
 
                 res = {
                     'order_number': data['order_number'],
-                    'create_date': book_obj.create_date.strftime("%Y-%m-%d %H:%M:%S"),
+                    'create_date': book_obj.create_date and book_obj.create_date.strftime("%Y-%m-%d %H:%M:%S") or '',
                     'time_limit': self.time_limit and self.time_limit.strftime("%Y-%m-%d %H:%M:%S") or (payment_acq_number.create_date + timedelta(hours=1)).strftime("%Y-%m-%d %H:%M:%S"),
                     'nomor_rekening': payment_acq_number.payment_acquirer_id.account_number,
                     'amount': payment_acq_number.amount + payment_acq_number.fee_amount - payment_acq_number.unique_amount,
