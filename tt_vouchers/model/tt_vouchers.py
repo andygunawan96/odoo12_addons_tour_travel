@@ -1193,16 +1193,19 @@ class TtVoucherDetail(models.Model):
 
                                     # create alles
                                     provider_total_price += float(j.total)
-                                    provider_total_discount += float(discount_amount)
+                                    provider_total_discount += float(voucher_usage)
+
+                                    # SUM discount amount
+                                    final_amount = float(j.total) - float(voucher_usage)
 
                                     # create result temp dict
                                     result_temp = {
                                         'charge_code': j.charge_code,
                                         'charge_type': j.charge_type,
                                         'start_amount': j.total,
-                                        'discount_value': discount_amount,
+                                        'discount_value': voucher_usage,
                                         'voucher_type': voucher.voucher_type,
-                                        'discount_amount': float(discount_amount),
+                                        'discount_amount': float(voucher_usage),
                                         'final_amount': float(final_amount)
                                     }
                                     temp_array.append(result_temp)
@@ -1344,16 +1347,19 @@ class TtVoucherDetail(models.Model):
 
                                     # create alles
                                     provider_total_price += float(j.total)
-                                    provider_total_discount += float(discount_amount)
+                                    provider_total_discount += float(voucher_usage)
+
+                                    # SUM discount amount
+                                    final_amount = float(j.total) - float(voucher_usage)
 
                                     # create result temp dict
                                     result_temp = {
                                         'charge_code': j.charge_code,
                                         'charge_type': j.charge_type,
                                         'start_amount': j.total,
-                                        'discount_value': discount_amount,
+                                        'discount_value': voucher_usage,
                                         'voucher_type': voucher.voucher_type,
-                                        'discount_amount': float(discount_amount),
+                                        'discount_amount': float(voucher_usage),
                                         'final_amount': float(final_amount)
                                     }
                                     temp_array.append(result_temp)
