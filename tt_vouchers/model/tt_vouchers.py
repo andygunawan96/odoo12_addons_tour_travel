@@ -1426,6 +1426,11 @@ class TtVoucherDetail(models.Model):
             # count the discount for particular provider
             provider_final_total_price = provider_total_price - provider_total_discount
 
+            # if for some reason the voucher behave like its not suppose to, worse case 100% discount
+            if provider_final_total_price < 0:
+                provider_final_total_price = 0
+                provider_total_discount = provider_total_price
+
             # create result dict
             result_dict = {
                 'provider_type_code': i.provider_id.provider_type_id.code,
