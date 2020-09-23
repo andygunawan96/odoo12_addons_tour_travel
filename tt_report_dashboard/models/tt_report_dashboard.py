@@ -52,6 +52,12 @@ class TtReportDashboard(models.Model):
             res = self.get_report_hotel(data)
         elif type == 'tour':
             res = self.get_report_tour(data)
+        elif type == 'get_total_rupiah':
+            res = self.get_total_rupiah(data)
+        elif type == 'get_top_up_upiah':
+            res = self.get_top_up_rupiah(data)
+        elif type == 'get_average_rupiah':
+            res = self.get_average_rupiah(data)
         else:
             return ERR.get_error(1001, "Cannot find action")
         return ERR.get_no_error(res)
@@ -1459,3 +1465,79 @@ class TtReportDashboard(models.Model):
         }
 
         return to_return
+
+    def get_total_rupiah(self, data):
+        temp_dict = {
+            'start_date': data['start_date'],
+            'end_date': data['end_date'],
+            'type': data['report_type']
+        }
+        values = self.env['report.tt_report_selling.report_selling']._get_reports(temp_dict)
+
+        month = [
+            'January', 'February', 'March', 'April', 'May', 'June',
+            'July', 'August', 'September', 'October', 'November', 'December'
+        ]
+        summary_by_date = []
+        result = []
+        for i in values['lines']:
+            # count for date
+            try:
+                month_index = self.check_date_index(summary_by_date, {'year': i['booked_year'],
+                                                                      'month': month[int(i['booked_month']) - 1]})
+                if month_index == -1:
+                    temp_dict = {
+                        'year': i['booked_year'],
+                        'month': month[int(i['booked_month']) - 1],
+                        'detail': self.add_month_detail()
+                    }
+                    # seperate book date
+                    try:
+                        splits = i['reservation_booked_date'].split("-")
+                        day_index = int(splits[2]) - 1
+                        temp_dict['detail'][day_index]['booked_counter'] += 1
+                    except:
+                        pass
+                    try:
+                        splits = i['reservation_issued_date'].split("-")
+                        day_index = int(splits[2]) - 1
+                        temp_dict['detail'][day_index]['issued_counter'] += 1
+                    except:
+                        pass
+
+                    summary_by_date.append(temp_dict)
+                else:
+                    try:
+                        splits = i['reservation_booked_date'].split("-")
+                        day_index = int(splits[2]) - 1
+                        summary_by_date[month_index]['detail'][day_index]['booked_counter'] += 1
+                    except:
+                        pass
+                    try:
+                        splits = i['reservation_issued_date'].split("-")
+                        day_index = int(splits[2]) - 1
+                        summary_by_date[month_index]['detail'][day_index]['issued_counter'] += 1
+                    except:
+                        pass
+            except:
+                pass
+            provider_index = self.check_index(result, "provider", i['provider_type_name'])
+            if provider_index == -1:
+                temp_dict = {
+                    'provider': i['provider_type_name'],
+                    'counter': 1,
+                    i['reservation_state']: 1
+                }
+                result.append(temp_dict)
+            else:
+                result[provider_index]['counter'] += 1
+                try:
+                    result[provider_index][i['reservation_state']] += 1
+                except:
+                    result[provider_index][i['reservation_state']] = 1
+
+
+    def get_top_up_rupiah(self, data):
+        return res
+    def get_average_rupiah(self, data):
+        return res
