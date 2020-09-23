@@ -1182,11 +1182,11 @@ class TtVoucherDetail(models.Model):
                                     # check if voucher value is bigger than fare
                                     if float(j.total) - voucher_remainder < 0:
                                         # total is smaller than voucher value
-                                        voucher_usage = voucher_remainder - float(j.total)
+                                        voucher_usage = float(j.total)
 
                                     else:
                                         # total is bigger than voucher value
-                                        voucher_usage = float(j.total) - voucher_remainder
+                                        voucher_usage = voucher_remainder
 
                                     # subtract voucher_remainder
                                     voucher_remainder -= voucher_usage
