@@ -1940,12 +1940,12 @@ class ReservationAirline(models.Model):
 
                 new_prov_obj.write({
                     'booking_id': new_booking_obj.id,
-                    'hold_date': prov['new_data']['hold_date'],
+                    'hold_date': prov['new_data']['hold_date'] if prov['new_data'].get('hold_date') else False,
                     'pnr': prov['new_data']['pnr'],
-                    'pnr2': prov['new_data']['pnr2'],
-                    'reference': prov['new_data']['reference'],
-                    'balance_due': prov['new_data']['balance_due'],
-                    'total_price': prov['new_data']['total_price'],
+                    'pnr2': prov['new_data']['pnr2'] if prov['new_data'].get('pnr2') else '',
+                    'reference': prov['new_data']['reference'] if prov['new_data'].get('reference') else '',
+                    'balance_due': prov['new_data']['balance_due'] if prov['new_data'].get('balance_due') else 0,
+                    'total_price': prov['new_data']['total_price'] if prov['new_data'].get('total_price') else 0,
                     'state': prov_obj.state,
                     'booked_uid': prov_obj.booked_uid and prov_obj.booked_uid.id or False,
                     'booked_date': prov_obj.booked_date and prov_obj.booked_date or False,
@@ -1984,7 +1984,7 @@ class ReservationAirline(models.Model):
                     first_name = psg_obj.first_name and ''.join(psg_obj.first_name.split()) or ''
                     psg_obj_key_1 = '%s%s' % (first_name, psg_obj.last_name and ''.join(psg_obj.last_name.split()) or '')
                     psg_obj_key_2 = '%s%s' % (first_name, first_name)
-                    for psg_data in prov['new_data']['passengers']:
+                    for psg_data in prov['new_data'].get('passengers', []):
                         psg_data_key = '%s%s' % (''.join(psg_data['first_name'].split()), psg_data['last_name'] and ''.join(psg_data['last_name'].split()) or '')
                         # if psg_data['first_name'].strip() == psg_data['last_name'].strip():
                         #     pass
@@ -2046,7 +2046,8 @@ class ReservationAirline(models.Model):
                         sc_obj.unlink()
                     else:
                         sc_obj.write({
-                            'pax_count': new_pax_count
+                            'pax_count': new_pax_count,
+                            'total': sc_obj.amount * new_pax_count,
                         })
 
                 for fee_obj in prov_obj.fee_ids:
@@ -2056,22 +2057,19 @@ class ReservationAirline(models.Model):
                             'passenger_id': new_passenger_id_dict[fee_obj.passenger_id.id]
                         })
 
-                # FIXME bisa dijalankan ketika proses split ke vendor sudah berjalan
-                # FIXME sementara untuk testing split biasa dari front end
-                # if new_total_price != 0:
-                #     prov_obj.write({
-                #         'total_price': prov_obj.total_price - new_total_price,
-                #         'balance_due': float(prov_obj.balance_due - new_total_price) if prov_obj.state == 'booked' else prov_obj.balance_due
-                #     })
-                #     new_prov_obj.write({
-                #         'total_price': new_total_price,
-                #         'balance_due': new_total_price if prov_obj.state == 'booked' else new_prov_obj.balance_due
-                #     })
-                #
-                # if is_ledger_created:
-                #     prov_obj.action_create_ledger(context['co_uid'])
-                #     new_prov_obj.action_create_ledger(context['co_uid'])
-                # FIXME END
+                if new_total_price != 0:
+                    prov_obj.write({
+                        'total_price': prov_obj.total_price - new_total_price,
+                        'balance_due': float(prov_obj.balance_due - new_total_price) if prov_obj.state == 'booked' else prov_obj.balance_due
+                    })
+                    new_prov_obj.write({
+                        'total_price': new_total_price,
+                        'balance_due': new_total_price if prov_obj.state == 'booked' else new_prov_obj.balance_due
+                    })
+
+                if is_ledger_created:
+                    prov_obj.action_create_ledger(context['co_uid'])
+                    new_prov_obj.action_create_ledger(context['co_uid'])
 
             book_obj.calculate_pnr_provider_carrier()
             new_booking_obj.calculate_pnr_provider_carrier()
@@ -2081,7 +2079,9 @@ class ReservationAirline(models.Model):
             new_booking_obj.check_provider_state(context=context)
 
             response = {
+                'book_id': new_booking_obj.id,
                 'order_number': new_booking_obj.name,
+                'provider_bookings': [{'provider_id': n_prov_obj.id, 'pnr': n_prov_obj.pnr} for n_prov_obj in new_booking_obj.provider_booking_ids],
             }
             return ERR.get_no_error(response)
         except RequestException as e:

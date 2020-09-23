@@ -1062,22 +1062,6 @@ class TtVoucherDetail(models.Model):
         # declare result array
         result_array = []
 
-        # create eligible provider
-        if voucher.voucher_coverage != 'all':
-            # create data to check
-            # since dependencies len is < 2
-            temp_dict = {
-                'voucher_reference': data['voucher_reference_code'],
-                'provider_type_id': dependencies_data.provider_id.provider_type_id.id,
-                'provider_id': dependencies_data.provider_id.id,
-                'provider_name': dependencies_data.provider_id.code
-            }
-
-            # check if provider is cover by the voucher
-            provider_is_eligible = self.env['tt.voucher'].is_product_eligible(temp_dict)
-        else:
-            provider_is_eligible = []
-
         # iterate for every provier
         for i in dependencies_data:
 
@@ -1089,7 +1073,23 @@ class TtVoucherDetail(models.Model):
             # declare temp array for return value
             temp_array = []
 
-            if len(provider_is_eligible) == 0 or i in provider_is_eligible:
+            # create eligible provider
+            if voucher.voucher_coverage != 'all':
+                # create data to check
+                # since dependencies len is < 2
+                temp_dict = {
+                    'voucher_reference': data['voucher_reference_code'],
+                    'provider_type_id': i.provider_id.provider_type_id.id,
+                    'provider_id': i.provider_id.id,
+                    'provider_name': i.provider_id.code
+                }
+
+                # check if provider is cover by the voucher
+                provider_is_eligible = self.env['tt.voucher'].is_product_eligible(temp_dict)
+            else:
+                provider_is_eligible = True
+
+            if provider_is_eligible:
 
                 # iterate data
                 for j in i.cost_service_charge_ids:

@@ -109,8 +109,10 @@ class TtPaymentApiCon(models.Model):
             if book_obj:
                 different_time = book_obj.hold_date - datetime.now()
                 different_time = int(different_time.seconds/60)
-                if different_time > 55:
+                if different_time > 60:
                     different_time = 55
+                else:
+                    different_time -= 5
                 values = {
                     "amount": book_obj.total,
                     "currency": book_obj.currency_id.name,
