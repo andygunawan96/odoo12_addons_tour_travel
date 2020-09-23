@@ -1193,16 +1193,19 @@ class TtVoucherDetail(models.Model):
 
                                     # create alles
                                     provider_total_price += float(j.total)
-                                    provider_total_discount += float(discount_amount)
+                                    provider_total_discount += float(voucher_usage)
+
+                                    # SUM discount amount
+                                    final_amount = float(j.total) - float(voucher_usage)
 
                                     # create result temp dict
                                     result_temp = {
                                         'charge_code': j.charge_code,
                                         'charge_type': j.charge_type,
                                         'start_amount': j.total,
-                                        'discount_value': discount_amount,
+                                        'discount_value': voucher_usage,
                                         'voucher_type': voucher.voucher_type,
-                                        'discount_amount': float(discount_amount),
+                                        'discount_amount': float(voucher_usage),
                                         'final_amount': float(final_amount)
                                     }
                                     temp_array.append(result_temp)
@@ -1344,16 +1347,19 @@ class TtVoucherDetail(models.Model):
 
                                     # create alles
                                     provider_total_price += float(j.total)
-                                    provider_total_discount += float(discount_amount)
+                                    provider_total_discount += float(voucher_usage)
+
+                                    # SUM discount amount
+                                    final_amount = float(j.total) - float(voucher_usage)
 
                                     # create result temp dict
                                     result_temp = {
                                         'charge_code': j.charge_code,
                                         'charge_type': j.charge_type,
                                         'start_amount': j.total,
-                                        'discount_value': discount_amount,
+                                        'discount_value': voucher_usage,
                                         'voucher_type': voucher.voucher_type,
-                                        'discount_amount': float(discount_amount),
+                                        'discount_amount': float(voucher_usage),
                                         'final_amount': float(final_amount)
                                     }
                                     temp_array.append(result_temp)
@@ -2176,48 +2182,58 @@ class TtVoucherDetail(models.Model):
         }
 
     def use_voucher_new(self, data, context):
-        if data == None:
-            return ERR.get_error()
-        # data = {
-        #   voucher_reference
-        #   order_code
-        #   date
-        #   provider_type
-        # }
+        try:
+            if data == None:
+                return ERR.get_error()
+            # data = {
+            #   voucher_reference
+            #   order_code
+            #   date
+            #   provider_type
+            # }
 
-        simulate = self.new_simulate_voucher(data, context)
-        if simulate['error_code'] == 0:
-            splits = data['voucher_reference'].split(".")
-            data['voucher_reference_code'] = splits[0]
-            data['voucher_reference_period'] = splits[1]
+            simulate = self.new_simulate_voucher(data, context)
+            if simulate['error_code'] == 0:
+                splits = data['voucher_reference'].split(".")
+                data['voucher_reference_code'] = splits[0]
+                data['voucher_reference_period'] = splits[1]
 
-            voucher_detail = self.env['tt.voucher.detail'].search([('voucher_reference_code', '=', data['voucher_reference_code']), ('voucher_period_reference', '=', data['voucher_reference_period'])])
-            provider_type = self.env['tt.provider.type'].search([('code', '=', simulate['response'][0]['provider_type_code'])])
-            provider = self.env['tt.provider'].search([('code', '=', simulate['response'][0]['provider_code'])])
+                voucher_detail = self.env['tt.voucher.detail'].search([('voucher_reference_code', '=', data['voucher_reference_code']), ('voucher_period_reference', '=', data['voucher_reference_period'])])
+                provider_type = self.env['tt.provider.type'].search([('code', '=', simulate['response'][0]['provider_type_code'])])
+                provider = self.env['tt.provider'].search([('code', '=', simulate['response'][0]['provider_code'])])
+                voucher = self.env['tt.voucher'].search([('voucher_reference_code', '=', data['voucher_reference_code'])])
 
-            use_voucher_data = {
-                'voucher_detail_id': voucher_detail.id,
-                'voucher_date_use': data['date'],
-                'voucher_agent_type': context['co_agent_type_id'],
-                'voucher_agent': context['co_agent_id'],
-                'voucher_provider_type': provider_type.id,
-                'voucher_provider': provider.id,
-            }
-            res = self.env['tt.voucher.detail.used'].add_voucher_used_detail(use_voucher_data)
-            if res.id == False:
-                return ERR.get_error(additional_message="voucher failed to be use")
-            else:
-                voucher = self.env['tt.voucher'].search(['voucher_reference_code', '=', data['voucher_reference_code']])
-                if voucher.voucher_multi_usage:
-                    voucher.voucher_usage_value += data['total_discount']
+                discount_total = 0
+                for i in simulate['response']:
+                    discount_total += i['provider_total_discount']
+
+                use_voucher_data = {
+                    'voucher_detail_id': voucher_detail.id,
+                    'voucher_date_use': data['date'],
+                    'voucher_agent_type': context['co_agent_type_id'],
+                    'voucher_agent': context['co_agent_id'],
+                    'voucher_provider_type': provider_type.id,
+                    'voucher_provider': provider.id,
+                    'currency': voucher.currency_id.id,
+                    'voucher_usage': discount_total
+                }
+                res = self.env['tt.voucher.detail.used'].add_voucher_used_detail(use_voucher_data)
+                if res.id == False:
+                    return ERR.get_error(additional_message="voucher failed to be use")
                 else:
-                    number_of_use = voucher_detail.voucher_used + 1
-                    voucher_detail.write({
-                        'voucher_used': number_of_use
-                    })
-        else:
+                    if voucher.voucher_multi_usage:
+                        voucher.voucher_usage_value += discount_total
+                    else:
+                        number_of_use = voucher_detail.voucher_used + 1
+                        voucher_detail.write({
+                            'voucher_used': number_of_use
+                        })
+            else:
+                return simulate
             return simulate
-        return simulate
+        except Exception as e:
+            _logger.error(str(e) + traceback.format_exc())
+
 
     ### bellow dis is old function ###
     def use_voucher(self, data, context):
@@ -2334,7 +2350,7 @@ class TtVoucherusedDetail(models.Model):
             'voucher_agent_id': int(data['voucher_agent']),
             'voucher_provider_type_id': int(data['voucher_provider_type']),
             'voucher_provider_id': int(data['voucher_provider']),
-            'currency': data['currency'],
+            'currency_id': int(data['currency']),
             'voucher_usage': data['voucher_usage']
         })
 
