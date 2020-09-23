@@ -96,6 +96,9 @@ class AgentInvoice(models.Model):
             amount if debit == True else 0,
             amount if debit == False else 0,
             'Ledger for: %s' % self.name,
+            **{
+                'agent_invoice_id': self.id
+            }
         )
 
     def action_confirm(self):

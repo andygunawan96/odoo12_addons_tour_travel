@@ -10,8 +10,8 @@
         Long description of module's purpose
     """,
 
-    'author': "Skytors",
-    'website': "http://www.skytors.id",
+    'author': "PT. Roda Express Sukses Mandiri",
+    'website': "http://rodextrip.com",
 
     # Categories can be used to filter modules in modules listing
     # Check https://github.com/odoo/odoo/blob/12.0/odoo/addons/base/data/ir_module_category_data.xml
@@ -35,6 +35,7 @@
         'wizard/tt_merge_wizard_view.xml',
         'views/tt_agent_invoice_line.xml',
         'views/tt_agent_invoice.xml',
+        'views/tt_ledger.xml',
         'views/tt_payment.xml',
         'data/ir_cron_data.xml'
 
