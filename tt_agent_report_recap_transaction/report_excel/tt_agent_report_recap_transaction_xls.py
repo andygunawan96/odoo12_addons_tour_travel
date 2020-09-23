@@ -388,7 +388,7 @@ class AgentReportRecapTransactionXls(models.TransientModel):
         workbook.close()
 
         attach_id = self.env['tt.agent.report.excel.output.wizard'].create(
-            {'name': 'Agent Report Transaction Recap.xlsx', 'file_output': base64.encodebytes(stream.getvalue())})
+            {'name': '%s %s.xlsx' % (values['data_form']['agent_name'],values['data_form']['title']), 'file_output': base64.encodebytes(stream.getvalue())})
         return {
             'context': self.env.context,
             'view_type': 'form',

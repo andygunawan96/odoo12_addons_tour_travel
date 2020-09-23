@@ -35,8 +35,9 @@ class TtCronLogInhResv(models.Model):
                     'date_from': datetime.now(pytz.timezone("Asia/Jakarta")) - timedelta(days=1), #klo hari ini tgl 23 Jan 00:00 liat record e 22 Jan
                     'date_to': datetime.now(pytz.timezone("Asia/Jakarta")) - timedelta(days=1),
                 })
-                recon_obj = wiz_obj.send_recon_request_data()
-                recon_obj.compare_reconcile_data()
+                recon_obj_list = wiz_obj.send_recon_request_data()
+                for recon_obj in recon_obj_list:
+                    recon_obj.compare_reconcile_data()
         except:
             self.create_cron_log_folder()
             self.write_cron_log('cron_auto_reconcile')

@@ -32,8 +32,8 @@ class TtReconcileTransactionWizard(models.TransientModel):
         response = self.env['tt.api.con'].send_reconcile_request(request)
         if response['error_code'] != 0:
             raise UserError(response['error_msg'])
-        recon_obj = self.save_reconcile_data(response['response'])
-        return recon_obj
+        recon_obj_list = self.save_reconcile_data(response['response'])
+        return recon_obj_list
 
     def dummy_send_recon(self):
         request = {
@@ -53,7 +53,7 @@ class TtReconcileTransactionWizard(models.TransientModel):
         provider_obj = self.env['tt.provider'].search([('code','=',data['provider_code'])])
         if not provider_obj:
             raise UserError("Provider Not Found")
-
+        recon_data_list = []
         for period in data['transaction_periods']:
             existing_recon_data = self.env['tt.reconcile.transaction'].search([('provider_id','=',provider_obj.id),
                                                                                ('transaction_date','=',period['transaction_date'])])
@@ -99,7 +99,8 @@ class TtReconcileTransactionWizard(models.TransientModel):
             recon_data.write({
                 'reconcile_lines_ids': write_data
             })
-        return recon_data
+            recon_data_list.append(recon_data)
+        return recon_data_list
 
     # TODO: pindah kan ke lokasi yg tepat
     def reconcile_internal_vendor(self, req):
