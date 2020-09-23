@@ -356,9 +356,11 @@ class PaymentAcquirerNumber(models.Model):
                 res = {
                     'order_number': data['order_number'],
                     'create_date': payment_acq_number.create_date.strftime("%Y-%m-%d %H:%M:%S"),
-                    'time_limit': (payment_acq_number.create_date + timedelta(hours=1)).strftime("%Y-%m-%d %H:%M:%S"),
+                    'time_limit': self.time_limit and self.time_limit.strftime("%Y-%m-%d %H:%M:%S") or (payment_acq_number.create_date + timedelta(hours=1)).strftime("%Y-%m-%d %H:%M:%S"),
                     'nomor_rekening': payment_acq_number.payment_acquirer_id.account_number,
-                    'amount': payment_acq_number.amount + payment_acq_number.fee_amount - payment_acq_number.unique_amount
+                    'amount': payment_acq_number.amount + payment_acq_number.fee_amount - payment_acq_number.unique_amount,
+                    'va_number': self.va_number,
+                    'bank_name': self.bank_name
                 }
                 return ERR.get_no_error(res)
             else:
