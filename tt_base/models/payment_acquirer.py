@@ -291,7 +291,7 @@ class PaymentAcquirerNumber(models.Model):
     bank_name = fields.Char('Bank Name')
     unique_amount = fields.Float('Unique Amount')
     fee_amount = fields.Float('Fee Amount')
-    time_limit = fields.fields.Datetime('Time Limit', readonly=True)
+    time_limit = fields.Datetime('Time Limit', readonly=True)
     amount = fields.Float('Amount')
     state = fields.Selection([('open', 'Open'), ('close', 'Closed'), ('done','Done'), ('cancel','Expired')], 'Payment Type')
     display_name_payment = fields.Char('Display Name',compute="_compute_display_name_payment")
