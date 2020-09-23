@@ -143,6 +143,9 @@
                             <page string="Ledgers">
                                 <field name="ledger_ids" context="{'tree_view_ref': 'tt_accounting.tt_ledger_cor_tree_view'}"/>
                             </page>
+                            <page string="Adjustment" name="adjustment_page">
+                                <field name="adjustment_ids"/>
+                            </page>
                         </notebook>
                     </group>
 
