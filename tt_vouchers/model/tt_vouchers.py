@@ -2200,7 +2200,7 @@ class TtVoucherDetail(models.Model):
             voucher_detail = self.env['tt.voucher.detail'].search([('voucher_reference_code', '=', data['voucher_reference_code']), ('voucher_period_reference', '=', data['voucher_reference_period'])])
             provider_type = self.env['tt.provider.type'].search([('code', '=', simulate['response'][0]['provider_type_code'])])
             provider = self.env['tt.provider'].search([('code', '=', simulate['response'][0]['provider_code'])])
-            voucher = self.env['tt.voucher'].search(['voucher_reference_code', '=', data['voucher_reference_code']])
+            voucher = self.env['tt.voucher'].search([('voucher_reference_code', '=', data['voucher_reference_code'])])
 
             use_voucher_data = {
                 'voucher_detail_id': voucher_detail.id,
