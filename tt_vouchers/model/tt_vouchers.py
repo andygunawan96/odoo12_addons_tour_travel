@@ -1180,7 +1180,7 @@ class TtVoucherDetail(models.Model):
                                 if j.charge_type != 'RAC':
 
                                     # check if voucher value is bigger than fare
-                                    if float(j.total) - voucher_remainder < 0:
+                                    if float(j.total) - voucher_remainder > 0:
                                         # total is smaller than voucher value
                                         voucher_usage = float(j.total)
 
@@ -1334,13 +1334,13 @@ class TtVoucherDetail(models.Model):
                                 if j.charge_code == 'fare' or j.charge_code == 'FarePrice':
 
                                     # check if voucher value is bigger than fare
-                                    if float(j.total) - voucher_remainder < 0:
+                                    if float(j.total) - voucher_remainder > 0:
                                         # total is smaller than voucher value
-                                        voucher_usage = voucher_remainder - float(j.total)
+                                        voucher_usage = float(j.total)
 
                                     else:
                                         # total is bigger than voucher value
-                                        voucher_usage = float(j.total) - voucher_remainder
+                                        voucher_usage = voucher_remainder
 
                                     # subtract voucher_remainder
                                     voucher_remainder -= voucher_usage
