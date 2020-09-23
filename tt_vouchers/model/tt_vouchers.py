@@ -2194,7 +2194,6 @@ class TtVoucherDetail(models.Model):
 
             simulate = self.new_simulate_voucher(data, context)
             if simulate['error_code'] == 0:
-                _logger.info(simulate['response'])
                 splits = data['voucher_reference'].split(".")
                 data['voucher_reference_code'] = splits[0]
                 data['voucher_reference_period'] = splits[1]
@@ -2215,7 +2214,7 @@ class TtVoucherDetail(models.Model):
                     'voucher_agent': context['co_agent_id'],
                     'voucher_provider_type': provider_type.id,
                     'voucher_provider': provider.id,
-                    'currency': voucher.currency_id,
+                    'currency': voucher.currency_id.id,
                     'voucher_usage': discount_total
                 }
                 res = self.env['tt.voucher.detail.used'].add_voucher_used_detail(use_voucher_data)
@@ -2351,7 +2350,7 @@ class TtVoucherusedDetail(models.Model):
             'voucher_agent_id': int(data['voucher_agent']),
             'voucher_provider_type_id': int(data['voucher_provider_type']),
             'voucher_provider_id': int(data['voucher_provider']),
-            'currency_id': data['currency'],
+            'currency_id': int(data['currency']),
             'voucher_usage': data['voucher_usage']
         })
 
