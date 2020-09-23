@@ -2200,6 +2200,7 @@ class TtVoucherDetail(models.Model):
             voucher_detail = self.env['tt.voucher.detail'].search([('voucher_reference_code', '=', data['voucher_reference_code']), ('voucher_period_reference', '=', data['voucher_reference_period'])])
             provider_type = self.env['tt.provider.type'].search([('code', '=', simulate['response'][0]['provider_type_code'])])
             provider = self.env['tt.provider'].search([('code', '=', simulate['response'][0]['provider_code'])])
+            voucher = self.env['tt.voucher'].search(['voucher_reference_code', '=', data['voucher_reference_code']])
 
             use_voucher_data = {
                 'voucher_detail_id': voucher_detail.id,
@@ -2208,12 +2209,12 @@ class TtVoucherDetail(models.Model):
                 'voucher_agent': context['co_agent_id'],
                 'voucher_provider_type': provider_type.id,
                 'voucher_provider': provider.id,
+                'currency': voucher.currency_id
             }
             res = self.env['tt.voucher.detail.used'].add_voucher_used_detail(use_voucher_data)
             if res.id == False:
                 return ERR.get_error(additional_message="voucher failed to be use")
             else:
-                voucher = self.env['tt.voucher'].search(['voucher_reference_code', '=', data['voucher_reference_code']])
                 if voucher.voucher_multi_usage:
                     voucher.voucher_usage_value += data['total_discount']
                 else:
@@ -2340,7 +2341,7 @@ class TtVoucherusedDetail(models.Model):
             'voucher_agent_id': int(data['voucher_agent']),
             'voucher_provider_type_id': int(data['voucher_provider_type']),
             'voucher_provider_id': int(data['voucher_provider']),
-            'currency': data['currency'],
+            'currency_id': data['currency'],
             'voucher_usage': data['voucher_usage']
         })
 

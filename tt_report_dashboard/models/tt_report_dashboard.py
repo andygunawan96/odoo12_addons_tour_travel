@@ -1470,74 +1470,47 @@ class TtReportDashboard(models.Model):
         temp_dict = {
             'start_date': data['start_date'],
             'end_date': data['end_date'],
-            'type': data['report_type']
+            'type': "overall"
         }
         values = self.env['report.tt_report_selling.report_selling']._get_reports(temp_dict)
 
-        month = [
-            'January', 'February', 'March', 'April', 'May', 'June',
-            'July', 'August', 'September', 'October', 'November', 'December'
-        ]
-        summary_by_date = []
-        result = []
+        total = 0
         for i in values['lines']:
-            # count for date
-            try:
-                month_index = self.check_date_index(summary_by_date, {'year': i['booked_year'],
-                                                                      'month': month[int(i['booked_month']) - 1]})
-                if month_index == -1:
-                    temp_dict = {
-                        'year': i['booked_year'],
-                        'month': month[int(i['booked_month']) - 1],
-                        'detail': self.add_month_detail()
-                    }
-                    # seperate book date
-                    try:
-                        splits = i['reservation_booked_date'].split("-")
-                        day_index = int(splits[2]) - 1
-                        temp_dict['detail'][day_index]['booked_counter'] += 1
-                    except:
-                        pass
-                    try:
-                        splits = i['reservation_issued_date'].split("-")
-                        day_index = int(splits[2]) - 1
-                        temp_dict['detail'][day_index]['issued_counter'] += 1
-                    except:
-                        pass
+            # check for every book state, and count if issued
+            if i['reservation_state'] == 'issued':
+                total += i['amount']
 
-                    summary_by_date.append(temp_dict)
-                else:
-                    try:
-                        splits = i['reservation_booked_date'].split("-")
-                        day_index = int(splits[2]) - 1
-                        summary_by_date[month_index]['detail'][day_index]['booked_counter'] += 1
-                    except:
-                        pass
-                    try:
-                        splits = i['reservation_issued_date'].split("-")
-                        day_index = int(splits[2]) - 1
-                        summary_by_date[month_index]['detail'][day_index]['issued_counter'] += 1
-                    except:
-                        pass
-            except:
-                pass
-            provider_index = self.check_index(result, "provider", i['provider_type_name'])
-            if provider_index == -1:
-                temp_dict = {
-                    'provider': i['provider_type_name'],
-                    'counter': 1,
-                    i['reservation_state']: 1
-                }
-                result.append(temp_dict)
-            else:
-                result[provider_index]['counter'] += 1
-                try:
-                    result[provider_index][i['reservation_state']] += 1
-                except:
-                    result[provider_index][i['reservation_state']] = 1
+        to_return = {
+            'data': total
+        }
 
+        return to_return
 
     def get_top_up_rupiah(self, data):
+        temp_dict = {
+            'start_date': data['start_date'],
+            'end_date': data['end_date'],
+        }
+
         return res
+
     def get_average_rupiah(self, data):
-        return res
+        temp_dict = {
+            'start_date': data['start_date'],
+            'end_date': data['end_date'],
+            'type': "overall"
+        }
+        values = self.env['report.tt_report_selling.report_selling']._get_reports(temp_dict)
+
+        total = 0
+        num_data = 0
+        for i in values['lines']:
+            # check for every book state, and count if issued
+            if i['reservation_state'] == 'issued':
+                total += i['amount']
+                num_data += 1
+
+        to_return = {
+            'data': float(total)/num_data
+        }
+        return to_return
