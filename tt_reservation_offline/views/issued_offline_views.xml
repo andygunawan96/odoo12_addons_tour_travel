@@ -28,6 +28,12 @@
                         <filter string="Canceled/Expired/Refund" name="canceled_expired_refund" domain="['|', '|', ('state_offline','=','cancel'),('state_offline','=','expired'),('state_offline','=','refund')]"/>
                     </group>
                     <separator/>
+                    <group>
+                        <filter string="Not Reconciled" name="reconciled" domain="[('reconcile_state','=','not_reconciled')]"/>
+                        <filter string="Partial Reconciled" name="reconciled" domain="[('reconcile_state','=','partial')]"/>
+                        <filter string="Reconciled" name="reconciled" domain="[('reconcile_state','=','reconciled')]"/>
+                    </group>
+                    <separator/>
                     <filter string="Today" name="today" domain="[('date','&gt;=',time.strftime('%%Y-%%m-%%d'))]"/>
                     <filter string="Yesterday" name="yesterday"
                             domain="[
@@ -72,12 +78,12 @@
                         <button string="Cancel" name="action_cancel" type="object" attrs="{'invisible':[('state_offline','not in',['confirm','sent','validate'])]}" groups="tt_base.group_tt_ticketing_operator,account.group_account_invoice" confirm="Are you sure want to cancel?"/>
                         <button string="Cancel" name="action_cancel" type="object"  attrs="{'invisible':[('state_offline','!=','draft')]}" confirm="Are you sure want to cancel?"/>
 
-<!--                        hapus setelah fix-->
+                        <!--                        hapus setelah fix-->
                         <button string="ACCOUNTING SET TO ISSUED" name="offline_set_to_issued" type="object" attrs="{'invisible':[('state_offline','in',['draft', 'confirm', 'expired'])]}" groups="tt_base.group_tt_accounting_supervisor"/>
-<!--                        end of hapus-->
+                        <!--                        end of hapus-->
 
                         <button string="Change Admin Fee" name="%(tt_accounting.tt_change_admin_fee_wizard_action_view)d" type="action"
-                            context="{
+                                context="{
                         'default_res_model': 'tt.reservation.offline',
                         'default_res_id': id,
                         'default_agent_id': agent_id,
@@ -95,7 +101,7 @@
                         'default_adj_type': provider_type_id
                     }"/>
                         <button string="Refund Request" name="%(tt_accounting.tt_refund_wizard_action_view)d" type="action" groups="tt_base.group_tt_agent_user_operator, base.user_admin"
-                                       context="{
+                                context="{
                         'default_res_model': res_model,
                         'default_res_id': id,
                         'default_agent_id': agent_id,
@@ -107,13 +113,13 @@
                         'default_service_type': provider_type_id
                     }" attrs="{'invisible':[('refundable','=',False)]}"/>
                         <button string="Set Back to Confirm" name="set_back_to_confirm" type="object" states="cancel2"/>
-<!--                        <button string="Print Invoice Ticket" name="print_invoice_ticket" type="object" states="paid,posted"/>-->
-<!--                        <button string="Get Config API" name="get_config_api" type="object"/>-->
-<!--                        <button string="Sync ALL Carrier List" name="sync_all_carrier_list" type="object" groups="base.user_admin"/>-->
-<!--                        <button string="Sync ALL Service Charge" name="sync_all_service_charge" type="object" groups="base.user_admin"/>-->
-<!--                        <button string="Get Booking Offline" name="get_booking_offline" type="object"/>-->
-<!--                        <button string="Test Repricing Offline" name="test_repricing_offline" type="object"/>-->
-<!--                        <button string="Sync Service Charge" name="sync_service_charge" type="object"/>-->
+                        <!--                        <button string="Print Invoice Ticket" name="print_invoice_ticket" type="object" states="paid,posted"/>-->
+                        <!--                        <button string="Get Config API" name="get_config_api" type="object"/>-->
+                        <!--                        <button string="Sync ALL Carrier List" name="sync_all_carrier_list" type="object" groups="base.user_admin"/>-->
+                        <!--                        <button string="Sync ALL Service Charge" name="sync_all_service_charge" type="object" groups="base.user_admin"/>-->
+                        <!--                        <button string="Get Booking Offline" name="get_booking_offline" type="object"/>-->
+                        <!--                        <button string="Test Repricing Offline" name="test_repricing_offline" type="object"/>-->
+                        <!--                        <button string="Sync Service Charge" name="sync_service_charge" type="object"/>-->
                         <!--                        <button string="Print Invoice Ticket" name="print_invoice_ticket" type="object" states="paid,posted"/>-->
                         <!--                        <button string="Get Config API" name="get_config_api" type="object"/>-->
                         <field name="state_offline" widget="statusbar" statusbar_visible="draft,confirm,sent,validate,done"/>
@@ -145,7 +151,7 @@
                         </div>
                         <group>
                             <group>
-<!--                                ### untuk default value adjustment &ndash;&gt;-->
+                                <!--                                ### untuk default value adjustment &ndash;&gt;-->
                                 <field name="res_model" invisible="1"/>
                                 <field name="agent_id" readonly="1" groups="tt_base.group_tt_agent_user_operator,tt_base.group_tt_tour_travel_operator"/>
                                 <field name="agent_type_id" readonly="1"/>
@@ -182,7 +188,7 @@
                                 <field name="state" string="Status" invisible="0" readonly="1"/>
                                 <field name="social_media_type" attrs="{'required': [('state_offline', '=', 'confirm')], 'readonly': [('state_offline', 'not in', ['draft', 'confirm'])]}"/>
                                 <field name="hold_date" invisible="0" readonly="0" string="Time Limit"/>
-<!--                                <field name="expired_date" required="1"/>-->
+                                <!--                                <field name="expired_date" required="1"/>-->
                                 <field name="currency_id" invisible="1"/>
                                 <label for="create_uid" string="Created"/>
                                 <div>
@@ -313,7 +319,7 @@
             <field name="model">tt.reservation.offline</field>
             <field name="arch" type="xml">
                 <tree>
-<!--                    <button type="object" string="Create Issued Offline" name="create_booking_reservation_offline_api"/>-->
+                    <!--                    <button type="object" string="Create Issued Offline" name="create_booking_reservation_offline_api"/>-->
                     <field name="name"/>
                     <field name="offline_provider_type"/>
                     <field name="agent_id"/>
@@ -322,8 +328,9 @@
                     <field name="sector_type"/>
                     <field name="confirm_uid"/>
                     <field name="confirm_date"/>
+                    <field name="create_date"/>
                     <field name="hold_date" string="Time Limit"/>
-<!--                    <field name="expired_date"/>-->
+                    <!--                    <field name="expired_date"/>-->
                     <field name="state_offline" string="State Offline"/>
                     <field name="state" invisible="1"/>
                     <field name="reconcile_state"/>
