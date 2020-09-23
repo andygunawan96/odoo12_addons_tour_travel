@@ -2193,6 +2193,7 @@ class TtVoucherDetail(models.Model):
 
         simulate = self.new_simulate_voucher(data, context)
         if simulate['error_code'] == 0:
+            _logger.info(simulate['response'])
             splits = data['voucher_reference'].split(".")
             data['voucher_reference_code'] = splits[0]
             data['voucher_reference_period'] = splits[1]
