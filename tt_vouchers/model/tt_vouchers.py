@@ -2222,7 +2222,7 @@ class TtVoucherDetail(models.Model):
                     return ERR.get_error(additional_message="voucher failed to be use")
                 else:
                     if voucher.voucher_multi_usage:
-                        voucher.voucher_usage_value += data['total_discount']
+                        voucher.voucher_usage_value += discount_total
                     else:
                         number_of_use = voucher_detail.voucher_used + 1
                         voucher_detail.write({
