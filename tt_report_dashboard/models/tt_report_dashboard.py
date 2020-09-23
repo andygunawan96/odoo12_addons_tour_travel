@@ -54,7 +54,7 @@ class TtReportDashboard(models.Model):
             res = self.get_report_tour(data)
         elif type == 'get_total_rupiah':
             res = self.get_total_rupiah(data)
-        elif type == 'get_top_up_upiah':
+        elif type == 'get_top_up_rupiah':
             res = self.get_top_up_rupiah(data)
         elif type == 'get_average_rupiah':
             res = self.get_average_rupiah(data)
@@ -1510,7 +1510,11 @@ class TtReportDashboard(models.Model):
                 total += i['amount']
                 num_data += 1
 
+        average = float(total)/float(num_data)
+
         to_return = {
-            'data': float(total)/num_data
+            'data': average,
+            'total': total,
+            'num_data': num_data
         }
         return to_return

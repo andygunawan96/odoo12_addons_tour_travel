@@ -2202,6 +2202,10 @@ class TtVoucherDetail(models.Model):
             provider = self.env['tt.provider'].search([('code', '=', simulate['response'][0]['provider_code'])])
             voucher = self.env['tt.voucher'].search([('voucher_reference_code', '=', data['voucher_reference_code'])])
 
+            discount_total = 0
+            for i in simulate['response']:
+                discount_total += i['provider_total_discount']
+
             use_voucher_data = {
                 'voucher_detail_id': voucher_detail.id,
                 'voucher_date_use': data['date'],
@@ -2209,7 +2213,8 @@ class TtVoucherDetail(models.Model):
                 'voucher_agent': context['co_agent_id'],
                 'voucher_provider_type': provider_type.id,
                 'voucher_provider': provider.id,
-                'currency': voucher.currency_id
+                'currency': voucher.currency_id,
+                'voucher_usage': discount_total
             }
             res = self.env['tt.voucher.detail.used'].add_voucher_used_detail(use_voucher_data)
             if res.id == False:
