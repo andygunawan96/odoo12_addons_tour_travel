@@ -1097,7 +1097,7 @@ class TtVoucherDetail(models.Model):
                 # at this point provider within transaction is covered by voucher
 
                 # check if voucher is multiusage and percent
-                if voucher.voucher_type == 'percent' and voucher.multi_usage:
+                if voucher.voucher_type == 'percent' and voucher.voucher_multi_usage:
                     # voucher invalid
                     # no way multi use is percent will let it slide
                     _logger.error("Voucher logic is invalid, %s" % voucher.voucher_reference)
@@ -1121,7 +1121,7 @@ class TtVoucherDetail(models.Model):
                         # adding result to temp array
                         temp_array.append(result_temp)
 
-                elif voucher.voucher_type == 'percent' and not voucher.muli_usage:
+                elif voucher.voucher_type == 'percent' and not voucher.voucher_multi_usage:
                     # voucher is percent
 
                     # iterate every cost
