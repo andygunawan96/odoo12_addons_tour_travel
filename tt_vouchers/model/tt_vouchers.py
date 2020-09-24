@@ -8,6 +8,7 @@ from ...tools import ERR
 
 _logger = logging.getLogger(__name__)
 
+
 class TtVoucher(models.Model):
     _name = "tt.voucher"
     _description = 'Rodex Model Voucher'
@@ -17,7 +18,7 @@ class TtVoucher(models.Model):
     currency_id = fields.Many2one("res.currency")
     voucher_value = fields.Float("Voucher value")
     voucher_maximum_cap = fields.Float("Voucher Cap")
-    voucher_minimum_purchase = fields.Float('Voucher Minimum Purchase')
+    voucher_minimum_purchase = fields.Float('Voucher Minimum Purchase', default=0)
     voucher_detail_ids = fields.One2many("tt.voucher.detail", "voucher_id", "Voucher Detail")
     voucher_author_id = fields.Many2one('res.users', 'author')   # voucher maker
 
@@ -34,6 +35,44 @@ class TtVoucher(models.Model):
     voucher_multi_usage = fields.Boolean("Voucher Multi Usage")
     voucher_usage_value = fields.Monetary("Voucher usage")
     voucher_customer_id = fields.Many2one('tt.customer', 'Customer')
+
+    @api.model
+    def create(self, vals):
+        res = super(TtVoucher, self).create(vals)
+        try:
+            res.create_voucher_email_queue('created')
+        except Exception as e:
+            _logger.info('Error Create Voucher Creation Email Queue')
+        return res
+
+    def create_voucher_created_email_queue(self):
+        self.create_voucher_email_queue('created')
+
+    def create_voucher_email_queue(self, type):
+        if self.voucher_multi_usage and self.voucher_customer_id:
+            try:
+                mail_created = self.env['tt.email.queue'].sudo().with_context({'active_test': False}).search(
+                    [('res_id', '=', self.id), ('res_model', '=', self._name), ('type', '=', type)],
+                    limit=1)
+                if not mail_created:
+                    temp_data = {
+                        'provider_type': 'voucher',
+                        'ref_code': self.voucher_reference_code,
+                        'type': type,
+                    }
+                    temp_context = {
+                        'co_agent_id': self.voucher_customer_id.agent_id.id
+                    }
+                    self.env['tt.email.queue'].create_email_queue(temp_data, temp_context)
+                else:
+                    if type == 'created':
+                        _logger.info('Voucher Creation email for {} is already created!'.format(self.voucher_reference_code))
+                        raise Exception('Voucher Creation email for {} is already created!'.format(self.voucher_reference_code))
+                    else:
+                        _logger.info('Voucher Usage email for {} is already created!'.format(self.voucher_reference_code))
+                        raise Exception('Voucher Usage email for {} is already created!'.format(self.voucher_reference_code))
+            except Exception as e:
+                _logger.info('Error Create Email Queue')
 
     #harus di cek sama dengan atasnya
     def create_voucher(self, data):
@@ -523,7 +562,7 @@ class TtVoucherDetail(models.Model):
                         for j in i.cost_service_charge_ids:
                             if j.charge_type != 'RAC':
                                 #check if voucher is either percent or price discount
-                                if voucher.voucher_type == 'percentage':
+                                if voucher.voucher_type == 'percent':
                                     # count the discount
                                     discount_amount = float(j.total) * voucher.voucher_value / 100.0
                                 else:
@@ -926,8 +965,7 @@ class TtVoucherDetail(models.Model):
 
     def new_simulate_voucher(self, data, context):
         # get the order object
-        order_obj = self.env['tt.reservation.%s' % (data['provider_type'])].search(
-            [('name', '=', data['order_number'])])
+        order_obj = self.env['tt.reservation.%s' % (data['provider_type'])].search([('name', '=', data['order_number'])])
 
         # get dependencies object
         dependencies_data = order_obj.provider_booking_ids
@@ -1064,7 +1102,7 @@ class TtVoucherDetail(models.Model):
         result_array = []
 
         # dependencies of voucher amount, and just to be safe
-        voucher_remainder = voucher.voucher_value
+        voucher_remainder = voucher.voucher_value - voucher.voucher_usage_value
         voucher_usage = 0
 
         # iterate for every provider
@@ -1098,7 +1136,7 @@ class TtVoucherDetail(models.Model):
                 # at this point provider within transaction is covered by voucher
 
                 # check if voucher is multiusage and percent
-                if voucher.voucher_type == 'percentage' and voucher.multi_usage:
+                if voucher.voucher_type == 'percent' and voucher.voucher_multi_usage:
                     # voucher invalid
                     # no way multi use is percent will let it slide
                     _logger.error("Voucher logic is invalid, %s" % voucher.voucher_reference)
@@ -1122,7 +1160,7 @@ class TtVoucherDetail(models.Model):
                         # adding result to temp array
                         temp_array.append(result_temp)
 
-                elif voucher.voucher_type == 'percentage' and not voucher.muli_usage:
+                elif voucher.voucher_type == 'percent' and not voucher.voucher_multi_usage:
                     # voucher is percent
 
                     # iterate every cost
@@ -1574,7 +1612,7 @@ class TtVoucherDetail(models.Model):
     #                     # voucher affect all pricing
     #
     #                     # check type voucher
-    #                     if voucher.voucher_type == 'percentage' and voucher.multi_usage:
+    #                     if voucher.voucher_type == 'percent' and voucher.multi_usage:
     #                         # voucher invalid
     #                         # no way multi use is percent will let it slide
     #                         _logger.error("Voucher logic is invalid, %s" % voucher.voucher_reference)
@@ -1596,7 +1634,7 @@ class TtVoucherDetail(models.Model):
     #                         # adding result to temp array
     #                         temp_array.append(result_temp)
     #
-    #                     elif voucher.voucher_type == 'percentage':
+    #                     elif voucher.voucher_type == 'percent':
     #                         # voucher is percent
     #                         if j.charge_type != 'RAC':
     #                             # charge_type is not RAC
@@ -1728,7 +1766,7 @@ class TtVoucherDetail(models.Model):
     #                     # voucher affect only base fare
     #
     #                     # check type voucher
-    #                     if voucher.voucher_type == 'percentage' and voucher.multi_usage:
+    #                     if voucher.voucher_type == 'percent' and voucher.multi_usage:
     #                         # voucher invalid
     #                         # no way multi use is percent will let it slide
     #                         _logger.error("Voucher logic is invalid, %s" % voucher.voucher_reference)
@@ -1750,7 +1788,7 @@ class TtVoucherDetail(models.Model):
     #                         # adding result to temp array
     #                         temp_array.append(result_temp)
     #
-    #                     elif voucher.voucher_type == 'percentage':
+    #                     elif voucher.voucher_type == 'percent':
     #                         # voucher is percent
     #                         if j.charge_code == 'fare' or j.charge_code == 'FarePrice':
     #                             # charge_type is not RAC
@@ -2170,9 +2208,9 @@ class TtVoucherDetail(models.Model):
                 data['voucher_reference_period'] = splits[1]
 
                 voucher_detail = self.env['tt.voucher.detail'].search([('voucher_reference_code', '=', data['voucher_reference_code']), ('voucher_period_reference', '=', data['voucher_reference_period'])])
-                provider_type = self.env['tt.provider.type'].search([('code', '=', simulate['response'][0]['provider_type_code'])])
-                provider = self.env['tt.provider'].search([('code', '=', simulate['response'][0]['provider_code'])])
-                voucher = self.env['tt.voucher'].search([('voucher_reference_code', '=', data['voucher_reference_code'])])
+                provider_type = self.env['tt.provider.type'].search([('code', '=', simulate['response'][0]['provider_type_code'])], limit=1)
+                provider = self.env['tt.provider'].search([('code', '=', simulate['response'][0]['provider_code'])], limit=1)
+                voucher = self.env['tt.voucher'].search([('voucher_reference_code', '=', data['voucher_reference_code'])], limit=1)
 
                 discount_total = 0
                 for i in simulate['response']:
@@ -2190,7 +2228,7 @@ class TtVoucherDetail(models.Model):
                 }
                 res = self.env['tt.voucher.detail.used'].add_voucher_used_detail(use_voucher_data)
                 if res.id == False:
-                    return ERR.get_error(additional_message="voucher failed to be use")
+                    return ERR.get_error(additional_message="voucher usage failed")
                 else:
                     if voucher.voucher_multi_usage:
                         voucher.voucher_usage_value += discount_total
@@ -2199,6 +2237,12 @@ class TtVoucherDetail(models.Model):
                         voucher_detail.write({
                             'voucher_used': number_of_use
                         })
+
+                    try:
+                        voucher.create_voucher_email_queue('used')
+                    except Exception as e:
+                        _logger.info('Error Create Voucher Usage Email Queue')
+
             else:
                 return simulate
             return simulate
