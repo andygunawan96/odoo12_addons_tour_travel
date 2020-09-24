@@ -38,13 +38,12 @@ class PhoneDetail(models.Model):
 
     def generate_va_number(self):
         check_number = self.env['payment.acquirer.number'].search([('number', 'ilike', self.calling_number[-8:])])
-        payment_acq = self.env['tt.agent'].search([('id', '=', self.agent_id.id)]).payment_acq_ids
-        payment_acq_open_length = 0
-        for rec in payment_acq:
-            if rec.state == 'open':
-                payment_acq_open_length += 1
+        agent_open_payment_acqurier = self.env['payment.acquirer.number'].search([
+            ('agent_id','=',self.agent_id.id),
+            ('state','=','open')
+        ])
         agent = self.env['tt.agent'].search([('id', '=', self.agent_id.id)])
-        if len(check_number) == 0 and payment_acq_open_length == 0 and agent.email and agent.name:
+        if len(check_number) == 0 and len(agent_open_payment_acqurier) == 0 and agent.email and agent.name:
             data = {
                 'number': self.calling_number[-8:],
                 'email': agent.email,
@@ -57,33 +56,22 @@ class PhoneDetail(models.Model):
             # res = self.env['tt.payment.api.con'].merchant_info(data)
             if res['error_code'] == 0:
                 if len(res['response']) > 0:
-                    for rec in agent.payment_acq_ids:
-                        # panggil espay
-                        if rec.state == 'open':
-                            #panggil delete
-                            rec.unlink()
-                    HO_acq = self.env['tt.agent'].browse(self.env.ref('tt_base.rodex_ho').id)
+                    ho_agent_obj = self.env['tt.agent'].browse(self.env.ref('tt_base.rodex_ho').id)
                     for rec in res['response']:
-                        check = True
-
-                        for payment_acq in HO_acq.payment_acquirer_ids:
-                            if 'Virtual Account ' + self.env['tt.bank'].search([('name', '=ilike', rec['bank'])],
-                                                                               limit=1).name == payment_acq.name:
-                                check = False
-                                break
-                        if check == True:
-                            HO_acq.env['payment.acquirer'].create({
+                        bank_obj = self.env['tt.bank'].search([('name', '=ilike', rec['bank'])],limit=1)
+                        existing_payment_acquirer = self.env['payment.acquirer'].search([('agent_id','=',ho_agent_obj.id),('name','=','Virtual Account %s' % (bank_obj.name))])
+                        if not existing_payment_acquirer:
+                            existing_payment_acquirer = self.env['payment.acquirer'].create({
                                 'type': 'va',
-                                'bank_id': self.env['tt.bank'].search([('name', '=ilike', rec['bank'])], limit=1).id,
+                                'bank_id': bank_obj.id,
                                 'agent_id': agent.id,
                                 'provider': 'manual',
                                 'website_published': True,
-                                'name': 'Virtual Account ' + self.env['tt.bank'].search(
-                                    [('name', '=ilike', rec['bank'])], limit=1).name,
+                                'name': 'Virtual Account %s' % (bank_obj.name),
                             })
                         self.env['payment.acquirer.number'].create({
                             'agent_id': agent.id,
-                            'payment_acquirer_id': HO_acq.env['payment.acquirer'].search([('name', '=','Virtual Account ' +self.env['tt.bank'].search([('code','=',rec['code'])], limit=1).name)]).id,
+                            'payment_acquirer_id': existing_payment_acquirer.id,
                             'state': 'open',
                             'number': rec['number']
                         })
@@ -104,7 +92,7 @@ class PhoneDetail(models.Model):
             raise UserError(_("Please fill agent name"))
         elif len(check_number) > 0:
             raise UserError(_("Phone number has been register in our system please use other number"))
-        elif payment_acq_open_length > 0:
+        elif len(agent_open_payment_acqurier) > 0:
             raise UserError(_("You have register VA account"))
 
 
