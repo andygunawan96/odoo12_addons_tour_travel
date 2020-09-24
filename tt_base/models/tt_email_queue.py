@@ -89,7 +89,7 @@ class TtEmailQueue(models.Model):
                     'res_id': resv.id,
                 })
 
-                if resv.agent_id.is_send_refund_email_cust and resv.booker_id.email:
+                if resv.agent_id.is_send_email_cust and resv.booker_id.email:
                     template = self.env.ref('tt_accounting.template_mail_{}_{}_cust'.format(data['provider_type'], data.get('type', 'confirmed'))).id
                     self.env['tt.email.queue'].sudo().create({
                         'name': 'Refund ' + type_str + ': ' + resv.name,
@@ -126,7 +126,7 @@ class TtEmailQueue(models.Model):
                         'res_id': resv.id,
                     })
 
-                    if resv.voucher_customer_id.agent_id.is_send_voucher_email_cust and resv.voucher_customer_id.email:
+                    if resv.voucher_customer_id.agent_id.is_send_email_cust and resv.voucher_customer_id.email:
                         template = self.env.ref('tt_vouchers.template_mail_{}_{}_cust'.format(data['provider_type'], data.get('type', 'used'))).id
                         self.env['tt.email.queue'].sudo().create({
                             'name': 'Voucher ' + type_str + ': ' + resv.voucher_reference_code,
