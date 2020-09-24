@@ -20,6 +20,9 @@
         <field name="model">tt.voucher</field>
         <field name="arch" type="xml">
             <form>
+                <header>
+                    <button name="create_voucher_created_email_queue" string="Send Voucher Created Email" type="object"/>
+                </header>
                 <sheet>
                     <group>
                         <field name="id"/>

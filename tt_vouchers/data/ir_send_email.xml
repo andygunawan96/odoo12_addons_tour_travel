@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="0">
+
+        <record model="mail.template" id="template_mail_voucher_created">
+			<field name="name">Template Mail Voucher Created</field>
+			<field name="email_from">info@rodextrip.com</field>
+			<field name="subject">Voucher Created: ${object.voucher_reference_code}</field>
+			<field name="email_to">${object.voucher_customer_id.agent_id.email}</field>
+            <field name="email_cc"/>
+			<field name="model_id" ref="tt_vouchers.model_tt_voucher"/>
+			<field name="auto_delete" eval="False"/>
+			<field name="lang"/>
+			<field name="copyvalue"/>
+			<field name="body_html">
+<![CDATA[
+<p>Dear ${object.voucher_customer_id.agent_id.name},</p>
+<br/>
+<p>We would like to inform you that your customer with the following information:</p>
+<p>Name: ${object.voucher_customer_id.first_name} ${object.voucher_customer_id.last_name}</p>
+<p>Email: ${object.voucher_customer_id.email}</p>
+<p>Birth Date: ${object.voucher_customer_id.birth_date}</p>
+<br/>
+<p>is eligible to use the following voucher:</p>
+<p>Ref Code: ${object.voucher_reference_code}</p>
+<p>Currency: ${object.currency_id.name}</p>
+<p>Value: ${object.voucher_value}</p>
+<p>Type: ${object.voucher_type}</p>
+<br/>
+<p>For more details about the voucher, feel free to contact us. And please kindly inform your customer regarding this. Thank you for your trust and support in using our service.</p>
+<br/>
+<br/>
+<p>Regards,</p>
+<p>Rodex Tours and Travel</p>
+]]>
+			</field>
+		</record>
+
+		<record model="mail.template" id="template_mail_voucher_used">
+			<field name="name">Template Mail Voucher Used</field>
+			<field name="email_from">info@rodextrip.com</field>
+			<field name="subject">Voucher Used: ${object.voucher_reference_code}</field>
+			<field name="email_to">${object.voucher_customer_id.agent_id.email}</field>
+            <field name="email_cc"/>
+			<field name="model_id" ref="tt_vouchers.model_tt_voucher"/>
+			<field name="auto_delete" eval="False"/>
+			<field name="lang"/>
+			<field name="copyvalue"/>
+			<field name="body_html">
+<![CDATA[
+<p>Dear ${object.voucher_customer_id.agent_id.name},</p>
+<br/>
+<p>We would like to inform you that your customer with the following information:</p>
+<p>Name: ${object.voucher_customer_id.first_name} ${object.voucher_customer_id.last_name}</p>
+<p>Email: ${object.voucher_customer_id.email}</p>
+<p>Birth Date: ${object.voucher_customer_id.birth_date}</p>
+<br/>
+<p>has used the following voucher:</p>
+<p>Ref Code: ${object.voucher_reference_code}</p>
+<p>Currency: ${object.currency_id.name}</p>
+<p>Value: ${object.voucher_value}</p>
+<p>Type: ${object.voucher_type}</p>
+<br/>
+<p>Please kindly inform your customer regarding the voucher status now, and we hope they will enjoy their reservation(s). Thank you for your trust and support in using our service.</p>
+<br/>
+<br/>
+<p>Regards,</p>
+<p>Rodex Tours and Travel</p>
+]]>
+			</field>
+		</record>
+
+		<record model="mail.template" id="template_mail_voucher_created_cust">
+			<field name="name">Template Mail Voucher Created Customer</field>
+			<field name="email_from">info@rodextrip.com</field>
+			<field name="subject">Voucher Created: ${object.voucher_reference_code}</field>
+			<field name="email_to">${object.voucher_customer_id.email}</field>
+            <field name="email_cc"/>
+			<field name="model_id" ref="tt_vouchers.model_tt_voucher"/>
+			<field name="auto_delete" eval="False"/>
+			<field name="lang"/>
+			<field name="copyvalue"/>
+			<field name="body_html">
+<![CDATA[
+<p>Dear ${object.voucher_customer_id.first_name} ${object.voucher_customer_id.last_name},</p>
+<br/>
+<p>We are happy to inform you that you are eligible to use the following voucher:</p>
+<p>Ref Code: ${object.voucher_reference_code}</p>
+<p>Currency: ${object.currency_id.name}</p>
+<p>Value: ${object.voucher_value}</p>
+<p>Type: ${object.voucher_type}</p>
+<br/>
+<p>For more details about the voucher, feel free to contact us. And we hope you will make a good use of this voucher. Thank you for your trust and support in using our service.</p>
+<br/>
+<br/>
+<p>Regards,</p>
+<p>Rodex Tours and Travel</p>
+]]>
+			</field>
+		</record>
+
+		<record model="mail.template" id="template_mail_voucher_used_cust">
+			<field name="name">Template Mail Voucher Used Customer</field>
+			<field name="email_from">info@rodextrip.com</field>
+			<field name="subject">Voucher Used: ${object.voucher_reference_code}</field>
+			<field name="email_to">${object.voucher_customer_id.email}</field>
+            <field name="email_cc"/>
+			<field name="model_id" ref="tt_vouchers.model_tt_voucher"/>
+			<field name="auto_delete" eval="False"/>
+			<field name="lang"/>
+			<field name="copyvalue"/>
+			<field name="body_html">
+<![CDATA[
+<p>Dear ${object.voucher_customer_id.first_name} ${object.voucher_customer_id.last_name},</p>
+<br/>
+<p>You have used a voucher with the following information:</p>
+<p>Ref Code: ${object.voucher_reference_code}</p>
+<p>Currency: ${object.currency_id.name}</p>
+<p>Value: ${object.voucher_value}</p>
+<p>Type: ${object.voucher_type}</p>
+<br/>
+<p>We hope you will enjoy your reservation(s). If you have any concerns or suggestions, feel free to contact us. Thank you for your trust and support in using our service.</p>
+<br/>
+<br/>
+<p>Regards,</p>
+<p>Rodex Tours and Travel</p>
+]]>
+			</field>
+		</record>
+
+    </data>
+</odoo>
