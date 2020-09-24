@@ -1,6 +1,33 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <data>
+        <record id="payment_acquirer_custom_search_views" model="ir.ui.view">
+            <field name="name">payment.acquirer.custom.search.views</field>
+            <field name="model">payment.acquirer</field>
+            <field name="priority">3</field>
+            <field name="arch" type="xml">
+                <search string="Search Payment Acquirer">
+                    <field name="name"/>
+                    <field name="type"/>
+                    <field name="agent_id"/>
+                    <field name="bank_id"/>
+                    <field name="account_name"/>
+                    <field name="account_number"/>
+                    <group>
+                        <filter string="All" name="all"/>
+                        <filter string="Published" name="published" domain="[('website_published','=',True)]"/>
+                        <filter string="Not Published" name="not_published" domain="[('website_published','=',False)]"/>
+                        <filter string="Holiday Off" name="holiday_off" domain="[('is_sunday_off','=',True)]"/>
+                        <filter string="Specific Time" name="specific_time" domain="[('is_specific_time','=',True)]"/>
+                    </group>
+                    <separator/>
+                    <group expand="0" string="Group By">
+                        <filter name="group_by_agent_id" string="Agent" domain="[]" context="{'group_by':'agent_id'}" groups="tt_base.group_tt_tour_travel_operator"/>
+                    </group>
+                </search>
+            </field>
+        </record>
+
         <record id="payment_acquirer_form_view" model="ir.ui.view">
             <field name="name">payment.acquirer.form.view</field>
             <field name="model">payment.acquirer</field>
