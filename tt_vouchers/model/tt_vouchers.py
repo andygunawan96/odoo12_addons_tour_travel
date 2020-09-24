@@ -1064,7 +1064,7 @@ class TtVoucherDetail(models.Model):
         result_array = []
 
         # dependencies of voucher amount, and just to be safe
-        voucher_remainder = voucher.voucher_value
+        voucher_remainder = voucher.voucher_value - voucher.voucher_usage_value
         voucher_usage = 0
 
         # iterate for every provider
