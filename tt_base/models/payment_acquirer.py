@@ -149,7 +149,7 @@ class PaymentAcquirer(models.Model):
 
     def check_is_holiday(self,now_time):
         holiday_objs = self.env['tt.public.holiday'].search([('country_id','=',self.env.ref('base.id').id),
-                                              ('date','=',now_time.strftime('%Y-%m-%d'))])
+                                                             ('date','=',now_time.strftime('%Y-%m-%d'))])
         if holiday_objs:
             return True
         return False
@@ -226,8 +226,14 @@ class PaymentAcquirer(models.Model):
 
             # # payment gateway
             if util.get_without_empty(req, 'order_number'):
-                dom = [('website_published', '=', True), ('company_id', '=', self.env.user.company_id.id)]
-                dom.append(('agent_id', '=', self.env.ref('tt_base.rodex_ho').id))
+                dom = [
+                    ('website_published', '=', True),
+                    ('company_id', '=', self.env.user.company_id.id),
+                    ('agent_id', '=', self.env.ref('tt_base.rodex_ho').id),
+                    '|',
+                    ('type', '=', 'va'),  ## search yg espay
+                    ('type', '=', 'payment_gateway')  ## search yg mutasi bca
+                ]
                 pay_acq_num = self.env['payment.acquirer.number'].search([('number', 'ilike', req['order_number'])])
                 if pay_acq_num:
                     unique = pay_acq_num[0].unique_amount * -1
@@ -235,14 +241,13 @@ class PaymentAcquirer(models.Model):
                     unique = self.generate_unique_amount(amount).lower_number
                 for acq in self.sudo().search(dom):
                     # self.test_validate(acq) utk testing saja
-                    if acq.type == 'va' or acq.type == 'payment_gateway':
-                        if self.validate_time(acq,now_time):
-                            if not values.get(acq.type):
-                                values[acq.type] = []
-                            if acq.account_number != '':
-                                values[acq.type].append(acq.acquirer_format(amount, unique))
-                            else:
-                                values[acq.type].append(acq.acquirer_format(amount, 0))
+                    if self.validate_time(acq,now_time):
+                        if not values.get(acq.type):
+                            values[acq.type] = []
+                        if acq.account_number != '':
+                            values[acq.type].append(acq.acquirer_format(amount, unique))
+                        else:
+                            values[acq.type].append(acq.acquirer_format(amount, 0))
 
             res = {}
             res['non_member'] = values
@@ -395,7 +400,7 @@ class PaymentUniqueAmount(models.Model):
     def create(self, vals_list):
         already_exist_on_same_amount = [rec.upper_number for rec in self.search([('amount', '=', vals_list['amount'])])]
         already_exist_on_lower_higher_amount = [abs(rec.lower_number) for rec in self.search([('amount', 'in', [int(vals_list['amount'])-1000,
-                                                                                                    int(vals_list['amount'])+1000])])]
+                                                                                                                int(vals_list['amount'])+1000])])]
         already_exist = already_exist_on_same_amount+already_exist_on_lower_higher_amount
         unique_amount = None
         while (not unique_amount):
