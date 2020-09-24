@@ -198,9 +198,13 @@ class Ledger(models.Model):
 
     def get_allowed_rule(self):
         return {
-            'is_reversed': (
-                False,
-                ('is_reversed', 'reverse_id')
+            'is_reversed': (##Field yang mau di check
+                False,## boleh tumpuk atau tidak, False = hanya bisa edit jika False, True boleh replace
+                ('is_reversed', 'reverse_id')##yang boleh di edit
+            ),
+            'description': (
+                True,
+                ('description',)## koma jangan di hapus nanti error tidak loop tupple tetapi string
             )
         }
 
@@ -218,10 +222,10 @@ class Ledger(models.Model):
 
         for key, value in vals.items():
             if key not in allowed_list:
-                raise Exception('Cannot Write Ledger.')
+                raise Exception('Cannot Write Ledger, new.')
             if getattr(self, key):
                 if key not in allowed_replace_list:
-                    raise Exception('Cannot Write Ledger.')
+                    raise Exception('Cannot Write Ledger, replace.')
         return super(Ledger, self).write(vals)
 
     @api.multi
@@ -413,6 +417,11 @@ class Ledger(models.Model):
         else:
             _logger.info("Empty Waiting List, current ID: %s." % (str([(rec[0],rec[1],rec[2].id,rec[2].waiting_number) for rec in list_of_waiting_id])))
         return list_of_waiting_list
+
+    def fixing_description_ledger_adjustment(self):
+        for rec in self.search([('adjustment_id','!=',False)]):
+            rec.description = '%s%s' % (rec.description,rec.adjustment_id.description and '\nReason : %s' % (rec.adjustment_id.description) or '')
+            _logger.info(rec.name)
 
 class TtLedgerWaitingList(models.Model):
     _name = 'tt.ledger.waiting.list'

@@ -27,7 +27,7 @@ class tt_ledger(models.Model):
         a.update({
             'pnr': (
                 True,
-                ('pnr',)
+                ('pnr',)## koma jangan di hapus nanti error tidak loop tupple tetapi string
             )
         })
         return a
