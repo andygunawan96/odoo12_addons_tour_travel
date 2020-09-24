@@ -64,9 +64,9 @@ class PhoneDetail(models.Model):
                             existing_payment_acquirer = self.env['payment.acquirer'].create({
                                 'type': 'va',
                                 'bank_id': bank_obj.id,
-                                'agent_id': agent.id,
+                                'agent_id': ho_agent_obj.id,
                                 'provider': 'manual',
-                                'website_published': True,
+                                'website_published': False,
                                 'name': 'Virtual Account %s' % (bank_obj.name),
                             })
                         self.env['payment.acquirer.number'].create({
