@@ -523,7 +523,7 @@ class TtVoucherDetail(models.Model):
                         for j in i.cost_service_charge_ids:
                             if j.charge_type != 'RAC':
                                 #check if voucher is either percent or price discount
-                                if voucher.voucher_type == 'percentage':
+                                if voucher.voucher_type == 'percent':
                                     # count the discount
                                     discount_amount = float(j.total) * voucher.voucher_value / 100.0
                                 else:
@@ -926,8 +926,7 @@ class TtVoucherDetail(models.Model):
 
     def new_simulate_voucher(self, data, context):
         # get the order object
-        order_obj = self.env['tt.reservation.%s' % (data['provider_type'])].search(
-            [('name', '=', data['order_number'])])
+        order_obj = self.env['tt.reservation.%s' % (data['provider_type'])].search([('name', '=', data['order_number'])])
 
         # get dependencies object
         dependencies_data = order_obj.provider_booking_ids
@@ -1098,7 +1097,7 @@ class TtVoucherDetail(models.Model):
                 # at this point provider within transaction is covered by voucher
 
                 # check if voucher is multiusage and percent
-                if voucher.voucher_type == 'percentage' and voucher.multi_usage:
+                if voucher.voucher_type == 'percent' and voucher.multi_usage:
                     # voucher invalid
                     # no way multi use is percent will let it slide
                     _logger.error("Voucher logic is invalid, %s" % voucher.voucher_reference)
@@ -1122,7 +1121,7 @@ class TtVoucherDetail(models.Model):
                         # adding result to temp array
                         temp_array.append(result_temp)
 
-                elif voucher.voucher_type == 'percentage' and not voucher.muli_usage:
+                elif voucher.voucher_type == 'percent' and not voucher.muli_usage:
                     # voucher is percent
 
                     # iterate every cost
@@ -1574,7 +1573,7 @@ class TtVoucherDetail(models.Model):
     #                     # voucher affect all pricing
     #
     #                     # check type voucher
-    #                     if voucher.voucher_type == 'percentage' and voucher.multi_usage:
+    #                     if voucher.voucher_type == 'percent' and voucher.multi_usage:
     #                         # voucher invalid
     #                         # no way multi use is percent will let it slide
     #                         _logger.error("Voucher logic is invalid, %s" % voucher.voucher_reference)
@@ -1596,7 +1595,7 @@ class TtVoucherDetail(models.Model):
     #                         # adding result to temp array
     #                         temp_array.append(result_temp)
     #
-    #                     elif voucher.voucher_type == 'percentage':
+    #                     elif voucher.voucher_type == 'percent':
     #                         # voucher is percent
     #                         if j.charge_type != 'RAC':
     #                             # charge_type is not RAC
@@ -1728,7 +1727,7 @@ class TtVoucherDetail(models.Model):
     #                     # voucher affect only base fare
     #
     #                     # check type voucher
-    #                     if voucher.voucher_type == 'percentage' and voucher.multi_usage:
+    #                     if voucher.voucher_type == 'percent' and voucher.multi_usage:
     #                         # voucher invalid
     #                         # no way multi use is percent will let it slide
     #                         _logger.error("Voucher logic is invalid, %s" % voucher.voucher_reference)
@@ -1750,7 +1749,7 @@ class TtVoucherDetail(models.Model):
     #                         # adding result to temp array
     #                         temp_array.append(result_temp)
     #
-    #                     elif voucher.voucher_type == 'percentage':
+    #                     elif voucher.voucher_type == 'percent':
     #                         # voucher is percent
     #                         if j.charge_code == 'fare' or j.charge_code == 'FarePrice':
     #                             # charge_type is not RAC
