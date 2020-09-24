@@ -1437,12 +1437,13 @@ class TtVoucherDetail(models.Model):
                 'provider_code': i.provider_id.code,
                 'provider_total_price': provider_total_price,
                 'provider_total_discount': provider_total_discount,
-                'prrovider_final_price': provider_final_total_price,
+                'provider_final_price': provider_final_total_price,
                 'discount_detail': temp_array
             }
 
             # add result dict to result array
             result_array.append(result_dict)
+            _logger.info(result_array)
         return ERR.get_no_error(result_array)
 
     # def simulate_voucher_api(self, data, context):
