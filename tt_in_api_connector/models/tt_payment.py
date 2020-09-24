@@ -13,7 +13,6 @@ class TtPaymentApiCon(models.Model):
     table_name = 'payment.acquirer'
 
     def action_call(self, table_obj, action, data, context):
-
         if action == 'payment':
             if data['va_type'] == 'open':
                 if self.env['payment.acquirer.number'].search([('number', '=', data['virtual_account'])])[0].state == 'open':
@@ -132,9 +131,7 @@ class TtPaymentApiCon(models.Model):
             res = self.env['payment.acquirer.number'].set_va_number_api(data)
         else:
             raise RequestException(999)
-
         return res
-
 
     def set_VA(self, req):
         data = {
