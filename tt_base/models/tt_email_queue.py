@@ -89,7 +89,7 @@ class TtEmailQueue(models.Model):
                     'res_id': resv.id,
                 })
 
-                if resv.agent_id.is_send_refund_email_cust:
+                if resv.agent_id.is_send_refund_email_cust and resv.booker_id.email:
                     template = self.env.ref('tt_accounting.template_mail_{}_{}_cust'.format(data['provider_type'], data.get('type', 'confirmed'))).id
                     self.env['tt.email.queue'].sudo().create({
                         'name': 'Refund ' + type_str + ': ' + resv.name,
@@ -98,6 +98,43 @@ class TtEmailQueue(models.Model):
                         'res_model': resv._name,
                         'res_id': resv.id,
                     })
+            else:
+                raise RequestException(1001)
+
+        elif data.get('provider_type') == 'voucher':
+            try:
+                self.env.get('tt.voucher')._name
+            except:
+                raise Exception('Module tt.voucher not found!')
+
+            resv = self.env['tt.voucher'].search([('voucher_reference_code', '=', data.get('ref_code'))], limit=1)
+            if resv:
+                if data.get('type') == 'created':
+                    type_str = 'Created'
+                elif data.get('type') == 'used':
+                    type_str = 'Used'
+                else:
+                    type_str = ''
+
+                if type_str:
+                    template = self.env.ref('tt_vouchers.template_mail_{}_{}'.format(data['provider_type'], data.get('type', 'used'))).id
+                    self.env['tt.email.queue'].sudo().create({
+                        'name': 'Voucher ' + type_str + ': ' + resv.voucher_reference_code,
+                        'type': '{}_{}'.format(data['provider_type'], data.get('type', 'used')),
+                        'template_id': template,
+                        'res_model': resv._name,
+                        'res_id': resv.id,
+                    })
+
+                    if resv.voucher_customer_id.agent_id.is_send_voucher_email_cust and resv.voucher_customer_id.email:
+                        template = self.env.ref('tt_vouchers.template_mail_{}_{}_cust'.format(data['provider_type'], data.get('type', 'used'))).id
+                        self.env['tt.email.queue'].sudo().create({
+                            'name': 'Voucher ' + type_str + ': ' + resv.voucher_reference_code,
+                            'type': '{}_{}'.format(data['provider_type'], data.get('type', 'used')),
+                            'template_id': template,
+                            'res_model': resv._name,
+                            'res_id': resv.id,
+                        })
             else:
                 raise RequestException(1001)
 
