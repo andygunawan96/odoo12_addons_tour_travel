@@ -47,14 +47,18 @@ class PaymentAcquirer(models.Model):
         amount = int(amount)
         cust_fee = 0
         bank_fee = 0
+        ##hitung fee karena EDC dll tidak pengaruh ke ledger invoice dll. hanya pencatatan
         if self.cust_fee:
             cust_fee = round(amount * self.cust_fee / 100)
         if self.bank_fee:
             bank_fee = round((amount+cust_fee) * self.bank_fee / 100)
+        ##untuk VA fee, jika VA fee pasti bukan EDC jadi bisa replace
 
-        lost_or_profit = cust_fee-bank_fee
-
-        return lost_or_profit,cust_fee, uniq
+        if self.va_fee:
+            return 0,self.va_fee,uniq
+        else:
+            lost_or_profit = cust_fee-bank_fee
+            return lost_or_profit,cust_fee, uniq
 
     @api.onchange('start_time', 'end_time')
     def check_start_end_time(self):
@@ -95,12 +99,11 @@ class PaymentAcquirer(models.Model):
             'currency': 'IDR',
             'price_component': {
                 'amount': amount,
-                'fee': fee or self.va_fee,
+                'fee': fee,
                 'unique_amount': abs(uniq),
             },
             'total_amount': float(amount) + fee + uniq,
             'image': self.bank_id.image_id and self.bank_id.image_id.url or '',
-            'return_url': '/payment/' + str(self.type) + '/feedback?acq_id=' + str(self.id)
         }
 
     def acquirer_format_VA(self, acq, amount,unique):
@@ -129,7 +132,6 @@ class PaymentAcquirer(models.Model):
             },
             'total_amount': float(amount) + fee + uniq,
             'image': payment_acq.id.bank_id.image_id and payment_acq.id.bank_id.image_id.url or '',
-            'return_url': '/payment/' + str(payment_acq.id.type) + '/feedback?acq_id=' + str(payment_acq.id.id)
         }
 
     def get_va_number(self, req, context):

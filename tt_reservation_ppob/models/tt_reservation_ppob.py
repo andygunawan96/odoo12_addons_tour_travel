@@ -176,9 +176,9 @@ class ReservationPpob(models.Model):
         provider_list = []
         carrier_list = []
         for rec in self.provider_booking_ids:
-            pnr_list.append(rec.pnr)
-            provider_list.append(rec.provider_id.name)
-            carrier_list.append(rec.carrier_id.name)
+            pnr_list.append(rec.pnr or '')
+            provider_list.append(rec.provider_id.name or '')
+            carrier_list.append(rec.carrier_id.name or '')
         self.write({
             'state': 'issued',
             'issued_date': datetime.now(),

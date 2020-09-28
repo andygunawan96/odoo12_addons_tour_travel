@@ -114,6 +114,28 @@ class TtReservationTrain(models.Model):
     def action_issued_api_train(self,acquirer_id,customer_parent_id,context):
         self.action_issued_train(context['co_uid'],customer_parent_id,acquirer_id)
 
+    def action_partial_booked_api_train(self,context,pnr_list=[],hold_date=False):
+        if type(hold_date) != datetime:
+            hold_date = False
+
+        values = {
+            'state': 'partial_booked',
+            'booked_uid': context['co_uid'],
+            'booked_date': datetime.now(),
+            # 'hold_date': hold_date,
+            # 'pnr': ','.join(pnr_list)
+        }
+
+        # May 11, 2020 - SAM
+        # Bisa di comment karena fungsi mengisi pnr list dan hold date dipindahkan ke fungsi lain
+        if pnr_list:
+            values['pnr'] = ', '.join(pnr_list)
+        if hold_date:
+            values['hold_date'] = hold_date
+        # END
+
+        self.write(values)
+
     def action_reverse_train(self,context):
         self.write({
             'state': 'fail_refunded',

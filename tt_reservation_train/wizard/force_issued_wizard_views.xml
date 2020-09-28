@@ -27,7 +27,7 @@
     </record>
 
     <record id="force_issued_wizard_train_action_view" model="ir.actions.act_window">
-        <field name="name">force.issued.wizard.train.action.view</field>
+        <field name="name">Force Issued Wizard Train</field>
         <field name="res_model">force.issued.wizard.train</field>
         <field name="view_type">form</field>
         <field name="view_mode">form</field>
