@@ -102,7 +102,7 @@ class PaymentAcquirer(models.Model):
                 'fee': fee,
                 'unique_amount': abs(uniq),
             },
-            'total_amount': fee and float(amount) + uniq + fee or self.va_fee + float(amount) + uniq,
+            'total_amount': float(amount) + uniq + fee,
             'image': self.bank_id.image_id and self.bank_id.image_id.url or '',
         }
 
