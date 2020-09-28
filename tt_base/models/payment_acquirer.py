@@ -95,7 +95,7 @@ class PaymentAcquirer(models.Model):
             'currency': 'IDR',
             'price_component': {
                 'amount': amount,
-                'fee': fee,
+                'fee': fee or self.va_fee,
                 'unique_amount': abs(uniq),
             },
             'total_amount': float(amount) + fee + uniq,
@@ -247,7 +247,7 @@ class PaymentAcquirer(models.Model):
                     if self.validate_time(acq,now_time):
                         if not values.get(acq.type):
                             values[acq.type] = []
-                        if acq.account_number != '':
+                        if acq.account_number:
                             values[acq.type].append(acq.acquirer_format(amount, unique))
                         else:
                             values[acq.type].append(acq.acquirer_format(amount, 0))
@@ -322,7 +322,7 @@ class PaymentAcquirerNumber(models.Model):
             #check datetime
             date_now = datetime.now()
             time_delta = date_now - payment_acq_number[len(payment_acq_number)-1].create_date
-            if divmod(time_delta.seconds, 3600)[0] > 0 or datetime.now() > self.time_limit and self.time_limit:
+            if divmod(time_delta.seconds, 3600)[0] > 0 or self.time_limit and datetime.now() > self.time_limit:
                 for rec in payment_acq_number:
                     if rec.state == 'close':
                         rec.state = 'cancel'
@@ -385,6 +385,8 @@ class PaymentAcquirerNumber(models.Model):
             payment_acq_number.bank_name = data['bank_name']
             payment_acq_number.fee_amount = data['fee_amount']
             payment_acq_number.time_limit = data['time_limit']
+            payment_acq_number.payment_acquirer_id.va_fee = data['fee_amount']
+
             return ERR.get_no_error()
         else:
             return ERR.get_error(additional_message='Payment Acquirer not found')
