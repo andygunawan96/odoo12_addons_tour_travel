@@ -263,6 +263,18 @@ class TtProviderPPOB(models.Model):
                 })]
             })
 
+    def action_failed_void_api_ppob(self,err_code,err_msg):
+        for rec in self:
+            rec.write({
+                'state': 'void_failed',
+                'error_history_ids': [(0,0,{
+                    'res_model': self._name,
+                    'res_id': self.id,
+                    'error_code': err_code,
+                    'error_msg': err_msg
+                })]
+            })
+
     def action_expired(self):
         self.state = 'cancel2'
 
@@ -461,7 +473,10 @@ class TtProviderPPOB(models.Model):
             'pnr2': self.pnr2 and self.pnr2 or '',
             'original_pnr': self.original_pnr and self.original_pnr or '',
             'provider': self.provider_id and self.provider_id.code or '',
-            'provider_id': self.provider_id.id,
+            'provider_id': self.id,
+            'agent_id': self.booking_id.agent_id.id if self.booking_id and self.booking_id.agent_id else '',
+            'state': self.state,
+            'state_description': variables.BOOKING_STATE_STR[self.state],
             'payment_message': self.payment_message and self.payment_message or '',
             'balance_due': self.balance_due and self.balance_due or 0,
             'total_price': self.total_price and self.total_price or 0,
