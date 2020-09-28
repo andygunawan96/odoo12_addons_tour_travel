@@ -98,7 +98,7 @@ class PaymentAcquirer(models.Model):
                 'fee': fee or self.va_fee,
                 'unique_amount': abs(uniq),
             },
-            'total_amount': float(amount) + fee + uniq,
+            'total_amount': fee and float(amount) + uniq + fee or self.va_fee + float(amount) + uniq,
             'image': self.bank_id.image_id and self.bank_id.image_id.url or '',
             'return_url': '/payment/' + str(self.type) + '/feedback?acq_id=' + str(self.id)
         }
