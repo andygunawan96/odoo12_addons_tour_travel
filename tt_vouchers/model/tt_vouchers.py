@@ -26,9 +26,13 @@ class TtVoucher(models.Model):
     voucher_effect_base_fare = fields.Boolean("Base Fare")
 
     voucher_state = fields.Selection([('draft', 'Draft'), ('confirm', 'Confirm'), ('not-active', 'Not Active')], default="draft")
+    agent_type_access_type = fields.Selection([("all", "ALL"), ("allow", "Allowed"), ("restrict", "Restricted")], 'Agent Type Access Type', default='all')
     voucher_agent_type_eligibility_ids = fields.Many2many("tt.agent.type", "tt_agent_type_tt_voucher_rel", "tt_voucher_id", "tt_agent_type_id", "Agent Type")      #type of user that are able to use the voucher
+    agent_access_type = fields.Selection([("all", "ALL"), ("allow", "Allowed"), ("restrict", "Restricted")], 'Agent Access Type', default='all')
     voucher_agent_eligibility_ids = fields.Many2many('tt.agent', "tt_agent_tt_voucher_rel", "tt_voucher_id", "tt_agent_id", "Agent ID")                                        # who can use the voucher
+    provider_type_access_type = fields.Selection([("all", "ALL"), ("allow", "Allowed"), ("restrict", "Restricted")], 'Provider Type Access Type', default='all')
     voucher_provider_type_eligibility_ids = fields.Many2many("tt.provider.type", "tt_provider_type_tt_voucher_rel", "tt_voucher_id", "tt_provider_type_id", "Provider Type")                         # what product this voucher can be applied
+    provider_access_type = fields.Selection([("all", "ALL"), ("allow", "Allowed"), ("restrict", "Restricted")], 'Provider Access Type', default='all')
     voucher_provider_eligibility_ids = fields.Many2many('tt.provider', "tt_provider_tt_voucher_rel", "tt_voucher_id", "tt_provier_id", "Provider ID")                                  # what provider this voucher can be applied
 
     #add-ons
@@ -312,19 +316,28 @@ class TtVoucher(models.Model):
 
     def is_product_eligible(self, data):
         voucher = self.env['tt.voucher'].search([('voucher_reference_code', "=", data['voucher_reference'])])
-        is_eligible = False
-        if voucher.voucher_coverage == 'all':
-            is_eligible = True
+
+        is_provider_type_eligible = False
+        if voucher.provider_type_access_type == 'all':
+            is_provider_type_eligible = True
+        elif voucher.provider_type_access_type == 'allow':
+            if int(data['provider_type_id']) in voucher.voucher_provider_type_eligibility_ids.ids:
+                is_provider_type_eligible = True
         else:
-            provider_type = voucher.voucher_provider_type_eligibility_ids.filtered(lambda x: x['id'] == data['provider_type_id'])
-            if provider_type.id != False:
-                is_eligible = True
+            if int(data['provider_type_id']) not in voucher.voucher_provider_type_eligibility_ids.ids:
+                is_provider_type_eligible = True
 
-            provider = voucher.voucher_provider_eligibility_ids.filtered(lambda x: x['id'] == data['provider_id'])
-            if provider.id == False:
-                is_eligible = False
+        is_provider_eligible = False
+        if voucher.provider_access_type == 'all':
+            is_provider_eligible = True
+        elif voucher.provider_access_type == 'allow':
+            if int(data['provider_id']) in voucher.voucher_provider_eligibility_ids.ids:
+                is_provider_eligible = True
+        else:
+            if int(data['provider_id']) not in voucher.voucher_provider_eligibility_ids.ids:
+                is_provider_eligible = True
 
-        return is_eligible
+        return is_provider_type_eligible and is_provider_eligible
 
     def add_usage_value(self, usage):
         self.voucher_usage_value += usage
@@ -333,24 +346,28 @@ class TtVoucher(models.Model):
     #update
     def is_agent_eligible(self, data):
         voucher = self.env['tt.voucher'].search([('voucher_reference_code', "=", data['voucher_reference'])])
-        is_eligible = False
-        is_empty = False
-        if len(voucher.voucher_agent_type_eligibility_ids) < 1 and len(voucher.voucher_agent_eligibility_ids) < 1:
-            is_empty = True
-            is_eligible = True
 
-        if not is_empty:
-            agent_type = voucher.voucher_agent_type_eligibility_ids.filtered(lambda x: x['id'] == data['agent_type_id'])
-            if agent_type.id != False:
-                is_eligible = True
+        is_agent_type_eligible = False
+        if voucher.agent_type_access_type == 'all':
+            is_agent_type_eligible = True
+        elif voucher.agent_type_access_type == 'allow':
+            if int(data['agent_type_id']) in voucher.voucher_agent_type_eligibility_ids.ids:
+                is_agent_type_eligible = True
+        else:
+            if int(data['agent_type_id']) not in voucher.voucher_agent_type_eligibility_ids.ids:
+                is_agent_type_eligible = True
 
-            agent = voucher.voucher_agent_eligibility_ids.filtered(lambda x: x['id'] == data['agent_id'])
-            if agent.id != False:
-                is_eligible = True
-            else:
-                is_eligible = False
+        is_agent_eligible = False
+        if voucher.agent_access_type == 'all':
+            is_agent_eligible = True
+        elif voucher.agent_access_type == 'allow':
+            if int(data['agent_id']) in voucher.voucher_agent_eligibility_ids.ids:
+                is_agent_eligible = True
+        else:
+            if int(data['agent_id']) not in voucher.voucher_agent_eligibility_ids.ids:
+                is_agent_eligible = True
 
-        return is_eligible
+        return is_agent_type_eligible and is_agent_eligible
 
     def is_purchase_allowed(self, data):
         voucher = self.env['tt.voucher'].search([('voucher_reference_code', '=', data['voucher_reference'])])
@@ -360,23 +377,39 @@ class TtVoucher(models.Model):
 
         return is_eligible
 
-    @api.onchange('voucher_agent_type_eligibility_ids')
+    @api.onchange('agent_type_access_type', 'voucher_agent_type_eligibility_ids')
     def _onchange_action_agent_type(self):
-        domain = {'voucher_agent_eligibility_ids': []}
-        if self.voucher_agent_type_eligibility_ids != False:
+        if self.agent_type_access_type == 'all':
+            domain = {
+                'voucher_agent_eligibility_ids': [('id', '!=', False)]
+            }
+        elif self.agent_type_access_type == 'allow':
             self.voucher_agent_eligibility_ids = False
             domain = {
                 'voucher_agent_eligibility_ids': [('agent_type_id', 'in', self.voucher_agent_type_eligibility_ids.ids)]
             }
+        else:
+            self.voucher_agent_eligibility_ids = False
+            domain = {
+                'voucher_agent_eligibility_ids': [('agent_type_id', 'not in', self.voucher_agent_type_eligibility_ids.ids)]
+            }
         return {'domain': domain}
 
-    @api.onchange('voucher_provider_type_eligibility_ids')
+    @api.onchange('provider_type_access_type', 'voucher_provider_type_eligibility_ids')
     def _onchange_action_provider_type(self):
-        domain = {'voucher_provider_eligibility_ids': []}
-        if self.voucher_provider_type_eligibility_ids != False:
+        if self.provider_type_access_type == 'all':
+            domain = {
+                'voucher_provider_eligibility_ids': [('id', '!=', False)]
+            }
+        elif self.provider_type_access_type == 'allow':
             self.voucher_provider_eligibility_ids = False
             domain = {
                 'voucher_provider_eligibility_ids': [('provider_type_id', 'in', self.voucher_provider_type_eligibility_ids.ids)]
+            }
+        else:
+            self.voucher_provider_eligibility_ids = False
+            domain = {
+                'voucher_provider_eligibility_ids': [('provider_type_id', 'not in', self.voucher_provider_type_eligibility_ids.ids)]
             }
         return {'domain': domain}
 
@@ -390,15 +423,24 @@ class TtVoucher(models.Model):
         if self.voucher_effect_base_fare == True:
             self.voucher_effect_all = False
 
-    @api.onchange('voucher_agent_eligibility_ids')
+    @api.onchange('agent_access_type', 'voucher_agent_eligibility_ids')
     def _onchange_action_agent(self):
-        domain = {'voucher_customer_id': []}
-        if self.voucher_agent_eligibility_ids != False:
+        if self.agent_access_type == 'all':
+            domain = {
+                'voucher_customer_id': [('id', '!=', False)]
+            }
+        elif self.agent_access_type == 'allow':
             self.voucher_customer_id = False
             domain = {
-                'voucher_customer_id': [('name', 'in', self.voucher_agent_eligibility_ids.ids)]
+                'voucher_customer_id': [('agent_id', 'in', self.voucher_agent_eligibility_ids.ids)]
+            }
+        else:
+            self.voucher_customer_id = False
+            domain = {
+                'voucher_customer_id': [('agent_id', 'not in', self.voucher_agent_eligibility_ids.ids)]
             }
         return {'domain': domain}
+
 
 class TtVoucherDetail(models.Model):
     _name = "tt.voucher.detail"
@@ -1960,51 +2002,245 @@ class TtVoucherDetail(models.Model):
     #     return ERR.get_no_error(result_array)
 
     #done
+    # def simulate_voucher_api(self, data, context):
+    #     # requirement of data
+    #     # data = {
+    #     #     voucher_reference
+    #     #     date          <-- date vouchernya digunakan (today)
+    #     #     provider_type
+    #     #     provider          --> list
+    #     # }
+    #
+    #     result_array = []
+    #
+    #     #seperate voucher reference code
+    #     splits = data['voucher_reference'].split(".")
+    #     data['voucher_reference_code'] = splits[0]
+    #     try:
+    #         data['voucher_reference_period'] = splits[1]
+    #     except:
+    #         return ERR.get_error(additional_message="Voucher must have period reference")
+    #
+    #     #check if voucher exist
+    #     voucher = self.env['tt.voucher'].search([('voucher_reference_code', '=', data['voucher_reference_code'])])
+    #     if voucher.id == False:
+    #         _logger.error('%s Voucher is not exist' % data['voucher_reference'])
+    #         return ERR.get_error(additional_message="Voucher is NOT exist")
+    #
+    #     voucher_detail = voucher.voucher_detail_ids.filtered(lambda x: x['voucher_period_reference'] == data['voucher_reference_period'])
+    #     if voucher_detail.id == False:
+    #         _logger.error('%s Voucher is not exist' % data['voucher_reference'])
+    #         return ERR.get_error(additional_message="Voucher is NOT exist")
+    #
+    #     #if voucher already expired
+    #     if voucher_detail.voucher_detail_state == 'expire':
+    #         _logger.error('%s Voucher can no longer be use (Expired)'% data['voucher_reference'])
+    #         return ERR.get_error(additional_message="Voucher is already Expired")
+    #
+    #     if voucher_detail.voucher_start_date.strftime("%Y-%m-%d") > data['date'] and voucher_detail.voucher_expire_date < data['date']:
+    #         _logger.error("%s Voucher cannot be use outside designated date" % data['voucher_reference'])
+    #         return ERR.get_error(additional_message="Voucher cannot be use outside designated date")
+    #
+    #     #check if there are voucher left to be use
+    #     if voucher_detail.voucher_used >= voucher_detail.voucher_quota:
+    #         _logger.error("%s Voucher is used up (Sold out)" % data['voucher_reference'])
+    #         return ERR.get_error(additional_message="Voucher sold out")
+    #
+    #     #check agent
+    #     agent_to_validate = {
+    #         'voucher_reference': data['voucher_reference_code'],
+    #         'agent_type_id': context['co_agent_type_id'],
+    #         'agent_id': context['co_agent_id']
+    #     }
+    #     agent_eligible = self.env['tt.voucher'].is_agent_eligible(agent_to_validate)
+    #     if not agent_eligible:
+    #         _logger.error("Agent ID %s cannot use the %s voucher "% (context['co_agent_id'], data['voucher_reference']))
+    #         return ERR.get_error(additional_message="Agent cannot use the voucher")
+    #
+    #     #if voucher coverage == all
+    #     if voucher.voucher_coverage == 'all':
+    #         # check if voucher can be use to selected provider type
+    #         provider_type = self.env['tt.provider.type'].search([('code', '=', data['provider_type'])])
+    #
+    #         if type(data['provider']) is list:
+    #             #for every data in list
+    #             for i in data['provider']:
+    #
+    #                 #check if given provider is actually part of povider_type
+    #                 provider = self.env['tt.provider'].search([('code', '=', i)])
+    #                 if provider.provider_type_id.id == provider_type.id:
+    #                     to_return = {
+    #                         'provider_type': data['provider_type'],
+    #                         'provider': i,
+    #                         'able_to_use': True
+    #                     }
+    #                 else:
+    #                     to_return = {
+    #                         'provider_type': data['provider_type'],
+    #                         'provider': i,
+    #                         'able_to_use': False
+    #                     }
+    #                 result_array.append(to_return)
+    #         else:
+    #             provider = self.env['tt.provider'].search([('code', '=', data['provider'])])
+    #             if provider.provider_type_id.id == provider_type.id:
+    #                 to_return = {
+    #                     'provider_type': data['provider_type'],
+    #                     'provider': data['provider'],
+    #                     'able_to_use': True
+    #                 }
+    #             else:
+    #                 to_return = {
+    #                     'provider_type': data['provider_type'],
+    #                     'provider': data['provider'],
+    #                     'able_to_use': False
+    #                 }
+    #             result_array.append(to_return)
+    #     else:
+    #         #check if voucher can be use to selected provider type
+    #         provider_type = voucher.voucher_provider_type_eligibility_ids.filtered(lambda x: x['code'] == data['provider_type'])
+    #
+    #         if provider_type.id != False:
+    #             if type(data['provider']) is list:
+    #                 for i in data['provider']:
+    #                     # check if given provider is actually part of povider_type
+    #                     provider = self.env['tt.provider'].search([('code', '=', i)])
+    #                     if provider.provider_type_id.id == provider_type.id:
+    #                         to_return = {
+    #                             'provider_type': data['provider_type'],
+    #                             'provider': i,
+    #                             'able_to_use': True
+    #                         }
+    #                     else:
+    #                         to_return = {
+    #                             'provider_type': data['provider_type'],
+    #                             'provider': i,
+    #                             'able_to_use': False
+    #                         }
+    #                     result_array.append(to_return)
+    #             else:
+    #                 provider = voucher.voucher_provider_eligibility_ids.filtered(lambda x: x['code'] == data['provider'])
+    #                 if provider.id != False:
+    #                     if provider.provider_type_id.id == provider_type.id:
+    #                         to_return = {
+    #                             'provider_type': data['provider_type'],
+    #                             'provider': data['provider'],
+    #                             'able_to_use': True
+    #                         }
+    #                     else:
+    #                         to_return = {
+    #                             'provider_type': data['provider_type'],
+    #                             'provider': data['provider'],
+    #                             'able_to_use': False
+    #                         }
+    #                 else:
+    #                     to_return = {
+    #                         'provider_type': data['provider_type'],
+    #                         'provider': data['provider'],
+    #                         'able_to_use': False
+    #                     }
+    #                 result_array.append(to_return)
+    #         else:
+    #             return ERR.get_error(additional_message="Voucher cannot be use on type %s" % data['provider_type'])
+    #
+    #     #built to return
+    #
+    #     #maximum_cap
+    #     if voucher.voucher_maximum_cap < 1:
+    #         maximum_cap = False
+    #     else:
+    #         maximum_cap = voucher.voucher_maximum_cap
+    #
+    #     #minimum purchase
+    #     if voucher.voucher_minimum_purchase < 1:
+    #         minimum_purchase = False
+    #     else:
+    #         minimum_purchase = voucher.voucher_minimum_purchase
+    #
+    #     result = {
+    #         'reference_code': data['voucher_reference'],
+    #         'voucher_type': voucher.voucher_type,
+    #         'voucher_value': voucher.voucher_value,
+    #         'voucher_currency': voucher.currency_id.name,
+    #         'voucher_cap': maximum_cap,
+    #         'voucher_minimum_purchase': minimum_purchase,
+    #         'date_expire': voucher_detail.voucher_expire_date.strftime("%Y-%m-%d"),
+    #         'provider_type': data['provider_type'],
+    #         'provider': result_array
+    #     }
+    #
+    #     return ERR.get_no_error(result)
     def simulate_voucher_api(self, data, context):
         # requirement of data
         # data = {
-        #     voucher_reference
-        #     date          <-- date vouchernya digunakan (today)
-        #     provider_type
-        #     provider          --> list
+        #	voucher_reference,
+        #	date 				<-- date voucher digunakan (today)
+        #	provider_type
+        #	provider 			--> list
         # }
 
+        # create a return array
         result_array = []
 
-        #seperate voucher reference code
+        # split voucher reference
         splits = data['voucher_reference'].split(".")
+        # get the first index of split
         data['voucher_reference_code'] = splits[0]
+        # try to get the second half
         try:
             data['voucher_reference_period'] = splits[1]
         except:
+            # write to logger
+            _logger.error("%s, voucher code is invalid" % data['voucher_reference'])
+            # return error
             return ERR.get_error(additional_message="Voucher must have period reference")
 
-        #check if voucher exist
+        # at this point the voucher code is legal
+        # check if the reference code voucher is actually exist
         voucher = self.env['tt.voucher'].search([('voucher_reference_code', '=', data['voucher_reference_code'])])
         if voucher.id == False:
-            _logger.error('%s Voucher is not exist' % data['voucher_reference'])
+            # no voucher found
+            # write to logger
+            logger.error("%s voucher is not exist" % data['voucher_reference'])
+            # return error
             return ERR.get_error(additional_message="Voucher is NOT exist")
 
-        voucher_detail = voucher.voucher_detail_ids.filtered(lambda x: x['voucher_period_reference'] == data['voucher_reference_period'])
+        # okay so voucher is exist, but is the particular period voucher exist
+        voucher_detail = voucher.vouhcer_detail_ids.filtered(
+            lambda x: x['voucher_period_reference'] == data['voucher_reference_period'])
         if voucher_detail.id == False:
-            _logger.error('%s Voucher is not exist' % data['voucher_reference'])
-            return ERR.get_error(additional_message="Voucher is NOT exist")
+            # no voucher detail found
+            # write to logger
+            logger.error("%s voucher is not exist" % data['voucher_reference'])
+            # return error
+            return ERR.get_error(additional_message="Voucher is NOT Exist")
 
-        #if voucher already expired
+        # voucher is exist hooray, now we'll check if the voucher could be use
         if voucher_detail.voucher_detail_state == 'expire':
-            _logger.error('%s Voucher can no longer be use (Expired)'% data['voucher_reference'])
-            return ERR.get_error(additional_message="Voucher is already Expired")
+            # voucher is expired dun dun dun
+            # write log
+            _logger.error("%s Voucher can no longer be use (Expired)" % data['voucher_reference'])
+            # return error
+            return ERR.get_error(additional_message="Voucher is expired dun dun dun")
 
-        if voucher_detail.voucher_start_date.strftime("%Y-%m-%d") > data['date'] and voucher_detail.voucher_expire_date < data['date']:
-            _logger.error("%s Voucher cannot be use outside designated date" % data['voucher_reference'])
+        # voucher may not be expired at this point, but maybe just maybe voucher can only be use on certain date(s)
+        if voucher_detail.voucher_start_date.strftime("%Y-%m-%d") > data[
+            'date'] and voucher_detail.voucher_expire_date.strftime("%Y-%m-%d") < data['date']:
+            # today's date (the day users pass to use the date) is not covered by the voucher #ouch!
+            # write log
+            _logger.error("%s Voucher cannot be use outside the designated date" % data['voucher_reference'])
+            # return error
             return ERR.get_error(additional_message="Voucher cannot be use outside designated date")
 
-        #check if there are voucher left to be use
+        # okay okay so the voucher is there, the date is within the voucher date, then we should look f there's voucher left
         if voucher_detail.voucher_used >= voucher_detail.voucher_quota:
-            _logger.error("%s Voucher is used up (Sold out)" % data['voucher_reference'])
+            # o no the voucher is up
+            # write to logger
+            _logger.error("%s No More Voucher :(" % data['voucher_reference'])
+            # return error
             return ERR.get_error(additional_message="Voucher sold out")
 
-        #check agent
+        # check agent
         agent_to_validate = {
             'voucher_reference': data['voucher_reference_code'],
             'agent_type_id': context['co_agent_type_id'],
@@ -2012,104 +2248,72 @@ class TtVoucherDetail(models.Model):
         }
         agent_eligible = self.env['tt.voucher'].is_agent_eligible(agent_to_validate)
         if not agent_eligible:
-            _logger.error("Agent ID %s cannot use the %s voucher "% (context['co_agent_id'], data['voucher_reference']))
-            return ERR.get_error(additional_message="Agent cannot use the voucher")
+            # agent is not eligible to be use dun dun dun
+            # write to log
+            _logger.error('Agent ID %s cannot use voucher %s' % (context['co_agent_id'], data['voucher_reference']))
+            # return error
+            return ERR.get_error(additional_message="Agent cannot user the voucher")
 
-        #if voucher coverage == all
-        if voucher.voucher_coverage == 'all':
-            # check if voucher can be use to selected provider type
-            provider_type = self.env['tt.provider.type'].search([('code', '=', data['provider_type'])])
-
-            if type(data['provider']) is list:
-                #for every data in list
-                for i in data['provider']:
-
-                    #check if given provider is actually part of povider_type
-                    provider = self.env['tt.provider'].search([('code', '=', i)])
-                    if provider.provider_type_id.id == provider_type.id:
-                        to_return = {
-                            'provider_type': data['provider_type'],
-                            'provider': i,
-                            'able_to_use': True
-                        }
-                    else:
-                        to_return = {
-                            'provider_type': data['provider_type'],
-                            'provider': i,
-                            'able_to_use': False
-                        }
-                    result_array.append(to_return)
-            else:
-                provider = self.env['tt.provider'].search([('code', '=', data['provider'])])
-                if provider.provider_type_id.id == provider_type.id:
+        # check provider
+        if type(data['provider']) is list:
+            # if provider list pass is list type
+            for i in data['provider']:
+                provider = self.env['tt.provider'].search([('code', '=', i)])
+                to_check = {
+                    'provider_type': data['provider_type'],
+                    'provider': i,
+                    'voucher_reference': data['voucher_reference_code']
+                }
+                is_eligible = self.is_product_eligible(to_check)
+                if is_eligible:
                     to_return = {
                         'provider_type': data['provider_type'],
-                        'provider': data['provider'],
+                        'provider': i,
                         'able_to_use': True
                     }
                 else:
                     to_return = {
                         'provider_type': data['provider_type'],
-                        'provider': data['provider'],
+                        'provider': i,
                         'able_to_use': False
                     }
                 result_array.append(to_return)
         else:
-            #check if voucher can be use to selected provider type
-            provider_type = voucher.voucher_provider_type_eligibility_ids.filtered(lambda x: x['code'] == data['provider_type'])
-
-            if provider_type.id != False:
-                if type(data['provider']) is list:
-                    for i in data['provider']:
-                        # check if given provider is actually part of povider_type
-                        provider = self.env['tt.provider'].search([('code', '=', i)])
-                        if provider.provider_type_id.id == provider_type.id:
-                            to_return = {
-                                'provider_type': data['provider_type'],
-                                'provider': i,
-                                'able_to_use': True
-                            }
-                        else:
-                            to_return = {
-                                'provider_type': data['provider_type'],
-                                'provider': i,
-                                'able_to_use': False
-                            }
-                        result_array.append(to_return)
-                else:
-                    provider = voucher.voucher_provider_eligibility_ids.filtered(lambda x: x['code'] == data['provider'])
-                    if provider.id != False:
-                        if provider.provider_type_id.id == provider_type.id:
-                            to_return = {
-                                'provider_type': data['provider_type'],
-                                'provider': data['provider'],
-                                'able_to_use': True
-                            }
-                        else:
-                            to_return = {
-                                'provider_type': data['provider_type'],
-                                'provider': data['provider'],
-                                'able_to_use': False
-                            }
-                    else:
-                        to_return = {
-                            'provider_type': data['provider_type'],
-                            'provider': data['provider'],
-                            'able_to_use': False
-                        }
-                    result_array.append(to_return)
+            provider = self.env['tt.provider'].search([('code', '=', data['provider'])])
+            to_check = {
+                'provider_type': data['provider_type'],
+                'provider': i,
+                'voucher_reference': data['voucher_reference_code']
+            }
+            is_eligible = self.is_product_eligible(to_check)
+            if is_eligible:
+                to_return = {
+                    'provider_type': data['provider_type'],
+                    'provider': i,
+                    'able_to_use': True
+                }
             else:
-                return ERR.get_error(additional_message="Voucher cannot be use on type %s" % data['provider_type'])
+                to_return = {
+                    'provider_type': data['provider_type'],
+                    'provider': i,
+                    'able_to_use': False
+                }
+            result_array.append(to_return)
 
-        #built to return
+        # at this point the voucher can be use and will be use (?)
+        # okay do something about the voucher
+        if voucher.voucher_multi_usage:
+            voucher_value = voucher.voucher_value - voucher.voucher_usage_value
+        else:
+            voucher_value = voucher.voucher_value
 
-        #maximum_cap
+        # maximum_cap
         if voucher.voucher_maximum_cap < 1:
             maximum_cap = False
         else:
             maximum_cap = voucher.voucher_maximum_cap
 
-        #minimum purchase
+        # minimum purchase
         if voucher.voucher_minimum_purchase < 1:
             minimum_purchase = False
         else:
@@ -2118,7 +2322,7 @@ class TtVoucherDetail(models.Model):
         result = {
             'reference_code': data['voucher_reference'],
             'voucher_type': voucher.voucher_type,
-            'voucher_value': voucher.voucher_value,
+            'voucher_value': voucher_value,
             'voucher_currency': voucher.currency_id.name,
             'voucher_cap': maximum_cap,
             'voucher_minimum_purchase': minimum_purchase,
