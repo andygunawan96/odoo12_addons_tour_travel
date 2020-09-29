@@ -26,9 +26,13 @@ class TtVoucher(models.Model):
     voucher_effect_base_fare = fields.Boolean("Base Fare")
 
     voucher_state = fields.Selection([('draft', 'Draft'), ('confirm', 'Confirm'), ('not-active', 'Not Active')], default="draft")
+    agent_type_access_type = fields.Selection([("all", "ALL"), ("allow", "Allowed"), ("restrict", "Restricted")], 'Agent Type Access Type', default='all')
     voucher_agent_type_eligibility_ids = fields.Many2many("tt.agent.type", "tt_agent_type_tt_voucher_rel", "tt_voucher_id", "tt_agent_type_id", "Agent Type")      #type of user that are able to use the voucher
+    agent_access_type = fields.Selection([("all", "ALL"), ("allow", "Allowed"), ("restrict", "Restricted")], 'Agent Access Type', default='all')
     voucher_agent_eligibility_ids = fields.Many2many('tt.agent', "tt_agent_tt_voucher_rel", "tt_voucher_id", "tt_agent_id", "Agent ID")                                        # who can use the voucher
+    provider_type_access_type = fields.Selection([("all", "ALL"), ("allow", "Allowed"), ("restrict", "Restricted")], 'Provider Type Access Type', default='all')
     voucher_provider_type_eligibility_ids = fields.Many2many("tt.provider.type", "tt_provider_type_tt_voucher_rel", "tt_voucher_id", "tt_provider_type_id", "Provider Type")                         # what product this voucher can be applied
+    provider_access_type = fields.Selection([("all", "ALL"), ("allow", "Allowed"), ("restrict", "Restricted")], 'Provider Access Type', default='all')
     voucher_provider_eligibility_ids = fields.Many2many('tt.provider', "tt_provider_tt_voucher_rel", "tt_voucher_id", "tt_provier_id", "Provider ID")                                  # what provider this voucher can be applied
 
     #add-ons
@@ -312,19 +316,28 @@ class TtVoucher(models.Model):
 
     def is_product_eligible(self, data):
         voucher = self.env['tt.voucher'].search([('voucher_reference_code', "=", data['voucher_reference'])])
-        is_eligible = False
-        if voucher.voucher_coverage == 'all':
-            is_eligible = True
+
+        is_provider_type_eligible = False
+        if voucher.provider_type_access_type == 'all':
+            is_provider_type_eligible = True
+        elif voucher.provider_type_access_type == 'allow':
+            if int(data['provider_type_id']) in voucher.voucher_provider_type_eligibility_ids.ids:
+                is_provider_type_eligible = True
         else:
-            provider_type = voucher.voucher_provider_type_eligibility_ids.filtered(lambda x: x['id'] == data['provider_type_id'])
-            if provider_type.id != False:
-                is_eligible = True
+            if int(data['provider_type_id']) not in voucher.voucher_provider_type_eligibility_ids.ids:
+                is_provider_type_eligible = True
 
-            provider = voucher.voucher_provider_eligibility_ids.filtered(lambda x: x['id'] == data['provider_id'])
-            if provider.id == False:
-                is_eligible = False
+        is_provider_eligible = False
+        if voucher.provider_access_type == 'all':
+            is_provider_eligible = True
+        elif voucher.provider_access_type == 'allow':
+            if int(data['provider_id']) in voucher.voucher_provider_eligibility_ids.ids:
+                is_provider_eligible = True
+        else:
+            if int(data['provider_id']) not in voucher.voucher_provider_eligibility_ids.ids:
+                is_provider_eligible = True
 
-        return is_eligible
+        return is_provider_type_eligible and is_provider_eligible
 
     def add_usage_value(self, usage):
         self.voucher_usage_value += usage
@@ -333,24 +346,28 @@ class TtVoucher(models.Model):
     #update
     def is_agent_eligible(self, data):
         voucher = self.env['tt.voucher'].search([('voucher_reference_code', "=", data['voucher_reference'])])
-        is_eligible = False
-        is_empty = False
-        if len(voucher.voucher_agent_type_eligibility_ids) < 1 and len(voucher.voucher_agent_eligibility_ids) < 1:
-            is_empty = True
-            is_eligible = True
 
-        if not is_empty:
-            agent_type = voucher.voucher_agent_type_eligibility_ids.filtered(lambda x: x['id'] == data['agent_type_id'])
-            if agent_type.id != False:
-                is_eligible = True
+        is_agent_type_eligible = False
+        if voucher.agent_type_access_type == 'all':
+            is_agent_type_eligible = True
+        elif voucher.agent_type_access_type == 'allow':
+            if int(data['agent_type_id']) in voucher.voucher_agent_type_eligibility_ids.ids:
+                is_agent_type_eligible = True
+        else:
+            if int(data['agent_type_id']) not in voucher.voucher_agent_type_eligibility_ids.ids:
+                is_agent_type_eligible = True
 
-            agent = voucher.voucher_agent_eligibility_ids.filtered(lambda x: x['id'] == data['agent_id'])
-            if agent.id != False:
-                is_eligible = True
-            else:
-                is_eligible = False
+        is_agent_eligible = False
+        if voucher.agent_access_type == 'all':
+            is_agent_eligible = True
+        elif voucher.agent_access_type == 'allow':
+            if int(data['agent_id']) in voucher.voucher_agent_eligibility_ids.ids:
+                is_agent_eligible = True
+        else:
+            if int(data['agent_id']) not in voucher.voucher_agent_eligibility_ids.ids:
+                is_agent_eligible = True
 
-        return is_eligible
+        return is_agent_type_eligible and is_agent_eligible
 
     def is_purchase_allowed(self, data):
         voucher = self.env['tt.voucher'].search([('voucher_reference_code', '=', data['voucher_reference'])])
@@ -360,23 +377,39 @@ class TtVoucher(models.Model):
 
         return is_eligible
 
-    @api.onchange('voucher_agent_type_eligibility_ids')
+    @api.onchange('agent_type_access_type', 'voucher_agent_type_eligibility_ids')
     def _onchange_action_agent_type(self):
-        domain = {'voucher_agent_eligibility_ids': []}
-        if self.voucher_agent_type_eligibility_ids != False:
+        if self.agent_type_access_type == 'all':
+            domain = {
+                'voucher_agent_eligibility_ids': [('id', '!=', False)]
+            }
+        elif self.agent_type_access_type == 'allow':
             self.voucher_agent_eligibility_ids = False
             domain = {
                 'voucher_agent_eligibility_ids': [('agent_type_id', 'in', self.voucher_agent_type_eligibility_ids.ids)]
             }
+        else:
+            self.voucher_agent_eligibility_ids = False
+            domain = {
+                'voucher_agent_eligibility_ids': [('agent_type_id', 'not in', self.voucher_agent_type_eligibility_ids.ids)]
+            }
         return {'domain': domain}
 
-    @api.onchange('voucher_provider_type_eligibility_ids')
+    @api.onchange('provider_type_access_type', 'voucher_provider_type_eligibility_ids')
     def _onchange_action_provider_type(self):
-        domain = {'voucher_provider_eligibility_ids': []}
-        if self.voucher_provider_type_eligibility_ids != False:
+        if self.provider_type_access_type == 'all':
+            domain = {
+                'voucher_provider_eligibility_ids': [('id', '!=', False)]
+            }
+        elif self.provider_type_access_type == 'allow':
             self.voucher_provider_eligibility_ids = False
             domain = {
                 'voucher_provider_eligibility_ids': [('provider_type_id', 'in', self.voucher_provider_type_eligibility_ids.ids)]
+            }
+        else:
+            self.voucher_provider_eligibility_ids = False
+            domain = {
+                'voucher_provider_eligibility_ids': [('provider_type_id', 'not in', self.voucher_provider_type_eligibility_ids.ids)]
             }
         return {'domain': domain}
 
@@ -390,15 +423,24 @@ class TtVoucher(models.Model):
         if self.voucher_effect_base_fare == True:
             self.voucher_effect_all = False
 
-    @api.onchange('voucher_agent_eligibility_ids')
+    @api.onchange('agent_access_type', 'voucher_agent_eligibility_ids')
     def _onchange_action_agent(self):
-        domain = {'voucher_customer_id': []}
-        if self.voucher_agent_eligibility_ids != False:
+        if self.agent_access_type == 'all':
+            domain = {
+                'voucher_customer_id': [('id', '!=', False)]
+            }
+        elif self.agent_access_type == 'allow':
             self.voucher_customer_id = False
             domain = {
-                'voucher_customer_id': [('name', 'in', self.voucher_agent_eligibility_ids.ids)]
+                'voucher_customer_id': [('agent_id', 'in', self.voucher_agent_eligibility_ids.ids)]
+            }
+        else:
+            self.voucher_customer_id = False
+            domain = {
+                'voucher_customer_id': [('agent_id', 'not in', self.voucher_agent_eligibility_ids.ids)]
             }
         return {'domain': domain}
+
 
 class TtVoucherDetail(models.Model):
     _name = "tt.voucher.detail"
