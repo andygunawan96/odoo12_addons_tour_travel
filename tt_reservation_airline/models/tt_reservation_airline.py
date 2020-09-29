@@ -2071,6 +2071,9 @@ class ReservationAirline(models.Model):
                     prov_obj.action_create_ledger(context['co_uid'])
                     new_prov_obj.action_create_ledger(context['co_uid'])
 
+                # Remove smua passenger yg udah dpindah ke resv baru
+                book_obj.passenger_ids = [(3, sid) for sid in passenger_id_list]
+
             book_obj.calculate_pnr_provider_carrier()
             new_booking_obj.calculate_pnr_provider_carrier()
             book_obj.calculate_service_charge()
@@ -2078,11 +2081,21 @@ class ReservationAirline(models.Model):
             book_obj.check_provider_state(context=context)
             new_booking_obj.check_provider_state(context=context)
 
-            response = {
-                'book_id': new_booking_obj.id,
-                'order_number': new_booking_obj.name,
-                'provider_bookings': [{'provider_id': n_prov_obj.id, 'pnr': n_prov_obj.pnr} for n_prov_obj in new_booking_obj.provider_booking_ids],
-            }
+            response = new_booking_obj.to_dict()
+
+            psg_list = [rec.to_dict() for rec in new_booking_obj.sudo().passenger_ids]
+            prov_list = [rec.to_dict() for rec in new_booking_obj.provider_booking_ids]
+            response.update({
+                'passengers': psg_list,
+                'provider_bookings': prov_list,
+            })
+
+            # response = {
+            #     'book_id': new_booking_obj.id,
+            #     'order_number': new_booking_obj.name,
+            #     'provider_bookings': [{'provider_id': n_prov_obj.id, 'pnr': n_prov_obj.pnr} for n_prov_obj in
+            #                           new_booking_obj.provider_booking_ids],
+            # }
             return ERR.get_no_error(response)
         except RequestException as e:
             _logger.error('Error Split Reservation Airline API, %s' % traceback.format_exc())
