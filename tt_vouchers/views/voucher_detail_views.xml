@@ -10,7 +10,6 @@
                 <field name="voucher_expire_date"/>
                 <field name="voucher_used"/>
                 <field name="voucher_quota"/>
-                <field name="voucher_detail_state"/>
             </tree>
         </field>
     </record>
@@ -29,7 +28,6 @@
                         <field name="voucher_expire_date"/>
                         <field name="voucher_used"/>
                         <field name="voucher_quota"/>
-                        <field name="voucher_detail_state"/>
                     </group>
                     <notebook>
                         <page string="Voucher Blackout">
