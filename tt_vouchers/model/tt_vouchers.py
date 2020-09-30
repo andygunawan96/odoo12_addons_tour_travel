@@ -12,11 +12,11 @@ _logger = logging.getLogger(__name__)
 class TtVoucher(models.Model):
     _name = "tt.voucher"
     _description = 'Rodex Model Voucher'
-    voucher_reference_code = fields.Char("Reference Code")
-    voucher_coverage = fields.Selection([("all", "All"), ("product", "Specified Product"), ("provider", "Specified Provider")])
-    voucher_type = fields.Selection([("percent", "Percentage"), ("amount", "Some Amount")])
+    voucher_reference_code = fields.Char("Reference Code", required=True)
+    voucher_coverage = fields.Selection([("all", "All"), ("product", "Specified Product"), ("provider", "Specified Provider")], default='all')
+    voucher_type = fields.Selection([("percent", "Percentage"), ("amount", "Some Amount")], default='amount')
     currency_id = fields.Many2one("res.currency")
-    voucher_value = fields.Float("Voucher value")
+    voucher_value = fields.Float("Voucher value", default=0)
     voucher_maximum_cap = fields.Float("Voucher Cap")
     voucher_minimum_purchase = fields.Float('Voucher Minimum Purchase', default=0)
     voucher_detail_ids = fields.One2many("tt.voucher.detail", "voucher_id", "Voucher Detail")
@@ -25,7 +25,7 @@ class TtVoucher(models.Model):
     voucher_effect_all = fields.Boolean("Total", default=True)
     voucher_effect_base_fare = fields.Boolean("Base Fare")
 
-    voucher_state = fields.Selection([('draft', 'Draft'), ('confirm', 'Confirm'), ('not-active', 'Not Active')], default="draft")
+    state = fields.Selection([('draft', 'Draft'), ('confirm', 'Confirm'), ('not-active', 'Not Active')], default="draft")
     agent_type_access_type = fields.Selection([("all", "ALL"), ("allow", "Allowed"), ("restrict", "Restricted")], 'Agent Type Access Type', default='all')
     voucher_agent_type_eligibility_ids = fields.Many2many("tt.agent.type", "tt_agent_type_tt_voucher_rel", "tt_voucher_id", "tt_agent_type_id", "Agent Type")      #type of user that are able to use the voucher
     agent_access_type = fields.Selection([("all", "ALL"), ("allow", "Allowed"), ("restrict", "Restricted")], 'Agent Access Type', default='all')
@@ -37,7 +37,7 @@ class TtVoucher(models.Model):
 
     #add-ons
     voucher_multi_usage = fields.Boolean("Voucher Multi Usage")
-    voucher_usage_value = fields.Monetary("Voucher usage")
+    voucher_usage_value = fields.Monetary("Voucher usage", readonly=True)
     voucher_customer_id = fields.Many2one('tt.customer', 'Customer')
 
     @api.model
@@ -447,15 +447,15 @@ class TtVoucherDetail(models.Model):
     _description = 'Rodex Model Voucher Detail'
 
     voucher_id = fields.Many2one("tt.voucher")
-    voucher_reference_code = fields.Char("Voucher Reference", related="voucher_id.voucher_reference_code")
+    voucher_reference_code = fields.Char("Voucher Reference", related="voucher_id.voucher_reference_code", readonly=True)
     voucher_period_reference = fields.Char("Voucher Period Reference")
     voucher_start_date = fields.Datetime("voucher starts")
     voucher_expire_date = fields.Datetime("voucher end")
-    voucher_used = fields.Integer("Voucher use")
+    voucher_used = fields.Integer("Voucher use", readonly=True)
     voucher_quota = fields.Integer("Voucher quota")
     voucher_blackout_ids = fields.One2many("tt.voucher.detail.blackout", 'voucher_detail_id')
     voucher_used_ids = fields.One2many("tt.voucher.detail.used", "voucher_detail_id")
-    voucher_detail_state = fields.Selection([('not-active', 'Not Active'), ('active', 'Active'), ('expire', 'Expire')], default="not-active")
+    state = fields.Selection([('not-active', 'Not Active'), ('active', 'Active'), ('expire', 'Expire')], default="not-active")
 
     def get_voucher_remainder(self, voucher_id):
         voucher = self.env['tt.voucher.detail'].browse(int(voucher_id))
@@ -472,21 +472,21 @@ class TtVoucherDetail(models.Model):
 
     #function for cron
     def activate_voucher(self):
-        voucher = self.env['tt.voucher.detail'].search([('voucher_detail_state', '=', 'not-active')])
+        voucher = self.env['tt.voucher.detail'].search([('state', '=', 'not-active')])
         for i in voucher:
             if i.voucher_start_date.strftime("%Y-%m-%d") <= datetime.today().strftime("%Y-%m-%d"):
                 i.write({
-                    'voucher_detail_state': 'active'
+                    'state': 'active'
                 })
         return 0
 
     #function for cron
     def expire_voucher(self):
-        voucher = self.env['tt.voucher.detail'].search([('voucher_detail_state', '=', 'active')])
+        voucher = self.env['tt.voucher.detail'].search([('state', '=', 'active')])
         for i in voucher:
             if i.voucher_expire_date.strftime("%Y-%m-%d") < datetime.today().strftime("%Y-%m-%d"):
                 i.write({
-                    'voucher_detail_state': 'expire'
+                    'state': 'expire'
                 })
 
         return 0
@@ -538,7 +538,7 @@ class TtVoucherDetail(models.Model):
             return ERR.get_error(additional_message="Voucher is not exist")
 
         # check for validity of the voucher
-        if voucher_detail.voucher_detail_state == 'expire':
+        if voucher_detail.state == 'expire':
 
             #if voucher already expire
             _logger.error("%s, voucher is expired" % data['voucher_reference'])
@@ -1066,7 +1066,7 @@ class TtVoucherDetail(models.Model):
         #####################
 
         # check for voucher state
-        if voucher_detail.voucher_detail_state == 'expire':
+        if voucher_detail.state == 'expire':
             # if voucher is already expire
             # print to logger
             _logger.error("%s voucher is expired" % data['voucher_reference'])
@@ -1181,7 +1181,7 @@ class TtVoucherDetail(models.Model):
                 if voucher.voucher_type == 'percent' and voucher.voucher_multi_usage:
                     # voucher invalid
                     # no way multi use is percent will let it slide
-                    _logger.error("Voucher logic is invalid, %s" % voucher.voucher_reference_code)
+                    _logger.error("Voucher logic is invalid, %s" % voucher.voucher_reference)
 
                     # let the data pass
                     for j in i.cost_service_charge_ids:
@@ -1471,7 +1471,7 @@ class TtVoucherDetail(models.Model):
                 'provider_code': i.provider_id.code,
                 'provider_total_price': provider_total_price,
                 'provider_total_discount': provider_total_discount,
-                'prrovider_final_price': provider_final_total_price,
+                'provider_final_price': provider_final_total_price,
                 'discount_detail': temp_array
             }
 
@@ -1540,7 +1540,7 @@ class TtVoucherDetail(models.Model):
     #     #####################
     #
     #     # check for voucher state
-    #     if voucher_detail.voucher_detail_state == 'expire':
+    #     if voucher_detail.state == 'expire':
     #         # if voucher is already expire
     #         # print to logger
     #         _logger.error("%s voucher is expired" % data['voucher_reference'])
@@ -2033,7 +2033,7 @@ class TtVoucherDetail(models.Model):
     #         return ERR.get_error(additional_message="Voucher is NOT exist")
     #
     #     #if voucher already expired
-    #     if voucher_detail.voucher_detail_state == 'expire':
+    #     if voucher_detail.state == 'expire':
     #         _logger.error('%s Voucher can no longer be use (Expired)'% data['voucher_reference'])
     #         return ERR.get_error(additional_message="Voucher is already Expired")
     #
@@ -2216,7 +2216,7 @@ class TtVoucherDetail(models.Model):
             return ERR.get_error(additional_message="Voucher is NOT Exist")
 
         # voucher is exist hooray, now we'll check if the voucher could be use
-        if voucher_detail.voucher_detail_state == 'expire':
+        if voucher_detail.state == 'expire':
             # voucher is expired dun dun dun
             # write log
             _logger.error("%s Voucher can no longer be use (Expired)" % data['voucher_reference'])
@@ -2260,11 +2260,13 @@ class TtVoucherDetail(models.Model):
             for i in data['provider']:
                 provider = self.env['tt.provider'].search([('code', '=', i)])
                 to_check = {
-                    'provider_type': data['provider_type'],
-                    'provider': i,
+                    'provider_type_id': provider.provider_type_id.id,
+                    'provider_id': provider.id,
+                    'provider_name': i,
                     'voucher_reference': data['voucher_reference_code']
                 }
-                is_eligible = self.voucher_id.is_product_eligible(to_check)
+
+                is_eligible = self.voucher.is_product_eligible(to_check)
                 if is_eligible:
                     to_return = {
                         'provider_type': data['provider_type'],
@@ -2281,21 +2283,22 @@ class TtVoucherDetail(models.Model):
         else:
             provider = self.env['tt.provider'].search([('code', '=', data['provider'])])
             to_check = {
-                'provider_type': data['provider_type'],
-                'provider': i,
+                'provider_type_id': provider.provider_type_id.id,
+                'provider_id': provider.id,
+                'provider_name': data['provider'],
                 'voucher_reference': data['voucher_reference_code']
             }
-            is_eligible = self.voucher_id.is_product_eligible(to_check)
+            is_eligible = self.voucher.is_product_eligible(to_check)
             if is_eligible:
                 to_return = {
                     'provider_type': data['provider_type'],
-                    'provider': i,
+                    'provider': data['provider'],
                     'able_to_use': True
                 }
             else:
                 to_return = {
                     'provider_type': data['provider_type'],
-                    'provider': i,
+                    'provider': data['provider'],
                     'able_to_use': False
                 }
             result_array.append(to_return)
@@ -2341,7 +2344,7 @@ class TtVoucherDetail(models.Model):
             'voucher_expire_date': data['end_date'],
             'voucher_used': 0,
             'voucher_quota': int(data['voucher_quota']),
-            'voucher_detail_state': 'not-activate'
+            'state': 'not-activate'
         })
 
     #need revision
@@ -2362,7 +2365,7 @@ class TtVoucherDetail(models.Model):
             _logger.error('Voucher is not exist')
             return ERR.get_error(additional_message="voucher is not exist")
 
-        if corresponding_voucher.voucher_detail_state == 'expire':
+        if corresponding_voucher.state == 'expire':
             _logger.error('Voucher is no longer works (expired)')
             return ERR.get_error(additional_message="voucher is already expired")
 
@@ -2550,7 +2553,7 @@ class TtVoucherusedDetail(models.Model):
     _name = "tt.voucher.detail.used"
     _description = "Rodex Model Voucher Detail Used"
 
-    voucher_detail_id = fields.Many2one("tt.voucher.detail")
+    voucher_detail_id = fields.Many2one("tt.voucher.detail", readonly=True)
     voucher_date_use = fields.Datetime("Date use")
     voucher_agent_type_id = fields.Many2one("tt.agent.type", "Agent Type")
     voucher_agent_id = fields.Many2one("tt.agent", "Agent ID")
@@ -2558,8 +2561,8 @@ class TtVoucherusedDetail(models.Model):
     voucher_provider_id = fields.Many2one("tt.provider", "Provider ID")
 
     currency_id = fields.Many2one('res.currency', 'Currency')
-    voucher_usage = fields.Monetary('Voucher Usage')
-    voucher_remainder = fields.Monetary('Voucher Remainder')
+    voucher_usage = fields.Monetary('Voucher Usage', readonly=True)
+    voucher_remainder = fields.Monetary('Voucher Remainder', readonly=True)
 
     def add_voucher_used_detail(self, data):
         result = self.env['tt.voucher.detail.used'].create({
