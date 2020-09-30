@@ -19,6 +19,12 @@
         <field name="model">tt.voucher.detail</field>
         <field name="arch" type="xml">
             <form>
+                <header>
+                    <button string="Deactivate" name="action_set_not_active" groups="base.user_admin" type="object"/>
+                    <button string="Activate" name="action_set_active" groups="base.user_admin" type="object"/>
+                    <button string="Expire" name="action_set_expire" groups="base.user_admin" type="object"/>
+                    <field name="state" widget="statusbar" statusbar_visible="not_active,active,expire"/>
+                </header>
                 <sheet>
                     <group>
                         <field name="voucher_id"/>
