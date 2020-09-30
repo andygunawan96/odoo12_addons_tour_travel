@@ -42,6 +42,8 @@ class TtVoucher(models.Model):
 
     @api.model
     def create(self, vals):
+        if type(vals.get('voucher_reference_code')) == str:
+            vals['voucher_reference_code'] = vals['voucher_reference_code'].upper();
         res = super(TtVoucher, self).create(vals)
         try:
             res.create_voucher_email_queue('created')
@@ -457,6 +459,13 @@ class TtVoucherDetail(models.Model):
     voucher_used_ids = fields.One2many("tt.voucher.detail.used", "voucher_detail_id")
     state = fields.Selection([('not-active', 'Not Active'), ('active', 'Active'), ('expire', 'Expire')], default="not-active")
 
+    @api.model
+    def create(self, vals):
+        if type(vals.get('voucher_period_reference')) == str:
+            vals['voucher_period_reference'] = vals['voucher_period_reference'].upper()
+        res = super(TtVoucherDetail, self).create(vals)
+        return res
+
     def get_voucher_remainder(self, voucher_id):
         voucher = self.env['tt.voucher.detail'].browse(int(voucher_id))
         return voucher.voucher_quota - voucher.voucher_used
@@ -490,6 +499,21 @@ class TtVoucherDetail(models.Model):
                 })
 
         return 0
+
+    def action_not_activate(self):
+        self.write({
+            'state': 'not_activate'
+        })
+
+    def action_activate(self):
+        self.write({
+            'state': 'activate'
+        })
+
+    def action_expire(self):
+        self.write({
+            'state': 'expire'
+        })
 
     def simulate_voucher(self, data, context):
         # requirement of data
@@ -2232,13 +2256,21 @@ class TtVoucherDetail(models.Model):
             # return error
             return ERR.get_error(additional_message="Voucher cannot be use outside designated date")
 
-        # okay okay so the voucher is there, the date is within the voucher date, then we should look f there's voucher left
-        if voucher_detail.voucher_used >= voucher_detail.voucher_quota:
-            # o no the voucher is up
-            # write to logger
-            _logger.error("%s No More Voucher :(" % data['voucher_reference'])
-            # return error
-            return ERR.get_error(additional_message="Voucher sold out")
+        if voucher.voucher_multi_usage:
+            if voucher.voucher_value - voucher.voucher_usage_value <= 0:
+                # o no the voucher is up
+                # write to logger
+                _logger.error("%s Voucher has no value left :(" % data['voucher_reference'])
+                # return error
+                return ERR.get_error(additional_message="Voucher has no value left")
+        else:
+            # okay okay so the voucher is there, the date is within the voucher date, then we should look f there's voucher left
+            if voucher_detail.voucher_used >= voucher_detail.voucher_quota:
+                # o no the voucher is up
+                # write to logger
+                _logger.error("%s No More Voucher :(" % data['voucher_reference'])
+                # return error
+                return ERR.get_error(additional_message="Voucher sold out")
 
         # check agent
         agent_to_validate = {
@@ -2266,7 +2298,7 @@ class TtVoucherDetail(models.Model):
                     'voucher_reference': data['voucher_reference_code']
                 }
 
-                is_eligible = self.voucher.is_product_eligible(to_check)
+                is_eligible = self.env['tt.voucher'].is_product_eligible(to_check)
                 if is_eligible:
                     to_return = {
                         'provider_type': data['provider_type'],
@@ -2288,7 +2320,7 @@ class TtVoucherDetail(models.Model):
                 'provider_name': data['provider'],
                 'voucher_reference': data['voucher_reference_code']
             }
-            is_eligible = self.voucher.is_product_eligible(to_check)
+            is_eligible = self.env['tt.voucher'].is_product_eligible(to_check)
             if is_eligible:
                 to_return = {
                     'provider_type': data['provider_type'],
