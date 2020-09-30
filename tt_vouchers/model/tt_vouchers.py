@@ -12,6 +12,8 @@ _logger = logging.getLogger(__name__)
 class TtVoucher(models.Model):
     _name = "tt.voucher"
     _description = 'Rodex Model Voucher'
+    _rec_name = 'voucher_reference_code'
+
     voucher_reference_code = fields.Char("Reference Code", required=True)
     voucher_coverage = fields.Selection([("all", "All"), ("product", "Specified Product"), ("provider", "Specified Provider")], default='all')
     voucher_type = fields.Selection([("percent", "Percentage"), ("amount", "Some Amount")], default='amount')
@@ -39,46 +41,6 @@ class TtVoucher(models.Model):
     voucher_multi_usage = fields.Boolean("Voucher Multi Usage")
     voucher_usage_value = fields.Monetary("Voucher usage", readonly=True)
     voucher_customer_id = fields.Many2one('tt.customer', 'Customer')
-
-    @api.model
-    def create(self, vals):
-        if type(vals.get('voucher_reference_code')) == str:
-            vals['voucher_reference_code'] = vals['voucher_reference_code'].upper();
-        res = super(TtVoucher, self).create(vals)
-        try:
-            res.create_voucher_email_queue('created')
-        except Exception as e:
-            _logger.info('Error Create Voucher Creation Email Queue')
-        return res
-
-    def create_voucher_created_email_queue(self):
-        self.create_voucher_email_queue('created')
-
-    def create_voucher_email_queue(self, type):
-        if self.voucher_multi_usage and self.voucher_customer_id:
-            try:
-                mail_created = self.env['tt.email.queue'].sudo().with_context({'active_test': False}).search(
-                    [('res_id', '=', self.id), ('res_model', '=', self._name), ('type', '=', type)],
-                    limit=1)
-                if not mail_created:
-                    temp_data = {
-                        'provider_type': 'voucher',
-                        'ref_code': self.voucher_reference_code,
-                        'type': type,
-                    }
-                    temp_context = {
-                        'co_agent_id': self.voucher_customer_id.agent_id.id
-                    }
-                    self.env['tt.email.queue'].create_email_queue(temp_data, temp_context)
-                else:
-                    if type == 'created':
-                        _logger.info('Voucher Creation email for {} is already created!'.format(self.voucher_reference_code))
-                        raise Exception('Voucher Creation email for {} is already created!'.format(self.voucher_reference_code))
-                    else:
-                        _logger.info('Voucher Usage email for {} is already created!'.format(self.voucher_reference_code))
-                        raise Exception('Voucher Usage email for {} is already created!'.format(self.voucher_reference_code))
-            except Exception as e:
-                _logger.info('Error Create Email Queue')
 
     #harus di cek sama dengan atasnya
     def create_voucher(self, data):
@@ -479,6 +441,42 @@ class TtVoucherDetail(models.Model):
             vals['voucher_period_reference'] = vals['voucher_period_reference'].upper()
         res = super(TtVoucherDetail, self).create(vals)
         return res
+
+    @api.model
+    def create(self, vals):
+        res = super(TtVoucherDetail, self).create(vals)
+        try:
+            res.create_voucher_email_queue('created')
+        except Exception as e:
+            _logger.info('Error Create Voucher Creation Email Queue')
+        return res
+
+    def create_voucher_created_email_queue(self):
+        self.create_voucher_email_queue('created')
+
+    def create_voucher_email_queue(self, type):
+        if self.voucher_id.voucher_multi_usage and self.voucher_id.voucher_customer_id:
+            try:
+                temp_data = {
+                    'provider_type': 'voucher',
+                    'ref_code': self.voucher_reference_code,
+                    'period_code': self.voucher_period_reference,
+                    'type': type,
+                }
+                temp_context = {
+                    'co_agent_id': self.voucher_id.voucher_customer_id.agent_id.id
+                }
+                self.env['tt.email.queue'].create_email_queue(temp_data, temp_context)
+            except Exception as e:
+                _logger.info('Error Create Email Queue')
+
+    def get_voucher_details_email(self):
+        txt_detail = '<p>Reference Code: %s.%s</p>' % (self.voucher_reference_code, self.voucher_period_reference)
+        txt_detail += '<p>Value: %s %s</p>' % (self.voucher_id.currency_id.name, self.voucher_id.voucher_value)
+        txt_detail += '<p>Start Date: %s</p>' % (self.voucher_start_date.strftime('%d %b %Y %H:%M'), )
+        txt_detail += '<p>Expired Date: %s</p>' % (self.voucher_expire_date.strftime('%d %b %Y %H:%M'), )
+        txt_detail += '<br/>'
+        return txt_detail
 
     def get_voucher_remainder(self, voucher_id):
         voucher = self.env['tt.voucher.detail'].browse(int(voucher_id))
@@ -2493,7 +2491,7 @@ class TtVoucherDetail(models.Model):
                         })
 
                     try:
-                        voucher.create_voucher_email_queue('used')
+                        voucher_detail.create_voucher_email_queue('used')
                     except Exception as e:
                         _logger.info('Error Create Voucher Usage Email Queue')
 

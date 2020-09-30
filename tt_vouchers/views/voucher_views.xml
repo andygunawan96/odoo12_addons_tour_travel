@@ -20,14 +20,12 @@
         <field name="arch" type="xml">
             <form>
                 <header>
-                    <button name="create_voucher_created_email_queue" string="Send Voucher Created Email" type="object"/>
                     <button string="Set to draft" name="set_to_draft" groups="base.user_admin" type="object"/>
                     <button string="Confirm" name="action_set_confirm" groups="base.user_admin" type="object"/>
                     <field name="state" widget="statusbar" statusbar_visible="draft,confirm,not_active"/>
                 </header>
                 <sheet>
                     <group>
-                        <field name="id"/>
                         <field name="voucher_reference_code"/>
                         <field name="voucher_coverage"/>
                         <field name="voucher_type"/>
@@ -36,8 +34,8 @@
                         <field name="voucher_usage_value"/>
                         <field name="currency_id"/>
                     </group>
-                    <label for="voucher_detail_ids">Voucher Detail</label>
-                        <field name="voucher_detail_ids"/>
+                    <separator string="Voucher Details"/>
+                    <field name="voucher_detail_ids"/>
                     <notebook>
                         <page string="Agent Type">
                             <group>
