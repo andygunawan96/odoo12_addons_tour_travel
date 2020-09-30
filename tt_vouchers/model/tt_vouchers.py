@@ -1181,7 +1181,7 @@ class TtVoucherDetail(models.Model):
                 if voucher.voucher_type == 'percent' and voucher.voucher_multi_usage:
                     # voucher invalid
                     # no way multi use is percent will let it slide
-                    _logger.error("Voucher logic is invalid, %s" % voucher.voucher_reference)
+                    _logger.error("Voucher logic is invalid, %s" % voucher.voucher_reference_code)
 
                     # let the data pass
                     for j in i.cost_service_charge_ids:
@@ -2201,17 +2201,17 @@ class TtVoucherDetail(models.Model):
         if voucher.id == False:
             # no voucher found
             # write to logger
-            logger.error("%s voucher is not exist" % data['voucher_reference'])
+            _logger.error("%s voucher is not exist" % data['voucher_reference'])
             # return error
             return ERR.get_error(additional_message="Voucher is NOT exist")
 
         # okay so voucher is exist, but is the particular period voucher exist
-        voucher_detail = voucher.vouhcer_detail_ids.filtered(
+        voucher_detail = voucher.voucher_detail_ids.filtered(
             lambda x: x['voucher_period_reference'] == data['voucher_reference_period'])
         if voucher_detail.id == False:
             # no voucher detail found
             # write to logger
-            logger.error("%s voucher is not exist" % data['voucher_reference'])
+            _logger.error("%s voucher is not exist" % data['voucher_reference'])
             # return error
             return ERR.get_error(additional_message="Voucher is NOT Exist")
 
@@ -2264,7 +2264,7 @@ class TtVoucherDetail(models.Model):
                     'provider': i,
                     'voucher_reference': data['voucher_reference_code']
                 }
-                is_eligible = self.is_product_eligible(to_check)
+                is_eligible = self.voucher_id.is_product_eligible(to_check)
                 if is_eligible:
                     to_return = {
                         'provider_type': data['provider_type'],
@@ -2285,7 +2285,7 @@ class TtVoucherDetail(models.Model):
                 'provider': i,
                 'voucher_reference': data['voucher_reference_code']
             }
-            is_eligible = self.is_product_eligible(to_check)
+            is_eligible = self.voucher_id.is_product_eligible(to_check)
             if is_eligible:
                 to_return = {
                     'provider_type': data['provider_type'],
