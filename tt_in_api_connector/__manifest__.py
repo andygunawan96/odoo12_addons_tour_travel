@@ -23,6 +23,7 @@
 
     # always loaded
     'data': [
+        'wizard/create_customer_parent_wizard_view.xml'
     ],
     # only loaded in demonstration mode
     'demo': [

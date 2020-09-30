@@ -3,7 +3,7 @@
 
     <record id="force_issued_wizard_form_view" model="ir.ui.view">
         <field name="name">Force Issued Wizard</field>
-        <field name="model">force.issued.wizard</field>
+        <field name="model">force.issued.wizard.ppob</field>
         <field name="arch" type="xml">
             <form string="Force Issued Wizard">
                 <group>
@@ -26,9 +26,9 @@
         </field>
     </record>
 
-    <record id="force_issued_wizard_action_view" model="ir.actions.act_window">
-        <field name="name">force.issued.wizard.action.view</field>
-        <field name="res_model">force.issued.wizard</field>
+    <record id="force_issued_wizard_ppob_action_view" model="ir.actions.act_window">
+        <field name="name">Force Issued Wizard Ppob</field>
+        <field name="res_model">force.issued.wizard.ppob</field>
         <field name="view_type">form</field>
         <field name="view_mode">form</field>
         <field name="target">new</field>

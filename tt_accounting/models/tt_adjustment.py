@@ -159,7 +159,7 @@ class TtAdjustment(models.Model):
             self.customer_parent_id.id,
             debit,
             credit,
-            'Adjustment for %s, by %s' % (self.referenced_document,self.name),
+            'Adjustment for %s, by %s%s' % (self.referenced_document,self.name,self.description and '\nReason: %s' % self.description or ''),
             **{
                 'adjustment_id': self.id,
                 'refund_id': self.res_model == 'tt.refund' and self.res_id or False,

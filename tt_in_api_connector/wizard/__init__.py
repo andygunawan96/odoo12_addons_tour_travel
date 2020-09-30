@@ -1,0 +1,1 @@
+from . import get_merchant_info_payment_acquirer

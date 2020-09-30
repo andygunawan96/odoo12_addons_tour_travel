@@ -82,7 +82,7 @@
                             <field name="currency_id" readonly="1"/>
                             <field name="is_using_pnr_quota" groups="tt_base.group_tt_agent_management_operator"
                                    invisible="1"/>
-                            <field name="is_send_refund_email_cust" groups="tt_base.group_tt_agent_management_operator"/>
+                            <field name="is_send_email_cust" groups="tt_base.group_tt_agent_management_operator"/>
                             <!--                            <field name="actual_balance"/>-->
                             <!--                            <field name="annual_revenue_target"/>-->
                             <!--                            <field name="annual_profit_target"/>-->
@@ -108,7 +108,7 @@
                         <field name="email" placeholder="Agent's Email" readonly="1"/>
                         <field name="website" readonly="1"/>
                         <field name="npwp" readonly="1"/>
-                        <field name="payment_acquirer_ids" context="{'form_view_ref':'tt_base.payment_acquirer_form_view'}" readonly="0"/>
+                        <field name="payment_acquirer_ids" context="{'form_view_ref':'tt_base.payment_acquirer_form_view','tree_view_ref': 'tt_base.payment_acquirer_tree_view'}" readonly="0"/>
                     </group>
 
                     <group name="Ledger">
@@ -213,7 +213,7 @@
         <field name="priority">40</field>
         <field name="arch" type="xml">
             <field name="payment_acquirer_ids" position="replace">
-                <field name="payment_acquirer_ids" context="{'form_view_ref':'tt_base.payment_acquirer_form_view'}" readonly="0"/>
+                <field name="payment_acquirer_ids" context="{'form_view_ref':'tt_base.payment_acquirer_form_view','tree_view_ref': 'tt_base.payment_acquirer_tree_view'}" readonly="0"/>
             </field>
             <field name="address_ids" position="replace">
                 <field name="address_ids" readonly="0"/>

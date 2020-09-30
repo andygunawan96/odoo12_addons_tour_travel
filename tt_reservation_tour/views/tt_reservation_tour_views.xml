@@ -22,6 +22,12 @@
                 </group>
                 <separator/>
                 <group>
+                    <filter string="Not Reconciled" name="reconciled" domain="[('reconcile_state','=','not_reconciled')]"/>
+                    <filter string="Partial Reconciled" name="reconciled" domain="[('reconcile_state','=','partial')]"/>
+                    <filter string="Reconciled" name="reconciled" domain="[('reconcile_state','=','reconciled')]"/>
+                </group>
+                <separator/>
+                <group>
                     <filter string="Full Payment" name="full_payment" domain="[('payment_method_tour','=','full')]"/>
                     <filter string="Installment" name="installment" domain="[('payment_method_tour','=','installment')]"/>
                 </group>

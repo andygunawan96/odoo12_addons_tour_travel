@@ -13,7 +13,6 @@ class TtPaymentApiCon(models.Model):
     table_name = 'payment.acquirer'
 
     def action_call(self, table_obj, action, data, context):
-
         if action == 'payment':
             if data['va_type'] == 'open':
                 if self.env['payment.acquirer.number'].search([('number', '=', data['virtual_account'])])[0].state == 'open':
@@ -64,10 +63,9 @@ class TtPaymentApiCon(models.Model):
                     }
                     request = {
                         'amount': data['amount'],
-                        'seq_id': self.env.ref('tt_base.payment_acquirer_ho_payment_gateway').seq_id,
                         'currency_code': data['ccy'],
                         'payment_ref': data['payment_ref'],
-                        'payment_seq_id': self.env.ref('tt_base.payment_acquirer_ho_payment_gateway').seq_id,
+                        'payment_seq_id': pay_acq_num.payment_acquirer_id.seq_id,
                         'fee': data['fee']
                     }
 
@@ -132,9 +130,7 @@ class TtPaymentApiCon(models.Model):
             res = self.env['payment.acquirer.number'].set_va_number_api(data)
         else:
             raise RequestException(999)
-
         return res
-
 
     def set_VA(self, req):
         data = {
@@ -190,3 +186,13 @@ class TtPaymentApiCon(models.Model):
                                             request,
                                             action,
                                             timeout=180)
+
+    def get_merchant_info(self,req):
+        request = {
+            'provider': req['provider']
+        }
+        action = 'merchant_info'
+        return self.send_request_to_gateway('%s/payment' % (self.url),
+                                            request,
+                                            action,
+                                            timeout=60)

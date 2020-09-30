@@ -52,6 +52,12 @@ class TtReportDashboard(models.Model):
             res = self.get_report_hotel(data)
         elif type == 'tour':
             res = self.get_report_tour(data)
+        elif type == 'get_total_rupiah':
+            res = self.get_total_rupiah(data)
+        elif type == 'get_top_up_rupiah':
+            res = self.get_top_up_rupiah(data)
+        elif type == 'get_average_rupiah':
+            res = self.get_average_rupiah(data)
         else:
             return ERR.get_error(1001, "Cannot find action")
         return ERR.get_no_error(res)
@@ -1458,4 +1464,57 @@ class TtReportDashboard(models.Model):
             }
         }
 
+        return to_return
+
+    def get_total_rupiah(self, data):
+        temp_dict = {
+            'start_date': data['start_date'],
+            'end_date': data['end_date'],
+            'type': "overall"
+        }
+        values = self.env['report.tt_report_selling.report_selling']._get_reports(temp_dict)
+
+        total = 0
+        for i in values['lines']:
+            # check for every book state, and count if issued
+            if i['reservation_state'] == 'issued':
+                total += i['amount']
+
+        to_return = {
+            'data': total
+        }
+
+        return to_return
+
+    def get_top_up_rupiah(self, data):
+        temp_dict = {
+            'start_date': data['start_date'],
+            'end_date': data['end_date'],
+        }
+
+        return res
+
+    def get_average_rupiah(self, data):
+        temp_dict = {
+            'start_date': data['start_date'],
+            'end_date': data['end_date'],
+            'type': "overall"
+        }
+        values = self.env['report.tt_report_selling.report_selling']._get_reports(temp_dict)
+
+        total = 0
+        num_data = 0
+        for i in values['lines']:
+            # check for every book state, and count if issued
+            if i['reservation_state'] == 'issued':
+                total += i['amount']
+                num_data += 1
+
+        average = float(total)/float(num_data)
+
+        to_return = {
+            'data': average,
+            'total': total,
+            'num_data': num_data
+        }
         return to_return

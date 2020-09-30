@@ -21,6 +21,12 @@
                     <filter string="Failed/Expired" name="failed_expired" domain="['|', '|', '|', ('state', '=', 'fail_booked'), ('state', '=', 'fail_issued'), ('state', '=', 'fail_refunded'), ('state', '=', 'cancel2')]"/>
                     <filter string="Cancelled/Rejected/Refunded" name="cancel" domain="['|', '|', ('state', '=', 'cancel'), ('state', '=', 'rejected'), ('state', '=', 'refund')]"/>
                 </group>
+                <separator/>
+                <group>
+                    <filter string="Not Reconciled" name="reconciled" domain="[('reconcile_state','=','not_reconciled')]"/>
+                    <filter string="Partial Reconciled" name="reconciled" domain="[('reconcile_state','=','partial')]"/>
+                    <filter string="Reconciled" name="reconciled" domain="[('reconcile_state','=','reconciled')]"/>
+                </group>
 <!--                <seperator/>-->
 <!--                <filter name="today" string="Today" domain="[('date', '&gt;=', time.strftime('%%Y-%%m-%%d'))]"/>-->
 <!--                <filter name="yesterday" string="Yesterday"-->

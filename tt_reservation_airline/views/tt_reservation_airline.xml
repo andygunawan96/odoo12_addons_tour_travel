@@ -22,6 +22,12 @@
                     <filter string="Cancelled/Refunded" name="cancel" domain="['|', ('state','=','cancel'),('state','=','refund')]"/>
                 </group>
                 <separator/>
+                <group>
+                    <filter string="Not Reconciled" name="reconciled" domain="[('reconcile_state','=','not_reconciled')]"/>
+                    <filter string="Partial Reconciled" name="reconciled" domain="[('reconcile_state','=','partial')]"/>
+                    <filter string="Reconciled" name="reconciled" domain="[('reconcile_state','=','reconciled')]"/>
+                </group>
+                <separator/>
                 <filter name="today" string="Today" domain="[('date','&gt;=',time.strftime('%%Y-%%m-%%d'))]"/>
                 <filter name="yesterday" string="Yesterday"
                         domain="[
@@ -66,7 +72,6 @@
                 <button name="sync_booking_with_vendor" type="object" string="Sync Reservation"
                         groups="base.user_admin"/>
                 <!--                <button name="CR8" string="CR8" type="object" groups="base.user_admin"/>-->
-                <button name="compute_journey_code" type="object" string="Compute Journey Code" groups="base.user_admin"/>
             </xpath>
             <xpath expr="//div[hasclass('oe_title')]" position="inside">
                 <label for="is_get_booking_from_vendor" string="Retrieved From Vendor" attrs="{'invisible': [('is_get_booking_from_vendor','=',False)]}"/>

@@ -9,7 +9,6 @@
                 <field name="voucher_coverage"/>
                 <field name="voucher_type"/>
                 <field name="voucher_value"/>
-                <field name="voucher_state"/>
                 <field name="currency_id"/>
             </tree>
         </field>
@@ -20,31 +19,46 @@
         <field name="model">tt.voucher</field>
         <field name="arch" type="xml">
             <form>
+                <header>
+                    <button string="Set to draft" name="set_to_draft" groups="base.user_admin" type="object"/>
+                    <button string="Confirm" name="action_set_confirm" groups="base.user_admin" type="object"/>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,confirm,not_active"/>
+                </header>
                 <sheet>
                     <group>
-                        <field name="id"/>
                         <field name="voucher_reference_code"/>
                         <field name="voucher_coverage"/>
                         <field name="voucher_type"/>
                         <field name="voucher_value"/>
-                        <field name="voucher_state"/>
                         <field name="voucher_multi_usage"/>
                         <field name="voucher_usage_value"/>
                         <field name="currency_id"/>
                     </group>
-                    <label for="voucher_detail_ids">Voucher Detail</label>
-                        <field name="voucher_detail_ids"/>
+                    <separator string="Voucher Details"/>
+                    <field name="voucher_detail_ids"/>
                     <notebook>
                         <page string="Agent Type">
+                            <group>
+                                <field name="agent_type_access_type"/>
+                            </group>
                             <field name="voucher_agent_type_eligibility_ids"/>
                         </page>
                         <page string="Agent">
+                            <group>
+                                <field name="agent_access_type"/>
+                            </group>
                             <field name="voucher_agent_eligibility_ids"/>
                         </page>
                         <page string="Provider Type">
+                            <group>
+                                <field name="provider_type_access_type"/>
+                            </group>
                             <field name="voucher_provider_type_eligibility_ids"/>
                         </page>
                         <page string="Provider">
+                            <group>
+                                <field name="provider_access_type"/>
+                            </group>
                             <field name="voucher_provider_eligibility_ids"/>
                         </page>
                         <page string="Affecting">

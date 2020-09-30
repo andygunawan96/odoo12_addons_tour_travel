@@ -54,14 +54,6 @@
             <field name="account_name">Roda Express Sukses Mandiri</field>
             <field name="website_published" eval="True"/>
         </record>
-        <record id="payment_acquirer_ho_payment_gateway" model="payment.acquirer">
-            <field name="name">Espay Payment Gateway</field>
-            <field name="provider">manual</field>
-            <field name="type">payment_gateway</field>
-            <field name="agent_id" ref="tt_base.rodex_ho"/>
-            <field name="account_name">Roda Express Sukses Payment Espay</field>
-            <field name="website_published" eval="True"/>
-        </record>
 
         <record id="payment_acquirer_ho_payment_gateway_bca" model="payment.acquirer">
             <field name="name">Transfer BANK BCA</field>
