@@ -32,7 +32,7 @@
     </record>
 
     <record id="voucher_detail_used_action_view" model="ir.actions.act_window">
-        <field name="name">voucher used</field>
+        <field name="name">Voucher Used</field>
         <field name="type">ir.actions.act_window</field>
         <field name="res_model">tt.voucher.detail.used</field>
         <field name="view_type">form</field>

@@ -48,7 +48,7 @@
     </record>
 
     <record id="voucher_detail_action_view" model="ir.actions.act_window">
-        <field name="name">voucher detail</field>
+        <field name="name">Voucher Detail</field>
         <field name="type">ir.actions.act_window</field>
         <field name="res_model">tt.voucher.detail</field>
         <field name="view_type">form</field>
