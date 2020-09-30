@@ -14,6 +14,7 @@ class TtVoucher(models.Model):
     _description = 'Rodex Model Voucher'
     _rec_name = 'voucher_reference_code'
 
+    name = fields.Char("Voucher Name", required=True, default='Voucher')
     voucher_reference_code = fields.Char("Reference Code", required=True)
     voucher_coverage = fields.Selection([("all", "All"), ("product", "Specified Product"), ("provider", "Specified Provider")], default='all')
     voucher_type = fields.Selection([("percent", "Percentage"), ("amount", "Some Amount")], default='amount')
@@ -405,28 +406,29 @@ class TtVoucher(models.Model):
             }
         return {'domain': domain}
 
-    def action_set_draft(self):
+    def action_set_to_draft(self):
         self.write({
             'state': 'draft'
         })
 
-    def action_set_confirm(self):
+    def action_set_to_confirm(self):
         self.write({
             'state': 'confirm'
         })
 
-    def set_not_active(self):
+    def set_to_not_active(self):
         self.write({
-            'state': 'not_activate'
+            'state': 'not-active'
         })
 
 class TtVoucherDetail(models.Model):
     _name = "tt.voucher.detail"
     _description = 'Rodex Model Voucher Detail'
+    _rec_name = 'display_name'
 
     voucher_id = fields.Many2one("tt.voucher")
     voucher_reference_code = fields.Char("Voucher Reference", related="voucher_id.voucher_reference_code", readonly=True)
-    voucher_period_reference = fields.Char("Voucher Period Reference")
+    voucher_period_reference = fields.Char("Voucher Period Reference", required=True)
     voucher_start_date = fields.Datetime("voucher starts")
     voucher_expire_date = fields.Datetime("voucher end")
     voucher_used = fields.Integer("Voucher use", readonly=True)
@@ -434,16 +436,18 @@ class TtVoucherDetail(models.Model):
     voucher_blackout_ids = fields.One2many("tt.voucher.detail.blackout", 'voucher_detail_id')
     voucher_used_ids = fields.One2many("tt.voucher.detail.used", "voucher_detail_id")
     state = fields.Selection([('not-active', 'Not Active'), ('active', 'Active'), ('expire', 'Expire')], default="not-active")
+    display_name = fields.Char('Display Name', compute='_compute_display_name')
+
+    @api.depends('voucher_reference_code', 'voucher_period_reference')
+    @api.onchange('voucher_reference_code', 'voucher_period_reference')
+    def _compute_display_name(self):
+        for rec in self:
+            rec.display_name = rec.voucher_reference_code + '.' + rec.voucher_period_reference
 
     @api.model
     def create(self, vals):
         if type(vals.get('voucher_period_reference')) == str:
             vals['voucher_period_reference'] = vals['voucher_period_reference'].upper()
-        res = super(TtVoucherDetail, self).create(vals)
-        return res
-
-    @api.model
-    def create(self, vals):
         res = super(TtVoucherDetail, self).create(vals)
         try:
             res.create_voucher_email_queue('created')
@@ -512,14 +516,14 @@ class TtVoucherDetail(models.Model):
 
         return 0
 
-    def action_set_not_activate(self):
+    def action_set_not_active(self):
         self.write({
-            'state': 'not_activate'
+            'state': 'not-active'
         })
 
-    def action_set_activate(self):
+    def action_set_active(self):
         self.write({
-            'state': 'activate'
+            'state': 'active'
         })
 
     def action_set_expire(self):
@@ -1217,7 +1221,7 @@ class TtVoucherDetail(models.Model):
                 if voucher.voucher_type == 'percent' and voucher.voucher_multi_usage:
                     # voucher invalid
                     # no way multi use is percent will let it slide
-                    _logger.error("Voucher logic is invalid, %s" % voucher.voucher_reference)
+                    _logger.error("Voucher logic is invalid, %s" % voucher.voucher_reference_code)
 
                     # let the data pass
                     for j in i.cost_service_charge_ids:
