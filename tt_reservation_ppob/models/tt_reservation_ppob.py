@@ -176,9 +176,9 @@ class ReservationPpob(models.Model):
         provider_list = []
         carrier_list = []
         for rec in self.provider_booking_ids:
-            pnr_list.append(rec.pnr)
-            provider_list.append(rec.provider_id.name)
-            carrier_list.append(rec.carrier_id.name)
+            pnr_list.append(rec.pnr or '')
+            provider_list.append(rec.provider_id.name or '')
+            carrier_list.append(rec.carrier_id.name or '')
         self.write({
             'state': 'issued',
             'issued_date': datetime.now(),
@@ -328,10 +328,16 @@ class ReservationPpob(models.Model):
         elif all(rec.state == 'cancel' for rec in self.provider_booking_ids):
             # failed book
             self.action_set_as_cancel()
+        elif self.provider_booking_ids:
+            provider_obj = self.provider_booking_ids[0]
+            self.write({
+                'state': provider_obj.state,
+            })
         else:
-            # entah status apa
-            _logger.error('Entah status apa')
-            raise RequestException(1006)
+            self.write({
+                'state': 'draft',
+            })
+            # raise RequestException(1006)
 
     def payment_ppob_api(self,req,context):
         payment_res = self.payment_reservation_api('ppob',req,context)
@@ -878,6 +884,58 @@ class ReservationPpob(models.Model):
             return e.error_dict()
         except Exception as e:
             _logger.error(traceback.format_exc())
+            return ERR.get_error(1005)
+
+    def update_pnr_provider_ppob_api(self, req, context):
+        _logger.info("Update\n" + json.dumps(req))
+        try:
+            if req.get('book_id'):
+                book_obj = self.env['tt.reservation.ppob'].browse(req['book_id'])
+            elif req.get('order_number'):
+                book_obj = self.env['tt.reservation.ppob'].search([('name', '=', req['order_number'])])
+            else:
+                raise Exception('Booking ID or Number not Found')
+            try:
+                book_obj.create_date
+            except:
+                raise RequestException(1001)
+
+            any_provider_changed = False
+
+            for provider in req['provider_booking']:
+                provider_obj = self.env['tt.provider.ppob'].browse(provider['provider_id'])
+                try:
+                    provider_obj.create_date
+                except:
+                    raise RequestException(1002)
+
+                if provider['status'] == 'CANCEL':
+                    provider_obj.action_cancel_api_ppob(context)
+                    any_provider_changed = True
+                elif provider['status'] == 'VOID_FAILED':
+                    provider_obj.action_failed_void_api_ppob(provider.get('error_code', -1), provider.get('error_msg', ''))
+                    any_provider_changed = True
+
+            if any_provider_changed:
+                book_obj.check_provider_state(context, req=req)
+
+            return ERR.get_no_error({
+                'order_number': book_obj.name,
+                'book_id': book_obj.id
+            })
+        except RequestException as e:
+            _logger.error(traceback.format_exc())
+            try:
+                book_obj.notes += str(datetime.now()) + '\n' + traceback.format_exc()+'\n'
+            except:
+                _logger.error('Creating Notes Error')
+            return e.error_dict()
+        except Exception as e:
+            _logger.error(traceback.format_exc())
+            try:
+                book_obj.notes += str(datetime.now()) + '\n' + traceback.format_exc()+'\n'
+            except:
+                _logger.error('Creating Notes Error')
             return ERR.get_error(1005)
 
     def get_filename(self):

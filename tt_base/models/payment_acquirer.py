@@ -47,14 +47,18 @@ class PaymentAcquirer(models.Model):
         amount = int(amount)
         cust_fee = 0
         bank_fee = 0
+        ##hitung fee karena EDC dll tidak pengaruh ke ledger invoice dll. hanya pencatatan
         if self.cust_fee:
             cust_fee = round(amount * self.cust_fee / 100)
         if self.bank_fee:
             bank_fee = round((amount+cust_fee) * self.bank_fee / 100)
+        ##untuk VA fee, jika VA fee pasti bukan EDC jadi bisa replace
 
-        lost_or_profit = cust_fee-bank_fee
-
-        return lost_or_profit,cust_fee, uniq
+        if self.va_fee:
+            return 0,self.va_fee,uniq
+        else:
+            lost_or_profit = cust_fee-bank_fee
+            return lost_or_profit,cust_fee, uniq
 
     @api.onchange('start_time', 'end_time')
     def check_start_end_time(self):
@@ -98,9 +102,8 @@ class PaymentAcquirer(models.Model):
                 'fee': fee,
                 'unique_amount': abs(uniq),
             },
-            'total_amount': float(amount) + fee + uniq,
+            'total_amount': float(amount) + uniq + fee,
             'image': self.bank_id.image_id and self.bank_id.image_id.url or '',
-            'return_url': '/payment/' + str(self.type) + '/feedback?acq_id=' + str(self.id)
         }
 
     def acquirer_format_VA(self, acq, amount,unique):
@@ -129,7 +132,6 @@ class PaymentAcquirer(models.Model):
             },
             'total_amount': float(amount) + fee + uniq,
             'image': payment_acq.id.bank_id.image_id and payment_acq.id.bank_id.image_id.url or '',
-            'return_url': '/payment/' + str(payment_acq.id.type) + '/feedback?acq_id=' + str(payment_acq.id.id)
         }
 
     def get_va_number(self, req, context):
@@ -149,7 +151,7 @@ class PaymentAcquirer(models.Model):
 
     def check_is_holiday(self,now_time):
         holiday_objs = self.env['tt.public.holiday'].search([('country_id','=',self.env.ref('base.id').id),
-                                              ('date','=',now_time.strftime('%Y-%m-%d'))])
+                                                             ('date','=',now_time.strftime('%Y-%m-%d'))])
         if holiday_objs:
             return True
         return False
@@ -203,31 +205,40 @@ class PaymentAcquirer(models.Model):
                 amount = req.get('amount', 0)
                 co_agent_id = context['co_agent_id']
 
-            dom = [('website_published', '=', True), ('company_id', '=', self.env.user.company_id.id)]
-
+            dom = [
+                ('website_published', '=', True),
+                ('company_id', '=', self.env.user.company_id.id),
+                ('type', '!=', 'va'),  ## search yg bukan espay
+                ('type', '!=', 'payment_gateway')  ## search yg bukan mutasi bca
+            ]
+            unique = 0
             if req['transaction_type'] == 'top_up':
                 # Kalau top up Ambil agent_id HO
                 dom.append(('agent_id', '=', self.env.ref('tt_base.rodex_ho').id))
                 unique = self.generate_unique_amount(amount).upper_number
             elif req['transaction_type'] == 'billing':
                 dom.append(('agent_id', '=', co_agent_id))
-                unique = 0
 
             values = {}
             now_time = datetime.now(pytz.timezone('Asia/Jakarta'))
             if context['co_user_login'] != self.env.ref('tt_base.agent_b2c_user').login:
                 for acq in self.sudo().search(dom):
-                    if acq.type != 'va' and acq.type != 'payment_gateway':
-                        # self.test_validate(acq) utk testig saja
-                        if self.validate_time(acq, now_time):
-                            if not values.get(acq.type):
-                                values[acq.type] = []
-                            values[acq.type].append(acq.acquirer_format(amount, unique))
+                    # self.test_validate(acq) utk testig saja
+                    if self.validate_time(acq, now_time):
+                        if not values.get(acq.type):
+                            values[acq.type] = []
+                        values[acq.type].append(acq.acquirer_format(amount, unique))
 
             # # payment gateway
             if util.get_without_empty(req, 'order_number'):
-                dom = [('website_published', '=', True), ('company_id', '=', self.env.user.company_id.id)]
-                dom.append(('agent_id', '=', self.env.ref('tt_base.rodex_ho').id))
+                dom = [
+                    ('website_published', '=', True),
+                    ('company_id', '=', self.env.user.company_id.id),
+                    ('agent_id', '=', self.env.ref('tt_base.rodex_ho').id),
+                    '|',
+                    ('type', '=', 'va'),  ## search yg espay
+                    ('type', '=', 'payment_gateway')  ## search yg mutasi bca
+                ]
                 pay_acq_num = self.env['payment.acquirer.number'].search([('number', 'ilike', req['order_number'])])
                 if pay_acq_num:
                     unique = pay_acq_num[0].unique_amount * -1
@@ -235,14 +246,13 @@ class PaymentAcquirer(models.Model):
                     unique = self.generate_unique_amount(amount).lower_number
                 for acq in self.sudo().search(dom):
                     # self.test_validate(acq) utk testing saja
-                    if acq.type == 'va' or acq.type == 'payment_gateway':
-                        if self.validate_time(acq,now_time):
-                            if not values.get(acq.type):
-                                values[acq.type] = []
-                            if acq.account_number != '':
-                                values[acq.type].append(acq.acquirer_format(amount, unique))
-                            else:
-                                values[acq.type].append(acq.acquirer_format(amount, 0))
+                    if self.validate_time(acq,now_time):
+                        if not values.get(acq.type):
+                            values[acq.type] = []
+                        if acq.account_number:
+                            values[acq.type].append(acq.acquirer_format(amount, unique))
+                        else:
+                            values[acq.type].append(acq.acquirer_format(amount, 0))
 
             res = {}
             res['non_member'] = values
@@ -314,7 +324,7 @@ class PaymentAcquirerNumber(models.Model):
             #check datetime
             date_now = datetime.now()
             time_delta = date_now - payment_acq_number[len(payment_acq_number)-1].create_date
-            if divmod(time_delta.seconds, 3600)[0] > 0 or datetime.now() > self.time_limit and self.time_limit:
+            if divmod(time_delta.seconds, 3600)[0] > 0 or self.time_limit and datetime.now() > self.time_limit:
                 for rec in payment_acq_number:
                     if rec.state == 'close':
                         rec.state = 'cancel'
@@ -377,6 +387,8 @@ class PaymentAcquirerNumber(models.Model):
             payment_acq_number.bank_name = data['bank_name']
             payment_acq_number.fee_amount = data['fee_amount']
             payment_acq_number.time_limit = data['time_limit']
+            payment_acq_number.payment_acquirer_id.va_fee = data['fee_amount']
+
             return ERR.get_no_error()
         else:
             return ERR.get_error(additional_message='Payment Acquirer not found')
@@ -395,7 +407,7 @@ class PaymentUniqueAmount(models.Model):
     def create(self, vals_list):
         already_exist_on_same_amount = [rec.upper_number for rec in self.search([('amount', '=', vals_list['amount'])])]
         already_exist_on_lower_higher_amount = [abs(rec.lower_number) for rec in self.search([('amount', 'in', [int(vals_list['amount'])-1000,
-                                                                                                    int(vals_list['amount'])+1000])])]
+                                                                                                                int(vals_list['amount'])+1000])])]
         already_exist = already_exist_on_same_amount+already_exist_on_lower_higher_amount
         unique_amount = None
         while (not unique_amount):

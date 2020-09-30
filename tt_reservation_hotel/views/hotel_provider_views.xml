@@ -5,7 +5,7 @@
         <field name="arch" type="xml">
             <form>
                 <header>
-                    <button string="Issued Locally" name="%(tt_reservation_hotel.force_issued_wizard_action_view)d" states="" type="action"
+                    <button string="Issued Locally" name="%(tt_reservation_hotel.force_issued_wizard_hotel_action_view)d" states="" type="action"
                             groups="tt_base.group_tt_ticketing_operator"
                             context="{
                         'default_provider_id': id,
