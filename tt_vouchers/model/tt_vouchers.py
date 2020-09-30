@@ -405,6 +405,20 @@ class TtVoucher(models.Model):
             }
         return {'domain': domain}
 
+    def action_set_draft(self):
+        self.write({
+            'state': 'draft'
+        })
+
+    def action_set_confirm(self):
+        self.write({
+            'state': 'confirm'
+        })
+
+    def set_not_active(self):
+        self.write({
+            'state': 'not_activate'
+        })
 
 class TtVoucherDetail(models.Model):
     _name = "tt.voucher.detail"
@@ -498,17 +512,17 @@ class TtVoucherDetail(models.Model):
 
         return 0
 
-    def action_not_activate(self):
+    def action_set_not_activate(self):
         self.write({
             'state': 'not_activate'
         })
 
-    def action_activate(self):
+    def action_set_activate(self):
         self.write({
             'state': 'activate'
         })
 
-    def action_expire(self):
+    def action_set_expire(self):
         self.write({
             'state': 'expire'
         })
@@ -2359,6 +2373,7 @@ class TtVoucherDetail(models.Model):
             'voucher_currency': voucher.currency_id.name,
             'voucher_cap': maximum_cap,
             'voucher_minimum_purchase': minimum_purchase,
+            'voucher_scope': voucher.voucher_effect_all,
             'date_expire': voucher_detail.voucher_expire_date.strftime("%Y-%m-%d"),
             'provider_type': data['provider_type'],
             'provider': result_array

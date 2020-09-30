@@ -19,6 +19,11 @@
         <field name="model">tt.voucher</field>
         <field name="arch" type="xml">
             <form>
+                <header>
+                    <button string="Set to draft" name="set_to_draft" groups="base.user_admin" type="object"/>
+                    <button string="Confirm" name="action_set_confirm" groups="base.user_admin" type="object"/>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,confirm,not_active"/>
+                </header>
                 <sheet>
                     <group>
                         <field name="voucher_reference_code"/>

@@ -21,6 +21,10 @@
             <form>
                 <header>
                     <button name="create_voucher_created_email_queue" string="Send Voucher Created Email" type="object"/>
+                    <button string="Deactivate" name="action_set_not_active" groups="base.user_admin" type="object"/>
+                    <button string="Activate" name="action_set_active" groups="base.user_admin" type="object"/>
+                    <button string="Expire" name="action_set_expire" groups="base.user_admin" type="object"/>
+                    <field name="state" widget="statusbar" statusbar_visible="not_active,active,expire"/>
                 </header>
                 <sheet>
                     <group>
