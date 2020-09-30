@@ -1181,7 +1181,7 @@ class TtVoucherDetail(models.Model):
                 if voucher.voucher_type == 'percent' and voucher.voucher_multi_usage:
                     # voucher invalid
                     # no way multi use is percent will let it slide
-                    _logger.error("Voucher logic is invalid, %s" % voucher.voucher_reference)
+                    _logger.error("Voucher logic is invalid, %s" % voucher.voucher_reference_code)
 
                     # let the data pass
                     for j in i.cost_service_charge_ids:
