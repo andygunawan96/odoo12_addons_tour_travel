@@ -14,7 +14,7 @@ class TtVoucher(models.Model):
     _description = 'Rodex Model Voucher'
     voucher_reference_code = fields.Char("Reference Code", required=True)
     voucher_coverage = fields.Selection([("all", "All"), ("product", "Specified Product"), ("provider", "Specified Provider")], default='all')
-    voucher_type = fields.Selection([("percent", "Percentage"), ("amount", "Some Amount")], default='percent')
+    voucher_type = fields.Selection([("percent", "Percentage"), ("amount", "Some Amount")], default='amount')
     currency_id = fields.Many2one("res.currency")
     voucher_value = fields.Float("Voucher value", default=0)
     voucher_maximum_cap = fields.Float("Voucher Cap")
