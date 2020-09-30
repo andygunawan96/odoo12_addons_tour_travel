@@ -279,7 +279,7 @@ class TtRefund(models.Model):
                 # TODO perlu di break disini atau ambil yg paling trakhir?
         return current_refund_env
 
-    def get_refund_fee_amount(self, agent_id, order_number='', order_type='', refund_amount=0):
+    def get_refund_fee_amount(self, agent_id, order_number='', order_type='', refund_amount=0, passenger_count=0):
         admin_fee_obj = self.get_refund_admin_fee_rule(agent_id)
 
         pnr_amount = 1
@@ -288,7 +288,7 @@ class TtRefund(models.Model):
             book_obj = self.env['tt.reservation.'+order_type].search([('name', '=', order_number)], limit=1)
 
             pnr_amount = len(book_obj.provider_booking_ids.ids)
-            pax_amount = len(book_obj.passenger_ids.ids)
+            pax_amount = int(passenger_count) or len(book_obj.passenger_ids.ids)
 
         admin_fee_ho = admin_fee_obj.get_final_adm_fee_ho(refund_amount, pnr_amount, pax_amount)
         admin_fee_agent = admin_fee_obj.get_final_adm_fee_agent(refund_amount, pnr_amount, pax_amount)
@@ -322,7 +322,7 @@ class TtRefund(models.Model):
                 rec.admin_fee = 0
 
     def compute_admin_fee_api(self, req):
-        refund_fee = self.get_refund_fee_amount(req['agent_id'], req['order_number'], req['order_type'], req['refund_amount'])
+        refund_fee = self.get_refund_fee_amount(req['agent_id'], req['order_number'], req['order_type'], req['refund_amount'], req['passenger_count'])
         return refund_fee['admin_fee']
 
     @api.depends('admin_fee', 'refund_amount')
