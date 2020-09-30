@@ -409,10 +409,11 @@ class TtVoucher(models.Model):
 class TtVoucherDetail(models.Model):
     _name = "tt.voucher.detail"
     _description = 'Rodex Model Voucher Detail'
+    _rec_name = 'display_name'
 
     voucher_id = fields.Many2one("tt.voucher")
     voucher_reference_code = fields.Char("Voucher Reference", related="voucher_id.voucher_reference_code")
-    voucher_period_reference = fields.Char("Voucher Period Reference")
+    voucher_period_reference = fields.Char("Voucher Period Reference", required=True)
     voucher_start_date = fields.Datetime("voucher starts")
     voucher_expire_date = fields.Datetime("voucher end")
     voucher_used = fields.Integer("Voucher use")
@@ -420,6 +421,13 @@ class TtVoucherDetail(models.Model):
     voucher_blackout_ids = fields.One2many("tt.voucher.detail.blackout", 'voucher_detail_id')
     voucher_used_ids = fields.One2many("tt.voucher.detail.used", "voucher_detail_id")
     voucher_detail_state = fields.Selection([('not-active', 'Not Active'), ('active', 'Active'), ('expire', 'Expire')], default="not-active")
+    display_name = fields.Char('Display Name', compute='_compute_display_name')
+
+    @api.depends('voucher_reference_code', 'voucher_period_reference')
+    @api.onchange('voucher_reference_code', 'voucher_period_reference')
+    def _compute_display_name(self):
+        for rec in self:
+            rec.display_name = rec.voucher_reference_code + '.' + rec.voucher_period_reference
 
     @api.model
     def create(self, vals):

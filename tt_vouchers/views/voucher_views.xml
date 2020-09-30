@@ -1,5 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
+    <record id="voucher_filter_view" model="ir.ui.view">
+        <field name="name">voucher.filter.view</field>
+        <field name="model">tt.voucher</field>
+        <field name="arch" type="xml">
+            <search string="Search Voucher">
+                <field name="name"/>
+                <field name="voucher_reference_code"/>
+                <field name="voucher_value"/>
+                <field name="voucher_customer_id"/>
+
+                <group expand="0" string="Group By">
+                    <filter name="group_by_voucher_type" string="Voucher Type" domain="[]" context="{'group_by':'voucher_type'}"/>
+                    <filter name="group_by_currency_id" string="Voucher Currency" domain="[]" context="{'group_by':'currency_id'}"/>
+                    <filter name="group_by_agent_type_access_type" string="Agent Type Access Type" domain="[]" context="{'group_by':'agent_type_access_type'}"/>
+                    <filter name="group_by_agent_access_type" string="Agent Access Type" domain="[]" context="{'group_by':'agent_access_type'}"/>
+                    <filter name="group_by_provider_type_access_type" string="Provider Type Access Type" domain="[]" context="{'group_by':'provider_type_access_type'}"/>
+                    <filter name="group_by_provider_access_type" string="Provider Access Type" domain="[]" context="{'group_by':'provider_access_type'}"/>
+                    <filter name="group_by_voucher_state" string="Voucher State" domain="[]" context="{'group_by':'voucher_state'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
     <record id="voucher_tree_view" model="ir.ui.view">
         <field name="name">voucher.tree.view</field>
         <field name="model">tt.voucher</field>
