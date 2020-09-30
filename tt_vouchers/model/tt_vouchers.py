@@ -12,11 +12,11 @@ _logger = logging.getLogger(__name__)
 class TtVoucher(models.Model):
     _name = "tt.voucher"
     _description = 'Rodex Model Voucher'
-    voucher_reference_code = fields.Char("Reference Code")
-    voucher_coverage = fields.Selection([("all", "All"), ("product", "Specified Product"), ("provider", "Specified Provider")])
-    voucher_type = fields.Selection([("percent", "Percentage"), ("amount", "Some Amount")])
+    voucher_reference_code = fields.Char("Reference Code", required=True)
+    voucher_coverage = fields.Selection([("all", "All"), ("product", "Specified Product"), ("provider", "Specified Provider")], default='all')
+    voucher_type = fields.Selection([("percent", "Percentage"), ("amount", "Some Amount")], default='percent')
     currency_id = fields.Many2one("res.currency")
-    voucher_value = fields.Float("Voucher value")
+    voucher_value = fields.Float("Voucher value", default=0)
     voucher_maximum_cap = fields.Float("Voucher Cap")
     voucher_minimum_purchase = fields.Float('Voucher Minimum Purchase', default=0)
     voucher_detail_ids = fields.One2many("tt.voucher.detail", "voucher_id", "Voucher Detail")
@@ -37,7 +37,7 @@ class TtVoucher(models.Model):
 
     #add-ons
     voucher_multi_usage = fields.Boolean("Voucher Multi Usage")
-    voucher_usage_value = fields.Monetary("Voucher usage")
+    voucher_usage_value = fields.Monetary("Voucher usage", readonly=True)
     voucher_customer_id = fields.Many2one('tt.customer', 'Customer')
 
     @api.model
@@ -447,11 +447,11 @@ class TtVoucherDetail(models.Model):
     _description = 'Rodex Model Voucher Detail'
 
     voucher_id = fields.Many2one("tt.voucher")
-    voucher_reference_code = fields.Char("Voucher Reference", related="voucher_id.voucher_reference_code")
+    voucher_reference_code = fields.Char("Voucher Reference", related="voucher_id.voucher_reference_code", readonly=True)
     voucher_period_reference = fields.Char("Voucher Period Reference")
     voucher_start_date = fields.Datetime("voucher starts")
     voucher_expire_date = fields.Datetime("voucher end")
-    voucher_used = fields.Integer("Voucher use")
+    voucher_used = fields.Integer("Voucher use", readonly=True)
     voucher_quota = fields.Integer("Voucher quota")
     voucher_blackout_ids = fields.One2many("tt.voucher.detail.blackout", 'voucher_detail_id')
     voucher_used_ids = fields.One2many("tt.voucher.detail.used", "voucher_detail_id")
@@ -2201,7 +2201,7 @@ class TtVoucherDetail(models.Model):
         if voucher.id == False:
             # no voucher found
             # write to logger
-            logger.error("%s voucher is not exist" % data['voucher_reference'])
+            _logger.error("%s voucher is not exist" % data['voucher_reference'])
             # return error
             return ERR.get_error(additional_message="Voucher is NOT exist")
 
@@ -2211,7 +2211,7 @@ class TtVoucherDetail(models.Model):
         if voucher_detail.id == False:
             # no voucher detail found
             # write to logger
-            logger.error("%s voucher is not exist" % data['voucher_reference'])
+            _logger.error("%s voucher is not exist" % data['voucher_reference'])
             # return error
             return ERR.get_error(additional_message="Voucher is NOT Exist")
 
@@ -2260,11 +2260,13 @@ class TtVoucherDetail(models.Model):
             for i in data['provider']:
                 provider = self.env['tt.provider'].search([('code', '=', i)])
                 to_check = {
-                    'provider_type': data['provider_type'],
-                    'provider': i,
+                    'provider_type_id': provider.provider_type_id.id,
+                    'provider_id': provider.id,
+                    'provider_name': i,
                     'voucher_reference': data['voucher_reference_code']
                 }
-                is_eligible = self.voucher_id.is_product_eligible(to_check)
+
+                is_eligible = self.voucher.is_product_eligible(to_check)
                 if is_eligible:
                     to_return = {
                         'provider_type': data['provider_type'],
@@ -2281,21 +2283,22 @@ class TtVoucherDetail(models.Model):
         else:
             provider = self.env['tt.provider'].search([('code', '=', data['provider'])])
             to_check = {
-                'provider_type': data['provider_type'],
-                'provider': i,
+                'provider_type_id': provider.provider_type_id.id,
+                'provider_id': provider.id,
+                'provider_name': data['provider'],
                 'voucher_reference': data['voucher_reference_code']
             }
-            is_eligible = self.voucher_id.is_product_eligible(to_check)
+            is_eligible = self.voucher.is_product_eligible(to_check)
             if is_eligible:
                 to_return = {
                     'provider_type': data['provider_type'],
-                    'provider': i,
+                    'provider': data['provider'],
                     'able_to_use': True
                 }
             else:
                 to_return = {
                     'provider_type': data['provider_type'],
-                    'provider': i,
+                    'provider': data['provider'],
                     'able_to_use': False
                 }
             result_array.append(to_return)
@@ -2550,7 +2553,7 @@ class TtVoucherusedDetail(models.Model):
     _name = "tt.voucher.detail.used"
     _description = "Rodex Model Voucher Detail Used"
 
-    voucher_detail_id = fields.Many2one("tt.voucher.detail")
+    voucher_detail_id = fields.Many2one("tt.voucher.detail", readonly=True)
     voucher_date_use = fields.Datetime("Date use")
     voucher_agent_type_id = fields.Many2one("tt.agent.type", "Agent Type")
     voucher_agent_id = fields.Many2one("tt.agent", "Agent ID")
@@ -2558,8 +2561,8 @@ class TtVoucherusedDetail(models.Model):
     voucher_provider_id = fields.Many2one("tt.provider", "Provider ID")
 
     currency_id = fields.Many2one('res.currency', 'Currency')
-    voucher_usage = fields.Monetary('Voucher Usage')
-    voucher_remainder = fields.Monetary('Voucher Remainder')
+    voucher_usage = fields.Monetary('Voucher Usage', readonly=True)
+    voucher_remainder = fields.Monetary('Voucher Remainder', readonly=True)
 
     def add_voucher_used_detail(self, data):
         result = self.env['tt.voucher.detail.used'].create({
