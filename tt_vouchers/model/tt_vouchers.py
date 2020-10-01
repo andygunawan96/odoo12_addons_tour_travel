@@ -14,6 +14,7 @@ class TtVoucher(models.Model):
     _description = 'Rodex Model Voucher'
     _rec_name = 'voucher_reference_code'
 
+    name = fields.Char("Voucher Name", required=True, default='Voucher')
     voucher_reference_code = fields.Char("Reference Code", required=True)
     voucher_coverage = fields.Selection([("all", "All"), ("product", "Specified Product"), ("provider", "Specified Provider")], default='all')
     voucher_type = fields.Selection([("percent", "Percentage"), ("amount", "Some Amount")], default='amount')
@@ -41,6 +42,13 @@ class TtVoucher(models.Model):
     voucher_multi_usage = fields.Boolean("Voucher Multi Usage")
     voucher_usage_value = fields.Monetary("Voucher usage", readonly=True)
     voucher_customer_id = fields.Many2one('tt.customer', 'Customer')
+
+    @api.model
+    def create(self, vals):
+        if type(vals.get('voucher_reference_code')) == str:
+            vals['voucher_reference_code'] = vals['voucher_reference_code'].upper()
+        res = super(TtVoucher, self).create(vals)
+        return res
 
     #harus di cek sama dengan atasnya
     def create_voucher(self, data):
@@ -405,28 +413,29 @@ class TtVoucher(models.Model):
             }
         return {'domain': domain}
 
-    def action_set_draft(self):
+    def action_set_to_draft(self):
         self.write({
             'state': 'draft'
         })
 
-    def action_set_confirm(self):
+    def action_set_to_confirm(self):
         self.write({
             'state': 'confirm'
         })
 
-    def set_not_active(self):
+    def set_to_not_active(self):
         self.write({
-            'state': 'not_activate'
+            'state': 'not-active'
         })
 
 class TtVoucherDetail(models.Model):
     _name = "tt.voucher.detail"
     _description = 'Rodex Model Voucher Detail'
+    _rec_name = 'display_name'
 
     voucher_id = fields.Many2one("tt.voucher")
     voucher_reference_code = fields.Char("Voucher Reference", related="voucher_id.voucher_reference_code", readonly=True)
-    voucher_period_reference = fields.Char("Voucher Period Reference")
+    voucher_period_reference = fields.Char("Voucher Period Reference", required=True)
     voucher_start_date = fields.Datetime("voucher starts")
     voucher_expire_date = fields.Datetime("voucher end")
     voucher_used = fields.Integer("Voucher use", readonly=True)
@@ -434,16 +443,21 @@ class TtVoucherDetail(models.Model):
     voucher_blackout_ids = fields.One2many("tt.voucher.detail.blackout", 'voucher_detail_id')
     voucher_used_ids = fields.One2many("tt.voucher.detail.used", "voucher_detail_id")
     state = fields.Selection([('not-active', 'Not Active'), ('active', 'Active'), ('expire', 'Expire')], default="not-active")
+    display_name = fields.Char('Display Name', compute='_compute_display_name')
+    is_agent = fields.Boolean("For Agent", default=False)
+
+    @api.depends('voucher_reference_code', 'voucher_period_reference')
+    @api.onchange('voucher_reference_code', 'voucher_period_reference')
+    def _compute_display_name(self):
+        for rec in self:
+            ref_code = rec.voucher_reference_code and rec.voucher_reference_code or ''
+            per_ref = rec.voucher_period_reference and rec.voucher_period_reference or ''
+            rec.display_name = ref_code + '.' + per_ref
 
     @api.model
     def create(self, vals):
         if type(vals.get('voucher_period_reference')) == str:
             vals['voucher_period_reference'] = vals['voucher_period_reference'].upper()
-        res = super(TtVoucherDetail, self).create(vals)
-        return res
-
-    @api.model
-    def create(self, vals):
         res = super(TtVoucherDetail, self).create(vals)
         try:
             res.create_voucher_email_queue('created')
@@ -512,14 +526,14 @@ class TtVoucherDetail(models.Model):
 
         return 0
 
-    def action_set_not_activate(self):
+    def action_set_not_active(self):
         self.write({
-            'state': 'not_activate'
+            'state': 'not-active'
         })
 
-    def action_set_activate(self):
+    def action_set_active(self):
         self.write({
-            'state': 'activate'
+            'state': 'active'
         })
 
     def action_set_expire(self):
@@ -1217,7 +1231,7 @@ class TtVoucherDetail(models.Model):
                 if voucher.voucher_type == 'percent' and voucher.voucher_multi_usage:
                     # voucher invalid
                     # no way multi use is percent will let it slide
-                    _logger.error("Voucher logic is invalid, %s" % voucher.voucher_reference)
+                    _logger.error("Voucher logic is invalid, %s" % voucher.voucher_reference_code)
 
                     # let the data pass
                     for j in i.cost_service_charge_ids:
@@ -1240,7 +1254,7 @@ class TtVoucherDetail(models.Model):
 
                 elif voucher.voucher_type == 'percent' and not voucher.voucher_multi_usage:
                     # voucher is percent
-
+                    _logger.info(i.cost_service_charge_ids)
                     # iterate every cost
                     for j in i.cost_service_charge_ids:
 
@@ -1249,6 +1263,7 @@ class TtVoucherDetail(models.Model):
 
                             # make sure charge type is not comission
                             if j.charge_type != 'RAC':
+                                _logger.info("Will be discount: %s, %s" % (j.charge_code, j.charge_type))
                                 # charge_type is not RAC
                                 # count the discount
                                 discount_amount = float(j.total) * voucher.voucher_value / 100
@@ -1295,6 +1310,7 @@ class TtVoucherDetail(models.Model):
 
                             # voucher is percent
                             if j.charge_code == 'fare' or j.charge_code == 'FarePrice':
+                                _logger.info("Will be discount: %s, %s" % (j.charge_code, j.charge_type))
                                 # charge_type is not RAC
                                 # count the discount
                                 discount_amount = float(j.total) * voucher.voucher_value / 100
@@ -1343,6 +1359,7 @@ class TtVoucherDetail(models.Model):
                     # check voucher remainderity
                     if voucher_remainder > 0:
 
+                        _logger.info(i.cost_service_charge_ids)
                         # well count with the price
                         for j in i.cost_service_charge_ids:
 
@@ -1350,7 +1367,7 @@ class TtVoucherDetail(models.Model):
                             if voucher.voucher_effect_all:
                                 # check if price sector or voucher value is bigger
                                 if j.charge_type != 'RAC':
-
+                                    _logger.info("Will be discount: %s, %s" % (j.charge_code, j.charge_type))
                                     # check if voucher value is bigger than fare
                                     if float(j.total) - voucher_remainder < 0:
                                         # total is smaller than voucher value
@@ -1403,7 +1420,7 @@ class TtVoucherDetail(models.Model):
                             else:
                                 # check if price sector or voucher value is bigger
                                 if j.charge_code == 'fare' or j.charge_code == 'FarePrice':
-
+                                    _logger.info("Will be discount: %s, %s" % (j.charge_code, j.charge_type))
                                     # check if voucher value is bigger than fare
                                     if float(j.total) - voucher_remainder < 0:
                                         # total is smaller than voucher value
@@ -2373,10 +2390,11 @@ class TtVoucherDetail(models.Model):
             'voucher_currency': voucher.currency_id.name,
             'voucher_cap': maximum_cap,
             'voucher_minimum_purchase': minimum_purchase,
-            'voucher_scope': voucher.voucher_effect_all,
+            'voucher_effect_all': voucher.voucher_effect_all,
             'date_expire': voucher_detail.voucher_expire_date.strftime("%Y-%m-%d"),
             'provider_type': data['provider_type'],
-            'provider': result_array
+            'provider': result_array,
+            'is_agent': voucher_detail.is_agent
         }
 
         return ERR.get_no_error(result)
