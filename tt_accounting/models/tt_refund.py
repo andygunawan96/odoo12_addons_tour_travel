@@ -322,7 +322,7 @@ class TtRefund(models.Model):
                 rec.admin_fee = 0
 
     def compute_admin_fee_api(self, req):
-        refund_fee = self.get_refund_fee_amount(req['agent_id'], req['order_number'], req['order_type'], req['refund_amount'], req['passenger_count'])
+        refund_fee = self.get_refund_fee_amount(req['agent_id'], req['order_number'], req['order_type'], req['refund_amount'], req.get('passenger_count'))
         return refund_fee['admin_fee']
 
     @api.depends('admin_fee', 'refund_amount')

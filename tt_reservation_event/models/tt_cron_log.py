@@ -11,24 +11,24 @@ class TtCronLogInhResv(models.Model):
     def cron_expired_master_event(self):
         try:
             for rec in self.sudo().env['tt.master.event'].search([('state', 'not in', ['draft', 'expired', 'postpone'])]):
-                if str(rec.event_date_end) <= str(datetime.now()):
+                # Klo Event sdah lewat
+                if str(rec.event_date_end) < str(datetime.now()):
                     rec.state = 'expired'
                     for opt_obj in rec.option_ids:
                         opt_obj.active = False
                 else:
-                    if str(rec.event_date_start) < str(datetime.now()):
-                        rec.state = 'expired'
-                        for opt_obj in rec.option_ids:
-                            opt_obj.active = False
-                    else:
+                    # Klo Event blum lewat cek apakah masih ada ticket yg dijual
+                    if str(rec.event_date_start) >= str(datetime.now()):
                         count = 0
                         for opt_obj in rec.option_ids:
-                            date_str = opt_obj.date_end and str(opt_obj.date_end) or opt_obj.date_start and str(opt_obj.date_start) or str(rec.event_date_start)
-                            if date_str < str(datetime.now()):
+                            date_str = opt_obj.date_end or rec.event_date_start #Part ini g boleh ambil date_start
+                            if date_str < datetime.now():
                                 opt_obj.active = False
                                 count += 1
                         if count == len(rec.option_ids):
                             rec.state = 'expired'
+                            for opt_obj in rec.option_ids:
+                                opt_obj.active = False
 
 
         except Exception as e:

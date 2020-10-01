@@ -35,6 +35,12 @@ class ReservationAirline(models.Model):
                 # payment_acquirer_obj = None
                 payment_acquirer_obj = airline_obj.agent_id.default_acquirer_id
                 # END
+
+                if vals.get('seq_id'):
+                    payment_acquirer_obj = self.env['payment.acquirer'].search([('seq_id', '=', vals['seq_id'])], limit=1)
+                if not payment_acquirer_obj:
+                    return ERR.get_error(1017)
+
                 total_amount = 0.0
                 # reschedule_type = ''
                 if vals.get('sell_reschedule_provider'):
