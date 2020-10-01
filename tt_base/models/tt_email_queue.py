@@ -103,11 +103,11 @@ class TtEmailQueue(models.Model):
 
         elif data.get('provider_type') == 'voucher':
             try:
-                self.env.get('tt.voucher')._name
+                self.env.get('tt.voucher.detail')._name
             except:
-                raise Exception('Module tt.voucher not found!')
+                raise Exception('Module tt.voucher.detail not found!')
 
-            resv = self.env['tt.voucher'].search([('voucher_reference_code', '=', data.get('ref_code'))], limit=1)
+            resv = self.env['tt.voucher.detail'].search([('voucher_reference_code', '=', data.get('ref_code')), ('voucher_period_reference', '=', data.get('period_code'))], limit=1)
             if resv:
                 if data.get('type') == 'created':
                     type_str = 'Created'
@@ -119,17 +119,17 @@ class TtEmailQueue(models.Model):
                 if type_str:
                     template = self.env.ref('tt_vouchers.template_mail_{}_{}'.format(data['provider_type'], data.get('type', 'used'))).id
                     self.env['tt.email.queue'].sudo().create({
-                        'name': 'Voucher ' + type_str + ': ' + resv.voucher_reference_code,
+                        'name': 'Voucher ' + type_str + ': ' + resv.voucher_reference_code + '.' + resv.voucher_period_reference,
                         'type': '{}_{}'.format(data['provider_type'], data.get('type', 'used')),
                         'template_id': template,
                         'res_model': resv._name,
                         'res_id': resv.id,
                     })
 
-                    if resv.voucher_customer_id.agent_id.is_send_email_cust and resv.voucher_customer_id.email:
+                    if resv.voucher_id.voucher_customer_id.agent_id.is_send_email_cust and resv.voucher_id.voucher_customer_id.email:
                         template = self.env.ref('tt_vouchers.template_mail_{}_{}_cust'.format(data['provider_type'], data.get('type', 'used'))).id
                         self.env['tt.email.queue'].sudo().create({
-                            'name': 'Voucher ' + type_str + ': ' + resv.voucher_reference_code,
+                            'name': 'Voucher ' + type_str + ': ' + resv.voucher_reference_code + '.' + resv.voucher_period_reference,
                             'type': '{}_{}'.format(data['provider_type'], data.get('type', 'used')),
                             'template_id': template,
                             'res_model': resv._name,
@@ -299,5 +299,5 @@ class TtEmailQueue(models.Model):
             self.write({
                 'last_sent_attempt_date': datetime.now(),
                 'active': False,
-                'failure_reason': str(e)
+                'failure_reason': '%s : %s' % (traceback.format_exc(), str(e))
             })

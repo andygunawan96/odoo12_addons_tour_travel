@@ -12,6 +12,9 @@ _logger = logging.getLogger(__name__)
 class TtVoucher(models.Model):
     _name = "tt.voucher"
     _description = 'Rodex Model Voucher'
+    _rec_name = 'voucher_reference_code'
+
+    name = fields.Char("Voucher Name", required=True, default='Voucher')
     voucher_reference_code = fields.Char("Reference Code", required=True)
     voucher_coverage = fields.Selection([("all", "All"), ("product", "Specified Product"), ("provider", "Specified Provider")], default='all')
     voucher_type = fields.Selection([("percent", "Percentage"), ("amount", "Some Amount")], default='amount')
@@ -42,41 +45,10 @@ class TtVoucher(models.Model):
 
     @api.model
     def create(self, vals):
+        if type(vals.get('voucher_reference_code')) == str:
+            vals['voucher_reference_code'] = vals['voucher_reference_code'].upper();
         res = super(TtVoucher, self).create(vals)
-        try:
-            res.create_voucher_email_queue('created')
-        except Exception as e:
-            _logger.info('Error Create Voucher Creation Email Queue')
         return res
-
-    def create_voucher_created_email_queue(self):
-        self.create_voucher_email_queue('created')
-
-    def create_voucher_email_queue(self, type):
-        if self.voucher_multi_usage and self.voucher_customer_id:
-            try:
-                mail_created = self.env['tt.email.queue'].sudo().with_context({'active_test': False}).search(
-                    [('res_id', '=', self.id), ('res_model', '=', self._name), ('type', '=', type)],
-                    limit=1)
-                if not mail_created:
-                    temp_data = {
-                        'provider_type': 'voucher',
-                        'ref_code': self.voucher_reference_code,
-                        'type': type,
-                    }
-                    temp_context = {
-                        'co_agent_id': self.voucher_customer_id.agent_id.id
-                    }
-                    self.env['tt.email.queue'].create_email_queue(temp_data, temp_context)
-                else:
-                    if type == 'created':
-                        _logger.info('Voucher Creation email for {} is already created!'.format(self.voucher_reference_code))
-                        raise Exception('Voucher Creation email for {} is already created!'.format(self.voucher_reference_code))
-                    else:
-                        _logger.info('Voucher Usage email for {} is already created!'.format(self.voucher_reference_code))
-                        raise Exception('Voucher Usage email for {} is already created!'.format(self.voucher_reference_code))
-            except Exception as e:
-                _logger.info('Error Create Email Queue')
 
     #harus di cek sama dengan atasnya
     def create_voucher(self, data):
@@ -441,14 +413,29 @@ class TtVoucher(models.Model):
             }
         return {'domain': domain}
 
+    def action_set_to_draft(self):
+        self.write({
+            'state': 'draft'
+        })
+
+    def action_set_to_confirm(self):
+        self.write({
+            'state': 'confirm'
+        })
+
+    def set_to_not_active(self):
+        self.write({
+            'state': 'not-active'
+        })
 
 class TtVoucherDetail(models.Model):
     _name = "tt.voucher.detail"
     _description = 'Rodex Model Voucher Detail'
+    _rec_name = 'display_name'
 
     voucher_id = fields.Many2one("tt.voucher")
     voucher_reference_code = fields.Char("Voucher Reference", related="voucher_id.voucher_reference_code", readonly=True)
-    voucher_period_reference = fields.Char("Voucher Period Reference")
+    voucher_period_reference = fields.Char("Voucher Period Reference", required=True)
     voucher_start_date = fields.Datetime("voucher starts")
     voucher_expire_date = fields.Datetime("voucher end")
     voucher_used = fields.Integer("Voucher use", readonly=True)
@@ -456,6 +443,52 @@ class TtVoucherDetail(models.Model):
     voucher_blackout_ids = fields.One2many("tt.voucher.detail.blackout", 'voucher_detail_id')
     voucher_used_ids = fields.One2many("tt.voucher.detail.used", "voucher_detail_id")
     state = fields.Selection([('not-active', 'Not Active'), ('active', 'Active'), ('expire', 'Expire')], default="not-active")
+    display_name = fields.Char('Display Name', compute='_compute_display_name')
+    is_agent = fields.Boolean("For Agent", default=False)
+
+    @api.depends('voucher_reference_code', 'voucher_period_reference')
+    @api.onchange('voucher_reference_code', 'voucher_period_reference')
+    def _compute_display_name(self):
+        for rec in self:
+            rec.display_name = rec.voucher_reference_code + '.' + rec.voucher_period_reference
+
+    @api.model
+    def create(self, vals):
+        if type(vals.get('voucher_period_reference')) == str:
+            vals['voucher_period_reference'] = vals['voucher_period_reference'].upper()
+        res = super(TtVoucherDetail, self).create(vals)
+        try:
+            res.create_voucher_email_queue('created')
+        except Exception as e:
+            _logger.info('Error Create Voucher Creation Email Queue')
+        return res
+
+    def create_voucher_created_email_queue(self):
+        self.create_voucher_email_queue('created')
+
+    def create_voucher_email_queue(self, type):
+        if self.voucher_id.voucher_multi_usage and self.voucher_id.voucher_customer_id:
+            try:
+                temp_data = {
+                    'provider_type': 'voucher',
+                    'ref_code': self.voucher_reference_code,
+                    'period_code': self.voucher_period_reference,
+                    'type': type,
+                }
+                temp_context = {
+                    'co_agent_id': self.voucher_id.voucher_customer_id.agent_id.id
+                }
+                self.env['tt.email.queue'].create_email_queue(temp_data, temp_context)
+            except Exception as e:
+                _logger.info('Error Create Email Queue')
+
+    def get_voucher_details_email(self):
+        txt_detail = '<p>Reference Code: %s.%s</p>' % (self.voucher_reference_code, self.voucher_period_reference)
+        txt_detail += '<p>Value: %s %s</p>' % (self.voucher_id.currency_id.name, self.voucher_id.voucher_value)
+        txt_detail += '<p>Start Date: %s</p>' % (self.voucher_start_date.strftime('%d %b %Y %H:%M'), )
+        txt_detail += '<p>Expired Date: %s</p>' % (self.voucher_expire_date.strftime('%d %b %Y %H:%M'), )
+        txt_detail += '<br/>'
+        return txt_detail
 
     def get_voucher_remainder(self, voucher_id):
         voucher = self.env['tt.voucher.detail'].browse(int(voucher_id))
@@ -490,6 +523,21 @@ class TtVoucherDetail(models.Model):
                 })
 
         return 0
+
+    def action_set_not_active(self):
+        self.write({
+            'state': 'not-active'
+        })
+
+    def action_set_active(self):
+        self.write({
+            'state': 'active'
+        })
+
+    def action_set_expire(self):
+        self.write({
+            'state': 'expire'
+        })
 
     def simulate_voucher(self, data, context):
         # requirement of data
@@ -1181,7 +1229,7 @@ class TtVoucherDetail(models.Model):
                 if voucher.voucher_type == 'percent' and voucher.voucher_multi_usage:
                     # voucher invalid
                     # no way multi use is percent will let it slide
-                    _logger.error("Voucher logic is invalid, %s" % voucher.voucher_reference)
+                    _logger.error("Voucher logic is invalid, %s" % voucher.voucher_reference_code)
 
                     # let the data pass
                     for j in i.cost_service_charge_ids:
@@ -1204,7 +1252,7 @@ class TtVoucherDetail(models.Model):
 
                 elif voucher.voucher_type == 'percent' and not voucher.voucher_multi_usage:
                     # voucher is percent
-
+                    _logger.info(i.cost_service_charge_ids)
                     # iterate every cost
                     for j in i.cost_service_charge_ids:
 
@@ -1213,6 +1261,7 @@ class TtVoucherDetail(models.Model):
 
                             # make sure charge type is not comission
                             if j.charge_type != 'RAC':
+                                _logger.info("Will be discount: %s, %s" % (j.charge_code, j.charge_type))
                                 # charge_type is not RAC
                                 # count the discount
                                 discount_amount = float(j.total) * voucher.voucher_value / 100
@@ -1259,6 +1308,7 @@ class TtVoucherDetail(models.Model):
 
                             # voucher is percent
                             if j.charge_code == 'fare' or j.charge_code == 'FarePrice':
+                                _logger.info("Will be discount: %s, %s" % (j.charge_code, j.charge_type))
                                 # charge_type is not RAC
                                 # count the discount
                                 discount_amount = float(j.total) * voucher.voucher_value / 100
@@ -1307,6 +1357,7 @@ class TtVoucherDetail(models.Model):
                     # check voucher remainderity
                     if voucher_remainder > 0:
 
+                        _logger.info(i.cost_service_charge_ids)
                         # well count with the price
                         for j in i.cost_service_charge_ids:
 
@@ -1314,7 +1365,7 @@ class TtVoucherDetail(models.Model):
                             if voucher.voucher_effect_all:
                                 # check if price sector or voucher value is bigger
                                 if j.charge_type != 'RAC':
-
+                                    _logger.info("Will be discount: %s, %s" % (j.charge_code, j.charge_type))
                                     # check if voucher value is bigger than fare
                                     if float(j.total) - voucher_remainder < 0:
                                         # total is smaller than voucher value
@@ -1367,7 +1418,7 @@ class TtVoucherDetail(models.Model):
                             else:
                                 # check if price sector or voucher value is bigger
                                 if j.charge_code == 'fare' or j.charge_code == 'FarePrice':
-
+                                    _logger.info("Will be discount: %s, %s" % (j.charge_code, j.charge_type))
                                     # check if voucher value is bigger than fare
                                     if float(j.total) - voucher_remainder < 0:
                                         # total is smaller than voucher value
@@ -2232,13 +2283,21 @@ class TtVoucherDetail(models.Model):
             # return error
             return ERR.get_error(additional_message="Voucher cannot be use outside designated date")
 
-        # okay okay so the voucher is there, the date is within the voucher date, then we should look f there's voucher left
-        if voucher_detail.voucher_used >= voucher_detail.voucher_quota:
-            # o no the voucher is up
-            # write to logger
-            _logger.error("%s No More Voucher :(" % data['voucher_reference'])
-            # return error
-            return ERR.get_error(additional_message="Voucher sold out")
+        if voucher.voucher_multi_usage:
+            if voucher.voucher_value - voucher.voucher_usage_value <= 0:
+                # o no the voucher is up
+                # write to logger
+                _logger.error("%s Voucher has no value left :(" % data['voucher_reference'])
+                # return error
+                return ERR.get_error(additional_message="Voucher has no value left")
+        else:
+            # okay okay so the voucher is there, the date is within the voucher date, then we should look f there's voucher left
+            if voucher_detail.voucher_used >= voucher_detail.voucher_quota:
+                # o no the voucher is up
+                # write to logger
+                _logger.error("%s No More Voucher :(" % data['voucher_reference'])
+                # return error
+                return ERR.get_error(additional_message="Voucher sold out")
 
         # check agent
         agent_to_validate = {
@@ -2266,7 +2325,7 @@ class TtVoucherDetail(models.Model):
                     'voucher_reference': data['voucher_reference_code']
                 }
 
-                is_eligible = self.voucher.is_product_eligible(to_check)
+                is_eligible = self.env['tt.voucher'].is_product_eligible(to_check)
                 if is_eligible:
                     to_return = {
                         'provider_type': data['provider_type'],
@@ -2288,7 +2347,7 @@ class TtVoucherDetail(models.Model):
                 'provider_name': data['provider'],
                 'voucher_reference': data['voucher_reference_code']
             }
-            is_eligible = self.voucher.is_product_eligible(to_check)
+            is_eligible = self.env['tt.voucher'].is_product_eligible(to_check)
             if is_eligible:
                 to_return = {
                     'provider_type': data['provider_type'],
@@ -2329,9 +2388,11 @@ class TtVoucherDetail(models.Model):
             'voucher_currency': voucher.currency_id.name,
             'voucher_cap': maximum_cap,
             'voucher_minimum_purchase': minimum_purchase,
+            'voucher_effect_all': voucher.voucher_effect_all,
             'date_expire': voucher_detail.voucher_expire_date.strftime("%Y-%m-%d"),
             'provider_type': data['provider_type'],
-            'provider': result_array
+            'provider': result_array,
+            'is_agent': voucher_detail.is_agent
         }
 
         return ERR.get_no_error(result)
@@ -2446,7 +2507,7 @@ class TtVoucherDetail(models.Model):
                         })
 
                     try:
-                        voucher.create_voucher_email_queue('used')
+                        voucher_detail.create_voucher_email_queue('used')
                     except Exception as e:
                         _logger.info('Error Create Voucher Usage Email Queue')
 

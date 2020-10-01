@@ -102,6 +102,7 @@ class IssuedOffline(models.Model):
                                   readonly=True, states={'draft': [('readonly', False)],
                                                          'pending': [('readonly', False)]})
     total = fields.Monetary('Input Total', readonly=False, store=True, compute="")
+    input_total = fields.Monetary('Input Total', readonly=False, store=True, compute="")
     total_commission_amount = fields.Monetary('Total Commission Amount', store=True)
     # total_supplementary_price = fields.Monetary('Total Supplementary', compute='_get_total_supplement')
 
