@@ -1,5 +1,26 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
+    <record id="voucher_used_filter_view" model="ir.ui.view">
+        <field name="name">voucher.used.filter.view</field>
+        <field name="model">tt.voucher.detail.used</field>
+        <field name="arch" type="xml">
+            <search string="Search Voucher Used">
+                <field name="voucher_detail_id"/>
+                <field name="voucher_date_use"/>
+                <field name="voucher_agent_id"/>
+                <field name="voucher_provider_id"/>
+
+                <group expand="0" string="Group By">
+                    <filter name="group_by_voucher_detail_id" string="Voucher Detail" domain="[]" context="{'group_by':'voucher_detail_id'}"/>
+                    <filter name="group_by_voucher_agent_id" string="Agent" domain="[]" context="{'group_by':'voucher_agent_id'}"/>
+                    <filter name="group_by_voucher_agent_type_id" string="Agent Type" domain="[]" context="{'group_by':'voucher_agent_type_id'}"/>
+                    <filter name="group_by_voucher_provider_id" string="Provider" domain="[]" context="{'group_by':'voucher_provider_id'}"/>
+                    <filter name="group_by_voucher_provider_type_id" string="Provider Type" domain="[]" context="{'group_by':'voucher_provider_type_id'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
     <record id="voucher_used_tree_view" model="ir.ui.view">
         <field name="name">voucher.used.tree.view</field>
         <field name="model">tt.voucher.detail.used</field>
@@ -32,7 +53,7 @@
     </record>
 
     <record id="voucher_detail_used_action_view" model="ir.actions.act_window">
-        <field name="name">voucher used</field>
+        <field name="name">Voucher Used</field>
         <field name="type">ir.actions.act_window</field>
         <field name="res_model">tt.voucher.detail.used</field>
         <field name="view_type">form</field>
