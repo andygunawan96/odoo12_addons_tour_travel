@@ -46,7 +46,7 @@ class TtVoucher(models.Model):
     @api.model
     def create(self, vals):
         if type(vals.get('voucher_reference_code')) == str:
-            vals['voucher_reference_code'] = vals['voucher_reference_code'].upper();
+            vals['voucher_reference_code'] = vals['voucher_reference_code'].upper()
         res = super(TtVoucher, self).create(vals)
         return res
 

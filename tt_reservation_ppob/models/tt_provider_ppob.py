@@ -311,6 +311,13 @@ class TtProviderPPOB(models.Model):
                         'original_pnr': data['pnr'],
                         'payment_message': data['message'],
                     })
+
+                    for rec2 in rec.booking_id.ledger_ids:
+                        if str(rec2.pnr) == str(rec.sequence):
+                            rec2.sudo().write({
+                                'pnr': data['session_id']
+                            })
+
                     if data.get('bill_data'):
                         for rec2 in data['bill_data']:
                             bill_obj = self.env['tt.bill.ppob'].sudo().search([('provider_booking_id', '=', int(rec.id)), ('period', '=', datetime.strptime(rec2['period'], '%Y%m'))], limit=1)
