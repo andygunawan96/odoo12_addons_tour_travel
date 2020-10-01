@@ -84,7 +84,7 @@ class ReservationPassport(models.Model):
                         ' (' + str(psg.pricelist_id.duration if psg.pricelist_id.duration else '-') + ' days)'
             price = 0
             for srvc in psg.cost_service_charge_ids:
-                if srvc.charge_type != 'RAC':
+                if srvc.charge_type not in ['RAC', 'DISC']:
                     price += srvc.amount
             for srvc in psg.channel_service_charge_ids:
                 price += srvc.amount

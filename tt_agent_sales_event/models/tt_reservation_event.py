@@ -63,7 +63,7 @@ class ReservationEvent(models.Model):
         for opt_obj in self.passenger_ids:
             price_unit = 0
             for cost_charge in opt_obj.cost_service_charge_ids:
-                if cost_charge.charge_type != 'RAC':
+                if cost_charge.charge_type not in ['RAC', 'DISC']:
                     price_unit += cost_charge.amount
             for channel_charge in opt_obj.channel_service_charge_ids:
                 price_unit += channel_charge.amount
