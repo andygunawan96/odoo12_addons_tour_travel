@@ -731,7 +731,7 @@ class TtReservation(models.Model):
                     voucher.update({
                         'order_number': book_obj.name
                     })
-                    discount = self.env['tt.voucher.detail'].simulate_voucher(voucher, context)
+                    discount = self.env['tt.voucher.detail'].new_simulate_voucher(voucher, context)
                     if discount['error_code'] == 0:
                         for rec in discount['response']:
                             total_discount = total_discount + rec['provider_total_discount']
