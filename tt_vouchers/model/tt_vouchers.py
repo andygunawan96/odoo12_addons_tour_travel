@@ -43,6 +43,13 @@ class TtVoucher(models.Model):
     voucher_usage_value = fields.Monetary("Voucher usage", readonly=True)
     voucher_customer_id = fields.Many2one('tt.customer', 'Customer')
 
+    @api.model
+    def create(self, vals):
+        if type(vals.get('voucher_reference_code')) == str:
+            vals['voucher_reference_code'] = vals['voucher_reference_code'].upper();
+        res = super(TtVoucher, self).create(vals)
+        return res
+
     #harus di cek sama dengan atasnya
     def create_voucher(self, data):
         result = self.env['tt.voucher'].create({
@@ -437,6 +444,7 @@ class TtVoucherDetail(models.Model):
     voucher_used_ids = fields.One2many("tt.voucher.detail.used", "voucher_detail_id")
     state = fields.Selection([('not-active', 'Not Active'), ('active', 'Active'), ('expire', 'Expire')], default="not-active")
     display_name = fields.Char('Display Name', compute='_compute_display_name')
+    is_agent = fields.Boolean("For Agent", default=False)
 
     @api.depends('voucher_reference_code', 'voucher_period_reference')
     @api.onchange('voucher_reference_code', 'voucher_period_reference')
@@ -1244,7 +1252,7 @@ class TtVoucherDetail(models.Model):
 
                 elif voucher.voucher_type == 'percent' and not voucher.voucher_multi_usage:
                     # voucher is percent
-
+                    _logger.info(i.cost_service_charge_ids)
                     # iterate every cost
                     for j in i.cost_service_charge_ids:
 
@@ -1253,6 +1261,7 @@ class TtVoucherDetail(models.Model):
 
                             # make sure charge type is not comission
                             if j.charge_type != 'RAC':
+                                _logger.info("Will be discount: %s, %s" % (j.charge_code, j.charge_type))
                                 # charge_type is not RAC
                                 # count the discount
                                 discount_amount = float(j.total) * voucher.voucher_value / 100
@@ -1299,6 +1308,7 @@ class TtVoucherDetail(models.Model):
 
                             # voucher is percent
                             if j.charge_code == 'fare' or j.charge_code == 'FarePrice':
+                                _logger.info("Will be discount: %s, %s" % (j.charge_code, j.charge_type))
                                 # charge_type is not RAC
                                 # count the discount
                                 discount_amount = float(j.total) * voucher.voucher_value / 100
@@ -1347,6 +1357,7 @@ class TtVoucherDetail(models.Model):
                     # check voucher remainderity
                     if voucher_remainder > 0:
 
+                        _logger.info(i.cost_service_charge_ids)
                         # well count with the price
                         for j in i.cost_service_charge_ids:
 
@@ -1354,7 +1365,7 @@ class TtVoucherDetail(models.Model):
                             if voucher.voucher_effect_all:
                                 # check if price sector or voucher value is bigger
                                 if j.charge_type != 'RAC':
-
+                                    _logger.info("Will be discount: %s, %s" % (j.charge_code, j.charge_type))
                                     # check if voucher value is bigger than fare
                                     if float(j.total) - voucher_remainder < 0:
                                         # total is smaller than voucher value
@@ -1407,7 +1418,7 @@ class TtVoucherDetail(models.Model):
                             else:
                                 # check if price sector or voucher value is bigger
                                 if j.charge_code == 'fare' or j.charge_code == 'FarePrice':
-
+                                    _logger.info("Will be discount: %s, %s" % (j.charge_code, j.charge_type))
                                     # check if voucher value is bigger than fare
                                     if float(j.total) - voucher_remainder < 0:
                                         # total is smaller than voucher value
@@ -2377,10 +2388,11 @@ class TtVoucherDetail(models.Model):
             'voucher_currency': voucher.currency_id.name,
             'voucher_cap': maximum_cap,
             'voucher_minimum_purchase': minimum_purchase,
-            'voucher_scope': voucher.voucher_effect_all,
+            'voucher_effect_all': voucher.voucher_effect_all,
             'date_expire': voucher_detail.voucher_expire_date.strftime("%Y-%m-%d"),
             'provider_type': data['provider_type'],
-            'provider': result_array
+            'provider': result_array,
+            'is_agent': voucher_detail.is_agent
         }
 
         return ERR.get_no_error(result)
