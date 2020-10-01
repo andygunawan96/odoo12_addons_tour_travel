@@ -236,6 +236,8 @@ class ReservationAirline(models.Model):
         super(ReservationAirline, self).action_cancel()
         for rec in self.provider_booking_ids:
             rec.action_cancel()
+        if self.payment_acquirer_number_id:
+            self.payment_acquirer_number_id.state = 'cancel'
 
     def action_issued_from_button(self):
         api_context = {
@@ -458,7 +460,10 @@ class ReservationAirline(models.Model):
                 'carrier_name': ','.join(name_ids['carrier']),
                 'arrival_date': provider_ids[-1].arrival_date[:10]
             })
-
+            #channel repricing upsell
+            if req['repricing_data']:
+                req['repricing_data']['order_number'] = book_obj.name
+                self.env['tt.reservation'].channel_pricing_api(req['repricing_data'], context)
             ##pengecekan segment kembar airline dengan nama passengers
             if not req.get("bypass_psg_validator",False):
                 self.psg_validator(book_obj)

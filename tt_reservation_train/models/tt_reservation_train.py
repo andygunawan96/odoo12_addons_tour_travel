@@ -69,6 +69,8 @@ class TtReservationTrain(models.Model):
         super(TtReservationTrain, self).action_cancel()
         for rec in self.provider_booking_ids:
             rec.action_cancel()
+        if self.payment_acquirer_number_id:
+            self.payment_acquirer_number_id.state = 'cancel'
 
     @api.depends('origin_id','destination_id')
     def _compute_sector_type(self):
