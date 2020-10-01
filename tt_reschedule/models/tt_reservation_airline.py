@@ -292,3 +292,10 @@ class ReservationAirline(models.Model):
         except Exception as e:
             _logger.error('Error Get Reschedule Airline API, %s' % traceback.format_exc())
             return ERR.get_error(1030)
+
+    def to_dict_reschedule(self):
+        reschedule_list = []
+        for rsch in self.reschedule_ids:
+            rsch_values = rsch.get_reschedule_data()
+            reschedule_list.append(rsch_values)
+        return  reschedule_list

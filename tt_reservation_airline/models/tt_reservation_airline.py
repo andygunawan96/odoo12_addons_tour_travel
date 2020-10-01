@@ -693,6 +693,9 @@ class ReservationAirline(models.Model):
                 _logger.error('Creating Notes Error')
             return ERR.get_error(1005)
 
+    def to_dict_reschedule(self):
+        return []
+
     def get_booking_airline_api(self,req, context):
         try:
             # _logger.info("Get req\n" + json.dumps(context))
@@ -723,10 +726,8 @@ class ReservationAirline(models.Model):
                     ref_values = ref.get_refund_data()
                     refund_list.append(ref_values)
 
-                reschedule_list = []
-                for rsch in book_obj.reschedule_ids:
-                    rsch_values = rsch.get_reschedule_data()
-                    reschedule_list.append(rsch_values)
+                ##bisa kelolosan kalau tidak install tt_reschedule
+                reschedule_list = book_obj.to_dict_reschedule()
                 # END
 
                 res.update({
