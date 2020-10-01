@@ -450,7 +450,9 @@ class TtVoucherDetail(models.Model):
     @api.onchange('voucher_reference_code', 'voucher_period_reference')
     def _compute_display_name(self):
         for rec in self:
-            rec.display_name = rec.voucher_reference_code + '.' + rec.voucher_period_reference
+            ref_code = rec.voucher_reference_code and rec.voucher_reference_code or ''
+            per_ref = rec.voucher_period_reference and rec.voucher_period_reference or ''
+            rec.display_name = ref_code + '.' + per_ref
 
     @api.model
     def create(self, vals):

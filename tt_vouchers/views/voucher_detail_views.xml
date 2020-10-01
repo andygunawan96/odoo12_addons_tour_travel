@@ -48,7 +48,6 @@
                 </header>
                 <sheet>
                     <group>
-                        <field name="voucher_id"/>
                         <field name="voucher_reference_code"/>
                         <field name="voucher_period_reference"/>
                         <field name="voucher_start_date"/>
