@@ -169,7 +169,7 @@
                                 <field name="cancel_message" states="cancel"
                                        attrs="{'readonly':[('cancel_can_edit','=',False)]}"/>
                                 <field name="cancel_can_edit" invisible="1"/>
-                                <field name="total" attrs="{'readonly': [('state_offline', 'not in', ['draft', 'confirm'])]}" required="1"/>
+                                <field name="input_total" attrs="{'readonly': [('state_offline', 'not in', ['draft', 'confirm'])]}" required="1"/>
                                 <field name="total_commission_amount" invisible="0" attrs="{'invisible': [('state_offline', '=', 'draft')], 'readonly': [('state_offline', 'not in', ['draft', 'confirm'])]}"
                                        groups="tt_base.group_tt_tour_travel_operator"/>
                                 <field name="agent_commission" groups="tt_base.group_tt_agent_user_operator,tt_base.group_tt_tour_travel_operator" readonly="1"/>
@@ -182,7 +182,8 @@
                                 <field name="admin_fee" groups="tt_base.group_tt_tour_travel_operator"/>
                                 <field name="admin_fee_ho" groups="tt_base.group_tt_tour_travel_operator"/>
                                 <field name="admin_fee_agent" groups="tt_base.group_tt_tour_travel_operator"/>
-                                <field name="total_with_fees"/>
+<!--                                <field name="total_with_fees"/>-->
+                                <field name="total" readonly="1"/>
                             </group>
                             <group>
                                 <field name="state" string="Status" invisible="0" readonly="1"/>
