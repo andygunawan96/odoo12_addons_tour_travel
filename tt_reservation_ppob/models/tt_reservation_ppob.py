@@ -270,6 +270,9 @@ class ReservationPpob(models.Model):
                         'hold_date': datetime.today() + timedelta(days=1),
                     })
                 provider_list.append(rec.to_dict())
+            psg_list = []
+            for rec in resv_obj.sudo().passenger_ids:
+                psg_list.append(rec.to_dict())
 
             if resv_obj.state in ['fail_issued', 'fail_refunded']:
                 resv_obj.write({
@@ -281,7 +284,8 @@ class ReservationPpob(models.Model):
 
             res = resv_obj.to_dict()
             res.update({
-                'provider_booking': provider_list
+                'provider_booking': provider_list,
+                'passengers': psg_list
             })
             return ERR.get_no_error(res)
         except RequestException as e:
@@ -397,9 +401,14 @@ class ReservationPpob(models.Model):
                 provider_code = rec.provider_id and rec.provider_id.code or ''
                 total_price += rec.total
                 provider_list.append(rec.to_dict())
+            psg_list = []
+            for rec in inq_obj.sudo().passenger_ids:
+                psg_list.append(rec.to_dict())
+
             res = inq_obj.to_dict()
             res.update({
                 'provider_booking': provider_list,
+                'passengers': psg_list,
                 'state': inq_obj.state,
                 'prepaid_value': inq_obj.prepaid_value and inq_obj.prepaid_value or 0,
                 'total_price': total_price,
@@ -627,9 +636,13 @@ class ReservationPpob(models.Model):
             provider_list = []
             for rec in resv_obj.provider_booking_ids:
                 provider_list.append(rec.to_dict())
+            psg_list = []
+            for rec in resv_obj.sudo().passenger_ids:
+                psg_list.append(rec.to_dict())
             res = resv_obj.to_dict()
             res.update({
                 'provider_booking': provider_list,
+                'passengers': psg_list,
                 'total_price': total_price
             })
             return ERR.get_no_error(res)
@@ -686,16 +699,23 @@ class ReservationPpob(models.Model):
                     total_price += rec.total
                     provider_list.append(rec.to_dict())
                 resv_obj.check_provider_state(context)
+                psg_list = []
+                for rec in resv_obj.sudo().passenger_ids:
+                    psg_list.append(rec.to_dict())
             else:
                 provider_list = []
                 total_price = 0
                 for rec in resv_obj.provider_booking_ids:
                     total_price += rec.total
                     provider_list.append(rec.to_dict())
+                psg_list = []
+                for rec in resv_obj.sudo().passenger_ids:
+                    psg_list.append(rec.to_dict())
 
             res = resv_obj.to_dict()
             res.update({
                 'provider_booking': provider_list,
+                'passengers': psg_list,
                 'total_price': total_price
             })
             return ERR.get_no_error(res)
@@ -783,6 +803,9 @@ class ReservationPpob(models.Model):
                         rec.prepaid_update_service_charge(passengers, data['service_charges'])
                 total_price += rec.total
                 provider_list.append(rec.to_dict())
+            psg_list = []
+            for rec in resv_obj.sudo().passenger_ids:
+                psg_list.append(rec.to_dict())
             resv_obj.calculate_service_charge()
             resv_obj.write({
                 'prepaid_value': new_total
@@ -790,6 +813,7 @@ class ReservationPpob(models.Model):
             res = resv_obj.to_dict()
             res.update({
                 'provider_booking': provider_list,
+                'passengers': psg_list,
                 'total_price': total_price
             })
             return ERR.get_no_error(res)
@@ -875,10 +899,14 @@ class ReservationPpob(models.Model):
                 rec.update_status_api_ppob(data, context)
                 provider_list.append(rec.to_dict())
             resv_obj.check_provider_state(context)
+            psg_list = []
+            for rec in resv_obj.sudo().passenger_ids:
+                psg_list.append(rec.to_dict())
 
             res = resv_obj.to_dict()
             res.update({
-                'provider_booking': provider_list
+                'provider_booking': provider_list,
+                'passengers': psg_list
             })
             return ERR.get_no_error(res)
         except RequestException as e:
