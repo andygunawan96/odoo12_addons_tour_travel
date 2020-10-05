@@ -703,7 +703,7 @@ class TtProviderAirline(models.Model):
             'hold_date': self.hold_date and self.hold_date or '',
             'tickets': ticket_list,
             'error_msg': self.error_history_ids and self.error_history_ids[-1].error_msg or '',
-            'service_charges': service_charges,
+            # 'service_charges': service_charges,
             # April 29, 2020 - SAM
             'reference': self.reference,
             'total_price': self.total_price,
