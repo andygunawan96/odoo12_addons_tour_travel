@@ -193,6 +193,8 @@ class ReservationEvent(models.Model):
             'state': 'cancel2',
             'expired_date': datetime.now()
         })
+        if self.payment_acquirer_number_id:
+            self.payment_acquirer_number_id.state = 'cancel'
 
     def check_provider_state(self, context, pnr_list=[], hold_sate=False, req={}):
         if all(i.state == 'booked' for i in self.provider_booking_ids):

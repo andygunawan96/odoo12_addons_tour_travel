@@ -211,6 +211,8 @@ class ReservationTour(models.Model):
             'cancel_date': datetime.now(),
             'cancel_uid': self.env.user.id
         })
+        if self.payment_acquirer_number_id:
+            self.payment_acquirer_number_id.state = 'cancel'
         # self.message_post(body='Order CANCELED')
 
         if self.state != 'refund':

@@ -878,6 +878,8 @@ class HotelReservation(models.Model):
         if res['error_code'] != 0:
             raise ('Error')
         else:
+            if self.payment_acquirer_number_id:
+                self.payment_acquirer_number_id.state = 'cancel'
             return True
 
     def check_provider_state(self, context, pnr_list=[], hold_date=False,req={}):
