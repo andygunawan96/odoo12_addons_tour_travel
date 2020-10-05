@@ -318,6 +318,11 @@ class TtProviderPPOB(models.Model):
                                 'pnr': data['session_id']
                             })
 
+                    for rec2 in rec.cost_service_charge_ids:
+                        rec2.sudo().write({
+                            'description': data['session_id']
+                        })
+
                     if data.get('bill_data'):
                         for rec2 in data['bill_data']:
                             bill_obj = self.env['tt.bill.ppob'].sudo().search([('provider_booking_id', '=', int(rec.id)), ('period', '=', datetime.strptime(rec2['period'], '%Y%m'))], limit=1)

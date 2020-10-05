@@ -375,6 +375,8 @@ class TtVisa(models.Model):
             'cancel_uid': self.env.user.id,
             'cancel_date': datetime.now()
         })
+        if self.payment_acquirer_number_id:
+            self.payment_acquirer_number_id.state = 'cancel'
         self.message_post(body='Order CANCELED')
 
     def action_done_visa(self):

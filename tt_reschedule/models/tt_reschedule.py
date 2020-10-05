@@ -175,6 +175,8 @@ class TtReschedule(models.Model):
 
     printout_reschedule_id = fields.Many2one('tt.upload.center', 'Printout Reschedule', readonly=True)
     created_by_api = fields.Boolean('Created By API', default=False, readonly=True)
+    refund_type_id = fields.Many2one('tt.refund.type', 'Refund Type', required=False, readonly=True)
+    refund_type = fields.Char('Refund Type', required=False, readonly=True)
 
     def get_reschedule_admin_fee_rule(self, agent_id):
         current_refund_env = self.env.ref('tt_accounting.admin_fee_refund_regular')
@@ -185,7 +187,7 @@ class TtReschedule(models.Model):
                 # TODO perlu di break disini atau ambil yg paling trakhir?
         return current_refund_env
 
-    def get_refund_fee_amount(self, agent_id, order_number='', order_type='', refund_amount=0):
+    def get_reschedule_fee_amount(self, agent_id, order_number='', order_type='', refund_amount=0, passenger_count=0):
         admin_fee_obj = self.get_reschedule_admin_fee_rule(agent_id)
 
         pnr_amount = 1
@@ -204,6 +206,10 @@ class TtReschedule(models.Model):
             'admin_fee_agent': admin_fee_agent,
             'admin_fee': admin_fee,
         }
+
+    def compute_admin_fee_api(self, req):
+        reschedule_fee = self.get_reschedule_fee_amount(req['agent_id'], req['order_number'], req['order_type'], req['refund_amount'], req.get('passenger_count'))
+        return reschedule_fee['admin_fee']
 
     @api.depends('invoice_line_ids')
     def set_agent_invoice_state(self):

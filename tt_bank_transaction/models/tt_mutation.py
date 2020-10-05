@@ -3,6 +3,7 @@ from ...tools import variables
 from datetime import datetime, timedelta
 import pytz
 import json
+import re
 from ...tools.ERR import RequestException
 from ...tools import ERR
 
@@ -219,17 +220,18 @@ class TtBankTransaction(models.Model):
                     'transaction_name': i['TransactionName'],
                     'transaction_message': i['Trailer']
                 }
-
+                check_data = self.search([('transaction_message', '=', i['Trailer']), ('transaction_amount', '=', i['TransactionAmount'])])
                 try:
-                    added = self.create_bank_statement(data)
-                    # create transaction code
-                    merge_date = "".join(temp_date)
-                    transaction_code = "MUT." + str(merge_date) + str(bank_code.code) + str(added.id)
+                    if not check_data:
+                        added = self.create_bank_statement(data)
+                        # create transaction code
+                        merge_date = "".join(temp_date)
+                        transaction_code = "MUT." + str(merge_date) + str(bank_code.code) + str(added.id)
 
-                    added.write({
-                        'transaction_code': transaction_code
-                    })
-                    logs['successful'] += 1
+                        added.write({
+                            'transaction_code': transaction_code
+                        })
+                        logs['successful'] += 1
                 except:
                     logs['unsuccessful'] += 1
             else:
@@ -299,3 +301,24 @@ class TtBankTransaction(models.Model):
         self.env['tt.top.up'].create_top_up_api(data, context)
 
         return 0
+
+    def get_transaction_api(self, data):
+        number_checker = re.compile("^[0-9]*$")
+        account_number = ""
+        for acc_number in data['account_number']:
+            if number_checker.match(acc_number):
+                account_number += acc_number
+        transaction = self.env['tt.bank.accounts'].search([('bank_account_number_without_dot', '=', account_number)])
+        res = []
+        if transaction:
+            date_exist = transaction.bank_transaction_date_ids.filtered(
+                lambda x: x.date == data['date'])
+            if date_exist:
+                result = date_exist.transaction_ids.filtered(lambda x: x.transaction_type == 'C')
+                if result:
+                    res.append({
+                        "date": result.transaction_date.strftime("%Y-%m-%d %H:%M:%S"),
+                        "amount": result.transaction_amount,
+                        "transaction_message": result.transaction_message != '' and result.transaction_message or result.transaction_name
+                    })
+        return ERR.get_no_error(res)
