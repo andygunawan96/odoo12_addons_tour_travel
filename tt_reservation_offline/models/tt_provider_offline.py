@@ -118,13 +118,13 @@ class ProviderOffline(models.Model):
                 if line.provider_id.id == self.provider_id.id:
                     if line.pnr == self.pnr:
                         provider_line_count += 1
-            sale_price = self.booking_id.total / line_count * provider_line_count
+            sale_price = self.booking_id.input_total / line_count * provider_line_count
         else:
             if self.booking_id.line_ids:
-                sale_price = self.booking_id.total / len(self.booking_id.line_ids)
+                sale_price = self.booking_id.input_total / len(self.booking_id.line_ids)
                 provider_line_count = 1
             else:
-                sale_price = self.booking_id.total
+                sale_price = self.booking_id.input_total
                 provider_line_count = 1
 
         total_amount = self.booking_id.total_commission_amount
@@ -245,82 +245,6 @@ class ProviderOffline(models.Model):
             if abs(scs_2['total']) != 0:
                 scs_obj = service_chg_obj.create(scs_2)
                 scs_list_3.append(scs_obj.id)
-
-    def create_service_charge_no_line(self):
-        self.delete_service_charge()
-
-        provider_type_id = self.env['tt.provider.type'].search([('code', '=', self.booking_id.offline_provider_type)],
-                                                               limit=1)
-
-        scs_list = []
-        scs_list_2 = []
-        pricing_obj = self.env['tt.pricing.agent'].sudo()
-        sale_price = self.booking_id.total
-
-        # Get all pricing per pax
-        vals = {
-            'amount': sale_price,
-            'charge_code': 'fare',
-            'charge_type': 'FARE',
-            'description': '',
-            'pax_type': 'ADT',
-            'currency_id': self.currency_id.id,
-            'provider_offline_booking_id': self.id,
-            'pax_count': 1,
-            'total': sale_price,
-        }
-        scs_list.append(vals)
-
-        commission_list = pricing_obj.get_commission(
-            self.booking_id.total_commission_amount,
-            self.booking_id.agent_id, provider_type_id)
-        for comm in commission_list:
-            if comm['amount'] > 0:
-                vals2 = vals.copy()
-                vals2.update({
-                    'commission_agent_id': comm['commission_agent_id'],
-                    'total': comm['amount'] * -1,
-                    'amount': comm['amount'] * -1,
-                    'charge_code': comm['code'],
-                    'charge_type': 'RAC',
-                })
-                scs_list.append(vals2)
-
-        # Gather pricing based on pax type
-        for scs in scs_list:
-            # compare with ssc_list
-            scs_same = False
-            for scs_2 in scs_list_2:
-                if scs['charge_code'] == scs_2['charge_code']:
-                    if scs['pax_type'] == scs_2['pax_type']:
-                        scs_same = True
-                        # update ssc_final
-                        scs_2['pax_count'] = scs_2['pax_count'] + 1,
-                        scs_2['total'] += scs.get('amount')
-                        scs_2['pax_count'] = scs_2['pax_count'][0]
-                        break
-            if scs_same is False:
-                vals = {
-                    'commission_agent_id': scs.get(
-                        'commission_agent_id') if 'commission_agent_id' in scs else '',
-                    'amount': scs['amount'],
-                    'charge_code': scs['charge_code'],
-                    'charge_type': scs['charge_type'],
-                    'description': scs['description'],
-                    'pax_type': scs['pax_type'],
-                    'currency_id': scs['currency_id'],
-                    'provider_offline_booking_id': scs['provider_offline_booking_id'],
-                    'pax_count': 1,
-                    'total': scs['total'],
-                }
-                scs_list_2.append(vals)
-
-        # Insert into cost service charge
-        scs_list_3 = []
-        service_chg_obj = self.env['tt.service.charge']
-        for scs_2 in scs_list_2:
-            scs_obj = service_chg_obj.create(scs_2)
-            scs_list_3.append(scs_obj.id)
 
     def create_service_charge_hotel(self, index):
         self.delete_service_charge()
