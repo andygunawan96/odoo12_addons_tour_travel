@@ -725,7 +725,7 @@ class TestSearch(models.Model):
             'sid': context['sid'],
         })
 
-        vend_hotel.create_service_charge()
+        vend_hotel.create_service_charge(resv_id.sale_service_charge_ids)
 
         resv_id.action_booked()
         return self.get_booking_result(resv_id.id)
@@ -969,7 +969,7 @@ class TestSearch(models.Model):
             'lat': '',
             'long': '',
             'bookers': bookers,
-            'sale_service_charge': self.prepare_service_charge(resv_obj.sale_service_charge_ids, resv_obj.pnr),
+            # 'sale_service_charge': self.prepare_service_charge(resv_obj.sale_service_charge_ids, resv_obj.pnr),
         }
         return vals
 
@@ -1052,6 +1052,11 @@ class TestSearch(models.Model):
     def action_done_hotel_api(self, book_id, issued_res, acq_id, co_uid, context):
         resv_obj = self.env['tt.reservation.hotel'].browse(book_id)
         resv_obj.sid_issued = context['signature']
+        for pax in resv_obj.passenger_ids:
+            for csc in pax.channel_service_charge_ids:
+                csc.resv_hotel_id = resv_obj.id
+                csc.total = csc.amount * csc.pax_count
+                resv_obj.total += csc.total
         if resv_obj.state not in ['issued', 'fail_issued']:
             resv_obj.sudo().action_issued(acq_id, co_uid)
         return resv_obj.sudo().action_done(issued_res)

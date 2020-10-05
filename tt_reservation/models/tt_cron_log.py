@@ -28,6 +28,7 @@ class TtCronLogInhResv(models.Model):
 
     def cron_auto_reconcile(self):
         try:
+            error_list = ''
             for provider_obj in self.env['tt.provider'].search([('is_reconcile', '=', True)]):
                 wiz_obj = self.env['tt.reconcile.transaction.wizard'].create({
                     'provider_type_id': provider_obj.provider_type_id.id,
@@ -35,9 +36,15 @@ class TtCronLogInhResv(models.Model):
                     'date_from': datetime.now(pytz.timezone("Asia/Jakarta")) - timedelta(days=1), #klo hari ini tgl 23 Jan 00:00 liat record e 22 Jan
                     'date_to': datetime.now(pytz.timezone("Asia/Jakarta")) - timedelta(days=1),
                 })
-                recon_obj_list = wiz_obj.send_recon_request_data()
-                for recon_obj in recon_obj_list:
-                    recon_obj.compare_reconcile_data()
+
+                try:
+                    recon_obj_list = wiz_obj.send_recon_request_data()
+                    for recon_obj in recon_obj_list:
+                        recon_obj.compare_reconcile_data()
+                except Exception as e:
+                    error_list += '%s\n%s' % (provider_obj.name,traceback.format_exc())
+            if error_list:
+                raise Exception("Some provider error during reconcile")
         except:
             self.create_cron_log_folder()
-            self.write_cron_log('cron_auto_reconcile')
+            self.write_cron_log('cron_auto_reconcile',error_list)
