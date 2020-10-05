@@ -170,6 +170,8 @@ class ReservationPpob(models.Model):
     def action_set_as_cancel(self):
         for rec in self:
             rec.state = 'cancel'
+        if self.payment_acquirer_number_id:
+            self.payment_acquirer_number_id.state = 'cancel'
 
     def action_issued_ppob(self,co_uid,customer_parent_id,acquirer_id = False):
         pnr_list = []
