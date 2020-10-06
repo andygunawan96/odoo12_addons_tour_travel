@@ -170,15 +170,17 @@ class ReservationPpob(models.Model):
     def action_set_as_cancel(self):
         for rec in self:
             rec.state = 'cancel'
+        if self.payment_acquirer_number_id:
+            self.payment_acquirer_number_id.state = 'cancel'
 
     def action_issued_ppob(self,co_uid,customer_parent_id,acquirer_id = False):
         pnr_list = []
         provider_list = []
         carrier_list = []
         for rec in self.provider_booking_ids:
-            pnr_list.append(rec.pnr)
-            provider_list.append(rec.provider_id.name)
-            carrier_list.append(rec.carrier_id.name)
+            pnr_list.append(rec.pnr or '')
+            provider_list.append(rec.provider_id.name or '')
+            carrier_list.append(rec.carrier_id.name or '')
         self.write({
             'state': 'issued',
             'issued_date': datetime.now(),
@@ -268,6 +270,9 @@ class ReservationPpob(models.Model):
                         'hold_date': datetime.today() + timedelta(days=1),
                     })
                 provider_list.append(rec.to_dict())
+            psg_list = []
+            for rec in resv_obj.sudo().passenger_ids:
+                psg_list.append(rec.to_dict())
 
             if resv_obj.state in ['fail_issued', 'fail_refunded']:
                 resv_obj.write({
@@ -279,7 +284,8 @@ class ReservationPpob(models.Model):
 
             res = resv_obj.to_dict()
             res.update({
-                'provider_booking': provider_list
+                'provider_booking': provider_list,
+                'passengers': psg_list
             })
             return ERR.get_no_error(res)
         except RequestException as e:
@@ -328,10 +334,16 @@ class ReservationPpob(models.Model):
         elif all(rec.state == 'cancel' for rec in self.provider_booking_ids):
             # failed book
             self.action_set_as_cancel()
+        elif self.provider_booking_ids:
+            provider_obj = self.provider_booking_ids[0]
+            self.write({
+                'state': provider_obj.state,
+            })
         else:
-            # entah status apa
-            _logger.error('Entah status apa')
-            raise RequestException(1006)
+            self.write({
+                'state': 'draft',
+            })
+            # raise RequestException(1006)
 
     def payment_ppob_api(self,req,context):
         payment_res = self.payment_reservation_api('ppob',req,context)
@@ -389,9 +401,14 @@ class ReservationPpob(models.Model):
                 provider_code = rec.provider_id and rec.provider_id.code or ''
                 total_price += rec.total
                 provider_list.append(rec.to_dict())
+            psg_list = []
+            for rec in inq_obj.sudo().passenger_ids:
+                psg_list.append(rec.to_dict())
+
             res = inq_obj.to_dict()
             res.update({
                 'provider_booking': provider_list,
+                'passengers': psg_list,
                 'state': inq_obj.state,
                 'prepaid_value': inq_obj.prepaid_value and inq_obj.prepaid_value or 0,
                 'total_price': total_price,
@@ -619,9 +636,13 @@ class ReservationPpob(models.Model):
             provider_list = []
             for rec in resv_obj.provider_booking_ids:
                 provider_list.append(rec.to_dict())
+            psg_list = []
+            for rec in resv_obj.sudo().passenger_ids:
+                psg_list.append(rec.to_dict())
             res = resv_obj.to_dict()
             res.update({
                 'provider_booking': provider_list,
+                'passengers': psg_list,
                 'total_price': total_price
             })
             return ERR.get_no_error(res)
@@ -678,16 +699,23 @@ class ReservationPpob(models.Model):
                     total_price += rec.total
                     provider_list.append(rec.to_dict())
                 resv_obj.check_provider_state(context)
+                psg_list = []
+                for rec in resv_obj.sudo().passenger_ids:
+                    psg_list.append(rec.to_dict())
             else:
                 provider_list = []
                 total_price = 0
                 for rec in resv_obj.provider_booking_ids:
                     total_price += rec.total
                     provider_list.append(rec.to_dict())
+                psg_list = []
+                for rec in resv_obj.sudo().passenger_ids:
+                    psg_list.append(rec.to_dict())
 
             res = resv_obj.to_dict()
             res.update({
                 'provider_booking': provider_list,
+                'passengers': psg_list,
                 'total_price': total_price
             })
             return ERR.get_no_error(res)
@@ -775,6 +803,9 @@ class ReservationPpob(models.Model):
                         rec.prepaid_update_service_charge(passengers, data['service_charges'])
                 total_price += rec.total
                 provider_list.append(rec.to_dict())
+            psg_list = []
+            for rec in resv_obj.sudo().passenger_ids:
+                psg_list.append(rec.to_dict())
             resv_obj.calculate_service_charge()
             resv_obj.write({
                 'prepaid_value': new_total
@@ -782,6 +813,7 @@ class ReservationPpob(models.Model):
             res = resv_obj.to_dict()
             res.update({
                 'provider_booking': provider_list,
+                'passengers': psg_list,
                 'total_price': total_price
             })
             return ERR.get_no_error(res)
@@ -867,10 +899,14 @@ class ReservationPpob(models.Model):
                 rec.update_status_api_ppob(data, context)
                 provider_list.append(rec.to_dict())
             resv_obj.check_provider_state(context)
+            psg_list = []
+            for rec in resv_obj.sudo().passenger_ids:
+                psg_list.append(rec.to_dict())
 
             res = resv_obj.to_dict()
             res.update({
-                'provider_booking': provider_list
+                'provider_booking': provider_list,
+                'passengers': psg_list
             })
             return ERR.get_no_error(res)
         except RequestException as e:
@@ -878,6 +914,58 @@ class ReservationPpob(models.Model):
             return e.error_dict()
         except Exception as e:
             _logger.error(traceback.format_exc())
+            return ERR.get_error(1005)
+
+    def update_pnr_provider_ppob_api(self, req, context):
+        _logger.info("Update\n" + json.dumps(req))
+        try:
+            if req.get('book_id'):
+                book_obj = self.env['tt.reservation.ppob'].browse(req['book_id'])
+            elif req.get('order_number'):
+                book_obj = self.env['tt.reservation.ppob'].search([('name', '=', req['order_number'])])
+            else:
+                raise Exception('Booking ID or Number not Found')
+            try:
+                book_obj.create_date
+            except:
+                raise RequestException(1001)
+
+            any_provider_changed = False
+
+            for provider in req['provider_booking']:
+                provider_obj = self.env['tt.provider.ppob'].browse(provider['provider_id'])
+                try:
+                    provider_obj.create_date
+                except:
+                    raise RequestException(1002)
+
+                if provider['status'] == 'CANCEL':
+                    provider_obj.action_cancel_api_ppob(context)
+                    any_provider_changed = True
+                elif provider['status'] == 'VOID_FAILED':
+                    provider_obj.action_failed_void_api_ppob(provider.get('error_code', -1), provider.get('error_msg', ''))
+                    any_provider_changed = True
+
+            if any_provider_changed:
+                book_obj.check_provider_state(context, req=req)
+
+            return ERR.get_no_error({
+                'order_number': book_obj.name,
+                'book_id': book_obj.id
+            })
+        except RequestException as e:
+            _logger.error(traceback.format_exc())
+            try:
+                book_obj.notes += str(datetime.now()) + '\n' + traceback.format_exc()+'\n'
+            except:
+                _logger.error('Creating Notes Error')
+            return e.error_dict()
+        except Exception as e:
+            _logger.error(traceback.format_exc())
+            try:
+                book_obj.notes += str(datetime.now()) + '\n' + traceback.format_exc()+'\n'
+            except:
+                _logger.error('Creating Notes Error')
             return ERR.get_error(1005)
 
     def get_filename(self):

@@ -26,8 +26,8 @@
         </field>
     </record>
 
-    <record id="force_issued_wizard_action_view" model="ir.actions.act_window">
-        <field name="name">force.issued.wizard.action.view</field>
+    <record id="force_issued_wizard_hotel_action_view" model="ir.actions.act_window">
+        <field name="name">Force Issued Wizard Hotel</field>
         <field name="res_model">force.issued.wizard.hotel</field>
         <field name="view_type">form</field>
         <field name="view_mode">form</field>

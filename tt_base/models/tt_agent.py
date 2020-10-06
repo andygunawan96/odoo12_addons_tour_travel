@@ -60,7 +60,7 @@ class TtAgent(models.Model):
     quota_ids = fields.One2many('tt.pnr.quota','agent_id','Quota', readonly=False)
     quota_amount = fields.Integer('Quota', compute='_compute_quota_amount', store=True, readonly=True)
     quota_total_duration = fields.Date('Max Duration', compute='_compute_quota_duration',store=True, readonly=True)
-    is_send_refund_email_cust = fields.Boolean('Send Refund Email to Customer', default=False)
+    is_send_email_cust = fields.Boolean('Send Notification Email to Customer', default=False)
 
     third_party_key_ids = fields.One2many('tt.agent.third.party.key','agent_id','Third Party Key')
 
@@ -605,7 +605,7 @@ class TtAgent(models.Model):
             end_date = data.get('end_date') and data['end_date'] or data['start_date']
             resv_table = 'tt.reservation.{}'.format(provider_type, )
 
-            resv_data = self.env[resv_table].search([('agent_id', '=', context['co_agent_id']), ('state', '=', 'issued'), ('issued_date', '>=', start_date), ('issued_date', '<=', end_date)])
+            resv_data = self.env[resv_table].search([('agent_id', '=', context['co_agent_id']), ('state', '=', 'issued'), ('issued_date', '>=', start_date), ('issued_date', '<=', end_date), ('reconcile_state', '=', 'reconciled')])
             res = []
             for rec in resv_data:
                 latest_ledger = self.env['tt.ledger'].search([('res_id', '=', rec.id), ('res_model', '=', resv_table), ('transaction_type', '=', 2), ('is_reversed', '=', False)], limit=1)

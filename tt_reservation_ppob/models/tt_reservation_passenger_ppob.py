@@ -14,7 +14,7 @@ class TtReservationCustomer(models.Model):
                                                   'passenger_id', 'service_charge_id', 'Channel Service Charges')
     booking_id = fields.Many2one('tt.reservation.ppob', 'PPOB Inquiry')
     pax_type = fields.Selection([('ADT', 'Adult'), ('YCD', 'Senior'), ('CHD', 'Child'), ('INF', 'Infant')],
-                                string='Pax Type')
+                                string='Pax Type', default='ADT')
 
     def to_dict(self):
         res = super(TtReservationCustomer, self).to_dict()

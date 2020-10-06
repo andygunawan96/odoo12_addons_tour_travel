@@ -236,6 +236,8 @@ class ReservationAirline(models.Model):
         super(ReservationAirline, self).action_cancel()
         for rec in self.provider_booking_ids:
             rec.action_cancel()
+        if self.payment_acquirer_number_id:
+            self.payment_acquirer_number_id.state = 'cancel'
 
     def action_issued_from_button(self):
         api_context = {
@@ -458,7 +460,10 @@ class ReservationAirline(models.Model):
                 'carrier_name': ','.join(name_ids['carrier']),
                 'arrival_date': provider_ids[-1].arrival_date[:10]
             })
-
+            #channel repricing upsell
+            if req['repricing_data']:
+                req['repricing_data']['order_number'] = book_obj.name
+                self.env['tt.reservation'].channel_pricing_api(req['repricing_data'], context)
             ##pengecekan segment kembar airline dengan nama passengers
             if not req.get("bypass_psg_validator",False):
                 self.psg_validator(book_obj)
@@ -693,6 +698,9 @@ class ReservationAirline(models.Model):
                 _logger.error('Creating Notes Error')
             return ERR.get_error(1005)
 
+    def to_dict_reschedule(self):
+        return []
+
     def get_booking_airline_api(self,req, context):
         try:
             # _logger.info("Get req\n" + json.dumps(context))
@@ -723,10 +731,8 @@ class ReservationAirline(models.Model):
                     ref_values = ref.get_refund_data()
                     refund_list.append(ref_values)
 
-                reschedule_list = []
-                for rsch in book_obj.reschedule_ids:
-                    rsch_values = rsch.get_reschedule_data()
-                    reschedule_list.append(rsch_values)
+                ##bisa kelolosan kalau tidak install tt_reschedule
+                reschedule_list = book_obj.to_dict_reschedule()
                 # END
 
                 res.update({
@@ -2071,6 +2077,9 @@ class ReservationAirline(models.Model):
                     prov_obj.action_create_ledger(context['co_uid'])
                     new_prov_obj.action_create_ledger(context['co_uid'])
 
+                # Remove smua passenger yg udah dpindah ke resv baru
+                book_obj.passenger_ids = [(3, sid) for sid in passenger_id_list]
+
             book_obj.calculate_pnr_provider_carrier()
             new_booking_obj.calculate_pnr_provider_carrier()
             book_obj.calculate_service_charge()
@@ -2078,11 +2087,21 @@ class ReservationAirline(models.Model):
             book_obj.check_provider_state(context=context)
             new_booking_obj.check_provider_state(context=context)
 
-            response = {
-                'book_id': new_booking_obj.id,
-                'order_number': new_booking_obj.name,
-                'provider_bookings': [{'provider_id': n_prov_obj.id, 'pnr': n_prov_obj.pnr} for n_prov_obj in new_booking_obj.provider_booking_ids],
-            }
+            response = new_booking_obj.to_dict()
+
+            psg_list = [rec.to_dict() for rec in new_booking_obj.sudo().passenger_ids]
+            prov_list = [rec.to_dict() for rec in new_booking_obj.provider_booking_ids]
+            response.update({
+                'passengers': psg_list,
+                'provider_bookings': prov_list,
+            })
+
+            # response = {
+            #     'book_id': new_booking_obj.id,
+            #     'order_number': new_booking_obj.name,
+            #     'provider_bookings': [{'provider_id': n_prov_obj.id, 'pnr': n_prov_obj.pnr} for n_prov_obj in
+            #                           new_booking_obj.provider_booking_ids],
+            # }
             return ERR.get_no_error(response)
         except RequestException as e:
             _logger.error('Error Split Reservation Airline API, %s' % traceback.format_exc())

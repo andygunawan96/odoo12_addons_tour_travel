@@ -101,7 +101,7 @@ class IssuedOffline(models.Model):
     currency_id = fields.Many2one('res.currency', 'Currency', default=lambda self: self.env.user.company_id.currency_id,
                                   readonly=True, states={'draft': [('readonly', False)],
                                                          'pending': [('readonly', False)]})
-    total = fields.Monetary('Input Total', readonly=False, store=True, compute="")
+    input_total = fields.Monetary('Input Total', readonly=False, store=True, compute="")
     total_commission_amount = fields.Monetary('Total Commission Amount', store=True)
     # total_supplementary_price = fields.Monetary('Total Supplementary', compute='_get_total_supplement')
 
@@ -167,12 +167,13 @@ class IssuedOffline(models.Model):
     split_from_resv_id = fields.Many2one('tt.reservation.offline', 'Splitted From', readonly=1)
     split_to_resv_ids = fields.One2many('tt.reservation.offline', 'split_from_resv_id', 'Splitted To', readonly=1)
 
-    total_with_fees = fields.Monetary('Total Sale Price', compute="_get_total_with_fees", store=True)
+    # total_with_fees = fields.Monetary('Total Sale Price', compute="_get_total_with_fees", store=True)
+    total = fields.Monetary('Total', compute="_get_total", store=True)
 
     def get_form_id(self):
         return self.env.ref("tt_reservation_offline.issued_offline_view_form")
 
-    @api.depends('admin_fee_id', 'total', 'passenger_ids.name', 'line_ids.pnr', 'line_ids.check_in', 'line_ids.check_out', 'line_ids.obj_qty')
+    @api.depends('admin_fee_id', 'input_total', 'passenger_ids.name', 'line_ids.pnr', 'line_ids.check_in', 'line_ids.check_out', 'line_ids.obj_qty')
     def _compute_admin_fee(self):
         for rec in self:
             if rec.admin_fee_id:
@@ -183,8 +184,8 @@ class IssuedOffline(models.Model):
                         pnr_amount = rec2.obj_qty
                         pax_amount = (datetime.strptime(rec2.check_out, '%Y-%m-%d') - datetime.strptime(rec2.check_in, '%Y-%m-%d')).days
 
-                        ho_adm_fee = rec.admin_fee_id.get_final_adm_fee_ho(rec.total, pnr_amount, pax_amount)
-                        agent_adm_fee = rec.admin_fee_id.get_final_adm_fee_agent(rec.total, pnr_amount, pax_amount)
+                        ho_adm_fee = rec.admin_fee_id.get_final_adm_fee_ho(rec.input_total, pnr_amount, pax_amount)
+                        agent_adm_fee = rec.admin_fee_id.get_final_adm_fee_agent(rec.input_total, pnr_amount, pax_amount)
 
                         rec.admin_fee_ho += ho_adm_fee
                         rec.admin_fee_agent += agent_adm_fee
@@ -201,8 +202,8 @@ class IssuedOffline(models.Model):
                     for rec2 in rec.passenger_ids:
                         pax_amount += 1
 
-                    ho_adm_fee = rec.admin_fee_id.get_final_adm_fee_ho(rec.total, pnr_amount, pax_amount)
-                    agent_adm_fee = rec.admin_fee_id.get_final_adm_fee_agent(rec.total, pnr_amount, pax_amount)
+                    ho_adm_fee = rec.admin_fee_id.get_final_adm_fee_ho(rec.input_total, pnr_amount, pax_amount)
+                    agent_adm_fee = rec.admin_fee_id.get_final_adm_fee_agent(rec.input_total, pnr_amount, pax_amount)
 
                     rec.admin_fee_ho = ho_adm_fee
                     rec.admin_fee_agent = agent_adm_fee
@@ -464,7 +465,7 @@ class IssuedOffline(models.Model):
     def action_confirm(self, kwargs={}):
         if not self.check_line_empty():
             if not self.check_passenger_empty():
-                if self.total != 0:
+                if self.input_total != 0:
                     self.state_offline = 'confirm'
                     self.state = 'draft'
                     self.confirm_date = fields.Datetime.now()
@@ -725,7 +726,7 @@ class IssuedOffline(models.Model):
 
     @api.one
     def action_quick_issued(self):
-        if self.total > 0 and self.nta_price > 0:
+        if self.input_total > 0 and self.nta_price > 0:
             self.action_sent()
             self.action_validate()
         else:
@@ -916,20 +917,20 @@ class IssuedOffline(models.Model):
                         parent_comm += abs(scs.total)
 
         """ Get diff from pricing and from booking """
-        diff = self.total - total_price
+        diff = self.input_total - total_price
         agent_diff = self.agent_commission - agent_comm + self.admin_fee_agent
         ho_diff = self.ho_commission - ho_comm + self.admin_fee_ho
         parent_diff = self.parent_agent_commission - parent_comm
 
         if diff != 0:
             """ Jika diff != 0, lakukan pembulatan total price di pricing """
-            if diff < self.total:
+            if diff < self.input_total:
                 for scs in self.provider_booking_ids[0].cost_service_charge_ids:
                     if scs.charge_type == 'FARE':
                         scs.amount += diff
                         scs.total += diff
                         break
-            elif diff > self.total:
+            elif diff > self.input_total:
                 for scs in self.provider_booking_ids[0].cost_service_charge_ids:
                     if scs.charge_type == 'FARE':
                         scs.amount -= diff
@@ -988,23 +989,29 @@ class IssuedOffline(models.Model):
     # Set, Get & Compute
     ####################################################################################################
 
-    @api.onchange('total', 'admin_fee')
-    @api.depends('total', 'admin_fee')
-    def _get_total_with_fees(self):
+    @api.onchange('input_total', 'admin_fee')
+    @api.depends('input_total', 'admin_fee')
+    def _get_total(self):
         for rec in self:
-            rec.total_with_fees = rec.total + rec.admin_fee
+            rec.total = rec.input_total + rec.admin_fee
 
-    @api.onchange('total_with_fees', 'total_commission_amount')
-    @api.depends('total_with_fees', 'total_commission_amount')
+    # @api.onchange('input_total', 'admin_fee')
+    # @api.depends('input_total', 'admin_fee')
+    # def _get_total_with_fees(self):
+    #     for rec in self:
+    #         rec.total_with_fees = rec.input_total + rec.admin_fee
+
+    @api.onchange('input_total', 'total_commission_amount')
+    @api.depends('input_total', 'total_commission_amount')
     def _get_nta_price(self):
         for rec in self:
-            rec.nta_price = rec.total - rec.total_commission_amount  # - rec.incentive_amount
+            rec.nta_price = rec.input_total - rec.total_commission_amount  # - rec.incentive_amount
 
     @api.onchange('agent_commission')
-    @api.depends('agent_commission', 'total_with_fees')
+    @api.depends('agent_commission', 'total')
     def _get_agent_price(self):
         for rec in self:
-            rec.agent_nta_price = rec.total_with_fees - rec.total_commission_amount + rec.parent_agent_commission + rec.ho_commission
+            rec.agent_nta_price = rec.total - rec.total_commission_amount + rec.parent_agent_commission + rec.ho_commission
 
     def get_display_provider_name(self):
         provider_list = []
@@ -1711,7 +1718,7 @@ class IssuedOffline(models.Model):
                 'line_ids': [(6, 0, booking_line_ids)],
                 'offline_provider_type': data_reservation_offline.get('type'),
                 'description': data_reservation_offline.get('desc'),
-                'total': data_reservation_offline['total_sale_price'],
+                'input_total': data_reservation_offline['total_sale_price'],
                 "social_media_type": self._get_social_media_id_by_name(data_reservation_offline.get('social_media_id')),
                 # "expired_date": data_reservation_offline.get('expired_date'),
                 "hold_date": data_reservation_offline.get('expired_date'),
@@ -1728,7 +1735,7 @@ class IssuedOffline(models.Model):
                 })
             book_obj = self.sudo().create(header_val)
             book_obj.update({
-                'total': data_reservation_offline['total_sale_price']
+                'input_total': data_reservation_offline['total_sale_price']
             })
 
             # COR / POR
@@ -2042,7 +2049,8 @@ class IssuedOffline(models.Model):
             'offline_provider_type': self.offline_provider_type,
             'offline_provider_type_name': self.offline_provider_type_name,
             'total': self.total,
-            'total_with_fees': self.total_with_fees,
+            'input_total': self.input_total,
+            # 'total_with_fees': self.total_with_fees,
             'description': self.description,
             'state': self.state,
             'state_offline': self.state_offline,

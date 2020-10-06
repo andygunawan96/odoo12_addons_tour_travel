@@ -263,6 +263,18 @@ class TtProviderPPOB(models.Model):
                 })]
             })
 
+    def action_failed_void_api_ppob(self,err_code,err_msg):
+        for rec in self:
+            rec.write({
+                'state': 'void_failed',
+                'error_history_ids': [(0,0,{
+                    'res_model': self._name,
+                    'res_id': self.id,
+                    'error_code': err_code,
+                    'error_msg': err_msg
+                })]
+            })
+
     def action_expired(self):
         self.state = 'cancel2'
 
@@ -299,6 +311,18 @@ class TtProviderPPOB(models.Model):
                         'original_pnr': data['pnr'],
                         'payment_message': data['message'],
                     })
+
+                    for rec2 in rec.booking_id.ledger_ids:
+                        if str(rec2.pnr) == str(rec.sequence):
+                            rec2.sudo().write({
+                                'pnr': data['session_id']
+                            })
+
+                    for rec2 in rec.cost_service_charge_ids:
+                        rec2.sudo().write({
+                            'description': data['session_id']
+                        })
+
                     if data.get('bill_data'):
                         for rec2 in data['bill_data']:
                             bill_obj = self.env['tt.bill.ppob'].sudo().search([('provider_booking_id', '=', int(rec.id)), ('period', '=', datetime.strptime(rec2['period'], '%Y%m'))], limit=1)
@@ -461,7 +485,10 @@ class TtProviderPPOB(models.Model):
             'pnr2': self.pnr2 and self.pnr2 or '',
             'original_pnr': self.original_pnr and self.original_pnr or '',
             'provider': self.provider_id and self.provider_id.code or '',
-            'provider_id': self.provider_id.id,
+            'provider_id': self.id,
+            'agent_id': self.booking_id.agent_id.id if self.booking_id and self.booking_id.agent_id else '',
+            'state': self.state,
+            'state_description': variables.BOOKING_STATE_STR[self.state],
             'payment_message': self.payment_message and self.payment_message or '',
             'balance_due': self.balance_due and self.balance_due or 0,
             'total_price': self.total_price and self.total_price or 0,
@@ -469,7 +496,7 @@ class TtProviderPPOB(models.Model):
             'bill_details': bill_detail_list,
             'currency': self.currency_id and self.currency_id.name or '',
             'error_msg': self.error_history_ids and self.error_history_ids[-1].error_msg or '',
-            'service_charges': service_charges,
+            # 'service_charges': service_charges,
             'carrier_name': self.carrier_id and self.carrier_id.name or '',
             'carrier_code': self.carrier_id and self.carrier_id.code or '',
             'fare_type': self.fare_type and self.fare_type or '',

@@ -92,6 +92,9 @@ class AgentInvoice(models.Model):
     bill_address_id = fields.Many2one('address.detail', 'Address')
 
     pnr = fields.Char("PNR",compute="_compute_invoice_pnr",store=True)
+    def _get_res_model_domain(self):
+        return [('res_model', '=', self._name)]
+    adjustment_ids = fields.One2many('tt.adjustment','res_id','Adjustment',readonly=True,domain=_get_res_model_domain)
 
     @api.model
     def create(self, vals_list):

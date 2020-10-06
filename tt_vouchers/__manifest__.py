@@ -16,6 +16,7 @@ Key Features
     'data': [
         'security/ir.model.access.csv',
         'data/ir_cron_data.xml',
+        'data/ir_send_email.xml',
         'views/voucher_views.xml',
         'views/voucher_detail_views.xml',
         'views/voucher_blackout_views.xml',

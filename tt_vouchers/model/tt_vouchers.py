@@ -8,32 +8,47 @@ from ...tools import ERR
 
 _logger = logging.getLogger(__name__)
 
+
 class TtVoucher(models.Model):
     _name = "tt.voucher"
     _description = 'Rodex Model Voucher'
-    voucher_reference_code = fields.Char("Reference Code")
-    voucher_coverage = fields.Selection([("all", "All"), ("product", "Specified Product"), ("provider", "Specified Provider")])
-    voucher_type = fields.Selection([("percent", "Percentage"), ("amount", "Some Amount")])
+    _rec_name = 'voucher_reference_code'
+
+    name = fields.Char("Voucher Name", required=True, default='Voucher')
+    voucher_reference_code = fields.Char("Reference Code", required=True)
+    voucher_coverage = fields.Selection([("all", "All"), ("product", "Specified Product"), ("provider", "Specified Provider")], default='all')
+    voucher_type = fields.Selection([("percent", "Percentage"), ("amount", "Some Amount")], default='amount')
     currency_id = fields.Many2one("res.currency")
-    voucher_value = fields.Float("Voucher value")
+    voucher_value = fields.Float("Voucher value", default=0)
     voucher_maximum_cap = fields.Float("Voucher Cap")
-    voucher_minimum_purchase = fields.Float('Voucher Minimum Purchase')
+    voucher_minimum_purchase = fields.Float('Voucher Minimum Purchase', default=0)
     voucher_detail_ids = fields.One2many("tt.voucher.detail", "voucher_id", "Voucher Detail")
     voucher_author_id = fields.Many2one('res.users', 'author')   # voucher maker
 
     voucher_effect_all = fields.Boolean("Total", default=True)
     voucher_effect_base_fare = fields.Boolean("Base Fare")
 
-    voucher_state = fields.Selection([('draft', 'Draft'), ('confirm', 'Confirm'), ('not-active', 'Not Active')], default="draft")
+    state = fields.Selection([('draft', 'Draft'), ('confirm', 'Confirm'), ('not-active', 'Not Active')], default="draft")
+    agent_type_access_type = fields.Selection([("all", "ALL"), ("allow", "Allowed"), ("restrict", "Restricted")], 'Agent Type Access Type', default='all')
     voucher_agent_type_eligibility_ids = fields.Many2many("tt.agent.type", "tt_agent_type_tt_voucher_rel", "tt_voucher_id", "tt_agent_type_id", "Agent Type")      #type of user that are able to use the voucher
+    agent_access_type = fields.Selection([("all", "ALL"), ("allow", "Allowed"), ("restrict", "Restricted")], 'Agent Access Type', default='all')
     voucher_agent_eligibility_ids = fields.Many2many('tt.agent', "tt_agent_tt_voucher_rel", "tt_voucher_id", "tt_agent_id", "Agent ID")                                        # who can use the voucher
+    provider_type_access_type = fields.Selection([("all", "ALL"), ("allow", "Allowed"), ("restrict", "Restricted")], 'Provider Type Access Type', default='all')
     voucher_provider_type_eligibility_ids = fields.Many2many("tt.provider.type", "tt_provider_type_tt_voucher_rel", "tt_voucher_id", "tt_provider_type_id", "Provider Type")                         # what product this voucher can be applied
+    provider_access_type = fields.Selection([("all", "ALL"), ("allow", "Allowed"), ("restrict", "Restricted")], 'Provider Access Type', default='all')
     voucher_provider_eligibility_ids = fields.Many2many('tt.provider', "tt_provider_tt_voucher_rel", "tt_voucher_id", "tt_provier_id", "Provider ID")                                  # what provider this voucher can be applied
 
     #add-ons
     voucher_multi_usage = fields.Boolean("Voucher Multi Usage")
-    voucher_usage_value = fields.Monetary("Voucher usage")
+    voucher_usage_value = fields.Monetary("Voucher usage", readonly=True)
     voucher_customer_id = fields.Many2one('tt.customer', 'Customer')
+
+    @api.model
+    def create(self, vals):
+        if type(vals.get('voucher_reference_code')) == str:
+            vals['voucher_reference_code'] = vals['voucher_reference_code'].upper()
+        res = super(TtVoucher, self).create(vals)
+        return res
 
     #harus di cek sama dengan atasnya
     def create_voucher(self, data):
@@ -273,19 +288,28 @@ class TtVoucher(models.Model):
 
     def is_product_eligible(self, data):
         voucher = self.env['tt.voucher'].search([('voucher_reference_code', "=", data['voucher_reference'])])
-        is_eligible = False
-        if voucher.voucher_coverage == 'all':
-            is_eligible = True
+
+        is_provider_type_eligible = False
+        if voucher.provider_type_access_type == 'all':
+            is_provider_type_eligible = True
+        elif voucher.provider_type_access_type == 'allow':
+            if int(data['provider_type_id']) in voucher.voucher_provider_type_eligibility_ids.ids:
+                is_provider_type_eligible = True
         else:
-            provider_type = voucher.voucher_provider_type_eligibility_ids.filtered(lambda x: x['id'] == data['provider_type_id'])
-            if provider_type.id != False:
-                is_eligible = True
+            if int(data['provider_type_id']) not in voucher.voucher_provider_type_eligibility_ids.ids:
+                is_provider_type_eligible = True
 
-            provider = voucher.voucher_provider_eligibility_ids.filtered(lambda x: x['id'] == data['provider_id'])
-            if provider.id == False:
-                is_eligible = False
+        is_provider_eligible = False
+        if voucher.provider_access_type == 'all':
+            is_provider_eligible = True
+        elif voucher.provider_access_type == 'allow':
+            if int(data['provider_id']) in voucher.voucher_provider_eligibility_ids.ids:
+                is_provider_eligible = True
+        else:
+            if int(data['provider_id']) not in voucher.voucher_provider_eligibility_ids.ids:
+                is_provider_eligible = True
 
-        return is_eligible
+        return is_provider_type_eligible and is_provider_eligible
 
     def add_usage_value(self, usage):
         self.voucher_usage_value += usage
@@ -294,24 +318,28 @@ class TtVoucher(models.Model):
     #update
     def is_agent_eligible(self, data):
         voucher = self.env['tt.voucher'].search([('voucher_reference_code', "=", data['voucher_reference'])])
-        is_eligible = False
-        is_empty = False
-        if len(voucher.voucher_agent_type_eligibility_ids) < 1 and len(voucher.voucher_agent_eligibility_ids) < 1:
-            is_empty = True
-            is_eligible = True
 
-        if not is_empty:
-            agent_type = voucher.voucher_agent_type_eligibility_ids.filtered(lambda x: x['id'] == data['agent_type_id'])
-            if agent_type.id != False:
-                is_eligible = True
+        is_agent_type_eligible = False
+        if voucher.agent_type_access_type == 'all':
+            is_agent_type_eligible = True
+        elif voucher.agent_type_access_type == 'allow':
+            if int(data['agent_type_id']) in voucher.voucher_agent_type_eligibility_ids.ids:
+                is_agent_type_eligible = True
+        else:
+            if int(data['agent_type_id']) not in voucher.voucher_agent_type_eligibility_ids.ids:
+                is_agent_type_eligible = True
 
-            agent = voucher.voucher_agent_eligibility_ids.filtered(lambda x: x['id'] == data['agent_id'])
-            if agent.id != False:
-                is_eligible = True
-            else:
-                is_eligible = False
+        is_agent_eligible = False
+        if voucher.agent_access_type == 'all':
+            is_agent_eligible = True
+        elif voucher.agent_access_type == 'allow':
+            if int(data['agent_id']) in voucher.voucher_agent_eligibility_ids.ids:
+                is_agent_eligible = True
+        else:
+            if int(data['agent_id']) not in voucher.voucher_agent_eligibility_ids.ids:
+                is_agent_eligible = True
 
-        return is_eligible
+        return is_agent_type_eligible and is_agent_eligible
 
     def is_purchase_allowed(self, data):
         voucher = self.env['tt.voucher'].search([('voucher_reference_code', '=', data['voucher_reference'])])
@@ -321,23 +349,39 @@ class TtVoucher(models.Model):
 
         return is_eligible
 
-    @api.onchange('voucher_agent_type_eligibility_ids')
+    @api.onchange('agent_type_access_type', 'voucher_agent_type_eligibility_ids')
     def _onchange_action_agent_type(self):
-        domain = {'voucher_agent_eligibility_ids': []}
-        if self.voucher_agent_type_eligibility_ids != False:
+        if self.agent_type_access_type == 'all':
+            domain = {
+                'voucher_agent_eligibility_ids': [('id', '!=', False)]
+            }
+        elif self.agent_type_access_type == 'allow':
             self.voucher_agent_eligibility_ids = False
             domain = {
                 'voucher_agent_eligibility_ids': [('agent_type_id', 'in', self.voucher_agent_type_eligibility_ids.ids)]
             }
+        else:
+            self.voucher_agent_eligibility_ids = False
+            domain = {
+                'voucher_agent_eligibility_ids': [('agent_type_id', 'not in', self.voucher_agent_type_eligibility_ids.ids)]
+            }
         return {'domain': domain}
 
-    @api.onchange('voucher_provider_type_eligibility_ids')
+    @api.onchange('provider_type_access_type', 'voucher_provider_type_eligibility_ids')
     def _onchange_action_provider_type(self):
-        domain = {'voucher_provider_eligibility_ids': []}
-        if self.voucher_provider_type_eligibility_ids != False:
+        if self.provider_type_access_type == 'all':
+            domain = {
+                'voucher_provider_eligibility_ids': [('id', '!=', False)]
+            }
+        elif self.provider_type_access_type == 'allow':
             self.voucher_provider_eligibility_ids = False
             domain = {
                 'voucher_provider_eligibility_ids': [('provider_type_id', 'in', self.voucher_provider_type_eligibility_ids.ids)]
+            }
+        else:
+            self.voucher_provider_eligibility_ids = False
+            domain = {
+                'voucher_provider_eligibility_ids': [('provider_type_id', 'not in', self.voucher_provider_type_eligibility_ids.ids)]
             }
         return {'domain': domain}
 
@@ -351,30 +395,102 @@ class TtVoucher(models.Model):
         if self.voucher_effect_base_fare == True:
             self.voucher_effect_all = False
 
-    @api.onchange('voucher_agent_eligibility_ids')
+    @api.onchange('agent_access_type', 'voucher_agent_eligibility_ids')
     def _onchange_action_agent(self):
-        domain = {'voucher_customer_id': []}
-        if self.voucher_agent_eligibility_ids != False:
+        if self.agent_access_type == 'all':
+            domain = {
+                'voucher_customer_id': [('id', '!=', False)]
+            }
+        elif self.agent_access_type == 'allow':
             self.voucher_customer_id = False
             domain = {
-                'voucher_customer_id': [('name', 'in', self.voucher_agent_eligibility_ids.ids)]
+                'voucher_customer_id': [('agent_id', 'in', self.voucher_agent_eligibility_ids.ids)]
+            }
+        else:
+            self.voucher_customer_id = False
+            domain = {
+                'voucher_customer_id': [('agent_id', 'not in', self.voucher_agent_eligibility_ids.ids)]
             }
         return {'domain': domain}
+
+    def action_set_to_draft(self):
+        self.write({
+            'state': 'draft'
+        })
+
+    def action_set_to_confirm(self):
+        self.write({
+            'state': 'confirm'
+        })
+
+    def set_to_not_active(self):
+        self.write({
+            'state': 'not-active'
+        })
 
 class TtVoucherDetail(models.Model):
     _name = "tt.voucher.detail"
     _description = 'Rodex Model Voucher Detail'
+    _rec_name = 'display_name'
 
     voucher_id = fields.Many2one("tt.voucher")
-    voucher_reference_code = fields.Char("Voucher Reference", related="voucher_id.voucher_reference_code")
-    voucher_period_reference = fields.Char("Voucher Period Reference")
+    voucher_reference_code = fields.Char("Voucher Reference", related="voucher_id.voucher_reference_code", readonly=True)
+    voucher_period_reference = fields.Char("Voucher Period Reference", required=True)
     voucher_start_date = fields.Datetime("voucher starts")
     voucher_expire_date = fields.Datetime("voucher end")
-    voucher_used = fields.Integer("Voucher use")
+    voucher_used = fields.Integer("Voucher use", readonly=True)
     voucher_quota = fields.Integer("Voucher quota")
     voucher_blackout_ids = fields.One2many("tt.voucher.detail.blackout", 'voucher_detail_id')
     voucher_used_ids = fields.One2many("tt.voucher.detail.used", "voucher_detail_id")
-    voucher_detail_state = fields.Selection([('not-active', 'Not Active'), ('active', 'Active'), ('expire', 'Expire')], default="not-active")
+    state = fields.Selection([('not-active', 'Not Active'), ('active', 'Active'), ('expire', 'Expire')], default="not-active")
+    display_name = fields.Char('Display Name', compute='_compute_display_name')
+    is_agent = fields.Boolean("For Agent", default=False)
+
+    @api.depends('voucher_reference_code', 'voucher_period_reference')
+    @api.onchange('voucher_reference_code', 'voucher_period_reference')
+    def _compute_display_name(self):
+        for rec in self:
+            ref_code = rec.voucher_reference_code and rec.voucher_reference_code or ''
+            per_ref = rec.voucher_period_reference and rec.voucher_period_reference or ''
+            rec.display_name = ref_code + '.' + per_ref
+
+    @api.model
+    def create(self, vals):
+        if type(vals.get('voucher_period_reference')) == str:
+            vals['voucher_period_reference'] = vals['voucher_period_reference'].upper()
+        res = super(TtVoucherDetail, self).create(vals)
+        try:
+            res.create_voucher_email_queue('created')
+        except Exception as e:
+            _logger.info('Error Create Voucher Creation Email Queue')
+        return res
+
+    def create_voucher_created_email_queue(self):
+        self.create_voucher_email_queue('created')
+
+    def create_voucher_email_queue(self, type):
+        if self.voucher_id.voucher_multi_usage and self.voucher_id.voucher_customer_id:
+            try:
+                temp_data = {
+                    'provider_type': 'voucher',
+                    'ref_code': self.voucher_reference_code,
+                    'period_code': self.voucher_period_reference,
+                    'type': type,
+                }
+                temp_context = {
+                    'co_agent_id': self.voucher_id.voucher_customer_id.agent_id.id
+                }
+                self.env['tt.email.queue'].create_email_queue(temp_data, temp_context)
+            except Exception as e:
+                _logger.info('Error Create Email Queue')
+
+    def get_voucher_details_email(self):
+        txt_detail = '<p>Reference Code: %s.%s</p>' % (self.voucher_reference_code, self.voucher_period_reference)
+        txt_detail += '<p>Value: %s %s</p>' % (self.voucher_id.currency_id.name, self.voucher_id.voucher_value)
+        txt_detail += '<p>Start Date: %s</p>' % (self.voucher_start_date.strftime('%d %b %Y %H:%M'), )
+        txt_detail += '<p>Expired Date: %s</p>' % (self.voucher_expire_date.strftime('%d %b %Y %H:%M'), )
+        txt_detail += '<br/>'
+        return txt_detail
 
     def get_voucher_remainder(self, voucher_id):
         voucher = self.env['tt.voucher.detail'].browse(int(voucher_id))
@@ -391,538 +507,39 @@ class TtVoucherDetail(models.Model):
 
     #function for cron
     def activate_voucher(self):
-        voucher = self.env['tt.voucher.detail'].search([('voucher_detail_state', '=', 'not-active')])
+        voucher = self.env['tt.voucher.detail'].search([('state', '=', 'not-active')])
         for i in voucher:
             if i.voucher_start_date.strftime("%Y-%m-%d") <= datetime.today().strftime("%Y-%m-%d"):
                 i.write({
-                    'voucher_detail_state': 'active'
+                    'state': 'active'
                 })
         return 0
 
     #function for cron
     def expire_voucher(self):
-        voucher = self.env['tt.voucher.detail'].search([('voucher_detail_state', '=', 'active')])
+        voucher = self.env['tt.voucher.detail'].search([('state', '=', 'active')])
         for i in voucher:
             if i.voucher_expire_date.strftime("%Y-%m-%d") < datetime.today().strftime("%Y-%m-%d"):
                 i.write({
-                    'voucher_detail_state': 'expire'
+                    'state': 'expire'
                 })
 
         return 0
 
-    def simulate_voucher(self, data, context):
-        # requirement of data
-        # data = {
-        #     order_number
-        #     voucher_reference
-        #     date          <-- date vouchernya digunakan (today)
-        #     provider_type
-        # }
-
-        #get order data
-        order_obj = self.env['tt.reservation.%s' % (data['provider_type'])].search([('name', '=', data['order_number'])])
-        dependencies_data = order_obj.provider_booking_ids
-
-        ####################################################################
-        #   check if voucher is eligible to use
-        ####################################################################
-        #splitting between voucher reference and detail reference
-        splits = data['voucher_reference'].split(".")
-
-        # getting the main reference code
-        data['voucher_reference_code'] = splits[0]
-
-        try:
-            #get voucher detail reference code
-            data['voucher_reference_period'] = splits[1]
-        except:
-            #if failed, then raise an error
-            _logger.error("%s didn't give period reference code" % data['voucher_reference'])
-            return ERR.get_error(additional_message="must provide voucher period reference")
-
-        # check if voucher exist
-        voucher = self.env['tt.voucher'].search([('voucher_reference_code', '=', data['voucher_reference_code'])])
-
-        #if there's no voucher ID
-        if voucher.id == False:
-            _logger.error("%s, voucher is not exist" % data['voucher_reference'])
-            return ERR.get_error(additional_message="Voucher is not exist")
-
-        # get voucher detail for particular voucher
-        voucher_detail = voucher.voucher_detail_ids.filtered(lambda x: x['voucher_reference_code'] == data['voucher_reference_code'] and x['voucher_period_reference' == data['voucher_reference_period']])
-
-        #if no voucher detail found
-        if voucher_detail.id == False:
-            _logger.error("%s, voucher is not exist" % data['voucher_reference'])
-            return ERR.get_error(additional_message="Voucher is not exist")
-
-        # check for validity of the voucher
-        if voucher_detail.voucher_detail_state == 'expire':
-
-            #if voucher already expire
-            _logger.error("%s, voucher is expired" % data['voucher_reference'])
-            return ERR.get_error(additional_message="Voucher is Expired")
-
-        #check if voucher is multi usage
-        if not voucher.voucher_multi_usage:
-
-            #check if voucher use is under the voucher quota
-            if voucher_detail.voucher_used >= voucher_detail.voucher_quota and voucher_detail.voucher_quota != -1:
-
-                #return as voucher sold out
-                _logger.error("%s, voucher Sold Out" % data['voucher_reference'])
-                return ERR.get_error(additional_message="Voucher sold out")
-        else:
-
-            #if voucher is multi usage
-            if voucher.voucher_value - voucher.voucher_usage_value <= 0:
-
-                #return as voucher is no longer have value
-                _logger.error("%s, voucher Sold Out" % data['voucher_reference'])
-                return ERR.get_error(additional_message="Voucher sold out")
-
-        to_check = {
-            'voucher_reference': data['voucher_reference_code'],
-            'agent_type_id': context['co_agent_type_id'],
-            'agent_id': context['co_agent_id']
-        }
-        agent_is_eligible = self.env['tt.voucher'].is_agent_eligible(to_check)
-        if not agent_is_eligible:
-            _logger.error("%s, agent cannot use the voucher" % data['voucher_reference'])
-            return ERR.get_error(additional_message="Agent cannot use the voucher")
-
-        #check for minimum purchase
-        order_provider = order_obj.provider_name.split(",")
-
-        result_array = []
-        #check if provider is more than one
-        if len(order_provider) < 2:
-            # # # # # # # # # # # # # # # # # # # #
-            #   only one provider                 #
-            # # # # # # # # # # # # # # # # # # # #
-
-            #check if voucher covers all provider
-            if voucher.voucher_coverage == 'all':
-
-                #check if minimum purchase is allowed
-                order_purchase = order_obj.total_fare
-                if order_purchase < voucher.voucher_minimum_purchase and voucher.voucher_minimum_purchase != -1:
-                    #not meet required minimum purchase
-                    _logger.error("%s cannot use the voucher, minimum purchase not meet" % data['order_number'])
-                    return ERR.get_error(additional_message="Do not meet minimum purchase, cannot use voucher")
-
-                #if allowed
-                #count every provider booking
-                if voucher.voucher_effect_all:
-                    temp_voucher_value = voucher.voucher_value
-                    for i in dependencies_data:
-                        provider_total_price = 0.0
-                        provider_total_discount = 0.0
-                        provider_final_total_price = 0.0
-                        temp_array = []
-                        for j in i.cost_service_charge_ids:
-                            if j.charge_type != 'RAC':
-                                #check if voucher is either percent or price discount
-                                if voucher.voucher_type == 'percentage':
-                                    # count the discount
-                                    discount_amount = float(j.total) * voucher.voucher_value / 100.0
-                                else:
-                                    discount_amount = voucher.voucher_value
-                                final_amount = float(j.total) - float(discount_amount)
-
-                                provider_total_price += float(j.total)
-                                provider_total_discount += float(discount_amount)
-
-                                result_temp = {
-                                    'charge_code': j.charge_code,
-                                    'charge_type': j.charge_type,
-                                    'start_amount': j.total,
-                                    'discount_value': voucher.voucher_value,
-                                    'discount_amount': float(discount_amount),
-                                    'final_amount': float(final_amount),
-                                }
-                            else:
-                                #RAC will not be affected by voucher
-                                provider_total_price += float(j.total)
-                                result_temp = {
-                                    'charge_code': j.charge_code,
-                                    'charge_type': j.charge_type,
-                                    'start_amount': j.total,
-                                    'discount_value': 0,
-                                    'discount_amount': 0,
-                                    'final_amount': j.total,
-                                }
-
-                            temp_array.append(result_temp)
-
-                        #set data to return
-                        provider_final_total_price = provider_total_price - provider_total_discount
-                        result_dict = {
-                            'provider_type_code': i.provider_id.provider_type_id.code,
-                            'provider_code': i.provider_id.code,
-                            'provider_total_price': provider_total_price,
-                            'provider_total_discount': provider_total_discount,
-                            'provider_final_price': provider_final_total_price,
-                            'discount_detail': temp_array
-                        }
-                        result_array.append(result_dict)
-
-                # elif voucher.voucher_effect_base_fare:
-                else:
-                    for i in dependencies_data:
-                        provider_total_price = 0.0
-                        provider_total_discount = 0.0
-                        temp_array = []
-                        for j in i.cost_service_charge_ids:
-                            if j.charge_code == 'fare' or j.charge_code == 'FarePrice':
-                                # count the discount
-                                discount_amount = float(j.total) * voucher.voucher_value / 100.0
-                                final_amount = float(j.total) - float(discount_amount)
-
-                                provider_total_price += float(j.total)
-                                provider_total_discount += float(discount_amount)
-
-                                result_temp = {
-                                    'charge_code': j.charge_code,
-                                    'charge_type': j.charge_type,
-                                    'start_amount': j.total,
-                                    'discount_value': voucher.voucher_value,
-                                    'discount_amount': float(discount_amount),
-                                    'final_amount': float(final_amount),
-                                }
-                            else:
-                                #only fare affected by voucher
-                                provider_total_price += float(j.total)
-                                result_temp = {
-                                    'charge_code': j.charge_code,
-                                    'charge_type': j.charge_type,
-                                    'start_amount': j.total,
-                                    'discount_value': 0,
-                                    'discount_amount': 0,
-                                    'final_amount': j.total,
-                                }
-
-                            temp_array.append(result_temp)
-
-                        #create data to return
-                        provider_final_total_price = float(provider_total_price) - float(provider_total_discount)
-                        result_dict = {
-                            'provider_type_code': i.provider_id.provider_type_id.code,
-                            'provider_code': i.provider_id.code,
-                            'provider_total_price': provider_total_price,
-                            'provider_total_discount': provider_total_discount,
-                            'provider_final_price': provider_final_total_price,
-                            'discount_detail': temp_array
-                        }
-                        result_array.append(result_dict)
-            #voucher didn't cover all provider
-            else:
-                #check minimum purchase
-                order_purchase = order_obj.total_fare
-                if order_purchase < voucher.voucher_minimum_purchase and voucher.voucher_minimum_purchase != -1:
-                    # not meet required minimum purchase
-                    _logger.error("%s cannot use the voucher, minimum purchase not meet" % data['order_number'])
-                    return ERR.get_error(additional_message="Do not meet minimum purchase, cannot use voucher")
-
-                temp_dict = {
-                    'voucher_reference': data['voucher_reference_code'],
-                    'provider_type_id': dependencies_data.provider_id.provider_type_id.id,
-                    'provider_id': dependencies_data.provider_id.id,
-                    'provider_name': dependencies_data.provider_id.code
-                }
-                provider_is_eligible = self.env['tt.voucher'].is_product_eligible(temp_dict)
-                if provider_is_eligible:
-
-                    for i in dependencies_data:
-                        provider_total_price = 0.0
-                        provider_total_discount = 0.0
-                #voucher not covers all provider
-
-                        if voucher.voucher_effect_all:
-
-                            temp_array = []
-                            for j in i.cost_service_charge_ids:
-                                if j.charge_type != 'RAC':
-                                    # count the discount
-                                    discount_amount = float(j.total) * voucher.voucher_value / 100.0
-                                    final_amount = float(j.total) - float(discount_amount)
-
-                                    provider_total_price += float(j.total)
-                                    provider_total_discount += float(discount_amount)
-
-                                    result_temp = {
-                                        'charge_code': j.charge_code,
-                                        'charge_type': j.charge_type,
-                                        'start_amount': j.total,
-                                        'discount_value': voucher.voucher_value,
-                                        'discount_amount': float(discount_amount),
-                                        'final_amount': float(final_amount),
-                                    }
-                                else:
-                                    # RAC will not be affected by voucher
-                                    provider_total_price += float(j.total)
-                                    result_temp = {
-                                        'charge_code': j.charge_code,
-                                        'charge_type': j.charge_type,
-                                        'start_amount': j.total,
-                                        'discount_value': 0,
-                                        'discount_amount': 0,
-                                        'final_amount': j.total,
-                                    }
-
-                                temp_array.append(result_temp)
-
-                            # set data to return
-                            provider_final_total_price = provider_total_price - provider_total_discount
-                            result_dict = {
-                                'provider_type_code': i.provider_id.provider_type_id.code,
-                                'provider_code': i.provider_id.code,
-                                'provider_total_price': provider_total_price,
-                                'provider_total_discount': provider_total_discount,
-                                'provider_final_price': provider_final_total_price,
-                                'discount_detail': temp_array
-                            }
-                            result_array.append(result_dict)
-
-                        # elif voucher.voucher_effect_base_fare:
-                        else:
-                            temp_array = []
-                            for j in i.cost_service_charge_ids:
-                                if j.charge_code == 'fare' or j.charge_code == 'FarePrice':
-                                    # count the discount
-                                    discount_amount = float(j.total) * voucher.voucher_value / 100.0
-                                    final_amount = float(j.total) - float(discount_amount)
-
-                                    provider_total_price += float(j.total)
-                                    provider_total_discount += float(discount_amount)
-
-                                    result_temp = {
-                                        'charge_code': j.charge_code,
-                                        'charge_type': j.charge_type,
-                                        'start_amount': j.total,
-                                        'discount_value': voucher.voucher_value,
-                                        'discount_amount': float(discount_amount),
-                                        'final_amount': float(final_amount),
-                                    }
-                                else:
-                                    # only fare affected by voucher
-                                    provider_total_price += float(j.total)
-                                    result_temp = {
-                                        'charge_code': j.charge_code,
-                                        'charge_type': j.charge_type,
-                                        'start_amount': j.total,
-                                        'discount_value': 0,
-                                        'discount_amount': 0,
-                                        'final_amount': j.total,
-                                    }
-
-                                temp_array.append(result_temp)
-
-                            # create data to return
-                            provider_final_total_price = float(provider_total_price) - float(provider_total_discount)
-                            result_dict = {
-                                'provider_type_code': i.provider_id.provider_type_id.code,
-                                'provider_code': i.provider_id.code,
-                                'provider_total_price': provider_total_price,
-                                'provider_total_discount': provider_total_discount,
-                                'provider_final_price': provider_final_total_price,
-                                'discount_detail': temp_array
-                            }
-                            result_array.append(result_dict)
-                else:
-                    _logger.error("%s provider cannot use the voucher %s" % (dependencies_data.provider_id, data['voucher_reference']))
-                    return ERR.get_error(additional_message="Provider cannot use voucher %s" % data['voucher_reference'])
-        else:
-            # # # # # # # # # # # # # # # # # # # #
-            #   multi provider                    #
-            # # # # # # # # # # # # # # # # # # # #
-            #for multi provider then you have to loop and count every price, then count and check.
-
-            #check if voucher covers all provider
-            if voucher.voucher_coverage == 'all':
-
-                #check if minimum purchase is meet
-                order_purchase = order_obj.total_fare
-                if order_purchase < voucher.voucher_minimum_purchase:
-                    _logger.error("%s cannot use the voucher, minimum purchase not meet" % data['order_number'])
-                    return ERR.get_error(additional_message="Do not meet minimum purchase, cannot use voucher")
-
-                #if voucher affecting all price
-                if voucher.voucher_effect_all:
-                    for i in dependencies_data:
-                        temp_array = []
-                        provider_total_price = 0.0
-                        provider_total_discount = 0.0
-                        for j in i.cost_service_charge_ids:
-                            if j.charge_type != 'RAC':
-                                # count the discount
-                                discount_amount = float(j.total) * voucher.voucher_value / 100.0
-                                final_amount = float(j.total) - float(discount_amount)
-
-                                provider_total_price += float(j.total)
-                                provider_total_discount += float(discount_amount)
-
-                                result_temp = {
-                                    'charge_code': j.charge_code,
-                                    'charge_type': j.charge_type,
-                                    'start_amount': j.total,
-                                    'discount_value': voucher.voucher_value,
-                                    'discount_amount': float(discount_amount),
-                                    'final_amount': float(final_amount),
-                                }
-                            else:
-                                provider_total_price += float(j.total)
-
-                                result_temp = {
-                                    'charge_code': j.charge_code,
-                                    'charge_type': j.charge_type,
-                                    'start_amount': j.total,
-                                    'discount_value': 0,
-                                    'discount_amount': 0,
-                                    'final_amount': j.total,
-                                }
-                            temp_array.append(result_temp)
-
-                #if voucher only affecting base fare
-                # elif voucher.voucher_effect_base_fare:
-                else:
-                    for i in dependencies_data:
-                        temp_array = []
-                        provider_total_price = 0.0
-                        provider_total_discount = 0.0
-
-                        for j in i.cost_service_charge_ids:
-                            if j.charge_code != 'fare' or j.charge_code == 'FarePrice':
-                                # count the discount
-                                discount_amount = float(j.total) * voucher.voucher_value / 100.0
-                                final_amount = float(j.total) - float(discount_amount)
-
-                                provider_total_price += float(j.total)
-                                provider_total_discount += float(discount_amount)
-
-                                result_temp = {
-                                    'charge_code': j.charge_code,
-                                    'charge_type': j.charge_type,
-                                    'start_amount': j.total,
-                                    'discount_value': voucher.voucher_value,
-                                    'discount_amount': float(discount_amount),
-                                    'final_amount': float(final_amount),
-                                }
-                            else:
-                                provider_total_price += float(j.total)
-
-                                result_temp = {
-                                    'charge_code': j.charge_code,
-                                    'charge_type': j.charge_type,
-                                    'start_amount': j.total,
-                                    'discount_value': 0,
-                                    'discount_amount': 0,
-                                    'final_amount': j.total,
-                                }
-                            temp_array.append(result_temp)
-                        # create data to return
-                        provider_final_total_price = float(provider_total_price) - float(provider_total_discount)
-                        result_dict = {
-                            'provider_type_code': i.provider_id.provider_type_id.code,
-                            'provider_code': i.provider_id.code,
-                            'pnr': i.pnr,
-                            'provider_total_price': provider_total_price,
-                            'provider_total_discount': provider_total_discount,
-                            'provider_final_price': provider_final_total_price,
-                            'discount_detail': temp_array
-                        }
-                        result_array.append(result_dict)
-            else:
-                ### if voucher is not cover all data
-                #for every provider
-                eligible_provider = []
-                for i in order_provider:
-                    temp_filter = dependencies_data.provider_booking_ids.filtered(lambda x: x['provider_id']['code'] == i)
-
-                    #check if provider is allowed to use the voucher
-                    temp_dict = {
-                        'voucher_reference': data['voucher_reference_code'],
-                        'provider_type_id': temp_filter.provider_id.provider_type_id.id,
-                        'provider_id': temp_filter.provider_id.id,
-                        'provider_name': temp_filter.provider_id.code
-                    }
-                    provider_is_eligible = self.env['tt.voucher'].is_product_eligible(temp_dict)
-                    if provider_is_eligible:
-                        eligible_provider.append(i)
-
-                for i in dependencies_data:
-                    temp_array = []
-                    if i.provider_id.code in eligible_provider:
-                        provider_total_price = 0.0
-                        provider_total_discount = 0.0
-                        ## provider is allowed to use the voucher
-                        minimum_checker_provider = 0.0
-                        for j in i.cost_service_charge_ids:
-                            minimum_checker_provider += float(i.total)
-                        if minimum_checker_provider <= voucher.voucher_minimum_purchase:
-                            _logger.error("Purchase not meet minimum purchase")
-
-                        for j in i.cost_service_charge_ids:
-                            if j.charge_code == 'fare' or j.charge_code == 'FarePrice':
-                                # count the discount
-                                discount_amount = float(j.total) * voucher.voucher_value / 100.0
-                                final_amount = float(j.total) - float(discount_amount)
-
-                                provider_total_price += float(j.total)
-                                provider_total_discount += float(discount_amount)
-
-                                result_temp = {
-                                    'charge_code': j.charge_code,
-                                    'charge_type': j.charge_type,
-                                    'start_amount': j.total,
-                                    'discount_value': voucher.voucher_value,
-                                    'discount_amount': float(discount_amount),
-                                    'final_amount': float(final_amount),
-                                }
-                            else:
-                                provider_total_price += float(j.total)
-
-                                result_temp = {
-                                    'charge_code': j.charge_code,
-                                    'charge_type': j.charge_type,
-                                    'start_amount': j.total,
-                                    'discount_value': 0,
-                                    'discount_amount': 0,
-                                    'final_amount': j.total,
-                                }
-                            temp_array.append(result_temp)
-                    else:
-                        provider_total_price = 0.0
-                        provider_total_discount = 0.0
-
-                        for j in i.cost_service_charge_ids:
-                            provider_total_price += float(j.total)
-
-                            result_temp = {
-                                'charge_code': j.charge_code,
-                                'charge_type': j.charge_type,
-                                'start_amount': j.total,
-                                'discount_value': 0,
-                                'discount_amount': 0,
-                                'final_amount': j.total,
-                            }
-                            temp_array.append(result_temp)
-
-                    # create data to return
-                    provider_final_total_price = float(provider_total_price) - float(
-                        provider_total_discount)
-                    result_dict = {
-                        'provider_type_code': i.provider_id.provider_type_id.code,
-                        'provider_code': i.provider_id.code,
-                        'pnr': i.pnr,
-                        'provider_total_price': provider_total_price,
-                        'provider_total_discount': provider_total_discount,
-                        'provider_final_price': provider_final_total_price,
-                        'discount_detail': temp_array
-                    }
-                    result_array.append(result_dict)
-
-        return ERR.get_no_error(result_array)
+    def action_set_not_active(self):
+        self.write({
+            'state': 'not-active'
+        })
+
+    def action_set_active(self):
+        self.write({
+            'state': 'active'
+        })
+
+    def action_set_expire(self):
+        self.write({
+            'state': 'expire'
+        })
 
     def new_simulate_voucher(self, data, context):
         # get the order object
@@ -985,7 +602,7 @@ class TtVoucherDetail(models.Model):
         #####################
 
         # check for voucher state
-        if voucher_detail.voucher_detail_state == 'expire':
+        if voucher_detail.state == 'expire':
             # if voucher is already expire
             # print to logger
             _logger.error("%s voucher is expired" % data['voucher_reference'])
@@ -1062,7 +679,11 @@ class TtVoucherDetail(models.Model):
         # declare result array
         result_array = []
 
-        # iterate for every provier
+        # dependencies of voucher amount, and just to be safe
+        voucher_remainder = voucher.voucher_value - voucher.voucher_usage_value
+        voucher_usage = 0
+
+        # iterate for every provider
         for i in dependencies_data:
 
             # declare some float
@@ -1090,40 +711,46 @@ class TtVoucherDetail(models.Model):
                 provider_is_eligible = True
 
             if provider_is_eligible:
+                # at this point provider within transaction is covered by voucher
 
-                # iterate data
-                for j in i.cost_service_charge_ids:
+                # check if voucher is multiusage and percent
+                if voucher.voucher_type == 'percent' and voucher.voucher_multi_usage:
+                    # voucher invalid
+                    # no way multi use is percent will let it slide
+                    _logger.error("Voucher logic is invalid, %s" % voucher.voucher_reference_code)
 
-                    # prive coverage
-                    if voucher.voucher_effect_all:
-                        # voucher affect all pricing
-
-                        # check type voucher
-                        if voucher.voucher_type == 'percentage' and voucher.multi_usage:
-                            # voucher invalid
-                            # no way multi use is percent will let it slide
-                            _logger.error("Voucher logic is invalid, %s" % voucher.voucher_reference)
-
-                            # adding value to provider total
+                    # let the data pass
+                    for j in i.cost_service_charge_ids:
+                        # adding value to provider total
+                        if j.charge_type != 'RAC':
                             provider_total_price += float(j.total)
 
-                            # create result temp dict
-                            result_temp = {
-                                'charge_code': j.charge_code,
-                                'charge_type': j.charge_type,
-                                'start_amount': j.total,
-                                'discount_value': 0.0,
-                                'voucher_type': voucher.voucher_type,
-                                'discount_amount': 0.0,
-                                'final_amount': j.total
-                            }
+                        # create result temp dict
+                        result_temp = {
+                            'charge_code': j.charge_code,
+                            'charge_type': j.charge_type,
+                            'start_amount': j.total,
+                            'discount_value': 0.0,
+                            'voucher_type': voucher.voucher_type,
+                            'discount_amount': 0.0,
+                            'final_amount': j.total
+                        }
 
-                            # adding result to temp array
-                            temp_array.append(result_temp)
+                        # adding result to temp array
+                        temp_array.append(result_temp)
 
-                        elif voucher.voucher_type == 'percentage':
-                            # voucher is percent
+                elif voucher.voucher_type == 'percent' and not voucher.voucher_multi_usage:
+                    # voucher is percent
+                    _logger.info(i.cost_service_charge_ids)
+                    # iterate every cost
+                    for j in i.cost_service_charge_ids:
+
+                        # if voucher cover all pricing
+                        if voucher.voucher_effect_all:
+
+                            # make sure charge type is not comission
                             if j.charge_type != 'RAC':
+                                _logger.info("Will be discount: %s, %s" % (j.charge_code, j.charge_type))
                                 # charge_type is not RAC
                                 # count the discount
                                 discount_amount = float(j.total) * voucher.voucher_value / 100
@@ -1150,9 +777,6 @@ class TtVoucherDetail(models.Model):
                                 # nothing will happen
                                 # RAC will not be affected by voucher
 
-                                # adding value to provider total
-                                provider_total_price += float(j.total)
-
                                 # create result temp dict
                                 result_temp = {
                                     'charge_code': j.charge_code,
@@ -1167,117 +791,10 @@ class TtVoucherDetail(models.Model):
                             # adding result to temp array
                             temp_array.append(result_temp)
                         else:
-                            # voucher is amount
 
-                            # declare value of voucher
-                            voucher_remainder = voucher.voucher_value
-                            voucher_usage = 0.0
-
-                            # check fow may voucher value there is
-                            if voucher_remainder > 0:
-
-                                # check if price sector or voucher value is bigger
-                                if j.charge_type != 'RAC':
-
-                                    # check if voucher value is bigger than fare
-                                    if float(j.total) - voucher_remainder < 0:
-                                        # total is smaller than voucher value
-                                        voucher_usage = voucher_remainder - float(j.total)
-
-                                    else:
-                                        # total is bigger than voucher value
-                                        voucher_usage = float(j.total) - voucher_remainder
-
-                                    # subtract voucher_remainder
-                                    voucher_remainder -= voucher_usage
-
-                                    # create alles
-                                    provider_total_price += float(j.total)
-                                    provider_total_discount += float(voucher_usage)
-
-                                    # SUM discount amount
-                                    final_amount = float(j.total) - float(voucher_usage)
-
-                                    # create result temp dict
-                                    result_temp = {
-                                        'charge_code': j.charge_code,
-                                        'charge_type': j.charge_type,
-                                        'start_amount': j.total,
-                                        'discount_value': voucher_usage,
-                                        'voucher_type': voucher.voucher_type,
-                                        'discount_amount': float(voucher_usage),
-                                        'final_amount': float(final_amount)
-                                    }
-                                    temp_array.append(result_temp)
-                                else:
-                                    # no error just let the data pass
-                                    # add to SUM variable
-                                    provider_total_price += float(j.total)
-
-                                    # create result_temp
-                                    result_temp = {
-                                        'charge_code': j.charge_code,
-                                        'charge_type': j.charge_type,
-                                        'start_amount': j.total,
-                                        'discount_value': 0.0,
-                                        'voucher_type': voucher.voucher_type,
-                                        'discount_amount': 0.0,
-                                        'final_amount': j.total
-                                    }
-
-                                    # add to temp array
-                                    temp_array.append(result_temp)
-
-                            else:
-                                # no voucher remainder left
-                                # print to logger this specific
-                                _logger.error("No Voucher value left")
-
-                                # add to SUM variable
-                                provider_total_price += float(j.total)
-
-                                # create result_temp
-                                result_temp = {
-                                    'charge_code': j.charge_code,
-                                    'charge_type': j.charge_type,
-                                    'start_amount': j.total,
-                                    'discount_value': 0.0,
-                                    'voucher_type': voucher.voucher_type,
-                                    'discount_amount': 0.0,
-                                    'final_amount': j.total
-                                }
-
-                                # add to temp array
-                                temp_array.append(result_temp)
-                    else:
-                        # voucher affect only base fare
-
-                        # check type voucher
-                        if voucher.voucher_type == 'percentage' and voucher.multi_usage:
-                            # voucher invalid
-                            # no way multi use is percent will let it slide
-                            _logger.error("Voucher logic is invalid, %s" % voucher.voucher_reference)
-
-                            # adding value to provider total
-                            provider_total_price += float(j.total)
-
-                            # create result temp dict
-                            result_temp = {
-                                'charge_code': j.charge_code,
-                                'charge_type': j.charge_type,
-                                'start_amount': j.total,
-                                'discount_value': 0.0,
-                                'voucher_type': voucher.voucher_type,
-                                'discount_amount': 0.0,
-                                'final_amount': j.total
-                            }
-
-                            # adding result to temp array
-                            temp_array.append(result_temp)
-
-                        elif voucher.voucher_type == 'percentage':
                             # voucher is percent
                             if j.charge_code == 'fare' or j.charge_code == 'FarePrice':
+                                _logger.info("Will be discount: %s, %s" % (j.charge_code, j.charge_type))
                                 # charge_type is not RAC
                                 # count the discount
                                 discount_amount = float(j.total) * voucher.voucher_value / 100
@@ -1305,7 +822,8 @@ class TtVoucherDetail(models.Model):
                                 # RAC will not be affected by voucher
 
                                 # adding value to provider total
-                                provider_total_price += float(j.total)
+                                if j.charge_type != 'RAC':
+                                    provider_total_price += float(j.total)
 
                                 # create result temp dict
                                 result_temp = {
@@ -1320,37 +838,40 @@ class TtVoucherDetail(models.Model):
 
                             # adding result to temp array
                             temp_array.append(result_temp)
-                        else:
-                            # voucher is amount
+                else:
+                    # voucher will be defaulted to amount
 
-                            # declare value of voucher
-                            voucher_remainder = voucher.voucher_value
-                            voucher_usage = 0.0
+                    # check voucher remainderity
+                    if voucher_remainder > 0:
 
-                            # check fow may voucher value there is
-                            if voucher_remainder > 0:
+                        _logger.info(i.cost_service_charge_ids)
+                        # well count with the price
+                        for j in i.cost_service_charge_ids:
 
+                            # check if voucher check all
+                            if voucher.voucher_effect_all:
                                 # check if price sector or voucher value is bigger
-                                if j.charge_code == 'fare' or j.charge_code == 'FarePrice':
-
+                                if j.charge_type != 'RAC':
+                                    _logger.info("Will be discount: %s, %s" % (j.charge_code, j.charge_type))
                                     # check if voucher value is bigger than fare
                                     if float(j.total) - voucher_remainder < 0:
                                         # total is smaller than voucher value
-                                        voucher_usage = voucher_remainder - float(j.total)
+                                        temp_voucher_usage = float(j.total)
 
                                     else:
                                         # total is bigger than voucher value
-                                        voucher_usage = float(j.total) - voucher_remainder
+                                        temp_voucher_usage = voucher_remainder
 
                                     # subtract voucher_remainder
-                                    voucher_remainder -= voucher_usage
+                                    voucher_remainder -= temp_voucher_usage
+                                    voucher_usage += temp_voucher_usage
 
                                     # create alles
                                     provider_total_price += float(j.total)
-                                    provider_total_discount += float(voucher_usage)
+                                    provider_total_discount += float(temp_voucher_usage)
 
                                     # SUM discount amount
-                                    final_amount = float(j.total) - float(voucher_usage)
+                                    final_amount = float(j.total) - float(temp_voucher_usage)
 
                                     # create result temp dict
                                     result_temp = {
@@ -1359,14 +880,66 @@ class TtVoucherDetail(models.Model):
                                         'start_amount': j.total,
                                         'discount_value': voucher_usage,
                                         'voucher_type': voucher.voucher_type,
-                                        'discount_amount': float(voucher_usage),
+                                        'discount_amount': float(temp_voucher_usage),
+                                        'final_amount': float(final_amount)
+                                    }
+                                    temp_array.append(result_temp)
+                                else:
+                                    # no error just let the data pass
+
+                                    # create result_temp
+                                    result_temp = {
+                                        'charge_code': j.charge_code,
+                                        'charge_type': j.charge_type,
+                                        'start_amount': j.total,
+                                        'discount_value': 0.0,
+                                        'voucher_type': voucher.voucher_type,
+                                        'discount_amount': 0.0,
+                                        'final_amount': j.total
+                                    }
+
+                                    # add to temp array
+                                    temp_array.append(result_temp)
+                            else:
+                                # check if price sector or voucher value is bigger
+                                if j.charge_code == 'fare' or j.charge_code == 'FarePrice':
+                                    _logger.info("Will be discount: %s, %s" % (j.charge_code, j.charge_type))
+                                    # check if voucher value is bigger than fare
+                                    if float(j.total) - voucher_remainder < 0:
+                                        # total is smaller than voucher value
+                                        temp_voucher_usage = float(j.total)
+
+                                    else:
+                                        # total is bigger than voucher value
+                                        temp_voucher_usage = voucher_remainder
+
+                                    # subtract voucher_remainder
+                                    voucher_remainder -= temp_voucher_usage
+                                    voucher_usage += temp_voucher_usage
+
+                                    # create alles
+                                    provider_total_price += float(j.total)
+                                    provider_total_discount += float(temp_voucher_usage)
+
+                                    # SUM discount amount
+                                    final_amount = float(j.total) - float(temp_voucher_usage)
+
+                                    # create result temp dict
+                                    result_temp = {
+                                        'charge_code': j.charge_code,
+                                        'charge_type': j.charge_type,
+                                        'start_amount': j.total,
+                                        'discount_value': voucher_usage,
+                                        'voucher_type': voucher.voucher_type,
+                                        'discount_amount': float(temp_voucher_usage),
                                         'final_amount': float(final_amount)
                                     }
                                     temp_array.append(result_temp)
                                 else:
                                     # no error just let the data pass
                                     # add to SUM variable
-                                    provider_total_price += float(j.total)
+                                    if j.charge_type != 'RAC':
+                                        provider_total_price += float(j.total)
 
                                     # create result_temp
                                     result_temp = {
@@ -1382,32 +955,32 @@ class TtVoucherDetail(models.Model):
                                     # add to temp array
                                     temp_array.append(result_temp)
 
-                            else:
-                                # no voucher remainder left
-                                # print to logger this specific
-                                _logger.error("No Voucher value left")
-
-                                # add to SUM variable
+                    else:
+                        # let the data slide
+                        for j in i.cost_service_charge_ids:
+                            # adding value to provider total
+                            if j.charge_type != 'RAC':
                                 provider_total_price += float(j.total)
 
-                                # create result_temp
-                                result_temp = {
-                                    'charge_code': j.charge_code,
-                                    'charge_type': j.charge_type,
-                                    'start_amount': j.total,
-                                    'discount_value': 0.0,
-                                    'voucher_type': voucher.voucher_type,
-                                    'discount_amount': 0.0,
-                                    'final_amount': j.total
-                                }
+                            # create result temp dict
+                            result_temp = {
+                                'charge_code': j.charge_code,
+                                'charge_type': j.charge_type,
+                                'start_amount': j.total,
+                                'discount_value': 0.0,
+                                'voucher_type': voucher.voucher_type,
+                                'discount_amount': 0.0,
+                                'final_amount': j.total
+                            }
 
-                                # add to temp array
-                                temp_array.append(result_temp)
+                            # adding result to temp array
+                            temp_array.append(result_temp)
             else:
                 # let the data slide
                 for j in i.cost_service_charge_ids:
                     # adding value to provider total
-                    provider_total_price += float(j.total)
+                    if j.charge_type != 'RAC':
+                        provider_total_price += float(j.total)
 
                     # create result temp dict
                     result_temp = {
@@ -1426,13 +999,18 @@ class TtVoucherDetail(models.Model):
             # count the discount for particular provider
             provider_final_total_price = provider_total_price - provider_total_discount
 
+            # if for some reason the voucher behave like its not suppose to, worse case 100% discount
+            if provider_final_total_price < 0:
+                provider_final_total_price = 0
+                provider_total_discount = provider_total_price
+
             # create result dict
             result_dict = {
                 'provider_type_code': i.provider_id.provider_type_id.code,
                 'provider_code': i.provider_id.code,
                 'provider_total_price': provider_total_price,
                 'provider_total_discount': provider_total_discount,
-                'prrovider_final_price': provider_final_total_price,
+                'provider_final_price': provider_final_total_price,
                 'discount_detail': temp_array
             }
 
@@ -1440,562 +1018,85 @@ class TtVoucherDetail(models.Model):
             result_array.append(result_dict)
         return ERR.get_no_error(result_array)
 
-    # def simulate_voucher_api(self, data, context):
-    #     # get the order object
-    #     order_obj = self.env['tt.reservation.%s' % (data['provider_type'])].search(['name', '=', data['order_number']])
-    #
-    #     # get dependencies object
-    #     dependencies_data = order_obj.provider_booking_ids
-    #
-    #     ######################
-    #     # check to see if voucher is exist
-    #     #####################
-    #
-    #     # spliting voucher reference and detail reference by . (dot)
-    #     splits = data['voucher_reference'].split(".")
-    #
-    #     # extract the reference for the main voucher
-    #     # adding the reference to the data
-    #     data['voucher_reference_code'] = splits[0]
-    #
-    #     try:
-    #         # get the detail reference code
-    #         data['voucher_reference_period'] = splits[1]
-    #     except:
-    #         # incase there's no detail reference code
-    #         # write the error to logger
-    #         _logger.error("%s doens't have period reference code" % data['voucher_reference'])
-    #
-    #         # raise error
-    #         return ERR.get_error(additional_message="must provide voucher period reference")
-    #
-    #     # if voucher has reference and reference period
-    #     # get the voucher data
-    #     voucher = self.env['tt.voucher'].search(['voucher_reference_code', '=', data['voucher_reference_code']])
-    #
-    #     # check if particular voucher do actually exist
-    #     if voucher.id == False:
-    #         # if no known voucher data
-    #         # write to logger
-    #         _logger.error("%s voucher doesn't exist" % data['voucher_reference_code'])
-    #
-    #         # raise error
-    #         return ERR.get_error(additional_message="Voucher doesn't exist")
-    #
-    #     # if main voucher exist, lets try to get the voucher detail data
-    #     # get voucher detail data
-    #     voucher_detail = voucher.voucher_detail_ids.filtered(lambda x: x['voucher_reference_period'], '=', data[
-    #         'voucher_reference_period'])
-    #
-    #     # check if voucher detail is actually exist
-    #     if voucher_detail.id == False:
-    #         # if no known voucher detail
-    #         # print to logger
-    #         _logger.error("%s voucher doesn't exist" % data['voucher_reference'])
-    #
-    #         # raise error
-    #         return ERR.get_error(additional_message="Voucher doesn't exist")
-    #
-    #     ######################
-    #     # check to see if voucher is eligible
-    #     #####################
-    #
-    #     # check for voucher state
-    #     if voucher_detail.voucher_detail_state == 'expire':
-    #         # if voucher is already expire
-    #         # print to logger
-    #         _logger.error("%s voucher is expired" % data['voucher_reference'])
-    #
-    #         # raise error
-    #         return ERR.get_error(additional_message="Voucher is expired")
-    #
-    #     # check for voucher quota
-    #     # check if voucher is multi_usage voucher
-    #     if voucher.voucher_multi_usage:
-    #         # voucher is multi use
-    #         # check if voucher value is up
-    #         # if voucher value - voucher usage <= 0
-    #         if voucher.voucher_value - voucher.voucher_usage <= 0:
-    #             # voucher value is up
-    #             # Print logger
-    #             _logger.error("%s Voucher value is up" % data['voucher_reference'])
-    #
-    #             # raise error
-    #             return ERR.get_error("%s Voucher value is up" % data['voucher_reference'])
-    #     else:
-    #         # voucher is not multi use
-    #         # check for quota
-    #         # if voucher use is not bigger than quota, and quota is not -1
-    #         # quota -1 = unlimited voucher
-    #         if voucher_detail.voucher_used >= voucher_detail.voucher_quota and voucher_detail.voucher_quota != -1:
-    #             # voucher is sold out, or used up
-    #             # print in logger
-    #             _logger.error("%s No more voucher" % data['voucher_reference'])
-    #
-    #             # raise error
-    #             return ERR.get_error(additional_message="No Voucher left %s" % data['voucher_reference'])
-    #
-    #     # prepare data to check if voucher is able to be use by agent
-    #     to_check = {
-    #         'voucher_reference': data['voucher_reference_code'],
-    #         'agent_type_id': context['co_agent_type_id'],
-    #         'agent_id': context['co_agent_id']
-    #     }
-    #
-    #     # calling agent checker function
-    #     agent_is_eligible = self.env['tt.voucher'].is_agent_eligible(to_check)
-    #     # if value is false then the agent cannot use particular voucher
-    #     if not agent_is_eligible:
-    #         # agent cannot use the voucher
-    #         # print logger
-    #         _logger.error("%s, agent not allowed to use voucher" % data['voucher_reference'])
-    #         # raise error
-    #         return ERR.get_error(additional_message="Agent not allowed to use voucher %s" % data['voucher_reference'])
-    #
-    #     # at this point it means the voucher is exist
-    #     # voucher is not expired
-    #     # agent can use the voucher
-    #
-    #     ######################
-    #     # check voucher requirements
-    #     #####################
-    #
-    #     # check for minimum purchase
-    #     if order_obj.total_fare < voucher.voucher_minimum_purchase:
-    #         # total fare is under the minimum_purchase
-    #         # print logger
-    #         _logger.error("%s, Order did not meet minimum purchase required" % order_obj['name'])
-    #
-    #         # raise error
-    #         return ERR.get_error("%s, Order did not meet minimum purchase required" % order_obj['name'])
-    #
-    #     ######################
-    #     # voucher process
-    #     #####################
-    #
-    #     # g et all provider from order
-    #     order_provider = order_obj.provider_name.split(",")
-    #     # declare result array
-    #     result_array = []
-    #
-    #     # create eligible provider
-    #     if voucher.voucher_coverage != 'all':
-    #         # create data to check
-    #         # since dependencies len is < 2
-    #         temp_dict = {
-    #             'voucher_reference': data['voucher_reference_code'],
-    #             'provider_type_id': dependencies_data.provider_id.provider_type_id.id,
-    #             'provider_id': dependencies_data.provider_id.id,
-    #             'provider_name': dependencies_data.provider_id.code
-    #         }
-    #
-    #         # check if provider is cover by the voucher
-    #         provider_is_eligible = self.env['tt.vouher'].is_product_eligible(temp_dict)
-    #     else:
-    #         provider_is_eligible = []
-    #
-    #     # iterate for every provier
-    #     for i in dependencies_data:
-    #
-    #         # declare some float
-    #         provider_total_price = 0.0
-    #         provider_total_discount = 0.0
-    #         provider_final_total_price = 0.0
-    #
-    #         # declare temp array for return value
-    #         temp_array = []
-    #
-    #         if len(provider_is_eligible) == 0 or i in provider_is_eligible:
-    #
-    #             # iterate data
-    #             for j in i.cost_service_charge_ids:
-    #
-    #                 # prive coverage
-    #                 if voucher.voucher_effect_all:
-    #                     # voucher affect all pricing
-    #
-    #                     # check type voucher
-    #                     if voucher.voucher_type == 'percentage' and voucher.multi_usage:
-    #                         # voucher invalid
-    #                         # no way multi use is percent will let it slide
-    #                         _logger.error("Voucher logic is invalid, %s" % voucher.voucher_reference)
-    #
-    #                         # adding value to provider total
-    #                         provider_total_price += float(j.total)
-    #
-    #                         # create result temp dict
-    #                         result_temp = {
-    #                             'charge_code': j.charge_code,
-    #                             'charge_type': j.charge_type,
-    #                             'start_amount': j.total,
-    #                             'discount_value': 0.0,
-    #                             'voucher_type': voucher.voucher_type,
-    #                             'discount_amount': 0.0,
-    #                             'final_amount': j.total
-    #                         }
-    #
-    #                         # adding result to temp array
-    #                         temp_array.append(result_temp)
-    #
-    #                     elif voucher.voucher_type == 'percentage':
-    #                         # voucher is percent
-    #                         if j.charge_type != 'RAC':
-    #                             # charge_type is not RAC
-    #                             # count the discount
-    #                             discount_amount = float(j.total) * voucher.voucher_value / 100
-    #
-    #                             # SUM discount amount
-    #                             final_amount = float(j.total) - float(discount_amount)
-    #
-    #                             # adding the value to total price
-    #                             provider_total_price += float(j.total)
-    #                             provider_total_discount += float(discount_amount)
-    #
-    #                             # creating result temp dict
-    #                             result_temp = {
-    #                                 'charge_code': j.charge_code,
-    #                                 'charge_type': j.charge_type,
-    #                                 'start_amount': j.total,
-    #                                 'discount_value': voucher.voucher_value,
-    #                                 'voucher_type': voucher.voucher_type,
-    #                                 'discount_amount': float(discount_amount),
-    #                                 'final_amount': float(final_amount)
-    #                             }
-    #                         else:
-    #                             # charge_type is RAC
-    #                             # nothing will happen
-    #                             # RAC will not be affected by voucher
-    #
-    #                             # adding value to provider total
-    #                             provider_total_price += float(j.total)
-    #
-    #                             # create result temp dict
-    #                             result_temp = {
-    #                                 'charge_code': j.charge_code,
-    #                                 'charge_type': j.charge_type,
-    #                                 'start_amount': j.total,
-    #                                 'discount_value': 0.0,
-    #                                 'voucher_type': voucher.voucher_type,
-    #                                 'discount_amount': 0.0,
-    #                                 'final_amount': j.total
-    #                             }
-    #
-    #                         # adding result to temp array
-    #                         temp_array.append(result_temp)
-    #                     else:
-    #                         # voucher is amount
-    #
-    #                         # declare value of voucher
-    #                         voucher_remainder = voucher.voucher_value
-    #                         voucher_usage = 0.0
-    #
-    #                         # check fow may voucher value there is
-    #                         if voucher_remainder > 0:
-    #
-    #                             # check if price sector or voucher value is bigger
-    #                             if j.charge_type != 'RAC':
-    #
-    #                                 # check if voucher value is bigger than fare
-    #                                 if float(j.total) - voucher_remainder < 0:
-    #                                     # total is smaller than voucher value
-    #                                     voucher_usage = voucher_remainder - float(j.total)
-    #
-    #                                 else:
-    #                                     # total is bigger than voucher value
-    #                                     voucher_usage = float(j.total) - voucher_remainder
-    #
-    #                                 # subtract voucher_remainder
-    #                                 voucher_remainder -= voucher_usage
-    #
-    #                                 # create alles
-    #                                 provider_total_price += float(j.total)
-    #                                 provider_total_discount += float(discount_amount)
-    #
-    #                                 # create result temp dict
-    #                                 result_temp = {
-    #                                     'charge_code': j.charge_code,
-    #                                     'charge_type': j.charge_type,
-    #                                     'start_amount': j.total,
-    #                                     'discount_value': discount_amount,
-    #                                     'voucher_type': voucher.voucher_type,
-    #                                     'discount_amount': float(discount_amount),
-    #                                     'final_amount': float(final_amount)
-    #                                 }
-    #                                 temp_array.append(result_temp)
-    #                             else:
-    #                                 # no error just let the data pass
-    #                                 # add to SUM variable
-    #                                 provider_total_price += float(j.total)
-    #
-    #                                 # create result_temp
-    #                                 result_temp = {
-    #                                     'charge_code': j.charge_code,
-    #                                     'charge_type': j.charge_type,
-    #                                     'start_amount': j.total,
-    #                                     'discount_value': 0.0,
-    #                                     'voucher_type': voucher.voucher_type,
-    #                                     'discount_amount': 0.0,
-    #                                     'final_amount': j.total
-    #                                 }
-    #
-    #                                 # add to temp array
-    #                                 temp_array.append(result_temp)
-    #
-    #                         else:
-    #                             # no voucher remainder left
-    #                             # print to logger this specific
-    #                             _logger.error("No Voucher value left")
-    #
-    #                             # add to SUM variable
-    #                             provider_total_price += float(j.total)
-    #
-    #                             # create result_temp
-    #                             result_temp = {
-    #                                 'charge_code': j.charge_code,
-    #                                 'charge_type': j.charge_type,
-    #                                 'start_amount': j.total,
-    #                                 'discount_value': 0.0,
-    #                                 'voucher_type': voucher.voucher_type,
-    #                                 'discount_amount': 0.0,
-    #                                 'final_amount': j.total
-    #                             }
-    #
-    #                             # add to temp array
-    #                             temp_array.append(result_temp)
-    #                 else:
-    #                     # voucher affect only base fare
-    #
-    #                     # check type voucher
-    #                     if voucher.voucher_type == 'percentage' and voucher.multi_usage:
-    #                         # voucher invalid
-    #                         # no way multi use is percent will let it slide
-    #                         _logger.error("Voucher logic is invalid, %s" % voucher.voucher_reference)
-    #
-    #                         # adding value to provider total
-    #                         provider_total_price += float(j.total)
-    #
-    #                         # create result temp dict
-    #                         result_temp = {
-    #                             'charge_code': j.charge_code,
-    #                             'charge_type': j.charge_type,
-    #                             'start_amount': j.total,
-    #                             'discount_value': 0.0,
-    #                             'voucher_type': voucher.voucher_type,
-    #                             'discount_amount': 0.0,
-    #                             'final_amount': j.total
-    #                         }
-    #
-    #                         # adding result to temp array
-    #                         temp_array.append(result_temp)
-    #
-    #                     elif voucher.voucher_type == 'percentage':
-    #                         # voucher is percent
-    #                         if j.charge_code == 'fare' or j.charge_code == 'FarePrice':
-    #                             # charge_type is not RAC
-    #                             # count the discount
-    #                             discount_amount = float(j.total) * voucher.voucher_value / 100
-    #
-    #                             # SUM discount amount
-    #                             final_amount = float(j.total) - float(discount_amount)
-    #
-    #                             # adding the value to total price
-    #                             provider_total_price += float(j.total)
-    #                             provider_total_discount += float(discount_amount)
-    #
-    #                             # creating result temp dict
-    #                             result_temp = {
-    #                                 'charge_code': j.charge_code,
-    #                                 'charge_type': j.charge_type,
-    #                                 'start_amount': j.total,
-    #                                 'discount_value': voucher.voucher_value,
-    #                                 'voucher_type': voucher.voucher_type,
-    #                                 'discount_amount': float(discount_amount),
-    #                                 'final_amount': float(final_amount)
-    #                             }
-    #                         else:
-    #                             # charge_type is RAC
-    #                             # nothing will happen
-    #                             # RAC will not be affected by voucher
-    #
-    #                             # adding value to provider total
-    #                             provider_total_price += float(j.total)
-    #
-    #                             # create result temp dict
-    #                             result_temp = {
-    #                                 'charge_code': j.charge_code,
-    #                                 'charge_type': j.charge_type,
-    #                                 'start_amount': j.total,
-    #                                 'discount_value': 0.0,
-    #                                 'voucher_type': voucher.voucher_type,
-    #                                 'discount_amount': 0.0,
-    #                                 'final_amount': j.total
-    #                             }
-    #
-    #                         # adding result to temp array
-    #                         temp_array.append(result_temp)
-    #                     else:
-    #                         # voucher is amount
-    #
-    #                         # declare value of voucher
-    #                         voucher_remainder = voucher.voucher_value
-    #                         voucher_usage = 0.0
-    #
-    #                         # check fow may voucher value there is
-    #                         if voucher_remainder > 0:
-    #
-    #                             # check if price sector or voucher value is bigger
-    #                             if j.charge_code == 'fare' or j.charge_code == 'FarePrice':
-    #
-    #                                 # check if voucher value is bigger than fare
-    #                                 if float(j.total) - voucher_remainder < 0:
-    #                                     # total is smaller than voucher value
-    #                                     voucher_usage = voucher_remainder - float(j.total)
-    #
-    #                                 else:
-    #                                     # total is bigger than voucher value
-    #                                     voucher_usage = float(j.total) - voucher_remainder
-    #
-    #                                 # subtract voucher_remainder
-    #                                 voucher_remainder -= voucher_usage
-    #
-    #                                 # create alles
-    #                                 provider_total_price += float(j.total)
-    #                                 provider_total_discount += float(discount_amount)
-    #
-    #                                 # create result temp dict
-    #                                 result_temp = {
-    #                                     'charge_code': j.charge_code,
-    #                                     'charge_type': j.charge_type,
-    #                                     'start_amount': j.total,
-    #                                     'discount_value': discount_amount,
-    #                                     'voucher_type': voucher.voucher_type,
-    #                                     'discount_amount': float(discount_amount),
-    #                                     'final_amount': float(final_amount)
-    #                                 }
-    #                                 temp_array.append(result_temp)
-    #                             else:
-    #                                 # no error just let the data pass
-    #                                 # add to SUM variable
-    #                                 provider_total_price += float(j.total)
-    #
-    #                                 # create result_temp
-    #                                 result_temp = {
-    #                                     'charge_code': j.charge_code,
-    #                                     'charge_type': j.charge_type,
-    #                                     'start_amount': j.total,
-    #                                     'discount_value': 0.0,
-    #                                     'voucher_type': voucher.voucher_type,
-    #                                     'discount_amount': 0.0,
-    #                                     'final_amount': j.total
-    #                                 }
-    #
-    #                                 # add to temp array
-    #                                 temp_array.append(result_temp)
-    #
-    #                         else:
-    #                             # no voucher remainder left
-    #                             # print to logger this specific
-    #                             _logger.error("No Voucher value left")
-    #
-    #                             # add to SUM variable
-    #                             provider_total_price += float(j.total)
-    #
-    #                             # create result_temp
-    #                             result_temp = {
-    #                                 'charge_code': j.charge_code,
-    #                                 'charge_type': j.charge_type,
-    #                                 'start_amount': j.total,
-    #                                 'discount_value': 0.0,
-    #                                 'voucher_type': voucher.voucher_type,
-    #                                 'discount_amount': 0.0,
-    #                                 'final_amount': j.total
-    #                             }
-    #
-    #                             # add to temp array
-    #                             temp_array.append(result_temp)
-    #         else:
-    #             # let the data slide
-    #             for j in i.cost_service_charge_ids:
-    #                 # adding value to provider total
-    #                 provider_total_price += float(j.total)
-    #
-    #                 # create result temp dict
-    #                 result_temp = {
-    #                     'charge_code': j.charge_code,
-    #                     'charge_type': j.charge_type,
-    #                     'start_amount': j.total,
-    #                     'discount_value': 0.0,
-    #                     'voucher_type': voucher.voucher_type,
-    #                     'discount_amount': 0.0,
-    #                     'final_amount': j.total
-    #                 }
-    #
-    #                 # adding result to temp array
-    #                 temp_array.append(result_temp)
-    #
-    #         # count the discount for particular provider
-    #         provider_final_total_price = provider_total_price - provider_total_discount
-    #
-    #         # create result dict
-    #         result_dict = {
-    #             'provider_type_code': i.provider_id.provider_type_id.code,
-    #             'provider_code': i.provider_id.code,
-    #             'provider_total_price': provider_total_price,
-    #             'provider_total_discount': provider_total_discount,
-    #             'prrovider_final_price': provider_final_total_price,
-    #             'discount_detail': temp_array
-    #         }
-    #
-    #         # add result dict to result array
-    #         result_array.append(result_dict)
-    #     return ERR.get_no_error(result_array)
-
-    #done
     def simulate_voucher_api(self, data, context):
         # requirement of data
         # data = {
-        #     voucher_reference
-        #     date          <-- date vouchernya digunakan (today)
-        #     provider_type
-        #     provider          --> list
+        #	voucher_reference,
+        #	date 				<-- date voucher digunakan (today)
+        #	provider_type
+        #	provider 			--> list
         # }
 
+        # create a return array
         result_array = []
 
-        #seperate voucher reference code
+        # split voucher reference
         splits = data['voucher_reference'].split(".")
+        # get the first index of split
         data['voucher_reference_code'] = splits[0]
+        # try to get the second half
         try:
             data['voucher_reference_period'] = splits[1]
         except:
+            # write to logger
+            _logger.error("%s, voucher code is invalid" % data['voucher_reference'])
+            # return error
             return ERR.get_error(additional_message="Voucher must have period reference")
 
-        #check if voucher exist
+        # at this point the voucher code is legal
+        # check if the reference code voucher is actually exist
         voucher = self.env['tt.voucher'].search([('voucher_reference_code', '=', data['voucher_reference_code'])])
         if voucher.id == False:
-            _logger.error('%s Voucher is not exist' % data['voucher_reference'])
+            # no voucher found
+            # write to logger
+            _logger.error("%s voucher is not exist" % data['voucher_reference'])
+            # return error
             return ERR.get_error(additional_message="Voucher is NOT exist")
 
-        voucher_detail = voucher.voucher_detail_ids.filtered(lambda x: x['voucher_period_reference'] == data['voucher_reference_period'])
+        # okay so voucher is exist, but is the particular period voucher exist
+        voucher_detail = voucher.voucher_detail_ids.filtered(
+            lambda x: x['voucher_period_reference'] == data['voucher_reference_period'])
         if voucher_detail.id == False:
-            _logger.error('%s Voucher is not exist' % data['voucher_reference'])
-            return ERR.get_error(additional_message="Voucher is NOT exist")
+            # no voucher detail found
+            # write to logger
+            _logger.error("%s voucher is not exist" % data['voucher_reference'])
+            # return error
+            return ERR.get_error(additional_message="Voucher is NOT Exist")
 
-        #if voucher already expired
-        if voucher_detail.voucher_detail_state == 'expire':
-            _logger.error('%s Voucher can no longer be use (Expired)'% data['voucher_reference'])
-            return ERR.get_error(additional_message="Voucher is already Expired")
+        # voucher is exist hooray, now we'll check if the voucher could be use
+        if voucher_detail.state == 'expire':
+            # voucher is expired dun dun dun
+            # write log
+            _logger.error("%s Voucher can no longer be use (Expired)" % data['voucher_reference'])
+            # return error
+            return ERR.get_error(additional_message="Voucher is expired dun dun dun")
 
-        if voucher_detail.voucher_start_date.strftime("%Y-%m-%d") > data['date'] and voucher_detail.voucher_expire_date < data['date']:
-            _logger.error("%s Voucher cannot be use outside designated date" % data['voucher_reference'])
+        # voucher may not be expired at this point, but maybe just maybe voucher can only be use on certain date(s)
+        if voucher_detail.voucher_start_date.strftime("%Y-%m-%d") > data[
+            'date'] and voucher_detail.voucher_expire_date.strftime("%Y-%m-%d") < data['date']:
+            # today's date (the day users pass to use the date) is not covered by the voucher #ouch!
+            # write log
+            _logger.error("%s Voucher cannot be use outside the designated date" % data['voucher_reference'])
+            # return error
             return ERR.get_error(additional_message="Voucher cannot be use outside designated date")
 
-        #check if there are voucher left to be use
-        if voucher_detail.voucher_used >= voucher_detail.voucher_quota:
-            _logger.error("%s Voucher is used up (Sold out)" % data['voucher_reference'])
-            return ERR.get_error(additional_message="Voucher sold out")
+        if voucher.voucher_multi_usage:
+            if voucher.voucher_value - voucher.voucher_usage_value <= 0:
+                # o no the voucher is up
+                # write to logger
+                _logger.error("%s Voucher has no value left :(" % data['voucher_reference'])
+                # return error
+                return ERR.get_error(additional_message="Voucher has no value left")
+        else:
+            # okay okay so the voucher is there, the date is within the voucher date, then we should look f there's voucher left
+            if voucher_detail.voucher_used >= voucher_detail.voucher_quota:
+                # o no the voucher is up
+                # write to logger
+                _logger.error("%s No More Voucher :(" % data['voucher_reference'])
+                # return error
+                return ERR.get_error(additional_message="Voucher sold out")
 
-        #check agent
+        # check agent
         agent_to_validate = {
             'voucher_reference': data['voucher_reference_code'],
             'agent_type_id': context['co_agent_type_id'],
@@ -2003,104 +1104,75 @@ class TtVoucherDetail(models.Model):
         }
         agent_eligible = self.env['tt.voucher'].is_agent_eligible(agent_to_validate)
         if not agent_eligible:
-            _logger.error("Agent ID %s cannot use the %s voucher "% (context['co_agent_id'], data['voucher_reference']))
-            return ERR.get_error(additional_message="Agent cannot use the voucher")
+            # agent is not eligible to be use dun dun dun
+            # write to log
+            _logger.error('Agent ID %s cannot use voucher %s' % (context['co_agent_id'], data['voucher_reference']))
+            # return error
+            return ERR.get_error(additional_message="Agent cannot user the voucher")
 
-        #if voucher coverage == all
-        if voucher.voucher_coverage == 'all':
-            # check if voucher can be use to selected provider type
-            provider_type = self.env['tt.provider.type'].search([('code', '=', data['provider_type'])])
+        # check provider
+        if type(data['provider']) is list:
+            # if provider list pass is list type
+            for i in data['provider']:
+                provider = self.env['tt.provider'].search([('code', '=', i)])
+                to_check = {
+                    'provider_type_id': provider.provider_type_id.id,
+                    'provider_id': provider.id,
+                    'provider_name': i,
+                    'voucher_reference': data['voucher_reference_code']
+                }
 
-            if type(data['provider']) is list:
-                #for every data in list
-                for i in data['provider']:
-
-                    #check if given provider is actually part of povider_type
-                    provider = self.env['tt.provider'].search([('code', '=', i)])
-                    if provider.provider_type_id.id == provider_type.id:
-                        to_return = {
-                            'provider_type': data['provider_type'],
-                            'provider': i,
-                            'able_to_use': True
-                        }
-                    else:
-                        to_return = {
-                            'provider_type': data['provider_type'],
-                            'provider': i,
-                            'able_to_use': False
-                        }
-                    result_array.append(to_return)
-            else:
-                provider = self.env['tt.provider'].search([('code', '=', data['provider'])])
-                if provider.provider_type_id.id == provider_type.id:
+                is_eligible = self.env['tt.voucher'].is_product_eligible(to_check)
+                if is_eligible:
                     to_return = {
                         'provider_type': data['provider_type'],
-                        'provider': data['provider'],
+                        'provider': i,
                         'able_to_use': True
                     }
                 else:
                     to_return = {
                         'provider_type': data['provider_type'],
-                        'provider': data['provider'],
+                        'provider': i,
                         'able_to_use': False
                     }
                 result_array.append(to_return)
         else:
-            #check if voucher can be use to selected provider type
-            provider_type = voucher.voucher_provider_type_eligibility_ids.filtered(lambda x: x['code'] == data['provider_type'])
-
-            if provider_type.id != False:
-                if type(data['provider']) is list:
-                    for i in data['provider']:
-                        # check if given provider is actually part of povider_type
-                        provider = self.env['tt.provider'].search([('code', '=', i)])
-                        if provider.provider_type_id.id == provider_type.id:
-                            to_return = {
-                                'provider_type': data['provider_type'],
-                                'provider': i,
-                                'able_to_use': True
-                            }
-                        else:
-                            to_return = {
-                                'provider_type': data['provider_type'],
-                                'provider': i,
-                                'able_to_use': False
-                            }
-                        result_array.append(to_return)
-                else:
-                    provider = voucher.voucher_provider_eligibility_ids.filtered(lambda x: x['code'] == data['provider'])
-                    if provider.id != False:
-                        if provider.provider_type_id.id == provider_type.id:
-                            to_return = {
-                                'provider_type': data['provider_type'],
-                                'provider': data['provider'],
-                                'able_to_use': True
-                            }
-                        else:
-                            to_return = {
-                                'provider_type': data['provider_type'],
-                                'provider': data['provider'],
-                                'able_to_use': False
-                            }
-                    else:
-                        to_return = {
-                            'provider_type': data['provider_type'],
-                            'provider': data['provider'],
-                            'able_to_use': False
-                        }
-                    result_array.append(to_return)
+            provider = self.env['tt.provider'].search([('code', '=', data['provider'])])
+            to_check = {
+                'provider_type_id': provider.provider_type_id.id,
+                'provider_id': provider.id,
+                'provider_name': data['provider'],
+                'voucher_reference': data['voucher_reference_code']
+            }
+            is_eligible = self.env['tt.voucher'].is_product_eligible(to_check)
+            if is_eligible:
+                to_return = {
+                    'provider_type': data['provider_type'],
+                    'provider': data['provider'],
+                    'able_to_use': True
+                }
             else:
-                return ERR.get_error(additional_message="Voucher cannot be use on type %s" % data['provider_type'])
+                to_return = {
+                    'provider_type': data['provider_type'],
+                    'provider': data['provider'],
+                    'able_to_use': False
+                }
+            result_array.append(to_return)
 
-        #built to return
+        # at this point the voucher can be use and will be use (?)
+        # okay do something about the voucher
+        if voucher.voucher_multi_usage:
+            voucher_value = voucher.voucher_value - voucher.voucher_usage_value
+        else:
+            voucher_value = voucher.voucher_value
 
-        #maximum_cap
+        # maximum_cap
         if voucher.voucher_maximum_cap < 1:
             maximum_cap = False
         else:
             maximum_cap = voucher.voucher_maximum_cap
 
-        #minimum purchase
+        # minimum purchase
         if voucher.voucher_minimum_purchase < 1:
             minimum_purchase = False
         else:
@@ -2109,13 +1181,15 @@ class TtVoucherDetail(models.Model):
         result = {
             'reference_code': data['voucher_reference'],
             'voucher_type': voucher.voucher_type,
-            'voucher_value': voucher.voucher_value,
+            'voucher_value': voucher_value,
             'voucher_currency': voucher.currency_id.name,
             'voucher_cap': maximum_cap,
             'voucher_minimum_purchase': minimum_purchase,
+            'voucher_effect_all': voucher.voucher_effect_all,
             'date_expire': voucher_detail.voucher_expire_date.strftime("%Y-%m-%d"),
             'provider_type': data['provider_type'],
-            'provider': result_array
+            'provider': result_array,
+            'is_agent': voucher_detail.is_agent
         }
 
         return ERR.get_no_error(result)
@@ -2128,7 +1202,7 @@ class TtVoucherDetail(models.Model):
             'voucher_expire_date': data['end_date'],
             'voucher_used': 0,
             'voucher_quota': int(data['voucher_quota']),
-            'voucher_detail_state': 'not-activate'
+            'state': 'not-activate'
         })
 
     #need revision
@@ -2149,7 +1223,7 @@ class TtVoucherDetail(models.Model):
             _logger.error('Voucher is not exist')
             return ERR.get_error(additional_message="voucher is not exist")
 
-        if corresponding_voucher.voucher_detail_state == 'expire':
+        if corresponding_voucher.state == 'expire':
             _logger.error('Voucher is no longer works (expired)')
             return ERR.get_error(additional_message="voucher is already expired")
 
@@ -2182,153 +1256,69 @@ class TtVoucherDetail(models.Model):
         }
 
     def use_voucher_new(self, data, context):
-        if data == None:
-            return ERR.get_error()
-        # data = {
-        #   voucher_reference
-        #   order_code
-        #   date
-        #   provider_type
-        # }
-
-        simulate = self.new_simulate_voucher(data, context)
-        if simulate['error_code'] == 0:
-            _logger.info(simulate['response'])
-            splits = data['voucher_reference'].split(".")
-            data['voucher_reference_code'] = splits[0]
-            data['voucher_reference_period'] = splits[1]
-
-            voucher_detail = self.env['tt.voucher.detail'].search([('voucher_reference_code', '=', data['voucher_reference_code']), ('voucher_period_reference', '=', data['voucher_reference_period'])])
-            provider_type = self.env['tt.provider.type'].search([('code', '=', simulate['response'][0]['provider_type_code'])])
-            provider = self.env['tt.provider'].search([('code', '=', simulate['response'][0]['provider_code'])])
-            voucher = self.env['tt.voucher'].search([('voucher_reference_code', '=', data['voucher_reference_code'])])
-
-            discount_total = 0
-            for i in simulate['response']:
-                discount_total += i['provider_total_discount']
-
-            use_voucher_data = {
-                'voucher_detail_id': voucher_detail.id,
-                'voucher_date_use': data['date'],
-                'voucher_agent_type': context['co_agent_type_id'],
-                'voucher_agent': context['co_agent_id'],
-                'voucher_provider_type': provider_type.id,
-                'voucher_provider': provider.id,
-                'currency': voucher.currency_id,
-                'voucher_usage': discount_total
-            }
-            res = self.env['tt.voucher.detail.used'].add_voucher_used_detail(use_voucher_data)
-            if res.id == False:
-                return ERR.get_error(additional_message="voucher failed to be use")
-            else:
-                if voucher.voucher_multi_usage:
-                    voucher.voucher_usage_value += data['total_discount']
-                else:
-                    number_of_use = voucher_detail.voucher_used + 1
-                    voucher_detail.write({
-                        'voucher_used': number_of_use
-                    })
-        else:
-            return simulate
-        return simulate
-
-    ### bellow dis is old function ###
-    def use_voucher(self, data, context):
-        # requirement of data
-        # data = {
-        #     voucher_reference
-        #     voucher_date
-        #     provider_type
-        #     provider
-        #     purchase_amount
-        # }
-
-        # split reference code
-        splits = data['voucher_reference'].split(".")
-        data['voucher_reference'] = splits[0]
         try:
-            data['voucher_reference_period'] = splits[1]
-        except:
-            return ERR.get_error(7000, "Voucher not valid")
-        data['agent_type_id'] = context['co_agent_type_id']
+            if data == None:
+                return ERR.get_error()
+            # data = {
+            #   voucher_reference
+            #   order_code
+            #   date
+            #   provider_type
+            # }
 
-        #search the voucher
-        voucher_date_detail = self.env['tt.voucher.detail'].search([('voucher_reference_code', '=', splits[0]), ('voucher_period_reference', '=', splits[1])])
-        if voucher_date_detail == False:
-            _logger.error('Voucher is not exist')
-            return ERR.get_error("Voucher is not exist.")
+            simulate = self.new_simulate_voucher(data, context)
+            if simulate['error_code'] == 0:
+                splits = data['voucher_reference'].split(".")
+                data['voucher_reference_code'] = splits[0]
+                data['voucher_reference_period'] = splits[1]
 
-        #check if voucher quota is still available
-        if voucher_date_detail.voucher_used >= voucher_date_detail.voucher_quota:
-            _logger.error('Voucher sold out')
-            return ERR.get_error("Voucher sold out")
+                voucher_detail = self.env['tt.voucher.detail'].search([('voucher_reference_code', '=', data['voucher_reference_code']), ('voucher_period_reference', '=', data['voucher_reference_period'])])
+                provider_type = self.env['tt.provider.type'].search([('code', '=', simulate['response'][0]['provider_type_code'])], limit=1)
+                provider = self.env['tt.provider'].search([('code', '=', simulate['response'][0]['provider_code'])], limit=1)
+                voucher = self.env['tt.voucher'].search([('voucher_reference_code', '=', data['voucher_reference_code'])], limit=1)
 
-        data['voucher_detail_id'] = voucher_date_detail['id']
+                discount_total = 0
+                for i in simulate['response']:
+                    discount_total += i['provider_total_discount']
 
-        # get provider id
-        provider_type = self.env['tt.provider.type'].search([('code', '=', data['provider_type'])])
-        provider = self.env['tt.provider'].search([('code', '=', data['provider'])])
-
-        if provider_type.id:
-            data['provider_type_id'] = provider_type.id
-        else:
-            return ERR.get_error(7020, "provider type not exist or there's a typo")
-
-        if provider.id:
-            data['provider_id'] = provider.id
-        else:
-            return ERR.get_error(7021, "provider not exist or there's a typo")
-
-        #check if voucher is eligible to use
-        able_to_use = self.voucher_validator(data)
-
-        if able_to_use['error_code'] == 0:
-            # check if the purchase data is passed to this function
-            try:
-                voucher = self.env['tt.voucher'].search([('voucher_reference_code', '=', data['voucher_reference'])])
-                if voucher[0]['voucher_type'] == 'percent':
-                    discount_amount = (voucher[0]['voucher_value'] / 100.0) * float(data['purchase_amount'])
-                    total = float(data['purchase_amount']) - discount_amount
-                else:
-                    discount_amount = 0
-                    total = data['purchase_amount']
-                voucher_data = {
-                    'start_amount': data['purchase_amount'],
-                    'voucher_value': voucher[0]['voucher_value'],
-                    'discount': discount_amount,
-                    'final_amount': total
+                use_voucher_data = {
+                    'voucher_detail_id': voucher_detail.id,
+                    'voucher_date_use': data['date'],
+                    'voucher_agent_type': context['co_agent_type_id'],
+                    'voucher_agent': context['co_agent_id'],
+                    'voucher_provider_type': provider_type.id,
+                    'voucher_provider': provider.id,
+                    'currency': voucher.currency_id.id,
+                    'voucher_usage': discount_total,
                 }
-            except:
-                _logger.error("Purchase data must be included")
-                return ERR.get_error(7000, "Purchase must be included")
+                res = self.env['tt.voucher.detail.used'].add_voucher_used_detail(use_voucher_data)
+                if res.id == False:
+                    return ERR.get_error(additional_message="voucher usage failed")
+                else:
+                    if voucher.voucher_multi_usage:
+                        voucher.voucher_usage_value += discount_total
+                    else:
+                        number_of_use = voucher_detail.voucher_used + 1
+                        voucher_detail.write({
+                            'voucher_used': number_of_use
+                        })
 
-            voucher = self.env['tt.voucher.detail'].browse(int(data['voucher_detail_id']))
-            # log use voucher data
-            used = {
-                'voucher_detail_id': voucher.id,
-                'voucher_date_use': datetime.today(),
-                'voucher_agent_type': context['co_agent_type_id'],
-                'voucher_agent': context['co_agent_id'],
-                'voucher_provider_type': data['provider_type_id'],
-                'voucher_provider': data['provider_id']
-            }
-            voucher_detail = self.env['tt.voucher.detail.used'].add_voucher_used_detail(used)
+                    try:
+                        voucher_detail.create_voucher_email_queue('used')
+                    except Exception as e:
+                        _logger.info('Error Create Voucher Usage Email Queue')
 
-            number_of_use = voucher.voucher_used + 1
-            voucher.write({
-                'voucher_used': number_of_use
-            })
-
-        else:
-            return able_to_use
-        return ERR.get_no_error(voucher_data)
-    ### above dis is old function ###
+            else:
+                return simulate
+            return simulate
+        except Exception as e:
+            _logger.error(str(e) + traceback.format_exc())
 
 class TtVoucherusedDetail(models.Model):
     _name = "tt.voucher.detail.used"
     _description = "Rodex Model Voucher Detail Used"
 
-    voucher_detail_id = fields.Many2one("tt.voucher.detail")
+    voucher_detail_id = fields.Many2one("tt.voucher.detail", readonly=True)
     voucher_date_use = fields.Datetime("Date use")
     voucher_agent_type_id = fields.Many2one("tt.agent.type", "Agent Type")
     voucher_agent_id = fields.Many2one("tt.agent", "Agent ID")
@@ -2336,8 +1326,8 @@ class TtVoucherusedDetail(models.Model):
     voucher_provider_id = fields.Many2one("tt.provider", "Provider ID")
 
     currency_id = fields.Many2one('res.currency', 'Currency')
-    voucher_usage = fields.Monetary('Voucher Usage')
-    voucher_remainder = fields.Monetary('Voucher Remainder')
+    voucher_usage = fields.Monetary('Voucher Usage', readonly=True)
+    voucher_remainder = fields.Monetary('Voucher Remainder', readonly=True)
 
     def add_voucher_used_detail(self, data):
         result = self.env['tt.voucher.detail.used'].create({
@@ -2347,8 +1337,8 @@ class TtVoucherusedDetail(models.Model):
             'voucher_agent_id': int(data['voucher_agent']),
             'voucher_provider_type_id': int(data['voucher_provider_type']),
             'voucher_provider_id': int(data['voucher_provider']),
-            'currency_id': data['currency'],
-            'voucher_usage': data['voucher_usage']
+            'currency_id': int(data['currency']),
+            'voucher_usage': data['voucher_usage'],
         })
 
         return result

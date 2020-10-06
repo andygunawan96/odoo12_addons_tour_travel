@@ -725,7 +725,7 @@ class TestSearch(models.Model):
             'sid': context['sid'],
         })
 
-        vend_hotel.create_service_charge()
+        vend_hotel.create_service_charge(resv_id.sale_service_charge_ids)
 
         resv_id.action_booked()
         return self.get_booking_result(resv_id.id)
@@ -893,6 +893,35 @@ class TestSearch(models.Model):
             'work_phone': bookers['phone_ids'] and bookers['phone_ids'][0]['calling_number'] or '',
         }
 
+    def prepare_service_charge(self, cost_sc, obj_pnr):
+        sc_value = {}
+        for p_sc in cost_sc:
+            p_charge_type = p_sc.charge_type
+            pnr = p_sc.description or obj_pnr
+            if not sc_value.get(pnr):
+                sc_value[pnr] = {}
+            if not sc_value[pnr].get(p_charge_type):
+                sc_value[pnr][p_charge_type] = {}
+                sc_value[pnr][p_charge_type].update({
+                    'amount': 0,
+                    'foreign_amount': 0,
+                })
+
+            if p_charge_type == 'RAC' and p_sc.charge_code != 'rac':
+                continue
+
+            sc_value[pnr][p_charge_type].update({
+                'charge_code': p_sc.charge_code,
+                'currency': p_sc.currency_id.name,
+                'foreign_currency': p_sc.foreign_currency_id.name,
+                'amount': sc_value[pnr][p_charge_type]['amount'] + p_sc.amount,
+                # 'amount': p_sc.amount,
+                'foreign_amount': sc_value[pnr][p_charge_type]['foreign_amount'] + p_sc.foreign_amount,
+                # 'foreign_amount': p_sc.foreign_amount,
+            })
+
+        return sc_value
+
     # TODO: ganti ke get_booking default
     def get_booking_result(self, resv_id, context=False):
         if isinstance(resv_id, int):
@@ -940,6 +969,7 @@ class TestSearch(models.Model):
             'lat': '',
             'long': '',
             'bookers': bookers,
+            # 'sale_service_charge': self.prepare_service_charge(resv_obj.sale_service_charge_ids, resv_obj.pnr),
         }
         return vals
 
@@ -1022,6 +1052,11 @@ class TestSearch(models.Model):
     def action_done_hotel_api(self, book_id, issued_res, acq_id, co_uid, context):
         resv_obj = self.env['tt.reservation.hotel'].browse(book_id)
         resv_obj.sid_issued = context['signature']
+        for pax in resv_obj.passenger_ids:
+            for csc in pax.channel_service_charge_ids:
+                csc.resv_hotel_id = resv_obj.id
+                csc.total = csc.amount * csc.pax_count
+                resv_obj.total += csc.total
         if resv_obj.state not in ['issued', 'fail_issued']:
             resv_obj.sudo().action_issued(acq_id, co_uid)
         return resv_obj.sudo().action_done(issued_res)

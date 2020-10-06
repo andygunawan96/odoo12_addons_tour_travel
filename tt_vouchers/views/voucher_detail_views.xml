@@ -1,5 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
+    <record id="voucher_detail_filter_view" model="ir.ui.view">
+        <field name="name">voucher.detail.filter.view</field>
+        <field name="model">tt.voucher.detail</field>
+        <field name="arch" type="xml">
+            <search string="Search Voucher Detail">
+                <field name="voucher_period_reference"/>
+                <field name="voucher_id"/>
+                <field name="voucher_quota"/>
+                <field name="voucher_start_date"/>
+                <field name="voucher_expire_date"/>
+
+                <group expand="0" string="Group By">
+                    <filter name="group_by_voucher_id" string="Voucher" domain="[]" context="{'group_by':'voucher_id'}"/>
+                    <filter name="group_by_state" string="State" domain="[]" context="{'group_by':'state'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
     <record id="voucher_detail_tree_view" model="ir.ui.view">
         <field name="name">voucher.detail.tree.view</field>
         <field name="model">tt.voucher.detail</field>
@@ -10,7 +29,7 @@
                 <field name="voucher_expire_date"/>
                 <field name="voucher_used"/>
                 <field name="voucher_quota"/>
-                <field name="voucher_detail_state"/>
+                <field name="state"/>
             </tree>
         </field>
     </record>
@@ -20,16 +39,21 @@
         <field name="model">tt.voucher.detail</field>
         <field name="arch" type="xml">
             <form>
+                <header>
+                    <button name="create_voucher_created_email_queue" string="Send Voucher Created Email" type="object"/>
+                    <button string="Deactivate" name="action_set_not_active" groups="tt_base.group_tt_tour_travel_supervisor" type="object"/>
+                    <button string="Activate" name="action_set_active" groups="tt_base.group_tt_tour_travel_supervisor" type="object"/>
+                    <button string="Expire" name="action_set_expire" groups="tt_base.group_tt_tour_travel_supervisor" type="object"/>
+                    <field name="state" widget="statusbar" statusbar_visible="not_active,active,expire"/>
+                </header>
                 <sheet>
                     <group>
-                        <field name="voucher_id"/>
                         <field name="voucher_reference_code"/>
                         <field name="voucher_period_reference"/>
                         <field name="voucher_start_date"/>
                         <field name="voucher_expire_date"/>
                         <field name="voucher_used"/>
                         <field name="voucher_quota"/>
-                        <field name="voucher_detail_state"/>
                     </group>
                     <notebook>
                         <page string="Voucher Blackout">
@@ -45,7 +69,7 @@
     </record>
 
     <record id="voucher_detail_action_view" model="ir.actions.act_window">
-        <field name="name">voucher detail</field>
+        <field name="name">Voucher Detail</field>
         <field name="type">ir.actions.act_window</field>
         <field name="res_model">tt.voucher.detail</field>
         <field name="view_type">form</field>

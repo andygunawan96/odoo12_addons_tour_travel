@@ -109,6 +109,7 @@ class HotelReservation(models.Model):
 
     @api.multi
     @api.onchange('checkin_date', 'checkout_date')
+    @api.depends('checkin_date', 'checkout_date')
     def count_days(self):
         for hotel in self:
             if hotel.checkout_date:
@@ -142,7 +143,7 @@ class HotelReservation(models.Model):
             hotel.total_commission_amount = 0
             hotel.total = 0
             for detail in hotel.room_detail_ids:
-                hotel.total_commission_amount += detail.commission_amount
+                hotel.total_commission_amount += detail.commission_amount * -1
                 hotel.total += detail.sale_price
             hotel.total_nta = hotel.total - hotel.total_commission_amount
 
@@ -499,6 +500,11 @@ class HotelReservation(models.Model):
         self.issued_uid = co_uid
 
         self.action_create_invoice(acquirer_id, co_uid)
+        for prov in self.provider_booking_ids:
+            prov.action_issued_api_hotel({
+                'co_uid': co_uid or self.env.user.id,
+                'signature': self.sid_issued or self.sid_booked
+            })
         self.state = 'issued'
         self.calc_voucher_name()
 
@@ -872,6 +878,8 @@ class HotelReservation(models.Model):
         if res['error_code'] != 0:
             raise ('Error')
         else:
+            if self.payment_acquirer_number_id:
+                self.payment_acquirer_number_id.state = 'cancel'
             return True
 
     def check_provider_state(self, context, pnr_list=[], hold_date=False,req={}):

@@ -1,6 +1,33 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <data>
+        <record id="payment_acquirer_custom_search_views" model="ir.ui.view">
+            <field name="name">payment.acquirer.custom.search.views</field>
+            <field name="model">payment.acquirer</field>
+            <field name="priority">3</field>
+            <field name="arch" type="xml">
+                <search string="Search Payment Acquirer">
+                    <field name="name"/>
+                    <field name="type"/>
+                    <field name="agent_id"/>
+                    <field name="bank_id"/>
+                    <field name="account_name"/>
+                    <field name="account_number"/>
+                    <group>
+                        <filter string="All" name="all"/>
+                        <filter string="Published" name="published" domain="[('website_published','=',True)]"/>
+                        <filter string="Not Published" name="not_published" domain="[('website_published','=',False)]"/>
+                        <filter string="Holiday Off" name="holiday_off" domain="[('is_sunday_off','=',True)]"/>
+                        <filter string="Specific Time" name="specific_time" domain="[('is_specific_time','=',True)]"/>
+                    </group>
+                    <separator/>
+                    <group expand="0" string="Group By">
+                        <filter name="group_by_agent_id" string="Agent" domain="[]" context="{'group_by':'agent_id'}" groups="tt_base.group_tt_tour_travel_operator"/>
+                    </group>
+                </search>
+            </field>
+        </record>
+
         <record id="payment_acquirer_form_view" model="ir.ui.view">
             <field name="name">payment.acquirer.form.view</field>
             <field name="model">payment.acquirer</field>
@@ -33,8 +60,6 @@
                         </div>
                         <group name="acquirer_base" col="2" attrs="{'invisible': ['&amp;', ('module_id', '!=', False), ('module_state', '!=', 'installed')]}">
                             <group name="acquirer_left">
-                                <field name="provider" groups="base.group_no_one"/>
-                                <field name="environment" invisible="1"/>
                                 <field name="module_id" invisible="1"/>
                                 <field name="module_state" invisible="1"/>
                                 <field name="agent_id"/>
@@ -89,8 +114,6 @@
                         </div>
                         <group name="acquirer_base" col="2" attrs="{'invisible': ['&amp;', ('module_id', '!=', False), ('module_state', '!=', 'installed')]}">
                             <group name="acquirer_left">
-                                <field name="provider" groups="base.group_no_one" readonly="1"/>
-                                <field name="environment" invisible="1" readonly="1"/>
                                 <field name="module_id" invisible="1" readonly="1"/>
                                 <field name="module_state" invisible="1" readonly="1"/>
                                 <field name="agent_id" readonly="1"/>
@@ -103,7 +126,7 @@
                                 <field name="account_name" attrs="{'invisible': [('type','not in',['transfer','debit','credit','va','payment_gateway'])]}" readonly="1"/>
                                 <field name="cust_fee" attrs="{'invisible': [('type','not in',['debit','credit'])]}" readonly="1"/>
                                 <field name="bank_fee" attrs="{'invisible': [('type','not in',['debit','credit'])]}" readonly="1"/>
-                                <field name="va_fee" attrs="{'invisible': [('type','not in',['va','payment_gateway'])]}"/>
+                                <field name="va_fee" attrs="{'invisible': [('type','not in',['va','payment_gateway'])]}" readonly="1"/>
                             </group>
                         </group>
                         <group name="acquirer_base2">
@@ -112,8 +135,8 @@
                                 <field name="is_specific_time"/>
                             </group>
                             <group>
-                                <field name="start_time" attrs="{'invisible': [('is_specific_time','=',False)]}" widget="float_time"/>
-                                <field name="end_time" attrs="{'invisible': [('is_specific_time','=',False)]}" widget="float_time"/>
+                                <field name="start_time" attrs="{'invisible': [('is_specific_time','=',False)]}" widget="float_time" readonly="1"/>
+                                <field name="end_time" attrs="{'invisible': [('is_specific_time','=',False)]}" widget="float_time" readonly="1"/>
                             </group>
                         </group>
                     </sheet>
@@ -127,11 +150,13 @@
             <field name="arch" type="xml">
                 <tree string="Payment Acquirer">
                     <field name="name"/>
-                    <field name="provider"/>
                     <field name="provider_id"/>
                     <field name="agent_id"/>
                     <field name="bank_id"/>
-                    <field name="environment"/>
+                    <field name="account_name"/>
+                    <field name="account_number"/>
+                    <field name="type"/>
+                    <field name="website_published"/>
                 </tree>
             </field>
         </record>

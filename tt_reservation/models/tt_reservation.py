@@ -103,7 +103,7 @@ class TtReservation(models.Model):
     total_fare = fields.Monetary(string='Total Fare', default=0, compute="_compute_total_fare",store=True)
     total_tax = fields.Monetary(string='Total Tax', default=0, compute='_compute_total_tax',store=True)
     total = fields.Monetary(string='Grand Total', default=0, compute='_compute_grand_total',store=True)
-    total_discount = fields.Monetary(string='Total Discount', default=0, readonly=True,store=True)
+    total_discount = fields.Monetary(string='Total Discount', default=0, compute='_compute_total_discount', store=True)
     total_commission = fields.Monetary(string='Total Commission', default=0, compute='_compute_total_commission',store=True)
     total_nta = fields.Monetary(string='NTA Amount',compute='_compute_total_nta',store=True)
     agent_nta = fields.Monetary(string='NTA Amount',compute='_compute_agent_nta',store=True)
@@ -432,7 +432,7 @@ class TtReservation(models.Model):
         for rec in self:
             grand_total = 0
             for sale in rec.sale_service_charge_ids:
-                if sale.charge_type != 'RAC':
+                if sale.charge_type not in ['RAC', 'DISC']:
                     grand_total += sale.total
             rec.total = grand_total
 
@@ -450,8 +450,18 @@ class TtReservation(models.Model):
         for rec in self:
             nta_total = 0
             for sale in rec.sale_service_charge_ids:
-                nta_total += sale.total
+                if sale.charge_type not in ['DISC']:
+                    nta_total += sale.total
             rec.total_nta = nta_total
+
+    @api.depends("sale_service_charge_ids")
+    def _compute_total_discount(self):
+        for rec in self:
+            total_discount = 0
+            for sale in rec.sale_service_charge_ids:
+                if sale.charge_type in ['DISC']:
+                    total_discount += abs(sale.total)
+            rec.total_discount = total_discount
 
     @api.depends("sale_service_charge_ids")
     def _compute_agent_nta(self):
@@ -721,7 +731,7 @@ class TtReservation(models.Model):
                     voucher.update({
                         'order_number': book_obj.name
                     })
-                    discount = self.env['tt.voucher.detail'].simulate_voucher(voucher, context)
+                    discount = self.env['tt.voucher.detail'].new_simulate_voucher(voucher, context)
                     if discount['error_code'] == 0:
                         for rec in discount['response']:
                             total_discount = total_discount + rec['provider_total_discount']
