@@ -52,6 +52,10 @@ class TtReportDashboard(models.Model):
             res = self.get_report_hotel(data)
         elif type == 'tour':
             res = self.get_report_tour(data)
+        elif type == 'issued_hour':
+            res = self.get_issued_hour(data)
+        elif type == 'payment_method':
+            res = self.get_payment_report(data)
         elif type == 'get_total_rupiah':
             res = self.get_total_rupiah(data)
         elif type == 'get_top_up_rupiah':
@@ -1481,7 +1485,9 @@ class TtReportDashboard(models.Model):
                 total += i['amount']
 
         to_return = {
-            'data': total
+            'data': total,
+            'total': total,
+            'type': 'total_rupiah'
         }
 
         return to_return
@@ -1490,9 +1496,19 @@ class TtReportDashboard(models.Model):
         temp_dict = {
             'start_date': data['start_date'],
             'end_date': data['end_date'],
+            'type': "top_up"
+        }
+        values = self.env['report.tt_report_dashboard.overall']._get_reports(temp_dict)
+
+        total = 0
+        for i in values['lines']:
+            total += i['validate_amount']
+
+        to_return = {
+            'total': total
         }
 
-        return res
+        return to_return
 
     def get_average_rupiah(self, data):
         temp_dict = {
@@ -1510,11 +1526,29 @@ class TtReportDashboard(models.Model):
                 total += i['amount']
                 num_data += 1
 
-        average = float(total)/float(num_data)
+        if num_data > 0:
+            average = float(total)/float(num_data)
+        else:
+            average = float(total) / 1
 
         to_return = {
             'data': average,
             'total': total,
-            'num_data': num_data
+            'num_data': num_data,
+            'type': 'average_rupiah'
+        }
+        return to_return
+
+    def get_payment_report(self, data):
+        temp_dict = {
+            'start_date': data['start_date'],
+            'end_date': data['end_date'],
+            'type': 'payment_method'
+        }
+
+        values = self.env['report.tt_report_dashboard.overall']._get_reports(temp_dict)
+
+        to_return = {
+
         }
         return to_return
