@@ -172,8 +172,6 @@ class TtRefund(models.Model):
 
     service_type = fields.Selection(lambda self: self.get_service_type(), 'Service Type', required=True, readonly=True)
     refund_type_id = fields.Many2one('tt.refund.type', 'Refund Type', required=True, readonly=True, states={'draft': [('readonly', False)]})
-    refund_type = fields.Selection([('quick', 'Quick Refund (Max. 3 days process)'), ('regular', 'Regular Refund (40 days process)')], 'Refund Type', required=True, default='regular', readonly=True,
-                                   states={'draft': [('readonly', False)]})
 
     def get_admin_fee_domain(self):
         agent_type_adm_ids = self.agent_id.agent_type_id.admin_fee_ids.ids

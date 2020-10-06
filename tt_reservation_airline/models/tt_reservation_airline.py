@@ -461,7 +461,7 @@ class ReservationAirline(models.Model):
                 'arrival_date': provider_ids[-1].arrival_date[:10]
             })
             #channel repricing upsell
-            if req['repricing_data']:
+            if req.get('repricing_data'):
                 req['repricing_data']['order_number'] = book_obj.name
                 self.env['tt.reservation'].channel_pricing_api(req['repricing_data'], context)
             ##pengecekan segment kembar airline dengan nama passengers
