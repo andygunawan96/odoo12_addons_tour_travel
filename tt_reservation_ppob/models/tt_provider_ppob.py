@@ -496,7 +496,7 @@ class TtProviderPPOB(models.Model):
             'bill_details': bill_detail_list,
             'currency': self.currency_id and self.currency_id.name or '',
             'error_msg': self.error_history_ids and self.error_history_ids[-1].error_msg or '',
-            'service_charges': service_charges,
+            # 'service_charges': service_charges,
             'carrier_name': self.carrier_id and self.carrier_id.name or '',
             'carrier_code': self.carrier_id and self.carrier_id.code or '',
             'fare_type': self.fare_type and self.fare_type or '',
