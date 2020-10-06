@@ -84,7 +84,7 @@ class ReservationOffline(models.Model):
                 inv_line_obj.write({
                     'invoice_line_detail_ids': [(0, 0, {
                         'desc': desc_text,
-                        'price_unit': self.total_with_fees / qty,
+                        'price_unit': self.total / qty,
                         'quantity': qty,
                         'invoice_line_id': invoice_line_id,
                     })]
@@ -100,7 +100,7 @@ class ReservationOffline(models.Model):
                 inv_line_obj.write({
                     'invoice_line_detail_ids': [(0, 0, {
                         'desc': desc_text,
-                        'price_unit': self.total_with_fees / len(self.passenger_ids),
+                        'price_unit': self.total / len(self.passenger_ids),
                         'quantity': 1,
                         'invoice_line_id': invoice_line_id,
                     })]
