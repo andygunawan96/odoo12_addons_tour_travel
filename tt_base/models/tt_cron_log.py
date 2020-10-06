@@ -14,11 +14,11 @@ class TtCronLog(models.Model):
         if not os.path.exists(dest):
             os.mkdir(dest)
 
-    def write_cron_log(self,action_name):
+    def write_cron_log(self,action_name,additional_message):
         file = open('%s/%s_%s_error.log' % (
             '/var/log/odoo/cron_log',action_name, datetime.now().strftime('%Y-%m-%d_%H:%M:%S')),
                     'w')
-        file.write(traceback.format_exc())
+        file.write(traceback.format_exc()+"\n"+additional_message)
         file.close()
         try:
             self.env['tt.api.con'].send_cron_error_notification(action_name)

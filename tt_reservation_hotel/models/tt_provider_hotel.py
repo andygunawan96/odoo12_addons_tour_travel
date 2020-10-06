@@ -159,10 +159,10 @@ class TransportBookingProvider(models.Model):
             self.booking_id.action_issued(payment_data, self.issued_uid.id)
 
     # TODO START
-    def create_service_charge(self):
+    def create_service_charge(self, service_charge_vals):
         service_chg_obj = self.env['tt.service.charge']
 
-        for scs in self.booking_id.sale_service_charge_ids:
+        for scs in service_charge_vals:
             service_chg_obj.create({
                 'charge_code': scs.charge_code,
                 'charge_type': scs.charge_type,
