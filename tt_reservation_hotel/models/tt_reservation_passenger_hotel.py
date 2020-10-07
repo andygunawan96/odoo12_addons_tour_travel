@@ -17,15 +17,15 @@ class TtReservationCustomer(models.Model):
 
     def to_dict(self):
         res = super(TtReservationCustomer, self).to_dict()
-        fee_list = []
-        for rec in self.fee_ids:
-            fee_list.append(rec.to_dict())
+        # fee_list = []
+        # for rec in self.fee_ids:
+        #     fee_list.append(rec.to_dict())
         res.update({
-            'sale_service_charges': self.get_service_charges(),
-            'fees': fee_list
+            'sale_service_charges': [],
+            'fees': []
         })
-        if len(self.channel_service_charge_ids.ids)>0:
-            res['channel_service_charges'] = self.get_channel_service_charges()
+        # if len(self.channel_service_charge_ids.ids)>0:
+        #     res['channel_service_charges'] = self.get_channel_service_charges()
         return res
 
     def create_ssr(self,ssr_param,pnr,provider_id):

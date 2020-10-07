@@ -691,7 +691,7 @@ class TestSearch(models.Model):
                     'meal_type': '',
                 })
                 # Merge Jika Room type yg sama 2
-                for price in charge_id['ho_commission']:
+                for price in charge_id['service_charges']:
                     price.update({
                         'resv_hotel_id': resv_id.id,
                         'total': price['amount'] * price['pax_count'],
@@ -928,7 +928,7 @@ class TestSearch(models.Model):
         passengers = self.sudo().prepare_passengers(resv_obj.passenger_ids)
         bookers = self.sudo().prepare_bookers(resv_obj.booker_id)
 
-        passengers[0]['sale_service_charges'] = self.sudo().prepare_service_charge(resv_obj.sale_service_charge_ids, resv_obj.pnr)
+        passengers[0]['sale_service_charges'] = self.sudo().prepare_service_charge(resv_obj.sale_service_charge_ids, resv_obj.pnr or resv_obj.name)
         vals = {
             'adult': resv_obj.adult,
             'checkin_date': resv_obj.checkin_date,
@@ -1061,11 +1061,11 @@ class TestSearch(models.Model):
         return country and country[0].id or False
 
     def fail_booking_hotel(self, book_id, msg):
-        resv_obj = self.env['tt.reservation.hotel'].browse(book_id)
+        resv_obj = self.env['tt.reservation.hotel'].search([('name','=',book_id)], limit=1)[0]
         return resv_obj.sudo().action_failed(msg)
 
     def action_done_hotel_api(self, book_id, issued_res, acq_id, co_uid, context):
-        resv_obj = self.env['tt.reservation.hotel'].browse(book_id)
+        resv_obj = self.env['tt.reservation.hotel'].search([('name','=',book_id)], limit=1)[0]
         resv_obj.sid_issued = context['signature']
         for pax in resv_obj.passenger_ids:
             for csc in pax.channel_service_charge_ids:
