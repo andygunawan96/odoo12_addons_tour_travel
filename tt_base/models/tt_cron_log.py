@@ -87,7 +87,7 @@ class TtCronLog(models.Model):
 
     def cron_expire_unique_amount(self):
         try:
-            unique_obj = self.env['unique.amount'].search([('create_date','<',datetime.now() - timedelta(hours=3))])
+            unique_obj = self.env['unique.amount'].search([('create_date','<',datetime.now() - timedelta(days=1))])
             for rec in unique_obj:
                 rec.active = False
         except:
