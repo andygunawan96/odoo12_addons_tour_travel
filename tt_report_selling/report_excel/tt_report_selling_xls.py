@@ -43,6 +43,8 @@ class ReportSellingXls(models.TransientModel):
             res = self._print_report_excel_offline(data)
         if data['form']['provider_type'] == 'event':
             res = self._print_report_excel_event(data)
+        if data['form']['provider_type'] == 'ppob':
+            res = self._print_report_excel_ppob(data)
         return res
 
     def _print_report_excel_all(self, data):
