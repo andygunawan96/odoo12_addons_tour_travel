@@ -7,7 +7,7 @@
             <form string="Report Options">
                 <field name="company_id" invisible="1"/>
                 <group>
-                    <group>
+                    <group name="group_period">
                         <field name="period" required="1"/>
                         <field name="date_from" attrs="{'invisible': [('period', '!=', 'custom')]}"/>
                         <field name="date_to" attrs="{'invisible': [('period', '!=', 'custom')]}"/>

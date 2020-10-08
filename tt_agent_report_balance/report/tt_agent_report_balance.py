@@ -27,8 +27,8 @@ class AgentReportBalance(models.Model):
         """
 
     @staticmethod
-    def _where(date_from, date_to):
-        where = """agent.create_date >= '%s' and agent.create_date <= '%s'""" % (date_from, date_to)
+    def _where(agent):
+        where = """agent_type.id = '%s'""" % (agent)
         return where
 
     @staticmethod
@@ -41,7 +41,7 @@ class AgentReportBalance(models.Model):
         data_form['title'] = 'Balance Report: ' + data_form['subtitle']
 
     def _lines(self, date_from, date_to, agent_id):
-        query = 'SELECT {} FROM {} ORDER BY {}'.format(self._select(), self._from(), self._order_by())
+        query = 'SELECT {} FROM {} WHERE {} ORDER BY {}'.format(self._select(), self._from(), self._where(agent_id), self._order_by())
 
         self.env.cr.execute(query)
         _logger.info(query)
@@ -75,7 +75,10 @@ class AgentReportBalance(models.Model):
         }
 
     def _search_valued(self, data_form):
-        data = self.env['tt.agent'].sudo().search([]).read()
+        if data_form['agent_id']:
+            data = self.env['tt.agent'].sudo().search([('id', '=', data_form['agent_id'])]).read()
+        else:
+            data = self.env['tt.agent'].sudo().search([]).read()
         line = []
         for i in data:
             temp_dict = {
