@@ -33,7 +33,7 @@ class TtReportDashboard(models.Model):
         return -1
 
     def convert_to_datetime(self, data):
-        to_return = datetime.datetime.strptime(data, '%Y-%m-%d')
+        to_return = datetime.strptime(data, '%Y-%m-%d')
         return to_return
 
     def daterange(self, start_date, end_date):
