@@ -422,8 +422,8 @@ class PaymentUniqueAmount(models.Model):
 
     amount = fields.Float('Amount', required=True)
     display_name = fields.Char('Display Name', compute="_compute_name",store=True)
-    unique_number = fields.Float('Amount Unique', compute="_compute_unique_number",store=True)
-    amount_total = fields.Integer('Unique Number', required=True)
+    unique_number = fields.Float('Amount Unique',store=True)
+    amount_total = fields.Float('Unique Number',compute="_compute_amount_total", required=True)
     active = fields.Boolean('Active', default=True)
 
     @api.model
@@ -431,7 +431,7 @@ class PaymentUniqueAmount(models.Model):
         unique_amount = None
         while (not unique_amount):
             number = random.randint(1,999)
-            already_exist = self.search(['amount_total','=',number+int(vals_list['amount'])])
+            already_exist = self.search([('amount_total','=',number+int(vals_list['amount']))])
             if not already_exist:
                 unique_amount = number
         vals_list['unique_number'] = unique_amount
@@ -440,9 +440,9 @@ class PaymentUniqueAmount(models.Model):
 
     @api.depends('amount','unique_number')
     @api.multi
-    def _compute_unique_number(self):
+    def _compute_amount_total(self):
         for rec in self:
-            rec.unique_number = rec.amount+rec.unique_number
+            rec.amount_total = rec.amount+rec.unique_number
 
     @api.depends('amount','unique_number')
     @api.multi
