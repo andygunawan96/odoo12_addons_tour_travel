@@ -243,7 +243,13 @@ class PaymentAcquirer(models.Model):
                 if pay_acq_num:
                     unique = pay_acq_num[0].unique_amount
                 else:
-                    unique = self.generate_unique_amount(amount).unique_number
+                    unique = 0
+                    if book_obj.unique_amount_id:
+                        if book_obj.unique_amount_id.active:
+                            unique = book_obj.unique_amount_id.unique_number
+                    if not unique:
+                        unique = self.generate_unique_amount(amount).unique_number
+
                 for acq in self.sudo().search(dom):
                     # self.test_validate(acq) utk testing saja
                     if self.validate_time(acq,now_time):
