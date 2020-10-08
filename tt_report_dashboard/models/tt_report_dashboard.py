@@ -1,7 +1,7 @@
 from odoo import models, fields, api, _
 from ...tools import variables,util,ERR
 import logging, traceback,pytz
-from datetime import datetime
+from datetime import datetime, timedelta, date
 
 _logger = logging.getLogger(__name__)
 
@@ -32,20 +32,40 @@ class TtReportDashboard(models.Model):
                 return i
         return -1
 
+    def convert_to_datetime(self, data):
+        to_return = datetime.strptime(data, '%Y-%m-%d')
+        return to_return
+
+    def daterange(self, start_date, end_date):
+        for n in range(int((end_date - start_date).days)):
+            yield start_date + timedelta(n)
+
     def get_report_json_api(self, data, context):
         type = data['report_type']
         if type == 'overall':
             res = self.get_report_overall(data)
+        elif type == 'overall_airline':
+            res = self.get_report_overall_airline(data)
+        elif type == 'overall_train':
+            res = self.get_report_overall_train(data)
+        elif type == 'overall_event':
+            res = self.get_report_overall_event(data)
+        elif type == 'overall_tour':
+            res = self.get_report_overall_tour(data)
+        elif type == 'overall_activity':
+            res = self.get_report_overall_activity(data)
+        elif type == 'overall_hotel':
+            res = self.get_report_overall_hotel(data)
+        elif type == 'overall_visa':
+            res = self.get_report_overall_visa(data)
+        elif type == 'overall_offline':
+            res = self.get_report_overall_offline(data)
         elif type == 'airline':
             res = self.get_report_airline(data)
         elif type == 'event':
             res = self.get_report_event(data)
         elif type == 'train':
             res = self.get_report_train(data)
-        # elif type == 'passport':
-        #     res = self.get_report_passport(data)
-        # elif type == 'ppob':
-        #     res = self.get_report_ppob(data)
         elif type == 'activity':
             res = self.get_report_activity(data)
         elif type == 'hotel':
@@ -77,6 +97,7 @@ class TtReportDashboard(models.Model):
         }
         values = self.env['report.tt_report_selling.report_selling']._get_reports(temp_dict)
 
+        provider_list = variables.PROVIDER_TYPE
         # _logger.info(values)
         month = [
             'January', 'February', 'March', 'April', 'May', 'June',
@@ -84,62 +105,20 @@ class TtReportDashboard(models.Model):
         ]
         summary_by_date = []
         result = []
-        for i in values['lines']:
+
+        #iterate to create a list of list kind of
+        for i in variables.PROVIDER_TYPE:
+            result.append({i : []})
+
+        # sort data by date
+        sorted_date = sorted(values['lines'], key=lambda x : x['issued_date'])
+
+        # iterate every line return by query
+        for i in sorted_date:
             # count for date
-            try:
-                month_index = self.check_date_index(summary_by_date, {'year': i['booked_year'],
-                                                                      'month': month[int(i['booked_month']) - 1]})
-                if month_index == -1:
-                    temp_dict = {
-                        'year': i['booked_year'],
-                        'month': month[int(i['booked_month']) - 1],
-                        'detail': self.add_month_detail()
-                    }
-                    # seperate book date
-                    try:
-                        splits = i['reservation_booked_date'].split("-")
-                        day_index = int(splits[2]) - 1
-                        temp_dict['detail'][day_index]['booked_counter'] += 1
-                    except:
-                        pass
-                    try:
-                        splits = i['reservation_issued_date'].split("-")
-                        day_index = int(splits[2]) - 1
-                        temp_dict['detail'][day_index]['issued_counter'] += 1
-                    except:
-                        pass
-
-                    summary_by_date.append(temp_dict)
-                else:
-                    try:
-                        splits = i['reservation_booked_date'].split("-")
-                        day_index = int(splits[2]) - 1
-                        summary_by_date[month_index]['detail'][day_index]['booked_counter'] += 1
-                    except:
-                        pass
-                    try:
-                        splits = i['reservation_issued_date'].split("-")
-                        day_index = int(splits[2]) - 1
-                        summary_by_date[month_index]['detail'][day_index]['issued_counter'] += 1
-                    except:
-                        pass
-            except:
-                pass
+            # check if provider is exist in result list
             provider_index = self.check_index(result, "provider", i['provider_type_name'])
-            if provider_index == -1:
-                temp_dict = {
-                    'provider': i['provider_type_name'],
-                    'counter': 1,
-                    i['reservation_state']: 1
-                }
-                result.append(temp_dict)
-            else:
-                result[provider_index]['counter'] += 1
-                try:
-                    result[provider_index][i['reservation_state']] += 1
-                except:
-                    result[provider_index][i['reservation_state']] = 1
-
+            result[i['provider_type_name']]
         label_data = []
         data_data = []
         _logger.info(result)
@@ -158,6 +137,192 @@ class TtReportDashboard(models.Model):
         }
 
         return to_return
+
+    def get_report_overall_airline(self, data):
+        temp_dict = {
+            'start_date': data['start_date'],
+            'end_date': data['end_date'],
+            'type': data['report_type']
+        }
+        values = self.env['report.tt_report_selling.report_selling']._get_reports(temp_dict)
+
+        result = {}
+
+        # lets populate result with empty date dictionary
+        start_date = self.convert_to_datetime(data['start_date'])
+        end_date = self.convert_to_datetime(data['end_date'])
+        for single_date in self.daterange(start_date, end_date):
+            result[single_date] = 0
+
+        # iterate every line from values
+        for i in values['lines']:
+            try:
+                result[i['issued_date']] += 1
+            except:
+                pass
+        return result
+
+    def get_report_overall_train(self, data):
+        temp_dict = {
+            'start_date': data['start_date'],
+            'end_date': data['end_date'],
+            'type': data['report_type']
+        }
+        values = self.env['report.tt_report_selling.report_selling']._get_reports(temp_dict)
+
+        result = {}
+
+        # lets populate result with empty date dictionary
+        start_date = self.convert_to_datetime(data['start_date'])
+        end_date = self.convert_to_datetime(data['end_date'])
+        for single_date in self.daterange(start_date, end_date):
+            result[single_date] = 0
+
+        # iterate every line from values
+        for i in values['lines']:
+            try:
+                result[i['issued_date']] += 1
+            except:
+                pass
+        return result
+
+    def get_report_overall_hotel(self, data):
+        temp_dict = {
+            'start_date': data['start_date'],
+            'end_date': data['end_date'],
+            'type': data['report_type']
+        }
+        values = self.env['report.tt_report_selling.report_selling']._get_reports(temp_dict)
+        result = {}
+
+        # lets populate result with empty date dictionary
+        start_date = self.convert_to_datetime(data['start_date'])
+        end_date = self.convert_to_datetime(data['end_date'])
+        for single_date in self.daterange(start_date, end_date):
+            result[single_date] = 0
+
+        # iterate every line from values
+        for i in values['lines']:
+            try:
+                result[i['issued_date']] += 1
+            except:
+                pass
+        return result
+
+    def get_report_overall_tour(self, data):
+        temp_dict = {
+            'start_date': data['start_date'],
+            'end_date': data['end_date'],
+            'type': data['report_type']
+        }
+        values = self.env['report.tt_report_selling.report_selling']._get_reports(temp_dict)
+        result = {}
+
+        # lets populate result with empty date dictionary
+        start_date = self.convert_to_datetime(data['start_date'])
+        end_date = self.convert_to_datetime(data['end_date'])
+        for single_date in self.daterange(start_date, end_date):
+            result[single_date] = 0
+
+        # iterate every line from values
+        for i in values['lines']:
+            try:
+                result[i['issued_date']] += 1
+            except:
+                pass
+        return result
+
+    def get_report_overall_activity(self, data):
+        temp_dict = {
+            'start_date': data['start_date'],
+            'end_date': data['end_date'],
+            'type': data['report_type']
+        }
+        values = self.env['report.tt_report_selling.report_selling']._get_reports(temp_dict)
+        result = {}
+
+        # lets populate result with empty date dictionary
+        start_date = self.convert_to_datetime(data['start_date'])
+        end_date = self.convert_to_datetime(data['end_date'])
+        for single_date in self.daterange(start_date, end_date):
+            result[single_date] = 0
+
+        # iterate every line from values
+        for i in values['lines']:
+            try:
+                result[i['issued_date']] += 1
+            except:
+                pass
+        return result
+
+    def get_report_overall_event(self, data):
+        temp_dict = {
+            'start_date': data['start_date'],
+            'end_date': data['end_date'],
+            'type': data['report_type']
+        }
+        values = self.env['report.tt_report_selling.report_selling']._get_reports(temp_dict)
+        result = {}
+
+        # lets populate result with empty date dictionary
+        start_date = self.convert_to_datetime(data['start_date'])
+        end_date = self.convert_to_datetime(data['end_date'])
+        for single_date in self.daterange(start_date, end_date):
+            result[single_date] = 0
+
+        # iterate every line from values
+        for i in values['lines']:
+            try:
+                result[i['issued_date']] += 1
+            except:
+                pass
+        return result
+
+    def get_report_overall_visa(self, data):
+        temp_dict = {
+            'start_date': data['start_date'],
+            'end_date': data['end_date'],
+            'type': data['report_type']
+        }
+        values = self.env['report.tt_report_selling.report_selling']._get_reports(temp_dict)
+        result = {}
+
+        # lets populate result with empty date dictionary
+        start_date = self.convert_to_datetime(data['start_date'])
+        end_date = self.convert_to_datetime(data['end_date'])
+        for single_date in self.daterange(start_date, end_date):
+            result[single_date] = 0
+
+        # iterate every line from values
+        for i in values['lines']:
+            try:
+                result[i['issued_date']] += 1
+            except:
+                pass
+        return result
+
+    def get_report_overall_offline(self, data):
+        temp_dict = {
+            'start_date': data['start_date'],
+            'end_date': data['end_date'],
+            'type': data['report_type']
+        }
+        values = self.env['report.tt_report_selling.report_selling']._get_reports(temp_dict)
+        result = {}
+
+        # lets populate result with empty date dictionary
+        start_date = self.convert_to_datetime(data['start_date'])
+        end_date = self.convert_to_datetime(data['end_date'])
+        for single_date in self.daterange(start_date, end_date):
+            result[single_date] = 0
+
+        # iterate every line from values
+        for i in values['lines']:
+            try:
+                result[i['issued_date']] += 1
+            except:
+                pass
+        return result
 
     def get_report_airline(self, data):
         temp_dict = {
