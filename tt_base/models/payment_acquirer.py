@@ -422,8 +422,8 @@ class PaymentUniqueAmount(models.Model):
 
     amount = fields.Float('Amount', required=True)
     display_name = fields.Char('Display Name', compute="_compute_name",store=True)
-    unique_number = fields.Float('Amount Unique',store=True)
-    amount_total = fields.Float('Unique Number',compute="_compute_amount_total", required=True)
+    unique_number = fields.Float('Amount Unique',compute=False)
+    amount_total = fields.Float('Unique Number',compute="_compute_amount_total",store=True)
     active = fields.Boolean('Active', default=True)
 
     @api.model
