@@ -34,9 +34,9 @@ class PaymentAcquirer(models.Model):
         return super(PaymentAcquirer, self).create(vals_list)
 
     # FUNGSI
-    def generate_unique_amount(self,amount):
+    def generate_unique_amount(self,amount,downsell=False):
         # return int(self.env['ir.sequence'].next_by_code('tt.payment.unique.amount'))
-        return self.env['unique.amount'].create({'amount':amount})
+        return self.env['unique.amount'].create({'amount':amount,'downsell':downsell})
 
     def compute_fee(self,amount,unique = 0):
         uniq = 0
@@ -241,7 +241,7 @@ class PaymentAcquirer(models.Model):
                 ]
                 pay_acq_num = self.env['payment.acquirer.number'].search([('number', 'ilike', req['order_number'])])
                 if pay_acq_num:
-                    unique = pay_acq_num[0].unique_amount * -1
+                    unique = pay_acq_num[0].unique_amount
                 else:
                     unique = self.generate_unique_amount(amount).unique_number
                 for acq in self.sudo().search(dom):
@@ -420,8 +420,9 @@ class PaymentUniqueAmount(models.Model):
     #         new_unique = super(PaymentUniqueAmount, self).create(vals_list)
     #         return new_unique
 
-    amount = fields.Float('Amount', required=True)
     display_name = fields.Char('Display Name', compute="_compute_name",store=True)
+    is_downsell = fields.Boolean('Downsell')
+    amount = fields.Float('Amount', required=True)
     unique_number = fields.Float('Amount Unique',compute=False)
     amount_total = fields.Float('Unique Number',compute="_compute_amount_total",store=True)
     active = fields.Boolean('Active', default=True)
@@ -442,7 +443,7 @@ class PaymentUniqueAmount(models.Model):
     @api.multi
     def _compute_amount_total(self):
         for rec in self:
-            rec.amount_total = rec.amount+rec.unique_number
+            rec.amount_total = rec.amount + rec.is_downsell and rec.unique_number*-1 or rec.unique_number
 
     @api.depends('amount','unique_number')
     @api.multi
