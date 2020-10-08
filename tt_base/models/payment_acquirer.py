@@ -449,7 +449,7 @@ class PaymentUniqueAmount(models.Model):
     @api.multi
     def _compute_amount_total(self):
         for rec in self:
-            rec.amount_total = rec.amount + rec.is_downsell and rec.unique_number*-1 or rec.unique_number
+            rec.amount_total = rec.amount + (rec.is_downsell and rec.unique_number*-1 or rec.unique_number)
 
     @api.depends('amount','unique_number')
     @api.multi
