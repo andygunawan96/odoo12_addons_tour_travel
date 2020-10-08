@@ -34,9 +34,9 @@ class PaymentAcquirer(models.Model):
         return super(PaymentAcquirer, self).create(vals_list)
 
     # FUNGSI
-    def generate_unique_amount(self,amount):
+    def generate_unique_amount(self,amount,downsell=False):
         # return int(self.env['ir.sequence'].next_by_code('tt.payment.unique.amount'))
-        return self.env['unique.amount'].create({'amount':amount})
+        return self.env['unique.amount'].create({'amount':amount,'downsell':downsell})
 
     def compute_fee(self,amount,unique = 0):
         uniq = 0
@@ -215,7 +215,7 @@ class PaymentAcquirer(models.Model):
             if req['transaction_type'] == 'top_up':
                 # Kalau top up Ambil agent_id HO
                 dom.append(('agent_id', '=', self.env.ref('tt_base.rodex_ho').id))
-                unique = self.generate_unique_amount(amount).upper_number
+                unique = self.generate_unique_amount(amount).unique_number
             elif req['transaction_type'] == 'billing':
                 dom.append(('agent_id', '=', co_agent_id))
 
@@ -241,9 +241,15 @@ class PaymentAcquirer(models.Model):
                 ]
                 pay_acq_num = self.env['payment.acquirer.number'].search([('number', 'ilike', req['order_number'])])
                 if pay_acq_num:
-                    unique = pay_acq_num[0].unique_amount * -1
+                    unique = pay_acq_num[0].unique_amount
                 else:
-                    unique = self.generate_unique_amount(amount).lower_number
+                    unique = 0
+                    if book_obj.unique_amount_id:
+                        if book_obj.unique_amount_id.active:
+                            unique = book_obj.unique_amount_id.unique_number
+                    if not unique:
+                        unique = self.generate_unique_amount(amount).unique_number
+
                 for acq in self.sudo().search(dom):
                     # self.test_validate(acq) utk testing saja
                     if self.validate_time(acq,now_time):
@@ -397,24 +403,56 @@ class PaymentAcquirerNumber(models.Model):
 class PaymentUniqueAmount(models.Model):
     _name = 'unique.amount'
     _description = 'Rodex Model Unique Amount'
+    # OLD segment
+    #
+    #     amount = fields.Float('Amount', required=True)
+    #     upper_number = fields.Integer('Up Number')
+    #     lower_number = fields.Integer('Lower Number')
+    #     active = fields.Boolean('Active',default=True)
+    #
+    #     @api.model
+    #     def create(self, vals_list):
+    #         already_exist_on_same_amount = [rec.upper_number for rec in self.search([('amount', '=', vals_list['amount'])])]
+    #         already_exist_on_lower_higher_amount = [abs(rec.lower_number) for rec in self.search([('amount', 'in', [int(vals_list['amount'])-1000,
+    #                                                                                                                 int(vals_list['amount'])+1000])])]
+    #         already_exist = already_exist_on_same_amount+already_exist_on_lower_higher_amount
+    #         unique_amount = None
+    #         while (not unique_amount):
+    #             number = random.randint(1,999)
+    #             if number not in already_exist:
+    #                 unique_amount = number
+    #         vals_list['upper_number'] = unique_amount
+    #         vals_list['lower_number'] = unique_amount-1000
+    #         new_unique = super(PaymentUniqueAmount, self).create(vals_list)
+    #         return new_unique
 
+    display_name = fields.Char('Display Name', compute="_compute_name",store=True)
+    is_downsell = fields.Boolean('Downsell')
     amount = fields.Float('Amount', required=True)
-    upper_number = fields.Integer('Up Number')
-    lower_number = fields.Integer('Lower Number')
-    active = fields.Boolean('Active',default=True)
+    unique_number = fields.Float('Amount Unique',compute=False)
+    amount_total = fields.Float('Unique Number',compute="_compute_amount_total",store=True)
+    active = fields.Boolean('Active', default=True)
 
     @api.model
     def create(self, vals_list):
-        already_exist_on_same_amount = [rec.upper_number for rec in self.search([('amount', '=', vals_list['amount'])])]
-        already_exist_on_lower_higher_amount = [abs(rec.lower_number) for rec in self.search([('amount', 'in', [int(vals_list['amount'])-1000,
-                                                                                                                int(vals_list['amount'])+1000])])]
-        already_exist = already_exist_on_same_amount+already_exist_on_lower_higher_amount
         unique_amount = None
         while (not unique_amount):
             number = random.randint(1,999)
-            if number not in already_exist:
+            already_exist = self.search([('amount_total','=',number+int(vals_list['amount']))])
+            if not already_exist:
                 unique_amount = number
-        vals_list['upper_number'] = unique_amount
-        vals_list['lower_number'] = unique_amount-1000
+        vals_list['unique_number'] = unique_amount
         new_unique = super(PaymentUniqueAmount, self).create(vals_list)
         return new_unique
+
+    @api.depends('amount','unique_number')
+    @api.multi
+    def _compute_amount_total(self):
+        for rec in self:
+            rec.amount_total = rec.amount + (rec.is_downsell and rec.unique_number*-1 or rec.unique_number)
+
+    @api.depends('amount','unique_number')
+    @api.multi
+    def _compute_name(self):
+        for rec in self:
+            rec.display_name = '%s / %s / %s' % (rec.amount or 0,rec.unique_number or 0, rec.amount_total or 0)

@@ -691,7 +691,7 @@ class TestSearch(models.Model):
                     'meal_type': '',
                 })
                 # Merge Jika Room type yg sama 2
-                for price in charge_id['ho_commission']:
+                for price in charge_id['service_charges']:
                     price.update({
                         'resv_hotel_id': resv_id.id,
                         'total': price['amount'] * price['pax_count'],
@@ -838,31 +838,29 @@ class TestSearch(models.Model):
 
         return True
 
-    def prepare_booking_room(self, lines, customers):
-        guests = []
-        for passenger in customers:
-            cust = passenger['customer_id']
-            last_name = cust.last_name and ' ' + cust.last_name or ''
-            a = {
-                'prefix': 'prefix' in cust._fields.keys() and cust.prefix or 'mr',
-                'full_name': cust.first_name + last_name
-            }
-            guests.append(a)
+    def prepare_nightly_price(self, nightly, meal_type='Room Only'):
+        return [{
+            'date': str(night.date),
+            'currency': night.currency_id.name,
+            'sale_price': night.sale_price,
+            'meal_type': meal_type,
+        } for night in nightly]
 
+
+    def prepare_booking_room(self, lines, customers):
         vals = []
         for room in lines:
             data = {
-                'id': room.id,
+                # 'id': room.id,
                 'prov_issued_code': room.issued_name,
                 'prov_booking_code': room.name,
-                'provider': room.provider_id.code,
-                'date': room.date,
+                'provider': room.provider_id.alias,
+                'dates': self.prepare_nightly_price(room.room_date_ids),
                 'room_name': room.room_info_id and room.room_info_id.name or room.room_name,
                 'room_vendor_code': room.room_vendor_code,
                 'room_type': room.room_type,
                 'room_rate': room.sale_price,
                 'person': room.room_info_id and room.room_info_id.max_guest or 2,
-                'guests': guests,
                 'currency': room.currency_id and room.currency_id.name,
                 'meal_type': room.room_info_id.meal_type,
             }
@@ -870,13 +868,7 @@ class TestSearch(models.Model):
         return vals
 
     def prepare_passengers(self, customers):
-        return [{
-            'title': cust['customer_id']['gender'] == 'male' and 'MR' or cust['customer_id']['marital_status'] in ['married', 'widowed'] and 'MRS' or 'MS',
-            'first_name': cust['customer_id']['first_name'],
-            'last_name': cust['customer_id']['last_name'] or '',
-            'pax_type': 'ADT',
-            'birth_date': cust['customer_id']['birth_date'],
-        } for cust in customers]
+        return [cust.to_dict() for cust in customers]
 
     def prepare_bookers(self, bookers):
         return {
@@ -935,6 +927,8 @@ class TestSearch(models.Model):
         rooms = self.sudo().prepare_booking_room(resv_obj.room_detail_ids, resv_obj.passenger_ids)
         passengers = self.sudo().prepare_passengers(resv_obj.passenger_ids)
         bookers = self.sudo().prepare_bookers(resv_obj.booker_id)
+
+        passengers[0]['sale_service_charges'] = self.sudo().prepare_service_charge(resv_obj.sale_service_charge_ids, resv_obj.pnr or resv_obj.name)
         vals = {
             'adult': resv_obj.adult,
             'checkin_date': resv_obj.checkin_date,
@@ -971,7 +965,28 @@ class TestSearch(models.Model):
             'bookers': bookers,
             # 'sale_service_charge': self.prepare_service_charge(resv_obj.sale_service_charge_ids, resv_obj.pnr),
         }
-        return vals
+        new_vals = resv_obj.to_dict()
+        for a in ['arrival_date', 'departure_date']:
+            new_vals.pop(a)
+        new_vals.update({
+            "state_description": dict(self.env['tt.reservation.hotel']._fields['state'].selection).get(resv_obj.state),
+            "room_count": resv_obj.room_count,
+            "checkin_date": str(resv_obj.checkin_date),
+            "checkout_date": str(resv_obj.checkout_date),
+            # "provider_type": "hotel",
+            'passengers': passengers,
+            'hotel_name': resv_obj.hotel_name,
+            'hotel_address': resv_obj.hotel_address,
+            'hotel_phone': resv_obj.hotel_phone,
+            'hotel_city_name': resv_obj.hotel_city,
+            'hotel_rating': 0,
+            'images': [],
+            'cancellation_policy': [],
+            'lat': '',
+            'long': '',
+            'hotel_rooms': rooms,
+        })
+        return new_vals
 
     @api.multi
     def get_booking_dummy(self):
@@ -1046,11 +1061,11 @@ class TestSearch(models.Model):
         return country and country[0].id or False
 
     def fail_booking_hotel(self, book_id, msg):
-        resv_obj = self.env['tt.reservation.hotel'].browse(book_id)
+        resv_obj = self.env['tt.reservation.hotel'].search([('name','=',book_id)], limit=1)[0]
         return resv_obj.sudo().action_failed(msg)
 
     def action_done_hotel_api(self, book_id, issued_res, acq_id, co_uid, context):
-        resv_obj = self.env['tt.reservation.hotel'].browse(book_id)
+        resv_obj = self.env['tt.reservation.hotel'].search([('name','=',book_id)], limit=1)[0]
         resv_obj.sid_issued = context['signature']
         for pax in resv_obj.passenger_ids:
             for csc in pax.channel_service_charge_ids:

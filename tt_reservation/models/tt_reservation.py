@@ -128,6 +128,7 @@ class TtReservation(models.Model):
     printout_vendor_invoice_id = fields.Many2one('tt.upload.center', 'Vendor Invoice', readonly=True)
 
     payment_acquirer_number_id = fields.Many2one('payment.acquirer.number','Payment Acquier Number')
+    unique_amount_id = fields.Many2one('unique.amount','Unique Amount')
 
     # April 21, 2020 - SAM
     is_force_issued = fields.Boolean('Force Issued', default=False)
