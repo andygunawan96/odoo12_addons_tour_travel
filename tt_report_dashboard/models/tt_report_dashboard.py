@@ -37,7 +37,7 @@ class TtReportDashboard(models.Model):
         return to_return
 
     def daterange(self, start_date, end_date):
-        for n in range(int(end_date - start_date).days):
+        for n in range(int((end_date - start_date).days)):
             yield start_date + timedelta(n)
 
     def get_report_json_api(self, data, context):
