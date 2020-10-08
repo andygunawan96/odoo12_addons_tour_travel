@@ -152,7 +152,7 @@ class TtReportDashboard(models.Model):
         start_date = self.convert_to_datetime(data['start_date'])
         end_date = self.convert_to_datetime(data['end_date'])
         for single_date in self.daterange(start_date, end_date):
-            result[single_date] = 0
+            result[str(single_date)] = 0
 
         # iterate every line from values
         for i in values['lines']:
@@ -176,7 +176,7 @@ class TtReportDashboard(models.Model):
         start_date = self.convert_to_datetime(data['start_date'])
         end_date = self.convert_to_datetime(data['end_date'])
         for single_date in self.daterange(start_date, end_date):
-            result[single_date] = 0
+            result[str(single_date)] = 0
 
         # iterate every line from values
         for i in values['lines']:
@@ -184,7 +184,14 @@ class TtReportDashboard(models.Model):
                 result[i['issued_date']] += 1
             except:
                 pass
-        return result
+
+        to_return = {
+            'graph': {
+                'label': result.keys(),
+                'data': result.values()
+            }
+        }
+        return to_return
 
     def get_report_overall_hotel(self, data):
         temp_dict = {
@@ -207,7 +214,14 @@ class TtReportDashboard(models.Model):
                 result[i['issued_date']] += 1
             except:
                 pass
-        return result
+
+        to_return = {
+            'graph': {
+                'label': result.keys(),
+                'data': result.values()
+            }
+        }
+        return to_return
 
     def get_report_overall_tour(self, data):
         temp_dict = {
@@ -222,7 +236,7 @@ class TtReportDashboard(models.Model):
         start_date = self.convert_to_datetime(data['start_date'])
         end_date = self.convert_to_datetime(data['end_date'])
         for single_date in self.daterange(start_date, end_date):
-            result[single_date] = 0
+            result[str(single_date)] = 0
 
         # iterate every line from values
         for i in values['lines']:
@@ -230,7 +244,13 @@ class TtReportDashboard(models.Model):
                 result[i['issued_date']] += 1
             except:
                 pass
-        return result
+        to_return = {
+            'graph': {
+                'label': result.keys(),
+                'data': result.values()
+            }
+        }
+        return to_return
 
     def get_report_overall_activity(self, data):
         temp_dict = {
@@ -245,7 +265,7 @@ class TtReportDashboard(models.Model):
         start_date = self.convert_to_datetime(data['start_date'])
         end_date = self.convert_to_datetime(data['end_date'])
         for single_date in self.daterange(start_date, end_date):
-            result[single_date] = 0
+            result[str(single_date)] = 0
 
         # iterate every line from values
         for i in values['lines']:
@@ -253,7 +273,13 @@ class TtReportDashboard(models.Model):
                 result[i['issued_date']] += 1
             except:
                 pass
-        return result
+        to_return = {
+            'graph': {
+                'label': result.keys(),
+                'data': result.values()
+            }
+        }
+        return to_return
 
     def get_report_overall_event(self, data):
         temp_dict = {
@@ -268,7 +294,7 @@ class TtReportDashboard(models.Model):
         start_date = self.convert_to_datetime(data['start_date'])
         end_date = self.convert_to_datetime(data['end_date'])
         for single_date in self.daterange(start_date, end_date):
-            result[single_date] = 0
+            result[str(single_date)] = 0
 
         # iterate every line from values
         for i in values['lines']:
@@ -276,7 +302,13 @@ class TtReportDashboard(models.Model):
                 result[i['issued_date']] += 1
             except:
                 pass
-        return result
+        to_return = {
+            'graph': {
+                'label': result.keys(),
+                'data': result.values()
+            }
+        }
+        return to_return
 
     def get_report_overall_visa(self, data):
         temp_dict = {
@@ -291,7 +323,7 @@ class TtReportDashboard(models.Model):
         start_date = self.convert_to_datetime(data['start_date'])
         end_date = self.convert_to_datetime(data['end_date'])
         for single_date in self.daterange(start_date, end_date):
-            result[single_date] = 0
+            result[str(single_date)] = 0
 
         # iterate every line from values
         for i in values['lines']:
@@ -299,7 +331,13 @@ class TtReportDashboard(models.Model):
                 result[i['issued_date']] += 1
             except:
                 pass
-        return result
+        to_return = {
+            'graph': {
+                'label': result.keys(),
+                'data': result.values()
+            }
+        }
+        return to_return
 
     def get_report_overall_offline(self, data):
         temp_dict = {
@@ -314,7 +352,7 @@ class TtReportDashboard(models.Model):
         start_date = self.convert_to_datetime(data['start_date'])
         end_date = self.convert_to_datetime(data['end_date'])
         for single_date in self.daterange(start_date, end_date):
-            result[single_date] = 0
+            result[str(single_date)] = 0
 
         # iterate every line from values
         for i in values['lines']:
@@ -322,7 +360,13 @@ class TtReportDashboard(models.Model):
                 result[i['issued_date']] += 1
             except:
                 pass
-        return result
+        to_return = {
+            'graph': {
+                'label': result.keys(),
+                'data': result.values()
+            }
+        }
+        return to_return
 
     def get_report_airline(self, data):
         temp_dict = {
@@ -1288,7 +1332,7 @@ class TtReportDashboard(models.Model):
             data_data.append([i['counter'] if i['counter'] else 0, i['passenger_count'] if i['passenger_count'] else 0])
 
         to_return = {
-            'overall_graph': {
+            'graph': {
                 'label': label_data,
                 'data': data_data
             },
@@ -1473,7 +1517,7 @@ class TtReportDashboard(models.Model):
             label_data.append(i['hotel_name'] if i['hotel_name'] else '')
             data_data.append(i['counter'] if i['counter'] else 0)
         to_return = {
-            'overall_graph': {
+            'graph': {
                 'label': label_data,
                 'data': data_data
             }
@@ -1627,7 +1671,7 @@ class TtReportDashboard(models.Model):
             data_data.append(i['counter'] if i['counter'] else 0)
 
         to_return = {
-            'overall_graph': {
+            'graph': {
                 'label': label_data,
                 'data': data_data
             }
