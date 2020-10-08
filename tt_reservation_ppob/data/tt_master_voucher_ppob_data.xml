@@ -489,5 +489,157 @@
             <field name="sequence">610</field>
             <field name="active" eval="True"/>
         </record>
+        <record id="tt_master_voucher_ppob_gp10" model="tt.master.voucher.ppob">
+            <field name="name">GOPAY</field>
+            <field name="code">GP10</field>
+            <field name="value">10000</field>
+            <field name="type">prepaid_mobile</field>
+            <field name="sequence">620</field>
+            <field name="active" eval="True"/>
+        </record>
+        <record id="tt_master_voucher_ppob_gp20" model="tt.master.voucher.ppob">
+            <field name="name">GOPAY</field>
+            <field name="code">GP20</field>
+            <field name="value">20000</field>
+            <field name="type">prepaid_mobile</field>
+            <field name="sequence">630</field>
+            <field name="active" eval="True"/>
+        </record>
+        <record id="tt_master_voucher_ppob_gp25" model="tt.master.voucher.ppob">
+            <field name="name">GOPAY</field>
+            <field name="code">GP25</field>
+            <field name="value">25000</field>
+            <field name="type">prepaid_mobile</field>
+            <field name="sequence">640</field>
+            <field name="active" eval="True"/>
+        </record>
+        <record id="tt_master_voucher_ppob_gp30" model="tt.master.voucher.ppob">
+            <field name="name">GOPAY</field>
+            <field name="code">GP30</field>
+            <field name="value">30000</field>
+            <field name="type">prepaid_mobile</field>
+            <field name="sequence">650</field>
+            <field name="active" eval="True"/>
+        </record>
+        <record id="tt_master_voucher_ppob_gp40" model="tt.master.voucher.ppob">
+            <field name="name">GOPAY</field>
+            <field name="code">GP40</field>
+            <field name="value">40000</field>
+            <field name="type">prepaid_mobile</field>
+            <field name="sequence">660</field>
+            <field name="active" eval="True"/>
+        </record>
+        <record id="tt_master_voucher_ppob_gp50" model="tt.master.voucher.ppob">
+            <field name="name">GOPAY</field>
+            <field name="code">GP50</field>
+            <field name="value">50000</field>
+            <field name="type">prepaid_mobile</field>
+            <field name="sequence">670</field>
+            <field name="active" eval="True"/>
+        </record>
+        <record id="tt_master_voucher_ppob_gp75" model="tt.master.voucher.ppob">
+            <field name="name">GOPAY</field>
+            <field name="code">GP75</field>
+            <field name="value">75000</field>
+            <field name="type">prepaid_mobile</field>
+            <field name="sequence">680</field>
+            <field name="active" eval="True"/>
+        </record>
+        <record id="tt_master_voucher_ppob_gp100" model="tt.master.voucher.ppob">
+            <field name="name">GOPAY</field>
+            <field name="code">GP100</field>
+            <field name="value">100000</field>
+            <field name="type">prepaid_mobile</field>
+            <field name="sequence">690</field>
+            <field name="active" eval="True"/>
+        </record>
+        <record id="tt_master_voucher_ppob_ovo20" model="tt.master.voucher.ppob">
+            <field name="name">OVO</field>
+            <field name="code">OVO20</field>
+            <field name="value">20000</field>
+            <field name="type">prepaid_mobile</field>
+            <field name="sequence">700</field>
+            <field name="active" eval="True"/>
+        </record>
+        <record id="tt_master_voucher_ppob_ovo25" model="tt.master.voucher.ppob">
+            <field name="name">OVO</field>
+            <field name="code">OVO25</field>
+            <field name="value">25000</field>
+            <field name="type">prepaid_mobile</field>
+            <field name="sequence">710</field>
+            <field name="active" eval="True"/>
+        </record>
+        <record id="tt_master_voucher_ppob_ovo30" model="tt.master.voucher.ppob">
+            <field name="name">OVO</field>
+            <field name="code">OVO30</field>
+            <field name="value">30000</field>
+            <field name="type">prepaid_mobile</field>
+            <field name="sequence">720</field>
+            <field name="active" eval="True"/>
+        </record>
+        <record id="tt_master_voucher_ppob_ovo40" model="tt.master.voucher.ppob">
+            <field name="name">OVO</field>
+            <field name="code">OVO40</field>
+            <field name="value">40000</field>
+            <field name="type">prepaid_mobile</field>
+            <field name="sequence">730</field>
+            <field name="active" eval="True"/>
+        </record>
+        <record id="tt_master_voucher_ppob_ovo50" model="tt.master.voucher.ppob">
+            <field name="name">OVO</field>
+            <field name="code">OVO50</field>
+            <field name="value">50000</field>
+            <field name="type">prepaid_mobile</field>
+            <field name="sequence">740</field>
+            <field name="active" eval="True"/>
+        </record>
+        <record id="tt_master_voucher_ppob_ovo60" model="tt.master.voucher.ppob">
+            <field name="name">OVO</field>
+            <field name="code">OVO60</field>
+            <field name="value">60000</field>
+            <field name="type">prepaid_mobile</field>
+            <field name="sequence">750</field>
+            <field name="active" eval="True"/>
+        </record>
+        <record id="tt_master_voucher_ppob_ovo70" model="tt.master.voucher.ppob">
+            <field name="name">OVO</field>
+            <field name="code">OVO70</field>
+            <field name="value">70000</field>
+            <field name="type">prepaid_mobile</field>
+            <field name="sequence">760</field>
+            <field name="active" eval="True"/>
+        </record>
+        <record id="tt_master_voucher_ppob_ovo75" model="tt.master.voucher.ppob">
+            <field name="name">OVO</field>
+            <field name="code">OVO75</field>
+            <field name="value">75000</field>
+            <field name="type">prepaid_mobile</field>
+            <field name="sequence">770</field>
+            <field name="active" eval="True"/>
+        </record>
+        <record id="tt_master_voucher_ppob_ovo80" model="tt.master.voucher.ppob">
+            <field name="name">OVO</field>
+            <field name="code">OVO80</field>
+            <field name="value">80000</field>
+            <field name="type">prepaid_mobile</field>
+            <field name="sequence">780</field>
+            <field name="active" eval="True"/>
+        </record>
+        <record id="tt_master_voucher_ppob_ovo90" model="tt.master.voucher.ppob">
+            <field name="name">OVO</field>
+            <field name="code">OVO90</field>
+            <field name="value">90000</field>
+            <field name="type">prepaid_mobile</field>
+            <field name="sequence">790</field>
+            <field name="active" eval="True"/>
+        </record>
+        <record id="tt_master_voucher_ppob_ovo100" model="tt.master.voucher.ppob">
+            <field name="name">OVO</field>
+            <field name="code">OVO100</field>
+            <field name="value">100000</field>
+            <field name="type">prepaid_mobile</field>
+            <field name="sequence">800</field>
+            <field name="active" eval="True"/>
+        </record>
     </data>
 </odoo>
