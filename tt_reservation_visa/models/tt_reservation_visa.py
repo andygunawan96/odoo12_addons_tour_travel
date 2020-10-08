@@ -1424,6 +1424,15 @@ class TtVisa(models.Model):
                                 sale['TOTAL'].update({
                                     'currency': ssc.currency_id.name
                                 })
+                        elif ssc.charge_code == 'disc':
+                            sale['DISC'] = {
+                                'charge_code': ssc.charge_code,
+                                'amount': ssc.amount
+                            }
+                            if ssc['currency_id']:
+                                sale['DISC'].update({
+                                    'currency': ssc.currency_id.name
+                                })
                     for ssc in pax.channel_service_charge_ids:
                         csc = {
                             'amount': 0,
@@ -1756,11 +1765,11 @@ class TtVisa(models.Model):
                 'sequence': passenger_obj.sequence,
             }
             ssc_list.append(vals)
-            ssc_obj = passenger_obj.cost_service_charge_ids.create(vals)
-            ssc_obj.write({
-                'passenger_visa_ids': [(6, 0, passenger_obj.ids)]
-            })
-            ssc.append(ssc_obj.id)
+            # ssc_obj = passenger_obj.cost_service_charge_ids.create(vals)
+            # ssc_obj.write({
+            #     'passenger_visa_ids': [(6, 0, passenger_obj.ids)]
+            # })
+            # ssc.append(ssc_obj.id)
 
             commission_list2 = []
             for sell in sell_visa['search_data']:
@@ -1779,15 +1788,15 @@ class TtVisa(models.Model):
                         'charge_type': 'RAC',
                     })
                     ssc_list.append(vals2)
-                    ssc_obj2 = passenger_obj.cost_service_charge_ids.create(vals2)
-                    ssc_obj2.write({
-                        'passenger_visa_ids': [(6, 0, passenger_obj.ids)]
-                    })
-                    ssc.append(ssc_obj2.id)
+                    # ssc_obj2 = passenger_obj.cost_service_charge_ids.create(vals2)
+                    # ssc_obj2.write({
+                    #     'passenger_visa_ids': [(6, 0, passenger_obj.ids)]
+                    # })
+                    # ssc.append(ssc_obj2.id)
 
-            passenger_obj.write({
-                'cost_service_charge_ids': [(6, 0, ssc)]
-            })
+            # passenger_obj.write({
+            #     'cost_service_charge_ids': [(6, 0, ssc)]
+            # })
             vals_fixed = {
                 'commission_agent_id': self.env.ref('tt_base.rodex_ho').id,
                 'amount': -(pricelist_obj.cost_price - pricelist_obj.nta_price),
@@ -1803,15 +1812,15 @@ class TtVisa(models.Model):
                 'sequence': passenger_obj.sequence,
             }
             ssc_list.append(vals_fixed)
-            ssc_obj3 = passenger_obj.cost_service_charge_ids.create(vals_fixed)
-            ssc_obj3.write({
-                'passenger_visa_ids': [(6, 0, passenger_obj.ids)]
-            })
-            ssc.append(ssc_obj3.id)
+            # ssc_obj3 = passenger_obj.cost_service_charge_ids.create(vals_fixed)
+            # ssc_obj3.write({
+            #     'passenger_visa_ids': [(6, 0, passenger_obj.ids)]
+            # })
+            # ssc.append(ssc_obj3.id)
 
-            passenger_obj.write({
-                'cost_service_charge_ids': [(6, 0, ssc)]
-            })
+            # passenger_obj.write({
+            #     'cost_service_charge_ids': [(6, 0, ssc)]
+            # })
 
         # susun daftar ssc yang sudah dibuat
         for ssc in ssc_list:
