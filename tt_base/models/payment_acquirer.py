@@ -248,7 +248,9 @@ class PaymentAcquirer(models.Model):
                         if book_obj.unique_amount_id.active:
                             unique = book_obj.unique_amount_id.unique_number
                     if not unique:
-                        unique = self.generate_unique_amount(amount).unique_number
+                        unique_obj = self.generate_unique_amount(amount)
+                        book_obj.unique_amount_id = unique_obj.id
+                        unique = unique_obj.unique_number
 
                 for acq in self.sudo().search(dom):
                     # self.test_validate(acq) utk testing saja
@@ -429,8 +431,8 @@ class PaymentUniqueAmount(models.Model):
     display_name = fields.Char('Display Name', compute="_compute_name",store=True)
     is_downsell = fields.Boolean('Downsell')
     amount = fields.Float('Amount', required=True)
-    unique_number = fields.Float('Amount Unique',compute=False)
-    amount_total = fields.Float('Unique Number',compute="_compute_amount_total",store=True)
+    unique_number = fields.Integer('Amount Unique',compute=False)
+    amount_total = fields.Float('Amount Total',compute="_compute_amount_total",store=True)
     active = fields.Boolean('Active', default=True)
 
     @api.model
@@ -455,4 +457,4 @@ class PaymentUniqueAmount(models.Model):
     @api.multi
     def _compute_name(self):
         for rec in self:
-            rec.display_name = '%s / %s / %s' % (rec.amount or 0,rec.unique_number or 0, rec.amount_total or 0)
+            rec.display_name = '%s - %s - %s' % (rec.amount or 0,rec.unique_number or 0, rec.amount_total or 0)
