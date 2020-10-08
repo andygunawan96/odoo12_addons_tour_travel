@@ -39,15 +39,12 @@
 
 
                     <field name="booker_calling_code" placeholder="62"
-                           attrs="{'required': [('is_database_booker','=',False)],
-                                                                'invisible':[('is_database_booker','!=',False)]}"/>
+                           attrs="{'required': [('is_database_booker','=',False)]}"/>
 
-                    <field name="booker_mobile" attrs="{'required': [('is_database_booker','=',False)],
-                                                                'invisible':[('is_database_booker','!=',False)]}"/>
+                    <field name="booker_mobile" attrs="{'required': [('is_database_booker','=',False)]}"/>
 
 
-                    <field name="booker_email" attrs="{'required': [('is_database_booker','=',False)],
-                                                        'invisible':[('is_database_booker','!=',False)]}"/>
+                    <field name="booker_email" attrs="{'required': [('is_database_booker','=',False)]}"/>
                     <field name="pricing_date"/>
                 </group>
                 <footer>

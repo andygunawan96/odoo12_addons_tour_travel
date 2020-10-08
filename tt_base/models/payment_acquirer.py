@@ -431,7 +431,7 @@ class PaymentUniqueAmount(models.Model):
         unique_amount = None
         while (not unique_amount):
             number = random.randint(1,999)
-            already_exist = self.search(['amount_total','=',number+vals_list['amount']])
+            already_exist = self.search(['amount_total','=',number+int(vals_list['amount'])])
             if not already_exist:
                 unique_amount = number
         vals_list['unique_number'] = unique_amount
