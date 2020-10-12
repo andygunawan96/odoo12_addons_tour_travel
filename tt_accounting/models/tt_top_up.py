@@ -308,7 +308,10 @@ class TtTopUp(models.Model):
                 if 3 <= datetime.now(pytz.timezone('Asia/Jakarta')).hour < 21:
                     cron_bank_transaction_obj = self.env.ref("tt_bank_transaction.cron_auto_get_bank_transaction")
                     if cron_bank_transaction_obj.active:
+                        cron_bank_transaction_obj.nextcall = datetime.now() - timedelta(seconds=20)
                         d_time = cron_bank_transaction_obj.nextcall - datetime.now()
+                        if d_time < timedelta():
+                            d_time = cron_bank_transaction_obj.nextcall + timedelta(cron_bank_transaction_obj.interval_number)
                         list_d_time = str(d_time).split(':')
                         next_cron = "{} minutes {} seconds".format(int(list_d_time[1]),int(list_d_time[2][:2]))
             except Exception as e :
