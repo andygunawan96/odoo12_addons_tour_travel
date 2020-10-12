@@ -108,11 +108,10 @@ class TtReportDashboard(models.Model):
             result[str(single_date)] = 0
 
         for i in values['lines']:
-            if i['issued_date']:
-                try:
-                    result[str(i['issued_date'])] += 1
-                except:
-                    pass
+            try:
+                result[str(i['reservation_issued_date'])] += 1
+            except:
+                pass
 
         to_return = {
             'graph': {
@@ -141,7 +140,7 @@ class TtReportDashboard(models.Model):
         # iterate every line from values
         for i in values['lines']:
             try:
-                result[str(i['issued_date'])] += 1
+                result[str(i['reservation_issued_date'])] += 1
             except:
                 pass
 
@@ -172,7 +171,7 @@ class TtReportDashboard(models.Model):
         # iterate every line from values
         for i in values['lines']:
             try:
-                result[str(i['issued_date'])] += 1
+                result[str(i['reservation_issued_date'])] += 1
             except:
                 pass
 
@@ -202,7 +201,7 @@ class TtReportDashboard(models.Model):
         # iterate every line from values
         for i in values['lines']:
             try:
-                result[str(i['issued_date'])] += 1
+                result[str(i['reservation_issued_date'])] += 1
             except:
                 pass
 
@@ -232,7 +231,7 @@ class TtReportDashboard(models.Model):
         # iterate every line from values
         for i in values['lines']:
             try:
-                result[str(i['issued_date'])] += 1
+                result[str(i['reservation_issued_date'])] += 1
             except:
                 pass
         to_return = {
@@ -261,7 +260,7 @@ class TtReportDashboard(models.Model):
         # iterate every line from values
         for i in values['lines']:
             try:
-                result[str(i['issued_date'])] += 1
+                result[str(i['reservation_issued_date'])] += 1
             except:
                 pass
         to_return = {
@@ -290,7 +289,7 @@ class TtReportDashboard(models.Model):
         # iterate every line from values
         for i in values['lines']:
             try:
-                result[str(i['issued_date'])] += 1
+                result[str(i['reservation_issued_date'])] += 1
             except:
                 pass
         to_return = {
@@ -319,7 +318,7 @@ class TtReportDashboard(models.Model):
         # iterate every line from values
         for i in values['lines']:
             try:
-                result[str(i['issued_date'])] += 1
+                result[str(i['reservation_issued_date'])] += 1
             except:
                 pass
         to_return = {
@@ -348,7 +347,7 @@ class TtReportDashboard(models.Model):
         # iterate every line from values
         for i in values['lines']:
             try:
-                result[str(i['issued_date'])] += 1
+                result[str(i['reservation_issued_date'])] += 1
             except:
                 pass
         to_return = {
