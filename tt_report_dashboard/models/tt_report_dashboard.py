@@ -97,45 +97,29 @@ class TtReportDashboard(models.Model):
         }
         values = self.env['report.tt_report_selling.report_selling']._get_reports(temp_dict)
 
-        provider_list = variables.PROVIDER_TYPE
-        # _logger.info(values)
-        month = [
-            'January', 'February', 'March', 'April', 'May', 'June',
-            'July', 'August', 'September', 'October', 'November', 'December'
-        ]
-        summary_by_date = []
-        result = []
+        result = {}
 
-        #iterate to create a list of list kind of
-        for i in variables.PROVIDER_TYPE:
-            result.append({i : []})
+        # lets populate result with empty date dictionary
+        start_date = self.convert_to_datetime(data['start_date'])
+        end_date = self.convert_to_datetime(data['end_date'])
 
-        # sort data by date
-        sorted_date = sorted(values['lines'], key=lambda x : x['issued_date'])
+        date_range = self.daterange(data['start_date'], data['end_date'])
+        for single_date in self.daterange(start_date, end_date):
+            result[str(single_date)] = 0
 
-        # iterate every line return by query
-        for i in sorted_date:
-            # count for date
-            # check if provider is exist in result list
-            provider_index = self.check_index(result, "provider", i['provider_type_name'])
-            result[i['provider_type_name']]
-        label_data = []
-        data_data = []
-        _logger.info(result)
-        for i in result:
-            label_data.append(i['provider'] if i['provider'] else '')
-            try:
-                data_data.append(i['issued'])
-            except:
-                data_data.append(0)
+        for i in values['lines']:
+            if i['issued_date']:
+                try:
+                    result[str(i['issued_date'])] += 1
+                except:
+                    pass
 
         to_return = {
-            'overall_graph': {
-                'label': label_data,
-                'data': data_data
+            'graph': {
+                'label': result.keys(),
+                'data': result.values()
             }
         }
-
         return to_return
 
     def get_report_overall_airline(self, data):
@@ -157,10 +141,17 @@ class TtReportDashboard(models.Model):
         # iterate every line from values
         for i in values['lines']:
             try:
-                result[i['issued_date']] += 1
+                result[str(i['issued_date'])] += 1
             except:
                 pass
-        return result
+
+        to_return = {
+            'graph': {
+                'label': result.keys(),
+                'data': result.values()
+            }
+        }
+        return to_return
 
     def get_report_overall_train(self, data):
         temp_dict = {
@@ -181,7 +172,7 @@ class TtReportDashboard(models.Model):
         # iterate every line from values
         for i in values['lines']:
             try:
-                result[i['issued_date']] += 1
+                result[str(i['issued_date'])] += 1
             except:
                 pass
 
@@ -206,12 +197,12 @@ class TtReportDashboard(models.Model):
         start_date = self.convert_to_datetime(data['start_date'])
         end_date = self.convert_to_datetime(data['end_date'])
         for single_date in self.daterange(start_date, end_date):
-            result[single_date] = 0
+            result[str(single_date)] = 0
 
         # iterate every line from values
         for i in values['lines']:
             try:
-                result[i['issued_date']] += 1
+                result[str(i['issued_date'])] += 1
             except:
                 pass
 
@@ -241,7 +232,7 @@ class TtReportDashboard(models.Model):
         # iterate every line from values
         for i in values['lines']:
             try:
-                result[i['issued_date']] += 1
+                result[str(i['issued_date'])] += 1
             except:
                 pass
         to_return = {
@@ -270,7 +261,7 @@ class TtReportDashboard(models.Model):
         # iterate every line from values
         for i in values['lines']:
             try:
-                result[i['issued_date']] += 1
+                result[str(i['issued_date'])] += 1
             except:
                 pass
         to_return = {
@@ -299,7 +290,7 @@ class TtReportDashboard(models.Model):
         # iterate every line from values
         for i in values['lines']:
             try:
-                result[i['issued_date']] += 1
+                result[str(i['issued_date'])] += 1
             except:
                 pass
         to_return = {
@@ -328,7 +319,7 @@ class TtReportDashboard(models.Model):
         # iterate every line from values
         for i in values['lines']:
             try:
-                result[i['issued_date']] += 1
+                result[str(i['issued_date'])] += 1
             except:
                 pass
         to_return = {
@@ -357,7 +348,7 @@ class TtReportDashboard(models.Model):
         # iterate every line from values
         for i in values['lines']:
             try:
-                result[i['issued_date']] += 1
+                result[str(i['issued_date'])] += 1
             except:
                 pass
         to_return = {
