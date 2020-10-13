@@ -252,7 +252,6 @@ class TtTopUp(models.Model):
 
     def get_top_up_api(self,data,context):
         try:
-            print(json.dumps(data))
             agent_obj = self.env['tt.agent'].browse(context['co_agent_id'])
             try:
                 agent_obj.create_date
@@ -309,6 +308,8 @@ class TtTopUp(models.Model):
                     cron_bank_transaction_obj = self.env.ref("tt_bank_transaction.cron_auto_get_bank_transaction")
                     if cron_bank_transaction_obj.active:
                         d_time = cron_bank_transaction_obj.nextcall - datetime.now()
+                        if d_time < timedelta():
+                            d_time = timedelta()
                         list_d_time = str(d_time).split(':')
                         next_cron = "{} minutes {} seconds".format(int(list_d_time[1]),int(list_d_time[2][:2]))
             except Exception as e :

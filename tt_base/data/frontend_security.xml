@@ -70,6 +70,11 @@
         <field name="code">b2c_limitation</field>
     </record>
 
+    <record id="dashboard" model="tt.frontend.security">
+        <field name="name">Dashboard</field>
+        <field name="code">dashboard</field>
+    </record>
+
     <record id="able_to_use_pnr_quota" model="tt.frontend.security">
         <field name="name">PNR Quota</field>
         <field name="code">pnr_quota</field>
