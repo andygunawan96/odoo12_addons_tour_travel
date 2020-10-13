@@ -4,7 +4,7 @@
         <field name="name">bank.accounts.tree.view</field>
         <field name="model">tt.bank.accounts</field>
         <field name="arch" type="xml">
-            <tree>
+            <tree create="false">
                 <field name="bank_account_owner"/>
                 <field name="bank_account_number"/>
                 <field name="currency_id"/>
@@ -17,26 +17,43 @@
         <field name="name">bank.accounts.form.view</field>
         <field name="model">tt.bank.accounts</field>
         <field name="arch" type="xml">
-            <form>
+            <form create="false">
+                <header>
+                    <button string="Test Get Data" name="test_get_data" type="object"/>
+                </header>
                 <sheet>
                     <group>
-                        <field name="bank_id"/>
-                        <field name="currency_id"/>
-                        <field name="bank_account_owner"/>
-                        <field name="bank_account_number"/>
-                        <field name="bank_account_number_without_dot"/>
-                        <field name="do_get_transaction"/>
+                        <field name="agent_id" readonly="1"/>
+                        <field name="bank_id" readonly="1"/>
+                        <field name="currency_id" readonly="1"/>
+                        <field name="bank_account_owner" readonly="1"/>
+                        <field name="bank_account_number" readonly="1"/>
+                        <field name="bank_account_number_without_dot" readonly="1"/>
+                        <field name="do_get_transaction" readonly="1"/>
                     </group>
                     <notebook string="Transactions List">
                         <page string="Date list">
-                            <field name="bank_transaction_date_ids"/>
+                            <field name="bank_transaction_date_ids" readonly="1"/>
                         </page>
                         <page string="Transaction List">
-                            <field name="bank_transaction_ids"/>
+                            <field name="bank_transaction_ids" readonly="1"/>
                         </page>
                     </notebook>
                 </sheet>
             </form>
+        </field>
+    </record>
+
+    <!-- Tour & Travel Manager memiliki privilege get transaction readonly = 0 -->
+    <record id="bank_accounts_form_view_tt_manager" model="ir.ui.view">
+        <field name="name">bank.accounts.form.view.tt.manager</field>
+        <field name="model">tt.bank.accounts</field>
+        <field name="inherit_id" ref="bank_accounts_form_view" />
+        <field name="groups_id" eval="[(6, 0, [ref('tt_base.group_tt_tour_travel_manager') ])]" />
+        <field name="arch" type="xml">
+            <field name="do_get_transaction" position="attributes">
+               <attribute name="readonly">0</attribute>
+            </field>
         </field>
     </record>
 

@@ -228,6 +228,13 @@
                   parent="tt_base.top_tour_travel_master_data"
                   sequence="60"/>
 
+        <!--Bank (Master Data)-->
+        <menuitem id="menu_tour_travel_bank"
+                  name="Bank"
+                  groups="tt_base.group_tt_tour_travel_operator"
+                  parent="tt_base.top_tour_travel_master_data"
+                  sequence="65"/>
+
         <!--Destination-->
         <menuitem id="menu_tour_travel_destination"
                   name="Destination"

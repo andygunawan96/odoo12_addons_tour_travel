@@ -77,7 +77,7 @@
         </record>
 
         <menuitem id="sub_menu_item_tour_travel_res_bank"
-                  parent="tt_base.menu_tour_travel_configuration_bank"
+                  parent="tt_base.menu_tour_travel_bank"
                   groups="base.group_user"
                   name="Bank"
                   sequence="1"

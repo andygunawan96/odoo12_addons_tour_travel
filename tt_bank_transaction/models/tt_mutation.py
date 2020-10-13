@@ -13,6 +13,7 @@ class TtBankAccount(models.Model):
     _description = 'collections of bank accounts'
     _rec_name = 'bank_account_owner'
 
+    agent_id = fields.Many2one('tt.agent', 'Agent')
     bank_account_owner = fields.Char('Owner Name')
     bank_account_number = fields.Char('Bank Number')
     bank_account_number_without_dot = fields.Char("Bank Number Modified")

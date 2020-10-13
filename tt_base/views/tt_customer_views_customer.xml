@@ -73,9 +73,9 @@
                                 <page string="Social Media">
                                     <field name="social_media_ids"/>
                                 </page>
-                                <page string="Bank Detail">
-                                    <field name="customer_bank_detail_ids"/>
-                                </page>
+<!--                                <page string="Bank Detail">-->
+<!--                                    <field name="customer_bank_detail_ids"/>-->
+<!--                                </page>-->
                                 <page string="Users">
                                     <field name="user_ids"/>
                                 </page>

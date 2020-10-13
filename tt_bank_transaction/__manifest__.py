@@ -15,6 +15,7 @@ Key Features
     'depends': ['tt_base', 'tt_accounting'],
     'data': [
         'security/ir.model.access.csv',
+        'security/ir_rule_data.xml',
         'data/ir_cron_data.xml',
         'data/default_data.xml',
         'views/bank_accounts_views.xml',
