@@ -46,7 +46,7 @@ class TtAgent(models.Model):
     history_ids = fields.Char(string="History", required=False, )  # tt_history
     user_ids = fields.One2many('res.users', 'agent_id', 'User')
     payment_acquirer_ids = fields.One2many('payment.acquirer','agent_id',string="Payment Acquirer")  # payment_acquirer
-    agent_bank_detail_ids = fields.One2many('agent.bank.detail', 'agent_id', 'Agent Bank')  # agent_bank_detail
+    # agent_bank_detail_ids = fields.One2many('agent.bank.detail', 'agent_id', 'Agent Bank')  # agent_bank_detail
     tac = fields.Text('Terms and Conditions', readonly=True, states={'draft': [('readonly', False)],
                                                                      'confirm': [('readonly', False)]})
     active = fields.Boolean('Active', default='True')
