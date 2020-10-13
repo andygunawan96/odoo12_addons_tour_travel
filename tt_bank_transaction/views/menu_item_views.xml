@@ -1,9 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
+    <!-- Bank Menu in Accounting (Transactions) -->
+    <menuitem id="menu_transaction_accounting_bank"
+              parent="tt_base.top_menu_accounting"
+              name="Bank"
+              sequence="50"
+              groups="base.group_user"/>
+
     <menuitem id="tt_bank_accounts_sub_menu"
               name="Bank Accounts"
               sequence="1"
-              parent="tt_base.menu_tour_travel_configuration_bank"
+              parent="menu_transaction_accounting_bank"
               action="bank_accounts_action_view"
         />
 

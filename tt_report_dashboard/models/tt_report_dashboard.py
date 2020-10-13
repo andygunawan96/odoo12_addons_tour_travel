@@ -107,17 +107,21 @@ class TtReportDashboard(models.Model):
         for single_date in self.daterange(start_date, end_date):
             result[str(single_date)] = 0
 
+        total = 0
+        num_data = 0
         for i in values['lines']:
-            try:
+            if i['reservation_state'] == 'issued':
                 result[str(i['reservation_issued_date'])] += 1
-            except:
-                pass
+                total += i['amount']
+                num_data += 1
 
         to_return = {
             'graph': {
                 'label': result.keys(),
                 'data': result.values()
-            }
+            },
+            'total_rupiah': total,
+            'average_rupiah': float(total)/float(num_data)
         }
         return to_return
 
@@ -138,17 +142,21 @@ class TtReportDashboard(models.Model):
             result[str(single_date)] = 0
 
         # iterate every line from values
+        total = 0
+        num_data = 0
         for i in values['lines']:
-            try:
+            if i['reservation_state'] == 'issued':
                 result[str(i['reservation_issued_date'])] += 1
-            except:
-                pass
+                total += i['amount']
+                num_data += 1
 
         to_return = {
             'graph': {
                 'label': result.keys(),
                 'data': result.values()
-            }
+            },
+            'total_rupiah': total,
+            'average_rupiah': float(total) / float(num_data)
         }
         return to_return
 
@@ -169,17 +177,21 @@ class TtReportDashboard(models.Model):
             result[str(single_date)] = 0
 
         # iterate every line from values
+        total = 0
+        num_data = 0
         for i in values['lines']:
-            try:
+            if i['reservation_state'] == 'issued':
                 result[str(i['reservation_issued_date'])] += 1
-            except:
-                pass
+                total += i['amount']
+                num_data += 1
 
         to_return = {
             'graph': {
                 'label': result.keys(),
                 'data': result.values()
-            }
+            },
+            'total_rupiah': total,
+            'average_rupiah': float(total) / float(num_data)
         }
         return to_return
 
@@ -199,17 +211,21 @@ class TtReportDashboard(models.Model):
             result[str(single_date)] = 0
 
         # iterate every line from values
+        total = 0
+        num_data = 0
         for i in values['lines']:
-            try:
+            if i['reservation_state'] == 'issued':
                 result[str(i['reservation_issued_date'])] += 1
-            except:
-                pass
+                total += i['amount']
+                num_data += 1
 
         to_return = {
             'graph': {
                 'label': result.keys(),
                 'data': result.values()
-            }
+            },
+            'total_rupiah': total,
+            'average_rupiah': float(total) / float(num_data)
         }
         return to_return
 
@@ -229,16 +245,21 @@ class TtReportDashboard(models.Model):
             result[str(single_date)] = 0
 
         # iterate every line from values
+        total = 0
+        num_data = 0
         for i in values['lines']:
-            try:
+            if i['reservation_state'] == 'issued':
                 result[str(i['reservation_issued_date'])] += 1
-            except:
-                pass
+                total += i['amount']
+                num_data += 1
+
         to_return = {
             'graph': {
                 'label': result.keys(),
                 'data': result.values()
-            }
+            },
+            'total_rupiah': total,
+            'average_rupiah': float(total) / float(num_data)
         }
         return to_return
 
@@ -258,16 +279,21 @@ class TtReportDashboard(models.Model):
             result[str(single_date)] = 0
 
         # iterate every line from values
+        total = 0
+        num_data = 0
         for i in values['lines']:
-            try:
+            if i['reservation_state'] == 'issued':
                 result[str(i['reservation_issued_date'])] += 1
-            except:
-                pass
+                total += i['amount']
+                num_data += 1
+
         to_return = {
             'graph': {
                 'label': result.keys(),
                 'data': result.values()
-            }
+            },
+            'total_rupiah': total,
+            'average_rupiah': float(total) / float(num_data)
         }
         return to_return
 
@@ -287,16 +313,21 @@ class TtReportDashboard(models.Model):
             result[str(single_date)] = 0
 
         # iterate every line from values
+        total = 0
+        num_data = 0
         for i in values['lines']:
-            try:
+            if i['reservation_state'] == 'issued':
                 result[str(i['reservation_issued_date'])] += 1
-            except:
-                pass
+                total += i['amount']
+                num_data += 1
+
         to_return = {
             'graph': {
                 'label': result.keys(),
                 'data': result.values()
-            }
+            },
+            'total_rupiah': total,
+            'average_rupiah': float(total) / float(num_data)
         }
         return to_return
 
@@ -316,16 +347,21 @@ class TtReportDashboard(models.Model):
             result[str(single_date)] = 0
 
         # iterate every line from values
+        total = 0
+        num_data = 0
         for i in values['lines']:
-            try:
+            if i['reservation_state'] == 'issued':
                 result[str(i['reservation_issued_date'])] += 1
-            except:
-                pass
+                total += i['amount']
+                num_data += 1
+
         to_return = {
             'graph': {
                 'label': result.keys(),
                 'data': result.values()
-            }
+            },
+            'total_rupiah': total,
+            'average_rupiah': float(total) / float(num_data)
         }
         return to_return
 
@@ -345,16 +381,21 @@ class TtReportDashboard(models.Model):
             result[str(single_date)] = 0
 
         # iterate every line from values
+        total = 0
+        num_data = 0
         for i in values['lines']:
-            try:
+            if i['reservation_state'] == 'issued':
                 result[str(i['reservation_issued_date'])] += 1
-            except:
-                pass
+                total += i['amount']
+                num_data += 1
+
         to_return = {
             'graph': {
                 'label': result.keys(),
                 'data': result.values()
-            }
+            },
+            'total_rupiah': total,
+            'average_rupiah': float(total) / float(num_data)
         }
         return to_return
 

@@ -13,6 +13,7 @@ class TtBankAccount(models.Model):
     _description = 'collections of bank accounts'
     _rec_name = 'bank_account_owner'
 
+    agent_id = fields.Many2one('tt.agent', 'Agent')
     bank_account_owner = fields.Char('Owner Name')
     bank_account_number = fields.Char('Bank Number')
     bank_account_number_without_dot = fields.Char("Bank Number Modified")
@@ -20,6 +21,7 @@ class TtBankAccount(models.Model):
     bank_id = fields.Many2one('tt.bank', 'Bank ID')
     bank_transaction_date_ids = fields.One2many('tt.bank.transaction.date', "bank_account_id")
     bank_transaction_ids = fields.One2many('tt.bank.transaction', 'bank_account_id')
+    is_get_transaction = fields.Boolean('Do Get Transaction')
 
     def create_bank_account(self, req):
         result = self.env['tt.bank.accounts'].create({
