@@ -29,7 +29,7 @@
                         <field name="bank_account_owner" readonly="1"/>
                         <field name="bank_account_number" readonly="1"/>
                         <field name="bank_account_number_without_dot" readonly="1"/>
-                        <field name="do_get_transaction" readonly="1"/>
+                        <field name="is_get_transaction" readonly="1"/>
                     </group>
                     <notebook string="Transactions List">
                         <page string="Date list">
@@ -51,7 +51,7 @@
         <field name="inherit_id" ref="bank_accounts_form_view" />
         <field name="groups_id" eval="[(6, 0, [ref('tt_base.group_tt_tour_travel_manager') ])]" />
         <field name="arch" type="xml">
-            <field name="do_get_transaction" position="attributes">
+            <field name="is_get_transaction" position="attributes">
                <attribute name="readonly">0</attribute>
             </field>
         </field>

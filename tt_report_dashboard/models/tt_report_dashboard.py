@@ -103,9 +103,11 @@ class TtReportDashboard(models.Model):
         start_date = self.convert_to_datetime(data['start_date'])
         end_date = self.convert_to_datetime(data['end_date'])
 
-        date_range = self.daterange(data['start_date'], data['end_date'])
-        for single_date in self.daterange(start_date, end_date):
-            result[str(single_date)] = 0
+        delta = end_date - start_date
+
+        for i in range(delta.days + 1):
+            tanggal = start_date + timedelta(days=i)
+            result[tanggal.strftime('%Y-%m-%d')] = 0
 
         total = 0
         num_data = 0
@@ -121,7 +123,7 @@ class TtReportDashboard(models.Model):
                 'data': result.values()
             },
             'total_rupiah': total,
-            'average_rupiah': float(total)/float(num_data)
+            'average_rupiah': float(total) / float(num_data)
         }
         return to_return
 
@@ -138,10 +140,13 @@ class TtReportDashboard(models.Model):
         # lets populate result with empty date dictionary
         start_date = self.convert_to_datetime(data['start_date'])
         end_date = self.convert_to_datetime(data['end_date'])
-        for single_date in self.daterange(start_date, end_date):
-            result[str(single_date)] = 0
 
-        # iterate every line from values
+        delta = end_date - start_date
+
+        for i in range(delta.days + 1):
+            tanggal = start_date + timedelta(days=i)
+            result[tanggal.strftime('%Y-%m-%d')] = 0
+
         total = 0
         num_data = 0
         for i in values['lines']:
@@ -173,10 +178,13 @@ class TtReportDashboard(models.Model):
         # lets populate result with empty date dictionary
         start_date = self.convert_to_datetime(data['start_date'])
         end_date = self.convert_to_datetime(data['end_date'])
-        for single_date in self.daterange(start_date, end_date):
-            result[str(single_date)] = 0
 
-        # iterate every line from values
+        delta = end_date - start_date
+
+        for i in range(delta.days + 1):
+            tanggal = start_date + timedelta(days=i)
+            result[tanggal.strftime('%Y-%m-%d')] = 0
+
         total = 0
         num_data = 0
         for i in values['lines']:
@@ -202,15 +210,19 @@ class TtReportDashboard(models.Model):
             'type': data['report_type']
         }
         values = self.env['report.tt_report_selling.report_selling']._get_reports(temp_dict)
+
         result = {}
 
         # lets populate result with empty date dictionary
         start_date = self.convert_to_datetime(data['start_date'])
         end_date = self.convert_to_datetime(data['end_date'])
-        for single_date in self.daterange(start_date, end_date):
-            result[str(single_date)] = 0
 
-        # iterate every line from values
+        delta = end_date - start_date
+
+        for i in range(delta.days + 1):
+            tanggal = start_date + timedelta(days=i)
+            result[tanggal.strftime('%Y-%m-%d')] = 0
+
         total = 0
         num_data = 0
         for i in values['lines']:
@@ -236,15 +248,19 @@ class TtReportDashboard(models.Model):
             'type': data['report_type']
         }
         values = self.env['report.tt_report_selling.report_selling']._get_reports(temp_dict)
+
         result = {}
 
         # lets populate result with empty date dictionary
         start_date = self.convert_to_datetime(data['start_date'])
         end_date = self.convert_to_datetime(data['end_date'])
-        for single_date in self.daterange(start_date, end_date):
-            result[str(single_date)] = 0
 
-        # iterate every line from values
+        delta = end_date - start_date
+
+        for i in range(delta.days + 1):
+            tanggal = start_date + timedelta(days=i)
+            result[tanggal.strftime('%Y-%m-%d')] = 0
+
         total = 0
         num_data = 0
         for i in values['lines']:
@@ -270,15 +286,19 @@ class TtReportDashboard(models.Model):
             'type': data['report_type']
         }
         values = self.env['report.tt_report_selling.report_selling']._get_reports(temp_dict)
+
         result = {}
 
         # lets populate result with empty date dictionary
         start_date = self.convert_to_datetime(data['start_date'])
         end_date = self.convert_to_datetime(data['end_date'])
-        for single_date in self.daterange(start_date, end_date):
-            result[str(single_date)] = 0
 
-        # iterate every line from values
+        delta = end_date - start_date
+
+        for i in range(delta.days + 1):
+            tanggal = start_date + timedelta(days=i)
+            result[tanggal.strftime('%Y-%m-%d')] = 0
+
         total = 0
         num_data = 0
         for i in values['lines']:
@@ -304,15 +324,19 @@ class TtReportDashboard(models.Model):
             'type': data['report_type']
         }
         values = self.env['report.tt_report_selling.report_selling']._get_reports(temp_dict)
+
         result = {}
 
         # lets populate result with empty date dictionary
         start_date = self.convert_to_datetime(data['start_date'])
         end_date = self.convert_to_datetime(data['end_date'])
-        for single_date in self.daterange(start_date, end_date):
-            result[str(single_date)] = 0
 
-        # iterate every line from values
+        delta = end_date - start_date
+
+        for i in range(delta.days + 1):
+            tanggal = start_date + timedelta(days=i)
+            result[tanggal.strftime('%Y-%m-%d')] = 0
+
         total = 0
         num_data = 0
         for i in values['lines']:
@@ -338,15 +362,19 @@ class TtReportDashboard(models.Model):
             'type': data['report_type']
         }
         values = self.env['report.tt_report_selling.report_selling']._get_reports(temp_dict)
+
         result = {}
 
         # lets populate result with empty date dictionary
         start_date = self.convert_to_datetime(data['start_date'])
         end_date = self.convert_to_datetime(data['end_date'])
-        for single_date in self.daterange(start_date, end_date):
-            result[str(single_date)] = 0
 
-        # iterate every line from values
+        delta = end_date - start_date
+
+        for i in range(delta.days + 1):
+            tanggal = start_date + timedelta(days=i)
+            result[tanggal.strftime('%Y-%m-%d')] = 0
+
         total = 0
         num_data = 0
         for i in values['lines']:
@@ -372,15 +400,19 @@ class TtReportDashboard(models.Model):
             'type': data['report_type']
         }
         values = self.env['report.tt_report_selling.report_selling']._get_reports(temp_dict)
+
         result = {}
 
         # lets populate result with empty date dictionary
         start_date = self.convert_to_datetime(data['start_date'])
         end_date = self.convert_to_datetime(data['end_date'])
-        for single_date in self.daterange(start_date, end_date):
-            result[str(single_date)] = 0
 
-        # iterate every line from values
+        delta = end_date - start_date
+
+        for i in range(delta.days + 1):
+            tanggal = start_date + timedelta(days=i)
+            result[tanggal.strftime('%Y-%m-%d')] = 0
+
         total = 0
         num_data = 0
         for i in values['lines']:
