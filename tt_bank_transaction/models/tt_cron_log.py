@@ -125,25 +125,24 @@ class ttCronTopUpValidator(models.Model):
 
     def cron_auto_get_bank_transaction(self):
         if 3 <= datetime.now(pytz.timezone('Asia/Jakarta')).hour < 21:
-            account_objs = self.env['tt.bank.accounts'].search([])
+            account_objs = self.env['tt.bank.accounts'].search([('is_get_transaction','=',True)])
             for rec in account_objs:
-                if rec.do_get_transaction:
-                    try:
-                        # get_bank_account = self.env.ref('tt_bank_transaction.bank_account_bca_1')
-                        #can be modified to respected account
-                        data = {
-                            'account_id': rec.id,
-                            'account_number': rec.bank_account_number_without_dot,
-                            'provider': rec.bank_id.code,
-                            'startdate': (datetime.today() + timedelta(hours=7)).strftime("%Y-%m-%d"),
-                            'enddate': (datetime.today() + timedelta(hours=7)).strftime("%Y-%m-%d"),
-                        }
-                            #called function to proceed data and input in bank transaction
-                        result = self.env['tt.bank.transaction'].get_data(data)
-                        self.cron_auto_top_up_validator()
-                    except Exception as e:
-                        self.create_cron_log_folder()
-                        self.write_cron_log('auto get bank transaction')
+                try:
+                    # get_bank_account = self.env.ref('tt_bank_transaction.bank_account_bca_1')
+                    #can be modified to respected account
+                    data = {
+                        'account_id': rec.id,
+                        'account_number': rec.bank_account_number_without_dot,
+                        'provider': rec.bank_id.code,
+                        'startdate': datetime.now(pytz.timezone('Asia/Jakarta')).strftime("%Y-%m-%d"),
+                        'enddate': datetime.now(pytz.timezone('Asia/Jakarta')).strftime("%Y-%m-%d"),
+                    }
+                    #called function to proceed data and input in bank transaction
+                    result = self.env['tt.bank.transaction'].get_data(data)
+                    self.cron_auto_top_up_validator()
+                except Exception as e:
+                    self.create_cron_log_folder()
+                    self.write_cron_log('auto get bank transaction',rec.bank_account_number)
         else:
             _logger.error("Cron only works between 0300 AM to 2100 PM UTC+7")
 

@@ -21,7 +21,7 @@ class TtBankAccount(models.Model):
     bank_id = fields.Many2one('tt.bank', 'Bank ID')
     bank_transaction_date_ids = fields.One2many('tt.bank.transaction.date', "bank_account_id")
     bank_transaction_ids = fields.One2many('tt.bank.transaction', 'bank_account_id')
-    do_get_transaction = fields.Boolean('Do Get Transaction')
+    is_get_transaction = fields.Boolean('Do Get Transaction')
 
     def create_bank_account(self, req):
         result = self.env['tt.bank.accounts'].create({
