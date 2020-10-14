@@ -169,6 +169,7 @@ class TtReportDashboard(models.Model):
                 'total_rupiah': total,
                 'average_rupiah': float(total) / float(num_data) if num_data > 0 else 0
             }
+            _logger.info(to_return)
             return to_return
         except Exception as e:
             _logger.error(traceback.format_exc())
