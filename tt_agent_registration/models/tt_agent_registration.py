@@ -945,6 +945,7 @@ class AgentRegistration(models.Model):
             for rec in self.env['tt.agent.type'].search([('can_be_registered','=',True)]):
                 agent_type.append({
                     'name': rec.name,
+                    'registration_fee': rec.registration_fee,
                     'is_allow_regis': rec.can_register_agent,
                     'terms_and_condition': rec.terms_and_condition,
                     'product': [{'title': rec2.title, 'benefit': rec2.benefit} for rec2 in rec.benefit]
