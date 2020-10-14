@@ -77,10 +77,13 @@ class ReservationTour(models.Model):
     def check_provider_state(self,context,pnr_list=[],hold_date=False,req={}):
         if all(rec.state == 'booked' for rec in self.provider_booking_ids):
             # booked
-            pass
+            self.calculate_service_charge()
+            hold_date = datetime.now() + relativedelta(hours=6)
+            self.action_booked_tour(context, pnr_list, hold_date)
         elif all(rec.state == 'issued' for rec in self.provider_booking_ids):
             # issued
-            pass
+            acquirer_id, customer_parent_id = self.get_acquirer_n_c_parent_id(req)
+            self.action_issued_tour(acquirer_id and acquirer_id.id or False, customer_parent_id, context)
         elif all(rec.state == 'refund' for rec in self.provider_booking_ids):
             # refund
             self.action_refund()
@@ -102,36 +105,57 @@ class ReservationTour(models.Model):
         elif all(rec.state == 'fail_booked' for rec in self.provider_booking_ids):
             # failed book
             self.action_failed_book()
+        elif all(rec.state == 'cancel' for rec in self.provider_booking_ids):
+            # failed book
+            self.action_set_as_cancel()
+        elif self.provider_booking_ids:
+            provider_obj = self.provider_booking_ids[0]
+            self.write({
+                'state': provider_obj.state,
+            })
         else:
-            # entah status apa
-            _logger.error('Entah status apa')
-            raise RequestException(1006)
+            self.write({
+                'state': 'draft',
+            })
+            # raise RequestException(1006)
 
-    def action_issued_tour(self, pay_method=None, api_context=None):
-        if not pay_method:
-            pay_method = self.payment_method and self.payment_method or 'full'
-        if not api_context:  # Jika dari call from backend
-            api_context = {
+    def action_issued_tour(self,acquirer_id,customer_parent_id,context):
+        if not context:  # Jika dari call from backend
+            context = {
                 'co_uid': self.env.user.id,
                 'signature': ''
             }
-        if not api_context.get('co_uid'):
-            api_context.update({
+        if not context.get('co_uid'):
+            context.update({
                 'co_uid': self.env.user.id
             })
-        if not api_context.get('signature'):
-            api_context.update({
+        if not context.get('signature'):
+            context.update({
                 'signature': ''
             })
 
         if self.state != 'issued':
+            pnr_list = []
+            provider_list = []
+            carrier_list = []
             for rec in self.provider_booking_ids:
-                rec.action_issued_api_tour(api_context)
+                pnr_list.append(rec.pnr or '')
+                provider_list.append(rec.provider_id.name or '')
+                carrier_list.append(rec.carrier_id.name or '')
+
             self.write({
                 'state': 'issued',
                 'issued_date': datetime.now(),
-                'issued_uid': api_context['co_uid'] or self.env.user.id,
+                'issued_uid': context['co_uid'] or self.env.user.id,
+                'customer_parent_id': customer_parent_id,
+                'pnr': ', '.join(pnr_list),
+                'provider_name': ','.join(provider_list),
+                'carrier_name': ','.join(carrier_list),
             })
+
+            payment_method = self.payment_method_tour and self.payment_method_tour or 'full'
+            if not self.is_already_issued:
+                self.call_create_invoice(acquirer_id, context['co_uid'], customer_parent_id, payment_method)
 
             try:
                 if self.agent_type_id.is_send_email_issued:
@@ -205,31 +229,33 @@ class ReservationTour(models.Model):
             'state': 'partial_issued'
         })
 
-    def action_cancel(self):
-        self.write({
-            'state': 'cancel',
-            'cancel_date': datetime.now(),
-            'cancel_uid': self.env.user.id
-        })
+    @api.multi
+    def action_set_as_cancel(self):
+        for rec in self:
+            rec.write({
+                'state': 'cancel',
+                'cancel_date': datetime.now(),
+                'cancel_uid': self.env.user.id
+            })
+
+            if rec.state != 'refund':
+                pax_amount = sum(1 for temp in rec.passenger_ids if temp.pax_type != 'INF')
+                temp_seat = rec.tour_id.seat
+                temp_seat += pax_amount
+                if temp_seat > rec.tour_id.quota:
+                    temp_seat = rec.tour_id.quota
+                rec.tour_id.sudo().write({
+                    'seat': temp_seat,
+                    'state': 'open'
+                })
+                for rec2 in rec.tour_id.passengers_ids:
+                    if rec2.booking_id.id == rec.id:
+                        rec2.sudo().write({
+                            'master_tour_id': False
+                        })
+
         if self.payment_acquirer_number_id:
             self.payment_acquirer_number_id.state = 'cancel'
-        # self.message_post(body='Order CANCELED')
-
-        if self.state != 'refund':
-            pax_amount = sum(1 for temp in self.passenger_ids if temp.pax_type != 'INF')
-            temp_seat = self.tour_id.seat
-            temp_seat += pax_amount
-            if temp_seat > self.tour_id.quota:
-                temp_seat = self.tour_id.quota
-            self.tour_id.sudo().write({
-                'seat': temp_seat,
-                'state': 'open'
-            })
-            for rec in self.tour_id.passengers_ids:
-                if rec.booking_id.id == self.id:
-                    rec.sudo().write({
-                        'master_tour_id': False
-                    })
 
     def action_expired(self):
         self.state = 'cancel2'
@@ -253,23 +279,29 @@ class ReservationTour(models.Model):
         except:
             _logger.error("provider type %s failed to expire vendor" % (self._name))
 
-    def action_booked_tour(self, api_context=None):
-        if not api_context:  # Jika dari call from backend
-            api_context = {
+    def action_booked_tour(self,context,pnr_list,hold_date):
+        if not context:  # Jika dari call from backend
+            context = {
                 'co_uid': self.env.user.id
             }
-        if not api_context.get('co_uid'):
-            api_context.update({
+        if not context.get('co_uid'):
+            context.update({
                 'co_uid': self.env.user.id
             })
 
         if self.state != 'booked':
-            self.write({
+            write_values = {
                 'state': 'booked',
+                'pnr': ', '.join(pnr_list),
+                'hold_date': hold_date,
                 'booked_date': datetime.now(),
-                'booked_uid': api_context['co_uid'] or self.env.user.id,
-                'hold_date': datetime.now() + relativedelta(hours=6),
-            })
+                'booked_uid': context['co_uid'] or self.env.user.id,
+            }
+
+            if write_values['pnr'] == '':
+                write_values.pop('pnr')
+
+            self.write(write_values)
 
             # Kurangi seat sejumlah pax_amount, lalu cek sisa kuota tour
             pax_amount = sum(1 for temp in self.passenger_ids if temp.pax_type != 'INF')  # jumlah orang yang di book
@@ -484,6 +516,7 @@ class ReservationTour(models.Model):
                     'arrival_date': tour_data.arrival_date,
                     'balance_due': balance_due,
                     'total_price': balance_due,
+                    'sequence': 1
                 }
 
                 provider_tour_obj = self.env['tt.provider.tour'].sudo().create(provider_tour_vals)
@@ -498,13 +531,16 @@ class ReservationTour(models.Model):
                 provider_tour_obj.delete_service_charge()
                 provider_tour_obj.create_service_charge(pricing)
 
-                response = {
-                    'order_id': booking_obj.id,
-                    'order_number': booking_obj.name,
-                }
+                provider_booking_list = []
+                for prov in booking_obj.provider_booking_ids:
+                    provider_booking_list.append(prov.to_dict())
+                response = booking_obj.to_dict()
+                response.update({
+                    'provider_booking': provider_booking_list
+                })
             else:
                 response = {
-                    'order_id': 0,
+                    'book_id': 0,
                     'order_number': 0
                 }
             return ERR.get_no_error(response)
@@ -532,29 +568,18 @@ class ReservationTour(models.Model):
                 book_obj = book_objs[0]
 
             payment_method = data.get('payment_method') and data['payment_method'] or 'full'
-
-            acquirer_id, customer_parent_id = book_obj.get_acquirer_n_c_parent_id(data)
-
             vals = {
-                'customer_parent_id': customer_parent_id,
                 'payment_method_tour': payment_method
             }
-
             book_obj.sudo().write(vals)
-            book_obj.action_issued_tour(payment_method, context)
-            self.env.cr.commit()
 
-            if not book_obj.is_already_issued:
-                book_obj.call_create_invoice(acquirer_id and acquirer_id.id or False, context['co_uid'], customer_parent_id, payment_method)
-
-            response = {
-                'order_id': book_obj.id,
-                'order_number': book_obj.name,
-                'state': book_obj.state,
-                'pnr': book_obj.pnr,
-                'provider': book_obj.tour_id.provider_id.code,
-                'booking_uuid': book_obj.booking_uuid and book_obj.booking_uuid or False,
-            }
+            provider_booking_list = []
+            for prov in book_obj.provider_booking_ids:
+                provider_booking_list.append(prov.to_dict())
+            response = book_obj.to_dict()
+            response.update({
+                'provider_booking': provider_booking_list
+            })
             return ERR.get_no_error(response)
         except RequestException as e:
             _logger.error(traceback.format_exc())
@@ -582,12 +607,14 @@ class ReservationTour(models.Model):
                 book_obj = book_obj[0]
             master = self.env['tt.master.tour'].browse(book_obj.tour_id.id)
 
-            response = {
-                'pnr': book_obj.pnr,
-                'order_number': book_obj.name,
-                'provider': master.provider_id.code,
+            provider_booking_list = []
+            for prov in book_obj.provider_booking_ids:
+                provider_booking_list.append(prov.to_dict())
+            response = book_obj.to_dict()
+            response.update({
+                'provider_booking': provider_booking_list,
                 'booking_uuid': book_obj.booking_uuid and book_obj.booking_uuid or False,
-            }
+            })
             return ERR.get_no_error(response)
         except RequestException as e:
             _logger.error(traceback.format_exc())
@@ -684,11 +711,14 @@ class ReservationTour(models.Model):
                     book_obj.sudo().write(book_update_vals)
                     self.env.cr.commit()
 
+                provider_booking_list = []
+                for prov in book_obj.provider_booking_ids:
+                    provider_booking_list.append(prov.to_dict())
                 response = book_obj.to_dict()
                 response.update({
+                    'provider_booking': provider_booking_list,
                     'passengers': passengers,
                     'booking_uuid': book_obj.booking_uuid and book_obj.booking_uuid or False,
-                    'provider': master.provider_id.code,
                     'tour_details': tour_package,
                     'rooms': rooms,
                     'payment_rules': payment_rules,
@@ -706,29 +736,42 @@ class ReservationTour(models.Model):
 
     def update_booking_api(self, data, context, **kwargs):
         try:
-            book_objs = self.env['tt.reservation.tour'].sudo().search([('name', '=', data['order_number'])])
-            book_obj = book_objs[0]
-            book_obj.action_booked_tour(context)
-            write_vals = {
-                'sid_booked': context.get('sid') and context['sid'] or '',
-            }
-            book_info = data.get('book_info') and data['book_info'] or {}
-            if book_info:
-                write_vals.update({
-                    'pnr': book_info.get('pnr') and book_info['pnr'] or '',
-                    'booking_uuid': book_info.get('booking_uuid') and book_info['booking_uuid'] or ''
-                })
+            if data.get('order_id'):
+                book_obj = self.env['tt.reservation.tour'].sudo().browse(int(data['order_id']))
+            else:
+                book_objs = self.env['tt.reservation.tour'].sudo().search([('name', '=', data['order_number'])], limit=1)
+                book_obj = book_objs[0]
 
-            for rec in book_obj.provider_booking_ids:
-                rec.action_booked_api_tour(book_info, context)
-            book_obj.sudo().write(write_vals)
-            book_obj.calculate_service_charge()
+            book_info = data.get('book_info') and data['book_info'] or {}
+
+            if book_info['status'] == 'booked':
+                write_vals = {
+                    'sid_booked': context.get('sid') and context['sid'] or '',
+                    'booking_uuid': book_info.get('booking_uuid') and book_info['booking_uuid'] or ''
+                }
+
+                pnr_list = []
+                for rec in book_obj.provider_booking_ids:
+                    rec.action_booked_api_tour(book_info, context)
+                    pnr_list.append(book_info.get('pnr') or '')
+
+                book_obj.check_provider_state(context, pnr_list)
+                book_obj.sudo().write(write_vals)
+            elif book_info['status'] == 'issued':
+                for rec in book_obj.provider_booking_ids:
+                    rec.action_issued_api_tour(context)
+
+                book_obj.check_provider_state(context, req=data)
             self.env.cr.commit()
 
-            response = {
-                'order_number': book_obj.name,
-                'state': book_obj.state,
-            }
+            provider_booking_list = []
+            for prov in book_obj.provider_booking_ids:
+                provider_booking_list.append(prov.to_dict())
+            response = book_obj.to_dict()
+            response.update({
+                'provider_booking': provider_booking_list,
+                'booking_uuid': book_obj.booking_uuid and book_obj.booking_uuid or False,
+            })
             return ERR.get_no_error(response)
         except RequestException as e:
             _logger.error(traceback.format_exc())

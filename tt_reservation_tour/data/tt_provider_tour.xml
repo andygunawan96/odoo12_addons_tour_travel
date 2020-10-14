@@ -4,18 +4,21 @@
         <record id="tt_provider_tour_internal" model="tt.provider">
             <field name="name">Internal Tour</field>
             <field name="code">internal_tour</field>
+            <field name="alias">ITR</field>
             <field name="active" eval="True"/>
             <field name="provider_type_id" ref="tt_provider_type_tour"/>
         </record>
         <record id="tt_provider_tour_gochina" model="tt.provider">
             <field name="name">GoChina</field>
             <field name="code">gochina</field>
+            <field name="alias">GC</field>
             <field name="active" eval="True"/>
             <field name="provider_type_id" ref="tt_provider_type_tour"/>
         </record>
         <record id="tt_provider_tour_rodextrip_tour" model="tt.provider">
             <field name="name">Rodextrip Tour</field>
             <field name="code">rodextrip_tour</field>
+            <field name="alias">RDTR</field>
             <field name="active" eval="True"/>
             <field name="provider_type_id" ref="tt_provider_type_tour"/>
         </record>
