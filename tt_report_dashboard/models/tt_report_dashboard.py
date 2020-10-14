@@ -124,7 +124,7 @@ class TtReportDashboard(models.Model):
                     'data': result.values()
                 },
                 'total_rupiah': total,
-                'average_rupiah': float(total) / float(num_data)
+                'average_rupiah': float(total) / float(num_data) if num_data > 0 else 0
             }
             return to_return
         except Exception as e:
@@ -140,6 +140,9 @@ class TtReportDashboard(models.Model):
                 'type': data['report_type']
             }
             values = self.env['report.tt_report_selling.report_selling']._get_reports(temp_dict)
+
+            # print data
+            _logger.info(values['lines'][0])
 
             result = {}
 
@@ -167,7 +170,7 @@ class TtReportDashboard(models.Model):
                     'data': result.values()
                 },
                 'total_rupiah': total,
-                'average_rupiah': float(total) / float(num_data)
+                'average_rupiah': float(total) / float(num_data) if num_data > 0 else 0
             }
             return to_return
         except Exception as e:
@@ -209,7 +212,7 @@ class TtReportDashboard(models.Model):
                     'data': result.values()
                 },
                 'total_rupiah': total,
-                'average_rupiah': float(total) / float(num_data)
+                'average_rupiah': float(total) / float(num_data) if num_data > 0 else 0
             }
             return to_return
         except Exception as e:
@@ -251,7 +254,7 @@ class TtReportDashboard(models.Model):
                     'data': result.values()
                 },
                 'total_rupiah': total,
-                'average_rupiah': float(total) / float(num_data)
+                'average_rupiah': float(total) / float(num_data) if num_data > 0 else 0
             }
             return to_return
         except Exception as e:
@@ -293,7 +296,7 @@ class TtReportDashboard(models.Model):
                     'data': result.values()
                 },
                 'total_rupiah': total,
-                'average_rupiah': float(total) / float(num_data)
+                'average_rupiah': float(total) / float(num_data) if num_data > 0 else 0
             }
             return to_return
         except Exception as e:
@@ -335,7 +338,7 @@ class TtReportDashboard(models.Model):
                     'data': result.values()
                 },
                 'total_rupiah': total,
-                'average_rupiah': float(total) / float(num_data)
+                'average_rupiah': float(total) / float(num_data) if num_data > 0 else 0
             }
             return to_return
         except Exception as e:
@@ -377,7 +380,7 @@ class TtReportDashboard(models.Model):
                     'data': result.values()
                 },
                 'total_rupiah': total,
-                'average_rupiah': float(total) / float(num_data)
+                'average_rupiah': float(total) / float(num_data) if num_data > 0 else 0
             }
             return to_return
         except Exception as e:
@@ -419,7 +422,7 @@ class TtReportDashboard(models.Model):
                     'data': result.values()
                 },
                 'total_rupiah': total,
-                'average_rupiah': float(total) / float(num_data)
+                'average_rupiah': float(total) / float(num_data) if num_data > 0 else 0
             }
             return to_return
         except Exception as e:
@@ -461,7 +464,7 @@ class TtReportDashboard(models.Model):
                     'data': result.values()
                 },
                 'total_rupiah': total,
-                'average_rupiah': float(total) / float(num_data)
+                'average_rupiah': float(total) / float(num_data) if num_data > 0 else 0
             }
             return to_return
         except Exception as e:
