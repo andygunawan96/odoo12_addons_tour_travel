@@ -34,6 +34,7 @@
                     <button string="Cancel" name="action_cancel" type="object" attrs="{'invisible': ['|', ('state', 'not in', ['draft','open']), ('provider_id', '!=', %(tt_reservation_tour.tt_provider_tour_internal)d)]}" groups="tt_base.group_tt_tour_division_operator" confirm="Are you sure you want to cancel this tour?"/>  <!--groups="tt_base.group_tt_tour_travel_operator"-->
                     <button string="Sold Out" name="action_sold" type="object" attrs="{'invisible': ['|', ('state', 'not in', ['draft','open','definite']), ('provider_id', '!=', %(tt_reservation_tour.tt_provider_tour_internal)d)]}" groups="tt_base.group_tt_tour_division_operator" confirm="Are you sure you want to set this tour as sold out?"/>  <!--groups="tt_base.group_tt_tour_travel_operator"-->
                     <button string="Re-Open" name="action_reopen" type="object" attrs="{'invisible': ['|', ('state', 'not in', ['cancel', 'sold', 'closed']), ('provider_id', '!=', %(tt_reservation_tour.tt_provider_tour_internal)d)]}" groups="tt_base.group_tt_tour_division_operator" confirm="Are you sure you want to re-open this tour?"/>  <!--groups="tt_base.group_tt_tour_travel_manager"-->
+                    <button string="Update Tour Code" name="update_tour_code_temp" type="object" groups="base.user_admin"/>
                     <!--                    <button string="Generate Room Codes" name="generate_all_room_codes" type="object" groups="base.user_admin"/>-->
                 </header>
                 <sheet>
@@ -88,7 +89,6 @@
                             <field name="tour_code" attrs="{'readonly': [('provider_id', '!=', %(tt_reservation_tour.tt_provider_tour_internal)d)]}"/>
                             <field name="provider_id" groups="tt_base.group_tt_tour_travel_operator"/>
                             <field name="carrier_id" groups="tt_base.group_tt_tour_travel_operator"/>
-                            <field name="provider_fare_code" invisible="1" attrs="{'readonly': [('provider_id', '!=', %(tt_reservation_tour.tt_provider_tour_internal)d)]}"/>
                             <field name="currency_id" attrs="{'readonly': [('provider_id', '!=', %(tt_reservation_tour.tt_provider_tour_internal)d)]}"/>
                             <field name="description" attrs="{'readonly': [('provider_id', '!=', %(tt_reservation_tour.tt_provider_tour_internal)d)]}"/>
                             <field name="tour_category" attrs="{'readonly': [('provider_id', '!=', %(tt_reservation_tour.tt_provider_tour_internal)d)]}"/>
