@@ -120,11 +120,11 @@ class TtReportDashboard(models.Model):
 
             to_return = {
                 'graph': {
-                    'label': result.keys(),
-                    'data': result.values()
+                    'label': list(result.keys()),
+                    'data': list(result.values())
                 },
                 'total_rupiah': total,
-                'average_rupiah': float(total) / float(num_data)
+                'average_rupiah': float(total) / float(num_data) if num_data > 0 else 0
             }
             return to_return
         except Exception as e:
@@ -163,11 +163,11 @@ class TtReportDashboard(models.Model):
 
             to_return = {
                 'graph': {
-                    'label': result.keys(),
-                    'data': result.values()
+                    'label': list(result.keys()),
+                    'data': list(result.values())
                 },
                 'total_rupiah': total,
-                'average_rupiah': float(total) / float(num_data)
+                'average_rupiah': float(total) / float(num_data) if num_data > 0 else 0
             }
             return to_return
         except Exception as e:
@@ -205,11 +205,11 @@ class TtReportDashboard(models.Model):
 
             to_return = {
                 'graph': {
-                    'label': result.keys(),
-                    'data': result.values()
+                    'label': list(result.keys()),
+                    'data': list(result.values())
                 },
                 'total_rupiah': total,
-                'average_rupiah': float(total) / float(num_data)
+                'average_rupiah': float(total) / float(num_data) if num_data > 0 else 0
             }
             return to_return
         except Exception as e:
@@ -247,11 +247,11 @@ class TtReportDashboard(models.Model):
 
             to_return = {
                 'graph': {
-                    'label': result.keys(),
-                    'data': result.values()
+                    'label': list(result.keys()),
+                    'data': list(result.values())
                 },
                 'total_rupiah': total,
-                'average_rupiah': float(total) / float(num_data)
+                'average_rupiah': float(total) / float(num_data) if num_data > 0 else 0
             }
             return to_return
         except Exception as e:
@@ -289,11 +289,11 @@ class TtReportDashboard(models.Model):
 
             to_return = {
                 'graph': {
-                    'label': result.keys(),
-                    'data': result.values()
+                    'label': list(result.keys()),
+                    'data': list(result.values())
                 },
                 'total_rupiah': total,
-                'average_rupiah': float(total) / float(num_data)
+                'average_rupiah': float(total) / float(num_data) if num_data > 0 else 0
             }
             return to_return
         except Exception as e:
@@ -331,11 +331,11 @@ class TtReportDashboard(models.Model):
 
             to_return = {
                 'graph': {
-                    'label': result.keys(),
-                    'data': result.values()
+                    'label': list(result.keys()),
+                    'data': list(result.values())
                 },
                 'total_rupiah': total,
-                'average_rupiah': float(total) / float(num_data)
+                'average_rupiah': float(total) / float(num_data) if num_data > 0 else 0
             }
             return to_return
         except Exception as e:
@@ -373,11 +373,11 @@ class TtReportDashboard(models.Model):
 
             to_return = {
                 'graph': {
-                    'label': result.keys(),
-                    'data': result.values()
+                    'label': list(result.keys()),
+                    'data': list(result.values())
                 },
                 'total_rupiah': total,
-                'average_rupiah': float(total) / float(num_data)
+                'average_rupiah': float(total) / float(num_data) if num_data > 0 else 0
             }
             return to_return
         except Exception as e:
@@ -415,11 +415,11 @@ class TtReportDashboard(models.Model):
 
             to_return = {
                 'graph': {
-                    'label': result.keys(),
-                    'data': result.values()
+                    'label': list(result.keys()),
+                    'data': list(result.values())
                 },
                 'total_rupiah': total,
-                'average_rupiah': float(total) / float(num_data)
+                'average_rupiah': float(total) / float(num_data) if num_data > 0 else 0
             }
             return to_return
         except Exception as e:
@@ -457,11 +457,11 @@ class TtReportDashboard(models.Model):
 
             to_return = {
                 'graph': {
-                    'label': result.keys(),
-                    'data': result.values()
+                    'label': list(result.keys()),
+                    'data': list(result.values())
                 },
                 'total_rupiah': total,
-                'average_rupiah': float(total) / float(num_data)
+                'average_rupiah': float(total) / float(num_data) if num_data > 0 else 0
             }
             return to_return
         except Exception as e:
