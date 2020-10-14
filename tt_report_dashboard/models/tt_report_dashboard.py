@@ -142,7 +142,7 @@ class TtReportDashboard(models.Model):
             values = self.env['report.tt_report_selling.report_selling']._get_reports(temp_dict)
 
             # print data
-            _logger.info(values['lines'][0])
+            _logger.info(values)
 
             result = {}
 
