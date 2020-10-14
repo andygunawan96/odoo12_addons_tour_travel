@@ -90,346 +90,383 @@ class TtReportDashboard(models.Model):
         return ERR.get_no_error()
 
     def get_report_overall(self, data):
-        temp_dict = {
-            'start_date': data['start_date'],
-            'end_date': data['end_date'],
-            'type': data['report_type']
-        }
-        values = self.env['report.tt_report_selling.report_selling']._get_reports(temp_dict)
+        try:
+            temp_dict = {
+                'start_date': data['start_date'],
+                'end_date': data['end_date'],
+                'type': data['report_type']
+            }
+            values = self.env['report.tt_report_selling.report_selling']._get_reports(temp_dict)
 
-        result = {}
+            result = {}
 
-        # lets populate result with empty date dictionary
-        start_date = self.convert_to_datetime(data['start_date'])
-        end_date = self.convert_to_datetime(data['end_date'])
+            # lets populate result with empty date dictionary
+            start_date = self.convert_to_datetime(data['start_date'])
+            end_date = self.convert_to_datetime(data['end_date'])
 
-        delta = end_date - start_date
+            delta = end_date - start_date
 
-        for i in range(delta.days + 1):
-            tanggal = start_date + timedelta(days=i)
-            result[tanggal.strftime('%Y-%m-%d')] = 0
+            for i in range(delta.days + 1):
+                tanggal = start_date + timedelta(days=i)
+                result[tanggal.strftime('%Y-%m-%d')] = 0
 
-        total = 0
-        num_data = 0
-        for i in values['lines']:
-            if i['reservation_state'] == 'issued':
-                result[str(i['reservation_issued_date'])] += 1
-                total += i['amount']
-                num_data += 1
+            total = 0
+            num_data = 0
+            for i in values['lines']:
+                if i['reservation_state'] == 'issued':
+                    result[str(i['reservation_issued_date'])] += 1
+                    total += i['amount']
+                    num_data += 1
 
-        to_return = {
-            'graph': {
-                'label': result.keys(),
-                'data': result.values()
-            },
-            'total_rupiah': total,
-            'average_rupiah': float(total) / float(num_data)
-        }
-        return to_return
+            to_return = {
+                'graph': {
+                    'label': result.keys(),
+                    'data': result.values()
+                },
+                'total_rupiah': total,
+                'average_rupiah': float(total) / float(num_data)
+            }
+            return to_return
+        except Exception as e:
+            _logger.error(traceback.format_exc())
+            raise e
+
 
     def get_report_overall_airline(self, data):
-        temp_dict = {
-            'start_date': data['start_date'],
-            'end_date': data['end_date'],
-            'type': data['report_type']
-        }
-        values = self.env['report.tt_report_selling.report_selling']._get_reports(temp_dict)
+        try:
+            temp_dict = {
+                'start_date': data['start_date'],
+                'end_date': data['end_date'],
+                'type': data['report_type']
+            }
+            values = self.env['report.tt_report_selling.report_selling']._get_reports(temp_dict)
 
-        result = {}
+            result = {}
 
-        # lets populate result with empty date dictionary
-        start_date = self.convert_to_datetime(data['start_date'])
-        end_date = self.convert_to_datetime(data['end_date'])
+            # lets populate result with empty date dictionary
+            start_date = self.convert_to_datetime(data['start_date'])
+            end_date = self.convert_to_datetime(data['end_date'])
 
-        delta = end_date - start_date
+            delta = end_date - start_date
 
-        for i in range(delta.days + 1):
-            tanggal = start_date + timedelta(days=i)
-            result[tanggal.strftime('%Y-%m-%d')] = 0
+            for i in range(delta.days + 1):
+                tanggal = start_date + timedelta(days=i)
+                result[tanggal.strftime('%Y-%m-%d')] = 0
 
-        total = 0
-        num_data = 0
-        for i in values['lines']:
-            if i['reservation_state'] == 'issued':
-                result[str(i['reservation_issued_date'])] += 1
-                total += i['amount']
-                num_data += 1
+            total = 0
+            num_data = 0
+            for i in values['lines']:
+                if i['reservation_state'] == 'issued':
+                    result[str(i['reservation_issued_date'])] += 1
+                    total += i['amount']
+                    num_data += 1
 
-        to_return = {
-            'graph': {
-                'label': result.keys(),
-                'data': result.values()
-            },
-            'total_rupiah': total,
-            'average_rupiah': float(total) / float(num_data)
-        }
-        return to_return
+            to_return = {
+                'graph': {
+                    'label': result.keys(),
+                    'data': result.values()
+                },
+                'total_rupiah': total,
+                'average_rupiah': float(total) / float(num_data)
+            }
+            return to_return
+        except Exception as e:
+            _logger.error(traceback.format_exc())
+            raise e
 
     def get_report_overall_train(self, data):
-        temp_dict = {
-            'start_date': data['start_date'],
-            'end_date': data['end_date'],
-            'type': data['report_type']
-        }
-        values = self.env['report.tt_report_selling.report_selling']._get_reports(temp_dict)
+        try:
+            temp_dict = {
+                'start_date': data['start_date'],
+                'end_date': data['end_date'],
+                'type': data['report_type']
+            }
+            values = self.env['report.tt_report_selling.report_selling']._get_reports(temp_dict)
 
-        result = {}
+            result = {}
 
-        # lets populate result with empty date dictionary
-        start_date = self.convert_to_datetime(data['start_date'])
-        end_date = self.convert_to_datetime(data['end_date'])
+            # lets populate result with empty date dictionary
+            start_date = self.convert_to_datetime(data['start_date'])
+            end_date = self.convert_to_datetime(data['end_date'])
 
-        delta = end_date - start_date
+            delta = end_date - start_date
 
-        for i in range(delta.days + 1):
-            tanggal = start_date + timedelta(days=i)
-            result[tanggal.strftime('%Y-%m-%d')] = 0
+            for i in range(delta.days + 1):
+                tanggal = start_date + timedelta(days=i)
+                result[tanggal.strftime('%Y-%m-%d')] = 0
 
-        total = 0
-        num_data = 0
-        for i in values['lines']:
-            if i['reservation_state'] == 'issued':
-                result[str(i['reservation_issued_date'])] += 1
-                total += i['amount']
-                num_data += 1
+            total = 0
+            num_data = 0
+            for i in values['lines']:
+                if i['reservation_state'] == 'issued':
+                    result[str(i['reservation_issued_date'])] += 1
+                    total += i['amount']
+                    num_data += 1
 
-        to_return = {
-            'graph': {
-                'label': result.keys(),
-                'data': result.values()
-            },
-            'total_rupiah': total,
-            'average_rupiah': float(total) / float(num_data)
-        }
-        return to_return
+            to_return = {
+                'graph': {
+                    'label': result.keys(),
+                    'data': result.values()
+                },
+                'total_rupiah': total,
+                'average_rupiah': float(total) / float(num_data)
+            }
+            return to_return
+        except Exception as e:
+            _logger.error(traceback.format_exc())
+            raise e
 
     def get_report_overall_hotel(self, data):
-        temp_dict = {
-            'start_date': data['start_date'],
-            'end_date': data['end_date'],
-            'type': data['report_type']
-        }
-        values = self.env['report.tt_report_selling.report_selling']._get_reports(temp_dict)
+        try:
+            temp_dict = {
+                'start_date': data['start_date'],
+                'end_date': data['end_date'],
+                'type': data['report_type']
+            }
+            values = self.env['report.tt_report_selling.report_selling']._get_reports(temp_dict)
 
-        result = {}
+            result = {}
 
-        # lets populate result with empty date dictionary
-        start_date = self.convert_to_datetime(data['start_date'])
-        end_date = self.convert_to_datetime(data['end_date'])
+            # lets populate result with empty date dictionary
+            start_date = self.convert_to_datetime(data['start_date'])
+            end_date = self.convert_to_datetime(data['end_date'])
 
-        delta = end_date - start_date
+            delta = end_date - start_date
 
-        for i in range(delta.days + 1):
-            tanggal = start_date + timedelta(days=i)
-            result[tanggal.strftime('%Y-%m-%d')] = 0
+            for i in range(delta.days + 1):
+                tanggal = start_date + timedelta(days=i)
+                result[tanggal.strftime('%Y-%m-%d')] = 0
 
-        total = 0
-        num_data = 0
-        for i in values['lines']:
-            if i['reservation_state'] == 'issued':
-                result[str(i['reservation_issued_date'])] += 1
-                total += i['amount']
-                num_data += 1
+            total = 0
+            num_data = 0
+            for i in values['lines']:
+                if i['reservation_state'] == 'issued':
+                    result[str(i['reservation_issued_date'])] += 1
+                    total += i['amount']
+                    num_data += 1
 
-        to_return = {
-            'graph': {
-                'label': result.keys(),
-                'data': result.values()
-            },
-            'total_rupiah': total,
-            'average_rupiah': float(total) / float(num_data)
-        }
-        return to_return
+            to_return = {
+                'graph': {
+                    'label': result.keys(),
+                    'data': result.values()
+                },
+                'total_rupiah': total,
+                'average_rupiah': float(total) / float(num_data)
+            }
+            return to_return
+        except Exception as e:
+            _logger.error(traceback.format_exc())
+            raise e
 
     def get_report_overall_tour(self, data):
-        temp_dict = {
-            'start_date': data['start_date'],
-            'end_date': data['end_date'],
-            'type': data['report_type']
-        }
-        values = self.env['report.tt_report_selling.report_selling']._get_reports(temp_dict)
+        try:
+            temp_dict = {
+                'start_date': data['start_date'],
+                'end_date': data['end_date'],
+                'type': data['report_type']
+            }
+            values = self.env['report.tt_report_selling.report_selling']._get_reports(temp_dict)
 
-        result = {}
+            result = {}
 
-        # lets populate result with empty date dictionary
-        start_date = self.convert_to_datetime(data['start_date'])
-        end_date = self.convert_to_datetime(data['end_date'])
+            # lets populate result with empty date dictionary
+            start_date = self.convert_to_datetime(data['start_date'])
+            end_date = self.convert_to_datetime(data['end_date'])
 
-        delta = end_date - start_date
+            delta = end_date - start_date
 
-        for i in range(delta.days + 1):
-            tanggal = start_date + timedelta(days=i)
-            result[tanggal.strftime('%Y-%m-%d')] = 0
+            for i in range(delta.days + 1):
+                tanggal = start_date + timedelta(days=i)
+                result[tanggal.strftime('%Y-%m-%d')] = 0
 
-        total = 0
-        num_data = 0
-        for i in values['lines']:
-            if i['reservation_state'] == 'issued':
-                result[str(i['reservation_issued_date'])] += 1
-                total += i['amount']
-                num_data += 1
+            total = 0
+            num_data = 0
+            for i in values['lines']:
+                if i['reservation_state'] == 'issued':
+                    result[str(i['reservation_issued_date'])] += 1
+                    total += i['amount']
+                    num_data += 1
 
-        to_return = {
-            'graph': {
-                'label': result.keys(),
-                'data': result.values()
-            },
-            'total_rupiah': total,
-            'average_rupiah': float(total) / float(num_data)
-        }
-        return to_return
+            to_return = {
+                'graph': {
+                    'label': result.keys(),
+                    'data': result.values()
+                },
+                'total_rupiah': total,
+                'average_rupiah': float(total) / float(num_data)
+            }
+            return to_return
+        except Exception as e:
+            _logger.error(traceback.format_exc())
+            raise e
 
     def get_report_overall_activity(self, data):
-        temp_dict = {
-            'start_date': data['start_date'],
-            'end_date': data['end_date'],
-            'type': data['report_type']
-        }
-        values = self.env['report.tt_report_selling.report_selling']._get_reports(temp_dict)
+        try:
+            temp_dict = {
+                'start_date': data['start_date'],
+                'end_date': data['end_date'],
+                'type': data['report_type']
+            }
+            values = self.env['report.tt_report_selling.report_selling']._get_reports(temp_dict)
 
-        result = {}
+            result = {}
 
-        # lets populate result with empty date dictionary
-        start_date = self.convert_to_datetime(data['start_date'])
-        end_date = self.convert_to_datetime(data['end_date'])
+            # lets populate result with empty date dictionary
+            start_date = self.convert_to_datetime(data['start_date'])
+            end_date = self.convert_to_datetime(data['end_date'])
 
-        delta = end_date - start_date
+            delta = end_date - start_date
 
-        for i in range(delta.days + 1):
-            tanggal = start_date + timedelta(days=i)
-            result[tanggal.strftime('%Y-%m-%d')] = 0
+            for i in range(delta.days + 1):
+                tanggal = start_date + timedelta(days=i)
+                result[tanggal.strftime('%Y-%m-%d')] = 0
 
-        total = 0
-        num_data = 0
-        for i in values['lines']:
-            if i['reservation_state'] == 'issued':
-                result[str(i['reservation_issued_date'])] += 1
-                total += i['amount']
-                num_data += 1
+            total = 0
+            num_data = 0
+            for i in values['lines']:
+                if i['reservation_state'] == 'issued':
+                    result[str(i['reservation_issued_date'])] += 1
+                    total += i['amount']
+                    num_data += 1
 
-        to_return = {
-            'graph': {
-                'label': result.keys(),
-                'data': result.values()
-            },
-            'total_rupiah': total,
-            'average_rupiah': float(total) / float(num_data)
-        }
-        return to_return
+            to_return = {
+                'graph': {
+                    'label': result.keys(),
+                    'data': result.values()
+                },
+                'total_rupiah': total,
+                'average_rupiah': float(total) / float(num_data)
+            }
+            return to_return
+        except Exception as e:
+            _logger.error(traceback.format_exc())
+            raise e
 
     def get_report_overall_event(self, data):
-        temp_dict = {
-            'start_date': data['start_date'],
-            'end_date': data['end_date'],
-            'type': data['report_type']
-        }
-        values = self.env['report.tt_report_selling.report_selling']._get_reports(temp_dict)
+        try:
+            temp_dict = {
+                'start_date': data['start_date'],
+                'end_date': data['end_date'],
+                'type': data['report_type']
+            }
+            values = self.env['report.tt_report_selling.report_selling']._get_reports(temp_dict)
 
-        result = {}
+            result = {}
 
-        # lets populate result with empty date dictionary
-        start_date = self.convert_to_datetime(data['start_date'])
-        end_date = self.convert_to_datetime(data['end_date'])
+            # lets populate result with empty date dictionary
+            start_date = self.convert_to_datetime(data['start_date'])
+            end_date = self.convert_to_datetime(data['end_date'])
 
-        delta = end_date - start_date
+            delta = end_date - start_date
 
-        for i in range(delta.days + 1):
-            tanggal = start_date + timedelta(days=i)
-            result[tanggal.strftime('%Y-%m-%d')] = 0
+            for i in range(delta.days + 1):
+                tanggal = start_date + timedelta(days=i)
+                result[tanggal.strftime('%Y-%m-%d')] = 0
 
-        total = 0
-        num_data = 0
-        for i in values['lines']:
-            if i['reservation_state'] == 'issued':
-                result[str(i['reservation_issued_date'])] += 1
-                total += i['amount']
-                num_data += 1
+            total = 0
+            num_data = 0
+            for i in values['lines']:
+                if i['reservation_state'] == 'issued':
+                    result[str(i['reservation_issued_date'])] += 1
+                    total += i['amount']
+                    num_data += 1
 
-        to_return = {
-            'graph': {
-                'label': result.keys(),
-                'data': result.values()
-            },
-            'total_rupiah': total,
-            'average_rupiah': float(total) / float(num_data)
-        }
-        return to_return
+            to_return = {
+                'graph': {
+                    'label': result.keys(),
+                    'data': result.values()
+                },
+                'total_rupiah': total,
+                'average_rupiah': float(total) / float(num_data)
+            }
+            return to_return
+        except Exception as e:
+            _logger.error(traceback.format_exc())
+            raise e
 
     def get_report_overall_visa(self, data):
-        temp_dict = {
-            'start_date': data['start_date'],
-            'end_date': data['end_date'],
-            'type': data['report_type']
-        }
-        values = self.env['report.tt_report_selling.report_selling']._get_reports(temp_dict)
+        try:
+            temp_dict = {
+                'start_date': data['start_date'],
+                'end_date': data['end_date'],
+                'type': data['report_type']
+            }
+            values = self.env['report.tt_report_selling.report_selling']._get_reports(temp_dict)
 
-        result = {}
+            result = {}
 
-        # lets populate result with empty date dictionary
-        start_date = self.convert_to_datetime(data['start_date'])
-        end_date = self.convert_to_datetime(data['end_date'])
+            # lets populate result with empty date dictionary
+            start_date = self.convert_to_datetime(data['start_date'])
+            end_date = self.convert_to_datetime(data['end_date'])
 
-        delta = end_date - start_date
+            delta = end_date - start_date
 
-        for i in range(delta.days + 1):
-            tanggal = start_date + timedelta(days=i)
-            result[tanggal.strftime('%Y-%m-%d')] = 0
+            for i in range(delta.days + 1):
+                tanggal = start_date + timedelta(days=i)
+                result[tanggal.strftime('%Y-%m-%d')] = 0
 
-        total = 0
-        num_data = 0
-        for i in values['lines']:
-            if i['reservation_state'] == 'issued':
-                result[str(i['reservation_issued_date'])] += 1
-                total += i['amount']
-                num_data += 1
+            total = 0
+            num_data = 0
+            for i in values['lines']:
+                if i['reservation_state'] == 'issued':
+                    result[str(i['reservation_issued_date'])] += 1
+                    total += i['amount']
+                    num_data += 1
 
-        to_return = {
-            'graph': {
-                'label': result.keys(),
-                'data': result.values()
-            },
-            'total_rupiah': total,
-            'average_rupiah': float(total) / float(num_data)
-        }
-        return to_return
+            to_return = {
+                'graph': {
+                    'label': result.keys(),
+                    'data': result.values()
+                },
+                'total_rupiah': total,
+                'average_rupiah': float(total) / float(num_data)
+            }
+            return to_return
+        except Exception as e:
+            _logger.error(traceback.format_exc())
+            raise e
 
     def get_report_overall_offline(self, data):
-        temp_dict = {
-            'start_date': data['start_date'],
-            'end_date': data['end_date'],
-            'type': data['report_type']
-        }
-        values = self.env['report.tt_report_selling.report_selling']._get_reports(temp_dict)
+        try:
+            temp_dict = {
+                'start_date': data['start_date'],
+                'end_date': data['end_date'],
+                'type': data['report_type']
+            }
+            values = self.env['report.tt_report_selling.report_selling']._get_reports(temp_dict)
 
-        result = {}
+            result = {}
 
-        # lets populate result with empty date dictionary
-        start_date = self.convert_to_datetime(data['start_date'])
-        end_date = self.convert_to_datetime(data['end_date'])
+            # lets populate result with empty date dictionary
+            start_date = self.convert_to_datetime(data['start_date'])
+            end_date = self.convert_to_datetime(data['end_date'])
 
-        delta = end_date - start_date
+            delta = end_date - start_date
 
-        for i in range(delta.days + 1):
-            tanggal = start_date + timedelta(days=i)
-            result[tanggal.strftime('%Y-%m-%d')] = 0
+            for i in range(delta.days + 1):
+                tanggal = start_date + timedelta(days=i)
+                result[tanggal.strftime('%Y-%m-%d')] = 0
 
-        total = 0
-        num_data = 0
-        for i in values['lines']:
-            if i['reservation_state'] == 'issued':
-                result[str(i['reservation_issued_date'])] += 1
-                total += i['amount']
-                num_data += 1
+            total = 0
+            num_data = 0
+            for i in values['lines']:
+                if i['reservation_state'] == 'issued':
+                    result[str(i['reservation_issued_date'])] += 1
+                    total += i['amount']
+                    num_data += 1
 
-        to_return = {
-            'graph': {
-                'label': result.keys(),
-                'data': result.values()
-            },
-            'total_rupiah': total,
-            'average_rupiah': float(total) / float(num_data)
-        }
-        return to_return
+            to_return = {
+                'graph': {
+                    'label': result.keys(),
+                    'data': result.values()
+                },
+                'total_rupiah': total,
+                'average_rupiah': float(total) / float(num_data)
+            }
+            return to_return
+        except Exception as e:
+            _logger.error(traceback.format_exc())
+            raise e
 
     def get_report_airline(self, data):
         temp_dict = {
