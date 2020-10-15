@@ -58,6 +58,7 @@
                 <field name="provider_type_id"/>
                 <field name="provider_id"/>
                 <field name="transaction_date"/>
+                <field name="total_lines"/>
                 <field name="state"/>
             </tree>
         </field>
@@ -147,6 +148,8 @@
                 <field name="tax"/>
                 <field name="commission"/>
                 <field name="total"/>
+                <field name="vendor_start_balance" string="Start Balance"/>
+                <field name="vendor_end_balance" string="End Balance"/>
                 <field name="state"/>
                 <field name="currency_id" invisible="1"/>
             </tree>
