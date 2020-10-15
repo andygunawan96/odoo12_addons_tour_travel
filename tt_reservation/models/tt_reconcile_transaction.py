@@ -20,6 +20,7 @@ class TtReconcileTransaction(models.Model):
     transaction_date = fields.Date('Transaction Date', readonly=True)
     state = fields.Selection([('open','Open')],'State', default='open', readonly=True)
     excel_file = fields.Binary('Excel File')
+    total_lines = fields.Integer('Total Lines', compute='_compute_total_lines', store=True)
 
     @api.depends('provider_id','transaction_date')
     def _compute_display_reconcile_name(self):
@@ -28,6 +29,11 @@ class TtReconcileTransaction(models.Model):
                 rec.provider_id and rec.provider_id.name or '',
                 rec.transaction_date and datetime.strftime(rec.transaction_date,'%Y-%m-%d')
             )
+
+    @api.depends('reconcile_lines_ids')
+    def _compute_total_lines(self):
+        for rec in self:
+            rec.total_lines = len(rec.reconcile_lines_ids)
 
     def compare_reconcile_data(self):
         for rec in self.reconcile_lines_ids.filtered(lambda x: x.state == 'not_match'):
