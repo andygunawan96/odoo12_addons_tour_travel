@@ -11,7 +11,7 @@ class TtReconcileTransaction(models.Model):
     _name = 'tt.reconcile.transaction'
     _description = 'Rodex Model Reconcile'
     _rec_name = 'display_reconcile_name'
-    _order = 'provider_type_id,provider_id,transaction_date desc'
+    _order = 'transaction_date desc'
 
     display_reconcile_name = fields.Char('Display Name', compute='_compute_display_reconcile_name',store=True)
     provider_type_id = fields.Many2one('tt.provider.type', 'Provider Type', related='provider_id.provider_type_id', readonly=True)
