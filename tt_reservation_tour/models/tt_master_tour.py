@@ -1447,7 +1447,7 @@ class MasterTour(models.Model):
     def get_tour_pricing_api(self, req, context):
         try:
             search_request = {
-                'tour_code': req['req'].get('tour_code') and req['req']['tour_code'] or '',
+                'tour_code': req.get('tour_code') and req['tour_code'] or '',
                 'provider': req.get('provider') and req['provider'] or ''
             }
             provider_obj = self.env['tt.provider'].sudo().search([('code', '=', search_request['provider'])], limit=1)
@@ -1508,7 +1508,7 @@ class MasterTour(models.Model):
                     'infant_tipping_driver': tour_data.tipping_driver,
                 })
 
-            temp_room_list = req['req']['room_list']
+            temp_room_list = req['room_list']
             total_adt = 0
             total_chd = 0
             total_inf = 0
