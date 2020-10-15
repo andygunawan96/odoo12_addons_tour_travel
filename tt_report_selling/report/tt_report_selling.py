@@ -426,14 +426,17 @@ class ReportSelling(models.Model):
         elif provider_checker == 'overall_airline':
             query += 'FROM {} '.format(self._from_airline())
             query += 'WHERE {} '.format(self._where_issued(date_from, date_to))
+            query += 'GROUP BY {} '.format(self._group_by_airline())
             query += 'ORDER BY {} '.format(self._order_by_issued())
         elif provider_checker == 'overall_activity':
             query += 'FROM {} '.format(self._from_activity())
             query += 'WHERE {} '.format(self._where_issued(date_from, date_to))
+            query += 'GROUP BY {} '.format(self._group_by_activity())
             query += 'ORDER BY {} '.format(self._order_by_issued())
         elif provider_checker == 'overall_event':
             query += 'FROM {} '.format(self._from_event())
             query += 'WHERE {} '.format(self._where_issued(date_from, date_to))
+            query += 'GROUP BY {} '.format(self._group_by_event())
             query += 'ORDER BY {} '.format(self._order_by_issued())
         elif provider_checker == 'overall_tour':
             query += 'FROM {} '.format(self._from_tour())
@@ -442,14 +445,17 @@ class ReportSelling(models.Model):
         elif provider_checker == 'overall_train':
             query += 'FROM {} '.format(self._from_train())
             query += 'WHERE {} '.format(self._where_issued(date_from, date_to))
+            query += 'GROUP BY {} '.format(self._group_by_train())
             query += 'ORDER BY {} '.format(self._order_by_issued())
         elif provider_checker == 'overall_hotel':
             query += 'FROM {} '.format(self._from_hotel())
             query += 'WHERE {} '.format(self._where_issued(date_from, date_to))
+            query += 'GROUP BY {} '.format(self._group_by_hotel())
             query += 'ORDER BY {} '.format(self._order_by_issued())
         elif provider_checker == 'overall_visa':
             query += 'FROM {} '.format(self._from_visa())
             query += 'WHERE {} '.format(self._where_issued(date_from, date_to))
+            query += 'GROUP BY {} '.format(self._group_by_visa())
             query += 'ORDER BY {} '.format(self._order_by_issued())
         elif provider_checker == 'overall_offline':
             query += 'FROM {} '.format(self._from_offline())

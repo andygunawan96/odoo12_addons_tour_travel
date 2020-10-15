@@ -130,13 +130,13 @@ class TtReportDashboard(models.Model):
                             'counter': 1,
                             i['reservation_state']: 1
                         }
-                        result.append(temp_dict)
+                        result_list.append(temp_dict)
                     else:
-                        result[provider_index]['counter'] += 1
+                        result_list[provider_index]['counter'] += 1
                         try:
-                            result[provider_index][i['reservation_state']] += 1
+                            result_list[provider_index][i['reservation_state']] += 1
                         except:
-                            result[provider_index][i['reservation_state']] = 1
+                            result_list[provider_index][i['reservation_state']] = 1
 
             for i in result:
                 i[2] = i[1] / 1[0] if i[0] > 0 else 0
