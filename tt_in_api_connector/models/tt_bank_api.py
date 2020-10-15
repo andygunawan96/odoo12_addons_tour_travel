@@ -23,4 +23,4 @@ class TtBankApiCon(models.Model):
             'startdate': req['startdate'], # '2019-11-01',
             'enddate': req['enddate'] #'2019-11-05',
         }
-        return self.send_request_to_gateway('%s/bank' % (self.url), data, 'get_transaction')
+        return self.send_request_to_gateway('%s/bank' % (self.url), data, 'get_transaction',timeout=60)
