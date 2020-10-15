@@ -1,5 +1,6 @@
 from odoo import models, fields, api, _
 from ...tools import variables
+from datetime import datetime, timedelta
 
 import logging
 _logger = logging.getLogger(__name__)
@@ -197,6 +198,27 @@ class ReportSelling(models.Model):
         COUNT(reservation_passenger.booking_id) as reservation_passenger
         """
 
+    @staticmethod
+    def _select_ppob():
+        return """
+        reservation.id as reservation_id, 
+        reservation.name as reservation_order_number, 
+        reservation.booked_date as reservation_booked_date_og,
+        reservation.issued_date as reservation_issued_date_og,
+        reservation.create_date as reservation_create_date_og, 
+        reservation.nights as reservation_night, 
+        reservation.provider_name as reservation_provider_name,
+        reservation.total as amount, 
+        reservation.state as reservation_state, 
+        reservation.event_name as reservation_event_name,
+        reservation.elder as reservation_elder, 
+        reservation.adult as reservation_adult, 
+        reservation.child as reservation_child, 
+        reservation.infant as reservation_infant,
+        provider_type.name as provider_type_name,
+        COUNT(reservation_passenger.booking_id) as reservation_passenger
+        """
+
     #for all
     @staticmethod
     def _from(provider_type):
@@ -264,6 +286,13 @@ class ReportSelling(models.Model):
         """
 
     @staticmethod
+    def _from_ppob():
+        return """tt_reservation_ppob reservation
+        LEFT JOIN tt_provider_type provider_type ON reservation.provider_type_id = provider_type.id
+        LEFT JOIN tt_reservation_passenger_activity reservation_passenger ON reservation_passenger.booking_id = reservation.id
+        """
+
+    @staticmethod
     def _from_offline():
         return """tt_reservation_offline reservation
         LEFT JOIN tt_provider_type provider_type ON reservation.provider_type_id = provider_type.id
@@ -296,6 +325,10 @@ class ReportSelling(models.Model):
     def _group_by_event():
         return """reservation.id, provider_type.name"""
 
+    @staticmethod
+    def _group_by_ppob():
+        return """reservation.id provider_type.name"""
+
     #works with all
     @staticmethod
     def _where(date_from, date_to):
@@ -305,7 +338,7 @@ class ReportSelling(models.Model):
     # where issued
     @staticmethod
     def _where_issued(date_from, date_to):
-        where = """reservation.create_date >= '%s' and reservation.create_date <= '%s' AND reservation.state = 'issued'""" % (date_from, date_to)
+        where = """reservation.issued_date >= '%s' and reservation.issued_date <= '%s' AND reservation.state = 'issued'""" % (date_from, date_to)
         return where
 
     #works with all
@@ -326,22 +359,24 @@ class ReportSelling(models.Model):
         data_form['title'] = 'Selling Report: ' + data_form['subtitle']
 
     def _lines(self, date_from, date_to, agent_id, provider_type, provider_checker):
-        if provider_checker == 'airline':
+        if provider_checker == 'airline' or provider_checker == 'overall_airline':
             query = 'SELECT {} '.format(self._select_airline())
-        elif provider_checker == 'train':
+        elif provider_checker == 'train' or provider_checker == 'overall_train':
             query = 'SELECT {} '.format(self._select_train())
-        elif provider_checker == 'hotel':
+        elif provider_checker == 'hotel' or provider_checker == 'overall_hotel':
             query = 'SELECT {} '.format(self._select_hotel())
-        elif provider_checker == 'activity':
+        elif provider_checker == 'activity' or provider_checker == 'overall_activity':
             query = 'SELECT {} '.format(self._select_activity())
-        elif provider_checker == 'tour':
+        elif provider_checker == 'tour' or provider_checker == 'overall_tour':
             query = 'SELECT {} '.format(self._select_tour())
-        elif provider_checker == 'visa':
+        elif provider_checker == 'visa' or provider_checker == 'overall_visa':
             query = 'SELECT {} '.format(self._select_visa())
-        elif provider_checker == 'offline':
+        elif provider_checker == 'offline' or provider_checker == 'overall_offline':
             query = 'SELECT {} '.format(self._select_offline())
-        elif provider_checker == 'event':
+        elif provider_checker == 'event' or provider_checker == 'overall_event':
             query = 'SELECT {} '.format(self._select_event())
+        elif provider_checker == 'ppob':
+            query = 'SELECT {} '.format(self._select_ppob())
         else:
             query = 'SELECT {}'.format(self._select())
 
@@ -389,35 +424,35 @@ class ReportSelling(models.Model):
             query += 'GROUP BY {} '.format(self._group_by_ppob())
             query += 'ORDER BY {} '.format(self._order_by())
         elif provider_checker == 'overall_airline':
-            query += 'FROM {} '.format(self._from('airline'))
+            query += 'FROM {} '.format(self._from_airline())
             query += 'WHERE {} '.format(self._where_issued(date_from, date_to))
             query += 'ORDER BY {} '.format(self._order_by_issued())
         elif provider_checker == 'overall_activity':
-            query += 'FROM {} '.format(self._from('activity'))
+            query += 'FROM {} '.format(self._from_activity())
             query += 'WHERE {} '.format(self._where_issued(date_from, date_to))
             query += 'ORDER BY {} '.format(self._order_by_issued())
         elif provider_checker == 'overall_event':
-            query += 'FROM {} '.format(self._from('event'))
+            query += 'FROM {} '.format(self._from_event())
             query += 'WHERE {} '.format(self._where_issued(date_from, date_to))
             query += 'ORDER BY {} '.format(self._order_by_issued())
         elif provider_checker == 'overall_tour':
-            query += 'FROM {} '.format(self._from('tour'))
+            query += 'FROM {} '.format(self._from_tour())
             query += 'WHERE {} '.format(self._where_issued(date_from, date_to))
             query += 'ORDER BY {} '.format(self._order_by_issued())
         elif provider_checker == 'overall_train':
-            query += 'FROM {} '.format(self._from('train'))
+            query += 'FROM {} '.format(self._from_train())
             query += 'WHERE {} '.format(self._where_issued(date_from, date_to))
             query += 'ORDER BY {} '.format(self._order_by_issued())
         elif provider_checker == 'overall_hotel':
-            query += 'FROM {} '.format(self._from('hotel'))
+            query += 'FROM {} '.format(self._from_hotel())
             query += 'WHERE {} '.format(self._where_issued(date_from, date_to))
             query += 'ORDER BY {} '.format(self._order_by_issued())
         elif provider_checker == 'overall_visa':
-            query += 'FROM {} '.format(self._from('visa'))
+            query += 'FROM {} '.format(self._from_visa())
             query += 'WHERE {} '.format(self._where_issued(date_from, date_to))
             query += 'ORDER BY {} '.format(self._order_by_issued())
         elif provider_checker == 'overall_offline':
-            query += 'FROM {} '.format(self._from('offline'))
+            query += 'FROM {} '.format(self._from_offline())
             query += 'WHERE {} '.format(self._where_issued(date_from, date_to))
             query += 'ORDER BY {} '.format(self._order_by_issued())
         else:

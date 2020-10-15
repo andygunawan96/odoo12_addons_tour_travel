@@ -99,6 +99,7 @@ class TtReportDashboard(models.Model):
             values = self.env['report.tt_report_selling.report_selling']._get_reports(temp_dict)
 
             result = {}
+            result_list = []
 
             # lets populate result with empty date dictionary
             start_date = self.convert_to_datetime(data['start_date'])
@@ -113,10 +114,28 @@ class TtReportDashboard(models.Model):
             total = 0
             num_data = 0
             for i in values['lines']:
+
+                # create main graph
                 if i['reservation_state'] == 'issued':
                     result[str(i['reservation_issued_date'])] += 1
                     total += i['amount']
                     num_data += 1
+
+                    # create overview
+                    provider_index = self.check_index(result_list, "provider", i['provider_type_name'])
+                    if provider_index == -1:
+                        temp_dict = {
+                            'provider': i['provider_type_name'],
+                            'counter': 1,
+                            i['reservation_state']: 1
+                        }
+                        result.append(temp_dict)
+                    else:
+                        result[provider_index]['counter'] += 1
+                        try:
+                            result[provider_index][i['reservation_state']] += 1
+                        except:
+                            result[provider_index][i['reservation_state']] = 1
 
             to_return = {
                 'graph': {
@@ -124,7 +143,8 @@ class TtReportDashboard(models.Model):
                     'data': list(result.values())
                 },
                 'total_rupiah': total,
-                'average_rupiah': float(total) / float(num_data) if num_data > 0 else 0
+                'average_rupiah': float(total) / float(num_data) if num_data > 0 else 0,
+                'overview': result_list
             }
             return to_return
         except Exception as e:
@@ -141,7 +161,12 @@ class TtReportDashboard(models.Model):
             }
             values = self.env['report.tt_report_selling.report_selling']._get_reports(temp_dict)
 
+            # result for graph
             result = {}
+
+            # overview base on the same timeframe
+            destination_sector_summary = []
+            destination_direction_summary = []
 
             # lets populate result with empty date dictionary
             start_date = self.convert_to_datetime(data['start_date'])
@@ -161,15 +186,91 @@ class TtReportDashboard(models.Model):
                     total += i['amount']
                     num_data += 1
 
+                    # ============= Search best for every sector ==================
+                    returning_index = self.returning_index_sector(destination_sector_summary,
+                                                                  {'departure': i['departure'],
+                                                                   'destination': i['destination'],
+                                                                   'sector': i['reservation_sector']})
+                    if returning_index == -1:
+                        new_dict = {
+                            'sector': i['reservation_sector'],
+                            'departure': i['departure'],
+                            'destination': i['destination'],
+                            'counter': 1,
+                            'elder_count': i['reservation_elder'],
+                            'adult_count': i['reservation_adult'],
+                            'child_count': i['reservation_child'],
+                            'infant_count': i['reservation_infant'],
+                            'passenger_count': i['reservation_passenger']
+                        }
+                        destination_sector_summary.append(new_dict)
+                    else:
+                        destination_sector_summary[returning_index]['counter'] += 1
+                        destination_sector_summary[returning_index]['passenger_count'] += i['reservation_passenger']
+                        destination_sector_summary[returning_index]['elder_count'] += i['reservation_elder']
+                        destination_sector_summary[returning_index]['adult_count'] += i['reservation_adult']
+                        destination_sector_summary[returning_index]['child_count'] += i['reservation_child']
+                        destination_sector_summary[returning_index]['infant_count'] += i['reservation_infant']
+
+                    # ============= Search for best 50 routes ====================
+                    returning_index = self.returning_index(destination_direction_summary, {'departure': i['departure'],
+                                                                                           'destination': i[
+                                                                                               'destination']})
+                    if returning_index == -1:
+                        new_dict = {
+                            'direction': i['reservation_direction'],
+                            'departure': i['departure'],
+                            'destination': i['destination'],
+                            'sector': i['reservation_sector'],
+                            'counter': 1,
+                            'elder_count': i['reservation_elder'],
+                            'adult_count': i['reservation_adult'],
+                            'child_count': i['reservation_child'],
+                            'infant_count': i['reservation_infant'],
+                            'passenger_count': i['reservation_passenger']
+                        }
+                        destination_direction_summary.append(new_dict)
+                    else:
+                        destination_direction_summary[returning_index]['counter'] += 1
+                        destination_direction_summary[returning_index]['passenger_count'] += i['reservation_passenger']
+                        destination_direction_summary[returning_index]['elder_count'] += i['reservation_elder']
+                        destination_direction_summary[returning_index]['adult_count'] += i['reservation_adult']
+                        destination_direction_summary[returning_index]['child_count'] += i['reservation_child']
+                        destination_direction_summary[returning_index]['infant_count'] += i['reservation_infant']
+
+            # grouping data
+            international_filter = list(filter(lambda x: x['sector'] == 'International', destination_sector_summary))
+            domestic_filter = list(filter(lambda x: x['sector'] == 'Domestic', destination_sector_summary))
+            one_way_filter = list(filter(lambda x: x['direction'] == 'OW', destination_direction_summary))
+            return_filter = list(filter(lambda x: x['direction'] == 'RT', destination_direction_summary))
+            multi_city_filter = list(filter(lambda x: x['direction'] == 'MC', destination_direction_summary))
+
+            # ==== LETS get sorting ==================
+            destination_sector_summary.sort(key=lambda x: x['counter'], reverse=True)
+            destination_direction_summary.sort(key=lambda x: x['counter'], reverse=True)
+            international_filter.sort(key=lambda x: x['counter'], reverse=True)
+            domestic_filter.sort(key=lambda x: x['counter'], reverse=True)
+            one_way_filter.sort(key=lambda x: x['counter'], reverse=True)
+            return_filter.sort(key=lambda x: x['counter'], reverse=True)
+            multi_city_filter.sort(key=lambda x: x['counter'], reverse=True)
+
             to_return = {
                 'graph': {
                     'label': list(result.keys()),
                     'data': list(result.values())
                 },
                 'total_rupiah': total,
-                'average_rupiah': float(total) / float(num_data) if num_data > 0 else 0
+                'average_rupiah': float(total) / float(num_data) if num_data > 0 else 0,
+                'overview': {
+                    'sector_summary': destination_sector_summary,
+                    'direction_summary': destination_direction_summary,
+                    'international': international_filter,
+                    'domestic': domestic_filter,
+                    'one_way': one_way_filter,
+                    'return': return_filter,
+                    'multi_city': multi_city_filter
+                }
             }
-            _logger.info(to_return)
             return to_return
         except Exception as e:
             _logger.error(traceback.format_exc())
@@ -186,6 +287,10 @@ class TtReportDashboard(models.Model):
 
             result = {}
 
+            # overview base on the same timeframe
+            destination_sector_summary = []
+            destination_direction_summary = []
+
             # lets populate result with empty date dictionary
             start_date = self.convert_to_datetime(data['start_date'])
             end_date = self.convert_to_datetime(data['end_date'])
@@ -204,13 +309,91 @@ class TtReportDashboard(models.Model):
                     total += i['amount']
                     num_data += 1
 
+                    # ============= Search best for every sector ==================
+                    returning_index = self.returning_index_sector(destination_sector_summary,
+                                                                  {'departure': i['departure'],
+                                                                   'destination': i['destination'],
+                                                                   'sector': i['reservation_sector']})
+                    if returning_index == -1:
+                        new_dict = {
+                            'sector': i['reservation_sector'],
+                            'departure': i['departure'],
+                            'destination': i['destination'],
+                            'counter': 1,
+                            'elder_count': i['reservation_elder'],
+                            'adult_count': i['reservation_adult'],
+                            'child_count': i['reservation_child'],
+                            'infant_count': i['reservation_infant'],
+                            'passenger_count': i['reservation_passenger']
+                        }
+                        destination_sector_summary.append(new_dict)
+                    else:
+                        destination_sector_summary[returning_index]['counter'] += 1
+                        destination_sector_summary[returning_index]['passenger_count'] += i['reservation_passenger']
+                        destination_sector_summary[returning_index]['elder_count'] += i['reservation_elder']
+                        destination_sector_summary[returning_index]['adult_count'] += i['reservation_adult']
+                        destination_sector_summary[returning_index]['child_count'] += i['reservation_child']
+                        destination_sector_summary[returning_index]['infant_count'] += i['reservation_infant']
+
+                    # ============= Search for best 50 routes ====================
+                    returning_index = self.returning_index(destination_direction_summary, {'departure': i['departure'],
+                                                                                           'destination': i[
+                                                                                               'destination']})
+                    if returning_index == -1:
+                        new_dict = {
+                            'direction': i['reservation_direction'],
+                            'departure': i['departure'],
+                            'destination': i['destination'],
+                            'sector': i['reservation_sector'],
+                            'counter': 1,
+                            'elder_count': i['reservation_elder'],
+                            'adult_count': i['reservation_adult'],
+                            'child_count': i['reservation_child'],
+                            'infant_count': i['reservation_infant'],
+                            'passenger_count': i['reservation_passenger']
+                        }
+                        destination_direction_summary.append(new_dict)
+                    else:
+                        destination_direction_summary[returning_index]['counter'] += 1
+                        destination_direction_summary[returning_index]['passenger_count'] += i['reservation_passenger']
+                        destination_direction_summary[returning_index]['elder_count'] += i['reservation_elder']
+                        destination_direction_summary[returning_index]['adult_count'] += i['reservation_adult']
+                        destination_direction_summary[returning_index]['child_count'] += i['reservation_child']
+                        destination_direction_summary[returning_index]['infant_count'] += i['reservation_infant']
+
+                    # grouping data
+                international_filter = list(
+                    filter(lambda x: x['sector'] == 'International', destination_sector_summary))
+                domestic_filter = list(filter(lambda x: x['sector'] == 'Domestic', destination_sector_summary))
+                one_way_filter = list(filter(lambda x: x['direction'] == 'OW', destination_direction_summary))
+                return_filter = list(filter(lambda x: x['direction'] == 'RT', destination_direction_summary))
+                multi_city_filter = list(filter(lambda x: x['direction'] == 'MC', destination_direction_summary))
+
+                # ==== LETS get sorting ==================
+                destination_sector_summary.sort(key=lambda x: x['counter'], reverse=True)
+                destination_direction_summary.sort(key=lambda x: x['counter'], reverse=True)
+                international_filter.sort(key=lambda x: x['counter'], reverse=True)
+                domestic_filter.sort(key=lambda x: x['counter'], reverse=True)
+                one_way_filter.sort(key=lambda x: x['counter'], reverse=True)
+                return_filter.sort(key=lambda x: x['counter'], reverse=True)
+                multi_city_filter.sort(key=lambda x: x['counter'], reverse=True)
+
             to_return = {
                 'graph': {
                     'label': list(result.keys()),
                     'data': list(result.values())
                 },
                 'total_rupiah': total,
-                'average_rupiah': float(total) / float(num_data) if num_data > 0 else 0
+                'average_rupiah': float(total) / float(num_data) if num_data > 0 else 0,
+                'overview': {
+                    'sector_summary': destination_sector_summary,
+                    'direction_summary': destination_direction_summary,
+                    'international': international_filter,
+                    'domestic': domestic_filter,
+                    'one_way': one_way_filter,
+                    'return': return_filter,
+                    'multi_city': multi_city_filter
+                }
             }
             return to_return
         except Exception as e:
