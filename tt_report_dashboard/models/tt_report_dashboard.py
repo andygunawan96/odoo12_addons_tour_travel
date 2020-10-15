@@ -109,7 +109,7 @@ class TtReportDashboard(models.Model):
 
             for i in range(delta.days + 1):
                 tanggal = start_date + timedelta(days=i)
-                result[tanggal.strftime('%Y-%m-%d')] = 0
+                result[tanggal.strftime('%Y-%m-%d')] = [0,0,0]
 
             total = 0
             num_data = 0
@@ -117,7 +117,8 @@ class TtReportDashboard(models.Model):
 
                 # create main graph
                 if i['reservation_state'] == 'issued':
-                    result[str(i['reservation_issued_date'])] += 1
+                    result[str(i['reservation_issued_date'])][0] += 1
+                    result[str(i['reservation_issued_date'])][1] += i['amount']
                     total += i['amount']
                     num_data += 1
 
@@ -136,6 +137,9 @@ class TtReportDashboard(models.Model):
                             result[provider_index][i['reservation_state']] += 1
                         except:
                             result[provider_index][i['reservation_state']] = 1
+
+            for i in result:
+                i[2] = i[1] / 1[0] if i[0] > 0 else 0
 
             to_return = {
                 'graph': {
