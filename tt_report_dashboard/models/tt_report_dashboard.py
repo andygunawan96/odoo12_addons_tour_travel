@@ -120,8 +120,8 @@ class TtReportDashboard(models.Model):
 
             to_return = {
                 'graph': {
-                    'label': result.keys(),
-                    'data': result.values()
+                    'label': list(result.keys()),
+                    'data': list(result.values())
                 },
                 'total_rupiah': total,
                 'average_rupiah': float(total) / float(num_data) if num_data > 0 else 0
@@ -140,9 +140,6 @@ class TtReportDashboard(models.Model):
                 'type': data['report_type']
             }
             values = self.env['report.tt_report_selling.report_selling']._get_reports(temp_dict)
-
-            # print data
-            _logger.info(values)
 
             result = {}
 
@@ -166,12 +163,13 @@ class TtReportDashboard(models.Model):
 
             to_return = {
                 'graph': {
-                    'label': result.keys(),
-                    'data': result.values()
+                    'label': list(result.keys()),
+                    'data': list(result.values())
                 },
                 'total_rupiah': total,
                 'average_rupiah': float(total) / float(num_data) if num_data > 0 else 0
             }
+            _logger.info(to_return)
             return to_return
         except Exception as e:
             _logger.error(traceback.format_exc())
@@ -208,8 +206,8 @@ class TtReportDashboard(models.Model):
 
             to_return = {
                 'graph': {
-                    'label': result.keys(),
-                    'data': result.values()
+                    'label': list(result.keys()),
+                    'data': list(result.values())
                 },
                 'total_rupiah': total,
                 'average_rupiah': float(total) / float(num_data) if num_data > 0 else 0
@@ -250,8 +248,8 @@ class TtReportDashboard(models.Model):
 
             to_return = {
                 'graph': {
-                    'label': result.keys(),
-                    'data': result.values()
+                    'label': list(result.keys()),
+                    'data': list(result.values())
                 },
                 'total_rupiah': total,
                 'average_rupiah': float(total) / float(num_data) if num_data > 0 else 0
@@ -292,8 +290,8 @@ class TtReportDashboard(models.Model):
 
             to_return = {
                 'graph': {
-                    'label': result.keys(),
-                    'data': result.values()
+                    'label': list(result.keys()),
+                    'data': list(result.values())
                 },
                 'total_rupiah': total,
                 'average_rupiah': float(total) / float(num_data) if num_data > 0 else 0
@@ -334,8 +332,8 @@ class TtReportDashboard(models.Model):
 
             to_return = {
                 'graph': {
-                    'label': result.keys(),
-                    'data': result.values()
+                    'label': list(result.keys()),
+                    'data': list(result.values())
                 },
                 'total_rupiah': total,
                 'average_rupiah': float(total) / float(num_data) if num_data > 0 else 0
@@ -376,8 +374,8 @@ class TtReportDashboard(models.Model):
 
             to_return = {
                 'graph': {
-                    'label': result.keys(),
-                    'data': result.values()
+                    'label': list(result.keys()),
+                    'data': list(result.values())
                 },
                 'total_rupiah': total,
                 'average_rupiah': float(total) / float(num_data) if num_data > 0 else 0
@@ -418,8 +416,8 @@ class TtReportDashboard(models.Model):
 
             to_return = {
                 'graph': {
-                    'label': result.keys(),
-                    'data': result.values()
+                    'label': list(result.keys()),
+                    'data': list(result.values())
                 },
                 'total_rupiah': total,
                 'average_rupiah': float(total) / float(num_data) if num_data > 0 else 0
@@ -460,8 +458,8 @@ class TtReportDashboard(models.Model):
 
             to_return = {
                 'graph': {
-                    'label': result.keys(),
-                    'data': result.values()
+                    'label': list(result.keys()),
+                    'data': list(result.values())
                 },
                 'total_rupiah': total,
                 'average_rupiah': float(total) / float(num_data) if num_data > 0 else 0
