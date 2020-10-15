@@ -194,7 +194,6 @@ class MasterTour(models.Model):
                                   default=lambda self: self.env.ref('tt_reservation_tour.tt_provider_tour_internal'), copy=False)
     carrier_id = fields.Many2one('tt.transport.carrier', 'Carrier', domain=get_domain, readonly=True,
                                  default=lambda self: self.env.ref('tt_reservation_tour.tt_transport_carrier_tour_itt'), copy=False)
-    provider_fare_code = fields.Char('Provider Fare Code', default='tour_rdx1', readonly=True, copy=False)
     document_url = fields.Many2one('tt.upload.center', 'Document URL')
     import_other_info = fields.Binary('Import JSON')
     export_other_info = fields.Binary('Export JSON')
@@ -250,6 +249,16 @@ class MasterTour(models.Model):
                     rec.tour_type = 'series'
                 if rec.tour_type == 'sic':
                     rec.tipping_tour_leader = 0
+
+    # temporary function
+    def update_tour_code_temp(self):
+        all_tours = self.env['tt.master.tour'].search([])
+        for rec in all_tours:
+            if rec.provider_id and rec.tour_code:
+                prefix = rec.provider_id.alias and rec.provider_id.alias + '~' or ''
+                rec.write({
+                    'tour_code': prefix + rec.tour_code
+                })
 
     def action_get_internal_tour_json(self):
         raise UserError(_("This Provider does not support Sync Products."))
@@ -399,19 +408,18 @@ class MasterTour(models.Model):
             for rec in file['result']:
                 provider_obj = self.env['tt.provider'].sudo().search([('code', '=', rec['provider'])], limit=1)
                 provider_obj = provider_obj and provider_obj[0] or False
-
+                prefix = provider_obj.alias and provider_obj.alias + '~' or ''
                 currency_obj = self.env['res.currency'].sudo().search([('name', '=', rec['currency_code'])], limit=1)
                 currency_obj = currency_obj and currency_obj[0] or False
                 vals = {
                     'name': rec['name'],
                     'description': rec['description'],
-                    'tour_code': rec['tour_code'],
+                    'tour_code': prefix + rec['tour_code'],
                     'tour_route': rec['tour_route'],
                     'tour_category': rec['tour_category'],
                     'tour_type': rec['tour_type'],
                     'departure_date': datetime.strptime(rec['departure_date'], "%Y-%m-%d"),
                     'arrival_date': datetime.strptime(rec['arrival_date'], "%Y-%m-%d"),
-                    'provider_fare_code': rec['provider_fare_code'],
                     'adult_fare': rec['adult_sale_price'],
                     'child_fare': rec['child_sale_price'],
                     'infant_fare': rec['infant_sale_price'],
@@ -447,7 +455,6 @@ class MasterTour(models.Model):
                 req_post = {
                     'tour_code': rec['tour_code'],
                     'provider': rec['provider'],
-                    'fare_code': rec['provider_fare_code']
                 }
                 det_res = self.env['tt.master.tour.api.con'].get_details_provider(req_post)
                 if det_res['error_code'] == 0:
@@ -598,11 +605,12 @@ class MasterTour(models.Model):
             raise UserError(_('Please fill Provider!'))
         self.state = 'open'
         self.create_uid = self.env.user.id
+        prefix = self.provider_id.alias and self.provider_id.alias + '~' or ''
         if not self.tour_code:
             if self.tour_category == 'group':
-                self.tour_code = self.env['ir.sequence'].next_by_code('master.tour.code.group')
+                self.tour_code = prefix + self.env['ir.sequence'].next_by_code('master.tour.code.group')
             elif self.tour_category == 'private':
-                self.tour_code = self.env['ir.sequence'].next_by_code('master.tour.code.fit')
+                self.tour_code = prefix + self.env['ir.sequence'].next_by_code('master.tour.code.fit')
 
     def action_closed(self):
         self.state = 'on_going'
@@ -979,11 +987,19 @@ class MasterTour(models.Model):
                 'state': 'sold',
                 'availability': False
             }
-            provider_obj = self.env['tt.provider'].sudo().search([('code', '=', data['provider'])], limit=1)
+            if not data.get('provider'):
+                default_prov = self.env.ref('tt_reservation_tour.tt_provider_tour_internal')
+                data.update({
+                    'provider': default_prov.alias and default_prov.alias or ''
+                })
+            provider_obj = self.env['tt.provider'].sudo().search([('alias', '=', data['provider'])], limit=1)
             if not provider_obj:
                 raise RequestException(1002)
             provider_obj = provider_obj[0]
-            tour_obj = self.env['tt.master.tour'].sudo().search([('tour_code', '=', data['tour_code']), ('provider_id', '=', provider_obj.id)], limit=1)
+            if provider_obj.id == self.env.ref('tt_reservation_tour.tt_provider_tour_internal').id:
+                tour_obj = self.env['tt.master.tour'].sudo().search([('tour_code', '=', provider_obj.alias + '~' + data['tour_code']), ('provider_id', '=', provider_obj.id)], limit=1)
+            else:
+                tour_obj = self.env['tt.master.tour'].sudo().search([('tour_code', '=', data['tour_code']), ('provider_id', '=', provider_obj.id)], limit=1)
             if tour_obj:
                 tour_obj = tour_obj[0]
                 response.update({
@@ -1099,11 +1115,11 @@ class MasterTour(models.Model):
                 'tour_code': data.get('tour_code') and data['tour_code'] or '',
                 'provider': data.get('provider') and data['provider'] or ''
             }
-            provider_obj = self.env['tt.provider'].sudo().search([('code', '=', search_request['provider'])], limit=1)
+            provider_obj = self.env['tt.provider'].sudo().search([('alias', '=', search_request['provider'])], limit=1)
             if not provider_obj:
                 raise RequestException(1002)
             provider_obj = provider_obj[0]
-            tour_obj = self.env['tt.master.tour'].sudo().search([('tour_code', '=', search_request['tour_code']), ('provider_id', '=', provider_obj.id)], limit=1)
+            tour_obj = self.env['tt.master.tour'].sudo().search([('tour_code', '=', provider_obj.alias + '~' + search_request['tour_code']), ('provider_id', '=', provider_obj.id)], limit=1)
             if not tour_obj:
                 raise RequestException(1022, additional_message='Tour not found.')
             tour_obj = tour_obj[0]
@@ -1215,7 +1231,6 @@ class MasterTour(models.Model):
                 'images_obj': final_images,
                 'document_url': tour_obj.document_url and tour_obj.document_url.url or '',
                 'provider': tour_obj.provider_id and tour_obj.provider_id.code or '',
-                'provider_fare_code': tour_obj.provider_fare_code and tour_obj.provider_fare_code or '',
             }
 
             response = {
@@ -1591,6 +1606,7 @@ class MasterTour(models.Model):
     def commit_booking_vendor(self, data, context, **kwargs):
         try:
             response = {
+                'success': True,
                 'pnr': self.env['ir.sequence'].next_by_code('rodextrip.tour.reservation.code'),
                 'status': 'booked'
             }
@@ -1611,7 +1627,7 @@ class MasterTour(models.Model):
                 'success': True,
                 'pnr': book_obj.pnr,
                 'booking_uuid': book_obj.name,
-                'status': book_obj.state,
+                'status': 'issued',
             }
             return ERR.get_no_error(response)
         except RequestException as e:
@@ -1663,13 +1679,13 @@ class MasterTour(models.Model):
             provider_id = self.env['tt.provider'].sudo().search([('code', '=', req['provider'])], limit=1)
             if not provider_id:
                 raise RequestException(1002)
+            prefix = provider_id[0].alias and provider_id[0].alias + '~' or ''
             for rec in req['data']:
                 currency_obj = self.env['res.currency'].sudo().search([('name', '=', rec['currency_code'])], limit=1)
                 vals = {
                     'name': rec['name'],
-                    'tour_code': rec['tour_code'],
+                    'tour_code': prefix + rec['tour_code'],
                     'provider_id': provider_id[0].id,
-                    'provider_fare_code': rec['provider_fare_code'],
                     'tour_route': rec['tour_route'],
                     'sequence': rec['sequence'],
                     'is_can_hold': rec['is_can_hold'],
@@ -1848,7 +1864,6 @@ class TourSyncProductsChildren(models.TransientModel):
                 dict_vals = {
                     'name': rec.name,
                     'tour_code': rec.tour_code,
-                    'provider_fare_code': rec.provider_fare_code,
                     'tour_route': rec.tour_route,
                     'sequence': rec.sequence,
                     'is_can_hold': rec.is_can_hold,

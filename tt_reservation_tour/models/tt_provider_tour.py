@@ -42,7 +42,7 @@ class TtProviderTour(models.Model):
     # total_fare = fields.Monetary(string='Total Fare', compute="_compute_provider_total_fare", readonly=True)
     # total_orig = fields.Monetary(string='Total (Original)', readonly=True)
     promotion_code = fields.Char(string='Promotion Code')
-
+    sequence = fields.Integer('Sequence')
 
     # Booking Progress
     booked_uid = fields.Many2one('res.users', 'Booked By')
@@ -383,12 +383,11 @@ class TtProviderTour(models.Model):
             'provider_id': self.id,
             'tour_name': self.tour_id.name,
             'tour_code': self.tour_id.tour_code,
+            'state': self.state,
             'state_description': variables.BOOKING_STATE_STR[self.state],
             'sequence': self.sequence,
             'balance_due': self.balance_due,
-            'direction': self.direction,
-            'origin': self.origin_id.code,
-            'destination': self.destination_id.code,
+            'total_price': self.total_price,
             'departure_date': self.departure_date,
             'arrival_date': self.arrival_date,
             'currency': self.currency_id.name,
