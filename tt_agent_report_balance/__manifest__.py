@@ -25,6 +25,7 @@
     # always loaded
     'data': [
         'security/ir.model.access.csv',
+        'views/tt_log_agent_report_balance_views.xml',
         'wizard/tt_agent_report_balance_view.xml',
         'report/tt_agent_report_balance_menu.xml',
     ],
