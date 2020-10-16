@@ -8,6 +8,19 @@ _logger = logging.getLogger(__name__)
 class TtReportDashboard(models.Model):
     _name = 'tt.report.dashboard'
 
+    def returning_index(self, arr, params):
+        for i, dic in enumerate(arr):
+            if dic['departure'] == params['departure'] and dic['destination'] == params['destination']:
+                return i
+        return -1
+
+    def returning_index_sector(self, arr, params):
+        for i, dic in enumerate(arr):
+            if dic['departure'] == params['departure'] and dic['destination'] == params['destination'] and dic['sector'] == params['sector']:
+                return i
+
+        return -1
+
     def check_index(self, arr, key, param):
         for i, dic in enumerate(arr):
             if dic[key] == param:
@@ -139,7 +152,7 @@ class TtReportDashboard(models.Model):
                             result_list[provider_index][i['reservation_state']] = 1
 
             for i in result:
-                i[2] = i[1] / 1[0] if i[0] > 0 else 0
+                result[i][2] = result[i][1] / result[i][0] if result[i][0] > 0 else 0
 
             to_return = {
                 'graph': {
