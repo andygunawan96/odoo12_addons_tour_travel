@@ -408,13 +408,12 @@ class MasterTour(models.Model):
             for rec in file['result']:
                 provider_obj = self.env['tt.provider'].sudo().search([('code', '=', rec['provider'])], limit=1)
                 provider_obj = provider_obj and provider_obj[0] or False
-                prefix = provider_obj.alias and provider_obj.alias + '~' or ''
                 currency_obj = self.env['res.currency'].sudo().search([('name', '=', rec['currency_code'])], limit=1)
                 currency_obj = currency_obj and currency_obj[0] or False
                 vals = {
                     'name': rec['name'],
                     'description': rec['description'],
-                    'tour_code': prefix + rec['tour_code'],
+                    'tour_code': rec['tour_code'],
                     'tour_route': rec['tour_route'],
                     'tour_category': rec['tour_category'],
                     'tour_type': rec['tour_type'],
