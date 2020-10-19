@@ -177,7 +177,7 @@ class TtReportDashboard(models.Model):
 
             average = []
             for i in result:
-                average.append(result[i]/ revenue[i] if revenue[i] > 0 else 0)
+                average.append(revenue[i]/ result[i] if revenue[i] > 0 else 0)
 
             to_return = {
                 'graph': {
@@ -209,6 +209,12 @@ class TtReportDashboard(models.Model):
             result = {}
             revenue = {}
 
+            mode = 'days'
+            month = [
+                'January', 'February', 'March', 'April', 'May', 'June',
+                'July', 'August', 'September', 'October', 'November', 'December'
+            ]
+
             # overview base on the same timeframe
             destination_sector_summary = []
             destination_direction_summary = []
@@ -219,10 +225,21 @@ class TtReportDashboard(models.Model):
 
             delta = end_date - start_date
 
-            for i in range(delta.days + 1):
-                tanggal = start_date + timedelta(days=i)
-                result[tanggal.strftime('%Y-%m-%d')] = 0
-                revenue[tanggal.strftime('%Y-%m-%d')] = 0
+            if delta.days > 35:
+                # group by month
+                mode = 'month'
+                start_index = start_date.strftime('%m')
+                end_index = end_date.strftime('%m')
+
+                for i in range(int(start_index) - 1, int(end_index)):
+                    result[month[i]] = 0
+                    revenue[month[i]] = 0
+            else:
+                # group by dates
+                for i in range(delta.days + 1):
+                    tanggal = start_date + timedelta(days=i)
+                    result[tanggal.strftime('%Y-%m-%d')] = 0
+                    revenue[tanggal.strftime('%Y-%m-%d')] = 0
 
             total = 0
             num_data = 0
@@ -303,7 +320,7 @@ class TtReportDashboard(models.Model):
 
             average = []
             for i in result:
-                average.append(result[i] / revenue[i] if revenue[i] > 0 else 0)
+                average.append(revenue[i]/ result[i] if revenue[i] > 0 else 0)
 
             to_return = {
                 'graph': {
@@ -341,6 +358,12 @@ class TtReportDashboard(models.Model):
             result = {}
             revenue = {}
 
+            mode = 'days'
+            month = [
+                'January', 'February', 'March', 'April', 'May', 'June',
+                'July', 'August', 'September', 'October', 'November', 'December'
+            ]
+
             # overview base on the same timeframe
             destination_sector_summary = []
             destination_direction_summary = []
@@ -351,10 +374,21 @@ class TtReportDashboard(models.Model):
 
             delta = end_date - start_date
 
-            for i in range(delta.days + 1):
-                tanggal = start_date + timedelta(days=i)
-                result[tanggal.strftime('%Y-%m-%d')] = 0
-                revenue[tanggal.strftime('%Y-%m-%d')] = 0
+            if delta.days > 35:
+                # group by month
+                mode = 'month'
+                start_index = start_date.strftime('%m')
+                end_index = end_date.strftime('%m')
+
+                for i in range(int(start_index) - 1, int(end_index)):
+                    result[month[i]] = 0
+                    revenue[month[i]] = 0
+            else:
+                # group by dates
+                for i in range(delta.days + 1):
+                    tanggal = start_date + timedelta(days=i)
+                    result[tanggal.strftime('%Y-%m-%d')] = 0
+                    revenue[tanggal.strftime('%Y-%m-%d')] = 0
 
             total = 0
             num_data = 0
@@ -436,7 +470,7 @@ class TtReportDashboard(models.Model):
 
             average = []
             for i in result:
-                average.append(result[i] / revenue[i] if revenue[i] > 0 else 0)
+                average.append(revenue[i]/ result[i] if revenue[i] > 0 else 0)
 
             to_return = {
                 'graph': {
@@ -474,16 +508,33 @@ class TtReportDashboard(models.Model):
             result = {}
             revenue = {}
 
+            mode = 'days'
+            month = [
+                'January', 'February', 'March', 'April', 'May', 'June',
+                'July', 'August', 'September', 'October', 'November', 'December'
+            ]
+
             # lets populate result with empty date dictionary
             start_date = self.convert_to_datetime(data['start_date'])
             end_date = self.convert_to_datetime(data['end_date'])
 
             delta = end_date - start_date
 
-            for i in range(delta.days + 1):
-                tanggal = start_date + timedelta(days=i)
-                result[tanggal.strftime('%Y-%m-%d')] = 0
-                revenue[tanggal.strftime('%Y-%m-%d')] = 0
+            if delta.days > 35:
+                # group by month
+                mode = 'month'
+                start_index = start_date.strftime('%m')
+                end_index = end_date.strftime('%m')
+
+                for i in range(int(start_index) - 1, int(end_index)):
+                    result[month[i]] = 0
+                    revenue[month[i]] = 0
+            else:
+                # group by dates
+                for i in range(delta.days + 1):
+                    tanggal = start_date + timedelta(days=i)
+                    result[tanggal.strftime('%Y-%m-%d')] = 0
+                    revenue[tanggal.strftime('%Y-%m-%d')] = 0
 
             total = 0
             num_data = 0
@@ -496,7 +547,7 @@ class TtReportDashboard(models.Model):
 
             average = []
             for i in result:
-                average.append(result[i] / revenue[i] if revenue[i] > 0 else 0)
+                average.append(revenue[i]/ result[i] if revenue[i] > 0 else 0)
 
             to_return = {
                 'graph': {
@@ -525,16 +576,33 @@ class TtReportDashboard(models.Model):
             result = {}
             revenue = {}
 
+            mode = 'days'
+            month = [
+                'January', 'February', 'March', 'April', 'May', 'June',
+                'July', 'August', 'September', 'October', 'November', 'December'
+            ]
+
             # lets populate result with empty date dictionary
             start_date = self.convert_to_datetime(data['start_date'])
             end_date = self.convert_to_datetime(data['end_date'])
 
             delta = end_date - start_date
 
-            for i in range(delta.days + 1):
-                tanggal = start_date + timedelta(days=i)
-                result[tanggal.strftime('%Y-%m-%d')] = 0
-                revenue[tanggal.strftime('%Y-%m-%d')] = 0
+            if delta.days > 35:
+                # group by month
+                mode = 'month'
+                start_index = start_date.strftime('%m')
+                end_index = end_date.strftime('%m')
+
+                for i in range(int(start_index) - 1, int(end_index)):
+                    result[month[i]] = 0
+                    revenue[month[i]] = 0
+            else:
+                # group by dates
+                for i in range(delta.days + 1):
+                    tanggal = start_date + timedelta(days=i)
+                    result[tanggal.strftime('%Y-%m-%d')] = 0
+                    revenue[tanggal.strftime('%Y-%m-%d')] = 0
 
             total = 0
             num_data = 0
@@ -547,7 +615,7 @@ class TtReportDashboard(models.Model):
 
             average = []
             for i in result:
-                average.append(result[i] / revenue[i] if revenue[i] > 0 else 0)
+                average.append(revenue[i]/ result[i] if revenue[i] > 0 else 0)
 
             to_return = {
                 'graph': {
@@ -576,16 +644,33 @@ class TtReportDashboard(models.Model):
             result = {}
             revenue = {}
 
+            mode = 'days'
+            month = [
+                'January', 'February', 'March', 'April', 'May', 'June',
+                'July', 'August', 'September', 'October', 'November', 'December'
+            ]
+
             # lets populate result with empty date dictionary
             start_date = self.convert_to_datetime(data['start_date'])
             end_date = self.convert_to_datetime(data['end_date'])
 
             delta = end_date - start_date
 
-            for i in range(delta.days + 1):
-                tanggal = start_date + timedelta(days=i)
-                result[tanggal.strftime('%Y-%m-%d')] = 0
-                revenue[tanggal.strftime('%Y-%m-%d')] = 0
+            if delta.days > 35:
+                # group by month
+                mode = 'month'
+                start_index = start_date.strftime('%m')
+                end_index = end_date.strftime('%m')
+
+                for i in range(int(start_index) - 1, int(end_index)):
+                    result[month[i]] = 0
+                    revenue[month[i]] = 0
+            else:
+                # group by dates
+                for i in range(delta.days + 1):
+                    tanggal = start_date + timedelta(days=i)
+                    result[tanggal.strftime('%Y-%m-%d')] = 0
+                    revenue[tanggal.strftime('%Y-%m-%d')] = 0
 
             total = 0
             num_data = 0
@@ -597,7 +682,7 @@ class TtReportDashboard(models.Model):
 
             average = []
             for i in result:
-                average.append(result[i] / revenue[i] if revenue[i] > 0 else 0)
+                average.append(revenue[i]/ result[i] if revenue[i] > 0 else 0)
 
             to_return = {
                 'graph': {
@@ -626,16 +711,33 @@ class TtReportDashboard(models.Model):
             result = {}
             revenue = {}
 
+            mode = 'days'
+            month = [
+                'January', 'February', 'March', 'April', 'May', 'June',
+                'July', 'August', 'September', 'October', 'November', 'December'
+            ]
+
             # lets populate result with empty date dictionary
             start_date = self.convert_to_datetime(data['start_date'])
             end_date = self.convert_to_datetime(data['end_date'])
 
             delta = end_date - start_date
 
-            for i in range(delta.days + 1):
-                tanggal = start_date + timedelta(days=i)
-                result[tanggal.strftime('%Y-%m-%d')] = 0
-                revenue[tanggal.strftime('%Y-%m-%d')] = 0
+            if delta.days > 35:
+                # group by month
+                mode = 'month'
+                start_index = start_date.strftime('%m')
+                end_index = end_date.strftime('%m')
+
+                for i in range(int(start_index) - 1, int(end_index)):
+                    result[month[i]] = 0
+                    revenue[month[i]] = 0
+            else:
+                # group by dates
+                for i in range(delta.days + 1):
+                    tanggal = start_date + timedelta(days=i)
+                    result[tanggal.strftime('%Y-%m-%d')] = 0
+                    revenue[tanggal.strftime('%Y-%m-%d')] = 0
 
             total = 0
             num_data = 0
@@ -648,7 +750,7 @@ class TtReportDashboard(models.Model):
 
             average = []
             for i in result:
-                average.append(result[i] / revenue[i] if revenue[i] > 0 else 0)
+                average.append(revenue[i]/ result[i] if revenue[i] > 0 else 0)
 
             to_return = {
                 'graph': {
@@ -677,6 +779,12 @@ class TtReportDashboard(models.Model):
             result = {}
             revenue = {}
 
+            mode = 'days'
+            month = [
+                'January', 'February', 'March', 'April', 'May', 'June',
+                'July', 'August', 'September', 'October', 'November', 'December'
+            ]
+
             # lets populate result with empty date dictionary
             start_date = self.convert_to_datetime(data['start_date'])
             end_date = self.convert_to_datetime(data['end_date'])
@@ -699,7 +807,7 @@ class TtReportDashboard(models.Model):
 
             average = []
             for i in result:
-                average.append(result[i] / revenue[i] if revenue[i] > 0 else 0)
+                average.append(revenue[i]/ result[i] if revenue[i] > 0 else 0)
 
             to_return = {
                 'graph': {
@@ -728,16 +836,33 @@ class TtReportDashboard(models.Model):
             result = {}
             revenue = {}
 
+            mode = 'days'
+            month = [
+                'January', 'February', 'March', 'April', 'May', 'June',
+                'July', 'August', 'September', 'October', 'November', 'December'
+            ]
+
             # lets populate result with empty date dictionary
             start_date = self.convert_to_datetime(data['start_date'])
             end_date = self.convert_to_datetime(data['end_date'])
 
             delta = end_date - start_date
 
-            for i in range(delta.days + 1):
-                tanggal = start_date + timedelta(days=i)
-                result[tanggal.strftime('%Y-%m-%d')] = 0
-                revenue[tanggal.strftime('%Y-%m-%d')] = 0
+            if delta.days > 35:
+                # group by month
+                mode = 'month'
+                start_index = start_date.strftime('%m')
+                end_index = end_date.strftime('%m')
+
+                for i in range(int(start_index) - 1, int(end_index)):
+                    result[month[i]] = 0
+                    revenue[month[i]] = 0
+            else:
+                # group by dates
+                for i in range(delta.days + 1):
+                    tanggal = start_date + timedelta(days=i)
+                    result[tanggal.strftime('%Y-%m-%d')] = 0
+                    revenue[tanggal.strftime('%Y-%m-%d')] = 0
 
             total = 0
             num_data = 0
@@ -750,7 +875,7 @@ class TtReportDashboard(models.Model):
 
             average = []
             for i in result:
-                average.append(result[i] / revenue[i] if revenue[i] > 0 else 0)
+                average.append(revenue[i]/ result[i] if revenue[i] > 0 else 0)
 
             to_return = {
                 'graph': {
