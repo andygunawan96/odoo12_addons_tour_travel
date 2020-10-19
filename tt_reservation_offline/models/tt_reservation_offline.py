@@ -555,8 +555,8 @@ class IssuedOffline(models.Model):
         self.state_offline = 'validate'
         self.vendor_amount = self.nta_price
         self.compute_final_ho()
-        self.issued_date = fields.Datetime.now()
-        self.issued_uid = kwargs.get('user_id') and kwargs['user_id'] or self.env.user.id
+        self.validate_date = fields.Datetime.now()
+        self.validate_uid = kwargs.get('user_id') and kwargs['user_id'] or self.env.user.id
         for provider in self.provider_booking_ids:
             provider.issued_date = self.issued_date
             provider.issued_uid = self.issued_uid
@@ -672,6 +672,8 @@ class IssuedOffline(models.Model):
                     self.state_offline = 'done'
                     self.done_date = fields.Datetime.now()
                     self.done_uid = kwargs.get('user_id') and kwargs['user_id'] or self.env.user.id
+                    self.issued_date = fields.Datetime.now()
+                    self.issued_uid = kwargs.get('user_id') and kwargs['user_id'] or self.env.user.id
                     self.booked_date = fields.Datetime.now()
                     self.booked_uid = kwargs.get('user_id') and kwargs['user_id'] or self.env.user.id
                     if self.provider_type_id_name in ['activity', 'hotel']:
