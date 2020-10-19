@@ -171,7 +171,7 @@ class TtRefund(models.Model):
     cust_refund_date = fields.Date('Expected Cust. Refund Date', readonly=False, states={'done': [('readonly', True)]})
 
     service_type = fields.Selection(lambda self: self.get_service_type(), 'Service Type', required=True, readonly=True)
-    refund_type_id = fields.Many2one('tt.refund.type', 'Refund Type', required=True, readonly=True, states={'draft': [('readonly', False)]})
+    refund_type_id = fields.Many2one('tt.refund.type', 'Refund Type', required=False, readonly=True, states={'draft': [('readonly', False)]})
 
     def get_admin_fee_domain(self):
         agent_type_adm_ids = self.agent_id.agent_type_id.admin_fee_ids.ids
