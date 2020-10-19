@@ -115,16 +115,33 @@ class TtReportDashboard(models.Model):
             revenue = {}
             result_list = []
 
+            mode = 'days'
+            month = [
+                'January', 'February', 'March', 'April', 'May', 'June',
+                'July', 'August', 'September', 'October', 'November', 'December'
+            ]
+
             # lets populate result with empty date dictionary
             start_date = self.convert_to_datetime(data['start_date'])
             end_date = self.convert_to_datetime(data['end_date'])
 
             delta = end_date - start_date
 
-            for i in range(delta.days + 1):
-                tanggal = start_date + timedelta(days=i)
-                result[tanggal.strftime('%Y-%m-%d')] = 0
-                revenue[tanggal.strftime('%Y-%m-%d')] = 0
+            if delta.days > 35:
+                # group by month
+                mode = 'month'
+                start_index = start_date.strftime('%m')
+                end_index = end_date.strftime('%m')
+
+                for i in range(int(start_index) - 1, int(end_index)):
+                    result[month[i]] = 0
+                    revenue[month[i]] = 0
+            else:
+                # group by dates
+                for i in range(delta.days + 1):
+                    tanggal = start_date + timedelta(days=i)
+                    result[tanggal.strftime('%Y-%m-%d')] = 0
+                    revenue[tanggal.strftime('%Y-%m-%d')] = 0
 
             total = 0
             num_data = 0
@@ -132,8 +149,13 @@ class TtReportDashboard(models.Model):
 
                 # create main graph
                 if i['reservation_state'] == 'issued':
-                    result[str(i['reservation_issued_date'])] += 1
-                    revenue[str(i['reservation_issued_date'])] += i['amount']
+                    if mode == 'month':
+                        issued_index = i['reservation_issued_date_og'].strftime('%m')
+                        result[month[int(issued_index)-1]] += 1
+                        revenue[month[int(issued_index)-1]] += i['amount']
+                    else:
+                        result[str(i['reservation_issued_date'])] += 1
+                        revenue[str(i['reservation_issued_date'])] += i['amount']
                     total += i['amount']
                     num_data += 1
 
