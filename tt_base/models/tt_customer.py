@@ -244,7 +244,7 @@ class TtCustomer(models.Model):
                 dom.append(('email','=',req['email']))
             if req.get('cust_code'):
                 dom.append(('seq_id','=',req['cust_code']))
-            customer_list_obj = self.search(dom)
+            customer_list_obj = self.search(dom,limit=100)
 
             customer_list = []
             lower = date.today() - relativedelta(years=req.get('lower',12))

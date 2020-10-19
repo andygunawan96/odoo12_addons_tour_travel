@@ -137,6 +137,43 @@ class TtEmailQueue(models.Model):
                         })
             else:
                 raise RequestException(1001)
+        elif data.get('provider_type') == 'tour_installment':
+            try:
+                self.env.get(data['res_model'])._name
+                data_id = data['res_id']
+            except:
+                raise Exception('Module %s not found!' % (data.get('res_model') or ''))
+
+            resv = self.env[data['res_model']].browse(data_id)
+            if resv:
+                if data.get('type') == 'reminder':
+                    type_str = 'Reminder'
+                elif data.get('type') == 'overdue':
+                    type_str = 'Overdue'
+                else:
+                    type_str = ''
+
+                if type_str:
+                    template = self.env.ref('tt_reservation_tour.template_mail_{}_{}'.format(data['provider_type'], data.get('type', 'reminder'))).id
+                    self.env['tt.email.queue'].sudo().create({
+                        'name': 'Tour Installment ' + type_str + ': ' + resv.booking_id.name,
+                        'type': '{}_{}'.format(data['provider_type'], data.get('type', 'reminder')),
+                        'template_id': template,
+                        'res_model': resv._name,
+                        'res_id': resv.id,
+                    })
+
+                    if resv.booking_id.agent_id.is_send_email_cust and resv.booking_id.contact_email:
+                        template = self.env.ref('tt_reservation_tour.template_mail_{}_{}_cust'.format(data['provider_type'], data.get('type', 'reminder'))).id
+                        self.env['tt.email.queue'].sudo().create({
+                            'name': 'Tour Installment ' + type_str + ': ' + resv.booking_id.name,
+                            'type': '{}_{}'.format(data['provider_type'], data.get('type', 'reminder')),
+                            'template_id': template,
+                            'res_model': resv._name,
+                            'res_id': resv.id,
+                        })
+            else:
+                raise RequestException(1001)
 
     def open_reference(self):
         try:
