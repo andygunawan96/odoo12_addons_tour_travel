@@ -19,6 +19,7 @@ TT_RESCHEDULE
         'views/tt_segment_addons_views.xml',
         'views/tt_segment_views.xml',
         'views/tt_reschedule_views.xml',
+        'views/tt_leg_views.xml',
         'views/tt_reservation_airline.xml',
         'security/ir.model.access.csv',
         'security/ir_rule_data.xml',

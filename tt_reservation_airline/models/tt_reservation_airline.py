@@ -594,8 +594,6 @@ class ReservationAirline(models.Model):
                     provider_obj.update_ticket_api(provider['passengers'])
                     any_provider_changed = True
                 elif provider['status'] == 'ISSUED' and not provider.get('error_code'):
-                    if provider_obj.state == 'issued':
-                        continue
                     # May 20, 2020 - SAM
                     # Testing di comment
                     # # if req.get('force_issued'):
@@ -612,11 +610,18 @@ class ReservationAirline(models.Model):
                     # END
 
                     #action issued dan create ticket number
+                    provider_obj.update_ticket_api(provider['passengers'])
+
+                    # October 12, 2020 - SAM
+                    # Hanya akan melakukan update ticket apabila state sebelumnya adalah issued
+                    if provider_obj.state == 'issued':
+                        continue
+                    # END
+
                     # May 20, 2020 - SAM
                     # provider_obj.action_issued_api_airline(context)
                     provider_obj.action_issued_api_airline(provider, context)
                     # END
-                    provider_obj.update_ticket_api(provider['passengers'])
                     any_provider_changed = True
 
                     #get balance vendor

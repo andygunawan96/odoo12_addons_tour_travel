@@ -87,6 +87,40 @@ class ReservationAirline(models.Model):
 
                                 n_seg_obj = self.env['tt.segment.reschedule'].sudo().create(n_seg_values)
                                 new_segment_list.append(n_seg_obj.id)
+
+                                for leg in seg['legs']:
+                                    leg_carrier_obj = self.env['tt.transport.carrier'].sudo().search([('code', '=', leg['carrier_code'])], limit=1)
+                                    leg_provider_obj = self.env['tt.provider'].sudo().search([('code', '=', leg['provider'])], limit=1)
+                                    leg_origin_obj = self.env['tt.destinations'].sudo().search([('code', '=', leg['origin'])], limit=1)
+                                    leg_destination_obj = self.env['tt.destinations'].sudo().search([('code', '=', leg['destination'])], limit=1)
+
+                                    leg_values = {
+                                        'segment_id': n_seg_obj.id,
+                                        'origin_terminal': leg['origin_terminal'],
+                                        'destination_terminal': leg['destination_terminal'],
+                                        'departure_date': leg['departure_date'],
+                                        'arrival_date': leg['arrival_date'],
+                                    }
+                                    if leg_carrier_obj:
+                                        leg_values.update({
+                                            'carrier_id': leg_carrier_obj.id
+                                        })
+
+                                    if leg_provider_obj:
+                                        leg_values.update({
+                                            'provider_id': leg_provider_obj.id
+                                        })
+
+                                    if leg_origin_obj:
+                                        leg_values.update({
+                                            'origin_id': leg_origin_obj.id
+                                        })
+
+                                    if leg_destination_obj:
+                                        leg_values.update({
+                                            'destination_id': leg_destination_obj.id
+                                        })
+
                 else:
                     for seg in airline_obj.segment_ids:
                         n_seg_values = {
@@ -114,6 +148,18 @@ class ReservationAirline(models.Model):
 
                         n_seg_obj = self.env['tt.segment.reschedule'].sudo().create(n_seg_values)
                         new_segment_list.append(n_seg_obj.id)
+
+                        for leg in seg.leg_ids:
+                            leg_values = {
+                                'leg_code': leg.leg_code,
+                                'origin_id': leg.origin_id.id,
+                                'destination_id': leg.destination_id.id,
+                                'origin_terminal': leg.origin_terminal,
+                                'destination_terminal': leg.destination_terminal,
+                                'departure_date': leg.departure_date,
+                                'arrival_date': leg.arrival_date,
+                            }
+                            self.env['tt.leg.reschedule'].sudo().create(leg_values)
                 # END
 
                 # for rec in vals['segments']:
