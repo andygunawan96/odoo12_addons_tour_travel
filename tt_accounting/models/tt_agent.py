@@ -1,5 +1,9 @@
 from odoo import models, fields, api, _
+from datetime import datetime
+import pytz
+import logging
 
+_logger = logging.getLogger(__name__)
 
 class TtAgent(models.Model):
     _inherit = 'tt.agent'
@@ -34,3 +38,40 @@ class TtAgent(models.Model):
                 rec.balance = rec.ledger_ids[0].balance
             else:
                 rec.balance = 0
+
+    def create_ledger_statement(self):
+        ##fixing balance from last statement
+        statement_ledger_obj = self.env['tt.ledger'].search([('agent_id','=',self.id),('transaction_type','=',9)],limit=1,order='id desc')
+        dom = [('agent_id', '=', self.id)]
+        beginning = True
+        if statement_ledger_obj:
+            dom.append(('id', '>', statement_ledger_obj.id))
+            beginning = False
+        list_check_ledger_objs = self.env['tt.ledger'].search(dom,order='id asc')
+        _logger.info("Agent %s %s ledger since last balance statement, Beginning : %s" % (self.name,len(list_check_ledger_objs.ids),beginning))
+        for idx,ledger in enumerate(list_check_ledger_objs):
+            if beginning:
+                beginning = False
+                continue
+            true_balance = list_check_ledger_objs[idx-1].balance + ledger.debit - ledger.credit
+            if ledger.balance != true_balance:
+                ledger.balance = true_balance
+                _logger.info("Ledger %s ID %s from agent %s Balance Fixed" % (ledger.name,ledger.id,self.name))
+        self._compute_balance_agent()
+
+        ##create ledger statement
+        self.env['tt.ledger'].create_ledger_vanilla(
+            self._name,
+            self.id,
+            'End Balance Statement %s' % (self.name),
+            self.seq_id,
+            datetime.now(pytz.timezone('Asia/Jakarta')).date(),
+            9,
+            self.currency_id.id,
+            self.env.ref('base.user_root').id,
+            self.id,
+            False,
+            0,
+            0,
+            'Automatic End Balance Statement'
+        )

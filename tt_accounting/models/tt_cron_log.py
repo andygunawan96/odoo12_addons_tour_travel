@@ -49,9 +49,22 @@ class TtCronLogInhResv(models.Model):
     def cron_inactive_ledger_waiting_list(self):
         try:
             old_recs = self.env['tt.ledger.waiting.list'].search([('is_in_transaction','=',True),
-                                                                       ('create_date', '<=', datetime.today() - timedelta(minutes=5))])
+                                                                  ('create_date', '<=', datetime.today() - timedelta(minutes=5))])
             for rec in old_recs:
                 rec.is_in_transaction = False
         except Exception as e:
             self.create_cron_log_folder()
             self.write_cron_log('auto expired ledger waiting list')
+
+    def cron_ledger_statement_agent(self):
+        try:
+            list_agent_obj = self.env['tt.agent'].search([])
+            for agent_obj in list_agent_obj:
+                try:
+                    agent_obj.create_ledger_statement()
+                    _logger.info("Ledger Statement Success for %s" % (agent_obj.name))
+                except Exception as e:
+                    _logger.error("Failed Ledger Statement for %s\n%s" %(agent_obj.name,str(e)))
+        except Exception as e:
+            self.create_cron_log_folder()
+            self.write_cron_log('auto-create ledger statement agent')

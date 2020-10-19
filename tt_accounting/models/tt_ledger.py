@@ -17,6 +17,7 @@ LEDGER_TYPE = [
     (6, 'Admin fee'),
     (7, 'Reschedule'),
     (8, 'Addons'),
+    (9, 'Statement Balance'),
     (99, 'Others')
 ]
 
@@ -110,7 +111,7 @@ class Ledger(models.Model):
         }
 
     def create_ledger_vanilla(self, res_model,res_id,name, ref, ledger_date, ledger_type, currency_id, issued_uid,agent_id,customer_parent_id, debit=0, credit=0,description = '',**kwargs):
-        self.waiting_list_process([agent_id],customer_parent_id,debit)
+        # self.waiting_list_process([agent_id],customer_parent_id,debit)
         vals = self.prepare_vals(res_model,
                                  res_id,name, ref,
                                  ledger_date, ledger_type,
@@ -128,7 +129,7 @@ class Ledger(models.Model):
 
     def reverse_ledger(self):
         # 3
-        self.waiting_list_process([self.agent_id and self.agent_id.id or False],self.customer_parent_id and self.customer_parent_id.id or False,"Reverse")
+        # self.waiting_list_process([self.agent_id and self.agent_id.id or False],self.customer_parent_id and self.customer_parent_id.id or False,"Reverse")
         reverse_id = self.env['tt.ledger'].create({
             'name': 'Reverse:' + self.name,
             'debit': self.credit,
@@ -205,9 +206,12 @@ class Ledger(models.Model):
             'description': (
                 True,
                 ('description',)## koma jangan di hapus nanti error tidak loop tupple tetapi string
+            ),
+            'balance':(
+                True,
+                ('balance',)
             )
         }
-
 
     @api.multi
     def write(self, vals):
@@ -287,7 +291,7 @@ class Ledger(models.Model):
         #1
         affected_agent = [rec.commission_agent_id.id if rec.commission_agent_id else provider_obj.booking_id.agent_id.id for rec in provider_obj.cost_service_charge_ids]
         affected_agent = set(affected_agent)
-        self.waiting_list_process(affected_agent, False,"Create Ledger Provider")
+        # self.waiting_list_process(affected_agent, False,"Create Ledger Provider")
         commission_created = self.create_commission_ledger(provider_obj,issued_uid)
         ledger_created = self.create_ledger(provider_obj,issued_uid)
         return commission_created or ledger_created
