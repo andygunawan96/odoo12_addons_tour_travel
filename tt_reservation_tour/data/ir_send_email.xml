@@ -76,13 +76,116 @@
 <p>Request Created By: ${user.name} (${user.agent_id.name})</p>
 <p>Request Created On: ${object.create_date} (GMT +0)</p>
 <br/>
-Thank you for your cooperation.
-<br/>
+<p>Thank you for your cooperation.</p>
 <br/>
 <p>Regards,</p>
 <br/>
 <p>${user.name}</p>
 <p>(${user.agent_id.name})</p>
+]]>
+			</field>
+		</record>
+
+		<record model="mail.template" id="template_mail_tour_installment_reminder">
+			<field name="name">Template Mail Tour Installment Reminder</field>
+			<field name="email_from">info@rodextrip.com</field>
+			<field name="subject">Tour Installment Reminder: ${object.booking_id.name}</field>
+			<field name="email_to">${object.booking_id.agent_id.email}</field>
+            <field name="email_cc"/>
+			<field name="model_id" ref="tt_reservation_tour.model_tt_installment_invoice"/>
+			<field name="auto_delete" eval="False"/>
+			<field name="lang"/>
+			<field name="copyvalue"/>
+			<field name="body_html">
+<![CDATA[
+<p>Dear ${object.booking_id.agent_id.name},</p>
+<br/>
+<p>Your customer's tour installment for</p>
+<p>Reservation Order Number: ${object.booking_id.name}</p>
+<p>Amount: ${object.currency_id.name} ${object.amount}</p>
+<p>Installment: ${object.description}</p>
+<p>will be overdue in 3 days. Please inform your customer to complete their payment by ${object.get_formatted_due_date()}. Thank you for your cooperation.</p>
+<br/>
+<p>Regards,</p>
+<p>Rodex Tours and Travel</p>
+]]>
+			</field>
+		</record>
+
+		<record model="mail.template" id="template_mail_tour_installment_reminder_cust">
+			<field name="name">Template Mail Tour Installment Reminder Customer</field>
+			<field name="email_from">info@rodextrip.com</field>
+			<field name="subject">Tour Installment Reminder: ${object.booking_id.name}</field>
+			<field name="email_to">${object.booking_id.contact_email}</field>
+            <field name="email_cc"/>
+			<field name="model_id" ref="tt_reservation_tour.model_tt_installment_invoice"/>
+			<field name="auto_delete" eval="False"/>
+			<field name="lang"/>
+			<field name="copyvalue"/>
+			<field name="body_html">
+<![CDATA[
+<p>Dear ${object.booking_id.contact_title} ${object.booking_id.contact_name},</p>
+<br/>
+<p>Your tour installment for</p>
+<p>Reservation Order Number: ${object.booking_id.name}</p>
+<p>Amount: ${object.currency_id.name} ${object.amount}</p>
+<p>Installment: ${object.description}</p>
+<p>will be overdue in 3 days. Please complete your payment by ${object.get_formatted_due_date()}. Thank you for your cooperation.</p>
+<br/>
+<p>Regards,</p>
+<p>Rodex Tours and Travel</p>
+]]>
+			</field>
+		</record>
+
+		<record model="mail.template" id="template_mail_tour_installment_overdue">
+			<field name="name">Template Mail Tour Installment Overdue</field>
+			<field name="email_from">info@rodextrip.com</field>
+			<field name="subject">Tour Installment Overdue: ${object.booking_id.name}</field>
+			<field name="email_to">${object.booking_id.agent_id.email}</field>
+            <field name="email_cc"/>
+			<field name="model_id" ref="tt_reservation_tour.model_tt_installment_invoice"/>
+			<field name="auto_delete" eval="False"/>
+			<field name="lang"/>
+			<field name="copyvalue"/>
+			<field name="body_html">
+<![CDATA[
+<p>Dear ${object.booking_id.agent_id.name},</p>
+<br/>
+<p>Your customer's tour installment for</p>
+<p>Reservation Order Number: ${object.booking_id.name}</p>
+<p>Amount: ${object.currency_id.name} ${object.amount}</p>
+<p>Installment: ${object.description}</p>
+<p>has been overdue since ${object.get_formatted_due_date()}. Please inform your customer to complete their payment as soon as possible. Thank you for your cooperation.</p>
+<br/>
+<p>Regards,</p>
+<p>Rodex Tours and Travel</p>
+]]>
+			</field>
+		</record>
+
+		<record model="mail.template" id="template_mail_tour_installment_overdue_cust">
+			<field name="name">Template Mail Tour Installment Overdue Customer</field>
+			<field name="email_from">info@rodextrip.com</field>
+			<field name="subject">Tour Installment Overdue: ${object.booking_id.name}</field>
+			<field name="email_to">${object.booking_id.contact_email}</field>
+            <field name="email_cc"/>
+			<field name="model_id" ref="tt_reservation_tour.model_tt_installment_invoice"/>
+			<field name="auto_delete" eval="False"/>
+			<field name="lang"/>
+			<field name="copyvalue"/>
+			<field name="body_html">
+<![CDATA[
+<p>Dear ${object.booking_id.contact_title} ${object.booking_id.contact_name},</p>
+<br/>
+<p>Your tour installment for</p>
+<p>Reservation Order Number: ${object.booking_id.name}</p>
+<p>Amount: ${object.currency_id.name} ${object.amount}</p>
+<p>Installment: ${object.description}</p>
+<p>has been overdue since ${object.get_formatted_due_date()}. Please complete your payment as soon as possible. Thank you for your cooperation.</p>
+<br/>
+<p>Regards,</p>
+<p>Rodex Tours and Travel</p>
 ]]>
 			</field>
 		</record>

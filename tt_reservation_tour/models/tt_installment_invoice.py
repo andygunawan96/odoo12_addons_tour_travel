@@ -36,6 +36,9 @@ class InstallmentInvoice(models.Model):
     description = fields.Text('Description')
     payment_rules_id = fields.Many2one('tt.payment.rules', 'Payment Rules ID', readonly=True)
 
+    def get_formatted_due_date(self):
+        return self.due_date.strftime('%d %B %Y')
+
     def action_open(self):
         self.sudo().write({
             'state_invoice': 'open'
