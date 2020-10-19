@@ -112,7 +112,14 @@ class TtReportDashboard(models.Model):
             values = self.env['report.tt_report_selling.report_selling']._get_reports(temp_dict)
 
             result = {}
+            revenue = {}
             result_list = []
+
+            mode = 'days'
+            month = [
+                'January', 'February', 'March', 'April', 'May', 'June',
+                'July', 'August', 'September', 'October', 'November', 'December'
+            ]
 
             # lets populate result with empty date dictionary
             start_date = self.convert_to_datetime(data['start_date'])
@@ -120,9 +127,21 @@ class TtReportDashboard(models.Model):
 
             delta = end_date - start_date
 
-            for i in range(delta.days + 1):
-                tanggal = start_date + timedelta(days=i)
-                result[tanggal.strftime('%Y-%m-%d')] = [0,0,0]
+            if delta.days > 35:
+                # group by month
+                mode = 'month'
+                start_index = start_date.strftime('%m')
+                end_index = end_date.strftime('%m')
+
+                for i in range(int(start_index) - 1, int(end_index)):
+                    result[month[i]] = 0
+                    revenue[month[i]] = 0
+            else:
+                # group by dates
+                for i in range(delta.days + 1):
+                    tanggal = start_date + timedelta(days=i)
+                    result[tanggal.strftime('%Y-%m-%d')] = 0
+                    revenue[tanggal.strftime('%Y-%m-%d')] = 0
 
             total = 0
             num_data = 0
@@ -130,8 +149,13 @@ class TtReportDashboard(models.Model):
 
                 # create main graph
                 if i['reservation_state'] == 'issued':
-                    result[str(i['reservation_issued_date'])][0] += 1
-                    result[str(i['reservation_issued_date'])][1] += i['amount']
+                    if mode == 'month':
+                        issued_index = i['reservation_issued_date_og'].strftime('%m')
+                        result[month[int(issued_index)-1]] += 1
+                        revenue[month[int(issued_index)-1]] += i['amount']
+                    else:
+                        result[str(i['reservation_issued_date'])] += 1
+                        revenue[str(i['reservation_issued_date'])] += i['amount']
                     total += i['amount']
                     num_data += 1
 
@@ -151,13 +175,16 @@ class TtReportDashboard(models.Model):
                         except:
                             result_list[provider_index][i['reservation_state']] = 1
 
+            average = []
             for i in result:
-                result[i][2] = result[i][1] / result[i][0] if result[i][0] > 0 else 0
+                average.append(result[i]/ revenue[i] if revenue[i] > 0 else 0)
 
             to_return = {
                 'graph': {
                     'label': list(result.keys()),
-                    'data': list(result.values())
+                    'data': list(result.values()),
+                    'data2': list(revenue.values()),
+                    'data3': average
                 },
                 'total_rupiah': total,
                 'average_rupiah': float(total) / float(num_data) if num_data > 0 else 0,
@@ -180,6 +207,7 @@ class TtReportDashboard(models.Model):
 
             # result for graph
             result = {}
+            revenue = {}
 
             # overview base on the same timeframe
             destination_sector_summary = []
@@ -194,12 +222,14 @@ class TtReportDashboard(models.Model):
             for i in range(delta.days + 1):
                 tanggal = start_date + timedelta(days=i)
                 result[tanggal.strftime('%Y-%m-%d')] = 0
+                revenue[tanggal.strftime('%Y-%m-%d')] = 0
 
             total = 0
             num_data = 0
             for i in values['lines']:
                 if i['reservation_state'] == 'issued':
                     result[str(i['reservation_issued_date'])] += 1
+                    revenue[str(i['reservation_issued_date'])] += i['amount']
                     total += i['amount']
                     num_data += 1
 
@@ -271,10 +301,16 @@ class TtReportDashboard(models.Model):
             return_filter.sort(key=lambda x: x['counter'], reverse=True)
             multi_city_filter.sort(key=lambda x: x['counter'], reverse=True)
 
+            average = []
+            for i in result:
+                average.append(result[i] / revenue[i] if revenue[i] > 0 else 0)
+
             to_return = {
                 'graph': {
                     'label': list(result.keys()),
-                    'data': list(result.values())
+                    'data': list(result.values()),
+                    'data2': list(revenue.values()),
+                    'data3': average
                 },
                 'total_rupiah': total,
                 'average_rupiah': float(total) / float(num_data) if num_data > 0 else 0,
@@ -303,6 +339,7 @@ class TtReportDashboard(models.Model):
             values = self.env['report.tt_report_selling.report_selling']._get_reports(temp_dict)
 
             result = {}
+            revenue = {}
 
             # overview base on the same timeframe
             destination_sector_summary = []
@@ -317,12 +354,14 @@ class TtReportDashboard(models.Model):
             for i in range(delta.days + 1):
                 tanggal = start_date + timedelta(days=i)
                 result[tanggal.strftime('%Y-%m-%d')] = 0
+                revenue[tanggal.strftime('%Y-%m-%d')] = 0
 
             total = 0
             num_data = 0
             for i in values['lines']:
                 if i['reservation_state'] == 'issued':
                     result[str(i['reservation_issued_date'])] += 1
+                    revenue[str(i['reservation_issued_date'])] += i['amount']
                     total += i['amount']
                     num_data += 1
 
@@ -395,10 +434,16 @@ class TtReportDashboard(models.Model):
                 return_filter.sort(key=lambda x: x['counter'], reverse=True)
                 multi_city_filter.sort(key=lambda x: x['counter'], reverse=True)
 
+            average = []
+            for i in result:
+                average.append(result[i] / revenue[i] if revenue[i] > 0 else 0)
+
             to_return = {
                 'graph': {
                     'label': list(result.keys()),
-                    'data': list(result.values())
+                    'data': list(result.values()),
+                    'data2': list(revenue.values()),
+                    'data3': average
                 },
                 'total_rupiah': total,
                 'average_rupiah': float(total) / float(num_data) if num_data > 0 else 0,
@@ -427,6 +472,7 @@ class TtReportDashboard(models.Model):
             values = self.env['report.tt_report_selling.report_selling']._get_reports(temp_dict)
 
             result = {}
+            revenue = {}
 
             # lets populate result with empty date dictionary
             start_date = self.convert_to_datetime(data['start_date'])
@@ -437,19 +483,27 @@ class TtReportDashboard(models.Model):
             for i in range(delta.days + 1):
                 tanggal = start_date + timedelta(days=i)
                 result[tanggal.strftime('%Y-%m-%d')] = 0
+                revenue[tanggal.strftime('%Y-%m-%d')] = 0
 
             total = 0
             num_data = 0
             for i in values['lines']:
                 if i['reservation_state'] == 'issued':
                     result[str(i['reservation_issued_date'])] += 1
+                    revenue[str(i['reservation_issued_date'])] += i['amount']
                     total += i['amount']
                     num_data += 1
+
+            average = []
+            for i in result:
+                average.append(result[i] / revenue[i] if revenue[i] > 0 else 0)
 
             to_return = {
                 'graph': {
                     'label': list(result.keys()),
-                    'data': list(result.values())
+                    'data': list(result.values()),
+                    'data2': list(revenue.values()),
+                    'data3': average
                 },
                 'total_rupiah': total,
                 'average_rupiah': float(total) / float(num_data) if num_data > 0 else 0
@@ -469,6 +523,7 @@ class TtReportDashboard(models.Model):
             values = self.env['report.tt_report_selling.report_selling']._get_reports(temp_dict)
 
             result = {}
+            revenue = {}
 
             # lets populate result with empty date dictionary
             start_date = self.convert_to_datetime(data['start_date'])
@@ -479,19 +534,27 @@ class TtReportDashboard(models.Model):
             for i in range(delta.days + 1):
                 tanggal = start_date + timedelta(days=i)
                 result[tanggal.strftime('%Y-%m-%d')] = 0
+                revenue[tanggal.strftime('%Y-%m-%d')] = 0
 
             total = 0
             num_data = 0
             for i in values['lines']:
                 if i['reservation_state'] == 'issued':
                     result[str(i['reservation_issued_date'])] += 1
+                    revenue[str(i['reservation_issued_date'])] += i['amount']
                     total += i['amount']
                     num_data += 1
+
+            average = []
+            for i in result:
+                average.append(result[i] / revenue[i] if revenue[i] > 0 else 0)
 
             to_return = {
                 'graph': {
                     'label': list(result.keys()),
-                    'data': list(result.values())
+                    'data': list(result.values()),
+                    'data2': list(revenue.values()),
+                    'data3': average
                 },
                 'total_rupiah': total,
                 'average_rupiah': float(total) / float(num_data) if num_data > 0 else 0
@@ -511,6 +574,7 @@ class TtReportDashboard(models.Model):
             values = self.env['report.tt_report_selling.report_selling']._get_reports(temp_dict)
 
             result = {}
+            revenue = {}
 
             # lets populate result with empty date dictionary
             start_date = self.convert_to_datetime(data['start_date'])
@@ -521,6 +585,7 @@ class TtReportDashboard(models.Model):
             for i in range(delta.days + 1):
                 tanggal = start_date + timedelta(days=i)
                 result[tanggal.strftime('%Y-%m-%d')] = 0
+                revenue[tanggal.strftime('%Y-%m-%d')] = 0
 
             total = 0
             num_data = 0
@@ -530,10 +595,16 @@ class TtReportDashboard(models.Model):
                     total += i['amount']
                     num_data += 1
 
+            average = []
+            for i in result:
+                average.append(result[i] / revenue[i] if revenue[i] > 0 else 0)
+
             to_return = {
                 'graph': {
                     'label': list(result.keys()),
-                    'data': list(result.values())
+                    'data': list(result.values()),
+                    'data2': list(revenue.values()),
+                    'data3': average
                 },
                 'total_rupiah': total,
                 'average_rupiah': float(total) / float(num_data) if num_data > 0 else 0
@@ -553,6 +624,7 @@ class TtReportDashboard(models.Model):
             values = self.env['report.tt_report_selling.report_selling']._get_reports(temp_dict)
 
             result = {}
+            revenue = {}
 
             # lets populate result with empty date dictionary
             start_date = self.convert_to_datetime(data['start_date'])
@@ -563,19 +635,27 @@ class TtReportDashboard(models.Model):
             for i in range(delta.days + 1):
                 tanggal = start_date + timedelta(days=i)
                 result[tanggal.strftime('%Y-%m-%d')] = 0
+                revenue[tanggal.strftime('%Y-%m-%d')] = 0
 
             total = 0
             num_data = 0
             for i in values['lines']:
                 if i['reservation_state'] == 'issued':
                     result[str(i['reservation_issued_date'])] += 1
+                    revenue[str(i['reservation_issued_date'])] += i['amount']
                     total += i['amount']
                     num_data += 1
+
+            average = []
+            for i in result:
+                average.append(result[i] / revenue[i] if revenue[i] > 0 else 0)
 
             to_return = {
                 'graph': {
                     'label': list(result.keys()),
-                    'data': list(result.values())
+                    'data': list(result.values()),
+                    'data2': list(revenue.values()),
+                    'data3': average
                 },
                 'total_rupiah': total,
                 'average_rupiah': float(total) / float(num_data) if num_data > 0 else 0
@@ -595,6 +675,7 @@ class TtReportDashboard(models.Model):
             values = self.env['report.tt_report_selling.report_selling']._get_reports(temp_dict)
 
             result = {}
+            revenue = {}
 
             # lets populate result with empty date dictionary
             start_date = self.convert_to_datetime(data['start_date'])
@@ -605,19 +686,27 @@ class TtReportDashboard(models.Model):
             for i in range(delta.days + 1):
                 tanggal = start_date + timedelta(days=i)
                 result[tanggal.strftime('%Y-%m-%d')] = 0
+                revenue[tanggal.strftime('%Y-%m-%d')] = 0
 
             total = 0
             num_data = 0
             for i in values['lines']:
                 if i['reservation_state'] == 'issued':
                     result[str(i['reservation_issued_date'])] += 1
+                    revenue[str(i['reservation_issued_date'])] += i['amount']
                     total += i['amount']
                     num_data += 1
+
+            average = []
+            for i in result:
+                average.append(result[i] / revenue[i] if revenue[i] > 0 else 0)
 
             to_return = {
                 'graph': {
                     'label': list(result.keys()),
-                    'data': list(result.values())
+                    'data': list(result.values()),
+                    'data2': list(revenue.values()),
+                    'data3': average
                 },
                 'total_rupiah': total,
                 'average_rupiah': float(total) / float(num_data) if num_data > 0 else 0
@@ -637,6 +726,7 @@ class TtReportDashboard(models.Model):
             values = self.env['report.tt_report_selling.report_selling']._get_reports(temp_dict)
 
             result = {}
+            revenue = {}
 
             # lets populate result with empty date dictionary
             start_date = self.convert_to_datetime(data['start_date'])
@@ -647,19 +737,27 @@ class TtReportDashboard(models.Model):
             for i in range(delta.days + 1):
                 tanggal = start_date + timedelta(days=i)
                 result[tanggal.strftime('%Y-%m-%d')] = 0
+                revenue[tanggal.strftime('%Y-%m-%d')] = 0
 
             total = 0
             num_data = 0
             for i in values['lines']:
                 if i['reservation_state'] == 'issued':
                     result[str(i['reservation_issued_date'])] += 1
+                    revenue[str(i['reservation_issued_date'])] += i['amount']
                     total += i['amount']
                     num_data += 1
+
+            average = []
+            for i in result:
+                average.append(result[i] / revenue[i] if revenue[i] > 0 else 0)
 
             to_return = {
                 'graph': {
                     'label': list(result.keys()),
-                    'data': list(result.values())
+                    'data': list(result.values()),
+                    'data2': list(revenue.values()),
+                    'data3': average
                 },
                 'total_rupiah': total,
                 'average_rupiah': float(total) / float(num_data) if num_data > 0 else 0
