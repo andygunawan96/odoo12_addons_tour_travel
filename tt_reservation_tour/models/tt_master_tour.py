@@ -1210,6 +1210,7 @@ class MasterTour(models.Model):
                 'tour_route': tour_obj.tour_route,
                 'tour_category': tour_obj.tour_category,
                 'tour_type': tour_obj.tour_type,
+                'currency': tour_obj.currency_id.name,
                 'visa': tour_obj.visa,
                 'flight': tour_obj.flight,
                 'seat': int(tour_obj.seat),
