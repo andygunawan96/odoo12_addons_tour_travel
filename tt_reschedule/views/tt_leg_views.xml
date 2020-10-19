@@ -1,0 +1,73 @@
+<odoo>
+    <record id="tt_reschedule_leg_form_view" model="ir.ui.view">
+        <field name="name">tt.reschedule.leg.form.view</field>
+        <field name="model">tt.leg.reschedule</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="booking_id" invisible="1"/>
+                            <field name="segment_id"/>
+                            <field name="leg_code"/>
+                        </group>
+                    </group>
+                    <group>
+                        <group>
+                            <!--<field name="agent_id"/>-->
+                            <field name="provider_id"/>
+                        </group>
+                        <group>
+
+                        </group>
+                    </group>
+                    <group>
+                        <separator colspan="6" string="Booking"/>
+                        <group>
+                            <field name="origin_id"/>
+                            <field name="departure_date"/>
+                        </group>
+                        <group>
+                            <field name="destination_id"/>
+                            <field name="arrival_date"/>
+                        </group>
+                    </group>
+                    <group>
+                        <group>
+                            <!--<field name="meal_code"/>-->
+                            <!--<field name="company_id"/>-->
+                            <!--<field name="sequence_segment"/>-->
+                            <!--<field name="sequence_leg"/>-->
+                        </group>
+                        <group>
+                            <!--<field name="cabin_class"/>-->
+                            <!--<field name="class_of_service"/>-->
+                            <!--<field name="subclass"/>-->
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="tt_reschedule_leg_tree_view" model="ir.ui.view">
+        <field name="name">reschedule.leg.tree.view</field>
+        <field name="model">tt.leg.reschedule</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="provider_id"/>
+                <field name="origin_id"/>
+                <field name="destination_id"/>
+                <field name="departure_date"/>
+                <field name="arrival_date"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="tt_reschedule_leg_action" model="ir.actions.act_window">
+        <field name="name">Reschedule Leg</field>
+        <field name="res_model">tt.leg.reschedule</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+</odoo>
