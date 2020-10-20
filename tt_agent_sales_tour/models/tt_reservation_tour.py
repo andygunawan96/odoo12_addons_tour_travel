@@ -225,6 +225,16 @@ class ReservationTour(models.Model):
                     'payment_rules_id': rec.id,
                 })
 
-    def call_create_invoice(self, acquirer_id, co_uid, customer_parent_id, payment_method):
-        super(ReservationTour, self).call_create_invoice(acquirer_id, co_uid, customer_parent_id, payment_method)
+    def action_reverse_tour(self, context):
+        super(ReservationTour, self).action_reverse_tour(context)
+        for rec in self.invoice_line_ids:
+            try:
+                rec.invoice_id.action_cancel_invoice()
+            except Exception as e:
+                print(str(e))
+
+    def action_issued_tour(self, co_uid, customer_parent_id, acquirer_id):
+        super(ReservationTour, self).action_issued_tour(co_uid, customer_parent_id)
+        payment_method = self.payment_method_tour and self.payment_method_tour or 'full'
         self.action_create_invoice(acquirer_id, co_uid, customer_parent_id, payment_method)
+
