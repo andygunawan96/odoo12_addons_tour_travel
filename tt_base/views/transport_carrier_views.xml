@@ -26,6 +26,7 @@
                             <field name="adult_length_name"/>
                             <field name="child_length_name"/>
                             <field name="infant_length_name"/>
+                            <field name="is_adult_birth_date_required"/>
                         </group>
                     </group>
                 </sheet>
@@ -44,6 +45,7 @@
                 <field name="adult_length_name"/>
                 <field name="child_length_name"/>
                 <field name="infant_length_name"/>
+                <field name="is_adult_birth_date_required"/>
                 <field name="provider_type_id"/>
                 <field name="active"/>
             </tree>
