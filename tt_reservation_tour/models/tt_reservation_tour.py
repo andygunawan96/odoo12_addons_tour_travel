@@ -49,7 +49,6 @@ class ReservationTour(models.Model):
     provider_type_id = fields.Many2one('tt.provider.type', 'Provider Type', default=lambda self: self.env.ref('tt_reservation_tour.tt_provider_type_tour'))
     payment_method_tour = fields.Selection(PAYMENT_METHOD, 'Tour Payment Method')
     installment_invoice_ids = fields.One2many('tt.installment.invoice', 'booking_id', 'Installments')
-    is_already_issued = fields.Boolean('Already Issued', default=False)
 
     def get_form_id(self):
         return self.env.ref("tt_reservation_tour.tt_reservation_tour_form_view")
@@ -88,11 +87,7 @@ class ReservationTour(models.Model):
             # refund
             self.action_refund()
         elif all(rec.state == 'fail_refunded' for rec in self.provider_booking_ids):
-            self.write({
-                'state':  'fail_refunded',
-                'refund_uid': context['co_uid'],
-                'refund_date': datetime.now()
-            })
+            self.action_reverse_tour(context)
         elif any(rec.state == 'issued' for rec in self.provider_booking_ids):
             # partial issued
             self.action_partial_issued_api_tour()
@@ -153,10 +148,6 @@ class ReservationTour(models.Model):
                 'carrier_name': ','.join(carrier_list),
             })
 
-            payment_method = self.payment_method_tour and self.payment_method_tour or 'full'
-            if not self.is_already_issued:
-                self.call_create_invoice(acquirer_id, context['co_uid'], customer_parent_id, payment_method)
-
             try:
                 if self.agent_type_id.is_send_email_issued:
                     mail_created = self.env['tt.email.queue'].sudo().with_context({'active_test':False}).search([('res_id', '=', self.id), ('res_model', '=', self._name), ('type', '=', 'issued_tour')], limit=1)
@@ -214,6 +205,13 @@ class ReservationTour(models.Model):
                 rec.sudo().write({
                     'master_tour_id': False
                 })
+
+    def action_reverse_tour(self,context):
+        self.write({
+            'state':  'fail_refunded',
+            'refund_uid': context['co_uid'],
+            'refund_date': datetime.now()
+        })
 
     def action_partial_booked_api_tour(self,context,pnr_list,hold_date):
         self.write({
@@ -422,13 +420,13 @@ class ReservationTour(models.Model):
             passengers = data.get('passengers_data') and data['passengers_data'] or False
             force_issued = data.get('force_issued') and int(data['force_issued']) or False
             temp_provider_code = data.get('provider') and data['provider'] or 0
-            temp_tour_code = data.get('tour_code') and data['tour_code'] or 0
+            temp_tour_code = data.get('tour_code') and data['tour_code'] or ''
             room_list = data.get('room_list') and data['room_list'] or []
             provider_obj = self.env['tt.provider'].sudo().search([('code', '=', temp_provider_code)], limit=1)
             if not provider_obj:
                 raise RequestException(1002)
             provider_obj = provider_obj[0]
-            tour_data = self.env['tt.master.tour'].sudo().search([('tour_code', '=', temp_tour_code),('provider_id', '=', provider_obj.id)], limit=1)
+            tour_data = self.env['tt.master.tour'].sudo().search([('tour_code', '=', provider_obj.alias + '~' + temp_tour_code),('provider_id', '=', provider_obj.id)], limit=1)
             pricing = data.get('pricing') and data['pricing'] or []
             if not tour_data:
                 raise RequestException(1004, additional_message='Tour not found. Please check your tour code.')
@@ -704,10 +702,7 @@ class ReservationTour(models.Model):
                     book_update_vals = {
                         'state': data['state']
                     }
-                    if book_obj.state == 'issued':
-                        book_update_vals.update({
-                            'is_already_issued': True
-                        })
+
                     book_obj.sudo().write(book_update_vals)
                     self.env.cr.commit()
 

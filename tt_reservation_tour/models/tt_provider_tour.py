@@ -69,14 +69,82 @@ class TtProviderTour(models.Model):
     reconcile_time = fields.Datetime('Reconcile Time')
     ##
 
+    ##button function
+    def action_set_to_issued_from_button(self, payment_data={}):
+        if self.state == 'issued':
+            raise UserError("Has been Issued.")
+        self.write({
+            'state': 'issued',
+            'issued_uid': self.env.user.id,
+            'issued_date': datetime.now()
+        })
+        self.booking_id.check_provider_state({'co_uid': self.env.user.id}, [], False, payment_data)
+
+        return {
+            'type': 'ir.actions.client',
+            'tag': 'reload',
+        }
+
+    def action_force_issued_from_button(self, payment_data={}):
+        if self.state == 'issued':
+            raise UserError("Has been Issued.")
+
+        req = {
+            'book_id': self.booking_id.id,
+            'member': payment_data.get('member'),
+            'acquirer_seq_id': payment_data.get('acquirer_seq_id'),
+        }
+        context = {
+            'co_agent_id': self.booking_id.agent_id.id,
+            'co_agent_type_id': self.booking_id.agent_type_id.id,
+            'co_uid': self.env.user.id
+        }
+        payment_res = self.booking_id.payment_reservation_api('tour', req, context)
+        if payment_res['error_code'] != 0:
+            raise UserError(payment_res['error_msg'])
+
+        # balance_res = self.env['tt.agent'].check_balance_limit_api(self.booking_id.agent_id.id,self.booking_id.agent_nta)
+        # if balance_res['error_code'] != 0:
+        #     raise UserError("Balance not enough.")
+        #
+        # self.action_create_ledger(self.env.user.id)
+        self.action_set_to_issued_from_button(payment_data)
+
+        return {
+            'type': 'ir.actions.client',
+            'tag': 'reload',
+        }
+
+    def action_set_to_book_from_button(self):
+        if self.state == 'booked':
+            raise UserError("Has been Booked.")
+
+        self.write({
+            'state': 'booked',
+            'booked_uid': self.env.user.id,
+            'booked_date': datetime.now()
+        })
+
+        self.booking_id.check_provider_state({'co_uid':self.env.user.id})
+
+        return {
+            'type': 'ir.actions.client',
+            'tag': 'reload',
+        }
+
+    def action_reverse_ledger(self):
+        for rec in self.booking_id.ledger_ids:
+            pnr_text = self.pnr if self.pnr else str(self.sequence)
+            if rec.pnr == pnr_text and not rec.is_reversed:
+                rec.reverse_ledger()
+
+        for rec in self.cost_service_charge_ids:
+            rec.is_ledger_created = False
+
     def action_reverse_ledger_from_button(self):
         if self.state == 'fail_refunded':
             raise UserError("Cannot refund, this PNR has been refunded.")
 
-        # if not self.is_ledger_created:
-        #     raise UserError("This Provider Ledger is not Created.")
-
-        ##fixme salahhh, ini ke reverse semua provider bukan provider ini saja
         for rec in self.booking_id.ledger_ids:
             if rec.pnr == self.pnr and not rec.is_reversed:
                 rec.reverse_ledger()
@@ -89,6 +157,9 @@ class TtProviderTour(models.Model):
         })
 
         self.booking_id.check_provider_state({'co_uid':self.env.user.id})
+
+        for rec in self.booking_id.installment_invoice_ids:
+            rec.action_cancel()
 
         return {
             'type': 'ir.actions.client',

@@ -206,10 +206,15 @@
                                     <field name="sent_date" readonly="1" class="oe_inline"/> -
                                     <field name="sent_uid" readonly="1" class="oe_inline"/>
                                 </div>
-                                <label for="issued_uid" string="Validate by"/>
+<!--                                <label for="issued_uid" string="Validate by"/>-->
+<!--                                <div>-->
+<!--                                    <field name="issued_date" class="oe_inline"/> - -->
+<!--                                    <field name="issued_uid" class="oe_inline"/>-->
+<!--                                </div>-->
+                                <label for="validate_uid" string="Validate"/>
                                 <div>
-                                    <field name="issued_date" class="oe_inline"/> -
-                                    <field name="issued_uid" class="oe_inline"/>
+                                    <field name="validate_date" class="oe_inline"/> -
+                                    <field name="validate_uid" class="oe_inline"/>
                                 </div>
                                 <label for="done_uid" string="Done"/>
                                 <div>
