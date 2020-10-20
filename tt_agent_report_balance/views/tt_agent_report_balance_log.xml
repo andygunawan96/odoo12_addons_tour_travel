@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="tt_agent_report_balance_log_form_views" model="ir.ui.view">
+            <field name="name">tt.agent.report.balance.log.form.views</field>
+            <field name="model">tt.agent.report.balance.log</field>
+            <field name="priority">20</field>
+            <field name="arch" type="xml">
+                <form>
+                    <sheet>
+                        <field name="file"/>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <record id="tt_agent_report_balance_log_tree_views" model="ir.ui.view">
+            <field name="name">tt.agent.report.balance.log.form.views</field>
+            <field name="model">tt.agent.report.balance.log</field>
+            <field name="priority">20</field>
+            <field name="arch" type="xml">
+                <tree>
+                    <field name="file"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="tt_log_agent_balance_report_action_views" model="ir.actions.act_window">
+            <field name="name">Log Agent Balance Report</field>
+            <field name="res_model">tt.agent.report.balance.log</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="context">
+            {
+            'form_view_ref': 'tt_agent_report_balance.tt_agent_report_balance_log_form_views',
+            'tree_view_ref': 'tt_agent_report_balance.tt_agent_report_balance_log_tree_views'
+            }
+            </field>
+        </record>
+
+        <menuitem
+                id="menu_tour_travel_report_balance"
+                name="Agent Balance"
+                parent="tt_base.top_tour_travel_report"
+                sequence="1"
+        />
+        <menuitem
+                id="sub_menu_tour_travel_report_log_balance"
+                name="Agent Balance Log"
+                parent="tt_agent_report_balance.menu_tour_travel_report_balance"
+                sequence="10"
+                action="tt_log_agent_balance_report_action_views"
+        />
+    </data>
+</odoo>

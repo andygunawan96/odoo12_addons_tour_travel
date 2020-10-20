@@ -46,7 +46,6 @@ class TtAgent(models.Model):
         beginning = True
         if statement_ledger_obj:
             dom.append(('id', '>', statement_ledger_obj.id))
-            beginning = False
         list_check_ledger_objs = self.env['tt.ledger'].search(dom,order='id asc')
         _logger.info("Agent %s %s ledger since last balance statement, Beginning : %s" % (self.name,len(list_check_ledger_objs.ids),beginning))
         for idx,ledger in enumerate(list_check_ledger_objs):
