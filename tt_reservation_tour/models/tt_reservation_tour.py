@@ -422,13 +422,13 @@ class ReservationTour(models.Model):
             passengers = data.get('passengers_data') and data['passengers_data'] or False
             force_issued = data.get('force_issued') and int(data['force_issued']) or False
             temp_provider_code = data.get('provider') and data['provider'] or 0
-            temp_tour_code = data.get('tour_code') and data['tour_code'] or 0
+            temp_tour_code = data.get('tour_code') and data['tour_code'] or ''
             room_list = data.get('room_list') and data['room_list'] or []
             provider_obj = self.env['tt.provider'].sudo().search([('code', '=', temp_provider_code)], limit=1)
             if not provider_obj:
                 raise RequestException(1002)
             provider_obj = provider_obj[0]
-            tour_data = self.env['tt.master.tour'].sudo().search([('tour_code', '=', temp_tour_code),('provider_id', '=', provider_obj.id)], limit=1)
+            tour_data = self.env['tt.master.tour'].sudo().search([('tour_code', '=', provider_obj.alias + '~' + temp_tour_code),('provider_id', '=', provider_obj.id)], limit=1)
             pricing = data.get('pricing') and data['pricing'] or []
             if not tour_data:
                 raise RequestException(1004, additional_message='Tour not found. Please check your tour code.')
