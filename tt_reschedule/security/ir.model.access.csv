@@ -5,4 +5,5 @@ tt_reschedule_changes_for_all,tt.reschedule.changes.for.all,model_tt_reschedule_
 tt_reschedule_for_tour_travel_operator,tt.reschedule.for.tour.travel.operator,model_tt_reschedule,tt_base.group_tt_tour_travel_operator,1,1,1,1
 access_tt_seat_reschedule,access_tt_reservation_reschedule.tt_seat_reschedule,model_tt_seat_reschedule,,1,1,1,1
 access_tt_segment_reschedule,access_tt_reservation_reschedule.tt_segment_reschedule,model_tt_segment_reschedule,,1,1,1,1
+access_tt_leg_reschedule,access_tt_reservation_reschedule.tt_leg_reschedule,model_tt_leg_reschedule,,1,1,1,1
 access_tt_segment_addons_reschedule,access_tt_reservation_reschedule.tt_segment_addons_reschedule,model_tt_segment_addons_reschedule,,1,1,1,1
