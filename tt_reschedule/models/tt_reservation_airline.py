@@ -120,6 +120,7 @@ class ReservationAirline(models.Model):
                                         leg_values.update({
                                             'destination_id': leg_destination_obj.id
                                         })
+                                    self.env['tt.leg.reschedule'].sudo().create(leg_values)
 
                 else:
                     for seg in airline_obj.segment_ids:
@@ -151,6 +152,7 @@ class ReservationAirline(models.Model):
 
                         for leg in seg.leg_ids:
                             leg_values = {
+                                'segment_id': n_seg_obj.id,
                                 'leg_code': leg.leg_code,
                                 'origin_id': leg.origin_id.id,
                                 'destination_id': leg.destination_id.id,
