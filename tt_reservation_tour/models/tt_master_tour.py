@@ -1298,7 +1298,7 @@ class MasterTour(models.Model):
             if not provider_obj:
                 raise RequestException(1002)
             provider_obj = provider_obj[0]
-            search_tour_obj = self.env['tt.master.tour'].sudo().search([('tour_code', '=', search_request['tour_code']), ('provider_id', '=', provider_obj.id)], limit=1)
+            search_tour_obj = self.env['tt.master.tour'].sudo().search([('tour_code', '=', provider_obj.alias + '~' + search_request['tour_code']), ('provider_id', '=', provider_obj.id)], limit=1)
             if not search_tour_obj:
                 raise RequestException(1022, additional_message='Tour not found.')
             search_tour_obj = search_tour_obj[0]
