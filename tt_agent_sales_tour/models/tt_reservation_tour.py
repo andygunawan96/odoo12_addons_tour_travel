@@ -233,8 +233,8 @@ class ReservationTour(models.Model):
             except Exception as e:
                 print(str(e))
 
-    def action_issued_tour(self, acquirer_id, customer_parent_id, context):
-        super(ReservationTour, self).action_issued_tour(acquirer_id, customer_parent_id, context)
+    def action_issued_tour(self, co_uid, customer_parent_id, acquirer_id):
+        super(ReservationTour, self).action_issued_tour(co_uid, customer_parent_id)
         payment_method = self.payment_method_tour and self.payment_method_tour or 'full'
-        self.action_create_invoice(acquirer_id, context['co_uid'], customer_parent_id, payment_method)
+        self.action_create_invoice(acquirer_id, co_uid, customer_parent_id, payment_method)
 
