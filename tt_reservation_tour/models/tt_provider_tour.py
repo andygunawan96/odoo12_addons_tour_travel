@@ -149,6 +149,9 @@ class TtProviderTour(models.Model):
             if rec.pnr == self.pnr and not rec.is_reversed:
                 rec.reverse_ledger()
 
+        for rec in self.cost_service_charge_ids:
+            rec.is_ledger_created = False
+
         self.write({
             'state': 'fail_refunded',
             # 'is_ledger_created': False,
