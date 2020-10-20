@@ -8,6 +8,7 @@
             <field name="icao">SIA</field>
             <field name="call_sign">SINGAPORE</field>
             <field name="active">1</field>
+            <field name="is_adult_birth_date_required" eval="False"/>
             <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
         </record>
 
@@ -40,6 +41,7 @@
             <field name="icao">GIA</field>
             <field name="call_sign">INDONESIA</field>
             <field name="active">1</field>
+            <field name="is_adult_birth_date_required" eval="False"/>
             <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
         </record>
 
@@ -486,6 +488,7 @@
             <field name="icao">SJY</field>
             <field name="call_sign">SRIWIJAYA</field>
             <field name="active">1</field>
+            <field name="is_adult_birth_date_required" eval="False"/>
             <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
         </record>
 
