@@ -145,19 +145,47 @@ class TtReportDashboard(models.Model):
 
             total = 0
             num_data = 0
+            reservation_ids = []
+            for i in values['lines']:
+                reservation_ids.append(i['reservation_id'])
+
+            temp_dict = {
+                'start_date': data['start_date'],
+                'end_date': data['end_date'],
+                'type': 'invoice',
+                'reservation': reservation_ids
+            }
+            invoice = self.env['report.tt_report_selling.report_selling']._get_reports(temp_dict)
+
+            if mode == 'month':
+                for i in result:
+                    # filter invoice for every months
+                    month_index = month.index(i)
+                    filtered_data = list(filter(lambda x: int(x['date'].strftime('%m')) - 1 == month_index, invoice))
+                    result[i] += len(filtered_data)
+                    num_data += len(filtered_data)
+            else:
+                for i in result:
+                    # filter for everyday
+                    filtered_data = invoice.filtered(key=lambda x: x['create_date'] == i)
+                    result[i] += len(filtered_data)
+                    num_data += len(filtered_data)
+
+            # proceed invoice with the assumption of create date = issued date
+
             for i in values['lines']:
 
                 # create main graph
                 if i['reservation_state'] == 'issued':
                     if mode == 'month':
                         issued_index = i['reservation_issued_date_og'].strftime('%m')
-                        result[month[int(issued_index)-1]] += 1
+                        # result[month[int(issued_index)-1]] += 1
                         revenue[month[int(issued_index)-1]] += i['amount']
                     else:
-                        result[str(i['reservation_issued_date'])] += 1
+                        # result[str(i['reservation_issued_date'])] += 1
                         revenue[str(i['reservation_issued_date'])] += i['amount']
                     total += i['amount']
-                    num_data += 1
+                    # num_data += 1
 
                     # create overview
                     provider_index = self.check_index(result_list, "provider", i['provider_type_name'])
@@ -243,12 +271,40 @@ class TtReportDashboard(models.Model):
 
             total = 0
             num_data = 0
+            reservation_ids = []
+            for i in values['lines']:
+                reservation_ids.append(i['reservation_id'])
+
+            temp_dict = {
+                'start_date': data['start_date'],
+                'end_date': data['end_date'],
+                'type': 'invoice',
+                'reservation': reservation_ids
+            }
+            invoice = self.env['report.tt_report_selling.report_selling']._get_reports(temp_dict)
+
+            if mode == 'month':
+                for i in result:
+                    # filter invoice for every months
+                    month_index = month.index(i)
+                    filtered_data = list(filter(lambda x: int(x['date'].strftime('%m')) - 1 == month_index, invoice))
+                    result[i] += len(filtered_data)
+                    num_data += len(filtered_data)
+            else:
+                for i in result:
+                    # filter for everyday
+                    filtered_data = invoice.filtered(key=lambda x: x['create_date'] == i)
+                    result[i] += len(filtered_data)
+                    num_data += len(filtered_data)
+
+            # proceed invoice with the assumption of create date = issued date
+
             for i in values['lines']:
                 if i['reservation_state'] == 'issued':
                     result[str(i['reservation_issued_date'])] += 1
                     revenue[str(i['reservation_issued_date'])] += i['amount']
                     total += i['amount']
-                    num_data += 1
+                    # num_data += 1
 
                     # ============= Search best for every sector ==================
                     returning_index = self.returning_index_sector(destination_sector_summary,
@@ -392,12 +448,40 @@ class TtReportDashboard(models.Model):
 
             total = 0
             num_data = 0
+            reservation_ids = []
+            for i in values['lines']:
+                reservation_ids.append(i['reservation_id'])
+
+            temp_dict = {
+                'start_date': data['start_date'],
+                'end_date': data['end_date'],
+                'type': 'invoice',
+                'reservation': reservation_ids
+            }
+            invoice = self.env['report.tt_report_selling.report_selling']._get_reports(temp_dict)
+
+            if mode == 'month':
+                for i in result:
+                    # filter invoice for every months
+                    month_index = month.index(i)
+                    filtered_data = list(filter(lambda x: int(x['date'].strftime('%m')) - 1 == month_index, invoice))
+                    result[i] += len(filtered_data)
+                    num_data += len(filtered_data)
+            else:
+                for i in result:
+                    # filter for everyday
+                    filtered_data = invoice.filtered(key=lambda x: x['create_date'] == i)
+                    result[i] += len(filtered_data)
+                    num_data += len(filtered_data)
+
+            # proceed invoice with the assumption of create date = issued date
+
             for i in values['lines']:
                 if i['reservation_state'] == 'issued':
                     result[str(i['reservation_issued_date'])] += 1
                     revenue[str(i['reservation_issued_date'])] += i['amount']
                     total += i['amount']
-                    num_data += 1
+                    # num_data += 1
 
                     # ============= Search best for every sector ==================
                     returning_index = self.returning_index_sector(destination_sector_summary,
@@ -538,12 +622,40 @@ class TtReportDashboard(models.Model):
 
             total = 0
             num_data = 0
+            reservation_ids = []
+            for i in values['lines']:
+                reservation_ids.append(i['reservation_id'])
+
+            temp_dict = {
+                'start_date': data['start_date'],
+                'end_date': data['end_date'],
+                'type': 'invoice',
+                'reservation': reservation_ids
+            }
+            invoice = self.env['report.tt_report_selling.report_selling']._get_reports(temp_dict)
+
+            if mode == 'month':
+                for i in result:
+                    # filter invoice for every months
+                    month_index = month.index(i)
+                    filtered_data = list(filter(lambda x: int(x['date'].strftime('%m')) - 1 == month_index, invoice))
+                    result[i] += len(filtered_data)
+                    num_data += len(filtered_data)
+            else:
+                for i in result:
+                    # filter for everyday
+                    filtered_data = invoice.filtered(key=lambda x: x['create_date'] == i)
+                    result[i] += len(filtered_data)
+                    num_data += len(filtered_data)
+
+            # proceed invoice with the assumption of create date = issued date
+
             for i in values['lines']:
                 if i['reservation_state'] == 'issued':
                     result[str(i['reservation_issued_date'])] += 1
                     revenue[str(i['reservation_issued_date'])] += i['amount']
                     total += i['amount']
-                    num_data += 1
+                    # num_data += 1
 
             average = []
             for i in result:
@@ -606,12 +718,40 @@ class TtReportDashboard(models.Model):
 
             total = 0
             num_data = 0
+            reservation_ids = []
+            for i in values['lines']:
+                reservation_ids.append(i['reservation_id'])
+
+            temp_dict = {
+                'start_date': data['start_date'],
+                'end_date': data['end_date'],
+                'type': 'invoice',
+                'reservation': reservation_ids
+            }
+            invoice = self.env['report.tt_report_selling.report_selling']._get_reports(temp_dict)
+
+            if mode == 'month':
+                for i in result:
+                    # filter invoice for every months
+                    month_index = month.index(i)
+                    filtered_data = list(filter(lambda x: int(x['date'].strftime('%m')) - 1 == month_index, invoice))
+                    result[i] += len(filtered_data)
+                    num_data += len(filtered_data)
+            else:
+                for i in result:
+                    # filter for everyday
+                    filtered_data = invoice.filtered(key=lambda x: x['create_date'] == i)
+                    result[i] += len(filtered_data)
+                    num_data += len(filtered_data)
+
+            # proceed invoice with the assumption of create date = issued date
+
             for i in values['lines']:
                 if i['reservation_state'] == 'issued':
                     result[str(i['reservation_issued_date'])] += 1
                     revenue[str(i['reservation_issued_date'])] += i['amount']
                     total += i['amount']
-                    num_data += 1
+                    # num_data += 1
 
             average = []
             for i in result:
@@ -674,11 +814,39 @@ class TtReportDashboard(models.Model):
 
             total = 0
             num_data = 0
+            reservation_ids = []
+            for i in values['lines']:
+                reservation_ids.append(i['reservation_id'])
+
+            temp_dict = {
+                'start_date': data['start_date'],
+                'end_date': data['end_date'],
+                'type': 'invoice',
+                'reservation': reservation_ids
+            }
+            invoice = self.env['report.tt_report_selling.report_selling']._get_reports(temp_dict)
+
+            if mode == 'month':
+                for i in result:
+                    # filter invoice for every months
+                    month_index = month.index(i)
+                    filtered_data = list(filter(lambda x: int(x['date'].strftime('%m')) - 1 == month_index, invoice))
+                    result[i] += len(filtered_data)
+                    num_data += len(filtered_data)
+            else:
+                for i in result:
+                    # filter for everyday
+                    filtered_data = invoice.filtered(key=lambda x: x['create_date'] == i)
+                    result[i] += len(filtered_data)
+                    num_data += len(filtered_data)
+
+            # proceed invoice with the assumption of create date = issued date
+
             for i in values['lines']:
                 if i['reservation_state'] == 'issued':
                     result[str(i['reservation_issued_date'])] += 1
                     total += i['amount']
-                    num_data += 1
+                    # num_data += 1
 
             average = []
             for i in result:
@@ -741,12 +909,40 @@ class TtReportDashboard(models.Model):
 
             total = 0
             num_data = 0
+            reservation_ids = []
+            for i in values['lines']:
+                reservation_ids.append(i['reservation_id'])
+
+            temp_dict = {
+                'start_date': data['start_date'],
+                'end_date': data['end_date'],
+                'type': 'invoice',
+                'reservation': reservation_ids
+            }
+            invoice = self.env['report.tt_report_selling.report_selling']._get_reports(temp_dict)
+
+            if mode == 'month':
+                for i in result:
+                    # filter invoice for every months
+                    month_index = month.index(i)
+                    filtered_data = list(filter(lambda x: int(x['date'].strftime('%m')) - 1 == month_index, invoice))
+                    result[i] += len(filtered_data)
+                    num_data += len(filtered_data)
+            else:
+                for i in result:
+                    # filter for everyday
+                    filtered_data = invoice.filtered(key=lambda x: x['create_date'] == i)
+                    result[i] += len(filtered_data)
+                    num_data += len(filtered_data)
+
+            # proceed invoice with the assumption of create date = issued date
+
             for i in values['lines']:
                 if i['reservation_state'] == 'issued':
                     result[str(i['reservation_issued_date'])] += 1
                     revenue[str(i['reservation_issued_date'])] += i['amount']
                     total += i['amount']
-                    num_data += 1
+                    # num_data += 1
 
             average = []
             for i in result:
@@ -798,12 +994,40 @@ class TtReportDashboard(models.Model):
 
             total = 0
             num_data = 0
+            reservation_ids = []
+            for i in values['lines']:
+                reservation_ids.append(i['reservation_id'])
+
+            temp_dict = {
+                'start_date': data['start_date'],
+                'end_date': data['end_date'],
+                'type': 'invoice',
+                'reservation': reservation_ids
+            }
+            invoice = self.env['report.tt_report_selling.report_selling']._get_reports(temp_dict)
+
+            if mode == 'month':
+                for i in result:
+                    # filter invoice for every months
+                    month_index = month.index(i)
+                    filtered_data = list(filter(lambda x: int(x['date'].strftime('%m')) - 1 == month_index, invoice))
+                    result[i] += len(filtered_data)
+                    num_data += len(filtered_data)
+            else:
+                for i in result:
+                    # filter for everyday
+                    filtered_data = invoice.filtered(key=lambda x: x['create_date'] == i)
+                    result[i] += len(filtered_data)
+                    num_data += len(filtered_data)
+
+            # proceed invoice with the assumption of create date = issued date
+
             for i in values['lines']:
                 if i['reservation_state'] == 'issued':
                     result[str(i['reservation_issued_date'])] += 1
                     revenue[str(i['reservation_issued_date'])] += i['amount']
                     total += i['amount']
-                    num_data += 1
+                    # num_data += 1
 
             average = []
             for i in result:
@@ -866,12 +1090,40 @@ class TtReportDashboard(models.Model):
 
             total = 0
             num_data = 0
+            reservation_ids = []
+            for i in values['lines']:
+                reservation_ids.append(i['reservation_id'])
+
+            temp_dict = {
+                'start_date': data['start_date'],
+                'end_date': data['end_date'],
+                'type': 'invoice',
+                'reservation': reservation_ids
+            }
+            invoice = self.env['report.tt_report_selling.report_selling']._get_reports(temp_dict)
+
+            if mode == 'month':
+                for i in result:
+                    # filter invoice for every months
+                    month_index = month.index(i)
+                    filtered_data = list(filter(lambda x: int(x['date'].strftime('%m')) - 1 == month_index, invoice))
+                    result[i] += len(filtered_data)
+                    num_data += len(filtered_data)
+            else:
+                for i in result:
+                    # filter for everyday
+                    filtered_data = invoice.filtered(key=lambda x: x['create_date'] == i)
+                    result[i] += len(filtered_data)
+                    num_data += len(filtered_data)
+
+            # proceed invoice with the assumption of create date = issued date
+
             for i in values['lines']:
                 if i['reservation_state'] == 'issued':
                     result[str(i['reservation_issued_date'])] += 1
                     revenue[str(i['reservation_issued_date'])] += i['amount']
                     total += i['amount']
-                    num_data += 1
+                    # num_data += 1
 
             average = []
             for i in result:
