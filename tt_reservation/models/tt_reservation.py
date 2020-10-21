@@ -366,7 +366,7 @@ class TtReservation(models.Model):
                 'last_name': rec['last_name'],
                 'gender': rec['gender'],
                 'title': rec['title'],
-                'birth_date': rec['birth_date'],
+                'birth_date': rec.get('birth_date',False),
                 'nationality_id': nationality_id,
                 'identity_type': identity and identity['identity_type'] or '',
                 'identity_number': identity and identity['identity_number'] or '',
