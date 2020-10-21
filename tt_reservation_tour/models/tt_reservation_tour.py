@@ -565,7 +565,8 @@ class ReservationTour(models.Model):
                 provider_booking_list.append(prov.to_dict())
             response = book_obj.to_dict()
             response.update({
-                'provider_booking': provider_booking_list
+                'provider_booking': provider_booking_list,
+                'booking_uuid': book_obj.booking_uuid and book_obj.booking_uuid or False
             })
             return ERR.get_no_error(response)
         except RequestException as e:
