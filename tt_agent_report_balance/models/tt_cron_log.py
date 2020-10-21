@@ -16,5 +16,6 @@ class TtCronLogInhResv(models.Model):
         log_files = agent_balance_wz_obj.action_print_excel()
         self.env['tt.agent.report.balance.log'].create({
             'file': log_files,
-            'name': 'Daily Agent Report Balance Log %s.xls' % (date.strftime('%Y-%m-%d %H:%M:%S'))
+            'name': 'Daily Agent Report Balance Log %s.xls' % (date.strftime('%Y-%m-%d %H:%M:%S')),
+            'date': date
         })
