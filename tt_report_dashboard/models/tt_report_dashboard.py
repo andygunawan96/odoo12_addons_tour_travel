@@ -107,9 +107,17 @@ class TtReportDashboard(models.Model):
             temp_dict = {
                 'start_date': data['start_date'],
                 'end_date': data['end_date'],
+                'type': 'all'
+            }
+            all_values = self.env['report.tt_report_selling.report_selling']._get_reports(temp_dict)
+
+            temp_dict = {
+                'start_date': data['start_date'],
+                'end_date': data['end_date'],
                 'type': data['report_type']
             }
-            values = self.env['report.tt_report_selling.report_selling']._get_reports(temp_dict)
+            issued_values = self.env['report.tt_report_selling.report_selling']._get_reports(temp_dict)
+
 
             result = {}
             revenue = {}
@@ -146,7 +154,7 @@ class TtReportDashboard(models.Model):
             total = 0
             num_data = 0
             reservation_ids = []
-            for i in values['lines']:
+            for i in issued_values['lines']:
                 reservation_ids.append(i['reservation_id'])
 
             temp_dict = {
@@ -173,7 +181,7 @@ class TtReportDashboard(models.Model):
 
             # proceed invoice with the assumption of create date = issued date
 
-            for i in values['lines']:
+            for i in issued_values['lines']:
 
                 # create main graph
                 if i['reservation_state'] == 'issued':
@@ -207,12 +215,86 @@ class TtReportDashboard(models.Model):
             for i in result:
                 average.append(revenue[i]/ result[i] if revenue[i] > 0 else 0)
 
+            # create book vs issue
+            summary_by_date = []
+            for i in all_values['lines']:
+                try:
+                    month_index = self.check_date_index(summary_by_date, {'year': i['booked_year'],
+                                                                          'month': month[int(i['booked_month']) - 1]})
+                    if month_index == -1:
+                        temp_dict = {
+                            'year': i['booked_year'],
+                            'month_index': int(i['booked_month']),
+                            'month': month[int(i['booked_month']) - 1],
+                            'detail': self.add_month_detail()
+                        }
+                        # seperate book date
+                        try:
+                            splits = i['reservation_booked_date'].split("-")
+                            day_index = int(splits[2]) - 1
+                            temp_dict['detail'][day_index]['booked_counter'] += 1
+                        except:
+                            pass
+                        try:
+                            splits = i['reservation_issued_date'].split("-")
+                            day_index = int(splits[2]) - 1
+                            temp_dict['detail'][day_index]['issued_counter'] += 1
+                        except:
+                            pass
+
+                        summary_by_date.append(temp_dict)
+                    else:
+                        try:
+                            splits = i['reservation_booked_date'].split("-")
+                            day_index = int(splits[2]) - 1
+                            summary_by_date[month_index]['detail'][day_index]['booked_counter'] += 1
+                        except:
+                            pass
+                        try:
+                            splits = i['reservation_issued_date'].split("-")
+                            day_index = int(splits[2]) - 1
+                            summary_by_date[month_index]['detail'][day_index]['issued_counter'] += 1
+                        except:
+                            pass
+                except:
+                    pass
+
+            # sort summary_by_date month in the correct order
+            summary_by_date.sort(key=lambda x: (x['year'], x['month_index']))
+
+            # shape the data for return
+            book_data = {}
+            issued_data = {}
+            if mode == 'month':
+                # sum by month
+                for i in summary_by_date:
+                    # for every month in summary by date
+                    book_data[i['month']] = 0
+                    issued_data[i['month']] = 0
+                    for j in i['detail']:
+                        # for every date in a month (i)
+                        book_data[i['month']] += j['booked_counter']
+                        issued_data[i['month']] += j['issued_counter']
+            else:
+                # seperate by date
+                for i in summary_by_date:
+                    # for every month in summary by date
+                    for j in i['detail']:
+                        # for every date in a month (i)
+                        book_data[str(j['day']) + "-" + str(i['month'])] = j['booked_counter']
+                        issued_data[str(j['day']) + "-" + str(i['month'])] = j['issued_counter']
+
             to_return = {
                 'graph': {
                     'label': list(result.keys()),
                     'data': list(result.values()),
                     'data2': list(revenue.values()),
                     'data3': average
+                },
+                'second_graph': {
+                    'label': list(book_data.keys()),
+                    'data': list(book_data.values()),
+                    'data2': list(issued_data.values())
                 },
                 'total_rupiah': total,
                 'average_rupiah': float(total) / float(num_data) if num_data > 0 else 0,
@@ -229,9 +311,23 @@ class TtReportDashboard(models.Model):
             temp_dict = {
                 'start_date': data['start_date'],
                 'end_date': data['end_date'],
+                'type': 'all'
+            }
+            all_values = self.env['report.tt_report_selling.report_selling']._get_reports(temp_dict)
+
+            temp_dict = {
+                'start_date': data['start_date'],
+                'end_date': data['end_date'],
+                'type': 'all'
+            }
+            all_values = self.env['report.tt_report_selling.report_selling']._get_reports(temp_dict)
+
+            temp_dict = {
+                'start_date': data['start_date'],
+                'end_date': data['end_date'],
                 'type': data['report_type']
             }
-            values = self.env['report.tt_report_selling.report_selling']._get_reports(temp_dict)
+            issued_values = self.env['report.tt_report_selling.report_selling']._get_reports(temp_dict)
 
             # result for graph
             result = {}
@@ -272,7 +368,7 @@ class TtReportDashboard(models.Model):
             total = 0
             num_data = 0
             reservation_ids = []
-            for i in values['lines']:
+            for i in issued_values['lines']:
                 reservation_ids.append(i['reservation_id'])
 
             temp_dict = {
@@ -299,7 +395,7 @@ class TtReportDashboard(models.Model):
 
             # proceed invoice with the assumption of create date = issued date
 
-            for i in values['lines']:
+            for i in issued_values['lines']:
                 if i['reservation_state'] == 'issued':
                     result[str(i['reservation_issued_date'])] += 1
                     revenue[str(i['reservation_issued_date'])] += i['amount']
@@ -378,6 +474,49 @@ class TtReportDashboard(models.Model):
             for i in result:
                 average.append(revenue[i]/ result[i] if revenue[i] > 0 else 0)
 
+            # count book vs issued
+            summary_by_date = []
+            for i in all_values['lines']:
+                try:
+                    month_index = self.check_date_index(summary_by_date, {'year': i['booked_year'],
+                                                                          'month': month[int(i['booked_month']) - 1]})
+                    if month_index == -1:
+                        temp_dict = {
+                            'year': i['booked_year'],
+                            'month': month[int(i['booked_month']) - 1],
+                            'detail': self.add_month_detail()
+                        }
+                        # seperate book date
+                        try:
+                            splits = i['reservation_booked_date'].split("-")
+                            day_index = int(splits[2]) - 1
+                            temp_dict['detail'][day_index]['booked_counter'] += 1
+                        except:
+                            pass
+                        try:
+                            splits = i['reservation_issued_date'].split("-")
+                            day_index = int(splits[2]) - 1
+                            temp_dict['detail'][day_index]['issued_counter'] += 1
+                        except:
+                            pass
+
+                        summary_by_date.append(temp_dict)
+                    else:
+                        try:
+                            splits = i['reservation_booked_date'].split("-")
+                            day_index = int(splits[2]) - 1
+                            summary_by_date[month_index]['detail'][day_index]['booked_counter'] += 1
+                        except:
+                            pass
+                        try:
+                            splits = i['reservation_issued_date'].split("-")
+                            day_index = int(splits[2]) - 1
+                            summary_by_date[month_index]['detail'][day_index]['issued_counter'] += 1
+                        except:
+                            pass
+                except:
+                    pass
+
             to_return = {
                 'graph': {
                     'label': list(result.keys()),
@@ -407,9 +546,16 @@ class TtReportDashboard(models.Model):
             temp_dict = {
                 'start_date': data['start_date'],
                 'end_date': data['end_date'],
+                'type': 'all'
+            }
+            all_values = self.env['report.tt_report_selling.report_selling']._get_reports(temp_dict)
+
+            temp_dict = {
+                'start_date': data['start_date'],
+                'end_date': data['end_date'],
                 'type': data['report_type']
             }
-            values = self.env['report.tt_report_selling.report_selling']._get_reports(temp_dict)
+            issued_values = self.env['report.tt_report_selling.report_selling']._get_reports(temp_dict)
 
             result = {}
             revenue = {}
@@ -449,7 +595,7 @@ class TtReportDashboard(models.Model):
             total = 0
             num_data = 0
             reservation_ids = []
-            for i in values['lines']:
+            for i in issued_values['lines']:
                 reservation_ids.append(i['reservation_id'])
 
             temp_dict = {
@@ -476,7 +622,7 @@ class TtReportDashboard(models.Model):
 
             # proceed invoice with the assumption of create date = issued date
 
-            for i in values['lines']:
+            for i in issued_values['lines']:
                 if i['reservation_state'] == 'issued':
                     result[str(i['reservation_issued_date'])] += 1
                     revenue[str(i['reservation_issued_date'])] += i['amount']
@@ -556,6 +702,50 @@ class TtReportDashboard(models.Model):
             for i in result:
                 average.append(revenue[i]/ result[i] if revenue[i] > 0 else 0)
 
+            # count book vs issued
+            summary_by_date = []
+            for i in all_values['lines']:
+                try:
+                    month_index = self.check_date_index(summary_by_date, {'year': i['booked_year'],
+                                                                          'month': month[
+                                                                              int(i['booked_month']) - 1]})
+                    if month_index == -1:
+                        temp_dict = {
+                            'year': i['booked_year'],
+                            'month': month[int(i['booked_month']) - 1],
+                            'detail': self.add_month_detail()
+                        }
+                        # seperate book date
+                        try:
+                            splits = i['reservation_booked_date'].split("-")
+                            day_index = int(splits[2]) - 1
+                            temp_dict['detail'][day_index]['booked_counter'] += 1
+                        except:
+                            pass
+                        try:
+                            splits = i['reservation_issued_date'].split("-")
+                            day_index = int(splits[2]) - 1
+                            temp_dict['detail'][day_index]['issued_counter'] += 1
+                        except:
+                            pass
+
+                        summary_by_date.append(temp_dict)
+                    else:
+                        try:
+                            splits = i['reservation_booked_date'].split("-")
+                            day_index = int(splits[2]) - 1
+                            summary_by_date[month_index]['detail'][day_index]['booked_counter'] += 1
+                        except:
+                            pass
+                        try:
+                            splits = i['reservation_issued_date'].split("-")
+                            day_index = int(splits[2]) - 1
+                            summary_by_date[month_index]['detail'][day_index]['issued_counter'] += 1
+                        except:
+                            pass
+                except:
+                    pass
+
             to_return = {
                 'graph': {
                     'label': list(result.keys()),
@@ -585,9 +775,16 @@ class TtReportDashboard(models.Model):
             temp_dict = {
                 'start_date': data['start_date'],
                 'end_date': data['end_date'],
+                'type': 'all'
+            }
+            all_values = self.env['report.tt_report_selling.report_selling']._get_reports(temp_dict)
+
+            temp_dict = {
+                'start_date': data['start_date'],
+                'end_date': data['end_date'],
                 'type': data['report_type']
             }
-            values = self.env['report.tt_report_selling.report_selling']._get_reports(temp_dict)
+            issued_values = self.env['report.tt_report_selling.report_selling']._get_reports(temp_dict)
 
             result = {}
             revenue = {}
@@ -623,7 +820,7 @@ class TtReportDashboard(models.Model):
             total = 0
             num_data = 0
             reservation_ids = []
-            for i in values['lines']:
+            for i in issued_values['lines']:
                 reservation_ids.append(i['reservation_id'])
 
             temp_dict = {
@@ -650,7 +847,7 @@ class TtReportDashboard(models.Model):
 
             # proceed invoice with the assumption of create date = issued date
 
-            for i in values['lines']:
+            for i in issued_values['lines']:
                 if i['reservation_state'] == 'issued':
                     result[str(i['reservation_issued_date'])] += 1
                     revenue[str(i['reservation_issued_date'])] += i['amount']
@@ -660,6 +857,50 @@ class TtReportDashboard(models.Model):
             average = []
             for i in result:
                 average.append(revenue[i]/ result[i] if revenue[i] > 0 else 0)
+
+            # count book vs issued
+            summary_by_date = []
+            for i in all_values['lines']:
+                try:
+                    month_index = self.check_date_index(summary_by_date, {'year': i['booked_year'],
+                                                                          'month': month[
+                                                                              int(i['booked_month']) - 1]})
+                    if month_index == -1:
+                        temp_dict = {
+                            'year': i['booked_year'],
+                            'month': month[int(i['booked_month']) - 1],
+                            'detail': self.add_month_detail()
+                        }
+                        # seperate book date
+                        try:
+                            splits = i['reservation_booked_date'].split("-")
+                            day_index = int(splits[2]) - 1
+                            temp_dict['detail'][day_index]['booked_counter'] += 1
+                        except:
+                            pass
+                        try:
+                            splits = i['reservation_issued_date'].split("-")
+                            day_index = int(splits[2]) - 1
+                            temp_dict['detail'][day_index]['issued_counter'] += 1
+                        except:
+                            pass
+
+                        summary_by_date.append(temp_dict)
+                    else:
+                        try:
+                            splits = i['reservation_booked_date'].split("-")
+                            day_index = int(splits[2]) - 1
+                            summary_by_date[month_index]['detail'][day_index]['booked_counter'] += 1
+                        except:
+                            pass
+                        try:
+                            splits = i['reservation_issued_date'].split("-")
+                            day_index = int(splits[2]) - 1
+                            summary_by_date[month_index]['detail'][day_index]['issued_counter'] += 1
+                        except:
+                            pass
+                except:
+                    pass
 
             to_return = {
                 'graph': {
@@ -681,9 +922,16 @@ class TtReportDashboard(models.Model):
             temp_dict = {
                 'start_date': data['start_date'],
                 'end_date': data['end_date'],
+                'type': 'all'
+            }
+            all_values = self.env['report.tt_report_selling.report_selling']._get_reports(temp_dict)
+
+            temp_dict = {
+                'start_date': data['start_date'],
+                'end_date': data['end_date'],
                 'type': data['report_type']
             }
-            values = self.env['report.tt_report_selling.report_selling']._get_reports(temp_dict)
+            issued_values = self.env['report.tt_report_selling.report_selling']._get_reports(temp_dict)
 
             result = {}
             revenue = {}
@@ -719,7 +967,7 @@ class TtReportDashboard(models.Model):
             total = 0
             num_data = 0
             reservation_ids = []
-            for i in values['lines']:
+            for i in issued_values['lines']:
                 reservation_ids.append(i['reservation_id'])
 
             temp_dict = {
@@ -746,7 +994,7 @@ class TtReportDashboard(models.Model):
 
             # proceed invoice with the assumption of create date = issued date
 
-            for i in values['lines']:
+            for i in issued_values['lines']:
                 if i['reservation_state'] == 'issued':
                     result[str(i['reservation_issued_date'])] += 1
                     revenue[str(i['reservation_issued_date'])] += i['amount']
@@ -756,6 +1004,50 @@ class TtReportDashboard(models.Model):
             average = []
             for i in result:
                 average.append(revenue[i]/ result[i] if revenue[i] > 0 else 0)
+
+            # count book vs issued
+            summary_by_date = []
+            for i in all_values['lines']:
+                try:
+                    month_index = self.check_date_index(summary_by_date, {'year': i['booked_year'],
+                                                                          'month': month[
+                                                                              int(i['booked_month']) - 1]})
+                    if month_index == -1:
+                        temp_dict = {
+                            'year': i['booked_year'],
+                            'month': month[int(i['booked_month']) - 1],
+                            'detail': self.add_month_detail()
+                        }
+                        # seperate book date
+                        try:
+                            splits = i['reservation_booked_date'].split("-")
+                            day_index = int(splits[2]) - 1
+                            temp_dict['detail'][day_index]['booked_counter'] += 1
+                        except:
+                            pass
+                        try:
+                            splits = i['reservation_issued_date'].split("-")
+                            day_index = int(splits[2]) - 1
+                            temp_dict['detail'][day_index]['issued_counter'] += 1
+                        except:
+                            pass
+
+                        summary_by_date.append(temp_dict)
+                    else:
+                        try:
+                            splits = i['reservation_booked_date'].split("-")
+                            day_index = int(splits[2]) - 1
+                            summary_by_date[month_index]['detail'][day_index]['booked_counter'] += 1
+                        except:
+                            pass
+                        try:
+                            splits = i['reservation_issued_date'].split("-")
+                            day_index = int(splits[2]) - 1
+                            summary_by_date[month_index]['detail'][day_index]['issued_counter'] += 1
+                        except:
+                            pass
+                except:
+                    pass
 
             to_return = {
                 'graph': {
@@ -777,9 +1069,16 @@ class TtReportDashboard(models.Model):
             temp_dict = {
                 'start_date': data['start_date'],
                 'end_date': data['end_date'],
+                'type': 'all'
+            }
+            all_values = self.env['report.tt_report_selling.report_selling']._get_reports(temp_dict)
+
+            temp_dict = {
+                'start_date': data['start_date'],
+                'end_date': data['end_date'],
                 'type': data['report_type']
             }
-            values = self.env['report.tt_report_selling.report_selling']._get_reports(temp_dict)
+            issued_values = self.env['report.tt_report_selling.report_selling']._get_reports(temp_dict)
 
             result = {}
             revenue = {}
@@ -815,7 +1114,7 @@ class TtReportDashboard(models.Model):
             total = 0
             num_data = 0
             reservation_ids = []
-            for i in values['lines']:
+            for i in issued_values['lines']:
                 reservation_ids.append(i['reservation_id'])
 
             temp_dict = {
@@ -842,7 +1141,7 @@ class TtReportDashboard(models.Model):
 
             # proceed invoice with the assumption of create date = issued date
 
-            for i in values['lines']:
+            for i in issued_values['lines']:
                 if i['reservation_state'] == 'issued':
                     result[str(i['reservation_issued_date'])] += 1
                     total += i['amount']
@@ -851,6 +1150,50 @@ class TtReportDashboard(models.Model):
             average = []
             for i in result:
                 average.append(revenue[i]/ result[i] if revenue[i] > 0 else 0)
+
+            # count book vs issued
+            summary_by_date = []
+            for i in all_values['lines']:
+                try:
+                    month_index = self.check_date_index(summary_by_date, {'year': i['booked_year'],
+                                                                          'month': month[
+                                                                              int(i['booked_month']) - 1]})
+                    if month_index == -1:
+                        temp_dict = {
+                            'year': i['booked_year'],
+                            'month': month[int(i['booked_month']) - 1],
+                            'detail': self.add_month_detail()
+                        }
+                        # seperate book date
+                        try:
+                            splits = i['reservation_booked_date'].split("-")
+                            day_index = int(splits[2]) - 1
+                            temp_dict['detail'][day_index]['booked_counter'] += 1
+                        except:
+                            pass
+                        try:
+                            splits = i['reservation_issued_date'].split("-")
+                            day_index = int(splits[2]) - 1
+                            temp_dict['detail'][day_index]['issued_counter'] += 1
+                        except:
+                            pass
+
+                        summary_by_date.append(temp_dict)
+                    else:
+                        try:
+                            splits = i['reservation_booked_date'].split("-")
+                            day_index = int(splits[2]) - 1
+                            summary_by_date[month_index]['detail'][day_index]['booked_counter'] += 1
+                        except:
+                            pass
+                        try:
+                            splits = i['reservation_issued_date'].split("-")
+                            day_index = int(splits[2]) - 1
+                            summary_by_date[month_index]['detail'][day_index]['issued_counter'] += 1
+                        except:
+                            pass
+                except:
+                    pass
 
             to_return = {
                 'graph': {
@@ -872,9 +1215,16 @@ class TtReportDashboard(models.Model):
             temp_dict = {
                 'start_date': data['start_date'],
                 'end_date': data['end_date'],
+                'type': 'all'
+            }
+            all_values = self.env['report.tt_report_selling.report_selling']._get_reports(temp_dict)
+
+            temp_dict = {
+                'start_date': data['start_date'],
+                'end_date': data['end_date'],
                 'type': data['report_type']
             }
-            values = self.env['report.tt_report_selling.report_selling']._get_reports(temp_dict)
+            issued_values = self.env['report.tt_report_selling.report_selling']._get_reports(temp_dict)
 
             result = {}
             revenue = {}
@@ -910,7 +1260,7 @@ class TtReportDashboard(models.Model):
             total = 0
             num_data = 0
             reservation_ids = []
-            for i in values['lines']:
+            for i in issued_values['lines']:
                 reservation_ids.append(i['reservation_id'])
 
             temp_dict = {
@@ -937,7 +1287,7 @@ class TtReportDashboard(models.Model):
 
             # proceed invoice with the assumption of create date = issued date
 
-            for i in values['lines']:
+            for i in issued_values['lines']:
                 if i['reservation_state'] == 'issued':
                     result[str(i['reservation_issued_date'])] += 1
                     revenue[str(i['reservation_issued_date'])] += i['amount']
@@ -947,6 +1297,50 @@ class TtReportDashboard(models.Model):
             average = []
             for i in result:
                 average.append(revenue[i]/ result[i] if revenue[i] > 0 else 0)
+
+            # count book vs issued
+            summary_by_date = []
+            for i in all_values['lines']:
+                try:
+                    month_index = self.check_date_index(summary_by_date, {'year': i['booked_year'],
+                                                                          'month': month[
+                                                                              int(i['booked_month']) - 1]})
+                    if month_index == -1:
+                        temp_dict = {
+                            'year': i['booked_year'],
+                            'month': month[int(i['booked_month']) - 1],
+                            'detail': self.add_month_detail()
+                        }
+                        # seperate book date
+                        try:
+                            splits = i['reservation_booked_date'].split("-")
+                            day_index = int(splits[2]) - 1
+                            temp_dict['detail'][day_index]['booked_counter'] += 1
+                        except:
+                            pass
+                        try:
+                            splits = i['reservation_issued_date'].split("-")
+                            day_index = int(splits[2]) - 1
+                            temp_dict['detail'][day_index]['issued_counter'] += 1
+                        except:
+                            pass
+
+                        summary_by_date.append(temp_dict)
+                    else:
+                        try:
+                            splits = i['reservation_booked_date'].split("-")
+                            day_index = int(splits[2]) - 1
+                            summary_by_date[month_index]['detail'][day_index]['booked_counter'] += 1
+                        except:
+                            pass
+                        try:
+                            splits = i['reservation_issued_date'].split("-")
+                            day_index = int(splits[2]) - 1
+                            summary_by_date[month_index]['detail'][day_index]['issued_counter'] += 1
+                        except:
+                            pass
+                except:
+                    pass
 
             to_return = {
                 'graph': {
@@ -968,9 +1362,16 @@ class TtReportDashboard(models.Model):
             temp_dict = {
                 'start_date': data['start_date'],
                 'end_date': data['end_date'],
+                'type': 'all'
+            }
+            all_values = self.env['report.tt_report_selling.report_selling']._get_reports(temp_dict)
+
+            temp_dict = {
+                'start_date': data['start_date'],
+                'end_date': data['end_date'],
                 'type': data['report_type']
             }
-            values = self.env['report.tt_report_selling.report_selling']._get_reports(temp_dict)
+            issued_values = self.env['report.tt_report_selling.report_selling']._get_reports(temp_dict)
 
             result = {}
             revenue = {}
@@ -995,7 +1396,7 @@ class TtReportDashboard(models.Model):
             total = 0
             num_data = 0
             reservation_ids = []
-            for i in values['lines']:
+            for i in issued_values['lines']:
                 reservation_ids.append(i['reservation_id'])
 
             temp_dict = {
@@ -1022,7 +1423,7 @@ class TtReportDashboard(models.Model):
 
             # proceed invoice with the assumption of create date = issued date
 
-            for i in values['lines']:
+            for i in issued_values['lines']:
                 if i['reservation_state'] == 'issued':
                     result[str(i['reservation_issued_date'])] += 1
                     revenue[str(i['reservation_issued_date'])] += i['amount']
@@ -1032,6 +1433,50 @@ class TtReportDashboard(models.Model):
             average = []
             for i in result:
                 average.append(revenue[i]/ result[i] if revenue[i] > 0 else 0)
+
+            # count book vs issued
+            summary_by_date = []
+            for i in all_values['lines']:
+                try:
+                    month_index = self.check_date_index(summary_by_date, {'year': i['booked_year'],
+                                                                          'month': month[
+                                                                              int(i['booked_month']) - 1]})
+                    if month_index == -1:
+                        temp_dict = {
+                            'year': i['booked_year'],
+                            'month': month[int(i['booked_month']) - 1],
+                            'detail': self.add_month_detail()
+                        }
+                        # seperate book date
+                        try:
+                            splits = i['reservation_booked_date'].split("-")
+                            day_index = int(splits[2]) - 1
+                            temp_dict['detail'][day_index]['booked_counter'] += 1
+                        except:
+                            pass
+                        try:
+                            splits = i['reservation_issued_date'].split("-")
+                            day_index = int(splits[2]) - 1
+                            temp_dict['detail'][day_index]['issued_counter'] += 1
+                        except:
+                            pass
+
+                        summary_by_date.append(temp_dict)
+                    else:
+                        try:
+                            splits = i['reservation_booked_date'].split("-")
+                            day_index = int(splits[2]) - 1
+                            summary_by_date[month_index]['detail'][day_index]['booked_counter'] += 1
+                        except:
+                            pass
+                        try:
+                            splits = i['reservation_issued_date'].split("-")
+                            day_index = int(splits[2]) - 1
+                            summary_by_date[month_index]['detail'][day_index]['issued_counter'] += 1
+                        except:
+                            pass
+                except:
+                    pass
 
             to_return = {
                 'graph': {
@@ -1053,9 +1498,16 @@ class TtReportDashboard(models.Model):
             temp_dict = {
                 'start_date': data['start_date'],
                 'end_date': data['end_date'],
+                'type': 'all'
+            }
+            all_values = self.env['report.tt_report_selling.report_selling']._get_reports(temp_dict)
+
+            temp_dict = {
+                'start_date': data['start_date'],
+                'end_date': data['end_date'],
                 'type': data['report_type']
             }
-            values = self.env['report.tt_report_selling.report_selling']._get_reports(temp_dict)
+            issued_values = self.env['report.tt_report_selling.report_selling']._get_reports(temp_dict)
 
             result = {}
             revenue = {}
@@ -1091,7 +1543,7 @@ class TtReportDashboard(models.Model):
             total = 0
             num_data = 0
             reservation_ids = []
-            for i in values['lines']:
+            for i in issued_values['lines']:
                 reservation_ids.append(i['reservation_id'])
 
             temp_dict = {
@@ -1118,7 +1570,7 @@ class TtReportDashboard(models.Model):
 
             # proceed invoice with the assumption of create date = issued date
 
-            for i in values['lines']:
+            for i in issued_values['lines']:
                 if i['reservation_state'] == 'issued':
                     result[str(i['reservation_issued_date'])] += 1
                     revenue[str(i['reservation_issued_date'])] += i['amount']
@@ -1128,6 +1580,50 @@ class TtReportDashboard(models.Model):
             average = []
             for i in result:
                 average.append(revenue[i]/ result[i] if revenue[i] > 0 else 0)
+
+            # count book vs issued
+            summary_by_date = []
+            for i in all_values['lines']:
+                try:
+                    month_index = self.check_date_index(summary_by_date, {'year': i['booked_year'],
+                                                                          'month': month[
+                                                                              int(i['booked_month']) - 1]})
+                    if month_index == -1:
+                        temp_dict = {
+                            'year': i['booked_year'],
+                            'month': month[int(i['booked_month']) - 1],
+                            'detail': self.add_month_detail()
+                        }
+                        # seperate book date
+                        try:
+                            splits = i['reservation_booked_date'].split("-")
+                            day_index = int(splits[2]) - 1
+                            temp_dict['detail'][day_index]['booked_counter'] += 1
+                        except:
+                            pass
+                        try:
+                            splits = i['reservation_issued_date'].split("-")
+                            day_index = int(splits[2]) - 1
+                            temp_dict['detail'][day_index]['issued_counter'] += 1
+                        except:
+                            pass
+
+                        summary_by_date.append(temp_dict)
+                    else:
+                        try:
+                            splits = i['reservation_booked_date'].split("-")
+                            day_index = int(splits[2]) - 1
+                            summary_by_date[month_index]['detail'][day_index]['booked_counter'] += 1
+                        except:
+                            pass
+                        try:
+                            splits = i['reservation_issued_date'].split("-")
+                            day_index = int(splits[2]) - 1
+                            summary_by_date[month_index]['detail'][day_index]['issued_counter'] += 1
+                        except:
+                            pass
+                except:
+                    pass
 
             to_return = {
                 'graph': {
