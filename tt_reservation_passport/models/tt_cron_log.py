@@ -21,6 +21,5 @@ class TtCronLogInhResv(models.Model):
                     else:
                         rec.delivered_date = datetime.now()
         except Exception as e:
-            _logger.error(msg=str(e) + '\n' + traceback.format_exc())
             self.create_cron_log_folder()
             self.write_cron_log('Update status booking Passport')

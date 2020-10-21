@@ -22,7 +22,6 @@ class TtCronLogInhResv(models.Model):
                     else:
                         rec.delivered_date = datetime.now()
         except Exception as e:
-            _logger.error(msg=str(e) + '\n' + traceback.format_exc())
             self.create_cron_log_folder()
             self.write_cron_log('Update status booking Visa')
 
@@ -35,6 +34,5 @@ class TtCronLogInhResv(models.Model):
             for rec in validate_ho_date:
                 rec.action_expired()
         except Exception as e:
-            _logger.error(msg=str(e) + '\n' + traceback.format_exc())
             self.create_cron_log_folder()
             self.write_cron_log('Update status booking Visa')

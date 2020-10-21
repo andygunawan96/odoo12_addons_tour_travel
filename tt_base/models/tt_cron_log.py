@@ -15,6 +15,7 @@ class TtCronLog(models.Model):
             os.mkdir(dest)
 
     def write_cron_log(self,action_name,additional_message=''):
+        _logger.error(traceback.format_exc())
         file = open('%s/%s_%s_error.log' % (
             '/var/log/odoo/cron_log',action_name, datetime.now().strftime('%Y-%m-%d_%H:%M:%S')),
                     'w')

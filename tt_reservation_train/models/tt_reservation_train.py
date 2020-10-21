@@ -1,8 +1,7 @@
 from odoo import api,models,fields
-from ...tools import variables
 import json,traceback,logging
 from ...tools.ERR import RequestException
-from ...tools import ERR
+from ...tools import ERR,util,variables
 from datetime import date, datetime, timedelta
 import base64
 
@@ -205,6 +204,9 @@ class TtReservationTrain(models.Model):
                 rec[2].update({
                     'customer_id': list_customer_id[idx].id
                 })
+
+            for psg in list_passenger_value:
+                util.pop_empty_key(psg[2])
 
             values.update({
                 'user_id': context['co_uid'],
