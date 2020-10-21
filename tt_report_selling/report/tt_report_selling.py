@@ -497,9 +497,9 @@ class ReportSelling(models.Model):
                     query += 'WHERE {} '.format(self._where_invoice(i))
                     first_data = False
                 else:
-                    query += 'OR WHERE {} '.format(self._where_invoice(i))
-            query += 'ORDER BY {} '.format(self._order_by_invoice())
+                    query += 'OR {} '.format(self._where_invoice(i))
             query += 'GROUP BY {} '.format(self._group_by_invoice())
+            query += 'ORDER BY {} '.format(self._order_by_invoice())
         else:
             query += 'FROM {} '.format(self._from(provider_type))
             query += 'WHERE {} '.format(self._where(date_from, date_to))
