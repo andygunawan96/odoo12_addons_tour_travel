@@ -408,6 +408,8 @@ class MasterTour(models.Model):
             for rec in file['result']:
                 provider_obj = self.env['tt.provider'].sudo().search([('code', '=', rec['provider'])], limit=1)
                 provider_obj = provider_obj and provider_obj[0] or False
+                carrier_obj = self.env['tt.transport.carrier'].sudo().search([('code', '=', rec['carrier_code'])], limit=1)
+                carrier_obj = carrier_obj and carrier_obj[0] or False
                 currency_obj = self.env['res.currency'].sudo().search([('name', '=', rec['currency_code'])], limit=1)
                 currency_obj = currency_obj and currency_obj[0] or False
                 vals = {
@@ -441,6 +443,7 @@ class MasterTour(models.Model):
                     'guiding_days': rec['guiding_days'],
                     'driving_times': rec['driving_times'],
                     'provider_id': provider_obj and provider_obj.id or False,
+                    'carrier_id': carrier_obj and carrier_obj.id or False,
                     'currency_id': currency_obj and currency_obj.id or False,
                     'active': True
                 }
@@ -898,7 +901,8 @@ class MasterTour(models.Model):
 
             deleted_keys = ['import_other_info', 'export_other_info', 'adult_fare', 'adult_commission', 'child_fare',
                             'child_commission', 'infant_fare', 'infant_commission', 'document_url', 'down_payment',
-                            'other_info_preview', 'create_date', 'create_uid', 'write_date', 'write_uid']
+                            'other_info_preview', 'create_date', 'create_uid', 'write_date', 'write_uid', 'provider_id',
+                            'carrier_id', 'agent_id', 'active', 'id']
 
             for idx, rec in enumerate(result):
                 try:
@@ -919,6 +923,7 @@ class MasterTour(models.Model):
                 child_sale_price = int(rec['child_fare']) + int(rec['child_commission'])
                 infant_sale_price = int(rec['infant_fare']) + int(rec['infant_commission'])
                 res_provider = rec.get('provider_id') and self.env['tt.provider'].browse(rec['provider_id']) or None
+                res_carrier = rec.get('carrier_id') and self.env['tt.transport.carrier'].browse(rec['carrier_id']) or None
                 rec.update({
                     'name': rec['name'],
                     'adult_sale_price': adult_sale_price,
@@ -927,8 +932,8 @@ class MasterTour(models.Model):
                     'images_obj': final_images,
                     'departure_date': rec['departure_date'] and rec['departure_date'] or '',
                     'arrival_date': rec['arrival_date'] and rec['arrival_date'] or '',
-                    'provider_id': rec.get('provider_id') and rec['provider_id'] or '',
                     'provider': res_provider and res_provider.code or '',
+                    'carrier_code': res_carrier and res_carrier.code or '',
                     'create_date': '',
                     'write_date': '',
                 })

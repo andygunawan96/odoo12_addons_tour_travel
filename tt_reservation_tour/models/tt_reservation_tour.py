@@ -82,7 +82,7 @@ class ReservationTour(models.Model):
         elif all(rec.state == 'issued' for rec in self.provider_booking_ids):
             # issued
             acquirer_id, customer_parent_id = self.get_acquirer_n_c_parent_id(req)
-            self.action_issued_tour(acquirer_id and acquirer_id.id or False, customer_parent_id, context)
+            self.action_issued_api_tour(acquirer_id and acquirer_id.id or False, customer_parent_id, context)
         elif all(rec.state == 'refund' for rec in self.provider_booking_ids):
             # refund
             self.action_refund()
@@ -114,21 +114,7 @@ class ReservationTour(models.Model):
             })
             # raise RequestException(1006)
 
-    def action_issued_tour(self,acquirer_id,customer_parent_id,context):
-        if not context:  # Jika dari call from backend
-            context = {
-                'co_uid': self.env.user.id,
-                'signature': ''
-            }
-        if not context.get('co_uid'):
-            context.update({
-                'co_uid': self.env.user.id
-            })
-        if not context.get('signature'):
-            context.update({
-                'signature': ''
-            })
-
+    def action_issued_tour(self,co_uid,customer_parent_id,acquirer_id = False):
         if self.state != 'issued':
             pnr_list = []
             provider_list = []
@@ -141,7 +127,7 @@ class ReservationTour(models.Model):
             self.write({
                 'state': 'issued',
                 'issued_date': datetime.now(),
-                'issued_uid': context['co_uid'] or self.env.user.id,
+                'issued_uid': co_uid or self.env.user.id,
                 'customer_parent_id': customer_parent_id,
                 'pnr': ', '.join(pnr_list),
                 'provider_name': ','.join(provider_list),
@@ -166,6 +152,9 @@ class ReservationTour(models.Model):
                         raise Exception('Issued email for {} is already created!'.format(self.name))
             except Exception as e:
                 _logger.info('Error Create Email Queue')
+
+    def action_issued_api_tour(self,acquirer_id,customer_parent_id,context):
+        self.action_issued_tour(context['co_uid'],customer_parent_id,acquirer_id)
 
     def call_create_invoice(self, acquirer_id, co_uid, customer_parent_id, payment_method):
         _logger.info('Creating Invoice for ' + self.name)
