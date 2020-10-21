@@ -137,10 +137,8 @@ class TtProviderPPOB(models.Model):
         if self.state == 'fail_refunded':
             raise UserError("Cannot refund, this PNR has been refunded.")
 
-        ##fixme salahhh, ini ke reverse semua provider bukan provider ini saja
-        ## ^ harusnay sudah fix
         for rec in self.booking_id.ledger_ids:
-            if rec.pnr == self.pnr and not rec.is_reversed:
+            if rec.pnr in [self.pnr, str(self.sequence)] and not rec.is_reversed:
                 rec.reverse_ledger()
 
         for rec in self.cost_service_charge_ids:

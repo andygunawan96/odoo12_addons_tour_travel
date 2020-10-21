@@ -408,13 +408,14 @@ class MasterTour(models.Model):
             for rec in file['result']:
                 provider_obj = self.env['tt.provider'].sudo().search([('code', '=', rec['provider'])], limit=1)
                 provider_obj = provider_obj and provider_obj[0] or False
-                prefix = provider_obj.alias and provider_obj.alias + '~' or ''
+                carrier_obj = self.env['tt.transport.carrier'].sudo().search([('code', '=', rec['carrier_code'])], limit=1)
+                carrier_obj = carrier_obj and carrier_obj[0] or False
                 currency_obj = self.env['res.currency'].sudo().search([('name', '=', rec['currency_code'])], limit=1)
                 currency_obj = currency_obj and currency_obj[0] or False
                 vals = {
                     'name': rec['name'],
                     'description': rec['description'],
-                    'tour_code': prefix + rec['tour_code'],
+                    'tour_code': rec['tour_code'],
                     'tour_route': rec['tour_route'],
                     'tour_category': rec['tour_category'],
                     'tour_type': rec['tour_type'],
@@ -442,6 +443,7 @@ class MasterTour(models.Model):
                     'guiding_days': rec['guiding_days'],
                     'driving_times': rec['driving_times'],
                     'provider_id': provider_obj and provider_obj.id or False,
+                    'carrier_id': carrier_obj and carrier_obj.id or False,
                     'currency_id': currency_obj and currency_obj.id or False,
                     'active': True
                 }
@@ -899,7 +901,8 @@ class MasterTour(models.Model):
 
             deleted_keys = ['import_other_info', 'export_other_info', 'adult_fare', 'adult_commission', 'child_fare',
                             'child_commission', 'infant_fare', 'infant_commission', 'document_url', 'down_payment',
-                            'other_info_preview', 'create_date', 'create_uid', 'write_date', 'write_uid']
+                            'other_info_preview', 'create_date', 'create_uid', 'write_date', 'write_uid', 'provider_id',
+                            'carrier_id', 'agent_id', 'active', 'id']
 
             for idx, rec in enumerate(result):
                 try:
@@ -920,6 +923,7 @@ class MasterTour(models.Model):
                 child_sale_price = int(rec['child_fare']) + int(rec['child_commission'])
                 infant_sale_price = int(rec['infant_fare']) + int(rec['infant_commission'])
                 res_provider = rec.get('provider_id') and self.env['tt.provider'].browse(rec['provider_id']) or None
+                res_carrier = rec.get('carrier_id') and self.env['tt.transport.carrier'].browse(rec['carrier_id']) or None
                 rec.update({
                     'name': rec['name'],
                     'adult_sale_price': adult_sale_price,
@@ -928,8 +932,8 @@ class MasterTour(models.Model):
                     'images_obj': final_images,
                     'departure_date': rec['departure_date'] and rec['departure_date'] or '',
                     'arrival_date': rec['arrival_date'] and rec['arrival_date'] or '',
-                    'provider_id': rec.get('provider_id') and rec['provider_id'] or '',
                     'provider': res_provider and res_provider.code or '',
+                    'carrier_code': res_carrier and res_carrier.code or '',
                     'create_date': '',
                     'write_date': '',
                 })
@@ -990,16 +994,13 @@ class MasterTour(models.Model):
             if not data.get('provider'):
                 default_prov = self.env.ref('tt_reservation_tour.tt_provider_tour_internal')
                 data.update({
-                    'provider': default_prov.alias and default_prov.alias or ''
+                    'provider': default_prov.code and default_prov.code or ''
                 })
-            provider_obj = self.env['tt.provider'].sudo().search([('alias', '=', data['provider'])], limit=1)
+            provider_obj = self.env['tt.provider'].sudo().search([('code', '=', data['provider'])], limit=1)
             if not provider_obj:
                 raise RequestException(1002)
             provider_obj = provider_obj[0]
-            if provider_obj.id == self.env.ref('tt_reservation_tour.tt_provider_tour_internal').id:
-                tour_obj = self.env['tt.master.tour'].sudo().search([('tour_code', '=', provider_obj.alias + '~' + data['tour_code']), ('provider_id', '=', provider_obj.id)], limit=1)
-            else:
-                tour_obj = self.env['tt.master.tour'].sudo().search([('tour_code', '=', data['tour_code']), ('provider_id', '=', provider_obj.id)], limit=1)
+            tour_obj = self.env['tt.master.tour'].sudo().search([('tour_code', '=', provider_obj.alias + '~' + data['tour_code']), ('provider_id', '=', provider_obj.id)], limit=1)
             if tour_obj:
                 tour_obj = tour_obj[0]
                 response.update({
@@ -1258,7 +1259,7 @@ class MasterTour(models.Model):
             if not provider_obj:
                 raise RequestException(1002)
             provider_obj = provider_obj[0]
-            search_tour_obj = self.env['tt.master.tour'].sudo().search([('tour_code', '=', search_request['tour_code']), ('provider_id', '=', provider_obj.id)], limit=1)
+            search_tour_obj = self.env['tt.master.tour'].sudo().search([('tour_code', '=', provider_obj.alias + '~' + search_request['tour_code']), ('provider_id', '=', provider_obj.id)], limit=1)
             if not search_tour_obj:
                 raise RequestException(1022, additional_message='Tour not found.')
             search_tour_obj = search_tour_obj[0]
@@ -1302,7 +1303,7 @@ class MasterTour(models.Model):
             if not provider_obj:
                 raise RequestException(1002)
             provider_obj = provider_obj[0]
-            search_tour_obj = self.env['tt.master.tour'].sudo().search([('tour_code', '=', search_request['tour_code']), ('provider_id', '=', provider_obj.id)], limit=1)
+            search_tour_obj = self.env['tt.master.tour'].sudo().search([('tour_code', '=', provider_obj.alias + '~' + search_request['tour_code']), ('provider_id', '=', provider_obj.id)], limit=1)
             if not search_tour_obj:
                 raise RequestException(1022, additional_message='Tour not found.')
             search_tour_obj = search_tour_obj[0]
@@ -1455,7 +1456,7 @@ class MasterTour(models.Model):
             if not provider_obj:
                 raise RequestException(1002)
             provider_obj = provider_obj[0]
-            tour_data_list = self.env['tt.master.tour'].sudo().search([('tour_code', '=', search_request['tour_code']), ('provider_id', '=', provider_obj.id)], limit=1)
+            tour_data_list = self.env['tt.master.tour'].sudo().search([('tour_code', '=', provider_obj.alias + '~' + search_request['tour_code']), ('provider_id', '=', provider_obj.id)], limit=1)
             if not tour_data_list:
                 raise RequestException(1022, additional_message='Tour not found.')
             tour_data = tour_data_list[0]

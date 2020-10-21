@@ -71,7 +71,7 @@ class AgentReportBalanceXls(models.TransientModel):
 
         workbook.close()
 
-        if data.get('logging_daily'):
+        if data['form'].get('logging_daily'):
             return base64.encodebytes(stream.getvalue())
         else:
             attach_id = self.env['tt.agent.report.excel.output.wizard'].create(

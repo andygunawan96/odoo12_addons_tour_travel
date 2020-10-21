@@ -222,6 +222,8 @@
                                                 <field name="seat"/>
                                             </tree>
                                         </field>
+                                        <separator colspan="6" string="Legs"/>
+                                        <field name="leg_ids"/>
                                         <separator string="Addons"/>
                                         <field name="segment_addons_ids"/>
                                     </sheet>

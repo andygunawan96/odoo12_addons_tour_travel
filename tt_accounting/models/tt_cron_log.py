@@ -56,6 +56,9 @@ class TtCronLogInhResv(models.Model):
             self.create_cron_log_folder()
             self.write_cron_log('auto expired ledger waiting list')
 
+    def sub_func_agent_balance_report_log(self):
+        pass
+
     def cron_ledger_statement_agent(self):
         try:
             list_agent_obj = self.env['tt.agent'].search([])
@@ -65,6 +68,7 @@ class TtCronLogInhResv(models.Model):
                     _logger.info("Ledger Statement Success for %s" % (agent_obj.name))
                 except Exception as e:
                     _logger.error("Failed Ledger Statement for %s\n%s" %(agent_obj.name,str(e)))
+            self.sub_func_agent_balance_report_log()
         except Exception as e:
             self.create_cron_log_folder()
             self.write_cron_log('auto-create ledger statement agent')

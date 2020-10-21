@@ -75,6 +75,11 @@
         <field name="code">dashboard</field>
     </record>
 
+    <record id="report" model="tt.frontend.security">
+        <field name="name">Report</field>
+        <field name="code">report</field>
+    </record>
+
     <record id="able_to_use_pnr_quota" model="tt.frontend.security">
         <field name="name">PNR Quota</field>
         <field name="code">pnr_quota</field>

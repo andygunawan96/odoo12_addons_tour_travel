@@ -81,6 +81,16 @@ class TtRescheduleWizard(models.TransientModel):
                 'sequence': rec.sequence,
                 'old_id': rec.id,
             })
+            self.env['tt.leg.reschedule'].sudo().create({
+                'provider_id': rec.provider_id.id,
+                'origin_id': rec.origin_id.id,
+                'destination_id': rec.destination_id.id,
+                'origin_terminal': rec.origin_terminal,
+                'destination_terminal': rec.destination_terminal,
+                'departure_date': rec.departure_date,
+                'arrival_date': rec.arrival_date,
+                'segment_id': new_seg_obj.id,
+            })
             for rec2 in rec.seat_ids:
                 self.env['tt.seat.reschedule'].sudo().create({
                     'segment_id': new_seg_obj.id,
