@@ -373,7 +373,7 @@ class ReportSelling(models.Model):
     @staticmethod
     def _order_by_invoice():
         return """
-        created_date
+        create_date
         """
 
     @staticmethod
