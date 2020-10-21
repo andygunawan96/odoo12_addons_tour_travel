@@ -495,6 +495,7 @@ class ReportSelling(models.Model):
             for i in reservation:
                 if first_data:
                     query += 'WHERE {} '.format(self._where_invoice(i))
+                    first_data = False
                 else:
                     query += 'OR WHERE {} '.format(self._where_invoice(i))
             query += 'ORDER BY {} '.format(self._order_by_invoice())
