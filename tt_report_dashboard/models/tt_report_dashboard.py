@@ -549,6 +549,11 @@ class TtReportDashboard(models.Model):
                     'data2': list(revenue.values()),
                     'data3': average
                 },
+                'second_graph': {
+                    'label': list(book_data.keys()),
+                    'data': list(book_data.values()),
+                    'data2': list(issued_data.values())
+                },
                 'total_rupiah': total,
                 'average_rupiah': float(total) / float(num_data) if num_data > 0 else 0,
                 'overview': {
@@ -828,6 +833,11 @@ class TtReportDashboard(models.Model):
                     'data2': list(revenue.values()),
                     'data3': average
                 },
+                'second_graph': {
+                    'label': list(book_data.keys()),
+                    'data': list(book_data.values()),
+                    'data2': list(issued_data.values())
+                },
                 'total_rupiah': total,
                 'average_rupiah': float(total) / float(num_data) if num_data > 0 else 0,
                 'overview': {
@@ -1009,6 +1019,11 @@ class TtReportDashboard(models.Model):
                     'data2': list(revenue.values()),
                     'data3': average
                 },
+                'second_graph': {
+                    'label': list(book_data.keys()),
+                    'data': list(book_data.values()),
+                    'data2': list(issued_data.values())
+                },
                 'total_rupiah': total,
                 'average_rupiah': float(total) / float(num_data) if num_data > 0 else 0
             }
@@ -1181,6 +1196,11 @@ class TtReportDashboard(models.Model):
                     'data2': list(revenue.values()),
                     'data3': average
                 },
+                'second_graph': {
+                    'label': list(book_data.keys()),
+                    'data': list(book_data.values()),
+                    'data2': list(issued_data.values())
+                },
                 'total_rupiah': total,
                 'average_rupiah': float(total) / float(num_data) if num_data > 0 else 0
             }
@@ -1351,6 +1371,11 @@ class TtReportDashboard(models.Model):
                     'data': list(result.values()),
                     'data2': list(revenue.values()),
                     'data3': average
+                },
+                'second_graph': {
+                    'label': list(book_data.keys()),
+                    'data': list(book_data.values()),
+                    'data2': list(issued_data.values())
                 },
                 'total_rupiah': total,
                 'average_rupiah': float(total) / float(num_data) if num_data > 0 else 0
@@ -1524,6 +1549,11 @@ class TtReportDashboard(models.Model):
                     'data2': list(revenue.values()),
                     'data3': average
                 },
+                'second_graph': {
+                    'label': list(book_data.keys()),
+                    'data': list(book_data.values()),
+                    'data2': list(issued_data.values())
+                },
                 'total_rupiah': total,
                 'average_rupiah': float(total) / float(num_data) if num_data > 0 else 0
             }
@@ -1684,6 +1714,11 @@ class TtReportDashboard(models.Model):
                     'data': list(result.values()),
                     'data2': list(revenue.values()),
                     'data3': average
+                },
+                'second_graph': {
+                    'label': list(book_data.keys()),
+                    'data': list(book_data.values()),
+                    'data2': list(issued_data.values())
                 },
                 'total_rupiah': total,
                 'average_rupiah': float(total) / float(num_data) if num_data > 0 else 0
@@ -1856,6 +1891,11 @@ class TtReportDashboard(models.Model):
                     'data': list(result.values()),
                     'data2': list(revenue.values()),
                     'data3': average
+                },
+                'second_graph': {
+                    'label': list(book_data.keys()),
+                    'data': list(book_data.values()),
+                    'data2': list(issued_data.values())
                 },
                 'total_rupiah': total,
                 'average_rupiah': float(total) / float(num_data) if num_data > 0 else 0

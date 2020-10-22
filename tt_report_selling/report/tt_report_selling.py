@@ -378,7 +378,7 @@ class ReportSelling(models.Model):
 
     @staticmethod
     def _group_by_invoice():
-        return """invoice_id"""
+        return """invoice_id, create_date"""
 
     @staticmethod
     def _report_title(data_form):
