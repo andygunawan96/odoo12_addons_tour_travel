@@ -21,7 +21,7 @@
         <field name="arch" type="xml">
             <form create="false">
                 <header>
-                    <button string="Sync Balance" name="action_sync_balance" type="object"/>
+                    <button string="Sync Balance" name="action_sync_balance" type="object" groups="tt_base.group_tt_accounting_operator"/>
                     <field name="state" widget="statusbar" statusbar_visible="open"/>
                 </header>
                 <sheet>
@@ -43,14 +43,30 @@
                         <field name="provider_type_id"/>
                         <field name="provider_id"/>
                         <field name="currency_id" invisible="1"/>
-                        <field name="start_balance"/>
-                        <field name="end_balance"/>
+                        <field name="start_balance" readonly="1"/>
+                        <field name="end_balance" readonly="1"/>
                         <field name="transaction_date"/>
                     </group>
                     <separator string="Line(s)"/>
                     <field name="reconcile_lines_ids"/>
                 </sheet>
             </form>
+        </field>
+    </record>
+
+    <!-- Accounting Manager memiliki privilege untuk mengubah start & end balance -->
+    <record id="tt_reconcile_transaction_form_view_tt_accounting_manager" model="ir.ui.view">
+        <field name="name">tt.reconcile.transaction.form.view.tt.accounting.manager</field>
+        <field name="model">tt.reconcile.transaction</field>
+        <field name="inherit_id" ref="tt_reconcile_transaction_form_view" />
+        <field name="groups_id" eval="[(6, 0, [ref('tt_base.group_tt_accounting_manager') ])]" />
+        <field name="arch" type="xml">
+            <field name="start_balance" position="attributes">
+               <attribute name="readonly">0</attribute>
+            </field>
+            <field name="end_balance" position="attributes">
+               <attribute name="readonly">0</attribute>
+            </field>
         </field>
     </record>
 
