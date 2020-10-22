@@ -62,8 +62,10 @@
                 <field name="provider_type_id"/>
                 <field name="provider_id"/>
                 <field name="transaction_date"/>
+                <field name="start_balance"/>
+                <field name="end_balance"/>
                 <field name="total_lines"/>
-                <field name="state"/>
+<!--                <field name="state"/>-->
             </tree>
         </field>
     </record>
