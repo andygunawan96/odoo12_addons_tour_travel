@@ -6,12 +6,12 @@
             <field name="model">tt.agent.report.balance.log</field>
             <field name="priority">20</field>
             <field name="arch" type="xml">
-                <form>
+                <form edit="false" creaet="false">
                     <sheet>
                         <field name="name" invisible="1"/>
 
                         <h1>
-                            <field name="date"/>
+                            <field name="date" readonly="1"/>
                         </h1>
                         <br/>
                         <separator string="Download File"/>
@@ -26,7 +26,7 @@
             <field name="model">tt.agent.report.balance.log</field>
             <field name="priority">20</field>
             <field name="arch" type="xml">
-                <tree>
+                <tree create="false">
                     <field name="name"/>
                     <field name="date"/>
                 </tree>
