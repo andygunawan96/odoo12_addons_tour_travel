@@ -321,7 +321,7 @@ class TtReservation(models.Model):
                     continue
 
             psg['agent_id'] = context['co_agent_id']
-            agent_obj = self.env['tt.agent'].sudo().browse(context['co_agent_id'])
+
             psg.update({
                 'marital_status': 'married' if psg.get('title') == 'MRS' else '',
                 'is_get_booking_from_vendor': psg.get('is_get_booking_from_vendor', False),
@@ -366,7 +366,7 @@ class TtReservation(models.Model):
                 'last_name': rec['last_name'],
                 'gender': rec['gender'],
                 'title': rec['title'],
-                'birth_date': rec['birth_date'],
+                'birth_date': rec.get('birth_date',False),
                 'nationality_id': nationality_id,
                 'identity_type': identity and identity['identity_type'] or '',
                 'identity_number': identity and identity['identity_number'] or '',

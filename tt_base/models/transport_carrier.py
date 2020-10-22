@@ -28,6 +28,7 @@ class TransportCarrier(models.Model):
     adult_length_name = fields.Integer('Adult Length Name', default=30, help='Adult length name')
     child_length_name = fields.Integer('Child Length Name', default=30, help='Child length name')
     infant_length_name = fields.Integer('Infant Length Name', default=16, help='Infant length name')
+    is_adult_birth_date_required = fields.Boolean('Is Adult Birth Date Required', default=True)
     active = fields.Boolean('Active', default=True)
     # country_id = fields.Many2one('res.country', 'Country') masihbutuh?
 
@@ -55,6 +56,7 @@ class TransportCarrier(models.Model):
             'adult_length_name': self.adult_length_name,
             'child_length_name': self.child_length_name,
             'infant_length_name': self.infant_length_name,
+            'is_adult_birth_date_required': self.is_adult_birth_date_required,
             'active': self.active,
         }
 
@@ -69,6 +71,7 @@ class TransportCarrier(models.Model):
             'adult_length_name': self.adult_length_name,
             'child_length_name': self.child_length_name,
             'infant_length_name': self.infant_length_name,
+            'is_adult_birth_date_required': self.is_adult_birth_date_required,
             'active': self.active,
         }
         return res

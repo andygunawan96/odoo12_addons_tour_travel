@@ -27,6 +27,7 @@ class PaymentAcquirer(models.Model):
     is_specific_time = fields.Boolean('Specific Time')
     start_time = fields.Float(string='Start Time', help="Format: HH:mm Range 00:00 => 24:00")
     end_time = fields.Float(string='End Time', help="Format: HH:mm Range 00:00 => 24:00")
+    description_msg = fields.Text('Description')
 
     @api.model
     def create(self, vals_list):
@@ -104,6 +105,7 @@ class PaymentAcquirer(models.Model):
             },
             'total_amount': float(amount) + uniq + fee,
             'image': self.bank_id.image_id and self.bank_id.image_id.url or '',
+            'description_msg': self.description_msg or ''
         }
 
     def acquirer_format_VA(self, acq, amount,unique):
@@ -132,6 +134,7 @@ class PaymentAcquirer(models.Model):
             },
             'total_amount': float(amount) + fee + uniq,
             'image': payment_acq.id.bank_id.image_id and payment_acq.id.bank_id.image_id.url or '',
+            'description_msg': payment_acq.description_msg or ''
         }
 
     def get_va_number(self, req, context):

@@ -154,3 +154,11 @@ class ttCronTopUpValidator(models.Model):
         except Exception as e:
             self.create_cron_log_folder()
             self.write_cron_log("auto proceed yesterday transaction data")
+
+    def cron_auto_change_nextcall_get_bank_transaction(self,int_values=30):
+        try:
+            self.env.ref('tt_bank_transaction.cron_auto_get_bank_transaction').interval_number = int_values
+        except Exception as e:
+            self.create_cron_log_folder()
+            self.write_cron_log('auto change nexctcall get bank transaction')
+

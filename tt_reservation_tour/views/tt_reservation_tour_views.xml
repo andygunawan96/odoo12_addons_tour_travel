@@ -160,8 +160,8 @@
                             <field name="amount"/>
                             <field name="due_date"/>
                             <field name="description"/>
-                            <field name="state_invoice"/>
                             <field name="agent_invoice_id"/>
+                            <field name="state_invoice"/>
                         </tree>
                         <form create="false">
                             <header>

@@ -17,7 +17,7 @@ class AgentReportCommon(models.TransientModel):
 
     period = fields.Selection([('today', 'Today'), ('yesterday', 'Yesterday'),
                                ('1', 'This month'), ('2', 'A month ago'), ('3', 'Two month ago'),
-                               ('custom', 'Custom')], 'Period', default='1')
+                               ('custom', 'Custom')], 'Period', default='today')
 
     date_from = fields.Date(string='Start Date')
     date_to = fields.Date(string='End Date')
@@ -125,7 +125,7 @@ class AgentReportCommon(models.TransientModel):
         self.ensure_one()
         data = ({
             'model': self.env.context.get('active_model', 'ir.ui.menu'),
-            'form': self.read(['date_from', 'date_to', 'period', 'agent_id', 'state', 'provider_type', 'chart_frequency', 'agent_type_id', 'agent_type'])[0]
+            'form': self.read(['date_from', 'date_to', 'period', 'agent_id', 'state', 'provider_type', 'chart_frequency', 'agent_type_id', 'agent_type','logging_daily'])[0]
         })
         self._prepare_form(data)
         used_context = self._build_contexts(data)

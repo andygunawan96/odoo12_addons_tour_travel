@@ -21,6 +21,12 @@ class ReportSelling(models.Model):
         reservation.payment_method as reservation_payment_method
         """
 
+    @staticmethod
+    def _select_invoice():
+        return """
+        COUNT(*), create_date as create_date_og
+        """
+
     #only works with airline maybe train
     @staticmethod
     def _select_airline():
@@ -226,6 +232,10 @@ class ReportSelling(models.Model):
         LEFT JOIN tt_provider_type provider_type ON reservation.provider_type_id = provider_type.id
         """
 
+    @staticmethod
+    def _from_invoice():
+        return """tt_agent_invoice_line"""
+
     #only works for airline and train
     @staticmethod
     def _from_airline():
@@ -335,6 +345,12 @@ class ReportSelling(models.Model):
         where = """reservation.create_date >= '%s' and reservation.create_date <= '%s'""" % (date_from, date_to)
         return where
 
+    # where invoice
+    @staticmethod
+    def _where_invoice(id):
+        where = """res_id_resv = %s""" % (id)
+        return where
+
     # where issued
     @staticmethod
     def _where_issued(date_from, date_to):
@@ -355,10 +371,20 @@ class ReportSelling(models.Model):
         """
 
     @staticmethod
+    def _order_by_invoice():
+        return """
+        create_date
+        """
+
+    @staticmethod
+    def _group_by_invoice():
+        return """invoice_id"""
+
+    @staticmethod
     def _report_title(data_form):
         data_form['title'] = 'Selling Report: ' + data_form['subtitle']
 
-    def _lines(self, date_from, date_to, agent_id, provider_type, provider_checker):
+    def _lines(self, date_from, date_to, agent_id, provider_type, provider_checker, reservation = []):
         if provider_checker == 'airline' or provider_checker == 'overall_airline':
             query = 'SELECT {} '.format(self._select_airline())
         elif provider_checker == 'train' or provider_checker == 'overall_train':
@@ -377,6 +403,8 @@ class ReportSelling(models.Model):
             query = 'SELECT {} '.format(self._select_event())
         elif provider_checker == 'ppob':
             query = 'SELECT {} '.format(self._select_ppob())
+        elif provider_checker == 'invoice':
+            query = 'SELECT {} '.format(self._select_invoice())
         else:
             query = 'SELECT {}'.format(self._select())
 
@@ -461,6 +489,17 @@ class ReportSelling(models.Model):
             query += 'FROM {} '.format(self._from_offline())
             query += 'WHERE {} '.format(self._where_issued(date_from, date_to))
             query += 'ORDER BY {} '.format(self._order_by_issued())
+        elif provider_checker == 'invoice':
+            query += 'FROM {} '.format(self._from_invoice())
+            first_data = True
+            for i in reservation:
+                if first_data:
+                    query += 'WHERE {} '.format(self._where_invoice(i))
+                    first_data = False
+                else:
+                    query += 'OR {} '.format(self._where_invoice(i))
+            query += 'GROUP BY {} '.format(self._group_by_invoice())
+            query += 'ORDER BY {} '.format(self._order_by_invoice())
         else:
             query += 'FROM {} '.format(self._from(provider_type))
             query += 'WHERE {} '.format(self._where(date_from, date_to))
@@ -589,9 +628,9 @@ class ReportSelling(models.Model):
         value = fields.Datetime.from_string(utc_datetime_string)
         return fields.Datetime.context_timestamp(self, value).strftime("%Y-%m-%d")
 
-    def _get_lines_data(self, date_from, date_to, agent_id, provider_type):
+    def _get_lines_data(self, date_from, date_to, agent_id, provider_type, reservation = []):
         if provider_type != 'all':
-            lines = self._lines(date_from, date_to, agent_id, provider_type, provider_type)
+            lines = self._lines(date_from, date_to, agent_id, provider_type, provider_type, reservation)
             if provider_type == 'airline':
                 lines = self._convert_data_airline(lines)
             elif provider_type == 'train':
@@ -640,10 +679,13 @@ class ReportSelling(models.Model):
         date_from = data['start_date']
         date_to = data['end_date']
         provider_type = data['type']
+        reservation = []
         if provider_type == 'overall':
             provider_type = 'all'
+        if provider_type == 'invoice':
+            reservation = data['reservation']
         agent_id = ''
-        line = self._get_lines_data(date_from, date_to, agent_id, provider_type)
+        line = self._get_lines_data(date_from, date_to, agent_id, provider_type, reservation)
         return {
             'lines': line
         }

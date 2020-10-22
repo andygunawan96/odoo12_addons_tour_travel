@@ -85,6 +85,9 @@
                                 <field name="end_time" attrs="{'invisible': [('is_specific_time','=',False)]}" widget="float_time"/>
                             </group>
                         </group>
+                        <group>
+                            <field name="description_msg"/>
+                        </group>
                     </sheet>
                 </form>
             </field>

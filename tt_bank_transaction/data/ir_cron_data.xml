@@ -39,5 +39,17 @@
             <field name="model_id" ref="tt_base.model_tt_cron_log"/>
             <field name="code">model.cron_auto_proceed_bank_transaction()</field>
         </record>
+
+        <record model="ir.cron" id="cron_auto_change_nextcall_get_bank_transaction">
+            <field name="name">Auto-change nextcall get bank transaction</field>
+            <field name="user_id" ref="base.user_root"/>
+            <field name="interval_number">1</field>
+            <field name="interval_type">days</field>
+            <field name="numbercall">-1</field>
+            <field name="active">False</field>
+            <field name="state">code</field>
+            <field name="model_id" ref="tt_base.model_tt_cron_log"/>
+            <field name="code">model.cron_auto_change_nextcall_get_bank_transaction()</field>
+        </record>
     </data>
 </odoo>
