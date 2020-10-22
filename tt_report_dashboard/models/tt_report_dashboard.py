@@ -169,13 +169,13 @@ class TtReportDashboard(models.Model):
                 for i in result:
                     # filter invoice for every months
                     month_index = month.index(i)
-                    filtered_data = list(filter(lambda x: int(x['date'].strftime('%m')) - 1 == month_index, invoice))
+                    filtered_data = list(filter(lambda x: int(x['create_date_og'].strftime('%m')) - 1 == int(month_index), invoice))
                     result[i] += len(filtered_data)
                     num_data += len(filtered_data)
             else:
                 for i in result:
                     # filter for everyday
-                    filtered_data = invoice.filtered(key=lambda x: x['create_date'] == i)
+                    filtered_data = list(filter(lambda x: x['create_date'] == i, invoice))
                     result[i] += len(filtered_data)
                     num_data += len(filtered_data)
 
@@ -383,13 +383,13 @@ class TtReportDashboard(models.Model):
                 for i in result:
                     # filter invoice for every months
                     month_index = month.index(i)
-                    filtered_data = list(filter(lambda x: int(x['date'].strftime('%m')) - 1 == month_index, invoice))
+                    filtered_data = list(filter(lambda x: int(x['create_date_og'].strftime('%m')) - 1 == int(month_index), invoice))
                     result[i] += len(filtered_data)
                     num_data += len(filtered_data)
             else:
                 for i in result:
                     # filter for everyday
-                    filtered_data = invoice.filtered(key=lambda x: x['create_date'] == i)
+                    filtered_data = list(filter(lambda x: x['create_date'] == i, invoice))
                     result[i] += len(filtered_data)
                     num_data += len(filtered_data)
 
@@ -549,6 +549,11 @@ class TtReportDashboard(models.Model):
                     'data2': list(revenue.values()),
                     'data3': average
                 },
+                'second_graph': {
+                    'label': list(book_data.keys()),
+                    'data': list(book_data.values()),
+                    'data2': list(issued_data.values())
+                },
                 'total_rupiah': total,
                 'average_rupiah': float(total) / float(num_data) if num_data > 0 else 0,
                 'overview': {
@@ -635,13 +640,13 @@ class TtReportDashboard(models.Model):
                 for i in result:
                     # filter invoice for every months
                     month_index = month.index(i)
-                    filtered_data = list(filter(lambda x: int(x['date'].strftime('%m')) - 1 == month_index, invoice))
+                    filtered_data = list(filter(lambda x: int(x['create_date_og'].strftime('%m')) - 1 == int(month_index), invoice))
                     result[i] += len(filtered_data)
                     num_data += len(filtered_data)
             else:
                 for i in result:
                     # filter for everyday
-                    filtered_data = invoice.filtered(key=lambda x: x['create_date'] == i)
+                    filtered_data = list(filter(lambda x: x['create_date'] == i, invoice))
                     result[i] += len(filtered_data)
                     num_data += len(filtered_data)
 
@@ -828,6 +833,11 @@ class TtReportDashboard(models.Model):
                     'data2': list(revenue.values()),
                     'data3': average
                 },
+                'second_graph': {
+                    'label': list(book_data.keys()),
+                    'data': list(book_data.values()),
+                    'data2': list(issued_data.values())
+                },
                 'total_rupiah': total,
                 'average_rupiah': float(total) / float(num_data) if num_data > 0 else 0,
                 'overview': {
@@ -910,13 +920,13 @@ class TtReportDashboard(models.Model):
                 for i in result:
                     # filter invoice for every months
                     month_index = month.index(i)
-                    filtered_data = list(filter(lambda x: int(x['date'].strftime('%m')) - 1 == month_index, invoice))
+                    filtered_data = list(filter(lambda x: int(x['create_date_og'].strftime('%m')) - 1 == int(month_index), invoice))
                     result[i] += len(filtered_data)
                     num_data += len(filtered_data)
             else:
                 for i in result:
                     # filter for everyday
-                    filtered_data = invoice.filtered(key=lambda x: x['create_date'] == i)
+                    filtered_data = list(filter(lambda x: x['create_date'] == i, invoice))
                     result[i] += len(filtered_data)
                     num_data += len(filtered_data)
 
@@ -1008,6 +1018,11 @@ class TtReportDashboard(models.Model):
                     'data': list(result.values()),
                     'data2': list(revenue.values()),
                     'data3': average
+                },
+                'second_graph': {
+                    'label': list(book_data.keys()),
+                    'data': list(book_data.values()),
+                    'data2': list(issued_data.values())
                 },
                 'total_rupiah': total,
                 'average_rupiah': float(total) / float(num_data) if num_data > 0 else 0
@@ -1082,13 +1097,13 @@ class TtReportDashboard(models.Model):
                 for i in result:
                     # filter invoice for every months
                     month_index = month.index(i)
-                    filtered_data = list(filter(lambda x: int(x['date'].strftime('%m')) - 1 == month_index, invoice))
+                    filtered_data = list(filter(lambda x: int(x['create_date_og'].strftime('%m')) - 1 == int(month_index), invoice))
                     result[i] += len(filtered_data)
                     num_data += len(filtered_data)
             else:
                 for i in result:
                     # filter for everyday
-                    filtered_data = invoice.filtered(key=lambda x: x['create_date'] == i)
+                    filtered_data = list(filter(lambda x: x['create_date'] == i, invoice))
                     result[i] += len(filtered_data)
                     num_data += len(filtered_data)
 
@@ -1180,6 +1195,11 @@ class TtReportDashboard(models.Model):
                     'data': list(result.values()),
                     'data2': list(revenue.values()),
                     'data3': average
+                },
+                'second_graph': {
+                    'label': list(book_data.keys()),
+                    'data': list(book_data.values()),
+                    'data2': list(issued_data.values())
                 },
                 'total_rupiah': total,
                 'average_rupiah': float(total) / float(num_data) if num_data > 0 else 0
@@ -1254,13 +1274,13 @@ class TtReportDashboard(models.Model):
                 for i in result:
                     # filter invoice for every months
                     month_index = month.index(i)
-                    filtered_data = list(filter(lambda x: int(x['date'].strftime('%m')) - 1 == month_index, invoice))
+                    filtered_data = list(filter(lambda x: int(x['create_date_og'].strftime('%m')) - 1 == int(month_index), invoice))
                     result[i] += len(filtered_data)
                     num_data += len(filtered_data)
             else:
                 for i in result:
                     # filter for everyday
-                    filtered_data = invoice.filtered(key=lambda x: x['create_date'] == i)
+                    filtered_data = list(filter(lambda x: x['create_date'] == i, invoice))
                     result[i] += len(filtered_data)
                     num_data += len(filtered_data)
 
@@ -1351,6 +1371,11 @@ class TtReportDashboard(models.Model):
                     'data': list(result.values()),
                     'data2': list(revenue.values()),
                     'data3': average
+                },
+                'second_graph': {
+                    'label': list(book_data.keys()),
+                    'data': list(book_data.values()),
+                    'data2': list(issued_data.values())
                 },
                 'total_rupiah': total,
                 'average_rupiah': float(total) / float(num_data) if num_data > 0 else 0
@@ -1425,13 +1450,13 @@ class TtReportDashboard(models.Model):
                 for i in result:
                     # filter invoice for every months
                     month_index = month.index(i)
-                    filtered_data = list(filter(lambda x: int(x['date'].strftime('%m')) - 1 == month_index, invoice))
+                    filtered_data = list(filter(lambda x: int(x['create_date_og'].strftime('%m')) - 1 == int(month_index), invoice))
                     result[i] += len(filtered_data)
                     num_data += len(filtered_data)
             else:
                 for i in result:
                     # filter for everyday
-                    filtered_data = invoice.filtered(key=lambda x: x['create_date'] == i)
+                    filtered_data = list(filter(lambda x: x['create_date'] == i, invoice))
                     result[i] += len(filtered_data)
                     num_data += len(filtered_data)
 
@@ -1524,6 +1549,11 @@ class TtReportDashboard(models.Model):
                     'data2': list(revenue.values()),
                     'data3': average
                 },
+                'second_graph': {
+                    'label': list(book_data.keys()),
+                    'data': list(book_data.values()),
+                    'data2': list(issued_data.values())
+                },
                 'total_rupiah': total,
                 'average_rupiah': float(total) / float(num_data) if num_data > 0 else 0
             }
@@ -1586,13 +1616,13 @@ class TtReportDashboard(models.Model):
                 for i in result:
                     # filter invoice for every months
                     month_index = month.index(i)
-                    filtered_data = list(filter(lambda x: int(x['date'].strftime('%m')) - 1 == month_index, invoice))
+                    filtered_data = list(filter(lambda x: int(x['create_date_og'].strftime('%m')) - 1 == int(month_index), invoice))
                     result[i] += len(filtered_data)
                     num_data += len(filtered_data)
             else:
                 for i in result:
                     # filter for everyday
-                    filtered_data = invoice.filtered(key=lambda x: x['create_date'] == i)
+                    filtered_data = list(filter(lambda x: x['create_date'] == i, invoice))
                     result[i] += len(filtered_data)
                     num_data += len(filtered_data)
 
@@ -1684,6 +1714,11 @@ class TtReportDashboard(models.Model):
                     'data': list(result.values()),
                     'data2': list(revenue.values()),
                     'data3': average
+                },
+                'second_graph': {
+                    'label': list(book_data.keys()),
+                    'data': list(book_data.values()),
+                    'data2': list(issued_data.values())
                 },
                 'total_rupiah': total,
                 'average_rupiah': float(total) / float(num_data) if num_data > 0 else 0
@@ -1758,13 +1793,13 @@ class TtReportDashboard(models.Model):
                 for i in result:
                     # filter invoice for every months
                     month_index = month.index(i)
-                    filtered_data = list(filter(lambda x: int(x['date'].strftime('%m')) - 1 == month_index, invoice))
+                    filtered_data = list(filter(lambda x: int(x['create_date_og'].strftime('%m')) - 1 == int(month_index), invoice))
                     result[i] += len(filtered_data)
                     num_data += len(filtered_data)
             else:
                 for i in result:
                     # filter for everyday
-                    filtered_data = invoice.filtered(key=lambda x: x['create_date'] == i)
+                    filtered_data = list(filter(lambda x: x['create_date'] == i, invoice))
                     result[i] += len(filtered_data)
                     num_data += len(filtered_data)
 
@@ -1856,6 +1891,11 @@ class TtReportDashboard(models.Model):
                     'data': list(result.values()),
                     'data2': list(revenue.values()),
                     'data3': average
+                },
+                'second_graph': {
+                    'label': list(book_data.keys()),
+                    'data': list(book_data.values()),
+                    'data2': list(issued_data.values())
                 },
                 'total_rupiah': total,
                 'average_rupiah': float(total) / float(num_data) if num_data > 0 else 0

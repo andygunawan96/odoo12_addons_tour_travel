@@ -21,6 +21,11 @@ class TtReconcileTransaction(models.Model):
     state = fields.Selection([('open','Open')],'State', default='open', readonly=True)
     excel_file = fields.Binary('Excel File')
     total_lines = fields.Integer('Total Lines', compute='_compute_total_lines', store=True)
+    currency_id = fields.Many2one('res.currency', 'Vendor Balance Currency',
+                                          default=lambda self: self.env.user.company_id.currency_id,
+                                          readonly=True)
+    start_balance = fields.Monetary('Start Balance')
+    end_balance = fields.Monetary('End Balance')
 
     @api.depends('provider_id','transaction_date')
     def _compute_display_reconcile_name(self):
@@ -73,6 +78,32 @@ class TtReconcileTransaction(models.Model):
         url = self.env['tt.report.printout.reconcile'].print_report_excel(datas)
         self.excel_file = base64.encodebytes(url['value'])
         return url
+
+    def action_sync_balance(self):
+        reconcile_obj = self.env['tt.reconcile.transaction'].search([('provider_id', '=', self.provider_id.id),
+                                                                     ('transaction_date', '<', self.transaction_date)],
+                                                                     order='transaction_date desc', limit=1)
+        if self.reconcile_lines_ids:  # jika terdapat transaksi pada tanggal tsb
+            self.start_balance = self.reconcile_lines_ids[0].vendor_start_balance  # ambil dari start balance di reconcile lines di row pertama
+            self.end_balance = self.reconcile_lines_ids[len(self.reconcile_lines_ids)-1].vendor_end_balance  # ambil dari end balance di reconcile lines di row terakhir
+            self.currency_id = self.reconcile_lines_ids[len(self.reconcile_lines_ids)-1].vendor_balance_currency_id.id
+        else:  # jika tidak ada transaksi pada tanggal tsb
+            if reconcile_obj:  # jika terdapat reconcile hari sebelumnya
+                if (self.transaction_date - reconcile_obj.transaction_date).days == 1:  # jika selisih dg hari sebelumnya adalah 1 hari
+                    if reconcile_obj.reconcile_lines_ids:
+                        self.start_balance = reconcile_obj.reconcile_lines_ids[len(reconcile_obj.reconcile_lines_ids)-1].vendor_end_balance
+                        self.end_balance = self.start_balance
+                        self.currency_id = reconcile_obj.reconcile_lines_ids[len(reconcile_obj.reconcile_lines_ids)-1].vendor_balance_currency_id.id
+                    else:
+                        self.start_balance = reconcile_obj.start_balance
+                        self.end_balance = reconcile_obj.end_balance
+                        self.currency_id = reconcile_obj.currency_id.id
+                else:
+                    self.start_balance = 0
+                    self.end_balance = 0
+            else:  # jika tanggal tsb merupakan tanggal pertama
+                self.start_balance = 0
+                self.end_balance = 0
 
 
 class TtReconcileTransactionLines(models.Model):

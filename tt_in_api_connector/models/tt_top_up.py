@@ -33,4 +33,4 @@ class TtTopUpApiCon(models.Model):
         }
         return self.send_request_to_gateway('%s/notification' % (self.url),
                                             request
-                                            ,'notification_api')
+                                            ,'notification_code')
