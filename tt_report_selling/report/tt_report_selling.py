@@ -608,6 +608,11 @@ class ReportSelling(models.Model):
                 i['reservation_issued_date'] = self._datetime_user_context(i['reservation_issued_date_og'])
         return lines
 
+    def _convert_data_invoice(self, lines):
+        for i in lines:
+            i['create_date'] = self._datetime_user_context(i['create_date_og'])
+        return lines
+
     def _seperate_data(self, lines):
         for i in lines:
             try:
@@ -649,6 +654,8 @@ class ReportSelling(models.Model):
                 lines = self._convert_data_event(lines)
             elif provider_type == 'ppob':
                 lines = self._convert_data_ppob(lines)
+            elif provider_type == 'invoice':
+                lines = self._convert_data_invoice(lines)
             else:
                 lines = self._convert_data(lines)
             lines = self._seperate_data(lines)

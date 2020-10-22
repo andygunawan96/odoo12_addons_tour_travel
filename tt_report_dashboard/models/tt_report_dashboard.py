@@ -169,13 +169,13 @@ class TtReportDashboard(models.Model):
                 for i in result:
                     # filter invoice for every months
                     month_index = month.index(i)
-                    filtered_data = list(filter(lambda x: int(x['date'].strftime('%m')) - 1 == month_index, invoice))
+                    filtered_data = list(filter(lambda x: int(x['create_date_og'].strftime('%m')) - 1 == int(month_index), invoice))
                     result[i] += len(filtered_data)
                     num_data += len(filtered_data)
             else:
                 for i in result:
                     # filter for everyday
-                    filtered_data = invoice.filtered(key=lambda x: x['create_date'] == i)
+                    filtered_data = list(filter(lambda x: x['create_date'] == i, invoice))
                     result[i] += len(filtered_data)
                     num_data += len(filtered_data)
 
@@ -383,13 +383,13 @@ class TtReportDashboard(models.Model):
                 for i in result:
                     # filter invoice for every months
                     month_index = month.index(i)
-                    filtered_data = list(filter(lambda x: int(x['date'].strftime('%m')) - 1 == month_index, invoice))
+                    filtered_data = list(filter(lambda x: int(x['create_date_og'].strftime('%m')) - 1 == int(month_index), invoice))
                     result[i] += len(filtered_data)
                     num_data += len(filtered_data)
             else:
                 for i in result:
                     # filter for everyday
-                    filtered_data = invoice.filtered(key=lambda x: x['create_date'] == i)
+                    filtered_data = list(filter(lambda x: x['create_date'] == i, invoice))
                     result[i] += len(filtered_data)
                     num_data += len(filtered_data)
 
@@ -640,13 +640,13 @@ class TtReportDashboard(models.Model):
                 for i in result:
                     # filter invoice for every months
                     month_index = month.index(i)
-                    filtered_data = list(filter(lambda x: int(x['date'].strftime('%m')) - 1 == month_index, invoice))
+                    filtered_data = list(filter(lambda x: int(x['create_date_og'].strftime('%m')) - 1 == int(month_index), invoice))
                     result[i] += len(filtered_data)
                     num_data += len(filtered_data)
             else:
                 for i in result:
                     # filter for everyday
-                    filtered_data = invoice.filtered(key=lambda x: x['create_date'] == i)
+                    filtered_data = list(filter(lambda x: x['create_date'] == i, invoice))
                     result[i] += len(filtered_data)
                     num_data += len(filtered_data)
 
@@ -920,13 +920,13 @@ class TtReportDashboard(models.Model):
                 for i in result:
                     # filter invoice for every months
                     month_index = month.index(i)
-                    filtered_data = list(filter(lambda x: int(x['date'].strftime('%m')) - 1 == month_index, invoice))
+                    filtered_data = list(filter(lambda x: int(x['create_date_og'].strftime('%m')) - 1 == int(month_index), invoice))
                     result[i] += len(filtered_data)
                     num_data += len(filtered_data)
             else:
                 for i in result:
                     # filter for everyday
-                    filtered_data = invoice.filtered(key=lambda x: x['create_date'] == i)
+                    filtered_data = list(filter(lambda x: x['create_date'] == i, invoice))
                     result[i] += len(filtered_data)
                     num_data += len(filtered_data)
 
@@ -1097,13 +1097,13 @@ class TtReportDashboard(models.Model):
                 for i in result:
                     # filter invoice for every months
                     month_index = month.index(i)
-                    filtered_data = list(filter(lambda x: int(x['date'].strftime('%m')) - 1 == month_index, invoice))
+                    filtered_data = list(filter(lambda x: int(x['create_date_og'].strftime('%m')) - 1 == int(month_index), invoice))
                     result[i] += len(filtered_data)
                     num_data += len(filtered_data)
             else:
                 for i in result:
                     # filter for everyday
-                    filtered_data = invoice.filtered(key=lambda x: x['create_date'] == i)
+                    filtered_data = list(filter(lambda x: x['create_date'] == i, invoice))
                     result[i] += len(filtered_data)
                     num_data += len(filtered_data)
 
@@ -1274,13 +1274,13 @@ class TtReportDashboard(models.Model):
                 for i in result:
                     # filter invoice for every months
                     month_index = month.index(i)
-                    filtered_data = list(filter(lambda x: int(x['date'].strftime('%m')) - 1 == month_index, invoice))
+                    filtered_data = list(filter(lambda x: int(x['create_date_og'].strftime('%m')) - 1 == int(month_index), invoice))
                     result[i] += len(filtered_data)
                     num_data += len(filtered_data)
             else:
                 for i in result:
                     # filter for everyday
-                    filtered_data = invoice.filtered(key=lambda x: x['create_date'] == i)
+                    filtered_data = list(filter(lambda x: x['create_date'] == i, invoice))
                     result[i] += len(filtered_data)
                     num_data += len(filtered_data)
 
@@ -1450,13 +1450,13 @@ class TtReportDashboard(models.Model):
                 for i in result:
                     # filter invoice for every months
                     month_index = month.index(i)
-                    filtered_data = list(filter(lambda x: int(x['date'].strftime('%m')) - 1 == month_index, invoice))
+                    filtered_data = list(filter(lambda x: int(x['create_date_og'].strftime('%m')) - 1 == int(month_index), invoice))
                     result[i] += len(filtered_data)
                     num_data += len(filtered_data)
             else:
                 for i in result:
                     # filter for everyday
-                    filtered_data = invoice.filtered(key=lambda x: x['create_date'] == i)
+                    filtered_data = list(filter(lambda x: x['create_date'] == i, invoice))
                     result[i] += len(filtered_data)
                     num_data += len(filtered_data)
 
@@ -1616,13 +1616,13 @@ class TtReportDashboard(models.Model):
                 for i in result:
                     # filter invoice for every months
                     month_index = month.index(i)
-                    filtered_data = list(filter(lambda x: int(x['date'].strftime('%m')) - 1 == month_index, invoice))
+                    filtered_data = list(filter(lambda x: int(x['create_date_og'].strftime('%m')) - 1 == int(month_index), invoice))
                     result[i] += len(filtered_data)
                     num_data += len(filtered_data)
             else:
                 for i in result:
                     # filter for everyday
-                    filtered_data = invoice.filtered(key=lambda x: x['create_date'] == i)
+                    filtered_data = list(filter(lambda x: x['create_date'] == i, invoice))
                     result[i] += len(filtered_data)
                     num_data += len(filtered_data)
 
@@ -1793,13 +1793,13 @@ class TtReportDashboard(models.Model):
                 for i in result:
                     # filter invoice for every months
                     month_index = month.index(i)
-                    filtered_data = list(filter(lambda x: int(x['date'].strftime('%m')) - 1 == month_index, invoice))
+                    filtered_data = list(filter(lambda x: int(x['create_date_og'].strftime('%m')) - 1 == int(month_index), invoice))
                     result[i] += len(filtered_data)
                     num_data += len(filtered_data)
             else:
                 for i in result:
                     # filter for everyday
-                    filtered_data = invoice.filtered(key=lambda x: x['create_date'] == i)
+                    filtered_data = list(filter(lambda x: x['create_date'] == i, invoice))
                     result[i] += len(filtered_data)
                     num_data += len(filtered_data)
 

@@ -33,7 +33,7 @@ class AgentReportBalance(models.Model):
 
     @staticmethod
     def _order_by():
-        return """agent.id
+        return """agent_type.id
         """
 
     @staticmethod
@@ -76,9 +76,9 @@ class AgentReportBalance(models.Model):
 
     def _search_valued(self, data_form):
         if data_form['agent_id']:
-            data = self.env['tt.agent'].sudo().search([('id', '=', data_form['agent_id'])]).read()
+            data = self.env['tt.agent'].sudo().search([('id', '=', data_form['agent_id'])],order='agent_type_id').read()
         else:
-            data = self.env['tt.agent'].sudo().search([]).read()
+            data = self.env['tt.agent'].sudo().search([],order='agent_type_id').read()
         line = []
         for i in data:
             temp_dict = {
