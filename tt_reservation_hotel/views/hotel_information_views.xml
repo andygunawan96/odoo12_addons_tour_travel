@@ -72,7 +72,7 @@
                     </group>
                     <separator string="Hotel Information"/>
                     <notebook>
-                        <page string="Relations">
+                        <page string="Provider Code">
                             <field name="provider_hotel_ids">
                                 <tree editable="bottom">
                                     <field name="provider_id"/>

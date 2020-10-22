@@ -338,14 +338,19 @@ class ReservationAirline(models.Model):
             })
             # END
 
-            # July 13, 2020 - SAM
-            # Sementara diasumsikan untuk seluruh proses berhasil
-            reschedule_obj.confirm_reschedule_from_button()
-            reschedule_obj.send_reschedule_from_button()
-            reschedule_obj.validate_reschedule_from_button()
-            reschedule_obj.finalize_reschedule_from_button()
-            # reschedule_obj.action_done()
-            # END
+            # VIN: 22/10/2020 Check klo book tetep di catet cman ledger agent tidak terpotong
+            resv_obj = self.env[reschedule_obj.res_model].sudo().browse(reschedule_obj.res_id)
+            if resv_obj and resv_obj.state == 'issued':
+                # July 13, 2020 - SAM
+                # Sementara diasumsikan untuk seluruh proses berhasil
+                reschedule_obj.confirm_reschedule_from_button()
+                reschedule_obj.send_reschedule_from_button()
+                reschedule_obj.validate_reschedule_from_button()
+                reschedule_obj.finalize_reschedule_from_button()
+                # reschedule_obj.action_done()
+                # END
+            else:
+                reschedule_obj.cancel_reschedule_from_button()
 
             response = {
                 'reschedule_id': reschedule_obj.id,
