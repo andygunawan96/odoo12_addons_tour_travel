@@ -517,12 +517,42 @@ class TtReportDashboard(models.Model):
                 except:
                     pass
 
+            # sort summary_by_date month in the correct order
+            summary_by_date.sort(key=lambda x: (x['year'], x['month_index']))
+
+            # shape the data for return
+            book_data = {}
+            issued_data = {}
+            if mode == 'month':
+                # sum by month
+                for i in summary_by_date:
+                    # for every month in summary by date
+                    book_data[i['month']] = 0
+                    issued_data[i['month']] = 0
+                    for j in i['detail']:
+                        # for every date in a month (i)
+                        book_data[i['month']] += j['booked_counter']
+                        issued_data[i['month']] += j['issued_counter']
+            else:
+                # seperate by date
+                for i in summary_by_date:
+                    # for every month in summary by date
+                    for j in i['detail']:
+                        # for every date in a month (i)
+                        book_data[str(j['day']) + "-" + str(i['month'])] = j['booked_counter']
+                        issued_data[str(j['day']) + "-" + str(i['month'])] = j['issued_counter']
+
             to_return = {
                 'graph': {
                     'label': list(result.keys()),
                     'data': list(result.values()),
                     'data2': list(revenue.values()),
                     'data3': average
+                },
+                'second_graph': {
+                    'label': list(book_data.keys()),
+                    'data': list(book_data.values()),
+                    'data2': list(issued_data.values())
                 },
                 'total_rupiah': total,
                 'average_rupiah': float(total) / float(num_data) if num_data > 0 else 0,
@@ -746,12 +776,67 @@ class TtReportDashboard(models.Model):
                 except:
                     pass
 
+            # sort summary_by_date month in the correct order
+            summary_by_date.sort(key=lambda x: (x['year'], x['month_index']))
+
+            # shape the data for return
+            book_data = {}
+            issued_data = {}
+            if mode == 'month':
+                # sum by month
+                for i in summary_by_date:
+                    # for every month in summary by date
+                    book_data[i['month']] = 0
+                    issued_data[i['month']] = 0
+                    for j in i['detail']:
+                        # for every date in a month (i)
+                        book_data[i['month']] += j['booked_counter']
+                        issued_data[i['month']] += j['issued_counter']
+            else:
+                # seperate by date
+                for i in summary_by_date:
+                    # for every month in summary by date
+                    for j in i['detail']:
+                        # for every date in a month (i)
+                        book_data[str(j['day']) + "-" + str(i['month'])] = j['booked_counter']
+                        issued_data[str(j['day']) + "-" + str(i['month'])] = j['issued_counter']
+
+            # sort summary_by_date month in the correct order
+            summary_by_date.sort(key=lambda x: (x['year'], x['month_index']))
+
+            # shape the data for return
+            book_data = {}
+            issued_data = {}
+            if mode == 'month':
+                # sum by month
+                for i in summary_by_date:
+                    # for every month in summary by date
+                    book_data[i['month']] = 0
+                    issued_data[i['month']] = 0
+                    for j in i['detail']:
+                        # for every date in a month (i)
+                        book_data[i['month']] += j['booked_counter']
+                        issued_data[i['month']] += j['issued_counter']
+            else:
+                # seperate by date
+                for i in summary_by_date:
+                    # for every month in summary by date
+                    for j in i['detail']:
+                        # for every date in a month (i)
+                        book_data[str(j['day']) + "-" + str(i['month'])] = j['booked_counter']
+                        issued_data[str(j['day']) + "-" + str(i['month'])] = j['issued_counter']
+
             to_return = {
                 'graph': {
                     'label': list(result.keys()),
                     'data': list(result.values()),
                     'data2': list(revenue.values()),
                     'data3': average
+                },
+                'second_graph': {
+                    'label': list(book_data.keys()),
+                    'data': list(book_data.values()),
+                    'data2': list(issued_data.values())
                 },
                 'total_rupiah': total,
                 'average_rupiah': float(total) / float(num_data) if num_data > 0 else 0,
@@ -902,12 +987,42 @@ class TtReportDashboard(models.Model):
                 except:
                     pass
 
+            # sort summary_by_date month in the correct order
+            summary_by_date.sort(key=lambda x: (x['year'], x['month_index']))
+
+            # shape the data for return
+            book_data = {}
+            issued_data = {}
+            if mode == 'month':
+                # sum by month
+                for i in summary_by_date:
+                    # for every month in summary by date
+                    book_data[i['month']] = 0
+                    issued_data[i['month']] = 0
+                    for j in i['detail']:
+                        # for every date in a month (i)
+                        book_data[i['month']] += j['booked_counter']
+                        issued_data[i['month']] += j['issued_counter']
+            else:
+                # seperate by date
+                for i in summary_by_date:
+                    # for every month in summary by date
+                    for j in i['detail']:
+                        # for every date in a month (i)
+                        book_data[str(j['day']) + "-" + str(i['month'])] = j['booked_counter']
+                        issued_data[str(j['day']) + "-" + str(i['month'])] = j['issued_counter']
+
             to_return = {
                 'graph': {
                     'label': list(result.keys()),
                     'data': list(result.values()),
                     'data2': list(revenue.values()),
                     'data3': average
+                },
+                'second_graph': {
+                    'label': list(book_data.keys()),
+                    'data': list(book_data.values()),
+                    'data2': list(issued_data.values())
                 },
                 'total_rupiah': total,
                 'average_rupiah': float(total) / float(num_data) if num_data > 0 else 0
@@ -1049,12 +1164,42 @@ class TtReportDashboard(models.Model):
                 except:
                     pass
 
+            # sort summary_by_date month in the correct order
+            summary_by_date.sort(key=lambda x: (x['year'], x['month_index']))
+
+            # shape the data for return
+            book_data = {}
+            issued_data = {}
+            if mode == 'month':
+                # sum by month
+                for i in summary_by_date:
+                    # for every month in summary by date
+                    book_data[i['month']] = 0
+                    issued_data[i['month']] = 0
+                    for j in i['detail']:
+                        # for every date in a month (i)
+                        book_data[i['month']] += j['booked_counter']
+                        issued_data[i['month']] += j['issued_counter']
+            else:
+                # seperate by date
+                for i in summary_by_date:
+                    # for every month in summary by date
+                    for j in i['detail']:
+                        # for every date in a month (i)
+                        book_data[str(j['day']) + "-" + str(i['month'])] = j['booked_counter']
+                        issued_data[str(j['day']) + "-" + str(i['month'])] = j['issued_counter']
+
             to_return = {
                 'graph': {
                     'label': list(result.keys()),
                     'data': list(result.values()),
                     'data2': list(revenue.values()),
                     'data3': average
+                },
+                'second_graph': {
+                    'label': list(book_data.keys()),
+                    'data': list(book_data.values()),
+                    'data2': list(issued_data.values())
                 },
                 'total_rupiah': total,
                 'average_rupiah': float(total) / float(num_data) if num_data > 0 else 0
@@ -1195,12 +1340,42 @@ class TtReportDashboard(models.Model):
                 except:
                     pass
 
+            # sort summary_by_date month in the correct order
+            summary_by_date.sort(key=lambda x: (x['year'], x['month_index']))
+
+            # shape the data for return
+            book_data = {}
+            issued_data = {}
+            if mode == 'month':
+                # sum by month
+                for i in summary_by_date:
+                    # for every month in summary by date
+                    book_data[i['month']] = 0
+                    issued_data[i['month']] = 0
+                    for j in i['detail']:
+                        # for every date in a month (i)
+                        book_data[i['month']] += j['booked_counter']
+                        issued_data[i['month']] += j['issued_counter']
+            else:
+                # seperate by date
+                for i in summary_by_date:
+                    # for every month in summary by date
+                    for j in i['detail']:
+                        # for every date in a month (i)
+                        book_data[str(j['day']) + "-" + str(i['month'])] = j['booked_counter']
+                        issued_data[str(j['day']) + "-" + str(i['month'])] = j['issued_counter']
+
             to_return = {
                 'graph': {
                     'label': list(result.keys()),
                     'data': list(result.values()),
                     'data2': list(revenue.values()),
                     'data3': average
+                },
+                'second_graph': {
+                    'label': list(book_data.keys()),
+                    'data': list(book_data.values()),
+                    'data2': list(issued_data.values())
                 },
                 'total_rupiah': total,
                 'average_rupiah': float(total) / float(num_data) if num_data > 0 else 0
@@ -1342,12 +1517,42 @@ class TtReportDashboard(models.Model):
                 except:
                     pass
 
+            # sort summary_by_date month in the correct order
+            summary_by_date.sort(key=lambda x: (x['year'], x['month_index']))
+
+            # shape the data for return
+            book_data = {}
+            issued_data = {}
+            if mode == 'month':
+                # sum by month
+                for i in summary_by_date:
+                    # for every month in summary by date
+                    book_data[i['month']] = 0
+                    issued_data[i['month']] = 0
+                    for j in i['detail']:
+                        # for every date in a month (i)
+                        book_data[i['month']] += j['booked_counter']
+                        issued_data[i['month']] += j['issued_counter']
+            else:
+                # seperate by date
+                for i in summary_by_date:
+                    # for every month in summary by date
+                    for j in i['detail']:
+                        # for every date in a month (i)
+                        book_data[str(j['day']) + "-" + str(i['month'])] = j['booked_counter']
+                        issued_data[str(j['day']) + "-" + str(i['month'])] = j['issued_counter']
+
             to_return = {
                 'graph': {
                     'label': list(result.keys()),
                     'data': list(result.values()),
                     'data2': list(revenue.values()),
                     'data3': average
+                },
+                'second_graph': {
+                    'label': list(book_data.keys()),
+                    'data': list(book_data.values()),
+                    'data2': list(issued_data.values())
                 },
                 'total_rupiah': total,
                 'average_rupiah': float(total) / float(num_data) if num_data > 0 else 0
@@ -1478,12 +1683,42 @@ class TtReportDashboard(models.Model):
                 except:
                     pass
 
+            # sort summary_by_date month in the correct order
+            summary_by_date.sort(key=lambda x: (x['year'], x['month_index']))
+
+            # shape the data for return
+            book_data = {}
+            issued_data = {}
+            if mode == 'month':
+                # sum by month
+                for i in summary_by_date:
+                    # for every month in summary by date
+                    book_data[i['month']] = 0
+                    issued_data[i['month']] = 0
+                    for j in i['detail']:
+                        # for every date in a month (i)
+                        book_data[i['month']] += j['booked_counter']
+                        issued_data[i['month']] += j['issued_counter']
+            else:
+                # seperate by date
+                for i in summary_by_date:
+                    # for every month in summary by date
+                    for j in i['detail']:
+                        # for every date in a month (i)
+                        book_data[str(j['day']) + "-" + str(i['month'])] = j['booked_counter']
+                        issued_data[str(j['day']) + "-" + str(i['month'])] = j['issued_counter']
+
             to_return = {
                 'graph': {
                     'label': list(result.keys()),
                     'data': list(result.values()),
                     'data2': list(revenue.values()),
                     'data3': average
+                },
+                'second_graph': {
+                    'label': list(book_data.keys()),
+                    'data': list(book_data.values()),
+                    'data2': list(issued_data.values())
                 },
                 'total_rupiah': total,
                 'average_rupiah': float(total) / float(num_data) if num_data > 0 else 0
@@ -1625,12 +1860,42 @@ class TtReportDashboard(models.Model):
                 except:
                     pass
 
+            # sort summary_by_date month in the correct order
+            summary_by_date.sort(key=lambda x: (x['year'], x['month_index']))
+
+            # shape the data for return
+            book_data = {}
+            issued_data = {}
+            if mode == 'month':
+                # sum by month
+                for i in summary_by_date:
+                    # for every month in summary by date
+                    book_data[i['month']] = 0
+                    issued_data[i['month']] = 0
+                    for j in i['detail']:
+                        # for every date in a month (i)
+                        book_data[i['month']] += j['booked_counter']
+                        issued_data[i['month']] += j['issued_counter']
+            else:
+                # seperate by date
+                for i in summary_by_date:
+                    # for every month in summary by date
+                    for j in i['detail']:
+                        # for every date in a month (i)
+                        book_data[str(j['day']) + "-" + str(i['month'])] = j['booked_counter']
+                        issued_data[str(j['day']) + "-" + str(i['month'])] = j['issued_counter']
+
             to_return = {
                 'graph': {
                     'label': list(result.keys()),
                     'data': list(result.values()),
                     'data2': list(revenue.values()),
                     'data3': average
+                },
+                'second_graph': {
+                    'label': list(book_data.keys()),
+                    'data': list(book_data.values()),
+                    'data2': list(issued_data.values())
                 },
                 'total_rupiah': total,
                 'average_rupiah': float(total) / float(num_data) if num_data > 0 else 0

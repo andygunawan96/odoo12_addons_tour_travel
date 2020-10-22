@@ -373,12 +373,12 @@ class ReportSelling(models.Model):
     @staticmethod
     def _order_by_invoice():
         return """
-        created_date
+        create_date
         """
 
     @staticmethod
     def _group_by_invoice():
-        return """invoice_id"""
+        return """invoice_id, create_date"""
 
     @staticmethod
     def _report_title(data_form):
@@ -495,10 +495,11 @@ class ReportSelling(models.Model):
             for i in reservation:
                 if first_data:
                     query += 'WHERE {} '.format(self._where_invoice(i))
+                    first_data = False
                 else:
-                    query += 'OR WHERE {} '.format(self._where_invoice(i))
-            query += 'ORDER BY {} '.format(self._order_by_invoice())
+                    query += 'OR {} '.format(self._where_invoice(i))
             query += 'GROUP BY {} '.format(self._group_by_invoice())
+            query += 'ORDER BY {} '.format(self._order_by_invoice())
         else:
             query += 'FROM {} '.format(self._from(provider_type))
             query += 'WHERE {} '.format(self._where(date_from, date_to))
