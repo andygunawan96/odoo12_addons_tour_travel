@@ -21,6 +21,7 @@
         <field name="arch" type="xml">
             <form create="false">
                 <header>
+                    <button string="Sync Balance" name="action_sync_balance" type="object"/>
                     <field name="state" widget="statusbar" statusbar_visible="open"/>
                 </header>
                 <sheet>
@@ -41,6 +42,9 @@
                     <group>
                         <field name="provider_type_id"/>
                         <field name="provider_id"/>
+                        <field name="currency_id" invisible="1"/>
+                        <field name="start_balance"/>
+                        <field name="end_balance"/>
                         <field name="transaction_date"/>
                     </group>
                     <separator string="Line(s)"/>
@@ -152,6 +156,7 @@
                 <field name="vendor_end_balance" string="End Balance"/>
                 <field name="state"/>
                 <field name="currency_id" invisible="1"/>
+                <field name="vendor_balance_currency_id" invisible="1"/>
             </tree>
         </field>
     </record>
