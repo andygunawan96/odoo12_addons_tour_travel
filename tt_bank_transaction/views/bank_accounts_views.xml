@@ -18,9 +18,6 @@
         <field name="model">tt.bank.accounts</field>
         <field name="arch" type="xml">
             <form create="false">
-                <header>
-                    <button string="Test Get Data" name="test_get_data" type="object"/>
-                </header>
                 <sheet>
                     <group>
                         <field name="agent_id" readonly="1"/>
