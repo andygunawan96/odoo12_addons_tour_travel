@@ -8,6 +8,7 @@ import pytz
 from ...tools import tools_excel
 
 class TtReconcileTransaction(models.Model):
+    _inherit = ['tt.history']
     _name = 'tt.reconcile.transaction'
     _description = 'Rodex Model Reconcile'
     _rec_name = 'display_reconcile_name'
@@ -83,27 +84,21 @@ class TtReconcileTransaction(models.Model):
         reconcile_obj = self.env['tt.reconcile.transaction'].search([('provider_id', '=', self.provider_id.id),
                                                                      ('transaction_date', '<', self.transaction_date)],
                                                                      order='transaction_date desc', limit=1)
-        if self.reconcile_lines_ids:  # jika terdapat transaksi pada tanggal tsb
-            self.start_balance = self.reconcile_lines_ids[0].vendor_start_balance  # ambil dari start balance di reconcile lines di row pertama
-            self.end_balance = self.reconcile_lines_ids[len(self.reconcile_lines_ids)-1].vendor_end_balance  # ambil dari end balance di reconcile lines di row terakhir
-            self.currency_id = self.reconcile_lines_ids[len(self.reconcile_lines_ids)-1].vendor_balance_currency_id.id
-        else:  # jika tidak ada transaksi pada tanggal tsb
-            if reconcile_obj:  # jika terdapat reconcile hari sebelumnya
-                if (self.transaction_date - reconcile_obj.transaction_date).days == 1:  # jika selisih dg hari sebelumnya adalah 1 hari
-                    if reconcile_obj.reconcile_lines_ids:
-                        self.start_balance = reconcile_obj.reconcile_lines_ids[len(reconcile_obj.reconcile_lines_ids)-1].vendor_end_balance
-                        self.end_balance = self.start_balance
-                        self.currency_id = reconcile_obj.reconcile_lines_ids[len(reconcile_obj.reconcile_lines_ids)-1].vendor_balance_currency_id.id
-                    else:
-                        self.start_balance = reconcile_obj.start_balance
-                        self.end_balance = reconcile_obj.end_balance
-                        self.currency_id = reconcile_obj.currency_id.id
+
+        if reconcile_obj and (self.transaction_date - reconcile_obj.transaction_date).days == 1:
+            self.start_balance = reconcile_obj.end_balance
+            end_balance = self.start_balance
+
+            for line in self.reconcile_lines_ids:
+                if line.type in ['nta', 'admin_bank', 'other', 'insentif']:
+                    end_balance -= line.total
                 else:
-                    self.start_balance = 0
-                    self.end_balance = 0
-            else:  # jika tanggal tsb merupakan tanggal pertama
-                self.start_balance = 0
-                self.end_balance = 0
+                    end_balance += line.total
+
+            self.end_balance = end_balance
+        else:
+            self.start_balance = 0
+            self.end_balance = 0
 
 
 class TtReconcileTransactionLines(models.Model):
