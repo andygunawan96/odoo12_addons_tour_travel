@@ -2251,7 +2251,8 @@ class HotelInformation(models.Model):
         for img in new_hotel.get('images') or []:
             if isinstance(img, str):
                 new_img_url = 'http' in img and img or 'http://www.sunhotels.net/Sunhotels.net/HotelInfo/hotelImage.aspx' + img + '&full=1'
-                fac_list.append({'name': '', 'url': new_img_url})
+                provider_id = self.env['tt.provider'].search([('code', '=ilike', provider)], limit=1)
+                fac_list.append({'name': '', 'url': new_img_url, 'description': '' , 'provider_id': provider_id.id})
             else:
                 # Digunakan hotel yg bisa dpet nama image nya
                 # Sampai tgl 11-11-2019 yg kyak gini (miki_api) formate sdah bener jadi bisa langsung break
@@ -2360,6 +2361,60 @@ class HotelInformation(models.Model):
             if self.formatting_hotel_name(rec['name'], city_name) == self.formatting_hotel_name(hotel_name, city_name):
                 return [rec,]
         return False
+
+    def create_hotel(self, hotel_obj, file_number=-1):
+        create_hotel_id = self.env['tt.hotel'].create({
+            'name': hotel_obj['name'],
+            'rating': hotel_obj['rating'],
+            'ribbon': hotel_obj['ribbon'],
+            'email': hotel_obj.get('email'),
+            'website': hotel_obj.get('website'),
+            'provider': ', '.join([self.env['tt.provider'].search([('alias', '=', xxx)], limit=1).name or '' for xxx in
+                                   hotel_obj['external_code'].keys()]),
+            'description': hotel_obj['description'],
+            'lat': hotel_obj['lat'],
+            'long': hotel_obj['long'],
+            'phone': hotel_obj['telephone'],
+            'address': hotel_obj['location']['address'],
+            'address2': False,
+            'address3': hotel_obj['location']['city'],
+            'zip': hotel_obj['location']['zipcode'],
+            'city_id': hotel_obj['location']['city_id'],  # Todo search City
+            'state_id': hotel_obj['location']['state'],
+            'country_id': False,
+            'file_number': file_number,
+        })
+
+        # Create Image
+        for img in hotel_obj['images']:
+            img.update({
+                'hotel_id': create_hotel_id.id,
+                'provider_id': '',
+            })
+            self.env['tt.hotel.image'].create(img)
+
+        # Create Facility
+        fac_link_ids = []
+        for fac in hotel_obj['facilities']:
+            if fac['facility_id']:
+                fac_link_ids.append(int(fac['facility_id']))
+            else:
+                fac_link_ids.append(self.env['tt.hotel.facility'].sudo().find_by_name(fac['facility_name']))
+        create_hotel_id.update({'facility_ids': [(6, 0, fac_link_ids)]})
+
+        # Create Landmark
+        for landmark in hotel_obj['near_by_facility']:
+            continue
+
+        # Create Provider IDS
+        for vendor in hotel_obj['external_code'].keys():
+            self.env['tt.provider.code'].create({
+                'provider_id': self.env['tt.provider'].search([('alias', '=', vendor)], limit=1).id,
+                'code': hotel_obj['external_code'][vendor],
+                'hotel_id': create_hotel_id.id,
+                'name': hotel_obj['name'],
+            })
+        return create_hotel_id
 
     # Get Record From HOMAS, pool, api langsung jadi file cache
     # By City
@@ -2482,7 +2537,7 @@ class HotelInformation(models.Model):
             return rendered_city, length
 
     # Get Record From HOMAS, all in provider list
-    def get_record_homas(self):
+    def get_record_homas_current(self):
         # Read CSV CITY
         rendered_city, len_rendered = self.get_rendered_city()
         target_city_index = int(len_rendered)
@@ -2621,6 +2676,104 @@ class HotelInformation(models.Model):
             writer.writerows(new_to_add_list2)
         csvFile.close()
 
+        _logger.info('===============================')
+        _logger.info('==        RENDER DONE        ==')
+        _logger.info('===============================')
+
+    # Get Record From HOMAS, all in provider list
+    # Versi 2: Langsung create record di odoo, tmbahkan ada city jika tidak ketemu
+    def get_record_homas(self):
+        # Read CSV CITY
+        rendered_city, len_rendered = [], 0
+        target_city_index = int(len_rendered)
+        hotel_id = 0
+
+        provider_list = ['webbeds_pool', 'webbeds_excel_pool', 'knb', 'dida_pool']
+
+        import glob
+        for master_provider in provider_list:
+            city_ids = glob.glob("/var/log/cache_hotel/" + master_provider + "/*.json")
+
+            for target_city in city_ids:
+                city_name = target_city[22 + len(master_provider):-5]
+                if city_name.lower() in rendered_city or 'surab' not in city_name.lower():
+                    continue
+                cache_content = []
+                city_obj = self.env['res.city'].find_city_by_name(city_name, limit=1)
+                city_id = city_obj and city_obj.id or False
+                # Loop All provider
+                self.file_log_write(str(target_city_index + 1) + '. Start Render: ' + city_name)
+                # Looping untuk setiap city di alias name
+                searched_city_names = [city_name, ]
+                if city_obj:
+                    searched_city_names += [rec.name for rec in
+                                            city_obj.other_name_ids.filtered(lambda x: x.name not in city_name)]
+                else:
+                    try: #Coba catat user siapa yg buat jika user g pnya hak akses apa perlu dikasih error?
+                        city_obj = self.env['res.city'].create({'name': city_name})
+                    except: #sementara di bypass tnpa notif dan di catat create by admin
+                        city_obj = self.env['res.city'].sudo().create({'name': city_name})
+
+                for searched_city_name in searched_city_names:
+                    for provider in provider_list:
+                        a = 0
+                        try:
+                            file_url = "/var/log/cache_hotel/" + provider + "/" + searched_city_name + ".json"
+                            # Loop untuk setiap city cari file yg nama nya sma dengan  city yg dimaksud
+                            with open(file_url, 'r') as f2:
+                                file = f2.read()
+                                self.file_log_write('Provider ' + provider + ': ' + str(len(json.loads(file))))
+                                a += len(json.loads(file))
+                                for hotel in json.loads(file):
+                                    hotel_id += 1
+                                    # rubah format ke odoo
+                                    hotel_fmt = self.formating_homas(hotel, hotel_id, provider, city_id, target_city)
+                                    # Cek apakah file dengan kota tsb sdah ada di memory?
+                                    # same_name = self.advance_find_similar_name(hotel_fmt['name'], hotel_fmt['location']['city'], cache_content)
+                                    same_hotel_obj = self.exact_find_similar_name(hotel_fmt['name'],
+                                                                             hotel_fmt['location']['city'],
+                                                                             cache_content)
+                                    if same_hotel_obj:
+                                        # tambahkan detail ke record yg sama tersebut
+                                        hotel_id -= 1
+                                        if hotel.get('external_code'):
+                                            same_hotel_obj[0]['external_code'][self.masking_provider(provider)] = str(
+                                                hotel['external_code'][self.masking_provider(provider)])
+                                        else:
+                                            same_hotel_obj[0]['external_code'][self.masking_provider(provider)] = hotel[
+                                                'id']
+                                        same_hotel_obj[0]['images'] += hotel_fmt['images']
+                                        if len(same_hotel_obj[0]['facilities']) < len(hotel_fmt['facilities']):
+                                            same_hotel_obj[0]['facilities'] = hotel_fmt['facilities']
+                                        # self.file_log_write('Sync: ' + hotel_fmt['name'] + '->' + same_name[0]['name'])
+                                    else:
+                                        # create baru di memory
+                                        cache_content.append(hotel_fmt)
+                                        # self.file_log_write('New : ' + hotel_fmt['name'])
+                            f2.close()
+                        except Exception as e:
+                            self.file_log_write('Error:' + provider + ' in id ' + str(hotel_id) + '; MSG:' + str(e))
+                            try:
+                                f2.close()
+                                pass
+                            except:
+                                pass
+
+                if cache_content:
+                    self.file_log_write(
+                        'Render ' + city_name + ' End, Get:' + str(len(cache_content)) + ' Hotel(s)')
+                    # Save hasil ke odoo untuk versi 2:
+                    for cached_hotel in cache_content:
+                        self.create_hotel(cached_hotel, -1)
+
+                    # Simpan di rendered hotel
+                    for rec in searched_city_names:
+                        # Simpan all alias name juga
+                        rendered_city.append(rec)
+
+                    target_city_index += 1
+
+            break
         _logger.info('===============================')
         _logger.info('==        RENDER DONE        ==')
         _logger.info('===============================')
@@ -3081,26 +3234,33 @@ class HotelInformation(models.Model):
                                             and curr_hotel['location']['address'] or new_hotel['location']['address']
         return curr_hotel
 
+    def create_odoo_by_jupiter(self, url):
+        return True
+
     def jupiter_reader(self):
         need_to_add = [['No', 'Country', 'City', 'No Similar', 'To Merge', 'Total']]
         i = 0
         hotel_id = 0
-        for path, subdir, files in os.walk('/var/log/cache_hotel/jupiter_master/'):
+        for path, subdir, files in os.walk('/var/log/tour_travel/jupiter_master/'):
             for country in subdir:
+                # if country == '00Result00':
+                if country != 'Indonesia': #testing indon only
+                    continue
                 try:
-                    path = '/var/log/cache_hotel/jupiter_master/00Result00/' + country
+                    path = '/var/log/tour_travel/jupiter_master/00Result00/' + country
                     os.mkdir(path)
                 except:
                     pass
-                for path1, subdir1, files1 in os.walk('/var/log/cache_hotel/jupiter_master/' + country):
+                for path1, subdir1, files1 in os.walk('/var/log/tour_travel/jupiter_master/' + country):
                     for city in subdir1:
                         i += 1
                         a = []
                         current_hotel_objs = []
                         no_similar = 0
                         to_merge = 0
-                        try:
-                            with open('/var/log/cache_hotel/jupiter_master/' + country + '/' + city + '/rodex_hotel_result.csv', 'r') as f:
+
+                        if os.path.isfile('/var/log/tour_travel/jupiter_master/' + country + '/' + city + '/rodex_hotel_result.csv'):
+                            with open('/var/log/tour_travel/jupiter_master/' + country + '/' + city + '/rodex_hotel_result.csv', 'r') as f:
                                 rendered_city_ids = csv.reader(f)
                                 is_header = 0
                                 # providers = []
@@ -3145,9 +3305,25 @@ class HotelInformation(models.Model):
                             f.close()
                             need_to_add.append([i, country, city, no_similar, to_merge, len(a)])
                             _logger.info('Open {} - {} Success, get {} record(s)'.format(country, city, len(a)))
-                        except:
-                            need_to_add.append([i, country, city, no_similar, to_merge, -1])
-                            _logger.info('Open {} - {} Error, Cannot open rodex_hotel_result.csv'.format(country, city))
+                        else:
+                            for prov in ['knb', 'dida']:
+                                if os.path.isfile('/var/log/tour_travel/jupiter_master/' + country + '/' + city + '/'+ prov +'_' + city + '.csv'):
+                                    with open('/var/log/tour_travel/jupiter_master/' + country + '/' + city + '/'+ prov +'_' + city + '.csv','r') as f:
+                                        hotel_ids = csv.reader(f)
+                                        is_header = 0
+                                        for rec in hotel_ids:
+                                            if is_header == 0:
+                                                is_header = 1
+                                                continue
+                                            hotel_obj_fmt = self.formating_homas_jupiter(hotel_id, rec, prov)
+                                            no_similar += 1
+                                            a.append(rec)
+                                            current_hotel_objs.append(hotel_obj_fmt)
+                                            # G bsa ambil facility + image dari tempate edo
+                                            # Flow buat ambil data per city kedata vendor
+                                    f.close()
+                                    need_to_add.append([i, country, city, no_similar, to_merge, len(a)])
+                                    _logger.info('Open {} - {} Success, get {} record(s)'.format(country, city, len(a)))
 
                         file = open(path + '/' + city + '.json', 'w')
                         file.write(json.dumps(current_hotel_objs))
@@ -3155,7 +3331,7 @@ class HotelInformation(models.Model):
 
         # Write Result
         _logger.info('Write in XD')
-        with open('/var/log/cache_hotel/jupiter_master/00Result00/result_data.csv', 'w') as csvFile:
+        with open('/var/log/tour_travel/jupiter_master/00Result00/result_data.csv', 'w') as csvFile:
             writer = csv.writer(csvFile)
             writer.writerows(need_to_add)
         csvFile.close()
@@ -3174,67 +3350,7 @@ class HotelInformation(models.Model):
 
             _logger.info('Creating ' + str(len(hotel_objs)) + ' Hotel(s)')
             for hotel_obj in hotel_objs:
-                create_hotel_id = self.env['tt.hotel'].create({
-                    'name': hotel_obj['name'],
-                    'rating': hotel_obj['rating'],
-                    'ribbon': hotel_obj['ribbon'],
-                    'email': hotel_obj.get('email'),
-                    'website': hotel_obj.get('website'),
-                    'provider': ', '.join([self.env['tt.provider'].search([('alias', '=', xxx)], limit=1).name or '' for xxx in hotel_obj['external_code'].keys()]),
-                    'description': hotel_obj['description'],
-                    'lat': hotel_obj['lat'],
-                    'long': hotel_obj['long'],
-                    'phone': hotel_obj['telephone'],
-                    'address': hotel_obj['location']['address'],
-                    'address2': False,
-                    'address3': hotel_obj['location']['city'],
-                    'zip': hotel_obj['location']['zipcode'],
-                    'city_id': hotel_obj['location']['city_id'], #Todo search City
-                    'state_id': hotel_obj['location']['state'],
-                    'country_id': False,
-                    'file_number': hotel_per_city.split('/')[-1][12:-4],
-                })
-
-                # Create Image
-                for img in hotel_obj['images']:
-                    img.update({
-                        'hotel_id': create_hotel_id.id
-                    })
-                    self.env['tt.hotel.image'].create(img)
-
-                # Create Facility
-                fac_link_ids = []
-                for fac in hotel_obj['facilities']:
-                    if fac['facility_id']:
-                        fac_link_ids.append(int(fac['facility_id']))
-                    else:
-                        parse_name = fac['facility_name'].replace('(s)', '').replace("`s", '').replace('facilities', 'facility').replace('(chargeable)', '')
-                        fac_id = self.env['tt.hotel.facility'].search([('name', '=ilike', parse_name)], limit=1)
-                        if fac_id:
-                            fac_link_ids.append(fac_id.id)
-                        else:
-                            found_obj = False
-                            for fac_master in self.env['tt.hotel.facility'].search([]):
-                                if fac['facility_name'].lower() in [a.code.lower() for a in fac_master.provider_ids]:
-                                    found_obj = True
-                                    fac_link_ids.append(fac_master.id)
-                                    break
-                            if not found_obj:
-                                _logger.info(msg='Need to add ' + fac['facility_name'].lower())
-                create_hotel_id.update({'facility_ids': [(6,0, fac_link_ids)] })
-
-                # Create Landmark
-                for landmark in hotel_obj['near_by_facility']:
-                    continue
-
-                # Create Provider IDS
-                for vendor in hotel_obj['external_code'].keys():
-                    self.env['tt.provider.code'].create({
-                        'provider_id': self.env['tt.provider'].search([('alias', '=', vendor)], limit=1).id,
-                        'code': hotel_obj['external_code'][vendor],
-                        'hotel_id': create_hotel_id.id,
-                        'name': hotel_obj['name'],
-                    })
+                create_hotel_id = self.create_hotel(hotel_obj, hotel_per_city.split('/')[-1][12:-4])
 
     def remove_data_created_from_cache(self):
         for rec in self.env['tt.hotel'].search([('id', '>', 5)]):

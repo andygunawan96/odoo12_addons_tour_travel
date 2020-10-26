@@ -3,7 +3,7 @@ from odoo import api, fields, models, _
 
 class HotelInformation(models.Model):
     _name = 'tt.hotel'
-    _description = 'Master Data Hotel'
+    _description = 'Master Data Hotel yg dikirim ke gateway atau merupakan data final dari system'
     _inherit = ['tt.history']
 
     name = fields.Char('Name', required="True")
@@ -121,3 +121,10 @@ class TtTemporaryRecord(models.Model):
         obj_list = super(TtTemporaryRecord, self).get_obj()
         obj_list += [('tt.hotel', 'city_id')]
         return obj_list
+
+
+# class HotelRaw(models.Model):
+#     _name = 'tt.hotel.raw'
+#     _inherit = 'tt.hotel'
+#     _description = 'Real Data dari vendor tanpa kita editting, cman bisa di edit ketika retrieve data dari vendor'
+

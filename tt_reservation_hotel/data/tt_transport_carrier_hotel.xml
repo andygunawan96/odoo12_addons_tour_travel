@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <record id="tt_transport_carrier_hotel_mg" model="tt.transport.carrier">
+            <field name="name">MG Bedbank</field>
+            <field name="code">mg</field>
+            <field name="active">1</field>
+            <field name="is_adult_birth_date_required" eval="False"/>
+            <field name="provider_type_id" ref="tt_reservation_hotel.tt_provider_type_hotel"/>
+        </record>
+        <record id="tt_transport_carrier_hotel_hotelspro" model="tt.transport.carrier">
+            <field name="name">Hotels Pro</field>
+            <field name="code">hotelspro</field>
+            <field name="active">1</field>
+            <field name="is_adult_birth_date_required" eval="False"/>
+            <field name="provider_type_id" ref="tt_reservation_hotel.tt_provider_type_hotel"/>
+        </record>
+        <record id="tt_transport_carrier_hotel_miki" model="tt.transport.carrier">
+            <field name="name">Miki Travel</field>
+            <field name="code">miki</field>
+            <field name="active">1</field>
+            <field name="is_adult_birth_date_required" eval="False"/>
+            <field name="provider_type_id" ref="tt_reservation_hotel.tt_provider_type_hotel"/>
+        </record>
+        <record id="tt_transport_carrier_hotel_itank" model="tt.transport.carrier">
+            <field name="name">Itank</field>
+            <field name="code">itank</field>
+            <field name="active">1</field>
+            <field name="is_adult_birth_date_required" eval="False"/>
+            <field name="provider_type_id" ref="tt_reservation_hotel.tt_provider_type_hotel"/>
+        </record>
+        <record id="tt_transport_carrier_hotel_quantum" model="tt.transport.carrier">
+            <field name="name">Quantum</field>
+            <field name="code">quantum</field>
+            <field name="active">1</field>
+            <field name="is_adult_birth_date_required" eval="False"/>
+            <field name="provider_type_id" ref="tt_reservation_hotel.tt_provider_type_hotel"/>
+        </record>
+        <record id="tt_transport_carrier_hotel_webbeds" model="tt.transport.carrier">
+            <field name="name">Webbeds / Fitruums</field>
+            <field name="code">webbeds</field>
+            <field name="active">1</field>
+            <field name="is_adult_birth_date_required" eval="False"/>
+            <field name="provider_type_id" ref="tt_reservation_hotel.tt_provider_type_hotel"/>
+        </record>
+        <record id="tt_transport_carrier_hotel_hotelbeds" model="tt.transport.carrier">
+            <field name="name">HotelBeds</field>
+            <field name="code">hotelbeds</field>
+            <field name="active">1</field>
+            <field name="is_adult_birth_date_required" eval="False"/>
+            <field name="provider_type_id" ref="tt_reservation_hotel.tt_provider_type_hotel"/>
+        </record>
+        <record id="tt_transport_carrier_hotel_dida" model="tt.transport.carrier">
+            <field name="name">Dida Hotel Vendor</field>
+            <field name="code">dida</field>
+            <field name="active">1</field>
+            <field name="is_adult_birth_date_required" eval="False"/>
+            <field name="provider_type_id" ref="tt_reservation_hotel.tt_provider_type_hotel"/>
+        </record>
+        <record id="tt_transport_carrier_hotel_tbo" model="tt.transport.carrier">
+            <field name="name">TBO Holidays</field>
+            <field name="code">tbo</field>
+            <field name="active">1</field>
+            <field name="is_adult_birth_date_required" eval="False"/>
+            <field name="provider_type_id" ref="tt_reservation_hotel.tt_provider_type_hotel"/>
+        </record>
+        <record id="tt_transport_carrier_hotel_hmbed" model="tt.transport.carrier">
+            <field name="name">HMBeds</field>
+            <field name="code">hmbed</field>
+            <field name="active">1</field>
+            <field name="is_adult_birth_date_required" eval="False"/>
+            <field name="provider_type_id" ref="tt_reservation_hotel.tt_provider_type_hotel"/>
+        </record>
+        <record id="tt_transport_carrier_hotel_oyo" model="tt.transport.carrier">
+            <field name="name">OYO Rooms</field>
+            <field name="code">oyo</field>
+            <field name="active">1</field>
+            <field name="is_adult_birth_date_required" eval="False"/>
+            <field name="provider_type_id" ref="tt_reservation_hotel.tt_provider_type_hotel"/>
+        </record>
+        <record id="tt_transport_carrier_hotel_knb" model="tt.transport.carrier">
+            <field name="name">Klik and Books</field>
+            <field name="code">knb</field>
+            <field name="active">1</field>
+            <field name="is_adult_birth_date_required" eval="False"/>
+            <field name="provider_type_id" ref="tt_reservation_hotel.tt_provider_type_hotel"/>
+        </record>
+        <record id="tt_transport_carrier_hotel_mandira" model="tt.transport.carrier">
+            <field name="name">Mandira</field>
+            <field name="code">mandira</field>
+            <field name="active">1</field>
+            <field name="is_adult_birth_date_required" eval="False"/>
+            <field name="provider_type_id" ref="tt_reservation_hotel.tt_provider_type_hotel"/>
+        </record>
+        <record id="tt_transport_carrier_hotel_hanatours" model="tt.transport.carrier">
+            <field name="name">Hanatours</field>
+            <field name="code">hanatours</field>
+            <field name="active">1</field>
+            <field name="is_adult_birth_date_required" eval="False"/>
+            <field name="provider_type_id" ref="tt_reservation_hotel.tt_provider_type_hotel"/>
+        </record>
+        <record id="tt_transport_carrier_hotel_welcomebeds" model="tt.transport.carrier">
+            <field name="name">WelcomeBeds</field>
+            <field name="code">welcomebeds</field>
+            <field name="active">1</field>
+            <field name="is_adult_birth_date_required" eval="False"/>
+            <field name="provider_type_id" ref="tt_reservation_hotel.tt_provider_type_hotel"/>
+        </record>
+        <record id="tt_transport_carrier_hotel_rts" model="tt.transport.carrier">
+            <field name="name">RTS</field>
+            <field name="code">rts</field>
+            <field name="active">1</field>
+            <field name="is_adult_birth_date_required" eval="False"/>
+            <field name="provider_type_id" ref="tt_reservation_hotel.tt_provider_type_hotel"/>
+        </record>
+        <record id="tt_transport_carrier_hotel_rodextrip_hotel" model="tt.transport.carrier">
+            <field name="name">Rodextrip Hotel</field>
+            <field name="code">rodextrip_hotel</field>
+            <field name="active" eval="True"/>
+            <field name="is_adult_birth_date_required" eval="False"/>
+            <field name="provider_type_id" ref="tt_reservation_hotel.tt_provider_type_hotel"/>
+        </record>
+    </data>
+</odoo>
+    

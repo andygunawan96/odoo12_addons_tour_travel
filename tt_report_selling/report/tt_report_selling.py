@@ -156,6 +156,7 @@ class ReportSelling(models.Model):
         reservation.adult as reservation_adult, 
         reservation.child as reservation_child, 
         reservation.infant as reservation_infant,
+        provider_type.name as provider_type_name,
         country.name as country_name,
         COUNT(reservation_passenger.visa_id) as reservation_passenger
         """
@@ -179,7 +180,6 @@ class ReportSelling(models.Model):
         reservation.state as reservation_state,
         reservation.offline_provider_type as reservation_offline_provider_type, 
         reservation.nta_price as reservation_nta_price, 
-        reservation.vendor as reservation_vendor,
         provider_type.name as provider_type_name
         """
 
@@ -191,7 +191,6 @@ class ReportSelling(models.Model):
         reservation.booked_date as reservation_booked_date_og,
         reservation.issued_date as reservation_issued_date_og,
         reservation.create_date as reservation_create_date_og, 
-        reservation.nights as reservation_night, 
         reservation.provider_name as reservation_provider_name,
         reservation.total as amount, 
         reservation.state as reservation_state, 
@@ -329,7 +328,7 @@ class ReportSelling(models.Model):
 
     @staticmethod
     def _group_by_visa():
-        return """reservation.id, country.name"""
+        return """reservation.id, country.name,  provider_type.name"""
 
     @staticmethod
     def _group_by_event():
@@ -348,7 +347,7 @@ class ReportSelling(models.Model):
     # where invoice
     @staticmethod
     def _where_invoice(id):
-        where = """res_id_resv = %s""" % (id)
+        where = """res_id_resv = %s AND res_model_resv = 'tt.reservation.%s'""" % (id[0], id[1].lower())
         return where
 
     # where issued
@@ -634,7 +633,7 @@ class ReportSelling(models.Model):
         return fields.Datetime.context_timestamp(self, value).strftime("%Y-%m-%d")
 
     def _get_lines_data(self, date_from, date_to, agent_id, provider_type, reservation = []):
-        if provider_type != 'all':
+        if provider_type != 'all' and provider_type != 'overall':
             lines = self._lines(date_from, date_to, agent_id, provider_type, provider_type, reservation)
             if provider_type == 'airline':
                 lines = self._convert_data_airline(lines)
@@ -658,6 +657,15 @@ class ReportSelling(models.Model):
                 lines = self._convert_data_invoice(lines)
             else:
                 lines = self._convert_data(lines)
+            lines = self._seperate_data(lines)
+        elif provider_type == 'overall':
+            lines = []
+            providers = variables.PROVIDER_TYPE
+            for i in providers:
+                line = self._lines(date_from, date_to, agent_id, i, 'overall_' + i)
+                for j in line:
+                    lines.append(j)
+            lines = self._convert_data(lines)
             lines = self._seperate_data(lines)
         else:
             lines = []
@@ -687,8 +695,6 @@ class ReportSelling(models.Model):
         date_to = data['end_date']
         provider_type = data['type']
         reservation = []
-        if provider_type == 'overall':
-            provider_type = 'all'
         if provider_type == 'invoice':
             reservation = data['reservation']
         agent_id = ''

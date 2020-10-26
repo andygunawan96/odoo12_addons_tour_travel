@@ -42,7 +42,17 @@
                   name="Master Data"
                   parent="tt_reservation_hotel.top_tour_travel_hotel"
                   sequence="10"
-                  action="tt_reservation_hotel.tt_hotel_view_action_rodex"/>
+                  action=""/>
+            <menuitem id="submenu_hotel_data_confirmed"
+                      parent="tt_reservation_hotel.menu_tour_travel_hotel"
+                      name="Confirm"
+                      sequence="10"
+                      action="tt_reservation_hotel.tt_hotel_view_action_rodex"/>
+            <menuitem id="submenu_hotel_data_draft"
+                      parent="tt_reservation_hotel.menu_tour_travel_hotel"
+                      name="Draft"
+                      sequence="10"
+                      action="tt_reservation_hotel.tt_hotel_view_action_rodex"/>
 
         <menuitem id="menu_hotel_type"
                   parent="tt_reservation_hotel.top_tour_travel_hotel"
