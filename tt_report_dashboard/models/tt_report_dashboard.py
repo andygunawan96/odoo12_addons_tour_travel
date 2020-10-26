@@ -174,7 +174,7 @@ class TtReportDashboard(models.Model):
             # create list of reservation id for invoice query
             reservation_ids = []
             for i in issued_values['lines']:
-                reservation_ids.append(i['reservation_id'])
+                reservation_ids.append((i['reservation_id'], i['provider_type_name']))
 
             # get invoice data
             temp_dict = {
@@ -229,7 +229,11 @@ class TtReportDashboard(models.Model):
                 # for every detail in section
                 for j in i['detail']:
                     # built appropriate date
-                    if j['day'] < 10:
+                    if i['month_index'] < 10 and j['day'] < 10:
+                        today = str(i['year']) + "-0" + str(i['month_index']) + "-0" + str(j['day'])
+                    elif i['month_index'] < 10 and j['day'] > 9:
+                        today = str(i['year']) + "-0" + str(i['month_index']) + "-" + str(j['day'])
+                    elif i['month_index'] > 9 and j['day'] < 10:
                         today = str(i['year']) + "-" + str(i['month_index']) + "-0" + str(j['day'])
                     else:
                         today = str(i['year']) + "-" + str(i['month_index']) + "-" + str(j['day'])
@@ -304,6 +308,7 @@ class TtReportDashboard(models.Model):
                 first_counter = summary_issued[0]['month_index'] - 1
                 for i in summary_issued:
                     # fill skipped month(s)
+                    # check if current month (year) with start
                     if i['month_index'] - 1 < first_counter:
                         while first_counter < 12:
                             main_data[month[first_counter]] = 0
@@ -325,9 +330,10 @@ class TtReportDashboard(models.Model):
                     average_data[i['month']] = 0
                     revenue_data[i['month']] = 0
                     for j in i['detail']:
-                        main_data[i['month']] = j['invoice']
-                        average_data[i['month']] = j['average']
-                        revenue_data[i['month']] = j['revenue']
+                        # for detail in months
+                        main_data[i['month']] += j['invoice']
+                        average_data[i['month']] += j['average']
+                        revenue_data[i['month']] += j['revenue']
                     first_counter += 1
 
                 counter = summary_by_date[0]['month_index'] - 1
@@ -367,8 +373,20 @@ class TtReportDashboard(models.Model):
                     # for every month in summary by date
                     for j in i['detail']:
                         # for every date in a month (i)
-                        book_data[str(j['day']) + "-" + str(i['month_index']) + "-" + str(i['year'])] = j['booked_counter']
-                        issued_data[str(j['day']) + "-" + str(i['month_index']) + "-" + str(i['year'])] = j['issued_counter']
+                        if i['month_index'] < 10 and j['day'] < 10:
+                            today = str(i['year']) + "-0" + str(i['month_index']) + "-0" + str(j['day'])
+                        elif i['month_index'] < 10 and j['day'] > 9:
+                            today = str(i['year']) + "-0" + str(i['month_index']) + "-" + str(j['day'])
+                        elif i['month_index'] > 9 and j['day'] < 10:
+                            today = str(i['year']) + "-" + str(i['month_index']) + "-0" + str(j['day'])
+                        else:
+                            today = str(i['year']) + "-" + str(i['month_index']) + "-" + str(j['day'])
+                        if today < data['end_date']:
+                            book_data[str(j['day']) + "-" + str(i['month_index']) + "-" + str(i['year'])] = j['booked_counter']
+                            issued_data[str(j['day']) + "-" + str(i['month_index']) + "-" + str(i['year'])] = j['issued_counter']
+                        else:
+                            book_data[str(j['day']) + "-" + str(i['month_index']) + "-" + str(i['year'])] = 0
+                            issued_data[str(j['day']) + "-" + str(i['month_index']) + "-" + str(i['year'])] = 0
 
             to_return = {
                 'graph': {
@@ -394,13 +412,6 @@ class TtReportDashboard(models.Model):
 
     def get_report_overall_airline(self, data):
         try:
-            temp_dict = {
-                'start_date': data['start_date'],
-                'end_date': data['end_date'],
-                'type': 'all'
-            }
-            all_values = self.env['report.tt_report_selling.report_selling']._get_reports(temp_dict)
-
             temp_dict = {
                 'start_date': data['start_date'],
                 'end_date': data['end_date'],
