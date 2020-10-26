@@ -102,6 +102,10 @@ class ReservationAirline(models.Model):
             'pay_amount': invoice_id.grand_total
         })
 
+        self.write({
+            'is_invoice_created': True
+        })
+
 
     # # ## CREATED by Samvi 2018/07/24
     # @api.multi
@@ -127,4 +131,5 @@ class ReservationAirline(models.Model):
 
     def action_issued_airline(self,co_uid,customer_parent_id,acquirer_id):
         super(ReservationAirline, self).action_issued_airline(co_uid,customer_parent_id)
-        self.action_create_invoice(acquirer_id,co_uid,customer_parent_id)
+        if not self.is_invoice_created:
+            self.action_create_invoice(acquirer_id,co_uid,customer_parent_id)
