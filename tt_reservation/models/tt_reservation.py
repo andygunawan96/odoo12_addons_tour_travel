@@ -135,6 +135,7 @@ class TtReservation(models.Model):
     is_halt_process = fields.Boolean('Halt Process', default=False)
     # END
 
+    is_invoice_created = fields.Boolean('Is Invoice Created', default=False)
     reconcile_state = fields.Selection(variables.RESV_RECONCILE_STATE, 'Reconcile State',default='not_reconciled',
                                        compute='_compute_reconcile_state', store=True )
 

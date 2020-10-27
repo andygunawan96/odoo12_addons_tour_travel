@@ -138,6 +138,7 @@ class TtSplitReservationWizard(models.TransientModel):
             'contact_title': book_obj.contact_title,
             'contact_email': book_obj.contact_email,
             'contact_phone': book_obj.contact_phone,
+            'is_invoice_created': book_obj.is_invoice_created,
             'state': book_obj.state
         }
 
