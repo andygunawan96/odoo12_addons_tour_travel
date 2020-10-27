@@ -730,7 +730,7 @@ class TtReportDashboard(models.Model):
             num_data = 0
             reservation_ids = []
             for i in issued_values['lines']:
-                reservation_ids.append(i['reservation_id'])
+                reservation_ids.append((i['reservation_id'], i['provider_type_name']))
 
             temp_dict = {
                 'start_date': data['start_date'],
@@ -985,7 +985,7 @@ class TtReportDashboard(models.Model):
             num_data = 0
             reservation_ids = []
             for i in issued_values['lines']:
-                reservation_ids.append(i['reservation_id'])
+                reservation_ids.append((i['reservation_id'], i['provider_type_name']))
 
             temp_dict = {
                 'start_date': data['start_date'],
@@ -1153,7 +1153,7 @@ class TtReportDashboard(models.Model):
             num_data = 0
             reservation_ids = []
             for i in issued_values['lines']:
-                reservation_ids.append(i['reservation_id'])
+                reservation_ids.append((i['reservation_id'], i['provider_type_name']))
 
             temp_dict = {
                 'start_date': data['start_date'],
@@ -1321,7 +1321,7 @@ class TtReportDashboard(models.Model):
             num_data = 0
             reservation_ids = []
             for i in issued_values['lines']:
-                reservation_ids.append(i['reservation_id'])
+                reservation_ids.append((i['reservation_id'], i['provider_type_name']))
 
             temp_dict = {
                 'start_date': data['start_date'],
@@ -1489,7 +1489,7 @@ class TtReportDashboard(models.Model):
             num_data = 0
             reservation_ids = []
             for i in issued_values['lines']:
-                reservation_ids.append(i['reservation_id'])
+                reservation_ids.append((i['reservation_id'], i['provider_type_name']))
 
             temp_dict = {
                 'start_date': data['start_date'],
@@ -1657,7 +1657,7 @@ class TtReportDashboard(models.Model):
             num_data = 0
             reservation_ids = []
             for i in issued_values['lines']:
-                reservation_ids.append(i['reservation_id'])
+                reservation_ids.append((i['reservation_id'], i['provider_type_name']))
 
             temp_dict = {
                 'start_date': data['start_date'],
@@ -1825,7 +1825,7 @@ class TtReportDashboard(models.Model):
             num_data = 0
             reservation_ids = []
             for i in issued_values['lines']:
-                reservation_ids.append(i['reservation_id'])
+                reservation_ids.append((i['reservation_id'], i['provider_type_name']))
 
             temp_dict = {
                 'start_date': data['start_date'],
