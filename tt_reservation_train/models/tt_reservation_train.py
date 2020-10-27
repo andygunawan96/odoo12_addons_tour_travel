@@ -612,7 +612,7 @@ class TtReservationTrain(models.Model):
             except:
                 raise RequestException(1001)
             if book_obj.agent_id.id == context.get('co_agent_id',-1):
-                res = book_obj.to_dict(context['co_agent_id'] == self.env.ref('rodex_ho').id)
+                res = book_obj.to_dict(context['co_agent_id'] == self.env.ref('tt_base.rodex_ho').id)
                 psg_list = []
                 for rec in book_obj.sudo().passenger_ids:
                     psg_list.append(rec.to_dict())
