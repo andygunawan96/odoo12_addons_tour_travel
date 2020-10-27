@@ -1394,7 +1394,7 @@ class TtVisa(models.Model):
             _logger.info("Get req\n" + json.dumps(context))
             book_obj = self.env['tt.reservation.visa'].search([('name', '=', data.get('order_number'))], limit=1)
             if book_obj and book_obj.agent_id.id == context.get('co_agent_id', -1):
-                res_dict = book_obj.sudo().to_dict()
+                res_dict = book_obj.sudo().to_dict(context['co_agent_id'] == self.env.ref('tt_base.rodex_ho').id)
                 passenger = []
                 for idx, pax in enumerate(book_obj.passenger_ids, 1):
                     requirement = []
