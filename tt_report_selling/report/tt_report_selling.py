@@ -18,7 +18,9 @@ class ReportSelling(models.Model):
         reservation.booked_date as reservation_booked_date_og,
         reservation.issued_date as reservation_issued_date_og,
         reservation.total as amount, provider_type.name as provider_type_name, 
-        reservation.payment_method as reservation_payment_method
+        reservation.payment_method as reservation_payment_method,
+        reservation.agent_id as agent_id, reservation.agent_type_id as agent_type_id,
+        agent.name as agent_name, agent_type.name as agent_type_name
         """
 
     @staticmethod
@@ -32,6 +34,7 @@ class ReportSelling(models.Model):
     def _select_airline():
         return """
         reservation.id as reservation_id, 
+        reservation.agent_id as agent_id, reservation.agent_type_id as agent_type_id,
         reservation.name as reservation_order_number, 
         reservation.create_date as reservation_create_date_og,
         reservation.total as amount, 
@@ -49,13 +52,15 @@ class ReportSelling(models.Model):
         provider_type.name as provider_type_name,
         departure.display_name as departure, 
         destination.display_name as destination,
-        COUNT(reservation_passenger.id) as reservation_passenger
+        COUNT(reservation_passenger.id) as reservation_passenger,
+        agent.name as agent_name, agent_type.name as agent_type_name
         """
 
     @staticmethod
     def _select_train():
         return """
         reservation.id as reservation_id, 
+        reservation.agent_id as agent_id, reservation.agent_type_id as agent_type_id,
         reservation.name as reservation_order_number, 
         reservation.create_date as reservation_create_date_og,
         reservation.total as amount, 
@@ -72,13 +77,15 @@ class ReportSelling(models.Model):
         reservation.infant as reservation_infant,
         provider_type.name as provider_type_name,
         departure.display_name as departure, destination.display_name as destination,
-        COUNT(reservation_passenger.id) as reservation_passenger
+        COUNT(reservation_passenger.id) as reservation_passenger,
+        agent.name as agent_name, agent_type.name as agent_type_name
         """
 
     @staticmethod
     def _select_hotel():
         return """
         reservation.id as reservation_id, 
+        reservation.agent_id as agent_id, reservation.agent_type_id as agent_type_id,
         reservation.name as reservation_order_number, 
         reservation.booked_date as reservation_booked_date_og,
         reservation.issued_date as reservation_issued_date_og,
@@ -93,13 +100,15 @@ class ReportSelling(models.Model):
         reservation.child as reservation_child, 
         reservation.infant as reservation_infant,
         provider_type.name as provider_type_name,
-        COUNT(reservation_passenger.booking_id) as reservation_passenger
+        COUNT(reservation_passenger.booking_id) as reservation_passenger,
+        agent.name as agent_name, agent_type.name as agent_type_name
         """
 
     @staticmethod
     def _select_activity():
         return """
         reservation.id as reservation_id, 
+        reservation.agent_id as agent_id, reservation.agent_type_id as agent_type_id,
         reservation.name as reservation_order_number, 
         reservation.state as reservation_state,
         reservation.create_date as reservation_create_date_og, 
@@ -115,13 +124,15 @@ class ReportSelling(models.Model):
         reservation.child as reservation_child, 
         reservation.infant as reservation_infant,
         provider_type.name as provider_type_name,
-        COUNT(reservation_passenger.booking_id) as reservation_passenger
+        COUNT(reservation_passenger.booking_id) as reservation_passenger,
+        agent.name as agent_name, agent_type.name as agent_type_name
         """
 
     @staticmethod
     def _select_tour():
         return """
         reservation.id as reservation_id, 
+        reservation.agent_id as agent_id, reservation.agent_type_id as agent_type_id,
         reservation.name as reservation_order_number, 
         reservation.create_date as reservation_create_date_og,
         reservation.booked_date as reservation_booked_date_og, 
@@ -133,19 +144,22 @@ class ReportSelling(models.Model):
         reservation.adult as reservation_adult, 
         reservation.child as reservation_child, 
         reservation.infant as reservation_infant,
+        provider_type.name as provider_type_name,
         tour.name as tour_name, 
         tour.tour_category as tour_category, 
         tour.tour_type as tour_type, 
         tour.tour_route as tour_route, 
         tour.duration as tour_duration, 
         country.name as tour_country_name,
-        tour_location.country_name as tour_location_country
+        tour_location.country_name as tour_location_country,
+        agent.name as agent_name, agent_type.name as agent_type_name
         """
 
     @staticmethod
     def _select_visa():
         return """
         reservation.id as reservation_id, 
+        reservation.agent_id as agent_id, reservation.agent_type_id as agent_type_id,
         reservation.name as reservation_order_number, 
         reservation.create_date as reservation_create_date_og,
         reservation.booked_date as reservation_booked_date_og, 
@@ -158,13 +172,15 @@ class ReportSelling(models.Model):
         reservation.infant as reservation_infant,
         provider_type.name as provider_type_name,
         country.name as country_name,
-        COUNT(reservation_passenger.visa_id) as reservation_passenger
+        COUNT(reservation_passenger.visa_id) as reservation_passenger,
+        agent.name as agent_name, agent_type.name as agent_type_name
         """
 
     @staticmethod
     def _select_offline():
         return """
         reservation.id as reservation_id, 
+        reservation.agent_id as agent_id, reservation.agent_type_id as agent_type_id,
         reservation.name as reservation_order_number,
         reservation.create_date as reservation_create_date_og, 
         reservation.booked_date as reservation_booked_date_og,
@@ -180,13 +196,15 @@ class ReportSelling(models.Model):
         reservation.state as reservation_state,
         reservation.offline_provider_type as reservation_offline_provider_type, 
         reservation.nta_price as reservation_nta_price, 
-        provider_type.name as provider_type_name
+        provider_type.name as provider_type_name,
+        agent.name as agent_name, agent_type.name as agent_type_name
         """
 
     @staticmethod
     def _select_event():
         return """
         reservation.id as reservation_id, 
+        reservation.agent_id as agent_id, reservation.agent_type_id as agent_type_id,
         reservation.name as reservation_order_number, 
         reservation.booked_date as reservation_booked_date_og,
         reservation.issued_date as reservation_issued_date_og,
@@ -200,13 +218,15 @@ class ReportSelling(models.Model):
         reservation.child as reservation_child, 
         reservation.infant as reservation_infant,
         provider_type.name as provider_type_name,
-        COUNT(reservation_passenger.booking_id) as reservation_passenger
+        COUNT(reservation_passenger.booking_id) as reservation_passenger,
+        agent.name as agent_name, agent_type.name as agent_type_name
         """
 
     @staticmethod
     def _select_ppob():
         return """
         reservation.id as reservation_id, 
+        reservation.agent_id as agent_id, reservation.agent_type_id as agent_type_id,
         reservation.name as reservation_order_number, 
         reservation.booked_date as reservation_booked_date_og,
         reservation.issued_date as reservation_issued_date_og,
@@ -221,7 +241,8 @@ class ReportSelling(models.Model):
         reservation.child as reservation_child, 
         reservation.infant as reservation_infant,
         provider_type.name as provider_type_name,
-        COUNT(reservation_passenger.booking_id) as reservation_passenger
+        COUNT(reservation_passenger.booking_id) as reservation_passenger,
+        agent.name as agent_name, agent_type.name as agent_type_name
         """
 
     #for all
@@ -229,6 +250,8 @@ class ReportSelling(models.Model):
     def _from(provider_type):
         return """tt_reservation_""" + provider_type + """ reservation
         LEFT JOIN tt_provider_type provider_type ON reservation.provider_type_id = provider_type.id
+        LEFT JOIN tt_agent agent ON agent.id = reservation.agent_id
+        LEFT JOIN tt_agent_type agent_type ON agent_type.id = reservation.agent_type_id
         """
 
     @staticmethod
@@ -244,6 +267,8 @@ class ReportSelling(models.Model):
         LEFT JOIN tt_destinations destination ON reservation.destination_id = destination.id
         LEFT JOIN tt_journey_airline journey ON journey.booking_id = reservation.id
         LEFT JOIN tt_reservation_passenger_airline reservation_passenger ON reservation_passenger.booking_id = reservation.id
+        LEFT JOIN tt_agent agent ON agent.id = reservation.agent_id
+        LEFT JOIN tt_agent_type agent_type ON agent_type.id = reservation.agent_type_id
         """
 
     @staticmethod
@@ -254,6 +279,8 @@ class ReportSelling(models.Model):
         LEFT JOIN tt_destinations destination ON reservation.destination_id = destination.id
         LEFT JOIN tt_journey_train journey ON journey.booking_id = reservation.id
         LEFT JOIN tt_reservation_passenger_airline reservation_passenger ON reservation_passenger.booking_id = reservation.id
+        LEFT JOIN tt_agent agent ON agent.id = reservation.agent_id
+        LEFT JOIN tt_agent_type agent_type ON agent_type.id = reservation.agent_type_id
         """
 
     @staticmethod
@@ -261,6 +288,8 @@ class ReportSelling(models.Model):
         return """tt_reservation_hotel reservation
         LEFT JOIN tt_provider_type provider_type ON reservation.provider_type_id = provider_type.id
         LEFT JOIN tt_reservation_hotel_guest_rel reservation_passenger ON reservation_passenger.booking_id = reservation.id
+        LEFT JOIN tt_agent agent ON agent.id = reservation.agent_id
+        LEFT JOIN tt_agent_type agent_type ON agent_type.id = reservation.agent_type_id
         """
 
     @staticmethod
@@ -268,6 +297,8 @@ class ReportSelling(models.Model):
         return """tt_reservation_activity reservation
         LEFT JOIN tt_provider_type provider_type ON reservation.provider_type_id = provider_type.id
         LEFT JOIN tt_reservation_passenger_activity reservation_passenger ON reservation_passenger.booking_id = reservation.id
+        LEFT JOIN tt_agent agent ON agent.id = reservation.agent_id
+        LEFT JOIN tt_agent_type agent_type ON agent_type.id = reservation.agent_type_id
         """
 
     @staticmethod
@@ -277,6 +308,9 @@ class ReportSelling(models.Model):
         LEFT JOIN tt_tour_location_rel tour_location_rel ON tour_location_rel.product_id = tour.id
         LEFT JOIN tt_tour_master_locations tour_location ON tour_location.id = tour_location_rel.location_id
         LEFT JOIN res_country country ON tour_location.country_id = country.id
+        LEFT JOIN tt_provider_type provider_type ON reservation.provider_type_id = provider_type.id
+        LEFT JOIN tt_agent agent ON agent.id = reservation.agent_id
+        LEFT JOIN tt_agent_type agent_type ON agent_type.id = reservation.agent_type_id
         """
 
     @staticmethod
@@ -285,6 +319,8 @@ class ReportSelling(models.Model):
         LEFT JOIN tt_provider_type provider_type ON reservation.provider_type_id = provider_type.id
         LEFT JOIN res_country country ON country.id = reservation.country_id
         LEFT JOIN tt_reservation_visa_order_passengers reservation_passenger ON reservation_passenger.visa_id = reservation.id
+        LEFT JOIN tt_agent agent ON agent.id = reservation.agent_id
+        LEFT JOIN tt_agent_type agent_type ON agent_type.id = reservation.agent_type_id
         """
 
     @staticmethod
@@ -292,6 +328,8 @@ class ReportSelling(models.Model):
         return """tt_reservation_event reservation
         LEFT JOIN tt_provider_type provider_type ON reservation.provider_type_id = provider_type.id
         LEFT JOIN tt_reservation_passenger_activity reservation_passenger ON reservation_passenger.booking_id = reservation.id
+        LEFT JOIN tt_agent agent ON agent.id = reservation.agent_id
+        LEFT JOIN tt_agent_type agent_type ON agent_type.id = reservation.agent_type_id
         """
 
     @staticmethod
@@ -299,44 +337,52 @@ class ReportSelling(models.Model):
         return """tt_reservation_ppob reservation
         LEFT JOIN tt_provider_type provider_type ON reservation.provider_type_id = provider_type.id
         LEFT JOIN tt_reservation_passenger_activity reservation_passenger ON reservation_passenger.booking_id = reservation.id
+        LEFT JOIN tt_agent agent ON agent.id = reservation.agent_id
+        LEFT JOIN tt_agent_type agent_type ON agent_type.id = reservation.agent_type_id
         """
 
     @staticmethod
     def _from_offline():
         return """tt_reservation_offline reservation
         LEFT JOIN tt_provider_type provider_type ON reservation.provider_type_id = provider_type.id
+        LEFT JOIN tt_agent agent ON agent.id = reservation.agent_id
+        LEFT JOIN tt_agent_type agent_type ON agent_type.id = reservation.agent_type_id
         """
         # return """tt_reservation_offline"""
 
     # so far works with all
     @staticmethod
     def _group_by_airline():
-        return """reservation.id, provider_type.name, departure.display_name, destination.display_name, journey.id"""
+        return """reservation.id, provider_type.name, departure.display_name, destination.display_name, journey.id, agent.name, agent_type.name"""
 
     @staticmethod
     def _group_by_train():
-        return """reservation.id, provider_type.name, departure.display_name, destination.display_name, journey.id"""
+        return """reservation.id, provider_type.name, departure.display_name, destination.display_name, journey.id, agent.name, agent_type.name"""
 
     #specified hotel
     @staticmethod
     def _group_by_hotel():
-        return """reservation.id, provider_type.name"""
+        return """reservation.id, provider_type.name, agent.name, agent_type.name"""
 
     @staticmethod
     def _group_by_activity():
-        return """reservation.id, provider_type.name"""
+        return """reservation.id, provider_type.name, agent.name, agent_type.name"""
 
     @staticmethod
     def _group_by_visa():
-        return """reservation.id, country.name,  provider_type.name"""
+        return """reservation.id, country.name,  provider_type.name, agent.name, agent_type.name"""
+
+    @staticmethod
+    def _group_by_tour():
+        return """reservation.id, provider_type.name, agent.name, agent_type.name"""
 
     @staticmethod
     def _group_by_event():
-        return """reservation.id, provider_type.name"""
+        return """reservation.id, provider_type.name, agent.name, agent_type.name"""
 
     @staticmethod
     def _group_by_ppob():
-        return """reservation.id provider_type.name"""
+        return """reservation.id provider_type.name, agent.name, agent_type.name"""
 
     #works with all
     @staticmethod
@@ -430,6 +476,7 @@ class ReportSelling(models.Model):
         elif provider_checker == 'tour':
             query += 'FROM {} '.format(self._from_tour())
             query += 'WHERE {} '.format(self._where(date_from, date_to))
+            query += 'GROUP BY {} '.format(self._group_by_tour())
             query += 'ORDER BY {} '.format(self._order_by())
         elif provider_checker == 'visa':
             query += 'FROM {} '.format(self._from_visa())
@@ -487,6 +534,44 @@ class ReportSelling(models.Model):
         elif provider_checker == 'overall_offline':
             query += 'FROM {} '.format(self._from_offline())
             query += 'WHERE {} '.format(self._where_issued(date_from, date_to))
+            query += 'ORDER BY {} '.format(self._order_by_issued())
+        elif provider_checker == 'chanel_overall_airline':
+            query += 'FROM {} '.format(self._from_airline())
+            query += 'WHERE {} '.format(self._where_chanel(date_from, date_to))
+            query += 'GROUP BY {} '.format(self._group_by_airline())
+            query += 'ORDER BY {} '.format(self._order_by_issued())
+        elif provider_checker == 'chanel_overall_activity':
+            query += 'FROM {} '.format(self._from_activity())
+            query += 'WHERE {} '.format(self._where_chanel(date_from, date_to))
+            query += 'GROUP BY {} '.format(self._group_by_activity())
+            query += 'ORDER BY {} '.format(self._order_by_issued())
+        elif provider_checker == 'chanel_overall_event':
+            query += 'FROM {} '.format(self._from_event())
+            query += 'WHERE {} '.format(self._where_chanel(date_from, date_to))
+            query += 'GROUP BY {} '.format(self._group_by_event())
+            query += 'ORDER BY {} '.format(self._order_by_issued())
+        elif provider_checker == 'chanel_overall_hotel':
+            query += 'FROM {} '.format(self._from_hotel())
+            query += 'WHERE {} '.format(self._where_chanel(date_from, date_to))
+            query += 'GROUP BY {} '.format(self._group_by_hotel())
+            query += 'ORDER BY {} '.format(self._order_by_issued())
+        elif provider_checker == 'chanel_overall_tour':
+            query += 'FROM {} '.format(self._from_tour())
+            query += 'WHERE {} '.format(self._where_chanel(date_from, date_to))
+            query += 'ORDER BY {} '.format(self._order_by_issued())
+        elif provider_checker == 'chanel_overall_train':
+            query += 'FROM {} '.format(self._from_train())
+            query += 'WHERE {} '.format(self._where_chanel(date_from, date_to))
+            query += 'GROUP BY {} '.format(self._group_by_train())
+            query += 'ORDER BY {} '.format(self._order_by_issued())
+        elif provider_checker == 'chanel_overall_visa':
+            query += 'FROM {} '.format(self._from_visa())
+            query += 'WHERE {} '.format(self._where_chanel(date_from, date_to))
+            query += 'GROUP BY {} '.format(self._group_by_visa())
+            query += 'ORDER BY {} '.format(self._order_by_issued())
+        elif provider_checker == 'chanel_overall_offline':
+            query += 'FROM {} '.format(self._from_offline())
+            query += 'WHERE {} '.format(self._where_chanel(date_from, date_to))
             query += 'ORDER BY {} '.format(self._order_by_issued())
         elif provider_checker == 'invoice':
             query += 'FROM {} '.format(self._from_invoice())
@@ -693,7 +778,27 @@ class ReportSelling(models.Model):
     def _get_reports(self, data):
         date_from = data['start_date']
         date_to = data['end_date']
-        provider_type = data['type']
+        # need to process provider type
+        if data['addons'] == 'chanel':
+            # for chanel we gonna add prefix chanel
+            # check if data is not overall
+            if data['type'] != 'overall':
+                splits = data['type'].split("_")
+                provider_type = splits[1]
+            else:
+                # if data is only overall then we're gonna change it to all
+                provider_type = 'all'
+        elif data['addons'] == 'book_issued':
+            #for group we're gonna remove the overall prefix
+            # check if data is not overall
+            if data['type'] != 'overall':
+                splits = data['type'].split("_")
+                provider_type = splits[1]
+            else:
+                # if data is only overall then we're gonna change it to all
+                provider_type = 'all'
+        else:
+            provider_type = data['type']
         reservation = []
         if provider_type == 'invoice':
             reservation = data['reservation']
