@@ -463,7 +463,7 @@ class ReservationEvent(models.Model):
         try:
             resv_obj = self.get_book_obj(data.get('order_id'), data.get('order_number'))
             if resv_obj:
-                res = resv_obj.to_dict()
+                res = resv_obj.to_dict(context['co_agent_id'] == self.env.ref('tt_base.rodex_ho').id)
                 psg_list = []
                 for i in resv_obj.passenger_ids:
                     if list(filter(lambda x: x['name'] == i.option_id.event_option_name, psg_list)):
