@@ -1057,7 +1057,7 @@ class ReservationActivity(models.Model):
                     })
                     self.env.cr.commit()
 
-                response = activity_booking.to_dict()
+                response = activity_booking.to_dict(context['co_agent_id'] == self.env.ref('tt_base.rodex_ho').id)
                 response.update({
                     'activity': {
                         'name': master.name,
