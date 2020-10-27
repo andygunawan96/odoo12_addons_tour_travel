@@ -21,6 +21,13 @@ class TtReportDashboard(models.Model):
 
         return -1
 
+    def person_index(self, arr, params):
+        for i, dic in enumerate(arr):
+            if dic['agent_id'] == params['agent_id'] and dic['agent_type_id'] == params['agent_type_id']:
+                return i
+
+        return -1
+
     def add_month_detail(self):
         temp_list = []
         for i in range(1, 32):
@@ -130,18 +137,228 @@ class TtReportDashboard(models.Model):
     def get_report_xls_api(self, data,  context):
         return ERR.get_no_error()
 
+    def get_book_issued_ratio(self, data):
+        try:
+            # get all data
+            # prepare data
+            temp_dict = {
+                'start_date': data['start_date'],
+                'end_date': data['end_date'],
+                'type': data['report_type'],
+                'addons': 'book_issued'
+            }
+            # execute the query
+            all_values = self.env['report.tt_report_selling.report_selling']._get_reports(temp_dict)
+
+            # constant dependencies
+            mode = data['mode']
+            month = [
+                'January', 'February', 'March', 'April', 'May', 'June',
+                'July', 'August', 'September', 'October', 'November', 'December'
+            ]
+
+            # create book vs issue
+            summary_by_date = []
+            for i in all_values['lines']:
+                try:
+                    # convert month number (1) to text and index (Januray) in constant
+                    month_index = self.check_date_index(summary_by_date, {'year': i['booked_year'],
+                                                                          'month': month[int(i['booked_month']) - 1]})
+                    if month_index == -1:
+                        # create dictionary seperate by month
+                        temp_dict = {
+                            'year': i['booked_year'],
+                            'month_index': int(i['booked_month']),
+                            'month': month[int(i['booked_month']) - 1],
+                            'detail': self.add_month_detail()
+                        }
+                        # seperate book date
+                        try:
+                            splits = i['reservation_booked_date'].split("-")
+                            day_index = int(splits[2]) - 1
+                            temp_dict['detail'][day_index]['booked_counter'] += 1
+                        except:
+                            pass
+                        try:
+                            splits = i['reservation_issued_date'].split("-")
+                            day_index = int(splits[2]) - 1
+                            temp_dict['detail'][day_index]['issued_counter'] += 1
+                        except:
+                            pass
+
+                        # append to list of dictionaries
+                        summary_by_date.append(temp_dict)
+                    else:
+                        try:
+                            splits = i['reservation_booked_date'].split("-")
+                            day_index = int(splits[2]) - 1
+                            summary_by_date[month_index]['detail'][day_index]['booked_counter'] += 1
+                        except:
+                            pass
+                        try:
+                            splits = i['reservation_issued_date'].split("-")
+                            day_index = int(splits[2]) - 1
+                            summary_by_date[month_index]['detail'][day_index]['issued_counter'] += 1
+                        except:
+                            pass
+                except:
+                    pass
+
+            # sort the data by year and month
+            # the result will be (Year 2019, month January), (Year 2020, month January) and so on
+            summary_by_date.sort(key=lambda x: (x['year'], x['month_index']))
+
+            # shape the data for return
+            book_data = {}
+            issued_data = {}
+            if mode == 'month':
+                counter = summary_by_date[0]['month_index'] - 1
+                for i in summary_by_date:
+                    # fill skipped months
+                    if i['month_index'] - 1 < counter:
+                        while counter < 12:
+                            book_data[month[counter]] = 0
+                            issued_data[month[counter]] = 0
+                            counter += 1
+                        # resert counter after 12
+                        if counter == 12:
+                            counter = 0
+                    if i['month_index'] - 1 > counter:
+                        while counter < i['month_index'] - 1:
+                            book_data[month[counter]] = 0
+                            issued_data[month[counter]] = 0
+                            counter += 1
+
+                    # for every month in summary by date
+                    book_data[i['month']] = 0
+                    issued_data[i['month']] = 0
+                    for j in i['detail']:
+                        # for every date in a month (i)
+                        book_data[i['month']] += j['booked_counter']
+                        issued_data[i['month']] += j['issued_counter']
+                    counter += 1
+            else:
+                for i in summary_by_date:
+                    # for every month in summary by date
+                    for j in i['detail']:
+                        # for every date in a month (i)
+                        if i['month_index'] < 10 and j['day'] < 10:
+                            today = str(i['year']) + "-0" + str(i['month_index']) + "-0" + str(j['day'])
+                        elif i['month_index'] < 10 and j['day'] > 9:
+                            today = str(i['year']) + "-0" + str(i['month_index']) + "-" + str(j['day'])
+                        elif i['month_index'] > 9 and j['day'] < 10:
+                            today = str(i['year']) + "-" + str(i['month_index']) + "-0" + str(j['day'])
+                        else:
+                            today = str(i['year']) + "-" + str(i['month_index']) + "-" + str(j['day'])
+                        if today > data['start_date'] and today < data['end_date']:
+                            book_data[str(j['day']) + "-" + str(i['month_index']) + "-" + str(i['year'])] = j['booked_counter']
+                            issued_data[str(j['day']) + "-" + str(i['month_index']) + "-" + str(i['year'])] = j['issued_counter']
+                        else:
+                            book_data[str(j['day']) + "-" + str(i['month_index']) + "-" + str(i['year'])] = 0
+                            issued_data[str(j['day']) + "-" + str(i['month_index']) + "-" + str(i['year'])] = 0
+            # build to return data
+            to_return = {
+                # it will be very absurd to stand alone, however this particular graph will corenspond to second graph in front end, so theres that
+                'second_graph': {
+                    'label': list(book_data.keys()),
+                    'data': list(book_data.values()),
+                    'data2': list(issued_data.values())
+                }
+            }
+            return to_return
+        except Exception as e:
+            _logger.error(traceback.format_exc())
+            raise e
+
+    def get_report_group_by_chanel(self, data):
+        try:
+            temp_dict = {
+                'start_date': data['start_date'],
+                'end_date': data['end_date'],
+                'type': data['report_type'],
+                'addons': 'chanel'
+            }
+            chanel_values = self.env['report.tt_report_selling.report_selling']._get_reports(temp_dict)
+
+            # declare mode of group by (timewise either days or month)
+            mode = data['mode']
+            month = [
+                'January', 'February', 'March', 'April', 'May', 'June',
+                'July', 'August', 'September', 'October', 'November', 'December'
+            ]
+
+            # declare variable to temp handle processed data
+            summary_chanel = []
+
+            for i in chanel_values['lines']:
+                person_index = self.person_index(summary_chanel, {'agent_id': i['agent_id'], 'agent_type_id': i['agent_type_id']})
+
+                if person_index == -1:
+                    # data is not exist
+                    # create data
+                    temp_dict = {
+                        'agent_id': i['agent_id'],
+                        'agent_type_id': i['agent_type_id'],
+                        'agent_name': i['agent_name'],
+                        'agent_type_name': i['agent_type_name'],
+                        'revenue': i['amount'],
+                        'reservation': 1
+                    }
+                    # add to final list
+                    summary_chanel.append(temp_dict)
+                else:
+                    # data exist
+                    summary_chanel[person_index]['revenue'] += i['amount']
+                    summary_chanel[person_index]['reservation'] += 1
+
+            # sort data
+            summary_chanel.sort(key=lambda x: (x['revenue'], x['reservation']), reverse=True)
+
+            # create return dict
+            label_data = []
+            revenue_data = []
+            reservation_data = []
+            average_data = []
+
+            # lets populate list to return
+            if len(summary_chanel) < 20:
+                for i in summary_chanel:
+                    label_data.append(i['agent_name'])
+                    revenue_data.append(i['revenue'])
+                    reservation_data.append(i['reservation'])
+                    average_data.append(i['revenue']/i['reservation'])
+            else:
+                for i in range(20):
+                    label_data.append(summary_chanel[i]['agent_name'])
+                    revenue_data.append(summary_chanel[i]['revenue'])
+                    reservation_data.append(summary_chanel[i]['reservation'])
+                    average_data.append(summary_chanel[i]['revenue'] / summary_chanel[i]['reservation'])
+
+            # lets built to return
+            to_return = {
+                'third_graph': {
+                    'label': label_data,
+                    'data': revenue_data,
+                    'data2': reservation_data,
+                    'data3': average_data
+                }
+            }
+
+            return to_return
+        except Exception as e:
+            _logger.error(traceback.format_exc())
+            raise e
+
     def get_report_overall(self, data):
         try:
             # get all data by issued date (between start and end)
             temp_dict = {
                 'start_date': data['start_date'],
                 'end_date': data['end_date'],
-                'type': data['report_type']
+                'type': data['report_type'],
+                'addons': 'none'
             }
             issued_values = self.env['report.tt_report_selling.report_selling']._get_reports(temp_dict)
-
-            # end result variable declaration
-            result_list = []
 
             # constant dependencies
             mode = 'days'
@@ -175,7 +392,8 @@ class TtReportDashboard(models.Model):
                 'start_date': data['start_date'],
                 'end_date': data['end_date'],
                 'type': 'invoice',
-                'reservation': reservation_ids
+                'reservation': reservation_ids,
+                'addons': 'none'
             }
             invoice = self.env['report.tt_report_selling.report_selling']._get_reports(temp_dict)
 
@@ -282,7 +500,6 @@ class TtReportDashboard(models.Model):
                         average_data[i['month']] += j['average']
                         revenue_data[i['month']] += j['revenue']
                     first_counter += 1
-
             else:
                 # seperate by date
                 for i in summary_issued:
@@ -293,7 +510,7 @@ class TtReportDashboard(models.Model):
 
             # build to return data
             to_return = {
-                'graph': {
+                'first_graph': {
                     'label': list(main_data.keys()),
                     'data': list(main_data.values()),
                     'data2': list(revenue_data.values()),
@@ -301,139 +518,23 @@ class TtReportDashboard(models.Model):
                 },
                 'total_rupiah': total,
                 'average_rupiah': float(total) / float(num_data) if num_data > 0 else 0,
-                'overview': result_list
             }
-            return to_return
-        except Exception as e:
-            _logger.error(traceback.format_exc())
-            raise e
 
-    def get_book_issued_ratio(self, data):
-        try:
-            # get all data
-            # prepare data
-            temp_dict = {
-                'start_date': data['start_date'],
-                'end_date': data['end_date'],
-                'type': data['report_type']
-            }
-            # execute the query
-            all_values = self.env['report.tt_report_selling.report_selling']._get_reports(temp_dict)
+            # update dependencies
+            data['mode'] = mode
 
-            # constant dependencies
-            mode = 'days'
-            month = [
-                'January', 'February', 'March', 'April', 'May', 'June',
-                'July', 'August', 'September', 'October', 'November', 'December'
-            ]
+            # get book issued ratio
+            book_issued = self.get_book_issued_ratio(data)
 
-            # create book vs issue
-            summary_by_date = []
-            for i in all_values['lines']:
-                try:
-                    # convert month number (1) to text and index (Januray) in constant
-                    month_index = self.check_date_index(summary_by_date, {'year': i['booked_year'],
-                                                                          'month': month[int(i['booked_month']) - 1]})
-                    if month_index == -1:
-                        # create dictionary seperate by month
-                        temp_dict = {
-                            'year': i['booked_year'],
-                            'month_index': int(i['booked_month']),
-                            'month': month[int(i['booked_month']) - 1],
-                            'detail': self.add_month_detail()
-                        }
-                        # seperate book date
-                        try:
-                            splits = i['reservation_booked_date'].split("-")
-                            day_index = int(splits[2]) - 1
-                            temp_dict['detail'][day_index]['booked_counter'] += 1
-                        except:
-                            pass
-                        try:
-                            splits = i['reservation_issued_date'].split("-")
-                            day_index = int(splits[2]) - 1
-                            temp_dict['detail'][day_index]['issued_counter'] += 1
-                        except:
-                            pass
+            # adding book_issued ratio graph
+            to_return.update(book_issued)
 
-                        # append to list of dictionaries
-                        summary_by_date.append(temp_dict)
-                    else:
-                        try:
-                            splits = i['reservation_booked_date'].split("-")
-                            day_index = int(splits[2]) - 1
-                            summary_by_date[month_index]['detail'][day_index]['booked_counter'] += 1
-                        except:
-                            pass
-                        try:
-                            splits = i['reservation_issued_date'].split("-")
-                            day_index = int(splits[2]) - 1
-                            summary_by_date[month_index]['detail'][day_index]['issued_counter'] += 1
-                        except:
-                            pass
-                except:
-                    pass
+            # get by chanel
+            chanel_data = self.get_report_group_by_chanel(data)
 
-            # sort the data by year and month
-            # the result will be (Year 2019, month January), (Year 2020, month January) and so on
-            summary_by_date.sort(key=lambda x: (x['year'], x['month_index']))
+            # adding chanel_data graph
+            to_return.update(chanel_data)
 
-            # shape the data for return
-            book_data = {}
-            issued_data = {}
-            if mode == 'month':
-                counter = summary_by_date[0]['month_index'] - 1
-                for i in summary_by_date:
-                    # fill skipped months
-                    if i['month_index'] - 1 < counter:
-                        while counter < 12:
-                            book_data[month[counter]] = 0
-                            issued_data[month[counter]] = 0
-                            counter += 1
-                        # resert counter after 12
-                        if counter == 12:
-                            counter = 0
-                    if i['month_index'] - 1 > counter:
-                        while counter < i['month_index'] - 1:
-                            book_data[month[counter]] = 0
-                            issued_data[month[counter]] = 0
-                            counter += 1
-
-                    # for every month in summary by date
-                    book_data[i['month']] = 0
-                    issued_data[i['month']] = 0
-                    for j in i['detail']:
-                        # for every date in a month (i)
-                        book_data[i['month']] += j['booked_counter']
-                        issued_data[i['month']] += j['issued_counter']
-                    counter += 1
-            else:
-                for i in summary_by_date:
-                    # for every month in summary by date
-                    for j in i['detail']:
-                        # for every date in a month (i)
-                        if i['month_index'] < 10 and j['day'] < 10:
-                            today = str(i['year']) + "-0" + str(i['month_index']) + "-0" + str(j['day'])
-                        elif i['month_index'] < 10 and j['day'] > 9:
-                            today = str(i['year']) + "-0" + str(i['month_index']) + "-" + str(j['day'])
-                        elif i['month_index'] > 9 and j['day'] < 10:
-                            today = str(i['year']) + "-" + str(i['month_index']) + "-0" + str(j['day'])
-                        else:
-                            today = str(i['year']) + "-" + str(i['month_index']) + "-" + str(j['day'])
-                        if today < data['end_date']:
-                            book_data[str(j['day']) + "-" + str(i['month_index']) + "-" + str(i['year'])] = j['booked_counter']
-                            issued_data[str(j['day']) + "-" + str(i['month_index']) + "-" + str(i['year'])] = j['issued_counter']
-                        else:
-                            book_data[str(j['day']) + "-" + str(i['month_index']) + "-" + str(i['year'])] = 0
-                            issued_data[str(j['day']) + "-" + str(i['month_index']) + "-" + str(i['year'])] = 0
-            # build to return data
-            to_return = {
-                'graph': {
-                    'label': list(book_data.keys()),
-                    'data': list(book_data.values()),
-                    'data2': list(issued_data.values())
-                }
-            }
             return to_return
         except Exception as e:
             _logger.error(traceback.format_exc())
@@ -444,7 +545,8 @@ class TtReportDashboard(models.Model):
             temp_dict = {
                 'start_date': data['start_date'],
                 'end_date': data['end_date'],
-                'type': data['report_type']
+                'type': data['report_type'],
+                'addons': 'none'
             }
             issued_values = self.env['report.tt_report_selling.report_selling']._get_reports(temp_dict)
 
@@ -481,7 +583,8 @@ class TtReportDashboard(models.Model):
                 'start_date': data['start_date'],
                 'end_date': data['end_date'],
                 'type': 'invoice',
-                'reservation': reservation_ids
+                'reservation': reservation_ids,
+                'addons': 'none'
             }
             invoice = self.env['report.tt_report_selling.report_selling']._get_reports(temp_dict)
 
@@ -670,7 +773,6 @@ class TtReportDashboard(models.Model):
                         average_data[str(j['day']) + "-" + str(i['month_index']) + "-" + str(i['year'])] = j['average']
                         revenue_data[str(j['day']) + "-" + str(i['month_index']) + "-" + str(i['year'])] = j['revenue']
 
-
             to_return = {
                 'graph': {
                     'label': list(main_data.keys()),
@@ -690,6 +792,21 @@ class TtReportDashboard(models.Model):
                     'multi_city': multi_city_filter
                 }
             }
+            # update dependencies
+            data['mode'] = mode
+
+            # get book issued ratio
+            book_issued = self.get_book_issued_ratio(data)
+
+            # adding book_issued ratio graph
+            to_return.update(book_issued)
+
+            # get by chanel
+            chanel_data = self.get_report_group_by_chanel(data)
+
+            # adding chanel_data graph
+            to_return.update(chanel_data)
+
             return to_return
         except Exception as e:
             _logger.error(traceback.format_exc())
@@ -701,7 +818,8 @@ class TtReportDashboard(models.Model):
             temp_dict = {
                 'start_date': data['start_date'],
                 'end_date': data['end_date'],
-                'type': data['report_type']
+                'type': data['report_type'],
+                'addons': 'none'
             }
             issued_values = self.env['report.tt_report_selling.report_selling']._get_reports(temp_dict)
 
@@ -736,7 +854,8 @@ class TtReportDashboard(models.Model):
                 'start_date': data['start_date'],
                 'end_date': data['end_date'],
                 'type': 'invoice',
-                'reservation': reservation_ids
+                'reservation': reservation_ids,
+                'addons': 'none'
             }
             invoice = self.env['report.tt_report_selling.report_selling']._get_reports(temp_dict)
 
@@ -877,65 +996,65 @@ class TtReportDashboard(models.Model):
                     # count average
                     j['average'] = float(j['revenue']) / len(filtered_data) if len(filtered_data) > 0 else 0
 
-                # sort summary_by_date month in the correct order
-                summary_issued.sort(key=lambda x: (x['year'], x['month_index']))
+            # sort summary_by_date month in the correct order
+            summary_issued.sort(key=lambda x: (x['year'], x['month_index']))
 
-                # first graph data
-                main_data = {}
-                average_data = {}
-                revenue_data = {}
+            # first graph data
+            main_data = {}
+            average_data = {}
+            revenue_data = {}
 
-                # shape the data for return
-                if mode == 'month':
-                    # sum by month
-                    first_counter = summary_issued[0]['month_index'] - 1
-                    for i in summary_issued:
-                        # fill skipped month(s)
-                        # check if current month (year) with start
-                        if i['month_index'] - 1 < first_counter:
-                            while first_counter < 12:
-                                main_data[month[first_counter]] = 0
-                                average_data[month[first_counter]] = 0
-                                revenue_data[month[first_counter]] = 0
-                                first_counter += 1
-                            # resert counter after 12
-                            if first_counter == 12:
-                                first_counter = 0
-                        if i['month_index'] - 1 > first_counter:
-                            while first_counter < i['month_index'] - 1:
-                                main_data[month[first_counter]] = 0
-                                average_data[month[first_counter]] = 0
-                                revenue_data[month[first_counter]] = 0
-                                first_counter += 1
+            # shape the data for return
+            if mode == 'month':
+                # sum by month
+                first_counter = summary_issued[0]['month_index'] - 1
+                for i in summary_issued:
+                    # fill skipped month(s)
+                    # check if current month (year) with start
+                    if i['month_index'] - 1 < first_counter:
+                        while first_counter < 12:
+                            main_data[month[first_counter]] = 0
+                            average_data[month[first_counter]] = 0
+                            revenue_data[month[first_counter]] = 0
+                            first_counter += 1
+                        # resert counter after 12
+                        if first_counter == 12:
+                            first_counter = 0
+                    if i['month_index'] - 1 > first_counter:
+                        while first_counter < i['month_index'] - 1:
+                            main_data[month[first_counter]] = 0
+                            average_data[month[first_counter]] = 0
+                            revenue_data[month[first_counter]] = 0
+                            first_counter += 1
 
-                        # for every month in summary by date
-                        main_data[i['month']] = 0
-                        average_data[i['month']] = 0
-                        revenue_data[i['month']] = 0
-                        for j in i['detail']:
-                            # for detail in months
-                            main_data[i['month']] += j['invoice']
-                            average_data[i['month']] += j['average']
-                            revenue_data[i['month']] += j['revenue']
-                        first_counter += 1
+                    # for every month in summary by date
+                    main_data[i['month']] = 0
+                    average_data[i['month']] = 0
+                    revenue_data[i['month']] = 0
+                    for j in i['detail']:
+                        # for detail in months
+                        main_data[i['month']] += j['invoice']
+                        average_data[i['month']] += j['average']
+                        revenue_data[i['month']] += j['revenue']
+                    first_counter += 1
 
-                else:
-                    # seperate by date
-                    for i in summary_issued:
-                        for j in i['detail']:
-                            main_data[str(j['day']) + "-" + str(i['month_index']) + "-" + str(i['year'])] = j['invoice']
-                            average_data[str(j['day']) + "-" + str(i['month_index']) + "-" + str(i['year'])] = j[
-                                'average']
-                            revenue_data[str(j['day']) + "-" + str(i['month_index']) + "-" + str(i['year'])] = j[
-                                'revenue']
+            else:
+                # seperate by date
+                for i in summary_issued:
+                    for j in i['detail']:
+                        main_data[str(j['day']) + "-" + str(i['month_index']) + "-" + str(i['year'])] = j['invoice']
+                        average_data[str(j['day']) + "-" + str(i['month_index']) + "-" + str(i['year'])] = j[
+                            'average']
+                        revenue_data[str(j['day']) + "-" + str(i['month_index']) + "-" + str(i['year'])] = j[
+                            'revenue']
 
-                to_return = {
-                    'graph': {
-                        'label': list(main_data.keys()),
-                        'data': list(main_data.values()),
-                        'data2': list(revenue_data.values()),
-                        'data3': list(average_data.values())
-                    },
+            to_return = {
+                'graph': {
+                    'label': list(main_data.keys()),
+                    'data': list(main_data.values()),
+                    'data2': list(revenue_data.values()),
+                    'data3': list(average_data.values())
+                },
                 'total_rupiah': total,
                 'average_rupiah': float(total) / float(num_data) if num_data > 0 else 0,
                 'overview': {
@@ -948,6 +1067,22 @@ class TtReportDashboard(models.Model):
                     'multi_city': multi_city_filter
                 }
             }
+
+            # update dependencies
+            data['mode'] = mode
+
+            # get book issued ratio
+            book_issued = self.get_book_issued_ratio(data)
+
+            # adding book_issued ratio graph
+            to_return.update(book_issued)
+
+            # get by chanel
+            chanel_data = self.get_report_group_by_chanel(data)
+
+            # adding chanel_data graph
+            to_return.update(chanel_data)
+
             return to_return
         except Exception as e:
             _logger.error(traceback.format_exc())
@@ -959,7 +1094,8 @@ class TtReportDashboard(models.Model):
             temp_dict = {
                 'start_date': data['start_date'],
                 'end_date': data['end_date'],
-                'type': data['report_type']
+                'type': data['report_type'],
+                'addons': 'none'
             }
             # execute query
             issued_values = self.env['report.tt_report_selling.report_selling']._get_reports(temp_dict)
@@ -991,7 +1127,8 @@ class TtReportDashboard(models.Model):
                 'start_date': data['start_date'],
                 'end_date': data['end_date'],
                 'type': 'invoice',
-                'reservation': reservation_ids
+                'reservation': reservation_ids,
+                'addons': 'none'
             }
             invoice = self.env['report.tt_report_selling.report_selling']._get_reports(temp_dict)
 
@@ -1119,6 +1256,22 @@ class TtReportDashboard(models.Model):
                 'total_rupiah': total,
                 'average_rupiah': float(total) / float(num_data) if num_data > 0 else 0
             }
+
+            # update dependencies
+            data['mode'] = mode
+
+            # get book issued ratio
+            book_issued = self.get_book_issued_ratio(data)
+
+            # adding book_issued ratio graph
+            to_return.update(book_issued)
+
+            # get by chanel
+            chanel_data = self.get_report_group_by_chanel(data)
+
+            # adding chanel_data graph
+            to_return.update(chanel_data)
+
             return to_return
         except Exception as e:
             _logger.error(traceback.format_exc())
@@ -1129,7 +1282,8 @@ class TtReportDashboard(models.Model):
             temp_dict = {
                 'start_date': data['start_date'],
                 'end_date': data['end_date'],
-                'type': data['report_type']
+                'type': data['report_type'],
+                'addons': 'none'
             }
             issued_values = self.env['report.tt_report_selling.report_selling']._get_reports(temp_dict)
 
@@ -1287,6 +1441,22 @@ class TtReportDashboard(models.Model):
                 'total_rupiah': total,
                 'average_rupiah': float(total) / float(num_data) if num_data > 0 else 0
             }
+
+            # update dependencies
+            data['mode'] = mode
+
+            # get book issued ratio
+            book_issued = self.get_book_issued_ratio(data)
+
+            # adding book_issued ratio graph
+            to_return.update(book_issued)
+
+            # get by chanel
+            chanel_data = self.get_report_group_by_chanel(data)
+
+            # adding chanel_data graph
+            to_return.update(chanel_data)
+
             return to_return
         except Exception as e:
             _logger.error(traceback.format_exc())
@@ -1297,7 +1467,8 @@ class TtReportDashboard(models.Model):
             temp_dict = {
                 'start_date': data['start_date'],
                 'end_date': data['end_date'],
-                'type': data['report_type']
+                'type': data['report_type'],
+                'addons': 'none'
             }
             issued_values = self.env['report.tt_report_selling.report_selling']._get_reports(temp_dict)
 
@@ -1327,7 +1498,8 @@ class TtReportDashboard(models.Model):
                 'start_date': data['start_date'],
                 'end_date': data['end_date'],
                 'type': 'invoice',
-                'reservation': reservation_ids
+                'reservation': reservation_ids,
+                'addons': 'none'
             }
             invoice = self.env['report.tt_report_selling.report_selling']._get_reports(temp_dict)
 
@@ -1455,6 +1627,22 @@ class TtReportDashboard(models.Model):
                 'total_rupiah': total,
                 'average_rupiah': float(total) / float(num_data) if num_data > 0 else 0
             }
+
+            # update dependencies
+            data['mode'] = mode
+
+            # get book issued ratio
+            book_issued = self.get_book_issued_ratio(data)
+
+            # adding book_issued ratio graph
+            to_return.update(book_issued)
+
+            # get by chanel
+            chanel_data = self.get_report_group_by_chanel(data)
+
+            # adding chanel_data graph
+            to_return.update(chanel_data)
+
             return to_return
         except Exception as e:
             _logger.error(traceback.format_exc())
@@ -1465,7 +1653,8 @@ class TtReportDashboard(models.Model):
             temp_dict = {
                 'start_date': data['start_date'],
                 'end_date': data['end_date'],
-                'type': data['report_type']
+                'type': data['report_type'],
+                'addons': 'none'
             }
             issued_values = self.env['report.tt_report_selling.report_selling']._get_reports(temp_dict)
 
@@ -1495,7 +1684,8 @@ class TtReportDashboard(models.Model):
                 'start_date': data['start_date'],
                 'end_date': data['end_date'],
                 'type': 'invoice',
-                'reservation': reservation_ids
+                'reservation': reservation_ids,
+                'addons': 'none'
             }
             invoice = self.env['report.tt_report_selling.report_selling']._get_reports(temp_dict)
 
@@ -1623,6 +1813,22 @@ class TtReportDashboard(models.Model):
                 'total_rupiah': total,
                 'average_rupiah': float(total) / float(num_data) if num_data > 0 else 0
             }
+
+            # update dependencies
+            data['mode'] = mode
+
+            # get book issued ratio
+            book_issued = self.get_book_issued_ratio(data)
+
+            # adding book_issued ratio graph
+            to_return.update(book_issued)
+
+            # get by chanel
+            chanel_data = self.get_report_group_by_chanel(data)
+
+            # adding chanel_data graph
+            to_return.update(chanel_data)
+
             return to_return
         except Exception as e:
             _logger.error(traceback.format_exc())
@@ -1633,7 +1839,8 @@ class TtReportDashboard(models.Model):
             temp_dict = {
                 'start_date': data['start_date'],
                 'end_date': data['end_date'],
-                'type': data['report_type']
+                'type': data['report_type'],
+                'addons': 'none'
             }
             issued_values = self.env['report.tt_report_selling.report_selling']._get_reports(temp_dict)
 
@@ -1663,7 +1870,8 @@ class TtReportDashboard(models.Model):
                 'start_date': data['start_date'],
                 'end_date': data['end_date'],
                 'type': 'invoice',
-                'reservation': reservation_ids
+                'reservation': reservation_ids,
+                'addons': 'none'
             }
             invoice = self.env['report.tt_report_selling.report_selling']._get_reports(temp_dict)
 
@@ -1791,6 +1999,22 @@ class TtReportDashboard(models.Model):
                 'total_rupiah': total,
                 'average_rupiah': float(total) / float(num_data) if num_data > 0 else 0
             }
+
+            # update dependencies
+            data['mode'] = mode
+
+            # get book issued ratio
+            book_issued = self.get_book_issued_ratio(data)
+
+            # adding book_issued ratio graph
+            to_return.update(book_issued)
+
+            # get by chanel
+            chanel_data = self.get_report_group_by_chanel(data)
+
+            # adding chanel_data graph
+            to_return.update(chanel_data)
+
             return to_return
         except Exception as e:
             _logger.error(traceback.format_exc())
@@ -1801,7 +2025,8 @@ class TtReportDashboard(models.Model):
             temp_dict = {
                 'start_date': data['start_date'],
                 'end_date': data['end_date'],
-                'type': data['report_type']
+                'type': data['report_type'],
+                'addons': 'none'
             }
             issued_values = self.env['report.tt_report_selling.report_selling']._get_reports(temp_dict)
 
@@ -1831,7 +2056,8 @@ class TtReportDashboard(models.Model):
                 'start_date': data['start_date'],
                 'end_date': data['end_date'],
                 'type': 'invoice',
-                'reservation': reservation_ids
+                'reservation': reservation_ids,
+                'addons': 'none'
             }
             invoice = self.env['report.tt_report_selling.report_selling']._get_reports(temp_dict)
 
@@ -1959,6 +2185,22 @@ class TtReportDashboard(models.Model):
                 'total_rupiah': total,
                 'average_rupiah': float(total) / float(num_data) if num_data > 0 else 0
             }
+
+            # update dependencies
+            data['mode'] = mode
+
+            # get book issued ratio
+            book_issued = self.get_book_issued_ratio(data)
+
+            # adding book_issued ratio graph
+            to_return.update(book_issued)
+
+            # get by chanel
+            chanel_data = self.get_report_group_by_chanel(data)
+
+            # adding chanel_data graph
+            to_return.update(chanel_data)
+
             return to_return
         except Exception as e:
             _logger.error(traceback.format_exc())
