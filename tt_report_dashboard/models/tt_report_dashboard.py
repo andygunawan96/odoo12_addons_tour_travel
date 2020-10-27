@@ -250,12 +250,12 @@ class TtReportDashboard(models.Model):
                             today = str(i['year']) + "-" + str(i['month_index']) + "-0" + str(j['day'])
                         else:
                             today = str(i['year']) + "-" + str(i['month_index']) + "-" + str(j['day'])
-                        if today > data['start_date'] and today < data['end_date']:
+                        if today >= data['start_date'] and today <= data['end_date']:
                             book_data[str(j['day']) + "-" + str(i['month_index']) + "-" + str(i['year'])] = j['booked_counter']
                             issued_data[str(j['day']) + "-" + str(i['month_index']) + "-" + str(i['year'])] = j['issued_counter']
-                        else:
-                            book_data[str(j['day']) + "-" + str(i['month_index']) + "-" + str(i['year'])] = 0
-                            issued_data[str(j['day']) + "-" + str(i['month_index']) + "-" + str(i['year'])] = 0
+                        # else:
+                        #     book_data[str(j['day']) + "-" + str(i['month_index']) + "-" + str(i['year'])] = 0
+                        #     issued_data[str(j['day']) + "-" + str(i['month_index']) + "-" + str(i['year'])] = 0
             # build to return data
             to_return = {
                 # it will be very absurd to stand alone, however this particular graph will corenspond to second graph in front end, so theres that
@@ -504,9 +504,23 @@ class TtReportDashboard(models.Model):
                 # seperate by date
                 for i in summary_issued:
                     for j in i['detail']:
-                        main_data[str(j['day']) + "-" + str(i['month_index']) + "-" + str(i['year'])] = j['invoice']
-                        average_data[str(j['day']) + "-" + str(i['month_index']) + "-" + str(i['year'])] = j['average']
-                        revenue_data[str(j['day']) + "-" + str(i['month_index']) + "-" + str(i['year'])] = j['revenue']
+                        # built appropriate date
+                        if i['month_index'] < 10 and j['day'] < 10:
+                            today = str(i['year']) + "-0" + str(i['month_index']) + "-0" + str(j['day'])
+                        elif i['month_index'] < 10 and j['day'] > 9:
+                            today = str(i['year']) + "-0" + str(i['month_index']) + "-" + str(j['day'])
+                        elif i['month_index'] > 9 and j['day'] < 10:
+                            today = str(i['year']) + "-" + str(i['month_index']) + "-0" + str(j['day'])
+                        else:
+                            today = str(i['year']) + "-" + str(i['month_index']) + "-" + str(j['day'])
+
+                        # lets cut the data that is not needed
+                        if today >= data['start_date'] and today <= data['end_date']:
+                            main_data[str(j['day']) + "-" + str(i['month_index']) + "-" + str(i['year'])] = j['invoice']
+                            average_data[str(j['day']) + "-" + str(i['month_index']) + "-" + str(i['year'])] = j[
+                                'average']
+                            revenue_data[str(j['day']) + "-" + str(i['month_index']) + "-" + str(i['year'])] = j[
+                                'revenue']
 
             # build to return data
             to_return = {
@@ -769,9 +783,23 @@ class TtReportDashboard(models.Model):
                 # seperate by date
                 for i in summary_issued:
                     for j in i['detail']:
-                        main_data[str(j['day']) + "-" + str(i['month_index']) + "-" + str(i['year'])] = j['invoice']
-                        average_data[str(j['day']) + "-" + str(i['month_index']) + "-" + str(i['year'])] = j['average']
-                        revenue_data[str(j['day']) + "-" + str(i['month_index']) + "-" + str(i['year'])] = j['revenue']
+                        # built appropriate date
+                        if i['month_index'] < 10 and j['day'] < 10:
+                            today = str(i['year']) + "-0" + str(i['month_index']) + "-0" + str(j['day'])
+                        elif i['month_index'] < 10 and j['day'] > 9:
+                            today = str(i['year']) + "-0" + str(i['month_index']) + "-" + str(j['day'])
+                        elif i['month_index'] > 9 and j['day'] < 10:
+                            today = str(i['year']) + "-" + str(i['month_index']) + "-0" + str(j['day'])
+                        else:
+                            today = str(i['year']) + "-" + str(i['month_index']) + "-" + str(j['day'])
+
+                        # lets cut the data that is not needed
+                        if today >= data['start_date'] and today <= data['end_date']:
+                            main_data[str(j['day']) + "-" + str(i['month_index']) + "-" + str(i['year'])] = j['invoice']
+                            average_data[str(j['day']) + "-" + str(i['month_index']) + "-" + str(i['year'])] = j[
+                                'average']
+                            revenue_data[str(j['day']) + "-" + str(i['month_index']) + "-" + str(i['year'])] = j[
+                                'revenue']
 
             to_return = {
                 'graph': {
@@ -1241,9 +1269,23 @@ class TtReportDashboard(models.Model):
                 # seperate by date
                 for i in summary_issued:
                     for j in i['detail']:
-                        main_data[str(j['day']) + "-" + str(i['month_index']) + "-" + str(i['year'])] = j['invoice']
-                        average_data[str(j['day']) + "-" + str(i['month_index']) + "-" + str(i['year'])] = j['average']
-                        revenue_data[str(j['day']) + "-" + str(i['month_index']) + "-" + str(i['year'])] = j['revenue']
+                        # built appropriate date
+                        if i['month_index'] < 10 and j['day'] < 10:
+                            today = str(i['year']) + "-0" + str(i['month_index']) + "-0" + str(j['day'])
+                        elif i['month_index'] < 10 and j['day'] > 9:
+                            today = str(i['year']) + "-0" + str(i['month_index']) + "-" + str(j['day'])
+                        elif i['month_index'] > 9 and j['day'] < 10:
+                            today = str(i['year']) + "-" + str(i['month_index']) + "-0" + str(j['day'])
+                        else:
+                            today = str(i['year']) + "-" + str(i['month_index']) + "-" + str(j['day'])
+
+                        # lets cut the data that is not needed
+                        if today >= data['start_date'] and today <= data['end_date']:
+                            main_data[str(j['day']) + "-" + str(i['month_index']) + "-" + str(i['year'])] = j['invoice']
+                            average_data[str(j['day']) + "-" + str(i['month_index']) + "-" + str(i['year'])] = j[
+                                'average']
+                            revenue_data[str(j['day']) + "-" + str(i['month_index']) + "-" + str(i['year'])] = j[
+                                'revenue']
 
             # build to return data
             to_return = {
@@ -1426,9 +1468,23 @@ class TtReportDashboard(models.Model):
                 # seperate by date
                 for i in summary_issued:
                     for j in i['detail']:
-                        main_data[str(j['day']) + "-" + str(i['month_index']) + "-" + str(i['year'])] = j['invoice']
-                        average_data[str(j['day']) + "-" + str(i['month_index']) + "-" + str(i['year'])] = j['average']
-                        revenue_data[str(j['day']) + "-" + str(i['month_index']) + "-" + str(i['year'])] = j['revenue']
+                        # built appropriate date
+                        if i['month_index'] < 10 and j['day'] < 10:
+                            today = str(i['year']) + "-0" + str(i['month_index']) + "-0" + str(j['day'])
+                        elif i['month_index'] < 10 and j['day'] > 9:
+                            today = str(i['year']) + "-0" + str(i['month_index']) + "-" + str(j['day'])
+                        elif i['month_index'] > 9 and j['day'] < 10:
+                            today = str(i['year']) + "-" + str(i['month_index']) + "-0" + str(j['day'])
+                        else:
+                            today = str(i['year']) + "-" + str(i['month_index']) + "-" + str(j['day'])
+
+                        # lets cut the data that is not needed
+                        if today >= data['start_date'] and today <= data['end_date']:
+                            main_data[str(j['day']) + "-" + str(i['month_index']) + "-" + str(i['year'])] = j['invoice']
+                            average_data[str(j['day']) + "-" + str(i['month_index']) + "-" + str(i['year'])] = j[
+                                'average']
+                            revenue_data[str(j['day']) + "-" + str(i['month_index']) + "-" + str(i['year'])] = j[
+                                'revenue']
 
             # build to return data
             to_return = {
@@ -1612,9 +1668,23 @@ class TtReportDashboard(models.Model):
                 # seperate by date
                 for i in summary_issued:
                     for j in i['detail']:
-                        main_data[str(j['day']) + "-" + str(i['month_index']) + "-" + str(i['year'])] = j['invoice']
-                        average_data[str(j['day']) + "-" + str(i['month_index']) + "-" + str(i['year'])] = j['average']
-                        revenue_data[str(j['day']) + "-" + str(i['month_index']) + "-" + str(i['year'])] = j['revenue']
+                        # built appropriate date
+                        if i['month_index'] < 10 and j['day'] < 10:
+                            today = str(i['year']) + "-0" + str(i['month_index']) + "-0" + str(j['day'])
+                        elif i['month_index'] < 10 and j['day'] > 9:
+                            today = str(i['year']) + "-0" + str(i['month_index']) + "-" + str(j['day'])
+                        elif i['month_index'] > 9 and j['day'] < 10:
+                            today = str(i['year']) + "-" + str(i['month_index']) + "-0" + str(j['day'])
+                        else:
+                            today = str(i['year']) + "-" + str(i['month_index']) + "-" + str(j['day'])
+
+                        # lets cut the data that is not needed
+                        if today >= data['start_date'] and today <= data['end_date']:
+                            main_data[str(j['day']) + "-" + str(i['month_index']) + "-" + str(i['year'])] = j['invoice']
+                            average_data[str(j['day']) + "-" + str(i['month_index']) + "-" + str(i['year'])] = j[
+                                'average']
+                            revenue_data[str(j['day']) + "-" + str(i['month_index']) + "-" + str(i['year'])] = j[
+                                'revenue']
 
             # build to return data
             to_return = {
@@ -1798,9 +1868,23 @@ class TtReportDashboard(models.Model):
                 # seperate by date
                 for i in summary_issued:
                     for j in i['detail']:
-                        main_data[str(j['day']) + "-" + str(i['month_index']) + "-" + str(i['year'])] = j['invoice']
-                        average_data[str(j['day']) + "-" + str(i['month_index']) + "-" + str(i['year'])] = j['average']
-                        revenue_data[str(j['day']) + "-" + str(i['month_index']) + "-" + str(i['year'])] = j['revenue']
+                        # built appropriate date
+                        if i['month_index'] < 10 and j['day'] < 10:
+                            today = str(i['year']) + "-0" + str(i['month_index']) + "-0" + str(j['day'])
+                        elif i['month_index'] < 10 and j['day'] > 9:
+                            today = str(i['year']) + "-0" + str(i['month_index']) + "-" + str(j['day'])
+                        elif i['month_index'] > 9 and j['day'] < 10:
+                            today = str(i['year']) + "-" + str(i['month_index']) + "-0" + str(j['day'])
+                        else:
+                            today = str(i['year']) + "-" + str(i['month_index']) + "-" + str(j['day'])
+
+                        # lets cut the data that is not needed
+                        if today >= data['start_date'] and today <= data['end_date']:
+                            main_data[str(j['day']) + "-" + str(i['month_index']) + "-" + str(i['year'])] = j['invoice']
+                            average_data[str(j['day']) + "-" + str(i['month_index']) + "-" + str(i['year'])] = j[
+                                'average']
+                            revenue_data[str(j['day']) + "-" + str(i['month_index']) + "-" + str(i['year'])] = j[
+                                'revenue']
 
             # build to return data
             to_return = {
@@ -1984,9 +2068,23 @@ class TtReportDashboard(models.Model):
                 # seperate by date
                 for i in summary_issued:
                     for j in i['detail']:
-                        main_data[str(j['day']) + "-" + str(i['month_index']) + "-" + str(i['year'])] = j['invoice']
-                        average_data[str(j['day']) + "-" + str(i['month_index']) + "-" + str(i['year'])] = j['average']
-                        revenue_data[str(j['day']) + "-" + str(i['month_index']) + "-" + str(i['year'])] = j['revenue']
+                        # built appropriate date
+                        if i['month_index'] < 10 and j['day'] < 10:
+                            today = str(i['year']) + "-0" + str(i['month_index']) + "-0" + str(j['day'])
+                        elif i['month_index'] < 10 and j['day'] > 9:
+                            today = str(i['year']) + "-0" + str(i['month_index']) + "-" + str(j['day'])
+                        elif i['month_index'] > 9 and j['day'] < 10:
+                            today = str(i['year']) + "-" + str(i['month_index']) + "-0" + str(j['day'])
+                        else:
+                            today = str(i['year']) + "-" + str(i['month_index']) + "-" + str(j['day'])
+
+                        # lets cut the data that is not needed
+                        if today >= data['start_date'] and today <= data['end_date']:
+                            main_data[str(j['day']) + "-" + str(i['month_index']) + "-" + str(i['year'])] = j['invoice']
+                            average_data[str(j['day']) + "-" + str(i['month_index']) + "-" + str(i['year'])] = j[
+                                'average']
+                            revenue_data[str(j['day']) + "-" + str(i['month_index']) + "-" + str(i['year'])] = j[
+                                'revenue']
 
             # build to return data
             to_return = {
@@ -2170,9 +2268,22 @@ class TtReportDashboard(models.Model):
                 # seperate by date
                 for i in summary_issued:
                     for j in i['detail']:
-                        main_data[str(j['day']) + "-" + str(i['month_index']) + "-" + str(i['year'])] = j['invoice']
-                        average_data[str(j['day']) + "-" + str(i['month_index']) + "-" + str(i['year'])] = j['average']
-                        revenue_data[str(j['day']) + "-" + str(i['month_index']) + "-" + str(i['year'])] = j['revenue']
+
+                        # built appropriate date
+                        if i['month_index'] < 10 and j['day'] < 10:
+                            today = str(i['year']) + "-0" + str(i['month_index']) + "-0" + str(j['day'])
+                        elif i['month_index'] < 10 and j['day'] > 9:
+                            today = str(i['year']) + "-0" + str(i['month_index']) + "-" + str(j['day'])
+                        elif i['month_index'] > 9 and j['day'] < 10:
+                            today = str(i['year']) + "-" + str(i['month_index']) + "-0" + str(j['day'])
+                        else:
+                            today = str(i['year']) + "-" + str(i['month_index']) + "-" + str(j['day'])
+
+                        # lets cut the data that is not needed
+                        if today >= data['start_date'] and today <= data['end_date']:
+                            main_data[str(j['day']) + "-" + str(i['month_index']) + "-" + str(i['year'])] = j['invoice']
+                            average_data[str(j['day']) + "-" + str(i['month_index']) + "-" + str(i['year'])] = j['average']
+                            revenue_data[str(j['day']) + "-" + str(i['month_index']) + "-" + str(i['year'])] = j['revenue']
 
             # build to return data
             to_return = {
