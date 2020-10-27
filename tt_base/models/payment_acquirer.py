@@ -113,7 +113,7 @@ class PaymentAcquirer(models.Model):
         # NB:  BNI /payment/tt_transfer/feedback?acq_id=68
         # NB:  BCA /payment/tt_transfer/feedback?acq_id=27
         # NB:  MANDIRI /payment/tt_transfer/feedback?acq_id=28
-        payment_acq = self.env['payment.acquirer'].browse(acq.payment_acquirer_id)
+        payment_acq = self.env['payment.acquirer'].browse(acq.payment_acquirer_id.id)
         loss_or_profit, fee, uniq = self.compute_fee(unique)
         return {
             'seq_id': payment_acq.id.seq_id,
@@ -143,7 +143,7 @@ class PaymentAcquirer(models.Model):
             'va': []
         }
         for acq in agent_obj.payment_acq_ids:
-            if agent_obj.payment_acq_ids[0].state == 'open':
+            if acq.state == 'open':
                 values['va'].append(self.acquirer_format_VA(acq, 0, 0))
         return ERR.get_no_error(values)
 
