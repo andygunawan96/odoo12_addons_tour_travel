@@ -63,54 +63,55 @@ class ttCronTopUpValidator(models.Model):
                 for top_up_obj in top_up_objs:
                     transaction = self.env['tt.bank.accounts'].search([])
                     if transaction:
-                        date_exist = transaction.bank_transaction_date_ids.filtered(lambda x: x.date == datetime.today().strftime("%Y-%m-%d"))
-                        if date_exist:
-                            result = date_exist.transaction_ids.filtered(lambda x: x.transaction_amount == top_up_obj.amount - top_up_obj.unique_amount and x.transaction_type == 'C')
-                            if result:
-                                if result.transaction_message == '':
-                                    reference_code = result.transaction_code
-                                else:
-                                    reference_code = result.transaction_message
-                                agent_id = self.env['tt.reservation.%s' % variables.PROVIDER_TYPE_PREFIX[top_up_obj['number'].split('.')[0]]].search([('name', '=', '%s.%s' %(top_up_obj['number'].split('.')[0], top_up_obj['number'].split('.')[1]))]).agent_id
-                                if not self.env['tt.payment'].search([('reference', '=', reference_code)]):
-                                    # topup
-                                    context = {
-                                        'co_agent_id': agent_id.id,
-                                        'co_uid': self.env.ref('tt_base.base_top_up_admin').id
-                                    }
-                                    request = {
-                                        'amount': top_up_obj.amount - top_up_obj.unique_amount,
-                                        'seq_id': self.env.ref('tt_base.payment_acquirer_ho_payment_gateway_bca').seq_id,
-                                        'currency_code': result.currency_id.name,
-                                        'payment_ref': reference_code,
-                                        'payment_seq_id': self.env.ref('tt_base.payment_acquirer_ho_payment_gateway_bca').seq_id,
-                                        'subsidy': top_up_obj.unique_amount
-                                    }
-
-                                    res = self.env['tt.top.up'].create_top_up_api(request, context, True)
-                                    if res['error_code'] == 0:
-                                        request = {
-                                            'virtual_account': '',
-                                            'name': res['response']['name'],
-                                            'payment_ref': reference_code,
-                                            'fee': 0
+                        for transaction_data in transaction:
+                            date_exist = transaction_data.bank_transaction_date_ids.filtered(lambda x: x.date == datetime.today().strftime("%Y-%m-%d"))
+                            if date_exist:
+                                result = date_exist.transaction_ids.filtered(lambda x: x.transaction_amount == top_up_obj.amount + top_up_obj.unique_amount and x.transaction_type == 'C')
+                                if result:
+                                    if result.transaction_message == '':
+                                        reference_code = result.transaction_code
+                                    else:
+                                        reference_code = result.transaction_message
+                                    agent_id = self.env['tt.reservation.%s' % variables.PROVIDER_TYPE_PREFIX[top_up_obj['number'].split('.')[0]]].search([('name', '=', '%s.%s' %(top_up_obj['number'].split('.')[0], top_up_obj['number'].split('.')[1]))]).agent_id
+                                    if not self.env['tt.payment'].search([('reference', '=', reference_code)]):
+                                        # topup
+                                        context = {
+                                            'co_agent_id': agent_id.id,
+                                            'co_uid': self.env.ref('tt_base.base_top_up_admin').id
                                         }
-                                        res = self.env['tt.top.up'].action_va_top_up(request, context)
-                                        self._cr.commit()
-                                        result.top_up_validated(res['response']['top_up_id'])
-                                book_obj = self.env['tt.reservation.%s' % variables.PROVIDER_TYPE_PREFIX[top_up_obj['number'].split('.')[0]]].search([('name', '=', '%s.%s' % (top_up_obj['number'].split('.')[0], top_up_obj['number'].split('.')[1])), ('state', 'in', ['booked'])], limit=1)
+                                        request = {
+                                            'amount': top_up_obj.amount - top_up_obj.unique_amount,
+                                            'seq_id': self.env.ref('tt_base.payment_acquirer_ho_payment_gateway_bca').seq_id,
+                                            'currency_code': result.currency_id.name,
+                                            'payment_ref': reference_code,
+                                            'payment_seq_id': self.env.ref('tt_base.payment_acquirer_ho_payment_gateway_bca').seq_id,
+                                            'subsidy': top_up_obj.unique_amount
+                                        }
 
-                                if book_obj:
-                                    #login gateway, payment
-                                    req = {
-                                        'order_number': book_obj.name,
-                                        'user_id': book_obj.user_id.id,
-                                        'provider_type': variables.PROVIDER_TYPE_PREFIX[book_obj.name.split('.')[0]]
-                                    }
-                                    res = self.env['tt.payment.api.con'].send_payment(req)
-                                    top_up_obj.state = 'done'
-                                    _logger.info(json.dumps(res))
-                                    #tutup payment acq number
+                                        res = self.env['tt.top.up'].create_top_up_api(request, context, True)
+                                        if res['error_code'] == 0:
+                                            request = {
+                                                'virtual_account': '',
+                                                'name': res['response']['name'],
+                                                'payment_ref': reference_code,
+                                                'fee': 0
+                                            }
+                                            res = self.env['tt.top.up'].action_va_top_up(request, context)
+                                            self._cr.commit()
+                                            result.top_up_validated(res['response']['top_up_id'])
+                                    book_obj = self.env['tt.reservation.%s' % variables.PROVIDER_TYPE_PREFIX[top_up_obj['number'].split('.')[0]]].search([('name', '=', '%s.%s' % (top_up_obj['number'].split('.')[0], top_up_obj['number'].split('.')[1])), ('state', 'in', ['booked'])], limit=1)
+
+                                    if book_obj:
+                                        #login gateway, payment
+                                        req = {
+                                            'order_number': book_obj.name,
+                                            'user_id': book_obj.user_id.id,
+                                            'provider_type': variables.PROVIDER_TYPE_PREFIX[book_obj.name.split('.')[0]]
+                                        }
+                                        res = self.env['tt.payment.api.con'].send_payment(req)
+                                        top_up_obj.state = 'done'
+                                        _logger.info(json.dumps(res))
+                                        #tutup payment acq number
 
                     else:
                         _logger.error("%s ID, is not found within transaction" % top_up_obj.id)
