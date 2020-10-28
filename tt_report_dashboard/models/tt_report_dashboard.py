@@ -157,8 +157,11 @@ class TtReportDashboard(models.Model):
                 'July', 'August', 'September', 'October', 'November', 'December'
             ]
 
-            # create book vs issue
+            # create book vs issue "result list"
             summary_by_date = []
+            summary_provider = []
+
+            # iterate evvery data
             for i in all_values['lines']:
                 try:
                     # convert month number (1) to text and index (Januray) in constant
@@ -201,6 +204,22 @@ class TtReportDashboard(models.Model):
                             summary_by_date[month_index]['detail'][day_index]['issued_counter'] += 1
                         except:
                             pass
+
+                    provider_index = self.check_index(summary_provider, "provider", i['provider_type_name'])
+                    if provider_index == -1:
+                        temp_dict = {
+                            'provider': i['provider_type_name'],
+                            'counter': 1,
+                            i['reservation_state']: 1
+                        }
+                        summary_provider.append(temp_dict)
+                    else:
+                        summary_provider[provider_index]['counter'] += 1
+                        try:
+                            summary_provider[provider_index][i['reservation_state']] += 1
+                        except:
+                            summary_provider[provider_index][i['reservation_state']] = 1
+
                 except:
                     pass
 
@@ -263,7 +282,8 @@ class TtReportDashboard(models.Model):
                     'label': list(book_data.keys()),
                     'data': list(book_data.values()),
                     'data2': list(issued_data.values())
-                }
+                },
+                'second_overview': summary_provider
             }
             return to_return
         except Exception as e:
@@ -399,6 +419,7 @@ class TtReportDashboard(models.Model):
 
             # proceed invoice with the assumption of create date = issued date
             summary_issued = []
+            summary_provider = []
 
             for i in issued_values['lines']:
                 try:
@@ -429,10 +450,25 @@ class TtReportDashboard(models.Model):
                         # update existing summary
                         splits = i['reservation_issued_date'].split("-")
                         day_index = int(splits[2]) - 1
-                        temp_dict['detail'][day_index]['reservation'] += 1
-                        temp_dict['detail'][day_index]['revenue'] += i['amount']
+                        summary_issued[month_index]['detail'][day_index]['reservation'] += 1
+                        summary_issued[month_index]['detail'][day_index]['revenue'] += i['amount']
                         total += i['amount']
                         num_data += 1
+
+                    provider_index = self.check_index(summary_provider, "provider", i['provider_type_name'])
+                    if provider_index == -1:
+                        temp_dict = {
+                            'provider': i['provider_type_name'],
+                            'counter': 1,
+                            i['reservation_state']: 1
+                        }
+                        summary_provider.append(temp_dict)
+                    else:
+                        summary_provider[provider_index]['counter'] += 1
+                        try:
+                            summary_provider[provider_index][i['reservation_state']] += 1
+                        except:
+                            summary_provider[provider_index][i['reservation_state']] = 1
                 except:
                     pass
 
@@ -461,6 +497,7 @@ class TtReportDashboard(models.Model):
 
             # sort summary_by_date month in the correct order
             summary_issued.sort(key=lambda x: (x['year'], x['month_index']))
+            summary_provider.sort(key=lambda x: x['counter'])
 
             # first graph data
             main_data = {}
@@ -532,6 +569,7 @@ class TtReportDashboard(models.Model):
                 },
                 'total_rupiah': total,
                 'average_rupiah': float(total) / float(num_data) if num_data > 0 else 0,
+                'first_overview': summary_provider
             }
 
             # update dependencies
@@ -635,8 +673,8 @@ class TtReportDashboard(models.Model):
                         # update existing summary
                         splits = i['reservation_issued_date'].split("-")
                         day_index = int(splits[2]) - 1
-                        temp_dict['detail'][day_index]['reservation'] += 1
-                        temp_dict['detail'][day_index]['revenue'] += i['amount']
+                        summary_issued[month_index]['detail'][day_index]['reservation'] += 1
+                        summary_issued[month_index]['detail'][day_index]['revenue'] += i['amount']
                         total += i['amount']
                         num_data += 1
                 except:
@@ -810,7 +848,7 @@ class TtReportDashboard(models.Model):
                 },
                 'total_rupiah': total,
                 'average_rupiah': float(total) / float(num_data) if num_data > 0 else 0,
-                'overview': {
+                'first_overview': {
                     'sector_summary': destination_sector_summary,
                     'direction_summary': destination_direction_summary,
                     'international': international_filter,
@@ -921,8 +959,8 @@ class TtReportDashboard(models.Model):
                         # update existing summary
                         splits = i['reservation_issued_date'].split("-")
                         day_index = int(splits[2]) - 1
-                        temp_dict['detail'][day_index]['reservation'] += 1
-                        temp_dict['detail'][day_index]['revenue'] += i['amount']
+                        summary_issued[month_index]['detail'][day_index]['reservation'] += 1
+                        summary_issued[month_index]['detail'][day_index]['revenue'] += i['amount']
                         total += i['amount']
                         num_data += 1
                 except:
@@ -1085,7 +1123,7 @@ class TtReportDashboard(models.Model):
                 },
                 'total_rupiah': total,
                 'average_rupiah': float(total) / float(num_data) if num_data > 0 else 0,
-                'overview': {
+                'first_overview': {
                     'sector_summary': destination_sector_summary,
                     'direction_summary': destination_direction_summary,
                     'international': international_filter,
@@ -1193,8 +1231,8 @@ class TtReportDashboard(models.Model):
                         # update existing summary
                         splits = i['reservation_issued_date'].split("-")
                         day_index = int(splits[2]) - 1
-                        temp_dict['detail'][day_index]['reservation'] += 1
-                        temp_dict['detail'][day_index]['revenue'] += i['amount']
+                        summary_issued[month_index]['detail'][day_index]['reservation'] += 1
+                        summary_issued[month_index]['detail'][day_index]['revenue'] += i['amount']
                         total += i['amount']
                         num_data += 1
                 except:
@@ -1392,8 +1430,8 @@ class TtReportDashboard(models.Model):
                         # update existing summary
                         splits = i['reservation_issued_date'].split("-")
                         day_index = int(splits[2]) - 1
-                        temp_dict['detail'][day_index]['reservation'] += 1
-                        temp_dict['detail'][day_index]['revenue'] += i['amount']
+                        summary_issued[month_index]['detail'][day_index]['reservation'] += 1
+                        summary_issued[month_index]['detail'][day_index]['revenue'] += i['amount']
                         total += i['amount']
                         num_data += 1
                 except:
@@ -1592,8 +1630,8 @@ class TtReportDashboard(models.Model):
                         # update existing summary
                         splits = i['reservation_issued_date'].split("-")
                         day_index = int(splits[2]) - 1
-                        temp_dict['detail'][day_index]['reservation'] += 1
-                        temp_dict['detail'][day_index]['revenue'] += i['amount']
+                        summary_issued[month_index]['detail'][day_index]['reservation'] += 1
+                        summary_issued[month_index]['detail'][day_index]['revenue'] += i['amount']
                         total += i['amount']
                         num_data += 1
                 except:
@@ -1792,8 +1830,8 @@ class TtReportDashboard(models.Model):
                         # update existing summary
                         splits = i['reservation_issued_date'].split("-")
                         day_index = int(splits[2]) - 1
-                        temp_dict['detail'][day_index]['reservation'] += 1
-                        temp_dict['detail'][day_index]['revenue'] += i['amount']
+                        summary_issued[month_index]['detail'][day_index]['reservation'] += 1
+                        summary_issued[month_index]['detail'][day_index]['revenue'] += i['amount']
                         total += i['amount']
                         num_data += 1
                 except:
@@ -1992,8 +2030,8 @@ class TtReportDashboard(models.Model):
                         # update existing summary
                         splits = i['reservation_issued_date'].split("-")
                         day_index = int(splits[2]) - 1
-                        temp_dict['detail'][day_index]['reservation'] += 1
-                        temp_dict['detail'][day_index]['revenue'] += i['amount']
+                        summary_issued[month_index]['detail'][day_index]['reservation'] += 1
+                        summary_issued[month_index]['detail'][day_index]['revenue'] += i['amount']
                         total += i['amount']
                         num_data += 1
                 except:
@@ -2192,8 +2230,8 @@ class TtReportDashboard(models.Model):
                         # update existing summary
                         splits = i['reservation_issued_date'].split("-")
                         day_index = int(splits[2]) - 1
-                        temp_dict['detail'][day_index]['reservation'] += 1
-                        temp_dict['detail'][day_index]['revenue'] += i['amount']
+                        summary_issued[month_index]['detail'][day_index]['reservation'] += 1
+                        summary_issued[month_index]['detail'][day_index]['revenue'] += i['amount']
                         total += i['amount']
                         num_data += 1
                 except:
