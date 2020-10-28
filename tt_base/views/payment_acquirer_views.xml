@@ -79,6 +79,7 @@
                             <group>
                                 <field name="is_sunday_off"/>
                                 <field name="is_specific_time"/>
+                                <field name="is_downsell"/>
                             </group>
                             <group>
                                 <field name="start_time" attrs="{'invisible': [('is_specific_time','=',False)]}" widget="float_time"/>
