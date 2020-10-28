@@ -28,7 +28,6 @@ class PaymentAcquirer(models.Model):
     start_time = fields.Float(string='Start Time', help="Format: HH:mm Range 00:00 => 24:00")
     end_time = fields.Float(string='End Time', help="Format: HH:mm Range 00:00 => 24:00")
     description_msg = fields.Text('Description')
-    is_downsell = fields.Boolean('Downsell')
 
     @api.model
     def create(self, vals_list):
