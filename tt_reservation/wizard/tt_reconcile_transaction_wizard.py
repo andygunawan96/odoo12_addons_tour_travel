@@ -85,10 +85,23 @@ class TtReconcileTransactionWizard(models.TransientModel):
 
                 trans_lines = recon_data.reconcile_lines_ids.filtered(lambda x: x.pnr == transaction['pnr'])
                 if trans_lines:
-                    if trans_lines[0].total == transaction['total'] or trans_lines[0].state == 'match':
+                    total_match = False  # menandakan jika ada nominal trans yang sama dengan transaction
+                    for trans in trans_lines:
+                        # compare total dari trans dengan total dari transaction
+                        if trans.total == transaction['total'] or trans_lines[0].state == 'match':
+                            total_match = True
+
+                    if total_match:  # jika ada nominal yang match, skip
                         continue
                     else:
-                        write_data.append((1,trans_lines[0].id,transaction))
+                        if trans_lines[0].pnr != '':  # jika terdapat pnr
+                            # jika tipe nya tidak sama (jaga2 jika ada transaction dg pnr yang sama, namun typenya beda)
+                            if trans_lines[0].type != transaction['type']:
+                                write_data.append((0, 0, transaction))  # tambahkan isi ke dalam write_data (tanpa id)
+                            else:  # jika tipenya sama, update value dari pnr tersebut
+                                write_data.append((1, trans_lines[0].id, transaction))
+                        else:  # asumsikan yang tanpa pnr, biasanya top up, insentif, dll
+                            write_data.append((0, 0, transaction))  # pakai 0, 0, transaction, supaya tidak menimpa top up yang lain
                 else:
                     if transaction['type'] == 'nta':
                         transaction['state'] = 'not_match'
