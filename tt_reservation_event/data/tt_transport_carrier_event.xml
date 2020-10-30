@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <data noupdate="1">
-        <!-- Add Event Provider -->
-        <record id="tt_event_provider_internal" model="tt.provider">
+        <record id="tt_transport_carrier_event_internal" model="tt.transport.carrier">
             <field name="name">Event Internal</field>
-            <field name="alias">E1</field>
             <field name="code">event_internal</field>
-            <field name="active">1</field>
+            <field name="active" eval="True"/>
+            <field name="is_adult_birth_date_required" eval="False"/>
             <field name="provider_type_id" ref="tt_reservation_event.tt_provider_type_event"/>
         </record>
     </data>
 </odoo>
+    

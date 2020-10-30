@@ -37,7 +37,7 @@ class PaymentAcquirer(models.Model):
     # FUNGSI
     def generate_unique_amount(self,amount,downsell=False):
         # return int(self.env['ir.sequence'].next_by_code('tt.payment.unique.amount'))
-        return self.env['unique.amount'].create({'amount':amount,'downsell':downsell})
+        return self.env['unique.amount'].create({'amount':amount,'is_downsell':downsell})
 
     def compute_fee(self,amount,unique = 0):
         uniq = 0
@@ -101,7 +101,7 @@ class PaymentAcquirer(models.Model):
             'price_component': {
                 'amount': amount,
                 'fee': fee,
-                'unique_amount': abs(uniq),
+                'unique_amount': uniq,
             },
             'total_amount': float(amount) + uniq + fee,
             'image': self.bank_id.image_id and self.bank_id.image_id.url or '',
@@ -113,19 +113,19 @@ class PaymentAcquirer(models.Model):
         # NB:  BNI /payment/tt_transfer/feedback?acq_id=68
         # NB:  BCA /payment/tt_transfer/feedback?acq_id=27
         # NB:  MANDIRI /payment/tt_transfer/feedback?acq_id=28
-        payment_acq = self.env['payment.acquirer'].browse(acq.payment_acquirer_id)
+        payment_acq = self.env['payment.acquirer'].browse(acq.payment_acquirer_id.id)
         loss_or_profit, fee, uniq = self.compute_fee(unique)
         return {
-            'seq_id': payment_acq.id.seq_id,
-            'name': payment_acq.id.name,
+            'seq_id': payment_acq.seq_id,
+            'name': payment_acq.name,
             'account_name': acq.payment_acquirer_id.name or '-',
             'account_number': acq.number or '',
             'bank': {
-                'name': payment_acq.id.bank_id.name or '',
-                'code': payment_acq.id.bank_id.code or '',
+                'name': payment_acq.bank_id.name or '',
+                'code': payment_acq.bank_id.code or '',
             },
-            'type': payment_acq.id.type,
-            'provider_id': payment_acq.id.provider_id.id or '',
+            'type': payment_acq.type,
+            'provider_id': payment_acq.provider_id.id or '',
             'currency': 'IDR',
             'price_component': {
                 'amount': amount,
@@ -133,7 +133,7 @@ class PaymentAcquirer(models.Model):
                 'unique_amount': uniq,
             },
             'total_amount': float(amount) + fee + uniq,
-            'image': payment_acq.id.bank_id.image_id and payment_acq.id.bank_id.image_id.url or '',
+            'image': payment_acq.bank_id.image_id and payment_acq.bank_id.image_id.url or '',
             'description_msg': payment_acq.description_msg or ''
         }
 
@@ -143,7 +143,7 @@ class PaymentAcquirer(models.Model):
             'va': []
         }
         for acq in agent_obj.payment_acq_ids:
-            if agent_obj.payment_acq_ids[0].state == 'open':
+            if acq.state == 'open':
                 values['va'].append(self.acquirer_format_VA(acq, 0, 0))
         return ERR.get_no_error(values)
 
@@ -218,7 +218,7 @@ class PaymentAcquirer(models.Model):
             if req['transaction_type'] == 'top_up':
                 # Kalau top up Ambil agent_id HO
                 dom.append(('agent_id', '=', self.env.ref('tt_base.rodex_ho').id))
-                unique = self.generate_unique_amount(amount).unique_number
+                unique = self.generate_unique_amount(amount).get_unique_amount()
             elif req['transaction_type'] == 'billing':
                 dom.append(('agent_id', '=', co_agent_id))
 
@@ -233,6 +233,7 @@ class PaymentAcquirer(models.Model):
                         values[acq.type].append(acq.acquirer_format(amount, unique))
 
             # # payment gateway
+            # penjualan
             if util.get_without_empty(req, 'order_number'):
                 dom = [
                     ('website_published', '=', True),
@@ -249,11 +250,11 @@ class PaymentAcquirer(models.Model):
                     unique = 0
                     if book_obj.unique_amount_id:
                         if book_obj.unique_amount_id.active:
-                            unique = book_obj.unique_amount_id.unique_number
+                            unique = book_obj.unique_amount_id.get_unique_amount()
                     if not unique:
-                        unique_obj = self.generate_unique_amount(amount)
+                        unique_obj = self.generate_unique_amount(amount, downsell=True)  #penjualan
                         book_obj.unique_amount_id = unique_obj.id
-                        unique = unique_obj.unique_number
+                        unique = unique_obj.get_unique_amount()
 
                 for acq in self.sudo().search(dom):
                     # self.test_validate(acq) utk testing saja
@@ -346,7 +347,7 @@ class PaymentAcquirerNumber(models.Model):
                     'amount': data['amount'],
                     'payment_acquirer_id': HO_acq.env['payment.acquirer'].search([('seq_id', '=', data['seq_id'])]).id,
                     'res_model': provider_type,
-                    'res_id': booking_obj.id
+                    'res_id': booking_obj.id,
                 })
                 booking_obj.payment_acquirer_number_id = payment.id
                 payment = {'order_number': payment.number}
@@ -361,7 +362,7 @@ class PaymentAcquirerNumber(models.Model):
                 'payment_acquirer_id': HO_acq.env['payment.acquirer'].search([('seq_id', '=', data['seq_id'])]).id,
                 'amount': data['amount'],
                 'res_model': provider_type,
-                'res_id': booking_obj.id
+                'res_id': booking_obj.id,
             })
             booking_obj.payment_acquirer_number_id = payment.id
             payment = {'order_number': payment.number}
@@ -375,13 +376,12 @@ class PaymentAcquirerNumber(models.Model):
             time_delta = date_now - payment_acq_number[len(payment_acq_number) - 1].create_date
             if divmod(time_delta.seconds, 3600)[0] == 0 or datetime.now() < self.time_limit and self.time_limit:
                 book_obj = self.env['tt.reservation.%s' % data['provider']].search([('name', '=', '%s.%s' % (data['order_number'].split('.')[0],data['order_number'].split('.')[1]))], limit=1)
-
                 res = {
                     'order_number': data['order_number'],
                     'create_date': book_obj.create_date and book_obj.create_date.strftime("%Y-%m-%d %H:%M:%S") or '',
                     'time_limit': payment_acq_number.time_limit and payment_acq_number.time_limit.strftime("%Y-%m-%d %H:%M:%S") or (payment_acq_number.create_date + timedelta(hours=1)).strftime("%Y-%m-%d %H:%M:%S"),
                     'nomor_rekening': payment_acq_number.payment_acquirer_id.account_number,
-                    'amount': payment_acq_number.amount + payment_acq_number.fee_amount - payment_acq_number.unique_amount,
+                    'amount': payment_acq_number.amount + payment_acq_number.fee_amount + payment_acq_number.unique_amount,
                     'va_number': payment_acq_number.va_number,
                     'bank_name': payment_acq_number.bank_name
                 }
@@ -450,11 +450,14 @@ class PaymentUniqueAmount(models.Model):
         new_unique = super(PaymentUniqueAmount, self).create(vals_list)
         return new_unique
 
-    @api.depends('amount','unique_number')
+    @api.depends('amount', 'unique_number')
     @api.multi
     def _compute_amount_total(self):
         for rec in self:
-            rec.amount_total = rec.amount + (rec.is_downsell and rec.unique_number*-1 or rec.unique_number)
+            rec.amount_total = rec.get_unique_amount() + rec.amount
+
+    def get_unique_amount(self):
+        return (self.is_downsell and self.unique_number * -1 or self.unique_number)
 
     @api.depends('amount','unique_number')
     @api.multi

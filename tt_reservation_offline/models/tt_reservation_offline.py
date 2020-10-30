@@ -1628,7 +1628,12 @@ class IssuedOffline(models.Model):
                 book_obj.create_date
             except:
                 raise RequestException(1001)
-            if book_obj.agent_id.id == context.get('co_agent_id', -1):
+            user_obj = self.env['res.users'].browse(context['co_uid'])
+            try:
+                user_obj.create_date
+            except:
+                raise RequestException(1008)
+            if book_obj and book_obj.agent_id.id == context.get('co_agent_id', -1) or self.env.ref('tt_base.group_tt_process_channel_bookings').id in user_obj.groups_id.ids:
                 res_dict = book_obj.sudo().to_dict()
                 lines = []
                 passengers = []

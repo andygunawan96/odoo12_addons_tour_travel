@@ -82,9 +82,11 @@
         <field name="model">tt.provider.code</field>
         <field name="arch" type="xml">
             <form>
-                <sheet>
+                <header>
                     <button string="Find Country or City" name="find_city_country" type="object" states=""/>
-                    <button string="Clear" name="clear_rel" type="object" states=""/>
+                    <button string="Clear All" name="clear_all" type="object" states=""/>
+                </header>
+                <sheet>
                     <group>
                         <group>
                             <field name="name"/>

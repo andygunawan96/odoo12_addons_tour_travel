@@ -135,6 +135,7 @@ class TtReservation(models.Model):
     is_halt_process = fields.Boolean('Halt Process', default=False)
     # END
 
+    is_invoice_created = fields.Boolean('Is Invoice Created', default=False)
     reconcile_state = fields.Selection(variables.RESV_RECONCILE_STATE, 'Reconcile State',default='not_reconciled',
                                        compute='_compute_reconcile_state', store=True )
 
@@ -473,7 +474,7 @@ class TtReservation(models.Model):
                     agent_nta_total += sale.total
             rec.agent_nta = agent_nta_total + rec.total
 
-    def to_dict(self):
+    def to_dict(self,include_total_nta=False):
         # invoice_list = []
         # if hasattr(self, 'invoice_line_ids'):
         #     for rec in self.invoice_line_ids:
@@ -527,9 +528,11 @@ class TtReservation(models.Model):
             # May 19, 2020 - SAM
             'is_force_issued': self.is_force_issued,
             'is_halt_process': self.is_halt_process,
+            'agent_nta': self.agent_nta,
             # END
         }
-
+        if include_total_nta:
+            res['total_nta'] = self.total_nta
         return res
 
     def get_book_obj(self, book_id, order_number):
