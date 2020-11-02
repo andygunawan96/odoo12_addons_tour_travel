@@ -90,7 +90,7 @@ class TtReconcileTransaction(models.Model):
             end_balance = self.start_balance
 
             for line in self.reconcile_lines_ids:
-                if line.type in ['nta', 'admin_bank', 'other', 'insentif']:
+                if line.type in ['nta', 'admin_bank', 'other']:
                     end_balance -= line.total
                 else:
                     end_balance += line.total
@@ -139,6 +139,8 @@ class TtReconcileTransactionLines(models.Model):
                               ('ignore','Ignore')],'State',default='not_match')
     res_model = fields.Char('Ref Model', readonly=True)
     res_id = fields.Integer('Ref ID', readonly=True)
+
+    sequence = fields.Integer('Sequence')
 
     def open_reference(self):
         # try:

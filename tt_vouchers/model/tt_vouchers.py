@@ -41,7 +41,19 @@ class TtVoucher(models.Model):
     #add-ons
     voucher_multi_usage = fields.Boolean("Voucher Multi Usage")
     voucher_usage_value = fields.Monetary("Voucher usage", readonly=True)
-    voucher_customer_id = fields.Many2one('tt.customer', 'Customer')
+    voucher_customer_id = fields.Many2one('tt.customer', 'Customer', domain=[])
+
+    @api.onchange('agent_access_type', 'voucher_agent_eligibility_ids')
+    def agent_eligibility_change(self):
+        if self.agent_access_type == 'allow':
+            domain = [('agent_id', 'in', self.voucher_agent_eligibility_ids.ids)]
+        elif self.agent_access_type == 'restrict':
+            domain = [('agent_id', 'not in', self.voucher_agent_eligibility_ids.ids)]
+        else:
+            domain = []
+        return {'domain': {
+            'voucher_customer_id': domain
+        }}
 
     @api.model
     def create(self, vals):

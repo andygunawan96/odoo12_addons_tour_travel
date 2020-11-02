@@ -399,7 +399,13 @@ class ReportSelling(models.Model):
     # where issued
     @staticmethod
     def _where_issued(date_from, date_to):
-        where = """reservation.issued_date >= '%s' and reservation.issued_date <= '%s' AND reservation.state = 'issued'""" % (date_from, date_to)
+        where = """reservation.issued_date >= '%s' and reservation.issued_date <= '%s'""" % (date_from, date_to)
+        return where
+
+    @staticmethod
+    def _where_agent(agent_id):
+        where = """agent.id = %s
+        """ % (agent_id)
         return where
 
     #works with all
@@ -446,7 +452,7 @@ class ReportSelling(models.Model):
             query = 'SELECT {} '.format(self._select_offline())
         elif provider_checker == 'event' or provider_checker == 'overall_event':
             query = 'SELECT {} '.format(self._select_event())
-        elif provider_checker == 'ppob':
+        elif provider_checker == 'ppob' or provider_checker == 'overall_ppob':
             query = 'SELECT {} '.format(self._select_ppob())
         elif provider_checker == 'invoice':
             query = 'SELECT {} '.format(self._select_invoice())
@@ -500,40 +506,56 @@ class ReportSelling(models.Model):
         elif provider_checker == 'overall_airline':
             query += 'FROM {} '.format(self._from_airline())
             query += 'WHERE {} '.format(self._where_issued(date_from, date_to))
+            if agent_id:
+                query += 'AND {} '.format(self._where_agent(agent_id))
             query += 'GROUP BY {} '.format(self._group_by_airline())
             query += 'ORDER BY {} '.format(self._order_by_issued())
         elif provider_checker == 'overall_activity':
             query += 'FROM {} '.format(self._from_activity())
             query += 'WHERE {} '.format(self._where_issued(date_from, date_to))
+            if agent_id:
+                query += 'AND {} '.format(self._where_agent(agent_id))
             query += 'GROUP BY {} '.format(self._group_by_activity())
             query += 'ORDER BY {} '.format(self._order_by_issued())
         elif provider_checker == 'overall_event':
             query += 'FROM {} '.format(self._from_event())
             query += 'WHERE {} '.format(self._where_issued(date_from, date_to))
+            if agent_id:
+                query += 'AND {} '.format(self._where_agent(agent_id))
             query += 'GROUP BY {} '.format(self._group_by_event())
             query += 'ORDER BY {} '.format(self._order_by_issued())
         elif provider_checker == 'overall_tour':
             query += 'FROM {} '.format(self._from_tour())
             query += 'WHERE {} '.format(self._where_issued(date_from, date_to))
+            if agent_id:
+                query += 'AND {} '.format(self._where_agent(agent_id))
             query += 'ORDER BY {} '.format(self._order_by_issued())
         elif provider_checker == 'overall_train':
             query += 'FROM {} '.format(self._from_train())
             query += 'WHERE {} '.format(self._where_issued(date_from, date_to))
+            if agent_id:
+                query += 'AND {} '.format(self._where_agent(agent_id))
             query += 'GROUP BY {} '.format(self._group_by_train())
             query += 'ORDER BY {} '.format(self._order_by_issued())
         elif provider_checker == 'overall_hotel':
             query += 'FROM {} '.format(self._from_hotel())
             query += 'WHERE {} '.format(self._where_issued(date_from, date_to))
+            if agent_id:
+                query += 'AND {} '.format(self._where_agent(agent_id))
             query += 'GROUP BY {} '.format(self._group_by_hotel())
             query += 'ORDER BY {} '.format(self._order_by_issued())
         elif provider_checker == 'overall_visa':
             query += 'FROM {} '.format(self._from_visa())
             query += 'WHERE {} '.format(self._where_issued(date_from, date_to))
+            if agent_id:
+                query += 'AND {} '.format(self._where_agent(agent_id))
             query += 'GROUP BY {} '.format(self._group_by_visa())
             query += 'ORDER BY {} '.format(self._order_by_issued())
         elif provider_checker == 'overall_offline':
             query += 'FROM {} '.format(self._from_offline())
             query += 'WHERE {} '.format(self._where_issued(date_from, date_to))
+            if agent_id:
+                query += 'AND {} '.format(self._where_agent(agent_id))
             query += 'ORDER BY {} '.format(self._order_by_issued())
         elif provider_checker == 'chanel_overall_airline':
             query += 'FROM {} '.format(self._from_airline())
@@ -764,10 +786,12 @@ class ReportSelling(models.Model):
         return lines
 
     def _prepare_valued(self, data_form):
+        # get data from form
         date_from = data_form['date_from']
         date_to = data_form['date_to']
         agent_id = data_form['agent_id']
         provider_type = data_form['provider_type']
+
         line = self._get_lines_data(date_from, date_to, agent_id, provider_type)
         self._report_title(data_form)
         return {
@@ -776,19 +800,22 @@ class ReportSelling(models.Model):
         }
 
     def _get_reports(self, data):
+        # get data from frontend
         date_from = data['start_date']
         date_to = data['end_date']
-        # need to process provider type
-        if data['addons'] == 'chanel':
-            # for chanel we gonna add prefix chanel
-            # check if data is not overall
-            if data['type'] != 'overall':
-                splits = data['type'].split("_")
-                provider_type = splits[1]
-            else:
-                # if data is only overall then we're gonna change it to all
-                provider_type = 'all'
-        elif data['addons'] == 'book_issued':
+        agent_id = data['agent_seq_id']
+
+        # # need to process provider type
+        # if data['addons'] == 'chanel':
+        #     # for chanel we gonna add prefix chanel
+        #     # check if data is not overall
+        #     if data['type'] != 'overall':
+        #         splits = data['type'].split("_")
+        #         provider_type = splits[1]
+        #     else:
+        #         # if data is only overall then we're gonna change it to all
+        #         provider_type = 'all'
+        if data['addons'] == 'book_issued':
             #for group we're gonna remove the overall prefix
             # check if data is not overall
             if data['type'] != 'overall':
@@ -802,7 +829,8 @@ class ReportSelling(models.Model):
         reservation = []
         if provider_type == 'invoice':
             reservation = data['reservation']
-        agent_id = ''
+
+        # proceed data
         line = self._get_lines_data(date_from, date_to, agent_id, provider_type, reservation)
         return {
             'lines': line

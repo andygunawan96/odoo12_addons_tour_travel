@@ -99,6 +99,7 @@
                 <field name="first_name"/>
                 <field name="last_name"/>
                 <field name="birth_date"/>
+                <field name="email"/>
                 <field name="gender"/>
                 <field name="marital_status"/>
                 <field name="agent_id"/>
