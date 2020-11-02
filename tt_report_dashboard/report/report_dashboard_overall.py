@@ -63,6 +63,13 @@ class ReportDashboardOverall(models.Model):
         _logger.info(query)
         return self.env.cr.dictfetchall()
 
+    def get_agent_lines(self):
+        query = "SELECT agent.id, agent.name, agent.agent_type_id FROM tt.agent"
+
+        self.env.cr.execute(query)
+        _logger.info(query)
+        return self.env.cr.dictfetchall()
+
     def _get_reports(self, data):
         date_from = data['start_date']
         date_to = data['end_date']
