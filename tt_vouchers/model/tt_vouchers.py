@@ -707,8 +707,6 @@ class TtVoucherDetail(models.Model):
         # voucher process
         #####################
 
-        # g et all provider from order
-        order_provider = order_obj.provider_name.split(",")
         # declare result array
         result_array = []
 
