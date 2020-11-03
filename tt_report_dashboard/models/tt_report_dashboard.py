@@ -138,11 +138,18 @@ class TtReportDashboard(models.Model):
         if is_ho:
             res['dependencies'] = {
                 'is_ho': 1,
-                'agent_list': self.env['report.tt_report_dashboard.overall'].get_agent_all()
+                'agent_list': self.env['report.tt_report_dashboard.overall'].get_agent_all(),
+                'current_agent': data['selected_agent']
             }
         else:
             res['dependencies'] = {
-                'is_ho': 0
+                'is_ho': 0,
+
+                # for testing purpose
+                'agent_list': self.env['report.tt_report_dashboard.overall'].get_agent_all(),
+                # need to be removed later
+
+                'current_agent': self.env['tt.agent'].browse(context['co_agent_id']).name
             }
         return ERR.get_no_error(res)
 
@@ -220,18 +227,28 @@ class TtReportDashboard(models.Model):
 
                     provider_index = self.check_index(summary_provider, "provider", i['provider_type_name'])
                     if provider_index == -1:
+                        # declare dependencies
                         temp_dict = {
                             'provider': i['provider_type_name'],
                             'counter': 1,
-                            i['reservation_state']: 1
+                            'booked': 0,
+                            'issued': 0,
+                            'cancel2': 0,
+                            'fail_booked': 0,
+                            'fail_issued': 0,
                         }
+
+                        # add the first data
+                        temp_dict[i['reservation_state']] += 1
+
+                        # add to big list
                         summary_provider.append(temp_dict)
                     else:
                         summary_provider[provider_index]['counter'] += 1
                         try:
                             summary_provider[provider_index][i['reservation_state']] += 1
                         except:
-                            summary_provider[provider_index][i['reservation_state']] = 1
+                            pass
 
                 except:
                     pass
@@ -374,9 +391,9 @@ class TtReportDashboard(models.Model):
             else:
                 for i in range(20):
                     label_data.append(summary_chanel[i]['agent_name'])
-                    revenue_data.append(summary_chanel[i]['revenue'])
+                    revenue_data.append(f"{summary_chanel[i]['revenue']:,.2f}")
                     reservation_data.append(summary_chanel[i]['reservation'])
-                    average_data.append(summary_chanel[i]['revenue'] / summary_chanel[i]['reservation'])
+                    average_data.append(f"{summary_chanel[i]['revenue'] / summary_chanel[i]['reservation']:,.2f}")
 
             # lets built to return
             to_return = {
@@ -602,11 +619,7 @@ class TtReportDashboard(models.Model):
                 },
                 'total_rupiah': f"{total:,.2f}",
                 'average_rupiah': f"{float(total) / float(num_data):,.2f}" if num_data > 0 else 0,
-                'first_overview': summary_provider,
-                # 'dependencies' : {
-                #     'is_ho': 1,
-                #     'agent_list': self.env['report.tt_report_dashboard.overall']._get_agent_all()
-                # }
+                'first_overview': summary_provider
             }
 
             # update dependencies
@@ -893,13 +906,13 @@ class TtReportDashboard(models.Model):
                 'total_rupiah': f"{total:,.2f}",
                 'average_rupiah': f"{float(total) / float(num_data):,.2f}" if num_data > 0 else 0,
                 'first_overview': {
-                    'sector_summary': destination_sector_summary,
-                    'direction_summary': destination_direction_summary,
-                    'international': international_filter,
-                    'domestic': domestic_filter,
-                    'one_way': one_way_filter,
-                    'return': return_filter,
-                    'multi_city': multi_city_filter
+                    'sector_summary': destination_sector_summary[:20],
+                    'direction_summary': destination_direction_summary[:20],
+                    'international': international_filter[:20],
+                    'domestic': domestic_filter[:20],
+                    'one_way': one_way_filter[:20],
+                    'return': return_filter[:20],
+                    'multi_city': multi_city_filter[:20]
                 }
             }
             # update dependencies
@@ -1175,13 +1188,13 @@ class TtReportDashboard(models.Model):
                 'total_rupiah': f"{total:,.2f}",
                 'average_rupiah': f"{float(total) / float(num_data):,.2f}" if num_data > 0 else 0,
                 'first_overview': {
-                    'sector_summary': destination_sector_summary,
-                    'direction_summary': destination_direction_summary,
-                    'international': international_filter,
-                    'domestic': domestic_filter,
-                    'one_way': one_way_filter,
-                    'return': return_filter,
-                    'multi_city': multi_city_filter
+                    'sector_summary': destination_sector_summary[:20],
+                    'direction_summary': destination_direction_summary[:20],
+                    'international': international_filter[:20],
+                    'domestic': domestic_filter[:20],
+                    'one_way': one_way_filter[:20],
+                    'return': return_filter[:20],
+                    'multi_city': multi_city_filter[:20]
                 }
             }
 
