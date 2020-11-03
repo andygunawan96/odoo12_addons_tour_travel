@@ -678,12 +678,12 @@ class TtVoucherDetail(models.Model):
                     cust_is_eligible = True
                     break
 
-        if not cust_is_eligible:
-            # agent cannot use the voucher
-            # print logger
-            _logger.error("%s, customer is not allowed to use voucher" % data['voucher_reference'])
-            # raise error
-            return ERR.get_error(additional_message="Customer is not allowed to use voucher %s" % data['voucher_reference'])
+            if not cust_is_eligible:
+                # agent cannot use the voucher
+                # print logger
+                _logger.error("%s, customer is not allowed to use voucher" % data['voucher_reference'])
+                # raise error
+                return ERR.get_error(additional_message="Customer is not allowed to use voucher %s" % data['voucher_reference'])
 
         # at this point it means the voucher is exist
         # voucher is not expired
