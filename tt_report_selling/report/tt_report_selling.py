@@ -404,7 +404,7 @@ class ReportSelling(models.Model):
 
     @staticmethod
     def _where_agent(agent_seq_id):
-        where = """agent.seq_id = %s
+        where = """agent.seq_id = '%s'
         """ % (agent_seq_id)
         return where
 
