@@ -670,20 +670,20 @@ class TtVoucherDetail(models.Model):
             return ERR.get_error(additional_message="Agent is not allowed to use voucher %s" % data['voucher_reference'])
 
         # if is_customer_exclusive is True, check if customer is eligible to use the voucher
-        cust_is_eligible = False
         if voucher.is_customer_exclusive:
+            cust_is_eligible = False
             filtered_cust = filter(lambda x: x['first_name'] == voucher.voucher_customer_id.first_name and x['last_name'] == voucher.voucher_customer_id.last_name, data['passenger_list'])
             for cust in filtered_cust:
                 if cust:
                     cust_is_eligible = True
                     break
 
-        if not cust_is_eligible:
-            # agent cannot use the voucher
-            # print logger
-            _logger.error("%s, customer is not allowed to use voucher" % data['voucher_reference'])
-            # raise error
-            return ERR.get_error(additional_message="Customer is not allowed to use voucher %s" % data['voucher_reference'])
+            if not cust_is_eligible:
+                # agent cannot use the voucher
+                # print logger
+                _logger.error("%s, customer is not allowed to use voucher" % data['voucher_reference'])
+                # raise error
+                return ERR.get_error(additional_message="Customer is not allowed to use voucher %s" % data['voucher_reference'])
 
         # at this point it means the voucher is exist
         # voucher is not expired
