@@ -88,8 +88,11 @@ class TtReportDashboard(models.Model):
 
     def get_report_json_api(self, data, context):
         is_ho = self.env.ref('tt_base.rodex_ho').id == context['co_agent_id']
-        if not is_ho:
-            data['agent_seq_id'] = self.env['tt.agent'].browse(context['co_agent_id']).seq_id
+        if is_ho:
+            data['agent_seq_id'] = False
+        else:
+            # get the id of the agent
+            data['agent_seq_id'] = self.env['tt.agent'].browse(context['co_agent_id']).seq_id.id
         type = data['report_type']
         if type == 'overall':
             res = self.get_report_overall(data)

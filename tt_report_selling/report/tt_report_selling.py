@@ -374,7 +374,7 @@ class ReportSelling(models.Model):
 
     @staticmethod
     def _group_by_tour():
-        return """reservation.id, provider_type.name, agent.name, agent_type.name"""
+        return """reservation.id, tour.name, provider_type.name, agent.name, agent_type.name"""
 
     @staticmethod
     def _group_by_event():
@@ -462,45 +462,63 @@ class ReportSelling(models.Model):
         if provider_checker == 'airline':
             query += 'FROM {} '.format(self._from_airline())
             query += 'WHERE {} '.format(self._where(date_from, date_to))
+            if agent_id:
+                query += 'AND {} '.format(self._where_agent(agent_id))
             query += 'GROUP BY {} '.format(self._group_by_airline())
             query += 'ORDER BY {} '.format(self._order_by())
         elif provider_checker == 'train':
             query += 'FROM {} '.format(self._from_train())
             query += 'WHERE {} '.format(self._where(date_from, date_to))
+            if agent_id:
+                query += 'AND {} '.format(self._where_agent(agent_id))
             query += 'GROUP BY {} '.format(self._group_by_train())
             query += 'ORDER BY {} '.format(self._order_by())
         elif provider_checker == 'hotel':
             query += 'FROM {} '.format(self._from_hotel())
             query += 'WHERE {} '.format(self._where(date_from, date_to))
+            if agent_id:
+                query += 'AND {} '.format(self._where_agent(agent_id))
             query += 'GROUP BY {} '.format(self._group_by_hotel())
             query += 'ORDER BY {} '.format(self._order_by())
         elif provider_checker == 'activity':
             query += 'FROM {} '.format(self._from_activity())
             query += 'WHERE {} '.format(self._where(date_from, date_to))
+            if agent_id:
+                query += 'AND {} '.format(self._where_agent(agent_id))
             query += 'GROUP BY {} '.format(self._group_by_activity())
             query += 'ORDER BY {} '.format(self._order_by())
         elif provider_checker == 'tour':
             query += 'FROM {} '.format(self._from_tour())
             query += 'WHERE {} '.format(self._where(date_from, date_to))
+            if agent_id:
+                query += 'AND {} '.format(self._where_agent(agent_id))
             query += 'GROUP BY {} '.format(self._group_by_tour())
             query += 'ORDER BY {} '.format(self._order_by())
         elif provider_checker == 'visa':
             query += 'FROM {} '.format(self._from_visa())
             query += 'WHERE {} '.format(self._where(date_from, date_to))
+            if agent_id:
+                query += 'AND {} '.format(self._where_agent(agent_id))
             query += 'GROUP BY {} '.format(self._group_by_visa())
             query += 'ORDER BY {} '.format(self._order_by())
         elif provider_checker == 'offline':
             query += 'FROM {} '.format(self._from_offline())
             query += 'WHERE {} '.format(self._where(date_from, date_to))
+            if agent_id:
+                query += 'AND {} '.format(self._where_agent(agent_id))
             query += 'ORDER BY {} '.format(self._order_by())
         elif provider_checker == 'event':
             query += 'FROM {} '.format(self._from_event())
             query += 'WHERE {} '.format(self._where(date_from, date_to))
+            if agent_id:
+                query += 'AND {} '.format(self._where_agent(agent_id))
             query += 'GROUP BY {} '.format(self._group_by_event())
             query += 'ORDER BY {} '.format(self._order_by())
         elif provider_checker == 'ppob':
             query += 'FROM {} '.format(self._from_ppob())
             query += 'WHERE {} '.format(self._where(date_from, date_to))
+            if agent_id:
+                query += 'AND {} '.format(self._where_agent(agent_id))
             query += 'GROUP BY {} '.format(self._group_by_ppob())
             query += 'ORDER BY {} '.format(self._order_by())
         elif provider_checker == 'overall_airline':
