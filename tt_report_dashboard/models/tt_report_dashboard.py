@@ -87,6 +87,9 @@ class TtReportDashboard(models.Model):
             yield start_date + timedelta(n)
 
     def get_report_json_api(self, data, context):
+        is_ho = self.env.ref('tt_base.rodex_ho').id == context['co_agent_id']
+        if not is_ho:
+            data['agent_seq_id'] = self.env['tt.agent'].browse(context['co_agent_id']).seq_id
         type = data['report_type']
         if type == 'overall':
             res = self.get_report_overall(data)
@@ -132,6 +135,15 @@ class TtReportDashboard(models.Model):
             res = self.get_book_issued_ratio(data)
         else:
             return ERR.get_error(1001, "Cannot find action")
+        if is_ho:
+            res['dependencies'] = {
+                'is_ho': 1,
+                'agent_list': self.env['report.tt_report_dashboard.overall'].get_agent_all()
+            }
+        else:
+            res['dependencies'] = {
+                'is_ho': 0
+            }
         return ERR.get_no_error(res)
 
     def get_report_xls_api(self, data,  context):
@@ -145,6 +157,7 @@ class TtReportDashboard(models.Model):
                 'start_date': data['start_date'],
                 'end_date': data['end_date'],
                 'type': data['report_type'],
+                'agent_seq_id': data['agent_seq_id'],
                 'addons': 'book_issued'
             }
             # execute the query
@@ -226,6 +239,7 @@ class TtReportDashboard(models.Model):
             # sort the data by year and month
             # the result will be (Year 2019, month January), (Year 2020, month January) and so on
             summary_by_date.sort(key=lambda x: (x['year'], x['month_index']))
+            summary_provider.sort(key=lambda x: x['counter'], reverse=True)
 
             # shape the data for return
             book_data = {}
@@ -296,6 +310,8 @@ class TtReportDashboard(models.Model):
                 'start_date': data['start_date'],
                 'end_date': data['end_date'],
                 'type': data['report_type'],
+                'agent_seq_id': data['agent_seq_id'],
+                # 'agent_seq_id': 8,
                 'addons': 'chanel'
             }
             chanel_values = self.env['report.tt_report_selling.report_selling']._get_reports(temp_dict)
@@ -310,7 +326,15 @@ class TtReportDashboard(models.Model):
             # declare variable to temp handle processed data
             summary_chanel = []
 
+            current_id = -100
+
             for i in chanel_values['lines']:
+
+                if i['reservation_id'] == current_id:
+                    continue
+                else:
+                    current_id = i['reservation_id']
+
                 person_index = self.person_index(summary_chanel, {'agent_id': i['agent_id'], 'agent_type_id': i['agent_type_id']})
 
                 if person_index == -1:
@@ -344,9 +368,9 @@ class TtReportDashboard(models.Model):
             if len(summary_chanel) < 20:
                 for i in summary_chanel:
                     label_data.append(i['agent_name'])
-                    revenue_data.append(i['revenue'])
+                    revenue_data.append(f"{i['revenue']:,.2f}")
                     reservation_data.append(i['reservation'])
-                    average_data.append(i['revenue']/i['reservation'])
+                    average_data.append(f"{i['revenue']/i['reservation']:,.2f}")
             else:
                 for i in range(20):
                     label_data.append(summary_chanel[i]['agent_name'])
@@ -371,11 +395,22 @@ class TtReportDashboard(models.Model):
 
     def get_report_overall(self, data):
         try:
+            # process datetime to GMT 0
+            # convert string to datetime
+            start_date = self.convert_to_datetime(data['start_date'])
+            end_date = self.convert_to_datetime(data['end_date'])
+
+            temp_start_date = start_date - timedelta(days=1)
+            data['start_date'] = temp_start_date.strftime('%Y-%m-%d') + " 17:00:00"
+            data['end_date'] += " 16:59:59"
+
             # get all data by issued date (between start and end)
             temp_dict = {
                 'start_date': data['start_date'],
                 'end_date': data['end_date'],
                 'type': data['report_type'],
+                'agent_seq_id': data['agent_seq_id'],
+                # 'agent_seq_id': False,
                 'addons': 'none'
             }
             issued_values = self.env['report.tt_report_selling.report_selling']._get_reports(temp_dict)
@@ -387,9 +422,7 @@ class TtReportDashboard(models.Model):
                 'July', 'August', 'September', 'October', 'November', 'December'
             ]
 
-            # convert string to datetime
-            start_date = self.convert_to_datetime(data['start_date'])
-            end_date = self.convert_to_datetime(data['end_date'])
+
 
             # count different of days between dates
             delta = end_date - start_date
@@ -412,6 +445,8 @@ class TtReportDashboard(models.Model):
                 'start_date': data['start_date'],
                 'end_date': data['end_date'],
                 'type': 'invoice',
+                'agent_seq_id': data['agent_seq_id'],
+                # 'agent_seq_id': False,
                 'reservation': reservation_ids,
                 'addons': 'none'
             }
@@ -497,7 +532,7 @@ class TtReportDashboard(models.Model):
 
             # sort summary_by_date month in the correct order
             summary_issued.sort(key=lambda x: (x['year'], x['month_index']))
-            summary_provider.sort(key=lambda x: x['counter'])
+            summary_provider.sort(key=lambda x: x['counter'], reverse=True)
 
             # first graph data
             main_data = {}
@@ -554,10 +589,8 @@ class TtReportDashboard(models.Model):
                         # lets cut the data that is not needed
                         if today >= data['start_date'] and today <= data['end_date']:
                             main_data[str(j['day']) + "-" + str(i['month_index']) + "-" + str(i['year'])] = j['invoice']
-                            average_data[str(j['day']) + "-" + str(i['month_index']) + "-" + str(i['year'])] = j[
-                                'average']
-                            revenue_data[str(j['day']) + "-" + str(i['month_index']) + "-" + str(i['year'])] = j[
-                                'revenue']
+                            average_data[str(j['day']) + "-" + str(i['month_index']) + "-" + str(i['year'])] = f"{j['average']:,.2f}"
+                            revenue_data[str(j['day']) + "-" + str(i['month_index']) + "-" + str(i['year'])] = f"{j['revenue']:,.2f}"
 
             # build to return data
             to_return = {
@@ -567,9 +600,13 @@ class TtReportDashboard(models.Model):
                     'data2': list(revenue_data.values()),
                     'data3': list(average_data.values())
                 },
-                'total_rupiah': total,
-                'average_rupiah': float(total) / float(num_data) if num_data > 0 else 0,
-                'first_overview': summary_provider
+                'total_rupiah': f"{total:,.2f}",
+                'average_rupiah': f"{float(total) / float(num_data):,.2f}" if num_data > 0 else 0,
+                'first_overview': summary_provider,
+                # 'dependencies' : {
+                #     'is_ho': 1,
+                #     'agent_list': self.env['report.tt_report_dashboard.overall']._get_agent_all()
+                # }
             }
 
             # update dependencies
@@ -594,10 +631,20 @@ class TtReportDashboard(models.Model):
 
     def get_report_overall_airline(self, data):
         try:
+            # process datetime to GMT 0
+            # convert string to datetime
+            start_date = self.convert_to_datetime(data['start_date'])
+            end_date = self.convert_to_datetime(data['end_date'])
+
+            temp_start_date = start_date - timedelta(days=1)
+            data['start_date'] = temp_start_date.strftime('%Y-%m-%d') + " 17:00:00"
+            data['end_date'] += " 16:59:59"
+
             temp_dict = {
                 'start_date': data['start_date'],
                 'end_date': data['end_date'],
                 'type': data['report_type'],
+                'agent_seq_id': data['agent_seq_id'],
                 'addons': 'none'
             }
             issued_values = self.env['report.tt_report_selling.report_selling']._get_reports(temp_dict)
@@ -611,10 +658,6 @@ class TtReportDashboard(models.Model):
             # overview base on the same timeframe
             destination_sector_summary = []
             destination_direction_summary = []
-
-            # lets populate result with empty date dictionary
-            start_date = self.convert_to_datetime(data['start_date'])
-            end_date = self.convert_to_datetime(data['end_date'])
 
             delta = end_date - start_date
 
@@ -636,6 +679,7 @@ class TtReportDashboard(models.Model):
                 'end_date': data['end_date'],
                 'type': 'invoice',
                 'reservation': reservation_ids,
+                'agent_seq_id': data['agent_seq_id'],
                 'addons': 'none'
             }
             invoice = self.env['report.tt_report_selling.report_selling']._get_reports(temp_dict)
@@ -834,10 +878,10 @@ class TtReportDashboard(models.Model):
                         # lets cut the data that is not needed
                         if today >= data['start_date'] and today <= data['end_date']:
                             main_data[str(j['day']) + "-" + str(i['month_index']) + "-" + str(i['year'])] = j['invoice']
-                            average_data[str(j['day']) + "-" + str(i['month_index']) + "-" + str(i['year'])] = j[
-                                'average']
-                            revenue_data[str(j['day']) + "-" + str(i['month_index']) + "-" + str(i['year'])] = j[
-                                'revenue']
+                            average_data[str(j['day']) + "-" + str(i['month_index']) + "-" + str(
+                                i['year'])] = f"{j['average']:,.2f}"
+                            revenue_data[str(j['day']) + "-" + str(i['month_index']) + "-" + str(
+                                i['year'])] = f"{j['revenue']:,.2f}"
 
             to_return = {
                 'graph': {
@@ -846,8 +890,8 @@ class TtReportDashboard(models.Model):
                     'data2': list(revenue_data.values()),
                     'data3': list(average_data.values())
                 },
-                'total_rupiah': total,
-                'average_rupiah': float(total) / float(num_data) if num_data > 0 else 0,
+                'total_rupiah': f"{total:,.2f}",
+                'average_rupiah': f"{float(total) / float(num_data):,.2f}" if num_data > 0 else 0,
                 'first_overview': {
                     'sector_summary': destination_sector_summary,
                     'direction_summary': destination_direction_summary,
@@ -880,11 +924,21 @@ class TtReportDashboard(models.Model):
 
     def get_report_overall_train(self, data):
         try:
+            # process datetime to GMT 0
+            # convert string to datetime
+            start_date = self.convert_to_datetime(data['start_date'])
+            end_date = self.convert_to_datetime(data['end_date'])
+
+            temp_start_date = start_date - timedelta(days=1)
+            data['start_date'] = temp_start_date.strftime('%Y-%m-%d') + " 17:00:00"
+            data['end_date'] += " 16:59:59"
+
             # to get report by issued
             temp_dict = {
                 'start_date': data['start_date'],
                 'end_date': data['end_date'],
                 'type': data['report_type'],
+                'agent_seq_id': data['agent_seq_id'],
                 'addons': 'none'
             }
             issued_values = self.env['report.tt_report_selling.report_selling']._get_reports(temp_dict)
@@ -899,10 +953,6 @@ class TtReportDashboard(models.Model):
             # overview base on the same timeframe
             destination_sector_summary = []
             destination_direction_summary = []
-
-            # lets populate result with empty date dictionary
-            start_date = self.convert_to_datetime(data['start_date'])
-            end_date = self.convert_to_datetime(data['end_date'])
 
             delta = end_date - start_date
 
@@ -921,6 +971,7 @@ class TtReportDashboard(models.Model):
                 'end_date': data['end_date'],
                 'type': 'invoice',
                 'reservation': reservation_ids,
+                'agent_seq_id': data['agent_seq_id'],
                 'addons': 'none'
             }
             invoice = self.env['report.tt_report_selling.report_selling']._get_reports(temp_dict)
@@ -1109,10 +1160,10 @@ class TtReportDashboard(models.Model):
                 for i in summary_issued:
                     for j in i['detail']:
                         main_data[str(j['day']) + "-" + str(i['month_index']) + "-" + str(i['year'])] = j['invoice']
-                        average_data[str(j['day']) + "-" + str(i['month_index']) + "-" + str(i['year'])] = j[
-                            'average']
-                        revenue_data[str(j['day']) + "-" + str(i['month_index']) + "-" + str(i['year'])] = j[
-                            'revenue']
+                        average_data[
+                            str(j['day']) + "-" + str(i['month_index']) + "-" + str(i['year'])] = f"{j['average']:,.2f}"
+                        revenue_data[
+                            str(j['day']) + "-" + str(i['month_index']) + "-" + str(i['year'])] = f"{j['revenue']:,.2f}"
 
             to_return = {
                 'graph': {
@@ -1121,8 +1172,8 @@ class TtReportDashboard(models.Model):
                     'data2': list(revenue_data.values()),
                     'data3': list(average_data.values())
                 },
-                'total_rupiah': total,
-                'average_rupiah': float(total) / float(num_data) if num_data > 0 else 0,
+                'total_rupiah': f"{total:,.2f}",
+                'average_rupiah': f"{float(total) / float(num_data):,.2f}" if num_data > 0 else 0,
                 'first_overview': {
                     'sector_summary': destination_sector_summary,
                     'direction_summary': destination_direction_summary,
@@ -1156,11 +1207,21 @@ class TtReportDashboard(models.Model):
 
     def get_report_overall_hotel(self, data):
         try:
+            # process datetime to GMT 0
+            # convert string to datetime
+            start_date = self.convert_to_datetime(data['start_date'])
+            end_date = self.convert_to_datetime(data['end_date'])
+
+            temp_start_date = start_date - timedelta(days=1)
+            data['start_date'] = temp_start_date.strftime('%Y-%m-%d') + " 17:00:00"
+            data['end_date'] += " 16:59:59"
+
             # get report by issued
             temp_dict = {
                 'start_date': data['start_date'],
                 'end_date': data['end_date'],
                 'type': data['report_type'],
+                'agent_seq_id': data['agent_seq_id'],
                 'addons': 'none'
             }
             # execute query
@@ -1172,10 +1233,6 @@ class TtReportDashboard(models.Model):
                 'January', 'February', 'March', 'April', 'May', 'June',
                 'July', 'August', 'September', 'October', 'November', 'December'
             ]
-
-            # lets populate result with empty date dictionary
-            start_date = self.convert_to_datetime(data['start_date'])
-            end_date = self.convert_to_datetime(data['end_date'])
 
             delta = end_date - start_date
 
@@ -1194,6 +1251,7 @@ class TtReportDashboard(models.Model):
                 'end_date': data['end_date'],
                 'type': 'invoice',
                 'reservation': reservation_ids,
+                'agent_seq_id': data['agent_seq_id'],
                 'addons': 'none'
             }
             invoice = self.env['report.tt_report_selling.report_selling']._get_reports(temp_dict)
@@ -1320,10 +1378,10 @@ class TtReportDashboard(models.Model):
                         # lets cut the data that is not needed
                         if today >= data['start_date'] and today <= data['end_date']:
                             main_data[str(j['day']) + "-" + str(i['month_index']) + "-" + str(i['year'])] = j['invoice']
-                            average_data[str(j['day']) + "-" + str(i['month_index']) + "-" + str(i['year'])] = j[
-                                'average']
-                            revenue_data[str(j['day']) + "-" + str(i['month_index']) + "-" + str(i['year'])] = j[
-                                'revenue']
+                            average_data[str(j['day']) + "-" + str(i['month_index']) + "-" + str(
+                                i['year'])] = f"{j['average']:,.2f}"
+                            revenue_data[str(j['day']) + "-" + str(i['month_index']) + "-" + str(
+                                i['year'])] = f"{j['revenue']:,.2f}"
 
             # build to return data
             to_return = {
@@ -1333,8 +1391,8 @@ class TtReportDashboard(models.Model):
                     'data2': list(revenue_data.values()),
                     'data3': list(average_data.values())
                 },
-                'total_rupiah': total,
-                'average_rupiah': float(total) / float(num_data) if num_data > 0 else 0
+                'total_rupiah': f"{total:,.2f}",
+                'average_rupiah': f"{float(total) / float(num_data):,.2f}" if num_data > 0 else 0
             }
 
             # update dependencies
@@ -1359,10 +1417,20 @@ class TtReportDashboard(models.Model):
 
     def get_report_overall_tour(self, data):
         try:
+            # process datetime to GMT 0
+            # convert string to datetime
+            start_date = self.convert_to_datetime(data['start_date'])
+            end_date = self.convert_to_datetime(data['end_date'])
+
+            temp_start_date = start_date - timedelta(days=1)
+            data['start_date'] = temp_start_date.strftime('%Y-%m-%d') + " 17:00:00"
+            data['end_date'] += " 16:59:59"
+
             temp_dict = {
                 'start_date': data['start_date'],
                 'end_date': data['end_date'],
                 'type': data['report_type'],
+                'agent_seq_id': data['agent_seq_id'],
                 'addons': 'none'
             }
             issued_values = self.env['report.tt_report_selling.report_selling']._get_reports(temp_dict)
@@ -1372,10 +1440,6 @@ class TtReportDashboard(models.Model):
                 'January', 'February', 'March', 'April', 'May', 'June',
                 'July', 'August', 'September', 'October', 'November', 'December'
             ]
-
-            # lets populate result with empty date dictionary
-            start_date = self.convert_to_datetime(data['start_date'])
-            end_date = self.convert_to_datetime(data['end_date'])
 
             delta = end_date - start_date
 
@@ -1393,6 +1457,7 @@ class TtReportDashboard(models.Model):
                 'start_date': data['start_date'],
                 'end_date': data['end_date'],
                 'type': 'invoice',
+                'agent_seq_id': data['agent_seq_id'],
                 'reservation': reservation_ids
             }
             invoice = self.env['report.tt_report_selling.report_selling']._get_reports(temp_dict)
@@ -1519,10 +1584,10 @@ class TtReportDashboard(models.Model):
                         # lets cut the data that is not needed
                         if today >= data['start_date'] and today <= data['end_date']:
                             main_data[str(j['day']) + "-" + str(i['month_index']) + "-" + str(i['year'])] = j['invoice']
-                            average_data[str(j['day']) + "-" + str(i['month_index']) + "-" + str(i['year'])] = j[
-                                'average']
-                            revenue_data[str(j['day']) + "-" + str(i['month_index']) + "-" + str(i['year'])] = j[
-                                'revenue']
+                            average_data[str(j['day']) + "-" + str(i['month_index']) + "-" + str(
+                                i['year'])] = f"{j['average']:,.2f}"
+                            revenue_data[str(j['day']) + "-" + str(i['month_index']) + "-" + str(
+                                i['year'])] = f"{j['revenue']:,.2f}"
 
             # build to return data
             to_return = {
@@ -1532,8 +1597,8 @@ class TtReportDashboard(models.Model):
                     'data2': list(revenue_data.values()),
                     'data3': list(average_data.values())
                 },
-                'total_rupiah': total,
-                'average_rupiah': float(total) / float(num_data) if num_data > 0 else 0
+                'total_rupiah': f"{total:,.2f}",
+                'average_rupiah': f"{float(total) / float(num_data):,.2f}" if num_data > 0 else 0
             }
 
             # update dependencies
@@ -1558,10 +1623,20 @@ class TtReportDashboard(models.Model):
 
     def get_report_overall_activity(self, data):
         try:
+            # process datetime to GMT 0
+            # convert string to datetime
+            start_date = self.convert_to_datetime(data['start_date'])
+            end_date = self.convert_to_datetime(data['end_date'])
+
+            temp_start_date = start_date - timedelta(days=1)
+            data['start_date'] = temp_start_date.strftime('%Y-%m-%d') + " 17:00:00"
+            data['end_date'] += " 16:59:59"
+
             temp_dict = {
                 'start_date': data['start_date'],
                 'end_date': data['end_date'],
                 'type': data['report_type'],
+                'agent_seq_id': data['agent_seq_id'],
                 'addons': 'none'
             }
             issued_values = self.env['report.tt_report_selling.report_selling']._get_reports(temp_dict)
@@ -1571,10 +1646,6 @@ class TtReportDashboard(models.Model):
                 'January', 'February', 'March', 'April', 'May', 'June',
                 'July', 'August', 'September', 'October', 'November', 'December'
             ]
-
-            # lets populate result with empty date dictionary
-            start_date = self.convert_to_datetime(data['start_date'])
-            end_date = self.convert_to_datetime(data['end_date'])
 
             delta = end_date - start_date
 
@@ -1593,6 +1664,7 @@ class TtReportDashboard(models.Model):
                 'end_date': data['end_date'],
                 'type': 'invoice',
                 'reservation': reservation_ids,
+                'agent_seq_id': data['agent_seq_id'],
                 'addons': 'none'
             }
             invoice = self.env['report.tt_report_selling.report_selling']._get_reports(temp_dict)
@@ -1719,10 +1791,10 @@ class TtReportDashboard(models.Model):
                         # lets cut the data that is not needed
                         if today >= data['start_date'] and today <= data['end_date']:
                             main_data[str(j['day']) + "-" + str(i['month_index']) + "-" + str(i['year'])] = j['invoice']
-                            average_data[str(j['day']) + "-" + str(i['month_index']) + "-" + str(i['year'])] = j[
-                                'average']
-                            revenue_data[str(j['day']) + "-" + str(i['month_index']) + "-" + str(i['year'])] = j[
-                                'revenue']
+                            average_data[str(j['day']) + "-" + str(i['month_index']) + "-" + str(
+                                i['year'])] = f"{j['average']:,.2f}"
+                            revenue_data[str(j['day']) + "-" + str(i['month_index']) + "-" + str(
+                                i['year'])] = f"{j['revenue']:,.2f}"
 
             # build to return data
             to_return = {
@@ -1732,8 +1804,8 @@ class TtReportDashboard(models.Model):
                     'data2': list(revenue_data.values()),
                     'data3': list(average_data.values())
                 },
-                'total_rupiah': total,
-                'average_rupiah': float(total) / float(num_data) if num_data > 0 else 0
+                'total_rupiah': f"{total:,.2f}",
+                'average_rupiah': f"{float(total) / float(num_data):,.2f}" if num_data > 0 else 0
             }
 
             # update dependencies
@@ -1758,10 +1830,20 @@ class TtReportDashboard(models.Model):
 
     def get_report_overall_event(self, data):
         try:
+            # process datetime to GMT 0
+            # convert string to datetime
+            start_date = self.convert_to_datetime(data['start_date'])
+            end_date = self.convert_to_datetime(data['end_date'])
+
+            temp_start_date = start_date - timedelta(days=1)
+            data['start_date'] = temp_start_date.strftime('%Y-%m-%d') + " 17:00:00"
+            data['end_date'] += " 16:59:59"
+
             temp_dict = {
                 'start_date': data['start_date'],
                 'end_date': data['end_date'],
                 'type': data['report_type'],
+                'agent_seq_id': data['agent_seq_id'],
                 'addons': 'none'
             }
             issued_values = self.env['report.tt_report_selling.report_selling']._get_reports(temp_dict)
@@ -1771,10 +1853,6 @@ class TtReportDashboard(models.Model):
                 'January', 'February', 'March', 'April', 'May', 'June',
                 'July', 'August', 'September', 'October', 'November', 'December'
             ]
-
-            # lets populate result with empty date dictionary
-            start_date = self.convert_to_datetime(data['start_date'])
-            end_date = self.convert_to_datetime(data['end_date'])
 
             delta = end_date - start_date
 
@@ -1793,6 +1871,7 @@ class TtReportDashboard(models.Model):
                 'end_date': data['end_date'],
                 'type': 'invoice',
                 'reservation': reservation_ids,
+                'agent_seq_id': data['agent_seq_id'],
                 'addons': 'none'
             }
             invoice = self.env['report.tt_report_selling.report_selling']._get_reports(temp_dict)
@@ -1919,10 +1998,10 @@ class TtReportDashboard(models.Model):
                         # lets cut the data that is not needed
                         if today >= data['start_date'] and today <= data['end_date']:
                             main_data[str(j['day']) + "-" + str(i['month_index']) + "-" + str(i['year'])] = j['invoice']
-                            average_data[str(j['day']) + "-" + str(i['month_index']) + "-" + str(i['year'])] = j[
-                                'average']
-                            revenue_data[str(j['day']) + "-" + str(i['month_index']) + "-" + str(i['year'])] = j[
-                                'revenue']
+                            average_data[str(j['day']) + "-" + str(i['month_index']) + "-" + str(
+                                i['year'])] = f"{j['average']:,.2f}"
+                            revenue_data[str(j['day']) + "-" + str(i['month_index']) + "-" + str(
+                                i['year'])] = f"{j['revenue']:,.2f}"
 
             # build to return data
             to_return = {
@@ -1932,8 +2011,8 @@ class TtReportDashboard(models.Model):
                     'data2': list(revenue_data.values()),
                     'data3': list(average_data.values())
                 },
-                'total_rupiah': total,
-                'average_rupiah': float(total) / float(num_data) if num_data > 0 else 0
+                'total_rupiah': f"{total:,.2f}",
+                'average_rupiah': f"{float(total) / float(num_data):,.2f}" if num_data > 0 else 0
             }
 
             # update dependencies
@@ -1958,10 +2037,20 @@ class TtReportDashboard(models.Model):
 
     def get_report_overall_visa(self, data):
         try:
+            # process datetime to GMT 0
+            # convert string to datetime
+            start_date = self.convert_to_datetime(data['start_date'])
+            end_date = self.convert_to_datetime(data['end_date'])
+
+            temp_start_date = start_date - timedelta(days=1)
+            data['start_date'] = temp_start_date.strftime('%Y-%m-%d') + " 17:00:00"
+            data['end_date'] += " 16:59:59"
+
             temp_dict = {
                 'start_date': data['start_date'],
                 'end_date': data['end_date'],
                 'type': data['report_type'],
+                'agent_seq_id': data['agent_seq_id'],
                 'addons': 'none'
             }
             issued_values = self.env['report.tt_report_selling.report_selling']._get_reports(temp_dict)
@@ -1971,10 +2060,6 @@ class TtReportDashboard(models.Model):
                 'January', 'February', 'March', 'April', 'May', 'June',
                 'July', 'August', 'September', 'October', 'November', 'December'
             ]
-
-            # lets populate result with empty date dictionary
-            start_date = self.convert_to_datetime(data['start_date'])
-            end_date = self.convert_to_datetime(data['end_date'])
 
             delta = end_date - start_date
 
@@ -1993,6 +2078,7 @@ class TtReportDashboard(models.Model):
                 'end_date': data['end_date'],
                 'type': 'invoice',
                 'reservation': reservation_ids,
+                'agent_seq_id': data['agent_seq_id'],
                 'addons': 'none'
             }
             invoice = self.env['report.tt_report_selling.report_selling']._get_reports(temp_dict)
@@ -2119,10 +2205,10 @@ class TtReportDashboard(models.Model):
                         # lets cut the data that is not needed
                         if today >= data['start_date'] and today <= data['end_date']:
                             main_data[str(j['day']) + "-" + str(i['month_index']) + "-" + str(i['year'])] = j['invoice']
-                            average_data[str(j['day']) + "-" + str(i['month_index']) + "-" + str(i['year'])] = j[
-                                'average']
-                            revenue_data[str(j['day']) + "-" + str(i['month_index']) + "-" + str(i['year'])] = j[
-                                'revenue']
+                            average_data[str(j['day']) + "-" + str(i['month_index']) + "-" + str(
+                                i['year'])] = f"{j['average']:,.2f}"
+                            revenue_data[str(j['day']) + "-" + str(i['month_index']) + "-" + str(
+                                i['year'])] = f"{j['revenue']:,.2f}"
 
             # build to return data
             to_return = {
@@ -2132,8 +2218,8 @@ class TtReportDashboard(models.Model):
                     'data2': list(revenue_data.values()),
                     'data3': list(average_data.values())
                 },
-                'total_rupiah': total,
-                'average_rupiah': float(total) / float(num_data) if num_data > 0 else 0
+                'total_rupiah': f"{total:,.2f}",
+                'average_rupiah': f"{float(total) / float(num_data):,.2f}" if num_data > 0 else 0
             }
 
             # update dependencies
@@ -2158,10 +2244,20 @@ class TtReportDashboard(models.Model):
 
     def get_report_overall_offline(self, data):
         try:
+            # process datetime to GMT 0
+            # convert string to datetime
+            start_date = self.convert_to_datetime(data['start_date'])
+            end_date = self.convert_to_datetime(data['end_date'])
+
+            temp_start_date = start_date - timedelta(days=1)
+            data['start_date'] = temp_start_date.strftime('%Y-%m-%d') + " 17:00:00"
+            data['end_date'] += " 16:59:59"
+
             temp_dict = {
                 'start_date': data['start_date'],
                 'end_date': data['end_date'],
                 'type': data['report_type'],
+                'agent_seq_id': data['agent_seq_id'],
                 'addons': 'none'
             }
             issued_values = self.env['report.tt_report_selling.report_selling']._get_reports(temp_dict)
@@ -2171,10 +2267,6 @@ class TtReportDashboard(models.Model):
                 'January', 'February', 'March', 'April', 'May', 'June',
                 'July', 'August', 'September', 'October', 'November', 'December'
             ]
-
-            # lets populate result with empty date dictionary
-            start_date = self.convert_to_datetime(data['start_date'])
-            end_date = self.convert_to_datetime(data['end_date'])
 
             delta = end_date - start_date
 
@@ -2193,6 +2285,7 @@ class TtReportDashboard(models.Model):
                 'end_date': data['end_date'],
                 'type': 'invoice',
                 'reservation': reservation_ids,
+                'agent_seq_id': data['agent_seq_id'],
                 'addons': 'none'
             }
             invoice = self.env['report.tt_report_selling.report_selling']._get_reports(temp_dict)
@@ -2320,8 +2413,10 @@ class TtReportDashboard(models.Model):
                         # lets cut the data that is not needed
                         if today >= data['start_date'] and today <= data['end_date']:
                             main_data[str(j['day']) + "-" + str(i['month_index']) + "-" + str(i['year'])] = j['invoice']
-                            average_data[str(j['day']) + "-" + str(i['month_index']) + "-" + str(i['year'])] = j['average']
-                            revenue_data[str(j['day']) + "-" + str(i['month_index']) + "-" + str(i['year'])] = j['revenue']
+                            average_data[str(j['day']) + "-" + str(i['month_index']) + "-" + str(
+                                i['year'])] = f"{j['average']:,.2f}"
+                            revenue_data[str(j['day']) + "-" + str(i['month_index']) + "-" + str(
+                                i['year'])] = f"{j['revenue']:,.2f}"
 
             # build to return data
             to_return = {
@@ -2331,8 +2426,8 @@ class TtReportDashboard(models.Model):
                     'data2': list(revenue_data.values()),
                     'data3': list(average_data.values())
                 },
-                'total_rupiah': total,
-                'average_rupiah': float(total) / float(num_data) if num_data > 0 else 0
+                'total_rupiah': f"{total:,.2f}",
+                'average_rupiah': f"{float(total) / float(num_data):,.2f}" if num_data > 0 else 0
             }
 
             # update dependencies
