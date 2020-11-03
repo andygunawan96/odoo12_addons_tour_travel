@@ -11,6 +11,7 @@ _logger = logging.getLogger(__name__)
 
 class TtVoucher(models.Model):
     _name = "tt.voucher"
+    _inherit = 'tt.history'
     _description = 'Rodex Model Voucher'
     _rec_name = 'voucher_reference_code'
 
@@ -42,6 +43,8 @@ class TtVoucher(models.Model):
     voucher_multi_usage = fields.Boolean("Voucher Multi Usage", readonly=True, states={'draft': [('readonly', False)]})
     voucher_usage_value = fields.Monetary("Voucher usage", readonly=True)
     voucher_customer_id = fields.Many2one('tt.customer', 'Customer', domain=[], readonly=True, states={'draft': [('readonly', False)]})
+    terms_conditions = fields.Html('Terms and Conditions', readonly=True, states={'draft': [('readonly', False)]})
+    is_customer_exclusive = fields.Boolean('Is Customer Exclusive', readonly=True, states={'draft': [('readonly', False)]})
 
     @api.onchange('agent_access_type', 'voucher_agent_eligibility_ids')
     def agent_eligibility_change(self):
@@ -442,6 +445,7 @@ class TtVoucher(models.Model):
 
 class TtVoucherDetail(models.Model):
     _name = "tt.voucher.detail"
+    _inherit = 'tt.history'
     _description = 'Rodex Model Voucher Detail'
     _rec_name = 'display_name'
 
