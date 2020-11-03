@@ -225,23 +225,13 @@ class ReportSelling(models.Model):
     @staticmethod
     def _select_ppob():
         return """
-        reservation.id as reservation_id, 
-        reservation.agent_id as agent_id, reservation.agent_type_id as agent_type_id,
-        reservation.name as reservation_order_number, 
+        reservation.id as reservation_id, reservation.name as reservation_order_number, 
+        reservation.create_date as reservation_create_date_og, reservation.state as reservation_state, 
         reservation.booked_date as reservation_booked_date_og,
         reservation.issued_date as reservation_issued_date_og,
-        reservation.create_date as reservation_create_date_og, 
-        reservation.nights as reservation_night, 
-        reservation.provider_name as reservation_provider_name,
-        reservation.total as amount, 
-        reservation.state as reservation_state, 
-        reservation.event_name as reservation_event_name,
-        reservation.elder as reservation_elder, 
-        reservation.adult as reservation_adult, 
-        reservation.child as reservation_child, 
-        reservation.infant as reservation_infant,
-        provider_type.name as provider_type_name,
-        COUNT(reservation_passenger.booking_id) as reservation_passenger,
+        reservation.total as amount, provider_type.name as provider_type_name, 
+        reservation.payment_method as reservation_payment_method,
+        reservation.agent_id as agent_id, reservation.agent_type_id as agent_type_id,
         agent.name as agent_name, agent_type.name as agent_type_name
         """
 
@@ -382,7 +372,7 @@ class ReportSelling(models.Model):
 
     @staticmethod
     def _group_by_ppob():
-        return """reservation.id provider_type.name, agent.name, agent_type.name"""
+        return """reservation.id, provider_type.name, agent.name, agent_type.name"""
 
     #works with all
     @staticmethod
@@ -575,6 +565,12 @@ class ReportSelling(models.Model):
             if agent_seq_id:
                 query += 'AND {} '.format(self._where_agent(agent_seq_id))
             query += 'ORDER BY {} '.format(self._order_by_issued())
+        elif provider_checker == 'overall_ppob':
+            query += 'FROM {} '.format(self._from_ppob())
+            query += 'WHERE {} '.format(self._where_issued(date_from, date_to))
+            if agent_seq_id:
+                query += 'AND {} '.format(self._where_agent(agent_seq_id))
+            query += 'ORDER BY {} '.format(self._order_by_issued())
         elif provider_checker == 'chanel_overall_airline':
             query += 'FROM {} '.format(self._from_airline())
             query += 'WHERE {} '.format(self._where_chanel(date_from, date_to))
@@ -611,6 +607,10 @@ class ReportSelling(models.Model):
             query += 'ORDER BY {} '.format(self._order_by_issued())
         elif provider_checker == 'chanel_overall_offline':
             query += 'FROM {} '.format(self._from_offline())
+            query += 'WHERE {} '.format(self._where_chanel(date_from, date_to))
+            query += 'ORDER BY {} '.format(self._order_by_issued())
+        elif provider_checker == 'chanel_overall_ppob':
+            query += 'FROM {} '.format(self._from_ppob())
             query += 'WHERE {} '.format(self._where_chanel(date_from, date_to))
             query += 'ORDER BY {} '.format(self._order_by_issued())
         elif provider_checker == 'invoice':
