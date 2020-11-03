@@ -1689,6 +1689,7 @@ class TtReportDashboard(models.Model):
 
             # proceed invoice with the assumption of create date = issued date
             summary_issued = []
+            product_summary = []
 
             for i in issued_values['lines']:
                 try:
@@ -1726,6 +1727,28 @@ class TtReportDashboard(models.Model):
                         num_data += 1
                 except:
                     pass
+
+                product_index = self.check_index(product_summary, 'product', i['reservation_activity_name'])
+                if product_index == -1:
+                    temp_dict = {
+                        'product': i['reservation_activity_name'],
+                        'counter': 1,
+                        'elder_count': i['reservation_elder'],
+                        'adult_count': i['reservation_adult'],
+                        'child_count': i['reservation_child'],
+                        'infant_count': i['reservation_infant'],
+                        'passenger': i['reservation_passenger'],
+                        'amount': i['amount']
+                    }
+                    product_summary.append(temp_dict)
+                else:
+                    product_summary[product_index]['counter'] += 1
+                    product_summary[product_index]['passenger'] += i['reservation_passenger']
+                    product_summary[product_index]['amount'] += i['amount']
+                    product_summary[product_index]['elder_count'] += i['reservation_elder']
+                    product_summary[product_index]['adult_count'] += i['reservation_adult']
+                    product_summary[product_index]['child_count'] += i['reservation_child']
+                    product_summary[product_index]['infant_count'] += i['reservation_infant']
 
             # for every section in summary
             for i in summary_issued:
@@ -1823,7 +1846,8 @@ class TtReportDashboard(models.Model):
                     'data3': list(average_data.values())
                 },
                 'total_rupiah': f"{total:,.2f}",
-                'average_rupiah': f"{float(total) / float(num_data):,.2f}" if num_data > 0 else 0
+                'average_rupiah': f"{float(total) / float(num_data):,.2f}" if num_data > 0 else 0,
+                'first_overview': product_summary
             }
 
             # update dependencies
@@ -1896,6 +1920,7 @@ class TtReportDashboard(models.Model):
 
             # proceed invoice with the assumption of create date = issued date
             summary_issued = []
+            product_summary = []
 
             for i in issued_values['lines']:
                 try:
@@ -1931,6 +1956,28 @@ class TtReportDashboard(models.Model):
                         summary_issued[month_index]['detail'][day_index]['revenue'] += i['amount']
                         total += i['amount']
                         num_data += 1
+
+                        product_index = self.check_index(product_summary, 'product', i['reservation_activity_name'])
+                        if product_index == -1:
+                            temp_dict = {
+                                'product': i['reservation_activity_name'],
+                                'counter': 1,
+                                'elder_count': i['reservation_elder'],
+                                'adult_count': i['reservation_adult'],
+                                'child_count': i['reservation_child'],
+                                'infant_count': i['reservation_infant'],
+                                'passenger': i['reservation_passenger'],
+                                'amount': i['amount']
+                            }
+                            product_summary.append(temp_dict)
+                        else:
+                            product_summary[product_index]['counter'] += 1
+                            product_summary[product_index]['passenger'] += i['reservation_passenger']
+                            product_summary[product_index]['amount'] += i['amount']
+                            product_summary[product_index]['elder_count'] += i['reservation_elder']
+                            product_summary[product_index]['adult_count'] += i['reservation_adult']
+                            product_summary[product_index]['child_count'] += i['reservation_child']
+                            product_summary[product_index]['infant_count'] += i['reservation_infant']
                 except:
                     pass
 
@@ -2030,7 +2077,8 @@ class TtReportDashboard(models.Model):
                     'data3': list(average_data.values())
                 },
                 'total_rupiah': f"{total:,.2f}",
-                'average_rupiah': f"{float(total) / float(num_data):,.2f}" if num_data > 0 else 0
+                'average_rupiah': f"{float(total) / float(num_data):,.2f}" if num_data > 0 else 0,
+                'first_overview': product_summary
             }
 
             # update dependencies
