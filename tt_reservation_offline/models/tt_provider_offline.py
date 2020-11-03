@@ -60,42 +60,10 @@ class ProviderOffline(models.Model):
     reconcile_time = fields.Datetime('Reconcile Time')
     ##
 
-
     def action_refund(self, check_provider_state=False):
         self.state = 'refund'
         if check_provider_state:
             self.booking_id.check_provider_state({'co_uid': self.env.user.id})
-
-    def action_confirm(self):
-        for rec in self:
-            rec.write({
-                'state': 'confirm',
-                'confirm_date': fields.Datetime.now(),
-            })
-        self.env.cr.commit()
-
-    @api.depends('sale_service_charge_ids')
-    def _compute_total(self):
-        for rec in self:
-            total = 0
-            total_orig = 0
-            for sc in self.sale_service_charge_ids:
-                if sc.charge_code.find('r.ac') < 0:
-                    total += sc.total
-                    # total_orig adalah NTA
-                    total_orig += sc.total
-                rec.write({
-                    'total': total,
-                    'total_orig': total_orig
-                })
-
-    def get_provider_pnr(self):
-        pnr = []
-        for line in self.booking_id.line_ids:
-            if line.provider_id.id == self.provider_id.id:
-                if line.pnr not in pnr:
-                    pnr.append(line.pnr)
-        return pnr
 
     def create_service_charge(self):
         self.delete_service_charge()
@@ -415,9 +383,6 @@ class ProviderOffline(models.Model):
 
     def action_create_ledger(self, issued_uid, pay_method=None):
         return self.env['tt.ledger'].action_create_ledger(self, issued_uid)
-
-    def get_carrier_name(self):
-        return []
 
     def set_total_price(self):
         for rec in self:
