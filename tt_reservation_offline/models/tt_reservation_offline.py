@@ -361,7 +361,9 @@ class IssuedOffline(models.Model):
                                                int(line.departure_minute if 'departure_minute' not in vals else vals['departure_minute'])
                                 if delta_minute < 0:
                                     raise UserError('Arrival date ' + arrival_date.strftime('%Y-%m-%d') + ' must be greater than departure date ' + departure_date.strftime('%Y-%m-%d'))
+
         elif offline_provider_type == 'hotel':
+            """ Cek format tanggal check in """
             if 'check_in' in vals:
                 if vals['check_in'] is not False:
                     check_in = datetime.strptime(vals['check_in'], '%Y-%m-%d')
@@ -375,6 +377,8 @@ class IssuedOffline(models.Model):
                         raise UserError('Check in date ' + line.check_in + ' input is wrong. Input Example: 2020-10-31')
                 else:
                     check_in = False
+
+            """ Cek format tanggal check out """
             if 'check_out' in vals:
                 if vals['check_out'] is not False:
                     check_out = datetime.strptime(vals['check_out'], '%Y-%m-%d')
@@ -388,9 +392,11 @@ class IssuedOffline(models.Model):
                         raise UserError('Check out date ' + line.check_out + ' input is wrong. Input Example: 2020-10-31')
                 else:
                     check_out = False
+
+            """ Cek selisih hari dari check out dengan check in """
             if check_out is not False and check_in is not False:
                 delta_date = check_out - check_in
-                if delta_date.days < 0:
+                if delta_date.days <= 0:
                     raise UserError('Check Out date ' + check_out.strftime('%Y-%m-%d') + ' must be greater than Check In date ' + check_in.strftime('%Y-%m-%d'))
 
     @api.model

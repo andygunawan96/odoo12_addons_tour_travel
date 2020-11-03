@@ -14,34 +14,34 @@ class TtVoucher(models.Model):
     _description = 'Rodex Model Voucher'
     _rec_name = 'voucher_reference_code'
 
-    name = fields.Char("Voucher Name", required=True, default='Voucher')
-    voucher_reference_code = fields.Char("Reference Code", required=True)
-    voucher_coverage = fields.Selection([("all", "All"), ("product", "Specified Product"), ("provider", "Specified Provider")], default='all')
-    voucher_type = fields.Selection([("percent", "Percentage"), ("amount", "Some Amount")], default='amount')
-    currency_id = fields.Many2one("res.currency")
-    voucher_value = fields.Float("Voucher value", default=0)
-    voucher_maximum_cap = fields.Float("Voucher Cap")
-    voucher_minimum_purchase = fields.Float('Voucher Minimum Purchase', default=0)
-    voucher_detail_ids = fields.One2many("tt.voucher.detail", "voucher_id", "Voucher Detail")
+    name = fields.Char("Voucher Name", required=True, default='Voucher', readonly=True, states={'draft': [('readonly', False)]})
+    voucher_reference_code = fields.Char("Reference Code", required=True, readonly=True, states={'draft': [('readonly', False)]})
+    voucher_coverage = fields.Selection([("all", "All"), ("product", "Specified Product"), ("provider", "Specified Provider")], default='all', readonly=True, states={'draft': [('readonly', False)]})
+    voucher_type = fields.Selection([("percent", "Percentage"), ("amount", "Some Amount")], default='amount', readonly=True, states={'draft': [('readonly', False)]})
+    currency_id = fields.Many2one("res.currency", readonly=True, states={'draft': [('readonly', False)]})
+    voucher_value = fields.Float("Voucher value", default=0, readonly=True, states={'draft': [('readonly', False)]})
+    voucher_maximum_cap = fields.Float("Voucher Cap", readonly=True, states={'draft': [('readonly', False)]})
+    voucher_minimum_purchase = fields.Float('Voucher Minimum Purchase', default=0, readonly=True, states={'draft': [('readonly', False)]})
+    voucher_detail_ids = fields.One2many("tt.voucher.detail", "voucher_id", "Voucher Detail", readonly=True, states={'draft': [('readonly', False)]})
     voucher_author_id = fields.Many2one('res.users', 'author')   # voucher maker
 
-    voucher_effect_all = fields.Boolean("Total", default=True)
-    voucher_effect_base_fare = fields.Boolean("Base Fare")
+    voucher_effect_all = fields.Boolean("Total", default=True, readonly=True, states={'draft': [('readonly', False)]})
+    voucher_effect_base_fare = fields.Boolean("Base Fare", readonly=True, states={'draft': [('readonly', False)]})
 
     state = fields.Selection([('draft', 'Draft'), ('confirm', 'Confirm'), ('not-active', 'Not Active')], default="draft")
-    agent_type_access_type = fields.Selection([("all", "ALL"), ("allow", "Allowed"), ("restrict", "Restricted")], 'Agent Type Access Type', default='all')
-    voucher_agent_type_eligibility_ids = fields.Many2many("tt.agent.type", "tt_agent_type_tt_voucher_rel", "tt_voucher_id", "tt_agent_type_id", "Agent Type")      #type of user that are able to use the voucher
-    agent_access_type = fields.Selection([("all", "ALL"), ("allow", "Allowed"), ("restrict", "Restricted")], 'Agent Access Type', default='all')
-    voucher_agent_eligibility_ids = fields.Many2many('tt.agent', "tt_agent_tt_voucher_rel", "tt_voucher_id", "tt_agent_id", "Agent ID")                                        # who can use the voucher
-    provider_type_access_type = fields.Selection([("all", "ALL"), ("allow", "Allowed"), ("restrict", "Restricted")], 'Provider Type Access Type', default='all')
-    voucher_provider_type_eligibility_ids = fields.Many2many("tt.provider.type", "tt_provider_type_tt_voucher_rel", "tt_voucher_id", "tt_provider_type_id", "Provider Type")                         # what product this voucher can be applied
-    provider_access_type = fields.Selection([("all", "ALL"), ("allow", "Allowed"), ("restrict", "Restricted")], 'Provider Access Type', default='all')
-    voucher_provider_eligibility_ids = fields.Many2many('tt.provider', "tt_provider_tt_voucher_rel", "tt_voucher_id", "tt_provier_id", "Provider ID")                                  # what provider this voucher can be applied
+    agent_type_access_type = fields.Selection([("all", "ALL"), ("allow", "Allowed"), ("restrict", "Restricted")], 'Agent Type Access Type', default='all', readonly=True, states={'draft': [('readonly', False)]})
+    voucher_agent_type_eligibility_ids = fields.Many2many("tt.agent.type", "tt_agent_type_tt_voucher_rel", "tt_voucher_id", "tt_agent_type_id", "Agent Type", readonly=True, states={'draft': [('readonly', False)]})      #type of user that are able to use the voucher
+    agent_access_type = fields.Selection([("all", "ALL"), ("allow", "Allowed"), ("restrict", "Restricted")], 'Agent Access Type', default='all', readonly=True, states={'draft': [('readonly', False)]})
+    voucher_agent_eligibility_ids = fields.Many2many('tt.agent', "tt_agent_tt_voucher_rel", "tt_voucher_id", "tt_agent_id", "Agent ID", readonly=True, states={'draft': [('readonly', False)]})                                        # who can use the voucher
+    provider_type_access_type = fields.Selection([("all", "ALL"), ("allow", "Allowed"), ("restrict", "Restricted")], 'Provider Type Access Type', default='all', readonly=True, states={'draft': [('readonly', False)]})
+    voucher_provider_type_eligibility_ids = fields.Many2many("tt.provider.type", "tt_provider_type_tt_voucher_rel", "tt_voucher_id", "tt_provider_type_id", "Provider Type", readonly=True, states={'draft': [('readonly', False)]})                         # what product this voucher can be applied
+    provider_access_type = fields.Selection([("all", "ALL"), ("allow", "Allowed"), ("restrict", "Restricted")], 'Provider Access Type', default='all', readonly=True, states={'draft': [('readonly', False)]})
+    voucher_provider_eligibility_ids = fields.Many2many('tt.provider', "tt_provider_tt_voucher_rel", "tt_voucher_id", "tt_provier_id", "Provider ID", readonly=True, states={'draft': [('readonly', False)]})                                  # what provider this voucher can be applied
 
     #add-ons
-    voucher_multi_usage = fields.Boolean("Voucher Multi Usage")
+    voucher_multi_usage = fields.Boolean("Voucher Multi Usage", readonly=True, states={'draft': [('readonly', False)]})
     voucher_usage_value = fields.Monetary("Voucher usage", readonly=True)
-    voucher_customer_id = fields.Many2one('tt.customer', 'Customer', domain=[])
+    voucher_customer_id = fields.Many2one('tt.customer', 'Customer', domain=[], readonly=True, states={'draft': [('readonly', False)]})
 
     @api.onchange('agent_access_type', 'voucher_agent_eligibility_ids')
     def agent_eligibility_change(self):
@@ -454,7 +454,7 @@ class TtVoucherDetail(models.Model):
     voucher_quota = fields.Integer("Voucher quota")
     voucher_blackout_ids = fields.One2many("tt.voucher.detail.blackout", 'voucher_detail_id')
     voucher_used_ids = fields.One2many("tt.voucher.detail.used", "voucher_detail_id")
-    state = fields.Selection([('not-active', 'Not Active'), ('active', 'Active'), ('expire', 'Expire')], default="not-active")
+    state = fields.Selection([('not-active', 'Not Active'), ('active', 'Active'), ('expire', 'Expire')], default="active")
     display_name = fields.Char('Display Name', compute='_compute_display_name')
     is_agent = fields.Boolean("For Agent", default=False)
 
