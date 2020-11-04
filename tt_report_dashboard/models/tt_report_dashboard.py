@@ -146,7 +146,7 @@ class TtReportDashboard(models.Model):
             res['dependencies'] = {
                 'is_ho': 1,
                 'agent_list': self.env['report.tt_report_dashboard.overall'].get_agent_all(),
-                'current_agent': self.env['tt.agent'].browse(data['agent_seq_id']).name
+                'current_agent': self.env['tt.agent'].browse(int(data['agent_seq_id'])).name
             }
         else:
             res['dependencies'] = {
@@ -1346,7 +1346,12 @@ class TtReportDashboard(models.Model):
             # shape the data for return
             if mode == 'month':
                 # sum by month
-                first_counter = summary_issued[0]['month_index'] - 1
+                try:
+                    first_counter = summary_issued[0]['month_index'] - 1
+                except:
+                    splits = data['start_date'].split("-")
+                    month = splits[1]
+                    first_counter = int(month) - 1
                 for i in summary_issued:
                     # fill skipped month(s)
                     # check if current month (year) with start
@@ -1474,7 +1479,8 @@ class TtReportDashboard(models.Model):
                 'end_date': data['end_date'],
                 'type': 'invoice',
                 'agent_seq_id': data['agent_seq_id'],
-                'reservation': reservation_ids
+                'reservation': reservation_ids,
+                'addons': 'none'
             }
             invoice = self.env['report.tt_report_selling.report_selling']._get_reports(temp_dict)
 
@@ -2444,7 +2450,12 @@ class TtReportDashboard(models.Model):
             # shape the data for return
             if mode == 'month':
                 # sum by month
-                first_counter = summary_issued[0]['month_index'] - 1
+                try:
+                    first_counter = summary_issued[0]['month_index'] - 1
+                except:
+                    splits = data['start_date'].split("-")
+                    month = splits[1]
+                    first_counter = int(month) - 1
                 for i in summary_issued:
                     # fill skipped month(s)
                     # check if current month (year) with start
