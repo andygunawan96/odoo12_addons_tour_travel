@@ -1,6 +1,7 @@
 from odoo import api, models, fields
 from ...tools import variables
-from datetime import datetime
+from datetime import datetime, date, timedelta
+import base64
 import logging,traceback
 import json
 from ...tools.ERR import RequestException
@@ -43,8 +44,8 @@ class TtVoucher(models.Model):
     voucher_multi_usage = fields.Boolean("Voucher Multi Usage", readonly=True, states={'draft': [('readonly', False)]})
     voucher_usage_value = fields.Monetary("Voucher usage", readonly=True)
     voucher_customer_id = fields.Many2one('tt.customer', 'Customer', domain=[], readonly=True, states={'draft': [('readonly', False)]})
-    terms_conditions = fields.Html('Terms and Conditions', readonly=True, states={'draft': [('readonly', False)]})
     is_customer_exclusive = fields.Boolean('Is Customer Exclusive', readonly=True, states={'draft': [('readonly', False)]})
+    terms_conditions = fields.Html('Terms and Conditions', readonly=True, states={'draft': [('readonly', False)]})
 
     @api.onchange('agent_access_type', 'voucher_agent_eligibility_ids')
     def agent_eligibility_change(self):
@@ -443,6 +444,7 @@ class TtVoucher(models.Model):
             'state': 'not-active'
         })
 
+
 class TtVoucherDetail(models.Model):
     _name = "tt.voucher.detail"
     _inherit = 'tt.history'
@@ -452,15 +454,16 @@ class TtVoucherDetail(models.Model):
     voucher_id = fields.Many2one("tt.voucher")
     voucher_reference_code = fields.Char("Voucher Reference", related="voucher_id.voucher_reference_code", readonly=True)
     voucher_period_reference = fields.Char("Voucher Period Reference", required=True)
-    voucher_start_date = fields.Datetime("voucher starts")
-    voucher_expire_date = fields.Datetime("voucher end")
-    voucher_used = fields.Integer("Voucher use", readonly=True)
+    voucher_start_date = fields.Datetime("Voucher valid from", required=False)
+    voucher_expire_date = fields.Datetime("Voucher valid until")
+    voucher_used = fields.Integer("Voucher use")
     voucher_quota = fields.Integer("Voucher quota")
     voucher_blackout_ids = fields.One2many("tt.voucher.detail.blackout", 'voucher_detail_id')
     voucher_used_ids = fields.One2many("tt.voucher.detail.used", "voucher_detail_id")
     state = fields.Selection([('not-active', 'Not Active'), ('active', 'Active'), ('expire', 'Expire')], default="active")
     display_name = fields.Char('Display Name', compute='_compute_display_name')
     is_agent = fields.Boolean("For Agent", default=False)
+    printout_voucher_id = fields.Many2one('tt.upload.center', 'Printout Voucher', readonly=True)
 
     @api.depends('voucher_reference_code', 'voucher_period_reference')
     @api.onchange('voucher_reference_code', 'voucher_period_reference')
@@ -503,8 +506,15 @@ class TtVoucherDetail(models.Model):
     def get_voucher_details_email(self):
         txt_detail = '<p>Reference Code: %s.%s</p>' % (self.voucher_reference_code, self.voucher_period_reference)
         txt_detail += '<p>Value: %s %s</p>' % (self.voucher_id.currency_id.name, self.voucher_id.voucher_value)
-        txt_detail += '<p>Start Date: %s</p>' % (self.voucher_start_date.strftime('%d %b %Y %H:%M'), )
-        txt_detail += '<p>Expired Date: %s</p>' % (self.voucher_expire_date.strftime('%d %b %Y %H:%M'), )
+        if self.voucher_start_date:
+            txt_detail += '<p>Start Date: %s</p>' % (self.voucher_start_date.strftime('%d %b %Y %H:%M'), )
+        else:
+            txt_detail += '<p>Start Date: -</p>'
+
+        if self.voucher_expire_date:
+            txt_detail += '<p>Expired Date: %s</p>' % (self.voucher_expire_date.strftime('%d %b %Y %H:%M'), )
+        else:
+            txt_detail += '<p>Expired Date: -</p>'
         txt_detail += '<br/>'
         return txt_detail
 
@@ -619,13 +629,22 @@ class TtVoucherDetail(models.Model):
         #####################
 
         # check for voucher state
-        if voucher_detail.state == 'expire':
-            # if voucher is already expire
+        if voucher.state != 'confirm':
+            # if voucher is not confirmed
             # print to logger
-            _logger.error("%s voucher is expired" % data['voucher_reference'])
+            _logger.error("%s voucher is either expired or inactive" % data['voucher_reference'])
 
             # raise error
-            return ERR.get_error(additional_message="Voucher is expired")
+            return ERR.get_error(additional_message="Voucher is either expired or inactive")
+
+        # check for voucher state
+        if voucher_detail.state != 'active':
+            # if voucher is already expire
+            # print to logger
+            _logger.error("%s voucher is either expired or inactive" % data['voucher_reference'])
+
+            # raise error
+            return ERR.get_error(additional_message="Voucher is either expired or inactive")
 
         # check for voucher quota
         # check if voucher is multi_usage voucher
@@ -1096,12 +1115,19 @@ class TtVoucherDetail(models.Model):
             return ERR.get_error(additional_message="Voucher is NOT Exist")
 
         # voucher is exist hooray, now we'll check if the voucher could be use
-        if voucher_detail.state == 'expire':
+        if voucher.state != 'confirm':
             # voucher is expired dun dun dun
             # write log
-            _logger.error("%s Voucher can no longer be use (Expired)" % data['voucher_reference'])
+            _logger.error("%s Voucher is either expired or inactive" % data['voucher_reference'])
             # return error
-            return ERR.get_error(additional_message="Voucher is expired dun dun dun")
+            return ERR.get_error(additional_message="Voucher is either expired or inactive")
+
+        if voucher_detail.state != 'active':
+            # voucher is expired dun dun dun
+            # write log
+            _logger.error("%s Voucher is either expired or inactive" % data['voucher_reference'])
+            # return error
+            return ERR.get_error(additional_message="Voucher is either expired or inactive")
 
         # voucher may not be expired at this point, but maybe just maybe voucher can only be use on certain date(s)
         if voucher_detail.voucher_start_date.strftime("%Y-%m-%d") > data[
@@ -1362,6 +1388,48 @@ class TtVoucherDetail(models.Model):
             return simulate
         except Exception as e:
             _logger.error(str(e) + traceback.format_exc())
+
+    def print_voucher(self):
+        datas = {
+            'ids': self.env.context.get('active_ids', []),
+            'model': self._name,
+        }
+        res = self.read()
+        res = res and res[0] or {}
+        datas['form'] = res
+        voucher_printout_action = self.env.ref('tt_report_common.action_report_printout_voucher')
+        if not self.printout_voucher_id:
+            co_agent_id = self.env.user.agent_id.id
+            co_uid = self.env.user.id
+
+            pdf_report = voucher_printout_action.report_action(self, data=datas)
+            pdf_report['context'].update({
+                'active_model': self._name,
+                'active_id': self.id
+            })
+            pdf_report_bytes = voucher_printout_action.render_qweb_pdf(data=pdf_report)
+            res = self.env['tt.upload.center.wizard'].upload_file_api(
+                {
+                    'filename': 'Voucher.pdf',
+                    'file_reference': 'Voucher Printout',
+                    'file': base64.b64encode(pdf_report_bytes[0]),
+                    'delete_date': datetime.today() + timedelta(minutes=10)
+                },
+                {
+                    'co_agent_id': co_agent_id,
+                    'co_uid': co_uid,
+                }
+            )
+            upc_id = self.env['tt.upload.center'].search([('seq_id', '=', res['response']['seq_id'])], limit=1)
+            self.printout_voucher_id = upc_id.id
+        url = {
+            'type': 'ir.actions.act_url',
+            'name': "Printout",
+            'target': 'new',
+            'url': self.printout_voucher_id.url,
+        }
+        return url
+
 
 class TtVoucherusedDetail(models.Model):
     _name = "tt.voucher.detail.used"

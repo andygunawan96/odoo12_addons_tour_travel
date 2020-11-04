@@ -68,12 +68,11 @@
                     </group>
                     <separator string="Voucher Details"/>
                     <field name="voucher_detail_ids"/>
+                    <separator string="Terms and Conditions"/>
+                    <group>
+                        <field name="terms_conditions"/>
+                    </group>
                     <notebook>
-                        <page string="Terms and Conditions">
-                            <group>
-                                <field name="terms_conditions"/>
-                            </group>
-                        </page>
                         <page string="Agent Type">
                             <group>
                                 <field name="agent_type_access_type"/>

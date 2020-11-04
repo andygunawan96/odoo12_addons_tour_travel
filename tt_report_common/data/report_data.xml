@@ -385,5 +385,16 @@
             print_report_name="'After Sales - %s' % (object.name)"
             menu="False"
         />
+        <report
+            string="Voucher"
+            id="action_report_printout_voucher"
+            model="tt.voucher.detail"
+            report_type="qweb-html"
+            name="tt_report_common.printout_voucher"
+            file="tt_report_common.printout_voucher"
+            paperformat="tt_report_common.paperformat_A4_no_margin"
+            print_report_name="'Voucher'"
+            menu="False"
+        />
     </data>
 </odoo>
