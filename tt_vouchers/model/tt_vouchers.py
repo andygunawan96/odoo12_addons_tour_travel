@@ -557,7 +557,8 @@ class TtVoucherDetail(models.Model):
             'state': 'expire'
         })
 
-    def simulate_voucher_api(self, data, context):
+    # simulate voucher setelah order_obj created
+    def new_simulate_voucher(self, data, context):
         # get the order object
         order_obj = self.env['tt.reservation.%s' % (data['provider_type'])].search([('name', '=', data['order_number'])])
 
@@ -672,9 +673,8 @@ class TtVoucherDetail(models.Model):
         # if is_customer_exclusive is True, check if customer is eligible to use the voucher
         if voucher.is_customer_exclusive:
             cust_is_eligible = False
-            filtered_cust = filter(lambda x: x['first_name'] == voucher.voucher_customer_id.first_name and x['last_name'] == voucher.voucher_customer_id.last_name, data['passenger_list'])
-            for cust in filtered_cust:
-                if cust:
+            for cust in order_obj.passenger_ids:
+                if voucher.voucher_customer_id.first_name == cust.first_name and voucher.voucher_customer_id.last_name == cust.last_name:
                     cust_is_eligible = True
                     break
 
@@ -1049,181 +1049,199 @@ class TtVoucherDetail(models.Model):
             result_array.append(result_dict)
         return ERR.get_no_error(result_array)
 
-    # def simulate_voucher_api_backup(self, data, context):
-    #     # requirement of data
-    #     # data = {
-    #     #	voucher_reference,
-    #     #	date 				<-- date voucher digunakan (today)
-    #     #	provider_type
-    #     #	provider 			--> list
-    #     # }
-    #
-    #     # create a return array
-    #     result_array = []
-    #
-    #     # split voucher reference
-    #     splits = data['voucher_reference'].split(".")
-    #     # get the first index of split
-    #     data['voucher_reference_code'] = splits[0]
-    #     # try to get the second half
-    #     try:
-    #         data['voucher_reference_period'] = splits[1]
-    #     except:
-    #         # write to logger
-    #         _logger.error("%s, voucher code is invalid" % data['voucher_reference'])
-    #         # return error
-    #         return ERR.get_error(additional_message="Voucher must have period reference")
-    #
-    #     # at this point the voucher code is legal
-    #     # check if the reference code voucher is actually exist
-    #     voucher = self.env['tt.voucher'].search([('voucher_reference_code', '=', data['voucher_reference_code'])])
-    #     if voucher.id == False:
-    #         # no voucher found
-    #         # write to logger
-    #         _logger.error("%s voucher is not exist" % data['voucher_reference'])
-    #         # return error
-    #         return ERR.get_error(additional_message="Voucher is NOT exist")
-    #
-    #     # okay so voucher is exist, but is the particular period voucher exist
-    #     voucher_detail = voucher.voucher_detail_ids.filtered(
-    #         lambda x: x['voucher_period_reference'] == data['voucher_reference_period'])
-    #     if voucher_detail.id == False:
-    #         # no voucher detail found
-    #         # write to logger
-    #         _logger.error("%s voucher is not exist" % data['voucher_reference'])
-    #         # return error
-    #         return ERR.get_error(additional_message="Voucher is NOT Exist")
-    #
-    #     # voucher is exist hooray, now we'll check if the voucher could be use
-    #     if voucher_detail.state == 'expire':
-    #         # voucher is expired dun dun dun
-    #         # write log
-    #         _logger.error("%s Voucher can no longer be use (Expired)" % data['voucher_reference'])
-    #         # return error
-    #         return ERR.get_error(additional_message="Voucher is expired dun dun dun")
-    #
-    #     # voucher may not be expired at this point, but maybe just maybe voucher can only be use on certain date(s)
-    #     if voucher_detail.voucher_start_date.strftime("%Y-%m-%d") > data[
-    #         'date'] and voucher_detail.voucher_expire_date.strftime("%Y-%m-%d") < data['date']:
-    #         # today's date (the day users pass to use the date) is not covered by the voucher #ouch!
-    #         # write log
-    #         _logger.error("%s Voucher cannot be use outside the designated date" % data['voucher_reference'])
-    #         # return error
-    #         return ERR.get_error(additional_message="Voucher cannot be use outside designated date")
-    #
-    #     if voucher.voucher_multi_usage:
-    #         if voucher.voucher_value - voucher.voucher_usage_value <= 0:
-    #             # o no the voucher is up
-    #             # write to logger
-    #             _logger.error("%s Voucher has no value left :(" % data['voucher_reference'])
-    #             # return error
-    #             return ERR.get_error(additional_message="Voucher has no value left")
-    #     else:
-    #         # okay okay so the voucher is there, the date is within the voucher date, then we should look f there's voucher left
-    #         if voucher_detail.voucher_used >= voucher_detail.voucher_quota:
-    #             # o no the voucher is up
-    #             # write to logger
-    #             _logger.error("%s No More Voucher :(" % data['voucher_reference'])
-    #             # return error
-    #             return ERR.get_error(additional_message="Voucher sold out")
-    #
-    #     # check agent
-    #     agent_to_validate = {
-    #         'voucher_reference': data['voucher_reference_code'],
-    #         'agent_type_id': context['co_agent_type_id'],
-    #         'agent_id': context['co_agent_id']
-    #     }
-    #     agent_eligible = self.env['tt.voucher'].is_agent_eligible(agent_to_validate)
-    #     if not agent_eligible:
-    #         # agent is not eligible to be use dun dun dun
-    #         # write to log
-    #         _logger.error('Agent ID %s cannot use voucher %s' % (context['co_agent_id'], data['voucher_reference']))
-    #         # return error
-    #         return ERR.get_error(additional_message="Agent cannot user the voucher")
-    #
-    #     # check provider
-    #     if type(data['provider']) is list:
-    #         # if provider list pass is list type
-    #         for i in data['provider']:
-    #             provider = self.env['tt.provider'].search([('code', '=', i)])
-    #             to_check = {
-    #                 'provider_type_id': provider.provider_type_id.id,
-    #                 'provider_id': provider.id,
-    #                 'provider_name': i,
-    #                 'voucher_reference': data['voucher_reference_code']
-    #             }
-    #
-    #             is_eligible = self.env['tt.voucher'].is_product_eligible(to_check)
-    #             if is_eligible:
-    #                 to_return = {
-    #                     'provider_type': data['provider_type'],
-    #                     'provider': i,
-    #                     'able_to_use': True
-    #                 }
-    #             else:
-    #                 to_return = {
-    #                     'provider_type': data['provider_type'],
-    #                     'provider': i,
-    #                     'able_to_use': False
-    #                 }
-    #             result_array.append(to_return)
-    #     else:
-    #         provider = self.env['tt.provider'].search([('code', '=', data['provider'])])
-    #         to_check = {
-    #             'provider_type_id': provider.provider_type_id.id,
-    #             'provider_id': provider.id,
-    #             'provider_name': data['provider'],
-    #             'voucher_reference': data['voucher_reference_code']
-    #         }
-    #         is_eligible = self.env['tt.voucher'].is_product_eligible(to_check)
-    #         if is_eligible:
-    #             to_return = {
-    #                 'provider_type': data['provider_type'],
-    #                 'provider': data['provider'],
-    #                 'able_to_use': True
-    #             }
-    #         else:
-    #             to_return = {
-    #                 'provider_type': data['provider_type'],
-    #                 'provider': data['provider'],
-    #                 'able_to_use': False
-    #             }
-    #         result_array.append(to_return)
-    #
-    #     # at this point the voucher can be use and will be use (?)
-    #     # okay do something about the voucher
-    #     if voucher.voucher_multi_usage:
-    #         voucher_value = voucher.voucher_value - voucher.voucher_usage_value
-    #     else:
-    #         voucher_value = voucher.voucher_value
-    #
-    #     # maximum_cap
-    #     if voucher.voucher_maximum_cap < 1:
-    #         maximum_cap = False
-    #     else:
-    #         maximum_cap = voucher.voucher_maximum_cap
-    #
-    #     # minimum purchase
-    #     if voucher.voucher_minimum_purchase < 1:
-    #         minimum_purchase = False
-    #     else:
-    #         minimum_purchase = voucher.voucher_minimum_purchase
-    #
-    #     result = {
-    #         'reference_code': data['voucher_reference'],
-    #         'voucher_type': voucher.voucher_type,
-    #         'voucher_value': voucher_value,
-    #         'voucher_currency': voucher.currency_id.name,
-    #         'voucher_cap': maximum_cap,
-    #         'voucher_minimum_purchase': minimum_purchase,
-    #         'voucher_effect_all': voucher.voucher_effect_all,
-    #         'date_expire': voucher_detail.voucher_expire_date.strftime("%Y-%m-%d"),
-    #         'provider_type': data['provider_type'],
-    #         'provider': result_array,
-    #         'is_agent': voucher_detail.is_agent
-    #     }
-    #
-    #     return ERR.get_no_error(result)
+    # simulate voucher sebelum booked
+    def simulate_voucher_api(self, data, context):
+        # requirement of data
+        # data = {
+        #	voucher_reference,
+        #	date 				<-- date voucher digunakan (today)
+        #	provider_type
+        #	provider 			--> list
+        # }
+
+        # create a return array
+        result_array = []
+
+        # split voucher reference
+        splits = data['voucher_reference'].split(".")
+        # get the first index of split
+        data['voucher_reference_code'] = splits[0]
+        # try to get the second half
+        try:
+            data['voucher_reference_period'] = splits[1]
+        except:
+            # write to logger
+            _logger.error("%s, voucher code is invalid" % data['voucher_reference'])
+            # return error
+            return ERR.get_error(additional_message="Voucher must have period reference")
+
+        # at this point the voucher code is legal
+        # check if the reference code voucher is actually exist
+        voucher = self.env['tt.voucher'].search([('voucher_reference_code', '=', data['voucher_reference_code'])])
+        if voucher.id == False:
+            # no voucher found
+            # write to logger
+            _logger.error("%s voucher is not exist" % data['voucher_reference'])
+            # return error
+            return ERR.get_error(additional_message="Voucher is NOT exist")
+
+        # okay so voucher is exist, but is the particular period voucher exist
+        voucher_detail = voucher.voucher_detail_ids.filtered(
+            lambda x: x['voucher_period_reference'] == data['voucher_reference_period'])
+        if voucher_detail.id == False:
+            # no voucher detail found
+            # write to logger
+            _logger.error("%s voucher is not exist" % data['voucher_reference'])
+            # return error
+            return ERR.get_error(additional_message="Voucher is NOT Exist")
+
+        # voucher is exist hooray, now we'll check if the voucher could be use
+        if voucher_detail.state == 'expire':
+            # voucher is expired dun dun dun
+            # write log
+            _logger.error("%s Voucher can no longer be use (Expired)" % data['voucher_reference'])
+            # return error
+            return ERR.get_error(additional_message="Voucher is expired dun dun dun")
+
+        # voucher may not be expired at this point, but maybe just maybe voucher can only be use on certain date(s)
+        if voucher_detail.voucher_start_date.strftime("%Y-%m-%d") > data[
+            'date'] and voucher_detail.voucher_expire_date.strftime("%Y-%m-%d") < data['date']:
+            # today's date (the day users pass to use the date) is not covered by the voucher #ouch!
+            # write log
+            _logger.error("%s Voucher cannot be use outside the designated date" % data['voucher_reference'])
+            # return error
+            return ERR.get_error(additional_message="Voucher cannot be use outside designated date")
+
+        if voucher.voucher_multi_usage:
+            if voucher.voucher_value - voucher.voucher_usage_value <= 0:
+                # o no the voucher is up
+                # write to logger
+                _logger.error("%s Voucher has no value left :(" % data['voucher_reference'])
+                # return error
+                return ERR.get_error(additional_message="Voucher has no value left")
+        else:
+            # okay okay so the voucher is there, the date is within the voucher date, then we should look f there's voucher left
+            if voucher_detail.voucher_used >= voucher_detail.voucher_quota:
+                # o no the voucher is up
+                # write to logger
+                _logger.error("%s No More Voucher :(" % data['voucher_reference'])
+                # return error
+                return ERR.get_error(additional_message="Voucher sold out")
+
+        # check agent
+        agent_to_validate = {
+            'voucher_reference': data['voucher_reference_code'],
+            'agent_type_id': context['co_agent_type_id'],
+            'agent_id': context['co_agent_id']
+        }
+        agent_eligible = self.env['tt.voucher'].is_agent_eligible(agent_to_validate)
+        if not agent_eligible:
+            # agent is not eligible to be use dun dun dun
+            # write to log
+            _logger.error('Agent ID %s cannot use voucher %s' % (context['co_agent_id'], data['voucher_reference']))
+            # return error
+            return ERR.get_error(additional_message="Agent cannot user the voucher")
+
+        # if is_customer_exclusive is True, check if customer is eligible to use the voucher
+        if voucher.is_customer_exclusive:
+            cust_is_eligible = False
+            filtered_cust = filter(lambda x: x['first_name'] == voucher.voucher_customer_id.first_name and x['last_name'] == voucher.voucher_customer_id.last_name, data['passenger_list'])
+            for cust in filtered_cust:
+                if cust:
+                    cust_is_eligible = True
+                    break
+
+            if not cust_is_eligible:
+                # agent cannot use the voucher
+                # print logger
+                _logger.error("%s, customer is not allowed to use voucher" % data['voucher_reference'])
+                # raise error
+                return ERR.get_error(
+                    additional_message="Customer is not allowed to use voucher %s" % data['voucher_reference'])
+
+        # check provider
+        if type(data['provider']) is list:
+            # if provider list pass is list type
+            for i in data['provider']:
+                provider = self.env['tt.provider'].search([('code', '=', i)])
+                to_check = {
+                    'provider_type_id': provider.provider_type_id.id,
+                    'provider_id': provider.id,
+                    'provider_name': i,
+                    'voucher_reference': data['voucher_reference_code']
+                }
+
+                is_eligible = self.env['tt.voucher'].is_product_eligible(to_check)
+                if is_eligible:
+                    to_return = {
+                        'provider_type': data['provider_type'],
+                        'provider': i,
+                        'able_to_use': True
+                    }
+                else:
+                    to_return = {
+                        'provider_type': data['provider_type'],
+                        'provider': i,
+                        'able_to_use': False
+                    }
+                result_array.append(to_return)
+        else:
+            provider = self.env['tt.provider'].search([('code', '=', data['provider'])])
+            to_check = {
+                'provider_type_id': provider.provider_type_id.id,
+                'provider_id': provider.id,
+                'provider_name': data['provider'],
+                'voucher_reference': data['voucher_reference_code']
+            }
+            is_eligible = self.env['tt.voucher'].is_product_eligible(to_check)
+            if is_eligible:
+                to_return = {
+                    'provider_type': data['provider_type'],
+                    'provider': data['provider'],
+                    'able_to_use': True
+                }
+            else:
+                to_return = {
+                    'provider_type': data['provider_type'],
+                    'provider': data['provider'],
+                    'able_to_use': False
+                }
+            result_array.append(to_return)
+
+        # at this point the voucher can be use and will be use (?)
+        # okay do something about the voucher
+        if voucher.voucher_multi_usage:
+            voucher_value = voucher.voucher_value - voucher.voucher_usage_value
+        else:
+            voucher_value = voucher.voucher_value
+
+        # maximum_cap
+        if voucher.voucher_maximum_cap < 1:
+            maximum_cap = False
+        else:
+            maximum_cap = voucher.voucher_maximum_cap
+
+        # minimum purchase
+        if voucher.voucher_minimum_purchase < 1:
+            minimum_purchase = False
+        else:
+            minimum_purchase = voucher.voucher_minimum_purchase
+
+        result = {
+            'reference_code': data['voucher_reference'],
+            'voucher_type': voucher.voucher_type,
+            'voucher_value': voucher_value,
+            'voucher_currency': voucher.currency_id.name,
+            'voucher_cap': maximum_cap,
+            'voucher_minimum_purchase': minimum_purchase,
+            'voucher_effect_all': voucher.voucher_effect_all,
+            'date_expire': voucher_detail.voucher_expire_date.strftime("%Y-%m-%d"),
+            'provider_type': data['provider_type'],
+            'provider': result_array,
+            'is_agent': voucher_detail.is_agent
+        }
+
+        return ERR.get_no_error(result)
 
     def create_voucher_detail(self, data):
         self.env['tt.voucher.detail'].create({
@@ -1297,7 +1315,7 @@ class TtVoucherDetail(models.Model):
             #   provider_type
             # }
 
-            simulate = self.simulate_voucher_api(data, context)
+            simulate = self.new_simulate_voucher(data, context)
             if simulate['error_code'] == 0:
                 splits = data['voucher_reference'].split(".")
                 data['voucher_reference_code'] = splits[0]
