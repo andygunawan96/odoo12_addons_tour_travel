@@ -88,8 +88,10 @@ class TtReportDashboard(models.Model):
 
     def get_report_json_api(self, data, context):
         is_ho = self.env.ref('tt_base.rodex_ho').id == context['co_agent_id']
-        if is_ho:
+        if is_ho and data['agent_seq_id'] == "":
             data['agent_seq_id'] = False
+        elif is_ho and data['agent_seq_id'] != "":
+            pass
         else:
             # get the id of the agent
             data['agent_seq_id'] = self.env['tt.agent'].browse(context['co_agent_id']).seq_id
@@ -144,16 +146,11 @@ class TtReportDashboard(models.Model):
             res['dependencies'] = {
                 'is_ho': 1,
                 'agent_list': self.env['report.tt_report_dashboard.overall'].get_agent_all(),
-                'current_agent': data['selected_agent']
+                'current_agent': self.env['tt.agent'].browse(data['agent_sew_id']).name
             }
         else:
             res['dependencies'] = {
                 'is_ho': 0,
-
-                # for testing purpose
-                'agent_list': self.env['report.tt_report_dashboard.overall'].get_agent_all(),
-                # need to be removed later
-
                 'current_agent': self.env['tt.agent'].browse(context['co_agent_id']).name
             }
         return ERR.get_no_error(res)
@@ -611,8 +608,8 @@ class TtReportDashboard(models.Model):
                         # lets cut the data that is not needed
                         if today >= data['start_date'] and today <= data['end_date']:
                             main_data[str(j['day']) + "-" + str(i['month_index']) + "-" + str(i['year'])] = j['invoice']
-                            average_data[str(j['day']) + "-" + str(i['month_index']) + "-" + str(i['year'])] = f"{j['average']:,.2f}"
-                            revenue_data[str(j['day']) + "-" + str(i['month_index']) + "-" + str(i['year'])] = f"{j['revenue']:,.2f}"
+                            average_data[str(j['day']) + "-" + str(i['month_index']) + "-" + str(i['year'])] = j['average']
+                            revenue_data[str(j['day']) + "-" + str(i['month_index']) + "-" + str(i['year'])] = j['revenue']
 
             # build to return data
             to_return = {
@@ -622,8 +619,8 @@ class TtReportDashboard(models.Model):
                     'data2': list(revenue_data.values()),
                     'data3': list(average_data.values())
                 },
-                'total_rupiah': f"{total:,.2f}",
-                'average_rupiah': f"{float(total) / float(num_data):,.2f}" if num_data > 0 else 0,
+                'total_rupiah': total,
+                'average_rupiah': float(total) / float(num_data) if num_data > 0 else 0,
                 'first_overview': summary_provider
             }
 
@@ -897,9 +894,9 @@ class TtReportDashboard(models.Model):
                         if today >= data['start_date'] and today <= data['end_date']:
                             main_data[str(j['day']) + "-" + str(i['month_index']) + "-" + str(i['year'])] = j['invoice']
                             average_data[str(j['day']) + "-" + str(i['month_index']) + "-" + str(
-                                i['year'])] = f"{j['average']:,.2f}"
+                                i['year'])] = j['average']
                             revenue_data[str(j['day']) + "-" + str(i['month_index']) + "-" + str(
-                                i['year'])] = f"{j['revenue']:,.2f}"
+                                i['year'])] = j['revenue']
 
             to_return = {
                 'graph': {
@@ -908,8 +905,8 @@ class TtReportDashboard(models.Model):
                     'data2': list(revenue_data.values()),
                     'data3': list(average_data.values())
                 },
-                'total_rupiah': f"{total:,.2f}",
-                'average_rupiah': f"{float(total) / float(num_data):,.2f}" if num_data > 0 else 0,
+                'total_rupiah': total,
+                'average_rupiah': float(total) / float(num_data) if num_data > 0 else 0,
                 'first_overview': {
                     'sector_summary': destination_sector_summary[:20],
                     'direction_summary': destination_direction_summary[:20],
@@ -1179,9 +1176,9 @@ class TtReportDashboard(models.Model):
                     for j in i['detail']:
                         main_data[str(j['day']) + "-" + str(i['month_index']) + "-" + str(i['year'])] = j['invoice']
                         average_data[
-                            str(j['day']) + "-" + str(i['month_index']) + "-" + str(i['year'])] = f"{j['average']:,.2f}"
+                            str(j['day']) + "-" + str(i['month_index']) + "-" + str(i['year'])] = j['average']
                         revenue_data[
-                            str(j['day']) + "-" + str(i['month_index']) + "-" + str(i['year'])] = f"{j['revenue']:,.2f}"
+                            str(j['day']) + "-" + str(i['month_index']) + "-" + str(i['year'])] = j['revenue']
 
             to_return = {
                 'graph': {
@@ -1190,8 +1187,8 @@ class TtReportDashboard(models.Model):
                     'data2': list(revenue_data.values()),
                     'data3': list(average_data.values())
                 },
-                'total_rupiah': f"{total:,.2f}",
-                'average_rupiah': f"{float(total) / float(num_data):,.2f}" if num_data > 0 else 0,
+                'total_rupiah': total,
+                'average_rupiah': float(total) / float(num_data) if num_data > 0 else 0,
                 'first_overview': {
                     'sector_summary': destination_sector_summary[:20],
                     'direction_summary': destination_direction_summary[:20],
@@ -1397,9 +1394,9 @@ class TtReportDashboard(models.Model):
                         if today >= data['start_date'] and today <= data['end_date']:
                             main_data[str(j['day']) + "-" + str(i['month_index']) + "-" + str(i['year'])] = j['invoice']
                             average_data[str(j['day']) + "-" + str(i['month_index']) + "-" + str(
-                                i['year'])] = f"{j['average']:,.2f}"
+                                i['year'])] = j['average']
                             revenue_data[str(j['day']) + "-" + str(i['month_index']) + "-" + str(
-                                i['year'])] = f"{j['revenue']:,.2f}"
+                                i['year'])] = j['revenue']
 
             # build to return data
             to_return = {
@@ -1409,8 +1406,8 @@ class TtReportDashboard(models.Model):
                     'data2': list(revenue_data.values()),
                     'data3': list(average_data.values())
                 },
-                'total_rupiah': f"{total:,.2f}",
-                'average_rupiah': f"{float(total) / float(num_data):,.2f}" if num_data > 0 else 0
+                'total_rupiah': total,
+                'average_rupiah': float(total) / float(num_data) if num_data > 0 else 0
             }
 
             # update dependencies
@@ -1603,9 +1600,9 @@ class TtReportDashboard(models.Model):
                         if today >= data['start_date'] and today <= data['end_date']:
                             main_data[str(j['day']) + "-" + str(i['month_index']) + "-" + str(i['year'])] = j['invoice']
                             average_data[str(j['day']) + "-" + str(i['month_index']) + "-" + str(
-                                i['year'])] = f"{j['average']:,.2f}"
+                                i['year'])] = j['average']
                             revenue_data[str(j['day']) + "-" + str(i['month_index']) + "-" + str(
-                                i['year'])] = f"{j['revenue']:,.2f}"
+                                i['year'])] = j['revenue']
 
             # build to return data
             to_return = {
@@ -1615,8 +1612,8 @@ class TtReportDashboard(models.Model):
                     'data2': list(revenue_data.values()),
                     'data3': list(average_data.values())
                 },
-                'total_rupiah': f"{total:,.2f}",
-                'average_rupiah': f"{float(total) / float(num_data):,.2f}" if num_data > 0 else 0
+                'total_rupiah': total,
+                'average_rupiah': float(total) / float(num_data) if num_data > 0 else 0
             }
 
             # update dependencies
@@ -1833,9 +1830,9 @@ class TtReportDashboard(models.Model):
                         if today >= data['start_date'] and today <= data['end_date']:
                             main_data[str(j['day']) + "-" + str(i['month_index']) + "-" + str(i['year'])] = j['invoice']
                             average_data[str(j['day']) + "-" + str(i['month_index']) + "-" + str(
-                                i['year'])] = f"{j['average']:,.2f}"
+                                i['year'])] = j['average']
                             revenue_data[str(j['day']) + "-" + str(i['month_index']) + "-" + str(
-                                i['year'])] = f"{j['revenue']:,.2f}"
+                                i['year'])] = j['revenue']
 
             # build to return data
             to_return = {
@@ -1845,8 +1842,8 @@ class TtReportDashboard(models.Model):
                     'data2': list(revenue_data.values()),
                     'data3': list(average_data.values())
                 },
-                'total_rupiah': f"{total:,.2f}",
-                'average_rupiah': f"{float(total) / float(num_data):,.2f}" if num_data > 0 else 0,
+                'total_rupiah': total,
+                'average_rupiah': float(total) / float(num_data) if num_data > 0 else 0,
                 'first_overview': product_summary
             }
 
@@ -2064,9 +2061,9 @@ class TtReportDashboard(models.Model):
                         if today >= data['start_date'] and today <= data['end_date']:
                             main_data[str(j['day']) + "-" + str(i['month_index']) + "-" + str(i['year'])] = j['invoice']
                             average_data[str(j['day']) + "-" + str(i['month_index']) + "-" + str(
-                                i['year'])] = f"{j['average']:,.2f}"
+                                i['year'])] = j['average']
                             revenue_data[str(j['day']) + "-" + str(i['month_index']) + "-" + str(
-                                i['year'])] = f"{j['revenue']:,.2f}"
+                                i['year'])] = j['revenue']
 
             # build to return data
             to_return = {
@@ -2076,8 +2073,8 @@ class TtReportDashboard(models.Model):
                     'data2': list(revenue_data.values()),
                     'data3': list(average_data.values())
                 },
-                'total_rupiah': f"{total:,.2f}",
-                'average_rupiah': f"{float(total) / float(num_data):,.2f}" if num_data > 0 else 0,
+                'total_rupiah': total,
+                'average_rupiah': float(total) / float(num_data) if num_data > 0 else 0,
                 'first_overview': product_summary
             }
 
@@ -2287,9 +2284,9 @@ class TtReportDashboard(models.Model):
                         if today >= data['start_date'] and today <= data['end_date']:
                             main_data[str(j['day']) + "-" + str(i['month_index']) + "-" + str(i['year'])] = j['invoice']
                             average_data[str(j['day']) + "-" + str(i['month_index']) + "-" + str(
-                                i['year'])] = f"{j['average']:,.2f}"
+                                i['year'])] = j['average']
                             revenue_data[str(j['day']) + "-" + str(i['month_index']) + "-" + str(
-                                i['year'])] = f"{j['revenue']:,.2f}"
+                                i['year'])] = j['revenue']
 
             # build to return data
             to_return = {
@@ -2299,8 +2296,8 @@ class TtReportDashboard(models.Model):
                     'data2': list(revenue_data.values()),
                     'data3': list(average_data.values())
                 },
-                'total_rupiah': f"{total:,.2f}",
-                'average_rupiah': f"{float(total) / float(num_data):,.2f}" if num_data > 0 else 0,
+                'total_rupiah': total,
+                'average_rupiah': float(total) / float(num_data) if num_data > 0 else 0,
                 'first_overview': country_summary
             }
 
@@ -2496,9 +2493,9 @@ class TtReportDashboard(models.Model):
                         if today >= data['start_date'] and today <= data['end_date']:
                             main_data[str(j['day']) + "-" + str(i['month_index']) + "-" + str(i['year'])] = j['invoice']
                             average_data[str(j['day']) + "-" + str(i['month_index']) + "-" + str(
-                                i['year'])] = f"{j['average']:,.2f}"
+                                i['year'])] = j['average']
                             revenue_data[str(j['day']) + "-" + str(i['month_index']) + "-" + str(
-                                i['year'])] = f"{j['revenue']:,.2f}"
+                                i['year'])] = j['revenue']
 
             # build to return data
             to_return = {
@@ -2508,8 +2505,8 @@ class TtReportDashboard(models.Model):
                     'data2': list(revenue_data.values()),
                     'data3': list(average_data.values())
                 },
-                'total_rupiah': f"{total:,.2f}",
-                'average_rupiah': f"{float(total) / float(num_data):,.2f}" if num_data > 0 else 0
+                'total_rupiah': total,
+                'average_rupiah': float(total) / float(num_data) if num_data > 0 else 0
             }
 
             # update dependencies
@@ -2704,9 +2701,9 @@ class TtReportDashboard(models.Model):
                         if today >= data['start_date'] and today <= data['end_date']:
                             main_data[str(j['day']) + "-" + str(i['month_index']) + "-" + str(i['year'])] = j['invoice']
                             average_data[str(j['day']) + "-" + str(i['month_index']) + "-" + str(
-                                i['year'])] = f"{j['average']:,.2f}"
+                                i['year'])] = j['average']
                             revenue_data[str(j['day']) + "-" + str(i['month_index']) + "-" + str(
-                                i['year'])] = f"{j['revenue']:,.2f}"
+                                i['year'])] = j['revenue']
 
             # build to return data
             to_return = {
@@ -2716,8 +2713,8 @@ class TtReportDashboard(models.Model):
                     'data2': list(revenue_data.values()),
                     'data3': list(average_data.values())
                 },
-                'total_rupiah': f"{total:,.2f}",
-                'average_rupiah': f"{float(total) / float(num_data):,.2f}" if num_data > 0 else 0
+                'total_rupiah': total,
+                'average_rupiah': float(total) / float(num_data) if num_data > 0 else 0
             }
 
             # update dependencies
