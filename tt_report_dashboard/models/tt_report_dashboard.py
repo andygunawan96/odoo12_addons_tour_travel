@@ -146,12 +146,13 @@ class TtReportDashboard(models.Model):
             res['dependencies'] = {
                 'is_ho': 1,
                 'agent_list': self.env['report.tt_report_dashboard.overall'].get_agent_all(),
-                'current_agent': self.env['tt.agent'].browse(data['agent_sew_id']).name
+                'current_agent': self.env['tt.agent'].browse(data['agent_seq_id']).name
             }
         else:
             res['dependencies'] = {
                 'is_ho': 0,
-                'current_agent': self.env['tt.agent'].browse(context['co_agent_id']).name
+                'current_agent': self.env['tt.agent'].browse(context['co_agent_id']).name,
+                'agent_list': []
             }
         return ERR.get_no_error(res)
 
@@ -899,7 +900,7 @@ class TtReportDashboard(models.Model):
                                 i['year'])] = j['revenue']
 
             to_return = {
-                'graph': {
+                'first_graph': {
                     'label': list(main_data.keys()),
                     'data': list(main_data.values()),
                     'data2': list(revenue_data.values()),
@@ -1181,7 +1182,7 @@ class TtReportDashboard(models.Model):
                             str(j['day']) + "-" + str(i['month_index']) + "-" + str(i['year'])] = j['revenue']
 
             to_return = {
-                'graph': {
+                'first_graph': {
                     'label': list(main_data.keys()),
                     'data': list(main_data.values()),
                     'data2': list(revenue_data.values()),
@@ -1400,7 +1401,7 @@ class TtReportDashboard(models.Model):
 
             # build to return data
             to_return = {
-                'graph': {
+                'first_graph': {
                     'label': list(main_data.keys()),
                     'data': list(main_data.values()),
                     'data2': list(revenue_data.values()),
@@ -1606,7 +1607,7 @@ class TtReportDashboard(models.Model):
 
             # build to return data
             to_return = {
-                'graph': {
+                'first_graph': {
                     'label': list(main_data.keys()),
                     'data': list(main_data.values()),
                     'data2': list(revenue_data.values()),
@@ -1836,7 +1837,7 @@ class TtReportDashboard(models.Model):
 
             # build to return data
             to_return = {
-                'graph': {
+                'first_graph': {
                     'label': list(main_data.keys()),
                     'data': list(main_data.values()),
                     'data2': list(revenue_data.values()),
@@ -2067,7 +2068,7 @@ class TtReportDashboard(models.Model):
 
             # build to return data
             to_return = {
-                'graph': {
+                'first_graph': {
                     'label': list(main_data.keys()),
                     'data': list(main_data.values()),
                     'data2': list(revenue_data.values()),
@@ -2290,7 +2291,7 @@ class TtReportDashboard(models.Model):
 
             # build to return data
             to_return = {
-                'graph': {
+                'first_graph': {
                     'label': list(main_data.keys()),
                     'data': list(main_data.values()),
                     'data2': list(revenue_data.values()),
@@ -2499,7 +2500,7 @@ class TtReportDashboard(models.Model):
 
             # build to return data
             to_return = {
-                'graph': {
+                'first_graph': {
                     'label': list(main_data.keys()),
                     'data': list(main_data.values()),
                     'data2': list(revenue_data.values()),
@@ -2707,7 +2708,7 @@ class TtReportDashboard(models.Model):
 
             # build to return data
             to_return = {
-                'graph': {
+                'first_graph': {
                     'label': list(main_data.keys()),
                     'data': list(main_data.values()),
                     'data2': list(revenue_data.values()),
