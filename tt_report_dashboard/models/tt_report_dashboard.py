@@ -390,15 +390,15 @@ class TtReportDashboard(models.Model):
             if len(summary_chanel) < 20:
                 for i in summary_chanel:
                     label_data.append(i['agent_name'])
-                    revenue_data.append(f"{i['revenue']:,.2f}")
+                    revenue_data.append(i['revenue'])
                     reservation_data.append(i['reservation'])
-                    average_data.append(f"{i['revenue']/i['reservation']:,.2f}")
+                    average_data.append(i['revenue']/i['reservation'])
             else:
                 for i in range(20):
                     label_data.append(summary_chanel[i]['agent_name'])
-                    revenue_data.append(f"{summary_chanel[i]['revenue']:,.2f}")
+                    revenue_data.append(summary_chanel[i]['revenue'])
                     reservation_data.append(summary_chanel[i]['reservation'])
-                    average_data.append(f"{summary_chanel[i]['revenue'] / summary_chanel[i]['reservation']:,.2f}")
+                    average_data.append(summary_chanel[i]['revenue'] / summary_chanel[i]['reservation'])
 
             # lets built to return
             to_return = {
