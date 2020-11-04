@@ -85,7 +85,7 @@ class TtReconcileTransaction(models.Model):
                                                                      ('transaction_date', '<', self.transaction_date)],
                                                                      order='transaction_date desc', limit=1)
 
-        if reconcile_obj and (self.transaction_date - reconcile_obj.transaction_date).days == 1:
+        if reconcile_obj and (self.transaction_date - reconcile_obj.transaction_date).days == 1 and self.provider_id.is_using_balance:
             self.start_balance = reconcile_obj.end_balance
             end_balance = self.start_balance
 

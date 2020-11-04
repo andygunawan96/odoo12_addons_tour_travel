@@ -376,7 +376,7 @@
         </div>
          <div>
              <span>* The refund amount is in accordance with the amount returned by the airline / hotel minus the admin fee of IDR
-                 <span t-esc="refund_fee" t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/>.
+                 <span t-esc="refund_fee" t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/> / passenger.
              </span>
         </div>
         <br/>
@@ -386,7 +386,7 @@
         </div>
         <div>
             <span>* A reschedule fee will be charged to the customer in accordance with airline / hotel regulations plus admin fee of IDR
-                <span t-esc="reschedule_fee" t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/>.
+                <span t-esc="reschedule_fee" t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/> / PNR (Personal Number Reservation).
             </span>
         </div>
         <div>
