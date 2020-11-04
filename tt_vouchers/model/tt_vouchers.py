@@ -11,6 +11,7 @@ _logger = logging.getLogger(__name__)
 
 class TtVoucher(models.Model):
     _name = "tt.voucher"
+    _inherit = 'tt.history'
     _description = 'Rodex Model Voucher'
     _rec_name = 'voucher_reference_code'
 
@@ -42,6 +43,8 @@ class TtVoucher(models.Model):
     voucher_multi_usage = fields.Boolean("Voucher Multi Usage", readonly=True, states={'draft': [('readonly', False)]})
     voucher_usage_value = fields.Monetary("Voucher usage", readonly=True)
     voucher_customer_id = fields.Many2one('tt.customer', 'Customer', domain=[], readonly=True, states={'draft': [('readonly', False)]})
+    terms_conditions = fields.Html('Terms and Conditions', readonly=True, states={'draft': [('readonly', False)]})
+    is_customer_exclusive = fields.Boolean('Is Customer Exclusive', readonly=True, states={'draft': [('readonly', False)]})
 
     @api.onchange('agent_access_type', 'voucher_agent_eligibility_ids')
     def agent_eligibility_change(self):
@@ -442,6 +445,7 @@ class TtVoucher(models.Model):
 
 class TtVoucherDetail(models.Model):
     _name = "tt.voucher.detail"
+    _inherit = 'tt.history'
     _description = 'Rodex Model Voucher Detail'
     _rec_name = 'display_name'
 
@@ -553,6 +557,7 @@ class TtVoucherDetail(models.Model):
             'state': 'expire'
         })
 
+    # simulate voucher setelah order_obj created
     def new_simulate_voucher(self, data, context):
         # get the order object
         order_obj = self.env['tt.reservation.%s' % (data['provider_type'])].search([('name', '=', data['order_number'])])
@@ -661,13 +666,29 @@ class TtVoucherDetail(models.Model):
         if not agent_is_eligible:
             # agent cannot use the voucher
             # print logger
-            _logger.error("%s, agent not allowed to use voucher" % data['voucher_reference'])
+            _logger.error("%s, agent is not allowed to use voucher" % data['voucher_reference'])
             # raise error
-            return ERR.get_error(additional_message="Agent not allowed to use voucher %s" % data['voucher_reference'])
+            return ERR.get_error(additional_message="Agent is not allowed to use voucher %s" % data['voucher_reference'])
+
+        # if is_customer_exclusive is True, check if customer is eligible to use the voucher
+        if voucher.is_customer_exclusive:
+            cust_is_eligible = False
+            for cust in order_obj.passenger_ids:
+                if voucher.voucher_customer_id.first_name == cust.first_name and voucher.voucher_customer_id.last_name == cust.last_name:
+                    cust_is_eligible = True
+                    break
+
+            if not cust_is_eligible:
+                # agent cannot use the voucher
+                # print logger
+                _logger.error("%s, customer is not allowed to use voucher" % data['voucher_reference'])
+                # raise error
+                return ERR.get_error(additional_message="Customer is not allowed to use voucher %s" % data['voucher_reference'])
 
         # at this point it means the voucher is exist
         # voucher is not expired
         # agent can use the voucher
+        # customer can use the voucher
 
         ######################
         # check voucher requirements
@@ -686,8 +707,6 @@ class TtVoucherDetail(models.Model):
         # voucher process
         #####################
 
-        # g et all provider from order
-        order_provider = order_obj.provider_name.split(",")
         # declare result array
         result_array = []
 
@@ -1030,6 +1049,7 @@ class TtVoucherDetail(models.Model):
             result_array.append(result_dict)
         return ERR.get_no_error(result_array)
 
+    # simulate voucher sebelum booked
     def simulate_voucher_api(self, data, context):
         # requirement of data
         # data = {
@@ -1121,6 +1141,23 @@ class TtVoucherDetail(models.Model):
             _logger.error('Agent ID %s cannot use voucher %s' % (context['co_agent_id'], data['voucher_reference']))
             # return error
             return ERR.get_error(additional_message="Agent cannot user the voucher")
+
+        # if is_customer_exclusive is True, check if customer is eligible to use the voucher
+        if voucher.is_customer_exclusive:
+            cust_is_eligible = False
+            filtered_cust = filter(lambda x: x['first_name'] == voucher.voucher_customer_id.first_name and x['last_name'] == voucher.voucher_customer_id.last_name, data['passenger_list'])
+            for cust in filtered_cust:
+                if cust:
+                    cust_is_eligible = True
+                    break
+
+            if not cust_is_eligible:
+                # agent cannot use the voucher
+                # print logger
+                _logger.error("%s, customer is not allowed to use voucher" % data['voucher_reference'])
+                # raise error
+                return ERR.get_error(
+                    additional_message="Customer is not allowed to use voucher %s" % data['voucher_reference'])
 
         # check provider
         if type(data['provider']) is list:
