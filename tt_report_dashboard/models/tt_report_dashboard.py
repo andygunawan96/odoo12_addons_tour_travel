@@ -2151,6 +2151,7 @@ class TtReportDashboard(models.Model):
 
             # proceed invoice with the assumption of create date = issued date
             summary_issued = []
+            country_summary = []
 
             for i in issued_values['lines']:
                 try:
@@ -2186,6 +2187,19 @@ class TtReportDashboard(models.Model):
                         summary_issued[month_index]['detail'][day_index]['revenue'] += i['amount']
                         total += i['amount']
                         num_data += 1
+
+                    # ============= Country summary Report =======================
+                    country_index = self.check_index(country_summary, 'country', i['country_name'])
+                    if country_index == -1:
+                        temp_dict = {
+                            'country': i['country_name'],
+                            'counter': 1,
+                            'passenger': i['reservation_passenger']
+                        }
+                        country_summary.append(temp_dict)
+                    else:
+                        country_summary[country_index]['counter'] += 1
+                        country_summary[country_index]['passenger'] += i['reservation_passenger']
                 except:
                     pass
 
@@ -2214,6 +2228,7 @@ class TtReportDashboard(models.Model):
 
             # sort summary_by_date month in the correct order
             summary_issued.sort(key=lambda x: (x['year'], x['month_index']))
+            country_summary.sort(key=lambda x: x['counter'], reverse=True)
 
             # first graph data
             main_data = {}
@@ -2285,7 +2300,8 @@ class TtReportDashboard(models.Model):
                     'data3': list(average_data.values())
                 },
                 'total_rupiah': f"{total:,.2f}",
-                'average_rupiah': f"{float(total) / float(num_data):,.2f}" if num_data > 0 else 0
+                'average_rupiah': f"{float(total) / float(num_data):,.2f}" if num_data > 0 else 0,
+                'first_overview': country_summary
             }
 
             # update dependencies

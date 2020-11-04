@@ -86,3 +86,6 @@ class ReportDashboardOverall(models.Model):
             'lines': lines
         }
 
+    def get_agent_all(self):
+        lines = self.get_agent_lines()
+        return lines
