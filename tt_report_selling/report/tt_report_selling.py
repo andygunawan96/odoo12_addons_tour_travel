@@ -398,6 +398,11 @@ class ReportSelling(models.Model):
         """ % (agent_seq_id)
         return where
 
+    @staticmethod
+    def _where_agent_type(agent_type_code):
+        where = """agent_type.code = '%s'""" % (agent_type_code)
+        return where
+
     #works with all
     @staticmethod
     def _order_by():
@@ -425,7 +430,7 @@ class ReportSelling(models.Model):
     def _report_title(data_form):
         data_form['title'] = 'Selling Report: ' + data_form['subtitle']
 
-    def _lines(self, date_from, date_to, agent_seq_id, provider_type, provider_checker, reservation = []):
+    def _lines(self, date_from, date_to, agent_seq_id, provider_type, provider_checker, context):
         if provider_checker == 'airline' or provider_checker == 'overall_airline':
             query = 'SELECT {} '.format(self._select_airline())
         elif provider_checker == 'train' or provider_checker == 'overall_train':
@@ -452,6 +457,8 @@ class ReportSelling(models.Model):
         if provider_checker == 'airline':
             query += 'FROM {} '.format(self._from_airline())
             query += 'WHERE {} '.format(self._where(date_from, date_to))
+            if context['agent_type_code']:
+                query += 'AND {} '.format(self._where_agent_type(context['agent_type_code']))
             if agent_seq_id:
                 query += 'AND {} '.format(self._where_agent(agent_seq_id))
             query += 'GROUP BY {} '.format(self._group_by_airline())
@@ -459,6 +466,8 @@ class ReportSelling(models.Model):
         elif provider_checker == 'train':
             query += 'FROM {} '.format(self._from_train())
             query += 'WHERE {} '.format(self._where(date_from, date_to))
+            if context['agent_type_code']:
+                query += 'AND {} '.format(self._where_agent_type(context['agent_type_code']))
             if agent_seq_id:
                 query += 'AND {} '.format(self._where_agent(agent_seq_id))
             query += 'GROUP BY {} '.format(self._group_by_train())
@@ -466,6 +475,8 @@ class ReportSelling(models.Model):
         elif provider_checker == 'hotel':
             query += 'FROM {} '.format(self._from_hotel())
             query += 'WHERE {} '.format(self._where(date_from, date_to))
+            if context['agent_type_code']:
+                query += 'AND {} '.format(self._where_agent_type(context['agent_type_code']))
             if agent_seq_id:
                 query += 'AND {} '.format(self._where_agent(agent_seq_id))
             query += 'GROUP BY {} '.format(self._group_by_hotel())
@@ -473,6 +484,8 @@ class ReportSelling(models.Model):
         elif provider_checker == 'activity':
             query += 'FROM {} '.format(self._from_activity())
             query += 'WHERE {} '.format(self._where(date_from, date_to))
+            if context['agent_type_code']:
+                query += 'AND {} '.format(self._where_agent_type(context['agent_type_code']))
             if agent_seq_id:
                 query += 'AND {} '.format(self._where_agent(agent_seq_id))
             query += 'GROUP BY {} '.format(self._group_by_activity())
@@ -480,6 +493,8 @@ class ReportSelling(models.Model):
         elif provider_checker == 'tour':
             query += 'FROM {} '.format(self._from_tour())
             query += 'WHERE {} '.format(self._where(date_from, date_to))
+            if context['agent_type_code']:
+                query += 'AND {} '.format(self._where_agent_type(context['agent_type_code']))
             if agent_seq_id:
                 query += 'AND {} '.format(self._where_agent(agent_seq_id))
             query += 'GROUP BY {} '.format(self._group_by_tour())
@@ -487,6 +502,8 @@ class ReportSelling(models.Model):
         elif provider_checker == 'visa':
             query += 'FROM {} '.format(self._from_visa())
             query += 'WHERE {} '.format(self._where(date_from, date_to))
+            if context['agent_type_code']:
+                query += 'AND {} '.format(self._where_agent_type(context['agent_type_code']))
             if agent_seq_id:
                 query += 'AND {} '.format(self._where_agent(agent_seq_id))
             query += 'GROUP BY {} '.format(self._group_by_visa())
@@ -494,12 +511,16 @@ class ReportSelling(models.Model):
         elif provider_checker == 'offline':
             query += 'FROM {} '.format(self._from_offline())
             query += 'WHERE {} '.format(self._where(date_from, date_to))
+            if context['agent_type_code']:
+                query += 'AND {} '.format(self._where_agent_type(context['agent_type_code']))
             if agent_seq_id:
                 query += 'AND {} '.format(self._where_agent(agent_seq_id))
             query += 'ORDER BY {} '.format(self._order_by())
         elif provider_checker == 'event':
             query += 'FROM {} '.format(self._from_event())
             query += 'WHERE {} '.format(self._where(date_from, date_to))
+            if context['agent_type_code']:
+                query += 'AND {} '.format(self._where_agent_type(context['agent_type_code']))
             if agent_seq_id:
                 query += 'AND {} '.format(self._where_agent(agent_seq_id))
             query += 'GROUP BY {} '.format(self._group_by_event())
@@ -507,6 +528,8 @@ class ReportSelling(models.Model):
         elif provider_checker == 'ppob':
             query += 'FROM {} '.format(self._from_ppob())
             query += 'WHERE {} '.format(self._where(date_from, date_to))
+            if context['agent_type_code']:
+                query += 'AND {} '.format(self._where_agent_type(context['agent_type_code']))
             if agent_seq_id:
                 query += 'AND {} '.format(self._where_agent(agent_seq_id))
             query += 'GROUP BY {} '.format(self._group_by_ppob())
@@ -514,6 +537,8 @@ class ReportSelling(models.Model):
         elif provider_checker == 'overall_airline':
             query += 'FROM {} '.format(self._from_airline())
             query += 'WHERE {} '.format(self._where_issued(date_from, date_to))
+            if context['agent_type_code']:
+                query += 'AND {} '.format(self._where_agent_type(context['agent_type_code']))
             if agent_seq_id:
                 query += 'AND {} '.format(self._where_agent(agent_seq_id))
             query += 'GROUP BY {} '.format(self._group_by_airline())
@@ -521,6 +546,8 @@ class ReportSelling(models.Model):
         elif provider_checker == 'overall_activity':
             query += 'FROM {} '.format(self._from_activity())
             query += 'WHERE {} '.format(self._where_issued(date_from, date_to))
+            if context['agent_type_code']:
+                query += 'AND {} '.format(self._where_agent_type(context['agent_type_code']))
             if agent_seq_id:
                 query += 'AND {} '.format(self._where_agent(agent_seq_id))
             query += 'GROUP BY {} '.format(self._group_by_activity())
@@ -528,6 +555,8 @@ class ReportSelling(models.Model):
         elif provider_checker == 'overall_event':
             query += 'FROM {} '.format(self._from_event())
             query += 'WHERE {} '.format(self._where_issued(date_from, date_to))
+            if context['agent_type_code']:
+                query += 'AND {} '.format(self._where_agent_type(context['agent_type_code']))
             if agent_seq_id:
                 query += 'AND {} '.format(self._where_agent(agent_seq_id))
             query += 'GROUP BY {} '.format(self._group_by_event())
@@ -535,12 +564,16 @@ class ReportSelling(models.Model):
         elif provider_checker == 'overall_tour':
             query += 'FROM {} '.format(self._from_tour())
             query += 'WHERE {} '.format(self._where_issued(date_from, date_to))
+            if context['agent_type_code']:
+                query += 'AND {} '.format(self._where_agent_type(context['agent_type_code']))
             if agent_seq_id:
                 query += 'AND {} '.format(self._where_agent(agent_seq_id))
             query += 'ORDER BY {} '.format(self._order_by_issued())
         elif provider_checker == 'overall_train':
             query += 'FROM {} '.format(self._from_train())
             query += 'WHERE {} '.format(self._where_issued(date_from, date_to))
+            if context['agent_type_code']:
+                query += 'AND {} '.format(self._where_agent_type(context['agent_type_code']))
             if agent_seq_id:
                 query += 'AND {} '.format(self._where_agent(agent_seq_id))
             query += 'GROUP BY {} '.format(self._group_by_train())
@@ -548,6 +581,8 @@ class ReportSelling(models.Model):
         elif provider_checker == 'overall_hotel':
             query += 'FROM {} '.format(self._from_hotel())
             query += 'WHERE {} '.format(self._where_issued(date_from, date_to))
+            if context['agent_type_code']:
+                query += 'AND {} '.format(self._where_agent_type(context['agent_type_code']))
             if agent_seq_id:
                 query += 'AND {} '.format(self._where_agent(agent_seq_id))
             query += 'GROUP BY {} '.format(self._group_by_hotel())
@@ -555,6 +590,8 @@ class ReportSelling(models.Model):
         elif provider_checker == 'overall_visa':
             query += 'FROM {} '.format(self._from_visa())
             query += 'WHERE {} '.format(self._where_issued(date_from, date_to))
+            if context['agent_type_code']:
+                query += 'AND {} '.format(self._where_agent_type(context['agent_type_code']))
             if agent_seq_id:
                 query += 'AND {} '.format(self._where_agent(agent_seq_id))
             query += 'GROUP BY {} '.format(self._group_by_visa())
@@ -562,12 +599,16 @@ class ReportSelling(models.Model):
         elif provider_checker == 'overall_offline':
             query += 'FROM {} '.format(self._from_offline())
             query += 'WHERE {} '.format(self._where_issued(date_from, date_to))
+            if context['agent_type_code']:
+                query += 'AND {} '.format(self._where_agent_type(context['agent_type_code']))
             if agent_seq_id:
                 query += 'AND {} '.format(self._where_agent(agent_seq_id))
             query += 'ORDER BY {} '.format(self._order_by_issued())
         elif provider_checker == 'overall_ppob':
             query += 'FROM {} '.format(self._from_ppob())
             query += 'WHERE {} '.format(self._where_issued(date_from, date_to))
+            if context['agent_type_code']:
+                query += 'AND {} '.format(self._where_agent_type(context['agent_type_code']))
             if agent_seq_id:
                 query += 'AND {} '.format(self._where_agent(agent_seq_id))
             query += 'ORDER BY {} '.format(self._order_by_issued())
@@ -616,7 +657,7 @@ class ReportSelling(models.Model):
         elif provider_checker == 'invoice':
             query += 'FROM {} '.format(self._from_invoice())
             first_data = True
-            for i in reservation:
+            for i in context['reservation']:
                 if first_data:
                     query += 'WHERE {} '.format(self._where_invoice(i))
                     first_data = False
@@ -757,9 +798,9 @@ class ReportSelling(models.Model):
         value = fields.Datetime.from_string(utc_datetime_string)
         return fields.Datetime.context_timestamp(self, value).strftime("%Y-%m-%d")
 
-    def _get_lines_data(self, date_from, date_to, agent_id, provider_type, reservation = []):
+    def _get_lines_data(self, date_from, date_to, agent_id, provider_type, context = {}):
         if provider_type != 'all' and provider_type != 'overall':
-            lines = self._lines(date_from, date_to, agent_id, provider_type, provider_type, reservation)
+            lines = self._lines(date_from, date_to, agent_id, provider_type, provider_type, context)
             if provider_type == 'airline':
                 lines = self._convert_data_airline(lines)
             elif provider_type == 'train':
@@ -822,17 +863,7 @@ class ReportSelling(models.Model):
         date_from = data['start_date']
         date_to = data['end_date']
         agent_id = data['agent_seq_id']
-
-        # # need to process provider type
-        # if data['addons'] == 'chanel':
-        #     # for chanel we gonna add prefix chanel
-        #     # check if data is not overall
-        #     if data['type'] != 'overall':
-        #         splits = data['type'].split("_")
-        #         provider_type = splits[1]
-        #     else:
-        #         # if data is only overall then we're gonna change it to all
-        #         provider_type = 'all'
+        agent_type = data['agent_type']
         if data['addons'] == 'book_issued':
             #for group we're gonna remove the overall prefix
             # check if data is not overall
@@ -847,9 +878,16 @@ class ReportSelling(models.Model):
         reservation = []
         if provider_type == 'invoice':
             reservation = data['reservation']
+        else:
+            reservation = []
 
         # proceed data
-        line = self._get_lines_data(date_from, date_to, agent_id, provider_type, reservation)
+        context = {
+            'agent_seq_id': agent_id,
+            'agent_type_code': agent_type,
+            'reservation': reservation
+        }
+        line = self._get_lines_data(date_from, date_to, agent_id, provider_type, context)
         return {
             'lines': line
         }

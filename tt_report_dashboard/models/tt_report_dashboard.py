@@ -145,14 +145,20 @@ class TtReportDashboard(models.Model):
         if is_ho:
             res['dependencies'] = {
                 'is_ho': 1,
+                'agent_type': self.env['report.tt_report_dashboard.overall'].get_agent_type_all(),
                 'agent_list': self.env['report.tt_report_dashboard.overall'].get_agent_all(),
-                'current_agent': self.env['tt.agent'].browse(int(data['agent_seq_id'])).name
+                'current_agent': self.env['tt.agent'].browse(int(data['agent_seq_id'])).name,
+                'provider':variables.PROVIDER_TYPE,
+                'from_data': data
             }
         else:
             res['dependencies'] = {
                 'is_ho': 0,
                 'current_agent': self.env['tt.agent'].browse(context['co_agent_id']).name,
-                'agent_list': []
+                'agent_type': [],
+                'agent_list': [],
+                'provider': variables.PROVIDER_TYPE,
+                'form_data': data
             }
         return ERR.get_no_error(res)
 
@@ -168,6 +174,7 @@ class TtReportDashboard(models.Model):
                 'end_date': data['end_date'],
                 'type': data['report_type'],
                 'agent_seq_id': data['agent_seq_id'],
+                'agent_type': data['agent_type'],
                 'addons': 'book_issued'
             }
             # execute the query
@@ -331,6 +338,7 @@ class TtReportDashboard(models.Model):
                 'end_date': data['end_date'],
                 'type': data['report_type'],
                 'agent_seq_id': data['agent_seq_id'],
+                'agent_type': data['agent_type'],
                 # 'agent_seq_id': 8,
                 'addons': 'chanel'
             }
@@ -430,6 +438,7 @@ class TtReportDashboard(models.Model):
                 'end_date': data['end_date'],
                 'type': data['report_type'],
                 'agent_seq_id': data['agent_seq_id'],
+                'agent_type': data['agent_type'],
                 # 'agent_seq_id': False,
                 'addons': 'none'
             }
@@ -466,6 +475,7 @@ class TtReportDashboard(models.Model):
                 'end_date': data['end_date'],
                 'type': 'invoice',
                 'agent_seq_id': data['agent_seq_id'],
+                'agent_type': data['agent_type'],
                 # 'agent_seq_id': False,
                 'reservation': reservation_ids,
                 'addons': 'none'
@@ -562,7 +572,12 @@ class TtReportDashboard(models.Model):
             # shape the data for return
             if mode == 'month':
                 # sum by month
-                first_counter = summary_issued[0]['month_index'] - 1
+                try:
+                    first_counter = summary_issued[0]['month_index'] - 1
+                except:
+                    splits = data['start_date'].split("-")
+                    month = splits[1]
+                    first_counter = int(month) - 1
                 for i in summary_issued:
                     # fill skipped month(s)
                     # check if current month (year) with start
@@ -661,6 +676,7 @@ class TtReportDashboard(models.Model):
                 'end_date': data['end_date'],
                 'type': data['report_type'],
                 'agent_seq_id': data['agent_seq_id'],
+                'agent_type': data['agent_type'],
                 'addons': 'none'
             }
             issued_values = self.env['report.tt_report_selling.report_selling']._get_reports(temp_dict)
@@ -846,7 +862,12 @@ class TtReportDashboard(models.Model):
             # shape the data for return
             if mode == 'month':
                 # sum by month
-                first_counter = summary_issued[0]['month_index'] - 1
+                try:
+                    first_counter = summary_issued[0]['month_index'] - 1
+                except:
+                    splits = data['start_date'].split("-")
+                    month = splits[1]
+                    first_counter = int(month) - 1
                 for i in summary_issued:
                     # fill skipped month(s)
                     # check if current month (year) with start
@@ -1140,7 +1161,12 @@ class TtReportDashboard(models.Model):
             # shape the data for return
             if mode == 'month':
                 # sum by month
-                first_counter = summary_issued[0]['month_index'] - 1
+                try:
+                    first_counter = summary_issued[0]['month_index'] - 1
+                except:
+                    splits = data['start_date'].split("-")
+                    month = splits[1]
+                    first_counter = int(month) - 1
                 for i in summary_issued:
                     # fill skipped month(s)
                     # check if current month (year) with start
@@ -1570,7 +1596,12 @@ class TtReportDashboard(models.Model):
             # shape the data for return
             if mode == 'month':
                 # sum by month
-                first_counter = summary_issued[0]['month_index'] - 1
+                try:
+                    first_counter = summary_issued[0]['month_index'] - 1
+                except:
+                    splits = data['start_date'].split("-")
+                    month = splits[1]
+                    first_counter = int(month) - 1
                 for i in summary_issued:
                     # fill skipped month(s)
                     # check if current month (year) with start
@@ -1800,7 +1831,12 @@ class TtReportDashboard(models.Model):
             # shape the data for return
             if mode == 'month':
                 # sum by month
-                first_counter = summary_issued[0]['month_index'] - 1
+                try:
+                    first_counter = summary_issued[0]['month_index'] - 1
+                except:
+                    splits = data['start_date'].split("-")
+                    month = splits[1]
+                    first_counter = int(month) - 1
                 for i in summary_issued:
                     # fill skipped month(s)
                     # check if current month (year) with start
@@ -2031,7 +2067,12 @@ class TtReportDashboard(models.Model):
             # shape the data for return
             if mode == 'month':
                 # sum by month
-                first_counter = summary_issued[0]['month_index'] - 1
+                try:
+                    first_counter = summary_issued[0]['month_index'] - 1
+                except:
+                    splits = data['start_date'].split("-")
+                    month = splits[1]
+                    first_counter = int(month) - 1
                 for i in summary_issued:
                     # fill skipped month(s)
                     # check if current month (year) with start
@@ -2254,7 +2295,12 @@ class TtReportDashboard(models.Model):
             # shape the data for return
             if mode == 'month':
                 # sum by month
-                first_counter = summary_issued[0]['month_index'] - 1
+                try:
+                    first_counter = summary_issued[0]['month_index'] - 1
+                except:
+                    splits = data['start_date'].split("-")
+                    month = splits[1]
+                    first_counter = int(month) - 1
                 for i in summary_issued:
                     # fill skipped month(s)
                     # check if current month (year) with start
@@ -2675,7 +2721,12 @@ class TtReportDashboard(models.Model):
             # shape the data for return
             if mode == 'month':
                 # sum by month
-                first_counter = summary_issued[0]['month_index'] - 1
+                try:
+                    first_counter = summary_issued[0]['month_index'] - 1
+                except:
+                    splits = data['start_date'].split("-")
+                    month = splits[1]
+                    first_counter = int(month) - 1
                 for i in summary_issued:
                     # fill skipped month(s)
                     # check if current month (year) with start
