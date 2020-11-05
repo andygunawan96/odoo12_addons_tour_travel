@@ -798,33 +798,33 @@ class ReportSelling(models.Model):
         value = fields.Datetime.from_string(utc_datetime_string)
         return fields.Datetime.context_timestamp(self, value).strftime("%Y-%m-%d")
 
-    def _get_lines_data(self, date_from, date_to, agent_id, provider_type, context = {}):
-        if provider_type != 'all' and provider_type != 'overall':
-            lines = self._lines(date_from, date_to, agent_id, provider_type, provider_type, context)
-            if provider_type == 'airline':
+    def _get_lines_data(self, date_from, date_to, agent_id, provider, context = {}):
+        if provider != 'all' and provider != 'overall':
+            lines = self._lines(date_from, date_to, agent_id, provider, provider, context)
+            if provider == 'airline':
                 lines = self._convert_data_airline(lines)
-            elif provider_type == 'train':
+            elif provider == 'train':
                 lines = self._convert_data_train(lines)
-            elif provider_type == 'tour':
+            elif provider == 'tour':
                 lines = self._convert_data_tour(lines)
-            elif provider_type == 'hotel':
+            elif provider == 'hotel':
                 lines = self._convert_data_hotel(lines)
-            elif provider_type == 'activity':
+            elif provider == 'activity':
                 lines = self._convert_data_activity(lines)
-            elif provider_type == 'visa':
+            elif provider == 'visa':
                 lines = self._convert_data_visa(lines)
-            elif provider_type == 'offline':
+            elif provider == 'offline':
                 lines = self._convert_data_offline(lines)
-            elif provider_type == 'event':
+            elif provider == 'event':
                 lines = self._convert_data_event(lines)
-            elif provider_type == 'ppob':
+            elif provider == 'ppob':
                 lines = self._convert_data_ppob(lines)
-            elif provider_type == 'invoice':
+            elif provider == 'invoice':
                 lines = self._convert_data_invoice(lines)
             else:
                 lines = self._convert_data(lines)
             lines = self._seperate_data(lines)
-        elif provider_type == 'overall':
+        elif provider == 'overall':
             lines = []
             providers = variables.PROVIDER_TYPE
             for i in providers:
@@ -849,9 +849,9 @@ class ReportSelling(models.Model):
         date_from = data_form['date_from']
         date_to = data_form['date_to']
         agent_id = data_form['agent_id']
-        provider_type = data_form['provider_type']
+        provider = data_form['provider_type']
 
-        line = self._get_lines_data(date_from, date_to, agent_id, provider_type)
+        line = self._get_lines_data(date_from, date_to, agent_id, provider)
         self._report_title(data_form)
         return {
             'lines': line,
@@ -869,24 +869,24 @@ class ReportSelling(models.Model):
             # check if data is not overall
             if data['type'] != 'overall':
                 splits = data['type'].split("_")
-                provider_type = splits[1]
+                provider = splits[1]
             else:
                 # if data is only overall then we're gonna change it to all
-                provider_type = 'all'
+                provider = 'all'
         else:
-            provider_type = data['type']
+            provider = data['type']
         reservation = []
-        if provider_type == 'invoice':
+        if provider == 'invoice':
             reservation = data['reservation']
 
         # proceed data
         context = {
             'agent_seq_id': agent_id,
             'agent_type_code': agent_type,
-            # 'sub_provider': data['sub_provider'],
+            # 'provider_type_code': data['provider_type_code'],
             'reservation': reservation
         }
-        line = self._get_lines_data(date_from, date_to, agent_id, provider_type, context)
+        line = self._get_lines_data(date_from, date_to, agent_id, provider, context)
         return {
             'lines': line
         }
