@@ -668,6 +668,10 @@ class ReportSelling(models.Model):
         else:
             query += 'FROM {} '.format(self._from(provider_type))
             query += 'WHERE {} '.format(self._where(date_from, date_to))
+            if context['agent_type_code']:
+                query += 'AND {} '.format(self._where_agent_type(context['agent_type_code']))
+            if agent_seq_id:
+                query += 'AND {} '.format(self._where_agent(agent_seq_id))
             query += 'ORDER BY {} '.format(self._order_by_issued())
 
         self.env.cr.execute(query)
