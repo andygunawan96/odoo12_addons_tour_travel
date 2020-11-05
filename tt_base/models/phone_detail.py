@@ -1,5 +1,6 @@
 from odoo import api, fields, models, _
 from odoo.exceptions import UserError
+import logging
 
 TYPE = [
     ('work', 'Work'),
@@ -7,6 +8,7 @@ TYPE = [
     ('other', 'Other')
 ]
 
+_logger = logging.getLogger(__name__)
 
 class PhoneDetail(models.Model):
     _name = 'phone.detail'
@@ -16,7 +18,7 @@ class PhoneDetail(models.Model):
     country_id = fields.Many2one('res.country', string='Country')
     calling_code = fields.Char('Calling Code', required=True)
     calling_number = fields.Char('Calling Number', required=True)
-    phone_number = fields.Char('Phone Number', readonly=True, compute='_compute_phone_number')
+    phone_number = fields.Char('Phone Number', store=True, compute='_compute_phone_number')
     agent_id = fields.Many2one('tt.agent', string='Agent')
     customer_id = fields.Many2one('tt.customer', string='Customer')
     customer_parent_id = fields.Many2one('tt.customer.parent', string='Customer Parent')
@@ -91,10 +93,9 @@ class PhoneDetail(models.Model):
         elif not agent.name:
             raise UserError(_("Please fill agent name"))
         elif len(check_number) > 0:
-            raise UserError(_("Phone number has been register in our system please use other number"))
+            raise UserError(_("Phone number has been registered in our system please use other number"))
         elif len(agent_open_payment_acqurier) > 0:
-            raise UserError(_("You have register VA account"))
-
+            raise UserError(_("You have already registered a VA account"))
 
     def delete_va_number(self):
         data = {
@@ -117,3 +118,11 @@ class PhoneDetail(models.Model):
                 raise UserError(_("Error delete VA !"))
         else:
             raise UserError(_("No Such data VA !"))
+
+    def compute_number(self):
+        self._compute_phone_number()
+
+    def generate_phone_number(self):
+        for rec in self.search([]):
+            _logger.info('%s %s' % (self.agent_id,self.id))
+            rec.compute_number()

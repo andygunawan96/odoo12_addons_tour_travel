@@ -104,12 +104,13 @@ class ResUsers(models.Model):
             vals.pop('password')
         return super(ResUsers, self).write(vals)
 
-    @api.model
-    def _update_last_login(self):
-        super(ResUsers, self)._update_last_login()
-        self.env['tt.access.activity'].sudo().create({
-            'type': 'login',
-            'user_id': self.id,
-            # 'user_ip_add': request.httprequest.headers.environ.get('HTTP_X_REAL_IP'),
-            'user_ip_add': request.httprequest.environ['REMOTE_ADDR'],
-        })
+    # 28 OKT 2020, comment IP log karena isinya 127.0.0.1
+    # @api.model
+    # def _update_last_login(self):
+    #     super(ResUsers, self)._update_last_login()
+    #     self.env['tt.access.activity'].sudo().create({
+    #         'type': 'login',
+    #         'user_id': self.id,
+    #         # 'user_ip_add': request.httprequest.headers.environ.get('HTTP_X_REAL_IP'),
+    #         'user_ip_add': request.httprequest.environ['REMOTE_ADDR'],
+    #     })

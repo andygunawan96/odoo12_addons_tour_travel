@@ -293,109 +293,108 @@ class TtAgent(models.Model):
             rec.annual_revenue_target = last_target_id.annual_revenue_target
             rec.annual_profit_target = last_target_id.annual_profit_target
 
-    def generate_va_number(self):
-        for phone in self.phone_ids:
-            data = {
-                'number': self.phone_ids[0].calling_number[-8:],
-                'email': self.email,
-                'name': self.name
-            }
-            res = self.env['tt.payment.api.con'].set_VA(data)
-            # res = self.env['tt.payment.api.con'].delete_VA(data)
-            # res = self.env['tt.payment.api.con'].set_invoice(data)
-            # res = self.env['tt.payment.api.con'].merchant_info(data)
-            if res['error_code'] == 0:
-                for rec in self.payment_acq_ids:
-                    #panggil espay
-                    if rec.state == 'open':
-                        rec.unlink()
-                HO_acq = self.env['tt.agent'].browse(self.env.ref('tt_base.rodex_ho').id)
-                for rec in res['response']:
-                    check = True
-
-                    for payment_acq in HO_acq.payment_acquirer_ids:
-                        if 'Virtual Account ' + self.env['tt.bank'].search([('name', '=ilike', rec['bank'])], limit=1).name == payment_acq.name:
-                            check = False
-                            break
-                    # for payment_acq in self.payment_acquirer_ids:
-                    #     if 'VA ' + self.env['tt.bank'].search([('name', '=ilike', rec['bank'])], limit=1).name == payment_acq.name:
-                    #         check = False
-                    if check == True:
-                        HO_acq.env['payment.acquirer'].create({
-                            'type': 'va',
-                            'bank_id': self.env['tt.bank'].search([('name', '=ilike', rec['bank'])], limit=1).id,
-                            'agent_id': self.id,
-                            'provider': 'manual',
-                            'website_published': True,
-                            'name': 'Virtual Account ' + self.env['tt.bank'].search([('name', '=ilike', rec['bank'])], limit=1).name,
-                        })
-                        # self.env['payment.acquirer'].create({
-                        #     'type': 'va',
-                        #     'bank_id': self.env['tt.bank'].search([('name', '=ilike', rec['bank'])], limit=1).id,
-                        #     'agent_id': self.id,
-                        #     'provider': 'manual',
-                        #     'website_published': True,
-                        #     'name': 'VA ' + self.env['tt.bank'].search([('name', '=ilike', rec['bank'])], limit=1).name,
-                        # })
-                    self.env['payment.acquirer.number'].create({
-                        'agent_id': self.id,
-                        'payment_acquirer_id': HO_acq.env['payment.acquirer'].search([('name', '=', 'Virtual Account ' + self.env['tt.bank'].search([('name', '=ilike', rec['bank'])], limit=1).name)]).id,
-                        'state': 'open',
-                        'number': rec['number']
-                    })
-                break
-            UserError(_("Success set VA number for this agent!"))
-        else:
-            UserError(_("Already set VA number for this agent!"))
-        # if len(self.virtual_ids) == 0:
-        #     for phone in self.phone_ids:
-        #         if len(self.env['tt.virtual.account'].search([('virtual_account_number', 'like', self.phone_ids[0].calling_number[-8:])])) == 0:
-        #             data = {
-        #                 'number': self.phone_ids[0].calling_number[-8:],
-        #                 'email': self.email,
-        #                 'name': self.name
-        #             }
-        #             res = self.env['tt.payment.api.con'].set_VA(data)
-        #             # res = self.env['tt.payment.api.con'].delete_VA(data)
-        #             # res = self.env['tt.payment.api.con'].set_invoice(data)
-        #             # res = self.env['tt.payment.api.con'].merchant_info(data)
-        #             if res['error_code'] == 0:
-        #                 for rec in res['response']:
-        #                     if self.env['tt.bank'].search([('name', '=ilike', rec['bank'])], limit=1).id not in self.payment_acquirer_ids:
-        #                         self.env['payment.acquirer'].create({
-        #                             'type': 'va',
-        #                             'bank_id': self.env['tt.bank'].search([('name', '=ilike', rec['bank'])], limit=1).id,
-        #                             'agent_id': self.id,
-        #                             'provider': 'manual',
-        #                             'name': 'VA ' + self.env['tt.bank'].search([('name', '=ilike', rec['bank'])], limit=1).name,
-        #                         })
-        #             break
-        # else:
-        #     data = {
-        #         'number': self.phone_ids[0].calling_number[-8:],
-        #         'email': self.email,
-        #         'name': self.name
-        #     }
-        #     # res = self.env['tt.payment.api.con'].merchant_info(data)
-        #     # res = self.env['tt.payment.api.con'].delete_VA(data)
-        #     UserError(_("Already set VA number for this agent!"))
-
-    def delete_va_number(self):
-        if len(self.virtual_ids) == 0:
-            for phone in self.phone_ids:
-                data = {
-                    'number': self.phone_ids[0].calling_number[-8:],
-                    'email': self.email,
-                    'name': self.name
-                }
-                res = self.env['tt.payment.api.con'].delete_VA(data)
-                if res['error_code'] == 0:
-                    return True
-            else:
-                UserError(_("Please insert phone number for this agent to generate VA !"))
-        else:
-            UserError(_("Already set VA number for this agent!"))
-
+    # def generate_va_number(self):
+    #     for phone in self.phone_ids:
+    #         data = {
+    #             'number': self.phone_ids[0].calling_number[-8:],
+    #             'email': self.email,
+    #             'name': self.name
+    #         }
+    #         res = self.env['tt.payment.api.con'].set_VA(data)
+    #         # res = self.env['tt.payment.api.con'].delete_VA(data)
+    #         # res = self.env['tt.payment.api.con'].set_invoice(data)
+    #         # res = self.env['tt.payment.api.con'].merchant_info(data)
+    #         if res['error_code'] == 0:
+    #             for rec in self.payment_acq_ids:
+    #                 #panggil espay
+    #                 if rec.state == 'open':
+    #                     rec.unlink()
+    #             HO_acq = self.env['tt.agent'].browse(self.env.ref('tt_base.rodex_ho').id)
+    #             for rec in res['response']:
+    #                 check = True
+    #
+    #                 for payment_acq in HO_acq.payment_acquirer_ids:
+    #                     if 'Virtual Account ' + self.env['tt.bank'].search([('name', '=ilike', rec['bank'])], limit=1).name == payment_acq.name:
+    #                         check = False
+    #                         break
+    #                 # for payment_acq in self.payment_acquirer_ids:
+    #                 #     if 'VA ' + self.env['tt.bank'].search([('name', '=ilike', rec['bank'])], limit=1).name == payment_acq.name:
+    #                 #         check = False
+    #                 if check == True:
+    #                     HO_acq.env['payment.acquirer'].create({
+    #                         'type': 'va',
+    #                         'bank_id': self.env['tt.bank'].search([('name', '=ilike', rec['bank'])], limit=1).id,
+    #                         'agent_id': self.id,
+    #                         'provider': 'manual',
+    #                         'website_published': True,
+    #                         'name': 'Virtual Account ' + self.env['tt.bank'].search([('name', '=ilike', rec['bank'])], limit=1).name,
+    #                     })
+    #                     # self.env['payment.acquirer'].create({
+    #                     #     'type': 'va',
+    #                     #     'bank_id': self.env['tt.bank'].search([('name', '=ilike', rec['bank'])], limit=1).id,
+    #                     #     'agent_id': self.id,
+    #                     #     'provider': 'manual',
+    #                     #     'website_published': True,
+    #                     #     'name': 'VA ' + self.env['tt.bank'].search([('name', '=ilike', rec['bank'])], limit=1).name,
+    #                     # })
+    #                 self.env['payment.acquirer.number'].create({
+    #                     'agent_id': self.id,
+    #                     'payment_acquirer_id': HO_acq.env['payment.acquirer'].search([('name', '=', 'Virtual Account ' + self.env['tt.bank'].search([('name', '=ilike', rec['bank'])], limit=1).name)]).id,
+    #                     'state': 'open',
+    #                     'number': rec['number']
+    #                 })
+    #             break
+    #         UserError(_("Success set VA number for this agent!"))
+    #     else:
+    #         UserError(_("Already set VA number for this agent!"))
+    #     # if len(self.virtual_ids) == 0:
+    #     #     for phone in self.phone_ids:
+    #     #         if len(self.env['tt.virtual.account'].search([('virtual_account_number', 'like', self.phone_ids[0].calling_number[-8:])])) == 0:
+    #     #             data = {
+    #     #                 'number': self.phone_ids[0].calling_number[-8:],
+    #     #                 'email': self.email,
+    #     #                 'name': self.name
+    #     #             }
+    #     #             res = self.env['tt.payment.api.con'].set_VA(data)
+    #     #             # res = self.env['tt.payment.api.con'].delete_VA(data)
+    #     #             # res = self.env['tt.payment.api.con'].set_invoice(data)
+    #     #             # res = self.env['tt.payment.api.con'].merchant_info(data)
+    #     #             if res['error_code'] == 0:
+    #     #                 for rec in res['response']:
+    #     #                     if self.env['tt.bank'].search([('name', '=ilike', rec['bank'])], limit=1).id not in self.payment_acquirer_ids:
+    #     #                         self.env['payment.acquirer'].create({
+    #     #                             'type': 'va',
+    #     #                             'bank_id': self.env['tt.bank'].search([('name', '=ilike', rec['bank'])], limit=1).id,
+    #     #                             'agent_id': self.id,
+    #     #                             'provider': 'manual',
+    #     #                             'name': 'VA ' + self.env['tt.bank'].search([('name', '=ilike', rec['bank'])], limit=1).name,
+    #     #                         })
+    #     #             break
+    #     # else:
+    #     #     data = {
+    #     #         'number': self.phone_ids[0].calling_number[-8:],
+    #     #         'email': self.email,
+    #     #         'name': self.name
+    #     #     }
+    #     #     # res = self.env['tt.payment.api.con'].merchant_info(data)
+    #     #     # res = self.env['tt.payment.api.con'].delete_VA(data)
+    #     #     UserError(_("Already set VA number for this agent!"))
+    #
+    # def delete_va_number(self):
+    #     if len(self.virtual_ids) == 0:
+    #         for phone in self.phone_ids:
+    #             data = {
+    #                 'number': self.phone_ids[0].calling_number[-8:],
+    #                 'email': self.email,
+    #                 'name': self.name
+    #             }
+    #             res = self.env['tt.payment.api.con'].delete_VA(data)
+    #             if res['error_code'] == 0:
+    #                 return True
+    #         else:
+    #             UserError(_("Please insert phone number for this agent to generate VA !"))
+    #     else:
+    #         UserError(_("Already set VA number for this agent!"))
 
     def action_show_agent_target_history(self):
         tree_view_id = self.env.ref('tt_base.view_agent_target_tree').id
@@ -641,6 +640,37 @@ class TtAgent(models.Model):
         except Exception as e:
             _logger.error(traceback.format_exc())
             return ERR.get_error(1022)
+
+    def generate_va_all(self):
+        error_msg = []
+        success_msg = []
+        for agent_obj in self.search([]):
+            _logger.info("GENERATE VA %s" % (agent_obj.name))
+            try:
+                next_agent = False
+                for payment_acq_number in agent_obj.payment_acq_ids:
+                    if payment_acq_number.state == 'open':
+                        success_msg.append('%s Success, already Exist.\n\n' % (agent_obj.name))
+                        next_agent = True
+                        break
+                if next_agent:
+                    continue
+                if agent_obj.phone_ids:
+                    agent_obj.phone_ids[0].generate_va_number()
+                    success_msg.append('%s Success, VA Created.\n\n' % (agent_obj.name))
+                else:
+                    error_msg.append('%s Failed, No Phone.\n\n' % (agent_obj.name))
+            except Exception as e:
+                error_msg.append(agent_obj.name+ " " + str(e) + "\n\n")
+        file = open('/var/log/odoo/%s_va_success.txt' % (datetime.now().strftime('%Y_%m_%d__%H_%M_%S')),'w')
+        for row in success_msg:
+            file.write(row)
+        file.close()
+
+        file = open('/var/log/odoo/%s_va_error.txt' % (datetime.now().strftime('%Y_%m_%d__%H_%M_%S')), 'w')
+        for row in error_msg:
+            file.write(row)
+        file.close()
 
 class AgentTarget(models.Model):
     _inherit = ['tt.history']
