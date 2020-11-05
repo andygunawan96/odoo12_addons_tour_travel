@@ -64,7 +64,14 @@ class ReportDashboardOverall(models.Model):
         return self.env.cr.dictfetchall()
 
     def get_agent_lines(self):
-        query = "SELECT agent.id, agent.name, agent.agent_type_id FROM tt_agent agent"
+        query = "SELECT agent.seq_id, agent.name, agent.agent_type_id FROM tt_agent agent"
+
+        self.env.cr.execute(query)
+        _logger.info(query)
+        return self.env.cr.dictfetchall()
+
+    def get_agent_type_lines(self):
+        query = "SELECT agent.name, agent.code FROM tt_agent_type agent"
 
         self.env.cr.execute(query)
         _logger.info(query)
@@ -88,4 +95,8 @@ class ReportDashboardOverall(models.Model):
 
     def get_agent_all(self):
         lines = self.get_agent_lines()
+        return lines
+
+    def get_agent_type_all(self):
+        lines = self.get_agent_type_lines()
         return lines
