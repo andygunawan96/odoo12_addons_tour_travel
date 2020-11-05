@@ -7,7 +7,7 @@
             <field name="interval_number">1</field>
             <field name="interval_type">days</field>
             <field name="numbercall">-1</field>
-            <field name="nextcall" eval="(DateTime.now() + timedelta(hours=7)).strftime('%Y-%m-%d %H:%M:%S')"/>
+            <field name="nextcall" eval="(datetime.now().replace(hour=17,minute=5,second=0).isoformat())"/>
             <field name="active">False</field>
             <field name="state">code</field>
             <field name="model_id" ref="tt_base.model_tt_cron_log"/>
@@ -20,7 +20,7 @@
             <field name="interval_number">1</field>
             <field name="interval_type">days</field>
             <field name="numbercall">-1</field>
-            <field name="nextcall" eval="(DateTime.now() + timedelta(hours=7)).strftime('%Y-%m-%d %H:%M:%S')"/>
+            <field name="nextcall" eval="(datetime.now().replace(hour=17,minute=10,second=0).isoformat())"/>
             <field name="active">False</field>
             <field name="state">code</field>
             <field name="model_id" ref="tt_base.model_tt_cron_log"/>

@@ -72,12 +72,7 @@
                 <td style="width:150px;">Refund Type</td>
                 <td style="width:10px;">:</td>
                 <td style="width:400px;text-align: right;">
-                    <t t-if="doc.refund_type == 'quick'">
-                        <i>Quick Refund</i>
-                    </t>
-                    <t t-if="doc.refund_type == 'regular'">
-                        <i>Regular Refund</i>
-                    </t>
+                    <i><span t-esc="doc.refund_type_id.name"/></i>
                 </td>
             </tr>
 
@@ -297,12 +292,7 @@
                 <td style="width:150px;">Refund Type</td>
                 <td style="width:10px;">:</td>
                 <td style="width:400px;text-align: right;">
-                    <t t-if="doc.refund_type == 'quick'">
-                        <i>Quick Refund</i>
-                    </t>
-                    <t t-if="doc.refund_type == 'regular'">
-                        <i>Regular Refund</i>
-                    </t>
+                    <i><span t-esc="doc.refund_type_id.name"/></i>
                 </td>
             </tr>
 
@@ -492,12 +482,7 @@
                 <td style="width:150px;">Refund Type</td>
                 <td style="width:10px;">:</td>
                 <td style="width:400px;text-align: right;">
-                    <t t-if="doc.refund_type == 'quick'">
-                        <i>Quick Refund</i>
-                    </t>
-                    <t t-if="doc.refund_type == 'regular'">
-                        <i>Regular Refund</i>
-                    </t>
+                    <i><span t-esc="doc.refund_type_id.name"/></i>
                 </td>
             </tr>
 
@@ -674,12 +659,7 @@
                 <td style="width:150px;">Refund Type</td>
                 <td style="width:10px;">:</td>
                 <td style="width:400px;text-align: right;">
-                    <t t-if="doc.refund_type == 'quick'">
-                        <i>Quick Refund</i>
-                    </t>
-                    <t t-if="doc.refund_type == 'regular'">
-                        <i>Regular Refund</i>
-                    </t>
+                    <i><span t-esc="doc.refund_type_id.name"/></i>
                 </td>
             </tr>
 
