@@ -40,13 +40,18 @@
         <field name="arch" type="xml">
             <form>
                 <header>
-                    <button name="create_voucher_created_email_queue" string="Send Voucher Created Email" type="object"/>
-                    <button string="Deactivate" name="action_set_not_active" groups="tt_base.group_tt_tour_travel_supervisor" type="object"/>
-                    <button string="Activate" name="action_set_active" groups="tt_base.group_tt_tour_travel_supervisor" type="object"/>
-                    <button string="Expire" name="action_set_expire" groups="tt_base.group_tt_tour_travel_supervisor" type="object"/>
+                    <button name="create_voucher_created_email_queue" string="Send Voucher Created Email" states="active" groups="tt_base.group_tt_accounting_supervisor" type="object"/>
+                    <button string="Deactivate" name="action_set_not_active" states="active,expire" groups="tt_base.group_tt_accounting_operator" type="object"/>
+                    <button string="Activate" name="action_set_active" states="not-active,expire" groups="tt_base.group_tt_accounting_operator" type="object"/>
+                    <button string="Expire" name="action_set_expire" states="active,not-active" groups="tt_base.group_tt_accounting_operator" type="object"/>
                     <field name="state" widget="statusbar" statusbar_visible="not_active,active,expire"/>
                 </header>
                 <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="print_voucher"
+                                class="oe_stat_button"
+                                string="Voucher" type="object" icon="fa-print"/>
+                    </div>
                     <group>
                         <field name="voucher_reference_code"/>
                         <field name="voucher_period_reference"/>
@@ -64,6 +69,10 @@
                         </page>
                     </notebook>
                 </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids" widget="mail_followers"/>
+                    <field name="message_ids" widget="mail_thread"/>
+                </div>
             </form>
         </field>
     </record>

@@ -2,6 +2,7 @@ from odoo import models, fields, api
 import datetime
 import json
 from num2words import num2words
+import pytz
 
 
 class PrintoutTicketForm(models.AbstractModel):
@@ -2172,4 +2173,34 @@ class PrintoutReschedule(models.AbstractModel):
             'header_width': str(header_width),
             'base_color': self.sudo().env['ir.config_parameter'].get_param('tt_base.website_default_color', default='#FFFFFF'),
             'img_url': "url('/tt_report_common/static/images/background footer airline.jpg');"
+        }
+
+
+class PrintoutVoucher(models.AbstractModel):
+    _name = 'report.tt_report_common.printout_voucher'
+    _description = 'Rodex Model'
+
+    @api.model
+    def _get_report_values(self, docids, data=None):
+        if not data.get('context'):
+            internal_model_id = docids.pop(0)
+            data['context'] = {
+                'active_model': 'tt.voucher.detail',
+                'active_ids': docids
+            }
+
+        temp_docs = self.env[data['context']['active_model']].browse(data['context']['active_ids'])
+        header_width = 90
+        ho_obj = self.env['tt.agent'].sudo().search([('agent_type_id', '=', self.env.ref('tt_base.agent_type_ho').id)], limit=1)
+        return {
+            'doc_ids': data['context']['active_ids'],
+            'doc_model': data['context']['active_model'],
+            'doc_type': 'voucher',
+            'docs': temp_docs,
+            'doc_start_date': temp_docs.voucher_start_date and temp_docs.voucher_start_date.astimezone(pytz.timezone('Asia/Jakarta')) or False,
+            'doc_expire_date': temp_docs.voucher_expire_date and temp_docs.voucher_expire_date.astimezone(pytz.timezone('Asia/Jakarta')) or False,
+            'header_width': str(header_width),
+            'base_color': self.sudo().env['ir.config_parameter'].get_param('tt_base.website_default_color', default='#FFFFFF'),
+            'img_url': "url('/tt_report_common/static/images/background footer airline.jpg');",
+            'ho_obj': ho_obj and ho_obj[0] or False
         }
