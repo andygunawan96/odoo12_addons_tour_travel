@@ -828,7 +828,7 @@ class ReportSelling(models.Model):
             lines = []
             providers = variables.PROVIDER_TYPE
             for i in providers:
-                line = self._lines(date_from, date_to, agent_id, i, 'overall_' + i)
+                line = self._lines(date_from, date_to, agent_id, i, 'overall_' + i, context)
                 for j in line:
                     lines.append(j)
             lines = self._convert_data(lines)
@@ -837,7 +837,7 @@ class ReportSelling(models.Model):
             lines = []
             providers = variables.PROVIDER_TYPE
             for i in providers:
-                line = self._lines(date_from, date_to, agent_id, i, 'all')
+                line = self._lines(date_from, date_to, agent_id, i, 'all', context)
                 for j in line:
                     lines.append(j)
             lines = self._convert_data(lines)
@@ -878,13 +878,12 @@ class ReportSelling(models.Model):
         reservation = []
         if provider_type == 'invoice':
             reservation = data['reservation']
-        else:
-            reservation = []
 
         # proceed data
         context = {
             'agent_seq_id': agent_id,
             'agent_type_code': agent_type,
+            # 'sub_provider': data['sub_provider'],
             'reservation': reservation
         }
         line = self._get_lines_data(date_from, date_to, agent_id, provider_type, context)
