@@ -149,6 +149,7 @@ class TtReportDashboard(models.Model):
                 'agent_list': self.env['report.tt_report_dashboard.overall'].get_agent_all(),
                 'current_agent': self.env['tt.agent'].browse(int(data['agent_seq_id'])).name,
                 'provider':variables.PROVIDER_TYPE,
+                'sub_provider': self.env['report.tt_report_dashboard.overall'].get_sub_provider_all(),
                 'from_data': data
             }
         else:
@@ -158,6 +159,7 @@ class TtReportDashboard(models.Model):
                 'agent_type': [],
                 'agent_list': [],
                 'provider': variables.PROVIDER_TYPE,
+                'sub_provider': self.env['report.tt_report_dashboard.overall'].get_sub_provider_all(),
                 'form_data': data
             }
         return ERR.get_no_error(res)
@@ -174,7 +176,7 @@ class TtReportDashboard(models.Model):
                 'end_date': data['end_date'],
                 'type': data['report_type'],
                 'agent_seq_id': data['agent_seq_id'],
-                'agent_type': data['agent_type'],
+                'agent_type': data['agent_type_seq_id'],
                 'addons': 'book_issued'
             }
             # execute the query
@@ -338,7 +340,7 @@ class TtReportDashboard(models.Model):
                 'end_date': data['end_date'],
                 'type': data['report_type'],
                 'agent_seq_id': data['agent_seq_id'],
-                'agent_type': data['agent_type'],
+                'agent_type': data['agent_type_seq_id'],
                 # 'agent_seq_id': 8,
                 'addons': 'chanel'
             }
@@ -438,7 +440,7 @@ class TtReportDashboard(models.Model):
                 'end_date': data['end_date'],
                 'type': data['report_type'],
                 'agent_seq_id': data['agent_seq_id'],
-                'agent_type': data['agent_type'],
+                'agent_type': data['agent_type_seq_id'],
                 # 'agent_seq_id': False,
                 'addons': 'none'
             }
@@ -475,7 +477,7 @@ class TtReportDashboard(models.Model):
                 'end_date': data['end_date'],
                 'type': 'invoice',
                 'agent_seq_id': data['agent_seq_id'],
-                'agent_type': data['agent_type'],
+                'agent_type': data['agent_type_seq_id'],
                 # 'agent_seq_id': False,
                 'reservation': reservation_ids,
                 'addons': 'none'
@@ -637,7 +639,7 @@ class TtReportDashboard(models.Model):
                 },
                 'total_rupiah': total,
                 'average_rupiah': float(total) / float(num_data) if num_data > 0 else 0,
-                'first_overview': summary_provider
+                'first_overview': summary_provider,
             }
 
             # update dependencies
@@ -676,7 +678,7 @@ class TtReportDashboard(models.Model):
                 'end_date': data['end_date'],
                 'type': data['report_type'],
                 'agent_seq_id': data['agent_seq_id'],
-                'agent_type': data['agent_type'],
+                'agent_type': data['agent_type_seq_id'],
                 'addons': 'none'
             }
             issued_values = self.env['report.tt_report_selling.report_selling']._get_reports(temp_dict)
@@ -712,6 +714,7 @@ class TtReportDashboard(models.Model):
                 'type': 'invoice',
                 'reservation': reservation_ids,
                 'agent_seq_id': data['agent_seq_id'],
+                'agent_type': data['agent_type_seq_id'],
                 'addons': 'none'
             }
             invoice = self.env['report.tt_report_selling.report_selling']._get_reports(temp_dict)
@@ -976,6 +979,7 @@ class TtReportDashboard(models.Model):
                 'end_date': data['end_date'],
                 'type': data['report_type'],
                 'agent_seq_id': data['agent_seq_id'],
+                'agent_type': data['agent_type_seq_id'],
                 'addons': 'none'
             }
             issued_values = self.env['report.tt_report_selling.report_selling']._get_reports(temp_dict)
@@ -1009,6 +1013,7 @@ class TtReportDashboard(models.Model):
                 'type': 'invoice',
                 'reservation': reservation_ids,
                 'agent_seq_id': data['agent_seq_id'],
+                'agent_type': data['agent_type_seq_id'],
                 'addons': 'none'
             }
             invoice = self.env['report.tt_report_selling.report_selling']._get_reports(temp_dict)
@@ -1276,6 +1281,7 @@ class TtReportDashboard(models.Model):
                 'end_date': data['end_date'],
                 'type': data['report_type'],
                 'agent_seq_id': data['agent_seq_id'],
+                'agent_type': data['agent_type_seq_id'],
                 'addons': 'none'
             }
             # execute query
@@ -1490,6 +1496,7 @@ class TtReportDashboard(models.Model):
                 'end_date': data['end_date'],
                 'type': data['report_type'],
                 'agent_seq_id': data['agent_seq_id'],
+                'agent_type': data['agent_type_seq_id'],
                 'addons': 'none'
             }
             issued_values = self.env['report.tt_report_selling.report_selling']._get_reports(temp_dict)
@@ -1517,6 +1524,7 @@ class TtReportDashboard(models.Model):
                 'end_date': data['end_date'],
                 'type': 'invoice',
                 'agent_seq_id': data['agent_seq_id'],
+                'agent_type': data['agent_type_seq_id'],
                 'reservation': reservation_ids,
                 'addons': 'none'
             }
@@ -1702,6 +1710,7 @@ class TtReportDashboard(models.Model):
                 'end_date': data['end_date'],
                 'type': data['report_type'],
                 'agent_seq_id': data['agent_seq_id'],
+                'agent_type': data['agent_type_seq_id'],
                 'addons': 'none'
             }
             issued_values = self.env['report.tt_report_selling.report_selling']._get_reports(temp_dict)
@@ -1730,6 +1739,7 @@ class TtReportDashboard(models.Model):
                 'type': 'invoice',
                 'reservation': reservation_ids,
                 'agent_seq_id': data['agent_seq_id'],
+                'agent_type': data['agent_type_seq_id'],
                 'addons': 'none'
             }
             invoice = self.env['report.tt_report_selling.report_selling']._get_reports(temp_dict)
@@ -1938,6 +1948,7 @@ class TtReportDashboard(models.Model):
                 'end_date': data['end_date'],
                 'type': data['report_type'],
                 'agent_seq_id': data['agent_seq_id'],
+                'agent_type': data['agent_type_seq_id'],
                 'addons': 'none'
             }
             issued_values = self.env['report.tt_report_selling.report_selling']._get_reports(temp_dict)
@@ -1966,6 +1977,7 @@ class TtReportDashboard(models.Model):
                 'type': 'invoice',
                 'reservation': reservation_ids,
                 'agent_seq_id': data['agent_seq_id'],
+                'agent_type': data['agent_type_seq_id'],
                 'addons': 'none'
             }
             invoice = self.env['report.tt_report_selling.report_selling']._get_reports(temp_dict)
@@ -2174,6 +2186,7 @@ class TtReportDashboard(models.Model):
                 'end_date': data['end_date'],
                 'type': data['report_type'],
                 'agent_seq_id': data['agent_seq_id'],
+                'agent_type': data['agent_type_seq_id'],
                 'addons': 'none'
             }
             issued_values = self.env['report.tt_report_selling.report_selling']._get_reports(temp_dict)
@@ -2202,6 +2215,7 @@ class TtReportDashboard(models.Model):
                 'type': 'invoice',
                 'reservation': reservation_ids,
                 'agent_seq_id': data['agent_seq_id'],
+                'agent_type': data['agent_type_seq_id'],
                 'addons': 'none'
             }
             invoice = self.env['report.tt_report_selling.report_selling']._get_reports(temp_dict)
@@ -2402,6 +2416,7 @@ class TtReportDashboard(models.Model):
                 'end_date': data['end_date'],
                 'type': data['report_type'],
                 'agent_seq_id': data['agent_seq_id'],
+                'agent_type': data['agent_type_seq_id'],
                 'addons': 'none'
             }
             issued_values = self.env['report.tt_report_selling.report_selling']._get_reports(temp_dict)
@@ -2430,6 +2445,7 @@ class TtReportDashboard(models.Model):
                 'type': 'invoice',
                 'reservation': reservation_ids,
                 'agent_seq_id': data['agent_seq_id'],
+                'agent_type': data['agent_type_seq_id'],
                 'addons': 'none'
             }
             invoice = self.env['report.tt_report_selling.report_selling']._get_reports(temp_dict)
@@ -2615,6 +2631,7 @@ class TtReportDashboard(models.Model):
                 'end_date': data['end_date'],
                 'type': data['report_type'],
                 'agent_seq_id': data['agent_seq_id'],
+                'agent_type': data['agent_type_seq_id'],
                 'addons': 'none'
             }
             issued_values = self.env['report.tt_report_selling.report_selling']._get_reports(temp_dict)
@@ -2643,6 +2660,7 @@ class TtReportDashboard(models.Model):
                 'type': 'invoice',
                 'reservation': reservation_ids,
                 'agent_seq_id': data['agent_seq_id'],
+                'agent_type': data['agent_type_seq_id'],
                 'addons': 'none'
             }
             invoice = self.env['report.tt_report_selling.report_selling']._get_reports(temp_dict)
