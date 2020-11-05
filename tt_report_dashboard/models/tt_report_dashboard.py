@@ -147,7 +147,7 @@ class TtReportDashboard(models.Model):
                 'is_ho': 1,
                 'agent_type': self.env['report.tt_report_dashboard.overall'].get_agent_type_all(),
                 'agent_list': self.env['report.tt_report_dashboard.overall'].get_agent_all(),
-                'current_agent': self.env['tt.agent'].browse(data['agent_seq_id']).name,
+                'current_agent': self.env['tt.agent'].search([('seq_id', '=', data['agent_seq_id'])]).name,
                 'provider_type': variables.PROVIDER_TYPE,
                 'provider': self.env['report.tt_report_dashboard.overall'].get_provider_all(),
                 'from_data': data
@@ -155,7 +155,7 @@ class TtReportDashboard(models.Model):
         else:
             res['dependencies'] = {
                 'is_ho': 0,
-                'current_agent': self.env['tt.agent'].browse(context['co_agent_id']).name,
+                'current_agent': self.env['tt.agent'].search([('seq_id', '=', data['agent_seq_id'])]).name,
                 'agent_type': [],
                 'agent_list': [],
                 'provider_type': variables.PROVIDER_TYPE,
