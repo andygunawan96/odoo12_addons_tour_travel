@@ -315,6 +315,30 @@ class TtEmailQueue(models.Model):
             raise Exception(_('Failed to get refund attachment!'))
         self.template_id.attachment_ids = [(6, 0, attachment_id_list)]
 
+    def prepare_attachment_voucher(self):
+        attachment_id_list = []
+        ref_obj = self.env[self.res_model].sudo().browse(int(self.res_id))
+        ticket_data = ref_obj.print_voucher()
+        if ticket_data.get('url'):
+            headers = {
+                'Content-Type': 'application/json',
+            }
+            upload_data = util.send_request(ticket_data['url'], data={}, headers=headers, method='GET',
+                                            content_type='content', timeout=600)
+            if upload_data['error_code'] == 0:
+                attachment_obj = self.env['ir.attachment'].create({
+                    'name': 'Voucher.pdf',
+                    'datas_fname': 'Voucher.pdf',
+                    'datas': upload_data['response'],
+                })
+                attachment_id_list.append(attachment_obj.id)
+            else:
+                _logger.info(upload_data['error_msg'])
+                raise Exception(_('Failed to convert voucher attachment!'))
+        else:
+            raise Exception(_('Failed to get voucher attachment!'))
+        self.template_id.attachment_ids = [(6, 0, attachment_id_list)]
+
     def action_send_email(self):
         try:
             if self.type in ['issued_airline', 'issued_train', 'issued_activity', 'issued_tour', 'issued_visa', 'issued_passport', 'issued_hotel', 'issued_offline', 'issued_ppob']:
@@ -323,6 +347,8 @@ class TtEmailQueue(models.Model):
                 self.prepare_attachment_billing_statement()
             elif self.type in ['refund_confirmed', 'refund_finalized', 'refund_done']:
                 self.prepare_attachment_refund()
+            elif self.type == 'voucher_created':
+                self.prepare_attachment_voucher()
             else:
                 self.template_id.attachment_ids = [(6, 0, [])]
 
