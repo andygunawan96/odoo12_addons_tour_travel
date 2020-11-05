@@ -146,7 +146,7 @@ class TtReportDashboard(models.Model):
             res['dependencies'] = {
                 'is_ho': 1,
                 'agent_list': self.env['report.tt_report_dashboard.overall'].get_agent_all(),
-                'current_agent': self.env['tt.agent'].browse(data['agent_seq_id']).name
+                'current_agent': self.env['tt.agent'].browse(int(data['agent_seq_id'])).name
             }
         else:
             res['dependencies'] = {
@@ -1175,11 +1175,23 @@ class TtReportDashboard(models.Model):
                 # seperate by date
                 for i in summary_issued:
                     for j in i['detail']:
-                        main_data[str(j['day']) + "-" + str(i['month_index']) + "-" + str(i['year'])] = j['invoice']
-                        average_data[
-                            str(j['day']) + "-" + str(i['month_index']) + "-" + str(i['year'])] = j['average']
-                        revenue_data[
-                            str(j['day']) + "-" + str(i['month_index']) + "-" + str(i['year'])] = j['revenue']
+                        # built appropriate date
+                        if i['month_index'] < 10 and j['day'] < 10:
+                            today = str(i['year']) + "-0" + str(i['month_index']) + "-0" + str(j['day'])
+                        elif i['month_index'] < 10 and j['day'] > 9:
+                            today = str(i['year']) + "-0" + str(i['month_index']) + "-" + str(j['day'])
+                        elif i['month_index'] > 9 and j['day'] < 10:
+                            today = str(i['year']) + "-" + str(i['month_index']) + "-0" + str(j['day'])
+                        else:
+                            today = str(i['year']) + "-" + str(i['month_index']) + "-" + str(j['day'])
+
+                        # lets cut the data that is not needed
+                        if today >= data['start_date'] and today <= data['end_date']:
+                            main_data[str(j['day']) + "-" + str(i['month_index']) + "-" + str(i['year'])] = j['invoice']
+                            average_data[str(j['day']) + "-" + str(i['month_index']) + "-" + str(
+                                i['year'])] = j['average']
+                            revenue_data[str(j['day']) + "-" + str(i['month_index']) + "-" + str(
+                                i['year'])] = j['revenue']
 
             to_return = {
                 'first_graph': {
@@ -1346,7 +1358,12 @@ class TtReportDashboard(models.Model):
             # shape the data for return
             if mode == 'month':
                 # sum by month
-                first_counter = summary_issued[0]['month_index'] - 1
+                try:
+                    first_counter = summary_issued[0]['month_index'] - 1
+                except:
+                    splits = data['start_date'].split("-")
+                    month = splits[1]
+                    first_counter = int(month) - 1
                 for i in summary_issued:
                     # fill skipped month(s)
                     # check if current month (year) with start
@@ -1474,7 +1491,8 @@ class TtReportDashboard(models.Model):
                 'end_date': data['end_date'],
                 'type': 'invoice',
                 'agent_seq_id': data['agent_seq_id'],
-                'reservation': reservation_ids
+                'reservation': reservation_ids,
+                'addons': 'none'
             }
             invoice = self.env['report.tt_report_selling.report_selling']._get_reports(temp_dict)
 
@@ -2444,7 +2462,12 @@ class TtReportDashboard(models.Model):
             # shape the data for return
             if mode == 'month':
                 # sum by month
-                first_counter = summary_issued[0]['month_index'] - 1
+                try:
+                    first_counter = summary_issued[0]['month_index'] - 1
+                except:
+                    splits = data['start_date'].split("-")
+                    month = splits[1]
+                    first_counter = int(month) - 1
                 for i in summary_issued:
                     # fill skipped month(s)
                     # check if current month (year) with start
