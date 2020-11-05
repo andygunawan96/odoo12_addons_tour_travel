@@ -148,8 +148,8 @@ class TtReportDashboard(models.Model):
                 'agent_type': self.env['report.tt_report_dashboard.overall'].get_agent_type_all(),
                 'agent_list': self.env['report.tt_report_dashboard.overall'].get_agent_all(),
                 'current_agent': self.env['tt.agent'].browse(int(data['agent_seq_id'])).name,
-                'provider':variables.PROVIDER_TYPE,
-                'provider_type': self.env['report.tt_report_dashboard.overall'].get_provider_type_all(),
+                'provider_type': variables.PROVIDER_TYPE,
+                'provider': self.env['report.tt_report_dashboard.overall'].get_provider_all(),
                 'from_data': data
             }
         else:
@@ -158,8 +158,8 @@ class TtReportDashboard(models.Model):
                 'current_agent': self.env['tt.agent'].browse(context['co_agent_id']).name,
                 'agent_type': [],
                 'agent_list': [],
-                'provider': variables.PROVIDER_TYPE,
-                'provider_type': self.env['report.tt_report_dashboard.overall'].get_provider_type_all(),
+                'provider_type': variables.PROVIDER_TYPE,
+                'provider': self.env['report.tt_report_dashboard.overall'].get_provider_all(),
                 'form_data': data
             }
         return ERR.get_no_error(res)
