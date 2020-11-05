@@ -77,7 +77,7 @@ class ReportDashboardOverall(models.Model):
         _logger.info(query)
         return self.env.cr.dictfetchall()
 
-    def get_provider_type_lines(self):
+    def get_provider_lines(self):
         query = "SELECT provider.name, provider.code, provider_type.name as provider_type FROM tt_provider provider JOIN tt_provider_type provider_type ON provider.provider_type_id = provider_type.id"
 
         self.env.cr.execute(query)
@@ -108,6 +108,6 @@ class ReportDashboardOverall(models.Model):
         lines = self.get_agent_type_lines()
         return lines
 
-    def get_provider_type_all(self):
-        lines = self.get_provider_type_lines()
+    def get_provider_all(self):
+        lines = self.get_provider_lines()
         return lines
