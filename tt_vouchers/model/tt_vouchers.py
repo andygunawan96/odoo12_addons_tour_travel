@@ -454,7 +454,7 @@ class TtVoucherDetail(models.Model):
     voucher_id = fields.Many2one("tt.voucher")
     voucher_reference_code = fields.Char("Voucher Reference", related="voucher_id.voucher_reference_code", readonly=True)
     voucher_period_reference = fields.Char("Voucher Period Reference", required=True)
-    voucher_start_date = fields.Datetime("Voucher valid from", required=False)
+    voucher_start_date = fields.Datetime("Voucher valid from")
     voucher_expire_date = fields.Datetime("Voucher valid until")
     voucher_used = fields.Integer("Voucher use")
     voucher_quota = fields.Integer("Voucher quota")
@@ -477,12 +477,7 @@ class TtVoucherDetail(models.Model):
     def create(self, vals):
         if type(vals.get('voucher_period_reference')) == str:
             vals['voucher_period_reference'] = vals['voucher_period_reference'].upper()
-        res = super(TtVoucherDetail, self).create(vals)
-        try:
-            res.create_voucher_email_queue('created')
-        except Exception as e:
-            _logger.info('Error Create Voucher Creation Email Queue')
-        return res
+        return super(TtVoucherDetail, self).create(vals)
 
     def create_voucher_created_email_queue(self):
         self.create_voucher_email_queue('created')
