@@ -2076,7 +2076,7 @@ class TtReportDashboard(models.Model):
                         product_index = self.check_index(product_summary, 'product', i['reservation_activity_name'])
                         if product_index == -1:
                             temp_dict = {
-                                'product': i['reservation_activity_name'],
+                                'product': i['reservation_event_name'],
                                 'counter': 1,
                                 'elder_count': i['reservation_elder'],
                                 'adult_count': i['reservation_adult'],
