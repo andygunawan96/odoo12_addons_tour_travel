@@ -2804,6 +2804,7 @@ class TtReportDashboard(models.Model):
 
             # sort summary_by_date month in the correct order
             summary_issued.sort(key=lambda x: (x['year'], x['month_index']))
+            ppob_summary.sort(key=lambda x: x['amount'])
 
             # first graph data
             main_data = {}
