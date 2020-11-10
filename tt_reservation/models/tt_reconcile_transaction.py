@@ -90,7 +90,7 @@ class TtReconcileTransaction(models.Model):
             end_balance = self.start_balance
 
             for line in self.reconcile_lines_ids:
-                if line.type in ['nta', 'admin_bank', 'other']:
+                if line.type in ['nta', 'admin_bank', 'reissue', 'other']:
                     end_balance -= line.total
                 else:
                     end_balance += line.total
