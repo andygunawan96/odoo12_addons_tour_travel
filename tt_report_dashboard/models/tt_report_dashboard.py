@@ -1499,6 +1499,7 @@ class TtReportDashboard(models.Model):
                     'data2': list(revenue_data.values()),
                     'data3': list(average_data.values())
                 },
+                'first_overview': [],
                 'total_rupiah': total,
                 'average_rupiah': float(total) / float(num_data) if num_data > 0 else 0
             }
@@ -1715,6 +1716,7 @@ class TtReportDashboard(models.Model):
                     'data2': list(revenue_data.values()),
                     'data3': list(average_data.values())
                 },
+                'first_overview': [],
                 'total_rupiah': total,
                 'average_rupiah': float(total) / float(num_data) if num_data > 0 else 0
             }
