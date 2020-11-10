@@ -97,7 +97,7 @@ class TtReportDashboard(models.Model):
             # get the id of the agent
             data['agent_seq_id'] = self.env['tt.agent'].browse(context['co_agent_id']).seq_id
 
-        if data['provider']:
+        if data['provider'] != 'all' or data['provider'] != '':
             # check if provider is exist
             provider_type = self.env['tt.provider'].search([('code', '=', data['provider'])])
 
@@ -532,9 +532,9 @@ class TtReportDashboard(models.Model):
                         # if year and month with details doens't exist yet
                         # create a temp dict
                         temp_dict = {
-                            'year': i['booked_year'],
-                            'month_index': int(i['booked_month']),
-                            'month': month[int(i['booked_month']) - 1],
+                            'year': i['issued_year'],
+                            'month_index': int(i['issued_month']),
+                            'month': month[int(i['issued_month']) - 1],
                             'detail': self.add_issued_month_detail()
                         }
 
@@ -769,9 +769,9 @@ class TtReportDashboard(models.Model):
                         # if year and month with details doens't exist yet
                         # create a temp dict
                         temp_dict = {
-                            'year': i['booked_year'],
-                            'month_index': int(i['booked_month']),
-                            'month': month[int(i['booked_month']) - 1],
+                            'year': i['issued_year'],
+                            'month_index': int(i['issued_month']),
+                            'month': month[int(i['issued_month']) - 1],
                             'detail': self.add_issued_month_detail()
                         }
 
@@ -1071,9 +1071,9 @@ class TtReportDashboard(models.Model):
                         # if year and month with details doens't exist yet
                         # create a temp dict
                         temp_dict = {
-                            'year': i['booked_year'],
-                            'month_index': int(i['booked_month']),
-                            'month': month[int(i['booked_month']) - 1],
+                            'year': i['issued_year'],
+                            'month_index': int(i['issued_month']),
+                            'month': month[int(i['issued_month']) - 1],
                             'detail': self.add_issued_month_detail()
                         }
 
@@ -1371,9 +1371,9 @@ class TtReportDashboard(models.Model):
                         # if year and month with details doens't exist yet
                         # create a temp dict
                         temp_dict = {
-                            'year': i['booked_year'],
-                            'month_index': int(i['booked_month']),
-                            'month': month[int(i['booked_month']) - 1],
+                            'year': i['issued_year'],
+                            'month_index': int(i['issued_month']),
+                            'month': month[int(i['issued_month']) - 1],
                             'detail': self.add_issued_month_detail()
                         }
 
@@ -1587,9 +1587,9 @@ class TtReportDashboard(models.Model):
                         # if year and month with details doens't exist yet
                         # create a temp dict
                         temp_dict = {
-                            'year': i['booked_year'],
-                            'month_index': int(i['booked_month']),
-                            'month': month[int(i['booked_month']) - 1],
+                            'year': i['issued_year'],
+                            'month_index': int(i['issued_month']),
+                            'month': month[int(i['issued_month']) - 1],
                             'detail': self.add_issued_month_detail()
                         }
 
@@ -1804,9 +1804,9 @@ class TtReportDashboard(models.Model):
                         # if year and month with details doens't exist yet
                         # create a temp dict
                         temp_dict = {
-                            'year': i['booked_year'],
-                            'month_index': int(i['booked_month']),
-                            'month': month[int(i['booked_month']) - 1],
+                            'year': i['issued_year'],
+                            'month_index': int(i['issued_month']),
+                            'month': month[int(i['issued_month']) - 1],
                             'detail': self.add_issued_month_detail()
                         }
 
@@ -2044,9 +2044,9 @@ class TtReportDashboard(models.Model):
                         # if year and month with details doens't exist yet
                         # create a temp dict
                         temp_dict = {
-                            'year': i['booked_year'],
-                            'month_index': int(i['booked_month']),
-                            'month': month[int(i['booked_month']) - 1],
+                            'year': i['issued_year'],
+                            'month_index': int(i['issued_month']),
+                            'month': month[int(i['issued_month']) - 1],
                             'detail': self.add_issued_month_detail()
                         }
 
@@ -2284,9 +2284,9 @@ class TtReportDashboard(models.Model):
                         # if year and month with details doens't exist yet
                         # create a temp dict
                         temp_dict = {
-                            'year': i['booked_year'],
-                            'month_index': int(i['booked_month']),
-                            'month': month[int(i['booked_month']) - 1],
+                            'year': i['issued_year'],
+                            'month_index': int(i['issued_month']),
+                            'month': month[int(i['issued_month']) - 1],
                             'detail': self.add_issued_month_detail()
                         }
 
@@ -2515,9 +2515,9 @@ class TtReportDashboard(models.Model):
                         # if year and month with details doens't exist yet
                         # create a temp dict
                         temp_dict = {
-                            'year': i['booked_year'],
-                            'month_index': int(i['booked_month']),
-                            'month': month[int(i['booked_month']) - 1],
+                            'year': i['issued_year'],
+                            'month_index': int(i['issued_month']),
+                            'month': month[int(i['issued_month']) - 1],
                             'detail': self.add_issued_month_detail()
                         }
 
@@ -2732,9 +2732,9 @@ class TtReportDashboard(models.Model):
                         # if year and month with details doens't exist yet
                         # create a temp dict
                         temp_dict = {
-                            'year': i['booked_year'],
-                            'month_index': int(i['booked_month']),
-                            'month': month[int(i['booked_month']) - 1],
+                            'year': i['issued_year'],
+                            'month_index': int(i['issued_month']),
+                            'month': month[int(i['issued_month']) - 1],
                             'detail': self.add_issued_month_detail()
                         }
 
