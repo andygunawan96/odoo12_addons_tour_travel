@@ -97,7 +97,7 @@ class TtReportDashboard(models.Model):
             # get the id of the agent
             data['agent_seq_id'] = self.env['tt.agent'].browse(context['co_agent_id']).seq_id
 
-        if data['provider'] != 'all' or data['provider'] != '':
+        if data['provider']:
             # check if provider is exist
             provider_type = self.env['tt.provider'].search([('code', '=', data['provider'])])
 
