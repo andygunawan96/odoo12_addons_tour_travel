@@ -1881,6 +1881,7 @@ class TtReportDashboard(models.Model):
 
             # sort summary_by_date month in the correct order
             summary_issued.sort(key=lambda x: (x['year'], x['month_index']))
+            product_summary.sort(key=lambda x: x['counter'], reverse=True)
 
             # first graph data
             main_data = {}
@@ -2121,6 +2122,7 @@ class TtReportDashboard(models.Model):
 
             # sort summary_by_date month in the correct order
             summary_issued.sort(key=lambda x: (x['year'], x['month_index']))
+            product_summary.sort(key=lambda x: x['counter'], reverse=True)
 
             # first graph data
             main_data = {}
