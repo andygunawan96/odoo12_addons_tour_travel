@@ -332,7 +332,7 @@ class ReportSelling(models.Model):
         LEFT JOIN tt_agent agent ON agent.id = reservation.agent_id
         LEFT JOIN tt_agent_type agent_type ON agent_type.id = reservation.agent_type_id
         LEFT JOIN tt_provider_visa pro_visa ON pro_visa.booking_id = reservation.id
-        LEFT JOIN tt_provider provider ON provider.id = pro_act.provider_id
+        LEFT JOIN tt_provider provider ON provider.id = pro_visa.provider_id
         """
 
     @staticmethod
