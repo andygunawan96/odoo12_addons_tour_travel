@@ -110,7 +110,7 @@ class TtReportDashboard(models.Model):
 
             # if provider is not in provider type
             if data['report_type'] != "overall":
-                splits = data['report_of'].split("_")
+                splits = data['report_type'].split("_")
                 if provider_type_by_provider != splits[1]:
                     raise UserError(_("Provider %s is not in %s"))
             else:
