@@ -203,7 +203,6 @@ class ReportSelling(models.Model):
         reservation.offline_provider_type as reservation_offline_provider_type, 
         reservation.nta_price as reservation_nta_price, 
         provider_type.name as provider_type_name,
-        provider.name as provider_name,
         agent.name as agent_name, agent_type.name as agent_type_name
         """
 
