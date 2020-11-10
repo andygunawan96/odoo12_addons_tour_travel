@@ -316,7 +316,11 @@ class TtBankTransaction(models.Model):
             date_exist = transaction.bank_transaction_date_ids.filtered(
                 lambda x: x.date == data['date'])
             if date_exist:
-                result = date_exist.transaction_ids.filtered(lambda x: x.transaction_type == 'C')
+                if data.get('type') == 'D':
+                    transaction_type = 'D'
+                else:
+                    transaction_type = 'C'
+                result = date_exist.transaction_ids.filtered(lambda x: x.transaction_type == transaction_type)
                 if result:
                     res.append({
                         "date": result.transaction_date.strftime("%Y-%m-%d %H:%M:%S"),
