@@ -862,7 +862,7 @@ class TestSearch(models.Model):
                 'room_rate': room.sale_price,
                 'person': room.room_info_id and room.room_info_id.max_guest or 2,
                 'currency': room.currency_id and room.currency_id.name,
-                'meal_type': room.room_info_id.meal_type,
+                'meal_type': room.room_info_id and room.room_info_id.meal_type or room.meal_type,
             }
             vals.append(data)
         return vals

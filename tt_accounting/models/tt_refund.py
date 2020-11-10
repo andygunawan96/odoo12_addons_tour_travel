@@ -746,6 +746,17 @@ class TtRefund(models.Model):
             'cancel_date': datetime.now()
         })
 
+    def cancel_refund_reverse_ledger(self):
+        for rec in self.ledger_ids:
+            if not rec.is_reversed:
+                rec.reverse_ledger()
+
+        self.write({
+            'state': 'cancel',
+            'cancel_uid': self.env.user.id,
+            'cancel_date': datetime.now()
+        })
+
     def open_reference(self):
         try:
             form_id = self.env[self.res_model].get_form_id()

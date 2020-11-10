@@ -1,0 +1,216 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="voucher_layout">
+        <div class="container">
+            <div class="article" style="margin: 0px !important; padding: 0px !important">
+                <t t-call="tt_report_common.voucher_layout_header"/>
+                <t t-raw="0"/>
+                <t t-call="tt_report_common.voucher_layout_footer"/>
+            </div>
+        </div>
+    </template>
+
+    <template id="voucher_layout_header">
+        <div class="row" style="height:100px; font-family: 'LiberationSans'">
+            <t t-if="doc_type == 'ho_invoice'">
+                <div class="col-4" style="margin-left: 30px">
+                    <img t-att-src="'data:image/png;base64,%s' % to_text(ho_obj.logo)" height="200" border="1" width="300" style="max-height:100px; max-width:165px; margin-bottom: 20px"/>
+                </div>
+            </t>
+            <t t-else="">
+                <t t-if="ho_obj.logo">
+                    <div class="col-4" style="margin-left: 30px">
+                        <img t-att-src="'data:image/png;base64,%s' % to_text(ho_obj.logo)" height="200" border="1" width="300" style="max-height:100px; max-width:165px; margin-bottom: 20px"/><br/>
+                    </div>
+                </t>
+                <t t-else="">
+                    <div class="col-4" style="margin-left: 30px; text-align: center; display: inline-flex; align-items: center;">
+                        <span t-field="ho_obj.name" style="font-size: 28px;"/>
+                    </div>
+                </t>
+            </t>
+            <div class="col-2">
+
+            </div>
+            <div class="col-5 text-center">
+                <span t-att-style="'margin-top: 10px; margin-left: 10px; color: '+ base_color +'; font-size: 20px;'">Voucher</span><br/>
+                <t t-set="printout_icon" t-value="'/tt_report_common/static/images/ticket-white.png'"/>
+                <div t-att-style="'height: 105px; width:'+ header_width+'%; float: right'">
+                    <div id="circle" t-att-style="'width: 60px; height: 60px; background: '+ base_color +'; border-radius: 100%; position: absolute; z-index: 1;'">
+                        <img t-att-src="printout_icon" style="max-height: 35px; max-width: 35px; margin: 12px 0px 0px 0px;"/>
+                    </div>
+                    <div id="rectangle" t-att-style="'width: '+header_width+'%; height: 50px; bottom: 15px; border-radius: 25px; position: absolute; z-index: 0; background-image: ' + img_url">
+                        <div style="padding-left: 75px; padding-bottom: 10px; vertical-align: middle; text-align: center; border-radius: 25px; background-color: rgba(39,62,84,0.76); padding-top: 5px;">
+                            <div style="vertical-align: middle; display: flex; letter-spacing: 0.05em; font-size: 24px; color: white; font-weight: 600; margin-top: 0px; margin-left: -10px; margin-right: 10px;">
+                                <span t-field="doc.voucher_id.name" style="margin-top: 5px; font-size: 16px"/>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div style="border: 1px solid #BBB; margin-bottom: 10px; margin-top: 10px; position: absolute; left: 0; right: 0; width: 100%"/>  <!---15px -15px-->
+    </template>
+
+    <template id="voucher_layout_footer">
+        <div class="footer" style="position: absolute; left: 0; right: 0; background-image: url('/tt_reservation_offline/static/images/background footer airline.jpg');">
+            <div class="box-footer" style="padding: 0px; width: 100%; height: 120px; background: rgba(39,62,84,0.82); font-family: 'DejaVu Sans'">  <!--rgba(70,70,70,0.8);-->
+                <div class="row">
+                    <div class="col-5" style="margin-top:10px; padding: 0 30px;">
+                        <div style="margin-left: 15px; margin-right: 15px;">
+                            <span style="font-weight: 600; color: white" t-field="ho_obj.name"/>
+                        </div>
+                        <div style="margin-left: 15px; margin-right: 15px;">
+                            <t t-if="ho_obj.address_ids">
+                                <span style="color: white; font-size: 13px;" t-field="ho_obj.address_ids[0].address"/>
+                            </t>
+                            <t t-else="">
+                                <span style="color: white; font-size: 13px;">-</span>
+                            </t>
+                        </div>
+                    </div>
+                    <div class="col-6" style="margin-top:10px;">
+                        <div>
+                            <span style="font-weight: 500; color: white">Contact Customer Care</span>
+                        </div>
+                        <div class="row">
+                            <div class="col-6" style="padding-right: 0px">
+                                <div style="margin-top: 5px;">
+                                    <span style="color: white"><img t-att-src="'/tt_report_common/static/images/call-answer.png'" height="200" border="1" width="300" style="max-height:24px; max-width:24px;"/>
+                                        <t t-if="ho_obj.phone_ids">
+                                            <span style="color: white; font-size: 13px" t-field="ho_obj.phone_ids[0].calling_code"/> <span style="color: white; font-size: 14px" t-field="ho_obj.phone_ids[0].calling_number"/>
+                                        </t>
+                                        <t t-else=""><span style="color: white; font-size: 13px">-</span></t>
+                                    </span>
+                                </div>
+                                <div style="margin-top: 5px;">
+                                    <span style="color: white"><img t-att-src="'/tt_report_common/static/images/whatsapp.png'" height="200" border="1" width="300" style="max-height:24px; max-width:24px;"/>
+                                        <t t-if="ho_obj.social_media_ids.filtered(lambda x: x.type_id.name == 'WhatApps')">
+                                            <span style="color: white; font-size: 13px" t-field="ho_obj.social_media_ids.filtered(lambda x: x.type_id.name == 'WhatApps')[0].name"/>
+                                        </t>
+                                        <t t-else="">
+                                            <span style="color: white; font-size: 13px">-</span>
+                                        </t>
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="col-6" style="padding-right: 0px">
+                                <div style="margin-top: 5px;">
+                                    <span style="color: white"><img t-att-src="'/tt_report_common/static/images/telegram.png'" height="200" border="1" width="300" style="max-height:24px; max-width:24px;"/>
+                                        <t t-if="ho_obj.social_media_ids.filtered(lambda x: x.type_id.name == 'Telegram')">
+                                            <span style="color: white; font-size: 13px" t-field="ho_obj.social_media_ids.filtered(lambda x: x.type_id.name == 'Telegram')[0].name"/>
+                                        </t>
+                                        <t t-else=""><span style="color: white; font-size: 13px">-</span></t>
+                                    </span>
+                                </div>
+                                <div style="margin-top: 5px;">
+                                    <span style="color: white"><img t-att-src="'/tt_report_common/static/images/line.png'" height="200" border="1" width="300" style="max-height:24px; max-width:24px;"/>
+                                        <t t-if="ho_obj.social_media_ids.filtered(lambda x: x.type_id.name == 'Line')">
+                                            <span style="color: white; font-size: 13px" t-field="ho_obj.social_media_ids.filtered(lambda x: x.type_id.name == 'Line')[0].name"/>
+                                        </t>
+                                        <t t-else=""><span style="color: white; font-size: 13px">-</span></t>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </template>
+
+    <template id="printout_voucher">
+        <t t-set="data_report_header_spacing" t-value="0"/>
+        <t t-set="data_report_margin_top" t-value="10"/>
+        <t t-set="data_report_margin_bottom" t-value="26"/>
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="doc">
+                <div class="page">
+                    <t t-call="tt_report_common.voucher_layout">
+                        <div style="margin: 0 20px; font-family: 'LiberationSans'">
+                            <table style="margin-bottom: 20px; margin-top: 20px;">
+                                <tr>
+                                    <td style="width:50px;">To</td>
+                                    <td style="width:10px;">:</td>
+                                    <td style="width:400px; vertical-align: top;" rowspan="3">
+                                        <strong><span t-field="doc.voucher_id.voucher_customer_id.first_name"/> <span t-field="doc.voucher_id.voucher_customer_id.last_name"/></strong>
+                                    </td>
+                                </tr>
+                            </table>
+
+                            <div class="row">
+                                <div class="col-12">
+                                    <p>You have been given a discount voucher with the following information:</p>
+                                </div>
+                            </div>
+                            <br/>
+                            <div class="row">
+                                <div class="col-12">
+                                    <table style="width: 100%; line-height: normal; border-collapse: separate; border-spacing: 0;">  <!--border-radius: 20px; border: 1px solid #CCC; border-spacing: 0; margin-bottom: 30px; padding: 5px 0px 5px 0px;-->
+                                        <tr t-att-style="'background-color: '+base_color+'; padding-top: 5px; padding-bottom: 5px'">
+                                            <th style="width: 25%; padding: 7px 7px 7px 20px; border-left: 1px solid #CCC; border-top-left-radius: 20px; color: white; font-weight: 800; font-size: 18px">
+                                                <span>Voucher Code</span>
+                                            </th>
+                                            <th style="width: 25%; padding: 7px 7px 7px 20px; color: white; font-weight: 800; font-size: 18px">
+                                                <span>Value</span>
+                                            </th>
+                                            <th style="width: 25%; padding: 7px 7px 7px 20px; color: white; font-weight: 800; font-size: 18px">
+                                                <span>Valid From</span>
+                                            </th>
+                                            <th style="width: 25%; padding: 7px 7px 7px 20px; border-right: 1px solid #CCC; border-top-right-radius: 20px; color: white; font-weight: 800; font-size: 18px">
+                                                <span>Valid Until</span>
+                                            </th>
+                                        </tr>
+                                        <tr valign="top" style="padding-top: 5px; padding-bottom: 5px;">
+                                            <td style="background: #F0F0F0; width: 25%; border-left: 1px solid #ccc; border-bottom: 1px solid #ccc; border-right: 1px solid #ccc; border-radius: 0px 0px 0px 20px; border-color: #CCC; padding: 7px 7px 7px 20px;">
+                                                <span t-esc="doc.voucher_reference_code"/>.<span t-esc="doc.voucher_period_reference"/>
+                                            </td>
+                                            <td style="width: 25%; border-left: 1px solid #ccc; border-bottom: 1px solid #ccc; border-right: 1px solid #ccc; border-radius: 0px 0px 0px 0px; border-color: #CCC; padding: 7px 7px 7px 20px;">
+                                                <t t-if="doc.voucher_id.voucher_type == 'percent'">
+                                                    <span t-esc="doc.voucher_id.voucher_value"/>%
+                                                </t>
+                                                <t t-else="">
+                                                    <span t-esc="doc.voucher_id.voucher_value" t-options="{&quot;widget&quot;: &quot;monetary&quot;, &quot;display_currency&quot;: doc.voucher_id.currency_id}"/>
+                                                </t>
+                                            </td>
+                                            <td style="width: 25%; border-left: 1px solid #ccc; border-bottom: 1px solid #ccc; border-right: 1px solid #ccc; border-radius: 0px 0px 0px 0px; border-color: #CCC; padding: 7px 7px 7px 20px;">
+                                                <t t-if="doc_start_date">
+                                                    <span t-esc="doc_start_date.strftime('%d %B %Y %H:%M:%S')"/>
+                                                </t>
+                                                <t t-else="">
+                                                    -
+                                                </t>
+                                            </td>
+                                            <td style="width: 25%; border-left: 1px solid #ccc; border-bottom: 1px solid #ccc; border-right: 1px solid #ccc; border-radius: 0px 0px 20px 0px; border-color: #CCC; padding: 7px 7px 7px 20px;">
+                                                <t t-if="doc_expire_date">
+                                                    <span t-esc="doc_expire_date.strftime('%d %B %Y %H:%M:%S')"/>
+                                                </t>
+                                                <t t-else="">
+                                                    -
+                                                </t>
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </div>
+                            </div>
+                            <br/>
+                            <div class="row">
+                                <div class="col-12">
+                                    <t t-if="doc.voucher_id.terms_conditions">
+                                        Please pay attention to the terms and conditions below before using this voucher. We hope you will enjoy your trip. Thank you.
+                                        <br/><br/>
+                                        <span style="font-size: 28px; font-weight: 730">Terms and Conditions</span><br/>
+                                        <span t-raw="doc.voucher_id.terms_conditions"/>
+                                    </t>
+                                    <t t-else="">
+                                        We hope you will enjoy your trip. Thank you.
+                                    </t>
+                                </div>
+                            </div>
+                        </div>
+                    </t>
+                </div>
+            </t>
+        </t>
+    </template>
+</odoo>

@@ -2,6 +2,7 @@ from odoo import models, fields, api, _
 from ...tools import variables,util,ERR
 import logging, traceback,pytz
 from datetime import datetime, timedelta, date
+from odoo.exceptions import UserError
 
 _logger = logging.getLogger(__name__)
 
@@ -88,11 +89,33 @@ class TtReportDashboard(models.Model):
 
     def get_report_json_api(self, data, context):
         is_ho = self.env.ref('tt_base.rodex_ho').id == context['co_agent_id']
-        if is_ho:
+        if is_ho and data['agent_seq_id'] == "":
             data['agent_seq_id'] = False
+        elif is_ho and data['agent_seq_id'] != "":
+            pass
         else:
             # get the id of the agent
             data['agent_seq_id'] = self.env['tt.agent'].browse(context['co_agent_id']).seq_id
+
+        if data['provider'] != 'all' and data['provider'] != '':
+            # check if provider is exist
+            provider_type = self.env['tt.provider'].search([('code', '=', data['provider'])])
+
+            # if provider is not exist
+            if not provider_type:
+                raise UserError(_('Provider is not exist'))
+
+            # get correspond provider type
+            provider_type_by_provider = 'overall_' + provider_type['provider_type_id'].code
+
+            # if provider is not in provider type
+            if data['report_type'] != "overall":
+                splits = data['report_of'].split("_")
+                if provider_type_by_provider != splits[1]:
+                    raise UserError(_("Provider %s is not in %s"))
+            else:
+                data['report_type'] = "overall_" + provider_type_by_provider
+
         type = data['report_type']
         if type == 'overall':
             res = self.get_report_overall(data)
@@ -143,18 +166,22 @@ class TtReportDashboard(models.Model):
         if is_ho:
             res['dependencies'] = {
                 'is_ho': 1,
+                'agent_type': self.env['report.tt_report_dashboard.overall'].get_agent_type_all(),
                 'agent_list': self.env['report.tt_report_dashboard.overall'].get_agent_all(),
-                'current_agent': data['selected_agent']
+                'current_agent': self.env['tt.agent'].browse(data['agent_seq_id']).name,
+                'provider_type': variables.PROVIDER_TYPE,
+                'provider': self.env['report.tt_report_dashboard.overall'].get_provider_all(),
+                'from_data': data
             }
         else:
             res['dependencies'] = {
                 'is_ho': 0,
-
-                # for testing purpose
-                'agent_list': self.env['report.tt_report_dashboard.overall'].get_agent_all(),
-                # need to be removed later
-
-                'current_agent': self.env['tt.agent'].browse(context['co_agent_id']).name
+                'current_agent': self.env['tt.agent'].browse(context['co_agent_id']).name,
+                'agent_type': [],
+                'agent_list': [],
+                'provider_type': variables.PROVIDER_TYPE,
+                'provider': self.env['report.tt_report_dashboard.overall'].get_provider_all(),
+                'form_data': data
             }
         return ERR.get_no_error(res)
 
@@ -169,7 +196,9 @@ class TtReportDashboard(models.Model):
                 'start_date': data['start_date'],
                 'end_date': data['end_date'],
                 'type': data['report_type'],
+                'provider': data['provider'],
                 'agent_seq_id': data['agent_seq_id'],
+                'agent_type': data['agent_type_seq_id'],
                 'addons': 'book_issued'
             }
             # execute the query
@@ -267,7 +296,12 @@ class TtReportDashboard(models.Model):
             book_data = {}
             issued_data = {}
             if mode == 'month':
-                counter = summary_by_date[0]['month_index'] - 1
+                try:
+                    counter = summary_by_date[0]['month_index'] - 1
+                except:
+                    splits = data['start_date'].split("-")
+                    month = splits[1]
+                    counter = int(month) - 1
                 for i in summary_by_date:
                     # fill skipped months
                     if i['month_index'] - 1 < counter:
@@ -332,7 +366,9 @@ class TtReportDashboard(models.Model):
                 'start_date': data['start_date'],
                 'end_date': data['end_date'],
                 'type': data['report_type'],
+                'provider': data['provider'],
                 'agent_seq_id': data['agent_seq_id'],
+                'agent_type': data['agent_type_seq_id'],
                 # 'agent_seq_id': 8,
                 'addons': 'chanel'
             }
@@ -417,11 +453,17 @@ class TtReportDashboard(models.Model):
 
     def get_report_overall(self, data):
         try:
+            # check if user ask for a specific provider
+            if data['provider']:
+                provider_type = self.env['tt.provider'].search([('code', '=', data['provider'])])
+                data['report_type'] = 'overall_' + provider_type['provider_type_id'].code
+
             # process datetime to GMT 0
             # convert string to datetime
             start_date = self.convert_to_datetime(data['start_date'])
             end_date = self.convert_to_datetime(data['end_date'])
 
+            # change date to UTC0 from UTC+7
             temp_start_date = start_date - timedelta(days=1)
             data['start_date'] = temp_start_date.strftime('%Y-%m-%d') + " 17:00:00"
             data['end_date'] += " 16:59:59"
@@ -431,7 +473,9 @@ class TtReportDashboard(models.Model):
                 'start_date': data['start_date'],
                 'end_date': data['end_date'],
                 'type': data['report_type'],
+                'provider': data['provider'],
                 'agent_seq_id': data['agent_seq_id'],
+                'agent_type': data['agent_type_seq_id'],
                 # 'agent_seq_id': False,
                 'addons': 'none'
             }
@@ -467,7 +511,9 @@ class TtReportDashboard(models.Model):
                 'start_date': data['start_date'],
                 'end_date': data['end_date'],
                 'type': 'invoice',
+                'provider': data['provider'],
                 'agent_seq_id': data['agent_seq_id'],
+                'agent_type': data['agent_type_seq_id'],
                 # 'agent_seq_id': False,
                 'reservation': reservation_ids,
                 'addons': 'none'
@@ -486,9 +532,9 @@ class TtReportDashboard(models.Model):
                         # if year and month with details doens't exist yet
                         # create a temp dict
                         temp_dict = {
-                            'year': i['booked_year'],
-                            'month_index': int(i['booked_month']),
-                            'month': month[int(i['booked_month']) - 1],
+                            'year': i['issued_year'],
+                            'month_index': int(i['issued_month']),
+                            'month': month[int(i['issued_month']) - 1],
                             'detail': self.add_issued_month_detail()
                         }
 
@@ -564,7 +610,12 @@ class TtReportDashboard(models.Model):
             # shape the data for return
             if mode == 'month':
                 # sum by month
-                first_counter = summary_issued[0]['month_index'] - 1
+                try:
+                    first_counter = summary_issued[0]['month_index'] - 1
+                except:
+                    splits = data['start_date'].split("-")
+                    month = splits[1]
+                    first_counter = int(month) - 1
                 for i in summary_issued:
                     # fill skipped month(s)
                     # check if current month (year) with start
@@ -611,8 +662,8 @@ class TtReportDashboard(models.Model):
                         # lets cut the data that is not needed
                         if today >= data['start_date'] and today <= data['end_date']:
                             main_data[str(j['day']) + "-" + str(i['month_index']) + "-" + str(i['year'])] = j['invoice']
-                            average_data[str(j['day']) + "-" + str(i['month_index']) + "-" + str(i['year'])] = f"{j['average']:,.2f}"
-                            revenue_data[str(j['day']) + "-" + str(i['month_index']) + "-" + str(i['year'])] = f"{j['revenue']:,.2f}"
+                            average_data[str(j['day']) + "-" + str(i['month_index']) + "-" + str(i['year'])] = j['average']
+                            revenue_data[str(j['day']) + "-" + str(i['month_index']) + "-" + str(i['year'])] = j['revenue']
 
             # build to return data
             to_return = {
@@ -622,9 +673,9 @@ class TtReportDashboard(models.Model):
                     'data2': list(revenue_data.values()),
                     'data3': list(average_data.values())
                 },
-                'total_rupiah': f"{total:,.2f}",
-                'average_rupiah': f"{float(total) / float(num_data):,.2f}" if num_data > 0 else 0,
-                'first_overview': summary_provider
+                'total_rupiah': total,
+                'average_rupiah': float(total) / float(num_data) if num_data > 0 else 0,
+                'first_overview': summary_provider,
             }
 
             # update dependencies
@@ -662,7 +713,9 @@ class TtReportDashboard(models.Model):
                 'start_date': data['start_date'],
                 'end_date': data['end_date'],
                 'type': data['report_type'],
+                'provider': data['provider'],
                 'agent_seq_id': data['agent_seq_id'],
+                'agent_type': data['agent_type_seq_id'],
                 'addons': 'none'
             }
             issued_values = self.env['report.tt_report_selling.report_selling']._get_reports(temp_dict)
@@ -696,8 +749,10 @@ class TtReportDashboard(models.Model):
                 'start_date': data['start_date'],
                 'end_date': data['end_date'],
                 'type': 'invoice',
+                'provider': data['provider'],
                 'reservation': reservation_ids,
                 'agent_seq_id': data['agent_seq_id'],
+                'agent_type': data['agent_type_seq_id'],
                 'addons': 'none'
             }
             invoice = self.env['report.tt_report_selling.report_selling']._get_reports(temp_dict)
@@ -714,9 +769,9 @@ class TtReportDashboard(models.Model):
                         # if year and month with details doens't exist yet
                         # create a temp dict
                         temp_dict = {
-                            'year': i['booked_year'],
-                            'month_index': int(i['booked_month']),
-                            'month': month[int(i['booked_month']) - 1],
+                            'year': i['issued_year'],
+                            'month_index': int(i['issued_month']),
+                            'month': month[int(i['issued_month']) - 1],
                             'detail': self.add_issued_month_detail()
                         }
 
@@ -848,7 +903,12 @@ class TtReportDashboard(models.Model):
             # shape the data for return
             if mode == 'month':
                 # sum by month
-                first_counter = summary_issued[0]['month_index'] - 1
+                try:
+                    first_counter = summary_issued[0]['month_index'] - 1
+                except:
+                    splits = data['start_date'].split("-")
+                    month = splits[1]
+                    first_counter = int(month) - 1
                 for i in summary_issued:
                     # fill skipped month(s)
                     # check if current month (year) with start
@@ -897,19 +957,19 @@ class TtReportDashboard(models.Model):
                         if today >= data['start_date'] and today <= data['end_date']:
                             main_data[str(j['day']) + "-" + str(i['month_index']) + "-" + str(i['year'])] = j['invoice']
                             average_data[str(j['day']) + "-" + str(i['month_index']) + "-" + str(
-                                i['year'])] = f"{j['average']:,.2f}"
+                                i['year'])] = j['average']
                             revenue_data[str(j['day']) + "-" + str(i['month_index']) + "-" + str(
-                                i['year'])] = f"{j['revenue']:,.2f}"
+                                i['year'])] = j['revenue']
 
             to_return = {
-                'graph': {
+                'first_graph': {
                     'label': list(main_data.keys()),
                     'data': list(main_data.values()),
                     'data2': list(revenue_data.values()),
                     'data3': list(average_data.values())
                 },
-                'total_rupiah': f"{total:,.2f}",
-                'average_rupiah': f"{float(total) / float(num_data):,.2f}" if num_data > 0 else 0,
+                'total_rupiah': total,
+                'average_rupiah': float(total) / float(num_data) if num_data > 0 else 0,
                 'first_overview': {
                     'sector_summary': destination_sector_summary[:20],
                     'direction_summary': destination_direction_summary[:20],
@@ -956,7 +1016,9 @@ class TtReportDashboard(models.Model):
                 'start_date': data['start_date'],
                 'end_date': data['end_date'],
                 'type': data['report_type'],
+                'provider': data['provider'],
                 'agent_seq_id': data['agent_seq_id'],
+                'agent_type': data['agent_type_seq_id'],
                 'addons': 'none'
             }
             issued_values = self.env['report.tt_report_selling.report_selling']._get_reports(temp_dict)
@@ -988,8 +1050,10 @@ class TtReportDashboard(models.Model):
                 'start_date': data['start_date'],
                 'end_date': data['end_date'],
                 'type': 'invoice',
+                'provider': data['provider'],
                 'reservation': reservation_ids,
                 'agent_seq_id': data['agent_seq_id'],
+                'agent_type': data['agent_type_seq_id'],
                 'addons': 'none'
             }
             invoice = self.env['report.tt_report_selling.report_selling']._get_reports(temp_dict)
@@ -1007,9 +1071,9 @@ class TtReportDashboard(models.Model):
                         # if year and month with details doens't exist yet
                         # create a temp dict
                         temp_dict = {
-                            'year': i['booked_year'],
-                            'month_index': int(i['booked_month']),
-                            'month': month[int(i['booked_month']) - 1],
+                            'year': i['issued_year'],
+                            'month_index': int(i['issued_month']),
+                            'month': month[int(i['issued_month']) - 1],
                             'detail': self.add_issued_month_detail()
                         }
 
@@ -1142,7 +1206,12 @@ class TtReportDashboard(models.Model):
             # shape the data for return
             if mode == 'month':
                 # sum by month
-                first_counter = summary_issued[0]['month_index'] - 1
+                try:
+                    first_counter = summary_issued[0]['month_index'] - 1
+                except:
+                    splits = data['start_date'].split("-")
+                    month = splits[1]
+                    first_counter = int(month) - 1
                 for i in summary_issued:
                     # fill skipped month(s)
                     # check if current month (year) with start
@@ -1177,21 +1246,33 @@ class TtReportDashboard(models.Model):
                 # seperate by date
                 for i in summary_issued:
                     for j in i['detail']:
-                        main_data[str(j['day']) + "-" + str(i['month_index']) + "-" + str(i['year'])] = j['invoice']
-                        average_data[
-                            str(j['day']) + "-" + str(i['month_index']) + "-" + str(i['year'])] = f"{j['average']:,.2f}"
-                        revenue_data[
-                            str(j['day']) + "-" + str(i['month_index']) + "-" + str(i['year'])] = f"{j['revenue']:,.2f}"
+                        # built appropriate date
+                        if i['month_index'] < 10 and j['day'] < 10:
+                            today = str(i['year']) + "-0" + str(i['month_index']) + "-0" + str(j['day'])
+                        elif i['month_index'] < 10 and j['day'] > 9:
+                            today = str(i['year']) + "-0" + str(i['month_index']) + "-" + str(j['day'])
+                        elif i['month_index'] > 9 and j['day'] < 10:
+                            today = str(i['year']) + "-" + str(i['month_index']) + "-0" + str(j['day'])
+                        else:
+                            today = str(i['year']) + "-" + str(i['month_index']) + "-" + str(j['day'])
+
+                        # lets cut the data that is not needed
+                        if today >= data['start_date'] and today <= data['end_date']:
+                            main_data[str(j['day']) + "-" + str(i['month_index']) + "-" + str(i['year'])] = j['invoice']
+                            average_data[str(j['day']) + "-" + str(i['month_index']) + "-" + str(
+                                i['year'])] = j['average']
+                            revenue_data[str(j['day']) + "-" + str(i['month_index']) + "-" + str(
+                                i['year'])] = j['revenue']
 
             to_return = {
-                'graph': {
+                'first_graph': {
                     'label': list(main_data.keys()),
                     'data': list(main_data.values()),
                     'data2': list(revenue_data.values()),
                     'data3': list(average_data.values())
                 },
-                'total_rupiah': f"{total:,.2f}",
-                'average_rupiah': f"{float(total) / float(num_data):,.2f}" if num_data > 0 else 0,
+                'total_rupiah': total,
+                'average_rupiah': float(total) / float(num_data) if num_data > 0 else 0,
                 'first_overview': {
                     'sector_summary': destination_sector_summary[:20],
                     'direction_summary': destination_direction_summary[:20],
@@ -1239,7 +1320,9 @@ class TtReportDashboard(models.Model):
                 'start_date': data['start_date'],
                 'end_date': data['end_date'],
                 'type': data['report_type'],
+                'provider': data['provider'],
                 'agent_seq_id': data['agent_seq_id'],
+                'agent_type': data['agent_type_seq_id'],
                 'addons': 'none'
             }
             # execute query
@@ -1268,8 +1351,10 @@ class TtReportDashboard(models.Model):
                 'start_date': data['start_date'],
                 'end_date': data['end_date'],
                 'type': 'invoice',
+                'provider': data['provider'],
                 'reservation': reservation_ids,
                 'agent_seq_id': data['agent_seq_id'],
+                'agent_type': data['agent_type_seq_id'],
                 'addons': 'none'
             }
             invoice = self.env['report.tt_report_selling.report_selling']._get_reports(temp_dict)
@@ -1286,9 +1371,9 @@ class TtReportDashboard(models.Model):
                         # if year and month with details doens't exist yet
                         # create a temp dict
                         temp_dict = {
-                            'year': i['booked_year'],
-                            'month_index': int(i['booked_month']),
-                            'month': month[int(i['booked_month']) - 1],
+                            'year': i['issued_year'],
+                            'month_index': int(i['issued_month']),
+                            'month': month[int(i['issued_month']) - 1],
                             'detail': self.add_issued_month_detail()
                         }
 
@@ -1348,7 +1433,12 @@ class TtReportDashboard(models.Model):
             # shape the data for return
             if mode == 'month':
                 # sum by month
-                first_counter = summary_issued[0]['month_index'] - 1
+                try:
+                    first_counter = summary_issued[0]['month_index'] - 1
+                except:
+                    splits = data['start_date'].split("-")
+                    month = splits[1]
+                    first_counter = int(month) - 1
                 for i in summary_issued:
                     # fill skipped month(s)
                     # check if current month (year) with start
@@ -1397,20 +1487,20 @@ class TtReportDashboard(models.Model):
                         if today >= data['start_date'] and today <= data['end_date']:
                             main_data[str(j['day']) + "-" + str(i['month_index']) + "-" + str(i['year'])] = j['invoice']
                             average_data[str(j['day']) + "-" + str(i['month_index']) + "-" + str(
-                                i['year'])] = f"{j['average']:,.2f}"
+                                i['year'])] = j['average']
                             revenue_data[str(j['day']) + "-" + str(i['month_index']) + "-" + str(
-                                i['year'])] = f"{j['revenue']:,.2f}"
+                                i['year'])] = j['revenue']
 
             # build to return data
             to_return = {
-                'graph': {
+                'first_graph': {
                     'label': list(main_data.keys()),
                     'data': list(main_data.values()),
                     'data2': list(revenue_data.values()),
                     'data3': list(average_data.values())
                 },
-                'total_rupiah': f"{total:,.2f}",
-                'average_rupiah': f"{float(total) / float(num_data):,.2f}" if num_data > 0 else 0
+                'total_rupiah': total,
+                'average_rupiah': float(total) / float(num_data) if num_data > 0 else 0
             }
 
             # update dependencies
@@ -1448,7 +1538,9 @@ class TtReportDashboard(models.Model):
                 'start_date': data['start_date'],
                 'end_date': data['end_date'],
                 'type': data['report_type'],
+                'provider': data['provider'],
                 'agent_seq_id': data['agent_seq_id'],
+                'agent_type': data['agent_type_seq_id'],
                 'addons': 'none'
             }
             issued_values = self.env['report.tt_report_selling.report_selling']._get_reports(temp_dict)
@@ -1475,8 +1567,11 @@ class TtReportDashboard(models.Model):
                 'start_date': data['start_date'],
                 'end_date': data['end_date'],
                 'type': 'invoice',
+                'provider': data['provider'],
                 'agent_seq_id': data['agent_seq_id'],
-                'reservation': reservation_ids
+                'agent_type': data['agent_type_seq_id'],
+                'reservation': reservation_ids,
+                'addons': 'none'
             }
             invoice = self.env['report.tt_report_selling.report_selling']._get_reports(temp_dict)
 
@@ -1492,9 +1587,9 @@ class TtReportDashboard(models.Model):
                         # if year and month with details doens't exist yet
                         # create a temp dict
                         temp_dict = {
-                            'year': i['booked_year'],
-                            'month_index': int(i['booked_month']),
-                            'month': month[int(i['booked_month']) - 1],
+                            'year': i['issued_year'],
+                            'month_index': int(i['issued_month']),
+                            'month': month[int(i['issued_month']) - 1],
                             'detail': self.add_issued_month_detail()
                         }
 
@@ -1554,7 +1649,12 @@ class TtReportDashboard(models.Model):
             # shape the data for return
             if mode == 'month':
                 # sum by month
-                first_counter = summary_issued[0]['month_index'] - 1
+                try:
+                    first_counter = summary_issued[0]['month_index'] - 1
+                except:
+                    splits = data['start_date'].split("-")
+                    month = splits[1]
+                    first_counter = int(month) - 1
                 for i in summary_issued:
                     # fill skipped month(s)
                     # check if current month (year) with start
@@ -1603,20 +1703,20 @@ class TtReportDashboard(models.Model):
                         if today >= data['start_date'] and today <= data['end_date']:
                             main_data[str(j['day']) + "-" + str(i['month_index']) + "-" + str(i['year'])] = j['invoice']
                             average_data[str(j['day']) + "-" + str(i['month_index']) + "-" + str(
-                                i['year'])] = f"{j['average']:,.2f}"
+                                i['year'])] = j['average']
                             revenue_data[str(j['day']) + "-" + str(i['month_index']) + "-" + str(
-                                i['year'])] = f"{j['revenue']:,.2f}"
+                                i['year'])] = j['revenue']
 
             # build to return data
             to_return = {
-                'graph': {
+                'first_graph': {
                     'label': list(main_data.keys()),
                     'data': list(main_data.values()),
                     'data2': list(revenue_data.values()),
                     'data3': list(average_data.values())
                 },
-                'total_rupiah': f"{total:,.2f}",
-                'average_rupiah': f"{float(total) / float(num_data):,.2f}" if num_data > 0 else 0
+                'total_rupiah': total,
+                'average_rupiah': float(total) / float(num_data) if num_data > 0 else 0
             }
 
             # update dependencies
@@ -1654,7 +1754,9 @@ class TtReportDashboard(models.Model):
                 'start_date': data['start_date'],
                 'end_date': data['end_date'],
                 'type': data['report_type'],
+                'provider': data['provider'],
                 'agent_seq_id': data['agent_seq_id'],
+                'agent_type': data['agent_type_seq_id'],
                 'addons': 'none'
             }
             issued_values = self.env['report.tt_report_selling.report_selling']._get_reports(temp_dict)
@@ -1681,8 +1783,10 @@ class TtReportDashboard(models.Model):
                 'start_date': data['start_date'],
                 'end_date': data['end_date'],
                 'type': 'invoice',
+                'provider': data['provider'],
                 'reservation': reservation_ids,
                 'agent_seq_id': data['agent_seq_id'],
+                'agent_type': data['agent_type_seq_id'],
                 'addons': 'none'
             }
             invoice = self.env['report.tt_report_selling.report_selling']._get_reports(temp_dict)
@@ -1700,9 +1804,9 @@ class TtReportDashboard(models.Model):
                         # if year and month with details doens't exist yet
                         # create a temp dict
                         temp_dict = {
-                            'year': i['booked_year'],
-                            'month_index': int(i['booked_month']),
-                            'month': month[int(i['booked_month']) - 1],
+                            'year': i['issued_year'],
+                            'month_index': int(i['issued_month']),
+                            'month': month[int(i['issued_month']) - 1],
                             'detail': self.add_issued_month_detail()
                         }
 
@@ -1784,7 +1888,12 @@ class TtReportDashboard(models.Model):
             # shape the data for return
             if mode == 'month':
                 # sum by month
-                first_counter = summary_issued[0]['month_index'] - 1
+                try:
+                    first_counter = summary_issued[0]['month_index'] - 1
+                except:
+                    splits = data['start_date'].split("-")
+                    month = splits[1]
+                    first_counter = int(month) - 1
                 for i in summary_issued:
                     # fill skipped month(s)
                     # check if current month (year) with start
@@ -1833,20 +1942,20 @@ class TtReportDashboard(models.Model):
                         if today >= data['start_date'] and today <= data['end_date']:
                             main_data[str(j['day']) + "-" + str(i['month_index']) + "-" + str(i['year'])] = j['invoice']
                             average_data[str(j['day']) + "-" + str(i['month_index']) + "-" + str(
-                                i['year'])] = f"{j['average']:,.2f}"
+                                i['year'])] = j['average']
                             revenue_data[str(j['day']) + "-" + str(i['month_index']) + "-" + str(
-                                i['year'])] = f"{j['revenue']:,.2f}"
+                                i['year'])] = j['revenue']
 
             # build to return data
             to_return = {
-                'graph': {
+                'first_graph': {
                     'label': list(main_data.keys()),
                     'data': list(main_data.values()),
                     'data2': list(revenue_data.values()),
                     'data3': list(average_data.values())
                 },
-                'total_rupiah': f"{total:,.2f}",
-                'average_rupiah': f"{float(total) / float(num_data):,.2f}" if num_data > 0 else 0,
+                'total_rupiah': total,
+                'average_rupiah': float(total) / float(num_data) if num_data > 0 else 0,
                 'first_overview': product_summary
             }
 
@@ -1885,7 +1994,9 @@ class TtReportDashboard(models.Model):
                 'start_date': data['start_date'],
                 'end_date': data['end_date'],
                 'type': data['report_type'],
+                'provider': data['provider'],
                 'agent_seq_id': data['agent_seq_id'],
+                'agent_type': data['agent_type_seq_id'],
                 'addons': 'none'
             }
             issued_values = self.env['report.tt_report_selling.report_selling']._get_reports(temp_dict)
@@ -1912,8 +2023,10 @@ class TtReportDashboard(models.Model):
                 'start_date': data['start_date'],
                 'end_date': data['end_date'],
                 'type': 'invoice',
+                'provider': data['provider'],
                 'reservation': reservation_ids,
                 'agent_seq_id': data['agent_seq_id'],
+                'agent_type': data['agent_type_seq_id'],
                 'addons': 'none'
             }
             invoice = self.env['report.tt_report_selling.report_selling']._get_reports(temp_dict)
@@ -1931,9 +2044,9 @@ class TtReportDashboard(models.Model):
                         # if year and month with details doens't exist yet
                         # create a temp dict
                         temp_dict = {
-                            'year': i['booked_year'],
-                            'month_index': int(i['booked_month']),
-                            'month': month[int(i['booked_month']) - 1],
+                            'year': i['issued_year'],
+                            'month_index': int(i['issued_month']),
+                            'month': month[int(i['issued_month']) - 1],
                             'detail': self.add_issued_month_detail()
                         }
 
@@ -2015,7 +2128,12 @@ class TtReportDashboard(models.Model):
             # shape the data for return
             if mode == 'month':
                 # sum by month
-                first_counter = summary_issued[0]['month_index'] - 1
+                try:
+                    first_counter = summary_issued[0]['month_index'] - 1
+                except:
+                    splits = data['start_date'].split("-")
+                    month = splits[1]
+                    first_counter = int(month) - 1
                 for i in summary_issued:
                     # fill skipped month(s)
                     # check if current month (year) with start
@@ -2064,20 +2182,20 @@ class TtReportDashboard(models.Model):
                         if today >= data['start_date'] and today <= data['end_date']:
                             main_data[str(j['day']) + "-" + str(i['month_index']) + "-" + str(i['year'])] = j['invoice']
                             average_data[str(j['day']) + "-" + str(i['month_index']) + "-" + str(
-                                i['year'])] = f"{j['average']:,.2f}"
+                                i['year'])] = j['average']
                             revenue_data[str(j['day']) + "-" + str(i['month_index']) + "-" + str(
-                                i['year'])] = f"{j['revenue']:,.2f}"
+                                i['year'])] = j['revenue']
 
             # build to return data
             to_return = {
-                'graph': {
+                'first_graph': {
                     'label': list(main_data.keys()),
                     'data': list(main_data.values()),
                     'data2': list(revenue_data.values()),
                     'data3': list(average_data.values())
                 },
-                'total_rupiah': f"{total:,.2f}",
-                'average_rupiah': f"{float(total) / float(num_data):,.2f}" if num_data > 0 else 0,
+                'total_rupiah': total,
+                'average_rupiah': float(total) / float(num_data) if num_data > 0 else 0,
                 'first_overview': product_summary
             }
 
@@ -2116,7 +2234,9 @@ class TtReportDashboard(models.Model):
                 'start_date': data['start_date'],
                 'end_date': data['end_date'],
                 'type': data['report_type'],
+                'provider': data['provider'],
                 'agent_seq_id': data['agent_seq_id'],
+                'agent_type': data['agent_type_seq_id'],
                 'addons': 'none'
             }
             issued_values = self.env['report.tt_report_selling.report_selling']._get_reports(temp_dict)
@@ -2143,8 +2263,10 @@ class TtReportDashboard(models.Model):
                 'start_date': data['start_date'],
                 'end_date': data['end_date'],
                 'type': 'invoice',
+                'provider': data['provider'],
                 'reservation': reservation_ids,
                 'agent_seq_id': data['agent_seq_id'],
+                'agent_type': data['agent_type_seq_id'],
                 'addons': 'none'
             }
             invoice = self.env['report.tt_report_selling.report_selling']._get_reports(temp_dict)
@@ -2162,9 +2284,9 @@ class TtReportDashboard(models.Model):
                         # if year and month with details doens't exist yet
                         # create a temp dict
                         temp_dict = {
-                            'year': i['booked_year'],
-                            'month_index': int(i['booked_month']),
-                            'month': month[int(i['booked_month']) - 1],
+                            'year': i['issued_year'],
+                            'month_index': int(i['issued_month']),
+                            'month': month[int(i['issued_month']) - 1],
                             'detail': self.add_issued_month_detail()
                         }
 
@@ -2238,7 +2360,12 @@ class TtReportDashboard(models.Model):
             # shape the data for return
             if mode == 'month':
                 # sum by month
-                first_counter = summary_issued[0]['month_index'] - 1
+                try:
+                    first_counter = summary_issued[0]['month_index'] - 1
+                except:
+                    splits = data['start_date'].split("-")
+                    month = splits[1]
+                    first_counter = int(month) - 1
                 for i in summary_issued:
                     # fill skipped month(s)
                     # check if current month (year) with start
@@ -2287,20 +2414,20 @@ class TtReportDashboard(models.Model):
                         if today >= data['start_date'] and today <= data['end_date']:
                             main_data[str(j['day']) + "-" + str(i['month_index']) + "-" + str(i['year'])] = j['invoice']
                             average_data[str(j['day']) + "-" + str(i['month_index']) + "-" + str(
-                                i['year'])] = f"{j['average']:,.2f}"
+                                i['year'])] = j['average']
                             revenue_data[str(j['day']) + "-" + str(i['month_index']) + "-" + str(
-                                i['year'])] = f"{j['revenue']:,.2f}"
+                                i['year'])] = j['revenue']
 
             # build to return data
             to_return = {
-                'graph': {
+                'first_graph': {
                     'label': list(main_data.keys()),
                     'data': list(main_data.values()),
                     'data2': list(revenue_data.values()),
                     'data3': list(average_data.values())
                 },
-                'total_rupiah': f"{total:,.2f}",
-                'average_rupiah': f"{float(total) / float(num_data):,.2f}" if num_data > 0 else 0,
+                'total_rupiah': total,
+                'average_rupiah': float(total) / float(num_data) if num_data > 0 else 0,
                 'first_overview': country_summary
             }
 
@@ -2339,7 +2466,9 @@ class TtReportDashboard(models.Model):
                 'start_date': data['start_date'],
                 'end_date': data['end_date'],
                 'type': data['report_type'],
+                'provider': data['provider'],
                 'agent_seq_id': data['agent_seq_id'],
+                'agent_type': data['agent_type_seq_id'],
                 'addons': 'none'
             }
             issued_values = self.env['report.tt_report_selling.report_selling']._get_reports(temp_dict)
@@ -2366,8 +2495,10 @@ class TtReportDashboard(models.Model):
                 'start_date': data['start_date'],
                 'end_date': data['end_date'],
                 'type': 'invoice',
+                'provider': data['provider'],
                 'reservation': reservation_ids,
                 'agent_seq_id': data['agent_seq_id'],
+                'agent_type': data['agent_type_seq_id'],
                 'addons': 'none'
             }
             invoice = self.env['report.tt_report_selling.report_selling']._get_reports(temp_dict)
@@ -2384,9 +2515,9 @@ class TtReportDashboard(models.Model):
                         # if year and month with details doens't exist yet
                         # create a temp dict
                         temp_dict = {
-                            'year': i['booked_year'],
-                            'month_index': int(i['booked_month']),
-                            'month': month[int(i['booked_month']) - 1],
+                            'year': i['issued_year'],
+                            'month_index': int(i['issued_month']),
+                            'month': month[int(i['issued_month']) - 1],
                             'detail': self.add_issued_month_detail()
                         }
 
@@ -2446,7 +2577,12 @@ class TtReportDashboard(models.Model):
             # shape the data for return
             if mode == 'month':
                 # sum by month
-                first_counter = summary_issued[0]['month_index'] - 1
+                try:
+                    first_counter = summary_issued[0]['month_index'] - 1
+                except:
+                    splits = data['start_date'].split("-")
+                    month = splits[1]
+                    first_counter = int(month) - 1
                 for i in summary_issued:
                     # fill skipped month(s)
                     # check if current month (year) with start
@@ -2496,20 +2632,20 @@ class TtReportDashboard(models.Model):
                         if today >= data['start_date'] and today <= data['end_date']:
                             main_data[str(j['day']) + "-" + str(i['month_index']) + "-" + str(i['year'])] = j['invoice']
                             average_data[str(j['day']) + "-" + str(i['month_index']) + "-" + str(
-                                i['year'])] = f"{j['average']:,.2f}"
+                                i['year'])] = j['average']
                             revenue_data[str(j['day']) + "-" + str(i['month_index']) + "-" + str(
-                                i['year'])] = f"{j['revenue']:,.2f}"
+                                i['year'])] = j['revenue']
 
             # build to return data
             to_return = {
-                'graph': {
+                'first_graph': {
                     'label': list(main_data.keys()),
                     'data': list(main_data.values()),
                     'data2': list(revenue_data.values()),
                     'data3': list(average_data.values())
                 },
-                'total_rupiah': f"{total:,.2f}",
-                'average_rupiah': f"{float(total) / float(num_data):,.2f}" if num_data > 0 else 0
+                'total_rupiah': total,
+                'average_rupiah': float(total) / float(num_data) if num_data > 0 else 0
             }
 
             # update dependencies
@@ -2547,7 +2683,9 @@ class TtReportDashboard(models.Model):
                 'start_date': data['start_date'],
                 'end_date': data['end_date'],
                 'type': data['report_type'],
+                'provider': data['provider'],
                 'agent_seq_id': data['agent_seq_id'],
+                'agent_type': data['agent_type_seq_id'],
                 'addons': 'none'
             }
             issued_values = self.env['report.tt_report_selling.report_selling']._get_reports(temp_dict)
@@ -2574,8 +2712,10 @@ class TtReportDashboard(models.Model):
                 'start_date': data['start_date'],
                 'end_date': data['end_date'],
                 'type': 'invoice',
+                'provider': data['provider'],
                 'reservation': reservation_ids,
                 'agent_seq_id': data['agent_seq_id'],
+                'agent_type': data['agent_type_seq_id'],
                 'addons': 'none'
             }
             invoice = self.env['report.tt_report_selling.report_selling']._get_reports(temp_dict)
@@ -2592,9 +2732,9 @@ class TtReportDashboard(models.Model):
                         # if year and month with details doens't exist yet
                         # create a temp dict
                         temp_dict = {
-                            'year': i['booked_year'],
-                            'month_index': int(i['booked_month']),
-                            'month': month[int(i['booked_month']) - 1],
+                            'year': i['issued_year'],
+                            'month_index': int(i['issued_month']),
+                            'month': month[int(i['issued_month']) - 1],
                             'detail': self.add_issued_month_detail()
                         }
 
@@ -2654,7 +2794,12 @@ class TtReportDashboard(models.Model):
             # shape the data for return
             if mode == 'month':
                 # sum by month
-                first_counter = summary_issued[0]['month_index'] - 1
+                try:
+                    first_counter = summary_issued[0]['month_index'] - 1
+                except:
+                    splits = data['start_date'].split("-")
+                    month = splits[1]
+                    first_counter = int(month) - 1
                 for i in summary_issued:
                     # fill skipped month(s)
                     # check if current month (year) with start
@@ -2704,20 +2849,20 @@ class TtReportDashboard(models.Model):
                         if today >= data['start_date'] and today <= data['end_date']:
                             main_data[str(j['day']) + "-" + str(i['month_index']) + "-" + str(i['year'])] = j['invoice']
                             average_data[str(j['day']) + "-" + str(i['month_index']) + "-" + str(
-                                i['year'])] = f"{j['average']:,.2f}"
+                                i['year'])] = j['average']
                             revenue_data[str(j['day']) + "-" + str(i['month_index']) + "-" + str(
-                                i['year'])] = f"{j['revenue']:,.2f}"
+                                i['year'])] = j['revenue']
 
             # build to return data
             to_return = {
-                'graph': {
+                'first_graph': {
                     'label': list(main_data.keys()),
                     'data': list(main_data.values()),
                     'data2': list(revenue_data.values()),
                     'data3': list(average_data.values())
                 },
-                'total_rupiah': f"{total:,.2f}",
-                'average_rupiah': f"{float(total) / float(num_data):,.2f}" if num_data > 0 else 0
+                'total_rupiah': total,
+                'average_rupiah': float(total) / float(num_data) if num_data > 0 else 0
             }
 
             # update dependencies
