@@ -2,6 +2,7 @@ from odoo import models, fields, api, _
 from ...tools import variables,util,ERR
 import logging, traceback,pytz
 from datetime import datetime, timedelta, date
+from odoo.exceptions import UserError
 
 _logger = logging.getLogger(__name__)
 
@@ -95,6 +96,26 @@ class TtReportDashboard(models.Model):
         else:
             # get the id of the agent
             data['agent_seq_id'] = self.env['tt.agent'].browse(context['co_agent_id']).seq_id
+
+        if data['provider'] != 'all' or data['provider'] != '':
+            # check if provider is exist
+            provider_type = self.env['tt.provider'].search([('code', '=', data['provider'])])
+
+            # if provider is not exist
+            if not provider_type:
+                raise UserError(_('Provider is not exist'))
+
+            # get correspond provider type
+            provider_type_by_provider = 'overall_' + provider_type['provider_type_id'].code
+
+            # if provider is not in provider type
+            if data['report_type'] != "overall":
+                splits = data['report_of'].split("_")
+                if provider_type_by_provider != splits[1]:
+                    raise UserError(_("Provider %s is not in %s"))
+            else:
+                data['report_type'] = "overall_" + provider_type_by_provider
+
         type = data['report_type']
         if type == 'overall':
             res = self.get_report_overall(data)
@@ -147,7 +168,7 @@ class TtReportDashboard(models.Model):
                 'is_ho': 1,
                 'agent_type': self.env['report.tt_report_dashboard.overall'].get_agent_type_all(),
                 'agent_list': self.env['report.tt_report_dashboard.overall'].get_agent_all(),
-                'current_agent': self.env['tt.agent'].search([('seq_id', '=', data['agent_seq_id'])]).name,
+                'current_agent': self.env['tt.agent'].browse(data['agent_seq_id']).name,
                 'provider_type': variables.PROVIDER_TYPE,
                 'provider': self.env['report.tt_report_dashboard.overall'].get_provider_all(),
                 'from_data': data
@@ -155,7 +176,7 @@ class TtReportDashboard(models.Model):
         else:
             res['dependencies'] = {
                 'is_ho': 0,
-                'current_agent': self.env['tt.agent'].search([('seq_id', '=', data['agent_seq_id'])]).name,
+                'current_agent': self.env['tt.agent'].browse(context['co_agent_id']).name,
                 'agent_type': [],
                 'agent_list': [],
                 'provider_type': variables.PROVIDER_TYPE,
@@ -175,6 +196,7 @@ class TtReportDashboard(models.Model):
                 'start_date': data['start_date'],
                 'end_date': data['end_date'],
                 'type': data['report_type'],
+                'provider': data['provider'],
                 'agent_seq_id': data['agent_seq_id'],
                 'agent_type': data['agent_type_seq_id'],
                 'addons': 'book_issued'
@@ -274,7 +296,12 @@ class TtReportDashboard(models.Model):
             book_data = {}
             issued_data = {}
             if mode == 'month':
-                counter = summary_by_date[0]['month_index'] - 1
+                try:
+                    counter = summary_by_date[0]['month_index'] - 1
+                except:
+                    splits = data['start_date'].split("-")
+                    month = splits[1]
+                    counter = int(month) - 1
                 for i in summary_by_date:
                     # fill skipped months
                     if i['month_index'] - 1 < counter:
@@ -339,6 +366,7 @@ class TtReportDashboard(models.Model):
                 'start_date': data['start_date'],
                 'end_date': data['end_date'],
                 'type': data['report_type'],
+                'provider': data['provider'],
                 'agent_seq_id': data['agent_seq_id'],
                 'agent_type': data['agent_type_seq_id'],
                 # 'agent_seq_id': 8,
@@ -425,11 +453,17 @@ class TtReportDashboard(models.Model):
 
     def get_report_overall(self, data):
         try:
+            # check if user ask for a specific provider
+            if data['provider']:
+                provider_type = self.env['tt.provider'].search([('code', '=', data['provider'])])
+                data['report_type'] = 'overall_' + provider_type['provider_type_id'].code
+
             # process datetime to GMT 0
             # convert string to datetime
             start_date = self.convert_to_datetime(data['start_date'])
             end_date = self.convert_to_datetime(data['end_date'])
 
+            # change date to UTC0 from UTC+7
             temp_start_date = start_date - timedelta(days=1)
             data['start_date'] = temp_start_date.strftime('%Y-%m-%d') + " 17:00:00"
             data['end_date'] += " 16:59:59"
@@ -439,6 +473,7 @@ class TtReportDashboard(models.Model):
                 'start_date': data['start_date'],
                 'end_date': data['end_date'],
                 'type': data['report_type'],
+                'provider': data['provider'],
                 'agent_seq_id': data['agent_seq_id'],
                 'agent_type': data['agent_type_seq_id'],
                 # 'agent_seq_id': False,
@@ -476,6 +511,7 @@ class TtReportDashboard(models.Model):
                 'start_date': data['start_date'],
                 'end_date': data['end_date'],
                 'type': 'invoice',
+                'provider': data['provider'],
                 'agent_seq_id': data['agent_seq_id'],
                 'agent_type': data['agent_type_seq_id'],
                 # 'agent_seq_id': False,
@@ -496,9 +532,9 @@ class TtReportDashboard(models.Model):
                         # if year and month with details doens't exist yet
                         # create a temp dict
                         temp_dict = {
-                            'year': i['booked_year'],
-                            'month_index': int(i['booked_month']),
-                            'month': month[int(i['booked_month']) - 1],
+                            'year': i['issued_year'],
+                            'month_index': int(i['issued_month']),
+                            'month': month[int(i['issued_month']) - 1],
                             'detail': self.add_issued_month_detail()
                         }
 
@@ -677,6 +713,7 @@ class TtReportDashboard(models.Model):
                 'start_date': data['start_date'],
                 'end_date': data['end_date'],
                 'type': data['report_type'],
+                'provider': data['provider'],
                 'agent_seq_id': data['agent_seq_id'],
                 'agent_type': data['agent_type_seq_id'],
                 'addons': 'none'
@@ -712,6 +749,7 @@ class TtReportDashboard(models.Model):
                 'start_date': data['start_date'],
                 'end_date': data['end_date'],
                 'type': 'invoice',
+                'provider': data['provider'],
                 'reservation': reservation_ids,
                 'agent_seq_id': data['agent_seq_id'],
                 'agent_type': data['agent_type_seq_id'],
@@ -731,9 +769,9 @@ class TtReportDashboard(models.Model):
                         # if year and month with details doens't exist yet
                         # create a temp dict
                         temp_dict = {
-                            'year': i['booked_year'],
-                            'month_index': int(i['booked_month']),
-                            'month': month[int(i['booked_month']) - 1],
+                            'year': i['issued_year'],
+                            'month_index': int(i['issued_month']),
+                            'month': month[int(i['issued_month']) - 1],
                             'detail': self.add_issued_month_detail()
                         }
 
@@ -978,6 +1016,7 @@ class TtReportDashboard(models.Model):
                 'start_date': data['start_date'],
                 'end_date': data['end_date'],
                 'type': data['report_type'],
+                'provider': data['provider'],
                 'agent_seq_id': data['agent_seq_id'],
                 'agent_type': data['agent_type_seq_id'],
                 'addons': 'none'
@@ -1011,6 +1050,7 @@ class TtReportDashboard(models.Model):
                 'start_date': data['start_date'],
                 'end_date': data['end_date'],
                 'type': 'invoice',
+                'provider': data['provider'],
                 'reservation': reservation_ids,
                 'agent_seq_id': data['agent_seq_id'],
                 'agent_type': data['agent_type_seq_id'],
@@ -1031,9 +1071,9 @@ class TtReportDashboard(models.Model):
                         # if year and month with details doens't exist yet
                         # create a temp dict
                         temp_dict = {
-                            'year': i['booked_year'],
-                            'month_index': int(i['booked_month']),
-                            'month': month[int(i['booked_month']) - 1],
+                            'year': i['issued_year'],
+                            'month_index': int(i['issued_month']),
+                            'month': month[int(i['issued_month']) - 1],
                             'detail': self.add_issued_month_detail()
                         }
 
@@ -1280,6 +1320,7 @@ class TtReportDashboard(models.Model):
                 'start_date': data['start_date'],
                 'end_date': data['end_date'],
                 'type': data['report_type'],
+                'provider': data['provider'],
                 'agent_seq_id': data['agent_seq_id'],
                 'agent_type': data['agent_type_seq_id'],
                 'addons': 'none'
@@ -1310,8 +1351,10 @@ class TtReportDashboard(models.Model):
                 'start_date': data['start_date'],
                 'end_date': data['end_date'],
                 'type': 'invoice',
+                'provider': data['provider'],
                 'reservation': reservation_ids,
                 'agent_seq_id': data['agent_seq_id'],
+                'agent_type': data['agent_type_seq_id'],
                 'addons': 'none'
             }
             invoice = self.env['report.tt_report_selling.report_selling']._get_reports(temp_dict)
@@ -1328,9 +1371,9 @@ class TtReportDashboard(models.Model):
                         # if year and month with details doens't exist yet
                         # create a temp dict
                         temp_dict = {
-                            'year': i['booked_year'],
-                            'month_index': int(i['booked_month']),
-                            'month': month[int(i['booked_month']) - 1],
+                            'year': i['issued_year'],
+                            'month_index': int(i['issued_month']),
+                            'month': month[int(i['issued_month']) - 1],
                             'detail': self.add_issued_month_detail()
                         }
 
@@ -1495,6 +1538,7 @@ class TtReportDashboard(models.Model):
                 'start_date': data['start_date'],
                 'end_date': data['end_date'],
                 'type': data['report_type'],
+                'provider': data['provider'],
                 'agent_seq_id': data['agent_seq_id'],
                 'agent_type': data['agent_type_seq_id'],
                 'addons': 'none'
@@ -1523,6 +1567,7 @@ class TtReportDashboard(models.Model):
                 'start_date': data['start_date'],
                 'end_date': data['end_date'],
                 'type': 'invoice',
+                'provider': data['provider'],
                 'agent_seq_id': data['agent_seq_id'],
                 'agent_type': data['agent_type_seq_id'],
                 'reservation': reservation_ids,
@@ -1542,9 +1587,9 @@ class TtReportDashboard(models.Model):
                         # if year and month with details doens't exist yet
                         # create a temp dict
                         temp_dict = {
-                            'year': i['booked_year'],
-                            'month_index': int(i['booked_month']),
-                            'month': month[int(i['booked_month']) - 1],
+                            'year': i['issued_year'],
+                            'month_index': int(i['issued_month']),
+                            'month': month[int(i['issued_month']) - 1],
                             'detail': self.add_issued_month_detail()
                         }
 
@@ -1709,6 +1754,7 @@ class TtReportDashboard(models.Model):
                 'start_date': data['start_date'],
                 'end_date': data['end_date'],
                 'type': data['report_type'],
+                'provider': data['provider'],
                 'agent_seq_id': data['agent_seq_id'],
                 'agent_type': data['agent_type_seq_id'],
                 'addons': 'none'
@@ -1737,6 +1783,7 @@ class TtReportDashboard(models.Model):
                 'start_date': data['start_date'],
                 'end_date': data['end_date'],
                 'type': 'invoice',
+                'provider': data['provider'],
                 'reservation': reservation_ids,
                 'agent_seq_id': data['agent_seq_id'],
                 'agent_type': data['agent_type_seq_id'],
@@ -1757,9 +1804,9 @@ class TtReportDashboard(models.Model):
                         # if year and month with details doens't exist yet
                         # create a temp dict
                         temp_dict = {
-                            'year': i['booked_year'],
-                            'month_index': int(i['booked_month']),
-                            'month': month[int(i['booked_month']) - 1],
+                            'year': i['issued_year'],
+                            'month_index': int(i['issued_month']),
+                            'month': month[int(i['issued_month']) - 1],
                             'detail': self.add_issued_month_detail()
                         }
 
@@ -1947,6 +1994,7 @@ class TtReportDashboard(models.Model):
                 'start_date': data['start_date'],
                 'end_date': data['end_date'],
                 'type': data['report_type'],
+                'provider': data['provider'],
                 'agent_seq_id': data['agent_seq_id'],
                 'agent_type': data['agent_type_seq_id'],
                 'addons': 'none'
@@ -1975,6 +2023,7 @@ class TtReportDashboard(models.Model):
                 'start_date': data['start_date'],
                 'end_date': data['end_date'],
                 'type': 'invoice',
+                'provider': data['provider'],
                 'reservation': reservation_ids,
                 'agent_seq_id': data['agent_seq_id'],
                 'agent_type': data['agent_type_seq_id'],
@@ -1995,9 +2044,9 @@ class TtReportDashboard(models.Model):
                         # if year and month with details doens't exist yet
                         # create a temp dict
                         temp_dict = {
-                            'year': i['booked_year'],
-                            'month_index': int(i['booked_month']),
-                            'month': month[int(i['booked_month']) - 1],
+                            'year': i['issued_year'],
+                            'month_index': int(i['issued_month']),
+                            'month': month[int(i['issued_month']) - 1],
                             'detail': self.add_issued_month_detail()
                         }
 
@@ -2185,6 +2234,7 @@ class TtReportDashboard(models.Model):
                 'start_date': data['start_date'],
                 'end_date': data['end_date'],
                 'type': data['report_type'],
+                'provider': data['provider'],
                 'agent_seq_id': data['agent_seq_id'],
                 'agent_type': data['agent_type_seq_id'],
                 'addons': 'none'
@@ -2213,6 +2263,7 @@ class TtReportDashboard(models.Model):
                 'start_date': data['start_date'],
                 'end_date': data['end_date'],
                 'type': 'invoice',
+                'provider': data['provider'],
                 'reservation': reservation_ids,
                 'agent_seq_id': data['agent_seq_id'],
                 'agent_type': data['agent_type_seq_id'],
@@ -2233,9 +2284,9 @@ class TtReportDashboard(models.Model):
                         # if year and month with details doens't exist yet
                         # create a temp dict
                         temp_dict = {
-                            'year': i['booked_year'],
-                            'month_index': int(i['booked_month']),
-                            'month': month[int(i['booked_month']) - 1],
+                            'year': i['issued_year'],
+                            'month_index': int(i['issued_month']),
+                            'month': month[int(i['issued_month']) - 1],
                             'detail': self.add_issued_month_detail()
                         }
 
@@ -2415,6 +2466,7 @@ class TtReportDashboard(models.Model):
                 'start_date': data['start_date'],
                 'end_date': data['end_date'],
                 'type': data['report_type'],
+                'provider': data['provider'],
                 'agent_seq_id': data['agent_seq_id'],
                 'agent_type': data['agent_type_seq_id'],
                 'addons': 'none'
@@ -2443,6 +2495,7 @@ class TtReportDashboard(models.Model):
                 'start_date': data['start_date'],
                 'end_date': data['end_date'],
                 'type': 'invoice',
+                'provider': data['provider'],
                 'reservation': reservation_ids,
                 'agent_seq_id': data['agent_seq_id'],
                 'agent_type': data['agent_type_seq_id'],
@@ -2462,9 +2515,9 @@ class TtReportDashboard(models.Model):
                         # if year and month with details doens't exist yet
                         # create a temp dict
                         temp_dict = {
-                            'year': i['booked_year'],
-                            'month_index': int(i['booked_month']),
-                            'month': month[int(i['booked_month']) - 1],
+                            'year': i['issued_year'],
+                            'month_index': int(i['issued_month']),
+                            'month': month[int(i['issued_month']) - 1],
                             'detail': self.add_issued_month_detail()
                         }
 
@@ -2630,6 +2683,7 @@ class TtReportDashboard(models.Model):
                 'start_date': data['start_date'],
                 'end_date': data['end_date'],
                 'type': data['report_type'],
+                'provider': data['provider'],
                 'agent_seq_id': data['agent_seq_id'],
                 'agent_type': data['agent_type_seq_id'],
                 'addons': 'none'
@@ -2658,6 +2712,7 @@ class TtReportDashboard(models.Model):
                 'start_date': data['start_date'],
                 'end_date': data['end_date'],
                 'type': 'invoice',
+                'provider': data['provider'],
                 'reservation': reservation_ids,
                 'agent_seq_id': data['agent_seq_id'],
                 'agent_type': data['agent_type_seq_id'],
@@ -2677,9 +2732,9 @@ class TtReportDashboard(models.Model):
                         # if year and month with details doens't exist yet
                         # create a temp dict
                         temp_dict = {
-                            'year': i['booked_year'],
-                            'month_index': int(i['booked_month']),
-                            'month': month[int(i['booked_month']) - 1],
+                            'year': i['issued_year'],
+                            'month_index': int(i['issued_month']),
+                            'month': month[int(i['issued_month']) - 1],
                             'detail': self.add_issued_month_detail()
                         }
 
