@@ -20,7 +20,7 @@ class ReportSelling(models.Model):
         reservation.total as amount, provider_type.name as provider_type_name, 
         reservation.payment_method as reservation_payment_method,
         reservation.agent_id as agent_id, reservation.agent_type_id as agent_type_id,
-        agent.name as agent_name, agent_type.name as agent_type_name
+        agent.name as agent_name, agent_type.name as agent_type_name,
         provider.name as provider_name
         """
 
@@ -681,6 +681,16 @@ class ReportSelling(models.Model):
             query += 'ORDER BY {} '.format(self._order_by_issued())
         elif provider_checker == 'overall_ppob':
             query += 'FROM {} '.format(self._from_ppob())
+            query += 'WHERE {} '.format(self._where_issued(date_from, date_to))
+            if context['provider']:
+                query += 'AND {} '.format(self._where_provider(context['provider']))
+            if context['agent_type_code']:
+                query += 'AND {} '.format(self._where_agent_type(context['agent_type_code']))
+            if agent_seq_id:
+                query += 'AND {} '.format(self._where_agent(agent_seq_id))
+            query += 'ORDER BY {} '.format(self._order_by_issued())
+        elif provider_checker == 'overall_passport':
+            query += 'FROM {} '.format(self._from('passport'))
             query += 'WHERE {} '.format(self._where_issued(date_from, date_to))
             if context['provider']:
                 query += 'AND {} '.format(self._where_provider(context['provider']))
