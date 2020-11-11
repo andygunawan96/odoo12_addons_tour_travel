@@ -231,8 +231,8 @@ class PrintoutReconcile(models.AbstractModel):
 
     def prepare_values(self, data):
         lines = self._lines(data)
-        for line in lines:
-            line['ticket_numbers'] = self.ticket_to_list(line['ticket_numbers'])
+        # for line in lines:
+        #     line['ticket_numbers'] = self.ticket_to_list(line['ticket_numbers'])
         data['subtitle'] = 'Reconcile Report: '
 
         return {
@@ -263,25 +263,25 @@ class PrintoutReconcile(models.AbstractModel):
 
         sheet.merge_range('A1:L2', 'Reconcile Report', style.title)  # set merge cells for agent name
         sheet.merge_range('A3:L4', values['data']['form']['display_reconcile_name'], style.title2)  # set merge cells for title
-        sheet.write('O5', 'Printing Date :' + date_now.strftime('%d-%b-%Y %H:%M'),
+        sheet.write('P5', 'Printing Date :' + date_now.strftime('%d-%b-%Y %H:%M'),
                     style.print_date)  # print date print
         sheet.freeze_panes(9, 0)  # freeze panes mulai dari row 1-10
 
         # ======= TABLE HEAD ==========
-        sheet.write('A9', 'Ticket Number', style.table_head_center)
-        sheet.write('B9', 'PNR', style.table_head_center)
-        sheet.write('C9', 'Agent Name', style.table_head_center)
-        sheet.write('D9', 'Transaction Code', style.table_head_center)
-        sheet.write('E9', 'Type', style.table_head_center)
-        sheet.write('F9', 'Booking Time', style.table_head_center)
-        sheet.write('G9', 'Issued Time', style.table_head_center)
-        sheet.write('H9', 'Base Price', style.table_head_center)
-        sheet.write('I9', 'Tax', style.table_head_center)
-        sheet.write('J9', 'Commission', style.table_head_center)
-        sheet.write('K9', 'Total Price', style.table_head_center)
-        sheet.write('L9', 'Vendor Start Balance', style.table_head_center)
-        sheet.write('M9', 'Vendor End Balance', style.table_head_center)
-        sheet.write('N9', 'State', style.table_head_center)
+        sheet.write('A9', 'PNR', style.table_head_center)
+        sheet.write('B9', 'Agent Name', style.table_head_center)
+        sheet.write('C9', 'Transaction Code', style.table_head_center)
+        sheet.write('D9', 'Type', style.table_head_center)
+        sheet.write('E9', 'Booking Time', style.table_head_center)
+        sheet.write('F9', 'Issued Time', style.table_head_center)
+        sheet.write('G9', 'Base Price', style.table_head_center)
+        sheet.write('H9', 'Tax', style.table_head_center)
+        sheet.write('I9', 'Commission', style.table_head_center)
+        sheet.write('J9', 'Total Price', style.table_head_center)
+        sheet.write('K9', 'Vendor Start Balance', style.table_head_center)
+        sheet.write('L9', 'Vendor End Balance', style.table_head_center)
+        sheet.write('M9', 'State', style.table_head_center)
+        sheet.write('N9', 'Ticket Numbers', style.table_head_center)
         sheet.write('O9', 'Description', style.table_head_center)
 
         # ====== SET WIDTH AND HEIGHT ==========
@@ -291,110 +291,108 @@ class PrintoutReconcile(models.AbstractModel):
         sheet.set_row(3, row_height)
         sheet.set_row(4, row_height)
         sheet.set_row(8, 30)
-        sheet.set_column('A:A', 5)  # set_column(first_col, last_col, width)
-        sheet.set_column('B:B', 13)
-        sheet.set_column('C:C', 19)
-        sheet.set_column('D:D', 15)
-        sheet.set_column('E:E', 10)
+        sheet.set_column('A:A', 13)  # set_column(first_col, last_col, width)
+        sheet.set_column('B:B', 19)
+        sheet.set_column('C:C', 15)
+        sheet.set_column('D:D', 10)
+        sheet.set_column('E:E', 18)
         sheet.set_column('F:F', 18)
-        sheet.set_column('G:G', 18)
+        sheet.set_column('G:G', 17)
         sheet.set_column('H:H', 17)
         sheet.set_column('I:I', 17)
         sheet.set_column('J:J', 17)
-        sheet.set_column('K:K', 17)
+        sheet.set_column('K:K', 20)
         sheet.set_column('L:L', 20)
-        sheet.set_column('M:M', 20)
-        sheet.set_column('N:N', 17)
+        sheet.set_column('M:M', 17)
+        sheet.set_column('N:N', 50)
         sheet.set_column('O:O', 30)
 
         row_data = 8
         for rec in values['lines']:
-            if rec['ticket_numbers']:
-                for ticket in rec['ticket_numbers']:
-                    # Style
-                    row_data += 1
+            # Style
+            row_data += 1
 
-                    sty_table_data_center = style.table_data_center
-                    sty_table_data = style.table_data
-                    sty_datetime = style.table_data_datetime
-                    sty_date = style.table_data_date
-                    sty_amount = style.table_data_amount
+            sty_table_data_center = style.table_data_center
+            sty_table_data = style.table_data
+            sty_datetime = style.table_data_datetime
+            sty_date = style.table_data_date
+            sty_amount = style.table_data_amount
 
-                    if rec['state'] == 'match':
-                        sty_table_data_center = style.table_data_center_green
-                        sty_table_data = style.table_data_green
-                        sty_datetime = style.table_data_datetime_green
-                        sty_date = style.table_data_datetime_green
-                        sty_amount = style.table_data_amount_green
-                    elif rec['state'] == 'done':
-                        sty_table_data_center = style.table_data_center_blue
-                        sty_table_data = style.table_data_blue
-                        sty_datetime = style.table_data_datetime_blue
-                        sty_date = style.table_data_datetime_blue
-                        sty_amount = style.table_data_amount_blue
-                    elif rec['state'] == 'ignore':
-                        sty_table_data_center = style.table_data_center_red
-                        sty_table_data = style.table_data_red
-                        sty_datetime = style.table_data_datetime_red
-                        sty_date = style.table_data_datetime_red
-                        sty_amount = style.table_data_amount_red
+            if rec['state'] == 'match':
+                sty_table_data_center = style.table_data_center_green
+                sty_table_data = style.table_data_green
+                sty_datetime = style.table_data_datetime_green
+                sty_date = style.table_data_datetime_green
+                sty_amount = style.table_data_amount_green
+            elif rec['state'] == 'done':
+                sty_table_data_center = style.table_data_center_blue
+                sty_table_data = style.table_data_blue
+                sty_datetime = style.table_data_datetime_blue
+                sty_date = style.table_data_datetime_blue
+                sty_amount = style.table_data_amount_blue
+            elif rec['state'] == 'ignore':
+                sty_table_data_center = style.table_data_center_red
+                sty_table_data = style.table_data_red
+                sty_datetime = style.table_data_datetime_red
+                sty_date = style.table_data_datetime_red
+                sty_amount = style.table_data_amount_red
 
-                    if row_data % 2 == 0:  # row genap : bg abu2
-                        sty_table_data_center = style.table_data_center_even
-                        sty_table_data = style.table_data_even
-                        sty_datetime = style.table_data_datetime_even
-                        sty_date = style.table_data_date_even
-                        sty_amount = style.table_data_amount_even
+            if row_data % 2 == 0:  # row genap : bg abu2
+                sty_table_data_center = style.table_data_center_even
+                sty_table_data = style.table_data_even
+                sty_datetime = style.table_data_datetime_even
+                sty_date = style.table_data_date_even
+                sty_amount = style.table_data_amount_even
 
-                        if rec['state'] == 'match':
-                            sty_table_data_center = style.table_data_center_green_even
-                            sty_table_data = style.table_data_green_even
-                            sty_datetime = style.table_data_datetime_green_even
-                            sty_date = style.table_data_datetime_green_even
-                            sty_amount = style.table_data_amount_green_even
-                        elif rec['state'] == 'done':
-                            sty_table_data_center = style.table_data_center_blue_even
-                            sty_table_data = style.table_data_blue_even
-                            sty_datetime = style.table_data_datetime_blue_even
-                            sty_date = style.table_data_datetime_blue_even
-                            sty_amount = style.table_data_amount_blue_even
-                        elif rec['state'] == 'ignore':
-                            sty_table_data_center = style.table_data_center_red_even
-                            sty_table_data = style.table_data_red_even
-                            sty_datetime = style.table_data_datetime_red_even
-                            sty_date = style.table_data_datetime_red_even
-                            sty_amount = style.table_data_amount_red_even
+                if rec['state'] == 'match':
+                    sty_table_data_center = style.table_data_center_green_even
+                    sty_table_data = style.table_data_green_even
+                    sty_datetime = style.table_data_datetime_green_even
+                    sty_date = style.table_data_datetime_green_even
+                    sty_amount = style.table_data_amount_green_even
+                elif rec['state'] == 'done':
+                    sty_table_data_center = style.table_data_center_blue_even
+                    sty_table_data = style.table_data_blue_even
+                    sty_datetime = style.table_data_datetime_blue_even
+                    sty_date = style.table_data_datetime_blue_even
+                    sty_amount = style.table_data_amount_blue_even
+                elif rec['state'] == 'ignore':
+                    sty_table_data_center = style.table_data_center_red_even
+                    sty_table_data = style.table_data_red_even
+                    sty_datetime = style.table_data_datetime_red_even
+                    sty_date = style.table_data_datetime_red_even
+                    sty_amount = style.table_data_amount_red_even
 
-                    sty_table_data_center.font_size = 10
-                    sty_table_data.font_size = 10
-                    sty_datetime.font_size = 10
-                    sty_date.font_size = 10
-                    sty_amount.font_size = 10
+            sty_table_data_center.font_size = 10
+            sty_table_data.font_size = 10
+            sty_datetime.font_size = 10
+            sty_date.font_size = 10
+            sty_amount.font_size = 10
 
-                    # Content
-                    sheet.write(row_data, 0, ticket, sty_table_data)
-                    sheet.write(row_data, 1, rec['pnr'], sty_table_data)
-                    sheet.write(row_data, 2, rec['agent_name'], sty_table_data)
-                    sheet.write(row_data, 3, rec['transaction_code'], sty_table_data)
-                    sheet.write(row_data, 4, rec['type'], sty_table_data)
-                    sheet.write(row_data, 5,
-                                datetime.strptime(str(rec['booking_time']), "%Y-%m-%d %H:%M:%S").strftime(
-                                    "%Y-%m-%d %H:%M:%S") if rec[
-                                    'booking_time'] else '',
-                                sty_datetime)
-                    sheet.write(row_data, 6,
-                                datetime.strptime(str(rec['issued_time']), "%Y-%m-%d %H:%M:%S").strftime(
-                                    "%Y-%m-%d %H:%M:%S") if rec[
-                                    'issued_time'] else '',
-                                sty_datetime)
-                    sheet.write(row_data, 7, rec['base_price'], sty_amount)
-                    sheet.write(row_data, 8, rec['tax'], sty_amount)
-                    sheet.write(row_data, 9, rec['commission'], sty_amount)
-                    sheet.write(row_data, 10, rec['total'], sty_amount)
-                    sheet.write(row_data, 11, rec['vendor_start_balance'], sty_amount)
-                    sheet.write(row_data, 12, rec['vendor_end_balance'], sty_amount)
-                    sheet.write(row_data, 13, rec['state'], sty_table_data)
-                    sheet.write(row_data, 14, rec['description'], sty_table_data)
+            # Content
+            sheet.write(row_data, 0, rec['pnr'], sty_table_data)
+            sheet.write(row_data, 1, rec['agent_name'], sty_table_data)
+            sheet.write(row_data, 2, rec['transaction_code'], sty_table_data)
+            sheet.write(row_data, 3, rec['type'], sty_table_data)
+            sheet.write(row_data, 4,
+                        datetime.strptime(str(rec['booking_time']), "%Y-%m-%d %H:%M:%S").strftime(
+                            "%Y-%m-%d %H:%M:%S") if rec[
+                            'booking_time'] else '',
+                        sty_datetime)
+            sheet.write(row_data, 5,
+                        datetime.strptime(str(rec['issued_time']), "%Y-%m-%d %H:%M:%S").strftime(
+                            "%Y-%m-%d %H:%M:%S") if rec[
+                            'issued_time'] else '',
+                        sty_datetime)
+            sheet.write(row_data, 6, rec['base_price'], sty_amount)
+            sheet.write(row_data, 7, rec['tax'], sty_amount)
+            sheet.write(row_data, 8, rec['commission'], sty_amount)
+            sheet.write(row_data, 9, rec['total'], sty_amount)
+            sheet.write(row_data, 10, rec['vendor_start_balance'], sty_amount)
+            sheet.write(row_data, 11, rec['vendor_end_balance'], sty_amount)
+            sheet.write(row_data, 12, rec['state'], sty_table_data)
+            sheet.write(row_data, 13, rec['ticket_numbers'], sty_table_data)
+            sheet.write(row_data, 14, rec['description'], sty_table_data)
 
         workbook.close()
 
