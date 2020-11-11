@@ -239,6 +239,7 @@ class ReportSelling(models.Model):
         reservation.total as amount, provider_type.name as provider_type_name, 
         reservation.payment_method as reservation_payment_method,
         reservation.agent_id as agent_id, reservation.agent_type_id as agent_type_id,
+        pro_ppob.carrier_name as carrier_name,
         provider_type.name as provider_type_name,
         provider.name as provider_name,
         agent.name as agent_name, agent_type.name as agent_type_name
