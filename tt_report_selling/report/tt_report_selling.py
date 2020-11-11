@@ -21,6 +21,7 @@ class ReportSelling(models.Model):
         reservation.payment_method as reservation_payment_method,
         reservation.agent_id as agent_id, reservation.agent_type_id as agent_type_id,
         agent.name as agent_name, agent_type.name as agent_type_name
+        provider.name as provider_name
         """
 
     @staticmethod
@@ -203,6 +204,7 @@ class ReportSelling(models.Model):
         reservation.offline_provider_type as reservation_offline_provider_type, 
         reservation.nta_price as reservation_nta_price, 
         provider_type.name as provider_type_name,
+        provider.name as provider_name,
         agent.name as agent_name, agent_type.name as agent_type_name
         """
 
@@ -252,6 +254,8 @@ class ReportSelling(models.Model):
         LEFT JOIN tt_provider_type provider_type ON reservation.provider_type_id = provider_type.id
         LEFT JOIN tt_agent agent ON agent.id = reservation.agent_id
         LEFT JOIN tt_agent_type agent_type ON agent_type.id = reservation.agent_type_id
+        LEFT JOIN tt_provider_ """ + provider_type + """ pro_type ON pro_type.booking_id = reservation.id
+        LEFT JOIN tt_provider provider ON pro_type.provider_id = provider.id
         """
 
     @staticmethod
@@ -363,6 +367,8 @@ class ReportSelling(models.Model):
         LEFT JOIN tt_provider_type provider_type ON reservation.provider_type_id = provider_type.id
         LEFT JOIN tt_agent agent ON agent.id = reservation.agent_id
         LEFT JOIN tt_agent_type agent_type ON agent_type.id = reservation.agent_type_id
+        LEFT JOIN tt_provider_offline pro_off ON pro_off.booking_id = reservation.id
+        LEFT JOIN tt_provider provider ON provider.id = pro_off.provider_id
         """
         # return """tt_reservation_offline"""
 
