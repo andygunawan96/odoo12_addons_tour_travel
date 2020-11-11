@@ -310,10 +310,10 @@ class TtBankTransaction(models.Model):
         for acc_number in data['account_number']:
             if number_checker.match(acc_number):
                 account_number += acc_number
-        transaction = self.env['tt.bank.accounts'].search([('bank_account_number_without_dot', '=', account_number)])
+        bank_account_obj = self.env['tt.bank.accounts'].search([('bank_account_number_without_dot', '=', account_number)])
         res = []
-        if transaction:
-            date_exist = transaction.bank_transaction_date_ids.filtered(
+        if bank_account_obj:
+            date_exist = bank_account_obj.bank_transaction_date_ids.filtered(
                 lambda x: x.date == data['date'])
             if date_exist:
                 if data.get('type') == 'D':
@@ -321,10 +321,10 @@ class TtBankTransaction(models.Model):
                 else:
                     transaction_type = 'C'
                 result = date_exist.transaction_ids.filtered(lambda x: x.transaction_type == transaction_type)
-                if result:
+                for rec in result:
                     res.append({
-                        "date": result.transaction_date.strftime("%Y-%m-%d %H:%M:%S"),
-                        "amount": result.transaction_amount,
-                        "transaction_message": result.transaction_message != '' and result.transaction_message or result.transaction_name
+                        "date": rec.transaction_date.strftime("%Y-%m-%d %H:%M:%S"),
+                        "amount": rec.transaction_amount,
+                        "transaction_message": rec.transaction_message != '' and rec.transaction_message or rec.transaction_name
                     })
         return ERR.get_no_error(res)
