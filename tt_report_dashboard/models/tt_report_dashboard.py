@@ -106,15 +106,15 @@ class TtReportDashboard(models.Model):
                 raise UserError(_('Provider is not exist'))
 
             # get correspond provider type
-            provider_type_by_provider = 'overall_' + provider_type['provider_type_id'].code
+            provider_type_by_provider = provider_type['provider_type_id'].code
 
             # if provider is not in provider type
             if data['report_type'] != "overall":
-                splits = data['report_of'].split("_")
-                if provider_type_by_provider != splits[1]:
+                splits = data['report_type'].split("_")
+                if str(provider_type_by_provider) != splits[1]:
                     raise UserError(_("Provider %s is not in %s"))
             else:
-                data['report_type'] = "overall_" + provider_type_by_provider
+                data['report_type'] = "overall_" + str(provider_type_by_provider)
 
         type = data['report_type']
         if type == 'overall':
@@ -137,6 +137,8 @@ class TtReportDashboard(models.Model):
             res = self.get_report_overall_offline(data)
         elif type == 'overall_ppob':
             res = self.get_report_overall_ppob(data)
+        elif type == 'overall_passport':
+            res = self.get_report_overall_passport(data)
         elif type == 'airline':
             res = self.get_report_airline(data)
         elif type == 'event':
@@ -168,7 +170,7 @@ class TtReportDashboard(models.Model):
                 'is_ho': 1,
                 'agent_type': self.env['report.tt_report_dashboard.overall'].get_agent_type_all(),
                 'agent_list': self.env['report.tt_report_dashboard.overall'].get_agent_all(),
-                'current_agent': self.env['tt.agent'].browse(data['agent_seq_id']).name,
+                'current_agent': self.env['tt.agent'].search([('seq_id', '=', data['agent_seq_id'])]).name,
                 'provider_type': variables.PROVIDER_TYPE,
                 'provider': self.env['report.tt_report_dashboard.overall'].get_provider_all(),
                 'from_data': data
@@ -727,6 +729,38 @@ class TtReportDashboard(models.Model):
             ]
 
             # overview base on the same timeframe
+            sector_dictionary = [{
+                'sector': 'International',
+                'valuation': 0,
+                'passenger_count': 0,
+                'counter': 0
+            }, {
+                'sector': 'Domestic',
+                'valuation': 0,
+                'passenger_count': 0,
+                'counter': 0
+            }, {
+                'sector': 'Other',
+                'valuation': 0,
+                'passenger_count': 0,
+                'counter': 0
+            }]
+            direction_dictionary = [{
+                'direction': 'One Way',
+                'valuation': 0,
+                'passenger_count': 0,
+                'counter': 0
+            }, {
+                'direction': 'Return',
+                'valuation': 0,
+                'passenger_count': 0,
+                'counter': 0
+            }, {
+                'direction': 'Multi-City',
+                'valuation': 0,
+                'passenger_count': 0,
+                'counter': 0
+            }]
             destination_sector_summary = []
             destination_direction_summary = []
 
@@ -796,6 +830,34 @@ class TtReportDashboard(models.Model):
                         num_data += 1
                 except:
                     pass
+
+                # ============= Summary by Domestic/International ============
+                if i['reservation_sector'] == 'International':
+                    sector_dictionary[0]['valuation'] += int(i['amount'])
+                    sector_dictionary[0]['counter'] += 1
+                    sector_dictionary[0]['passenger_count'] += int(i['reservation_passenger'])
+                elif i['reservation_sector'] == 'Domestic':
+                    sector_dictionary[1]['valuation'] += int(i['amount'])
+                    sector_dictionary[1]['counter'] += 1
+                    sector_dictionary[1]['passenger_count'] += int(i['reservation_passenger'])
+                else:
+                    sector_dictionary[2]['valuation'] += int(i['amount'])
+                    sector_dictionary[2]['counter'] += 1
+                    sector_dictionary[2]['passenger_count'] += int(i['reservation_passenger'])
+
+                # ============= Summary by flight Type (OW, R, MC) ===========
+                if i['reservation_direction'] == 'OW':
+                    direction_dictionary[0]['valuation'] += int(i['amount'])
+                    direction_dictionary[0]['counter'] += 1
+                    direction_dictionary[0]['passenger_count'] = int(i['reservation_passenger'])
+                elif i['reservation_direction'] == 'RT':
+                    direction_dictionary[1]['valuation'] += int(i['amount'])
+                    direction_dictionary[1]['counter'] += 1
+                    direction_dictionary[1]['passenger_count'] = int(i['reservation_passenger'])
+                else:
+                    direction_dictionary[2]['valuation'] += int(i['amount'])
+                    direction_dictionary[2]['counter'] += 1
+                    direction_dictionary[2]['passenger_count'] = int(i['reservation_passenger'])
 
                 if i['reservation_state'] == 'issued':
                     total += i['amount']
@@ -971,8 +1033,8 @@ class TtReportDashboard(models.Model):
                 'total_rupiah': total,
                 'average_rupiah': float(total) / float(num_data) if num_data > 0 else 0,
                 'first_overview': {
-                    'sector_summary': destination_sector_summary[:20],
-                    'direction_summary': destination_direction_summary[:20],
+                    'sector_summary': sector_dictionary,
+                    'direction_summary': direction_dictionary,
                     'international': international_filter[:20],
                     'domestic': domestic_filter[:20],
                     'one_way': one_way_filter[:20],
@@ -1029,6 +1091,40 @@ class TtReportDashboard(models.Model):
                 'January', 'February', 'March', 'April', 'May', 'June',
                 'July', 'August', 'September', 'October', 'November', 'December'
             ]
+
+            # ============== INITIATE RESULT DICT ==================
+            sector_dictionary = [{
+                'sector': 'International',
+                'valuation': 0,
+                'passenger_count': 0,
+                'counter': 0
+            }, {
+                'sector': 'Domestic',
+                'valuation': 0,
+                'passenger_count': 0,
+                'counter': 0
+            }, {
+                'sector': 'Other',
+                'valuation': 0,
+                'passenger_count': 0,
+                'counter': 0
+            }]
+            direction_dictionary = [{
+                'direction': 'One Way',
+                'valuation': 0,
+                'passenger_count': 0,
+                'counter': 0
+            }, {
+                'direction': 'Return',
+                'valuation': 0,
+                'passenger_count': 0,
+                'counter': 0
+            }, {
+                'direction': 'Multi-City',
+                'valuation': 0,
+                'passenger_count': 0,
+                'counter': 0
+            }]
 
             # overview base on the same timeframe
             destination_sector_summary = []
@@ -1098,6 +1194,34 @@ class TtReportDashboard(models.Model):
                         num_data += 1
                 except:
                     pass
+
+                # ============= International or Domestic route ==============
+                if i['reservation_sector'] == 'International':
+                    sector_dictionary[0]['valuation'] += int(i['amount'])
+                    sector_dictionary[0]['counter'] += 1
+                    sector_dictionary[0]['passenger_count'] += int(i['reservation_passenger'])
+                elif i['reservation_sector'] == 'Domestic':
+                    sector_dictionary[1]['valuation'] += int(i['amount'])
+                    sector_dictionary[1]['counter'] += 1
+                    sector_dictionary[1]['passenger_count'] += int(i['reservation_passenger'])
+                else:
+                    sector_dictionary[2]['valuation'] += int(i['amount'])
+                    sector_dictionary[2]['counter'] += 1
+                    sector_dictionary[2]['passenger_count'] += int(i['reservation_passenger'])
+
+                # ============= Type of direction ============================
+                if i['reservation_direction'] == 'OW':
+                    direction_dictionary[0]['valuation'] += int(i['amount'])
+                    direction_dictionary[0]['counter'] += 1
+                    direction_dictionary[0]['passenger_count'] = int(i['reservation_passenger'])
+                elif i['reservation_direction'] == 'RT':
+                    direction_dictionary[1]['valuation'] += int(i['amount'])
+                    direction_dictionary[1]['counter'] += 1
+                    direction_dictionary[1]['passenger_count'] = int(i['reservation_passenger'])
+                else:
+                    direction_dictionary[2]['valuation'] += int(i['amount'])
+                    direction_dictionary[2]['counter'] += 1
+                    direction_dictionary[2]['passenger_count'] = int(i['reservation_passenger'])
 
                 if i['reservation_state'] == 'issued':
                     total += i['amount']
@@ -1274,8 +1398,8 @@ class TtReportDashboard(models.Model):
                 'total_rupiah': total,
                 'average_rupiah': float(total) / float(num_data) if num_data > 0 else 0,
                 'first_overview': {
-                    'sector_summary': destination_sector_summary[:20],
-                    'direction_summary': destination_direction_summary[:20],
+                    'sector_summary': sector_dictionary,
+                    'direction_summary': direction_dictionary,
                     'international': international_filter[:20],
                     'domestic': domestic_filter[:20],
                     'one_way': one_way_filter[:20],
@@ -1499,6 +1623,7 @@ class TtReportDashboard(models.Model):
                     'data2': list(revenue_data.values()),
                     'data3': list(average_data.values())
                 },
+                'first_overview': [],
                 'total_rupiah': total,
                 'average_rupiah': float(total) / float(num_data) if num_data > 0 else 0
             }
@@ -1715,6 +1840,7 @@ class TtReportDashboard(models.Model):
                     'data2': list(revenue_data.values()),
                     'data3': list(average_data.values())
                 },
+                'first_overview': [],
                 'total_rupiah': total,
                 'average_rupiah': float(total) / float(num_data) if num_data > 0 else 0
             }
@@ -1879,6 +2005,7 @@ class TtReportDashboard(models.Model):
 
             # sort summary_by_date month in the correct order
             summary_issued.sort(key=lambda x: (x['year'], x['month_index']))
+            product_summary.sort(key=lambda x: x['counter'], reverse=True)
 
             # first graph data
             main_data = {}
@@ -2070,27 +2197,27 @@ class TtReportDashboard(models.Model):
                         total += i['amount']
                         num_data += 1
 
-                        product_index = self.check_index(product_summary, 'product', i['reservation_activity_name'])
-                        if product_index == -1:
-                            temp_dict = {
-                                'product': i['reservation_activity_name'],
-                                'counter': 1,
-                                'elder_count': i['reservation_elder'],
-                                'adult_count': i['reservation_adult'],
-                                'child_count': i['reservation_child'],
-                                'infant_count': i['reservation_infant'],
-                                'passenger': i['reservation_passenger'],
-                                'amount': i['amount']
-                            }
-                            product_summary.append(temp_dict)
-                        else:
-                            product_summary[product_index]['counter'] += 1
-                            product_summary[product_index]['passenger'] += i['reservation_passenger']
-                            product_summary[product_index]['amount'] += i['amount']
-                            product_summary[product_index]['elder_count'] += i['reservation_elder']
-                            product_summary[product_index]['adult_count'] += i['reservation_adult']
-                            product_summary[product_index]['child_count'] += i['reservation_child']
-                            product_summary[product_index]['infant_count'] += i['reservation_infant']
+                    product_index = self.check_index(product_summary, 'product', i['reservation_activity_name'])
+                    if product_index == -1:
+                        temp_dict = {
+                            'product': i['reservation_event_name'],
+                            'counter': 1,
+                            'elder_count': i['reservation_elder'],
+                            'adult_count': i['reservation_adult'],
+                            'child_count': i['reservation_child'],
+                            'infant_count': i['reservation_infant'],
+                            'passenger': i['reservation_passenger'],
+                            'amount': i['amount']
+                        }
+                        product_summary.append(temp_dict)
+                    else:
+                        product_summary[product_index]['counter'] += 1
+                        product_summary[product_index]['passenger'] += i['reservation_passenger']
+                        product_summary[product_index]['amount'] += i['amount']
+                        product_summary[product_index]['elder_count'] += i['reservation_elder']
+                        product_summary[product_index]['adult_count'] += i['reservation_adult']
+                        product_summary[product_index]['child_count'] += i['reservation_child']
+                        product_summary[product_index]['infant_count'] += i['reservation_infant']
                 except:
                     pass
 
@@ -2119,6 +2246,7 @@ class TtReportDashboard(models.Model):
 
             # sort summary_by_date month in the correct order
             summary_issued.sort(key=lambda x: (x['year'], x['month_index']))
+            product_summary.sort(key=lambda x: x['counter'], reverse=True)
 
             # first graph data
             main_data = {}
@@ -2505,6 +2633,7 @@ class TtReportDashboard(models.Model):
 
             # proceed invoice with the assumption of create date = issued date
             summary_issued = []
+            offline_summary = []
 
             for i in issued_values['lines']:
                 try:
@@ -2540,6 +2669,20 @@ class TtReportDashboard(models.Model):
                         summary_issued[month_index]['detail'][day_index]['revenue'] += i['amount']
                         total += i['amount']
                         num_data += 1
+
+                    # group data by offline provider type (airline, train, etc)
+                    offline_index = self.check_index(offline_summary, 'provider_type', i['reservation_offline_provider_type'])
+                    if offline_index == -1:
+                        temp_dict = {
+                            'category': 'Offline',
+                            'provider_type': i['reservation_offline_provider_type'],
+                            'counter': 1,
+                            'amount': i['amount']
+                        }
+                        offline_summary.append(temp_dict)
+                    else:
+                        offline_summary[offline_index]['counter'] += 1
+                        offline_summary[offline_index]['amount'] += i['amount']
                 except:
                     pass
 
@@ -2568,6 +2711,7 @@ class TtReportDashboard(models.Model):
 
             # sort summary_by_date month in the correct order
             summary_issued.sort(key=lambda x: (x['year'], x['month_index']))
+            offline_summary.sort(key=lambda x: (x['amount'], x['counter']))
 
             # first graph data
             main_data = {}
@@ -2645,7 +2789,8 @@ class TtReportDashboard(models.Model):
                     'data3': list(average_data.values())
                 },
                 'total_rupiah': total,
-                'average_rupiah': float(total) / float(num_data) if num_data > 0 else 0
+                'average_rupiah': float(total) / float(num_data) if num_data > 0 else 0,
+                'first_overview': offline_summary
             }
 
             # update dependencies
@@ -2722,6 +2867,7 @@ class TtReportDashboard(models.Model):
 
             # proceed invoice with the assumption of create date = issued date
             summary_issued = []
+            ppob_summary = []
 
             for i in issued_values['lines']:
                 try:
@@ -2757,6 +2903,20 @@ class TtReportDashboard(models.Model):
                         summary_issued[month_index]['detail'][day_index]['revenue'] += i['amount']
                         total += i['amount']
                         num_data += 1
+
+                    # populate ppob_summary
+                    ppob_index = self.check_index(ppob_summary, 'product', i['reservation_carrier_name'])
+                    if ppob_index == -1:
+                        temp_dict = {
+                            'product': i['reservation_carrier_name'],
+                            'counter': 1,
+                            'amount': i['amount']
+                        }
+                        ppob_summary.append(temp_dict)
+                    else:
+                        ppob_summary[ppob_index]['counter'] += 1
+                        ppob_summary[ppob_index]['amount'] += i['amount']
+
                 except:
                     pass
 
@@ -2785,6 +2945,7 @@ class TtReportDashboard(models.Model):
 
             # sort summary_by_date month in the correct order
             summary_issued.sort(key=lambda x: (x['year'], x['month_index']))
+            ppob_summary.sort(key=lambda x: x['amount'])
 
             # first graph data
             main_data = {}
@@ -2862,7 +3023,244 @@ class TtReportDashboard(models.Model):
                     'data3': list(average_data.values())
                 },
                 'total_rupiah': total,
-                'average_rupiah': float(total) / float(num_data) if num_data > 0 else 0
+                'average_rupiah': float(total) / float(num_data) if num_data > 0 else 0,
+                'first_overview': ppob_summary
+            }
+
+            # update dependencies
+            data['mode'] = mode
+
+            # get book issued ratio
+            book_issued = self.get_book_issued_ratio(data)
+
+            # adding book_issued ratio graph
+            to_return.update(book_issued)
+
+            # get by chanel
+            chanel_data = self.get_report_group_by_chanel(data)
+
+            # adding chanel_data graph
+            to_return.update(chanel_data)
+
+            return to_return
+        except Exception as e:
+            _logger.error(traceback.format_exc())
+            raise e
+
+    def get_report_overall_passport(self, data):
+        try:
+            # process datetime to GMT 0
+            # convert string to datetime
+            start_date = self.convert_to_datetime(data['start_date'])
+            end_date = self.convert_to_datetime(data['end_date'])
+
+            # convert time to UTC0 from UTC7
+            temp_start_date = start_date - timedelta(days=1)
+            data['start_date'] = temp_start_date.strftime('%Y-%m-%d') + " 17:00:00"
+            data['end_date'] += " 16:59:59"
+
+            # prepare data to search reservation list
+            temp_dict = {
+                'start_date': data['start_date'],
+                'end_date': data['end_date'],
+                'type': data['report_type'],
+                'provider': data['provider'],
+                'agent_seq_id': data['agent_seq_id'],
+                'agent_type': data['agent_type_seq_id'],
+                'addons': 'none'
+            }
+
+            # search reservation list
+            issued_values = self.env['report.tt_report_selling.report_selling']._get_reports(temp_dict)
+
+            # declare some constant dependencies
+            mode = 'days'
+            month = [
+                'January', 'February', 'March', 'April', 'May', 'June',
+                'July', 'August', 'September', 'October', 'November', 'December'
+            ]
+            total = 0
+            num_data = 0
+
+            # count the date difference
+            delta = end_date - start_date
+
+            # check if difference in date more than 35 days, change "return" result to month (group by month, instead of daily (date) report)
+            if delta.days > 35:
+                # group by month
+                mode = 'month'
+
+            # preparing to look correspond invoice with list of reservation
+            # making a list of reservation id(s)
+            reservation_ids = []
+            for i in issued_values['lines']:
+                reservation_ids.append((i['reservation_id'], i['provider_type_name']))
+
+            # prepare data
+            temp_dict = {
+                'start_date': data['start_date'],
+                'end_date': data['end_date'],
+                'type': 'invoice',
+                'provider': data['provider'],
+                'reservation': reservation_ids,
+                'agent_seq_id': data['agent_seq_id'],
+                'agent_type': data['agent_type_seq_id'],
+                'addons': 'none'
+            }
+
+            # look for invoice
+            invoice = self.env['report.tt_report_selling.report_selling']._get_reports(temp_dict)
+
+            # proceed invoice with the assumption of create date = issued date
+            summary_issued = []
+            passport_summary = []
+
+            for i in issued_values['lines']:
+                try:
+                    month_index = self.check_date_index(summary_issued, {'year': i['issued_year'],
+                                                                         'month': month[int(i['issued_month']) - 1]})
+
+                    if month_index == -1:
+                        # if year and month with details doens't exist yet
+                        # create a temp dict
+                        temp_dict = {
+                            'year': i['issued_year'],
+                            'month_index': int(i['issued_month']),
+                            'month': month[int(i['issued_month']) - 1],
+                            'detail': self.add_issued_month_detail()
+                        }
+
+                        # add the first data
+                        splits = i['reservation_issued_date'].split("-")
+                        day_index = int(splits[2]) - 1
+                        temp_dict['detail'][day_index]['reservation'] += 1
+                        temp_dict['detail'][day_index]['revenue'] += i['amount']
+                        total += i['amount']
+                        num_data += 1
+
+                        # add to the big list
+                        summary_issued.append(temp_dict)
+                    else:
+                        # if "summary" already exist
+                        # update existing summary
+                        splits = i['reservation_issued_date'].split("-")
+                        day_index = int(splits[2]) - 1
+                        summary_issued[month_index]['detail'][day_index]['reservation'] += 1
+                        summary_issued[month_index]['detail'][day_index]['revenue'] += i['amount']
+                        total += i['amount']
+                        num_data += 1
+
+                    # populate passport_summary
+
+                except:
+                    pass
+
+            # for every section in summary
+            for i in summary_issued:
+                # for every detail in section
+                for j in i['detail']:
+                    # built appropriate date
+                    if i['month_index'] < 10 and j['day'] < 10:
+                        today = str(i['year']) + "-0" + str(i['month_index']) + "-0" + str(j['day'])
+                    elif i['month_index'] < 10 and j['day'] > 9:
+                        today = str(i['year']) + "-0" + str(i['month_index']) + "-" + str(j['day'])
+                    elif i['month_index'] > 9 and j['day'] < 10:
+                        today = str(i['year']) + "-" + str(i['month_index']) + "-0" + str(j['day'])
+                    else:
+                        today = str(i['year']) + "-" + str(i['month_index']) + "-" + str(j['day'])
+
+                    # filter invoice data
+                    filtered_data = list(filter(lambda x: x['create_date'] == today, invoice['lines']))
+
+                    # add to summary
+                    j['invoice'] += len(filtered_data)
+
+                    # count average
+                    j['average'] = float(j['revenue']) / len(filtered_data) if len(filtered_data) > 0 else 0
+
+            # sort summary_by_date month in the correct order
+            summary_issued.sort(key=lambda x: (x['year'], x['month_index']))
+            # passport_summary.sort(key=lambda x: x['amount'])
+
+            # first graph data
+            main_data = {}
+            average_data = {}
+            revenue_data = {}
+
+            # shape the data for return
+            if mode == 'month':
+                # sum by month
+                try:
+                    first_counter = summary_issued[0]['month_index'] - 1
+                except:
+                    splits = data['start_date'].split("-")
+                    month = splits[1]
+                    first_counter = int(month) - 1
+                for i in summary_issued:
+                    # fill skipped month(s)
+                    # check if current month (year) with start
+                    if i['month_index'] - 1 < first_counter:
+                        while first_counter < 12:
+                            main_data[month[first_counter]] = 0
+                            average_data[month[first_counter]] = 0
+                            revenue_data[month[first_counter]] = 0
+                            first_counter += 1
+                        # resert counter after 12
+                        if first_counter == 12:
+                            first_counter = 0
+                    if i['month_index'] - 1 > first_counter:
+                        while first_counter < i['month_index'] - 1:
+                            main_data[month[first_counter]] = 0
+                            average_data[month[first_counter]] = 0
+                            revenue_data[month[first_counter]] = 0
+                            first_counter += 1
+
+                    # for every month in summary by date
+                    main_data[i['month']] = 0
+                    average_data[i['month']] = 0
+                    revenue_data[i['month']] = 0
+                    for j in i['detail']:
+                        # for detail in months
+                        main_data[i['month']] += j['invoice']
+                        average_data[i['month']] += j['average']
+                        revenue_data[i['month']] += j['revenue']
+                    first_counter += 1
+
+            else:
+                # seperate by date
+                for i in summary_issued:
+                    for j in i['detail']:
+
+                        # built appropriate date
+                        if i['month_index'] < 10 and j['day'] < 10:
+                            today = str(i['year']) + "-0" + str(i['month_index']) + "-0" + str(j['day'])
+                        elif i['month_index'] < 10 and j['day'] > 9:
+                            today = str(i['year']) + "-0" + str(i['month_index']) + "-" + str(j['day'])
+                        elif i['month_index'] > 9 and j['day'] < 10:
+                            today = str(i['year']) + "-" + str(i['month_index']) + "-0" + str(j['day'])
+                        else:
+                            today = str(i['year']) + "-" + str(i['month_index']) + "-" + str(j['day'])
+
+                        # lets cut the data that is not needed
+                        if today >= data['start_date'] and today <= data['end_date']:
+                            main_data[str(j['day']) + "-" + str(i['month_index']) + "-" + str(i['year'])] = j[
+                                'invoice']
+                            average_data[str(j['day']) + "-" + str(i['month_index']) + "-" + str(
+                                i['year'])] = j['average']
+                            revenue_data[str(j['day']) + "-" + str(i['month_index']) + "-" + str(
+                                i['year'])] = j['revenue']
+
+            # build to return data
+            to_return = {
+                'first_graph': {
+                    'label': list(main_data.keys()),
+                    'data': list(main_data.values()),
+                    'data2': list(revenue_data.values()),
+                    'data3': list(average_data.values())
+                },
+                'total_rupiah': total,
+                'average_rupiah': float(total) / float(num_data) if num_data > 0 else 0,
+                'first_overview': passport_summary
             }
 
             # update dependencies
