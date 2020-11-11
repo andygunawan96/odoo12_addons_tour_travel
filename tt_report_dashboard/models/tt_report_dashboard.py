@@ -106,15 +106,15 @@ class TtReportDashboard(models.Model):
                 raise UserError(_('Provider is not exist'))
 
             # get correspond provider type
-            provider_type_by_provider = 'overall_' + provider_type['provider_type_id'].code
+            provider_type_by_provider = provider_type['provider_type_id'].code
 
             # if provider is not in provider type
             if data['report_type'] != "overall":
                 splits = data['report_type'].split("_")
-                if provider_type_by_provider != splits[1]:
+                if str(provider_type_by_provider) != splits[1]:
                     raise UserError(_("Provider %s is not in %s"))
             else:
-                data['report_type'] = "overall_" + provider_type_by_provider
+                data['report_type'] = "overall_" + str(provider_type_by_provider)
 
         type = data['report_type']
         if type == 'overall':
@@ -170,7 +170,7 @@ class TtReportDashboard(models.Model):
                 'is_ho': 1,
                 'agent_type': self.env['report.tt_report_dashboard.overall'].get_agent_type_all(),
                 'agent_list': self.env['report.tt_report_dashboard.overall'].get_agent_all(),
-                'current_agent': self.env['tt.agent'].browse(data['agent_seq_id']).name,
+                'current_agent': self.env['tt.agent'].search([('seq_id', '=', data['agent_seq_id'])]).name,
                 'provider_type': variables.PROVIDER_TYPE,
                 'provider': self.env['report.tt_report_dashboard.overall'].get_provider_all(),
                 'from_data': data
