@@ -254,7 +254,7 @@ class ReportSelling(models.Model):
         LEFT JOIN tt_provider_type provider_type ON reservation.provider_type_id = provider_type.id
         LEFT JOIN tt_agent agent ON agent.id = reservation.agent_id
         LEFT JOIN tt_agent_type agent_type ON agent_type.id = reservation.agent_type_id
-        LEFT JOIN tt_provider_ """ + provider_type + """ pro_type ON pro_type.booking_id = reservation.id
+        LEFT JOIN tt_provider_""" + provider_type + """ pro_type ON pro_type.booking_id = reservation.id
         LEFT JOIN tt_provider provider ON pro_type.provider_id = provider.id
         """
 
