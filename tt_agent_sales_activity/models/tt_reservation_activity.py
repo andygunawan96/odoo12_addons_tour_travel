@@ -18,7 +18,6 @@ class ReservationActivity(models.Model):
 
     @api.depends('invoice_line_ids')
     def set_agent_invoice_state(self):
-
         states = []
 
         for rec in self.invoice_line_ids:
@@ -33,11 +32,14 @@ class ReservationActivity(models.Model):
 
     def get_activity_description(self):
         tmp = ''
-        tmp += '%s (%s), ' % (self.activity_id.name, self.activity_product,)
-        tmp += '%s ' % (self.visit_date,)
-        if self.timeslot:
-            tmp += '(%s) ' % (self.timeslot,)
-        tmp += '\n '
+        for rec in self.provider_booking_ids:
+            for rec2 in rec.activity_detail_ids:
+                tmp += '%s (%s), ' % (rec2.activity_id.name, rec2.activity_product_id.name,)
+                tmp += '%s ' % (rec2.visit_date,)
+                if rec2.timeslot:
+                    tmp += '(%s) ' % (rec2.timeslot,)
+                tmp += '\n'
+            tmp += '\n'
         return tmp
 
     def action_create_invoice(self, acquirer_id,co_uid,customer_parent_id):
@@ -100,6 +102,15 @@ class ReservationActivity(models.Model):
             'pay_amount': invoice_id.grand_total
         })
 
-    def call_create_invoice(self, acquirer_id,co_uid,customer_parent_id):
-        super(ReservationActivity, self).call_create_invoice(acquirer_id,co_uid,customer_parent_id)
-        self.action_create_invoice(acquirer_id,co_uid,customer_parent_id)
+    def action_reverse_activity(self, context):
+        super(ReservationActivity, self).action_reverse_activity(context)
+        for rec in self.invoice_line_ids:
+            try:
+                rec.invoice_id.action_cancel_invoice()
+            except Exception as e:
+                print(str(e))
+
+    def action_issued_activity(self, co_uid, customer_parent_id, acquirer_id):
+        super(ReservationActivity, self).action_issued_activity(co_uid, customer_parent_id)
+        self.action_create_invoice(acquirer_id, co_uid, customer_parent_id)
+

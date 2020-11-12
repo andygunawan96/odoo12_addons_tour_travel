@@ -251,8 +251,8 @@ class ReservationPpob(models.Model):
 
     def action_resync_api(self, data, context):
         try:
-            if data.get('order_id'):
-                resv_obj = self.env['tt.reservation.ppob'].sudo().browse(int(data['order_id']))
+            if data.get('book_id'):
+                resv_obj = self.env['tt.reservation.ppob'].sudo().browse(int(data['book_id']))
             else:
                 resv_objs = self.env['tt.reservation.ppob'].sudo().search([('name', '=', data['order_number'])], limit=1)
                 resv_obj = resv_objs and resv_objs[0] or False
@@ -386,35 +386,42 @@ class ReservationPpob(models.Model):
 
     def get_inquiry_api(self, data, context):
         try:
-            if data.get('order_id'):
-                inq_obj = self.env['tt.reservation.ppob'].sudo().browse(int(data['order_id']))
+            inq_obj = self.get_book_obj(data.get('book_id'), data.get('order_number'))
+            try:
+                inq_obj.create_date
+            except:
+                raise RequestException(1001)
+
+            user_obj = self.env['res.users'].browse(context['co_uid'])
+            try:
+                user_obj.create_date
+            except:
+                raise RequestException(1008)
+
+            if inq_obj.agent_id.id == context.get('co_agent_id', -1) or self.env.ref('tt_base.group_tt_process_channel_bookings').id in user_obj.groups_id.ids:
+                provider_code = ''
+                provider_list = []
+                total_price = 0
+                for rec in inq_obj.provider_booking_ids:
+                    provider_code = rec.provider_id and rec.provider_id.code or ''
+                    total_price += rec.total
+                    provider_list.append(rec.to_dict())
+                psg_list = []
+                for rec in inq_obj.sudo().passenger_ids:
+                    psg_list.append(rec.to_dict())
+
+                res = inq_obj.to_dict()
+                res.update({
+                    'provider_booking': provider_list,
+                    'passengers': psg_list,
+                    'state': inq_obj.state,
+                    'prepaid_value': inq_obj.prepaid_value and inq_obj.prepaid_value or 0,
+                    'total_price': total_price,
+                    'provider': provider_code
+                })
+                return ERR.get_no_error(res)
             else:
-                inq_obj = self.env['tt.reservation.ppob'].sudo().search([('name', '=', data['order_number'])], limit=1)
-
-            if not inq_obj:
-                raise RequestException(1003)
-
-            provider_code = ''
-            provider_list = []
-            total_price = 0
-            for rec in inq_obj.provider_booking_ids:
-                provider_code = rec.provider_id and rec.provider_id.code or ''
-                total_price += rec.total
-                provider_list.append(rec.to_dict())
-            psg_list = []
-            for rec in inq_obj.sudo().passenger_ids:
-                psg_list.append(rec.to_dict())
-
-            res = inq_obj.to_dict()
-            res.update({
-                'provider_booking': provider_list,
-                'passengers': psg_list,
-                'state': inq_obj.state,
-                'prepaid_value': inq_obj.prepaid_value and inq_obj.prepaid_value or 0,
-                'total_price': total_price,
-                'provider': provider_code
-            })
-            return ERR.get_no_error(res)
+                raise RequestException(1001)
         except RequestException as e:
             _logger.error(traceback.format_exc())
             return e.error_dict()
@@ -728,8 +735,8 @@ class ReservationPpob(models.Model):
 
     def get_provider_api(self, data, context):
         try:
-            if data.get('order_id'):
-                resv_obj = self.env['tt.reservation.ppob'].sudo().browse(int(data['order_id']))
+            if data.get('book_id'):
+                resv_obj = self.env['tt.reservation.ppob'].sudo().browse(int(data['book_id']))
             else:
                 resv_objs = self.env['tt.reservation.ppob'].sudo().search([('name', '=', data['order_number'])], limit=1)
                 resv_obj = resv_objs and resv_objs[0] or False
@@ -757,8 +764,8 @@ class ReservationPpob(models.Model):
 
     def update_pay_amount_api(self, data, context):
         try:
-            if data.get('order_id'):
-                resv_obj = self.env['tt.reservation.ppob'].sudo().browse(int(data['order_id']))
+            if data.get('book_id'):
+                resv_obj = self.env['tt.reservation.ppob'].sudo().browse(int(data['book_id']))
             else:
                 resv_objs = self.env['tt.reservation.ppob'].sudo().search([('name', '=', data['order_number'])], limit=1)
                 resv_obj = resv_objs and resv_objs[0] or False
@@ -826,8 +833,8 @@ class ReservationPpob(models.Model):
 
     def issued_payment_api(self, data, context):
         try:
-            if data.get('order_id'):
-                resv_obj = self.env['tt.reservation.ppob'].sudo().browse(int(data['order_id']))
+            if data.get('book_id'):
+                resv_obj = self.env['tt.reservation.ppob'].sudo().browse(int(data['book_id']))
             else:
                 resv_objs = self.env['tt.reservation.ppob'].sudo().search([('name', '=', data['order_number'])], limit=1)
                 resv_obj = resv_objs and resv_objs[0] or False

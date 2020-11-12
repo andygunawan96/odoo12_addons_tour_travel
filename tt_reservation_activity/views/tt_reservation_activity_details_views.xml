@@ -1,0 +1,45 @@
+<odoo>
+    <record id="tt_reservation_activity_details_form_view" model="ir.ui.view">
+        <field name="name">tt.reservation.activity.details.form.view</field>
+        <field name="model">tt.reservation.activity.details</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="activity_id"/>
+                            <field name="activity_product_id"/>
+                            <field name="information"/>
+                        </group>
+                        <group>
+                            <field name="visit_date"/>
+                            <field name="timeslot"/>
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="tt_reservation_activity_details_tree_view" model="ir.ui.view">
+        <field name="name">tt.reservation.activity.details.tree.view</field>
+        <field name="model">tt.reservation.activity.details</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="activity_id"/>
+                <field name="activity_product_id"/>
+                <field name="information"/>
+                <field name="visit_date"/>
+                <field name="timeslot"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="tt_reservation_activity_details_action_view" model="ir.actions.act_window">
+        <field name="name">Reservation Activity Details</field>
+        <field name="res_model">tt.reservation.activity.details</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+</odoo>

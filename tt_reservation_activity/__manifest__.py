@@ -22,7 +22,7 @@ TT_TRANSPORT
         'data/ir_send_email.xml',
         'security/ir.model.access.csv',
         'security/ir_rule_data.xml',
-        # 'report/printout_invoice_templates.xml',
+        'wizard/force_issued_wizard_views.xml',
         'views/menu_item_base.xml',
         'views/tt_activity_voucher_wizard.xml',
         'views/tt_activity_sync_product_wizard.xml',
@@ -33,7 +33,8 @@ TT_TRANSPORT
         'views/tt_reservation_activity_views.xml',
         'views/tt_provider_views.xml',
         'views/tt_service_charge_views.xml',
-        'views/tt_reservation_passenger_activity_form_views.xml'
+        'views/tt_reservation_passenger_activity_form_views.xml',
+        'views/tt_reservation_activity_details_views.xml'
         # 'views/tt_activity_printout_menu.xml',
     ],
     'demo': [],

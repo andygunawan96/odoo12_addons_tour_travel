@@ -69,7 +69,6 @@ class MasterActivity(models.Model):
 
     uuid = fields.Char('Uuid', readonly=True)
     name = fields.Char('Activity Name', readonly=True)
-    # type_id = fields.Many2one('tt.activity.category', 'Type')
     type_ids = fields.Many2many('tt.activity.category', 'tt_activity_type_rel', 'activity_id', 'type_id', string='Types', readonly=True)
     category_ids = fields.Many2many('tt.activity.category', 'tt_activity_category_rel', 'activity_id', 'category_id', string='Categories', readonly=True)
     currency_id = fields.Many2one('res.currency', 'Currency', readonly=True)
@@ -102,7 +101,6 @@ class MasterActivity(models.Model):
     video_ids = fields.One2many('tt.activity.master.videos', 'activity_id', 'Video Path', readonly=True)
     provider_id = fields.Many2one('tt.provider', 'Provider', readonly=True)
     provider_code = fields.Char('Provider Code', readonly=True)
-    provider_fare_code = fields.Char('Provider Fare Code', readonly=True)
     can_hold_booking = fields.Boolean('Can Hold Booking', default=False, readonly=True)
     active = fields.Boolean('Active', default=True)
 
@@ -318,6 +316,16 @@ class MasterActivity(models.Model):
             file_dat.close()
             if file:
                 self.sync_products(provider, file)
+
+    # temporary function
+    def update_activity_uuid_temp(self):
+        all_activity = self.env['tt.master.activity'].search([])
+        for rec in all_activity:
+            if rec.provider_id and rec.uuid:
+                prefix = rec.provider_id.alias and rec.provider_id.alias + '~' or ''
+                rec.write({
+                    'uuid': prefix + rec.uuid
+                })
 
     def sync_config(self, provider):
         req_post = {
@@ -557,7 +565,6 @@ class MasterActivity(models.Model):
                         'can_hold_booking': rec['product']['can_hold_booking'],
                         'active': True,
                         'provider_id': provider_id.id,
-                        'provider_fare_code': rec['product']['provider_fare_code'],
                     })
                 else:
                     vals = {
@@ -589,7 +596,6 @@ class MasterActivity(models.Model):
                         'can_hold_booking': rec['product']['can_hold_booking'],
                         'active': True,
                         'provider_id': provider_id.id,
-                        'provider_fare_code': rec['product']['provider_fare_code'],
                     }
                     product_obj = self.env['tt.master.activity'].sudo().create(vals)
                     if rec['product']['provider'] == 'bemyguest':
@@ -1280,7 +1286,6 @@ class MasterActivity(models.Model):
     def sync_type_products_rodextrip_activity(self, result, product_id, provider):
         req_post = {
             'product_uuid': result['product']['uuid'],
-            'fare_code': result['product']['provider_fare_code'],
             'provider': provider
         }
         res = self.env['tt.master.activity.api.con'].get_details(req_post)
@@ -1605,7 +1610,6 @@ class MasterActivity(models.Model):
                     'description': result.get('description') and result['description'] or '',
                     'highlights': result.get('highlights') and result['highlights'] or '',
                     'hotelPickup': result.get('hotelPickup') and result['hotelPickup'] or False,
-                    'id': result['id'],
                     'itinerary': result.get('itinerary') and result['itinerary'] or '',
                     'latitude': result.get('latitude') and result['latitude'] or 0.0,
                     'longitude': result.get('longitude') and result['longitude'] or 0.0,
@@ -1616,11 +1620,9 @@ class MasterActivity(models.Model):
                     'priceIncludes': result.get('priceIncludes') and result['priceIncludes'] or '',
                     'provider_id': res_provider and res_provider.id or '',
                     'provider': res_provider and res_provider.code or '',
-                    'provider_fare_code': result.get('provider_fare_code') and result['provider_fare_code'] or '',
                     'reviewAverageScore': result.get('reviewAverageScore') and result['reviewAverageScore'] or 0.0,
                     'reviewCount': result.get('reviewCount') and result['reviewCount'] or 0,
                     'safety': result.get('safety') and result['safety'] or '',
-                    'type_id': result.get('type_id') and result['type_id'] or 0,
                     'uuid': result['uuid'],
                     'warnings': result.get('warnings') and result['warnings'] or '',
                     'can_hold_booking': result.get('can_hold_booking') and result['can_hold_booking'] or False,
@@ -1646,7 +1648,8 @@ class MasterActivity(models.Model):
                     'priceIncludes': priceIncludes,
                 })
 
-                result_obj = self.env['tt.master.activity'].browse(result['id'])
+                result_obj = self.env['tt.master.activity'].search([('uuid', '=', result['uuid'])], limit=1)
+                result_obj = result_obj and result_obj[0] or False
                 image_temp = []
                 if result_obj.image_ids:
                     image_objs = result_obj.image_ids
@@ -1781,33 +1784,138 @@ class MasterActivity(models.Model):
 
     def get_details_by_api(self, req, context):
         try:
-            provider_id = self.env['tt.provider'].sudo().search([('code', '=', req['provider'])], limit=1)
-            if not provider_id:
+            provider_obj = self.env['tt.provider'].sudo().search([('alias', '=', req['provider'])], limit=1)
+            if not provider_obj:
                 raise RequestException(1002)
-            provider_id = provider_id[0]
-            activity_id = self.search([('uuid', '=', req['uuid']), ('provider_id', '=', provider_id.id)], limit=1)
+            provider_obj = provider_obj[0]
+            activity_id = self.search([('uuid', '=', provider_obj.alias + '~' + req['activity_uuid']), ('provider_id', '=', provider_obj.id)], limit=1)
             if not activity_id:
                 raise RequestException(1022, additional_message='Activity not found.')
             activity_id = activity_id[0]
-            provider = provider_id.code
+            provider = provider_obj.code
             result_id_list = self.env['tt.master.activity.lines'].search([('activity_id', '=', activity_id.id)])
+            res = {
+                'uuid': activity_id.uuid and activity_id.uuid or '',
+                'name': activity_id.name and activity_id.name or '',
+                'additionalInfo': activity_id.additionalInfo and activity_id.additionalInfo.replace('<p>', '\n').replace('</p>', '') or '',
+                'airportPickup': activity_id.airportPickup and activity_id.airportPickup or False,
+                'basePrice': activity_id.basePrice and activity_id.basePrice or 0,
+                'businessHoursFrom': activity_id.businessHoursFrom and activity_id.businessHoursFrom or '',
+                'businessHoursTo': activity_id.businessHoursTo and activity_id.businessHoursTo or '',
+                'currency': activity_id.currency_id and activity_id.currency_id.name or '',
+                'description': activity_id.description and activity_id.description.replace('<p>', '\n').replace('</p>', '') or '',
+                'highlights': activity_id.highlights and activity_id.highlights.replace('<p>', '\n').replace('</p>', '') or '',
+                'hotelPickup': activity_id.hotelPickup and activity_id.hotelPickup or False,
+                'itinerary': activity_id.itinerary and activity_id.itinerary.replace('<p>', '\n').replace('</p>', '') or '',
+                'latitude': activity_id.latitude and activity_id.latitude or 0.0,
+                'longitude': activity_id.longitude and activity_id.longitude or 0.0,
+                'maxPax': activity_id.maxPax and activity_id.maxPax or 0,
+                'minPax': activity_id.minPax and activity_id.minPax or 0,
+                'priceExcludes': activity_id.priceExcludes and activity_id.priceExcludes.replace('<p>', '\n').replace('</p>', '') or '',
+                'priceIncludes': activity_id.priceIncludes and activity_id.priceIncludes.replace('<p>', '\n').replace('</p>', '') or '',
+                'provider_code': activity_id.provider_id and activity_id.provider_id.code or '',
+                'reviewAverageScore': activity_id.reviewAverageScore and activity_id.reviewAverageScore or 0.0,
+                'reviewCount': activity_id.reviewCount and activity_id.reviewCount or 0,
+                'safety': activity_id.safety and activity_id.safety.replace('<p>', '\n').replace('</p>', '') or '',
+                'warnings': activity_id.warnings and activity_id.warnings.replace('<p>', '\n').replace('</p>', '') or '',
+                'can_hold_booking': activity_id.can_hold_booking and activity_id.can_hold_booking or False
+            }
+
+            image_temp = []
+            if activity_id.image_ids:
+                image_objs = activity_id.image_ids
+                for image_obj in image_objs:
+                    if image_obj.photos_path and image_obj.photos_url:
+                        img_temp = {
+                            'path': image_obj.photos_path,
+                            'url': image_obj.photos_url,
+                        }
+                        image_temp.append(img_temp)
+                    else:
+                        img_temp = {
+                            'path': 'http://static.skytors.id/tour_packages/not_found.png',
+                            'url': '',
+                        }
+                        image_temp.append(img_temp)
+            else:
+                img_temp = {
+                    'path': 'http://static.skytors.id/tour_packages/not_found.png',
+                    'url': '',
+                }
+                image_temp.append(img_temp)
+            res.update({
+                'images': image_temp,
+            })
+
+            video_temp = []
+            if activity_id.video_ids:
+                video_objs = activity_id.video_ids
+                for video_obj in video_objs:
+                    if video_obj.video_url:
+                        vid_temp = {
+                            'url': video_obj.video_url,
+                        }
+                        video_temp.append(vid_temp)
+                    else:
+                        vid_temp = {
+                            'url': '',
+                        }
+                        video_temp.append(vid_temp)
+            else:
+                vid_temp = {
+                    'url': '',
+                }
+                video_temp.append(vid_temp)
+            res.update({
+                'videos': video_temp,
+            })
+
+            category_objs = activity_id.category_ids
+            category_temp = []
+            for category_obj in category_objs:
+                cat_temp = {
+                    'category_name': category_obj.name,
+                    'category_uuid': '',
+                    'category_id': category_obj.id,
+                }
+                for cat_line in category_obj.line_ids:
+                    if cat_line.provider_id.id == provider_obj.id:
+                        cat_temp.update({
+                            'category_uuid': cat_line.uuid,
+                        })
+                category_temp.append(cat_temp)
+            res.update({
+                'categories': category_temp,
+            })
+
+            location_objs = activity_id.location_ids
+            location_temp = []
+            for location_obj in location_objs:
+                loc_temp = {
+                    'country_name': location_obj.country_id.name,
+                    'state_name': location_obj.state_id.name,
+                    'city_name': location_obj.city_id.name,
+                }
+                location_temp.append(loc_temp)
+            res.update({
+                'locations': location_temp,
+            })
+
             temp = []
             for result_id in result_id_list:
                 result = {
-                    'activity_id': result_id.activity_id.id,
                     'uuid': result_id.uuid,
                     'name': result_id.name,
                     'provider_code': provider,
-                    'provider_fare_code': activity_id.provider_fare_code and activity_id.provider_fare_code or '',
-                    'description': result_id.description and result_id.description or '',
+                    'description': result_id.description and result_id.description.replace('<p>', '\n').replace('</p>', '') or '',
                     'durationDays': result_id.durationDays and result_id.durationDays or 0,
                     'durationHours': result_id.durationHours and result_id.durationHours or 0,
                     'durationMinutes': result_id.durationMinutes and result_id.durationMinutes or 0,
                     'isNonRefundable': result_id.isNonRefundable and result_id.isNonRefundable or True,
                     'minPax': result_id.minPax and result_id.minPax or 1,
                     'maxPax': result_id.maxPax and result_id.maxPax or 100,
-                    'voucherUse': result_id.voucherUse and result_id.voucherUse or '',
-                    'voucherRedemptionAddress': result_id.voucherRedemptionAddress and result_id.voucherRedemptionAddress or '',
+                    'voucherUse': result_id.voucherUse and result_id.voucherUse.replace('<p>', '\n').replace('</p>', '') or '',
+                    'voucherRedemptionAddress': result_id.voucherRedemptionAddress and result_id.voucherRedemptionAddress.replace('<p>', '\n').replace('</p>', '') or '',
                     'voucherRequiresPrinting': result_id.voucherRequiresPrinting and result_id.voucherRequiresPrinting or '',
                     'cancellationPolicies': result_id.cancellationPolicies and result_id.cancellationPolicies or '',
                     'meetingLocation': result_id.meetingLocation and result_id.meetingLocation or '',
@@ -1819,9 +1927,6 @@ class MasterActivity(models.Model):
                     'voucher_validity_date': result_id.voucher_validity_date and result_id.voucher_validity_date or False,
                     'advanceBookingDays': result_id.advanceBookingDays and result_id.advanceBookingDays or 0,
                 }
-                description = (result['description'].replace('<p>', '\n').replace('</p>', ''))[1:]
-                voucherUse = (result['voucherUse'].replace('<p>', '\n').replace('</p>', ''))[1:]
-                voucherRedemptionAddress = (result['voucherRedemptionAddress'].replace('<p>', '\n').replace('</p>', ''))[1:]
 
                 if result_id.voucher_validity_type == 'only_visit_date':
                     voucher_validity = 'Valid only on the stated visit date'
@@ -1835,9 +1940,6 @@ class MasterActivity(models.Model):
                     voucher_validity = '-'
 
                 result.update({
-                    'description': description,
-                    'voucherUse': voucherUse,
-                    'voucherRedemptionAddress': voucherRedemptionAddress,
                     'voucher_validity': voucher_validity,
                 })
                 skus = []
@@ -1942,7 +2044,10 @@ class MasterActivity(models.Model):
                     'timeslots': timeslot
                 })
                 temp.append(result)
-            return ERR.get_no_error(temp)
+            res.update({
+                'activity_lines': temp
+            })
+            return ERR.get_no_error(res)
         except RequestException as e:
             _logger.error(traceback.format_exc())
             return e.error_dict()
@@ -2261,7 +2366,6 @@ class MasterActivity(models.Model):
                     'airportPickup': rec['airportPickup'],
                     'hotelPickup': rec['hotelPickup'],
                     'provider_id': provider_id[0].id,
-                    'provider_fare_code': rec['provider_fare_code'],
                     'currency_id': currency_obj and currency_obj[0].id or False,
                     'basePrice': rec['basePrice'],
                     'priceIncludes': rec['priceIncludes'],
@@ -2490,7 +2594,6 @@ class ActivitySyncProductsChildren(models.TransientModel):
                     'reviewCount': rec.reviewCount,
                     'airportPickup': rec.airportPickup,
                     'hotelPickup': rec.hotelPickup,
-                    'provider_fare_code': rec.provider_fare_code,
                     'currency_code': rec.currency_id.name,
                     'basePrice': rec.basePrice,
                     'priceIncludes': rec.priceIncludes,

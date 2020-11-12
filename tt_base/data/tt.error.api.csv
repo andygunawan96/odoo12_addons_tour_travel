@@ -71,6 +71,17 @@ tt_error_api_4028,4028,"Restricted booking, infant cannot be paired with senior 
 tt_error_api_4029,4029,"Failed Issued",,,1,1
 tt_error_api_4030,4030,"User is banned",,,1,1
 tt_error_api_4031,4031,"Resource not found",,,1,1
+tt_error_api_4032,4032,"Failed Transaction",,,1,1
+tt_error_api_4033,4033,"Failed to execute payment",,,1,1
+tt_error_api_4034,4034,"Transaction has been paid on vendor",,,1,1
+tt_error_api_4035,4035,"Failed Transaction, manual resync needed",,,1,1
+tt_error_api_4036,4036,"Transaction is still in progress, please try again later",,,1,1
+tt_error_api_4037,4037,"Frequent Flyer is not available",,,1,1
+tt_error_api_4038,4038,"PNR is not found",,,1,1
+tt_error_api_4039,4039,"PNR not allowed to process",,,1,1
+tt_error_api_4040,4040,"Failed Split Booking",,,1,1
+tt_error_api_4041,4041,"Failed to Retrieve Vendor Balance",,,1,1
+tt_error_api_4042,4042,"No update change detected",,,1,1
 tt_error_api_9001,9901,Notification,For Notif,,1,1
 tt_error_api_9002,9902,Warning,For Warning,,1,1
 tt_error_api_9003,9903,Error,For Error,,1,1
@@ -78,3 +89,4 @@ tt_error_api_9004,9904,Balance,For Balance,,1,1
 tt_error_api_9005,9905,Booking,For Booking,,1,1
 tt_error_api_9006,9906,Issued,For Issued,,1,1
 tt_error_api_9007,9907,Top Up,For Top Up,,1,1
+tt_error_api_9008,9908,Tour Request,For Tour Request,,1,1
