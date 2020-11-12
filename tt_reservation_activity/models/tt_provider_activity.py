@@ -7,20 +7,20 @@ from datetime import datetime
 class TtProviderActivity(models.Model):
     _name = 'tt.provider.activity'
     _rec_name = 'pnr'
-    _order = 'visit_date'
     _description = 'Rodex Model'
 
     pnr = fields.Char('PNR')
     pnr2 = fields.Char('PNR2')
     provider_id = fields.Many2one('tt.provider','Provider')
+    carrier_id = fields.Many2one('tt.transport.carrier', 'Carrier')
+    carrier_code = fields.Char('Carrier Code')
+    carrier_name = fields.Char('Carrier Name')
     state = fields.Selection(variables.BOOKING_STATE, 'Status', default='draft')
     booking_id = fields.Many2one('tt.reservation.activity', 'Order Number', ondelete='cascade')
+    sequence = fields.Integer('Sequence')
     balance_due = fields.Float('Balance Due')
-    activity_id = fields.Many2one('tt.master.activity', 'Activity')
-    activity_product_id = fields.Many2one('tt.master.activity.lines', 'Activity Product')
-    activity_product = fields.Char('Product Type')
-    activity_product_uuid = fields.Char('Product Type Uuid')
-    visit_date = fields.Datetime('Visit Date')
+    total_price = fields.Float('Total Price')
+    activity_detail_ids = fields.One2many('tt.reservation.activity.details', 'provider_booking_id', 'Reservation Details')
 
     sid_issued = fields.Char('SID Issued')#signature generate sendiri
 
@@ -47,18 +47,87 @@ class TtProviderActivity(models.Model):
     # refund_date = fields.Datetime('Refund Date')
     ticket_ids = fields.One2many('tt.ticket.activity', 'provider_id', 'Ticket Number')
 
-    error_msg = fields.Text('Message Error', readonly=True, states={'draft': [('readonly', False)]})
-
     # is_ledger_created = fields.Boolean('Ledger Created', default=False, readonly=True, states={'draft': [('readonly', False)]})
 
     notes = fields.Text('Notes', readonly=True, states={'draft': [('readonly', False)]})
-
-    total_price = fields.Float('Total Price', readonly=True, default=0)
+    error_history_ids = fields.One2many('tt.reservation.err.history', 'res_id', 'Error History', domain=[('res_model', '=', 'tt.provider.activity')])
 
     #reconcile purpose#
     reconcile_line_id = fields.Many2one('tt.reconcile.transaction.lines','Reconciled')
     reconcile_time = fields.Datetime('Reconcile Time')
     ##
+
+    ##button function
+    def action_set_to_issued_from_button(self, payment_data={}):
+        if self.state == 'issued':
+            raise UserError("Has been Issued.")
+        self.write({
+            'state': 'issued',
+            'issued_uid': self.env.user.id,
+            'issued_date': datetime.now()
+        })
+        self.booking_id.check_provider_state({'co_uid': self.env.user.id}, [], False, payment_data)
+
+        return {
+            'type': 'ir.actions.client',
+            'tag': 'reload',
+        }
+
+    def action_force_issued_from_button(self, payment_data={}):
+        if self.state == 'issued':
+            raise UserError("Has been Issued.")
+
+        req = {
+            'book_id': self.booking_id.id,
+            'member': payment_data.get('member'),
+            'acquirer_seq_id': payment_data.get('acquirer_seq_id'),
+        }
+        context = {
+            'co_agent_id': self.booking_id.agent_id.id,
+            'co_agent_type_id': self.booking_id.agent_type_id.id,
+            'co_uid': self.env.user.id
+        }
+        payment_res = self.booking_id.payment_reservation_api('activity', req, context)
+        if payment_res['error_code'] != 0:
+            raise UserError(payment_res['error_msg'])
+
+        # balance_res = self.env['tt.agent'].check_balance_limit_api(self.booking_id.agent_id.id,self.booking_id.agent_nta)
+        # if balance_res['error_code'] != 0:
+        #     raise UserError("Balance not enough.")
+        #
+        # self.action_create_ledger(self.env.user.id)
+        self.action_set_to_issued_from_button(payment_data)
+
+        return {
+            'type': 'ir.actions.client',
+            'tag': 'reload',
+        }
+
+    def action_set_to_book_from_button(self):
+        if self.state == 'booked':
+            raise UserError("Has been Booked.")
+
+        self.write({
+            'state': 'booked',
+            'booked_uid': self.env.user.id,
+            'booked_date': datetime.now()
+        })
+
+        self.booking_id.check_provider_state({'co_uid': self.env.user.id})
+
+        return {
+            'type': 'ir.actions.client',
+            'tag': 'reload',
+        }
+
+    def action_reverse_ledger(self):
+        for rec in self.booking_id.ledger_ids:
+            pnr_text = self.pnr if self.pnr else str(self.sequence)
+            if rec.pnr == pnr_text and not rec.is_reversed:
+                rec.reverse_ledger()
+
+        for rec in self.cost_service_charge_ids:
+            rec.is_ledger_created = False
 
     def action_reverse_ledger_from_button(self):
         if self.state == 'fail_refunded':
@@ -112,20 +181,79 @@ class TtProviderActivity(models.Model):
                 'balance_due': 0
             })
 
-    def action_failed_booked_api_activity(self):
+    def action_cancel_api_activity(self, context):
         for rec in self:
             rec.write({
-                'state': 'fail_booked'
+                'state': 'cancel',
+                'cancel_date': datetime.now(),
+                'cancel_uid': context['co_uid'],
+                'sid_cancel': context['signature'],
             })
 
-    def action_failed_issued_api_activity(self):
+    def action_cancel_pending_api_activity(self, context):
         for rec in self:
             rec.write({
-                'state': 'fail_issued'
+                'state': 'cancel_pending',
+                'cancel_date': datetime.now(),
+                'cancel_uid': context['co_uid'],
+                'sid_cancel': context['signature'],
+            })
+
+    def action_failed_booked_api_activity(self, err_code, err_msg):
+        for rec in self:
+            rec.write({
+                'state': 'fail_booked',
+                'error_history_ids': [(0, 0, {
+                    'res_model': self._name,
+                    'res_id': self.id,
+                    'error_code': err_code,
+                    'error_msg': err_msg
+                })]
+            })
+
+    def action_failed_issued_api_activity(self, err_code, err_msg):
+        for rec in self:
+            rec.write({
+                'state': 'fail_issued',
+                'error_history_ids': [(0, 0, {
+                    'res_model': self._name,
+                    'res_id': self.id,
+                    'error_code': err_code,
+                    'error_msg': err_msg
+                })]
+            })
+
+    def action_failed_paid_api_activity(self, err_code, err_msg):
+        for rec in self:
+            rec.write({
+                'state': 'fail_paid',
+                'error_history_ids': [(0, 0, {
+                    'res_model': self._name,
+                    'res_id': self.id,
+                    'error_code': err_code,
+                    'error_msg': err_msg
+                })]
+            })
+
+    def action_failed_void_api_activity(self, err_code, err_msg):
+        for rec in self:
+            rec.write({
+                'state': 'void_failed',
+                'error_history_ids': [(0, 0, {
+                    'res_model': self._name,
+                    'res_id': self.id,
+                    'error_code': err_code,
+                    'error_msg': err_msg
+                })]
             })
 
     def action_expired(self):
         self.state = 'cancel2'
+
+    def action_cancel(self):
+        self.cancel_date = fields.Datetime.now()
+        self.cancel_uid = self.env.user.id
+        self.state = 'cancel'
 
     def action_refund(self, check_provider_state=False):
         self.state = 'refund'
@@ -259,28 +387,27 @@ class TtProviderActivity(models.Model):
         return self.env['tt.ledger'].action_create_ledger(self, issued_uid)
 
     def to_dict(self):
-        journey_list = []
-        for rec in self.journey_ids:
-            journey_list.append(rec.to_dict())
         ticket_list = []
         for rec in self.ticket_ids:
             ticket_list.append(rec.to_dict())
+        activity_details_list = []
+        for rec in self.activity_detail_ids:
+            activity_details_list.append(rec.to_dict())
         res = {
             'pnr': self.pnr and self.pnr or '',
             'pnr2': self.pnr2 and self.pnr2 or '',
-            'provider': self.provider_id.code,
+            'provider': self.provider_id and self.provider_id.code or '',
             'provider_id': self.id,
+            'error_msg': self.error_history_ids and self.error_history_ids[-1].error_msg or '',
+            'carrier_name': self.carrier_id and self.carrier_id.name or '',
+            'carrier_code': self.carrier_id and self.carrier_id.code or '',
+            'agent_id': self.booking_id.agent_id.id if self.booking_id and self.booking_id.agent_id else '',
             'state': self.state,
             'state_description': variables.BOOKING_STATE_STR[self.state],
-            'sequence': self.sequence,
-            'balance_due': self.balance_due,
-            'direction': self.direction,
-            'origin': self.origin_id.code,
-            'destination': self.destination_id.code,
-            'departure_date': self.departure_date,
-            'arrival_date': self.arrival_date,
-            'journeys': journey_list,
-            'currency': self.currency_id.name,
+            'balance_due': self.balance_due and self.balance_due or 0,
+            'total_price': self.total_price and self.total_price or 0,
+            'currency': self.currency_id and self.currency_id.name or '',
+            'activity_details': activity_details_list,
             'hold_date': self.hold_date and self.hold_date or '',
             'tickets': ticket_list,
         }

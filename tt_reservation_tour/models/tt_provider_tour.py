@@ -26,6 +26,7 @@ class TtProviderTour(models.Model):
     state = fields.Selection(variables.BOOKING_STATE, 'Status', default='draft')
     booking_id = fields.Many2one('tt.reservation.tour', 'Order Number', ondelete='cascade')
     balance_due = fields.Float('Balance Due')
+    total_price = fields.Float('Total Price', readonly=True, default=0)
     tour_id = fields.Many2one('tt.master.tour', 'Tour')
     departure_date = fields.Datetime('Departure Date')
     return_date = fields.Datetime('Return Date')
@@ -56,13 +57,10 @@ class TtProviderTour(models.Model):
     # refund_date = fields.Datetime('Refund Date')
     ticket_ids = fields.One2many('tt.ticket.tour', 'provider_id', 'Ticket Number')
 
-    error_msg = fields.Text('Message Error', readonly=True, states={'draft': [('readonly', False)]})
-
     # is_ledger_created = fields.Boolean('Ledger Created', default=False, readonly=True, states={'draft': [('readonly', False)]})
 
     notes = fields.Text('Notes', readonly=True, states={'draft': [('readonly', False)]})
-
-    total_price = fields.Float('Total Price', readonly=True, default=0)
+    error_history_ids = fields.One2many('tt.reservation.err.history', 'res_id', 'Error History', domain=[('res_model', '=', 'tt.provider.tour')])
 
     #reconcile purpose#
     reconcile_line_id = fields.Many2one('tt.reconcile.transaction.lines','Reconciled')
@@ -195,20 +193,79 @@ class TtProviderTour(models.Model):
                 'balance_due': 0
             })
 
-    def action_failed_booked_api_tour(self):
+    def action_cancel_api_tour(self,context):
         for rec in self:
             rec.write({
-                'state': 'fail_booked'
+                'state': 'cancel',
+                'cancel_date': datetime.now(),
+                'cancel_uid': context['co_uid'],
+                'sid_cancel': context['signature'],
             })
 
-    def action_failed_issued_api_tour(self):
+    def action_cancel_pending_api_tour(self,context):
         for rec in self:
             rec.write({
-                'state': 'fail_issued'
+                'state': 'cancel_pending',
+                'cancel_date': datetime.now(),
+                'cancel_uid': context['co_uid'],
+                'sid_cancel': context['signature'],
+            })
+
+    def action_failed_booked_api_tour(self,err_code,err_msg):
+        for rec in self:
+            rec.write({
+                'state': 'fail_booked',
+                'error_history_ids': [(0,0,{
+                    'res_model': self._name,
+                    'res_id': self.id,
+                    'error_code': err_code,
+                    'error_msg': err_msg
+                })]
+            })
+
+    def action_failed_issued_api_tour(self,err_code,err_msg):
+        for rec in self:
+            rec.write({
+                'state': 'fail_issued',
+                'error_history_ids': [(0,0,{
+                    'res_model': self._name,
+                    'res_id': self.id,
+                    'error_code': err_code,
+                    'error_msg': err_msg
+                })]
+            })
+
+    def action_failed_paid_api_tour(self,err_code,err_msg):
+        for rec in self:
+            rec.write({
+                'state': 'fail_paid',
+                'error_history_ids': [(0,0,{
+                    'res_model': self._name,
+                    'res_id': self.id,
+                    'error_code': err_code,
+                    'error_msg': err_msg
+                })]
+            })
+
+    def action_failed_void_api_tour(self,err_code,err_msg):
+        for rec in self:
+            rec.write({
+                'state': 'void_failed',
+                'error_history_ids': [(0,0,{
+                    'res_model': self._name,
+                    'res_id': self.id,
+                    'error_code': err_code,
+                    'error_msg': err_msg
+                })]
             })
 
     def action_expired(self):
         self.state = 'cancel2'
+
+    def action_cancel(self):
+        self.cancel_date = fields.Datetime.now()
+        self.cancel_uid = self.env.user.id
+        self.state = 'cancel'
 
     def action_refund(self, check_provider_state=False):
         self.state = 'refund'
@@ -455,6 +512,9 @@ class TtProviderTour(models.Model):
             'pnr2': self.pnr2 and self.pnr2 or '',
             'provider': self.provider_id.code,
             'provider_id': self.id,
+            'error_msg': self.error_history_ids and self.error_history_ids[-1].error_msg or '',
+            'carrier_name': self.carrier_id and self.carrier_id.name or '',
+            'carrier_code': self.carrier_id and self.carrier_id.code or '',
             'tour_name': self.tour_id.name,
             'tour_code': self.tour_id.tour_code,
             'state': self.state,
