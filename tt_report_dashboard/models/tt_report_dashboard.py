@@ -733,33 +733,26 @@ class TtReportDashboard(models.Model):
                 'sector': 'International',
                 'valuation': 0,
                 'passenger_count': 0,
-                'counter': 0
+                'counter': 0,
+                'one_way': 0,
+                'return': 0,
+                'multi_city': 0
             }, {
                 'sector': 'Domestic',
                 'valuation': 0,
                 'passenger_count': 0,
-                'counter': 0
+                'counter': 0,
+                'one_way': 0,
+                'return': 0,
+                'multi_city': 0
             }, {
                 'sector': 'Other',
                 'valuation': 0,
                 'passenger_count': 0,
-                'counter': 0
-            }]
-            direction_dictionary = [{
-                'direction': 'One Way',
-                'valuation': 0,
-                'passenger_count': 0,
-                'counter': 0
-            }, {
-                'direction': 'Return',
-                'valuation': 0,
-                'passenger_count': 0,
-                'counter': 0
-            }, {
-                'direction': 'Multi-City',
-                'valuation': 0,
-                'passenger_count': 0,
-                'counter': 0
+                'counter': 0,
+                'one_way': 0,
+                'return': 0,
+                'multi_city': 0
             }]
             destination_sector_summary = []
             destination_direction_summary = []
@@ -835,29 +828,33 @@ class TtReportDashboard(models.Model):
                 if i['reservation_sector'] == 'International':
                     sector_dictionary[0]['valuation'] += int(i['amount'])
                     sector_dictionary[0]['counter'] += 1
+                    if i['reservation_direction'] == 'OW':
+                        sector_dictionary[0]['one_way'] += 1
+                    elif i['reservation_direction'] == 'RT':
+                        sector_dictionary[0]['return'] += 1
+                    else:
+                        sector_dictionary[0]['multi_city'] += 1
                     sector_dictionary[0]['passenger_count'] += int(i['reservation_passenger'])
                 elif i['reservation_sector'] == 'Domestic':
                     sector_dictionary[1]['valuation'] += int(i['amount'])
                     sector_dictionary[1]['counter'] += 1
+                    if i['reservation_direction'] == 'OW':
+                        sector_dictionary[1]['one_way'] += 1
+                    elif i['reservation_direction'] == 'RT':
+                        sector_dictionary[1]['return'] += 1
+                    else:
+                        sector_dictionary[1]['multi_city'] += 1
                     sector_dictionary[1]['passenger_count'] += int(i['reservation_passenger'])
                 else:
                     sector_dictionary[2]['valuation'] += int(i['amount'])
                     sector_dictionary[2]['counter'] += 1
+                    if i['reservation_direction'] == 'OW':
+                        sector_dictionary[2]['one_way'] += 1
+                    elif i['reservation_direction'] == 'RT':
+                        sector_dictionary[2]['return'] += 1
+                    else:
+                        sector_dictionary[2]['multi_city'] += 1
                     sector_dictionary[2]['passenger_count'] += int(i['reservation_passenger'])
-
-                # ============= Summary by flight Type (OW, R, MC) ===========
-                if i['reservation_direction'] == 'OW':
-                    direction_dictionary[0]['valuation'] += int(i['amount'])
-                    direction_dictionary[0]['counter'] += 1
-                    direction_dictionary[0]['passenger_count'] = int(i['reservation_passenger'])
-                elif i['reservation_direction'] == 'RT':
-                    direction_dictionary[1]['valuation'] += int(i['amount'])
-                    direction_dictionary[1]['counter'] += 1
-                    direction_dictionary[1]['passenger_count'] = int(i['reservation_passenger'])
-                else:
-                    direction_dictionary[2]['valuation'] += int(i['amount'])
-                    direction_dictionary[2]['counter'] += 1
-                    direction_dictionary[2]['passenger_count'] = int(i['reservation_passenger'])
 
                 if i['reservation_state'] == 'issued':
                     total += i['amount']
@@ -1034,7 +1031,6 @@ class TtReportDashboard(models.Model):
                 'average_rupiah': float(total) / float(num_data) if num_data > 0 else 0,
                 'first_overview': {
                     'sector_summary': sector_dictionary,
-                    'direction_summary': direction_dictionary,
                     'international': international_filter[:20],
                     'domestic': domestic_filter[:20],
                     'one_way': one_way_filter[:20],
@@ -1097,33 +1093,26 @@ class TtReportDashboard(models.Model):
                 'sector': 'International',
                 'valuation': 0,
                 'passenger_count': 0,
-                'counter': 0
+                'counter': 0,
+                'one_way': 0,
+                'return': 0,
+                'multi_city': 0
             }, {
                 'sector': 'Domestic',
                 'valuation': 0,
                 'passenger_count': 0,
-                'counter': 0
+                'counter': 0,
+                'one_way': 0,
+                'return': 0,
+                'multi_city': 0
             }, {
                 'sector': 'Other',
                 'valuation': 0,
                 'passenger_count': 0,
-                'counter': 0
-            }]
-            direction_dictionary = [{
-                'direction': 'One Way',
-                'valuation': 0,
-                'passenger_count': 0,
-                'counter': 0
-            }, {
-                'direction': 'Return',
-                'valuation': 0,
-                'passenger_count': 0,
-                'counter': 0
-            }, {
-                'direction': 'Multi-City',
-                'valuation': 0,
-                'passenger_count': 0,
-                'counter': 0
+                'counter': 0,
+                'one_way': 0,
+                'return': 0,
+                'multi_city': 0
             }]
 
             # overview base on the same timeframe
@@ -1195,33 +1184,37 @@ class TtReportDashboard(models.Model):
                 except:
                     pass
 
-                # ============= International or Domestic route ==============
+                # ============= Summary by Domestic/International ============
                 if i['reservation_sector'] == 'International':
                     sector_dictionary[0]['valuation'] += int(i['amount'])
                     sector_dictionary[0]['counter'] += 1
+                    if i['reservation_direction'] == 'OW':
+                        sector_dictionary[0]['one_way'] += 1
+                    elif i['reservation_direction'] == 'RT':
+                        sector_dictionary[0]['return'] += 1
+                    else:
+                        sector_dictionary[0]['multi_city'] += 1
                     sector_dictionary[0]['passenger_count'] += int(i['reservation_passenger'])
                 elif i['reservation_sector'] == 'Domestic':
                     sector_dictionary[1]['valuation'] += int(i['amount'])
                     sector_dictionary[1]['counter'] += 1
+                    if i['reservation_direction'] == 'OW':
+                        sector_dictionary[1]['one_way'] += 1
+                    elif i['reservation_direction'] == 'RT':
+                        sector_dictionary[1]['return'] += 1
+                    else:
+                        sector_dictionary[1]['multi_city'] += 1
                     sector_dictionary[1]['passenger_count'] += int(i['reservation_passenger'])
                 else:
                     sector_dictionary[2]['valuation'] += int(i['amount'])
                     sector_dictionary[2]['counter'] += 1
+                    if i['reservation_direction'] == 'OW':
+                        sector_dictionary[2]['one_way'] += 1
+                    elif i['reservation_direction'] == 'RT':
+                        sector_dictionary[2]['return'] += 1
+                    else:
+                        sector_dictionary[2]['multi_city'] += 1
                     sector_dictionary[2]['passenger_count'] += int(i['reservation_passenger'])
-
-                # ============= Type of direction ============================
-                if i['reservation_direction'] == 'OW':
-                    direction_dictionary[0]['valuation'] += int(i['amount'])
-                    direction_dictionary[0]['counter'] += 1
-                    direction_dictionary[0]['passenger_count'] = int(i['reservation_passenger'])
-                elif i['reservation_direction'] == 'RT':
-                    direction_dictionary[1]['valuation'] += int(i['amount'])
-                    direction_dictionary[1]['counter'] += 1
-                    direction_dictionary[1]['passenger_count'] = int(i['reservation_passenger'])
-                else:
-                    direction_dictionary[2]['valuation'] += int(i['amount'])
-                    direction_dictionary[2]['counter'] += 1
-                    direction_dictionary[2]['passenger_count'] = int(i['reservation_passenger'])
 
                 if i['reservation_state'] == 'issued':
                     total += i['amount']
@@ -1279,22 +1272,21 @@ class TtReportDashboard(models.Model):
                         destination_direction_summary[returning_index]['child_count'] += i['reservation_child']
                         destination_direction_summary[returning_index]['infant_count'] += i['reservation_infant']
 
-                    # grouping data
-                international_filter = list(
-                    filter(lambda x: x['sector'] == 'International', destination_sector_summary))
-                domestic_filter = list(filter(lambda x: x['sector'] == 'Domestic', destination_sector_summary))
-                one_way_filter = list(filter(lambda x: x['direction'] == 'OW', destination_direction_summary))
-                return_filter = list(filter(lambda x: x['direction'] == 'RT', destination_direction_summary))
-                multi_city_filter = list(filter(lambda x: x['direction'] == 'MC', destination_direction_summary))
+            # grouping data
+            international_filter = list(filter(lambda x: x['sector'] == 'International', destination_sector_summary))
+            domestic_filter = list(filter(lambda x: x['sector'] == 'Domestic', destination_sector_summary))
+            one_way_filter = list(filter(lambda x: x['direction'] == 'OW', destination_direction_summary))
+            return_filter = list(filter(lambda x: x['direction'] == 'RT', destination_direction_summary))
+            multi_city_filter = list(filter(lambda x: x['direction'] == 'MC', destination_direction_summary))
 
-                # ==== LETS get sorting ==================
-                destination_sector_summary.sort(key=lambda x: x['counter'], reverse=True)
-                destination_direction_summary.sort(key=lambda x: x['counter'], reverse=True)
-                international_filter.sort(key=lambda x: x['counter'], reverse=True)
-                domestic_filter.sort(key=lambda x: x['counter'], reverse=True)
-                one_way_filter.sort(key=lambda x: x['counter'], reverse=True)
-                return_filter.sort(key=lambda x: x['counter'], reverse=True)
-                multi_city_filter.sort(key=lambda x: x['counter'], reverse=True)
+            # ==== LETS get sorting ==================
+            destination_sector_summary.sort(key=lambda x: x['counter'], reverse=True)
+            destination_direction_summary.sort(key=lambda x: x['counter'], reverse=True)
+            international_filter.sort(key=lambda x: x['counter'], reverse=True)
+            domestic_filter.sort(key=lambda x: x['counter'], reverse=True)
+            one_way_filter.sort(key=lambda x: x['counter'], reverse=True)
+            return_filter.sort(key=lambda x: x['counter'], reverse=True)
+            multi_city_filter.sort(key=lambda x: x['counter'], reverse=True)
 
             # for every section in summary
             for i in summary_issued:
@@ -1399,7 +1391,6 @@ class TtReportDashboard(models.Model):
                 'average_rupiah': float(total) / float(num_data) if num_data > 0 else 0,
                 'first_overview': {
                     'sector_summary': sector_dictionary,
-                    'direction_summary': direction_dictionary,
                     'international': international_filter[:20],
                     'domestic': domestic_filter[:20],
                     'one_way': one_way_filter[:20],
