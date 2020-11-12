@@ -408,7 +408,7 @@ class ReportSelling(models.Model):
 
     @staticmethod
     def _group_by_ppob():
-        return """reservation.id, provider_type.name, agent.name, agent_type.name, provider.name"""
+        return """reservation.id, provider_type.name, agent.name, agent_type.name, provider.name, pro_ppob.carrier_name"""
 
     #works with all
     @staticmethod
