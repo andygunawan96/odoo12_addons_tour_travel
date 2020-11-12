@@ -918,7 +918,10 @@ class ReportSelling(models.Model):
             lines = []
             providers = variables.PROVIDER_TYPE
             for i in providers:
-                line = self._lines(date_from, date_to, agent_id, i, 'overall_' + i, context)
+                if i != 'activity':
+                    line = self._lines(date_from, date_to, agent_id, i, 'overall_' + i, context)
+                else:
+                    continue
                 for j in line:
                     lines.append(j)
             lines = self._convert_data(lines)
@@ -927,7 +930,10 @@ class ReportSelling(models.Model):
             lines = []
             providers = variables.PROVIDER_TYPE
             for i in providers:
-                line = self._lines(date_from, date_to, agent_id, i, 'all', context)
+                if i != 'activity':
+                    line = self._lines(date_from, date_to, agent_id, i, 'all', context)
+                else:
+                    continue
                 for j in line:
                     lines.append(j)
             lines = self._convert_data(lines)
