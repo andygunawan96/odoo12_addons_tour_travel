@@ -118,7 +118,6 @@ class ReportSelling(models.Model):
         reservation.create_date as reservation_create_date_og, 
         reservation.booked_date as reservation_booked_date_og, 
         reservation.issued_date as reservation_issued_date_og,
-        reservation.visit_date as reservation_visit_date_og, 
         reservation.total as amount, 
         reservation.activity_name as reservation_activity_name, 
         reservation.activity_product as reservation_activity_product,
