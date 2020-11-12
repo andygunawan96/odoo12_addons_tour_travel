@@ -521,7 +521,7 @@ class ReservationTour(models.Model):
                 provider_booking_list = []
                 for prov in booking_obj.provider_booking_ids:
                     provider_booking_list.append(prov.to_dict())
-                response = booking_obj.to_dict()
+                response = booking_obj.to_dict(context['co_agent_id'] == self.env.ref('tt_base.rodex_ho').id)
                 response.update({
                     'provider_booking': provider_booking_list
                 })
@@ -548,8 +548,8 @@ class ReservationTour(models.Model):
 
     def issued_booking_api(self, data, context, **kwargs):
         try:
-            if data.get('order_id'):
-                book_obj = self.env['tt.reservation.tour'].sudo().browse(int(data['order_id']))
+            if data.get('book_id'):
+                book_obj = self.env['tt.reservation.tour'].sudo().browse(int(data['book_id']))
             else:
                 book_objs = self.env['tt.reservation.tour'].sudo().search([('name', '=', data['order_number'])], limit=1)
                 book_obj = book_objs[0]
@@ -563,7 +563,7 @@ class ReservationTour(models.Model):
             provider_booking_list = []
             for prov in book_obj.provider_booking_ids:
                 provider_booking_list.append(prov.to_dict())
-            response = book_obj.to_dict()
+            response = book_obj.to_dict(context['co_agent_id'] == self.env.ref('tt_base.rodex_ho').id)
             response.update({
                 'provider_booking': provider_booking_list,
                 'booking_uuid': book_obj.booking_uuid and book_obj.booking_uuid or False
@@ -598,7 +598,7 @@ class ReservationTour(models.Model):
             provider_booking_list = []
             for prov in book_obj.provider_booking_ids:
                 provider_booking_list.append(prov.to_dict())
-            response = book_obj.to_dict()
+            response = book_obj.to_dict(context['co_agent_id'] == self.env.ref('tt_base.rodex_ho').id)
             response.update({
                 'provider_booking': provider_booking_list,
                 'booking_uuid': book_obj.booking_uuid and book_obj.booking_uuid or False,
@@ -613,12 +613,19 @@ class ReservationTour(models.Model):
 
     def get_booking_api(self, data, context, **kwargs):
         try:
-            search_booking_num = data['order_number']
-            book_obj = self.env['tt.reservation.tour'].sudo().search([('name', '=', search_booking_num)], limit=1)
-            if book_obj:
-                book_obj = book_obj[0]
-                if book_obj.agent_id.id != context.get('co_agent_id', -1):
-                    raise RequestException(1001)
+            book_obj = self.get_book_obj(data.get('book_id'), data.get('order_number'))
+            try:
+                book_obj.create_date
+            except:
+                raise RequestException(1001)
+
+            user_obj = self.env['res.users'].browse(context['co_uid'])
+            try:
+                user_obj.create_date
+            except:
+                raise RequestException(1008)
+
+            if book_obj.agent_id.id == context.get('co_agent_id',-1) or self.env.ref('tt_base.group_tt_process_channel_bookings').id in user_obj.groups_id.ids:
                 master = self.env['tt.master.tour'].browse(book_obj.tour_id.id)
                 image_urls = []
                 for img in master.image_ids:
@@ -721,8 +728,8 @@ class ReservationTour(models.Model):
 
     def update_booking_api(self, data, context, **kwargs):
         try:
-            if data.get('order_id'):
-                book_obj = self.env['tt.reservation.tour'].sudo().browse(int(data['order_id']))
+            if data.get('book_id'):
+                book_obj = self.env['tt.reservation.tour'].sudo().browse(int(data['book_id']))
             else:
                 book_objs = self.env['tt.reservation.tour'].sudo().search([('name', '=', data['order_number'])], limit=1)
                 book_obj = book_objs[0]
@@ -752,7 +759,7 @@ class ReservationTour(models.Model):
             provider_booking_list = []
             for prov in book_obj.provider_booking_ids:
                 provider_booking_list.append(prov.to_dict())
-            response = book_obj.to_dict()
+            response = book_obj.to_dict(context['co_agent_id'] == self.env.ref('tt_base.rodex_ho').id)
             response.update({
                 'provider_booking': provider_booking_list,
                 'booking_uuid': book_obj.booking_uuid and book_obj.booking_uuid or False,

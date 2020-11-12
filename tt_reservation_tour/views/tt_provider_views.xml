@@ -23,7 +23,6 @@
                             <field name="pnr2"/>
                             <field name="provider_id"/>
                             <field name="notes"/>
-                            <field name="error_msg"/>
                             <field name="balance_due"/>
                             <field name="total_price"/>
                             <field name="reconcile_line_id"/>
@@ -73,6 +72,13 @@
                             <field name="amount"/>
                             <field name="total"/>
                             <field name="passenger_tour_ids"/>
+                        </tree>
+                    </field>
+                    <separator string="Error History"/>
+                    <field name="error_history_ids">
+                        <tree>
+                            <field name="error_code"/>
+                            <field name="error_msg"/>
                         </tree>
                     </field>
                     <!--<group string="Total Information" class="oe_subtotal_footer oe_right" groups="tt_base.group_tt_tour_travel_operator">-->
