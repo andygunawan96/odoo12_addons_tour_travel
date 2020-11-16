@@ -564,7 +564,7 @@ class TtAgent(models.Model):
                         if quota_obj.state == 'active':
                             for quota_list_obj in quota_obj.price_package_id.available_price_list_ids:
                                 if req['provider_type'] == quota_list_obj.provider_type_id.code:
-                                    if quota_list_obj.provider_type_access_type == 'all' or quota_list_obj.provider_id.code == req['ref_provider'] and quota_list_obj.provider_type_access_type == 'allow' or quota_list_obj.provider_type_access_type == 'restrict' and req['ref_provider'] != quota_list_obj.provider_id.code:
+                                    if quota_list_obj.provider_access_type == 'all' or quota_list_obj.provider_id.code == req['ref_provider'] and quota_list_obj.provider_access_type == 'allow' or quota_list_obj.provider_access_type == 'restrict' and req['ref_provider'] != quota_list_obj.provider_id.code:
                                         for pnr in pnrs:
                                             if quota_list_obj.carrier_access_type == 'all' or quota_list_obj.carrier_access_type == 'restrict' and quota_list_obj.carrier_id.name != pnr or quota_list_obj.carrier_id.name != pnr:
                                                 if quota_list_obj.price_type == 'pnr':
