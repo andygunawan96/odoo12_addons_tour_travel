@@ -1,33 +1,31 @@
 from odoo import api,fields,models
 
+INVENTORY_TYPE = [
+    ('internal', 'Internal'),
+    ('external', 'External')
+]
+
 class TtPnrQuotaUsage(models.Model):
     _name = 'tt.pnr.quota.usage'
     _rec_name = 'pnr_quota_id'
     _description = 'Rodex Model PNR Quota'
+    _order = 'id desc'
 
     res_model_resv = fields.Char('Res Model')
     res_id_resv = fields.Integer('Res ID')
     res_model_prov = fields.Char('Res Model Provider')
     res_id_prov = fields.Integer('Res ID Provider')
-    ref_name = fields.Char('Reference', compute="_compute_ref_name", store=True)
-    ref_carriers = fields.Char('Carriers', compute="_compute_ref_name", store=True)
-    ref_pnrs = fields.Char('PNR', compute="_compute_ref_name", store=True)
+    ref_name = fields.Char('Reference')
+    ref_carriers = fields.Char('Carriers')
+    ref_pnrs = fields.Char('PNR')
+    ref_pax = fields.Integer('Total Passenger')
+    ref_r_n = fields.Integer('Room/Night')
+    inventory = fields.Selection(INVENTORY_TYPE, 'Inventory')
+    currency_id = fields.Many2one('res.currency', 'Currency',
+                                  default=lambda self: self.env.user.company_id.currency_id.id)
+    amount = fields.Monetary('Amount')
     pnr_quota_id = fields.Many2one('tt.pnr.quota', 'Quota')
     active = fields.Boolean('Active', default=True)
-
-    @api.depends('res_model_resv','res_id_resv','res_model_prov','res_id_prov')
-    def _compute_ref_name(self):
-        for rec in self:
-            try:
-                res_obj = self.env[rec.res_model_resv].browse(rec.res_id_resv)
-                prov_obj = self.env[rec.res_model_prov].browse(rec.res_id_prov)
-                rec.ref_name = res_obj.name
-                carrier_names = prov_obj.get_carrier_name()
-                rec.ref_carriers = ','.join(carrier_names)
-                rec.ref_pnrs = prov_obj.pnr
-            except:
-                rec.ref_name = rec.res_model_resv and rec.res_model_resv.split('.')[-1] or False
-
 
     def open_reservation(self):
         try:
