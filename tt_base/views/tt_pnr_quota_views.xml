@@ -19,11 +19,10 @@
                             <group>
                                 <field name="amount"/>
                                 <field name="used_amount"/>
-                                <field name="available_amount"/>
                             </group>
                             <group>
                                 <field name="agent_id"/>
-                                <field name="price_list_id"/>
+                                <field name="price_package_id"/>
                                 <field name="expired_date"/>
                             </group>
                         </group>
@@ -48,7 +47,6 @@
                 <tree string="PNR Quota">
                     <field name="name"/>
                     <field name="used_amount"/>
-                    <field name="available_amount"/>
                     <field name="expired_date"/>
                     <field name="state"/>
                 </tree>

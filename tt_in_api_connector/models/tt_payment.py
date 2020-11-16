@@ -128,6 +128,8 @@ class TtPaymentApiCon(models.Model):
             res = self.env['payment.acquirer.number'].get_payment_acq_api(data)
         elif action == 'set_va_number':
             res = self.env['payment.acquirer.number'].set_va_number_api(data)
+        elif action == 'use_pnr_quota':
+            res = self.env['tt.reservation'].use_pnr_quota_api(data,context)
         else:
             raise RequestException(999)
         return res

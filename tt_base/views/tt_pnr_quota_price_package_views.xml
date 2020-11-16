@@ -23,8 +23,9 @@
                             </h3>
                         </div>
                         <group>
-                            <field name="minimum_monthly_quota_id"/>
-                            <field name="excess_quota_fee"/>
+                            <field name="minimum_fee"/>
+                            <field name="fix_profit_share"/>
+                            <field name="validity"/>
                             <field name="currency_id"/>
                             <field name="available_price_list_ids"/>
                         </group>
@@ -39,8 +40,7 @@
             <field name="arch" type="xml">
                 <tree string="PNR Quota Price Package">
                     <field name="name"/>
-                    <field name="minimum_monthly_quota_id"/>
-                    <field name="excess_quota_fee"/>
+                    <field name="minimum_fee"/>
                     <field name="currency_id"/>
                     <field name="active"/>
                 </tree>
