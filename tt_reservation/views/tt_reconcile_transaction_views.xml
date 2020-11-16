@@ -218,4 +218,15 @@
     <!--              action="tt_monthly_fee_rule_action"-->
     <!--              groups="base.user_admin"-->
     <!--              sequence="20"/>-->
+
+    <record model="ir.actions.server" id="action_set_reconcile_match2">
+        <field name="name">Match Record</field>
+        <field name="model_id" ref="tt_reservation.model_tt_reconcile_transaction"/>
+        <field name="binding_model_id" ref="tt_reservation.model_tt_reconcile_transaction"/>
+        <field name="state">code</field>
+        <field name="code">
+if records:
+    action = records.multi_compare_reconcile_data()
+        </field>
+    </record>
 </odoo>

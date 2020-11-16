@@ -7,6 +7,7 @@ import base64
 import pytz
 from ...tools import tools_excel
 
+
 class TtReconcileTransaction(models.Model):
     _inherit = ['tt.history']
     _name = 'tt.reconcile.transaction'
@@ -40,6 +41,10 @@ class TtReconcileTransaction(models.Model):
     def _compute_total_lines(self):
         for rec in self:
             rec.total_lines = len(rec.reconcile_lines_ids)
+
+    def multi_compare_reconcile_data(self):
+        for rec in self:
+            rec.compare_reconcile_data()
 
     def compare_reconcile_data(self):
         for rec in self.reconcile_lines_ids.filtered(lambda x: x.state == 'not_match'):
