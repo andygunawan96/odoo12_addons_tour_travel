@@ -111,23 +111,23 @@ class ReportSelling(models.Model):
     @staticmethod
     def _select_activity():
         return """
-        reservation.id as reservation_id, 
+        reservation.id as reservation_id,
         reservation.agent_id as agent_id, reservation.agent_type_id as agent_type_id,
-        reservation.name as reservation_order_number, 
+        reservation.name as reservation_order_number,
         reservation.state as reservation_state,
-        reservation.create_date as reservation_create_date_og, 
-        reservation.booked_date as reservation_booked_date_og, 
+        reservation.create_date as reservation_create_date_og,
+        reservation.booked_date as reservation_booked_date_og,
         reservation.issued_date as reservation_issued_date_og,
-        reservation.total as amount, 
-        reservation.activity_name as reservation_activity_name, 
-        reservation.activity_product as reservation_activity_product,
-        reservation.timeslot as reservation_timeslot,
-        reservation.elder as reservation_elder, 
-        reservation.adult as reservation_adult, 
-        reservation.child as reservation_child, 
+        reservation.total as amount,
+        activity.name as reservation_activity_name,
+        product.name as reservation_activity_product,
+        activity_detail.visit_date as reservation_visit_date_og,
+        activity_detail.timeslot as timeslot,
+        reservation.elder as reservation_elder,
+        reservation.adult as reservation_adult,
+        reservation.child as reservation_child,
         reservation.infant as reservation_infant,
         provider_type.name as provider_type_name,
-        provider.name as provider_name,
         COUNT(reservation_passenger.booking_id) as reservation_passenger,
         agent.name as agent_name, agent_type.name as agent_type_name
         """
@@ -304,6 +304,9 @@ class ReportSelling(models.Model):
     @staticmethod
     def _from_activity():
         return """tt_reservation_activity reservation
+        LEFT JOIN tt_reservation_activity_details activity_detail ON activity_detail.booking_id = reservation.id
+        LEFT JOIN tt_master_activity activity ON activity.id = activity_detail.activity_id
+        LEFT JOIN tt_master_activity_lines product ON product.id = activity_detail.activity_product_id
         LEFT JOIN tt_provider_type provider_type ON reservation.provider_type_id = provider_type.id
         LEFT JOIN tt_reservation_passenger_activity reservation_passenger ON reservation_passenger.booking_id = reservation.id
         LEFT JOIN tt_agent agent ON agent.id = reservation.agent_id
@@ -387,7 +390,7 @@ class ReportSelling(models.Model):
 
     @staticmethod
     def _group_by_activity():
-        return """reservation.id, provider_type.name, agent.name, agent_type.name, provider.name"""
+        return """reservation.id, provider_type.name, agent.name, agent_type.name, provider.name, activity.name, product.name, activity_detail.visit_date, activity_detail.timeslot"""
 
     @staticmethod
     def _group_by_visa():

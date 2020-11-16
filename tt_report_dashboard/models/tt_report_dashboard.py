@@ -49,6 +49,7 @@ class TtReportDashboard(models.Model):
                 'reservation': 0,
                 'invoice': 0,
                 'revenue': 0,
+                'profit': 0,
                 'average': 0
             }
             temp_list.append(temp_dict)
@@ -490,8 +491,6 @@ class TtReportDashboard(models.Model):
                 'July', 'August', 'September', 'October', 'November', 'December'
             ]
 
-
-
             # count different of days between dates
             delta = end_date - start_date
 
@@ -857,7 +856,7 @@ class TtReportDashboard(models.Model):
                     sector_dictionary[2]['passenger_count'] += int(i['reservation_passenger'])
 
                 if i['reservation_state'] == 'issued':
-                    total += i['amount']
+                    # total += i['amount']
                     # num_data += 1
 
                     # ============= Search best for every sector ==================
