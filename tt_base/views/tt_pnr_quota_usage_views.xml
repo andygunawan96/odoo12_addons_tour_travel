@@ -25,6 +25,10 @@
                             <field name="ref_name"/>
                             <field name="ref_pnrs"/>
                             <field name="ref_carriers"/>
+                            <field name="ref_pax"/>
+                            <field name="ref_r_n"/>
+                            <field name="currency_id"/>
+                            <field name="amount"/>
                             <field name="pnr_quota_id"/>
                         </group>
                     </sheet>

@@ -11,6 +11,18 @@ import base64
 _logger = logging.getLogger(__name__)
 
 
+PROVIDER_TYPE_SELECTION = {
+    'AL': 'airline',
+    'VS': 'visa',
+    'PS': 'passport',
+    'TN': 'train',
+    'AT': 'activity',
+    'TR': 'tour',
+    'RESV': 'hotel',
+    'RO': 'issued_offline',
+    'BT': 'ppob'
+}
+
 class TtReservation(models.Model):
     _name = 'tt.reservation'
     _inherit = 'tt.history'
@@ -783,12 +795,37 @@ class TtReservation(models.Model):
                     ledger_created = provider.action_create_ledger(context['co_uid'], payment_method)
                     # if agent_obj.is_using_pnr_quota: ##selalu potong quota setiap  attemp payment
                     if agent_obj.is_using_pnr_quota and ledger_created: #tidak potong quota jika tidak membuat ledger
-                        agent_obj.use_pnr_quota({
-                            'res_model_resv': book_obj._name,
-                            'res_id_resv': book_obj.id,
-                            'res_model_prov': provider._name,
-                            'res_id_prov': provider.id
-                        })
+
+                        try:
+                            ledger_obj = self.env['tt.ledger'].search([('res_model', '=', book_obj._name),('res_id','=',book_obj.id),('is_reversed','=',False),('agent_id','=',self.env.ref('tt_base.rodex_ho').id)])
+                            amount = 0
+                            for ledger in ledger_obj:
+                                amount += ledger.debit
+                            carrier_code = []
+                            if hasattr(provider, 'journey_ids'):
+                                for journey in provider.journey_ids:
+                                    if hasattr(journey, 'segment_ids'):
+                                        for segment in journey.segment_ids:
+                                            carrier_code.append(segment.carrier_code)
+                                    else:
+                                        carrier_code.append(journey.carrier_code)
+                            agent_obj.use_pnr_quota({
+                                'res_model_resv': book_obj._name,
+                                'res_id_resv': book_obj.id,
+                                'res_model_prov': provider._name,
+                                'res_id_prov': provider.id,
+                                'ref_pnrs': provider.pnr,
+                                'ref_carriers': carrier_code,
+                                'ref_provider': provider.provider_id.code,
+                                'ref_name': book_obj.name,
+                                'ref_provider_type': PROVIDER_TYPE_SELECTION[book_obj.name.split('.')[0]], #parser code al to provider type
+                                'ref_pax': hasattr(book_obj, 'passenger_ids') and len(book_obj.passenger_ids) or 0,  # total pax
+                                'ref_r_n': hasattr(book_obj, 'nights') and book_obj.nights or 0,  # room/night
+                                'inventory': 'internal',
+                                'amount': amount
+                            })
+                        except Exception as e:
+                            _logger.error(traceback.format_exc(e))
                         # if not quota_used:
                         #     print("5k woi")
 
@@ -809,6 +846,40 @@ class TtReservation(models.Model):
             except:
                 _logger.error('Creating Notes Error')
             return ERR.get_error(1011)
+
+    def use_pnr_quota_api(self, req, context):
+        user_obj = self.env['res.users'].browse(context['co_uid'])
+        try:
+            user_obj.create_date
+        except:
+            raise RequestException(1008)
+        agent_obj = user_obj.agent_id
+        # ledger_created = provider.action_create_ledger(context['co_uid'], payment_method)
+        # if agent_obj.is_using_pnr_quota: ##selalu potong quota setiap  attemp payment
+        # if agent_obj.is_using_pnr_quota and ledger_created:  # tidak potong quota jika tidak membuat ledger
+        try:
+            carrier_str = ''
+            for carrier in req.get('carriers'):
+                if carrier_str != '':
+                    carrier += ', '
+                carrier_str += carrier
+            agent_obj.use_pnr_quota({
+                'res_model_resv': '',
+                'res_id_resv': '',
+                'res_model_prov': '',
+                'res_id_prov': '',
+                'ref_pnrs': req['pnr'],
+                'ref_carriers': carrier_str,
+                'ref_provider': req['provider'],
+                'provider_type': req['provider_type'],
+                'ref_name': "EXT.%s" % req['order_number'],
+                'ref_pax': req.get('pax'), # total pax
+                'ref_r_n': req.get('r_n'), # room/night
+                'inventory': 'external'
+            })
+        except Exception as e:
+            _logger.info(str(e))
+        return ERR.get_no_error()
 
     def get_btc_hold_date(self):
         if (self.booked_date + timedelta(hours=1)) >= self.hold_date:

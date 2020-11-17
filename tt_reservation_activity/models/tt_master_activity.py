@@ -327,6 +327,17 @@ class MasterActivity(models.Model):
                     'uuid': prefix + rec.uuid
                 })
 
+    # temporary function
+    def update_activity_lines_uuid_temp(self):
+        all_activity_lines = self.env['tt.master.activity.lines'].search([])
+        for rec in all_activity_lines:
+            if rec.activity_id:
+                if rec.activity_id.provider_id and rec.uuid:
+                    prefix = rec.activity_id.provider_id.alias and rec.activity_id.provider_id.alias + '~' or ''
+                    rec.write({
+                        'uuid': prefix + rec.uuid
+                    })
+
     def sync_config(self, provider):
         req_post = {
             'provider': provider
@@ -1556,7 +1567,6 @@ class MasterActivity(models.Model):
             provider = req.get('provider', 'all')
             provider_id = self.env['tt.provider'].sudo().search([('code', '=', provider)], limit=1)
             provider_id = provider_id and provider_id[0] or False
-            provider_code = provider_id and provider_id[0].code or ''
 
             sql_query = 'select themes.* from tt_master_activity themes left join tt_activity_location_rel locrel on locrel.product_id = themes.id left join tt_activity_master_locations loc on loc.id = locrel.location_id '
 
