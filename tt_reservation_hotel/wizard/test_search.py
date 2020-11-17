@@ -854,7 +854,7 @@ class TestSearch(models.Model):
                 # 'id': room.id,
                 'prov_issued_code': room.issued_name,
                 'prov_booking_code': room.name,
-                'provider': room.provider_id.alias,
+                'provider': room.provider_id.code,
                 'dates': self.prepare_nightly_price(room.room_date_ids),
                 'room_name': room.room_info_id and room.room_info_id.name or room.room_name,
                 'room_vendor_code': room.room_vendor_code,
@@ -985,6 +985,11 @@ class TestSearch(models.Model):
             'lat': '',
             'long': '',
             'hotel_rooms': rooms,
+            'sid_booked': resv_obj.sid_booked,
+            'uid_booked': self.sudo().env.ref('tt_base.agent_b2c_user').id,
+            'uname_booked': self.sudo().env.ref('tt_base.agent_b2c_user').name,
+            'currency': resv_obj.currency_id.name,
+            'total': resv_obj.total,
         })
         return new_vals
 

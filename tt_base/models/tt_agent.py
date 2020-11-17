@@ -558,7 +558,10 @@ class TtAgent(models.Model):
                 price_list_id = self.quota_ids.filtered(lambda x: x.state == 'active')[0].id
                 #check usage
                 amount = 0
-                pnrs = req.get('ref_pnrs').split(', ')
+                try:
+                    pnrs = req.get('ref_pnrs').split(', ')
+                except:
+                    pnrs = req.get('ref_pnrs')
                 if req['inventory'] == 'external':
                     for quota_obj in self.quota_ids:
                         if quota_obj.state == 'active':
