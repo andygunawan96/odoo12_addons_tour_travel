@@ -921,10 +921,10 @@ class ReportSelling(models.Model):
             lines = []
             providers = variables.PROVIDER_TYPE
             for i in providers:
-                if i != 'activity':
-                    line = self._lines(date_from, date_to, agent_id, i, 'overall_' + i, context)
-                else:
-                    continue
+                # if i != 'activity':
+                line = self._lines(date_from, date_to, agent_id, i, 'overall_' + i, context)
+                # else:
+                #     continue
                 for j in line:
                     lines.append(j)
             lines = self._convert_data(lines)
@@ -933,10 +933,10 @@ class ReportSelling(models.Model):
             lines = []
             providers = variables.PROVIDER_TYPE
             for i in providers:
-                if i != 'activity':
-                    line = self._lines(date_from, date_to, agent_id, i, 'all', context)
-                else:
-                    continue
+                # if i != 'activity':
+                line = self._lines(date_from, date_to, agent_id, i, 'all', context)
+                # else:
+                #     continue
                 for j in line:
                     lines.append(j)
             lines = self._convert_data(lines)
@@ -949,8 +949,15 @@ class ReportSelling(models.Model):
         date_to = data_form['date_to']
         agent_id = data_form['agent_id']
         provider_type = data_form['provider_type']
-
-        line = self._get_lines_data(date_from, date_to, agent_id, provider_type)
+        # proceed data
+        context = {
+            'agent_seq_id': '',
+            'agent_type_code': '',
+            # 'provider_code': data['provider_code'],
+            'reservation': '',
+            'provider': ''
+        }
+        line = self._get_lines_data(date_from, date_to, agent_id, provider_type, context)
         self._report_title(data_form)
         return {
             'lines': line,
