@@ -86,7 +86,7 @@
                             <field name="document_url"/>
                         </group>
                         <group>
-                            <field name="tour_code" attrs="{'readonly': [('provider_id', '!=', %(tt_reservation_tour.tt_provider_tour_internal)d)]}"/>
+                            <field name="tour_code" readonly="1"/>
                             <field name="provider_id" groups="tt_base.group_tt_tour_travel_operator"/>
                             <field name="carrier_id" groups="tt_base.group_tt_tour_travel_operator"/>
                             <field name="currency_id" attrs="{'readonly': [('provider_id', '!=', %(tt_reservation_tour.tt_provider_tour_internal)d)]}"/>
