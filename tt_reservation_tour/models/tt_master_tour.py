@@ -1187,7 +1187,7 @@ class MasterTour(models.Model):
                         })
 
             try:
-                self.env.cr.execute("""SELECT tuc.* FROM tt_upload_center tuc LEFT JOIN tour_images_rel tir ON tir.image_id = tuc.id WHERE tir.tour_id = %s;""", (tour_obj.id,))
+                self.env.cr.execute("""SELECT tuc.* FROM tt_upload_center tuc LEFT JOIN tour_images_rel tir ON tir.image_id = tuc.id WHERE tir.tour_id = %s AND tuc.active = True;""", (tour_obj.id,))
                 images = self.env.cr.dictfetchall()
             except Exception:
                 images = []
