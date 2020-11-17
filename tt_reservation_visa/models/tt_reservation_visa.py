@@ -202,7 +202,7 @@ class TtVisa(models.Model):
                     'datetime': temp_date,
                     'data': data
                 }
-                self.env['tt.api.webhook.data'].send_sync_status_visa(vals)
+                self.env['tt.api.con'].send_sync_status_visa(vals)
 
     def action_validate_visa(self):
         is_validated = True
@@ -223,10 +223,10 @@ class TtVisa(models.Model):
             self.sync_status_btbo2('validate')
         self.message_post(body='Order VALIDATED')
 
-    def action_sync_status_visa_api(self,req):
+    def action_sync_status_visa_api(self, req, ctx):
         try:
             book_id = self.env['tt.provider.visa'].search([('pnr', '=', req.get('order_number'))], limit=1).booking_id
-            book_obj = self.env['tt.reservation.visa'].search([('id', '=', book_id)], limit=1)
+            book_obj = self.env['tt.reservation.visa'].search([('id', '=', book_id.id)], limit=1)
             if req.get('state') == 'validate':
                 self.action_validate_visa_api(book_obj)
             return Response().get_no_error()
