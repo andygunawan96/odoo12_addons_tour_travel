@@ -724,6 +724,7 @@ class TtReportDashboard(models.Model):
                 },
                 'total_rupiah': total,
                 'average_rupiah': float(total) / float(num_data) if num_data > 0 else 0,
+                'profit_total': profit_total,
                 'first_overview': summary_provider,
             }
 
@@ -1108,6 +1109,7 @@ class TtReportDashboard(models.Model):
                 },
                 'total_rupiah': total,
                 'average_rupiah': float(total) / float(num_data) if num_data > 0 else 0,
+                'profit_total': profit_total,
                 'first_overview': {
                     'sector_summary': sector_dictionary,
                     'international': international_filter[:20],
@@ -1503,6 +1505,7 @@ class TtReportDashboard(models.Model):
                 },
                 'total_rupiah': total,
                 'average_rupiah': float(total) / float(num_data) if num_data > 0 else 0,
+                'profit_total': profit_total,
                 'first_overview': {
                     'sector_summary': sector_dictionary,
                     'international': international_filter[:20],
@@ -1763,7 +1766,8 @@ class TtReportDashboard(models.Model):
                 },
                 'first_overview': [],
                 'total_rupiah': total,
-                'average_rupiah': float(total) / float(num_data) if num_data > 0 else 0
+                'average_rupiah': float(total) / float(num_data) if num_data > 0 else 0,
+                'profit_total': profit_total
             }
 
             # update dependencies
@@ -2012,6 +2016,7 @@ class TtReportDashboard(models.Model):
                 },
                 'first_overview': [],
                 'total_rupiah': total,
+                'profit_total': profit_total,
                 'average_rupiah': float(total) / float(num_data) if num_data > 0 else 0
             }
 
@@ -2287,6 +2292,7 @@ class TtReportDashboard(models.Model):
                 },
                 'total_rupiah': total,
                 'average_rupiah': float(total) / float(num_data) if num_data > 0 else 0,
+                'profit_total': profit_total,
                 'first_overview': product_summary
             }
 
@@ -2561,6 +2567,7 @@ class TtReportDashboard(models.Model):
                 },
                 'total_rupiah': total,
                 'average_rupiah': float(total) / float(num_data) if num_data > 0 else 0,
+                'profit_total': profit_total,
                 'first_overview': product_summary
             }
 
@@ -2825,6 +2832,7 @@ class TtReportDashboard(models.Model):
                 },
                 'total_rupiah': total,
                 'average_rupiah': float(total) / float(num_data) if num_data > 0 else 0,
+                'profit_total': profit_total,
                 'first_overview': country_summary
             }
 
@@ -3093,6 +3101,7 @@ class TtReportDashboard(models.Model):
                 },
                 'total_rupiah': total,
                 'average_rupiah': float(total) / float(num_data) if num_data > 0 else 0,
+                'profit_total': profit_total,
                 'first_overview': offline_summary
             }
 
@@ -3358,6 +3367,7 @@ class TtReportDashboard(models.Model):
                 },
                 'total_rupiah': total,
                 'average_rupiah': float(total) / float(num_data) if num_data > 0 else 0,
+                'profit_total': profit_total,
                 'first_overview': ppob_summary
             }
 
@@ -3624,6 +3634,7 @@ class TtReportDashboard(models.Model):
                 },
                 'total_rupiah': total,
                 'average_rupiah': float(total) / float(num_data) if num_data > 0 else 0,
+                'profit_total': profit_total,
                 'first_overview': passport_summary
             }
 
