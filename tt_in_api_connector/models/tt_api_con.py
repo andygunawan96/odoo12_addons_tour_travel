@@ -117,3 +117,6 @@ class TtApiCon(models.Model):
                                             request['data'],
                                             'reconcile',
                                             timeout=120)
+    def send_sync_status_visa(self, request):
+        return self.send_request_to_gateway('%s/content' % self.url, request, 'sync_status_visa', timeout=300)
+

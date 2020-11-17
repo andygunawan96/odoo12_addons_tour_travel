@@ -223,6 +223,26 @@ class VisaOrderPassengers(models.Model):
                 rec.visa_id.action_partial_validate_visa()
             rec.message_post(body='Passenger VALIDATED')
 
+    def action_validate_api(self):
+        for rec in self:
+            for req in rec.to_requirement_ids:
+                if req.is_copy is True:
+                    req.is_copy = True
+                elif req.is_ori is True:
+                    req.is_ori = True
+            rec.write({
+                'state': 'validate'
+            })
+            all_validate = True
+            for psg in rec.visa_id.passenger_ids:
+                if psg.state != 'validate':
+                    all_validate = False
+            if all_validate:
+                rec.visa_id.action_validate_visa()
+            else:
+                rec.visa_id.action_partial_validate_visa()
+            rec.message_post(body='Passenger VALIDATED')
+
     def action_re_validate(self):
         for rec in self:
             rec.write({

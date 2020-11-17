@@ -1,4 +1,5 @@
 from odoo import models, fields, api, _
+from datetime import datetime, timedelta, date
 from odoo.exceptions import UserError
 from ...tools import variables, util
 from ...tt_reservation_offline.models.tt_reservation_offline import STATE_OFFLINE_STR
@@ -49,6 +50,10 @@ class ReportDashboardOverall(models.Model):
         return """ payment_method
         """
 
+    def _datetime_user_context(self, utc_datetime_string):
+        value = fields.Datetime.from_string(utc_datetime_string)
+        return fields.Datetime.context_timestamp(self, value).strftime("%Y-%m-%d")
+
     def get_top_up(self, start_date, end_date):
         query = "SELECT " + self._select_top_up() + "FROM " + self._from_top_up() + "WHERE " + self._where_top_up()
 
@@ -84,6 +89,29 @@ class ReportDashboardOverall(models.Model):
         _logger.info(query)
         return self.env.cr.dictfetchall()
 
+    def get_profit_lines(self, data):
+        query = """
+        SELECT ledger.date as date_og, ledger.debit, agent.name as agent_name, agent_type.name as agent_type, provider_type.name as provider_type
+        FROM tt_ledger ledger 
+        LEFT JOIN tt_agent agent ON agent.id = ledger.agent_id
+        LEFT JOIN tt_agent_type agent_type ON agent_type.id = ledger.agent_type_id
+        LEFT JOIN tt_provider_type provider_type ON provider_type.id = ledger.provider_type_id
+        WHERE ledger.name LIKE 'Commission%' AND ledger.create_date >= '{}' AND ledger.create_date <= '{}'
+        """.format(data['start_date'], data['end_date'])
+
+        if data['agent_type_seq_id']:
+            query += """AND agent_type.code = '%s' """ % (data['agent_type_seq_id'])
+
+        if data['agent_seq_id']:
+            query += """AND agent.seq_id = '%s' """ % (data['agent_seq_id'])
+
+        if data['provider_type']:
+            query += """AND provider_type.code = '%s' """ % (data['provider_type'])
+
+        self.env.cr.execute(query)
+        _logger.info(query)
+        return self.env.cr.dictfetchall()
+
     def _get_reports(self, data):
         date_from = data['start_date']
         date_to = data['end_date']
@@ -100,6 +128,15 @@ class ReportDashboardOverall(models.Model):
             'lines': lines
         }
 
+    def _convert_data_profit(self, lines):
+        for i in lines:
+            i['date'] = self._datetime_user_context(i['date_og'])
+
+            temp_booked_date = i['date'].split("-")
+            i['year'] = temp_booked_date[0]
+            i['month'] = temp_booked_date[1]
+        return lines
+
     def get_agent_all(self):
         lines = self.get_agent_lines()
         return lines
@@ -110,4 +147,17 @@ class ReportDashboardOverall(models.Model):
 
     def get_provider_all(self):
         lines = self.get_provider_lines()
+        return lines
+
+    def get_profit(self, data):
+        # proceed something
+        if data['provider_type'] != 'overall':
+            provider = data['provider_type'].split("_")
+            data['provider_type'] = provider[1]
+        else:
+            data['provider_type'] = ''
+
+        lines = self.get_profit_lines(data)
+        lines = self._convert_data_profit(lines)
+
         return lines
