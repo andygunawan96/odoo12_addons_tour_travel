@@ -300,6 +300,15 @@ class VisaOrderPassengers(models.Model):
             })
             rec.message_post(body='Passenger CONFIRM PAYMENT')
 
+    def action_confirm_payment_api(self):
+        for rec in self:
+            rec.sudo().write({
+                'state': 'confirm_payment',
+                'payment_date': datetime.now(),
+                'payment_uid': self.env.user.id
+            })
+            rec.message_post(body='Passenger CONFIRM PAYMENT')
+
     def action_in_process2(self):
         for rec in self:
             rec.write({
