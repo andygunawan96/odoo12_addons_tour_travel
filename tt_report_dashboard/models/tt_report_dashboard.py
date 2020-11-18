@@ -29,6 +29,13 @@ class TtReportDashboard(models.Model):
 
         return -1
 
+    def person_index_by_name(self, arr, params):
+        for i, dic in enumerate(arr):
+            if dic['agent_name'] == params['agent_name'] and dic['agent_type_name'] == params['agent_type_name']:
+                return i
+
+        return -1
+
     def add_month_detail(self):
         temp_list = []
         for i in range(1, 32):
@@ -381,7 +388,7 @@ class TtReportDashboard(models.Model):
             _logger.error(traceback.format_exc())
             raise e
 
-    def get_report_group_by_chanel(self, data):
+    def get_report_group_by_chanel(self, data, profit):
         try:
             temp_dict = {
                 'start_date': data['start_date'],
@@ -425,6 +432,7 @@ class TtReportDashboard(models.Model):
                         'agent_name': i['agent_name'],
                         'agent_type_name': i['agent_type_name'],
                         'revenue': i['amount'],
+                        'profit': 0,
                         'reservation': 1
                     }
                     # add to final list
@@ -434,6 +442,14 @@ class TtReportDashboard(models.Model):
                     summary_chanel[person_index]['revenue'] += i['amount']
                     summary_chanel[person_index]['reservation'] += 1
 
+            # proceed profit
+            for i in profit:
+                person_index = self.person_index_by_name(summary_chanel, {'agent_name': i['agent_name'], 'agent_type_name': i['agent_type']})
+                try:
+                    summary_chanel[person_index]['profit'] += i['debit']
+                except:
+                    pass
+
             # sort data
             summary_chanel.sort(key=lambda x: (x['revenue'], x['reservation']), reverse=True)
 
@@ -442,6 +458,7 @@ class TtReportDashboard(models.Model):
             revenue_data = []
             reservation_data = []
             average_data = []
+            profit_data = []
 
             # lets populate list to return
             if len(summary_chanel) < 20:
@@ -450,12 +467,14 @@ class TtReportDashboard(models.Model):
                     revenue_data.append(i['revenue'])
                     reservation_data.append(i['reservation'])
                     average_data.append(i['revenue']/i['reservation'])
+                    profit_data.append(i['profit'])
             else:
                 for i in range(20):
                     label_data.append(summary_chanel[i]['agent_name'])
                     revenue_data.append(summary_chanel[i]['revenue'])
                     reservation_data.append(summary_chanel[i]['reservation'])
                     average_data.append(summary_chanel[i]['revenue'] / summary_chanel[i]['reservation'])
+                    profit_data.append(i['profit'])
 
             # lets built to return
             to_return = {
@@ -463,7 +482,8 @@ class TtReportDashboard(models.Model):
                     'label': label_data,
                     'data': revenue_data,
                     'data2': reservation_data,
-                    'data3': average_data
+                    'data3': average_data,
+                    'data4': profit_data
                 }
             }
 
@@ -738,7 +758,7 @@ class TtReportDashboard(models.Model):
             to_return.update(book_issued)
 
             # get by chanel
-            chanel_data = self.get_report_group_by_chanel(data)
+            chanel_data = self.get_report_group_by_chanel(data, profit)
 
             # adding chanel_data graph
             to_return.update(chanel_data)
@@ -1129,7 +1149,7 @@ class TtReportDashboard(models.Model):
             to_return.update(book_issued)
 
             # get by chanel
-            chanel_data = self.get_report_group_by_chanel(data)
+            chanel_data = self.get_report_group_by_chanel(data, profit)
 
             # adding chanel_data graph
             to_return.update(chanel_data)
@@ -1526,7 +1546,7 @@ class TtReportDashboard(models.Model):
             to_return.update(book_issued)
 
             # get by chanel
-            chanel_data = self.get_report_group_by_chanel(data)
+            chanel_data = self.get_report_group_by_chanel(data, profit)
 
             # adding chanel_data graph
             to_return.update(chanel_data)
@@ -1780,7 +1800,7 @@ class TtReportDashboard(models.Model):
             to_return.update(book_issued)
 
             # get by chanel
-            chanel_data = self.get_report_group_by_chanel(data)
+            chanel_data = self.get_report_group_by_chanel(data, profit)
 
             # adding chanel_data graph
             to_return.update(chanel_data)
@@ -2030,7 +2050,7 @@ class TtReportDashboard(models.Model):
             to_return.update(book_issued)
 
             # get by chanel
-            chanel_data = self.get_report_group_by_chanel(data)
+            chanel_data = self.get_report_group_by_chanel(data, profit)
 
             # adding chanel_data graph
             to_return.update(chanel_data)
@@ -2306,7 +2326,7 @@ class TtReportDashboard(models.Model):
             to_return.update(book_issued)
 
             # get by chanel
-            chanel_data = self.get_report_group_by_chanel(data)
+            chanel_data = self.get_report_group_by_chanel(data, profit)
 
             # adding chanel_data graph
             to_return.update(chanel_data)
@@ -2581,7 +2601,7 @@ class TtReportDashboard(models.Model):
             to_return.update(book_issued)
 
             # get by chanel
-            chanel_data = self.get_report_group_by_chanel(data)
+            chanel_data = self.get_report_group_by_chanel(data, profit)
 
             # adding chanel_data graph
             to_return.update(chanel_data)
@@ -2846,7 +2866,7 @@ class TtReportDashboard(models.Model):
             to_return.update(book_issued)
 
             # get by chanel
-            chanel_data = self.get_report_group_by_chanel(data)
+            chanel_data = self.get_report_group_by_chanel(data, profit)
 
             # adding chanel_data graph
             to_return.update(chanel_data)
@@ -3115,7 +3135,7 @@ class TtReportDashboard(models.Model):
             to_return.update(book_issued)
 
             # get by chanel
-            chanel_data = self.get_report_group_by_chanel(data)
+            chanel_data = self.get_report_group_by_chanel(data, profit)
 
             # adding chanel_data graph
             to_return.update(chanel_data)
@@ -3381,7 +3401,7 @@ class TtReportDashboard(models.Model):
             to_return.update(book_issued)
 
             # get by chanel
-            chanel_data = self.get_report_group_by_chanel(data)
+            chanel_data = self.get_report_group_by_chanel(data, profit)
 
             # adding chanel_data graph
             to_return.update(chanel_data)
@@ -3648,7 +3668,7 @@ class TtReportDashboard(models.Model):
             to_return.update(book_issued)
 
             # get by chanel
-            chanel_data = self.get_report_group_by_chanel(data)
+            chanel_data = self.get_report_group_by_chanel(data, profit)
 
             # adding chanel_data graph
             to_return.update(chanel_data)
