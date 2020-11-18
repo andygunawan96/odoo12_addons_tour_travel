@@ -36,6 +36,18 @@ class TtReportDashboard(models.Model):
 
         return -1
 
+    def check_carrier(self, arr, params):
+        for i, dic in enumerate(arr):
+            if dic['carrier_name'] == params['carrier_name']:
+                return i
+        return -1
+
+    def check_carrier_route(self, arr, params):
+        for i, dic in enumerate(arr):
+            if dic['departure'] == params['departure'] and dic['destination'] == params['destination']:
+                return i
+        return -1
+
     def add_month_detail(self):
         temp_list = []
         for i in range(1, 32):
@@ -474,7 +486,7 @@ class TtReportDashboard(models.Model):
                     revenue_data.append(summary_chanel[i]['revenue'])
                     reservation_data.append(summary_chanel[i]['reservation'])
                     average_data.append(summary_chanel[i]['revenue'] / summary_chanel[i]['reservation'])
-                    profit_data.append(i['profit'])
+                    profit_data.append(summary_chanel[i]['profit'])
 
             # lets built to return
             to_return = {
@@ -824,6 +836,9 @@ class TtReportDashboard(models.Model):
             }]
             destination_sector_summary = []
             destination_direction_summary = []
+            start_point_summary = {}
+            end_point_summary = {}
+            top_carrier = []
 
             delta = end_date - start_date
 
@@ -866,6 +881,7 @@ class TtReportDashboard(models.Model):
             for i in issued_values['lines']:
                 if i['reservation_id'] != current_id:
                     try:
+                        # get index of month
                         month_index = self.check_date_index(summary_issued, {'year': i['issued_year'], 'month': month[int(i['issued_month']) - 1]})
 
                         if month_index == -1:
@@ -897,6 +913,66 @@ class TtReportDashboard(models.Model):
                             summary_issued[month_index]['detail'][day_index]['revenue'] += i['amount']
                             total += i['amount']
                             num_data += 1
+                    except:
+                        pass
+
+                    # Departure
+                    try:
+                        # seperate city of departure
+                        depart = i['departure'].split(" - ")
+                        start_point_summary[depart[0]] += 1
+                    except:
+                        # seperate city of departure
+                        depart = i['departure'].split(" - ")
+                        start_point_summary[depart[0]] = 1
+
+                    # Destination
+                    try:
+                        # seperate city of destination
+                        desti = i['destination'].split(" - ")
+                        end_point_summary[desti[0]] += 1
+                    except:
+                        # seperate city of destination
+                        desti = i['destination'].split(" - ")
+                        end_point_summary[desti[0]] = 1
+
+                    # Top Carrier
+                    try:
+                        carrier_index = self.check_carrier(top_carrier, {'carrier_name': i['carrier_name']})
+
+                        if carrier_index == -1:
+                            # carrier is not exist yet
+                            # declare a temporary dictionary
+                            temp_dict = {
+                                'carrier_name': i['carrier_name'],
+                                'counter': 1,
+                                'route': [{
+                                    'departure': i['departure'],
+                                    'destination': i['destination'],
+                                    'counter': 1
+                                }]
+                            }
+                            # add to main list
+                            top_carrier.append(temp_dict)
+                        else:
+                            # check index of route within top_carrier dictionary
+                            carrier_route_index = self.check_carrier_route(top_carrier[carrier_index]['route'], {'departure': i['departure'], 'destination': i['destination']})
+
+                            if carrier_route_index == -1:
+                                # route is not exist yet
+                                # create temporary dict
+                                temp_dict = {
+                                    'departure': i['departure'],
+                                    'destination': i['destination'],
+                                    'counter': 1
+                                }
+                                # add to list
+                                top_carrier[carrier_index]['route'].append(temp_dict)
+                            else:
+                                # if exist then only add counter
+                                top_carrier[carrier_index]['route'][carrier_route_index]['counter'] += 1
+                            # add carrier counter
+                            top_carrier[carrier_index]['counter'] += 1
                     except:
                         pass
 
@@ -1006,6 +1082,45 @@ class TtReportDashboard(models.Model):
             one_way_filter.sort(key=lambda x: x['counter'], reverse=True)
             return_filter.sort(key=lambda x: x['counter'], reverse=True)
             multi_city_filter.sort(key=lambda x: x['counter'], reverse=True)
+            departure_summary = sorted(start_point_summary.items(), key=lambda item: item[1], reverse=True)
+            destination_summary = sorted(end_point_summary.items(), key=lambda item: item[1], reverse=True)
+            top_carrier.sort(key=lambda x: x['counter'], reverse=True)
+            # sort route within top carrier
+            for i in top_carrier:
+                i['route'].sort(key=lambda x: x['counter'], reverse=True)
+
+            # trim top carrier data
+            carrier_summary = []
+            counter = 0
+            for i in top_carrier:
+                if counter < 10:
+                    i['route'] = i['route'][:10]
+                    carrier_summary.append(i)
+                    counter += 1
+                else:
+                    try:
+                        for j in i['route']:
+                            route_index = self.check_carrier_route(carrier_summary[10]['route'], {'departure': j['departure'], 'destination': j['destination']})
+                            if route_index == -1:
+                                temp_dict = {
+                                    'departure': j['departure'],
+                                    'destination': j['destination'],
+                                    'counter': i['counter']
+                                }
+                                # add to list
+                                carrier_summary[10]['route'].append(temp_dict)
+                            else:
+                                carrier_summary[10]['route'][route_index]['counter'] += 1
+                    except:
+                        carrier_summary.append({
+                            'carrier_name': 'Other',
+                            'counter': 1,
+                            'route': i['route']
+                        })
+
+            # sort and trim "other" carrier
+            carrier_summary[10]['route'].sort(key=lambda x: x['counter'], reverse=True)
+            carrier_summary[10]['route'] = carrier_summary[10]['route'][:10]
 
             # for every section in summary
             for i in summary_issued:
@@ -1119,6 +1234,34 @@ class TtReportDashboard(models.Model):
                             profit_data[str(j['day']) + "-" + str(i['month_index']) + "-" + str(i['year'])] = j[
                                 'profit']
 
+            # adding overview in graph
+            departure_graph = {}
+            destination_graph = {}
+
+            # create counter variabel
+            counter = 1
+            other_counter = 0
+            for i in departure_summary:
+                if counter < 10:
+                    departure_graph[i[0]] = i[1]
+                    counter += 1
+                else:
+                    other_counter += i[1]
+
+            departure_graph['Other'] = other_counter
+
+            # reset the counter
+            counter = 1
+            other_counter = 0
+            for i in destination_summary:
+                if counter < 10:
+                    destination_graph[i[0]] = i[1]
+                    counter += 1
+                else:
+                    other_counter += i[1]
+
+            destination_graph['Other'] = other_counter
+
             to_return = {
                 'first_graph': {
                     'label': list(main_data.keys()),
@@ -1136,7 +1279,16 @@ class TtReportDashboard(models.Model):
                     'domestic': domestic_filter[:20],
                     'one_way': one_way_filter[:20],
                     'return': return_filter[:20],
-                    'multi_city': multi_city_filter[:20]
+                    'multi_city': multi_city_filter[:20],
+                    'departure_graph': {
+                        'label': list(departure_graph.keys()),
+                        'data': list(departure_graph.values())
+                    },
+                    'destination_graph': {
+                        'label': list(destination_graph.keys()),
+                        'data': list(destination_graph.values())
+                    },
+                    'carrier': carrier_summary
                 }
             }
             # update dependencies
