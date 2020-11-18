@@ -227,6 +227,9 @@ class TtVisa(models.Model):
         try:
             book_id = self.env['tt.provider.visa'].search([('pnr', '=', req.get('order_number'))], limit=1).booking_id
             book_obj = self.env['tt.reservation.visa'].search([('id', '=', book_id.id)], limit=1)
+            _logger.error('visa book id ' + book_id.id)
+            _logger.error('visa get booking ' + json.dumps(book_obj))
+            _logger.error('visa req ' + json.dumps(req))
             if req.get('data'):
                 if req['data'].get('state') == 'validate':
                     self.action_validate_visa_by_api(book_obj)
