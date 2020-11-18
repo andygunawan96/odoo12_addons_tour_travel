@@ -96,7 +96,7 @@ class ReportDashboardOverall(models.Model):
         LEFT JOIN tt_agent agent ON agent.id = ledger.agent_id
         LEFT JOIN tt_agent_type agent_type ON agent_type.id = ledger.agent_type_id
         LEFT JOIN tt_provider_type provider_type ON provider_type.id = ledger.provider_type_id
-        WHERE ledger.name LIKE 'Commission%' AND ledger.create_date >= '{}' AND ledger.create_date <= '{}'
+        WHERE ledger.name LIKE 'Commission%' AND ledger.create_date >= '{}' AND ledger.create_date <= '{}' AND ledger.is_reversed = 'FALSE'
         """.format(data['start_date'], data['end_date'])
 
         if data['agent_type_seq_id']:
