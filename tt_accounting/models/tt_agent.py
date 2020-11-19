@@ -23,7 +23,7 @@ class TtAgent(models.Model):
             'domain': [('agent_id', '=', self.id)],
             'context': {
                 'form_view_ref': 'tt_accounting.tt_ledger_form_view',
-                'tree_view_ref': 'tt_accounting.tt_ledger_tree_view_page'
+                'tree_view_ref': 'tt_accounting.tt_ledger_tree_view'
             },
         }
 

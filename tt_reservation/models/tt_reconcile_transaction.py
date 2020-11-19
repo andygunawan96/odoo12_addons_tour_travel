@@ -130,13 +130,13 @@ class TtReconcileTransactionLines(models.Model):
     vendor_balance_currency_id = fields.Many2one('res.currency', 'Vendor Balance Currency',
                                                  default=lambda self: self.env.user.company_id.currency_id,
                                                  readonly=True)
-    ticket_numbers = fields.Text('Ticket')
-    description = fields.Text('Description')
+    ticket_numbers = fields.Text('Ticket',readonly=True)
+    description = fields.Text('Description',readonly=True)
 
     state = fields.Selection([('not_match','Not Match'),
                               ('match','Match'),
                               ('done','Done'),
-                              ('ignore','Ignore')],'State',default='not_match')
+                              ('ignore','Ignore')],'State',default='not_match',readonly=True)
     res_model = fields.Char('Ref Model', readonly=True)
     res_id = fields.Integer('Ref ID', readonly=True)
 
