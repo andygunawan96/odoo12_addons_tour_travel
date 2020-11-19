@@ -15,6 +15,7 @@ class ReportSelling(models.Model):
         return """
         reservation.id as reservation_id, reservation.name as reservation_order_number, 
         reservation.create_date as reservation_create_date_og, reservation.state as reservation_state, 
+        reservation.carrier_name as carrier_name,
         reservation.booked_date as reservation_booked_date_og,
         reservation.issued_date as reservation_issued_date_og,
         reservation.total as amount, provider_type.name as provider_type_name, 
@@ -38,7 +39,8 @@ class ReportSelling(models.Model):
         reservation.agent_id as agent_id, reservation.agent_type_id as agent_type_id,
         reservation.name as reservation_order_number, 
         reservation.create_date as reservation_create_date_og,
-        reservation.total as amount, 
+        reservation.total as amount,
+        reservation.carrier_name as carrier_name,
         reservation.sector_type as reservation_sector, 
         reservation.state as reservation_state,
         reservation.provider_name as reservation_provider_name, 
@@ -66,6 +68,7 @@ class ReportSelling(models.Model):
         reservation.name as reservation_order_number, 
         reservation.create_date as reservation_create_date_og,
         reservation.total as amount, 
+        reservation.carrier_name as carrier_name,
         reservation.sector_type as reservation_sector, 
         reservation.state as reservation_state,
         reservation.provider_name as reservation_provider_name, 
@@ -96,8 +99,12 @@ class ReportSelling(models.Model):
         reservation.nights as reservation_night, 
         reservation.provider_name as reservation_provider_name,
         reservation.total as amount, 
+        reservation.carrier_name as carrier_name,
         reservation.state as reservation_state, 
         reservation.hotel_name as reservation_hotel_name,
+        reservation.hotel_city as hotel_city,
+        reservation.hotel_city_id as hotel_city_id,
+        country.name as country_name,
         reservation.elder as reservation_elder, 
         reservation.adult as reservation_adult, 
         reservation.child as reservation_child, 
@@ -119,6 +126,7 @@ class ReportSelling(models.Model):
         reservation.booked_date as reservation_booked_date_og,
         reservation.issued_date as reservation_issued_date_og,
         reservation.total as amount,
+        reservation.carrier_name as carrier_name,
         activity.name as reservation_activity_name,
         product.name as reservation_activity_product,
         activity_detail.visit_date as reservation_visit_date_og,
@@ -142,6 +150,7 @@ class ReportSelling(models.Model):
         reservation.booked_date as reservation_booked_date_og, 
         reservation.issued_date as reservation_issued_date_og,
         reservation.total as amount, 
+        reservation.carrier_name as carrier_name,
         reservation.provider_name as reservation_provider_name, 
         reservation.state as reservation_state,
         reservation.elder as reservation_elder, 
@@ -170,6 +179,7 @@ class ReportSelling(models.Model):
         reservation.booked_date as reservation_booked_date_og, 
         reservation.issued_date as reservation_issued_date_og,
         reservation.total as amount, 
+        reservation.carrier_name as carrier_name,
         reservation.state as reservation_state,
         reservation.elder as reservation_elder, 
         reservation.adult as reservation_adult, 
@@ -194,6 +204,7 @@ class ReportSelling(models.Model):
         reservation.confirm_date as reservation_confirm_date_og, 
         reservation.done_date as reservation_done_date_og,
         reservation.total as amount, 
+        reservation.carrier_name as carrier_name,
         reservation.elder as reservation_elder,
         reservation.adult as reservation_adult,
         reservation.child as reservation_child,
@@ -218,6 +229,7 @@ class ReportSelling(models.Model):
         reservation.create_date as reservation_create_date_og, 
         reservation.provider_name as reservation_provider_name,
         reservation.total as amount, 
+        reservation.carrier_name as carrier_name,
         reservation.state as reservation_state, 
         reservation.event_name as reservation_event_name,
         reservation.elder as reservation_elder, 
@@ -235,6 +247,7 @@ class ReportSelling(models.Model):
         return """
         reservation.id as reservation_id, reservation.name as reservation_order_number, 
         reservation.create_date as reservation_create_date_og, reservation.state as reservation_state, 
+        reservation.carrier_name as carrier_name,
         reservation.booked_date as reservation_booked_date_og,
         reservation.issued_date as reservation_issued_date_og,
         reservation.total as amount, provider_type.name as provider_type_name, 
@@ -299,6 +312,8 @@ class ReportSelling(models.Model):
         LEFT JOIN tt_agent_type agent_type ON agent_type.id = reservation.agent_type_id
         LEFT JOIN tt_provider_hotel pro_hotel ON pro_hotel.booking_id = reservation.id
         LEFT JOIN tt_provider provider ON provider.id = pro_hotel.provider_id
+        LEFT JOIN res_city city ON city.id = reservation.hotel_city_id
+        LEFT JOIN res_country country ON country.id = city.country_id
         """
 
     @staticmethod
@@ -386,7 +401,7 @@ class ReportSelling(models.Model):
     #specified hotel
     @staticmethod
     def _group_by_hotel():
-        return """reservation.id, provider_type.name, agent.name, agent_type.name, provider.name"""
+        return """reservation.id, provider_type.name, agent.name, agent_type.name, provider.name, city.id, country.id"""
 
     @staticmethod
     def _group_by_activity():
