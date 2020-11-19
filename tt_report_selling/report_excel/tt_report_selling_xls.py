@@ -531,15 +531,15 @@ class ReportSellingXls(models.TransientModel):
                 if i['reservation_direction'] == 'OW':
                     direction_dictionary[0]['valuation'] += int(i['amount'])
                     direction_dictionary[0]['counter'] += 1
-                    direction_dictionary[0]['passenger_count'] = int(i['reservation_passenger'])
+                    direction_dictionary[0]['passenger_count'] += int(i['reservation_passenger'])
                 elif i['reservation_direction'] == 'RT':
                     direction_dictionary[1]['valuation'] += int(i['amount'])
                     direction_dictionary[1]['counter'] += 1
-                    direction_dictionary[1]['passenger_count'] = int(i['reservation_passenger'])
+                    direction_dictionary[1]['passenger_count'] += int(i['reservation_passenger'])
                 else:
                     direction_dictionary[2]['valuation'] += int(i['amount'])
                     direction_dictionary[2]['counter'] += 1
-                    direction_dictionary[2]['passenger_count'] = int(i['reservation_passenger'])
+                    direction_dictionary[2]['passenger_count'] += int(i['reservation_passenger'])
 
                 # ============= Search best for every sector ==================
                 returning_index = self.returning_index_sector(destination_sector_summary,{'departure': i['departure'], 'destination': i['destination'], 'sector': i['reservation_sector']})
@@ -1159,15 +1159,15 @@ class ReportSellingXls(models.TransientModel):
             if i['reservation_direction'] == 'OW':
                 direction_dictionary[0]['valuation'] += int(i['amount'])
                 direction_dictionary[0]['counter'] += 1
-                direction_dictionary[0]['passenger_count'] = int(i['reservation_passenger'])
+                direction_dictionary[0]['passenger_count'] += int(i['reservation_passenger'])
             elif i['reservation_direction'] == 'RT':
                 direction_dictionary[1]['valuation'] += int(i['amount'])
                 direction_dictionary[1]['counter'] += 1
-                direction_dictionary[1]['passenger_count'] = int(i['reservation_passenger'])
+                direction_dictionary[1]['passenger_count'] += int(i['reservation_passenger'])
             else:
                 direction_dictionary[2]['valuation'] += int(i['amount'])
                 direction_dictionary[2]['counter'] += 1
-                direction_dictionary[2]['passenger_count'] = int(i['reservation_passenger'])
+                direction_dictionary[2]['passenger_count'] += int(i['reservation_passenger'])
 
             # ============= Seek top 50 products by sector ===============
             returning_index = self.returning_index(destination_sector_summary,

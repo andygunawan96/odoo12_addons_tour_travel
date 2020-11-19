@@ -103,6 +103,14 @@
                             <field name="charge_code_ids" nolabel="1"/>
                         </group>
                     </group>
+                    <separator string="Agents"/>
+                    <group>
+                        <group>
+                            <field name="agent_access_type"/>
+                        </group>
+                        <group></group>
+                    </group>
+                    <field name="agent_ids"/>
                     <separator string="Uplines"/>
                     <field name="line_ids"/>
                 </sheet>
@@ -133,6 +141,8 @@
             <field name="display_charge_codes"/>
             <field name="class_of_service_type"/>
             <field name="display_class_of_services"/>
+            <field name="agent_access_type"/>
+            <field name="display_agents"/>
             <field name="provider_access_type"/>
             <field name="commission_charge_type"/>
             <field name="carrier_access_type"/>
@@ -157,8 +167,10 @@
             <field name="name"/>
             <field name="provider_access_type"/>
             <field name="carrier_access_type"/>
+            <field name="agent_access_type"/>
             <field name="display_providers"/>
             <field name="display_carriers"/>
+            <field name="display_agents"/>
             <field name="agent_type_id"/>
             <filter name="inactive" string="Archived" domain="[('active','=',False)]"/>
         </search>

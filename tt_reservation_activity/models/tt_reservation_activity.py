@@ -49,7 +49,7 @@ class ActivityResendVoucher(models.TransientModel):
     def resend_voucher_api(self):
         req = {
             'provider': self.provider_name,
-            'order_id': self.pnr,
+            'book_id': self.pnr,
             'user_email_address': self.user_email_add
         }
         res = self.env['tt.activity.api.con'].resend_voucher(req)
@@ -95,26 +95,18 @@ class ReservationActivity(models.Model):
     rejected_date = fields.Datetime('Rejected Date')
     refund_date = fields.Datetime('Refund Date')
 
-    activity_id = fields.Many2one('tt.master.activity', 'Activity')
-    activity_product_id = fields.Many2one('tt.master.activity.lines', 'Activity Product')
-    activity_name = fields.Char('Activity Name')
-    activity_product = fields.Char('Product Type')
-    activity_product_uuid = fields.Char('Product Type Uuid')
-    visit_date = fields.Datetime('Visit Date')
-    timeslot = fields.Char('Timeslot')
-
     sale_service_charge_ids = fields.One2many('tt.service.charge', 'booking_activity_id', string='Service Charge',
                                               readonly=True, states={'draft': [('readonly', False)]})
     provider_booking_ids = fields.One2many('tt.provider.activity', 'booking_id', string='Provider Booking',
                                            readonly=True, states={'draft': [('readonly', False)]})
     passenger_ids = fields.One2many('tt.reservation.passenger.activity', 'booking_id', string='Passengers')
 
-    information = fields.Text('Additional Information')
     file_upload = fields.Text('File Upload')
     voucher_url = fields.Text('Voucher URL')
     voucher_url_ids = fields.One2many('tt.reservation.activity.vouchers', 'booking_id', 'Voucher URLs')
     provider_type_id = fields.Many2one('tt.provider.type', 'Provider Type', default=lambda self: self.env.ref('tt_reservation_activity.tt_provider_type_activity'))
     option_ids = fields.One2many('tt.reservation.activity.option', 'booking_id', 'Options')
+    activity_detail_ids = fields.One2many('tt.reservation.activity.details', 'booking_id', 'Reservation Details')
 
     def get_form_id(self):
         return self.env.ref("tt_reservation_activity.tt_reservation_activity_form_view")
@@ -157,10 +149,13 @@ class ReservationActivity(models.Model):
     def check_provider_state(self,context,pnr_list=[],hold_date=False,req={}):
         if all(rec.state == 'booked' for rec in self.provider_booking_ids):
             # booked
-            pass
+            self.calculate_service_charge()
+            hold_date = datetime.now() + relativedelta(hours=6)
+            self.action_booked_activity(context, pnr_list, hold_date)
         elif all(rec.state == 'issued' for rec in self.provider_booking_ids):
             # issued
-            pass
+            acquirer_id, customer_parent_id = self.get_acquirer_n_c_parent_id(req)
+            self.action_issued_api_activity(acquirer_id and acquirer_id.id or False, customer_parent_id, context)
         elif all(rec.state == 'refund' for rec in self.provider_booking_ids):
             # refund
             self.action_refund()
@@ -182,10 +177,19 @@ class ReservationActivity(models.Model):
         elif all(rec.state == 'fail_booked' for rec in self.provider_booking_ids):
             # failed book
             self.action_failed_book()
+        elif all(rec.state == 'cancel' for rec in self.provider_booking_ids):
+            # failed book
+            self.action_set_as_cancel()
+        elif self.provider_booking_ids:
+            provider_obj = self.provider_booking_ids[0]
+            self.write({
+                'state': provider_obj.state,
+            })
         else:
-            # entah status apa
-            _logger.error('Entah status apa')
-            raise RequestException(1006)
+            self.write({
+                'state': 'draft',
+            })
+            # raise RequestException(1006)
 
     def action_booked(self):
         self.write({
@@ -215,7 +219,7 @@ class ReservationActivity(models.Model):
         req = {
             'uuid': self.booking_uuid,
             'provider': self.activity_id.provider_id.code,
-            'order_id': self.id,
+            'book_id': self.id,
             'pnr': self.pnr,
         }
         res = self.env['tt.activity.api.con'].issued_booking_vendor(req)
@@ -286,7 +290,7 @@ class ReservationActivity(models.Model):
         })
 
     def action_failed(self, data):
-        booking_rec = self.browse(int(data['order_id']))
+        booking_rec = self.browse(int(data['book_id']))
         booking_rec.write({
             'state': data['state'],
             'error_msg': data['error_msg']
@@ -307,8 +311,8 @@ class ReservationActivity(models.Model):
             'state': 'issued',
         })
 
-    def call_create_invoice(self, acquirer_id,co_uid,customer_parent_id):
-        _logger.info('Creating Invoice for ' + self.name)
+    def action_issued_api_activity(self,acquirer_id,customer_parent_id,context):
+        self.action_issued_activity(context['co_uid'],customer_parent_id,acquirer_id)
 
     def update_pnr_data(self, book_id, pnr):
         provider_objs = self.env['tt.provider.activity'].search([('booking_id', '=', book_id)])
@@ -328,43 +332,55 @@ class ReservationActivity(models.Model):
                 'pnr': pnr
             })
 
-    def update_booking_by_api(self, req, api_context):
+    def update_booking_by_api(self, data, context, **kwargs):
         try:
-            booking_id = req['order_id'],
-            book_info = req['book_info']
-            booking_obj = self.browse(booking_id)
-            for rec in booking_obj.provider_booking_ids:
-                rec.action_booked_api_activity(book_info, api_context)
-            booking_obj.sudo().write({
-                'pnr': book_info.get('code') and book_info['code'] or '',
-                'booking_uuid': book_info.get('uuid') and book_info['uuid'] or '',
-                'sid_booked': api_context.get('sid') and api_context['sid'] or '',
-                'state': book_info['status']
-            })
-            booking_obj.calculate_service_charge()
+            if data.get('book_id'):
+                book_obj = self.env['tt.reservation.activity'].sudo().browse(int(data['book_id']))
+            else:
+                book_objs = self.env['tt.reservation.activity'].sudo().search([('name', '=', data['order_number'])], limit=1)
+                book_obj = book_objs[0]
+
+            book_info = data.get('book_info') and data['book_info'] or {}
+
+            if book_info['status'] == 'booked':
+                write_vals = {
+                    'sid_booked': context.get('sid') and context['sid'] or '',
+                    'booking_uuid': book_info.get('uuid') and book_info['uuid'] or ''
+                }
+
+                pnr_list = []
+                for rec in book_obj.provider_booking_ids:
+                    rec.action_booked_api_activity(book_info, context)
+                    pnr_list.append(book_info.get('code') or '')
+
+                book_obj.check_provider_state(context, pnr_list)
+                book_obj.sudo().write(write_vals)
+            elif book_info['status'] == 'issued':
+                for rec in book_obj.provider_booking_ids:
+                    rec.action_issued_api_activity(context)
+
+                book_obj.check_provider_state(context, req=data)
             self.env.cr.commit()
 
-            if not api_context or api_context['co_uid'] == 1:
-                api_context['co_uid'] = booking_obj.booked_uid.id
-
-            response = {
-                'order_number': booking_obj.name
-            }
-
-            res = ERR.get_no_error(response)
-            return res
-
+            provider_booking_list = []
+            for prov in book_obj.provider_booking_ids:
+                provider_booking_list.append(prov.to_dict())
+            response = book_obj.to_dict(context['co_agent_id'] == self.env.ref('tt_base.rodex_ho').id)
+            response.update({
+                'provider_booking': provider_booking_list,
+            })
+            return ERR.get_no_error(response)
         except RequestException as e:
             _logger.error(traceback.format_exc())
             try:
-                booking_obj.notes += traceback.format_exc()+'\n'
+                book_obj.notes += traceback.format_exc()+'\n'
             except:
                 _logger.error('Creating Notes Error')
             return e.error_dict()
         except Exception as e:
             _logger.error(traceback.format_exc())
             try:
-                booking_obj.notes += traceback.format_exc()+'\n'
+                book_obj.notes += traceback.format_exc()+'\n'
             except:
                 _logger.error('Creating Notes Error')
             return ERR.get_error(1005)
@@ -450,12 +466,6 @@ class ReservationActivity(models.Model):
             file_upload = req.get('file_upload') and req['file_upload'] or False
             provider = req.get('provider') and req['provider'] or ''
             pricing = req.get('pricing') and req['pricing'] or []
-            try:
-                agent_obj = self.env['tt.customer'].browse(int(booker_data['booker_id'])).agent_id
-                if not agent_obj:
-                    agent_obj = self.env['res.users'].browse(int(context['co_uid'])).agent_id
-            except Exception:
-                agent_obj = self.env['res.users'].browse(int(context['co_uid'])).agent_id
 
             header_val = search_request
             booker_obj = self.create_booker_api(booker_data, context)
@@ -557,12 +567,6 @@ class ReservationActivity(models.Model):
                 'date': datetime.now(),
                 'agent_id': context['co_agent_id'],
                 'user_id': context['co_uid'],
-                'activity_id': activity_type_id.activity_id.id,
-                'activity_product_id': activity_type_id.id,
-                'visit_date': datetime.strptime(search_request['visit_date'], '%Y-%m-%d').strftime('%d %b %Y'),
-                'activity_name': activity_type_id.activity_id.name,
-                'activity_product': activity_type_id.name,
-                'activity_product_uuid': search_request['product_type_uuid'],
                 'senior': senior,
                 'adult': adult,
                 'child': child,
@@ -571,18 +575,6 @@ class ReservationActivity(models.Model):
                 'provider_name': activity_type_id.activity_id.provider_id.code,
                 'file_upload': file_upload,
             })
-
-            if search_request.get('timeslot'):
-                timeslot_obj = self.env['tt.activity.master.timeslot'].sudo().search([('uuid', '=', search_request['timeslot']), ('product_type_id', '=', int(activity_type_id.id))], limit=1)
-                timeslot_obj = timeslot_obj[0]
-                header_val.update({
-                    'timeslot': str(timeslot_obj.startTime) + ' - ' + str(timeslot_obj.endTime),
-                })
-
-            if not activity_type_id.instantConfirmation:
-                header_val.update({
-                    'information': 'On Request (max. 3 working days)',
-                })
 
             # create header & Update customer_parent_id
             book_obj = self.sudo().create(header_val)
@@ -604,12 +596,7 @@ class ReservationActivity(models.Model):
 
             provider_activity_vals = {
                 'booking_id': book_obj.id,
-                'activity_id': activity_type_id.activity_id.id,
-                'activity_product_id': activity_type_id.id,
-                'activity_product': activity_type_id.name,
-                'activity_product_uuid': search_request['product_type_uuid'],
                 'provider_id': provider_id.id,
-                'visit_date': search_request['visit_date'],
                 'balance_due': req['amount'],
             }
 
@@ -626,26 +613,35 @@ class ReservationActivity(models.Model):
             for rec in pricing:
                 provider_activity_obj.create_service_charge(rec)
 
-            book_obj.action_booked_activity(context)
-            self.env.cr.commit()
-
-            response = {
-                'order_id': book_obj.id,
-                'order_number': book_obj.name,
-                'status': book_obj.state,
-                'order_data': {
-                    'activity_uuid': activity_type_id.activity_id.uuid,
-                    'activity_name': activity_type_id.activity_id.name,
-                    'product_type_uuid': activity_type_id.uuid,
-                    'product_type_title': activity_type_id.name,
-                    'visit_date': book_obj.visit_date,
-                    'adult': book_obj.adult,
-                    'senior': book_obj.senior,
-                    'child': book_obj.child,
-                    'infant': book_obj.infant,
-                    'skus': skus,
-                }
+            reservation_details_vals = {
+                'provider_booking_id': provider_activity_obj.id,
+                'activity_id': activity_type_id.activity_id.id,
+                'activity_product_id': activity_type_id.id,
+                'visit_date': search_request['visit_date']
             }
+
+            if search_request.get('timeslot'):
+                timeslot_obj = self.env['tt.activity.master.timeslot'].sudo().search([('uuid', '=', search_request['timeslot']), ('product_type_id', '=', int(activity_type_id.id))], limit=1)
+                timeslot_obj = timeslot_obj[0]
+                reservation_details_vals.update({
+                    'timeslot': str(timeslot_obj.startTime) + ' - ' + str(timeslot_obj.endTime),
+                })
+
+            if not activity_type_id.instantConfirmation:
+                reservation_details_vals.update({
+                    'information': 'On Request (max. 3 working days)',
+                })
+
+            self.env['tt.reservation.activity.details'].sudo().create(reservation_details_vals)
+
+            prov_list = []
+            for prov in book_obj.provider_booking_ids:
+                prov_list.append(prov.to_dict())
+            response = book_obj.to_dict(context['co_agent_id'] == self.env.ref('tt_base.rodex_ho').id)
+            response.update({
+                'provider_booking': prov_list,
+                'booking_uuid': book_obj.booking_uuid
+            })
 
             return ERR.get_no_error(response)
         except RequestException as e:
@@ -668,32 +664,20 @@ class ReservationActivity(models.Model):
 
     def issued_booking_by_api(self, req, context):
         try:
-            if req.get('order_id'):
-                book_obj = self.env['tt.reservation.activity'].sudo().browse(int(req['order_id']))
+            if req.get('book_id'):
+                book_obj = self.env['tt.reservation.activity'].sudo().browse(int(req['book_id']))
             else:
                 book_objs = self.env['tt.reservation.activity'].sudo().search([('name', '=', req['order_number'])], limit=1)
                 book_obj = book_objs[0]
 
-            acquirer_id, customer_parent_id = book_obj.get_acquirer_n_c_parent_id(req)
-
-            vals = {
-                'customer_parent_id': customer_parent_id,
-            }
-            book_obj.sudo().write(vals)
-            book_obj.action_paid_activity(context)
-            self.env.cr.commit()
-
-            book_obj.call_create_invoice(acquirer_id and acquirer_id.id or False,context['co_uid'],customer_parent_id)
-
-            response = {
-                'order_id': book_obj.id,
-                'order_number': book_obj.name,
-                'status': book_obj.state,
-                'pnr': book_obj.pnr,
-                'provider': book_obj.activity_id.provider_id.code,
-                'uuid': book_obj.booking_uuid,
-            }
-
+            provider_booking_list = []
+            for prov in book_obj.provider_booking_ids:
+                provider_booking_list.append(prov.to_dict())
+            response = book_obj.to_dict(context['co_agent_id'] == self.env.ref('tt_base.rodex_ho').id)
+            response.update({
+                'provider_booking': provider_booking_list,
+                'booking_uuid': book_obj.booking_uuid
+            })
             return ERR.get_no_error(response)
         except RequestException as e:
             _logger.error(traceback.format_exc())
@@ -719,11 +703,18 @@ class ReservationActivity(models.Model):
     def get_vouchers_button_api(self, obj_id, context):
         try:
             obj = self.env['tt.reservation.activity'].browse(obj_id)
+            provider = ''
+            visit_date = ''
+            for rec in obj.provider_booking_ids:
+                provider = rec.provider_id.code
+                for rec2 in rec.activity_detail_ids:
+                    visit_date = rec2.visit_date
+
             req = {
                 'order_number': obj.name,
                 'uuid': obj.booking_uuid,
                 'pnr': obj.pnr,
-                'provider': obj.provider_name
+                'provider': provider
             }
             res2 = self.env['tt.activity.api.con'].get_vouchers(req)
             attachment_objs = []
@@ -733,7 +724,7 @@ class ReservationActivity(models.Model):
                         'filename': 'Activity_Ticket.pdf',
                         'file_reference': str(obj.name) + ' ' + str(idx+1),
                         'file': rec,
-                        'delete_date': obj.visit_date + timedelta(days=7)
+                        'delete_date': visit_date + timedelta(days=7)
                     }
                     attachment_obj = self.env['tt.upload.center.wizard'].upload_file_api(attachment_value, context)
                     if attachment_obj['error_code'] == 0:
@@ -948,26 +939,24 @@ class ReservationActivity(models.Model):
         try:
             order_number = data['order_number']
 
-            self.env.cr.execute("""SELECT * FROM tt_reservation_activity WHERE name=%s""", (order_number,))
-            activity_booking = self.env.cr.dictfetchall()
+            book_obj = self.env['tt.reservation.activity'].search([('name', '=', order_number)], limit=1)
+            if book_obj:
+                book_obj = book_obj[0]
 
-            if activity_booking:
-                self.env.cr.execute("""SELECT * FROM tt_provider_activity WHERE booking_id=%s""", (activity_booking[0]['id'],))
-                act_provider_ids = self.env.cr.dictfetchall()
+                provider = ''
+                for rec in book_obj.provider_booking_ids:
+                    provider = rec.provider_id.code
 
-                provider_obj = self.env['tt.provider'].browse(act_provider_ids[0]['provider_id'])
                 req = {
-                    'provider': provider_obj.code,
-                    'uuid': activity_booking[0]['booking_uuid'],
-                    'pnr': activity_booking[0]['pnr'],
-                    'order_number': order_number,
-                    'order_id': activity_booking[0]['id'],
+                    'provider': provider,
+                    'uuid': book_obj.booking_uuid,
+                    'pnr': book_obj.pnr,
+                    'order_number': book_obj.name,
+                    'book_id': book_obj.id,
                 }
+                result = ERR.get_no_error(req)
             else:
-                req = {
-                    'no_order_number': True
-                }
-            result = ERR.get_no_error(req)
+                raise RequestException(1001)
             return result
         except RequestException as e:
             _logger.error(traceback.format_exc())
@@ -989,87 +978,60 @@ class ReservationActivity(models.Model):
 
     def get_booking_by_api(self, res, req, context):
         try:
-            order_number = req['order_number']
-            activity_booking = self.env['tt.reservation.activity'].search([('name', '=', order_number)], limit=1)
-            if activity_booking:
-                activity_booking = activity_booking[0]
-                if activity_booking.agent_id.id != context.get('co_agent_id', -1):
+            book_obj = self.get_book_obj(req.get('book_id'), req.get('order_number'))
+            try:
+                book_obj.create_date
+            except:
+                raise RequestException(1001)
+
+            user_obj = self.env['res.users'].browse(context['co_uid'])
+            try:
+                user_obj.create_date
+            except:
+                raise RequestException(1008)
+
+            if book_obj.agent_id.id == context.get('co_agent_id',-1) or self.env.ref('tt_base.group_tt_process_channel_bookings').id in user_obj.groups_id.ids:
+                if book_obj.agent_id.id != context.get('co_agent_id', -1):
                     raise RequestException(1001)
                 book_option_ids = []
-                for rec in activity_booking.option_ids:
+                for rec in book_obj.option_ids:
                     book_option_ids.append({
                         'name': rec.name,
                         'value': rec.value,
                         'description': rec.description,
                     })
 
-                # self.env.cr.execute("""SELECT * FROM tt_service_charge WHERE booking_activity_id=%s""", (activity_booking[0]['id'],))
+                # self.env.cr.execute("""SELECT * FROM tt_service_charge WHERE booking_activity_id=%s""", (book_obj[0]['id'],))
                 # api_price_ids = self.env.cr.dictfetchall()
-                passengers = []
-                for rec in activity_booking.sudo().passenger_ids:
-                    passengers.append(rec.to_dict())
-                contact = self.env['tt.customer'].browse(activity_booking.contact_id.id)
-
-                master = self.env['tt.master.activity'].browse(activity_booking.activity_id.id)
-                image_urls = []
-                for img in master.image_ids:
-                    image_urls.append(str(img.photos_url) + str(img.photos_path))
-
-                activity_details = {
-                    'name': master.name,
-                    'description': self.clean_string(master.description),
-                    'highlights': self.clean_string(master.highlights),
-                    'additionalInfo': self.clean_string(master.additionalInfo),
-                    'safety': self.clean_string(master.safety),
-                    'warnings': self.clean_string(master.warnings),
-                    'priceIncludes': self.clean_string(master.priceIncludes),
-                    'priceExcludes': self.clean_string(master.priceExcludes),
-                    'image_urls': image_urls,
-                }
-                master_line = self.env['tt.master.activity.lines'].search([('activity_id', '=', master.id), ('uuid', '=', activity_booking.activity_product_uuid)])
-                if master_line:
-                    master_line = master_line[0]
-                voucher_detail = {
-                    'voucher_validity': {
-                        'voucher_validity_date': master_line.voucher_validity_date,
-                        'voucher_validity_days': master_line.voucher_validity_days,
-                        'voucher_validity_type': master_line.voucher_validity_type,
-                    },
-                    'voucherUse': self.clean_string(master_line.voucherUse),
-                    'voucherRedemptionAddress': self.clean_string(master_line.voucherRedemptionAddress),
-                    'cancellationPolicies': master_line.cancellationPolicies,
-                }
+                psg_list = []
+                for rec in book_obj.sudo().passenger_ids:
+                    psg_list.append(rec.to_dict())
 
                 voucher_url_parsed = []
-                activity_voucher_urls = self.env['tt.reservation.activity.vouchers'].sudo().search([('booking_id', '=', int(activity_booking.id))])
+                activity_voucher_urls = self.env['tt.reservation.activity.vouchers'].sudo().search([('booking_id', '=', int(book_obj.id))])
                 if res.get('voucher_url') and not activity_voucher_urls:
                     new_vouch_obj = self.env['tt.reservation.activity.vouchers'].sudo().create({
                         'name': res['voucher_url'],
-                        'booking_id': activity_booking.id
+                        'booking_id': book_obj.id
                     })
                     voucher_url_parsed = [new_vouch_obj.name]
                 elif activity_voucher_urls:
                     voucher_url_parsed = [url_voucher.name for url_voucher in activity_voucher_urls]
 
-                if activity_booking.state not in ['booked', 'issued', 'rejected', 'refund', 'cancel', 'cancel2', 'fail_booked', 'fail_issued', 'fail_refunded']:
-                    activity_booking.sudo().write({
+                if book_obj.state not in ['booked', 'issued', 'rejected', 'refund', 'cancel', 'cancel2', 'fail_booked', 'fail_issued', 'fail_refunded']:
+                    book_obj.sudo().write({
                         'state': res['status']
                     })
                     self.env.cr.commit()
 
-                response = activity_booking.to_dict(context['co_agent_id'] == self.env.ref('tt_base.rodex_ho').id)
+                prov_list = []
+                for prov in book_obj.provider_booking_ids:
+                    prov_list.append(prov.to_dict())
+                response = book_obj.to_dict(context['co_agent_id'] == self.env.ref('tt_base.rodex_ho').id)
                 response.update({
-                    'activity': {
-                        'name': master.name,
-                        'type': master_line.name,
-                    },
-                    'provider': master.provider_id.code,
-                    'visit_date': str(activity_booking.visit_date)[:10],
-                    'timeslot': activity_booking.timeslot and activity_booking.timeslot or False,
-                    'passengers': passengers,
-                    'activity_details': activity_details,
-                    'voucher_detail': voucher_detail,
-                    'uuid': res.get('uuid') and res['uuid'] or '',
+                    'passengers': psg_list,
+                    'provider_booking': prov_list,
+                    'booking_uuid': book_obj.booking_uuid,
                     'booking_options': book_option_ids,
                     'voucher_url': voucher_url_parsed and voucher_url_parsed or []
                 })
@@ -1084,20 +1046,29 @@ class ReservationActivity(models.Model):
             _logger.error(traceback.format_exc())
             return ERR.get_error(1013)
 
-    def action_booked_activity(self, api_context=None):
-        if not api_context:  # Jika dari call from backend
-            api_context = {
+    def action_booked_activity(self,context,pnr_list,hold_date):
+        if not context:  # Jika dari call from backend
+            context = {
                 'co_uid': self.env.user.id
             }
+        if not context.get('co_uid'):
+            context.update({
+                'co_uid': self.env.user.id
+            })
 
         if self.state != 'booked':
-            vals = {
+            write_values = {
                 'state': 'booked',
-                'booked_uid': api_context and api_context['co_uid'],
+                'pnr': ', '.join(pnr_list),
+                'hold_date': hold_date,
                 'booked_date': datetime.now(),
-                'hold_date': datetime.now() + relativedelta(hours=23, minutes=45),
+                'booked_uid': context['co_uid'] or self.env.user.id,
             }
-            self.write(vals)
+
+            if write_values['pnr'] == '':
+                write_values.pop('pnr')
+
+            self.write(write_values)
 
             try:
                 if self.agent_type_id.is_send_email_booked:
@@ -1118,29 +1089,25 @@ class ReservationActivity(models.Model):
             except Exception as e:
                 _logger.info('Error Create Email Queue')
 
-    def action_paid_activity(self, api_context=None):
-        if not api_context:  # Jika dari call from backend
-            api_context = {
-                'co_uid': self.env.user.id
-            }
-        if not api_context.get('co_uid'):
-            api_context.update({
-                'co_uid': self.env.user.id
-            })
-        if not api_context.get('signature'):
-            api_context.update({
-                'signature': ''
-            })
-
-        if self.state != 'paid':
-            vals = {
-                'state': 'paid',
-                'issued_uid': api_context['co_uid'] or self.env.user.id,
-                'issued_date': datetime.now(),
-            }
-            self.sudo().write(vals)
+    def action_issued_activity(self,co_uid,customer_parent_id,acquirer_id = False):
+        if self.state != 'issued':
+            pnr_list = []
+            provider_list = []
+            carrier_list = []
             for rec in self.provider_booking_ids:
-                rec.action_issued_api_activity(api_context)
+                pnr_list.append(rec.pnr or '')
+                provider_list.append(rec.provider_id.name or '')
+                carrier_list.append(rec.carrier_id.name or '')
+
+            self.write({
+                'state': 'issued',
+                'issued_date': datetime.now(),
+                'issued_uid': co_uid or self.env.user.id,
+                'customer_parent_id': customer_parent_id,
+                'pnr': ', '.join(pnr_list),
+                'provider_name': ','.join(provider_list),
+                'carrier_name': ','.join(carrier_list),
+            })
 
             try:
                 if self.agent_type_id.is_send_email_issued:
@@ -1168,8 +1135,8 @@ class ReservationActivity(models.Model):
         return row.id
 
     def confirm_booking_webhook(self, req):
-        if req.get('order_id'):
-            order_id = req['order_id']
+        if req.get('book_id'):
+            order_id = req['book_id']
             book_obj = self.sudo().search([('pnr', '=', order_id), ('provider_name', '=', req['provider'])], limit=1)
             book_obj = book_obj[0]
             if book_obj.state not in ['issued', 'cancel', 'cancel2', 'refund']:

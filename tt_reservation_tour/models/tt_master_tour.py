@@ -102,7 +102,7 @@ class MasterTour(models.Model):
     tour_code = fields.Char('Tour Code', readonly=True, copy=False)
     tour_route = fields.Selection([('international', 'International'), ('domestic', 'Domestic')],
                                   'Route', required=True, default='international')
-    tour_category = fields.Selection([('group', 'Group'), ('private', 'Private')],
+    tour_category = fields.Selection([('group', 'For All Agents'), ('private', 'For Selected Agent')],
                                      'Tour Category', required=True, default='group')
     tour_type = fields.Selection([('series', 'Series (With Tour Leader)'), ('sic', 'SIC (Without Tour Leader)'), ('land', 'Land Only'), ('city', 'City Tour'), ('private', 'Private Tour')], 'Tour Type', default='series')
 
@@ -239,16 +239,11 @@ class MasterTour(models.Model):
                 dp -= pp.payment_percentage
             rec.dp = dp
 
-    @api.onchange('tour_category', 'tour_type')
+    @api.onchange('tour_type')
     def _set_to_null(self):
         for rec in self:
-            if rec.tour_category == 'private':
-                rec.tour_type = 'private'
-            if rec.tour_category == 'group':
-                if rec.tour_type == 'private':
-                    rec.tour_type = 'series'
-                if rec.tour_type == 'sic':
-                    rec.tipping_tour_leader = 0
+            if rec.tour_type == 'sic':
+                rec.tipping_tour_leader = 0
 
     # temporary function
     def update_tour_code_temp(self):
@@ -609,10 +604,10 @@ class MasterTour(models.Model):
         self.create_uid = self.env.user.id
         prefix = self.provider_id.alias and self.provider_id.alias + '~' or ''
         if not self.tour_code:
-            if self.tour_category == 'group':
-                self.tour_code = prefix + self.env['ir.sequence'].next_by_code('master.tour.code.group')
-            elif self.tour_category == 'private':
+            if self.tour_type == 'private':
                 self.tour_code = prefix + self.env['ir.sequence'].next_by_code('master.tour.code.fit')
+            else:
+                self.tour_code = prefix + self.env['ir.sequence'].next_by_code('master.tour.code.group')
 
     def action_closed(self):
         self.state = 'on_going'
@@ -1187,7 +1182,7 @@ class MasterTour(models.Model):
                         })
 
             try:
-                self.env.cr.execute("""SELECT tuc.* FROM tt_upload_center tuc LEFT JOIN tour_images_rel tir ON tir.image_id = tuc.id WHERE tir.tour_id = %s;""", (tour_obj.id,))
+                self.env.cr.execute("""SELECT tuc.* FROM tt_upload_center tuc LEFT JOIN tour_images_rel tir ON tir.image_id = tuc.id WHERE tir.tour_id = %s AND tuc.active = True;""", (tour_obj.id,))
                 images = self.env.cr.dictfetchall()
             except Exception:
                 images = []
@@ -1590,13 +1585,6 @@ class MasterTour(models.Model):
                 'total_child': total_chd,
                 'total_infant': total_inf,
             })
-            # if tour_data.tour_category == 'private':
-            #     for rec in tour_data.discount_ids:
-            #         if rec.min_pax <= grand_total_pax_no_infant <= rec.max_pax:
-            #             price_itinerary.update({
-            #                 'discount_per_pax': rec.discount_per_pax,
-            #                 'discount_total': rec.discount_total,
-            #             })
             return ERR.get_no_error(price_itinerary)
         except RequestException as e:
             _logger.error(traceback.format_exc())

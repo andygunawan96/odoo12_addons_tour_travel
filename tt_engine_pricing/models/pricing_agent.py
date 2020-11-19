@@ -58,6 +58,10 @@ class PricingAgent(models.Model):
     charge_code_ids = fields.Many2many('tt.pricing.charge.code', 'tt_pricing_provider_line_charge_code_rel', 'pricing_line_id', 'charge_code_id', string='Charge Codes')
     display_charge_codes = fields.Char('Charge Codes', compute='_compute_display_charge_codes', store=True, readonly=1)
 
+    agent_ids = fields.Many2many('tt.agent', 'pricing_agent_rel', 'pricing_id', 'agent_id', string='Agents')
+    agent_access_type = fields.Selection(variables.ACCESS_TYPE, 'Agent Access Type', default='all')
+    display_agents = fields.Char('Display Agents', compute='_compute_display_agents', store=True, readonly=1)
+
     def do_compute_sequence(self):
         _objs = self.sudo().with_context(active_test=False).search([], order='sequence')
         count = 10
@@ -127,14 +131,33 @@ class PricingAgent(models.Model):
             rec.display_charge_codes = ','.join(res)
 
     @api.multi
-    @api.depends('agent_type_id.code','provider_type_id.code')
+    @api.depends('charge_code_ids')
+    def _compute_display_agents(self):
+        for rec in self:
+            res = [data.code for data in rec.agent_ids]
+            rec.display_agents = ','.join(res)
+
+    @api.multi
+    @api.depends('agent_type_id.code','provider_type_id.code', 'agent_access_type', 'agent_ids')
     def _compute_name_pricing(self):
         for rec in self:
             rec.name = rec.get_name()
 
     def get_name(self):
         # Perlu diupdate lagi, sementara menggunakan ini
-        res = '%s - %s' % ( self.agent_type_id.code and self.agent_type_id.code.title() or '', self.provider_type_id.code and self.provider_type_id.code.title() or '')
+        name_list = []
+        if self.agent_type_id:
+            name_list.append(self.agent_type_id.code.title())
+
+        if self.provider_type_id:
+            name_list.append(self.provider_type_id.code.title())
+
+        if self.agent_access_type:
+            name_list.append(self.agent_access_type.title())
+            if self.agent_access_type != 'all':
+                for rec in self.agent_ids:
+                    name_list.append(str(rec.id))
+        res = ' - '.join(name_list)
         return res
 
     @api.multi
@@ -195,6 +218,7 @@ class PricingAgent(models.Model):
         [line_dict.update({rec.agent_type_id.code: rec.get_data()}) for rec in self.line_ids if rec.active]
         carrier_codes = [rec.code for rec in self.carrier_ids]
         providers = [rec.code for rec in self.provider_ids]
+        agents = [rec.id for rec in self.agent_ids]
         origin_codes = [rec.code for rec in self.origin_ids]
         origin_city_ids = [rec.id for rec in self.origin_city_ids]
         origin_country_codes = [rec.code for rec in self.origin_country_ids]
@@ -232,7 +256,9 @@ class PricingAgent(models.Model):
             'destination_city_ids': destination_city_ids,
             'destination_country_codes': destination_country_codes,
             'charge_code_type': self.charge_code_type,
+            'agent_access_type': self.agent_access_type,
             'charge_codes': charge_codes,
+            'agents': agents,
             'class_of_service_type': self.class_of_service_type,
             'class_of_services': class_of_services,
         }

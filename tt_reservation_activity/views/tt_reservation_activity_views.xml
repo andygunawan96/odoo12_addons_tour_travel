@@ -96,18 +96,6 @@
                         </tree>
                     </field>
                 </group>
-                <separator string="Activity Information"/>
-                <group>
-                    <group>
-                        <field name="activity_id" string="Activity" readonly="1"/>
-                        <field name="activity_product_id" readonly="1"/>
-                    </group>
-                    <group>
-                        <field name="visit_date" readonly="1"/>
-                        <field name="timeslot" readonly="1"/>
-                        <field name="information" readonly="1"/>
-                    </group>
-                </group>
             </xpath>
             <xpath expr="//page[@name='anchor']" position="before">
                 <page string="Passengers">
@@ -181,6 +169,10 @@
                     <!--                    </field>-->
                 </page>
             </xpath>
+            <xpath expr="//group[@name='paxgroup']" position="after">
+                <separator string="Reservation Details"/>
+                <field name="activity_detail_ids"/>
+            </xpath>
         </field>
     </record>
 
@@ -196,9 +188,7 @@
                 <field name="customer_parent_type_id"/>
                 <field name="booker_id"/>
                 <field name="provider_name" groups="tt_base.group_tt_tour_travel_operator"/>
-                <field name="activity_id"/>
                 <field name="pnr"/>
-                <field name="visit_date"/>
                 <field name="date"/>
                 <field name="issued_uid"/>
                 <field name="issued_date"/>

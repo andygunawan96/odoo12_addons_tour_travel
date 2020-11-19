@@ -24,10 +24,14 @@
                         </div>
                         <group>
                             <field name="price"/>
-                            <field name="amount"/>
-                            <field name="validity_duration"/>
+                            <field name="price_type"/>
+                            <field name="provider_type_id"/>
+                            <field name="provider_id"/>
+                            <field name="provider_access_type"/>
+                            <field name="carrier_id"/>
+                            <field name="carrier_access_type"/>
+                            <field name="currency_id"/>
                             <field name="used_package_list_ids"/>
-                            <field name="currency_id" invisible="1"/>
                         </group>
                     </sheet>
                 </form>
@@ -41,8 +45,8 @@
                 <tree string="PNR Quota Price List">
                     <field name="name"/>
                     <field name="price"/>
-                    <field name="amount"/>
-                    <field name="validity_duration"/>
+                    <field name="provider_type_id"/>
+                    <field name="provider_id"/>
                     <field name="currency_id" invisible="1"/>
                 </tree>
             </field>

@@ -86,6 +86,6 @@ class TtMasterTourApiCon(models.Model):
             'message': 'New Tour Request: {}\n\nCo User Name : {}\nCo User Agent : {}\n\nRequest Number : {}'.format(data['url'], context['co_user_name'],context['co_agent_name'],data['req_number']),
             "title": 'TOUR PACKAGE REQUEST'
         }
-        return self.send_request_to_gateway('%s/notification' % (self.url), request, 'notification_api')
+        return self.send_request_to_gateway('%s/notification' % (self.url), request, 'notification_code')
 
 
