@@ -1067,7 +1067,7 @@ class TestSearch(models.Model):
     
     def get_provider_code_alias_api(self, limit):
         resp = {}
-        for rec in self.env['tt.provider'].search([('active','=',True), ('provider_type_id', '=', self.env.ref('tt_reservation_hotel.tt_provider_type_hotel').id)], limit=limit):
+        for rec in self.env['tt.provider'].search([('active','=',True), ('alias','!=',False), ('provider_type_id', '=', self.env.ref('tt_reservation_hotel.tt_provider_type_hotel').id)], limit=limit):
             if not resp.get(rec.alias):
                 resp[rec.alias] = []
             resp[rec.alias].append(rec.code)
