@@ -1064,7 +1064,15 @@ class TestSearch(models.Model):
     def get_provider_for_dest_name(self, dest_name):
         country = self.env['res.city'].search([('name', '=ilike', dest_name)], limit=1)
         return country and country[0].id or False
-
+    
+    def get_provider_code_alias_api(self, limit):
+        resp = {}
+        for rec in self.env['tt.provider'].search([('active','=',True), ('provider_type_id', '=', self.env.ref('tt_reservation_hotel.tt_provider_type_hotel').id)], limit=limit):
+            if not resp.get(rec.alias):
+                resp[rec.alias] = []
+            resp[rec.alias].append(rec.code)
+        return resp
+    
     def fail_booking_hotel(self, book_id, msg):
         resv_obj = self.env['tt.reservation.hotel'].search([('name','=',book_id)], limit=1)[0]
         return resv_obj.sudo().action_failed(msg)
