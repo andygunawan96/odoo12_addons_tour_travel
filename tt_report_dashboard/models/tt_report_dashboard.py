@@ -1140,8 +1140,11 @@ class TtReportDashboard(models.Model):
                         })
 
             # sort and trim "other" carrier
-            carrier_summary[10]['route'].sort(key=lambda x: x['counter'], reverse=True)
-            carrier_summary[10]['route'] = carrier_summary[10]['route'][:10]
+            try:
+                carrier_summary[10]['route'].sort(key=lambda x: x['counter'], reverse=True)
+                carrier_summary[10]['route'] = carrier_summary[10]['route'][:10]
+            except:
+                pass
 
             # for every section in summary
             for i in summary_issued:
@@ -1955,6 +1958,13 @@ class TtReportDashboard(models.Model):
                             'city': 'Other',
                             'counter': i['counter'],
                             'hotel': i['hotel']})
+
+            # sort end result of location summary
+            try:
+                location_summary[10]['hotel'].sort(key=lambda x: x['counter'], reverse=True)
+                location_summary[10]['hotel'] = location_summary[10]['hotel'][:10]
+            except:
+                pass
 
             # first graph data
             main_data = {}
