@@ -228,8 +228,8 @@ class TtVisa(models.Model):
             if req.get('data'):
                 book_id = self.env['tt.provider.visa'].search([('pnr', '=', req['data'].get('order_number'))],
                                                               limit=1).booking_id #get book_id
-                # book_obj = self.env['tt.reservation.visa'].search([('id', '=', book_id.id)], limit=1) #ambil book obj
-                book_obj = self.env['tt.reservation.visa'].search([('name', '=', req['data']['order_number'])], limit=1) #local
+                book_obj = self.env['tt.reservation.visa'].search([('id', '=', book_id.id)], limit=1) #ambil book obj
+                # book_obj = self.env['tt.reservation.visa'].search([('name', '=', req['data']['order_number'])], limit=1) #local
                 _logger.error('visa book id ' + json.dumps(book_id.id))
                 _logger.error('visa req ' + json.dumps(req))
                 # login admin agar bisa get booking sudah check apikey hash di gateway jadi aman
