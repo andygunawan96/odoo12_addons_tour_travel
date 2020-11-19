@@ -102,6 +102,9 @@ class ReportSelling(models.Model):
         reservation.carrier_name as carrier_name,
         reservation.state as reservation_state, 
         reservation.hotel_name as reservation_hotel_name,
+        reservation.hotel_city as hotel_city,
+        reservation.hotel_city_id as hotel_city_id,
+        country.name as country_name,
         reservation.elder as reservation_elder, 
         reservation.adult as reservation_adult, 
         reservation.child as reservation_child, 
@@ -309,6 +312,8 @@ class ReportSelling(models.Model):
         LEFT JOIN tt_agent_type agent_type ON agent_type.id = reservation.agent_type_id
         LEFT JOIN tt_provider_hotel pro_hotel ON pro_hotel.booking_id = reservation.id
         LEFT JOIN tt_provider provider ON provider.id = pro_hotel.provider_id
+        LEFT JOIN res_city city ON city.id = reservation.hotel_city_id
+        LEFT JOIN res_country country ON country.id = city.country_id
         """
 
     @staticmethod
@@ -396,7 +401,7 @@ class ReportSelling(models.Model):
     #specified hotel
     @staticmethod
     def _group_by_hotel():
-        return """reservation.id, provider_type.name, agent.name, agent_type.name, provider.name"""
+        return """reservation.id, provider_type.name, agent.name, agent_type.name, provider.name, city.id, country.id"""
 
     @staticmethod
     def _group_by_activity():

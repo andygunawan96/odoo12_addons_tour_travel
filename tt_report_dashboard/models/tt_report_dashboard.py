@@ -48,6 +48,18 @@ class TtReportDashboard(models.Model):
                 return i
         return -1
 
+    def check_location(self, arr, params):
+        for i, dic in enumerate(arr):
+            if dic['city'] == params['city']:
+                return i
+        return -1
+
+    def check_hotel_index(self, arr, params):
+        for i, dic in enumerate(arr):
+            if dic['name'] == params['name']:
+                return i
+        return -1
+
     def add_month_detail(self):
         temp_list = []
         for i in range(1, 32):
@@ -949,7 +961,8 @@ class TtReportDashboard(models.Model):
                                 'route': [{
                                     'departure': i['departure'],
                                     'destination': i['destination'],
-                                    'counter': 1
+                                    'counter': 1,
+                                    'passenger': i['reservation_passenger']
                                 }]
                             }
                             # add to main list
@@ -964,13 +977,15 @@ class TtReportDashboard(models.Model):
                                 temp_dict = {
                                     'departure': i['departure'],
                                     'destination': i['destination'],
-                                    'counter': 1
+                                    'counter': 1,
+                                    'passenger': int(i['reservation_passenger'])
                                 }
                                 # add to list
                                 top_carrier[carrier_index]['route'].append(temp_dict)
                             else:
                                 # if exist then only add counter
                                 top_carrier[carrier_index]['route'][carrier_route_index]['counter'] += 1
+                                top_carrier[carrier_index]['route'][carrier_route_index]['passenger'] += int(i['reservation_passenger'])
                             # add carrier counter
                             top_carrier[carrier_index]['counter'] += 1
                     except:
@@ -1093,11 +1108,15 @@ class TtReportDashboard(models.Model):
             carrier_summary = []
             counter = 0
             for i in top_carrier:
+                # get the top 10 data
                 if counter < 10:
+                    # get top 10 route too
                     i['route'] = i['route'][:10]
                     carrier_summary.append(i)
+                    # add counter
                     counter += 1
                 else:
+                    # cram other than top 10
                     try:
                         for j in i['route']:
                             route_index = self.check_carrier_route(carrier_summary[10]['route'], {'departure': j['departure'], 'destination': j['destination']})
@@ -1105,12 +1124,14 @@ class TtReportDashboard(models.Model):
                                 temp_dict = {
                                     'departure': j['departure'],
                                     'destination': j['destination'],
-                                    'counter': i['counter']
+                                    'counter': j['counter'],
+                                    'passenger': j['passenger']
                                 }
                                 # add to list
                                 carrier_summary[10]['route'].append(temp_dict)
                             else:
-                                carrier_summary[10]['route'][route_index]['counter'] += 1
+                                carrier_summary[10]['route'][route_index]['counter'] += j['counter']
+                                carrier_summary[10]['route'][route_index]['passenger'] += j['passenger']
                     except:
                         carrier_summary.append({
                             'carrier_name': 'Other',
@@ -1148,6 +1169,7 @@ class TtReportDashboard(models.Model):
             # adding profit to the summary
             for i in profit:
                 try:
+                    # get index
                     month_index = self.check_date_index(summary_issued, {'year': i['year'],
                                                                          'month': month[int(i['month']) - 1]})
                     splits = i['date'].split("-")
@@ -1262,6 +1284,7 @@ class TtReportDashboard(models.Model):
 
             destination_graph['Other'] = other_counter
 
+            # prepare data to return
             to_return = {
                 'first_graph': {
                     'label': list(main_data.keys()),
@@ -1769,6 +1792,7 @@ class TtReportDashboard(models.Model):
 
             # proceed invoice with the assumption of create date = issued date
             summary_issued = []
+            location_overview = []
 
             # declare current id
             current_id = ''
@@ -1808,6 +1832,38 @@ class TtReportDashboard(models.Model):
                             summary_issued[month_index]['detail'][day_index]['revenue'] += i['amount']
                             total += i['amount']
                             num_data += 1
+                    except:
+                        pass
+
+                    try:
+                        location_index = self.check_location(location_overview, {'city': i['hotel_city']})
+
+                        if location_index == -1:
+                            temp_dict = {
+                                'country': i['country_name'],
+                                'city': i['hotel_city'],
+                                'counter': 1,
+                                'hotel': [{
+                                    'name': i['reservation_hotel_name'],
+                                    'counter': 1,
+                                    'passenger': i['reservation_passenger']
+                                }]
+                            }
+                            location_overview.append(temp_dict)
+                        else:
+                            hotel_index = self.check_hotel_index(location_overview[location_index]['hotel'], {'name': i['reservation_hotel_name']})
+
+                            if hotel_index == -1:
+                                temp_dict = {
+                                    'name': i['reservation_hotel_name'],
+                                    'counter': 1,
+                                    'passenger': i['reservation_passenger']
+                                }
+                                location_overview[location_index]['hotel'].append(temp_dict)
+                            else:
+                                location_overview[location_index]['hotel'][hotel_index]['counter'] += 1
+                                location_overview[location_index]['hotel'][hotel_index]['passenger'] += i['reservation_passenger']
+                            location_overview[location_index]['counter'] += 1
                     except:
                         pass
 
@@ -1853,6 +1909,52 @@ class TtReportDashboard(models.Model):
 
             # sort summary_by_date month in the correct order
             summary_issued.sort(key=lambda x: (x['year'], x['month_index']))
+            location_overview.sort(key=lambda x: x['counter'], reverse=True)
+
+            # sort hotel inside locaion overview
+            for i in location_overview:
+                i['hotel'].sort(key=lambda x: x['counter'], reverse=True)
+
+            #trim to top 10
+            #declare final list
+            location_summary = []
+            counter = 0
+            for i in location_overview:
+                if counter < 10:
+                    # trim to top 10
+                    i['hotel'] = i['hotel'][:10]
+
+                    # add to overall list
+                    location_summary.append(i)
+
+                    # add counter
+                    counter += 1
+                else:
+                # put everything else at other
+                    try:
+                        for j in i['hotel']:
+                            # try to merge hotel from a lot of line (means look for index of hotel #again)
+                            hotel_index = self.check_hotel_index(location_summary[10]['hotel'], {'name': j['name']})
+
+                            if hotel_index == -1:
+                                # no data yet (either not overlapping, or just hasn't been inputed)
+                                location_summary[10]['hotel'].append({
+                                    'name': j['name'],
+                                    'counter': j['counter'],
+                                    'passenger': j['passenger']
+                                })
+                            else:
+                                # everything is there
+                                location_summary[10]['hotel'][hotel_index]['counter'] += j['counter']
+                                location_summary[10]['hotel'][hotel_index]['passenger'] += j['passenger']
+                        location_summary[10]['counter'] += i['counter']
+                    except:
+                        # index 10 do not exist
+                        location_summary.append({
+                            'country': 'Other',
+                            'city': 'Other',
+                            'counter': i['counter'],
+                            'hotel': i['hotel']})
 
             # first graph data
             main_data = {}
@@ -1936,7 +2038,9 @@ class TtReportDashboard(models.Model):
                     'data3': list(average_data.values()),
                     'data4': list(profit_data.values())
                 },
-                'first_overview': [],
+                'first_overview': {
+                    'location': location_summary
+                },
                 'total_rupiah': total,
                 'average_rupiah': float(total) / float(num_data) if num_data > 0 else 0,
                 'profit_total': profit_total
