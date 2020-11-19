@@ -1843,7 +1843,7 @@ class TtReportDashboard(models.Model):
 
                         if location_index == -1:
                             temp_dict = {
-                                'country': i['country_name'],
+                                'country': i['country_name'] if i['country_name'] else '',
                                 'city': i['hotel_city'],
                                 'counter': 1,
                                 'hotel': [{
