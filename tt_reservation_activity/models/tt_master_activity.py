@@ -1306,7 +1306,7 @@ class MasterActivity(models.Model):
                 temp_old.sudo().write({
                     'active': False
                 })
-            for rec in res['response']:
+            for rec in res['response']['activity_lines']:
                 rec.update({
                     'activity_id': product_id,
                     'active': True
@@ -1399,6 +1399,8 @@ class MasterActivity(models.Model):
                 activity_obj.update({
                     'option_ids': [(6, 0, option_ids)],
                 })
+        else:
+            return res
 
     def get_config_by_api(self):
         try:
