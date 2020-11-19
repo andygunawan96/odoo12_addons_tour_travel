@@ -215,7 +215,7 @@ access_tt_access_activity_for_tour_travel_manager,tt.access.activity.for.tour.tr
 
 access_tt_provider_for_public,tt.provider.for.public,model_tt_provider,,1,0,0,0
 access_tt_provider_for_tour_travel_operator,tt.provider.for.tour.travel.operator,model_tt_provider,tt_base.group_tt_tour_travel_operator,1,0,0,0
-access_tt_provider_for_tour_travel_supervisor,tt.provider.for.tour.travel.supervisor,model_tt_provider,tt_base.group_tt_tour_travel_supervisor,1,0,1,0
+access_tt_provider_for_tour_travel_supervisor,tt.provider.for.tour.travel.supervisor,model_tt_provider,tt_base.group_tt_tour_travel_supervisor,1,0,0,0
 access_tt_provider_for_tour_travel_manager,tt.provider.for.tour.travel.manager,model_tt_provider,tt_base.group_tt_tour_travel_manager,1,1,1,1
 access_tt_provider_for_accounting_supervisor,tt.provider.for.accounting.supervisor,model_tt_provider,tt_base.group_tt_accounting_supervisor,1,1,1,0
 

@@ -242,13 +242,13 @@
         <div class="row" style="height:100px; font-family: 'LiberationSans'">
             <t t-if="doc_type == 'ho_invoice'">
                 <div class="col-4" style="margin-left: 30px">
-                    <img t-att-src="'data:image/png;base64,%s' % to_text(ho_obj.logo)" height="200" border="1" width="300" style="max-height:100px; max-width:165px; margin-bottom: 20px"/>
+                    <img t-att-src="'data:image/png;base64,%s' % to_text(ho_obj.logo)" border="1" style="max-height:100px; max-width:165px; margin-bottom: 20px"/>
                 </div>
             </t>
             <t t-else="">
                 <t t-if="doc.agent_id.logo">
                     <div class="col-4" style="margin-left: 30px">
-                        <img t-att-src="'data:image/png;base64,%s' % to_text(doc.agent_id.logo)" height="200" border="1" width="300" style="max-height:100px; max-width:165px; margin-bottom: 20px"/><br/>
+                        <img t-att-src="'data:image/png;base64,%s' % to_text(doc.agent_id.logo)" border="1" style="max-height:100px; max-width:165px; margin-bottom: 20px"/><br/>
                     </div>
                 </t>
                 <t t-else="">

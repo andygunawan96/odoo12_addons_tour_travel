@@ -103,27 +103,6 @@
         </field>
     </record>
 
-    <!-- Page ada Current Balance agent nya-->
-    <record id="tt_ledger_tree_view_page" model="ir.ui.view">
-        <field name="name">tt.ledger.tree.view.page</field>
-        <field name="model">tt.ledger</field>
-        <field name="priority">20</field>
-        <field name="arch" type="xml">
-            <tree create="false">
-                <field name="date"/>
-                <field name="ref"/>
-                <field name="name"/>
-                <field name="agent_id"/>
-                <field name="description"/>
-                <field name="transaction_type"/>
-                <field name="currency_id" invisible="1"/>
-                <field name="debit" sum="Total Debit"/>
-                <field name="credit" sum="Total Credit"/>
-                <field name="balance"/>
-            </tree>
-        </field>
-    </record>
-
     <record id="tt_ledger_adj_tree_view" model="ir.ui.view">
         <field name="name">tt.ledger.adj.tree.view</field>
         <field name="model">tt.ledger</field>
@@ -147,27 +126,39 @@
         </field>
     </record>
 
-
+    <!-- Page ada Current Balance agent nya-->
     <record id="tt_ledger_tree_view" model="ir.ui.view">
-        <field name="name">tt.ledger.tree.view</field>
+        <field name="name">tt.ledger.tree.view.page</field>
         <field name="model">tt.ledger</field>
-        <field name="priority">10</field>
+        <field name="priority">20</field>
         <field name="arch" type="xml">
             <tree create="false">
                 <field name="date"/>
                 <field name="ref"/>
-                <field name="display_provider_name"/>
                 <field name="pnr"/>
                 <field name="agent_id"/>
-                <field name="agent_type_id"/>
                 <field name="description"/>
                 <field name="issued_uid"/>
                 <field name="transaction_type"/>
                 <field name="currency_id" invisible="1"/>
                 <field name="debit" sum="Total Debit"/>
                 <field name="credit" sum="Total Credit"/>
-                <field name="balance" invisible="1" sum="Total Balance"/>
+                <field name="balance"/>
             </tree>
+        </field>
+    </record>
+
+    <record id="tt_ledger_tree_view_ho_inh" model="ir.ui.view">
+        <field name="name">tt.ledger.tree.view.ho.inh</field>
+        <field name="model">tt.ledger</field>
+        <field name="inherit_id" ref="tt_accounting.tt_ledger_tree_view"/>
+        <field name="groups_id" eval="[(6, 0, [ref('tt_base.group_tt_tour_travel_operator') ])]" />
+        <field name="priority">10</field>
+        <field name="arch" type="xml">
+            <field name="pnr" position="after">
+                <field name="display_provider_name"/>
+                <field name="agent_type_id"/>
+            </field>
         </field>
     </record>
 
@@ -189,7 +180,7 @@
                 <field name="currency_id" invisible="1"/>
                 <field name="debit" sum="Total Debit"/>
                 <field name="credit" sum="Total Credit"/>
-                <field name="balance" invisible="1" sum="Total Balance"/>
+                <field name="balance"/>
             </tree>
         </field>
     </record>

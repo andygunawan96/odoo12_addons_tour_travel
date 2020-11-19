@@ -66,10 +66,10 @@
         <field name="groups_id" eval="[(6, 0, [ref('tt_base.group_tt_accounting_manager') ])]" />
         <field name="arch" type="xml">
             <field name="start_balance" position="attributes">
-               <attribute name="readonly">0</attribute>
+                <attribute name="readonly">0</attribute>
             </field>
             <field name="end_balance" position="attributes">
-               <attribute name="readonly">0</attribute>
+                <attribute name="readonly">0</attribute>
             </field>
         </field>
     </record>
@@ -85,7 +85,7 @@
                 <field name="start_balance"/>
                 <field name="end_balance"/>
                 <field name="total_lines"/>
-<!--                <field name="state"/>-->
+                <!--                <field name="state"/>-->
             </tree>
         </field>
     </record>
@@ -94,7 +94,7 @@
         <field name="name">tt.reconcile.transaction.lines.form.view</field>
         <field name="model">tt.reconcile.transaction.lines</field>
         <field name="arch" type="xml">
-            <form create="false">
+            <form edit="false" create="false">
                 <header>
                     <button name="ignore_recon_line_from_button" type="object" string="Ignore"
                             attrs="{'invisible':[('state','!=', 'not_match')]}"
@@ -119,7 +119,6 @@
                             'default_reconcile_transaction_line_id': id,
                             'offline_provider': True
                     }"/>
-                    <field name="state" widget="statusbar" statusbar_visible="not_match,match"/>
                 </header>
                 <sheet>
                     <group>
@@ -131,6 +130,7 @@
                             <field name="type"/>
                         </group>
                         <group>
+                            <field name="state"/>
                             <field name="booking_time"/>
                             <field name="issued_time"/>
                         </group>
@@ -160,6 +160,62 @@
                     <field name="description"/>
                 </sheet>
             </form>
+        </field>
+    </record>
+
+    <!-- Accounting Supervisor memiliki privilege untuk membuat lines -->
+    <record id="tt_reconcile_transaction_lines_form_view_tt_accounting_manager_inh" model="ir.ui.view">
+        <field name="name">tt.reconcile.transaction.lines.form.view.tt.accounting.manager.inh</field>
+        <field name="model">tt.reconcile.transaction.lines</field>
+        <field name="inherit_id" ref="tt_reconcile_transaction_lines_form_view" />
+        <field name="groups_id" eval="[(6, 0, [ref('tt_base.group_tt_accounting_manager') ])]" />
+        <field name="arch" type="xml">
+            <field name="state" position="attributes" class="oe_edit_only">
+                <attribute name="readonly">0</attribute>
+            </field>
+            <field name="agent_name" position="attributes">
+                <attribute name="readonly">0</attribute>
+            </field>
+            <field name="pnr" position="attributes">
+                <attribute name="readonly">0</attribute>
+            </field>
+            <field name="transaction_code" position="attributes">
+                <attribute name="readonly">0</attribute>
+            </field>
+            <field name="type" position="attributes">
+                <attribute name="readonly">0</attribute>
+            </field>
+            <field name="booking_time" position="attributes">
+                <attribute name="readonly">0</attribute>
+            </field>
+            <field name="issued_time" position="attributes">
+                <attribute name="readonly">0</attribute>
+            </field>
+            <field name="base_price" position="attributes">
+                <attribute name="readonly">0</attribute>
+            </field>
+            <field name="tax" position="attributes">
+                <attribute name="readonly">0</attribute>
+            </field>
+            <field name="commission" position="attributes">
+                <attribute name="readonly">0</attribute>
+            </field>
+            <field name="total" position="attributes">
+                <attribute name="readonly">0</attribute>
+            </field>
+            <field name="vendor_start_balance" position="attributes">
+                <attribute name="readonly">0</attribute>
+            </field>
+            <field name="vendor_end_balance" position="attributes">
+                <attribute name="readonly">0</attribute>
+            </field>
+            <field name="ticket_numbers" position="attributes">
+                <attribute name="readonly">0</attribute>
+            </field>
+            <field name="description" position="attributes">
+                <attribute name="readonly">0</attribute>
+            </field>
+
         </field>
     </record>
 
