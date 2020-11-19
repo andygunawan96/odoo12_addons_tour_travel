@@ -298,7 +298,7 @@ class ProviderOffline(models.Model):
                     else:
                         fee_amount_remaining -= fee_amount_vals.get('amount') * line.obj_qty * days_int
 
-        sale_price = book_obj.total / total_line_qty * line_obj.obj_qty * days_int_current
+        sale_price = book_obj.input_total / total_line_qty * line_obj.obj_qty * days_int_current
 
         # Get all pricing per pax
         vals = {
