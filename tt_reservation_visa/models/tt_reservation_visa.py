@@ -223,14 +223,27 @@ class TtVisa(models.Model):
             self.sync_status_btbo2('validate')
         self.message_post(body='Order VALIDATED')
 
-    def action_sync_status_visa_api(self, req, ctx):
+    def action_sync_status_visa_api(self, req):
         try:
-            book_id = self.env['tt.provider.visa'].search([('pnr', '=', req.get('order_number'))], limit=1).booking_id
-            book_obj = self.env['tt.reservation.visa'].search([('id', '=', book_id.id)], limit=1)
-            _logger.error('visa book id ' + book_id.id)
-            _logger.error('visa get booking ' + json.dumps(book_obj))
-            _logger.error('visa req ' + json.dumps(req))
             if req.get('data'):
+                book_id = self.env['tt.provider.visa'].search([('pnr', '=', req['data'].get('order_number'))],
+                                                              limit=1).booking_id #get book_id
+                # book_obj = self.env['tt.reservation.visa'].search([('id', '=', book_id.id)], limit=1) #ambil book obj
+                book_obj = self.env['tt.reservation.visa'].search([('name', '=', req['data']['order_number'])], limit=1) #local
+                _logger.error('visa book id ' + json.dumps(book_id.id))
+                _logger.error('visa req ' + json.dumps(req))
+                # login admin agar bisa get booking sudah check apikey hash di gateway jadi aman
+                # tidak jadi login admin karena context selalu visa selalu buat cuman bisa jadi contoh
+                # authorization = tools.config.get('backend_authorization', '')
+                # credential = util.decode_authorization(authorization)
+                # data = {
+                #     'user': credential.get('username', ''),
+                #     'password': credential.get('password', ''),
+                #     'api_key': self.env['tt.api.credential'].search([('name', '=', 'gateway user'), ('api_role', '=', 'admin')], limit=1).api_key
+                # }
+                # get_credential = self.env['tt.api.credential'].get_credential_api(data, {'sid':''})
+                # if get_credential['error_code']:
+                #     ctx = get_credential['response']
                 if req['data'].get('state') == 'validate':
                     self.action_validate_visa_by_api(book_obj)
                 elif req['data'].get('state') == 'in_process':
@@ -241,6 +254,8 @@ class TtVisa(models.Model):
                     self.action_process_by_consulate_visa_by_api(book_obj)
                 elif req['data'].get('state') == 'in_process':
                     self.action_in_process_visa_by_api(book_obj)
+                else:
+                    _logger.error("get credential error")
             return Response().get_no_error()
         except Exception as e:
             _logger.error(traceback.format_exc(e))
@@ -1484,7 +1499,7 @@ class TtVisa(models.Model):
             except:
                 raise RequestException(1008)
             if book_obj and book_obj.agent_id.id == context.get('co_agent_id', -1) or self.env.ref('tt_base.group_tt_process_channel_bookings').id in user_obj.groups_id.ids:
-                res_dict = book_obj.sudo().to_dict(context['co_agent_id'] == self.env.ref('tt_base.rodex_ho').id)
+                res_dict = book_obj.sudo().to_dict(user_obj.agent_id.id == self.env.ref('tt_base.rodex_ho').id)
                 passenger = []
                 for idx, pax in enumerate(book_obj.passenger_ids, 1):
                     requirement = []

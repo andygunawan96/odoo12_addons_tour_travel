@@ -28,7 +28,7 @@ class TtVisaApiCon(models.Model):
         elif action == 'get_booking_visa_api':
             res = table_obj.get_booking_visa_api(data, context)
         elif action == 'sync_status_visa':
-            res = table_obj.action_sync_status_visa_api(data, context)
+            res = table_obj.action_sync_status_visa_api(data)
         elif action == 'payment':
             res = self.env['tt.reservation.visa'].payment_visa_api(data,context)
         elif action == 'issued_booking_visa_api':
