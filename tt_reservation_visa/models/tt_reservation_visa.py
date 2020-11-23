@@ -752,7 +752,7 @@ class TtVisa(models.Model):
                     rec.env.ref('tt_base.rodex_ho').id,
                     False,
                     0,
-                    ho_profit,
+                    abs(ho_profit),
                     'Additional Charge Visa : ' + rec.name,
                     pnr=rec.pnr,
                     display_provider_name=provider_code,
