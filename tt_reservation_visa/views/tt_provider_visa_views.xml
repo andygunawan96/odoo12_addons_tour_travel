@@ -6,6 +6,8 @@
         <field name="arch" type="xml">
             <form edit="false" create="false">
                 <header>
+                    <button string="Set to Booked" name="action_set_to_booked" type="object" attrs="{'invisible': [('state', '!=', 'issued')]}" groups="tt_base.group_tt_ticketing_operator"/>
+                    <button string="Sync Price" name="action_sync_price" type="object" attrs="{'invisible': [('state', '=', 'issued')]}" groups="tt_base.group_tt_ticketing_operator"/>
                     <field name="state_visa" readonly="1" invisible="1"/>
                     <field name="state" widget="statusbar" statusbar_visible="booked,issued"/>
                 </header>

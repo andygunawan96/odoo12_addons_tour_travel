@@ -121,6 +121,24 @@ class TtProviderVisa(models.Model):
     def action_booked(self):
         self.state = 'booked'
 
+    def action_set_to_booked(self):
+        """ Fungsi ini mengembalikan state provider ke booked & state visa ke validate """
+        """ Fungsi ini dijalankan, in case terdapat salah input harga di pricelist & sudah potong ledger """
+
+        self.action_booked()  # ubah state provider ke booked
+
+        # ubah state visa ke validate
+        self.booking_id.state = 'validate'
+
+        # ubah state pax visa ke validate
+        for psg in self.booking_id.passenger_ids:
+            psg.action_validate()
+
+        # reverse ledger
+        for rec in self.booking_id.ledger_ids:
+            if not rec.is_reversed:
+                rec.reverse_ledger()
+
     def action_refund(self, check_provider_state=False):
         self.state = 'refund'
         if check_provider_state:
@@ -177,6 +195,126 @@ class TtProviderVisa(models.Model):
         datas['form'] = res
         printout_expenses_id = self.env.ref('tt_report_common.action_create_expenses_invoice')
         return printout_expenses_id.report_action(self, data=datas)
+
+    def action_sync_price(self):
+        provider_type_id = self.env.ref('tt_reservation_visa.tt_provider_type_visa')
+        pricing_obj = self.env['tt.pricing.agent'].sudo()
+
+        pricelist_data = {}
+        price_list = []
+
+        # buat adjustment pricing per pax
+        for psg in self.passenger_ids:
+            base_price = 0
+            base_comm = 0
+            base_fixed = 0
+
+            """ Hitung base_price, base_comm & base_fixed """
+            for scs in psg.passenger_id.cost_service_charge_ids:  # get base price dari service charge psg
+                if scs.charge_type == 'TOTAL':
+                    base_price += scs.amount
+                if scs.charge_type == 'RAC':
+                    if scs.charge_code == 'fixed':
+                        base_fixed += scs.amount
+                    else:
+                        base_comm += scs.amount
+
+            """ Hitung base price, comm & fixed dari pricelist """
+            base_pricelist_price = psg.passenger_id.pricelist_id.sale_price
+            base_pricelist_fixed = psg.passenger_id.pricelist_id.cost_price - psg.passenger_id.pricelist_id.nta_price
+            base_pricelist_comm = psg.passenger_id.pricelist_id.commission_price
+
+            """ Jika harga fare di booking tidak sama dengan di pricelist """
+            if base_price != base_pricelist_price:
+                price_list.append({
+                    'amount': base_pricelist_price - base_price,
+                    'total': base_pricelist_price - base_price,
+                    'pax_count': 1,
+                    'pax_type': psg.pax_type,
+                    'charge_code': 'sync_fare',
+                    'charge_type': 'TOTAL',
+                    'pricelist_id': psg.passenger_id.pricelist_id.id,
+                    'passenger_visa_id': psg.passenger_id.id
+                })
+
+            """ Jika total commission di booking tidak sama dengan di pricelist """
+            if abs(base_comm) != abs(base_pricelist_comm):
+                commission_list = pricing_obj.get_commission(abs(abs(base_pricelist_comm) - abs(base_comm)), self.agent_id,
+                                                             provider_type_id)
+
+                for comm in commission_list:
+                    vals_comm = {
+                        'pax_count': 1,
+                        'pax_type': psg.pax_type,
+                        'charge_code': 'sync_' + comm['code'],
+                        'charge_type': 'RAC',
+                        'pricelist_id': psg.passenger_id.pricelist_id.id,
+                        'passenger_visa_id': psg.passenger_id.id
+                    }
+
+                    if abs(base_pricelist_comm) > abs(base_comm):
+                        vals_comm.update({
+                            'amount': -comm['amount'],
+                            'total': comm['amount'],
+                        })
+                    else:
+                        vals_comm.update({
+                            'amount': -comm['amount'],
+                            'total': comm['amount'],
+                        })
+
+                    price_list.append(vals_comm)
+
+            """ Jika comm fixed di booking tidak sama dengan di pricelist """
+            if abs(base_fixed) != base_pricelist_fixed:
+                price_list.append({
+                    'amount': base_pricelist_fixed - base_fixed,
+                    'total': base_pricelist_fixed - base_fixed,
+                    'pax_count': 1,
+                    'pax_type': psg.pax_type,
+                    'charge_code': 'sync_fixed',
+                    'charge_type': 'RAC',
+                    'pricelist_id': psg.passenger_id.pricelist_id.id,
+                    'passenger_visa_id': psg.passenger_id.id
+                })
+
+        price_list2 = []
+        # susun daftar ssc yang sudah dibuat
+        for ssc in price_list:
+            # compare with ssc_list
+            ssc_same = False
+            for ssc_2 in price_list2:
+                if ssc['pricelist_id'] == ssc_2['pricelist_id']:
+                    if ssc['charge_code'] == ssc_2['charge_code']:
+                        if ssc['pax_type'] == ssc_2['pax_type']:
+                            ssc_same = True
+                            # update ssc_final
+                            ssc_2['pax_count'] = ssc_2['pax_count'] + 1,
+                            ssc_2['passenger_visa_ids'].append(ssc['passenger_visa_id'])
+                            ssc_2['total'] += ssc.get('amount')
+                            ssc_2['pax_count'] = ssc_2['pax_count'][0]
+                            break
+            if ssc_same is False:
+                vals = {
+                    'amount': ssc['amount'],
+                    'charge_code': ssc['charge_code'],
+                    'charge_type': ssc['charge_type'],
+                    'passenger_visa_ids': [],
+                    # 'description': ssc['description'],
+                    'pax_type': ssc['pax_type'],
+                    # 'currency_id': ssc['currency_id'],
+                    'pax_count': 1,
+                    'total': ssc['total'],
+                    'pricelist_id': ssc['pricelist_id']
+                }
+                if 'commission_agent_id' in ssc:
+                    vals.update({
+                        'commission_agent_id': ssc['commission_agent_id']
+                    })
+                vals['passenger_visa_ids'].append(ssc['passenger_visa_id'])
+                price_list2.append(vals)
+
+        self.create_service_charge(price_list2)
 
     def to_dict(self):
         passenger_list = []

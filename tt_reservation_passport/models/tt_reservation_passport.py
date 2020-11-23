@@ -524,7 +524,7 @@ class TtPassport(models.Model):
                     rec.env.ref('tt_base.rodex_ho').id,
                     False,
                     0,
-                    ho_profit,
+                    abs(ho_profit),
                     'Profit Passport : ' + rec.name,
                     pnr=rec.pnr,
                     provider_type_id=rec.provider_type_id.id,
