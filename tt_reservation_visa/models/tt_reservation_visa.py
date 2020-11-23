@@ -228,10 +228,9 @@ class TtVisa(models.Model):
             if req.get('data'):
                 book_id = self.env['tt.provider.visa'].search([('pnr', '=', req['data'].get('order_number'))],
                                                               limit=1).booking_id #get book_id
-                # book_obj = self.env['tt.reservation.visa'].search([('id', '=', book_id.id)], limit=1) #ambil book obj
-                book_obj = self.env['tt.reservation.visa'].search([('name', '=', req['data']['order_number'])], limit=1) #local
-                _logger.error('visa book id ' + json.dumps(book_id.id))
-                _logger.error('visa req ' + json.dumps(req))
+                book_obj = self.env['tt.reservation.visa'].search([('id', '=', book_id.id)], limit=1) #ambil book obj
+                # book_obj = self.env['tt.reservation.visa'].search([('name', '=', req['data']['order_number'])], limit=1) #local
+                
                 # login admin agar bisa get booking sudah check apikey hash di gateway jadi aman
                 # tidak jadi login admin karena context selalu visa selalu buat cuman bisa jadi contoh
                 # authorization = tools.config.get('backend_authorization', '')
@@ -255,7 +254,7 @@ class TtVisa(models.Model):
                 elif req['data'].get('state') == 'proceed':
                     self.action_proceed_visa_by_api(book_obj)
                 elif req['data'].get('state') == 'done':
-                    self.action_in_process_visa_by_api(book_obj)
+                    self.action_done_visa_by_api(book_obj)
                 elif req['data'].get('state') == 're_validate':
                     self.action_re_validate_visa_by_api(book_obj)
                 elif req['data'].get('state') == 're_confirm':
@@ -381,6 +380,14 @@ class TtVisa(models.Model):
     def action_to_agent_visa_by_api(self, book_obj):
         try:
             book_obj.passenger_ids.action_to_agent()
+            return Response().get_no_error()
+        except Exception as e:
+            _logger.error(traceback.format_exc(e))
+            return Response().get_error(error_message='contact b2b', error_code=500)
+
+    def action_done_visa_by_api(self, book_obj):
+        try:
+            book_obj.passenger_ids.action_done()
             return Response().get_no_error()
         except Exception as e:
             _logger.error(traceback.format_exc(e))

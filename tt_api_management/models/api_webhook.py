@@ -23,15 +23,11 @@ class ApiWebhookData(models.Model):
             if webhook_data_obj:
                 sent_data = []
                 send_limit = 3
-                _logger.info(msg=json.dumps(req))
                 while len(sent_data) < len(webhook_data_obj[0].webhook_rel_ids.ids) and send_limit > 0:
                     if req.get('child_id'):
                         children_list = webhook_data_obj[0].webhook_rel_ids.filtered(lambda x: x.credential_data_id.user_id.id == req['child_id'])
                     else:
                         children_list = webhook_data_obj[0].webhook_rel_ids
-
-                    _logger.info(msg=str(len(children_list)) + ' filter')
-                    _logger.info(msg=str(len(webhook_data_obj[0].webhook_rel_ids)) + ' tanpa filter')
                     for rec in children_list:
                         if rec.id not in sent_data:
                             temp_date = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
