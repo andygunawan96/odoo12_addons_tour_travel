@@ -249,6 +249,7 @@ class VisaOrderPassengers(models.Model):
                 'state': 're_validate',
             })
             rec.message_post(body='Passenger RE VALIDATE')
+            rec.visa_id.sync_status_btbo2('re_validate')
 
     def action_re_confirm(self):
         for rec in self:
@@ -256,6 +257,7 @@ class VisaOrderPassengers(models.Model):
                 'state': 're_confirm',
             })
             rec.message_post(body='Passenger RE CONFIRM')
+            rec.visa_id.sync_status_btbo2('re_confirm')
 
     def action_cancel_button(self):
         self.visa_id.action_cancel_visa()
@@ -275,6 +277,7 @@ class VisaOrderPassengers(models.Model):
                     'can_refund': True
                 })
             rec.message_post(body='Passenger CANCELED')
+            rec.visa_id.sync_status_btbo2('cancel')
 
     def action_in_process(self):
         for rec in self:
@@ -329,6 +332,7 @@ class VisaOrderPassengers(models.Model):
             if is_proceed:
                 rec.visa_id.action_partial_proceed_visa()
             rec.message_post(body='Passenger WAITING')
+            rec.visa_id.sync_status_btbo2('waiting')
 
     def action_proceed(self):
         for rec in self:
@@ -342,6 +346,7 @@ class VisaOrderPassengers(models.Model):
             rec.write({
                 'state': 'proceed',
             })
+            rec.visa_id.sync_status_btbo2('proceed')
             rec.message_post(body='Passenger PROCEED')
             is_proceed = True
             is_approved = False
@@ -370,6 +375,7 @@ class VisaOrderPassengers(models.Model):
                     all_reject = False
             if all_reject:
                 rec.visa_id.action_rejected_visa()
+            rec.visa_id.sync_status_btbo2('rejected')
             rec.message_post(body='Passenger REJECTED')
 
     def action_accept(self):
@@ -387,6 +393,7 @@ class VisaOrderPassengers(models.Model):
                 rec.visa_id.action_approved_visa()
             else:
                 rec.visa_id.action_partial_approved_visa()
+            rec.visa_id.sync_status_btbo2('accept')
             rec.message_post(body='Passenger ACCEPTED')
 
     def action_to_HO(self):
@@ -395,6 +402,7 @@ class VisaOrderPassengers(models.Model):
                 'state': 'to_HO',
                 'to_HO_date': datetime.now()
             })
+            rec.visa_id.sync_status_btbo2('to_HO')
             rec.message_post(body='Passenger documents TO HO')
             is_sent = True
             for psg in rec.visa_id.passenger_ids:
@@ -409,6 +417,7 @@ class VisaOrderPassengers(models.Model):
                 'state': 'to_agent',
                 'to_agent_date': datetime.now()
             })
+            rec.visa_id.sync_status_btbo2('to_agent')
             rec.message_post(body='Passenger documents TO Agent')
             if rec.visa_id.state_visa != 'delivered':
                 is_sent = True
@@ -433,6 +442,7 @@ class VisaOrderPassengers(models.Model):
                 'state': 'done',
                 'done_date': datetime.now()
             })
+            rec.visa_id.sync_status_btbo2('done')
             rec.message_post(body='Passenger DONE')
             is_done = True
             for psg in rec.visa_id.passenger_ids:
