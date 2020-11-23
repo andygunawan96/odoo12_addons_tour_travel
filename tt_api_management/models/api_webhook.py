@@ -24,7 +24,7 @@ class ApiWebhookData(models.Model):
                 send_limit = 3
                 while len(sent_data) < len(webhook_data_obj[0].webhook_rel_ids.ids) and send_limit > 0:
                     if req.get('child_id'):
-                        children_list = webhook_data_obj[0].webhook_rel_ids.filtered(lambda x: x.credential_data_id.user_id.id == req['child_id'].id)
+                        children_list = webhook_data_obj[0].webhook_rel_ids.filtered(lambda x: x.credential_data_id.user_id.id == req['child_id'])
                     else:
                         children_list = webhook_data_obj[0].webhook_rel_ids
                     for rec in children_list:
