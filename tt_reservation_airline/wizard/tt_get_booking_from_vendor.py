@@ -290,6 +290,9 @@ class TtGetBookingFromVendorReview(models.TransientModel):
 
         schedules_req_list = []
         schedules_req_list.append({
+            "pnr": retrieve_res['pnr'], ## ini itu pnr
+            "pnr2": retrieve_res['pnr2'], ## ini itu pnr2
+            "reference": retrieve_res['reference'], ## ini itu reference
             "journeys": retrieve_res['journeys'], ## ini itu schedule
             "passengers": retrieve_res['passengers'], ## yg ini untuk fees passenger
             "provider": retrieve_res['provider'],

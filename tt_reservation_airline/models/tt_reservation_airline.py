@@ -1204,6 +1204,9 @@ class ReservationAirline(models.Model):
 
             sequence+=1
             values = {
+                'pnr': schedule.get('pnr', ''),
+                'pnr2': schedule.get('pnr2', ''),
+                'reference': schedule.get('reference', ''),
                 'provider_id': provider_id,
                 'booking_id': self.id,
                 'sequence': sequence,
