@@ -13,8 +13,8 @@ class ReportSelling(models.Model):
     @staticmethod
     def _select():
         return """
-        reservation.id as reservation_id, reservation.name as reservation_order_number, 
-        reservation.create_date as reservation_create_date_og, reservation.state as reservation_state, 
+        reservation.id as reservation_id, reservation.state as reservation_state, reservation.name as reservation_order_number, 
+        reservation.create_date as reservation_create_date_og, 
         reservation.carrier_name as carrier_name,
         reservation.booked_date as reservation_booked_date_og,
         reservation.issued_date as reservation_issued_date_og,
@@ -36,13 +36,13 @@ class ReportSelling(models.Model):
     def _select_airline():
         return """
         reservation.id as reservation_id, 
+        reservation.state as reservation_state,
         reservation.agent_id as agent_id, reservation.agent_type_id as agent_type_id,
         reservation.name as reservation_order_number, 
         reservation.create_date as reservation_create_date_og,
         reservation.total as amount,
         reservation.carrier_name as carrier_name,
         reservation.sector_type as reservation_sector, 
-        reservation.state as reservation_state,
         reservation.provider_name as reservation_provider_name, 
         reservation.direction as reservation_direction,
         reservation.booked_date as reservation_booked_date_og, 
@@ -64,13 +64,13 @@ class ReportSelling(models.Model):
     def _select_train():
         return """
         reservation.id as reservation_id, 
+        reservation.state as reservation_state,
         reservation.agent_id as agent_id, reservation.agent_type_id as agent_type_id,
         reservation.name as reservation_order_number, 
         reservation.create_date as reservation_create_date_og,
         reservation.total as amount, 
         reservation.carrier_name as carrier_name,
         reservation.sector_type as reservation_sector, 
-        reservation.state as reservation_state,
         reservation.provider_name as reservation_provider_name, 
         reservation.direction as reservation_direction,
         reservation.booked_date as reservation_booked_date_og, 
@@ -91,6 +91,7 @@ class ReportSelling(models.Model):
     def _select_hotel():
         return """
         reservation.id as reservation_id, 
+        reservation.state as reservation_state, 
         reservation.agent_id as agent_id, reservation.agent_type_id as agent_type_id,
         reservation.name as reservation_order_number, 
         reservation.booked_date as reservation_booked_date_og,
@@ -100,7 +101,6 @@ class ReportSelling(models.Model):
         reservation.provider_name as reservation_provider_name,
         reservation.total as amount, 
         reservation.carrier_name as carrier_name,
-        reservation.state as reservation_state, 
         reservation.hotel_name as reservation_hotel_name,
         reservation.hotel_city as hotel_city,
         reservation.hotel_city_id as hotel_city_id,
@@ -119,9 +119,9 @@ class ReportSelling(models.Model):
     def _select_activity():
         return """
         reservation.id as reservation_id,
+        reservation.state as reservation_state,
         reservation.agent_id as agent_id, reservation.agent_type_id as agent_type_id,
         reservation.name as reservation_order_number,
-        reservation.state as reservation_state,
         reservation.create_date as reservation_create_date_og,
         reservation.booked_date as reservation_booked_date_og,
         reservation.issued_date as reservation_issued_date_og,
@@ -144,6 +144,7 @@ class ReportSelling(models.Model):
     def _select_tour():
         return """
         reservation.id as reservation_id, 
+        reservation.state as reservation_state,
         reservation.agent_id as agent_id, reservation.agent_type_id as agent_type_id,
         reservation.name as reservation_order_number, 
         reservation.create_date as reservation_create_date_og,
@@ -152,7 +153,6 @@ class ReportSelling(models.Model):
         reservation.total as amount, 
         reservation.carrier_name as carrier_name,
         reservation.provider_name as reservation_provider_name, 
-        reservation.state as reservation_state,
         reservation.elder as reservation_elder, 
         reservation.adult as reservation_adult, 
         reservation.child as reservation_child, 
@@ -173,6 +173,7 @@ class ReportSelling(models.Model):
     def _select_visa():
         return """
         reservation.id as reservation_id, 
+        reservation.state as reservation_state,
         reservation.agent_id as agent_id, reservation.agent_type_id as agent_type_id,
         reservation.name as reservation_order_number, 
         reservation.create_date as reservation_create_date_og,
@@ -180,7 +181,6 @@ class ReportSelling(models.Model):
         reservation.issued_date as reservation_issued_date_og,
         reservation.total as amount, 
         reservation.carrier_name as carrier_name,
-        reservation.state as reservation_state,
         reservation.elder as reservation_elder, 
         reservation.adult as reservation_adult, 
         reservation.child as reservation_child, 
@@ -196,6 +196,7 @@ class ReportSelling(models.Model):
     def _select_offline():
         return """
         reservation.id as reservation_id, 
+        reservation.state as reservation_state,
         reservation.agent_id as agent_id, reservation.agent_type_id as agent_type_id,
         reservation.name as reservation_order_number,
         reservation.create_date as reservation_create_date_og, 
@@ -210,7 +211,6 @@ class ReportSelling(models.Model):
         reservation.child as reservation_child,
         reservation.infant as reservation_infant,
         reservation.provider_name as reservation_provider_name,
-        reservation.state as reservation_state,
         reservation.offline_provider_type as reservation_offline_provider_type, 
         reservation.nta_price as reservation_nta_price, 
         provider_type.name as provider_type_name,
@@ -222,6 +222,7 @@ class ReportSelling(models.Model):
     def _select_event():
         return """
         reservation.id as reservation_id, 
+        reservation.state as reservation_state, 
         reservation.agent_id as agent_id, reservation.agent_type_id as agent_type_id,
         reservation.name as reservation_order_number, 
         reservation.booked_date as reservation_booked_date_og,
@@ -230,7 +231,6 @@ class ReportSelling(models.Model):
         reservation.provider_name as reservation_provider_name,
         reservation.total as amount, 
         reservation.carrier_name as carrier_name,
-        reservation.state as reservation_state, 
         reservation.event_name as reservation_event_name,
         reservation.elder as reservation_elder, 
         reservation.adult as reservation_adult, 
@@ -245,8 +245,8 @@ class ReportSelling(models.Model):
     @staticmethod
     def _select_ppob():
         return """
-        reservation.id as reservation_id, reservation.name as reservation_order_number, 
-        reservation.create_date as reservation_create_date_og, reservation.state as reservation_state, 
+        reservation.id as reservation_id, reservation.state as reservation_state, reservation.name as reservation_order_number, 
+        reservation.create_date as reservation_create_date_og, 
         reservation.carrier_name as carrier_name,
         reservation.booked_date as reservation_booked_date_og,
         reservation.issued_date as reservation_issued_date_og,

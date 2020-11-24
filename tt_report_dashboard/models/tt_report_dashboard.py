@@ -208,6 +208,7 @@ class TtReportDashboard(models.Model):
                 'from_data': data
             }
         else:
+            res['profit_ho'] = 0
             res['dependencies'] = {
                 'is_ho': 0,
                 'current_agent': self.env['tt.agent'].browse(context['co_agent_id']).name,
@@ -563,6 +564,7 @@ class TtReportDashboard(models.Model):
 
             total = 0
             profit_total = 0
+            profit_ho = 0
             num_data = 0
 
             # create list of reservation id for invoice query
@@ -658,6 +660,8 @@ class TtReportDashboard(models.Model):
                     summary_issued[month_index]['detail'][day_index]['profit'] += i['debit']
 
                     profit_total += i['debit']
+                    if i['agent_type'] == 'HO':
+                        profit_ho += i['debit']
                 except:
                     pass
 
@@ -769,6 +773,7 @@ class TtReportDashboard(models.Model):
                 'total_rupiah': total,
                 'average_rupiah': float(total) / float(num_data) if num_data > 0 else 0,
                 'profit_total': profit_total,
+                'profit_ho': profit_ho,
                 'first_overview': summary_provider,
             }
 
@@ -861,6 +866,7 @@ class TtReportDashboard(models.Model):
             total = 0
             num_data = 0
             profit_total = 0
+            profit_ho = 0
 
             # create list of reservation id for invoice query
             reservation_ids = []
@@ -1180,6 +1186,8 @@ class TtReportDashboard(models.Model):
                     summary_issued[month_index]['detail'][day_index]['profit'] += i['debit']
 
                     profit_total += i['debit']
+                    if i['agent_type'] == 'HO':
+                        profit_ho += i['debit']
                 except:
                     pass
 
@@ -1299,6 +1307,7 @@ class TtReportDashboard(models.Model):
                 'total_rupiah': total,
                 'average_rupiah': float(total) / float(num_data) if num_data > 0 else 0,
                 'profit_total': profit_total,
+                'profit_ho': profit_ho,
                 'first_overview': {
                     'sector_summary': sector_dictionary,
                     'international': international_filter[:20],
@@ -1407,6 +1416,7 @@ class TtReportDashboard(models.Model):
             total = 0
             num_data = 0
             profit_total = 0
+            proft_ho = 0
 
             reservation_ids = []
             for i in issued_values['lines']:
@@ -1614,6 +1624,8 @@ class TtReportDashboard(models.Model):
                     summary_issued[month_index]['detail'][day_index]['profit'] += i['debit']
 
                     profit_total += i['debit']
+                    if i['agent_type'] == 'HO':
+                        profit_ho += i['debit']
                 except:
                     pass
 
@@ -1704,6 +1716,7 @@ class TtReportDashboard(models.Model):
                 'total_rupiah': total,
                 'average_rupiah': float(total) / float(num_data) if num_data > 0 else 0,
                 'profit_total': profit_total,
+                'profit_ho': proft_ho,
                 'first_overview': {
                     'sector_summary': sector_dictionary,
                     'international': international_filter[:20],
@@ -1774,6 +1787,7 @@ class TtReportDashboard(models.Model):
             total = 0
             num_data = 0
             profit_total = 0
+            profit_ho = 0
             reservation_ids = []
             for i in issued_values['lines']:
                 reservation_ids.append((i['reservation_id'], i['provider_type_name']))
@@ -1907,6 +1921,8 @@ class TtReportDashboard(models.Model):
                     summary_issued[month_index]['detail'][day_index]['profit'] += i['debit']
 
                     profit_total += i['debit']
+                    if i['agent_type'] == 'HO':
+                        profit_ho += i['debit']
                 except:
                     pass
 
@@ -2053,7 +2069,8 @@ class TtReportDashboard(models.Model):
                 },
                 'total_rupiah': total,
                 'average_rupiah': float(total) / float(num_data) if num_data > 0 else 0,
-                'profit_total': profit_total
+                'profit_total': profit_total,
+                'profit_ho': profit_ho
             }
 
             # update dependencies
@@ -2113,6 +2130,7 @@ class TtReportDashboard(models.Model):
             total = 0
             num_data = 0
             profit_total = 0
+            profit_ho = 0
 
             reservation_ids = []
             for i in issued_values['lines']:
@@ -2213,6 +2231,8 @@ class TtReportDashboard(models.Model):
                     summary_issued[month_index]['detail'][day_index]['profit'] += i['debit']
 
                     profit_total += i['debit']
+                    if i['agent_type'] == 'HO':
+                        profit_ho += i['debit']
                 except:
                     pass
 
@@ -2303,6 +2323,7 @@ class TtReportDashboard(models.Model):
                 'first_overview': [],
                 'total_rupiah': total,
                 'profit_total': profit_total,
+                'profit_ho': profit_ho,
                 'average_rupiah': float(total) / float(num_data) if num_data > 0 else 0
             }
 
@@ -2363,6 +2384,7 @@ class TtReportDashboard(models.Model):
             total = 0
             num_data = 0
             profit_total = 0
+            profit_ho = 0
 
             reservation_ids = []
             for i in issued_values['lines']:
@@ -2487,6 +2509,8 @@ class TtReportDashboard(models.Model):
                     summary_issued[month_index]['detail'][day_index]['profit'] += i['debit']
 
                     profit_total += i['debit']
+                    if i['agent_type'] == 'HO':
+                        profit_ho += i['debit']
                 except:
                     pass
 
@@ -2579,6 +2603,7 @@ class TtReportDashboard(models.Model):
                 'total_rupiah': total,
                 'average_rupiah': float(total) / float(num_data) if num_data > 0 else 0,
                 'profit_total': profit_total,
+                'profit_ho': profit_ho,
                 'first_overview': product_summary
             }
 
@@ -2639,6 +2664,7 @@ class TtReportDashboard(models.Model):
             total = 0
             num_data = 0
             profit_total = 0
+            profit_ho = 0
 
             reservation_ids = []
             for i in issued_values['lines']:
@@ -2762,6 +2788,8 @@ class TtReportDashboard(models.Model):
                     summary_issued[month_index]['detail'][day_index]['profit'] += i['debit']
 
                     profit_total += i['debit']
+                    if i['agent_type'] == 'HO':
+                        profit_ho += i['debit']
                 except:
                     pass
 
@@ -2854,6 +2882,7 @@ class TtReportDashboard(models.Model):
                 'total_rupiah': total,
                 'average_rupiah': float(total) / float(num_data) if num_data > 0 else 0,
                 'profit_total': profit_total,
+                'profit_ho': profit_ho,
                 'first_overview': product_summary
             }
 
@@ -2914,6 +2943,7 @@ class TtReportDashboard(models.Model):
             total = 0
             num_data = 0
             profit_total = 0
+            profit_ho = 0
 
             reservation_ids = []
             for i in issued_values['lines']:
@@ -3029,6 +3059,8 @@ class TtReportDashboard(models.Model):
                     summary_issued[month_index]['detail'][day_index]['profit'] += i['debit']
 
                     profit_total += i['debit']
+                    if i['agent_type'] == 'HO':
+                        profit_ho += i['debit']
                 except:
                     pass
 
@@ -3119,6 +3151,7 @@ class TtReportDashboard(models.Model):
                 'total_rupiah': total,
                 'average_rupiah': float(total) / float(num_data) if num_data > 0 else 0,
                 'profit_total': profit_total,
+                'profit_ho': profit_ho,
                 'first_overview': country_summary
             }
 
@@ -3179,6 +3212,7 @@ class TtReportDashboard(models.Model):
             total = 0
             num_data = 0
             profit_total = 0
+            profit_ho = 0
 
             reservation_ids = []
             for i in issued_values['lines']:
@@ -3295,6 +3329,8 @@ class TtReportDashboard(models.Model):
                     summary_issued[month_index]['detail'][day_index]['profit'] += i['debit']
 
                     profit_total += i['debit']
+                    if i['agent_type'] == 'HO':
+                        profit_ho += i['debit']
                 except:
                     pass
 
@@ -3388,6 +3424,7 @@ class TtReportDashboard(models.Model):
                 'total_rupiah': total,
                 'average_rupiah': float(total) / float(num_data) if num_data > 0 else 0,
                 'profit_total': profit_total,
+                'profi_ho': profit_ho,
                 'first_overview': offline_summary
             }
 
@@ -3448,6 +3485,7 @@ class TtReportDashboard(models.Model):
             total = 0
             num_data = 0
             profit_total = 0
+            profit_ho = 0
             reservation_ids = []
             for i in issued_values['lines']:
                 reservation_ids.append((i['reservation_id'], i['provider_type_name']))
@@ -3561,6 +3599,8 @@ class TtReportDashboard(models.Model):
                     summary_issued[month_index]['detail'][day_index]['profit'] += i['debit']
 
                     profit_total += i['debit']
+                    if i['agent_type'] == 'HO':
+                        profit_ho += i['debit']
                 except:
                     pass
 
@@ -3654,6 +3694,7 @@ class TtReportDashboard(models.Model):
                 'total_rupiah': total,
                 'average_rupiah': float(total) / float(num_data) if num_data > 0 else 0,
                 'profit_total': profit_total,
+                'profit_ho': profit_ho,
                 'first_overview': ppob_summary
             }
 
@@ -3712,6 +3753,7 @@ class TtReportDashboard(models.Model):
             total = 0
             num_data = 0
             profit_total = 0
+            profit_ho = 0
             # count the date difference
             delta = end_date - start_date
 
@@ -3827,6 +3869,8 @@ class TtReportDashboard(models.Model):
                     summary_issued[month_index]['detail'][day_index]['profit'] += i['debit']
 
                     profit_total += i['debit']
+                    if i['agent_type'] == 'HO':
+                        profit_ho += i['debit']
                 except:
                     pass
 
