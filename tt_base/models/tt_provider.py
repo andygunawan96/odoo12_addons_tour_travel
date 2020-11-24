@@ -13,6 +13,7 @@ class TtProvider(models.Model):
     provider_type_id = fields.Many2one('tt.provider.type', 'Provider Type')
     provider_ledger_ids = fields.One2many('tt.provider.ledger', 'provider_id', 'Vendor Ledgers')
     currency_id = fields.Many2one('res.currency', 'Currency')
+    address_ids = fields.One2many('address.detail', 'provider_id', string='Addresses')
     provider_code_ids = fields.One2many('tt.provider.code', 'provider_id', 'Provider Codes')
     rate_ids = fields.One2many('tt.provider.rate', 'provider_id', 'Provider Codes')
     payment_acquirer_ids = fields.One2many('payment.acquirer', 'provider_id', 'Payment Acquirers')

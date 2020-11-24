@@ -17,12 +17,9 @@ class TtLetterGuarantee(models.Model):
         res = self.read()
         res = res and res[0] or {}
         datas['form'] = res
-        lg_printout_action = self.env.ref('tt_report_common.action_report_printout_lg')
+        lg_printout_action = self.env.ref('tt_report_common.action_report_printout_letter_guarantee')
         if not self.printout_lg_id:
-            if self.agent_id:
-                co_agent_id = self.agent_id.id
-            else:
-                co_agent_id = self.env.user.agent_id.id
+            co_agent_id = self.env.user.agent_id.id
 
             co_uid = self.env.user.id
 

@@ -41,6 +41,7 @@
         'report/printout_reschedule_template.xml',
         'report/printout_expenses_invoice_template.xml',
         'report/printout_voucher_template.xml',
+        'report/printout_letter_guarantee_template.xml'
     ],
     # only loaded in demonstration mode
     'demo': [
