@@ -3,6 +3,7 @@ import odoo.tools as tools
 import logging,traceback
 from datetime import datetime
 import hashlib
+import json
 from ...tools import util
 
 _logger = logging.getLogger(__name__)
@@ -23,7 +24,11 @@ class ApiWebhookData(models.Model):
                 sent_data = []
                 send_limit = 3
                 while len(sent_data) < len(webhook_data_obj[0].webhook_rel_ids.ids) and send_limit > 0:
-                    for rec in webhook_data_obj[0].webhook_rel_ids:
+                    if req.get('child_id'):
+                        children_list = webhook_data_obj[0].webhook_rel_ids.filtered(lambda x: x.credential_data_id.user_id.id == req['child_id'])
+                    else:
+                        children_list = webhook_data_obj[0].webhook_rel_ids
+                    for rec in children_list:
                         if rec.id not in sent_data:
                             temp_date = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
                             temp_sha = rec.api_key + temp_date

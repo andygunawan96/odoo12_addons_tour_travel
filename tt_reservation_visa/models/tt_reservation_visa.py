@@ -187,22 +187,23 @@ class TtVisa(models.Model):
         self.message_post(body='Order PROCEED')
 
     def sync_status_btbo2(self, status):
-        for credential in self.booked_uid.credential_ids.webhook_rel_ids:
+        for credential in self.user_id.credential_ids.webhook_rel_ids:
             if "webhook/visa" in credential.url:
+                ## check lebih efisien check api ccredential usernya punya webhook visa, atau kalau api user selalu di notify
+                ## tetapi nanti filterny sendiri ke kirm ato enda
+
                 data = {
                     'order_number': self.name,
                     'state': status
                 }
-                temp_date = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-                temp_sha = credential.api_key + temp_date
                 vals = {
+                    'provider_type': 'visa',
                     'action': 'sync_status_visa',
-                    'url': credential.url,
-                    'signature': hashlib.sha256(temp_sha.encode()).hexdigest(),
-                    'datetime': temp_date,
-                    'data': data
+                    'data': data,
+                    'child_id': self.user_id.id
                 }
-                self.env['tt.api.con'].send_sync_status_visa(vals)
+                self.env['tt.api.webhook.data'].notify_subscriber(vals)
+                break
 
     def action_validate_visa(self):
         is_validated = True
@@ -219,8 +220,7 @@ class TtVisa(models.Model):
             'validate_date': datetime.now(),
             'validate_uid': self.env.user.id
         })
-        if self.booked_uid.is_api_user:
-            self.sync_status_btbo2('validate')
+        self.sync_status_btbo2('validate')
         self.message_post(body='Order VALIDATED')
 
     def action_sync_status_visa_api(self, req):
@@ -230,8 +230,7 @@ class TtVisa(models.Model):
                                                               limit=1).booking_id #get book_id
                 book_obj = self.env['tt.reservation.visa'].search([('id', '=', book_id.id)], limit=1) #ambil book obj
                 # book_obj = self.env['tt.reservation.visa'].search([('name', '=', req['data']['order_number'])], limit=1) #local
-                _logger.error('visa book id ' + json.dumps(book_id.id))
-                _logger.error('visa req ' + json.dumps(req))
+                
                 # login admin agar bisa get booking sudah check apikey hash di gateway jadi aman
                 # tidak jadi login admin karena context selalu visa selalu buat cuman bisa jadi contoh
                 # authorization = tools.config.get('backend_authorization', '')
@@ -252,8 +251,26 @@ class TtVisa(models.Model):
                     self.action_payment_visa_by_api(book_obj)
                 elif req['data'].get('state') == 'process_by_consulate':
                     self.action_process_by_consulate_visa_by_api(book_obj)
-                elif req['data'].get('state') == 'in_process':
-                    self.action_in_process_visa_by_api(book_obj)
+                elif req['data'].get('state') == 'proceed':
+                    self.action_proceed_visa_by_api(book_obj)
+                elif req['data'].get('state') == 'done':
+                    self.action_done_visa_by_api(book_obj)
+                elif req['data'].get('state') == 're_validate':
+                    self.action_re_validate_visa_by_api(book_obj)
+                elif req['data'].get('state') == 're_confirm':
+                    self.action_re_confirm_visa_by_api(book_obj)
+                elif req['data'].get('state') == 'cancel':
+                    self.action_cancel_visa_by_api(book_obj)
+                elif req['data'].get('state') == 'waiting':
+                    self.action_waiting_visa_by_api(book_obj)
+                elif req['data'].get('state') == 'rejected':
+                    self.action_rejected_visa_by_api(book_obj)
+                elif req['data'].get('state') == 'accept':
+                    self.action_accept_visa_by_api(book_obj)
+                elif req['data'].get('state') == 'to_HO':
+                    self.action_to_HO_visa_by_api(book_obj)
+                elif req['data'].get('state') == 'to_agent':
+                    self.action_to_agent_visa_by_api(book_obj)
                 else:
                     _logger.error("get credential error")
             return Response().get_no_error()
@@ -291,6 +308,86 @@ class TtVisa(models.Model):
         try:
             book_obj.passenger_ids.action_confirm_payment_api()
             book_obj.action_in_process_consulate_visa()
+            return Response().get_no_error()
+        except Exception as e:
+            _logger.error(traceback.format_exc(e))
+            return Response().get_error(error_message='contact b2b', error_code=500)
+
+    def action_re_validate_visa_by_api(self, book_obj):
+        try:
+            book_obj.passenger_ids.action_re_validate()
+            return Response().get_no_error()
+        except Exception as e:
+            _logger.error(traceback.format_exc(e))
+            return Response().get_error(error_message='contact b2b', error_code=500)
+
+    def action_re_confirm_visa_by_api(self, book_obj):
+        try:
+            book_obj.passenger_ids.action_re_confirm()
+            return Response().get_no_error()
+        except Exception as e:
+            _logger.error(traceback.format_exc(e))
+            return Response().get_error(error_message='contact b2b', error_code=500)
+
+    def action_cancel_visa_by_api(self, book_obj):
+        try:
+            book_obj.passenger_ids.action_cancel()
+            return Response().get_no_error()
+        except Exception as e:
+            _logger.error(traceback.format_exc(e))
+            return Response().get_error(error_message='contact b2b', error_code=500)
+
+    def action_waiting_visa_by_api(self, book_obj):
+        try:
+            book_obj.passenger_ids.action_waiting()
+            return Response().get_no_error()
+        except Exception as e:
+            _logger.error(traceback.format_exc(e))
+            return Response().get_error(error_message='contact b2b', error_code=500)
+
+    def action_proceed_visa_by_api(self, book_obj):
+        try:
+            book_obj.passenger_ids.action_proceed()
+            return Response().get_no_error()
+        except Exception as e:
+            _logger.error(traceback.format_exc(e))
+            return Response().get_error(error_message='contact b2b', error_code=500)
+
+    def action_rejected_visa_by_api(self, book_obj):
+        try:
+            book_obj.passenger_ids.action_reject()
+            return Response().get_no_error()
+        except Exception as e:
+            _logger.error(traceback.format_exc(e))
+            return Response().get_error(error_message='contact b2b', error_code=500)
+
+    def action_accept_visa_by_api(self, book_obj):
+        try:
+            book_obj.passenger_ids.action_accept()
+            return Response().get_no_error()
+        except Exception as e:
+            _logger.error(traceback.format_exc(e))
+            return Response().get_error(error_message='contact b2b', error_code=500)
+
+    def action_to_HO_visa_by_api(self, book_obj):
+        try:
+            book_obj.passenger_ids.action_to_HO()
+            return Response().get_no_error()
+        except Exception as e:
+            _logger.error(traceback.format_exc(e))
+            return Response().get_error(error_message='contact b2b', error_code=500)
+
+    def action_to_agent_visa_by_api(self, book_obj):
+        try:
+            book_obj.passenger_ids.action_to_agent()
+            return Response().get_no_error()
+        except Exception as e:
+            _logger.error(traceback.format_exc(e))
+            return Response().get_error(error_message='contact b2b', error_code=500)
+
+    def action_done_visa_by_api(self, book_obj):
+        try:
+            book_obj.passenger_ids.action_done()
             return Response().get_no_error()
         except Exception as e:
             _logger.error(traceback.format_exc(e))
@@ -350,8 +447,7 @@ class TtVisa(models.Model):
         provider_id.write({
             'vendor_ids': [(0, 0, expenses_vals)]
         })
-        if self.booked_uid.is_api_user:
-            self.sync_status_btbo2('in_process')
+        self.sync_status_btbo2('in_process')
         self.message_post(body='Order IN PROCESS')
 
     # kirim data dan dokumen ke vendor
@@ -376,8 +472,7 @@ class TtVisa(models.Model):
         self.write({
             'state_visa': 'payment'
         })
-        if self.booked_uid.is_api_user:
-            self.sync_status_btbo2('payment')
+        self.sync_status_btbo2('payment')
         self.message_post(body='Order PAYMENT')
 
     def action_in_process_consulate_visa(self):
@@ -401,8 +496,7 @@ class TtVisa(models.Model):
             'in_process_date': datetime.now(),
             'estimate_date': date.today() + timedelta(days=estimate_days)
         })
-        if self.booked_uid.is_api_user:
-            self.sync_status_btbo2('process_by_consulate')
+        self.sync_status_btbo2('process_by_consulate')
         self.message_post(body='Order IN PROCESS TO CONSULATE')
         for rec in self.passenger_ids:
             rec.action_in_process2()
@@ -658,7 +752,7 @@ class TtVisa(models.Model):
                     rec.env.ref('tt_base.rodex_ho').id,
                     False,
                     0,
-                    ho_profit,
+                    abs(ho_profit),
                     'Additional Charge Visa : ' + rec.name,
                     pnr=rec.pnr,
                     display_provider_name=provider_code,

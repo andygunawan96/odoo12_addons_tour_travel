@@ -13,8 +13,8 @@ class AgentReportRecapTransacion(models.Model):
     @staticmethod
     def _select():
         return """
-            rsv.id, rsv.name as order_number, creates.id as creator_id, creates_partner.name as create_by, issued_partner.name as issued_by, rsv.issued_date as issued_date, rsv.adult, rsv.child, rsv.infant, rsv.pnr,
-            rsv.total as grand_total, rsv.total_commission, rsv.total_nta, rsv.provider_name, rsv.create_date, rsv.state,
+            rsv.id, rsv.name as order_number, rsv.state, creates.id as creator_id, creates_partner.name as create_by, issued_partner.name as issued_by, rsv.issued_date as issued_date, rsv.adult, rsv.child, rsv.infant, rsv.pnr,
+            rsv.total as grand_total, rsv.total_commission, rsv.total_nta, rsv.provider_name, rsv.create_date,
             provider_type.name as provider_type, agent.name as agent_name, agent.email as agent_email,
             currency.name as currency_name,
             agent_type.name as agent_type_name, ledger.id as ledger_id, ledger.ref as ledger_name,
@@ -75,7 +75,7 @@ class AgentReportRecapTransacion(models.Model):
             where += """ AND rsv.agent_id = %s""" % agent_id
         if provider_type and provider_type != 'all':
             where += """ AND provider_type.code = '%s' """ % provider_type
-        # where += """ AND ledger.transaction_type = 3"""
+        where += """ AND ledger.is_reversed = 'FALSE'"""
         return where
 
     @staticmethod
@@ -87,8 +87,10 @@ class AgentReportRecapTransacion(models.Model):
         if agent_id:
             where += """ AND rsv.agent_id = %s""" % agent_id
         if provider_type and provider_type != 'all':
-            where += """ AND provider_type.code = '%s' """ % provider_type
-        # where += """ AND ledger.transaction_type = 3"""
+            where += """ AND provider_type.code = '%s'""" % provider_type
+        if state:
+            where += """ AND rsv.state = '%s'""" % state
+        # where += """ AND ledger.is_reversed = 'FALSE'"""
         return where
 
     @staticmethod
