@@ -30,6 +30,7 @@
                                 <field name="currency_id"/>
                                 <field name="is_reconcile"/>
                                 <field name="is_using_balance"/>
+                                <field name="is_using_lg"/>
                             </group>
                             <group>
                                 <label for="create_uid" string="Created By"/>
