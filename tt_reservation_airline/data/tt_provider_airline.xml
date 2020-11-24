@@ -23,12 +23,14 @@
             <field name="name">Citilink</field>
             <field name="code">citilink</field>
             <field name="active" eval="True"/>
+            <field name="is_using_balance" eval="True"/>
             <field name="provider_type_id" ref="tt_provider_type_airline"/>
         </record>
         <record id="tt_provider_airline_airasia" model="tt.provider">
             <field name="name">Air Asia</field>
             <field name="code">airasia</field>
             <field name="active" eval="True"/>
+            <field name="is_using_balance" eval="True"/>
             <field name="provider_type_id" ref="tt_provider_type_airline"/>
         </record>
         <record id="tt_provider_airline_jetstar" model="tt.provider">
@@ -53,18 +55,21 @@
             <field name="name">Trigana</field>
             <field name="code">trigana</field>
             <field name="active" eval="True"/>
+            <field name="is_using_balance" eval="True"/>
             <field name="provider_type_id" ref="tt_provider_type_airline"/>
         </record>
         <record id="tt_provider_airline_transnusa" model="tt.provider">
             <field name="name">Transnusa</field>
             <field name="code">transnusa</field>
             <field name="active" eval="True"/>
+            <field name="is_using_balance" eval="True"/>
             <field name="provider_type_id" ref="tt_provider_type_airline"/>
         </record>
         <record id="tt_provider_airline_sriwijaya" model="tt.provider">
             <field name="name">Sriwijaya</field>
             <field name="code">sriwijaya</field>
             <field name="active" eval="True"/>
+            <field name="is_using_balance" eval="True"/>
             <field name="provider_type_id" ref="tt_provider_type_airline"/>
         </record>
         <record id="tt_provider_airline_altea" model="tt.provider">
@@ -77,6 +82,7 @@
             <field name="name">Lion Air</field>
             <field name="code">lionair</field>
             <field name="active" eval="True"/>
+            <field name="is_using_balance" eval="True"/>
             <field name="provider_type_id" ref="tt_provider_type_airline"/>
         </record>
         <record id="tt_provider_airline_expressair" model="tt.provider">

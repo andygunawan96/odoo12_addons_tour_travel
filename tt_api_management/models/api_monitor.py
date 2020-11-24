@@ -69,10 +69,10 @@ class ApiMonitorData(models.Model):
     provider_type_id = fields.Many2one('tt.provider.type', 'Provider Type')
     req_data = fields.Text('Request Data')
     hit_counter = fields.Integer('Hit Counter', compute="_compute_hit_counter", store=False)
-    unverified_counter = fields.Integer('Unverified Hit Counter', compute="_compute_unverified_counter", store=True)
+    unverified_counter = fields.Integer('Unverified Hit Counter', compute="_compute_unverified_counter", store=False)
     record_ids = fields.One2many('tt.api.monitor.data.record', 'monitor_data_id', 'Records')
     user_id = fields.Many2one('res.users','User', related='monitor_id.user_id',store=True)
-    monitor_rule_id = fields.Many2one('tt.api.monitor.rule','Monitor Rule', compute="_compute_monitor_rule",store=False)
+    monitor_rule_id = fields.Many2one('tt.api.monitor.rule','Monitor Rule', compute="_compute_monitor_rule",store=True)
 
     @api.depends('provider_type_id')
     def _compute_monitor_rule(self):

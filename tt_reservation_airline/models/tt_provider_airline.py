@@ -13,63 +13,63 @@ class TtProviderAirline(models.Model):
     _order = 'departure_date'
     _description = 'Rodex Model'
 
-    pnr = fields.Char('PNR')
-    pnr2 = fields.Char('PNR2')
-    reference = fields.Char('Reference', default='', help='PNR Reference if the airline provides another pnr reference number')
-    provider_id = fields.Many2one('tt.provider','Provider')
-    state = fields.Selection(variables.BOOKING_STATE, 'Status', default='draft')
-    booking_id = fields.Many2one('tt.reservation.airline', 'Order Number', ondelete='cascade')
-    sequence = fields.Integer('Sequence')
-    balance_due = fields.Float('Balance Due')
-    origin_id = fields.Many2one('tt.destinations', 'Origin')
-    destination_id = fields.Many2one('tt.destinations', 'Destination')
-    departure_date = fields.Char('Departure Date')
-    return_date = fields.Char('Return Date')
-    arrival_date = fields.Char('Arrival Date')
+    pnr = fields.Char('PNR', readonly=True, states={'draft': [('readonly', False)]})
+    pnr2 = fields.Char('PNR2', readonly=True, states={'draft': [('readonly', False)]})
+    reference = fields.Char('Reference', default='', readonly=True, states={'draft': [('readonly', False)]}, help='PNR Reference if the airline provides another pnr reference number')
+    provider_id = fields.Many2one('tt.provider','Provider', readonly=True, states={'draft': [('readonly', False)]})
+    state = fields.Selection(variables.BOOKING_STATE, 'Status', default='draft', readonly=True, states={'draft': [('readonly', False)]})
+    booking_id = fields.Many2one('tt.reservation.airline', 'Order Number', ondelete='cascade', readonly=True, states={'draft': [('readonly', False)]})
+    sequence = fields.Integer('Sequence', readonly=True, states={'draft': [('readonly', False)]})
+    balance_due = fields.Float('Balance Due', readonly=True, states={'draft': [('readonly', False)]})
+    origin_id = fields.Many2one('tt.destinations', 'Origin', readonly=True, states={'draft': [('readonly', False)]})
+    destination_id = fields.Many2one('tt.destinations', 'Destination', readonly=True, states={'draft': [('readonly', False)]})
+    departure_date = fields.Char('Departure Date', readonly=True, states={'draft': [('readonly', False)]})
+    return_date = fields.Char('Return Date', readonly=True, states={'draft': [('readonly', False)]})
+    arrival_date = fields.Char('Arrival Date', readonly=True, states={'draft': [('readonly', False)]})
 
-    sid_issued = fields.Char('SID Issued')#signature generate sendiri
-    sid_cancel = fields.Char('SID Cancel')#signature generate sendiri
+    sid_issued = fields.Char('SID Issued', readonly=True, states={'draft': [('readonly', False)]})#signature generate sendiri
+    sid_cancel = fields.Char('SID Cancel', readonly=True, states={'draft': [('readonly', False)]})#signature generate sendiri
 
-    journey_ids = fields.One2many('tt.journey.airline', 'provider_booking_id', string='Journeys')
-    cost_service_charge_ids = fields.One2many('tt.service.charge', 'provider_airline_booking_id', 'Cost Service Charges')
+    journey_ids = fields.One2many('tt.journey.airline', 'provider_booking_id', string='Journeys', readonly=True, states={'draft': [('readonly', False)]})
+    cost_service_charge_ids = fields.One2many('tt.service.charge', 'provider_airline_booking_id', 'Cost Service Charges', readonly=True, states={'draft': [('readonly', False)]})
 
     currency_id = fields.Many2one('res.currency', 'Currency', readonly=True, states={'draft': [('readonly', False)]},
                                   default=lambda self: self.env.user.company_id.currency_id)
 
-    promotion_code = fields.Char(string='Promotion Code')
+    promotion_code = fields.Char(string='Promotion Code', readonly=True, states={'draft': [('readonly', False)]})
 
 
     # Booking Progress
-    booked_uid = fields.Many2one('res.users', 'Booked By')
-    booked_date = fields.Datetime('Booking Date')
-    issued_uid = fields.Many2one('res.users', 'Issued By')
-    issued_date = fields.Datetime('Issued Date')
-    hold_date = fields.Char('Hold Date')
-    expired_date = fields.Datetime('Expired Date')
-    cancel_uid = fields.Many2one('res.users', 'Cancel By')
-    cancel_date = fields.Datetime('Cancel Date')
+    booked_uid = fields.Many2one('res.users', 'Booked By', readonly=True, states={'draft': [('readonly', False)]})
+    booked_date = fields.Datetime('Booking Date', readonly=True, states={'draft': [('readonly', False)]})
+    issued_uid = fields.Many2one('res.users', 'Issued By', readonly=True, states={'draft': [('readonly', False)]})
+    issued_date = fields.Datetime('Issued Date', readonly=True, states={'draft': [('readonly', False)]})
+    hold_date = fields.Char('Hold Date', readonly=True, states={'draft': [('readonly', False)]})
+    expired_date = fields.Datetime('Expired Date', readonly=True, states={'draft': [('readonly', False)]})
+    cancel_uid = fields.Many2one('res.users', 'Cancel By', readonly=True, states={'draft': [('readonly', False)]})
+    cancel_date = fields.Datetime('Cancel Date', readonly=True, states={'draft': [('readonly', False)]})
     #
-    refund_uid = fields.Many2one('res.users', 'Refund By')
-    refund_date = fields.Datetime('Refund Date')
+    refund_uid = fields.Many2one('res.users', 'Refund By', readonly=True, states={'draft': [('readonly', False)]})
+    refund_date = fields.Datetime('Refund Date', readonly=True, states={'draft': [('readonly', False)]})
 
-    ticket_ids = fields.One2many('tt.ticket.airline', 'provider_id', 'Ticket Number')
+    ticket_ids = fields.One2many('tt.ticket.airline', 'provider_id', 'Ticket Number', readonly=True, states={'draft': [('readonly', False)]})
 
     # is_ledger_created = fields.Boolean('Ledger Created', default=False, readonly=True, states={'draft': [('readonly', False)]})
 
-    error_history_ids = fields.One2many('tt.reservation.err.history','res_id','Error History', domain=[('res_model','=','tt.provider.airline')])
+    error_history_ids = fields.One2many('tt.reservation.err.history','res_id','Error History', domain=[('res_model','=','tt.provider.airline')], readonly=True, states={'draft': [('readonly', False)]})
     # , domain = [('res_model', '=', 'tt.provider.airline')]
 
     # April 23, 2020 - SAM
-    penalty_amount = fields.Float('Penalty Amount', default=0)
-    reschedule_uid = fields.Many2one('res.users', 'Rescheduled By')
-    reschedule_date = fields.Datetime('Rescheduled Date')
-    total_price = fields.Float('Total Price', default=0)
-    penalty_currency = fields.Char('Penalty Currency', default='')
+    penalty_amount = fields.Float('Penalty Amount', default=0, readonly=True, states={'draft': [('readonly', False)]})
+    reschedule_uid = fields.Many2one('res.users', 'Rescheduled By', readonly=True, states={'draft': [('readonly', False)]})
+    reschedule_date = fields.Datetime('Rescheduled Date', readonly=True, states={'draft': [('readonly', False)]})
+    total_price = fields.Float('Total Price', default=0, readonly=True, states={'draft': [('readonly', False)]})
+    penalty_currency = fields.Char('Penalty Currency', default='', readonly=True, states={'draft': [('readonly', False)]})
     # END
 
     #reconcile purpose#
-    reconcile_line_id = fields.Many2one('tt.reconcile.transaction.lines','Reconciled')
-    reconcile_time = fields.Datetime('Reconcile Time')
+    reconcile_line_id = fields.Many2one('tt.reconcile.transaction.lines','Reconciled', readonly=True, states={'draft': [('readonly', False)]})
+    reconcile_time = fields.Datetime('Reconcile Time', readonly=True, states={'draft': [('readonly', False)]})
     ##
 
     ##button function
@@ -143,7 +143,7 @@ class TtProviderAirline(models.Model):
         ##fixme salahhh, ini ke reverse semua provider bukan provider ini saja
         ## ^ harusnay sudah fix
         for rec in self.booking_id.ledger_ids:
-            if rec.pnr == self.pnr and not rec.is_reversed:
+            if rec.pnr in [self.pnr, str(self.sequence)] and not rec.is_reversed:
                 rec.reverse_ledger()
 
         for rec in self.cost_service_charge_ids:
