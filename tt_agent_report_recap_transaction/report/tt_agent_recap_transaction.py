@@ -75,6 +75,8 @@ class AgentReportRecapTransacion(models.Model):
             where += """ AND rsv.agent_id = %s""" % agent_id
         if provider_type and provider_type != 'all':
             where += """ AND provider_type.code = '%s' """ % provider_type
+        if state:
+            where += """ AND rsv.state = '%s'""" % state
         where += """ AND ledger.is_reversed = 'FALSE'"""
         return where
 
