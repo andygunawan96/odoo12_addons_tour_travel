@@ -92,12 +92,13 @@ class ReportSellingXls(models.TransientModel):
                         temp_dict['detail'][day_index]['booked_counter'] += 1
                     except:
                         pass
-                    try:
-                        splits = i['reservation_issued_date'].split("-")
-                        day_index = int(splits[2]) - 1
-                        temp_dict['detail'][day_index]['issued_counter'] += 1
-                    except:
-                        pass
+                    if i['reservation_state'] == 'issued':
+                        try:
+                            splits = i['reservation_issued_date'].split("-")
+                            day_index = int(splits[2]) - 1
+                            temp_dict['detail'][day_index]['issued_counter'] += 1
+                        except:
+                            pass
 
                     summary_by_date.append(temp_dict)
                 else:
@@ -107,12 +108,13 @@ class ReportSellingXls(models.TransientModel):
                         summary_by_date[month_index]['detail'][day_index]['booked_counter'] += 1
                     except:
                         pass
-                    try:
-                        splits = i['reservation_issued_date'].split("-")
-                        day_index = int(splits[2]) - 1
-                        summary_by_date[month_index]['detail'][day_index]['issued_counter'] += 1
-                    except:
-                        pass
+                    if i['reservation_state'] == 'issued':
+                        try:
+                            splits = i['reservation_issued_date'].split("-")
+                            day_index = int(splits[2]) - 1
+                            summary_by_date[month_index]['detail'][day_index]['issued_counter'] += 1
+                        except:
+                            pass
             except:
                 pass
             provider_index = self.check_index(result, "provider", i['provider_type_name'])
