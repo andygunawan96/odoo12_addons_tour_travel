@@ -29,6 +29,7 @@
                             <field name="ref_r_n"/>
                             <field name="currency_id"/>
                             <field name="amount"/>
+                            <field name="inventory"/>
                             <field name="pnr_quota_id"/>
                         </group>
                     </sheet>
@@ -45,6 +46,7 @@
                     <field name="ref_pnrs"/>
                     <field name="ref_carriers"/>
                     <field name="pnr_quota_id"/>
+                    <field name="amount"/>
                     <field name="active" invisible="1"/>
                     <button name="open_reservation" string="Go to reference" type="object"/>
                 </tree>

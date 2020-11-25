@@ -11,23 +11,32 @@ class TtPnrQuota(models.Model):
     _name = 'tt.pnr.quota'
     _rec_name = 'name'
     _description = 'Rodex Model PNR Quota'
-    _order = 'state,expired_date desc'
+    _order = 'id desc'
 
     name = fields.Char('Name')
     used_amount = fields.Integer('Used Amount', compute='_compute_used_amount',store=True)
-    amount = fields.Integer('Amount', compute='_compute_amount', store=True)
+    amount = fields.Integer('Amount', store=True)
+    currency_id = fields.Many2one('res.currency', string='Currency', readonly=True,
+                                  default=lambda self: self.env.user.company_id.currency_id)
     price_package_id = fields.Many2one('tt.pnr.quota.price.package', 'Price Package')
+    start_date = fields.Date('Start')
     expired_date = fields.Date('Expired Date', compute="_compute_expired_date",store=True)
     usage_ids = fields.One2many('tt.pnr.quota.usage','pnr_quota_id','Quota Usage', readonly=True)
     agent_id = fields.Many2one('tt.agent','Agent', domain="[('is_using_pnr_quota','=',True)]")
     is_expired = fields.Boolean('Expired')
-    state = fields.Selection([('active','Active'),('expired','Expired')],'State',compute="_compute_state",store=True)
+    state = fields.Selection([('active', 'Active'), ('waiting', 'Waiting'), ('payment', 'Payment'), ('done', 'Done'), ('failed', 'Failed')], 'State',compute="_compute_state",store=True)
+    transaction_amount_internal = fields.Monetary('Transaction Amount Internal', copy=False, readonly=True)
+    transaction_amount_external = fields.Monetary('Transaction Amount External', copy=False, readonly=True)
+    total_amount = fields.Monetary('Total Amount', copy=False)
 
     @api.model
     def create(self, vals_list):
-        now = datetime.now() + timedelta(days=30)
+        exp_date = datetime.now() + timedelta(days=30)
+        now = datetime.now()
         vals_list['name'] = self.env['ir.sequence'].next_by_code('tt.pnr.quota')
-        vals_list['expired_date'] = "%s-%s-%s" % (now.year, now.month, now.day) #akhir bulan
+        vals_list['expired_date'] = "%s-%s-%s" % (exp_date.year, exp_date.month, exp_date.day)
+        vals_list['start_date'] = "%s-%s-%s" % (now.year, now.month, now.day)
+        vals_list['state'] = 'active'
         return super(TtPnrQuota, self).create(vals_list)
 
     @api.depends('usage_ids', 'usage_ids.active')
@@ -41,13 +50,13 @@ class TtPnrQuota(models.Model):
     #     for rec in self:
     #         rec.amount = rec.price_list_id and rec.price_list_id.price or False
 
-    @api.depends('is_expired')
-    def _compute_state(self):
-        for rec in self:
-            if rec.is_expired:
-                rec.state = 'expired'
-            else:
-                rec.state = 'active'
+    # @api.depends('is_expired')
+    # def _compute_state(self):
+    #     for rec in self:
+    #         if rec.is_expired:
+    #             rec.state = 'expired'
+    #         else:
+    #             rec.state = 'active'
 
     # @api.onchange('agent_id')
     # def _onchange_domain_agent_id(self):
@@ -63,6 +72,56 @@ class TtPnrQuota(models.Model):
             'expired_date': self.expired_date,
             'state': self.state
         }
+
+    @api.onchange('min_amount', 'usage_ids')
+    def calc_amount_internal(self):
+        for rec in self:
+            total_amount = 0
+            for usage_obj in rec.usage_ids:
+                if usage_obj.inventory == 'internal':
+                    total_amount += usage_obj.amount
+            rec.transaction_amount_internal = total_amount
+
+    @api.onchange('min_amount', 'usage_ids')
+    def calc_amount_external(self):
+        for rec in self:
+            total_amount = 0
+            for usage_obj in rec.usage_ids:
+                if usage_obj.inventory == 'external':
+                    total_amount += usage_obj.amount
+            rec.transaction_amount_external = total_amount
+
+    @api.onchange('transaction_amount_internal', 'transaction_amount_external', 'usage_ids')
+    def calc_amount_total(self):
+        for rec in self:
+            if rec.price_package_id.fix_profit_share == False:
+                if rec.transaction_amount_internal > rec.amount:
+                    rec.total_amount = rec.transaction_amount_external
+                else:
+                    rec.total_amount = rec.amount - rec.transaction_amount_internal + rec.transaction_amount_external
+            else:
+                rec.total_amount = rec.amount + rec.transaction_amount_external
+
+    def payment_pnr_quota_api(self):
+        for rec in self:
+            if rec.agent_id.balance > rec.total_amount:
+                # bikin ledger
+                self.env['tt.ledger'].create_ledger_vanilla(rec._name,
+                                                            rec.id,
+                                                            'Order: %s' % (rec.name),
+                                                            rec.name,
+                                                            datetime.now(pytz.timezone('Asia/Jakarta')).date(),
+                                                            2,
+                                                            rec.currency_id.id,
+                                                            self.env.user.id,
+                                                            rec.agent_id.id,
+                                                            False,
+                                                            debit=0,
+                                                            credit=rec.total_amount,
+                                                            description='Buying PNR Quota for %s' % (rec.agent_id.name)
+                                                            )
+                rec.state = 'payment'
+
 
     def get_pnr_quota_api(self,data,context):
         try:
@@ -98,19 +157,20 @@ class TtPnrQuota(models.Model):
             except:
                 raise RequestException(1008)
 
-            price_package_obj = self.env['tt.pnr.quota.price.package'].search([('seq_id','=',req['quota_package_seq_id'])])
+            price_package_obj = self.env['tt.pnr.quota.price.package'].search([('seq_id','=',req['quota_seq_id'])])
             try:
                 price_package_obj.create_date
             except:
                 raise RequestException(1032)
 
-            if agent_obj.balance < price_package_obj.price:
-                raise RequestException(1007,additional_message='agent balance')
+            # if agent_obj.balance < price_package_obj.price:
+            #     raise RequestException(1007,additional_message='agent balance')
 
             new_pnr_quota = self.create({
                 'agent_id': agent_obj.id,
                 'price_package_id': price_package_obj.id
             })
+            agent_obj.quota_total_duration = new_pnr_quota.expired_date
 
             # self.env['tt.ledger'].create_ledger_vanilla(new_pnr_quota._name,
             #                                             new_pnr_quota.id,

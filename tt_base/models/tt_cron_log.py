@@ -57,13 +57,16 @@ class TtCronLog(models.Model):
         try:
             pnr_quota_obj = self.env['tt.pnr.quota'].search([('expired_date','<', datetime.now(pytz.timezone('Asia/Jakarta')).date())])
             for rec in pnr_quota_obj:
-                rec.is_expired = True
+                rec.state = 'waiting'
+                rec.amount = rec.price_package_id.minimum_fee
+                rec.calc_amount_internal()
+                rec.calc_amount_external()
             self.env.cr.commit()
             agent_obj = self.env['tt.agent'].search([('is_using_pnr_quota', '=', True), ('quota_total_duration', '=', False)])
             for rec in agent_obj:
                 res = self.env['tt.pnr.quota'].create_pnr_quota_api(
                     {
-                        'quota_seq_id': rec.quota_package_id.minimum_monthly_quota_id.seq_id
+                        'quota_seq_id': rec.quota_package_id.seq_id
                     },
                     {
                         'co_agent_id': rec.id
@@ -72,9 +75,34 @@ class TtCronLog(models.Model):
                 if res['error_code'] != 0:
                     rec.ban_user_api()
                     _logger.info(res['error_msg'])
-        except:
+        except Exception as e:
+            _logger.error(traceback.format_exc(e))
             self.create_cron_log_folder()
-            self.write_cron_log('auto-expire quota')
+            self.write_cron_log('auto-expire quota pnr')
+
+    def cron_payment_pnr_quota(self):
+        try:
+            pnr_quota_obj = self.env['tt.pnr.quota'].search([('state', '=', 'waiting')])
+            for rec in pnr_quota_obj:
+                rec.payment_pnr_quota_api()
+                if rec.state != 'payment':
+                    rec.agent_id.ban_user_api()
+                    rec.state = 'failed'
+
+        except Exception as e:
+            _logger.error(traceback.format_exc(e))
+            self.create_cron_log_folder()
+            self.write_cron_log('auto-payment quota pnr')
+
+    def cron_done_pnr_quota(self):
+        try:
+            pnr_quota_obj = self.env['tt.pnr.quota'].search([('state', '=', 'payment')])
+            for rec in pnr_quota_obj:
+                rec.state = 'done'
+        except Exception as e:
+            _logger.error(traceback.format_exc(e))
+            self.create_cron_log_folder()
+            self.write_cron_log('auto-done quota pnr')
 
     def cron_send_email_queue(self):
         try:
