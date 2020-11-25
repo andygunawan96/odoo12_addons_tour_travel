@@ -1,4 +1,5 @@
 from odoo import api, fields, models, _
+from odoo.exceptions import UserError
 from ...tools import variables
 from datetime import datetime
 
@@ -27,6 +28,7 @@ class ProviderOffline(models.Model):
     booking_id = fields.Many2one('tt.reservation.offline', 'Order Number', ondelete='cascade')
     sequence = fields.Integer('Sequence')
     state = fields.Selection(variables.BOOKING_STATE, 'Status', default='draft')
+    state_offline = fields.Selection(variables.BOOKING_STATE, string='State', default='draft', related='booking_id.state_offline')
     cost_service_charge_ids = fields.One2many('tt.service.charge', 'provider_offline_booking_id', 'Cost Service Charges')
 
     currency_id = fields.Many2one('res.currency', 'Currency', readonly=True, states={'draft': [('readonly', False)]},
@@ -59,6 +61,134 @@ class ProviderOffline(models.Model):
     reconcile_line_id = fields.Many2one('tt.reconcile.transaction.lines','Reconciled')
     reconcile_time = fields.Datetime('Reconcile Time')
     ##
+
+    is_lg_required = fields.Boolean('Is LG Required', readonly=True, compute='compute_is_lg_required')
+    letter_of_guarantee_ids = fields.One2many('tt.letter.guarantee', 'res_id', 'Letter of Guarantees', readonly=True)
+
+    @api.onchange('provider_id')
+    def compute_is_lg_required(self):
+        for rec in self:
+            if rec.provider_id.is_using_lg:
+                rec.is_lg_required = True
+            else:
+                rec.is_lg_required = False
+
+    def generate_lg(self):
+        if self.booking_id.state_offline == 'validate':
+            if not self.env.user.has_group('tt_base.group_tt_accounting_manager'):
+                hour_passed = (datetime.now() - self.booking_id.validate_date).seconds / 3600
+                if hour_passed > 1:
+                    raise UserError('Failed to generate Letter of Guarantee. It has been more than 1 hour after this reservation was validated, please contact Accounting Manager to generate Letter of Guarantee.')
+
+            lg_exist = self.env['tt.letter.guarantee'].search([('res_model', '=', self._name), ('res_id', '=', self.id)])
+            if lg_exist:
+                raise UserError('Letter of Guarantee for this provider is already exist.')
+            else:
+                multiplier = ''
+                mult_amount = 0
+                quantity = ''
+                qty_amount = 0
+                pax_desc_str = ''
+
+                desc_dict = {}
+                for rec in self.booking_id.line_ids:
+                    if rec.provider_id.id == self.provider_id.id:
+                        if not desc_dict.get(rec.pnr):
+                            desc_dict[rec.pnr] = ''
+
+                        if self.booking_id.offline_provider_type == 'airline':
+                            multiplier = 'Pax'
+                            quantity = 'Qty'
+                            qty_amount = 1
+                            dept_date_str = datetime.strptime('%s %s:%s' % (rec.departure_date, rec.departure_hour, rec.departure_minute), '%Y-%m-%d %H:%M').strftime('%d %b %Y %H:%M')
+                            ret_date_str = datetime.strptime('%s %s:%s' % (rec.arrival_date, rec.return_hour, rec.return_minute), '%Y-%m-%d %H:%M').strftime('%d %b %Y %H:%M')
+                            desc_dict[rec.pnr] += '%s %s %s (%s) %s - %s (%s) %s<br/>' % (rec.carrier_code, rec.carrier_number, rec.origin_id.city, rec.origin_id.code, dept_date_str, rec.destination_id.city, rec.destination_id.code, ret_date_str)
+                        elif self.booking_id.offline_provider_type == 'train':
+                            multiplier = 'Pax'
+                            quantity = 'Qty'
+                            qty_amount = 1
+                            dept_date_str = datetime.strptime('%s %s:%s' % (rec.departure_date, rec.departure_hour, rec.departure_minute),'%Y-%m-%d %H:%M').strftime('%d %b %Y %H:%M')
+                            ret_date_str = datetime.strptime('%s %s:%s' % (rec.arrival_date, rec.return_hour, rec.return_minute),'%Y-%m-%d %H:%M').strftime('%d %b %Y %H:%M')
+                            desc_dict[rec.pnr] += '%s %s %s (%s) %s - %s (%s) %s<br/>' % (rec.carrier_code, rec.carrier_number, rec.origin_id.city, rec.origin_id.code, dept_date_str, rec.destination_id.city, rec.destination_id.code, ret_date_str)
+                        elif self.booking_id.offline_provider_type == 'hotel':
+                            multiplier = 'Room'
+                            quantity = 'Night'
+                            mult_amount = rec.obj_qty
+                            qty_amount = (datetime.strptime(rec.check_out, '%Y-%m-%d') - datetime.strptime(rec.check_in, '%Y-%m-%d')).days
+                            desc_dict[rec.pnr] += '%s<br/>' % rec.hotel_name or '-'
+                            desc_dict[rec.pnr] += 'Room : %s<br/>' % rec.room or '-'
+                            desc_dict[rec.pnr] += 'Meal Type : %s<br/>' % rec.meal_type or '-'
+                            desc_dict[rec.pnr] += 'Check In Date : %s<br/>' % (rec.check_in and datetime.strptime(rec.check_in, '%Y-%m-%d').strftime('%d %B %Y') or '-')
+                            desc_dict[rec.pnr] += 'Check Out Date : %s<br/>' % (rec.check_out and datetime.strptime(rec.check_out, '%Y-%m-%d').strftime('%d %B %Y') or '-')
+                            desc_dict[rec.pnr] += '<br/>'
+                        elif self.booking_id.offline_provider_type == 'tour':
+                            multiplier = 'Pax'
+                            quantity = 'Qty'
+                            qty_amount = 1
+                            desc_dict[rec.pnr] += '%s<br/>' % rec.description
+                        elif self.booking_id.offline_provider_type == 'activity':
+                            multiplier = 'Pax'
+                            quantity = 'Qty'
+                            qty_amount = 1
+                            visit_date_str = datetime.strptime(rec.visit_date, '%Y-%m-%d').strftime('%d %B %Y')
+                            desc_dict[rec.pnr] += '%s (%s) - %s<br/>' % (rec.activity_name, rec.activity_package, visit_date_str)
+                        elif self.booking_id.offline_provider_type == 'visa':
+                            multiplier = 'Pax'
+                            quantity = 'Qty'
+                            qty_amount = 1
+                            desc_dict[rec.pnr] += '%s<br/>' % rec.description
+                        elif self.booking_id.offline_provider_type == 'passport':
+                            multiplier = 'Pax'
+                            quantity = 'Qty'
+                            qty_amount = 1
+                            desc_dict[rec.pnr] += '%s<br/>' % rec.description
+                        elif self.booking_id.offline_provider_type == 'ppob':
+                            multiplier = 'Pax'
+                            quantity = 'Qty'
+                            qty_amount = 1
+                            desc_dict[rec.pnr] += '%s<br/>' % rec.description
+                        elif self.booking_id.offline_provider_type == 'event':
+                            multiplier = 'Pax'
+                            quantity = 'Qty'
+                            qty_amount = 1
+                            desc_dict[rec.pnr] += '%s<br/>' % rec.description
+                        else:
+                            multiplier = 'Pax'
+                            quantity = 'Qty'
+                            qty_amount = 1
+                            desc_dict[rec.pnr] += '%s<br/>' % rec.description
+
+                for rec in self.booking_id.passenger_ids:
+                    pax_desc_str += '%s. %s %s<br/>' % (rec.title, rec.first_name, rec.last_name)
+                    if multiplier == 'Pax':
+                        mult_amount += 1
+
+                price_per_mul = self.total_price / mult_amount / qty_amount
+
+                lg_vals = {
+                    'res_model': self._name,
+                    'res_id': self.id,
+                    'provider_id': self.provider_id.id,
+                    'type': 'lg',
+                    'pax_description': pax_desc_str,
+                    'multiplier': multiplier,
+                    'multiplier_amount': mult_amount,
+                    'quantity': quantity,
+                    'quantity_amount': qty_amount,
+                    'currency_id': self.currency_id.id,
+                    'price_per_mult': price_per_mul,
+                    'price': self.total_price,
+                }
+                new_lg_obj = self.env['tt.letter.guarantee'].create(lg_vals)
+                for key, val in desc_dict.items():
+                    line_vals = {
+                        'lg_id': new_lg_obj.id,
+                        'ref_number': key,
+                        'description': val
+                    }
+                    self.env['tt.letter.guarantee.lines'].create(line_vals)
+        else:
+            raise UserError('You can only generate Letter of Guarantee if this reservation state is "Validated".')
 
     def action_refund(self, check_provider_state=False):
         self.state = 'refund'

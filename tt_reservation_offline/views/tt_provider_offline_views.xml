@@ -8,6 +8,8 @@
             <field name="arch" type="xml">
                 <form edit="false" create="false">
                     <header>
+                        <field name="state_offline" invisible="1"/>
+                        <button string="Generate Letter of Guarantee" class="oe_highlight" name="generate_lg" type="object" attrs="{'invisible': ['|', ('is_lg_required', '!=', True), '|', ('state_offline', '!=', 'validate'), ('letter_of_guarantee_ids', '!=', [])]}" groups="tt_base.group_tt_accounting_manager,tt_base.group_tt_tour_travel_manager,base.user_admin"/>
                         <field name="state" readonly="1" widget="statusbar" statusbar_visible="draft,booked,issued"/>
                     </header>
                     <sheet>
@@ -44,6 +46,10 @@
                                     <field name="total"/>
                                 </tree>
                             </field>
+                        </group>
+                        <field name="is_lg_required" invisible="1"/>
+                        <group string="Letter of Guarantee(s)" attrs="{'invisible': [('is_lg_required', '!=', True)]}">
+                            <field name="letter_of_guarantee_ids"/>
                         </group>
                     </sheet>
                 </form>

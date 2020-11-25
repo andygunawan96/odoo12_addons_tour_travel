@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+
+    <record id="tt_letter_guarantee_filter_view" model="ir.ui.view">
+        <field name="name">tt.letter.guarantee.filter.view</field>
+        <field name="model">tt.letter.guarantee</field>
+        <field name="arch" type="xml">
+            <search string="Search Letter of Guarantee">
+                <field name="name"/>
+                <field name="provider_id"/>
+                <field name="price"/>
+                <field name="notes"/>
+                <separator/>
+                <filter string="All" name='all'/>
+                <filter string="Draft" name='draft' domain="[('state', '=', 'draft')]"/>
+                <filter string="Confirmed" name='confirm' domain="[('state', '=', 'confirm')]"/>
+                <filter string="Sent" name='sent' domain="[('state', '=', 'sent')]"/>
+                <filter string="Paid" name='validate' domain="[('state', '=', 'paid')]"/>
+                <filter string="Cancelled" name='cancel' domain="[('state', '=', 'cancel')]"/>
+                <separator/>
+                <filter name="today" string="Today" domain="[('create_date','&gt;=',time.strftime('%%Y-%%m-%%d'))]"/>
+                <filter name="yesterday" string="Yesterday"
+                        domain="[
+                                ('create_date', '&lt;', (context_today()).strftime('%Y-%m-%d')),
+                                ('create_date', '&gt;=', (context_today() - datetime.timedelta(days=1)).strftime('%Y-%m-%d'))
+                        ]"/>
+                <filter name="week" string="This Week"
+                        domain="[
+                                '&amp;',
+                                ('create_date', '>=', (context_today() + relativedelta(weeks=-1,days=1,weekday=0)).strftime('%Y-%m-%d')),
+                                ('create_date', '&lt;=', (context_today() + relativedelta(weekday=6)).strftime('%Y-%m-%d')),
+                            ]"/>
+                <filter string="This Month" name="thismonth" domain="[('create_date','&gt;=',time.strftime('%%Y-%%m-01'))]"/>
+                <filter string="This Year" name="thisyear" domain="[('create_date','&gt;=',time.strftime('%%Y-01-01'))]"/>
+
+                <group expand="0" string="Group By">
+                    <filter name="group_by_provider_id" string="Provider" domain="[]" context="{'group_by':'provider_id'}"/>
+                    <filter name="group_by_type" string="Type" domain="[]" context="{'group_by':'type'}"/>
+                    <filter name="group_by_state" string="State" domain="[]" context="{'group_by':'state'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="tt_letter_guarantee_form_view" model="ir.ui.view">
+        <field name="name">tt.letter.guarantee.form.view</field>
+        <field name="model">tt.letter.guarantee</field>
+        <field name="arch" type="xml">
+            <form create="false">
+                <header>
+                    <button name="action_confirm" string="Confirm" type="object" groups="tt_base.group_tt_tour_travel_manager,tt_base.group_tt_accounting_manager" attrs="{'invisible':[('state','!=', 'draft')]}"/>
+                    <button name="action_sent" string="Set to Sent" type="object" groups="tt_base.group_tt_tour_travel_manager,tt_base.group_tt_accounting_manager" attrs="{'invisible':[('state','!=', 'confirm')]}"/>
+                    <button name="action_paid" string="Set to Paid" type="object" groups="tt_base.group_tt_accounting_manager" attrs="{'invisible':[('state','!=', 'sent')]}"/>
+                    <button name="set_to_draft" string="Set to Draft" type="object" groups="tt_base.group_tt_tour_travel_manager,tt_base.group_tt_accounting_manager" attrs="{'invisible':[('state','!=', 'cancel')]}"/>
+                    <button name="action_cancel" string="Cancel" groups="tt_base.group_tt_accounting_manager" type="object" attrs="{'invisible':[('state','=','cancel')]}" confirm="Are you sure you want to cancel?"/>
+
+                    <field name="state" widget="statusbar" statusbar_visible="draft,confirm,sent,paid"/>
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+
+                    </div>
+                    <div class="oe_title">
+                        <label for="name" class="oe_edit_only" string="Name"/>
+                        <h1>
+                            <field name="name"/>
+                        </h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="provider_id"/>
+                            <field name="type"/>
+                            <field name="pax_description"/>
+                            <field name="notes"/>
+                            <field name="res_model" invisible="1"/>
+                            <field name="res_id" invisible="1"/>
+                            <button name="open_reference" string="Go to reference" type="object"
+                                    attrs="{'invisible':['|',('res_model','=',False),('res_id','=',0)]}"/>
+                        </group>
+                        <group>
+                            <field name="multiplier"/>
+                            <field name="multiplier_amount"/>
+                            <field name="quantity"/>
+                            <field name="quantity_amount"/>
+                            <field name="currency_id"/>
+                            <field name="price_per_mult"/>
+                            <field name="price"/>
+                            <label for="create_uid" string="Created by"/>
+                            <div>
+                                <field name="create_uid" readonly="1" class="oe_inline"/> -
+                                <field name="create_date" readonly="1" class="oe_inline"/>
+                            </div>
+                            <label for="confirm_uid" string="Confirmed by"/>
+                            <div>
+                                <field name="confirm_uid" readonly="1" class="oe_inline"/> -
+                                <field name="confirm_date" readonly="1" class="oe_inline"/>
+                            </div>
+                            <label for="sent_uid" string="Sent by"/>
+                            <div>
+                                <field name="sent_uid" readonly="1" class="oe_inline"/> -
+                                <field name="sent_date" readonly="1" class="oe_inline"/>
+                            </div>
+                            <label for="paid_uid" string="Paid by"/>
+                            <div>
+                                <field name="paid_uid" readonly="1" class="oe_inline"/> -
+                                <field name="paid_date" readonly="1" class="oe_inline"/>
+                            </div>
+                        </group>
+                    </group>
+                    <separator string="Line(s)"/>
+                    <field name="line_ids"/>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids" widget="mail_followers"/>
+                    <field name="message_ids" widget="mail_thread"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <record id="tt_letter_guarantee_tree_view" model="ir.ui.view">
+        <field name="name">tt.letter.guarantee.tree.view</field>
+        <field name="model">tt.letter.guarantee</field>
+        <field name="arch" type="xml">
+            <tree create="false">
+                <field name="name"/>
+                <field name="provider_id"/>
+                <field name="type"/>
+                <field name="currency_id"/>
+                <field name="price"/>
+                <field name="create_date"/>
+                <field name="create_uid"/>
+                <field name="state"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="tt_letter_guarantee_action" model="ir.actions.act_window">
+        <field name="name">Letter of Guarantee</field>
+        <field name="res_model">tt.letter.guarantee</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+        <field name="context">
+            {
+            'form_view_ref': 'tt_base.tt_letter_guarantee_form_view',
+            'tree_view_ref': 'tt_base.tt_letter_guarantee_tree_view'
+            }
+        </field>
+    </record>
+
+    <menuitem id="menu_transaction_letter_guarantee" parent="tt_base.top_menu_accounting"
+              name="Letter of Guarantee" sequence="30" groups="tt_base.group_tt_tour_travel_operator,tt_base.group_tt_accounting_operator"/>
+
+    <menuitem id="sub_menu_transaction_letter_guarantee" parent="tt_base.menu_transaction_letter_guarantee"
+              name="Letter of Guarantee" action="tt_letter_guarantee_action" sequence="10" groups="tt_base.group_tt_tour_travel_operator,tt_base.group_tt_accounting_operator"/>
+
+</odoo>

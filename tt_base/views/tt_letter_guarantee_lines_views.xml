@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+
+    <record id="tt_letter_guarantee_lines_filter_view" model="ir.ui.view">
+        <field name="name">tt.letter.guarantee.lines.filter.view</field>
+        <field name="model">tt.letter.guarantee.lines</field>
+        <field name="arch" type="xml">
+            <search string="Search Letter of Guarantee">
+                <field name="ref_number"/>
+                <field name="lg_id"/>
+                <field name="description"/>
+                <separator/>
+                <filter string="All" name='all'/>
+                <filter string="Draft" name='draft' domain="[('state', '=', 'draft')]"/>
+                <filter string="Confirmed" name='confirm' domain="[('state', '=', 'confirm')]"/>
+                <filter string="Sent" name='sent' domain="[('state', '=', 'sent')]"/>
+                <filter string="Paid" name='validate' domain="[('state', '=', 'paid')]"/>
+                <filter string="Cancelled" name='cancel' domain="[('state', '=', 'cancel')]"/>
+
+                <group expand="0" string="Group By">
+                    <filter name="group_by_lg_id" string="Letter of Guarantee" domain="[]" context="{'group_by':'lg_id'}"/>
+                    <filter name="group_by_state" string="State" domain="[]" context="{'group_by':'state'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="tt_letter_guarantee_lines_form_view" model="ir.ui.view">
+        <field name="name">tt.letter.guarantee.lines.form.view</field>
+        <field name="model">tt.letter.guarantee.lines</field>
+        <field name="arch" type="xml">
+            <form create="false">
+                <header>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,confirm,sent,paid"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <label for="ref_number" class="oe_edit_only" string="Ref Number"/>
+                        <h1>
+                            <field name="ref_number"/>
+                        </h1>
+                    </div>
+                    <group>
+                        <field name="lg_id"/>
+                        <field name="description"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="tt_letter_guarantee_lines_tree_view" model="ir.ui.view">
+        <field name="name">tt.letter.guarantee.lines.tree.view</field>
+        <field name="model">tt.letter.guarantee.lines</field>
+        <field name="arch" type="xml">
+            <tree create="false">
+                <field name="ref_number"/>
+                <field name="description"/>
+                <field name="lg_id"/>
+                <field name="state"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="tt_letter_guarantee_lines_action" model="ir.actions.act_window">
+        <field name="name">Letter of Guarantee Lines</field>
+        <field name="res_model">tt.letter.guarantee.lines</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+        <field name="context">
+            {
+            'form_view_ref': 'tt_base.tt_letter_guarantee_lines_form_view',
+            'tree_view_ref': 'tt_base.tt_letter_guarantee_lines_tree_view'
+            }
+        </field>
+    </record>
+
+    <menuitem id="sub_menu_transaction_letter_guarantee_lines" parent="tt_base.menu_transaction_letter_guarantee"
+              name="Letter of Guarantee Lines" action="tt_letter_guarantee_lines_action" sequence="11" groups="tt_base.group_tt_tour_travel_operator,tt_base.group_tt_accounting_operator"/>
+
+</odoo>

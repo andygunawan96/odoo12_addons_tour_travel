@@ -216,8 +216,9 @@ access_tt_access_activity_for_tour_travel_manager,tt.access.activity.for.tour.tr
 access_tt_provider_for_public,tt.provider.for.public,model_tt_provider,,1,0,0,0
 access_tt_provider_for_tour_travel_operator,tt.provider.for.tour.travel.operator,model_tt_provider,tt_base.group_tt_tour_travel_operator,1,0,0,0
 access_tt_provider_for_tour_travel_supervisor,tt.provider.for.tour.travel.supervisor,model_tt_provider,tt_base.group_tt_tour_travel_supervisor,1,0,0,0
-access_tt_provider_for_tour_travel_manager,tt.provider.for.tour.travel.manager,model_tt_provider,tt_base.group_tt_tour_travel_manager,1,1,1,1
+access_tt_provider_for_tour_travel_manager,tt.provider.for.tour.travel.manager,model_tt_provider,tt_base.group_tt_tour_travel_manager,1,1,1,0
 access_tt_provider_for_accounting_supervisor,tt.provider.for.accounting.supervisor,model_tt_provider,tt_base.group_tt_accounting_supervisor,1,1,1,0
+access_tt_provider_for_accounting_manager,tt.provider.for.accounting.manager,model_tt_provider,tt_base.group_tt_accounting_manager,1,1,1,1
 
 access_tt_provider_code_for_public,tt.provider.code.for.public,model_tt_provider_code,,1,0,0,0
 access_tt_provider_code_for_tour_travel_operator,tt.provider.code.for.tour.travel.operator,model_tt_provider_code,tt_base.group_tt_tour_travel_operator,1,0,0,0
@@ -342,3 +343,11 @@ tt_loyalty_program_for_tour_travel_manager,tt.loyalty.program.for.tour.travel.ma
 tt_public_holiday_for_all,tt.public.holiday.for.all,model_tt_public_holiday,,0,0,0,0
 tt_public_holiday_for_tour_travel_operator,tt.public.holiday.for.tour.travel.operator,model_tt_public_holiday,tt_base.group_tt_tour_travel_operator,1,1,1,0
 tt_public_holiday_for_admin,tt.public.holiday.for.admin,model_tt_public_holiday,base.user_admin,1,1,1,1
+
+tt_letter_guarantee_for_public,tt.letter.guarantee.for.public,model_tt_letter_guarantee,,1,0,0,0
+tt_letter_guarantee_for_tour_travel_manager,tt.letter.guarantee.for.tour.travel.manager,model_tt_letter_guarantee,tt_base.group_tt_tour_travel_manager,1,1,1,0
+tt_letter_guarantee_for_accounting_manager,tt.letter.guarantee.for.accounting.manager,model_tt_letter_guarantee,tt_base.group_tt_accounting_manager,1,1,1,1
+
+tt_letter_guarantee_lines_for_public,tt.letter.guarantee.lines.for.public,model_tt_letter_guarantee_lines,,1,0,0,0
+tt_letter_guarantee_lines_for_tour_travel_manager,tt.letter.guarantee.lines.for.tour.travel.manager,model_tt_letter_guarantee_lines,tt_base.group_tt_tour_travel_manager,1,1,1,0
+tt_letter_guarantee_lines_for_accounting_manager,tt.letter.guarantee.lines.for.accounting.manager,model_tt_letter_guarantee_lines,tt_base.group_tt_accounting_manager,1,1,1,1

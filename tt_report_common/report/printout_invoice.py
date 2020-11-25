@@ -2204,3 +2204,31 @@ class PrintoutVoucher(models.AbstractModel):
             'img_url': "url('/tt_report_common/static/images/background footer airline.jpg');",
             'ho_obj': ho_obj and ho_obj[0] or False
         }
+
+
+class PrintoutLetterOfGuarantee(models.AbstractModel):
+    _name = 'report.tt_report_common.printout_letter_guarantee'
+    _description = 'Rodex Model'
+
+    @api.model
+    def _get_report_values(self, docids, data=None):
+        if not data.get('context'):
+            internal_model_id = docids.pop(0)
+            data['context'] = {
+                'active_model': 'tt.letter.guarantee',
+                'active_ids': docids
+            }
+
+        temp_docs = self.env[data['context']['active_model']].browse(data['context']['active_ids'])
+        header_width = 90
+        ho_obj = self.env['tt.agent'].sudo().search([('agent_type_id', '=', self.env.ref('tt_base.agent_type_ho').id)], limit=1)
+        return {
+            'doc_ids': data['context']['active_ids'],
+            'doc_model': data['context']['active_model'],
+            'doc_type': 'letter_of_guarantee',
+            'docs': temp_docs,
+            'header_width': str(header_width),
+            'base_color': self.sudo().env['ir.config_parameter'].get_param('tt_base.website_default_color', default='#FFFFFF'),
+            'img_url': "url('/tt_report_common/static/images/background footer airline.jpg');",
+            'ho_obj': ho_obj and ho_obj[0] or False
+        }
