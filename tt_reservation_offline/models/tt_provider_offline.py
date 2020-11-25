@@ -86,6 +86,7 @@ class ProviderOffline(models.Model):
             else:
                 multiplier = ''
                 mult_amount = 0
+                quantity = ''
                 qty_amount = 0
                 pax_desc_str = ''
 
@@ -97,58 +98,68 @@ class ProviderOffline(models.Model):
 
                         if self.booking_id.offline_provider_type == 'airline':
                             multiplier = 'Pax'
+                            quantity = 'Qty'
                             qty_amount = 1
                             dept_date_str = datetime.strptime('%s %s:%s' % (rec.departure_date, rec.departure_hour, rec.departure_minute), '%Y-%m-%d %H:%M').strftime('%d %b %Y %H:%M')
                             ret_date_str = datetime.strptime('%s %s:%s' % (rec.arrival_date, rec.return_hour, rec.return_minute), '%Y-%m-%d %H:%M').strftime('%d %b %Y %H:%M')
-                            desc_dict[rec.pnr] += '%s %s %s (%s) %s - %s (%s) %s\n' % (rec.carrier_code, rec.carrier_number, rec.origin_id.city, rec.origin_id.code, dept_date_str, rec.destination_id.city, rec.destination_id.code, ret_date_str)
+                            desc_dict[rec.pnr] += '%s %s %s (%s) %s - %s (%s) %s<br/>' % (rec.carrier_code, rec.carrier_number, rec.origin_id.city, rec.origin_id.code, dept_date_str, rec.destination_id.city, rec.destination_id.code, ret_date_str)
                         elif self.booking_id.offline_provider_type == 'train':
                             multiplier = 'Pax'
+                            quantity = 'Qty'
                             qty_amount = 1
                             dept_date_str = datetime.strptime('%s %s:%s' % (rec.departure_date, rec.departure_hour, rec.departure_minute),'%Y-%m-%d %H:%M').strftime('%d %b %Y %H:%M')
                             ret_date_str = datetime.strptime('%s %s:%s' % (rec.arrival_date, rec.return_hour, rec.return_minute),'%Y-%m-%d %H:%M').strftime('%d %b %Y %H:%M')
-                            desc_dict[rec.pnr] += '%s %s %s (%s) %s - %s (%s) %s\n' % (rec.carrier_code, rec.carrier_number, rec.origin_id.city, rec.origin_id.code, dept_date_str, rec.destination_id.city, rec.destination_id.code, ret_date_str)
+                            desc_dict[rec.pnr] += '%s %s %s (%s) %s - %s (%s) %s<br/>' % (rec.carrier_code, rec.carrier_number, rec.origin_id.city, rec.origin_id.code, dept_date_str, rec.destination_id.city, rec.destination_id.code, ret_date_str)
                         elif self.booking_id.offline_provider_type == 'hotel':
                             multiplier = 'Room'
+                            quantity = 'Night'
                             mult_amount = rec.obj_qty
                             qty_amount = (datetime.strptime(rec.check_out, '%Y-%m-%d') - datetime.strptime(rec.check_in, '%Y-%m-%d')).days
-                            desc_dict[rec.pnr] += '%s\n' % rec.hotel_name or '-'
-                            desc_dict[rec.pnr] += 'Room : %s\n' % rec.room or '-'
-                            desc_dict[rec.pnr] += 'Meal Type : %s\n' % rec.meal_type or '-'
-                            desc_dict[rec.pnr] += 'Check In Date : %s\n' % rec.check_in and datetime.strptime(rec.check_in, '%Y-%m-%d').strftime('%d %B %Y') or '-'
-                            desc_dict[rec.pnr] += 'Check Out Date : %s\n' % rec.check_out and datetime.strptime(rec.check_out, '%Y-%m-%d').strftime('%d %B %Y') or '-'
-                            desc_dict[rec.pnr] += '\n'
+                            desc_dict[rec.pnr] += '%s<br/>' % rec.hotel_name or '-'
+                            desc_dict[rec.pnr] += 'Room : %s<br/>' % rec.room or '-'
+                            desc_dict[rec.pnr] += 'Meal Type : %s<br/>' % rec.meal_type or '-'
+                            desc_dict[rec.pnr] += 'Check In Date : %s<br/>' % (rec.check_in and datetime.strptime(rec.check_in, '%Y-%m-%d').strftime('%d %B %Y') or '-')
+                            desc_dict[rec.pnr] += 'Check Out Date : %s<br/>' % (rec.check_out and datetime.strptime(rec.check_out, '%Y-%m-%d').strftime('%d %B %Y') or '-')
+                            desc_dict[rec.pnr] += '<br/>'
                         elif self.booking_id.offline_provider_type == 'tour':
                             multiplier = 'Pax'
+                            quantity = 'Qty'
                             qty_amount = 1
-                            desc_dict[rec.pnr] += '%s\n' % rec.description
+                            desc_dict[rec.pnr] += '%s<br/>' % rec.description
                         elif self.booking_id.offline_provider_type == 'activity':
                             multiplier = 'Pax'
+                            quantity = 'Qty'
                             qty_amount = 1
                             visit_date_str = datetime.strptime(rec.visit_date, '%Y-%m-%d').strftime('%d %B %Y')
-                            desc_dict[rec.pnr] += '%s (%s) - %s\n' % (rec.activity_name, rec.activity_package, visit_date_str)
+                            desc_dict[rec.pnr] += '%s (%s) - %s<br/>' % (rec.activity_name, rec.activity_package, visit_date_str)
                         elif self.booking_id.offline_provider_type == 'visa':
                             multiplier = 'Pax'
+                            quantity = 'Qty'
                             qty_amount = 1
-                            desc_dict[rec.pnr] += '%s\n' % rec.description
+                            desc_dict[rec.pnr] += '%s<br/>' % rec.description
                         elif self.booking_id.offline_provider_type == 'passport':
                             multiplier = 'Pax'
+                            quantity = 'Qty'
                             qty_amount = 1
-                            desc_dict[rec.pnr] += '%s\n' % rec.description
+                            desc_dict[rec.pnr] += '%s<br/>' % rec.description
                         elif self.booking_id.offline_provider_type == 'ppob':
                             multiplier = 'Pax'
+                            quantity = 'Qty'
                             qty_amount = 1
-                            desc_dict[rec.pnr] += '%s\n' % rec.description
+                            desc_dict[rec.pnr] += '%s<br/>' % rec.description
                         elif self.booking_id.offline_provider_type == 'event':
                             multiplier = 'Pax'
+                            quantity = 'Qty'
                             qty_amount = 1
-                            desc_dict[rec.pnr] += '%s\n' % rec.description
+                            desc_dict[rec.pnr] += '%s<br/>' % rec.description
                         else:
                             multiplier = 'Pax'
+                            quantity = 'Qty'
                             qty_amount = 1
-                            desc_dict[rec.pnr] += '%s\n' % rec.description
+                            desc_dict[rec.pnr] += '%s<br/>' % rec.description
 
                 for rec in self.booking_id.passenger_ids:
-                    pax_desc_str += '%s. %s %s\n' % (rec.title, rec.first_name, rec.last_name)
+                    pax_desc_str += '%s. %s %s<br/>' % (rec.title, rec.first_name, rec.last_name)
                     if multiplier == 'Pax':
                         mult_amount += 1
 
@@ -161,6 +172,7 @@ class ProviderOffline(models.Model):
                     'pax_description': pax_desc_str,
                     'multiplier': multiplier,
                     'multiplier_amount': mult_amount,
+                    'quantity': quantity,
                     'quantity_amount': qty_amount,
                     'currency_id': self.currency_id.id,
                     'price_per_mult': price_per_mul,

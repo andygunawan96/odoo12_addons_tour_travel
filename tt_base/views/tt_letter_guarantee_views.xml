@@ -78,6 +78,7 @@
                         <group>
                             <field name="multiplier"/>
                             <field name="multiplier_amount"/>
+                            <field name="quantity"/>
                             <field name="quantity_amount"/>
                             <field name="currency_id"/>
                             <field name="price_per_mult"/>

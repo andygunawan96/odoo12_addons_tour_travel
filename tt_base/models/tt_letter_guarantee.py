@@ -5,6 +5,7 @@ from datetime import datetime
 class TtLetterGuarantee(models.Model):
     _name = 'tt.letter.guarantee'
     _inherit = 'tt.history'
+    _order = 'id DESC'
     _description = 'Rodex Model'
 
     name = fields.Char('Name', required=True)
@@ -12,9 +13,10 @@ class TtLetterGuarantee(models.Model):
     res_id = fields.Integer('Related Reservation ID', index=True, help='Id of the followed resource')
     provider_id = fields.Many2one('tt.provider', 'Provider', required=True)
     line_ids = fields.One2many('tt.letter.guarantee.lines', 'lg_id', 'Line(s)', readonly=True, states={'draft': [('readonly', False)]})
-    pax_description = fields.Text('Passenger Description', required=True, readonly=True, states={'draft': [('readonly', False)]})
-    multiplier = fields.Char('Multiplier', default='Pax', required=True, readonly=True, states={'draft': [('readonly', False)]})
+    pax_description = fields.Html('Passenger Description', required=True, readonly=True, states={'draft': [('readonly', False)]})
+    multiplier = fields.Char('Multiplier String', default='Pax', required=True, readonly=True, states={'draft': [('readonly', False)]})
     multiplier_amount = fields.Integer('Multiplier Amount', default=0, required=True, readonly=True, states={'draft': [('readonly', False)]})
+    quantity = fields.Char('Quantity String', default='Qty', required=True, readonly=True, states={'draft': [('readonly', False)]})
     quantity_amount = fields.Integer('Quantity Amount', default=0, required=True, readonly=True, states={'draft': [('readonly', False)]})
     currency_id = fields.Many2one('res.currency', 'Currency', required=True,
                                   default=lambda self: self.env.user.company_id.currency_id.id, readonly=True, states={'draft': [('readonly', False)]})
@@ -72,13 +74,32 @@ class TtLetterGuarantee(models.Model):
             'state': 'draft',
         })
 
+    def open_reference(self):
+        try:
+            form_id = self.env[self.res_model].get_form_id()
+        except:
+            form_id = self.env['ir.ui.view'].search([('type', '=', 'form'), ('model', '=', self.res_model)], limit=1)
+            form_id = form_id[0] if form_id else False
+
+        return {
+            'type': 'ir.actions.act_window',
+            'name': 'Reservation',
+            'res_model': self.res_model,
+            'res_id': self.res_id,
+            'view_type': 'form',
+            'view_mode': 'form',
+            'view_id': form_id.id,
+            'context': {},
+            'target': 'current',
+        }
+
 
 class TtLetterGuaranteeLines(models.Model):
     _name = 'tt.letter.guarantee.lines'
     _description = 'Rodex Model'
 
     ref_number = fields.Char('Reference Number', required=True, readonly=True, states={'draft': [('readonly', False)]})
-    description = fields.Text('Description', required=True, readonly=True, states={'draft': [('readonly', False)]})
+    description = fields.Html('Description', required=True, readonly=True, states={'draft': [('readonly', False)]})
     lg_id = fields.Many2one('tt.letter.guarantee', 'Letter of Guarantee', required=True, readonly=True, ondelete='cascade')
     state = fields.Selection([('draft', 'Draft'), ('confirm', 'Confirmed'), ('sent', 'Sent'), ('paid', 'Paid'),
                               ('cancel', 'Cancelled')], 'State', related='lg_id.state', store=True)
