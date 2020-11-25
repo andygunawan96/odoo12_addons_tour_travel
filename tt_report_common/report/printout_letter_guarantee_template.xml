@@ -288,7 +288,8 @@
                                     Yours Faithfully
                                     <br/>
                                     <br/>
-                                    <span t-field="ho_obj.name"/>
+                                    <br/>
+                                    <span t-field="doc.confirm_uid.name"/>
                                 </div>
                             </div>
                         </div>
