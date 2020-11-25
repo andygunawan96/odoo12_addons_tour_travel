@@ -96,6 +96,7 @@ class TtLetterGuarantee(models.Model):
 
 class TtLetterGuaranteeLines(models.Model):
     _name = 'tt.letter.guarantee.lines'
+    _order = 'id DESC'
     _description = 'Rodex Model'
 
     ref_number = fields.Char('Reference Number', required=True, readonly=True, states={'draft': [('readonly', False)]})
