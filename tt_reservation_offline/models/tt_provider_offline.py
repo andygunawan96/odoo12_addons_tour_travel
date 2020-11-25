@@ -169,6 +169,7 @@ class ProviderOffline(models.Model):
                     'res_model': self._name,
                     'res_id': self.id,
                     'provider_id': self.provider_id.id,
+                    'type': 'lg',
                     'pax_description': pax_desc_str,
                     'multiplier': multiplier,
                     'multiplier_amount': mult_amount,
