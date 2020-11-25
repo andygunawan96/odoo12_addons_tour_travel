@@ -111,89 +111,34 @@ class AgentReportRecapTransactionXls(models.TransientModel):
                     sty_date = style.table_data_date_even
                     sty_amount = style.table_data_amount_even
 
-                # check if current pnr != as ledger pnr
-                if current_pnr != i['ledger_pnr']:
-                    try:
-                        # update current pnr
-                        current_pnr = pnr_list[current_pnr_index]
-                        # update index
-                        current_pnr_index += 1
-                    except:
-                        current_pnr = ""
-
-                    sheet.write(row_data, 0, '', sty_table_data_center)
-                    sheet.write(row_data, 1, '', sty_table_data)
-                    sheet.write(row_data, 2, '', sty_table_data)
-                    sheet.write(row_data, 3, '', sty_table_data)
-                    sheet.write(row_data, 4, '', sty_table_data)
-                    sheet.write(row_data, 5, '', sty_table_data)
-                    sheet.write(row_data, 6, '', sty_date)
-                    sheet.write(row_data, 7, '', sty_table_data)
-                    sheet.write(row_data, 8, i['provider_name'], sty_table_data)
-                    sheet.write(row_data, 9, '', sty_amount)
-                    sheet.write(row_data, 10, '', sty_amount)
-                    sheet.write(row_data, 11, '', sty_amount)
-                    sheet.write(row_data, 12, '', sty_amount)
-                    sheet.write(row_data, 13, i['state'], sty_table_data)
-                    sheet.write(row_data, 14, current_pnr, sty_table_data)
-                    sheet.write(row_data, 15, i['ledger_name'], sty_table_data)
-                    sheet.write(row_data, 16, '', sty_table_data)
-                    sheet.write(row_data, 17, '', sty_table_data_center)
-                    sheet.write(row_data, 18, '', sty_amount)
-                    sheet.write(row_data, 19, '', sty_amount)
-                    sheet.write(row_data, 20, '', sty_amount)
-                    sheet.write(row_data, 21, i['ledger_agent_name'], sty_table_data)
-                    sheet.write(row_data, 22, i['debit'], sty_amount)
-
-                else:
-
-                    sheet.write(row_data, 0, '', sty_table_data_center)
-                    sheet.write(row_data, 1, '', sty_table_data)
-                    sheet.write(row_data, 2, '', sty_table_data)
-                    sheet.write(row_data, 3, '', sty_table_data)
-                    sheet.write(row_data, 4, '', sty_table_data)
-                    sheet.write(row_data, 5, '', sty_table_data)
-                    sheet.write(row_data, 6, '', sty_date)
-                    sheet.write(row_data, 7, '', sty_table_data)
-                    sheet.write(row_data, 8, i['provider_name'], sty_table_data)
-                    sheet.write(row_data, 9, '', sty_amount)
-                    sheet.write(row_data, 10, '', sty_amount)
-                    sheet.write(row_data, 11, '', sty_amount)
-                    sheet.write(row_data, 12, '', sty_amount)
-                    sheet.write(row_data, 13, i['state'], sty_table_data)
-                    sheet.write(row_data, 14, current_pnr, sty_table_data)
-                    sheet.write(row_data, 15, i['ledger_name'], sty_table_data)
-                    sheet.write(row_data, 16, '', sty_table_data)
-                    sheet.write(row_data, 17, '', sty_table_data_center)
-                    sheet.write(row_data, 18, '', sty_amount)
-                    sheet.write(row_data, 19, '', sty_amount)
-                    sheet.write(row_data, 20, '', sty_amount)
-                    sheet.write(row_data, 21, i['ledger_agent_name'], sty_table_data)
-                    sheet.write(row_data, 22, i['debit'], sty_amount)
+                sheet.write(row_data, 0, '', sty_table_data_center)
+                sheet.write(row_data, 1, '', sty_table_data)
+                sheet.write(row_data, 2, '', sty_table_data)
+                sheet.write(row_data, 3, '', sty_table_data)
+                sheet.write(row_data, 4, '', sty_table_data)
+                sheet.write(row_data, 5, '', sty_table_data)
+                sheet.write(row_data, 6, '', sty_date)
+                sheet.write(row_data, 7, '', sty_table_data)
+                sheet.write(row_data, 8, i['provider_name'], sty_table_data)
+                sheet.write(row_data, 9, '', sty_amount)
+                sheet.write(row_data, 10, '', sty_amount)
+                sheet.write(row_data, 11, '', sty_amount)
+                sheet.write(row_data, 12, '', sty_amount)
+                sheet.write(row_data, 13, i['state'], sty_table_data)
+                sheet.write(row_data, 14, i['ledger_pnr'], sty_table_data)
+                sheet.write(row_data, 15, i['ledger_name'], sty_table_data)
+                sheet.write(row_data, 16, '', sty_table_data)
+                sheet.write(row_data, 17, '', sty_table_data_center)
+                sheet.write(row_data, 18, '', sty_amount)
+                sheet.write(row_data, 19, '', sty_amount)
+                sheet.write(row_data, 20, '', sty_amount)
+                sheet.write(row_data, 21, i['ledger_agent_name'], sty_table_data)
+                sheet.write(row_data, 22, i['debit'], sty_amount)
 
             else:
             # current_number != iterate order number
                 # set current order number to iterated number
                 temp_order_number = i['order_number']
-
-                # seperate pnr (maybe multiple pnr)
-                try:
-                    pnr_list = i['pnr'].split(", ")
-                except:
-                    if i['provider_type'].lower() == "offline":
-                        pnr_list = []
-                    else:
-                        pnr_list = []
-                        pass
-
-                #set current pnr
-                if len(pnr_list) > 0:
-                    current_pnr = pnr_list[0]
-                else:
-                    current_pnr = ""
-
-                # reset current_pnr_index
-                current_pnr_index = 1
 
                 # lets do some preparation to print the first line (data basically)
                 counter += 1
@@ -263,7 +208,7 @@ class AgentReportRecapTransactionXls(models.TransientModel):
                 sheet.write(row_data, 11, '', sty_amount)
                 sheet.write(row_data, 12, '', sty_amount)
                 sheet.write(row_data, 13, i['state'], sty_table_data)
-                sheet.write(row_data, 14, current_pnr, sty_table_data)
+                sheet.write(row_data, 14, i['ledger_pnr'], sty_table_data)
                 sheet.write(row_data, 15, i['ledger_name'], sty_table_data)
                 sheet.write(row_data, 16, '', sty_table_data)
                 sheet.write(row_data, 17, '', sty_table_data_center)
