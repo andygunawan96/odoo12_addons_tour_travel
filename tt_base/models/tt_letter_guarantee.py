@@ -12,7 +12,7 @@ class TtLetterGuarantee(models.Model):
     res_model = fields.Char('Related Reservation Name', index=True)
     res_id = fields.Integer('Related Reservation ID', index=True, help='Id of the followed resource')
     provider_id = fields.Many2one('tt.provider', 'Provider', required=True)
-    type = fields.Selection([('lg', 'Letter of Guarantee'), ('wol', 'Work Order Letter')], 'State', default='lg', required=True, readonly=True, states={'draft': [('readonly', False)]})
+    type = fields.Selection([('lg', 'Letter of Guarantee'), ('wol', 'Work Order Letter')], 'Type', default='lg', required=True, readonly=True, states={'draft': [('readonly', False)]})
     line_ids = fields.One2many('tt.letter.guarantee.lines', 'lg_id', 'Line(s)', readonly=True, states={'draft': [('readonly', False)]})
     pax_description = fields.Html('Passenger Description', required=True, readonly=True, states={'draft': [('readonly', False)]})
     multiplier = fields.Char('Multiplier String', default='Pax', required=True, readonly=True, states={'draft': [('readonly', False)]})
