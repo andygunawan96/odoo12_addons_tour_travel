@@ -24,7 +24,7 @@
                             context="{
                         'default_provider_id': id,
                    }"/>
-                    <button string="Reverse Ledger" name="action_reverse_ledger_from_button" states="issued" type="object"/>
+                    <button string="Reverse Ledger" name="action_reverse_ledger_from_button" states="issued,cancel2,fail_issued" type="object"/>
                     <field name="state" widget="statusbar" statusbar_visible="draft,booked,issued"/>
                 </header>
                 <sheet>
