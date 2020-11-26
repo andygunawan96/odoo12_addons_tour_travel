@@ -38,6 +38,7 @@
         'views/tt_reservation_tour_views.xml',
         'views/tt_master_tour_quotation_views.xml',
         'views/tt_tour_master_locations_views.xml',
+        'views/tt_master_tour_provider_views.xml',
         'views/tt_master_tour_views.xml',
         'views/tt_master_tour_otherinfo_views.xml',
         'views/tt_provider_views.xml',

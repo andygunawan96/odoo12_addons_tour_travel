@@ -86,13 +86,13 @@ class TtReconcileTransactionWizard(models.TransientModel):
 
                 trans_lines = recon_data.reconcile_lines_ids.filtered(lambda x: x.pnr == transaction['pnr'] and x.type == transaction['type'])
                 if trans_lines:
+                    found_trans_lines.append(trans_lines[0].id)
                     if transaction['sequence'] != trans_lines[0].sequence:  # update sequence dari vendor
                         trans_lines[0].sequence = transaction['sequence']
                     if trans_lines[0].total == transaction['total'] or trans_lines[0].state == 'match':
                         continue
                     else:
                         write_data.append((1,trans_lines[0].id,transaction))
-                    found_trans_lines.append(trans_lines[0].id)
                 else:
                     if transaction['type'] == 'nta':
                         transaction['state'] = 'not_match'
@@ -101,8 +101,15 @@ class TtReconcileTransactionWizard(models.TransientModel):
                     write_data.append((0,0,transaction))
 
             for rec_line in recon_data.reconcile_lines_ids:
+                state_dict = {}
                 if rec_line.id not in found_trans_lines:
-                    write_data.append((1, rec_line.id, {'state': 'cancel'}))
+                    state_dict['state'] = 'cancel'
+                elif rec_line.state != 'match':
+                    if rec_line.type == 'nta':
+                        state_dict['state'] = 'not_match'
+                    else:
+                        state_dict['state'] = 'done'
+                write_data.append((1, rec_line.id, state_dict))
 
             recon_data.write({
                 'reconcile_lines_ids': write_data

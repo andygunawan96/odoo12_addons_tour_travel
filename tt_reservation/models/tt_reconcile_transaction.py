@@ -90,7 +90,9 @@ class TtReconcileTransaction(models.Model):
             end_balance = self.start_balance
 
             for line in self.reconcile_lines_ids:
-                if line.type in ['nta', 'admin_bank', 'reissue', 'other']:
+                if line.state == 'cancel':
+                    continue
+                elif line.type in ['nta', 'admin_bank', 'reissue', 'other']:
                     end_balance -= line.total
                 else:
                     end_balance += line.total
@@ -369,6 +371,12 @@ class PrintoutReconcile(models.AbstractModel):
                     sty_date = style.table_data_datetime_blue_even
                     sty_amount = style.table_data_amount_blue_even
                 elif rec['state'] == 'ignore':
+                    sty_table_data_center = style.table_data_center_orange_even
+                    sty_table_data = style.table_data_orange_even
+                    sty_datetime = style.table_data_datetime_orange_even
+                    sty_date = style.table_data_datetime_orange_even
+                    sty_amount = style.table_data_amount_orange_even
+                elif rec['state'] == 'cancel':
                     sty_table_data_center = style.table_data_center_red_even
                     sty_table_data = style.table_data_red_even
                     sty_datetime = style.table_data_datetime_red_even
