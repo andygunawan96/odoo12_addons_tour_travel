@@ -200,7 +200,7 @@
                                         <t t-set="row_idx" t-value="0"/>
                                         <t t-foreach="doc.line_ids" t-as="line_rec">
                                             <tr valign="top" style="padding-top: 5px; padding-bottom: 5px;">
-                                                <t t-if="row_idx == len(line_rec)-1">
+                                                <t t-if="row_idx == len(doc.line_ids)-1">
                                                     <td style="width: 30%; border-left: 1px solid #ccc; border-bottom: 1px solid #ccc; border-right: 1px solid #ccc; border-radius: 0px 0px 0px 20px; border-color: #CCC; padding: 7px 7px 7px 20px;">
                                                         <span t-esc="line_rec.ref_number"/>
                                                     </td>
