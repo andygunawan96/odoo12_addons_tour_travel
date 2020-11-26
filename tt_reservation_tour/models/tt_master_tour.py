@@ -195,6 +195,7 @@ class MasterTour(models.Model):
     carrier_id = fields.Many2one('tt.transport.carrier', 'Carrier', domain=get_domain, readonly=True,
                                  default=lambda self: self.env.ref('tt_reservation_tour.tt_transport_carrier_tour_itt'), copy=False)
     document_url = fields.Many2one('tt.upload.center', 'Document URL')
+    related_provider_ids = fields.One2many('tt.master.tour.provider', 'master_tour_id', 'Related Vendor(s)')
     import_other_info = fields.Binary('Import JSON')
     export_other_info = fields.Binary('Export JSON')
     file_name = fields.Char("Filename",compute="_compute_filename",store=True)
