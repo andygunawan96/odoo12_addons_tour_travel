@@ -267,7 +267,8 @@ PRODUCT_STATE = [
 RESV_RECONCILE_STATE = [
     ('not_reconciled','Not Reconciled'),
     ('partial','Partially Reconciled'),
-    ('reconciled','Reconciled')
+    ('reconciled','Reconciled'),
+    ('cancel','Cancelled')
 ]
 
 PRICING_PROVIDER_TYPE = [

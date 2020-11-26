@@ -231,10 +231,10 @@
                                             <th style="width: 20%; padding: 7px 7px 7px 20px; border-left: 1px solid #CCC; border-top-left-radius: 20px; color: white; font-weight: 800; font-size: 18px;">
                                                 <span t-esc="doc.multiplier"/>
                                             </th>
-                                            <th style="width: 20%; padding: 7px 7px 7px 20px; color: white; font-weight: 800; font-size: 18px;">
+                                            <th style="width: 20%; padding: 7px 7px 7px 20px; border-left: 1px solid #CCC; color: white; font-weight: 800; font-size: 18px;">
                                                 <span t-esc="doc.quantity"/>
                                             </th>
-                                            <th style="width: 30%; padding: 7px 7px 7px 20px; color: white; font-weight: 800; font-size: 18px;">
+                                            <th style="width: 30%; padding: 7px 7px 7px 20px; border-left: 1px solid #CCC; color: white; font-weight: 800; font-size: 18px;">
                                                 <span>Price/</span><span t-esc="doc.multiplier"/>
                                             </th>
                                             <th style="width: 30%; padding: 7px 7px 7px 20px; border-left: 1px solid #CCC; border-top-right-radius: 20px; color: white; font-weight: 800; font-size: 18px;">

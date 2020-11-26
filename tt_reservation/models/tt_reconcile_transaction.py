@@ -136,7 +136,8 @@ class TtReconcileTransactionLines(models.Model):
     state = fields.Selection([('not_match','Not Match'),
                               ('match','Match'),
                               ('done','Done'),
-                              ('ignore','Ignore')],'State',default='not_match',readonly=True)
+                              ('ignore','Ignore'),
+                              ('cancel','Cancelled')],'State',default='not_match',readonly=True)
     res_model = fields.Char('Ref Model', readonly=True)
     res_id = fields.Integer('Ref ID', readonly=True)
 
