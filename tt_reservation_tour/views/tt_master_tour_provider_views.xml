@@ -1,0 +1,51 @@
+<odoo>
+    <record id="tt_master_tour_provider_form_view" model="ir.ui.view">
+        <field name="name">tt.master.tour.provider.form.view</field>
+        <field name="model">tt.master.tour.provider</field>
+        <field name="arch" type="xml">
+            <form edit="false" create="false">
+                <header>
+
+                </header>
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="provider_id"/>
+                            <field name="provider_type_id"/>
+                        </group>
+                        <group>
+                            <field name="master_tour_id"/>
+                            <field name="description"/>
+                        </group>
+                    </group>
+                    <separator string="Letter of Guarantee(s)"/>
+                    <field name="letter_of_guarantee_ids"/>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="tt_master_tour_provider_tree_view" model="ir.ui.view">
+        <field name="name">tt.master.tour.provider.tree.view</field>
+        <field name="model">tt.master.tour.provider</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="provider_id"/>
+                <field name="provider_type_id"/>
+                <field name="master_tour_id"/>
+                <field name="description"/>
+            </tree>
+        </field>
+    </record>
+
+
+    <record id="tt_master_tour_provider_action_views" model="ir.actions.act_window">
+        <field name="name">tt.master.tour.provider.action.views</field>
+        <field name="res_model">tt.master.tour.provider</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+        <field name="context">
+        </field>
+    </record>
+
+</odoo>

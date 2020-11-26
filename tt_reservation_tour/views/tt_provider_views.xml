@@ -1,6 +1,6 @@
 <odoo>
     <record id="tt_reservation_tour_provider_form_view" model="ir.ui.view">
-        <field name="name">tt.transport.tour.provider.form.view</field>
+        <field name="name">tt.reservation.tour.provider.form.view</field>
         <field name="model">tt.provider.tour</field>
         <field name="arch" type="xml">
             <form edit="false" create="false">
@@ -91,7 +91,7 @@
     </record>
 
     <record id="tt_reservation_tour_provider_tree_view" model="ir.ui.view">
-        <field name="name">tt.transport.tour.provider.tree.view</field>
+        <field name="name">tt.reservation.tour.provider.tree.view</field>
         <field name="model">tt.provider.tour</field>
         <field name="arch" type="xml">
             <tree>

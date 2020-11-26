@@ -253,6 +253,9 @@
                                 </form>
                             </field>
                         </page>
+                        <page string="Related Vendor(s)" groups="tt_base.group_tt_tour_travel_operator">
+                            <field name="related_provider_ids"/>
+                        </page>
                         <page string="Tour Quotation" groups="tt_base.group_tt_tour_travel_operator">
                             <field name="quotation_ids"/>
                         </page>
