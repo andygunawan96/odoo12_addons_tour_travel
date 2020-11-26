@@ -115,9 +115,9 @@ class ProviderOffline(models.Model):
                             quantity = 'Night'
                             mult_amount = rec.obj_qty
                             qty_amount = (datetime.strptime(rec.check_out, '%Y-%m-%d') - datetime.strptime(rec.check_in, '%Y-%m-%d')).days
-                            desc_dict[rec.pnr] += '%s<br/>' % rec.hotel_name or '-'
-                            desc_dict[rec.pnr] += 'Room : %s<br/>' % rec.room or '-'
-                            desc_dict[rec.pnr] += 'Meal Type : %s<br/>' % rec.meal_type or '-'
+                            desc_dict[rec.pnr] += '%s<br/>' % (rec.hotel_name and rec.hotel_name or '-')
+                            desc_dict[rec.pnr] += 'Room : %s<br/>' % (rec.room and rec.room or '-')
+                            desc_dict[rec.pnr] += 'Meal Type : %s<br/>' % (rec.meal_type and rec.meal_type or '-')
                             desc_dict[rec.pnr] += 'Check In Date : %s<br/>' % (rec.check_in and datetime.strptime(rec.check_in, '%Y-%m-%d').strftime('%d %B %Y') or '-')
                             desc_dict[rec.pnr] += 'Check Out Date : %s<br/>' % (rec.check_out and datetime.strptime(rec.check_out, '%Y-%m-%d').strftime('%d %B %Y') or '-')
                             desc_dict[rec.pnr] += '<br/>'

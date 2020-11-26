@@ -65,6 +65,7 @@ class TtReconcileTransactionWizard(models.TransientModel):
                     'transaction_date': period['transaction_date']
                 })
 
+            found_trans_lines = []
             write_data = []
             for transaction in period['transactions']:
                 try:
@@ -91,12 +92,17 @@ class TtReconcileTransactionWizard(models.TransientModel):
                         continue
                     else:
                         write_data.append((1,trans_lines[0].id,transaction))
+                    found_trans_lines.append(trans_lines[0].id)
                 else:
                     if transaction['type'] == 'nta':
                         transaction['state'] = 'not_match'
                     else:
                         transaction['state'] = 'done'
                     write_data.append((0,0,transaction))
+
+            for rec_line in recon_data.reconcile_lines_ids:
+                if rec_line.id not in found_trans_lines:
+                    write_data.append((1, rec_line.id, {'state': 'cancel'}))
 
             recon_data.write({
                 'reconcile_lines_ids': write_data

@@ -223,7 +223,7 @@
         <field name="name">tt.reconcile.transaction.lines.tree.page</field>
         <field name="model">tt.reconcile.transaction.lines</field>
         <field name="arch" type="xml">
-            <tree create="false" decoration-info="state=='done'" decoration-success="state=='match'" decoration-danger="state=='ignore'" default_order="sequence">
+            <tree create="false" decoration-info="state=='done'" decoration-success="state=='match'" decoration-warning="state=='ignore'" decoration-danger="state=='cancel'" default_order="sequence">
                 <field name="sequence" widget="handle"/>
                 <field name="pnr"/>
                 <field name="type"/>
