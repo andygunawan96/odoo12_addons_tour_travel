@@ -396,5 +396,16 @@
             print_report_name="'Voucher'"
             menu="False"
         />
+        <report
+            string="Letter of Guarantee"
+            id="action_report_printout_letter_guarantee"
+            model="tt.letter.guarantee"
+            report_type="qweb-html"
+            name="tt_report_common.printout_letter_guarantee"
+            file="tt_report_common.printout_letter_guarantee"
+            paperformat="tt_report_common.paperformat_A4_no_margin"
+            print_report_name="'Letter of Guarantee - %s' % (object.name)"
+            menu="False"
+        />
     </data>
 </odoo>

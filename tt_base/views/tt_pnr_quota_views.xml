@@ -17,13 +17,18 @@
                         </div>
                         <group>
                             <group>
-                                <field name="amount"/>
-                                <field name="used_amount"/>
-                            </group>
-                            <group>
                                 <field name="agent_id"/>
                                 <field name="price_package_id"/>
+                                <field name="start_date"/>
                                 <field name="expired_date"/>
+                                <field name="amount" string="Minimum Amount"/>
+                            </group>
+                            <group>
+                                <field name="currency_id"/>
+                                <field name="used_amount" string="Total Transaction"/>
+                                <field name="transaction_amount_internal"/>
+                                <field name="transaction_amount_external"/>
+                                <field name="total_amount" string="Agent Fee"/>
                             </group>
                         </group>
                         <notebook>

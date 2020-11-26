@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="tt_letter_guarantee_form_view_inh" model="ir.ui.view">
+        <field name="name">tt.letter.guarantee.form.view.inh</field>
+        <field name="model">tt.letter.guarantee</field>
+        <field name="inherit_id" ref="tt_base.tt_letter_guarantee_form_view"/>
+        <field name="arch" type="xml">
+            <xpath expr="//div[@name='button_box']" position="inside">
+                <button name="print_letter_of_guarantee"
+                        class="oe_stat_button" states="confirm,sent,paid"
+                        string="Letter of Guarantee" type="object" icon="fa-print"/>
+            </xpath>
+        </field>
+    </record>
+</odoo>

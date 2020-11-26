@@ -592,6 +592,14 @@ class IssuedOffline(models.Model):
                 empty = True
         return empty
 
+    def check_lg_required(self):
+        required = False
+        for rec in self.provider_booking_ids:
+            if rec.provider_id.is_using_lg:
+                if not rec.letter_of_guarantee_ids:
+                    required = True
+        return required
+
     @api.one
     def action_sent(self):
         if self.provider_type_id_name == 'hotel':
@@ -674,6 +682,8 @@ class IssuedOffline(models.Model):
                     if self.check_pnr_empty():
                         raise UserError(_('PNR(s) can\'t be Empty'))
                 if self.attachment_ids:
+                    if self.check_lg_required():
+                        raise UserError(_('Letter of Guarantee is required in one Vendor or more. Please check all Vendor(s)!'))
                     self.state = 'issued'
                     self.state_offline = 'done'
                     self.done_date = fields.Datetime.now()

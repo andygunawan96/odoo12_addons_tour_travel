@@ -30,6 +30,7 @@
                                 <field name="currency_id"/>
                                 <field name="is_reconcile"/>
                                 <field name="is_using_balance"/>
+                                <field name="is_using_lg"/>
                             </group>
                             <group>
                                 <label for="create_uid" string="Created By"/>
@@ -47,11 +48,14 @@
                             </group>
                         </group>
                         <notebook colspan="4">
+                            <page string="Addresses">
+                                <field name="address_ids"/>
+                            </page>
                             <page string="Provider Codes">
                                 <field name="provider_code_ids"/>
                             </page>
                             <page string="Allowed Destination">
-<!--                                <button name="clear_destination_ids" type="object" string="Clear Destination" groups="tt_base.group_tt_tour_travel_operator"/>-->
+                                <!--                                <button name="clear_destination_ids" type="object" string="Clear Destination" groups="tt_base.group_tt_tour_travel_operator"/>-->
                                 <button name="compute_destination_ids" type="object" string="Compute Destination" groups="tt_base.group_tt_tour_travel_operator"/>
                                 <field name="provider_destination_ids">
                                     <tree>

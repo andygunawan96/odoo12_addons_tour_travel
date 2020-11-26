@@ -67,5 +67,12 @@
             <field name="prefix">EXT.%(y)s%(month)s%(day)s%(sec)s</field>
             <field name="padding">3</field>
         </record>
+
+        <record id="seq_letter_guarantee" model="ir.sequence">
+            <field name="name">Letter of Guarantee</field>
+            <field name="code">tt.letter.guarantee.seq</field>
+            <field name="prefix">LG.%(y)s%(month)s%(day)s%(sec)s</field>
+            <field name="padding">3</field>
+        </record>
     </data>
 </odoo>
