@@ -20,23 +20,28 @@ class TtPnrQuota(models.Model):
                                   default=lambda self: self.env.user.company_id.currency_id)
     price_package_id = fields.Many2one('tt.pnr.quota.price.package', 'Price Package')
     start_date = fields.Date('Start')
-    expired_date = fields.Date('Expired Date', compute="_compute_expired_date",store=True)
-    usage_ids = fields.One2many('tt.pnr.quota.usage','pnr_quota_id','Quota Usage', readonly=True)
+    expired_date = fields.Date('Expired Date', store=True)
+    usage_ids = fields.One2many('tt.pnr.quota.usage', 'pnr_quota_id','Quota Usage', readonly=True)
     agent_id = fields.Many2one('tt.agent','Agent', domain="[('is_using_pnr_quota','=',True)]")
     is_expired = fields.Boolean('Expired')
     state = fields.Selection([('active', 'Active'), ('waiting', 'Waiting'), ('payment', 'Payment'), ('done', 'Done'), ('failed', 'Failed')], 'State',compute="_compute_state",store=True)
     transaction_amount_internal = fields.Monetary('Transaction Amount Internal', copy=False, readonly=True)
     transaction_amount_external = fields.Monetary('Transaction Amount External', copy=False, readonly=True)
-    total_amount = fields.Monetary('Total Amount', copy=False)
+    total_amount = fields.Monetary('Total Amount', copy=False, readonly=True)
 
     @api.model
     def create(self, vals_list):
-        exp_date = datetime.now() + timedelta(days=30)
-        now = datetime.now()
-        vals_list['name'] = self.env['ir.sequence'].next_by_code('tt.pnr.quota')
-        vals_list['expired_date'] = "%s-%s-%s" % (exp_date.year, exp_date.month, exp_date.day)
-        vals_list['start_date'] = "%s-%s-%s" % (now.year, now.month, now.day)
-        vals_list['state'] = 'active'
+        package_obj = self.env['tt.pnr.quota.price.package'].browse(vals_list['price_package_id'])
+        if package_obj:
+            exp_date = datetime.now() + timedelta(days=package_obj.validity)
+            now = datetime.now()
+            vals_list['name'] = self.env['ir.sequence'].next_by_code('tt.pnr.quota')
+            vals_list['expired_date'] = "%s-%s-%s" % (exp_date.year, exp_date.month, exp_date.day)
+            vals_list['start_date'] = "%s-%s-%s" % (now.year, now.month, now.day)
+            vals_list['state'] = 'active'
+            vals_list['amount'] = package_obj.minimum_fee
+        else:
+            raise Exception('Package not fount')
         return super(TtPnrQuota, self).create(vals_list)
 
     @api.depends('usage_ids', 'usage_ids.active')
@@ -94,13 +99,17 @@ class TtPnrQuota(models.Model):
     @api.onchange('transaction_amount_internal', 'transaction_amount_external', 'usage_ids')
     def calc_amount_total(self):
         for rec in self:
+            minimum = rec.amount
+            if minimum == 0: #check jika minimum 0 ambil dari package
+                rec.amount = rec.price_package_id.minimum_fee
+                minimum = rec.price_package_id.minimum_fee
             if rec.price_package_id.fix_profit_share == False:
-                if rec.transaction_amount_internal > rec.amount:
+                if rec.transaction_amount_internal > minimum:
                     rec.total_amount = rec.transaction_amount_external
                 else:
-                    rec.total_amount = rec.amount - rec.transaction_amount_internal + rec.transaction_amount_external
+                    rec.total_amount = minimum - rec.transaction_amount_internal + rec.transaction_amount_external
             else:
-                rec.total_amount = rec.amount + rec.transaction_amount_external
+                rec.total_amount = minimum + rec.transaction_amount_external
 
     def payment_pnr_quota_api(self):
         for rec in self:
