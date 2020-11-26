@@ -102,6 +102,12 @@
                     <button name="unignore_recon_line_from_button" type="object" string="Unignore"
                             attrs="{'invisible':[('state','!=', 'ignore')]}"
                             groups="tt_base.group_tt_accounting_operator"/>
+                    <button name="cancel_recon_line_from_button" type="object" string="Cancel"
+                            attrs="{'invisible':[('state','=', 'cancel')]}"
+                            groups="tt_base.group_tt_accounting_supervisor"/>
+                    <button name="uncancel_recon_line_from_button" type="object" string="Uncancel"
+                            attrs="{'invisible':[('state','!=', 'cancel')]}"
+                            groups="tt_base.group_tt_accounting_supervisor"/>
                     <button name="%(tt_reservation.tt_reconcile_manual_match_wizard_action_view)d"
                             string="Manual Match" type="action" states="not_match"
                             context="{
