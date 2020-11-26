@@ -523,7 +523,8 @@ class ReportSelling(models.Model):
 
     @staticmethod
     def _where_profit():
-        where = """ledger.transaction_type = 3 AND ledger.is_reversed = 'FALSE'"""
+        # where = """ledger.transaction_type = 3 AND ledger.is_reversed = 'FALSE'"""
+        where = """ ledger.is_reversed = 'FALSE'"""
         return where
 
     #works with all
