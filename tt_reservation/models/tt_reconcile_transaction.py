@@ -136,7 +136,8 @@ class TtReconcileTransactionLines(models.Model):
     state = fields.Selection([('not_match','Not Match'),
                               ('match','Match'),
                               ('done','Done'),
-                              ('ignore','Ignore')],'State',default='not_match',readonly=True)
+                              ('ignore','Ignored'),
+                              ('cancel','Cancelled')],'State',default='not_match',readonly=True)
     res_model = fields.Char('Ref Model', readonly=True)
     res_id = fields.Integer('Ref ID', readonly=True)
 
@@ -161,7 +162,6 @@ class TtReconcileTransactionLines(models.Model):
             'target': 'current',
         }
 
-
     def ignore_recon_line_from_button(self):
         if self.state == 'not_match':
             self.state = 'ignore'
@@ -172,7 +172,19 @@ class TtReconcileTransactionLines(models.Model):
         if self.state == 'ignore':
             self.state = 'not_match'
         else:
-            raise UserError('Can only unignore [ignore] state.')
+            raise UserError('Can only unignore [Ignored] state.')
+
+    def cancel_recon_line_from_button(self):
+        if self.state != 'cancel':
+            self.state = 'cancel'
+        else:
+            raise UserError('This line is already [Cancelled].')
+
+    def uncancel_recon_line_from_button(self):
+        if self.state == 'cancel':
+            self.state = 'not_match'
+        else:
+            raise UserError('Can only uncancel [Cancelled] state.')
 
 
 class PrintoutReconcile(models.AbstractModel):

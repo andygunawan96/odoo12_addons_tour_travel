@@ -966,6 +966,8 @@ class TtReportDashboard(models.Model):
                             temp_dict = {
                                 'carrier_name': i['carrier_name'],
                                 'counter': 1,
+                                'revenue': i['amount'],
+                                'passenger': i['reservation_passenger'],
                                 'route': [{
                                     'departure': i['departure'],
                                     'destination': i['destination'],
@@ -996,6 +998,8 @@ class TtReportDashboard(models.Model):
                                 top_carrier[carrier_index]['route'][carrier_route_index]['passenger'] += int(i['reservation_passenger'])
                             # add carrier counter
                             top_carrier[carrier_index]['counter'] += 1
+                            top_carrier[carrier_index]['revenue'] += i['amount']
+                            top_carrier[carrier_index]['passenger'] += i['reservation_passenger']
                     except:
                         pass
 

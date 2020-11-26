@@ -107,17 +107,18 @@ class ReservationEvent(models.Model):
             pass
         return super(ReservationEvent, self).create(vals_list)
 
-    @api.depends('provider_booking_ids','provider_booking_ids.reconcile_line_id')
+    @api.depends('provider_booking_ids', 'provider_booking_ids.reconcile_line_id')
     def _compute_reconcile_state(self):
         for rec in self:
-            reconcile_id_list = [rec1.reconcile_line_id.id != False for rec1 in rec.provider_booking_ids]
-            if reconcile_id_list:
-                if all(reconcile_id_list):
-                    rec.reconcile_state = 'reconciled'
-                elif any(reconcile_id_list):
-                    rec.reconcile_state = 'partial'
-                else:
-                    rec.reconcile_state = 'not_reconciled'
+            if all([rec1.reconcile_line_id and rec1.reconcile_line_id.state == 'match' or False for rec1 in
+                    rec.provider_booking_ids]):
+                rec.reconcile_state = 'reconciled'
+            elif any([rec1.reconcile_line_id and rec1.reconcile_line_id.state == 'match' or False for rec1 in
+                      rec.provider_booking_ids]):
+                rec.reconcile_state = 'partial'
+            elif all([rec1.reconcile_line_id and rec1.reconcile_line_id.state == 'cancel' or False for rec1 in
+                      rec.provider_booking_ids]):
+                rec.reconcile_state = 'cancel'
             else:
                 rec.reconcile_state = 'not_reconciled'
 
