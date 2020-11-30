@@ -47,8 +47,7 @@ class TtPnrQuota(models.Model):
     @api.depends('usage_ids', 'usage_ids.active')
     def _compute_used_amount(self):
         for rec in self:
-            if len(rec.usage_ids.ids) != 0:
-                rec.used_amount = len(rec.usage_ids.ids) + 1
+            rec.used_amount = len(rec.usage_ids.ids)
 
     # @api.depends('price_list_id')
     # def _compute_amount(self):
