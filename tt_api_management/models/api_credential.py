@@ -196,7 +196,10 @@ class TtAgentApiInherit(models.Model):
         for rec in self.user_ids:
             if rec.is_api_user:
                 self.env['tt.ban.user'].ban_user(rec.id, duration)
-
+                try:
+                    self.env['tt.api.con'].send_ban_user_error_notification(rec.name, 'error payment quota')
+                except Exception as e:
+                    _logger.error('Ban User Error %s %s' % (str(e), traceback.format_exc()))
     def unban_user_api(self):
         for rec in self.user_ids:
             if rec.is_api_user:

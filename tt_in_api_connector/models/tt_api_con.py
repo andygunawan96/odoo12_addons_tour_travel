@@ -101,6 +101,14 @@ class TtApiCon(models.Model):
                                             request
                                             ,'notification_api')
 
+    def send_ban_user_error_notification(self, user_name, reason):
+        request = {
+            'code': 9901,
+            'message': 'Ban user {} {}'.format(user_name, reason),
+            "title": 'User ban <b>%s</b>' % (user_name)
+        }
+        return self.send_request_to_gateway('%s/notification' % (self.url), request, 'notification_code')
+
     def send_new_ssr_notification(self, code, title, message, **kwargs):
         request = {
             'code': code,
