@@ -24,6 +24,7 @@ class TtPnrQuotaUsage(models.Model):
     currency_id = fields.Many2one('res.currency', 'Currency',
                                   default=lambda self: self.env.user.company_id.currency_id.id)
     amount = fields.Monetary('Amount')
+    pnr_quota_state = fields.Selection('Quota State', related='pnr_quota_id.state')
     pnr_quota_id = fields.Many2one('tt.pnr.quota', 'Quota')
     active = fields.Boolean('Active', default=True)
 
