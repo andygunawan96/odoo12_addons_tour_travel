@@ -113,7 +113,7 @@ class TtPnrQuota(models.Model):
 
     def payment_pnr_quota_api(self):
         for rec in self:
-            if rec.agent_id.balance > rec.total_amount:
+            if rec.agent_id.balance >= rec.total_amount:
                 # bikin ledger
                 self.env['tt.ledger'].create_ledger_vanilla(rec._name,
                                                             rec.id,
