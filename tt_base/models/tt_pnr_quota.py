@@ -21,7 +21,7 @@ class TtPnrQuota(models.Model):
     price_package_id = fields.Many2one('tt.pnr.quota.price.package', 'Price Package')
     start_date = fields.Date('Start')
     expired_date = fields.Date('Expired Date', store=True)
-    usage_ids = fields.One2many('tt.pnr.quota.usage', 'pnr_quota_id','Quota Usage', readonly=True)
+    usage_ids = fields.One2many('tt.pnr.quota.usage', 'pnr_quota_id','Quota Usage', readonly=True, domain=['|',('active', '=', True),('active', '=', False)])
     agent_id = fields.Many2one('tt.agent','Agent', domain="[('is_using_pnr_quota','=',True)]")
     is_expired = fields.Boolean('Expired')
     state = fields.Selection([('active', 'Active'), ('waiting', 'Waiting'), ('payment', 'Payment'), ('done', 'Done'), ('failed', 'Failed')], 'State',compute="_compute_state",store=True)
@@ -44,6 +44,7 @@ class TtPnrQuota(models.Model):
             raise Exception('Package not fount')
         return super(TtPnrQuota, self).create(vals_list)
 
+    @api.onchange('usage_ids', 'usage_ids.active')
     @api.depends('usage_ids', 'usage_ids.active')
     def _compute_used_amount(self):
         for rec in self:
@@ -82,7 +83,7 @@ class TtPnrQuota(models.Model):
         for rec in self:
             total_amount = 0
             for usage_obj in rec.usage_ids:
-                if usage_obj.inventory == 'internal':
+                if usage_obj.inventory == 'internal' and usage_obj.active:
                     total_amount += usage_obj.amount
             rec.transaction_amount_internal = total_amount
 
@@ -91,7 +92,7 @@ class TtPnrQuota(models.Model):
         for rec in self:
             total_amount = 0
             for usage_obj in rec.usage_ids:
-                if usage_obj.inventory == 'external':
+                if usage_obj.inventory == 'external' and usage_obj.active:
                     total_amount += usage_obj.amount
             rec.transaction_amount_external = total_amount
 
