@@ -204,6 +204,17 @@
         </field>
     </record>
 
+    <record model="ir.actions.server" id="action_mutli_sync_balance">
+        <field name="name">Sync Balance</field>
+        <field name="model_id" ref="tt_reservation.model_tt_reconcile_transaction"/>
+        <field name="binding_model_id" ref="tt_reservation.model_tt_reconcile_transaction"/>
+        <field name="state">code</field>
+        <field name="code">
+            if records:
+                action = records.multi_sync_balance()
+        </field>
+    </record>
+
 
     <!-- Reconcile -->
     <menuitem id="menu_transaction_accounting_reconcile"

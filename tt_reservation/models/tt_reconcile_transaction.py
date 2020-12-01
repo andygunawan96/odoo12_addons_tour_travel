@@ -80,6 +80,10 @@ class TtReconcileTransaction(models.Model):
         self.excel_file = base64.encodebytes(url['value'])
         return url
 
+    def multi_sync_balance(self):
+        for rec in self[::-1]:
+            rec.action_sync_balance()
+
     def action_sync_balance(self):
         reconcile_obj = self.env['tt.reconcile.transaction'].search([('provider_id', '=', self.provider_id.id),
                                                                      ('transaction_date', '<', self.transaction_date)],
@@ -164,6 +168,12 @@ class TtReconcileTransactionLines(models.Model):
             'target': 'current',
         }
 
+    def get_default_state(self):
+        if self.type == 'nta':
+            self.state = 'not_match'
+        else:
+            self.state = 'done'
+
     def ignore_recon_line_from_button(self):
         if self.state == 'not_match':
             self.state = 'ignore'
@@ -172,7 +182,7 @@ class TtReconcileTransactionLines(models.Model):
 
     def unignore_recon_line_from_button(self):
         if self.state == 'ignore':
-            self.state = 'not_match'
+            self.get_default_state()
         else:
             raise UserError('Can only unignore [Ignored] state.')
 
@@ -184,7 +194,7 @@ class TtReconcileTransactionLines(models.Model):
 
     def uncancel_recon_line_from_button(self):
         if self.state == 'cancel':
-            self.state = 'not_match'
+            self.get_default_state()
         else:
             raise UserError('Can only uncancel [Cancelled] state.')
 
