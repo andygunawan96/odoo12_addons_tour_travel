@@ -517,29 +517,29 @@ class ReportSellingXls(models.TransientModel):
 
                 # ============= Summary by Domestic/International ============
                 if i['reservation_sector'] == 'International':
-                    sector_dictionary[0]['valuation'] += int(i['amount'])
+                    sector_dictionary[0]['valuation'] += float(i['amount'])
                     sector_dictionary[0]['counter'] += 1
                     sector_dictionary[0]['passenger_count'] += int(i['reservation_passenger'])
                 elif i['reservation_sector'] == 'Domestic':
-                    sector_dictionary[1]['valuation'] += int(i['amount'])
+                    sector_dictionary[1]['valuation'] += float(i['amount'])
                     sector_dictionary[1]['counter'] += 1
                     sector_dictionary[1]['passenger_count'] += int(i['reservation_passenger'])
                 else:
-                    sector_dictionary[2]['valuation'] += int(i['amount'])
+                    sector_dictionary[2]['valuation'] += float(i['amount'])
                     sector_dictionary[2]['counter'] += 1
                     sector_dictionary[2]['passenger_count'] += int(i['reservation_passenger'])
 
                 # ============= Summary by flight Type (OW, R, MC) ===========
                 if i['reservation_direction'] == 'OW':
-                    direction_dictionary[0]['valuation'] += int(i['amount'])
+                    direction_dictionary[0]['valuation'] += float(i['amount'])
                     direction_dictionary[0]['counter'] += 1
                     direction_dictionary[0]['passenger_count'] += int(i['reservation_passenger'])
                 elif i['reservation_direction'] == 'RT':
-                    direction_dictionary[1]['valuation'] += int(i['amount'])
+                    direction_dictionary[1]['valuation'] += float(i['amount'])
                     direction_dictionary[1]['counter'] += 1
                     direction_dictionary[1]['passenger_count'] += int(i['reservation_passenger'])
                 else:
-                    direction_dictionary[2]['valuation'] += int(i['amount'])
+                    direction_dictionary[2]['valuation'] += float(i['amount'])
                     direction_dictionary[2]['counter'] += 1
                     direction_dictionary[2]['passenger_count'] += int(i['reservation_passenger'])
 
@@ -1145,29 +1145,29 @@ class ReportSellingXls(models.TransientModel):
 
             # ============= International or Domestic route ==============
             if i['reservation_sector'] == 'International':
-                sector_dictionary[0]['valuation'] += int(i['amount'])
+                sector_dictionary[0]['valuation'] += float(i['amount'])
                 sector_dictionary[0]['counter'] += 1
                 sector_dictionary[0]['passenger_count'] += int(i['reservation_passenger'])
             elif i['reservation_sector'] == 'Domestic':
-                sector_dictionary[1]['valuation'] += int(i['amount'])
+                sector_dictionary[1]['valuation'] += float(i['amount'])
                 sector_dictionary[1]['counter'] += 1
                 sector_dictionary[1]['passenger_count'] += int(i['reservation_passenger'])
             else:
-                sector_dictionary[2]['valuation'] += int(i['amount'])
+                sector_dictionary[2]['valuation'] += float(i['amount'])
                 sector_dictionary[2]['counter'] += 1
                 sector_dictionary[2]['passenger_count'] += int(i['reservation_passenger'])
 
             # ============= Type of direction ============================
             if i['reservation_direction'] == 'OW':
-                direction_dictionary[0]['valuation'] += int(i['amount'])
+                direction_dictionary[0]['valuation'] += float(i['amount'])
                 direction_dictionary[0]['counter'] += 1
                 direction_dictionary[0]['passenger_count'] += int(i['reservation_passenger'])
             elif i['reservation_direction'] == 'RT':
-                direction_dictionary[1]['valuation'] += int(i['amount'])
+                direction_dictionary[1]['valuation'] += float(i['amount'])
                 direction_dictionary[1]['counter'] += 1
                 direction_dictionary[1]['passenger_count'] += int(i['reservation_passenger'])
             else:
-                direction_dictionary[2]['valuation'] += int(i['amount'])
+                direction_dictionary[2]['valuation'] += float(i['amount'])
                 direction_dictionary[2]['counter'] += 1
                 direction_dictionary[2]['passenger_count'] += int(i['reservation_passenger'])
 
