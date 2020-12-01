@@ -50,6 +50,7 @@ class ReportSelling(models.Model):
         reservation.direction as reservation_direction,
         reservation.booked_date as reservation_booked_date_og, 
         reservation.issued_date as reservation_issued_date_og,
+        journey.id as journey_id,
         journey.departure_date as journey_departure_date,
         reservation.elder as reservation_elder, 
         reservation.adult as reservation_adult, 
@@ -81,6 +82,7 @@ class ReportSelling(models.Model):
         reservation.direction as reservation_direction,
         reservation.booked_date as reservation_booked_date_og, 
         reservation.issued_date as reservation_issued_date_og,
+        journey.id as journey_id,
         journey.departure_date as journey_departure_date,
         reservation.elder as reservation_elder, 
         reservation.adult as reservation_adult, 
@@ -502,7 +504,7 @@ class ReportSelling(models.Model):
     # where issued
     @staticmethod
     def _where_issued(date_from, date_to):
-        where = """reservation.issued_date >= '%s' and reservation.issued_date <= '%s'""" % (date_from, date_to)
+        where = """reservation.issued_date >= '%s' and reservation.issued_date <= '%s' AND reservation.state = 'issued' OR reservation.state = 'reissue'""" % (date_from, date_to)
         return where
 
     @staticmethod
