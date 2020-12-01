@@ -99,7 +99,7 @@ class AgentReportRecapTransacion(models.Model):
     @staticmethod
     def _order_by():
         return """
-        rsv.create_date, rsv.name 
+        rsv.create_date, rsv.name, ledger.id 
         """
     @staticmethod
     def _order_by_join_service_charge():
