@@ -61,7 +61,7 @@ class TtReportDashboard(models.Model):
                 return i
         return -1
 
-    def add_month_detail(self, year = 0, month = 0):
+    def add_month_detail(self, year=0, month=0):
         temp_list = []
         if month == 0 and year == 0:
             for i in range(1, 32):
@@ -71,30 +71,43 @@ class TtReportDashboard(models.Model):
                     'booked_counter': 0
                 }
                 temp_list.append(temp_dict)
-            else:
-                day = monthrange(year, month)
-                for i in range(1, day + 1):
-                    temp_dict = {
-                        'day': i,
-                        'issued_counter': 0,
-                        'booked_counter': 0
-                    }
-                    temp_list.append(temp_dict)
+        else:
+            day = monthrange(year, month)
+            for i in range(1, day[1] + 1):
+                temp_dict = {
+                    'day': i,
+                    'issued_counter': 0,
+                    'booked_counter': 0
+                }
+                temp_list.append(temp_dict)
 
         return temp_list
 
-    def add_issued_month_detail(self):
+    def add_issued_month_detail(self, year=0, month=0):
         temp_list = []
-        for i in range(1, 32):
-            temp_dict = {
-                'day': i,
-                'reservation': 0,
-                'invoice': 0,
-                'revenue': 0,
-                'profit': 0,
-                'average': 0
-            }
-            temp_list.append(temp_dict)
+        if month == 0 and year == 0:
+            for i in range(1, 32):
+                temp_dict = {
+                    'day': i,
+                    'reservation': 0,
+                    'invoice': 0,
+                    'revenue': 0,
+                    'profit': 0,
+                    'average': 0
+                }
+                temp_list.append(temp_dict)
+        else:
+            day = monthrange(year, month)
+            for i in range(1, day[1] + 1):
+                temp_dict = {
+                    'day': i,
+                    'reservation': 0,
+                    'invoice': 0,
+                    'revenue': 0,
+                    'profit': 0,
+                    'average': 0
+                }
+                temp_list.append(temp_dict)
 
         return temp_list
 
@@ -279,10 +292,10 @@ class TtReportDashboard(models.Model):
             summary_by_date = []
             summary_provider = []
 
-            # iterate evvery data
+            # iterate every data
             for i in all_values['lines']:
                 try:
-                    # convert month number (1) to text and index (Januray) in constant
+                    # convert month number (1) to text and index (January) in constant
                     month_index = self.check_date_index(summary_by_date, {'year': i['booked_year'],
                                                                           'month': month[int(i['booked_month']) - 1]})
                     if month_index == -1:
