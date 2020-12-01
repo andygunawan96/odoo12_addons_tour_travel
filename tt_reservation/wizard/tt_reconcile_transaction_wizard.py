@@ -101,15 +101,24 @@ class TtReconcileTransactionWizard(models.TransientModel):
                     write_data.append((0,0,transaction))
 
             for rec_line in recon_data.reconcile_lines_ids:
-                state_dict = {}
+                line_write_dict = {}
                 if rec_line.id not in found_trans_lines:
-                    state_dict['state'] = 'cancel'
+                    line_write_dict['state'] = 'cancel'
+                    if rec_line.res_model and rec_line.res_id:
+                        linked_obj = self.env[rec_line.res_model].browse(rec_line.res_id)
+                        if linked_obj:
+                            linked_obj.write({
+                                'reconcile_line_id': False,
+                                'reconcile_time': False
+                            })
+                        line_write_dict['res_model'] = ''
+                        line_write_dict['res_id'] = 0
                 elif rec_line.state != 'match':
                     if rec_line.type == 'nta':
-                        state_dict['state'] = 'not_match'
+                        line_write_dict['state'] = 'not_match'
                     else:
-                        state_dict['state'] = 'done'
-                write_data.append((1, rec_line.id, state_dict))
+                        line_write_dict['state'] = 'done'
+                write_data.append((1, rec_line.id, line_write_dict))
 
             recon_data.write({
                 'reconcile_lines_ids': write_data
