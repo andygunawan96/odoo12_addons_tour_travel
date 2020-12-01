@@ -1028,7 +1028,7 @@ class TtReportDashboard(models.Model):
 
                     # ============= Summary by Domestic/International ============
                     if i['reservation_sector'] == 'International':
-                        sector_dictionary[0]['valuation'] += int(i['amount'])
+                        sector_dictionary[0]['valuation'] += float(i['amount'])
                         sector_dictionary[0]['counter'] += 1
                         if i['reservation_direction'] == 'OW':
                             sector_dictionary[0]['one_way'] += 1
@@ -1038,7 +1038,7 @@ class TtReportDashboard(models.Model):
                             sector_dictionary[0]['multi_city'] += 1
                         sector_dictionary[0]['passenger_count'] += int(i['reservation_passenger'])
                     elif i['reservation_sector'] == 'Domestic':
-                        sector_dictionary[1]['valuation'] += int(i['amount'])
+                        sector_dictionary[1]['valuation'] += float(i['amount'])
                         sector_dictionary[1]['counter'] += 1
                         if i['reservation_direction'] == 'OW':
                             sector_dictionary[1]['one_way'] += 1
@@ -1048,7 +1048,7 @@ class TtReportDashboard(models.Model):
                             sector_dictionary[1]['multi_city'] += 1
                         sector_dictionary[1]['passenger_count'] += int(i['reservation_passenger'])
                     else:
-                        sector_dictionary[2]['valuation'] += int(i['amount'])
+                        sector_dictionary[2]['valuation'] += float(i['amount'])
                         sector_dictionary[2]['counter'] += 1
                         if i['reservation_direction'] == 'OW':
                             sector_dictionary[2]['one_way'] += 1
@@ -1518,7 +1518,7 @@ class TtReportDashboard(models.Model):
 
                     # ============= Summary by Domestic/International ============
                     if i['reservation_sector'] == 'International':
-                        sector_dictionary[0]['valuation'] += int(i['amount'])
+                        sector_dictionary[0]['valuation'] += float(i['amount'])
                         sector_dictionary[0]['counter'] += 1
                         if i['reservation_direction'] == 'OW':
                             sector_dictionary[0]['one_way'] += 1
@@ -1528,7 +1528,7 @@ class TtReportDashboard(models.Model):
                             sector_dictionary[0]['multi_city'] += 1
                         sector_dictionary[0]['passenger_count'] += int(i['reservation_passenger'])
                     elif i['reservation_sector'] == 'Domestic':
-                        sector_dictionary[1]['valuation'] += int(i['amount'])
+                        sector_dictionary[1]['valuation'] += float(i['amount'])
                         sector_dictionary[1]['counter'] += 1
                         if i['reservation_direction'] == 'OW':
                             sector_dictionary[1]['one_way'] += 1
@@ -1538,7 +1538,7 @@ class TtReportDashboard(models.Model):
                             sector_dictionary[1]['multi_city'] += 1
                         sector_dictionary[1]['passenger_count'] += int(i['reservation_passenger'])
                     else:
-                        sector_dictionary[2]['valuation'] += int(i['amount'])
+                        sector_dictionary[2]['valuation'] += float(i['amount'])
                         sector_dictionary[2]['counter'] += 1
                         if i['reservation_direction'] == 'OW':
                             sector_dictionary[2]['one_way'] += 1
