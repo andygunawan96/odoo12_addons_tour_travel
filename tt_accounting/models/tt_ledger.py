@@ -167,6 +167,7 @@ class Ledger(models.Model):
         #     try:
         try:
             vals_list['balance'] = self.calc_balance(vals_list)
+	    vals_list['date'] = datetime.now(pytz.timezone('Asia/Jakarta'))
             ledger_obj = super(Ledger, self).create(vals_list)
             #     successfully_created = True
             # except Exception as e:
