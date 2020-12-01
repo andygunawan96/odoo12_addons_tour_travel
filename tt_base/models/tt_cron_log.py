@@ -55,12 +55,14 @@ class TtCronLog(models.Model):
 
     def cron_expire_quota(self):
         try:
-            pnr_quota_obj = self.env['tt.pnr.quota'].search([('expired_date','<', datetime.now(pytz.timezone('Asia/Jakarta')).date())])
+            pnr_quota_obj = self.env['tt.pnr.quota'].search([('expired_date','<', datetime.now(pytz.timezone('Asia/Jakarta')).date()), ('state','=','active')])
+            # pnr_quota_obj = self.env['tt.pnr.quota'].search([('expired_date','<=', datetime.now(pytz.timezone('Asia/Jakarta')).date()), ('state','=','active')]) #testing
             for rec in pnr_quota_obj:
                 rec.state = 'waiting'
                 rec.amount = rec.price_package_id.minimum_fee
                 rec.calc_amount_internal()
                 rec.calc_amount_external()
+                rec.calc_amount_total()
             self.env.cr.commit()
             agent_obj = self.env['tt.agent'].search([('is_using_pnr_quota', '=', True), ('quota_total_duration', '=', False)])
             for rec in agent_obj:

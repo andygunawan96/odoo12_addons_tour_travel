@@ -12,7 +12,7 @@
                     <sheet>
                         <div class="oe_button_box" name="button_box">
                             <button name="toggle_active" type="object" groups="tt_base.group_tt_agent_management_operator"
-                                    class="oe_stat_button" icon="fa-archive">
+                                    class="oe_stat_button" icon="fa-archive" attrs="{'invisible': [('pnr_quota_state','!=','active')]}">
                                 <field name="active" widget="boolean_button"
                                        options='{"terminology": "archive"}'/>
                             </button>
@@ -25,6 +25,7 @@
                             <field name="ref_name"/>
                             <field name="ref_pnrs"/>
                             <field name="ref_carriers"/>
+                            <field name="pnr_quota_state" invisible="1"/>
                             <field name="ref_pax"/>
                             <field name="ref_r_n"/>
                             <field name="currency_id"/>
@@ -47,7 +48,7 @@
                     <field name="ref_carriers"/>
                     <field name="pnr_quota_id"/>
                     <field name="amount"/>
-                    <field name="active" invisible="1"/>
+                    <field name="active"/>
                     <button name="open_reservation" string="Go to reference" type="object"/>
                 </tree>
             </field>
@@ -58,6 +59,7 @@
             <field name="view_type">form</field>
             <field name="res_model">tt.pnr.quota.usage</field>
             <field name="view_mode">tree,form</field>
+            <field name="domain">['|',('active', '=', True),('active', '=', False)]</field>
             <field name="context">
                 {
                 'form_view_ref': 'tt_base.tt_pnr_quota_usage_form_view',

@@ -50,6 +50,7 @@ class ReportSelling(models.Model):
         reservation.direction as reservation_direction,
         reservation.booked_date as reservation_booked_date_og, 
         reservation.issued_date as reservation_issued_date_og,
+        journey.id as journey_id,
         journey.departure_date as journey_departure_date,
         reservation.elder as reservation_elder, 
         reservation.adult as reservation_adult, 
@@ -81,6 +82,7 @@ class ReportSelling(models.Model):
         reservation.direction as reservation_direction,
         reservation.booked_date as reservation_booked_date_og, 
         reservation.issued_date as reservation_issued_date_og,
+        journey.id as journey_id,
         journey.departure_date as journey_departure_date,
         reservation.elder as reservation_elder, 
         reservation.adult as reservation_adult, 
@@ -502,7 +504,7 @@ class ReportSelling(models.Model):
     # where issued
     @staticmethod
     def _where_issued(date_from, date_to):
-        where = """reservation.issued_date >= '%s' and reservation.issued_date <= '%s'""" % (date_from, date_to)
+        where = """reservation.issued_date >= '%s' and reservation.issued_date <= '%s' AND reservation.state = 'issued' OR reservation.state = 'reissue'""" % (date_from, date_to)
         return where
 
     @staticmethod
@@ -580,7 +582,7 @@ class ReportSelling(models.Model):
 
         if provider_checker == 'airline':
             query += 'FROM {} '.format(self._from_airline())
-            query += 'WHERE {} AND {} '.format(self._where(date_from, date_to), self._where_profit())
+            query += 'WHERE {} '.format(self._where(date_from, date_to))
             if context['provider']:
                 query += 'AND {} '.format(self._where_provider(context['provider']))
             if context['agent_type_code']:
@@ -591,7 +593,7 @@ class ReportSelling(models.Model):
             query += 'ORDER BY {} '.format(self._order_by())
         elif provider_checker == 'train':
             query += 'FROM {} '.format(self._from_train())
-            query += 'WHERE {} AND {} '.format(self._where(date_from, date_to), self._where_profit())
+            query += 'WHERE {} '.format(self._where(date_from, date_to))
             if context['provider']:
                 query += 'AND {} '.format(self._where_provider(context['provider']))
             if context['agent_type_code']:
@@ -602,7 +604,7 @@ class ReportSelling(models.Model):
             query += 'ORDER BY {} '.format(self._order_by())
         elif provider_checker == 'hotel':
             query += 'FROM {} '.format(self._from_hotel())
-            query += 'WHERE {} AND {} '.format(self._where(date_from, date_to), self._where_profit())
+            query += 'WHERE {} '.format(self._where(date_from, date_to))
             if context['provider']:
                 query += 'AND {} '.format(self._where_provider(context['provider']))
             if context['agent_type_code']:
@@ -613,7 +615,7 @@ class ReportSelling(models.Model):
             query += 'ORDER BY {} '.format(self._order_by())
         elif provider_checker == 'activity':
             query += 'FROM {} '.format(self._from_activity())
-            query += 'WHERE {} AND {} '.format(self._where(date_from, date_to), self._where_profit())
+            query += 'WHERE {} '.format(self._where(date_from, date_to))
             if context['provider']:
                 query += 'AND {} '.format(self._where_provider(context['provider']))
             if context['agent_type_code']:
@@ -624,7 +626,7 @@ class ReportSelling(models.Model):
             query += 'ORDER BY {} '.format(self._order_by())
         elif provider_checker == 'tour':
             query += 'FROM {} '.format(self._from_tour())
-            query += 'WHERE {} AND {} '.format(self._where(date_from, date_to), self._where_profit())
+            query += 'WHERE {} '.format(self._where(date_from, date_to))
             if context['provider']:
                 query += 'AND {} '.format(self._where_provider(context['provider']))
             if context['agent_type_code']:
@@ -635,7 +637,7 @@ class ReportSelling(models.Model):
             query += 'ORDER BY {} '.format(self._order_by())
         elif provider_checker == 'visa':
             query += 'FROM {} '.format(self._from_visa())
-            query += 'WHERE {} AND {} '.format(self._where(date_from, date_to), self._where_profit())
+            query += 'WHERE {} '.format(self._where(date_from, date_to))
             if context['provider']:
                 query += 'AND {} '.format(self._where_provider(context['provider']))
             if context['agent_type_code']:
@@ -646,7 +648,7 @@ class ReportSelling(models.Model):
             query += 'ORDER BY {} '.format(self._order_by())
         elif provider_checker == 'offline':
             query += 'FROM {} '.format(self._from_offline())
-            query += 'WHERE {} AND {} '.format(self._where(date_from, date_to), self._where_profit())
+            query += 'WHERE {} '.format(self._where(date_from, date_to))
             if context['provider']:
                 query += 'AND {} '.format(self._where_provider(context['provider']))
             if context['agent_type_code']:
@@ -656,7 +658,7 @@ class ReportSelling(models.Model):
             query += 'ORDER BY {} '.format(self._order_by())
         elif provider_checker == 'event':
             query += 'FROM {} '.format(self._from_event())
-            query += 'WHERE {} AND {} '.format(self._where(date_from, date_to), self._where_profit())
+            query += 'WHERE {} '.format(self._where(date_from, date_to))
             if context['provider']:
                 query += 'AND {} '.format(self._where_provider(context['provider']))
             if context['agent_type_code']:
@@ -667,7 +669,7 @@ class ReportSelling(models.Model):
             query += 'ORDER BY {} '.format(self._order_by())
         elif provider_checker == 'ppob':
             query += 'FROM {} '.format(self._from_ppob())
-            query += 'WHERE {} AND {} '.format(self._where(date_from, date_to), self._where_profit())
+            query += 'WHERE {} '.format(self._where(date_from, date_to))
             if context['provider']:
                 query += 'AND {} '.format(self._where_provider(context['provider']))
             if context['agent_type_code']:

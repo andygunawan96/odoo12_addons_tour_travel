@@ -55,7 +55,7 @@ class AgentReportRecapTransactionXls(models.TransientModel):
         sheet.write('S9', 'NTA Amount', style.table_head_center)
         sheet.write('T9', 'Total Commission', style.table_head_center)
         sheet.write('U9', 'Grand Total', style.table_head_center)
-        sheet.merge_range('V9:W9', 'Keterangan', style.table_head_center)
+        sheet.merge_range('V9:Y9', 'Keterangan', style.table_head_center)
 
         # sheet.write('B9', 'Date', style.table_head_center)
         # sheet.write('C9', 'Order Number', style.table_head_center)
@@ -78,6 +78,7 @@ class AgentReportRecapTransactionXls(models.TransientModel):
         sheet.set_column('C:F', 15)
         sheet.set_column('G:G', 12)
         sheet.set_column('H:S', 15)
+        sheet.set_column('Y:Y', 30)
 
         # ============ void start() ======================
         row_data = 8
@@ -133,7 +134,13 @@ class AgentReportRecapTransactionXls(models.TransientModel):
                 sheet.write(row_data, 19, '', sty_amount)
                 sheet.write(row_data, 20, '', sty_amount)
                 sheet.write(row_data, 21, i['ledger_agent_name'], sty_table_data)
-                sheet.write(row_data, 22, i['debit'], sty_amount)
+                if i['ledger_transaction_type'] == 3:
+                    sheet.write(row_data, 22, i['debit'], sty_amount)
+                    sheet.write(row_data, 23, '', sty_amount)
+                else:
+                    sheet.write(row_data, 22, '', sty_amount)
+                    sheet.write(row_data, 23, i['debit'], sty_amount)
+                sheet.write(row_data, 24, i['ledger_description'], sty_table_data)
 
             else:
             # current_number != iterate order number
@@ -179,6 +186,8 @@ class AgentReportRecapTransactionXls(models.TransientModel):
                 sheet.write(row_data, 20, i['grand_total'], sty_amount)
                 sheet.write(row_data, 21, '', sty_table_data)
                 sheet.write(row_data, 22, '', sty_amount)
+                sheet.write(row_data, 23, '', sty_table_data)
+                sheet.write(row_data, 24, '', sty_table_data)
 
                 row_data += 1
                 sty_table_data_center = style.table_data_center_border
@@ -216,7 +225,13 @@ class AgentReportRecapTransactionXls(models.TransientModel):
                 sheet.write(row_data, 19, '', sty_amount)
                 sheet.write(row_data, 20, '', sty_amount)
                 sheet.write(row_data, 21, i['ledger_agent_name'], sty_table_data)
-                sheet.write(row_data, 22, i['debit'], sty_amount)
+                if i['ledger_transaction_type'] == 3:
+                    sheet.write(row_data, 22, i['debit'], sty_amount)
+                    sheet.write(row_data, 23, '', sty_amount)
+                else:
+                    sheet.write(row_data, 22, '', sty_amount)
+                    sheet.write(row_data, 23, i['debit'], sty_amount)
+                sheet.write(row_data, 24, i['ledger_description'], sty_table_data)
 
             # lets recap
                 if i['provider_type'].lower() == 'airline':
@@ -313,6 +328,8 @@ class AgentReportRecapTransactionXls(models.TransientModel):
         sheet.write(row_data, 20, '', sty_table_data)
         sheet.write(row_data, 21, '', sty_amount)
         sheet.write(row_data, 22, '', sty_amount)
+        sheet.write(row_data, 23, '', sty_table_data)
+        sheet.write(row_data, 24, '', sty_table_data)
 
         row_data += 4
         if values['data_form']['provider_type'] == 'airline' or values['data_form']['provider_type'] == 'all' or values['data_form']['provider_type'] == 'offline':

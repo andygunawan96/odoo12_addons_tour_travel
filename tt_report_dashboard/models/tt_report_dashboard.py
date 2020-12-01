@@ -592,10 +592,17 @@ class TtReportDashboard(models.Model):
 
             # declare current id
             current_id = ''
+            current_journey = ''
 
             for i in issued_values['lines']:
                 try:
                     if i['reservation_id'] != current_id:
+                        # set journey
+                        try:
+                            current_journey = i['journey_id']
+                        except:
+                            current_journey = ''
+
                         month_index = self.check_date_index(summary_issued, {'year': i['issued_year'], 'month': month[int(i['issued_month']) - 1]})
 
                         if month_index == -1:
@@ -654,14 +661,21 @@ class TtReportDashboard(models.Model):
                                 summary_provider[provider_index][i['reservation_state']] = 1
                         current_id = i['reservation_id']
                     else:
-                        if i['ledger_transaction_type'] == 3:
-                            month_index = self.check_date_index(summary_issued, {'year': i['issued_year'], 'month': month[int(i['issued_month']) - 1]})
-                            splits = i['reservation_issued_date'].split("-")
-                            day_index = int(splits[2]) - 1
-                            summary_issued[month_index]['detail'][day_index]['profit'] += i['debit']
-                            profit_total += i['debit']
-                            if i['ledger_agent_type_name'] == 'HO':
-                                profit_ho += i['debit']
+                        # get current journey
+                        try:
+                            temp_journey = i['journey_id']
+                        except:
+                            temp_journey = ''
+
+                        if current_journey == temp_journey:
+                            if i['ledger_transaction_type'] == 3:
+                                month_index = self.check_date_index(summary_issued, {'year': i['issued_year'], 'month': month[int(i['issued_month']) - 1]})
+                                splits = i['reservation_issued_date'].split("-")
+                                day_index = int(splits[2]) - 1
+                                summary_issued[month_index]['detail'][day_index]['profit'] += i['debit']
+                                profit_total += i['debit']
+                                if i['ledger_agent_type_name'] == 'HO':
+                                    profit_ho += i['debit']
                 except:
                     pass
 
@@ -891,11 +905,15 @@ class TtReportDashboard(models.Model):
 
             # declare current id
             current_id = ''
+            current_journey = ''
 
             # proceed invoice with the assumption of create date = issued date
             for i in issued_values['lines']:
                 if i['reservation_id'] != current_id:
                     try:
+                        # set journey to current journey
+                        current_journey = i['journey_id']
+
                         # get index of month
                         month_index = self.check_date_index(summary_issued, {'year': i['issued_year'], 'month': month[int(i['issued_month']) - 1]})
 
@@ -1010,7 +1028,7 @@ class TtReportDashboard(models.Model):
 
                     # ============= Summary by Domestic/International ============
                     if i['reservation_sector'] == 'International':
-                        sector_dictionary[0]['valuation'] += int(i['amount'])
+                        sector_dictionary[0]['valuation'] += float(i['amount'])
                         sector_dictionary[0]['counter'] += 1
                         if i['reservation_direction'] == 'OW':
                             sector_dictionary[0]['one_way'] += 1
@@ -1020,7 +1038,7 @@ class TtReportDashboard(models.Model):
                             sector_dictionary[0]['multi_city'] += 1
                         sector_dictionary[0]['passenger_count'] += int(i['reservation_passenger'])
                     elif i['reservation_sector'] == 'Domestic':
-                        sector_dictionary[1]['valuation'] += int(i['amount'])
+                        sector_dictionary[1]['valuation'] += float(i['amount'])
                         sector_dictionary[1]['counter'] += 1
                         if i['reservation_direction'] == 'OW':
                             sector_dictionary[1]['one_way'] += 1
@@ -1030,7 +1048,7 @@ class TtReportDashboard(models.Model):
                             sector_dictionary[1]['multi_city'] += 1
                         sector_dictionary[1]['passenger_count'] += int(i['reservation_passenger'])
                     else:
-                        sector_dictionary[2]['valuation'] += int(i['amount'])
+                        sector_dictionary[2]['valuation'] += float(i['amount'])
                         sector_dictionary[2]['counter'] += 1
                         if i['reservation_direction'] == 'OW':
                             sector_dictionary[2]['one_way'] += 1
@@ -1097,15 +1115,16 @@ class TtReportDashboard(models.Model):
                             destination_direction_summary[returning_index]['infant_count'] += i['reservation_infant']
                     current_id = i['reservation_id']
                 else:
-                    if i['ledger_transaction_type'] == 3:
-                        month_index = self.check_date_index(summary_issued, {'year': i['issued_year'],
-                                                                             'month': month[int(i['issued_month']) - 1]})
-                        splits = i['reservation_issued_date'].split("-")
-                        day_index = int(splits[2]) - 1
-                        summary_issued[month_index]['detail'][day_index]['profit'] += i['debit']
-                        profit_total += i['debit']
-                        if i['ledger_agent_type_name'] == 'HO':
-                            profit_ho += i['debit']
+                    if current_journey == i['journey_id']:
+                        if i['ledger_transaction_type'] == 3:
+                            month_index = self.check_date_index(summary_issued, {'year': i['issued_year'],
+                                                                                 'month': month[int(i['issued_month']) - 1]})
+                            splits = i['reservation_issued_date'].split("-")
+                            day_index = int(splits[2]) - 1
+                            summary_issued[month_index]['detail'][day_index]['profit'] += i['debit']
+                            profit_total += i['debit']
+                            if i['ledger_agent_type_name'] == 'HO':
+                                profit_ho += i['debit']
 
             # grouping data
             international_filter = list(filter(lambda x: x['sector'] == 'International', destination_sector_summary))
@@ -1443,12 +1462,16 @@ class TtReportDashboard(models.Model):
 
             # declare current id
             current_id = ''
+            current_journey = ''
 
             # proceed invoice with the assumption of create date = issued date
-
             for i in issued_values['lines']:
                 if i['reservation_id'] != current_id:
                     try:
+                        # set journey to current journey (id)
+                        current_journey = i['journey_id']
+
+                        # search for month index within summary issued
                         month_index = self.check_date_index(summary_issued, {'year': i['issued_year'], 'month': month[int(i['issued_month']) - 1]})
 
                         if month_index == -1:
@@ -1495,7 +1518,7 @@ class TtReportDashboard(models.Model):
 
                     # ============= Summary by Domestic/International ============
                     if i['reservation_sector'] == 'International':
-                        sector_dictionary[0]['valuation'] += int(i['amount'])
+                        sector_dictionary[0]['valuation'] += float(i['amount'])
                         sector_dictionary[0]['counter'] += 1
                         if i['reservation_direction'] == 'OW':
                             sector_dictionary[0]['one_way'] += 1
@@ -1505,7 +1528,7 @@ class TtReportDashboard(models.Model):
                             sector_dictionary[0]['multi_city'] += 1
                         sector_dictionary[0]['passenger_count'] += int(i['reservation_passenger'])
                     elif i['reservation_sector'] == 'Domestic':
-                        sector_dictionary[1]['valuation'] += int(i['amount'])
+                        sector_dictionary[1]['valuation'] += float(i['amount'])
                         sector_dictionary[1]['counter'] += 1
                         if i['reservation_direction'] == 'OW':
                             sector_dictionary[1]['one_way'] += 1
@@ -1515,7 +1538,7 @@ class TtReportDashboard(models.Model):
                             sector_dictionary[1]['multi_city'] += 1
                         sector_dictionary[1]['passenger_count'] += int(i['reservation_passenger'])
                     else:
-                        sector_dictionary[2]['valuation'] += int(i['amount'])
+                        sector_dictionary[2]['valuation'] += float(i['amount'])
                         sector_dictionary[2]['counter'] += 1
                         if i['reservation_direction'] == 'OW':
                             sector_dictionary[2]['one_way'] += 1
@@ -1584,15 +1607,21 @@ class TtReportDashboard(models.Model):
                     # update current id
                     current_id = i['reservation_id']
                 else:
-                    if i['ledger_transaction_type'] == 3:
-                        month_index = self.check_date_index(summary_issued, {'year': i['issued_year'],
-                                                                             'month': month[int(i['issued_month']) - 1]})
-                        splits = i['reservation_issued_date'].split("-")
-                        day_index = int(splits[2]) - 1
-                        summary_issued[month_index]['detail'][day_index]['profit'] += i['debit']
-                        profit_total += i['debit']
-                        if i['ledger_agent_type_name'] == 'HO':
-                            profit_ho += i['debit']
+                    if current_journey == i['journey_id']:
+                        if i['ledger_transaction_type'] == 3:
+                            # get index of particular year and month
+                            month_index = self.check_date_index(summary_issued, {'year': i['issued_year'],
+                                                                                 'month': month[int(i['issued_month']) - 1]})
+                            # split date to extract day
+                            splits = i['reservation_issued_date'].split("-")
+                            # get day
+                            day_index = int(splits[2]) - 1
+                            # add profit to respected array
+                            summary_issued[month_index]['detail'][day_index]['profit'] += i['debit']
+                            # add to SUM
+                            profit_total += i['debit']
+                            if i['ledger_agent_type_name'] == 'HO':
+                                profit_ho += i['debit']
 
             # grouping data
             international_filter = list(filter(lambda x: x['sector'] == 'International', destination_sector_summary))
