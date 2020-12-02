@@ -4,6 +4,13 @@
         <field name="model">tt.segment.reschedule</field>
         <field name="arch" type="xml">
             <form>
+                <header>
+                    <button string="Set New PNR" name="%(tt_reschedule.set_new_segment_pnr_wizard_action_view)d" type="action" groups="tt_base.group_tt_tour_travel_operator"
+                            context="{
+                                'default_segment_reschedule_id': id,
+                                'default_new_pnr': pnr,
+                            }"/>
+                </header>
                 <sheet>
                     <group>
                         <group>

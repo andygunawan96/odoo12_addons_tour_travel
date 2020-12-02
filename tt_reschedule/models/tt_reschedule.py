@@ -296,10 +296,6 @@ class TtReschedule(models.Model):
         if self.state != 'draft':
             raise UserError("Cannot Confirm because state is not 'draft'.")
 
-        for rec in self.new_segment_ids:
-            if not rec.pnr:
-                raise UserError("PNR in New Segments cannot be empty!")
-
         self.write({
             'state': 'confirm',
             'confirm_uid': self.env.user.id,
@@ -401,6 +397,10 @@ class TtReschedule(models.Model):
         if self.state != 'validate':
             raise UserError("Cannot Finalize because state is not 'Validated'.")
 
+        for rec in self.new_segment_ids:
+            if not rec.pnr:
+                raise UserError("PNR in New Segments must be filled!")
+
         self.write({
             'state': 'final',
             'final_uid': self.env.user.id,
@@ -498,15 +498,12 @@ class TtReschedule(models.Model):
     def generate_changes(self):
         for rec in self.change_ids:
             rec.sudo().unlink()
-        required_fields = ['pnr']
-        unchecked_fields = ['create_uid', 'create_date', 'write_uid', 'write_date', 'old_id', 'sequence', 'seat_ids', 'segment_addons_ids', 'passenger_ids',
+        unchecked_fields = ['pnr', 'create_uid', 'create_date', 'write_uid', 'write_date', 'old_id', 'sequence', 'seat_ids', 'segment_addons_ids', 'passenger_ids',
                             'id', 'journey_id', 'booking_id', 'leg_ids', '__last_update']
         for idx, rec in enumerate(self.new_segment_ids):
             new_seg_dict = rec.read()
             old_seg_dict = self.old_segment_ids[idx].read()
             for key, val in new_seg_dict[0].items():
-                if key in required_fields and not val:
-                    raise UserError(_('%s in New Segments cannot be empty!' % (key)))
                 if key not in unchecked_fields:
                     if val != old_seg_dict[0][key]:
                         change_vals = {
