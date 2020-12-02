@@ -406,7 +406,7 @@ class PrintoutReconcile(models.AbstractModel):
             sheet.write(row_data, 2, rec['transaction_code'], sty_table_data)
             sheet.write(row_data, 3, rec['type'], sty_table_data)
             sheet.write(row_data, 5,
-                        rec['issued_time'].astimezone(user_tz).strftime('%Y-%m-%d %H:%M:%S') if rec[
+                        rec['booking_time'].astimezone(user_tz).strftime('%Y-%m-%d %H:%M:%S') if rec[
                             'booking_time'] else '',
                         sty_datetime)
             sheet.write(row_data, 6,
