@@ -38,6 +38,9 @@ class MasterTourProvider(models.Model):
             desc_str = self.master_tour_id.name + '<br/>'
             pax_desc_str = ''
             pax_amount = 0
+            for rec in self.master_tour_id.passengers_ids:
+                pax_amount += 1
+                pax_desc_str += '%s. %s<br/>' % (rec.title, rec.name)
             price_per_mul = self.total_price / pax_amount / self.quantity
             lg_vals = {
                 'res_model': self._name,
