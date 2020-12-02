@@ -411,11 +411,11 @@ class PrintoutReconcile(models.AbstractModel):
             sheet.write(row_data, 1, rec['agent_name'], sty_table_data)
             sheet.write(row_data, 2, rec['transaction_code'], sty_table_data)
             sheet.write(row_data, 3, rec['type'], sty_table_data)
-            sheet.write(row_data, 5,
+            sheet.write(row_data, 4,
                         rec['booking_time'].astimezone(user_tz).strftime('%Y-%m-%d %H:%M:%S') if rec[
                             'booking_time'] else '',
                         sty_datetime)
-            sheet.write(row_data, 6,
+            sheet.write(row_data, 5,
                         rec['issued_time'].astimezone(user_tz).strftime('%Y-%m-%d %H:%M:%S') if rec[
                             'issued_time'] else '',
                         sty_datetime)
