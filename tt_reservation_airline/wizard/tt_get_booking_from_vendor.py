@@ -3,18 +3,25 @@ import json,copy
 from odoo.exceptions import UserError
 from datetime import date
 from dateutil.relativedelta import relativedelta
+from ...tools import ERR
+from ...tools.api import Response
+import traceback, logging
+
+_logger = logging.getLogger(__name__)
+
+provider_selection = [
+        # ('sabre', 'Sabre'),
+        ('amadeus', 'Amadeus'),
+        ('altea', 'Garuda Altea'),
+        ('lionair', 'Lion Air'),
+    ]
 
 class TtGetBookingFromVendor(models.TransientModel):
     _name = "tt.get.booking.from.vendor"
     _description = "Rodex Model Get Booking from Vendor"
 
     pnr = fields.Char('PNR', required=True)
-    provider = fields.Selection([
-        # ('sabre', 'Sabre'),
-        ('amadeus', 'Amadeus'),
-        ('altea', 'Garuda Altea'),
-        ('lionair', 'Lion Air'),
-    ], string='Provider', required=True)
+    provider = fields.Selection(provider_selection, string='Provider', required=True)
 
     parent_agent_id = fields.Many2one('tt.agent', 'Parent Agent', readonly=True, related ="agent_id.parent_agent_id")
     agent_id = fields.Many2one('tt.agent', 'Agent', required=True)
@@ -34,6 +41,16 @@ class TtGetBookingFromVendor(models.TransientModel):
     is_bypass_pnr_validator = fields.Boolean('Is Bypass PNR Validator')
 
     pricing_date = fields.Date('Pricing Date')
+
+    def get_provider_booking_from_vendor_api(self):
+        try:
+            response = {
+                'list_provider': provider_selection
+            }
+            res = Response().get_no_error(response)
+        except Exception as e:
+            return ERR.get_error(500)
+        return res
 
     @api.onchange("agent_id")
     def _onchange_agent_id(self):
@@ -255,6 +272,127 @@ class TtGetBookingFromVendorReview(models.TransientModel):
 
     pax_type_data = fields.Text("Pax Type Data")
 
+    def create_data_by_api(self, req, context):
+
+        res = req['response']
+        get_booking_res = res['response']
+
+        today = date.today()
+        date_query = today - relativedelta(days=7)
+        airlines = self.env['tt.reservation.airline'].search([
+            ('pnr', 'ilike', get_booking_res['pnr']),
+            ('state', 'not in', ['cancel', 'draft']),
+            ('arrival_date', '>=', date_query),
+        ])
+        if not airlines or req['duplicate_pnr']:
+            wizard_form = self.env.ref('tt_reservation_airline.tt_reservation_airline_get_booking_from_vendor_review_form_view', False)
+            view_id = self.env['tt.get.booking.from.vendor.review']
+            journey_values = ""
+            price_values = ""
+            prices = {}
+            for rec in get_booking_res['journeys']:
+                for segment in rec['segments']:
+                    journey_values += "%s\n%s %s - %s %s\n\n" % (segment['carrier_name'],
+                                                                 segment['origin'],
+                                                                 segment['departure_date'],
+                                                                 segment['destination'],
+                                                                 segment['arrival_date'])
+                    for fare in segment['fares']:
+                        for svc in fare['service_charges']:
+                            if svc['pax_type'] not in prices:
+                                prices[svc['pax_type']] = {}
+                            if svc['charge_type'] not in prices[svc['pax_type']]:
+                                prices[svc['pax_type']][svc['charge_type']] = {
+                                    'amount': 0,
+                                    'total': 0,
+                                    'pax_count': 0,
+                                    'currency': 'IDR',  ###hard code currency
+                                    'foreign_amount': 0,
+                                    'foreign_currency': 'IDR',
+                                }
+                            prices[svc['pax_type']][svc['charge_type']]['amount'] += svc['amount']
+                            prices[svc['pax_type']][svc['charge_type']]['total'] += svc['total']
+                            prices[svc['pax_type']][svc['charge_type']]['foreign_amount'] += svc['foreign_amount']
+                            prices[svc['pax_type']][svc['charge_type']]['pax_count'] = svc['pax_count']
+                            prices[svc['pax_type']][svc['charge_type']]['currency'] = svc['currency']
+                            prices[svc['pax_type']][svc['charge_type']]['foreign_currency'] = svc['foreign_currency']
+            grand_total = 0
+            commission = 0
+            for pax_type, pax_val in prices.items():
+                for charge_type, charge_val in pax_val.items():
+                    if charge_type != 'RAC':
+                        price_values += "%s x %s %s @ %s = %s\n\n" % (charge_val['pax_count'],
+                                                                      charge_type,
+                                                                      pax_type,
+                                                                      charge_val['amount'],
+                                                                      charge_val['total'])
+                        grand_total += charge_val['total']
+                    else:
+                        commission += charge_val['total']
+                price_values += '\n'
+
+            passenger_values = ""
+            pax_count = {}
+            for rec in get_booking_res['passengers']:
+                passenger_values += "%s %s %s %s\n\n" % (rec['title'], rec['first_name'], rec['last_name'], rec['pax_type'])
+                if rec['pax_type'] not in pax_count:
+                    pax_count[rec['pax_type']] = 0
+                pax_count[rec['pax_type']] += 1
+
+            # booker_data ambil data dari booker_id
+            booker_data = {}
+            booker_obj = self.env['tt.customer'].search([('seq_id','=',req['booker_id'])], limit=1)
+            if booker_obj:
+                title = "MR"
+                # if self.booker_id.gender == "male":
+                #     title = "MR"
+                if booker_obj.gender == "female" and booker_obj.marital_status:
+                    title = "MS"
+                elif booker_obj.gender == "female":
+                    title = "MRS"
+
+                booker_data = {
+                    "title": title,
+                    "first_name": booker_obj.first_name or "",
+                    "last_name": booker_obj.last_name or "",
+                    "email": booker_obj.email,
+                    "calling_code": booker_obj.phone_ids and booker_obj.phone_ids[
+                        0].calling_code or '',
+                    "mobile": booker_obj.phone_ids and booker_obj.phone_ids[0].calling_number or '',
+                    "nationality_code": booker_obj.nationality_id.code,
+                    "is_also_booker": True,
+                    "gender": booker_obj.gender,
+                    "booker_seq_id": booker_obj.seq_id
+                }
+            vals = {
+                'pnr': get_booking_res['pnr'],
+                'status': get_booking_res['status'],
+                'user_id': int(context['co_uid']),
+                'agent_id': int(context['co_agent_id']),
+                'booker_id': booker_obj.id,
+                "booker_data": json.dumps(booker_data),
+                'journey_ids_char': journey_values,
+                'passenger_ids_char': passenger_values,
+                'price_itinerary': price_values,
+                'grand_total': grand_total,
+                'total_commission': abs(commission),
+                'get_booking_json': json.dumps(res),
+                'pax_type_data': json.dumps(pax_count)
+            }
+            new = view_id.create(vals)
+            return new
+        else:
+            raise Exception('duplicate pnr')
+
+    def save_booking_api(self, req, context):
+        try:
+            data_create = self.create_data_by_api(req, context)
+            data_create.save_booking()
+            return ERR.get_no_error()
+        except Exception as e:
+            _logger.error('Error save booking from vendor frontend, %s' % traceback.format_exc())
+            return ERR.get_error(500, additional_message='Error save booking')
+
     def save_booking(self):
         booking_res = json.loads(self.get_booking_json)
         signature = booking_res['signature']
@@ -407,12 +545,8 @@ class TtGetBookingFromVendorReview(models.TransientModel):
 
         # June 29, 2020 - SAM
         # Menambahkan mekanisme untuk create ledger required untuk memanggil fungsi add payment
-        payment_res = {
-            'error_code': 0,
-            'error_msg': ''
-        }
         if retrieve_res['status'] == 'ISSUED':
-            payment_res = self.env['tt.reservation.airline'].payment_reservation_api('airline', update_req,context={
+            self.env['tt.reservation.airline'].payment_reservation_api('airline', update_req,context={
                 'co_uid': self.user_id.id,
                 'co_user_name': self.user_id.name,
                 'co_agent_id': self.agent_id.id,
@@ -432,6 +566,3 @@ class TtGetBookingFromVendorReview(models.TransientModel):
 
         if update_res['error_code'] != 0:
             raise UserError(update_res['error_msg'])
-
-        if payment_res['error_code'] != 0:
-            raise UserError(payment_res['error_msg'])
