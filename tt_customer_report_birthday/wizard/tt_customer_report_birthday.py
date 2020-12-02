@@ -37,7 +37,7 @@ class CustomerReportBirthday(models.TransientModel):
 
     def _prepare_form(self, data):
         # ========== Timezone Process ==========
-        user_tz = pytz.timezone(self.env.context.get('tz') or self.env.user.tz or 'UTC')
+        user_tz = pytz.timezone('Asia/Jakarta')
         date_now = fields.datetime.now(tz=user_tz)
         data['form']['date_now'] = date_now
 
