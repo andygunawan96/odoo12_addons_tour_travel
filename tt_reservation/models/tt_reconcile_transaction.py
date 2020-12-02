@@ -356,6 +356,12 @@ class PrintoutReconcile(models.AbstractModel):
                 sty_date = style.table_data_datetime_blue
                 sty_amount = style.table_data_amount_blue
             elif rec['state'] == 'ignore':
+                sty_table_data_center = style.table_data_center_orange
+                sty_table_data = style.table_data_orange
+                sty_datetime = style.table_data_datetime_orange
+                sty_date = style.table_data_datetime_orange
+                sty_amount = style.table_data_amount_orange
+            elif rec['state'] == 'cancel':
                 sty_table_data_center = style.table_data_center_red
                 sty_table_data = style.table_data_red
                 sty_datetime = style.table_data_datetime_red
@@ -406,7 +412,7 @@ class PrintoutReconcile(models.AbstractModel):
             sheet.write(row_data, 2, rec['transaction_code'], sty_table_data)
             sheet.write(row_data, 3, rec['type'], sty_table_data)
             sheet.write(row_data, 5,
-                        rec['issued_time'].astimezone(user_tz).strftime('%Y-%m-%d %H:%M:%S') if rec[
+                        rec['booking_time'].astimezone(user_tz).strftime('%Y-%m-%d %H:%M:%S') if rec[
                             'booking_time'] else '',
                         sty_datetime)
             sheet.write(row_data, 6,
