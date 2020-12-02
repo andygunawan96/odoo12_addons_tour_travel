@@ -139,6 +139,7 @@ class ReportDashboardOverall(models.Model):
 
     def get_agent_all(self):
         lines = self.get_agent_lines()
+        lines.insert(0, {'seq_id': '', 'name': 'All', 'agent_type_id': ''})
         return lines
 
     def get_agent_type_all(self):
@@ -147,6 +148,11 @@ class ReportDashboardOverall(models.Model):
 
     def get_provider_all(self):
         lines = self.get_provider_lines()
+        lines.insert(0, {'name': 'All Provider', 'code': '', 'provider_type': ''})
+        return lines
+
+    def get_carrier(self):
+        lines = self.get_carrier_lines()
         return lines
 
     def get_profit(self, data):
