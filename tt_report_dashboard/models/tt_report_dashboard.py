@@ -10,12 +10,27 @@ _logger = logging.getLogger(__name__)
 class TtReportDashboard(models.Model):
     _name = 'tt.report.dashboard'
 
+    #####################################################
+    #    This section consists of function(s) for returning index of certain array
+    #####################################################
+    # input
+    #   arr -> array [{'departure': [something](str), 'destination': [something](str), ...}]
+    #   params -> dictionary {'departure': [something](str), 'destination': [something](str)}
+    # return
+    #   integer, -1 if no index found in arr
+    #
     def returning_index(self, arr, params):
         for i, dic in enumerate(arr):
             if dic['departure'] == params['departure'] and dic['destination'] == params['destination']:
                 return i
         return -1
 
+    # input
+    #   arr -> array [{'departure': [something](str), 'destination': [something](str), 'sector': [something](str), ...}]
+    #   params -> dictionary {'departure': [something](str), 'destination': [something](str), 'sector': [something](str)}
+    # return
+    #   integer, -1 if no index found in arr
+    #
     def returning_index_sector(self, arr, params):
         for i, dic in enumerate(arr):
             if dic['departure'] == params['departure'] and dic['destination'] == params['destination'] and dic['sector'] == params['sector']:
@@ -23,6 +38,12 @@ class TtReportDashboard(models.Model):
 
         return -1
 
+    # input
+    #   arr -> array [{'agent_id': [something](int), 'agent_type_id': [something](int), ...}]
+    #   params -> dictionary {'agent_id': [something](int), 'agent_type_id': [something](int)}
+    # return
+    #   integer, -1 if no index found in arr
+    #
     def person_index(self, arr, params):
         for i, dic in enumerate(arr):
             if dic['agent_id'] == params['agent_id'] and dic['agent_type_id'] == params['agent_type_id']:
@@ -30,6 +51,12 @@ class TtReportDashboard(models.Model):
 
         return -1
 
+    # input
+    #   arr -> array [{'agent_name': [something](str), 'agent_type_name': [something](str), ...}]
+    #   params -> dictionary {'agent_name': [something](str), 'agent_type_name': [something](str)}
+    # return
+    #   integer, -1 if no index found in arr
+    #
     def person_index_by_name(self, arr, params):
         for i, dic in enumerate(arr):
             if dic['agent_name'] == params['agent_name'] and dic['agent_type_name'] == params['agent_type_name']:
@@ -37,30 +64,67 @@ class TtReportDashboard(models.Model):
 
         return -1
 
+    # input
+    #   arr -> array [{'carrier_name': [something](str), ...}]
+    #   params -> dictionary {'carrier_name': [something](str)}
+    # return
+    #   integer, -1 if no index found in arr
+    #
     def check_carrier(self, arr, params):
         for i, dic in enumerate(arr):
             if dic['carrier_name'] == params['carrier_name']:
                 return i
         return -1
 
+    # input
+    #   arr -> array [{'departure': [something](str), 'destination': [something](str), ...}]
+    #   params -> dictionary {'departure': [something](str), 'destination': [something](str)}
+    # return
+    #   integer, -1 if no index found in arr
+    #
     def check_carrier_route(self, arr, params):
         for i, dic in enumerate(arr):
             if dic['departure'] == params['departure'] and dic['destination'] == params['destination']:
                 return i
         return -1
 
+    # input
+    #   arr -> array [{'city': [something](str), ...}]
+    #   params -> dictionary {'city': [something](str)}
+    # return
+    #   integer, -1 if no index found in arr
+    #
     def check_location(self, arr, params):
         for i, dic in enumerate(arr):
             if dic['city'] == params['city']:
                 return i
         return -1
 
+    # input
+    #   arr -> array [{'name': [something](str), ...}]
+    #   params -> dictionary {'name': [something](str)}
+    # return
+    #   integer, -1 if no index found in arr
+    #
     def check_hotel_index(self, arr, params):
         for i, dic in enumerate(arr):
             if dic['name'] == params['name']:
                 return i
         return -1
 
+    #####################################################
+    #    This section consists of function(s) for adding month (days) detail
+    #####################################################
+
+    # input
+    #   year (int) and month (int)
+    # return
+    #   [
+    #       {day: 1, 'issued_counter': 0, 'booker_counter': 0},
+    #       {day: 2, 'issued_counter': 0, 'booker_counter': 0},
+    #       {day: 3, 'issued_counter': 0, 'booker_counter': 0},
+    #   ]
+    #
     def add_month_detail(self, year=0, month=0):
         temp_list = []
         if month == 0 and year == 0:
