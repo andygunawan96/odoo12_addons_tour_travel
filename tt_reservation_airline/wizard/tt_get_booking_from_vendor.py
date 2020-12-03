@@ -364,6 +364,12 @@ class TtGetBookingFromVendorReview(models.TransientModel):
                     "gender": booker_obj.gender,
                     "booker_seq_id": booker_obj.seq_id
                 }
+            customer_parent_id = 0
+            if req.get('customer_parent_id') == '':
+                customer_parent_id = self.env['res.users'].search([('id','=', context['co_uid'])]).agent_id.customer_parent_walkin_id.id
+            else:
+                customer_parent_id = self.env['tt.customer.parent'].search([('seq_id','=',req.get('customer_parent_id'))]).id
+
             vals = {
                 'pnr': get_booking_res['pnr'],
                 'status': get_booking_res['status'],
@@ -371,7 +377,7 @@ class TtGetBookingFromVendorReview(models.TransientModel):
                 'agent_id': int(context['co_agent_id']),
                 'booker_id': booker_obj.id,
                 "booker_data": json.dumps(booker_data),
-                'customer_parent_id': int(req['customer_parent_id']),
+                'customer_parent_id': customer_parent_id,
                 'journey_ids_char': journey_values,
                 'passenger_ids_char': passenger_values,
                 'price_itinerary': price_values,
