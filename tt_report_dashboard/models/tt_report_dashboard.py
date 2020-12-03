@@ -112,6 +112,55 @@ class TtReportDashboard(models.Model):
                 return i
         return -1
 
+    # input
+    #   arr -> array [{'name': [something](str), ...}]
+    #   key -> name of the dictionary key (str)
+    #   params -> [something](str)
+    # return
+    #   integer, -1 if no index found in arr
+    #
+    def check_index(self, arr, key, param):
+        for i, dic in enumerate(arr):
+            if dic[key] == param:
+                return i
+        return -1
+
+    # input
+    #   arr -> array [{'name': [something](str), ...}]
+    #   params -> dictionary {'name': [something](str)}
+    # return
+    #   integer, -1 if no index found in arr
+    #
+    def check_date_index(self, arr, params):
+        for i, dic in enumerate(arr):
+            if dic['year'] == params['year'] and dic['month'] == params['month']:
+                return i
+        return -1
+
+    # input
+    #   arr -> array [{'category': [something](str), 'route': [something](str), ...}]
+    #   params -> dictionary {'category': [something](str), 'route': [something](str)}
+    # return
+    #   integer, -1 if no index found in arr
+    #
+    def check_tour_route_index(self, arr, params):
+        for i, dic in enumerate(arr):
+            if dic['category'] == params['category'] and dic['route'] == params['route']:
+                return i
+        return -1
+
+    # input
+    #   arr -> array [{'provider_type': [something](str), 'offline_provider_type': [something](str), ...}]
+    #   params -> dictionary {'provider_type': [something](str), 'offline_provider_type': [something](str)}
+    # return
+    #   integer, -1 if no index found in arr
+    #
+    def check_offline_provider(self, arr, params):
+        for i, dic in enumerate(arr):
+            if dic['provider_type'] == params['provider_type'] and dic['offline_provider_type'] == params['offline_provider_type']:
+                return i
+        return -1
+
     #####################################################
     #    This section consists of function(s) for adding month (days) detail
     #####################################################
@@ -147,6 +196,15 @@ class TtReportDashboard(models.Model):
 
         return temp_list
 
+    # input
+    #   year (int) and month (int)
+    # return
+    #   [
+    #       {'day': 1, 'reservation': 0, 'invoice': 0, 'revenue': 0, 'profit': 0, 'average': 0},
+    #       {'day': 2, 'reservation': 0, 'invoice': 0, 'revenue': 0, 'profit': 0, 'average': 0},
+    #       {'day': 3, 'reservation': 0, 'invoice': 0, 'revenue': 0, 'profit': 0, 'average': 0},
+    #   ]
+    #
     def add_issued_month_detail(self, year=0, month=0):
         temp_list = []
         if month == 0 and year == 0:
@@ -175,30 +233,10 @@ class TtReportDashboard(models.Model):
 
         return temp_list
 
-    def check_index(self, arr, key, param):
-        for i, dic in enumerate(arr):
-            if dic[key] == param:
-                return i
-        return -1
-
-    def check_date_index(self, arr, params):
-        for i, dic in enumerate(arr):
-            if dic['year'] == params['year'] and dic['month'] == params['month']:
-                return i
-        return -1
-
-    def check_tour_route_index(self, arr, params):
-        for i, dic in enumerate(arr):
-            if dic['category'] == params['category'] and dic['route'] == params['route']:
-                return i
-        return -1
-
-    def check_offline_provider(self, arr, params):
-        for i, dic in enumerate(arr):
-            if dic['provider_type'] == params['provider_type'] and dic['offline_provider_type'] == params['offline_provider_type']:
-                return i
-        return -1
-
+    # input
+    #   data -> datetime
+    # return
+    #   "YYYY-MM-DD" (str)
     def convert_to_datetime(self, data):
         to_return = datetime.strptime(data, '%Y-%m-%d')
         return to_return
@@ -207,15 +245,21 @@ class TtReportDashboard(models.Model):
         for n in range(int((end_date - start_date).days)):
             yield start_date + timedelta(n)
 
-    def get_report_json_api(self, data, context):
-        is_ho = self.env.ref('tt_base.rodex_ho').id == context['co_agent_id']
-        if is_ho and data['agent_seq_id'] == "":
-            data['agent_seq_id'] = False
-        elif is_ho and data['agent_seq_id'] != "":
-            pass
-        else:
-            # get the id of the agent
-            data['agent_seq_id'] = self.env['tt.agent'].browse(context['co_agent_id']).seq_id
+    #####################################################
+    #    MAIN FUNCTION
+    #####################################################
+    # this is the function that's being called by the gateway
+    # in short this is the main function
+    def get_report_json_api(self, data, context = []):
+        is_ho = 1
+        # is_ho = self.env.ref('tt_base.rodex_ho').id == context['co_agent_id']
+        # if is_ho and data['agent_seq_id'] == "":
+        #     data['agent_seq_id'] = False
+        # elif is_ho and data['agent_seq_id'] != "":
+        #     pass
+        # else:
+        #     # get the id of the agent
+        #     data['agent_seq_id'] = self.env['tt.agent'].browse(context['co_agent_id']).seq_id
 
         if data['provider'] != 'all' and data['provider'] != '':
             # check if provider is exist
@@ -297,6 +341,7 @@ class TtReportDashboard(models.Model):
             }
         else:
             res['profit_ho'] = 0
+            res['profit_agent'] = 0
             res['dependencies'] = {
                 'is_ho': 0,
                 'current_agent': self.env['tt.agent'].browse(context['co_agent_id']).name,
@@ -351,6 +396,7 @@ class TtReportDashboard(models.Model):
                 'January', 'February', 'March', 'April', 'May', 'June',
                 'July', 'August', 'September', 'October', 'November', 'December'
             ]
+            current_id = ''
 
             # create book vs issue "result list"
             summary_by_date = []
@@ -359,71 +405,73 @@ class TtReportDashboard(models.Model):
             # iterate every data
             for i in all_values['lines']:
                 try:
-                    # convert month number (1) to text and index (January) in constant
-                    month_index = self.check_date_index(summary_by_date, {'year': i['booked_year'],
-                                                                          'month': month[int(i['booked_month']) - 1]})
-                    if month_index == -1:
-                        # create dictionary seperate by month
-                        temp_dict = {
-                            'year': i['booked_year'],
-                            'month_index': int(i['booked_month']),
-                            'month': month[int(i['booked_month']) - 1],
-                            'detail': self.add_month_detail(int(i['booked_year']), int(i['booked_month']))
-                        }
-                        # separate book date
-                        try:
-                            splits = i['reservation_booked_date'].split("-")
-                            day_index = int(splits[2]) - 1
-                            temp_dict['detail'][day_index]['booked_counter'] += 1
-                        except:
-                            pass
-                        try:
-                            splits = i['reservation_issued_date'].split("-")
-                            day_index = int(splits[2]) - 1
-                            temp_dict['detail'][day_index]['issued_counter'] += 1
-                        except:
-                            pass
+                    if current_id != i['reservation_id']:
+                        current_id = i['reservation_id']
+                        # convert month number (1) to text and index (January) in constant
+                        month_index = self.check_date_index(summary_by_date, {'year': i['booked_year'],
+                                                                              'month': month[int(i['booked_month']) - 1]})
+                        if month_index == -1:
+                            # create dictionary seperate by month
+                            temp_dict = {
+                                'year': i['booked_year'],
+                                'month_index': int(i['booked_month']),
+                                'month': month[int(i['booked_month']) - 1],
+                                'detail': self.add_month_detail(int(i['booked_year']), int(i['booked_month']))
+                            }
+                            # separate book date
+                            try:
+                                splits = i['reservation_booked_date'].split("-")
+                                day_index = int(splits[2]) - 1
+                                temp_dict['detail'][day_index]['booked_counter'] += 1
+                            except:
+                                pass
+                            try:
+                                splits = i['reservation_issued_date'].split("-")
+                                day_index = int(splits[2]) - 1
+                                temp_dict['detail'][day_index]['issued_counter'] += 1
+                            except:
+                                pass
 
-                        # append to list of dictionaries
-                        summary_by_date.append(temp_dict)
-                    else:
-                        try:
-                            splits = i['reservation_booked_date'].split("-")
-                            day_index = int(splits[2]) - 1
-                            summary_by_date[month_index]['detail'][day_index]['booked_counter'] += 1
-                        except:
-                            pass
-                        try:
-                            splits = i['reservation_issued_date'].split("-")
-                            day_index = int(splits[2]) - 1
-                            summary_by_date[month_index]['detail'][day_index]['issued_counter'] += 1
-                        except:
-                            pass
+                            # append to list of dictionaries
+                            summary_by_date.append(temp_dict)
+                        else:
+                            try:
+                                splits = i['reservation_booked_date'].split("-")
+                                day_index = int(splits[2]) - 1
+                                summary_by_date[month_index]['detail'][day_index]['booked_counter'] += 1
+                            except:
+                                pass
+                            try:
+                                splits = i['reservation_issued_date'].split("-")
+                                day_index = int(splits[2]) - 1
+                                summary_by_date[month_index]['detail'][day_index]['issued_counter'] += 1
+                            except:
+                                pass
 
-                    provider_index = self.check_index(summary_provider, "provider", i['provider_type_name'])
-                    if provider_index == -1:
-                        # declare dependencies
-                        temp_dict = {
-                            'provider': i['provider_type_name'],
-                            'counter': 1,
-                            'booked': 0,
-                            'issued': 0,
-                            'cancel2': 0,
-                            'fail_booked': 0,
-                            'fail_issued': 0,
-                        }
+                        provider_index = self.check_index(summary_provider, "provider", i['provider_type_name'])
+                        if provider_index == -1:
+                            # declare dependencies
+                            temp_dict = {
+                                'provider': i['provider_type_name'],
+                                'counter': 1,
+                                'booked': 0,
+                                'issued': 0,
+                                'cancel2': 0,
+                                'fail_booked': 0,
+                                'fail_issued': 0,
+                            }
 
-                        # add the first data
-                        temp_dict[i['reservation_state']] += 1
+                            # add the first data
+                            temp_dict[i['reservation_state']] += 1
 
-                        # add to big list
-                        summary_provider.append(temp_dict)
-                    else:
-                        summary_provider[provider_index]['counter'] += 1
-                        try:
-                            summary_provider[provider_index][i['reservation_state']] += 1
-                        except:
-                            pass
+                            # add to big list
+                            summary_provider.append(temp_dict)
+                        else:
+                            summary_provider[provider_index]['counter'] += 1
+                            try:
+                                summary_provider[provider_index][i['reservation_state']] += 1
+                            except:
+                                pass
 
                 except:
                     pass
@@ -653,6 +701,7 @@ class TtReportDashboard(models.Model):
             total = 0
             profit_total = 0
             profit_ho = 0
+            profit_agent = 0
             num_data = 0
             invoice_total = 0
 
@@ -729,6 +778,7 @@ class TtReportDashboard(models.Model):
                                 elif i['ledger_agent_type_name'] != 'HO':
                                     temp_dict['detail'][day_index]['profit'] += i['debit']
                                     profit_total += i['debit']
+                                    profit_agent += i['debit']
 
                             # add to the big list
                             summary_issued.append(temp_dict)
@@ -749,6 +799,7 @@ class TtReportDashboard(models.Model):
                                 elif i['ledger_agent_type_name'] != 'HO':
                                     summary_issued[month_index]['detail'][day_index]['profit'] += i['debit']
                                     profit_total += i['debit']
+                                    profit_agent += i['debit']
 
                         # after adding summary issued we group the data by provider
                         provider_index = self.check_index(summary_provider, "provider", i['provider_type_name'])
@@ -788,6 +839,7 @@ class TtReportDashboard(models.Model):
                                 elif i['ledger_agent_type_name'] != 'HO':
                                     summary_issued[month_index]['detail'][day_index]['profit'] += i['debit']
                                     profit_total += i['debit']
+                                    profit_agent += i['debit']
                 except:
                     pass
 
@@ -903,6 +955,7 @@ class TtReportDashboard(models.Model):
                 'average_rupiah': float(total) / float(invoice_total) if invoice_total > 0 else 0,
                 'profit_total': profit_total,
                 'profit_ho': profit_ho,
+                'profit_agent': profit_agent,
                 'first_overview': summary_provider,
             }
 
@@ -933,6 +986,7 @@ class TtReportDashboard(models.Model):
             start_date = self.convert_to_datetime(data['start_date'])
             end_date = self.convert_to_datetime(data['end_date'])
 
+            # convert time to GMT 0
             temp_start_date = start_date - timedelta(days=1)
             data['start_date'] = temp_start_date.strftime('%Y-%m-%d') + " 17:00:00"
             data['end_date'] += " 16:59:59"
@@ -996,6 +1050,7 @@ class TtReportDashboard(models.Model):
             num_data = 0
             profit_total = 0
             profit_ho = 0
+            profit_agent = 0
             invoice_total = 0
 
             # create list of reservation id for invoice query
@@ -1058,6 +1113,7 @@ class TtReportDashboard(models.Model):
                                 elif i['ledger_agent_type_name'] != 'HO':
                                     temp_dict['detail'][day_index]['profit'] += i['debit']
                                     profit_total += i['debit']
+                                    profit_agent += i['debit']
 
                             # add to the big list
                             summary_issued.append(temp_dict)
@@ -1078,6 +1134,7 @@ class TtReportDashboard(models.Model):
                                 elif i['ledger_agent_type_name'] != 'HO':
                                     summary_issued[month_index]['detail'][day_index]['profit'] += i['debit']
                                     profit_total += i['debit']
+                                    profit_agent += i['debit']
                     except:
                         pass
 
@@ -1250,6 +1307,7 @@ class TtReportDashboard(models.Model):
                             elif i['ledger_agent_type_name'] != 'HO':
                                 summary_issued[month_index]['detail'][day_index]['profit'] += i['debit']
                                 profit_total += i['debit']
+                                profit_agent += i['debit']
 
             # grouping data
             international_filter = list(filter(lambda x: x['sector'] == 'International', destination_sector_summary))
@@ -1458,6 +1516,7 @@ class TtReportDashboard(models.Model):
                 'average_rupiah': float(total) / float(invoice_total) if invoice_total > 0 else 0,
                 'profit_total': profit_total,
                 'profit_ho': profit_ho,
+                'profit_agent': profit_agent,
                 'first_overview': {
                     'sector_summary': sector_dictionary,
                     'international': international_filter[:20],
@@ -1567,6 +1626,7 @@ class TtReportDashboard(models.Model):
             num_data = 0
             profit_total = 0
             profit_ho = 0
+            profit_agent = 0
             invoice_total = 0
 
             reservation_ids = []
@@ -1627,6 +1687,7 @@ class TtReportDashboard(models.Model):
                                 elif i['ledger_agent_type_name'] != 'HO':
                                     temp_dict['detail'][day_index]['profit'] += i['debit']
                                     profit_total += i['debit']
+                                    profit_agent += i['debit']
 
                             # add to the big list
                             summary_issued.append(temp_dict)
@@ -1647,6 +1708,7 @@ class TtReportDashboard(models.Model):
                                 elif i['ledger_agent_type_name'] != 'HO':
                                     summary_issued[month_index]['detail'][day_index]['profit'] += i['debit']
                                     profit_total += i['debit']
+                                    profit_agent += i['debit']
                     except:
                         pass
 
@@ -1758,6 +1820,7 @@ class TtReportDashboard(models.Model):
                             elif i['ledger_agent_type_name'] != 'HO':
                                 summary_issued[month_index]['detail'][day_index]['profit'] += i['debit']
                                 profit_total += i['debit']
+                                profit_agent += i['debit']
 
             # grouping data
             international_filter = list(filter(lambda x: x['sector'] == 'International', destination_sector_summary))
@@ -1889,6 +1952,7 @@ class TtReportDashboard(models.Model):
                 'average_rupiah': float(total) / float(invoice_total) if invoice_total > 0 else 0,
                 'profit_total': profit_total,
                 'profit_ho': profit_ho,
+                'profit_agent': profit_agent,
                 'first_overview': {
                     'sector_summary': sector_dictionary,
                     'international': international_filter[:20],
@@ -1960,6 +2024,7 @@ class TtReportDashboard(models.Model):
             num_data = 0
             profit_total = 0
             profit_ho = 0
+            profit_agent = 0
             invoice_total = 0
             reservation_ids = []
             for i in issued_values['lines']:
@@ -2015,6 +2080,7 @@ class TtReportDashboard(models.Model):
                                 elif i['ledger_agent_type_name'] != 'HO':
                                     temp_dict['detail'][day_index]['profit'] += i['debit']
                                     profit_total += i['debit']
+                                    profit_agent += i['debit']
 
                             # add to the big list
                             summary_issued.append(temp_dict)
@@ -2035,6 +2101,7 @@ class TtReportDashboard(models.Model):
                                 elif i['ledger_agent_type_name'] != 'HO':
                                     summary_issued[month_index]['detail'][day_index]['profit'] += i['debit']
                                     profit_total += i['debit']
+                                    profit_agent += i['debit']
                     except:
                         pass
 
@@ -2046,6 +2113,8 @@ class TtReportDashboard(models.Model):
                                 'country': i['country_name'] if i['country_name'] else '',
                                 'city': i['hotel_city'],
                                 'counter': 1,
+                                'revenue': i['amount'],
+                                'passenger': i['reservation_passenger'],
                                 'hotel': [{
                                     'name': i['reservation_hotel_name'],
                                     'counter': 1,
@@ -2069,6 +2138,8 @@ class TtReportDashboard(models.Model):
                                 location_overview[location_index]['hotel'][hotel_index]['counter'] += 1
                                 location_overview[location_index]['hotel'][hotel_index]['passenger'] += i['reservation_passenger']
                             location_overview[location_index]['counter'] += 1
+                            location_overview[location_index]['revenue'] += i['amount']
+                            location_overview[location_index]['passenger'] += i['reservation_passenger']
                     except:
                         pass
 
@@ -2086,6 +2157,7 @@ class TtReportDashboard(models.Model):
                         elif i['ledger_agent_type_name'] != 'HO':
                             summary_issued[month_index]['detail'][day_index]['profit'] += i['debit']
                             profit_total += i['debit']
+                            profit_agent += i['debit']
 
             # for every section in summary
             for i in summary_issued:
@@ -2257,7 +2329,8 @@ class TtReportDashboard(models.Model):
                 'total_rupiah': total,
                 'average_rupiah': float(total) / float(invoice_total) if invoice_total > 0 else 0,
                 'profit_total': profit_total,
-                'profit_ho': profit_ho
+                'profit_ho': profit_ho,
+                'profit_agent': profit_agent
             }
 
             # update dependencies
@@ -2318,6 +2391,7 @@ class TtReportDashboard(models.Model):
             num_data = 0
             profit_total = 0
             profit_ho = 0
+            profit_agent = 0
             invoice_total = 0
 
             reservation_ids = []
@@ -2373,6 +2447,7 @@ class TtReportDashboard(models.Model):
                                 elif i['ledger_agent_type_name'] != 'HO':
                                     temp_dict['detail'][day_index]['profit'] += i['debit']
                                     profit_total += i['debit']
+                                    profit_agent += i['debit']
 
                             # add to the big list
                             summary_issued.append(temp_dict)
@@ -2393,6 +2468,7 @@ class TtReportDashboard(models.Model):
                                 elif i['ledger_agent_type_name'] != 'HO':
                                     summary_issued[month_index]['detail'][day_index]['profit'] += i['debit']
                                     profit_total += i['debit']
+                                    profit_agent += i['debit']
                     except:
                         pass
                     current_id = i['reservation_id']
@@ -2408,6 +2484,7 @@ class TtReportDashboard(models.Model):
                     elif i['ledger_agent_type_name'] != 'HO':
                         summary_issued[month_index]['detail'][day_index]['profit'] += i['debit']
                         profit_total += i['debit']
+                        profit_agent += i['debit']
 
             # for every section in summary
             for i in summary_issued:
@@ -2523,6 +2600,7 @@ class TtReportDashboard(models.Model):
                 'total_rupiah': total,
                 'profit_total': profit_total,
                 'profit_ho': profit_ho,
+                'profit_agent': profit_agent,
                 'average_rupiah': float(total) / float(invoice_total) if invoice_total > 0 else 0
             }
 
@@ -2584,6 +2662,7 @@ class TtReportDashboard(models.Model):
             num_data = 0
             profit_total = 0
             profit_ho = 0
+            profit_agent = 0
             invoice_total = 0
 
             reservation_ids = []
@@ -2640,6 +2719,7 @@ class TtReportDashboard(models.Model):
                                 elif i['ledger_agent_type_name'] != 'HO':
                                     temp_dict['detail'][day_index]['profit'] += i['debit']
                                     profit_total += i['debit']
+                                    profit_agent += i['debit']
 
                             # add to the big list
                             summary_issued.append(temp_dict)
@@ -2660,6 +2740,7 @@ class TtReportDashboard(models.Model):
                                 elif i['ledger_agent_type_name'] != 'HO':
                                     summary_issued[month_index]['detail'][day_index]['profit'] += i['debit']
                                     profit_total += i['debit']
+                                    profit_agent += i['debit']
                     except:
                         pass
 
@@ -2699,6 +2780,7 @@ class TtReportDashboard(models.Model):
                         elif i['ledger_agent_type_name'] != 'HO':
                             summary_issued[month_index]['detail'][day_index]['profit'] += i['debit']
                             profit_total += i['debit']
+                            profit_agent += i['debit']
 
             # for every section in summary
             for i in summary_issued:
@@ -2816,6 +2898,7 @@ class TtReportDashboard(models.Model):
                 'average_rupiah': float(total) / float(invoice_total) if invoice_total > 0 else 0,
                 'profit_total': profit_total,
                 'profit_ho': profit_ho,
+                'profit_agent': profit_agent,
                 'first_overview': product_summary
             }
 
@@ -2877,6 +2960,7 @@ class TtReportDashboard(models.Model):
             num_data = 0
             profit_total = 0
             profit_ho = 0
+            profit_agent = 0
             invoice_total = 0
 
             reservation_ids = []
@@ -2933,6 +3017,7 @@ class TtReportDashboard(models.Model):
                                 elif i['ledger_agent_type_name'] != 'HO':
                                     temp_dict['detail'][day_index]['profit'] += i['debit']
                                     profit_total += i['debit']
+                                    profit_agent += i['debit']
 
                             # add to the big list
                             summary_issued.append(temp_dict)
@@ -2953,6 +3038,7 @@ class TtReportDashboard(models.Model):
                                 elif i['ledger_agent_type_name'] != 'HO':
                                     summary_issued[month_index]['detail'][day_index]['profit'] += i['debit']
                                     profit_total += i['debit']
+                                    profit_agent += i['debit']
 
                         product_index = self.check_index(product_summary, 'product', i['reservation_activity_name'])
                         if product_index == -1:
@@ -2991,6 +3077,7 @@ class TtReportDashboard(models.Model):
                         elif i['ledger_agent_type_name'] != 'HO':
                             summary_issued[month_index]['detail'][day_index]['profit'] += i['debit']
                             profit_total += i['debit']
+                            profit_agent += i['debit']
 
             # for every section in summary
             for i in summary_issued:
@@ -3169,6 +3256,7 @@ class TtReportDashboard(models.Model):
             num_data = 0
             profit_total = 0
             profit_ho = 0
+            profit_agent = 0
             invoice_total = 0
 
             reservation_ids = []
@@ -3228,6 +3316,7 @@ class TtReportDashboard(models.Model):
                                 elif i['ledger_agent_type_name'] != 'HO':
                                     temp_dict['detail'][day_index]['profit'] += i['debit']
                                     profit_total += i['debit']
+                                    profit_agent += i['debit']
 
                             # add to the big list
                             summary_issued.append(temp_dict)
@@ -3248,6 +3337,7 @@ class TtReportDashboard(models.Model):
                                 elif i['ledger_agent_type_name'] != 'HO':
                                     summary_issued[month_index]['detail'][day_index]['profit'] += i['debit']
                                     profit_total += i['debit']
+                                    profit_agent += i['debit']
 
                         # ============= Country summary Report =======================
                         country_index = self.check_index(country_summary, 'country', i['country_name'])
@@ -3278,6 +3368,7 @@ class TtReportDashboard(models.Model):
                         elif i['ledger_agent_type_name'] != 'HO':
                             summary_issued[month_index]['detail'][day_index]['profit'] += i['debit']
                             profit_total += i['debit']
+                            profit_agent += i['debit']
 
             # for every section in summary
             for i in summary_issued:
@@ -3393,6 +3484,7 @@ class TtReportDashboard(models.Model):
                 'average_rupiah': float(total) / float(invoice_total) if invoice_total > 0 else 0,
                 'profit_total': profit_total,
                 'profit_ho': profit_ho,
+                'profit_agent': profit_agent,
                 'first_overview': country_summary
             }
 
@@ -3454,6 +3546,7 @@ class TtReportDashboard(models.Model):
             num_data = 0
             profit_total = 0
             profit_ho = 0
+            profit_agent = 0
             invoice_total = 0
 
             reservation_ids = []
@@ -3513,6 +3606,7 @@ class TtReportDashboard(models.Model):
                                 elif i['ledger_agent_type_name'] != 'HO':
                                     temp_dict['detail'][day_index]['profit'] += i['debit']
                                     profit_total += i['debit']
+                                    profit_agent += i['debit']
 
                             # add to the big list
                             summary_issued.append(temp_dict)
@@ -3533,6 +3627,7 @@ class TtReportDashboard(models.Model):
                                 elif i['ledger_agent_type_name'] != 'HO':
                                     summary_issued[month_index]['detail'][day_index]['profit'] += i['debit']
                                     profit_total += i['debit']
+                                    profit_agent += i['debit']
 
                         # group data by offline provider type (airline, train, etc)
                         offline_index = self.check_index(offline_summary, 'provider_type', i['reservation_offline_provider_type'])
@@ -3564,6 +3659,7 @@ class TtReportDashboard(models.Model):
                         elif i['ledger_agent_type_name'] != 'HO':
                             summary_issued[month_index]['detail'][day_index]['profit'] += i['debit']
                             profit_total += i['debit']
+                            profit_agent += i['debit']
 
             # for every section in summary
             for i in summary_issued:
@@ -3682,6 +3778,7 @@ class TtReportDashboard(models.Model):
                 'average_rupiah': float(total) / float(invoice_total) if invoice_total > 0 else 0,
                 'profit_total': profit_total,
                 'profit_ho': profit_ho,
+                'profit_agent': profit_agent,
                 'first_overview': offline_summary
             }
 
@@ -3743,6 +3840,7 @@ class TtReportDashboard(models.Model):
             num_data = 0
             profit_total = 0
             profit_ho = 0
+            profit_agent = 0
             invoice_total = 0
             reservation_ids = []
             for i in issued_values['lines']:
@@ -3801,6 +3899,7 @@ class TtReportDashboard(models.Model):
                                 elif i['ledger_agent_type_name'] != 'HO':
                                     temp_dict['detail'][day_index]['profit'] += i['debit']
                                     profit_total += i['debit']
+                                    profit_agent += i['debit']
 
                             # add to the big list
                             summary_issued.append(temp_dict)
@@ -3821,6 +3920,7 @@ class TtReportDashboard(models.Model):
                                 elif i['ledger_agent_type_name'] != 'HO':
                                     summary_issued[month_index]['detail'][day_index]['profit'] += i['debit']
                                     profit_total += i['debit']
+                                    profit_agent += i['debit']
 
                         # populate ppob_summary
                         ppob_index = self.check_index(ppob_summary, 'product', i['reservation_carrier_name'])
@@ -3850,6 +3950,7 @@ class TtReportDashboard(models.Model):
                         elif i['ledger_agent_type_name'] != 'HO':
                             summary_issued[month_index]['detail'][day_index]['profit'] += i['debit']
                             profit_total += i['debit']
+                            profit_agent += i['debit']
 
             # for every section in summary
             for i in summary_issued:
@@ -3968,6 +4069,7 @@ class TtReportDashboard(models.Model):
                 'average_rupiah': float(total) / float(invoice_total) if invoice_total > 0 else 0,
                 'profit_total': profit_total,
                 'profit_ho': profit_ho,
+                'profit_agent': profit_agent,
                 'first_overview': ppob_summary
             }
 
@@ -4027,6 +4129,7 @@ class TtReportDashboard(models.Model):
             num_data = 0
             profit_total = 0
             profit_ho = 0
+            profit_agent = 0
             invoice_total = 0
             # count the date difference
             delta = end_date - start_date
@@ -4098,6 +4201,7 @@ class TtReportDashboard(models.Model):
                                 elif i['ledger_agent_type_name'] != 'HO':
                                     temp_dict['detail'][day_index]['profit'] += i['debit']
                                     profit_total += i['debit']
+                                    profit_agent += i['debit']
 
                             # add to the big list
                             summary_issued.append(temp_dict)
@@ -4118,6 +4222,7 @@ class TtReportDashboard(models.Model):
                                 elif i['ledger_agent_type_name'] != 'HO':
                                     summary_issued[month_index]['detail'][day_index]['profit'] += i['debit']
                                     profit_total += i['debit']
+                                    profit_agent += i['debit']
 
                         # populate passport_summary
                     except:
@@ -4129,10 +4234,15 @@ class TtReportDashboard(models.Model):
                                                                              'month': month[int(i['issued_month']) - 1]})
                         splits = i['reservation_issued_date'].split("-")
                         day_index = int(splits[2]) - 1
-                        summary_issued[month_index]['detail'][day_index]['profit'] += i['debit']
-                        profit_total += i['debit']
-                        if i['ledger_agent_type_name'] == 'HO':
-                            profit_ho += i['debit']
+                        if i['ledger_transaction_type'] == 3:
+                            if i['ledger_agent_type_name'] == 'HO' and is_ho == 1:
+                                summary_issued[month_index]['detail'][day_index]['profit'] += i['debit']
+                                profit_total += i['debit']
+                                profit_ho += i['debit']
+                            elif i['ledger_agent_type_name'] != 'HO':
+                                summary_issued[month_index]['detail'][day_index]['profit'] += i['debit']
+                                profit_total += i['debit']
+                                profit_agent += i['debit']
 
             # for every section in summary
             for i in summary_issued:
@@ -4251,6 +4361,8 @@ class TtReportDashboard(models.Model):
                 'total_rupiah': total,
                 'average_rupiah': float(total) / float(invoice_total) if invoice_total > 0 else 0,
                 'profit_total': profit_total,
+                'profit_ho': profit_ho,
+                'profit_agent': profit_agent,
                 'first_overview': passport_summary
             }
 
