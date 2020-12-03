@@ -371,6 +371,7 @@ class TtGetBookingFromVendorReview(models.TransientModel):
                 'agent_id': int(context['co_agent_id']),
                 'booker_id': booker_obj.id,
                 "booker_data": json.dumps(booker_data),
+                'customer_parent_id': int(req['customer_parent_id']),
                 'journey_ids_char': journey_values,
                 'passenger_ids_char': passenger_values,
                 'price_itinerary': price_values,
@@ -387,11 +388,11 @@ class TtGetBookingFromVendorReview(models.TransientModel):
     def save_booking_api(self, req, context):
         try:
             data_create = self.create_data_by_api(req, context)
-            data_create.save_booking()
-            return ERR.get_no_error()
+            res = data_create.save_booking()
+            return ERR.get_no_error(res['response'])
         except Exception as e:
             _logger.error('Error save booking from vendor frontend, %s' % traceback.format_exc())
-            return ERR.get_error(500, additional_message='Error save booking')
+            return ERR.get_error(500, additional_message='Error save booking, ' + e.args[0])
 
     def save_booking(self):
         booking_res = json.loads(self.get_booking_json)
@@ -553,7 +554,7 @@ class TtGetBookingFromVendorReview(models.TransientModel):
                 'co_agent_name': self.agent_id.name,
                 'signature': signature
             })
-        
+
         # END
 
         update_res = self.env['tt.reservation.airline'].update_pnr_provider_airline_api(update_req,context={
@@ -566,3 +567,5 @@ class TtGetBookingFromVendorReview(models.TransientModel):
 
         if update_res['error_code'] != 0:
             raise UserError(update_res['error_msg'])
+        update_res['response'].pop('book_id')
+        return update_res
