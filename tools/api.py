@@ -26,7 +26,7 @@ class Response:
         })
         return self.to_dict()
 
-    def get_error(self, error_message, error_code, additional_message):
+    def get_error(self, error_message, error_code, additional_message=''):
         self.__dict__.update({
             'error_code': error_code,
             'error_msg': error_message,
