@@ -9,6 +9,8 @@
                 <field name="name"/>
                 <field name="provider_id"/>
                 <field name="price"/>
+                <field name="parent_ref"/>
+                <field name="pax_description"/>
                 <field name="notes"/>
                 <separator/>
                 <filter string="All" name='all'/>
@@ -70,6 +72,7 @@
                         <group>
                             <field name="provider_id"/>
                             <field name="type"/>
+                            <field name="parent_ref"/>
                             <field name="pax_description"/>
                             <field name="notes"/>
                             <field name="res_model" invisible="1"/>
@@ -126,6 +129,7 @@
                 <field name="name"/>
                 <field name="provider_id"/>
                 <field name="type"/>
+                <field name="parent_ref"/>
                 <field name="currency_id"/>
                 <field name="price"/>
                 <field name="create_date"/>
