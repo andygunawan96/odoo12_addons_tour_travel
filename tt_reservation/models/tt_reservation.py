@@ -541,6 +541,7 @@ class TtReservation(models.Model):
             'is_force_issued': self.is_force_issued,
             'is_halt_process': self.is_halt_process,
             'agent_nta': self.agent_nta,
+            'booked_date': self.booked_date and self.booked_date.strftime('%Y-%m-%d %H:%M:%S') or '',
             # END
         }
         if include_total_nta:
