@@ -398,7 +398,7 @@ class TtGetBookingFromVendorReview(models.TransientModel):
             return ERR.get_no_error(res['response'])
         except Exception as e:
             _logger.error('Error save booking from vendor frontend, %s' % traceback.format_exc())
-            return ERR.get_error(1, additional_message= e.args[0])
+            return ERR.get_error(500, additional_message=e.args[0])
 
     def save_booking(self):
         booking_res = json.loads(self.get_booking_json)
