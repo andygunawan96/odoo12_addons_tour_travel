@@ -42,6 +42,7 @@ class ReservationAirline(models.Model):
     split_date = fields.Datetime('Splitted Date', readonly=True)
 
     is_get_booking_from_vendor = fields.Boolean('Get Booking From Vendor')
+    printout_ticket_original_id = fields.Many2one('tt.upload.center', 'Original Ticket', readonly=True)
 
     def compute_journey_code(self):
         objs = self.env['tt.reservation.airline'].sudo().search([])
@@ -1535,6 +1536,85 @@ class ReservationAirline(models.Model):
             )
             upc_id = book_obj.env['tt.upload.center'].search([('seq_id', '=', res['response']['seq_id'])], limit=1)
             book_obj.printout_ticket_price_id = upc_id.id
+        url = {
+            'type': 'ir.actions.act_url',
+            'name': "Printout",
+            'target': 'new',
+            'url': book_obj.printout_ticket_price_id.url,
+        }
+        return url
+
+    def save_eticket_original_api(self, data, ctx):
+        if 'order_number' not in data:
+            data['order_number'] = self.name
+        if 'provider_type' not in data:
+            data['provider_type'] = self.provider_type_id.name
+        book_obj = self.env['tt.reservation.airline'].search([('name', '=', data['order_number'])], limit=1)
+        if book_obj.agent_id:
+            co_agent_id = book_obj.agent_id.id
+        else:
+            co_agent_id = self.env.user.agent_id.id
+
+        if book_obj.user_id:
+            co_uid = book_obj.user_id.id
+        else:
+            co_uid = self.env.user.id
+        for base64 in data['response']:
+            res = book_obj.env['tt.upload.center.wizard'].upload_file_api(
+                {
+                    'filename': 'Airline Ticket Original %s.pdf' % book_obj.name,
+                    'file_reference': 'Airline Ticket Original',
+                    'file': base64['base64'],
+                    'delete_date': datetime.today() + timedelta(minutes=10)
+                },
+                {
+                    'co_agent_id': co_agent_id,
+                    'co_uid': co_uid
+                }
+            )
+        upc_id = book_obj.env['tt.upload.center'].search([('seq_id', '=', res['response']['seq_id'])], limit=1)
+        book_obj.printout_ticket_price_id = upc_id.id
+
+        url = {
+            'type': 'ir.actions.act_url',
+            'name': "Printout",
+            'target': 'new',
+            'url': book_obj.printout_ticket_original_id.url,
+        }
+        return url
+
+    @api.multi
+    def print_eticket_original(self, data, ctx=None):
+        # jika panggil dari backend
+        if 'order_number' not in data:
+            data['order_number'] = self.name
+        if 'provider_type' not in data:
+            data['provider_type'] = self.provider_type_id.name
+
+        book_obj = self.env['tt.reservation.airline'].search([('name', '=', data['order_number'])], limit=1)
+        datas = {'ids': book_obj.env.context.get('active_ids', [])}
+        # res = self.read(['price_list', 'qty1', 'qty2', 'qty3', 'qty4', 'qty5'])
+        res = book_obj.read()
+        res = res and res[0] or {}
+        datas['form'] = res
+        datas['is_with_price'] = True
+        airline_ticket_id = book_obj.env.ref('tt_report_common.action_report_printout_reservation_airline')
+
+        if not book_obj.printout_ticket_original_id:
+            # gateway get ticket
+            for provider_booking_obj in book_obj.provider_booking_ids:
+                req = {
+                    'pnr': provider_booking_obj.pnr,
+                    'provider': book_obj.provider_name
+                }
+                res = self.env['tt.airline.api.con'].send_get_original_ticket(req)
+                if res['error_code'] == 0:
+                    data.update({
+                        'response': res['response']
+                    })
+                    self.save_eticket_original_api(data, ctx)
+                else:
+                    return 0 # error
         url = {
             'type': 'ir.actions.act_url',
             'name': "Printout",

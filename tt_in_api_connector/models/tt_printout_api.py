@@ -51,6 +51,8 @@ class TtPrintoutApiCon(models.Model):
                         res = self.env['tt.reservation.%s' % data['provider_type']].print_eticket(data, context)
                     elif data['mode'] == 'ticket_price':
                         res = self.env['tt.reservation.%s' % data['provider_type']].print_eticket_with_price(data, context)
+                    elif data['mode'] == 'ticket_original':
+                        res = self.env['tt.reservation.%s' % data['provider_type']].print_eticket_original(data, context)
                     elif data['mode'] == 'itinerary':
                         res = self.env['tt.reservation.%s' % data['provider_type']].print_itinerary(data, context)
                     elif data['mode'] == 'visa_cust':
