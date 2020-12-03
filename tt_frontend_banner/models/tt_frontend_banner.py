@@ -13,7 +13,7 @@ class FrontendBanner(models.Model):
 
     type = fields.Selection([('big_banner', 'Big Banner'), ('small_banner', 'Small Banner'), ('promotion', 'Promotion')], default='big_banner')
     image_ids = fields.Many2many('tt.upload.center', 'tt_frontend_banner_tt_upload_center_rel' 'banner_id', 'image_id', string = 'Image',
-                                 context={'active_test': False, 'form_view_ref':'tt_base.tt_upload_center_form_view'})
+                                 context={'active_test': True, 'form_view_ref':'tt_base.tt_upload_center_form_view'})
 
     def add_banner_api(self,data,context):
         #
