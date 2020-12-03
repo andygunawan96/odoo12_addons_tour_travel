@@ -252,7 +252,7 @@ class MasterTimeslot(models.Model):
     # timezone = fields.Selection([('wib', 'WIB'), ('wita', 'WITA'), ('wit', 'WIT')])
     date = fields.Date('Date')
     all_day = fields.Boolean('all day')
-    # active = fields.Boolean('Active', default=True)
+    active = fields.Boolean('Active', default=True)
 
 class EventOptionAdditionalIformation(models.Model):
     _name = 'tt.event.option.additional'

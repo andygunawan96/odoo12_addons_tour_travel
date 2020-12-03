@@ -5,7 +5,7 @@ import logging
 TYPE = [
     ('work', 'Work'),
     ('home', 'Home'),
-    ('mobile','Mobile'),
+    ('mobile', 'Mobile'),
     ('other', 'Other')
 ]
 
