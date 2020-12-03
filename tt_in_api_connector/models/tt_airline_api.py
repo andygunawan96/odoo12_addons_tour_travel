@@ -89,3 +89,12 @@ class TtAirlineApiCon(models.Model):
                                             request,
                                             'get_booking',
                                             timeout=180)
+    def send_get_original_ticket(self, req):
+        request = req
+        request.update({
+            'proxy_co_uid': req.get('user_id', False)
+        })
+        return self.send_request_to_gateway('%s/booking/airline/private' % (self.url),
+                                            request,
+                                            'get_original_ticket',
+                                            timeout=180)
