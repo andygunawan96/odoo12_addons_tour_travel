@@ -170,6 +170,7 @@ class ProviderOffline(models.Model):
                     'res_id': self.id,
                     'provider_id': self.provider_id.id,
                     'type': 'lg',
+                    'parent_ref': self.booking_id.name,
                     'pax_description': pax_desc_str,
                     'multiplier': multiplier,
                     'multiplier_amount': mult_amount,
