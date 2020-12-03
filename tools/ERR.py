@@ -49,7 +49,7 @@ def get_error(_error_code=500, parameter='', additional_message=''):
     if additional_message:
         message = '%s, %s' % (message, additional_message)
 
-    res = Response().get_error(message, _data['code'])
+    res = Response().get_error(message, _data['code'], additional_message)
     return res
 
 

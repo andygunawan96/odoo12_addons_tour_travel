@@ -63,7 +63,8 @@ class ProviderOffline(models.Model):
     ##
 
     is_lg_required = fields.Boolean('Is LG Required', readonly=True, compute='compute_is_lg_required')
-    letter_of_guarantee_ids = fields.One2many('tt.letter.guarantee', 'res_id', 'Letter of Guarantees', readonly=True)
+    is_po_required = fields.Boolean('Is PO Required', readonly=True, compute='compute_is_po_required')
+    letter_of_guarantee_ids = fields.One2many('tt.letter.guarantee', 'res_id', 'Letter of Guarantees / Purchase Orders', readonly=True)
 
     @api.onchange('provider_id')
     def compute_is_lg_required(self):
@@ -73,7 +74,15 @@ class ProviderOffline(models.Model):
             else:
                 rec.is_lg_required = False
 
-    def generate_lg(self):
+    @api.onchange('provider_id')
+    def compute_is_po_required(self):
+        for rec in self:
+            if rec.provider_id.is_using_po:
+                rec.is_po_required = True
+            else:
+                rec.is_po_required = False
+
+    def generate_lg_or_po(self, lg_type):
         if self.booking_id.state_offline == 'validate':
             if not self.env.user.has_group('tt_base.group_tt_accounting_manager'):
                 hour_passed = (datetime.now() - self.booking_id.validate_date).seconds / 3600
@@ -169,7 +178,7 @@ class ProviderOffline(models.Model):
                     'res_model': self._name,
                     'res_id': self.id,
                     'provider_id': self.provider_id.id,
-                    'type': 'lg',
+                    'type': lg_type,
                     'parent_ref': self.booking_id.name,
                     'pax_description': pax_desc_str,
                     'multiplier': multiplier,
@@ -190,6 +199,12 @@ class ProviderOffline(models.Model):
                     self.env['tt.letter.guarantee.lines'].create(line_vals)
         else:
             raise UserError('You can only generate Letter of Guarantee if this reservation state is "Validated".')
+
+    def generate_lg(self):
+        self.generate_lg_or_po('lg')
+
+    def generate_po(self):
+        self.generate_lg_or_po('po')
 
     def action_refund(self, check_provider_state=False):
         self.state = 'refund'

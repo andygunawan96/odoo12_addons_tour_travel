@@ -25,6 +25,7 @@ class TtProvider(models.Model):
     is_reconcile = fields.Boolean('Can be Reconciled')
     is_using_balance = fields.Boolean('Is Using Balance')
     is_using_lg = fields.Boolean('Is Using Letter of Guarantee')
+    is_using_po = fields.Boolean('Is Using Purchase Order')
 
     #kasus concurrent update
     # def sync_balance(self):

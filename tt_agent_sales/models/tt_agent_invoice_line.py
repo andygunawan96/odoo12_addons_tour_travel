@@ -33,6 +33,8 @@ class AgentInvoice(models.Model):
     reference = fields.Char('Reference')
 
     pnr = fields.Char("PNR",compute="_compute_invoice_line_pnr",store=True)
+    agent_id = fields.Many2one('tt.agent', 'Agent', compute="_compute_invoice_line_pnr", store=True)
+    customer_parent_id = fields.Many2one('tt.customer.parent', 'Customer Parent', compute="_compute_invoice_line_pnr", store=True)
 
     def compute_total_all(self):
         for rec in self.search([]):
@@ -84,6 +86,8 @@ class AgentInvoice(models.Model):
             if rec.res_model_resv and rec.res_id_resv:
                 try:
                     rec.pnr = self.env[rec.res_model_resv].browse(rec.res_id_resv).pnr
+                    rec.agent_id = self.env[rec.res_model_resv].browse(rec.res_id_resv).agent_id.id
+                    rec.customer_parent_id = self.env[rec.res_model_resv].browse(rec.res_id_resv).customer_parent_id.id
                 except:
                     pass
 
