@@ -33,7 +33,13 @@
 
             </div>
             <div class="col-5 text-center">
-                <span t-att-style="'margin-top: 10px; margin-left: 10px; color: '+ base_color +'; font-size: 20px;'">Letter of Guarantee</span><br/>
+                <t t-if="doc.type == 'po'">
+                    <span t-att-style="'margin-top: 10px; margin-left: 10px; color: '+ base_color +'; font-size: 20px;'">Purchase Order</span>
+                </t>
+                <t t-else="">
+                    <span t-att-style="'margin-top: 10px; margin-left: 10px; color: '+ base_color +'; font-size: 20px;'">Letter of Guarantee</span>
+                </t>
+                <br/>
                 <t t-set="printout_icon" t-value="'/tt_report_common/static/images/bill-white.png'"/>
                 <div t-att-style="'height: 105px; width:'+ header_width+'%; float: right'">
                     <div id="circle" t-att-style="'width: 60px; height: 60px; background: '+ base_color +'; border-radius: 100%; position: absolute; z-index: 1;'">
@@ -272,9 +278,16 @@
                             </div>
 
                             <div class="row">
-                                <div class="col-12" style="margin-top:20px;">
-                                    We hereby guaranteed to settle the payment of the above services as per credit term agreement. We appreciate for your kind cooperations
-                                </div>
+                                <t t-if="doc.type == 'po'">
+                                    <div class="col-12" style="margin-top:20px;">
+                                        We hereby requesting to purchase the above services as per credit term agreement. We appreciate your kind cooperation.
+                                    </div>
+                                </t>
+                                <t t-else="">
+                                    <div class="col-12" style="margin-top:20px;">
+                                        We hereby guaranteed to settle the payment of the above services as per credit term agreement. We appreciate your kind cooperation.
+                                    </div>
+                                </t>
                             </div>
                             <br/><br/>
                             <div class="row">

@@ -31,6 +31,7 @@
                                 <field name="is_reconcile"/>
                                 <field name="is_using_balance"/>
                                 <field name="is_using_lg"/>
+                                <field name="is_using_po"/>
                             </group>
                             <group>
                                 <label for="create_uid" string="Created By"/>
