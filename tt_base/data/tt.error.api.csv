@@ -1,4 +1,5 @@
 id,code,message,note,description,active,is_data
+tt_error_api_1,1,Error,,,1,1
 tt_error_api_50,50,Error code message is not found,,,1,1
 tt_error_api_420,420,Method failure,,,1,1
 tt_error_api_500,500,Internal server error,,,1,1
