@@ -33,6 +33,10 @@ class TtAirlineApiCon(models.Model):
             res = table_obj.get_refund_airline_api(data,context)
         elif action == 'split_booking':
             res = table_obj.split_reservation_airline_api(data,context)
+        elif action == 'get_provider_booking_from_vendor':
+            res = self.env['tt.get.booking.from.vendor'].get_provider_booking_from_vendor_api()
+        elif action == 'save_booking_from_vendor':
+            res = self.env['tt.get.booking.from.vendor.review'].save_booking_api(data, context)
         else:
             raise RequestException(999)
 

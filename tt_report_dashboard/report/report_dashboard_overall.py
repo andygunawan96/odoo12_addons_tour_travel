@@ -69,21 +69,28 @@ class ReportDashboardOverall(models.Model):
         return self.env.cr.dictfetchall()
 
     def get_agent_lines(self):
-        query = "SELECT agent.seq_id, agent.name, agent.agent_type_id FROM tt_agent agent"
+        query = "SELECT agent.seq_id, agent.name, agent.agent_type_id FROM tt_agent agent ORDER BY name"
 
         self.env.cr.execute(query)
         _logger.info(query)
         return self.env.cr.dictfetchall()
 
     def get_agent_type_lines(self):
-        query = "SELECT agent.name, agent.code ,agent.id FROM tt_agent_type agent"
+        query = "SELECT agent.name, agent.code ,agent.id FROM tt_agent_type agent ORDER BY name"
 
         self.env.cr.execute(query)
         _logger.info(query)
         return self.env.cr.dictfetchall()
 
     def get_provider_lines(self):
-        query = "SELECT provider.name, provider.code, provider_type.name as provider_type FROM tt_provider provider JOIN tt_provider_type provider_type ON provider.provider_type_id = provider_type.id"
+        query = "SELECT provider.name, provider.code, provider_type.name as provider_type FROM tt_provider provider JOIN tt_provider_type provider_type ON provider.provider_type_id = provider_type.id ORDER BY name"
+
+        self.env.cr.execute(query)
+        _logger.info(query)
+        return self.env.cr.dictfetchall()
+
+    def get_carrier_lines(self):
+        query = ""
 
         self.env.cr.execute(query)
         _logger.info(query)
