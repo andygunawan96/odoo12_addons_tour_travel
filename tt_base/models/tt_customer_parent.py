@@ -48,6 +48,21 @@ class TtCustomerParent(models.Model):
     reject_uid = fields.Many2one('res.users', 'Rejected by', readonly=True)
     reject_date = fields.Datetime('Rejected Date', readonly=True)
 
+
+    def get_customer_parent_api(self, req, context):
+        try:
+            customer_parent_obj = self.search([('user_ids','=',context['co_uid'])])
+            res = []
+            for rec in customer_parent_obj:
+                res.append({
+                    'id': rec.id,
+                    'name': rec.name
+                })
+            return ERR.get_no_error(res)
+        except Exception as e:
+            return ERR.get_error(500, additional_message='error customer parent')
+
+
     def _compute_unprocessed_amount(self):
         for rec in self:
             total_amt = 0

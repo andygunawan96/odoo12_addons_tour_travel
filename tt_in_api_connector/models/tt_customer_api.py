@@ -11,6 +11,8 @@ class TtCustomerApiCon(models.Model):
     def action_call(self,table_obj,action,data,context):
         if action == 'get_customer_list':
             res = table_obj.get_customer_list_api(data, context)
+        elif action == 'get_customer_parent':
+            res = self.env['tt.customer.parent'].get_customer_parent_api(data, context)
         elif action == 'get_customer_customer_parent_list':
             res = table_obj.get_customer_customer_parent_list_api(data, context)
         elif action == 'create_customer':
