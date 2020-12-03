@@ -504,7 +504,7 @@ class ReportSelling(models.Model):
     # where issued
     @staticmethod
     def _where_issued(date_from, date_to):
-        where = """reservation.issued_date >= '%s' and reservation.issued_date <= '%s' AND reservation.state = 'issued' OR reservation.state = 'reissue'""" % (date_from, date_to)
+        where = """reservation.issued_date >= '%s' and reservation.issued_date <= '%s' AND (reservation.state = 'issued' OR reservation.state = 'reissue')""" % (date_from, date_to)
         return where
 
     @staticmethod
