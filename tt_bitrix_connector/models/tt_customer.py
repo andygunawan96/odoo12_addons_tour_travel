@@ -83,14 +83,15 @@ class TtCustomer(models.Model):
 
                 phone_list = []
                 for rec in cust_obj.phone_ids:
-                    phone_type_conv = {
-                        'work': 'WORK',
-                        'home': 'HOME',
-                        'other': 'OTHER'
-                    }
+                    # phone_type_conv = {
+                    #     'work': 'WORK',
+                    #     'home': 'HOME',
+                    #     'other': 'OTHER'
+                    # }
+                    phone_type_conv = dict(self._fields['type'].selection)
                     phone_list.append({
                         'VALUE': (rec.calling_code and rec.calling_code or '') + (rec.calling_number and rec.calling_number or ''),
-                        'VALUE_TYPE': rec.type and phone_type_conv[rec.type] or '',
+                        'VALUE_TYPE': rec.type and phone_type_conv[rec.type].upper() or '',
                     })
 
                 temp_identity_type = False
@@ -209,15 +210,16 @@ class TtCustomer(models.Model):
 
                 phone_list = []
                 for rec in self.phone_ids:
-                    phone_type_conv = {
-                        'work': 'WORK',
-                        'home': 'HOME',
-                        'other': 'OTHER'
-                    }
+                    # phone_type_conv = {
+                    #     'work': 'WORK',
+                    #     'home': 'HOME',
+                    #     'other': 'OTHER'
+                    # }
+                    phone_type_conv = dict(self._fields['type'].selection)
                     phone_list.append({
                         'VALUE': (rec.calling_code and rec.calling_code or '') + (
                                     rec.calling_number and rec.calling_number or ''),
-                        'VALUE_TYPE': rec.type and phone_type_conv[rec.type] or '',
+                        'VALUE_TYPE': rec.type and phone_type_conv[rec.type].upper() or '',
                     })
 
                 temp_identity_type = False
@@ -362,11 +364,13 @@ class TtCustomer(models.Model):
                             'country_id': add_country_obj and add_country_obj[0].id or False,
                         })
                         for cust_phone in phone_list:
-                            phone_type_conv = {
-                                'WORK': 'work',
-                                'HOME': 'home',
-                                'OTHER': 'other'
-                            }
+                            # phone_type_conv = {
+                            #     'WORK': 'work',
+                            #     'HOME': 'home',
+                            #     'OTHER': 'other'
+                            # }
+                            phone_type_conv = dict(self._fields['type'].selection) # Hasil {'work': 'Work', 'home': 'Home'}
+                            phone_type_conv = dict((v.upper(), k) for k, v in phone_type_conv.items())  # Reverse Hasil e {'WORK': 'work', 'HOME': 'home'}
                             self.env['phone.detail'].sudo().create({
                                 'customer_id': new_bitrix_cust.id,
                                 'calling_code': cust_phone.get('VALUE') and cust_phone['VALUE'][:2] or '0',
@@ -417,11 +421,13 @@ class TtCustomer(models.Model):
                             })
 
                         for cust_phone in phone_list:
-                            phone_type_conv = {
-                                'WORK': 'work',
-                                'HOME': 'home',
-                                'OTHER': 'other'
-                            }
+                            # phone_type_conv = {
+                            #     'WORK': 'work',
+                            #     'HOME': 'home',
+                            #     'OTHER': 'other'
+                            # }
+                            phone_type_conv = dict(self._fields['type'].selection)
+                            phone_type_conv = dict((v, k) for k, v in phone_type_conv.items())
                             call_code = cust_phone.get('VALUE') and cust_phone['VALUE'][:2] or '0'
                             call_num = cust_phone.get('VALUE') and cust_phone['VALUE'][2:] or '0'
                             call_type = cust_phone.get('VALUE_TYPE') and phone_type_conv[str(cust_phone['VALUE_TYPE'])] or False

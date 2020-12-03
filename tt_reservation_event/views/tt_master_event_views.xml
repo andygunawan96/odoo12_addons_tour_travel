@@ -28,7 +28,7 @@
         </field>
     </record>
     <record model="ir.ui.view" id="tt_option_event_view_form" >
-        <field name="name">tt.event.option.view.tree</field>
+        <field name="name">tt.event.option.view.form</field>
         <field name="model">tt.event.option</field>
         <field name="arch" type="xml">
             <form>
@@ -80,8 +80,9 @@
                                     <field name="start_minute"/>
                                     <field name="end_hour"/>
                                     <field name="end_minute"/>
-                                    <!--                                            <field name="timezone"/>-->
+                                    <!--<field name="timezone"/>-->
                                     <field name="date"/>
+                                    <field name="active"/>
                                 </tree>
                                 <form>
                                     <group>
