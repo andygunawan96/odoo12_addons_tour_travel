@@ -19,6 +19,7 @@ TT_RESCHEDULE
         'wizard/set_new_segment_pnr_wizard_views.xml',
         'views/tt_segment_addons_views.xml',
         'views/tt_segment_views.xml',
+        'views/tt_reschedule_line_views.xml',
         'views/tt_reschedule_views.xml',
         'views/tt_leg_views.xml',
         'views/tt_reservation_airline.xml',
