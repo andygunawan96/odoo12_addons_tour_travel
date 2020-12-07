@@ -84,7 +84,7 @@
 
                     <button name="print_eticket_original"
                             class="oe_stat_button" states="issued,done"
-                            string="Print Original Ticket" type="object" icon="fa-print"/>
+                            string="Get Original Ticket" type="object" icon="fa-print"/>
                     <button name="print_eticket_with_price"
                             class="oe_stat_button" states="issued,done"
                             string="Print E-Ticket (Price)" type="object" icon="fa-print"/>
@@ -141,6 +141,18 @@
                     </field>
                 </page>
             </xpath>
+
+            <xpath expr="//page[@name='anchor']" position="before">
+                <page string="Original Tickets">
+                    <field name="printout_ticket_original_ids">
+                        <tree>
+                            <field name="name"/>
+                            <field name="url"/>
+                        </tree>
+                    </field>
+                </page>
+            </xpath>
+
             <xpath expr="//page[@name='anchor']" position="before">
                 <page string="Prices" name="prices">
                     <!--                    <button name="calculate_service_charge" type="object" string="calc"/>-->
