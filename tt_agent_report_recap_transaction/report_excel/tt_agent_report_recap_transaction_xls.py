@@ -160,6 +160,39 @@ class AgentReportRecapTransactionXls(models.TransientModel):
                     sheet.write(row_data, 23, '', sty_amount)
                     sheet.write(row_data, 24, '', sty_table_data)
 
+                    if i['provider_type'].lower() == 'airline':
+                        data_index = next(
+                            (index for (index, d) in enumerate(airline_recaps) if d["id"] == i['creator_id']), -1)
+                        if data_index >= 0:
+                            if i['provider_name'] and 'amadeus' in i['provider_name'] or 'sabre' in i['provider_name']:
+                                airline_recaps[data_index]['GDS'] += i['adult']
+                                airline_recaps[data_index]['GDS'] += i['child']
+                                airline_recaps[data_index]['GDS'] += i['infant']
+                            else:
+                                airline_recaps[data_index]['non_GDS'] += i['adult']
+                                airline_recaps[data_index]['non_GDS'] += i['child']
+                                airline_recaps[data_index]['non_GDS'] += i['infant']
+                        else:
+                            temp_dict = {
+                                'id': i['creator_id'],
+                                'name': i['create_by'],
+                                'amadeus': 0,
+                                'GDS': 0,
+                                'non-amadeus': 0,
+                                'non_GDS': 0
+                            }
+                            airline_recaps.append(temp_dict)
+                            if i['provider_name'] and 'amadeus' in i['provider_name'] or 'sabre' in i['provider_name']:
+                                airline_recaps[data_index]['amadeus'] += 1
+                                airline_recaps[data_index]['GDS'] += i['adult']
+                                airline_recaps[data_index]['GDS'] += i['child']
+                                airline_recaps[data_index]['GDS'] += i['infant']
+                            else:
+                                airline_recaps[data_index]['non-amadeus'] += 1
+                                airline_recaps[data_index]['non_GDS'] += i['adult']
+                                airline_recaps[data_index]['non_GDS'] += i['child']
+                                airline_recaps[data_index]['non_GDS'] += i['infant']
+
                 # else condition if pnr is not yet change
                 row_data += 1
                 sty_table_data_center = style.table_data_center
@@ -356,20 +389,34 @@ class AgentReportRecapTransactionXls(models.TransientModel):
                     if data_index >= 0:
                         if i['provider_name'] and 'amadeus' in i['provider_name'] or 'sabre' in i['provider_name']:
                             airline_recaps[data_index]['amadeus'] += 1
+                            airline_recaps[data_index]['GDS'] += i['adult']
+                            airline_recaps[data_index]['GDS'] += i['child']
+                            airline_recaps[data_index]['GDS'] += i['infant']
                         else:
                             airline_recaps[data_index]['non-amadeus'] += 1
+                            airline_recaps[data_index]['non_GDS'] += i['adult']
+                            airline_recaps[data_index]['non_GDS'] += i['child']
+                            airline_recaps[data_index]['non_GDS'] += i['infant']
                     else:
                         temp_dict = {
                             'id': i['creator_id'],
                             'name': i['create_by'],
                             'amadeus': 0,
-                            'non-amadeus': 0
+                            'GDS': 0,
+                            'non-amadeus': 0,
+                            'non_GDS': 0
                         }
                         airline_recaps.append(temp_dict)
                         if i['provider_name'] and 'amadeus' in i['provider_name'] or 'sabre' in i['provider_name']:
                             airline_recaps[data_index]['amadeus'] += 1
+                            airline_recaps[data_index]['GDS'] += i['adult']
+                            airline_recaps[data_index]['GDS'] += i['child']
+                            airline_recaps[data_index]['GDS'] += i['infant']
                         else:
                             airline_recaps[data_index]['non-amadeus'] += 1
+                            airline_recaps[data_index]['non_GDS'] += i['adult']
+                            airline_recaps[data_index]['non_GDS'] += i['child']
+                            airline_recaps[data_index]['non_GDS'] += i['infant']
                 if i['provider_type'].lower() == 'hotel':
                     data_index = next((index for (index, d) in enumerate(hotel_recaps) if d["id"] == i['creator_id']),-1)
                     if data_index >= 0:
@@ -453,12 +500,16 @@ class AgentReportRecapTransactionXls(models.TransientModel):
             sheet.write(row_data, 0, 'AIRLINES', style.table_head_center)
             sheet.write(row_data, 1, 'Nama', style.table_head_center)
             sheet.write(row_data, 2, 'GDS', style.table_head_center)
-            sheet.write(row_data, 3, 'Non-GDS', style.table_head_center)
+            sheet.write(row_data, 3, 'GDS pax', style.table_head_center)
+            sheet.write(row_data, 4, 'Non-GDS', style.table_head_center)
+            sheet.write(row_data, 5, 'Non-GDS pax', style.table_head_center)
             for i in airline_recaps:
                 row_data += 1
                 sheet.write(row_data, 1, i['name'], sty_table_data)
                 sheet.write(row_data, 2, i['amadeus'], sty_table_data)
-                sheet.write(row_data, 3, i['non-amadeus'], sty_table_data)
+                sheet.write(row_data, 3, i['GDS'], sty_table_data)
+                sheet.write(row_data, 4, i['non-amadeus'], sty_table_data)
+                sheet.write(row_data, 5, i['non_GDS'], sty_table_data)
         row_data += 2
         if values['data_form']['provider_type'] == 'hotel' or values['data_form']['provider_type'] == 'all' or values['data_form']['provider_type'] == 'offline':
             sheet.write(row_data, 0, 'HOTELS', style.table_head_center)
