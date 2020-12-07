@@ -1117,6 +1117,8 @@ class TtReportDashboard(models.Model):
             start_point_summary = {}
             end_point_summary = {}
             top_carrier = []
+            issued_depart_international_summary = []
+            issued_depart_domestic_summary = []
 
             delta = end_date - start_date
 
@@ -1374,6 +1376,57 @@ class TtReportDashboard(models.Model):
                             sector_dictionary[2]['multi_city'] += 1
                         sector_dictionary[2]['passenger_count'] += int(i['reservation_passenger'])
 
+                    # issued depart days difference
+                    # ============= Issued compareed to depart date ==============
+                    filter_data = list(
+                        filter(lambda x: x['reservation_order_number'] == i['reservation_order_number'], issued_values['lines']))
+
+                    depart_index = 0
+                    if len(filter_data) > 1:
+                        earliest_depart = filter_data[0]['journey_departure_date']
+                        for j, dic in enumerate(filter_data):
+                            if earliest_depart > dic['journey_departure_date']:
+                                depart_index = j
+                    # lets count
+                    if filter_data[0]['reservation_issued_date_og']:
+                        date_time_convert = datetime.strptime(filter_data[depart_index]['journey_departure_date'],
+                                                              '%Y-%m-%d %H:%M:%S')
+                        if filter_data[0]['reservation_issued_date_og']:
+                            date_count = date_time_convert - filter_data[0]['reservation_issued_date_og']
+                            if date_count.days < 0:
+                                _logger.error("please check {}".format(i['reservation_order_number']))
+                        else:
+                            date_count = 0
+
+                        if filter_data[0]['reservation_sector'] == 'International':
+                            issued_depart_index = self.check_index(issued_depart_international_summary, "day", date_count.days)
+                            if issued_depart_index == -1:
+                                temp_dict = {
+                                    "day": date_count.days,
+                                    "counter": 1,
+                                    'passenger': filter_data[0]['reservation_passenger']
+                                }
+                                issued_depart_international_summary.append(temp_dict)
+                            else:
+                                issued_depart_international_summary[issued_depart_index]['counter'] += 1
+                                issued_depart_international_summary[issued_depart_index]['passenger'] += filter_data[0][
+                                    'reservation_passenger']
+                        else:
+                            issued_depart_index = self.check_index(issued_depart_domestic_summary, "day",
+                                                                   date_count.days)
+                            if issued_depart_index == -1:
+                                temp_dict = {
+                                    "day": date_count.days,
+                                    "counter": 1,
+                                    'passenger': filter_data[0]['reservation_passenger']
+                                }
+                                issued_depart_domestic_summary.append(temp_dict)
+                            else:
+                                issued_depart_domestic_summary[issued_depart_index]['counter'] += 1
+                                issued_depart_domestic_summary[issued_depart_index]['passenger'] += filter_data[0][
+                                    'reservation_passenger']
+
+
                     if i['reservation_state'] == 'issued':
                         # total += i['amount']
                         # num_data += 1
@@ -1578,6 +1631,8 @@ class TtReportDashboard(models.Model):
             one_way_filter.sort(key=lambda x: x['counter'], reverse=True)
             return_filter.sort(key=lambda x: x['counter'], reverse=True)
             multi_city_filter.sort(key=lambda x: x['counter'], reverse=True)
+            issued_depart_international_summary.sort(key=lambda x: x['counter'], reverse=True)
+            issued_depart_domestic_summary.sort(key=lambda x: x['counter'], reverse=True)
             departure_summary = sorted(start_point_summary.items(), key=lambda item: item[1], reverse=True)
             destination_summary = sorted(end_point_summary.items(), key=lambda item: item[1], reverse=True)
             top_carrier.sort(key=lambda x: x['counter'], reverse=True)
@@ -1786,6 +1841,8 @@ class TtReportDashboard(models.Model):
                         'label': list(destination_graph.keys()),
                         'data': list(destination_graph.values())
                     },
+                    'international_issued_depart': issued_depart_international_summary[:15],
+                    'domestic_issued_depart': issued_depart_domestic_summary[:15],
                     'carrier': carrier_summary
                 }
             }
