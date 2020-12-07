@@ -78,7 +78,7 @@ class AgentReportRecapTransacion(models.Model):
             where += """ AND provider_type.code = '%s' """ % provider_type
         where += """ AND ledger.is_reversed = 'FALSE' """
         if state:
-            where += """ AND rsv.state = '%s' OR rsv.state = 'reissue' """ % state
+            where += """ AND (rsv.state = '%s' OR rsv.state = 'reissue') """ % state
         return where
 
     @staticmethod
@@ -93,7 +93,7 @@ class AgentReportRecapTransacion(models.Model):
             where += """ AND provider_type.code = '%s'""" % provider_type
         # where += """ AND ledger.is_reversed = 'FALSE'"""
         if state:
-            where += """ AND rsv.state = '%s' OR rsv.state = 'reissue'""" % state
+            where += """ AND (rsv.state = '%s' OR rsv.state = 'reissue')""" % state
         return where
 
     @staticmethod

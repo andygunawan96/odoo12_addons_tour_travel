@@ -23,6 +23,24 @@ class ReportDashboardOverall(models.Model):
         """
 
     @staticmethod
+    def _select_join_service_charge():
+        return """
+            rsv.id, 
+            rsv.name as order_number, 
+            rsv.pnr, 
+            rsv.total as grand_total, 
+            rsv.total_commission, 
+            rsv.total_nta, 
+            rsv.state,
+            booking_ids.id as booking_id, 
+            booking_ids.pnr as booking_pnr, 
+            booking_ids.state as booking_state,
+            booking_service_charge.total as booking_charge_total, 
+            booking_service_charge.charge_type as booking_charge_type,
+            booking_service_charge.is_ledger_created as ledger_created
+            """
+
+    @staticmethod
     def _from_top_up():
         return """
         tt_top_up topup
@@ -32,6 +50,17 @@ class ReportDashboardOverall(models.Model):
     def _from_payment():
         return """ tt.reservation
         """
+
+    @staticmethod
+    def _from_join_service_charge(provider_type):
+        query = """tt_reservation_""" + provider_type + """ rsv """
+        # query += """LEFT JOIN tt_provider_""" + provider_type + """ booking_ids """
+        query += """
+            LEFT JOIN tt_provider_type provider_type ON provider_type.id = rsv.provider_type_id
+            LEFT JOIN tt_provider_""" + provider_type + """ booking_ids ON booking_ids.booking_id = rsv.id
+            LEFT JOIN tt_service_charge booking_service_charge ON booking_service_charge.provider_""" + provider_type + """_booking_id = booking_ids.id
+            """
+        return query
 
     @staticmethod
     def _where_top_up(start_date):
@@ -46,13 +75,57 @@ class ReportDashboardOverall(models.Model):
         """ % (start_date, end_date)
 
     @staticmethod
+    def _where_join_service_charge(date_from, date_to, agent_id, provider_type):
+        where = """rsv.issued_date >= '%s' and rsv.issued_date <= '%s'""" % (date_from, date_to)
+        # if agent_id:
+        #     where += """ AND rsv.agent_seq_id = '%s'""" % agent_id
+        # if provider_type and provider_type != 'all':
+        #     where += """ AND provider_type.code = '%s'""" % provider_type
+        # where += """ AND ledger.is_reversed = 'FALSE'"""
+        where += """ AND (rsv.state = 'issued' OR rsv.state = 'reissue')"""
+        return where
+
+    @staticmethod
     def _group_by_payment():
         return """ payment_method
         """
 
+    @staticmethod
+    def _order_by_join_service_charge():
+        return """
+            rsv.create_date, rsv.name
+            """
+
     def _datetime_user_context(self, utc_datetime_string):
         value = fields.Datetime.from_string(utc_datetime_string)
         return fields.Datetime.context_timestamp(self, value).strftime("%Y-%m-%d")
+
+    def _convert_data(self, lines, provider_type):
+        for rec in lines:
+            rec['create_date'] = self._datetime_user_context(rec['create_date'])
+            try:
+                rec['issued_date'] = self._datetime_user_context(rec['issued_date'])
+            except:
+                pass
+            # rec['state'] = variables.BOOKING_STATE_STR[rec['state']] if rec['state'] else ''  # STATE_OFFLINE_STR[rec['state']]
+        return lines
+
+    def _lines_join_service_charge(self, date_from, date_to, agent_id, provider_type):
+        # SELECT
+        query = 'SELECT ' + self._select_join_service_charge()
+
+        # FROM
+        query += 'FROM ' + self._from_join_service_charge(provider_type)
+
+        # WHERE
+        query += 'WHERE ' + self._where_join_service_charge(date_from, date_to, agent_id, provider_type)
+
+        # ORDER BY
+        query += 'ORDER BY ' + self._order_by_join_service_charge()
+
+        self.env.cr.execute(query)
+        _logger.info(query)
+        return self.env.cr.dictfetchall()
 
     def get_top_up(self, start_date, end_date):
         query = "SELECT " + self._select_top_up() + "FROM " + self._from_top_up() + "WHERE " + self._where_top_up()
@@ -119,6 +192,18 @@ class ReportDashboardOverall(models.Model):
         _logger.info(query)
         return self.env.cr.dictfetchall()
 
+    def _get_lines_data_join_service_charge(self, date_from, date_to, agent_id, provider_type):
+        lines = []
+        if provider_type != 'all':
+            lines = self._lines_join_service_charge(date_from, date_to, agent_id, provider_type)
+        else:
+            provider_types = variables.PROVIDER_TYPE
+            for provider_type in provider_types:
+                report_lines = self._lines_join_service_charge(date_from, date_to, agent_id, provider_type)
+                for j in report_lines:
+                    lines.append(j)
+        return lines
+
     def _get_reports(self, data):
         date_from = data['start_date']
         date_to = data['end_date']
@@ -173,4 +258,24 @@ class ReportDashboardOverall(models.Model):
         lines = self.get_profit_lines(data)
         lines = self._convert_data_profit(lines)
 
+        return lines
+
+    def get_service_charge(self, data):
+        date_from = data['start_date']
+        date_to = data['end_date']
+        # get agent data
+        agent_id = data['agent_seq_id']
+        agent_type = data['agent_type']
+        # get provider
+        if data['type'] != 'overall':
+            splits = data['type'].split("_")
+            provider_type = splits[1]
+        else:
+            # if data is only overall then we're gonna change it to all
+            provider_type = 'all'
+
+        # execute code
+        lines = self._get_lines_data_join_service_charge(date_from, date_to, agent_id, provider_type)
+
+        #return data
         return lines
