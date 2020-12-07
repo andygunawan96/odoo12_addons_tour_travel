@@ -251,15 +251,16 @@ class TtReportDashboard(models.Model):
     # this is the function that's being called by the gateway
     # in short this is the main function
     def get_report_json_api(self, data, context = []):
-        is_ho = 1
-        # is_ho = self.env.ref('tt_base.rodex_ho').id == context['co_agent_id']
-        # if is_ho and data['agent_seq_id'] == "":
-        #     data['agent_seq_id'] = False
-        # elif is_ho and data['agent_seq_id'] != "":
-        #     pass
-        # else:
-        #     # get the id of the agent
-        #     data['agent_seq_id'] = self.env['tt.agent'].browse(context['co_agent_id']).seq_id
+        # is_ho = 1
+        # check if agent is ho
+        is_ho = self.env.ref('tt_base.rodex_ho').id == context['co_agent_id']
+        if is_ho and data['agent_seq_id'] == "":
+            data['agent_seq_id'] = False
+        elif is_ho and data['agent_seq_id'] != "":
+            pass
+        else:
+            # get the id of the agent
+            data['agent_seq_id'] = self.env['tt.agent'].browse(context['co_agent_id']).seq_id
 
         if data['provider'] != 'all' and data['provider'] != '':
             # check if provider is exist
@@ -356,6 +357,8 @@ class TtReportDashboard(models.Model):
     def get_report_xls_api(self, data,  context):
         return ERR.get_no_error()
 
+    # old function of get profit
+    # currently not being use, since this function is merge is get reservation function
     def get_profit(self, data):
         try:
             # prepare value
@@ -374,6 +377,8 @@ class TtReportDashboard(models.Model):
             _logger.error(traceback.format_exc())
             raise e
 
+    # this function handle processing data to produce booked-issued ratio
+    # data contains all of the parameter from the frontend
     def get_book_issued_ratio(self, data):
         try:
             # get all data
@@ -403,8 +408,11 @@ class TtReportDashboard(models.Model):
             summary_provider = []
 
             # iterate every data
+            # i = reservation dictionary inside all_values['lines']
             for i in all_values['lines']:
                 try:
+                    # check if current id = iteration # ID
+                    # because returned line from SQL could produce more than one line for every resrvation
                     if current_id != i['reservation_id']:
                         current_id = i['reservation_id']
                         # convert month number (1) to text and index (January) in constant
@@ -448,6 +456,7 @@ class TtReportDashboard(models.Model):
                             except:
                                 pass
 
+                        # this section handle overview for booked issued ratio
                         provider_index = self.check_index(summary_provider, "provider", i['provider_type_name'])
                         if provider_index == -1:
                             # declare dependencies
@@ -482,9 +491,11 @@ class TtReportDashboard(models.Model):
             summary_provider.sort(key=lambda x: x['counter'], reverse=True)
 
             # shape the data for return
+            # by shape means trim unecessary data, and group data
             book_data = {}
             issued_data = {}
             if mode == 'month':
+                # if mode = month means the data will be sum to month instead of date
                 try:
                     counter = summary_by_date[0]['month_index'] - 1
                 except:
@@ -538,8 +549,13 @@ class TtReportDashboard(models.Model):
             to_return = {
                 # it will be very absurd to stand alone, however this particular graph will corenspond to second graph in front end, so theres that
                 'second_graph': {
+                    # label for graph in frontend
+                    # if mode month then label will be ['January', 'February', ...]
+                    # if mode is not month then label will be ['1-11-2020', '2-11-2020', ...]
                     'label': list(book_data.keys()),
+                    # data = list of booked reservation
                     'data': list(book_data.values()),
+                    # data2 = list of issued reservation
                     'data2': list(issued_data.values())
                 },
                 'second_overview': summary_provider
@@ -549,8 +565,12 @@ class TtReportDashboard(models.Model):
             _logger.error(traceback.format_exc())
             raise e
 
+    # this function handle and process data for channel ranking by revenue
+    # data = form data from frontend
+    # profit = reservation data from function who calls this function (reservation data contains profit data)
     def get_report_group_by_chanel(self, data, profit):
         try:
+            # prepare data to get channel base on reservation performance in database
             temp_dict = {
                 'start_date': data['start_date'],
                 'end_date': data['end_date'],
@@ -561,6 +581,8 @@ class TtReportDashboard(models.Model):
                 # 'agent_seq_id': 8,
                 'addons': 'chanel'
             }
+
+            # execute the query
             chanel_values = self.env['report.tt_report_selling.report_selling']._get_reports(temp_dict)
 
             # declare mode of group by (timewise either days or month)
@@ -573,7 +595,7 @@ class TtReportDashboard(models.Model):
             # declare variable to temp handle processed data
             summary_chanel = []
 
-            current_id = -100
+            current_id = ''
 
             for i in chanel_values['lines']:
 
@@ -653,9 +675,18 @@ class TtReportDashboard(models.Model):
             _logger.error(traceback.format_exc())
             raise e
 
+    ######################################################################
+    # this section contains of sub main function (function that is called by the main function)
+    ######################################################################
+
+    # this function handle data handler and processing for all of provider Type
+    # data = form data from frontend
+    # is_ho = ho checker from main function
     def get_report_overall(self, data, is_ho):
         try:
             # check if user ask for a specific provider
+            # this function is to tell the sql handler that the data we want is base on issued date
+            # the default of sql query is to search by created date
             if data['provider']:
                 provider_type = self.env['tt.provider'].search([('code', '=', data['provider'])])
                 data['report_type'] = 'overall_' + provider_type['provider_type_id'].code
@@ -681,6 +712,8 @@ class TtReportDashboard(models.Model):
                 # 'agent_seq_id': False,
                 'addons': 'none'
             }
+
+            # execute the query
             issued_values = self.env['report.tt_report_selling.report_selling']._get_reports(temp_dict)
 
             # constant dependencies
@@ -698,6 +731,7 @@ class TtReportDashboard(models.Model):
                 # group by month
                 mode = 'month'
 
+            # global result variable
             total = 0
             profit_total = 0
             profit_ho = 0
