@@ -52,12 +52,15 @@ class ReportSelling(models.Model):
         reservation.issued_date as reservation_issued_date_og,
         journey.id as journey_id,
         journey.departure_date as journey_departure_date,
+        segment.id as segment_id,
+        carrier.name as airline,
         reservation.elder as reservation_elder, 
         reservation.adult as reservation_adult, 
         reservation.child as reservation_child, 
         reservation.infant as reservation_infant,
         provider_type.name as provider_type_name,
         provider.name as provider_name,
+        provider.code as provider_code,
         departure.display_name as departure, 
         destination.display_name as destination,
         COUNT(reservation_passenger.id) as reservation_passenger,
@@ -317,6 +320,8 @@ class ReportSelling(models.Model):
         LEFT JOIN tt_destinations departure ON reservation.origin_id = departure.id
         LEFT JOIN tt_destinations destination ON reservation.destination_id = destination.id
         LEFT JOIN tt_journey_airline journey ON journey.booking_id = reservation.id
+        LEFT JOIN tt_segment_airline segment ON segment.journey_id = journey.id
+        LEFT JOIN tt_transport_carrier carrier ON carrier.id = segment.carrier_id
         LEFT JOIN tt_reservation_passenger_airline reservation_passenger ON reservation_passenger.booking_id = reservation.id
         LEFT JOIN tt_agent agent ON agent.id = reservation.agent_id
         LEFT JOIN tt_agent_type agent_type ON agent_type.id = reservation.agent_type_id
@@ -454,7 +459,7 @@ class ReportSelling(models.Model):
     # so far works with all
     @staticmethod
     def _group_by_airline():
-        return """reservation.id, provider_type.name, departure.display_name, destination.display_name, journey.id, agent.name, agent_type.name, provider.name, ledger.id, ledger_agent.name, ledger_agent_type.name"""
+        return """reservation.id, provider_type.name, departure.display_name, destination.display_name, journey.id, agent.name, agent_type.name, provider.name, ledger.id, ledger_agent.name, ledger_agent_type.name, segment.id, carrier.name, provider.code"""
 
     @staticmethod
     def _group_by_train():
@@ -540,6 +545,12 @@ class ReportSelling(models.Model):
     def _order_by_issued():
         return """
         reservation.issued_date
+        """
+
+    @staticmethod
+    def _order_by_overall_airline():
+        return """
+        reservation.issued_date, journey_id, segment_id, ledger_pnr
         """
 
     @staticmethod
@@ -689,7 +700,7 @@ class ReportSelling(models.Model):
                 query += 'AND {} '.format(self._where_agent(agent_seq_id))
             query += 'AND {} '.format(self._where_issued(date_from, date_to))
             query += 'GROUP BY {} '.format(self._group_by_airline())
-            query += 'ORDER BY {} '.format(self._order_by_issued())
+            query += 'ORDER BY {} '.format(self._order_by_overall_airline())
         elif provider_checker == 'overall_activity':
             query += 'FROM {} '.format(self._from_activity())
             query += 'WHERE {} '.format(self._where_profit())

@@ -42,7 +42,8 @@ class ReservationAirline(models.Model):
     split_date = fields.Datetime('Splitted Date', readonly=True)
 
     is_get_booking_from_vendor = fields.Boolean('Get Booking From Vendor')
-    printout_ticket_original_id = fields.Many2one('tt.upload.center', 'Original Ticket', readonly=True)
+    printout_ticket_original_ids = fields.Many2many('tt.upload.center', 'reservation_airline_attachment_rel', 'ori_ticket_id',
+                                       'attachment_id', string='Attachments')
 
     def compute_journey_code(self):
         objs = self.env['tt.reservation.airline'].sudo().search([])
@@ -1559,6 +1560,7 @@ class ReservationAirline(models.Model):
             co_uid = book_obj.user_id.id
         else:
             co_uid = self.env.user.id
+        attachments = []
         for base64 in data['response']:
             res = book_obj.env['tt.upload.center.wizard'].upload_file_api(
                 {
@@ -1572,16 +1574,8 @@ class ReservationAirline(models.Model):
                     'co_uid': co_uid
                 }
             )
-        upc_id = book_obj.env['tt.upload.center'].search([('seq_id', '=', res['response']['seq_id'])], limit=1)
-        book_obj.printout_ticket_price_id = upc_id.id
-
-        url = {
-            'type': 'ir.actions.act_url',
-            'name': "Printout",
-            'target': 'new',
-            'url': book_obj.printout_ticket_original_id.url,
-        }
-        return url
+            attachments.append(book_obj.env['tt.upload.center'].search([('seq_id', '=', res['response']['seq_id'])], limit=1).id)
+        book_obj.printout_ticket_original_ids = [(6, 0, attachments)]
 
     @api.multi
     def print_eticket_original(self, data, ctx=None):
@@ -1600,7 +1594,7 @@ class ReservationAirline(models.Model):
         datas['is_with_price'] = True
         airline_ticket_id = book_obj.env.ref('tt_report_common.action_report_printout_reservation_airline')
 
-        if not book_obj.printout_ticket_original_id:
+        if not book_obj.printout_ticket_original_ids:
             # gateway get ticket
             for provider_booking_obj in book_obj.provider_booking_ids:
                 req = {
@@ -1615,13 +1609,15 @@ class ReservationAirline(models.Model):
                     self.save_eticket_original_api(data, ctx)
                 else:
                     return 0 # error
-        url = {
-            'type': 'ir.actions.act_url',
-            'name': "Printout",
-            'target': 'new',
-            'url': book_obj.printout_ticket_price_id.url,
-        }
-        return url
+        if self.name != False:
+            return 0
+        else:
+            url = []
+            for ticket in book_obj.printout_ticket_original_ids:
+                url.append({
+                    'url': ticket.url
+                })
+            return url
 
     @api.multi
     def print_ho_invoice(self):
