@@ -9,6 +9,14 @@ class ReportSelling(models.Model):
     _name = 'report.tt_report_selling.report_selling'
     _description = "Selling Report"
 
+    ################
+    #   All of select function to build SELECT function in SQL
+    ################
+
+    # select function is a general purpose function
+    # basically if there's a new module and we haven't declare a spesific function for it
+    # call this function yes
+    # it will give a general report just so there's a report
     #to rule them all
     @staticmethod
     def _select():
@@ -28,12 +36,15 @@ class ReportSelling(models.Model):
         ledger.transaction_type as ledger_transaction_type, ledger.display_provider_name as ledger_provider
         """
 
+    # select invoice is a function to return how many invoice
     @staticmethod
     def _select_invoice():
         return """
         COUNT(*), create_date as create_date_og
         """
 
+    # select airline is a spesific function to build query for airline search only
+    # it will not work for other provider type
     #only works with airline maybe train
     @staticmethod
     def _select_airline():
@@ -70,6 +81,8 @@ class ReportSelling(models.Model):
         ledger.transaction_type as ledger_transaction_type, ledger.display_provider_name as ledger_provider
         """
 
+    # select train is a spesific function to build query for train search only
+    # it will not work for other provider type
     @staticmethod
     def _select_train():
         return """
@@ -101,6 +114,8 @@ class ReportSelling(models.Model):
         ledger.transaction_type as ledger_transaction_type, ledger.display_provider_name as ledger_provider
         """
 
+    # select hotel is a spesific function to build query for hotel search only
+    # it will not work for other provider type
     @staticmethod
     def _select_hotel():
         return """
@@ -133,6 +148,8 @@ class ReportSelling(models.Model):
         ledger.transaction_type as ledger_transaction_type, ledger.display_provider_name as ledger_provider
         """
 
+    # select activity is a spesific function to build query for activity search only
+    # it will not work for other provider type
     @staticmethod
     def _select_activity():
         return """
@@ -193,6 +210,8 @@ class ReportSelling(models.Model):
         ledger.transaction_type as ledger_transaction_type, ledger.display_provider_name as ledger_provider
         """
 
+    # select visa is a spesific function to build query for visa search only
+    # it will not work for other provider type
     @staticmethod
     def _select_visa():
         return """
@@ -219,6 +238,8 @@ class ReportSelling(models.Model):
         ledger.transaction_type as ledger_transaction_type, ledger.display_provider_name as ledger_provider
         """
 
+    # select offline is a spesific function to build query for offline search only
+    # it will not work for other provider type
     @staticmethod
     def _select_offline():
         return """
@@ -248,6 +269,8 @@ class ReportSelling(models.Model):
         ledger.transaction_type as ledger_transaction_type, ledger.display_provider_name as ledger_provider
         """
 
+    # select event is a spesific function to build query for event search only
+    # it will not work for other provider type
     @staticmethod
     def _select_event():
         return """
@@ -275,6 +298,8 @@ class ReportSelling(models.Model):
         ledger.transaction_type as ledger_transaction_type, ledger.display_provider_name as ledger_provider
         """
 
+    # select ppob is a spesific function to build query for ppob search only
+    # it will not work for other provider type
     @staticmethod
     def _select_ppob():
         return """
@@ -295,6 +320,10 @@ class ReportSelling(models.Model):
         ledger.transaction_type as ledger_transaction_type, ledger.display_provider_name as ledger_provider
         """
 
+    ################
+    #   All of FROM function to build FROM function in SQL
+    #   name of the function correspond to respected SELECT functions for easy development
+    ################
     #for all
     @staticmethod
     def _from(provider_type):
@@ -354,7 +383,7 @@ class ReportSelling(models.Model):
     def _from_hotel():
         return """tt_reservation_hotel reservation
         LEFT JOIN tt_provider_type provider_type ON reservation.provider_type_id = provider_type.id
-        LEFT JOIN tt_reservation_hotel_guest_rel reservation_passenger ON reservation_passenger.booking_id = reservation.id
+        LEFT JOIN tt_reservation_passenger_hotel reservation_passenger ON reservation_passenger.booking_id = reservation.id
         LEFT JOIN tt_agent agent ON agent.id = reservation.agent_id
         LEFT JOIN tt_agent_type agent_type ON agent_type.id = reservation.agent_type_id
         LEFT JOIN tt_provider_hotel pro_hotel ON pro_hotel.booking_id = reservation.id
@@ -457,6 +486,10 @@ class ReportSelling(models.Model):
         """
         # return """tt_reservation_offline"""
 
+    ################
+    #   All of GROUP function to build GROUP BY function in SQL
+    #   name of the function correspond to respected SELECT, FORM, WHERE functions for easy development
+    ################
     # so far works with all
     @staticmethod
     def _group_by_airline():
@@ -495,6 +528,14 @@ class ReportSelling(models.Model):
     def _group_by_ppob():
         return """reservation.id, provider_type.name, agent.name, agent_type.name, provider.name, pro_ppob.carrier_name, ledger.id, ledger_agent.name, ledger_agent_type.name"""
 
+    @staticmethod
+    def _group_by_invoice():
+        return """invoice_id, create_date"""
+
+    ################
+    #   All of WHERE function to build WHERE function in SQL
+    #   name of the function correspond to respected SELECT, FORM functions for easy development
+    ################
     #works with all
     @staticmethod
     def _where(date_from, date_to):
@@ -535,6 +576,10 @@ class ReportSelling(models.Model):
         where = """ ledger.is_reversed = 'FALSE'"""
         return where
 
+    ################
+    #   All of ORDER function to build ORDER BY function in SQL
+    #   name of the function correspond to respected SELECT, FORM, WHERE, GROUP BY functions for easy development
+    ################
     #works with all
     @staticmethod
     def _order_by():
@@ -560,14 +605,144 @@ class ReportSelling(models.Model):
         create_date
         """
 
-    @staticmethod
-    def _group_by_invoice():
-        return """invoice_id, create_date"""
-
+    ################
+    #   Dependencies function for converting date to string, vice versa
+    #
+    ################
     @staticmethod
     def _report_title(data_form):
         data_form['title'] = 'Selling Report: ' + data_form['subtitle']
 
+    # ============ convert for all ======================
+    def _convert_data(self, lines):
+        for i in lines:
+            i['reservation_create_date'] = self._datetime_user_context(i['reservation_create_date_og'])
+            if i['reservation_booked_date_og']:
+                i['reservation_booked_date'] = self._datetime_user_context(i['reservation_booked_date_og'])
+            if i['reservation_issued_date_og']:
+                i['reservation_issued_date'] = self._datetime_user_context(i['reservation_issued_date_og'])
+        return lines
+
+    def _convert_data_hotel(self, lines):
+        for i in lines:
+            i['reservation_create_date'] = self._datetime_user_context(i['reservation_create_date_og'])
+            if i['reservation_booked_date_og']:
+                i['reservation_booked_date'] = self._datetime_user_context(i['reservation_booked_date_og'])
+            if i['reservation_issued_date_og']:
+                i['reservation_issued_date'] = self._datetime_user_context(i['reservation_issued_date_og'])
+        return lines
+
+    def _convert_data_airline(self, lines):
+        for i in lines:
+            i['reservation_create_date'] = self._datetime_user_context(i['reservation_create_date_og'])
+            if i['reservation_booked_date_og']:
+                i['reservation_booked_date'] = self._datetime_user_context(i['reservation_booked_date_og'])
+            if i['reservation_issued_date_og']:
+                i['reservation_issued_date'] = self._datetime_user_context(i['reservation_issued_date_og'])
+        return lines
+
+    def _convert_data_tour(self, lines):
+        for i in lines:
+            i['reservation_create_date'] = self._datetime_user_context(i['reservation_create_date_og'])
+            if i['reservation_booked_date_og']:
+                i['reservation_booked_date'] = self._datetime_user_context(i['reservation_booked_date_og'])
+            if i['reservation_issued_date_og']:
+                i['reservation_issued_date'] = self._datetime_user_context(i['reservation_issued_date_og'])
+        return lines
+
+    def _convert_data_train(self, lines):
+        for i in lines:
+            i['reservation_create_date'] = self._datetime_user_context(i['reservation_create_date_og'])
+            if i['reservation_booked_date_og']:
+                i['reservation_booked_date'] = self._datetime_user_context(i['reservation_booked_date_og'])
+            if i['reservation_issued_date_og']:
+                i['reservation_issued_date'] = self._datetime_user_context(i['reservation_issued_date_og'])
+
+        return lines
+
+    def _convert_data_activity(self, lines):
+        for i in lines:
+            i['reservation_create_date'] = self._datetime_user_context(i['reservation_create_date_og'])
+            if i['reservation_booked_date_og']:
+                i['reservation_booked_date'] = self._datetime_user_context(i['reservation_booked_date_og'])
+            if i['reservation_issued_date_og']:
+                i['reservation_issued_date'] = self._datetime_user_context(i['reservation_issued_date_og'])
+            if i['reservation_visit_date_og']:
+                i['reservation_visit_date'] = self._datetime_user_context(i['reservation_visit_date_og'])
+        return lines
+
+    def _convert_data_visa(self, lines):
+        for i in lines:
+            i['reservation_create_date'] = self._datetime_user_context(i['reservation_create_date_og'])
+            if i['reservation_booked_date_og']:
+                i['reservation_booked_date'] = self._datetime_user_context(i['reservation_booked_date_og'])
+            if i['reservation_issued_date_og']:
+                i['reservation_issued_date'] = self._datetime_user_context(i['reservation_issued_date_og'])
+        return lines
+
+    def _convert_data_offline(self, lines):
+        for i in lines:
+            i['reservation_create_date'] = self._datetime_user_context(i['reservation_create_date_og'])
+            if i['reservation_booked_date_og']:
+                i['reservation_booked_date'] = self._datetime_user_context(i['reservation_booked_date_og'])
+            if i['reservation_issued_date_og']:
+                i['reservation_issued_date'] = self._datetime_user_context(i['reservation_issued_date_og'])
+            if i['reservation_confirm_date_og']:
+                i['reservation_confirm_date'] = self._datetime_user_context(i['reservation_confirm_date_og'])
+            if i['reservation_done_date_og']:
+                i['reservation_done_date'] = self._datetime_user_context(i['reservation_done_date_og'])
+
+        return lines
+
+    def _convert_data_event(self, lines):
+        for i in lines:
+            i['reservation_create_date'] = self._datetime_user_context(i['reservation_create_date_og'])
+            if i['reservation_booked_date_og']:
+                i['reservation_booked_date'] = self._datetime_user_context(i['reservation_booked_date_og'])
+            if i['reservation_issued_date_og']:
+                i['reservation_issued_date'] = self._datetime_user_context(i['reservation_issued_date_og'])
+        return lines
+
+    def _convert_data_ppob(self, lines):
+        for i in lines:
+            i['reservation_create_date'] = self._datetime_user_context(i['reservation_create_date_og'])
+            if i['reservation_booked_date_og']:
+                i['reservation_booked_date'] = self._datetime_user_context(i['reservation_booked_date_og'])
+            if i['reservation_issued_date_og']:
+                i['reservation_issued_date'] = self._datetime_user_context(i['reservation_issued_date_og'])
+        return lines
+
+    def _convert_data_invoice(self, lines):
+        for i in lines:
+            i['create_date'] = self._datetime_user_context(i['create_date_og'])
+        return lines
+
+    def _seperate_data(self, lines):
+        for i in lines:
+            try:
+                temp_booked_date = i['reservation_booked_date'].split("-")
+                i['booked_year'] = temp_booked_date[0]
+                i['booked_month'] = temp_booked_date[1]
+            except:
+                pass
+            try:
+                temp_issued_date = i['reservation_issued_date'].split("-")
+                i['issued_year'] = temp_issued_date[0]
+                i['issued_month'] = temp_issued_date[1]
+            except:
+                pass
+        return lines
+
+    def _datetime_user_context(self, utc_datetime_string):
+        value = fields.Datetime.from_string(utc_datetime_string)
+        return fields.Datetime.context_timestamp(self, value).strftime("%Y-%m-%d")
+
+    ################
+    #   Function to build the full query
+    #   Within this function we will call the SELECT function, FROM function, WHERE function, etc
+    #   for more information of what each query do, se explanation above every select function
+    #   name of select function is the same as the _lines_[function name] or get_[function_name]
+    ################
     def _lines(self, date_from, date_to, agent_seq_id, provider_type, provider_checker, context):
         if provider_checker == 'airline' or provider_checker == 'overall_airline':
             query = 'SELECT {} '.format(self._select_airline())
@@ -872,130 +1047,6 @@ class ReportSelling(models.Model):
         _logger.info(query)
         return self.env.cr.dictfetchall()
 
-    # ============ convert for all ======================
-    def _convert_data(self, lines):
-        for i in lines:
-            i['reservation_create_date'] = self._datetime_user_context(i['reservation_create_date_og'])
-            if i['reservation_booked_date_og']:
-                i['reservation_booked_date'] = self._datetime_user_context(i['reservation_booked_date_og'])
-            if i['reservation_issued_date_og']:
-                i['reservation_issued_date'] = self._datetime_user_context(i['reservation_issued_date_og'])
-        return lines
-
-    def _convert_data_hotel(self, lines):
-        for i in lines:
-            i['reservation_create_date'] = self._datetime_user_context(i['reservation_create_date_og'])
-            if i['reservation_booked_date_og']:
-                i['reservation_booked_date'] = self._datetime_user_context(i['reservation_booked_date_og'])
-            if i['reservation_issued_date_og']:
-                i['reservation_issued_date'] = self._datetime_user_context(i['reservation_issued_date_og'])
-        return lines
-
-    def _convert_data_airline(self, lines):
-        for i in lines:
-            i['reservation_create_date'] = self._datetime_user_context(i['reservation_create_date_og'])
-            if i['reservation_booked_date_og']:
-                i['reservation_booked_date'] = self._datetime_user_context(i['reservation_booked_date_og'])
-            if i['reservation_issued_date_og']:
-                i['reservation_issued_date'] = self._datetime_user_context(i['reservation_issued_date_og'])
-        return lines
-
-    def _convert_data_tour(self, lines):
-        for i in lines:
-            i['reservation_create_date'] = self._datetime_user_context(i['reservation_create_date_og'])
-            if i['reservation_booked_date_og']:
-                i['reservation_booked_date'] = self._datetime_user_context(i['reservation_booked_date_og'])
-            if i['reservation_issued_date_og']:
-                i['reservation_issued_date'] = self._datetime_user_context(i['reservation_issued_date_og'])
-        return lines
-
-    def _convert_data_train(self, lines):
-        for i in lines:
-            i['reservation_create_date'] = self._datetime_user_context(i['reservation_create_date_og'])
-            if i['reservation_booked_date_og']:
-                i['reservation_booked_date'] = self._datetime_user_context(i['reservation_booked_date_og'])
-            if i['reservation_issued_date_og']:
-                i['reservation_issued_date'] = self._datetime_user_context(i['reservation_issued_date_og'])
-
-        return lines
-
-    def _convert_data_activity(self, lines):
-        for i in lines:
-            i['reservation_create_date'] = self._datetime_user_context(i['reservation_create_date_og'])
-            if i['reservation_booked_date_og']:
-                i['reservation_booked_date'] = self._datetime_user_context(i['reservation_booked_date_og'])
-            if i['reservation_issued_date_og']:
-                i['reservation_issued_date'] = self._datetime_user_context(i['reservation_issued_date_og'])
-            if i['reservation_visit_date_og']:
-                i['reservation_visit_date'] = self._datetime_user_context(i['reservation_visit_date_og'])
-        return lines
-
-    def _convert_data_visa(self, lines):
-        for i in lines:
-            i['reservation_create_date'] = self._datetime_user_context(i['reservation_create_date_og'])
-            if i['reservation_booked_date_og']:
-                i['reservation_booked_date'] = self._datetime_user_context(i['reservation_booked_date_og'])
-            if i['reservation_issued_date_og']:
-                i['reservation_issued_date'] = self._datetime_user_context(i['reservation_issued_date_og'])
-        return lines
-
-    def _convert_data_offline(self, lines):
-        for i in lines:
-            i['reservation_create_date'] = self._datetime_user_context(i['reservation_create_date_og'])
-            if i['reservation_booked_date_og']:
-                i['reservation_booked_date'] = self._datetime_user_context(i['reservation_booked_date_og'])
-            if i['reservation_issued_date_og']:
-                i['reservation_issued_date'] = self._datetime_user_context(i['reservation_issued_date_og'])
-            if i['reservation_confirm_date_og']:
-                i['reservation_confirm_date'] = self._datetime_user_context(i['reservation_confirm_date_og'])
-            if i['reservation_done_date_og']:
-                i['reservation_done_date'] = self._datetime_user_context(i['reservation_done_date_og'])
-
-        return lines
-
-    def _convert_data_event(self, lines):
-        for i in lines:
-            i['reservation_create_date'] = self._datetime_user_context(i['reservation_create_date_og'])
-            if i['reservation_booked_date_og']:
-                i['reservation_booked_date'] = self._datetime_user_context(i['reservation_booked_date_og'])
-            if i['reservation_issued_date_og']:
-                i['reservation_issued_date'] = self._datetime_user_context(i['reservation_issued_date_og'])
-        return lines
-
-    def _convert_data_ppob(self, lines):
-        for i in lines:
-            i['reservation_create_date'] = self._datetime_user_context(i['reservation_create_date_og'])
-            if i['reservation_booked_date_og']:
-                i['reservation_booked_date'] = self._datetime_user_context(i['reservation_booked_date_og'])
-            if i['reservation_issued_date_og']:
-                i['reservation_issued_date'] = self._datetime_user_context(i['reservation_issued_date_og'])
-        return lines
-
-    def _convert_data_invoice(self, lines):
-        for i in lines:
-            i['create_date'] = self._datetime_user_context(i['create_date_og'])
-        return lines
-
-    def _seperate_data(self, lines):
-        for i in lines:
-            try:
-                temp_booked_date = i['reservation_booked_date'].split("-")
-                i['booked_year'] = temp_booked_date[0]
-                i['booked_month'] = temp_booked_date[1]
-            except:
-                pass
-            try:
-                temp_issued_date = i['reservation_issued_date'].split("-")
-                i['issued_year'] = temp_issued_date[0]
-                i['issued_month'] = temp_issued_date[1]
-            except:
-                pass
-        return lines
-
-    def _datetime_user_context(self, utc_datetime_string):
-        value = fields.Datetime.from_string(utc_datetime_string)
-        return fields.Datetime.context_timestamp(self, value).strftime("%Y-%m-%d")
-
     def _get_lines_data(self, date_from, date_to, agent_id, provider_type, context = {}):
         if provider_type != 'all' and provider_type != 'overall':
             lines = self._lines(date_from, date_to, agent_id, provider_type, provider_type, context)
@@ -1047,6 +1098,11 @@ class ReportSelling(models.Model):
             lines = self._convert_data(lines)
             lines = self._seperate_data(lines)
         return lines
+
+    #############################################
+    #   this section is the function that being called by the other module or page for that matter
+    #
+    #############################################
 
     def _prepare_valued(self, data_form):
         # get data from form

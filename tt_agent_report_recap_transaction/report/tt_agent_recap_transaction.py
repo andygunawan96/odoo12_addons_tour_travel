@@ -10,6 +10,11 @@ class AgentReportRecapTransacion(models.Model):
     _name = 'report.tt_agent_report_recap_transaction.agent_report_recap'
     _description = 'Recap Transaction'
 
+    ################
+    #   All of select function to build SELECT function in SQL
+    ################
+
+    # this select function responsible to build query to produce the neccessary report
     @staticmethod
     def _select():
         return """
@@ -29,6 +34,7 @@ class AgentReportRecapTransacion(models.Model):
         ,rsv.offline_provider_type as offline_provider
         """
 
+    # this select function responsible build query for service charge
     @staticmethod
     def _select_join_service_charge():
         return """
@@ -38,6 +44,10 @@ class AgentReportRecapTransacion(models.Model):
             booking_service_charge.is_ledger_created as ledger_created
             """
 
+    ################
+    #   All of FROM function to build FROM function in SQL
+    #   name of the function correspond to respected SELECT functions for easy development
+    ################
     @staticmethod
     def _from(provider_type):
         # query = """tt_ledger """
@@ -66,6 +76,10 @@ class AgentReportRecapTransacion(models.Model):
         """
         return query
 
+    ################
+    #   All of WHERE function to build WHERE function in SQL
+    #   name of the function correspond to respected SELECT, FORM functions for easy development
+    ################
     @staticmethod
     def _where(date_from, date_to, agent_id, provider_type, state):
         where = """rsv.issued_date >= '%s' and rsv.issued_date <= '%s'""" % (date_from, date_to)
@@ -96,6 +110,10 @@ class AgentReportRecapTransacion(models.Model):
             where += """ AND (rsv.state = '%s' OR rsv.state = 'reissue')""" % state
         return where
 
+    ################
+    #   All of ORDER function to build ORDER BY function in SQL
+    #   name of the function correspond to respected SELECT, FORM, WHERE, GROUP BY functions for easy development
+    ################
     @staticmethod
     def _order_by():
         return """
@@ -107,6 +125,12 @@ class AgentReportRecapTransacion(models.Model):
         rsv.create_date, rsv.name
         """
 
+    ################
+    #   Function to build the full query
+    #   Within this function we will call the SELECT function, FROM function, WHERE function, etc
+    #   for more information of what each query do, se explanation above every select function
+    #   name of select function is the same as the _lines_[function name] or get_[function_name]
+    ################
     def _lines(self, date_from, date_to, agent_id, provider_type, state):
         # SELECT
         query = 'SELECT ' + self._select()
@@ -143,6 +167,7 @@ class AgentReportRecapTransacion(models.Model):
         _logger.info(query)
         return self.env.cr.dictfetchall()
 
+    # this function handle preparation to call query builder for service charge
     def _get_lines_data(self, date_from, date_to, agent_id, provider_type, state):
         lines = []
         if provider_type != 'all':
@@ -157,6 +182,7 @@ class AgentReportRecapTransacion(models.Model):
                     lines.append(line)
         return lines
 
+    # this function handle preparation to call query builder for service charge
     def _get_lines_data_join_service_charge(self, date_from, date_to, agent_id, provider_type, state):
         lines = []
         if provider_type != 'all':
