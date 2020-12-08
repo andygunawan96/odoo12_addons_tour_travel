@@ -112,6 +112,7 @@ class ReportSelling(models.Model):
         reservation.issued_date as reservation_issued_date_og,
         reservation.create_date as reservation_create_date_og, 
         reservation.nights as reservation_night, 
+        reservation.checkin_date as reservation_check_in_date,
         reservation.provider_name as reservation_provider_name,
         reservation.total as amount, 
         reservation.carrier_name as carrier_name,
