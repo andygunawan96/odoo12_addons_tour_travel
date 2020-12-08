@@ -149,7 +149,7 @@
                             <field name="reschedule_type_str"/>
                         </group>
                         <group>
-                            <field name="payment_acquirer_id" attrs="{'invisible':['|', ('state','not in', ['sent', 'validate', 'final', 'done', 'cancel', 'expired']), ('customer_parent_type_id', 'in', [%(tt_base.customer_type_cor)d, %(tt_base.customer_type_por)d])], 'required':[('state','in', ['sent', 'validate', 'final', 'done']), ('customer_parent_type_id', '!=', %(tt_base.customer_type_cor)d)]}"/>
+                            <field name="payment_acquirer_id" attrs="{'invisible':['|', ('state','not in', ['sent', 'validate', 'final', 'done', 'cancel', 'expired']), ('customer_parent_type_id', 'in', [%(tt_base.customer_type_cor)d, %(tt_base.customer_type_por)d])], 'required':[('state','in', ['sent', 'validate', 'final', 'done']), ('customer_parent_type_id', 'in', [%(tt_base.customer_type_cor)d, %(tt_base.customer_type_por)d])]}"/>
                             <field name="notes"/>
                             <field name="created_by_api" invisible="1"/>
                         </group>
