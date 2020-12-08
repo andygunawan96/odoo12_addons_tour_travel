@@ -10,7 +10,7 @@
                                         'default_reschedule_line_id': id,
                                         'default_real_reschedule_amount': real_reschedule_amount,
                                         }" attrs="{'invisible':[('state','not in', ['final','done'])]}"/>
-                    <button string="Generate Purchase Order" class="oe_highlight" name="generate_po" type="object" attrs="{'invisible': ['|', ('is_po_required', '!=', True), ('letter_of_guarantee_ids', '!=', [])]}" groups="tt_base.group_tt_accounting_manager,tt_base.group_tt_tour_travel_manager,base.user_admin"/>
+                    <button string="Generate Purchase Order" class="oe_highlight" name="generate_po" type="object" attrs="{'invisible': ['|', ('is_po_required', '!=', True), '|', ('letter_of_guarantee_ids', '!=', []), ('state', '!=', 'final')]}" groups="tt_base.group_tt_accounting_manager,tt_base.group_tt_tour_travel_manager,base.user_admin"/>
                     <field name="state" widget="statusbar" statusbar_visible="draft,confirm,sent,validate,final,done"/>
                 </header>
                 <sheet>
@@ -31,7 +31,6 @@
                             <field name="admin_fee"/>
                             <field name="admin_fee_ho" groups="tt_base.group_tt_tour_travel_operator"/>
                             <field name="admin_fee_agent" groups="tt_base.group_tt_tour_travel_operator"/>
-                            <field name="quantity"/>
                             <field name="total_amount"/>
                             <field name="is_po_required" invisible="1"/>
                         </group>
@@ -56,7 +55,6 @@
                 <field name="reschedule_amount_ho" groups="tt_base.group_tt_tour_travel_operator"/>
                 <field name="admin_fee_id" groups="tt_base.group_tt_tour_travel_operator"/>
                 <field name="admin_fee"/>
-                <field name="quantity"/>
                 <field name="total_amount"/>
                 <field name="real_reschedule_amount" groups="tt_base.group_tt_tour_travel_operator"/>
                 <field name="state"/>

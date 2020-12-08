@@ -53,7 +53,6 @@ class TtRescheduleLine(models.Model):
     admin_fee = fields.Monetary('Admin Fee Amount', default=0, readonly=True, compute="_compute_admin_fee")
     admin_fee_ho = fields.Monetary('Admin Fee (HO)', default=0, readonly=True, compute="_compute_admin_fee")
     admin_fee_agent = fields.Monetary('Admin Fee (Agent)', default=0, readonly=True, compute="_compute_admin_fee")
-    quantity = fields.Integer('Quantity', default=1, required=True)
     total_amount = fields.Monetary('Total Amount', default=0, readonly=True, compute="_compute_total_amount")
     sequence = fields.Integer('Sequence', default=50, states={'draft': [('readonly', False)], 'confirm': [('readonly', False)]}, readonly=True)
     state = fields.Selection([('draft', 'Draft'), ('confirm', 'Confirmed'),
@@ -106,11 +105,11 @@ class TtRescheduleLine(models.Model):
                 rec.admin_fee_agent = 0
                 rec.admin_fee = 0
 
-    @api.depends('admin_fee', 'reschedule_amount', 'quantity')
-    @api.onchange('admin_fee', 'reschedule_amount', 'quantity')
+    @api.depends('admin_fee', 'reschedule_amount')
+    @api.onchange('admin_fee', 'reschedule_amount')
     def _compute_total_amount(self):
         for rec in self:
-            rec.total_amount = (rec.reschedule_amount + rec.admin_fee) * rec.quantity
+            rec.total_amount = rec.reschedule_amount + rec.admin_fee
 
     @api.onchange('admin_fee_dummy')
     def get_admin_fee_domain(self):
@@ -134,39 +133,56 @@ class TtRescheduleLine(models.Model):
                 rec.is_po_required = False
 
     def generate_po(self):
-        po_exist = self.env['tt.letter.guarantee'].search([('res_model', '=', self._name), ('res_id', '=', self.id)])
-        if po_exist:
-            raise UserError('Letter of Guarantee for this reschedule line is already exist.')
+        if self.reschedule_id.state == 'final':
+            if not self.env.user.has_group('tt_base.group_tt_accounting_manager'):
+                hour_passed = (datetime.now() - self.reschedule_id.final_date).seconds / 3600
+                if hour_passed > 1:
+                    raise UserError('Failed to generate Purchase Order. It has been more than 1 hour after this after sales was finalized, please contact Accounting Manager to generate Purchase Order.')
+
+            if self.real_reschedule_amount <= 0:
+                raise UserError('Please set Real After Sales Amount from Vendor.')
+
+            po_exist = self.env['tt.letter.guarantee'].search([('res_model', '=', self._name), ('res_id', '=', self.id)])
+            if po_exist:
+                raise UserError('Letter of Guarantee for this reschedule line is already exist.')
+            else:
+                desc_str = str(dict(self._fields['reschedule_type'].selection).get(self.reschedule_type)) + '<br/>'
+                pax_desc_str = ''
+                pax_amount = 0
+                for rec in self.reschedule_id.passenger_ids:
+                    pax_amount += 1
+                    pax_desc_str += '%s. %s<br/>' % (rec.title, rec.name)
+                price_per_mul = self.real_reschedule_amount / pax_amount
+                po_vals = {
+                    'res_model': self._name,
+                    'res_id': self.id,
+                    'provider_id': self.provider_id.id,
+                    'type': 'po',
+                    'parent_ref': self.reschedule_id.name,
+                    'pax_description': pax_desc_str,
+                    'multiplier': 'Pax',
+                    'multiplier_amount': pax_amount,
+                    'quantity': 'Qty',
+                    'quantity_amount': 1,
+                    'currency_id': self.currency_id.id,
+                    'price_per_mult': price_per_mul,
+                    'price': self.real_reschedule_amount,
+                }
+                new_po_obj = self.env['tt.letter.guarantee'].create(po_vals)
+                ref_num = ''
+                if self.reschedule_id.pnr and self.reschedule_id.referenced_pnr:
+                    if self.reschedule_id.pnr == self.reschedule_id.referenced_pnr:
+                        ref_num = self.reschedule_id.pnr
+                    else:
+                        ref_num = self.reschedule_id.referenced_pnr + ' to ' + self.reschedule_id.pnr
+                line_vals = {
+                    'lg_id': new_po_obj.id,
+                    'ref_number': ref_num,
+                    'description': desc_str
+                }
+                self.env['tt.letter.guarantee.lines'].create(line_vals)
         else:
-            desc_str = str(dict(self._fields['reschedule_type'].selection).get(self.reschedule_type)) + '<br/>'
-            pax_desc_str = ''
-            pax_amount = 0
-            for rec in self.reschedule_id.passenger_ids:
-                pax_amount += 1
-                pax_desc_str += '%s. %s<br/>' % (rec.title, rec.name)
-            price_per_mul = self.total_amount / pax_amount / self.quantity
-            po_vals = {
-                'res_model': self._name,
-                'res_id': self.id,
-                'provider_id': self.provider_id.id,
-                'type': 'po',
-                'parent_ref': self.reschedule_id.name,
-                'pax_description': pax_desc_str,
-                'multiplier': 'Pax',
-                'multiplier_amount': pax_amount,
-                'quantity': 'Qty',
-                'quantity_amount': self.quantity,
-                'currency_id': self.currency_id.id,
-                'price_per_mult': price_per_mul,
-                'price': self.total_amount,
-            }
-            new_po_obj = self.env['tt.letter.guarantee'].create(po_vals)
-            line_vals = {
-                'lg_id': new_po_obj.id,
-                'ref_number': self.reschedule_id.pnr,
-                'description': desc_str
-            }
-            self.env['tt.letter.guarantee.lines'].create(line_vals)
+            raise UserError('You can only generate Purchase Order if this after sales state is "Finalized".')
 
 
 class TtReschedule(models.Model):
@@ -440,9 +456,19 @@ class TtReschedule(models.Model):
             'final_date': datetime.now()
         })
 
+    def check_po_required(self):
+        required = False
+        for rec in self.reschedule_line_ids:
+            if rec.provider_id.is_using_po:
+                if not rec.letter_of_guarantee_ids:
+                    required = True
+        return required
+
     def action_done(self):
         if self.state != 'final':
             raise UserError("Cannot Approve because state is not 'Finalized'.")
+        if self.check_po_required():
+            raise UserError(_('Purchase Order is required in one Line or more. Please check all Line(s)!'))
 
         self.action_create_invoice()
         self.write({
