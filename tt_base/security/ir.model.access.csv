@@ -59,6 +59,9 @@ access_social_media_detail_for_public,social.media.detail.for.public,model_socia
 access_social_media_detail_for_tour_travel_operator,social.media.detail.for.tour.travel.operator,model_social_media_detail,tt_base.group_tt_tour_travel_operator,1,0,0,0
 access_social_media_detail_for_tour_travel_supervisor,social.media.detail.for.tour.travel.supervisor,model_social_media_detail,tt_base.group_tt_tour_travel_supervisor,1,1,1,0
 access_social_media_detail_for_tour_travel_manager,social.media.detail.for.tour.travel.manager,model_social_media_detail,tt_base.group_tt_tour_travel_manager,1,1,1,0
+access_social_media_detail_for_accounting_operator,social.media.detail.for.accounting.operator,model_social_media_detail,tt_base.group_tt_accounting_operator,1,1,1,0
+access_social_media_detail_for_accounting_supervisor,social.media.detail.for.accounting.supervisor,model_social_media_detail,tt_base.group_tt_accounting_supervisor,1,1,1,0
+access_social_media_detail_for_accounting_manager,social.media.detail.for.accounting.manager,model_social_media_detail,tt_base.group_tt_accounting_manager,1,1,1,1
 access_social_media_detail_for_agent_user_operator,social.media.detail.for.agent.user.operator,model_social_media_detail,tt_base.group_tt_agent_user_operator,1,0,0,0
 access_social_media_detail_for_agent_user_supervisor,social.media.detail.for.agent.user.supervisor,model_social_media_detail,tt_base.group_tt_agent_user_supervisor,1,1,1,0
 access_social_media_detail_for_agent_user_manager,social.media.detail.for.agent.user.manager,model_social_media_detail,tt_base.group_tt_agent_user_manager,1,1,1,0
@@ -181,6 +184,9 @@ access_address_detail_for_public,address.detail.for.public,model_address_detail,
 access_address_detail_for_tour_travel_operator,address.detail.for.tour.travel.operator,model_address_detail,tt_base.group_tt_tour_travel_operator,1,0,0,0
 access_address_detail_for_tour_travel_supervisor,address.detail.for.tour.travel.supervisor,model_address_detail,tt_base.group_tt_tour_travel_supervisor,1,0,1,0
 access_address_detail_for_tour_travel_manager,address.detail.for.tour.travel.manager,model_address_detail,tt_base.group_tt_tour_travel_manager,1,1,1,0
+access_address_detail_for_accounting_operator,address.detail.for.accounting.operator,model_address_detail,tt_base.group_tt_accounting_operator,1,1,1,0
+access_address_detail_for_accounting_supervisor,address.detail.for.accounting.supervisor,model_address_detail,tt_base.group_tt_accounting_supervisor,1,1,1,0
+access_address_detail_for_accounting_manager,address.detail.for.accounting.manager,model_address_detail,tt_base.group_tt_accounting_manager,1,1,1,1
 access_address_detail_for_agent_management_operator,address.detail.for.agent.management.operator,model_address_detail,tt_base.group_tt_agent_management_operator,1,1,1,0
 access_address_detail_for_agent_user_operator,address.detail.for.agent.user.operator,model_address_detail,tt_base.group_tt_agent_user_operator,1,1,1,0
 access_address_detail_for_agent_user_supervisor,address.detail.for.agent.user.supervisor,model_address_detail,tt_base.group_tt_agent_user_supervisor,1,1,1,0
@@ -190,6 +196,9 @@ access_phone_detail_for_public,phone.detail.for.public,model_phone_detail,,1,0,0
 access_phone_detail_for_tour_travel_operator,phone.detail.for.tour.travel.operator,model_phone_detail,tt_base.group_tt_tour_travel_operator,1,0,0,0
 access_phone_detail_for_tour_travel_supervisor,phone.detail.for.tour.travel.supervisor,model_phone_detail,tt_base.group_tt_tour_travel_supervisor,1,0,1,0
 access_phone_detail_for_tour_travel_manager,phone.detail.for.tour.travel.manager,model_phone_detail,tt_base.group_tt_tour_travel_manager,1,1,1,0
+access_phone_detail_for_accounting_operator,phone.detail.for.accounting.operator,model_phone_detail,tt_base.group_tt_accounting_operator,1,1,1,0
+access_phone_detail_for_accounting_supervisor,phone.detail.for.accounting.supervisor,model_phone_detail,tt_base.group_tt_accounting_supervisor,1,1,1,0
+access_phone_detail_for_accounting_manager,phone.detail.for.accounting.manager,model_phone_detail,tt_base.group_tt_accounting_manager,1,1,1,1
 access_phone_detail_for_ticketing_operator,phone.detail.for.ticketing.operator,model_phone_detail,tt_base.group_tt_ticketing_operator,1,1,1,0
 access_phone_detail_for_agent_management_operator,phone.detail.for.agent.management.operator,model_phone_detail,tt_base.group_tt_agent_management_operator,1,1,1,0
 access_phone_detail_for_agent_user_operator,phone.detail.for.agent.user.operator,model_phone_detail,tt_base.group_tt_agent_user_operator,1,1,1,0
