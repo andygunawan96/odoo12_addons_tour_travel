@@ -1276,7 +1276,11 @@ class TtReportDashboard(models.Model):
                             temp_dict['detail'][day_index]['revenue'] += i['amount']
                             total += i['amount']
                             num_data += 1
+                            # add the first profit if ledger type is 3 a.k.a commission
                             if i['ledger_transaction_type'] == 3:
+                                # check if commission (also known as profit) is belong to HQ or not, and if the user requesting is part of HQ or not
+                                # if HQ guy asking then we'll count everything
+                                # if not HQ guy then we'll only count respected agennt
                                 if i['ledger_agent_type_name'] == 'HO' and is_ho == 1:
                                     temp_dict['detail'][day_index]['profit'] += i['debit']
                                     profit_total += i['debit']
@@ -1298,6 +1302,9 @@ class TtReportDashboard(models.Model):
                             total += i['amount']
                             num_data += 1
                             if i['ledger_transaction_type'] == 3:
+                                # check if commission (also known as profit) is belong to HQ or not, and if the user requesting is part of HQ or not
+                                # if HQ guy asking then we'll count everything
+                                # if not HQ guy then we'll only count respected agennt
                                 if i['ledger_agent_type_name'] == 'HO' and is_ho == 1:
                                     summary_issued[month_index]['detail'][day_index]['profit'] += i['debit']
                                     profit_total += i['debit']
@@ -1351,7 +1358,6 @@ class TtReportDashboard(models.Model):
                                         nta_total += k['booking_charge_total']
                             grand_total = nta_total + commission
 
-
                             # carrier is not exist yet
                             # declare a temporary dictionary
                             temp_dict = {
@@ -1379,6 +1385,9 @@ class TtReportDashboard(models.Model):
                                 filter(lambda x: x['booking_pnr'] == i['ledger_pnr'] and x['order_number'] == i[
                                     'reservation_order_number'], service_charge))
 
+                            # this section below is to count total revenue group by carrier/airline
+                            # so no more provider like amadeus, or altea
+                            # and no more multi carrier i.e Garuda,Lion
                             nta_total = 0
                             commission = 0
                             for k in temp_charge:
@@ -1390,6 +1399,8 @@ class TtReportDashboard(models.Model):
                                         nta_total += k['booking_charge_total']
                             grand_total = nta_total + commission
 
+                            # each carrier will also have top 10 route by that particular Airline
+                            # this code below responsible for that
                             if carrier_route_index == -1:
                                 # route is not exist yet
                                 # create temporary dict
@@ -1413,17 +1424,27 @@ class TtReportDashboard(models.Model):
                         pass
 
                     # ============= Summary by Domestic/International ============
+                    # this summary basically make table to create international and domestic by direction
+                    # like one way, return or even multi city
                     if i['reservation_sector'] == 'International':
+                        # for every reservation with international destination
+                        # valuation = revenue
                         sector_dictionary[0]['valuation'] += float(i['amount'])
+                        # counter = # of reservation
                         sector_dictionary[0]['counter'] += 1
                         if i['reservation_direction'] == 'OW':
+                            # OW = one way
                             sector_dictionary[0]['one_way'] += 1
                         elif i['reservation_direction'] == 'RT':
+                            # rt = return
                             sector_dictionary[0]['return'] += 1
                         else:
+                            # else considered as multicity as of today 2020-12-08
                             sector_dictionary[0]['multi_city'] += 1
+                        # adding total passenger in international section
                         sector_dictionary[0]['passenger_count'] += int(i['reservation_passenger'])
                     elif i['reservation_sector'] == 'Domestic':
+                        # for every reservation with domestic destination
                         sector_dictionary[1]['valuation'] += float(i['amount'])
                         sector_dictionary[1]['counter'] += 1
                         if i['reservation_direction'] == 'OW':
@@ -1434,6 +1455,7 @@ class TtReportDashboard(models.Model):
                             sector_dictionary[1]['multi_city'] += 1
                         sector_dictionary[1]['passenger_count'] += int(i['reservation_passenger'])
                     else:
+                        # for any other (maybe an update on the system or something, take makes the reservation neither international or domestic)
                         sector_dictionary[2]['valuation'] += float(i['amount'])
                         sector_dictionary[2]['counter'] += 1
                         if i['reservation_direction'] == 'OW':
@@ -1461,17 +1483,29 @@ class TtReportDashboard(models.Model):
                                 depart_index = j
                     # lets count
                     if filter_data[0]['reservation_issued_date_og']:
-                        date_time_convert = datetime.strptime(filter_data[depart_index]['journey_departure_date'],
-                                                              '%Y-%m-%d %H:%M:%S')
+                        # conver journey date (string) to datetime
+                        date_time_convert = datetime.strptime(filter_data[depart_index]['journey_departure_date'],'%Y-%m-%d %H:%M:%S')
+                        # check if reservation has issued dates
+                        # this should be quite obselete since this function only calls for issued reservation
+                        # but this function also written in more general function so.. there's that
                         if filter_data[0]['reservation_issued_date_og']:
+                            # actually counting the day difference between each date
                             date_count = date_time_convert - filter_data[0]['reservation_issued_date_og']
                             if date_count.days < 0:
+                                # if for some whatever reason the date result in negative
+                                # just print to logger, maybe if someday needed to be check there's the data in logger
                                 _logger.error("please check {}".format(i['reservation_order_number']))
                         else:
                             date_count = 0
 
+                        # for airline only i dicided to seperate the data between international departure
+                        # and domestic departure, it makes more sense and insightful
+                        # so in here we check if the reservation has international or domestic destination (well from sector actually)
                         if filter_data[0]['reservation_sector'] == 'International':
+                            # if the data is international then we'll add it in international list
                             issued_depart_index = self.check_index(issued_depart_international_summary, "day", date_count.days)
+                            # as always check the index
+                            # if no index found a.k.a -1 then we'll create and add the data
                             if issued_depart_index == -1:
                                 temp_dict = {
                                     "day": date_count.days,
@@ -1480,10 +1514,13 @@ class TtReportDashboard(models.Model):
                                 }
                                 issued_depart_international_summary.append(temp_dict)
                             else:
+                                # if data exist then we only need to update existing data
                                 issued_depart_international_summary[issued_depart_index]['counter'] += 1
                                 issued_depart_international_summary[issued_depart_index]['passenger'] += filter_data[0][
                                     'reservation_passenger']
                         else:
+                            # as of today 2020-12-08 else considered as domestic
+                            # so we'll add it in domestic section
                             issued_depart_index = self.check_index(issued_depart_domestic_summary, "day",
                                                                    date_count.days)
                             if issued_depart_index == -1:
@@ -1505,10 +1542,11 @@ class TtReportDashboard(models.Model):
                         # num_data += 1
 
                         # ============= Search best for every sector ==================
-                        returning_index = self.returning_index_sector(destination_sector_summary,
-                                                                      {'departure': i['departure'],
-                                                                       'destination': i['destination'],
-                                                                       'sector': i['reservation_sector']})
+                        # in this section we only compare how many reservation is actually for international destination
+                        # and how many domestic reservation
+                        # just to make is useful this report also sumarize passenger count, and reservation count
+                        returning_index = self.returning_index_sector(destination_sector_summary,{'departure': i['departure'], 'destination': i['destination'], 'sector': i['reservation_sector']})
+                        # once again as always we check for index then create and add if not exist, update if data already exist
                         if returning_index == -1:
                             new_dict = {
                                 'sector': i['reservation_sector'],
@@ -1531,9 +1569,11 @@ class TtReportDashboard(models.Model):
                             destination_sector_summary[returning_index]['infant_count'] += i['reservation_infant']
 
                         # ============= Search for best 50 routes ====================
-                        returning_index = self.returning_index(destination_direction_summary, {'departure': i['departure'],
-                                                                                               'destination': i[
-                                                                                                   'destination']})
+                        # in this section we want to extract top i dunno like 15 route of each sector
+                        # this code can produce more than 15, but will be trim later down the line
+                        # to make it insightful i add revenue data, and passenger count
+                        returning_index = self.returning_index(destination_direction_summary, {'departure': i['departure'], 'destination': i['destination']})
+
                         if returning_index == -1:
                             new_dict = {
                                 'direction': i['reservation_direction'],
@@ -1557,23 +1597,36 @@ class TtReportDashboard(models.Model):
                             destination_direction_summary[returning_index]['infant_count'] += i['reservation_infant']
                     current_id = i['reservation_id']
                 else:
+                    # els in here means iterate data has the same order number as previous lines
+                    # with that we only need to update ledger count
+                    # no more filtering for smaller overview
+
+                    # this if logic is needed because in a reservation can contain multi journey and multi segment and multi ledger
+                    # it will double with each join (in SQL)
+                    # in order not to double count, this if condition is needed
                     if current_segment != i['segment_id'] and current_pnr != i['ledger_pnr']:
                         # if both segment and pnr is diff, then we want to count the ledger
                         # hence update to current pnr and segment
                         current_segment = i['segment_id']
                         current_pnr = i['ledger_pnr']
 
+                        # this if condition is needed because even after i add ORDER BY in SQL for some reason ledger PNR could still be in mumbo jumbo
+                        # so we need to keep track what pnr is already count
                         if current_pnr in pnr_within:
                             continue
                         else:
                             pnr_within.append(current_pnr)
 
-                        # count like always
-                        if i['ledger_transaction_type'] == 3:
-                            month_index = self.check_date_index(summary_issued, {'year': i['issued_year'],
-                                                                                 'month': month[int(i['issued_month']) - 1]})
+                        # Let's count
+                        if i['ledger_transaction_type'] == 3:   # type 3 = commission
+                            # as always we look for what index particular data is
+                            month_index = self.check_date_index(summary_issued, {'year': i['issued_year'], 'month': month[int(i['issued_month']) - 1]})
+                            # get the date (also known as index in summary issued)
                             splits = i['reservation_issued_date'].split("-")
                             day_index = int(splits[2]) - 1
+                            # check if commission (also known as profit) is belong to HQ or not, and if the user requesting is part of HQ or not
+                            # if HQ guy asking then we'll count everything
+                            # if not HQ guy then we'll only count respected agennt
                             if i['ledger_agent_type_name'] == 'HO' and is_ho == 1:
                                 summary_issued[month_index]['detail'][day_index]['profit'] += i['debit']
                                 profit_total += i['debit']
@@ -1585,17 +1638,19 @@ class TtReportDashboard(models.Model):
 
                         # update top carrier base on same reservation but diff segment and diff pnr
                         try:
+                            # so because pnr and segment difference, we could safely assume that this is a new airline, could be the same
+                            # but eitherway we'll gonna count it anyway so this section is for that
                             carrier_index = self.check_carrier(top_carrier, {'carrier_name': i['airline']})
 
+                            # at this point this seems really redundant so you know the drill.
                             if carrier_index == -1:
                                 # filter service charge
                                 # product total corresponding to particular pnr
                                 # filter from service charge data
-                                temp_charge = list(
-                                    filter(
-                                        lambda x: x['booking_pnr'] == i['ledger_pnr'] and x['order_number'] ==
-                                                  i['reservation_order_number'], service_charge))
+                                temp_charge = list(filter(lambda x: x['booking_pnr'] == i['ledger_pnr'] and x['order_number'] ==i['reservation_order_number'], service_charge))
 
+                                # this section count revenue for each airline by looking thru the service charge
+                                # so it's like super accurate
                                 nta_total = 0
                                 commission = 0
                                 for k in temp_charge:
@@ -1607,6 +1662,7 @@ class TtReportDashboard(models.Model):
                                             nta_total += k['booking_charge_total']
                                 grand_total = nta_total + commission
 
+                                # maybe not section above but below this you know the drill
                                 # carrier is not exist yet
                                 # declare a temporary dictionary
                                 temp_dict = {
@@ -1625,19 +1681,15 @@ class TtReportDashboard(models.Model):
                                 top_carrier.append(temp_dict)
                             else:
                                 # check index of route within top_carrier dictionary
-                                carrier_route_index = self.check_carrier_route(
-                                    top_carrier[carrier_index]['route'],
-                                    {'departure': i['departure'], 'destination': i['destination']})
+                                carrier_route_index = self.check_carrier_route(top_carrier[carrier_index]['route'], {'departure': i['departure'], 'destination': i['destination']})
 
                                 # filter service charge
                                 # product total corresponding to particular pnr
                                 # filter from service charge data
-                                temp_charge = list(
-                                    filter(
-                                        lambda x: x['booking_pnr'] == i['ledger_pnr'] and x['order_number'] ==
-                                                  i[
-                                                      'reservation_order_number'], service_charge))
+                                temp_charge = list(filter(lambda x: x['booking_pnr'] == i['ledger_pnr'] and x['order_number'] == i['reservation_order_number'], service_charge))
 
+                                # this section count revenue for each airline by looking thru the service charge
+                                # so it's like super accurate
                                 nta_total = 0
                                 commission = 0
                                 for k in temp_charge:
@@ -1649,6 +1701,7 @@ class TtReportDashboard(models.Model):
                                             nta_total += k['booking_charge_total']
                                 grand_total = nta_total + commission
 
+                                # same drill
                                 if carrier_route_index == -1:
                                     # route is not exist yet
                                     # create temporary dict
@@ -1673,13 +1726,15 @@ class TtReportDashboard(models.Model):
                             pass
 
                     elif current_segment == i['segment_id'] and current_pnr == i['ledger_pnr']:
+                        # if we have same segment and same pnr then we want to count for profit and all
                         # count like always
                         if i['ledger_transaction_type'] == 3:
-                            month_index = self.check_date_index(summary_issued, {'year': i['issued_year'],
-                                                                                 'month': month[
-                                                                                     int(i['issued_month']) - 1]})
+                            month_index = self.check_date_index(summary_issued, {'year': i['issued_year'], 'month': month[int(i['issued_month']) - 1]})
                             splits = i['reservation_issued_date'].split("-")
                             day_index = int(splits[2]) - 1
+                            # check if commission (also known as profit) is belong to HQ or not, and if the user requesting is part of HQ or not
+                            # if HQ guy asking then we'll count everything
+                            # if not HQ guy then we'll only count respected agennt
                             if i['ledger_agent_type_name'] == 'HO' and is_ho == 1:
                                 summary_issued[month_index]['detail'][day_index]['profit'] += i['debit']
                                 profit_total += i['debit']
@@ -1690,6 +1745,7 @@ class TtReportDashboard(models.Model):
                                 profit_agent += i['debit']
 
             # grouping data
+            # it's like spliting the data into smaller container
             international_filter = list(filter(lambda x: x['sector'] == 'International', destination_sector_summary))
             domestic_filter = list(filter(lambda x: x['sector'] == 'Domestic', destination_sector_summary))
             one_way_filter = list(filter(lambda x: x['direction'] == 'OW', destination_direction_summary))
@@ -1792,6 +1848,7 @@ class TtReportDashboard(models.Model):
 
             # shape the data for return
             if mode == 'month':
+                # just a reminder month mode achieve when date different between start and end is more than 35 days
                 # sum by month
                 try:
                     first_counter = summary_issued[0]['month_index'] - 1
@@ -1835,6 +1892,7 @@ class TtReportDashboard(models.Model):
 
             else:
                 # seperate by date
+                # build and trim data to exact date asked, just because
                 for i in summary_issued:
                     for j in i['detail']:
                         # built appropriate date
@@ -1886,6 +1944,7 @@ class TtReportDashboard(models.Model):
             destination_graph['Other'] = other_counter
 
             # prepare data to return
+            # this data actually printed in frontend console.log so for debugging if it's easier then there's that
             to_return = {
                 'first_graph': {
                     'label': list(main_data.keys()),
@@ -2069,7 +2128,11 @@ class TtReportDashboard(models.Model):
                             temp_dict['detail'][day_index]['revenue'] += i['amount']
                             total += i['amount']
                             num_data += 1
+                            # add the first profit if ledger type is 3 a.k.a commission
                             if i['ledger_transaction_type'] == 3:
+                                # check if commission (also known as profit) is belong to HQ or not, and if the user requesting is part of HQ or not
+                                # if HQ guy asking then we'll count everything
+                                # if not HQ guy then we'll only count respected agennt
                                 if i['ledger_agent_type_name'] == 'HO' and is_ho == 1:
                                     temp_dict['detail'][day_index]['profit'] += i['debit']
                                     profit_total += i['debit']
@@ -2091,6 +2154,9 @@ class TtReportDashboard(models.Model):
                             total += i['amount']
                             num_data += 1
                             if i['ledger_transaction_type'] == 3:
+                                # check if commission (also known as profit) is belong to HQ or not, and if the user requesting is part of HQ or not
+                                # if HQ guy asking then we'll count everything
+                                # if not HQ guy then we'll only count respected agennt
                                 if i['ledger_agent_type_name'] == 'HO' and is_ho == 1:
                                     summary_issued[month_index]['detail'][day_index]['profit'] += i['debit']
                                     profit_total += i['debit']
@@ -2103,17 +2169,27 @@ class TtReportDashboard(models.Model):
                         pass
 
                     # ============= Summary by Domestic/International ============
+                    # this summary basically make table to create international and domestic by direction
+                    # like one way, return or even multi city
                     if i['reservation_sector'] == 'International':
+                        # for every reservation with international destination
+                        # valuation = revenue
                         sector_dictionary[0]['valuation'] += float(i['amount'])
+                        # counter = # of reservation
                         sector_dictionary[0]['counter'] += 1
                         if i['reservation_direction'] == 'OW':
+                            # OW = one way
                             sector_dictionary[0]['one_way'] += 1
                         elif i['reservation_direction'] == 'RT':
+                            # rt = return
                             sector_dictionary[0]['return'] += 1
                         else:
+                            # else considered as multicity as of today 2020-12-08
                             sector_dictionary[0]['multi_city'] += 1
+                            # adding total passenger in international section
                         sector_dictionary[0]['passenger_count'] += int(i['reservation_passenger'])
                     elif i['reservation_sector'] == 'Domestic':
+                        # for every reservation with domestic destination
                         sector_dictionary[1]['valuation'] += float(i['amount'])
                         sector_dictionary[1]['counter'] += 1
                         if i['reservation_direction'] == 'OW':
@@ -2124,6 +2200,7 @@ class TtReportDashboard(models.Model):
                             sector_dictionary[1]['multi_city'] += 1
                         sector_dictionary[1]['passenger_count'] += int(i['reservation_passenger'])
                     else:
+                        # for any other (maybe an update on the system or something, take makes the reservation neither international or domestic)
                         sector_dictionary[2]['valuation'] += float(i['amount'])
                         sector_dictionary[2]['counter'] += 1
                         if i['reservation_direction'] == 'OW':
@@ -2150,17 +2227,24 @@ class TtReportDashboard(models.Model):
                                 depart_index = j
                     # lets count
                     if filter_data[0]['reservation_issued_date_og']:
-                        date_time_convert = datetime.strptime(filter_data[depart_index]['journey_departure_date'],
-                                                              '%Y-%m-%d %H:%M')
+                        # conver journey date (string) to datetime
+                        date_time_convert = datetime.strptime(filter_data[depart_index]['journey_departure_date'], '%Y-%m-%d %H:%M')
+                        # check if reservation has issued dates
+                        # this should be quite obselete since this function only calls for issued reservation
+                        # but this function also written in more general function so.. there's that
                         if filter_data[0]['reservation_issued_date_og']:
+                            # actually counting the day difference between each date
                             date_count = date_time_convert - filter_data[0]['reservation_issued_date_og']
                             if date_count.days < 0:
+                                # if for some whatever reason the date result in negative
+                                # just print to logger, maybe if someday needed to be check there's the data in logger
                                 _logger.error("please check {}".format(i['reservation_order_number']))
                         else:
                             date_count = 0
 
-                        issued_depart_index = self.check_index(issued_depart_summary, "day",
-                                                               date_count.days)
+                        # check for index in issued depart summary
+                        issued_depart_index = self.check_index(issued_depart_summary, "day", date_count.days)
+                        # if no index found a.k.a -1 then we'll create and add the data
                         if issued_depart_index == -1:
                             temp_dict = {
                                 "day": date_count.days,
@@ -2169,6 +2253,7 @@ class TtReportDashboard(models.Model):
                             }
                             issued_depart_summary.append(temp_dict)
                         else:
+                            # if data exist then we only need to update existing data
                             issued_depart_summary[issued_depart_index]['counter'] += 1
                             issued_depart_summary[issued_depart_index]['passenger'] += \
                             filter_data[0][
@@ -2182,10 +2267,12 @@ class TtReportDashboard(models.Model):
                         # num_data += 1
 
                         # ============= Search best for every sector ==================
-                        returning_index = self.returning_index_sector(destination_sector_summary,
-                                                                      {'departure': i['departure'],
-                                                                       'destination': i['destination'],
-                                                                       'sector': i['reservation_sector']})
+                        # in this section we only compare how many reservation is actually for international destination
+                        # and how many domestic reservation
+                        # just to make is useful this report also sumarize passenger count, and reservation count
+                        returning_index = self.returning_index_sector(destination_sector_summary, {'departure':
+                        # once again as always we check for index then create and add if not exist, update if data already exist
+                         i['departure'], 'destination': i['destination'], 'sector': i['reservation_sector']})
                         if returning_index == -1:
                             new_dict = {
                                 'sector': i['reservation_sector'],
@@ -2208,9 +2295,11 @@ class TtReportDashboard(models.Model):
                             destination_sector_summary[returning_index]['infant_count'] += i['reservation_infant']
 
                         # ============= Search for best 50 routes ====================
-                        returning_index = self.returning_index(destination_direction_summary, {'departure': i['departure'],
-                                                                                               'destination': i[
-                                                                                                   'destination']})
+                        # in this section we want to extract top i dunno like 15 route of each sector
+                        # this code can produce more than 15, but will be trim later down the line
+                        # to make it insightful i add revenue data, and passenger count
+                        returning_index = self.returning_index(destination_direction_summary, {'departure': i['departure'], 'destination': i['destination']})
+
                         if returning_index == -1:
                             new_dict = {
                                 'direction': i['reservation_direction'],
@@ -2236,16 +2325,23 @@ class TtReportDashboard(models.Model):
                     # update current id
                     current_id = i['reservation_id']
                 else:
+                    # els in here means iterate data has the same order number as previous lines
+                    # with that we only need to update ledger count
+                    # no more filtering for smaller overview
+
+                    # in order not to double count, this if condition is needed
                     if current_journey == i['journey_id']:
                         if i['ledger_transaction_type'] == 3:
                             # get index of particular year and month
-                            month_index = self.check_date_index(summary_issued, {'year': i['issued_year'],
-                                                                                 'month': month[int(i['issued_month']) - 1]})
+                            month_index = self.check_date_index(summary_issued, {'year': i['issued_year'], 'month': month[int(i['issued_month']) - 1]})
                             # split date to extract day
                             splits = i['reservation_issued_date'].split("-")
                             # get day
                             day_index = int(splits[2]) - 1
                             # add profit to respected array
+                            # check if commission (also known as profit) is belong to HQ or not, and if the user requesting is part of HQ or not
+                            # if HQ guy asking then we'll count everything
+                            # if not HQ guy then we'll only count respected agennt
                             if i['ledger_agent_type_name'] == 'HO' and is_ho == 1:
                                 summary_issued[month_index]['detail'][day_index]['profit'] += i['debit']
                                 profit_total += i['debit']
@@ -2514,6 +2610,9 @@ class TtReportDashboard(models.Model):
                             total += i['amount']
                             num_data += 1
                             if i['ledger_transaction_type'] == 3:
+                                # check if commission (also known as profit) is belong to HQ or not, and if the user requesting is part of HQ or not
+                                # if HQ guy asking then we'll count everything
+                                # if not HQ guy then we'll only count respected agennt
                                 if i['ledger_agent_type_name'] == 'HO' and is_ho == 1:
                                     temp_dict['detail'][day_index]['profit'] += i['debit']
                                     profit_total += i['debit']
@@ -2535,6 +2634,9 @@ class TtReportDashboard(models.Model):
                             total += i['amount']
                             num_data += 1
                             if i['ledger_transaction_type'] == 3:
+                                # check if commission (also known as profit) is belong to HQ or not, and if the user requesting is part of HQ or not
+                                # if HQ guy asking then we'll count everything
+                                # if not HQ guy then we'll only count respected agennt
                                 if i['ledger_agent_type_name'] == 'HO' and is_ho == 1:
                                     summary_issued[month_index]['detail'][day_index]['profit'] += i['debit']
                                     profit_total += i['debit']
@@ -2634,6 +2736,9 @@ class TtReportDashboard(models.Model):
                         splits = i['reservation_issued_date'].split("-")
                         day_index = int(splits[2]) - 1
                         if i['ledger_agent_type_name'] == 'HO' and is_ho == 1:
+                            # check if commission (also known as profit) is belong to HQ or not, and if the user requesting is part of HQ or not
+                            # if HQ guy asking then we'll count everything
+                            # if not HQ guy then we'll only count respected agennt
                             summary_issued[month_index]['detail'][day_index]['profit'] += i['debit']
                             profit_total += i['debit']
                             profit_ho += i['debit']
