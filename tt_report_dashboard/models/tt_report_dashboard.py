@@ -357,6 +357,13 @@ class TtReportDashboard(models.Model):
     def get_report_xls_api(self, data,  context):
         return ERR.get_no_error()
 
+    #####################################################
+    #    DEPENDENCIES FUNCTION
+    #####################################################
+    # this is the function that's being called by the sub main function (see below)
+    # within this section one function in charge of handling data to product report of certain scope i.e book issued ratio
+    # most of the input is form data that the sub main function get.
+
     # old function of get profit
     # currently not being use, since this function is merge is get reservation function
     def get_profit(self, data):
@@ -370,8 +377,11 @@ class TtReportDashboard(models.Model):
                 'agent_seq_id': data['agent_seq_id'],
                 'agent_type_seq_id': data['agent_type_seq_id']
             }
+
+            # execute the query
             profit_lines = self.env['report.tt_report_dashboard.overall'].get_profit(temp_dict)
 
+            # return to sub main function
             return profit_lines
         except Exception as e:
             _logger.error(traceback.format_exc())
@@ -416,8 +426,7 @@ class TtReportDashboard(models.Model):
                     if current_id != i['reservation_id']:
                         current_id = i['reservation_id']
                         # convert month number (1) to text and index (January) in constant
-                        month_index = self.check_date_index(summary_by_date, {'year': i['booked_year'],
-                                                                              'month': month[int(i['booked_month']) - 1]})
+                        month_index = self.check_date_index(summary_by_date, {'year': i['booked_year'], 'month': month[int(i['booked_month']) - 1]})
                         if month_index == -1:
                             # create dictionary seperate by month
                             temp_dict = {
@@ -428,9 +437,9 @@ class TtReportDashboard(models.Model):
                             }
                             # separate book date
                             try:
-                                splits = i['reservation_booked_date'].split("-")
-                                day_index = int(splits[2]) - 1
-                                temp_dict['detail'][day_index]['booked_counter'] += 1
+                                splits = i['reservation_booked_date'].split("-")        # return something like splits = [2020, 12, 2]
+                                day_index = int(splits[2]) - 1                          # minus 1 because temp dict is start at index 0 (with day 1 in its first dictionary)
+                                temp_dict['detail'][day_index]['booked_counter'] += 1   # add to respected place
                             except:
                                 pass
                             try:
@@ -443,6 +452,8 @@ class TtReportDashboard(models.Model):
                             # append to list of dictionaries
                             summary_by_date.append(temp_dict)
                         else:
+                            # if data already exist, then we do not need to create another temp dictionary
+                            # we just need to update the value within the correct slot
                             try:
                                 splits = i['reservation_booked_date'].split("-")
                                 day_index = int(splits[2]) - 1
@@ -457,8 +468,11 @@ class TtReportDashboard(models.Model):
                                 pass
 
                         # this section handle overview for booked issued ratio
+                        # the overview will return something like (airline 100 reservation, and so on, in the shape of list of dictionary)
                         provider_index = self.check_index(summary_provider, "provider", i['provider_type_name'])
                         if provider_index == -1:
+                            # this is also the same logic, if provider type cannot be found inside summary provider, then index will return -1
+                            # meaning the data isn't yet exist in summary provider
                             # declare dependencies
                             temp_dict = {
                                 'provider': i['provider_type_name'],
@@ -476,6 +490,8 @@ class TtReportDashboard(models.Model):
                             # add to big list
                             summary_provider.append(temp_dict)
                         else:
+                            # data is exist in summary_provider
+                            # only need to update the number
                             summary_provider[provider_index]['counter'] += 1
                             try:
                                 summary_provider[provider_index][i['reservation_state']] += 1
@@ -594,11 +610,12 @@ class TtReportDashboard(models.Model):
 
             # declare variable to temp handle processed data
             summary_chanel = []
-
             current_id = ''
 
+            # iterate every value in chanel_values['lines']
             for i in chanel_values['lines']:
-
+                # if for some reason current reservation_id is the same as current_id (previous iteration id)
+                # then continue
                 if i['reservation_id'] == current_id:
                     continue
                 else:
@@ -701,6 +718,8 @@ class TtReportDashboard(models.Model):
             data['start_date'] = temp_start_date.strftime('%Y-%m-%d') + " 17:00:00"
             data['end_date'] += " 16:59:59"
 
+            # first step of this function is to get reservation date, base on issued date
+
             # get all data by issued date (between start and end)
             temp_dict = {
                 'start_date': data['start_date'],
@@ -726,7 +745,7 @@ class TtReportDashboard(models.Model):
             # count different of days between dates
             delta = end_date - start_date
 
-            # if day counts > 35 then graph result will be group monthly
+            # if day counts > 35 then graph result will be group monthly, else graph data will be group by date
             if delta.days > 35:
                 # group by month
                 mode = 'month'
@@ -739,9 +758,11 @@ class TtReportDashboard(models.Model):
             num_data = 0
             invoice_total = 0
 
+            # second we gonna get invoice data based on the reservation that we know (incase there are 2 invoice within 1 reservation)
             # create list of reservation id for invoice query
             reservation_ids = []
             for i in issued_values['lines']:
+                # for every line from first step, we will extract the reservatoin_id, will be use to search invoice data
                 reservation_ids.append((i['reservation_id'], i['provider_type_name']))
 
             # get invoice data
@@ -756,6 +777,8 @@ class TtReportDashboard(models.Model):
                 'reservation': reservation_ids,
                 'addons': 'none'
             }
+
+            #executing invoice search
             invoice = self.env['report.tt_report_selling.report_selling']._get_reports(temp_dict)
 
             # proceed invoice with the assumption of create date = issued date
@@ -769,6 +792,8 @@ class TtReportDashboard(models.Model):
             current_pnr = ''
             pnr_within = []
 
+            # third we process the data to produce a trim proceed data, that is only need to be show
+
             # for every data in issued_values['lines']
             for i in issued_values['lines']:
                 try:
@@ -778,7 +803,8 @@ class TtReportDashboard(models.Model):
                         #reset pnr list
                         pnr_within = []
                         # if reservation id is not equal to current id it means, it's a different reservation than previous line
-                        # set journey (preventing return or multi city doubling ledger data)
+
+                        # triple try except is to keep track with current pnr, journey, and segment, making sure that the program dosen't count twite for the same data
                         try:
                             current_journey = i['journey_id']
                         except:
@@ -1091,6 +1117,9 @@ class TtReportDashboard(models.Model):
             _logger.error(traceback.format_exc())
             raise e
 
+    # this function handle data handler and processing for airline
+    # data = form data from frontend
+    # is_ho = ho checker from main function
     def get_report_overall_airline(self, data, is_ho):
         try:
             # process datetime to GMT 0
@@ -1102,6 +1131,8 @@ class TtReportDashboard(models.Model):
             temp_start_date = start_date - timedelta(days=1)
             data['start_date'] = temp_start_date.strftime('%Y-%m-%d') + " 17:00:00"
             data['end_date'] += " 16:59:59"
+
+            # first step of this function is to get reservation date, base on issued date
 
             temp_dict = {
                 'start_date': data['start_date'],
@@ -1843,6 +1874,9 @@ class TtReportDashboard(models.Model):
             _logger.error(traceback.format_exc())
             raise e
 
+    # this function handle data handler and processing for train
+    # data = form data from frontend
+    # is_ho = ho checker from main function
     def get_report_overall_train(self, data, is_ho):
         try:
             # process datetime to GMT 0
@@ -1853,6 +1887,8 @@ class TtReportDashboard(models.Model):
             temp_start_date = start_date - timedelta(days=1)
             data['start_date'] = temp_start_date.strftime('%Y-%m-%d') + " 17:00:00"
             data['end_date'] += " 16:59:59"
+
+            # first step of this function is to get reservation date, base on issued date
 
             # to get report by issued
             temp_dict = {
@@ -2271,6 +2307,9 @@ class TtReportDashboard(models.Model):
             _logger.error(traceback.format_exc())
             raise e
 
+    # this function handle data handler and processing for hotel
+    # data = form data from frontend
+    # is_ho = ho checker from main function
     def get_report_overall_hotel(self, data, is_ho):
         try:
             # process datetime to GMT 0
@@ -2281,6 +2320,8 @@ class TtReportDashboard(models.Model):
             temp_start_date = start_date - timedelta(days=1)
             data['start_date'] = temp_start_date.strftime('%Y-%m-%d') + " 17:00:00"
             data['end_date'] += " 16:59:59"
+
+            # first step of this function is to get reservation date, base on issued date
 
             # get report by issued
             temp_dict = {
@@ -2641,6 +2682,9 @@ class TtReportDashboard(models.Model):
             _logger.error(traceback.format_exc())
             raise e
 
+    # this function handle data handler and processing for tour
+    # data = form data from frontend
+    # is_ho = ho checker from main function
     def get_report_overall_tour(self, data, is_ho):
         try:
             # process datetime to GMT 0
@@ -2651,6 +2695,8 @@ class TtReportDashboard(models.Model):
             temp_start_date = start_date - timedelta(days=1)
             data['start_date'] = temp_start_date.strftime('%Y-%m-%d') + " 17:00:00"
             data['end_date'] += " 16:59:59"
+
+            # first step of this function is to get reservation date, base on issued date
 
             temp_dict = {
                 'start_date': data['start_date'],
@@ -2912,6 +2958,9 @@ class TtReportDashboard(models.Model):
             _logger.error(traceback.format_exc())
             raise e
 
+    # this function handle data handler and processing for activity
+    # data = form data from frontend
+    # is_ho = ho checker from main function
     def get_report_overall_activity(self, data, is_ho):
         try:
             # process datetime to GMT 0
@@ -2922,6 +2971,8 @@ class TtReportDashboard(models.Model):
             temp_start_date = start_date - timedelta(days=1)
             data['start_date'] = temp_start_date.strftime('%Y-%m-%d') + " 17:00:00"
             data['end_date'] += " 16:59:59"
+
+            # first step of this function is to get reservation date, base on issued date
 
             temp_dict = {
                 'start_date': data['start_date'],
@@ -3210,6 +3261,9 @@ class TtReportDashboard(models.Model):
             _logger.error(traceback.format_exc())
             raise e
 
+    # this function handle data handler and processing for event
+    # data = form data from frontend
+    # is_ho = ho checker from main function
     def get_report_overall_event(self, data, is_ho):
         try:
             # process datetime to GMT 0
@@ -3220,6 +3274,8 @@ class TtReportDashboard(models.Model):
             temp_start_date = start_date - timedelta(days=1)
             data['start_date'] = temp_start_date.strftime('%Y-%m-%d') + " 17:00:00"
             data['end_date'] += " 16:59:59"
+
+            # first step of this function is to get reservation date, base on issued date
 
             temp_dict = {
                 'start_date': data['start_date'],
@@ -3506,6 +3562,9 @@ class TtReportDashboard(models.Model):
             _logger.error(traceback.format_exc())
             raise e
 
+    # this function handle data handler and processing for visa
+    # data = form data from frontend
+    # is_ho = ho checker from main function
     def get_report_overall_visa(self, data, is_ho):
         try:
             # process datetime to GMT 0
@@ -3516,6 +3575,8 @@ class TtReportDashboard(models.Model):
             temp_start_date = start_date - timedelta(days=1)
             data['start_date'] = temp_start_date.strftime('%Y-%m-%d') + " 17:00:00"
             data['end_date'] += " 16:59:59"
+
+            # first step of this function is to get reservation date, base on issued date
 
             temp_dict = {
                 'start_date': data['start_date'],
@@ -3796,6 +3857,9 @@ class TtReportDashboard(models.Model):
             _logger.error(traceback.format_exc())
             raise e
 
+    # this function handle data handler and processing for offline
+    # data = form data from frontend
+    # is_ho = ho checker from main function
     def get_report_overall_offline(self, data, is_ho):
         try:
             # process datetime to GMT 0
@@ -3806,6 +3870,8 @@ class TtReportDashboard(models.Model):
             temp_start_date = start_date - timedelta(days=1)
             data['start_date'] = temp_start_date.strftime('%Y-%m-%d') + " 17:00:00"
             data['end_date'] += " 16:59:59"
+
+            # first step of this function is to get reservation date, base on issued date
 
             temp_dict = {
                 'start_date': data['start_date'],
@@ -4090,6 +4156,9 @@ class TtReportDashboard(models.Model):
             _logger.error(traceback.format_exc())
             raise e
 
+    # this function handle data handler and processing for ppob
+    # data = form data from frontend
+    # is_ho = ho checker from main function
     def get_report_overall_ppob(self, data, is_ho):
         try:
             # process datetime to GMT 0
@@ -4100,6 +4169,8 @@ class TtReportDashboard(models.Model):
             temp_start_date = start_date - timedelta(days=1)
             data['start_date'] = temp_start_date.strftime('%Y-%m-%d') + " 17:00:00"
             data['end_date'] += " 16:59:59"
+
+            # first step of this function is to get reservation date, base on issued date
 
             temp_dict = {
                 'start_date': data['start_date'],
@@ -4381,6 +4452,9 @@ class TtReportDashboard(models.Model):
             _logger.error(traceback.format_exc())
             raise e
 
+    # this function handle data handler and processing for passport
+    # data = form data from frontend
+    # is_ho = ho checker from main function
     def get_report_overall_passport(self, data, is_ho):
         try:
             # process datetime to GMT 0
@@ -4392,6 +4466,8 @@ class TtReportDashboard(models.Model):
             temp_start_date = start_date - timedelta(days=1)
             data['start_date'] = temp_start_date.strftime('%Y-%m-%d') + " 17:00:00"
             data['end_date'] += " 16:59:59"
+
+            # first step of this function is to get reservation date, base on issued date
 
             # prepare data to search reservation list
             temp_dict = {
@@ -4673,6 +4749,12 @@ class TtReportDashboard(models.Model):
         except Exception as e:
             _logger.error(traceback.format_exc())
             raise e
+
+    ######################################################################
+    # this section contains of either old function or prototype
+    ######################################################################
+    # most of functions written under this line is not being use atm.
+    # but can be use as reference if needed.
 
     def get_report_airline(self, data):
         temp_dict = {
