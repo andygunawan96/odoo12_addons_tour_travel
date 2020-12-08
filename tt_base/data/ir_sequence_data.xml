@@ -75,7 +75,7 @@
             <field name="padding">3</field>
         </record>
 
-        <record id="seq_purchase_order" model="ir.sequence">
+        <record id="seq_purchase_order_rodex" model="ir.sequence">
             <field name="name">Purchase Order</field>
             <field name="code">tt.purchase.order.seq</field>
             <field name="prefix">PO.%(y)s%(month)s%(day)s%(sec)s</field>

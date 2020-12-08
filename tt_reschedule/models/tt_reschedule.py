@@ -45,7 +45,7 @@ class TtRescheduleLine(models.Model):
     real_reschedule_amount = fields.Monetary('Real After Sales Amount from Vendor', default=0, required=True,
                                             readonly=False, states={'draft': [('readonly', True)]})
     reschedule_id = fields.Many2one('tt.reschedule', 'After Sales', readonly=True)
-
+    provider_id = fields.Many2one('tt.provider', 'Provider', required=True)
     currency_id = fields.Many2one('res.currency', readonly=True, default=lambda self: self.env.user.company_id.currency_id, related='reschedule_id.currency_id')
     agent_id = fields.Many2one('tt.agent', 'Agent', related='reschedule_id.agent_id')
     agent_type_id = fields.Many2one('tt.agent.type', 'Agent Type', related='agent_id.agent_type_id', readonly=True)
@@ -55,8 +55,13 @@ class TtRescheduleLine(models.Model):
     admin_fee_agent = fields.Monetary('Admin Fee (Agent)', default=0, readonly=True, compute="_compute_admin_fee")
     total_amount = fields.Monetary('Total Amount', default=0, readonly=True, compute="_compute_total_amount")
     sequence = fields.Integer('Sequence', default=50, states={'draft': [('readonly', False)], 'confirm': [('readonly', False)]}, readonly=True)
-    state = fields.Selection([('draft', 'Draft'), ('confirm', 'Confirmed'), ('done', 'Done')], 'State', default='confirm')
+    state = fields.Selection([('draft', 'Draft'), ('confirm', 'Confirmed'),
+                              ('sent', 'Sent'), ('validate', 'Validated'), ('final', 'Finalization'),
+                              ('done', 'Done'), ('cancel', 'Canceled'), ('expired', 'Expired')], 'Status',
+                             default='confirm', related='reschedule_id.state', store=True)
     admin_fee_dummy = fields.Boolean('Generate Admin Fee Options')
+    is_po_required = fields.Boolean('Is PO Required', readonly=True, compute='compute_is_po_required')
+    letter_of_guarantee_ids = fields.One2many('tt.letter.guarantee', 'res_id', 'Purchase Order(s)', readonly=True)
 
     @api.model
     def create(self, vals):
@@ -76,20 +81,25 @@ class TtRescheduleLine(models.Model):
         for rec in self:
             if rec.admin_fee_id:
                 book_obj = self.env[rec.reschedule_id.res_model].browse(int(rec.reschedule_id.res_id))
-                pnr_amount = 0
-                for rec2 in book_obj.provider_booking_ids:
-                    pnr_amount += 1
+                if book_obj:
+                    pnr_amount = 0
+                    for rec2 in book_obj.provider_booking_ids:
+                        pnr_amount += 1
 
-                pax_amount = 0
-                for rec2 in book_obj.passenger_ids:
-                    pax_amount += 1
+                    pax_amount = 0
+                    for rec2 in book_obj.passenger_ids:
+                        pax_amount += 1
 
-                admin_fee_ho = rec.admin_fee_id.get_final_adm_fee_ho(rec.reschedule_amount, pnr_amount, pax_amount)
-                admin_fee_agent = rec.admin_fee_id.get_final_adm_fee_agent(rec.reschedule_amount, pnr_amount, pax_amount)
+                    admin_fee_ho = rec.admin_fee_id.get_final_adm_fee_ho(rec.reschedule_amount, pnr_amount, pax_amount)
+                    admin_fee_agent = rec.admin_fee_id.get_final_adm_fee_agent(rec.reschedule_amount, pnr_amount, pax_amount)
 
-                rec.admin_fee_ho = admin_fee_ho
-                rec.admin_fee_agent = admin_fee_agent
-                rec.admin_fee = admin_fee_ho + admin_fee_agent
+                    rec.admin_fee_ho = admin_fee_ho
+                    rec.admin_fee_agent = admin_fee_agent
+                    rec.admin_fee = admin_fee_ho + admin_fee_agent
+                else:
+                    rec.admin_fee_ho = 0
+                    rec.admin_fee_agent = 0
+                    rec.admin_fee = 0
             else:
                 rec.admin_fee_ho = 0
                 rec.admin_fee_agent = 0
@@ -114,20 +124,65 @@ class TtRescheduleLine(models.Model):
                  ('agent_access_type', '=', 'restrict'), ('id', 'not in', agent_adm_ids)]
         }}
 
-    def set_to_draft(self):
-        self.write({
-            'state': 'draft',
-        })
+    @api.onchange('provider_id')
+    def compute_is_po_required(self):
+        for rec in self:
+            if rec.provider_id.is_using_po:
+                rec.is_po_required = True
+            else:
+                rec.is_po_required = False
 
-    def set_to_confirm(self):
-        self.write({
-            'state': 'confirm',
-        })
+    def generate_po(self):
+        if self.reschedule_id.state == 'final':
+            if not self.env.user.has_group('tt_base.group_tt_accounting_manager'):
+                hour_passed = (datetime.now() - self.reschedule_id.final_date).seconds / 3600
+                if hour_passed > 1:
+                    raise UserError('Failed to generate Purchase Order. It has been more than 1 hour after this after sales was finalized, please contact Accounting Manager to generate Purchase Order.')
 
-    def set_to_done(self):
-        self.write({
-            'state': 'done',
-        })
+            if self.real_reschedule_amount <= 0:
+                raise UserError('Please set Real After Sales Amount from Vendor.')
+
+            po_exist = self.env['tt.letter.guarantee'].search([('res_model', '=', self._name), ('res_id', '=', self.id), ('type', '=', 'po')])
+            if po_exist:
+                raise UserError('Purchase Order for this reschedule line is already exist.')
+            else:
+                desc_str = str(dict(self._fields['reschedule_type'].selection).get(self.reschedule_type)) + '<br/>'
+                pax_desc_str = ''
+                pax_amount = 0
+                for rec in self.reschedule_id.passenger_ids:
+                    pax_amount += 1
+                    pax_desc_str += '%s. %s<br/>' % (rec.title, rec.name)
+                price_per_mul = self.real_reschedule_amount / pax_amount
+                po_vals = {
+                    'res_model': self._name,
+                    'res_id': self.id,
+                    'provider_id': self.provider_id.id,
+                    'type': 'po',
+                    'parent_ref': self.reschedule_id.name,
+                    'pax_description': pax_desc_str,
+                    'multiplier': 'Pax',
+                    'multiplier_amount': pax_amount,
+                    'quantity': 'Qty',
+                    'quantity_amount': 1,
+                    'currency_id': self.currency_id.id,
+                    'price_per_mult': price_per_mul,
+                    'price': self.real_reschedule_amount,
+                }
+                new_po_obj = self.env['tt.letter.guarantee'].create(po_vals)
+                ref_num = ''
+                if self.reschedule_id.pnr and self.reschedule_id.referenced_pnr:
+                    if self.reschedule_id.pnr == self.reschedule_id.referenced_pnr:
+                        ref_num = self.reschedule_id.pnr
+                    else:
+                        ref_num = self.reschedule_id.referenced_pnr + ' to ' + self.reschedule_id.pnr
+                line_vals = {
+                    'lg_id': new_po_obj.id,
+                    'ref_number': ref_num,
+                    'description': desc_str
+                }
+                self.env['tt.letter.guarantee.lines'].create(line_vals)
+        else:
+            raise UserError('You can only generate Purchase Order if this after sales state is "Finalized".')
 
 
 class TtReschedule(models.Model):
@@ -289,8 +344,6 @@ class TtReschedule(models.Model):
             'confirm_date': datetime.now(),
             'hold_date': False
         })
-        for rec in self.reschedule_line_ids:
-            rec.set_to_confirm()
 
     def confirm_reschedule_from_button(self):
         if self.state != 'draft':
@@ -301,8 +354,6 @@ class TtReschedule(models.Model):
             'confirm_uid': self.env.user.id,
             'confirm_date': datetime.now(),
         })
-        for rec in self.reschedule_line_ids:
-            rec.set_to_confirm()
 
     def send_reschedule_from_button(self):
         if self.state != 'confirm':
@@ -313,8 +364,6 @@ class TtReschedule(models.Model):
             'sent_uid': self.env.user.id,
             'sent_date': datetime.now(),
         })
-        for rec in self.reschedule_line_ids:
-            rec.set_to_done()
 
     def validate_reschedule_from_button(self):
         if self.state != 'sent':
@@ -407,9 +456,19 @@ class TtReschedule(models.Model):
             'final_date': datetime.now()
         })
 
+    def check_po_required(self):
+        required = False
+        for rec in self.reschedule_line_ids:
+            if rec.provider_id.is_using_po:
+                if not rec.letter_of_guarantee_ids:
+                    required = True
+        return required
+
     def action_done(self):
         if self.state != 'final':
             raise UserError("Cannot Approve because state is not 'Finalized'.")
+        if self.check_po_required():
+            raise UserError(_('Purchase Order is required in one Line or more. Please check all Line(s)!'))
 
         self.action_create_invoice()
         self.write({
