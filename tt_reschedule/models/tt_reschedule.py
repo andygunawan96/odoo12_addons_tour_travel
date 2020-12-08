@@ -142,7 +142,7 @@ class TtRescheduleLine(models.Model):
             if self.real_reschedule_amount <= 0:
                 raise UserError('Please set Real After Sales Amount from Vendor.')
 
-            po_exist = self.env['tt.letter.guarantee'].search([('res_model', '=', self._name), ('res_id', '=', self.id)])
+            po_exist = self.env['tt.letter.guarantee'].search([('res_model', '=', self._name), ('res_id', '=', self.id), ('type', '=', 'po')])
             if po_exist:
                 raise UserError('Letter of Guarantee for this reschedule line is already exist.')
             else:
