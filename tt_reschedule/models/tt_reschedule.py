@@ -144,7 +144,7 @@ class TtRescheduleLine(models.Model):
 
             po_exist = self.env['tt.letter.guarantee'].search([('res_model', '=', self._name), ('res_id', '=', self.id), ('type', '=', 'po')])
             if po_exist:
-                raise UserError('Letter of Guarantee for this reschedule line is already exist.')
+                raise UserError('Purchase Order for this reschedule line is already exist.')
             else:
                 desc_str = str(dict(self._fields['reschedule_type'].selection).get(self.reschedule_type)) + '<br/>'
                 pax_desc_str = ''
