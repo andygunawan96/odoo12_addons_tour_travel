@@ -89,9 +89,13 @@ class ProviderOffline(models.Model):
                 if hour_passed > 1:
                     raise UserError('Failed to generate Letter of Guarantee. It has been more than 1 hour after this reservation was validated, please contact Accounting Manager to generate Letter of Guarantee.')
 
-            lg_exist = self.env['tt.letter.guarantee'].search([('res_model', '=', self._name), ('res_id', '=', self.id)])
+            lg_exist = self.env['tt.letter.guarantee'].search([('res_model', '=', self._name), ('res_id', '=', self.id), ('type', '=', lg_type)])
             if lg_exist:
-                raise UserError('Letter of Guarantee for this provider is already exist.')
+                if lg_type == 'po':
+                    type_str = 'Purchase Order'
+                else:
+                    type_str = 'Letter of Guarantee'
+                raise UserError('%s for this provider is already exist.' % (type_str, ))
             else:
                 multiplier = ''
                 mult_amount = 0
