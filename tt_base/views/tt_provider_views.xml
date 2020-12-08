@@ -52,6 +52,12 @@
                             <page string="Addresses">
                                 <field name="address_ids"/>
                             </page>
+                            <page string="Phones">
+                                <field name="phone_ids" readonly="1"/>
+                            </page>
+                            <page string="Social Media">
+                                <field name="social_media_ids" readonly="1"/>
+                            </page>
                             <page string="Provider Codes">
                                 <field name="provider_code_ids"/>
                             </page>

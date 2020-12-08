@@ -599,6 +599,20 @@ class IssuedOffline(models.Model):
             if rec.provider_id.is_using_lg:
                 if not rec.letter_of_guarantee_ids:
                     required = True
+                else:
+                    if not rec.letter_of_guarantee_ids.filtered(lambda x: x.type == 'lg'):
+                        required = True
+        return required
+
+    def check_po_required(self):
+        required = False
+        for rec in self.provider_booking_ids:
+            if rec.provider_id.is_using_po:
+                if not rec.letter_of_guarantee_ids:
+                    required = True
+                else:
+                    if not rec.letter_of_guarantee_ids.filtered(lambda x: x.type == 'po'):
+                        required = True
         return required
 
     @api.one
@@ -685,6 +699,8 @@ class IssuedOffline(models.Model):
                 if self.attachment_ids:
                     if self.check_lg_required():
                         raise UserError(_('Letter of Guarantee is required in one Vendor or more. Please check all Vendor(s)!'))
+                    if self.check_po_required():
+                        raise UserError(_('Purchase Order is required in one Vendor or more. Please check all Vendor(s)!'))
                     self.state = 'issued'
                     self.state_offline = 'done'
                     self.done_date = fields.Datetime.now()

@@ -13,6 +13,9 @@
                 <field name="pax_description"/>
                 <field name="notes"/>
                 <separator/>
+                <filter string="Letter of Guarantee" name='lg_filter' domain="[('type', '=', 'lg')]"/>
+                <filter string="Purchase Order" name='po_filter' domain="[('type', '=', 'po')]"/>
+                <separator/>
                 <filter string="All" name='all'/>
                 <filter string="Draft" name='draft' domain="[('state', '=', 'draft')]"/>
                 <filter string="Confirmed" name='confirm' domain="[('state', '=', 'confirm')]"/>
