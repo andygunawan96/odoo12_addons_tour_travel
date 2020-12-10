@@ -478,7 +478,7 @@ class TtVoucherDetail(models.Model):
     @api.model
     def create(self, vals):
         if vals.get('voucher_reference_code'):
-            if self.search('voucher_reference_code','=',vals['voucher_reference_code'])
+            if self.search('voucher_reference_code','=',vals['voucher_reference_code']):
                 raise UserError('Duplicate Reference Code')
         if type(vals.get('voucher_period_reference')) == str:
             vals['voucher_period_reference'] = vals['voucher_period_reference'].upper()
