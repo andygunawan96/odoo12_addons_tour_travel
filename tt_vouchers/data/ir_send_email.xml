@@ -5,7 +5,7 @@
         <record model="mail.template" id="template_mail_voucher_created">
 			<field name="name">Template Mail Voucher Created</field>
 			<field name="email_from">info@rodextrip.com</field>
-			<field name="subject">Voucher Created: ${object.voucher_reference_code}.${object.voucher_period_reference}</field>
+			<field name="subject">Voucher Created: ${object.voucher_period_reference}</field>
 			<field name="email_to">${object.voucher_id.voucher_customer_id.agent_id.email}</field>
             <field name="email_cc"/>
 			<field name="model_id" ref="tt_vouchers.model_tt_voucher_detail"/>
@@ -35,7 +35,7 @@ ${object.get_voucher_details_email() | safe}
 		<record model="mail.template" id="template_mail_voucher_used">
 			<field name="name">Template Mail Voucher Used</field>
 			<field name="email_from">info@rodextrip.com</field>
-			<field name="subject">Voucher Used: ${object.voucher_reference_code}.${object.voucher_period_reference}</field>
+			<field name="subject">Voucher Used: ${object.voucher_period_reference}</field>
 			<field name="email_to">${object.voucher_id.voucher_customer_id.agent_id.email}</field>
             <field name="email_cc"/>
 			<field name="model_id" ref="tt_vouchers.model_tt_voucher_detail"/>
@@ -65,7 +65,7 @@ ${object.get_voucher_details_email() | safe}
 		<record model="mail.template" id="template_mail_voucher_created_cust">
 			<field name="name">Template Mail Voucher Created Customer</field>
 			<field name="email_from">info@rodextrip.com</field>
-			<field name="subject">Voucher Created: ${object.voucher_reference_code}.${object.voucher_period_reference}</field>
+			<field name="subject">Voucher Created: ${object.voucher_period_reference}</field>
 			<field name="email_to">${object.voucher_id.voucher_customer_id.email}</field>
             <field name="email_cc"/>
 			<field name="model_id" ref="tt_vouchers.model_tt_voucher_detail"/>
@@ -90,7 +90,7 @@ ${object.get_voucher_details_email() | safe}
 		<record model="mail.template" id="template_mail_voucher_used_cust">
 			<field name="name">Template Mail Voucher Used Customer</field>
 			<field name="email_from">info@rodextrip.com</field>
-			<field name="subject">Voucher Used: ${object.voucher_reference_code}.${object.voucher_period_reference}</field>
+			<field name="subject">Voucher Used: ${object.voucher_period_reference}</field>
 			<field name="email_to">${object.voucher_id.voucher_customer_id.email}</field>
             <field name="email_cc"/>
 			<field name="model_id" ref="tt_vouchers.model_tt_voucher_detail"/>
