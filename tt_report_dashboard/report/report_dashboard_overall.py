@@ -39,17 +39,17 @@ class ReportDashboardOverall(models.Model):
     @staticmethod
     def _select_join_service_charge():
         return """
-            rsv.id, 
-            rsv.name as order_number, 
-            rsv.pnr, 
-            rsv.total as grand_total, 
-            rsv.total_commission, 
-            rsv.total_nta, 
+            rsv.id,
+            rsv.name as order_number,
+            rsv.pnr,
+            rsv.total as grand_total,
+            rsv.total_commission,
+            rsv.total_nta,
             rsv.state,
-            booking_ids.id as booking_id, 
-            booking_ids.pnr as booking_pnr, 
+            booking_ids.id as booking_id,
+            booking_ids.pnr as booking_pnr,
             booking_ids.state as booking_state,
-            booking_service_charge.total as booking_charge_total, 
+            booking_service_charge.total as booking_charge_total,
             booking_service_charge.charge_type as booking_charge_type,
             booking_service_charge.is_ledger_created as ledger_created
             """
@@ -230,7 +230,7 @@ class ReportDashboardOverall(models.Model):
     def get_profit_lines(self, data):
         query = """
         SELECT ledger.date as date_og, ledger.debit, agent.name as agent_name, agent_type.name as agent_type, provider_type.name as provider_type
-        FROM tt_ledger ledger 
+        FROM tt_ledger ledger
         LEFT JOIN tt_agent agent ON agent.id = ledger.agent_id
         LEFT JOIN tt_agent_type agent_type ON agent_type.id = ledger.agent_type_id
         LEFT JOIN tt_provider_type provider_type ON provider_type.id = ledger.provider_type_id

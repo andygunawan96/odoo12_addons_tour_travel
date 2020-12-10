@@ -8,10 +8,10 @@ class TtLetterGuarantee(models.Model):
     _order = 'id DESC'
     _description = 'Rodex Model'
 
-    name = fields.Char('Name', required=True)
+    name = fields.Char('Name', required=True, readonly=True)
     res_model = fields.Char('Related Reservation Name', index=True)
     res_id = fields.Integer('Related Reservation ID', index=True, help='Id of the followed resource')
-    provider_id = fields.Many2one('tt.provider', 'Provider', required=True)
+    provider_id = fields.Many2one('tt.provider', 'Provider', required=True, readonly=True, states={'draft': [('readonly', False)]})
     type = fields.Selection([('lg', 'Letter of Guarantee'), ('po', 'Purchase Order')], 'Type', default='lg', required=True, readonly=True, states={'draft': [('readonly', False)]})
     line_ids = fields.One2many('tt.letter.guarantee.lines', 'lg_id', 'Line(s)', readonly=True, states={'draft': [('readonly', False)]})
     parent_ref = fields.Char('Parent Reference', readonly=True, states={'draft': [('readonly', False)]})
