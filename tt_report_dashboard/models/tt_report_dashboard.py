@@ -52,6 +52,19 @@ class TtReportDashboard(models.Model):
         return -1
 
     # input
+    #   arr -> array [{'customer_id': [something](int), 'customer_name': [something](string), ..}]
+    #   params -> dictionary {'customer_id': [something](int), 'customer_name': [something](string)}
+    # return
+    #   integer, -1 id no index found in arr
+    #
+    def customer_index(self, arr, params):
+        for i, dic in enumerate(arr):
+            if dic['customer_id'] == params['customer_id'] and dic['customer_name'] == params['customer_name']:
+                return i
+
+        return -1
+
+    # input
     #   arr -> array [{'agent_name': [something](str), 'agent_type_name': [something](str), ...}]
     #   params -> dictionary {'agent_name': [something](str), 'agent_type_name': [something](str)}
     # return
@@ -251,15 +264,16 @@ class TtReportDashboard(models.Model):
     # this is the function that's being called by the gateway
     # in short this is the main function
     def get_report_json_api(self, data, context = []):
-        is_ho = 1
-        # is_ho = self.env.ref('tt_base.rodex_ho').id == context['co_agent_id']
-        # if is_ho and data['agent_seq_id'] == "":
-        #     data['agent_seq_id'] = False
-        # elif is_ho and data['agent_seq_id'] != "":
-        #     pass
-        # else:
-        #     # get the id of the agent
-        #     data['agent_seq_id'] = self.env['tt.agent'].browse(context['co_agent_id']).seq_id
+        # is_ho = 1
+        # check if agent is ho
+        is_ho = self.env.ref('tt_base.rodex_ho').id == context['co_agent_id']
+        if is_ho and data['agent_seq_id'] == "":
+            data['agent_seq_id'] = False
+        elif is_ho and data['agent_seq_id'] != "":
+            pass
+        else:
+            # get the id of the agent
+            data['agent_seq_id'] = self.env['tt.agent'].browse(context['co_agent_id']).seq_id
 
         if data['provider'] != 'all' and data['provider'] != '':
             # check if provider is exist
@@ -303,6 +317,8 @@ class TtReportDashboard(models.Model):
             res = self.get_report_overall_ppob(data, is_ho)
         elif type == 'overall_passport':
             res = self.get_report_overall_passport(data, is_ho)
+
+        # under this section is old or test function, left it there for future reference
         elif type == 'airline':
             res = self.get_report_airline(data)
         elif type == 'event':
@@ -356,6 +372,15 @@ class TtReportDashboard(models.Model):
     def get_report_xls_api(self, data,  context):
         return ERR.get_no_error()
 
+    #####################################################
+    #    DEPENDENCIES FUNCTION
+    #####################################################
+    # this is the function that's being called by the sub main function (see below)
+    # within this section one function in charge of handling data to product report of certain scope i.e book issued ratio
+    # most of the input is form data that the sub main function get.
+
+    # old function of get profit
+    # currently not being use, since this function is merge is get reservation function
     def get_profit(self, data):
         try:
             # prepare value
@@ -367,13 +392,18 @@ class TtReportDashboard(models.Model):
                 'agent_seq_id': data['agent_seq_id'],
                 'agent_type_seq_id': data['agent_type_seq_id']
             }
+
+            # execute the query
             profit_lines = self.env['report.tt_report_dashboard.overall'].get_profit(temp_dict)
 
+            # return to sub main function
             return profit_lines
         except Exception as e:
             _logger.error(traceback.format_exc())
             raise e
 
+    # this function handle processing data to produce booked-issued ratio
+    # data contains all of the parameter from the frontend
     def get_book_issued_ratio(self, data):
         try:
             # get all data
@@ -403,13 +433,15 @@ class TtReportDashboard(models.Model):
             summary_provider = []
 
             # iterate every data
+            # i = reservation dictionary inside all_values['lines']
             for i in all_values['lines']:
                 try:
+                    # check if current id = iteration # ID
+                    # because returned line from SQL could produce more than one line for every resrvation
                     if current_id != i['reservation_id']:
                         current_id = i['reservation_id']
                         # convert month number (1) to text and index (January) in constant
-                        month_index = self.check_date_index(summary_by_date, {'year': i['booked_year'],
-                                                                              'month': month[int(i['booked_month']) - 1]})
+                        month_index = self.check_date_index(summary_by_date, {'year': i['booked_year'], 'month': month[int(i['booked_month']) - 1]})
                         if month_index == -1:
                             # create dictionary seperate by month
                             temp_dict = {
@@ -420,9 +452,9 @@ class TtReportDashboard(models.Model):
                             }
                             # separate book date
                             try:
-                                splits = i['reservation_booked_date'].split("-")
-                                day_index = int(splits[2]) - 1
-                                temp_dict['detail'][day_index]['booked_counter'] += 1
+                                splits = i['reservation_booked_date'].split("-")        # return something like splits = [2020, 12, 2]
+                                day_index = int(splits[2]) - 1                          # minus 1 because temp dict is start at index 0 (with day 1 in its first dictionary)
+                                temp_dict['detail'][day_index]['booked_counter'] += 1   # add to respected place
                             except:
                                 pass
                             try:
@@ -435,6 +467,8 @@ class TtReportDashboard(models.Model):
                             # append to list of dictionaries
                             summary_by_date.append(temp_dict)
                         else:
+                            # if data already exist, then we do not need to create another temp dictionary
+                            # we just need to update the value within the correct slot
                             try:
                                 splits = i['reservation_booked_date'].split("-")
                                 day_index = int(splits[2]) - 1
@@ -448,8 +482,12 @@ class TtReportDashboard(models.Model):
                             except:
                                 pass
 
+                        # this section handle overview for booked issued ratio
+                        # the overview will return something like (airline 100 reservation, and so on, in the shape of list of dictionary)
                         provider_index = self.check_index(summary_provider, "provider", i['provider_type_name'])
                         if provider_index == -1:
+                            # this is also the same logic, if provider type cannot be found inside summary provider, then index will return -1
+                            # meaning the data isn't yet exist in summary provider
                             # declare dependencies
                             temp_dict = {
                                 'provider': i['provider_type_name'],
@@ -467,6 +505,8 @@ class TtReportDashboard(models.Model):
                             # add to big list
                             summary_provider.append(temp_dict)
                         else:
+                            # data is exist in summary_provider
+                            # only need to update the number
                             summary_provider[provider_index]['counter'] += 1
                             try:
                                 summary_provider[provider_index][i['reservation_state']] += 1
@@ -482,9 +522,11 @@ class TtReportDashboard(models.Model):
             summary_provider.sort(key=lambda x: x['counter'], reverse=True)
 
             # shape the data for return
+            # by shape means trim unecessary data, and group data
             book_data = {}
             issued_data = {}
             if mode == 'month':
+                # if mode = month means the data will be sum to month instead of date
                 try:
                     counter = summary_by_date[0]['month_index'] - 1
                 except:
@@ -538,8 +580,13 @@ class TtReportDashboard(models.Model):
             to_return = {
                 # it will be very absurd to stand alone, however this particular graph will corenspond to second graph in front end, so theres that
                 'second_graph': {
+                    # label for graph in frontend
+                    # if mode month then label will be ['January', 'February', ...]
+                    # if mode is not month then label will be ['1-11-2020', '2-11-2020', ...]
                     'label': list(book_data.keys()),
+                    # data = list of booked reservation
                     'data': list(book_data.values()),
+                    # data2 = list of issued reservation
                     'data2': list(issued_data.values())
                 },
                 'second_overview': summary_provider
@@ -549,8 +596,12 @@ class TtReportDashboard(models.Model):
             _logger.error(traceback.format_exc())
             raise e
 
-    def get_report_group_by_chanel(self, data, profit):
+    # this function handle and process data for customer ranking by revenue
+    # data = form data from frontend
+    # profit = reservation data from function who calls this function (reservation data contains profit data)
+    def get_report_group_by_customer(self, data, profit):
         try:
+            # prepare data to get channel base on reservation performance in database
             temp_dict = {
                 'start_date': data['start_date'],
                 'end_date': data['end_date'],
@@ -561,6 +612,123 @@ class TtReportDashboard(models.Model):
                 # 'agent_seq_id': 8,
                 'addons': 'chanel'
             }
+
+            # i use chanel as the variable name, because it has the same logic with chanel, also explains the addons parameter
+            # execute the query
+            chanel_values = self.env['report.tt_report_selling.report_selling']._get_reports(temp_dict)
+
+            # declare mode of group by (timewise either days or month)
+            mode = data['mode']
+            month = [
+                'January', 'February', 'March', 'April', 'May', 'June',
+                'July', 'August', 'September', 'October', 'November', 'December'
+            ]
+
+            # declare variable to temp handle processed data
+            summary_customer = []
+            current_id = ''
+
+            # iterate every value in chanel_values['lines']
+            for i in chanel_values['lines']:
+                # if for some reason current reservation_id is the same as current_id (previous iteration id)
+                # then continue
+                if i['reservation_id'] == current_id:
+                    continue
+                else:
+                    current_id = i['reservation_id']
+
+                # looking for index of particular person
+                # within the summary_customer list
+                # will return -1 if no match found
+                customer_index = self.customer_index(summary_customer, {'customer_id': i['customer_id'], 'customer_name': i['customer_name']})
+
+                if customer_index == -1:
+                    # no customer with particular data exist
+                    temp_dict = {
+                        'customer_id': i['customer_id'],
+                        'customer_name': i['customer_name'],
+                        'revenue': i['amount'],
+                        'profit': 0,
+                        'reservation': 1
+                    }
+
+                    # add to summary_customer
+                    summary_customer.append(temp_dict)
+                else:
+                    # data is exist, so we only need to update existing data yey
+                    summary_customer[customer_index]['revenue'] += i['amount']
+                    summary_customer[customer_index]['reservation'] += 1
+
+            # proceed profit
+            for i in profit:
+                person_index = self.customer_index(summary_customer, {'customer_id': i['customer_id'], 'customer_name': i['customer_name']})
+                try:
+                    summary_customer[person_index]['profit'] += i['debit']
+                except:
+                    pass
+
+                # sort data
+            summary_customer.sort(key=lambda x: (x['revenue'], x['reservation']), reverse=True)
+
+            # create return dict
+            label_data = []
+            revenue_data = []
+            reservation_data = []
+            average_data = []
+            profit_data = []
+
+            # lets populate list to return
+            if len(summary_customer) < 20:
+                for i in summary_customer:
+                    label_data.append(i['customer_name'])
+                    revenue_data.append(i['revenue'])
+                    reservation_data.append(i['reservation'])
+                    average_data.append(i['revenue'] / i['reservation'])
+                    profit_data.append(i['profit'])
+            else:
+                for i in range(20):
+                    label_data.append(summary_customer[i]['agent_name'])
+                    revenue_data.append(summary_customer[i]['revenue'])
+                    reservation_data.append(summary_customer[i]['reservation'])
+                    average_data.append(summary_customer[i]['revenue'] / summary_customer[i]['reservation'])
+                    profit_data.append(summary_customer[i]['profit'])
+
+            # lets built to return
+            to_return = {
+                'third_graph': {
+                    'label': label_data,
+                    'data': revenue_data,
+                    'data2': reservation_data,
+                    'data3': average_data,
+                    'data4': profit_data
+                },
+                'third_overview': summary_customer
+            }
+
+            # return data
+            return to_return
+        except Exception as e:
+            _logger.error(traceback.format_exc())
+            raise e
+
+    # this function handle and process data for channel ranking by revenue
+    # data = form data from frontend
+    # profit = reservation data from function who calls this function (reservation data contains profit data)
+    def get_report_group_by_chanel(self, data, profit):
+        try:
+            # prepare data to get channel base on reservation performance in database
+            temp_dict = {
+                'start_date': data['start_date'],
+                'end_date': data['end_date'],
+                'type': data['report_type'],
+                'provider': data['provider'],
+                'agent_seq_id': data['agent_seq_id'],
+                'agent_type': data['agent_type_seq_id'],
+                # 'agent_seq_id': 8,
+                'addons': 'chanel'
+            }
+
+            # execute the query
             chanel_values = self.env['report.tt_report_selling.report_selling']._get_reports(temp_dict)
 
             # declare mode of group by (timewise either days or month)
@@ -572,11 +740,12 @@ class TtReportDashboard(models.Model):
 
             # declare variable to temp handle processed data
             summary_chanel = []
+            current_id = ''
 
-            current_id = -100
-
+            # iterate every value in chanel_values['lines']
             for i in chanel_values['lines']:
-
+                # if for some reason current reservation_id is the same as current_id (previous iteration id)
+                # then continue
                 if i['reservation_id'] == current_id:
                     continue
                 else:
@@ -645,7 +814,8 @@ class TtReportDashboard(models.Model):
                     'data2': reservation_data,
                     'data3': average_data,
                     'data4': profit_data
-                }
+                },
+                'third_overview': summary_chanel
             }
 
             return to_return
@@ -653,9 +823,18 @@ class TtReportDashboard(models.Model):
             _logger.error(traceback.format_exc())
             raise e
 
+    ######################################################################
+    # this section contains of sub main function (function that is called by the main function)
+    ######################################################################
+
+    # this function handle data handler and processing for all of provider Type
+    # data = form data from frontend
+    # is_ho = ho checker from main function
     def get_report_overall(self, data, is_ho):
         try:
             # check if user ask for a specific provider
+            # this function is to tell the sql handler that the data we want is base on issued date
+            # the default of sql query is to search by created date
             if data['provider']:
                 provider_type = self.env['tt.provider'].search([('code', '=', data['provider'])])
                 data['report_type'] = 'overall_' + provider_type['provider_type_id'].code
@@ -670,6 +849,8 @@ class TtReportDashboard(models.Model):
             data['start_date'] = temp_start_date.strftime('%Y-%m-%d') + " 17:00:00"
             data['end_date'] += " 16:59:59"
 
+            # first step of this function is to get reservation date, base on issued date
+
             # get all data by issued date (between start and end)
             temp_dict = {
                 'start_date': data['start_date'],
@@ -681,6 +862,8 @@ class TtReportDashboard(models.Model):
                 # 'agent_seq_id': False,
                 'addons': 'none'
             }
+
+            # execute the query
             issued_values = self.env['report.tt_report_selling.report_selling']._get_reports(temp_dict)
 
             # constant dependencies
@@ -693,11 +876,12 @@ class TtReportDashboard(models.Model):
             # count different of days between dates
             delta = end_date - start_date
 
-            # if day counts > 35 then graph result will be group monthly
+            # if day counts > 35 then graph result will be group monthly, else graph data will be group by date
             if delta.days > 35:
                 # group by month
                 mode = 'month'
 
+            # global result variable
             total = 0
             profit_total = 0
             profit_ho = 0
@@ -705,9 +889,11 @@ class TtReportDashboard(models.Model):
             num_data = 0
             invoice_total = 0
 
+            # second we gonna get invoice data based on the reservation that we know (incase there are 2 invoice within 1 reservation)
             # create list of reservation id for invoice query
             reservation_ids = []
             for i in issued_values['lines']:
+                # for every line from first step, we will extract the reservatoin_id, will be use to search invoice data
                 reservation_ids.append((i['reservation_id'], i['provider_type_name']))
 
             # get invoice data
@@ -722,6 +908,8 @@ class TtReportDashboard(models.Model):
                 'reservation': reservation_ids,
                 'addons': 'none'
             }
+
+            #executing invoice search
             invoice = self.env['report.tt_report_selling.report_selling']._get_reports(temp_dict)
 
             # proceed invoice with the assumption of create date = issued date
@@ -735,6 +923,8 @@ class TtReportDashboard(models.Model):
             current_pnr = ''
             pnr_within = []
 
+            # third we process the data to produce a trim proceed data, that is only need to be show
+
             # for every data in issued_values['lines']
             for i in issued_values['lines']:
                 try:
@@ -744,7 +934,8 @@ class TtReportDashboard(models.Model):
                         #reset pnr list
                         pnr_within = []
                         # if reservation id is not equal to current id it means, it's a different reservation than previous line
-                        # set journey (preventing return or multi city doubling ledger data)
+
+                        # triple try except is to keep track with current pnr, journey, and segment, making sure that the program dosen't count twite for the same data
                         try:
                             current_journey = i['journey_id']
                         except:
@@ -958,18 +1149,37 @@ class TtReportDashboard(models.Model):
             profit_data = {}
 
             # shape the data for return
+            # a little reminder month and days mode determine by how many days in between requested report
+            # more than 35 days, automatically group by month
+            # less than 35 days, we'll return as is (divided by date)
             if mode == 'month':
+                # if so happens to be in month mode, then we'll sum every data by month
+                # because if you follow the program, you'll know that summary_issued divide the data into
+                # year, month, with date details (date detail is list)
+                # we have to sum the date detail basically
+
                 # sum by month
                 try:
+                    # first counter is trying to find what month user requested date are
+                    # why it has - 1 because if you look at constant dependencies
+                    # index and month value will result in difference of 1 (since list index starts in 0 yada yada yada)
                     first_counter = summary_issued[0]['month_index'] - 1
                 except:
+                    # if for whatever reason, above method doesn't work
+                    # then, we'll do the weird(?) way
+                    # by extracting from date
                     splits = data['start_date'].split("-")
                     month = splits[1]
                     first_counter = int(month) - 1
+
+                # with that done, we'll now process the data
                 for i in summary_issued:
                     # fill skipped month(s)
                     # check if current month (year) with start
                     if i['month_index'] - 1 < first_counter:
+                        # this is the condition for new year, where
+                        # counter month > than the earlier month of the year
+                        # we'll just gonna fill the gap
                         while first_counter < 12:
                             main_data[month[first_counter]] = 0
                             average_data[month[first_counter]] = 0
@@ -980,6 +1190,8 @@ class TtReportDashboard(models.Model):
                         if first_counter == 12:
                             first_counter = 0
                     if i['month_index'] - 1 > first_counter:
+                        # this to catch up current month to present day ish
+                        # or present month for that matter
                         while first_counter < i['month_index'] - 1:
                             main_data[month[first_counter]] = 0
                             average_data[month[first_counter]] = 0
@@ -987,17 +1199,24 @@ class TtReportDashboard(models.Model):
                             profit_data[month[first_counter]] = 0
                             first_counter += 1
 
-                    # for every month in summary by date
+                    # so after first counter, which doen't make any sense since
+                    # first counter was use to keep up...
+                    # after first counter catch up present month/day
+                    # we're gonna count the data
+                    # declare variable with respected month
                     main_data[i['month']] = 0
                     average_data[i['month']] = 0
                     revenue_data[i['month']] = 0
                     profit_data[i['month']] = 0
+
+                    # sum data from detail
                     for j in i['detail']:
                         # for detail in months
                         main_data[i['month']] += j['invoice']
                         average_data[i['month']] += j['average']
                         revenue_data[i['month']] += j['revenue']
                         profit_data[i['month']] += j['profit']
+                    # shift to next month yey
                     first_counter += 1
             else:
                 # seperate by date
@@ -1046,17 +1265,33 @@ class TtReportDashboard(models.Model):
             # adding book_issued ratio graph
             to_return.update(book_issued)
 
-            # get by chanel
-            chanel_data = self.get_report_group_by_chanel(data, issued_values['lines'])
+            # this is a suggestion and request, if user whose accessing the report only has agent level, then we could substitute
+            # channel/agent rank graph to customer graph
+            if is_ho != 1:
+                # if agent then we will populate with customer data (aka booker)
+                customer_data = self.get_report_group_by_customer(data, issued_values['lines'])
 
-            # adding chanel_data graph
-            to_return.update(chanel_data)
+                to_return.update(customer_data)
+            else:
+                # if ho then we will populate third graph with agent
+                # however incase of something not match we'll return the agent
+                # why because the agent will return smaller data
+
+                # get by chanel
+                chanel_data = self.get_report_group_by_chanel(data, issued_values['lines'])
+
+                # adding chanel_data graph
+                to_return.update(chanel_data)
+
 
             return to_return
         except Exception as e:
             _logger.error(traceback.format_exc())
             raise e
 
+    # this function handle data handler and processing for airline
+    # data = form data from frontend
+    # is_ho = ho checker from main function
     def get_report_overall_airline(self, data, is_ho):
         try:
             # process datetime to GMT 0
@@ -1069,7 +1304,8 @@ class TtReportDashboard(models.Model):
             data['start_date'] = temp_start_date.strftime('%Y-%m-%d') + " 17:00:00"
             data['end_date'] += " 16:59:59"
 
-            # prepare dictionary to get reservation data
+            # first step of this function is to get reservation date, base on issued date
+
             temp_dict = {
                 'start_date': data['start_date'],
                 'end_date': data['end_date'],
@@ -1212,7 +1448,11 @@ class TtReportDashboard(models.Model):
                             temp_dict['detail'][day_index]['revenue'] += i['amount']
                             total += i['amount']
                             num_data += 1
+                            # add the first profit if ledger type is 3 a.k.a commission
                             if i['ledger_transaction_type'] == 3:
+                                # check if commission (also known as profit) is belong to HQ or not, and if the user requesting is part of HQ or not
+                                # if HQ guy asking then we'll count everything
+                                # if not HQ guy then we'll only count respected agennt
                                 if i['ledger_agent_type_name'] == 'HO' and is_ho == 1:
                                     temp_dict['detail'][day_index]['profit'] += i['debit']
                                     profit_total += i['debit']
@@ -1234,6 +1474,9 @@ class TtReportDashboard(models.Model):
                             total += i['amount']
                             num_data += 1
                             if i['ledger_transaction_type'] == 3:
+                                # check if commission (also known as profit) is belong to HQ or not, and if the user requesting is part of HQ or not
+                                # if HQ guy asking then we'll count everything
+                                # if not HQ guy then we'll only count respected agennt
                                 if i['ledger_agent_type_name'] == 'HO' and is_ho == 1:
                                     summary_issued[month_index]['detail'][day_index]['profit'] += i['debit']
                                     profit_total += i['debit']
@@ -1287,7 +1530,6 @@ class TtReportDashboard(models.Model):
                                         nta_total += k['booking_charge_total']
                             grand_total = nta_total + commission
 
-
                             # carrier is not exist yet
                             # declare a temporary dictionary
                             temp_dict = {
@@ -1315,6 +1557,9 @@ class TtReportDashboard(models.Model):
                                 filter(lambda x: x['booking_pnr'] == i['ledger_pnr'] and x['order_number'] == i[
                                     'reservation_order_number'], service_charge))
 
+                            # this section below is to count total revenue group by carrier/airline
+                            # so no more provider like amadeus, or altea
+                            # and no more multi carrier i.e Garuda,Lion
                             nta_total = 0
                             commission = 0
                             for k in temp_charge:
@@ -1326,6 +1571,8 @@ class TtReportDashboard(models.Model):
                                         nta_total += k['booking_charge_total']
                             grand_total = nta_total + commission
 
+                            # each carrier will also have top 10 route by that particular Airline
+                            # this code below responsible for that
                             if carrier_route_index == -1:
                                 # route is not exist yet
                                 # create temporary dict
@@ -1349,17 +1596,27 @@ class TtReportDashboard(models.Model):
                         pass
 
                     # ============= Summary by Domestic/International ============
+                    # this summary basically make table to create international and domestic by direction
+                    # like one way, return or even multi city
                     if i['reservation_sector'] == 'International':
+                        # for every reservation with international destination
+                        # valuation = revenue
                         sector_dictionary[0]['valuation'] += float(i['amount'])
+                        # counter = # of reservation
                         sector_dictionary[0]['counter'] += 1
                         if i['reservation_direction'] == 'OW':
+                            # OW = one way
                             sector_dictionary[0]['one_way'] += 1
                         elif i['reservation_direction'] == 'RT':
+                            # rt = return
                             sector_dictionary[0]['return'] += 1
                         else:
+                            # else considered as multicity as of today 2020-12-08
                             sector_dictionary[0]['multi_city'] += 1
+                        # adding total passenger in international section
                         sector_dictionary[0]['passenger_count'] += int(i['reservation_passenger'])
                     elif i['reservation_sector'] == 'Domestic':
+                        # for every reservation with domestic destination
                         sector_dictionary[1]['valuation'] += float(i['amount'])
                         sector_dictionary[1]['counter'] += 1
                         if i['reservation_direction'] == 'OW':
@@ -1370,6 +1627,7 @@ class TtReportDashboard(models.Model):
                             sector_dictionary[1]['multi_city'] += 1
                         sector_dictionary[1]['passenger_count'] += int(i['reservation_passenger'])
                     else:
+                        # for any other (maybe an update on the system or something, take makes the reservation neither international or domestic)
                         sector_dictionary[2]['valuation'] += float(i['amount'])
                         sector_dictionary[2]['counter'] += 1
                         if i['reservation_direction'] == 'OW':
@@ -1397,17 +1655,29 @@ class TtReportDashboard(models.Model):
                                 depart_index = j
                     # lets count
                     if filter_data[0]['reservation_issued_date_og']:
-                        date_time_convert = datetime.strptime(filter_data[depart_index]['journey_departure_date'],
-                                                              '%Y-%m-%d %H:%M:%S')
+                        # conver journey date (string) to datetime
+                        date_time_convert = datetime.strptime(filter_data[depart_index]['journey_departure_date'],'%Y-%m-%d %H:%M:%S')
+                        # check if reservation has issued dates
+                        # this should be quite obselete since this function only calls for issued reservation
+                        # but this function also written in more general function so.. there's that
                         if filter_data[0]['reservation_issued_date_og']:
+                            # actually counting the day difference between each date
                             date_count = date_time_convert - filter_data[0]['reservation_issued_date_og']
                             if date_count.days < 0:
+                                # if for some whatever reason the date result in negative
+                                # just print to logger, maybe if someday needed to be check there's the data in logger
                                 _logger.error("please check {}".format(i['reservation_order_number']))
                         else:
                             date_count = 0
 
+                        # for airline only i dicided to seperate the data between international departure
+                        # and domestic departure, it makes more sense and insightful
+                        # so in here we check if the reservation has international or domestic destination (well from sector actually)
                         if filter_data[0]['reservation_sector'] == 'International':
+                            # if the data is international then we'll add it in international list
                             issued_depart_index = self.check_index(issued_depart_international_summary, "day", date_count.days)
+                            # as always check the index
+                            # if no index found a.k.a -1 then we'll create and add the data
                             if issued_depart_index == -1:
                                 temp_dict = {
                                     "day": date_count.days,
@@ -1416,10 +1686,13 @@ class TtReportDashboard(models.Model):
                                 }
                                 issued_depart_international_summary.append(temp_dict)
                             else:
+                                # if data exist then we only need to update existing data
                                 issued_depart_international_summary[issued_depart_index]['counter'] += 1
                                 issued_depart_international_summary[issued_depart_index]['passenger'] += filter_data[0][
                                     'reservation_passenger']
                         else:
+                            # as of today 2020-12-08 else considered as domestic
+                            # so we'll add it in domestic section
                             issued_depart_index = self.check_index(issued_depart_domestic_summary, "day",
                                                                    date_count.days)
                             if issued_depart_index == -1:
@@ -1441,10 +1714,11 @@ class TtReportDashboard(models.Model):
                         # num_data += 1
 
                         # ============= Search best for every sector ==================
-                        returning_index = self.returning_index_sector(destination_sector_summary,
-                                                                      {'departure': i['departure'],
-                                                                       'destination': i['destination'],
-                                                                       'sector': i['reservation_sector']})
+                        # in this section we only compare how many reservation is actually for international destination
+                        # and how many domestic reservation
+                        # just to make is useful this report also sumarize passenger count, and reservation count
+                        returning_index = self.returning_index_sector(destination_sector_summary,{'departure': i['departure'], 'destination': i['destination'], 'sector': i['reservation_sector']})
+                        # once again as always we check for index then create and add if not exist, update if data already exist
                         if returning_index == -1:
                             new_dict = {
                                 'sector': i['reservation_sector'],
@@ -1467,9 +1741,11 @@ class TtReportDashboard(models.Model):
                             destination_sector_summary[returning_index]['infant_count'] += i['reservation_infant']
 
                         # ============= Search for best 50 routes ====================
-                        returning_index = self.returning_index(destination_direction_summary, {'departure': i['departure'],
-                                                                                               'destination': i[
-                                                                                                   'destination']})
+                        # in this section we want to extract top i dunno like 15 route of each sector
+                        # this code can produce more than 15, but will be trim later down the line
+                        # to make it insightful i add revenue data, and passenger count
+                        returning_index = self.returning_index(destination_direction_summary, {'departure': i['departure'], 'destination': i['destination']})
+
                         if returning_index == -1:
                             new_dict = {
                                 'direction': i['reservation_direction'],
@@ -1493,23 +1769,36 @@ class TtReportDashboard(models.Model):
                             destination_direction_summary[returning_index]['infant_count'] += i['reservation_infant']
                     current_id = i['reservation_id']
                 else:
+                    # els in here means iterate data has the same order number as previous lines
+                    # with that we only need to update ledger count
+                    # no more filtering for smaller overview
+
+                    # this if logic is needed because in a reservation can contain multi journey and multi segment and multi ledger
+                    # it will double with each join (in SQL)
+                    # in order not to double count, this if condition is needed
                     if current_segment != i['segment_id'] and current_pnr != i['ledger_pnr']:
                         # if both segment and pnr is diff, then we want to count the ledger
                         # hence update to current pnr and segment
                         current_segment = i['segment_id']
                         current_pnr = i['ledger_pnr']
 
+                        # this if condition is needed because even after i add ORDER BY in SQL for some reason ledger PNR could still be in mumbo jumbo
+                        # so we need to keep track what pnr is already count
                         if current_pnr in pnr_within:
                             continue
                         else:
                             pnr_within.append(current_pnr)
 
-                        # count like always
-                        if i['ledger_transaction_type'] == 3:
-                            month_index = self.check_date_index(summary_issued, {'year': i['issued_year'],
-                                                                                 'month': month[int(i['issued_month']) - 1]})
+                        # Let's count
+                        if i['ledger_transaction_type'] == 3:   # type 3 = commission
+                            # as always we look for what index particular data is
+                            month_index = self.check_date_index(summary_issued, {'year': i['issued_year'], 'month': month[int(i['issued_month']) - 1]})
+                            # get the date (also known as index in summary issued)
                             splits = i['reservation_issued_date'].split("-")
                             day_index = int(splits[2]) - 1
+                            # check if commission (also known as profit) is belong to HQ or not, and if the user requesting is part of HQ or not
+                            # if HQ guy asking then we'll count everything
+                            # if not HQ guy then we'll only count respected agennt
                             if i['ledger_agent_type_name'] == 'HO' and is_ho == 1:
                                 summary_issued[month_index]['detail'][day_index]['profit'] += i['debit']
                                 profit_total += i['debit']
@@ -1521,17 +1810,19 @@ class TtReportDashboard(models.Model):
 
                         # update top carrier base on same reservation but diff segment and diff pnr
                         try:
+                            # so because pnr and segment difference, we could safely assume that this is a new airline, could be the same
+                            # but eitherway we'll gonna count it anyway so this section is for that
                             carrier_index = self.check_carrier(top_carrier, {'carrier_name': i['airline']})
 
+                            # at this point this seems really redundant so you know the drill.
                             if carrier_index == -1:
                                 # filter service charge
                                 # product total corresponding to particular pnr
                                 # filter from service charge data
-                                temp_charge = list(
-                                    filter(
-                                        lambda x: x['booking_pnr'] == i['ledger_pnr'] and x['order_number'] ==
-                                                  i['reservation_order_number'], service_charge))
+                                temp_charge = list(filter(lambda x: x['booking_pnr'] == i['ledger_pnr'] and x['order_number'] ==i['reservation_order_number'], service_charge))
 
+                                # this section count revenue for each airline by looking thru the service charge
+                                # so it's like super accurate
                                 nta_total = 0
                                 commission = 0
                                 for k in temp_charge:
@@ -1543,6 +1834,7 @@ class TtReportDashboard(models.Model):
                                             nta_total += k['booking_charge_total']
                                 grand_total = nta_total + commission
 
+                                # maybe not section above but below this you know the drill
                                 # carrier is not exist yet
                                 # declare a temporary dictionary
                                 temp_dict = {
@@ -1561,19 +1853,15 @@ class TtReportDashboard(models.Model):
                                 top_carrier.append(temp_dict)
                             else:
                                 # check index of route within top_carrier dictionary
-                                carrier_route_index = self.check_carrier_route(
-                                    top_carrier[carrier_index]['route'],
-                                    {'departure': i['departure'], 'destination': i['destination']})
+                                carrier_route_index = self.check_carrier_route(top_carrier[carrier_index]['route'], {'departure': i['departure'], 'destination': i['destination']})
 
                                 # filter service charge
                                 # product total corresponding to particular pnr
                                 # filter from service charge data
-                                temp_charge = list(
-                                    filter(
-                                        lambda x: x['booking_pnr'] == i['ledger_pnr'] and x['order_number'] ==
-                                                  i[
-                                                      'reservation_order_number'], service_charge))
+                                temp_charge = list(filter(lambda x: x['booking_pnr'] == i['ledger_pnr'] and x['order_number'] == i['reservation_order_number'], service_charge))
 
+                                # this section count revenue for each airline by looking thru the service charge
+                                # so it's like super accurate
                                 nta_total = 0
                                 commission = 0
                                 for k in temp_charge:
@@ -1585,6 +1873,7 @@ class TtReportDashboard(models.Model):
                                             nta_total += k['booking_charge_total']
                                 grand_total = nta_total + commission
 
+                                # same drill
                                 if carrier_route_index == -1:
                                     # route is not exist yet
                                     # create temporary dict
@@ -1609,13 +1898,15 @@ class TtReportDashboard(models.Model):
                             pass
 
                     elif current_segment == i['segment_id'] and current_pnr == i['ledger_pnr']:
+                        # if we have same segment and same pnr then we want to count for profit and all
                         # count like always
                         if i['ledger_transaction_type'] == 3:
-                            month_index = self.check_date_index(summary_issued, {'year': i['issued_year'],
-                                                                                 'month': month[
-                                                                                     int(i['issued_month']) - 1]})
+                            month_index = self.check_date_index(summary_issued, {'year': i['issued_year'], 'month': month[int(i['issued_month']) - 1]})
                             splits = i['reservation_issued_date'].split("-")
                             day_index = int(splits[2]) - 1
+                            # check if commission (also known as profit) is belong to HQ or not, and if the user requesting is part of HQ or not
+                            # if HQ guy asking then we'll count everything
+                            # if not HQ guy then we'll only count respected agennt
                             if i['ledger_agent_type_name'] == 'HO' and is_ho == 1:
                                 summary_issued[month_index]['detail'][day_index]['profit'] += i['debit']
                                 profit_total += i['debit']
@@ -1626,6 +1917,7 @@ class TtReportDashboard(models.Model):
                                 profit_agent += i['debit']
 
             # grouping data
+            # it's like spliting the data into smaller container
             international_filter = list(filter(lambda x: x['sector'] == 'International', destination_sector_summary))
             domestic_filter = list(filter(lambda x: x['sector'] == 'Domestic', destination_sector_summary))
             one_way_filter = list(filter(lambda x: x['direction'] == 'OW', destination_direction_summary))
@@ -1727,18 +2019,37 @@ class TtReportDashboard(models.Model):
             profit_data = {}
 
             # shape the data for return
+            # a little reminder month and days mode determine by how many days in between requested report
+            # more than 35 days, automatically group by month
+            # less than 35 days, we'll return as is (divided by date)
             if mode == 'month':
+                # if so happens to be in month mode, then we'll sum every data by month
+                # because if you follow the program, you'll know that summary_issued divide the data into
+                # year, month, with date details (date detail is list)
+                # we have to sum the date detail basically
+                #
                 # sum by month
                 try:
+                    # first counter is trying to find what month user requested date are
+                    # why it has - 1 because if you look at constant dependencies
+                    # index and month value will result in difference of 1 (since list index starts in 0 yada yada yada)
                     first_counter = summary_issued[0]['month_index'] - 1
                 except:
+                    # if for whatever reason, above method doesn't work
+                    # then, we'll do the weird(?) way
+                    # by extracting from date
                     splits = data['start_date'].split("-")
                     month = splits[1]
                     first_counter = int(month) - 1
+
+                # with that done, we'll now process the data
                 for i in summary_issued:
                     # fill skipped month(s)
                     # check if current month (year) with start
                     if i['month_index'] - 1 < first_counter:
+                        # this is the condition for new year, where
+                        # counter month > than the earlier month of the year
+                        # we'll just gonna fill the gap
                         while first_counter < 12:
                             main_data[month[first_counter]] = 0
                             average_data[month[first_counter]] = 0
@@ -1749,6 +2060,8 @@ class TtReportDashboard(models.Model):
                         if first_counter == 12:
                             first_counter = 0
                     if i['month_index'] - 1 > first_counter:
+                        # this to catch up current month to present day ish
+                        # or present month for that matter
                         while first_counter < i['month_index'] - 1:
                             main_data[month[first_counter]] = 0
                             average_data[month[first_counter]] = 0
@@ -1756,11 +2069,17 @@ class TtReportDashboard(models.Model):
                             profit_data[month[first_counter]] = 0
                             first_counter += 1
 
-                    # for every month in summary by date
+                    # so after first counter, which doen't make any sense since
+                    # first counter was use to keep up...
+                    # after first counter catch up present month/day
+                    # we're gonna count the data
+                    # declare variable with respected month
                     main_data[i['month']] = 0
                     average_data[i['month']] = 0
                     revenue_data[i['month']] = 0
                     profit_data[i['month']] = 0
+
+                    # sum data from detail
                     for j in i['detail']:
                         # for detail in months
                         main_data[i['month']] += j['invoice']
@@ -1771,6 +2090,7 @@ class TtReportDashboard(models.Model):
 
             else:
                 # seperate by date
+                # build and trim data to exact date asked, just because
                 for i in summary_issued:
                     for j in i['detail']:
                         # built appropriate date
@@ -1822,6 +2142,7 @@ class TtReportDashboard(models.Model):
             destination_graph['Other'] = other_counter
 
             # prepare data to return
+            # this data actually printed in frontend console.log so for debugging if it's easier then there's that
             to_return = {
                 'first_graph': {
                     'label': list(main_data.keys()),
@@ -1864,17 +2185,32 @@ class TtReportDashboard(models.Model):
             # adding book_issued ratio graph
             to_return.update(book_issued)
 
-            # get by chanel
-            chanel_data = self.get_report_group_by_chanel(data, issued_values['lines'])
+            # this is a suggestion and request, if user whose accessing the report only has agent level, then we could substitute
+            # channel/agent rank graph to customer graph
+            if is_ho != 1:
+                # if agent then we will populate with customer data (aka booker)
+                customer_data = self.get_report_group_by_customer(data, issued_values['lines'])
 
-            # adding chanel_data graph
-            to_return.update(chanel_data)
+                to_return.update(customer_data)
+            else:
+                # if ho then we will populate third graph with agent
+                # however incase of something not match we'll return the agent
+                # why because the agent will return smaller data
+
+                # get by chanel
+                chanel_data = self.get_report_group_by_chanel(data, issued_values['lines'])
+
+                # adding chanel_data graph
+                to_return.update(chanel_data)
 
             return to_return
         except Exception as e:
             _logger.error(traceback.format_exc())
             raise e
 
+    # this function handle data handler and processing for train
+    # data = form data from frontend
+    # is_ho = ho checker from main function
     def get_report_overall_train(self, data, is_ho):
         try:
             # process datetime to GMT 0
@@ -1885,6 +2221,8 @@ class TtReportDashboard(models.Model):
             temp_start_date = start_date - timedelta(days=1)
             data['start_date'] = temp_start_date.strftime('%Y-%m-%d') + " 17:00:00"
             data['end_date'] += " 16:59:59"
+
+            # first step of this function is to get reservation date, base on issued date
 
             # to get report by issued
             temp_dict = {
@@ -2000,7 +2338,11 @@ class TtReportDashboard(models.Model):
                             temp_dict['detail'][day_index]['revenue'] += i['amount']
                             total += i['amount']
                             num_data += 1
+                            # add the first profit if ledger type is 3 a.k.a commission
                             if i['ledger_transaction_type'] == 3:
+                                # check if commission (also known as profit) is belong to HQ or not, and if the user requesting is part of HQ or not
+                                # if HQ guy asking then we'll count everything
+                                # if not HQ guy then we'll only count respected agennt
                                 if i['ledger_agent_type_name'] == 'HO' and is_ho == 1:
                                     temp_dict['detail'][day_index]['profit'] += i['debit']
                                     profit_total += i['debit']
@@ -2022,6 +2364,9 @@ class TtReportDashboard(models.Model):
                             total += i['amount']
                             num_data += 1
                             if i['ledger_transaction_type'] == 3:
+                                # check if commission (also known as profit) is belong to HQ or not, and if the user requesting is part of HQ or not
+                                # if HQ guy asking then we'll count everything
+                                # if not HQ guy then we'll only count respected agennt
                                 if i['ledger_agent_type_name'] == 'HO' and is_ho == 1:
                                     summary_issued[month_index]['detail'][day_index]['profit'] += i['debit']
                                     profit_total += i['debit']
@@ -2034,17 +2379,27 @@ class TtReportDashboard(models.Model):
                         pass
 
                     # ============= Summary by Domestic/International ============
+                    # this summary basically make table to create international and domestic by direction
+                    # like one way, return or even multi city
                     if i['reservation_sector'] == 'International':
+                        # for every reservation with international destination
+                        # valuation = revenue
                         sector_dictionary[0]['valuation'] += float(i['amount'])
+                        # counter = # of reservation
                         sector_dictionary[0]['counter'] += 1
                         if i['reservation_direction'] == 'OW':
+                            # OW = one way
                             sector_dictionary[0]['one_way'] += 1
                         elif i['reservation_direction'] == 'RT':
+                            # rt = return
                             sector_dictionary[0]['return'] += 1
                         else:
+                            # else considered as multicity as of today 2020-12-08
                             sector_dictionary[0]['multi_city'] += 1
+                            # adding total passenger in international section
                         sector_dictionary[0]['passenger_count'] += int(i['reservation_passenger'])
                     elif i['reservation_sector'] == 'Domestic':
+                        # for every reservation with domestic destination
                         sector_dictionary[1]['valuation'] += float(i['amount'])
                         sector_dictionary[1]['counter'] += 1
                         if i['reservation_direction'] == 'OW':
@@ -2055,6 +2410,7 @@ class TtReportDashboard(models.Model):
                             sector_dictionary[1]['multi_city'] += 1
                         sector_dictionary[1]['passenger_count'] += int(i['reservation_passenger'])
                     else:
+                        # for any other (maybe an update on the system or something, take makes the reservation neither international or domestic)
                         sector_dictionary[2]['valuation'] += float(i['amount'])
                         sector_dictionary[2]['counter'] += 1
                         if i['reservation_direction'] == 'OW':
@@ -2081,17 +2437,24 @@ class TtReportDashboard(models.Model):
                                 depart_index = j
                     # lets count
                     if filter_data[0]['reservation_issued_date_og']:
-                        date_time_convert = datetime.strptime(filter_data[depart_index]['journey_departure_date'],
-                                                              '%Y-%m-%d %H:%M')
+                        # conver journey date (string) to datetime
+                        date_time_convert = datetime.strptime(filter_data[depart_index]['journey_departure_date'], '%Y-%m-%d %H:%M')
+                        # check if reservation has issued dates
+                        # this should be quite obselete since this function only calls for issued reservation
+                        # but this function also written in more general function so.. there's that
                         if filter_data[0]['reservation_issued_date_og']:
+                            # actually counting the day difference between each date
                             date_count = date_time_convert - filter_data[0]['reservation_issued_date_og']
                             if date_count.days < 0:
+                                # if for some whatever reason the date result in negative
+                                # just print to logger, maybe if someday needed to be check there's the data in logger
                                 _logger.error("please check {}".format(i['reservation_order_number']))
                         else:
                             date_count = 0
 
-                        issued_depart_index = self.check_index(issued_depart_summary, "day",
-                                                               date_count.days)
+                        # check for index in issued depart summary
+                        issued_depart_index = self.check_index(issued_depart_summary, "day", date_count.days)
+                        # if no index found a.k.a -1 then we'll create and add the data
                         if issued_depart_index == -1:
                             temp_dict = {
                                 "day": date_count.days,
@@ -2100,6 +2463,7 @@ class TtReportDashboard(models.Model):
                             }
                             issued_depart_summary.append(temp_dict)
                         else:
+                            # if data exist then we only need to update existing data
                             issued_depart_summary[issued_depart_index]['counter'] += 1
                             issued_depart_summary[issued_depart_index]['passenger'] += \
                             filter_data[0][
@@ -2113,10 +2477,12 @@ class TtReportDashboard(models.Model):
                         # num_data += 1
 
                         # ============= Search best for every sector ==================
-                        returning_index = self.returning_index_sector(destination_sector_summary,
-                                                                      {'departure': i['departure'],
-                                                                       'destination': i['destination'],
-                                                                       'sector': i['reservation_sector']})
+                        # in this section we only compare how many reservation is actually for international destination
+                        # and how many domestic reservation
+                        # just to make is useful this report also sumarize passenger count, and reservation count
+                        returning_index = self.returning_index_sector(destination_sector_summary, {'departure':
+                        # once again as always we check for index then create and add if not exist, update if data already exist
+                         i['departure'], 'destination': i['destination'], 'sector': i['reservation_sector']})
                         if returning_index == -1:
                             new_dict = {
                                 'sector': i['reservation_sector'],
@@ -2139,9 +2505,11 @@ class TtReportDashboard(models.Model):
                             destination_sector_summary[returning_index]['infant_count'] += i['reservation_infant']
 
                         # ============= Search for best 50 routes ====================
-                        returning_index = self.returning_index(destination_direction_summary, {'departure': i['departure'],
-                                                                                               'destination': i[
-                                                                                                   'destination']})
+                        # in this section we want to extract top i dunno like 15 route of each sector
+                        # this code can produce more than 15, but will be trim later down the line
+                        # to make it insightful i add revenue data, and passenger count
+                        returning_index = self.returning_index(destination_direction_summary, {'departure': i['departure'], 'destination': i['destination']})
+
                         if returning_index == -1:
                             new_dict = {
                                 'direction': i['reservation_direction'],
@@ -2167,16 +2535,23 @@ class TtReportDashboard(models.Model):
                     # update current id
                     current_id = i['reservation_id']
                 else:
+                    # els in here means iterate data has the same order number as previous lines
+                    # with that we only need to update ledger count
+                    # no more filtering for smaller overview
+
+                    # in order not to double count, this if condition is needed
                     if current_journey == i['journey_id']:
                         if i['ledger_transaction_type'] == 3:
                             # get index of particular year and month
-                            month_index = self.check_date_index(summary_issued, {'year': i['issued_year'],
-                                                                                 'month': month[int(i['issued_month']) - 1]})
+                            month_index = self.check_date_index(summary_issued, {'year': i['issued_year'], 'month': month[int(i['issued_month']) - 1]})
                             # split date to extract day
                             splits = i['reservation_issued_date'].split("-")
                             # get day
                             day_index = int(splits[2]) - 1
                             # add profit to respected array
+                            # check if commission (also known as profit) is belong to HQ or not, and if the user requesting is part of HQ or not
+                            # if HQ guy asking then we'll count everything
+                            # if not HQ guy then we'll only count respected agennt
                             if i['ledger_agent_type_name'] == 'HO' and is_ho == 1:
                                 summary_issued[month_index]['detail'][day_index]['profit'] += i['debit']
                                 profit_total += i['debit']
@@ -2239,18 +2614,36 @@ class TtReportDashboard(models.Model):
             profit_data = {}
 
             # shape the data for return
+            # a little reminder month and days mode determine by how many days in between requested report
+            # more than 35 days, automatically group by month
+            # less than 35 days, we'll return as is (divided by date)
             if mode == 'month':
+                # if so happens to be in month mode, then we'll sum every data by month
+                # because if you follow the program, you'll know that summary_issued divide the data into
+                # year, month, with date details (date detail is list)
+                # we have to sum the date detail basically
                 # sum by month
                 try:
+                    # first counter is trying to find what month user requested date are
+                    # why it has - 1 because if you look at constant dependencies
+                    # index and month value will result in difference of 1 (since list index starts in 0 yada yada yada)
                     first_counter = summary_issued[0]['month_index'] - 1
                 except:
+                    # if for whatever reason, above method doesn't work
+                    # then, we'll do the weird(?) way
+                    # by extracting from date
                     splits = data['start_date'].split("-")
                     month = splits[1]
                     first_counter = int(month) - 1
+
+                # with that done, we'll now process the data
                 for i in summary_issued:
                     # fill skipped month(s)
                     # check if current month (year) with start
                     if i['month_index'] - 1 < first_counter:
+                        # this is the condition for new year, where
+                        # counter month > than the earlier month of the year
+                        # we'll just gonna fill the gap
                         while first_counter < 12:
                             main_data[month[first_counter]] = 0
                             average_data[month[first_counter]] = 0
@@ -2261,6 +2654,8 @@ class TtReportDashboard(models.Model):
                         if first_counter == 12:
                             first_counter = 0
                     if i['month_index'] - 1 > first_counter:
+                        # this to catch up current month to present day ish
+                        # or present month for that matter
                         while first_counter < i['month_index'] - 1:
                             main_data[month[first_counter]] = 0
                             average_data[month[first_counter]] = 0
@@ -2268,17 +2663,24 @@ class TtReportDashboard(models.Model):
                             profit_data[month[first_counter]] = 0
                             first_counter += 1
 
-                    # for every month in summary by date
+                    # so after first counter, which doen't make any sense since
+                    # first counter was use to keep up...
+                    # after first counter catch up present month/day
+                    # we're gonna count the data
+                    # declare variable with respected month
                     main_data[i['month']] = 0
                     average_data[i['month']] = 0
                     revenue_data[i['month']] = 0
                     profit_data[i['month']] = 0
+
+                    # sum data from detail
                     for j in i['detail']:
                         # for detail in months
                         main_data[i['month']] += j['invoice']
                         average_data[i['month']] += j['average']
                         revenue_data[i['month']] += j['revenue']
                         profit_data[i['month']] += j['profit']
+                    # shift to next month yey
                     first_counter += 1
 
             else:
@@ -2338,17 +2740,32 @@ class TtReportDashboard(models.Model):
             # adding book_issued ratio graph
             to_return.update(book_issued)
 
-            # get by chanel
-            chanel_data = self.get_report_group_by_chanel(data, issued_values['lines'])
+            # this is a suggestion and request, if user whose accessing the report only has agent level, then we could substitute
+            # channel/agent rank graph to customer graph
+            if is_ho != 1:
+                # if agent then we will populate with customer data (aka booker)
+                customer_data = self.get_report_group_by_customer(data, issued_values['lines'])
 
-            # adding chanel_data graph
-            to_return.update(chanel_data)
+                to_return.update(customer_data)
+            else:
+                # if ho then we will populate third graph with agent
+                # however incase of something not match we'll return the agent
+                # why because the agent will return smaller data
+
+                # get by chanel
+                chanel_data = self.get_report_group_by_chanel(data, issued_values['lines'])
+
+                # adding chanel_data graph
+                to_return.update(chanel_data)
 
             return to_return
         except Exception as e:
             _logger.error(traceback.format_exc())
             raise e
 
+    # this function handle data handler and processing for hotel
+    # data = form data from frontend
+    # is_ho = ho checker from main function
     def get_report_overall_hotel(self, data, is_ho):
         try:
             # process datetime to GMT 0
@@ -2359,6 +2776,8 @@ class TtReportDashboard(models.Model):
             temp_start_date = start_date - timedelta(days=1)
             data['start_date'] = temp_start_date.strftime('%Y-%m-%d') + " 17:00:00"
             data['end_date'] += " 16:59:59"
+
+            # first step of this function is to get reservation date, base on issued date
 
             # get report by issued
             temp_dict = {
@@ -2440,6 +2859,9 @@ class TtReportDashboard(models.Model):
                             total += i['amount']
                             num_data += 1
                             if i['ledger_transaction_type'] == 3:
+                                # check if commission (also known as profit) is belong to HQ or not, and if the user requesting is part of HQ or not
+                                # if HQ guy asking then we'll count everything
+                                # if not HQ guy then we'll only count respected agennt
                                 if i['ledger_agent_type_name'] == 'HO' and is_ho == 1:
                                     temp_dict['detail'][day_index]['profit'] += i['debit']
                                     profit_total += i['debit']
@@ -2461,6 +2883,9 @@ class TtReportDashboard(models.Model):
                             total += i['amount']
                             num_data += 1
                             if i['ledger_transaction_type'] == 3:
+                                # check if commission (also known as profit) is belong to HQ or not, and if the user requesting is part of HQ or not
+                                # if HQ guy asking then we'll count everything
+                                # if not HQ guy then we'll only count respected agennt
                                 if i['ledger_agent_type_name'] == 'HO' and is_ho == 1:
                                     summary_issued[month_index]['detail'][day_index]['profit'] += i['debit']
                                     profit_total += i['debit']
@@ -2473,9 +2898,15 @@ class TtReportDashboard(models.Model):
                         pass
 
                     try:
+                        # this section responsible to build overview in hotel
+                        # the overview group the data by city, and adding like top 10 hotel within the city
+                        # code below is searching for index of city within location_overview
                         location_index = self.check_location(location_overview, {'city': i['hotel_city']})
 
+                        # if city cannot be found in location_overview, index will return as -1
+                        # hence we need to create and append the data
                         if location_index == -1:
+                            # build a temporary dictionary
                             temp_dict = {
                                 'country': i['country_name'] if i['country_name'] else '',
                                 'city': i['hotel_city'],
@@ -2489,8 +2920,11 @@ class TtReportDashboard(models.Model):
                                     'revenue': i['amount']
                                 }]
                             }
+                            # append to location_overview
                             location_overview.append(temp_dict)
                         else:
+                            # if city is exist, then we only need to look out for specific hotel
+                            # if hotel not found same drill as city, and if exist then we only need to update the data
                             hotel_index = self.check_hotel_index(location_overview[location_index]['hotel'], {'name': i['reservation_hotel_name']})
 
                             if hotel_index == -1:
@@ -2502,15 +2936,18 @@ class TtReportDashboard(models.Model):
                                 }
                                 location_overview[location_index]['hotel'].append(temp_dict)
                             else:
+                                # this only update the data
                                 location_overview[location_index]['hotel'][hotel_index]['counter'] += 1
                                 location_overview[location_index]['hotel'][hotel_index]['passenger'] += i['reservation_passenger']
+                            # this update the data for the city
                             location_overview[location_index]['counter'] += 1
                             location_overview[location_index]['revenue'] += i['amount']
                             location_overview[location_index]['passenger'] += i['reservation_passenger']
                     except:
                         pass
 
-                    # issued depart days difference
+                    # issued to check in days difference
+                    # have the same logic as issued to depart in airline and train
                     # ============= Issued compareed to depart date ==============
                     # filter the data, resulting all of the data with respected order number
                     filter_data = list(
@@ -2560,6 +2997,9 @@ class TtReportDashboard(models.Model):
                         splits = i['reservation_issued_date'].split("-")
                         day_index = int(splits[2]) - 1
                         if i['ledger_agent_type_name'] == 'HO' and is_ho == 1:
+                            # check if commission (also known as profit) is belong to HQ or not, and if the user requesting is part of HQ or not
+                            # if HQ guy asking then we'll count everything
+                            # if not HQ guy then we'll only count respected agennt
                             summary_issued[month_index]['detail'][day_index]['profit'] += i['debit']
                             profit_total += i['debit']
                             profit_ho += i['debit']
@@ -2604,6 +3044,7 @@ class TtReportDashboard(models.Model):
                 i['hotel'].sort(key=lambda x: x['counter'], reverse=True)
 
             #trim to top 10
+            # there will be 11 data, as i compress 11 to n as other
             #declare final list
             location_summary = []
             counter = 0
@@ -2645,6 +3086,7 @@ class TtReportDashboard(models.Model):
                             'hotel': i['hotel']})
 
             # sort end result of location summary
+            # and despite it's other we would only return top 10 data
             try:
                 location_summary[10]['hotel'].sort(key=lambda x: x['counter'], reverse=True)
                 location_summary[10]['hotel'] = location_summary[10]['hotel'][:10]
@@ -2658,18 +3100,37 @@ class TtReportDashboard(models.Model):
             profit_data = {}
 
             # shape the data for return
+            # a little reminder month and days mode determine by how many days in between requested report
+            # more than 35 days, automatically group by month
+            # less than 35 days, we'll return as is (divided by date)
             if mode == 'month':
+                # if so happens to be in month mode, then we'll sum every data by month
+                # because if you follow the program, you'll know that summary_issued divide the data into
+                # year, month, with date details (date detail is list)
+                # we have to sum the date detail basically
+
                 # sum by month
                 try:
+                    # first counter is trying to find what month user requested date are
+                    # why it has - 1 because if you look at constant dependencies
+                    # index and month value will result in difference of 1 (since list index starts in 0 yada yada yada)
                     first_counter = summary_issued[0]['month_index'] - 1
                 except:
+                    # if for whatever reason, above method doesn't work
+                    # then, we'll do the weird(?) way
+                    # by extracting from date
                     splits = data['start_date'].split("-")
                     month = splits[1]
                     first_counter = int(month) - 1
+
+                # with that done, we'll now process the data
                 for i in summary_issued:
                     # fill skipped month(s)
                     # check if current month (year) with start
                     if i['month_index'] - 1 < first_counter:
+                        # this is the condition for new year, where
+                        # counter month > than the earlier month of the year
+                        # we'll just gonna fill the gap
                         while first_counter < 12:
                             main_data[month[first_counter]] = 0
                             average_data[month[first_counter]] = 0
@@ -2680,6 +3141,8 @@ class TtReportDashboard(models.Model):
                         if first_counter == 12:
                             first_counter = 0
                     if i['month_index'] - 1 > first_counter:
+                        # this to catch up current month to present day ish
+                        # or present month for that matter
                         while first_counter < i['month_index'] - 1:
                             main_data[month[first_counter]] = 0
                             average_data[month[first_counter]] = 0
@@ -2687,17 +3150,24 @@ class TtReportDashboard(models.Model):
                             profit_data[month[first_counter]] = 0
                             first_counter += 1
 
-                    # for every month in summary by date
+                    # so after first counter, which doen't make any sense since
+                    # first counter was use to keep up...
+                    # after first counter catch up present month/day
+                    # we're gonna count the data
+                    # declare variable with respected month
                     main_data[i['month']] = 0
                     average_data[i['month']] = 0
                     revenue_data[i['month']] = 0
                     profit_data[i['month']] = 0
+
+                    # sum data from detail
                     for j in i['detail']:
                         # for detail in months
                         main_data[i['month']] += j['invoice']
                         average_data[i['month']] += j['average']
                         revenue_data[i['month']] += j['revenue']
                         profit_data[i['month']] += j['profit']
+                    # shift to next month yey
                     first_counter += 1
 
             else:
@@ -2725,6 +3195,7 @@ class TtReportDashboard(models.Model):
                                 'profit']
 
             # build to return data
+            # this data actually printed in frontend console.log so for debugging if it's easier then there's that
             to_return = {
                 'first_graph': {
                     'label': list(main_data.keys()),
@@ -2753,17 +3224,32 @@ class TtReportDashboard(models.Model):
             # adding book_issued ratio graph
             to_return.update(book_issued)
 
-            # get by chanel
-            chanel_data = self.get_report_group_by_chanel(data, issued_values['lines'])
+            # this is a suggestion and request, if user whose accessing the report only has agent level, then we could substitute
+            # channel/agent rank graph to customer graph
+            if is_ho != 1:
+                # if agent then we will populate with customer data (aka booker)
+                customer_data = self.get_report_group_by_customer(data, issued_values['lines'])
 
-            # adding chanel_data graph
-            to_return.update(chanel_data)
+                to_return.update(customer_data)
+            else:
+                # if ho then we will populate third graph with agent
+                # however incase of something not match we'll return the agent
+                # why because the agent will return smaller data
+
+                # get by chanel
+                chanel_data = self.get_report_group_by_chanel(data, issued_values['lines'])
+
+                # adding chanel_data graph
+                to_return.update(chanel_data)
 
             return to_return
         except Exception as e:
             _logger.error(traceback.format_exc())
             raise e
 
+    # this function handle data handler and processing for tour
+    # data = form data from frontend
+    # is_ho = ho checker from main function
     def get_report_overall_tour(self, data, is_ho):
         try:
             # process datetime to GMT 0
@@ -2775,6 +3261,8 @@ class TtReportDashboard(models.Model):
             data['start_date'] = temp_start_date.strftime('%Y-%m-%d') + " 17:00:00"
             data['end_date'] += " 16:59:59"
 
+            # first step of this function is to get reservation date, base on issued date
+
             temp_dict = {
                 'start_date': data['start_date'],
                 'end_date': data['end_date'],
@@ -2784,8 +3272,11 @@ class TtReportDashboard(models.Model):
                 'agent_type': data['agent_type_seq_id'],
                 'addons': 'none'
             }
+
+            # execute the query
             issued_values = self.env['report.tt_report_selling.report_selling']._get_reports(temp_dict)
 
+            # constant dependencies
             mode = 'days'
             month = [
                 'January', 'February', 'March', 'April', 'May', 'June',
@@ -2805,10 +3296,12 @@ class TtReportDashboard(models.Model):
             profit_agent = 0
             invoice_total = 0
 
+            # create list of reservation id for invoice query
             reservation_ids = []
             for i in issued_values['lines']:
                 reservation_ids.append((i['reservation_id'], i['provider_type_name']))
 
+            # get invoice data
             temp_dict = {
                 'start_date': data['start_date'],
                 'end_date': data['end_date'],
@@ -2851,6 +3344,9 @@ class TtReportDashboard(models.Model):
                             total += i['amount']
                             num_data += 1
                             if i['ledger_transaction_type'] == 3:
+                                # check if commission (also known as profit) is belong to HQ or not, and if the user requesting is part of HQ or not
+                                # if HQ guy asking then we'll count everything
+                                # if not HQ guy then we'll only count respected agennt
                                 if i['ledger_agent_type_name'] == 'HO' and is_ho == 1:
                                     temp_dict['detail'][day_index]['profit'] += i['debit']
                                     profit_total += i['debit']
@@ -2872,6 +3368,9 @@ class TtReportDashboard(models.Model):
                             total += i['amount']
                             num_data += 1
                             if i['ledger_transaction_type'] == 3:
+                                # check if commission (also known as profit) is belong to HQ or not, and if the user requesting is part of HQ or not
+                                # if HQ guy asking then we'll count everything
+                                # if not HQ guy then we'll only count respected agennt
                                 if i['ledger_agent_type_name'] == 'HO' and is_ho == 1:
                                     summary_issued[month_index]['detail'][day_index]['profit'] += i['debit']
                                     profit_total += i['debit']
@@ -2889,6 +3388,9 @@ class TtReportDashboard(models.Model):
                                                                          'month': month[int(i['issued_month']) - 1]})
                     splits = i['reservation_issued_date'].split("-")
                     day_index = int(splits[2]) - 1
+                    # check if commission (also known as profit) is belong to HQ or not, and if the user requesting is part of HQ or not
+                    # if HQ guy asking then we'll count everything
+                    # if not HQ guy then we'll only count respected agennt
                     if i['ledger_agent_type_name'] == 'HO' and is_ho == 1:
                         summary_issued[month_index]['detail'][day_index]['profit'] += i['debit']
                         profit_total += i['debit']
@@ -2934,18 +3436,37 @@ class TtReportDashboard(models.Model):
             profit_data = {}
 
             # shape the data for return
+            # a little reminder month and days mode determine by how many days in between requested report
+            # more than 35 days, automatically group by month
+            # less than 35 days, we'll return as is (divided by date)
             if mode == 'month':
+                # if so happens to be in month mode, then we'll sum every data by month
+                # because if you follow the program, you'll know that summary_issued divide the data into
+                # year, month, with date details (date detail is list)
+                # we have to sum the date detail basically
+
                 # sum by month
                 try:
+                    # first counter is trying to find what month user requested date are
+                    # why it has - 1 because if you look at constant dependencies
+                    # index and month value will result in difference of 1 (since list index starts in 0 yada yada yada)
                     first_counter = summary_issued[0]['month_index'] - 1
                 except:
+                    # if for whatever reason, above method doesn't work
+                    # then, we'll do the weird(?) way
+                    # by extracting from date
                     splits = data['start_date'].split("-")
                     month = splits[1]
                     first_counter = int(month) - 1
+
+                # with that done, we'll now process the data
                 for i in summary_issued:
                     # fill skipped month(s)
                     # check if current month (year) with start
                     if i['month_index'] - 1 < first_counter:
+                        # this is the condition for new year, where
+                        # counter month > than the earlier month of the year
+                        # we'll just gonna fill the gap
                         while first_counter < 12:
                             main_data[month[first_counter]] = 0
                             average_data[month[first_counter]] = 0
@@ -2956,6 +3477,8 @@ class TtReportDashboard(models.Model):
                         if first_counter == 12:
                             first_counter = 0
                     if i['month_index'] - 1 > first_counter:
+                        # this to catch up current month to present day ish
+                        # or present month for that matter
                         while first_counter < i['month_index'] - 1:
                             main_data[month[first_counter]] = 0
                             average_data[month[first_counter]] = 0
@@ -2963,17 +3486,24 @@ class TtReportDashboard(models.Model):
                             profit_data[month[first_counter]] = 0
                             first_counter += 1
 
-                    # for every month in summary by date
+                    # so after first counter, which doen't make any sense since
+                    # first counter was use to keep up...
+                    # after first counter catch up present month/day
+                    # we're gonna count the data
+                    # declare variable with respected month
                     main_data[i['month']] = 0
                     average_data[i['month']] = 0
                     revenue_data[i['month']] = 0
                     profit_data[i['month']] = 0
+
+                    # sum data from detail
                     for j in i['detail']:
                         # for detail in months
                         main_data[i['month']] += j['invoice']
                         average_data[i['month']] += j['average']
                         revenue_data[i['month']] += j['revenue']
                         profit_data[i['month']] += j['profit']
+                    # shift to next month yey
                     first_counter += 1
             else:
                 # seperate by date
@@ -3025,17 +3555,32 @@ class TtReportDashboard(models.Model):
             # adding book_issued ratio graph
             to_return.update(book_issued)
 
-            # get by chanel
-            chanel_data = self.get_report_group_by_chanel(data, issued_values['lines'])
+            # this is a suggestion and request, if user whose accessing the report only has agent level, then we could substitute
+            # channel/agent rank graph to customer graph
+            if is_ho != 1:
+                # if agent then we will populate with customer data (aka booker)
+                customer_data = self.get_report_group_by_customer(data, issued_values['lines'])
 
-            # adding chanel_data graph
-            to_return.update(chanel_data)
+                to_return.update(customer_data)
+            else:
+                # if ho then we will populate third graph with agent
+                # however incase of something not match we'll return the agent
+                # why because the agent will return smaller data
+
+                # get by chanel
+                chanel_data = self.get_report_group_by_chanel(data, issued_values['lines'])
+
+                # adding chanel_data graph
+                to_return.update(chanel_data)
 
             return to_return
         except Exception as e:
             _logger.error(traceback.format_exc())
             raise e
 
+    # this function handle data handler and processing for activity
+    # data = form data from frontend
+    # is_ho = ho checker from main function
     def get_report_overall_activity(self, data, is_ho):
         try:
             # process datetime to GMT 0
@@ -3046,6 +3591,8 @@ class TtReportDashboard(models.Model):
             temp_start_date = start_date - timedelta(days=1)
             data['start_date'] = temp_start_date.strftime('%Y-%m-%d') + " 17:00:00"
             data['end_date'] += " 16:59:59"
+
+            # first step of this function is to get reservation date, base on issued date
 
             temp_dict = {
                 'start_date': data['start_date'],
@@ -3124,6 +3671,9 @@ class TtReportDashboard(models.Model):
                             total += i['amount']
                             num_data += 1
                             if i['ledger_transaction_type'] == 3:
+                                # check if commission (also known as profit) is belong to HQ or not, and if the user requesting is part of HQ or not
+                                # if HQ guy asking then we'll count everything
+                                # if not HQ guy then we'll only count respected agennt
                                 if i['ledger_agent_type_name'] == 'HO' and is_ho == 1:
                                     temp_dict['detail'][day_index]['profit'] += i['debit']
                                     profit_total += i['debit']
@@ -3145,6 +3695,9 @@ class TtReportDashboard(models.Model):
                             total += i['amount']
                             num_data += 1
                             if i['ledger_transaction_type'] == 3:
+                                # check if commission (also known as profit) is belong to HQ or not, and if the user requesting is part of HQ or not
+                                # if HQ guy asking then we'll count everything
+                                # if not HQ guy then we'll only count respected agennt
                                 if i['ledger_agent_type_name'] == 'HO' and is_ho == 1:
                                     summary_issued[month_index]['detail'][day_index]['profit'] += i['debit']
                                     profit_total += i['debit']
@@ -3187,6 +3740,9 @@ class TtReportDashboard(models.Model):
                                                                              'month': month[int(i['issued_month']) - 1]})
                         splits = i['reservation_issued_date'].split("-")
                         day_index = int(splits[2]) - 1
+                        # check if commission (also known as profit) is belong to HQ or not, and if the user requesting is part of HQ or not
+                        # if HQ guy asking then we'll count everything
+                        # if not HQ guy then we'll only count respected agennt
                         if i['ledger_agent_type_name'] == 'HO' and is_ho == 1:
                             summary_issued[month_index]['detail'][day_index]['profit'] += i['debit']
                             profit_total += i['debit']
@@ -3233,18 +3789,37 @@ class TtReportDashboard(models.Model):
             profit_data = {}
 
             # shape the data for return
+            # a little reminder month and days mode determine by how many days in between requested report
+            # more than 35 days, automatically group by month
+            # less than 35 days, we'll return as is (divided by date)
             if mode == 'month':
+                # if so happens to be in month mode, then we'll sum every data by month
+                # because if you follow the program, you'll know that summary_issued divide the data into
+                # year, month, with date details (date detail is list)
+                # we have to sum the date detail basically
+
                 # sum by month
                 try:
+                    # first counter is trying to find what month user requested date are
+                    # why it has - 1 because if you look at constant dependencies
+                    # index and month value will result in difference of 1 (since list index starts in 0 yada yada yada)
                     first_counter = summary_issued[0]['month_index'] - 1
                 except:
+                    # if for whatever reason, above method doesn't work
+                    # then, we'll do the weird(?) way
+                    # by extracting from date
                     splits = data['start_date'].split("-")
                     month = splits[1]
                     first_counter = int(month) - 1
+
+                # with that done, we'll now process the data
                 for i in summary_issued:
                     # fill skipped month(s)
                     # check if current month (year) with start
                     if i['month_index'] - 1 < first_counter:
+                        # this is the condition for new year, where
+                        # counter month > than the earlier month of the year
+                        # we'll just gonna fill the gap
                         while first_counter < 12:
                             main_data[month[first_counter]] = 0
                             average_data[month[first_counter]] = 0
@@ -3255,6 +3830,8 @@ class TtReportDashboard(models.Model):
                         if first_counter == 12:
                             first_counter = 0
                     if i['month_index'] - 1 > first_counter:
+                        # this to catch up current month to present day ish
+                        # or present month for that matter
                         while first_counter < i['month_index'] - 1:
                             main_data[month[first_counter]] = 0
                             average_data[month[first_counter]] = 0
@@ -3262,7 +3839,11 @@ class TtReportDashboard(models.Model):
                             profit_data[month[first_counter]] = 0
                             first_counter += 1
 
-                    # for every month in summary by date
+                    # so after first counter, which doen't make any sense since
+                    # first counter was use to keep up...
+                    # after first counter catch up present month/day
+                    # we're gonna count the data
+                    # declare variable with respected month
                     main_data[i['month']] = 0
                     average_data[i['month']] = 0
                     revenue_data[i['month']] = 0
@@ -3273,6 +3854,7 @@ class TtReportDashboard(models.Model):
                         average_data[i['month']] += j['average']
                         revenue_data[i['month']] += j['revenue']
                         profit_data[i['month']] += j['profit']
+                    # shift to next month yey
                     first_counter += 1
 
             else:
@@ -3325,17 +3907,32 @@ class TtReportDashboard(models.Model):
             # adding book_issued ratio graph
             to_return.update(book_issued)
 
-            # get by chanel
-            chanel_data = self.get_report_group_by_chanel(data, issued_values['lines'])
+            # this is a suggestion and request, if user whose accessing the report only has agent level, then we could substitute
+            # channel/agent rank graph to customer graph
+            if is_ho != 1:
+                # if agent then we will populate with customer data (aka booker)
+                customer_data = self.get_report_group_by_customer(data, issued_values['lines'])
 
-            # adding chanel_data graph
-            to_return.update(chanel_data)
+                to_return.update(customer_data)
+            else:
+                # if ho then we will populate third graph with agent
+                # however incase of something not match we'll return the agent
+                # why because the agent will return smaller data
+
+                # get by chanel
+                chanel_data = self.get_report_group_by_chanel(data, issued_values['lines'])
+
+                # adding chanel_data graph
+                to_return.update(chanel_data)
 
             return to_return
         except Exception as e:
             _logger.error(traceback.format_exc())
             raise e
 
+    # this function handle data handler and processing for event
+    # data = form data from frontend
+    # is_ho = ho checker from main function
     def get_report_overall_event(self, data, is_ho):
         try:
             # process datetime to GMT 0
@@ -3346,6 +3943,8 @@ class TtReportDashboard(models.Model):
             temp_start_date = start_date - timedelta(days=1)
             data['start_date'] = temp_start_date.strftime('%Y-%m-%d') + " 17:00:00"
             data['end_date'] += " 16:59:59"
+
+            # first step of this function is to get reservation date, base on issued date
 
             temp_dict = {
                 'start_date': data['start_date'],
@@ -3424,6 +4023,9 @@ class TtReportDashboard(models.Model):
                             total += i['amount']
                             num_data += 1
                             if i['ledger_transaction_type'] == 3:
+                                # check if commission (also known as profit) is belong to HQ or not, and if the user requesting is part of HQ or not
+                                # if HQ guy asking then we'll count everything
+                                # if not HQ guy then we'll only count respected agennt
                                 if i['ledger_agent_type_name'] == 'HO' and is_ho == 1:
                                     temp_dict['detail'][day_index]['profit'] += i['debit']
                                     profit_total += i['debit']
@@ -3445,6 +4047,9 @@ class TtReportDashboard(models.Model):
                             total += i['amount']
                             num_data += 1
                             if i['ledger_transaction_type'] == 3:
+                                # check if commission (also known as profit) is belong to HQ or not, and if the user requesting is part of HQ or not
+                                # if HQ guy asking then we'll count everything
+                                # if not HQ guy then we'll only count respected agennt
                                 if i['ledger_agent_type_name'] == 'HO' and is_ho == 1:
                                     summary_issued[month_index]['detail'][day_index]['profit'] += i['debit']
                                     profit_total += i['debit']
@@ -3484,6 +4089,9 @@ class TtReportDashboard(models.Model):
                                                                              'month': month[int(i['issued_month']) - 1]})
                         splits = i['reservation_issued_date'].split("-")
                         day_index = int(splits[2]) - 1
+                        # check if commission (also known as profit) is belong to HQ or not, and if the user requesting is part of HQ or not
+                        # if HQ guy asking then we'll count everything
+                        # if not HQ guy then we'll only count respected agennt
                         if i['ledger_agent_type_name'] == 'HO' and is_ho == 1:
                             summary_issued[month_index]['detail'][day_index]['profit'] += i['debit']
                             profit_total += i['debit']
@@ -3530,18 +4138,37 @@ class TtReportDashboard(models.Model):
             profit_data = {}
 
             # shape the data for return
+            # a little reminder month and days mode determine by how many days in between requested report
+            # more than 35 days, automatically group by month
+            # less than 35 days, we'll return as is (divided by date)
             if mode == 'month':
+                # if so happens to be in month mode, then we'll sum every data by month
+                # because if you follow the program, you'll know that summary_issued divide the data into
+                # year, month, with date details (date detail is list)
+                # we have to sum the date detail basically
+
                 # sum by month
                 try:
+                    # first counter is trying to find what month user requested date are
+                    # why it has - 1 because if you look at constant dependencies
+                    # index and month value will result in difference of 1 (since list index starts in 0 yada yada yada)
                     first_counter = summary_issued[0]['month_index'] - 1
                 except:
+                    # if for whatever reason, above method doesn't work
+                    # then, we'll do the weird(?) way
+                    # by extracting from date
                     splits = data['start_date'].split("-")
                     month = splits[1]
                     first_counter = int(month) - 1
+
+                # with that done, we'll now process the data
                 for i in summary_issued:
                     # fill skipped month(s)
                     # check if current month (year) with start
                     if i['month_index'] - 1 < first_counter:
+                        # this is the condition for new year, where
+                        # counter month > than the earlier month of the year
+                        # we'll just gonna fill the gap
                         while first_counter < 12:
                             main_data[month[first_counter]] = 0
                             average_data[month[first_counter]] = 0
@@ -3552,6 +4179,8 @@ class TtReportDashboard(models.Model):
                         if first_counter == 12:
                             first_counter = 0
                     if i['month_index'] - 1 > first_counter:
+                        # this to catch up current month to present day ish
+                        # or present month for that matter
                         while first_counter < i['month_index'] - 1:
                             main_data[month[first_counter]] = 0
                             average_data[month[first_counter]] = 0
@@ -3559,17 +4188,24 @@ class TtReportDashboard(models.Model):
                             profit_data[month[first_counter]] = 0
                             first_counter += 1
 
-                    # for every month in summary by date
+                    # so after first counter, which doen't make any sense since
+                    # first counter was use to keep up...
+                    # after first counter catch up present month/day
+                    # we're gonna count the data
+                    # declare variable with respected month
                     main_data[i['month']] = 0
                     average_data[i['month']] = 0
                     revenue_data[i['month']] = 0
                     profit_data[i['month']] = 0
+
+                    # sum data from detail
                     for j in i['detail']:
                         # for detail in months
                         main_data[i['month']] += j['invoice']
                         average_data[i['month']] += j['average']
                         revenue_data[i['month']] += j['revenue']
                         profit_data[i['month']] += j['profit']
+                    # shift to next month yey
                     first_counter += 1
 
             else:
@@ -3621,17 +4257,32 @@ class TtReportDashboard(models.Model):
             # adding book_issued ratio graph
             to_return.update(book_issued)
 
-            # get by chanel
-            chanel_data = self.get_report_group_by_chanel(data, issued_values['lines'])
+            # this is a suggestion and request, if user whose accessing the report only has agent level, then we could substitute
+            # channel/agent rank graph to customer graph
+            if is_ho != 1:
+                # if agent then we will populate with customer data (aka booker)
+                customer_data = self.get_report_group_by_customer(data, issued_values['lines'])
 
-            # adding chanel_data graph
-            to_return.update(chanel_data)
+                to_return.update(customer_data)
+            else:
+                # if ho then we will populate third graph with agent
+                # however incase of something not match we'll return the agent
+                # why because the agent will return smaller data
+
+                # get by chanel
+                chanel_data = self.get_report_group_by_chanel(data, issued_values['lines'])
+
+                # adding chanel_data graph
+                to_return.update(chanel_data)
 
             return to_return
         except Exception as e:
             _logger.error(traceback.format_exc())
             raise e
 
+    # this function handle data handler and processing for visa
+    # data = form data from frontend
+    # is_ho = ho checker from main function
     def get_report_overall_visa(self, data, is_ho):
         try:
             # process datetime to GMT 0
@@ -3642,6 +4293,8 @@ class TtReportDashboard(models.Model):
             temp_start_date = start_date - timedelta(days=1)
             data['start_date'] = temp_start_date.strftime('%Y-%m-%d') + " 17:00:00"
             data['end_date'] += " 16:59:59"
+
+            # first step of this function is to get reservation date, base on issued date
 
             temp_dict = {
                 'start_date': data['start_date'],
@@ -3723,6 +4376,9 @@ class TtReportDashboard(models.Model):
                             total += i['amount']
                             num_data += 1
                             if i['ledger_transaction_type'] == 3:
+                                # check if commission (also known as profit) is belong to HQ or not, and if the user requesting is part of HQ or not
+                                # if HQ guy asking then we'll count everything
+                                # if not HQ guy then we'll only count respected agennt
                                 if i['ledger_agent_type_name'] == 'HO' and is_ho == 1:
                                     temp_dict['detail'][day_index]['profit'] += i['debit']
                                     profit_total += i['debit']
@@ -3744,6 +4400,9 @@ class TtReportDashboard(models.Model):
                             total += i['amount']
                             num_data += 1
                             if i['ledger_transaction_type'] == 3:
+                                # check if commission (also known as profit) is belong to HQ or not, and if the user requesting is part of HQ or not
+                                # if HQ guy asking then we'll count everything
+                                # if not HQ guy then we'll only count respected agennt
                                 if i['ledger_agent_type_name'] == 'HO' and is_ho == 1:
                                     summary_issued[month_index]['detail'][day_index]['profit'] += i['debit']
                                     profit_total += i['debit']
@@ -3775,6 +4434,9 @@ class TtReportDashboard(models.Model):
                                                                              'month': month[int(i['issued_month']) - 1]})
                         splits = i['reservation_issued_date'].split("-")
                         day_index = int(splits[2]) - 1
+                        # check if commission (also known as profit) is belong to HQ or not, and if the user requesting is part of HQ or not
+                        # if HQ guy asking then we'll count everything
+                        # if not HQ guy then we'll only count respected agennt
                         if i['ledger_agent_type_name'] == 'HO' and is_ho == 1:
                             summary_issued[month_index]['detail'][day_index]['profit'] += i['debit']
                             profit_total += i['debit']
@@ -3821,18 +4483,37 @@ class TtReportDashboard(models.Model):
             profit_data = {}
 
             # shape the data for return
+            # a little reminder month and days mode determine by how many days in between requested report
+            # more than 35 days, automatically group by month
+            # less than 35 days, we'll return as is (divided by date)
             if mode == 'month':
+                # if so happens to be in month mode, then we'll sum every data by month
+                # because if you follow the program, you'll know that summary_issued divide the data into
+                # year, month, with date details (date detail is list)
+                # we have to sum the date detail basically
+
                 # sum by month
                 try:
+                    # first counter is trying to find what month user requested date are
+                    # why it has - 1 because if you look at constant dependencies
+                    # index and month value will result in difference of 1 (since list index starts in 0 yada yada yada)
                     first_counter = summary_issued[0]['month_index'] - 1
                 except:
+                    # if for whatever reason, above method doesn't work
+                    # then, we'll do the weird(?) way
+                    # by extracting from date
                     splits = data['start_date'].split("-")
                     month = splits[1]
                     first_counter = int(month) - 1
+
+                # with that done, we'll now process the data
                 for i in summary_issued:
                     # fill skipped month(s)
                     # check if current month (year) with start
                     if i['month_index'] - 1 < first_counter:
+                        # this is the condition for new year, where
+                        # counter month > than the earlier month of the year
+                        # we'll just gonna fill the gap
                         while first_counter < 12:
                             main_data[month[first_counter]] = 0
                             average_data[month[first_counter]] = 0
@@ -3843,6 +4524,8 @@ class TtReportDashboard(models.Model):
                         if first_counter == 12:
                             first_counter = 0
                     if i['month_index'] - 1 > first_counter:
+                        # this to catch up current month to present day ish
+                        # or present month for that matter
                         while first_counter < i['month_index'] - 1:
                             main_data[month[first_counter]] = 0
                             average_data[month[first_counter]] = 0
@@ -3850,17 +4533,24 @@ class TtReportDashboard(models.Model):
                             profit_data[month[first_counter]] = 0
                             first_counter += 1
 
-                    # for every month in summary by date
+                    # so after first counter, which doen't make any sense since
+                    # first counter was use to keep up...
+                    # after first counter catch up present month/day
+                    # we're gonna count the data
+                    # declare variable with respected month
                     main_data[i['month']] = 0
                     average_data[i['month']] = 0
                     revenue_data[i['month']] = 0
                     profit_data[i['month']] = 0
+
+                    # sum data from detail
                     for j in i['detail']:
                         # for detail in months
                         main_data[i['month']] += j['invoice']
                         average_data[i['month']] += j['average']
                         revenue_data[i['month']] += j['revenue']
                         profit_data[i['month']] += j['profit']
+                    # shift to next month yey
                     first_counter += 1
 
             else:
@@ -3911,17 +4601,32 @@ class TtReportDashboard(models.Model):
             # adding book_issued ratio graph
             to_return.update(book_issued)
 
-            # get by chanel
-            chanel_data = self.get_report_group_by_chanel(data, issued_values['lines'])
+            # this is a suggestion and request, if user whose accessing the report only has agent level, then we could substitute
+            # channel/agent rank graph to customer graph
+            if is_ho != 1:
+                # if agent then we will populate with customer data (aka booker)
+                customer_data = self.get_report_group_by_customer(data, issued_values['lines'])
 
-            # adding chanel_data graph
-            to_return.update(chanel_data)
+                to_return.update(customer_data)
+            else:
+                # if ho then we will populate third graph with agent
+                # however incase of something not match we'll return the agent
+                # why because the agent will return smaller data
+
+                # get by chanel
+                chanel_data = self.get_report_group_by_chanel(data, issued_values['lines'])
+
+                # adding chanel_data graph
+                to_return.update(chanel_data)
 
             return to_return
         except Exception as e:
             _logger.error(traceback.format_exc())
             raise e
 
+    # this function handle data handler and processing for offline
+    # data = form data from frontend
+    # is_ho = ho checker from main function
     def get_report_overall_offline(self, data, is_ho):
         try:
             # process datetime to GMT 0
@@ -3932,6 +4637,8 @@ class TtReportDashboard(models.Model):
             temp_start_date = start_date - timedelta(days=1)
             data['start_date'] = temp_start_date.strftime('%Y-%m-%d') + " 17:00:00"
             data['end_date'] += " 16:59:59"
+
+            # first step of this function is to get reservation date, base on issued date
 
             temp_dict = {
                 'start_date': data['start_date'],
@@ -4013,6 +4720,9 @@ class TtReportDashboard(models.Model):
                             total += i['amount']
                             num_data += 1
                             if i['ledger_transaction_type'] == 3:
+                                # check if commission (also known as profit) is belong to HQ or not, and if the user requesting is part of HQ or not
+                                # if HQ guy asking then we'll count everything
+                                # if not HQ guy then we'll only count respected agennt
                                 if i['ledger_agent_type_name'] == 'HO' and is_ho == 1:
                                     temp_dict['detail'][day_index]['profit'] += i['debit']
                                     profit_total += i['debit']
@@ -4034,6 +4744,9 @@ class TtReportDashboard(models.Model):
                             total += i['amount']
                             num_data += 1
                             if i['ledger_transaction_type'] == 3:
+                                # check if commission (also known as profit) is belong to HQ or not, and if the user requesting is part of HQ or not
+                                # if HQ guy asking then we'll count everything
+                                # if not HQ guy then we'll only count respected agennt
                                 if i['ledger_agent_type_name'] == 'HO' and is_ho == 1:
                                     summary_issued[month_index]['detail'][day_index]['profit'] += i['debit']
                                     profit_total += i['debit']
@@ -4066,6 +4779,9 @@ class TtReportDashboard(models.Model):
                                                                              'month': month[int(i['issued_month']) - 1]})
                         splits = i['reservation_issued_date'].split("-")
                         day_index = int(splits[2]) - 1
+                        # check if commission (also known as profit) is belong to HQ or not, and if the user requesting is part of HQ or not
+                        # if HQ guy asking then we'll count everything
+                        # if not HQ guy then we'll only count respected agennt
                         if i['ledger_agent_type_name'] == 'HO' and is_ho == 1:
                             summary_issued[month_index]['detail'][day_index]['profit'] += i['debit']
                             profit_total += i['debit']
@@ -4112,18 +4828,37 @@ class TtReportDashboard(models.Model):
             profit_data = {}
 
             # shape the data for return
+            # a little reminder month and days mode determine by how many days in between requested report
+            # more than 35 days, automatically group by month
+            # less than 35 days, we'll return as is (divided by date)
             if mode == 'month':
+                # if so happens to be in month mode, then we'll sum every data by month
+                # because if you follow the program, you'll know that summary_issued divide the data into
+                # year, month, with date details (date detail is list)
+                # we have to sum the date detail basically
+
                 # sum by month
                 try:
+                    # first counter is trying to find what month user requested date are
+                    # why it has - 1 because if you look at constant dependencies
+                    # index and month value will result in difference of 1 (since list index starts in 0 yada yada yada)
                     first_counter = summary_issued[0]['month_index'] - 1
                 except:
+                    # if for whatever reason, above method doesn't work
+                    # then, we'll do the weird(?) way
+                    # by extracting from date
                     splits = data['start_date'].split("-")
                     month = splits[1]
                     first_counter = int(month) - 1
+
+                # with that done, we'll now process the data
                 for i in summary_issued:
                     # fill skipped month(s)
                     # check if current month (year) with start
                     if i['month_index'] - 1 < first_counter:
+                        # this is the condition for new year, where
+                        # counter month > than the earlier month of the year
+                        # we'll just gonna fill the gap
                         while first_counter < 12:
                             main_data[month[first_counter]] = 0
                             average_data[month[first_counter]] = 0
@@ -4134,6 +4869,8 @@ class TtReportDashboard(models.Model):
                         if first_counter == 12:
                             first_counter = 0
                     if i['month_index'] - 1 > first_counter:
+                        # this to catch up current month to present day ish
+                        # or present month for that matter
                         while first_counter < i['month_index'] - 1:
                             main_data[month[first_counter]] = 0
                             average_data[month[first_counter]] = 0
@@ -4141,7 +4878,11 @@ class TtReportDashboard(models.Model):
                             profit_data[month[first_counter]] = 0
                             first_counter += 1
 
-                    # for every month in summary by date
+                    # so after first counter, which doen't make any sense since
+                    # first counter was use to keep up...
+                    # after first counter catch up present month/day
+                    # we're gonna count the data
+                    # declare variable with respected month
                     main_data[i['month']] = 0
                     average_data[i['month']] = 0
                     revenue_data[i['month']] = 0
@@ -4152,6 +4893,7 @@ class TtReportDashboard(models.Model):
                         average_data[i['month']] += j['average']
                         revenue_data[i['month']] += j['revenue']
                         profit_data[i['month']] += j['profit']
+                    # shift to next month yey
                     first_counter += 1
 
             else:
@@ -4205,17 +4947,32 @@ class TtReportDashboard(models.Model):
             # adding book_issued ratio graph
             to_return.update(book_issued)
 
-            # get by chanel
-            chanel_data = self.get_report_group_by_chanel(data, issued_values['lines'])
+            # this is a suggestion and request, if user whose accessing the report only has agent level, then we could substitute
+            # channel/agent rank graph to customer graph
+            if is_ho != 1:
+                # if agent then we will populate with customer data (aka booker)
+                customer_data = self.get_report_group_by_customer(data, issued_values['lines'])
 
-            # adding chanel_data graph
-            to_return.update(chanel_data)
+                to_return.update(customer_data)
+            else:
+                # if ho then we will populate third graph with agent
+                # however incase of something not match we'll return the agent
+                # why because the agent will return smaller data
+
+                # get by chanel
+                chanel_data = self.get_report_group_by_chanel(data, issued_values['lines'])
+
+                # adding chanel_data graph
+                to_return.update(chanel_data)
 
             return to_return
         except Exception as e:
             _logger.error(traceback.format_exc())
             raise e
 
+    # this function handle data handler and processing for ppob
+    # data = form data from frontend
+    # is_ho = ho checker from main function
     def get_report_overall_ppob(self, data, is_ho):
         try:
             # process datetime to GMT 0
@@ -4226,6 +4983,8 @@ class TtReportDashboard(models.Model):
             temp_start_date = start_date - timedelta(days=1)
             data['start_date'] = temp_start_date.strftime('%Y-%m-%d') + " 17:00:00"
             data['end_date'] += " 16:59:59"
+
+            # first step of this function is to get reservation date, base on issued date
 
             temp_dict = {
                 'start_date': data['start_date'],
@@ -4306,6 +5065,9 @@ class TtReportDashboard(models.Model):
                             total += i['amount']
                             num_data += 1
                             if i['ledger_transaction_type'] == 3:
+                                # check if commission (also known as profit) is belong to HQ or not, and if the user requesting is part of HQ or not
+                                # if HQ guy asking then we'll count everything
+                                # if not HQ guy then we'll only count respected agennt
                                 if i['ledger_agent_type_name'] == 'HO' and is_ho == 1:
                                     temp_dict['detail'][day_index]['profit'] += i['debit']
                                     profit_total += i['debit']
@@ -4327,6 +5089,9 @@ class TtReportDashboard(models.Model):
                             total += i['amount']
                             num_data += 1
                             if i['ledger_transaction_type'] == 3:
+                                # check if commission (also known as profit) is belong to HQ or not, and if the user requesting is part of HQ or not
+                                # if HQ guy asking then we'll count everything
+                                # if not HQ guy then we'll only count respected agennt
                                 if i['ledger_agent_type_name'] == 'HO' and is_ho == 1:
                                     summary_issued[month_index]['detail'][day_index]['profit'] += i['debit']
                                     profit_total += i['debit']
@@ -4357,6 +5122,9 @@ class TtReportDashboard(models.Model):
                                                                              'month': month[int(i['issued_month']) - 1]})
                         splits = i['reservation_issued_date'].split("-")
                         day_index = int(splits[2]) - 1
+                        # check if commission (also known as profit) is belong to HQ or not, and if the user requesting is part of HQ or not
+                        # if HQ guy asking then we'll count everything
+                        # if not HQ guy then we'll only count respected agennt
                         if i['ledger_agent_type_name'] == 'HO' and is_ho == 1:
                             summary_issued[month_index]['detail'][day_index]['profit'] += i['debit']
                             profit_total += i['debit']
@@ -4403,18 +5171,37 @@ class TtReportDashboard(models.Model):
             profit_data = {}
 
             # shape the data for return
+            # a little reminder month and days mode determine by how many days in between requested report
+            # more than 35 days, automatically group by month
+            # less than 35 days, we'll return as is (divided by date)
             if mode == 'month':
+                # if so happens to be in month mode, then we'll sum every data by month
+                # because if you follow the program, you'll know that summary_issued divide the data into
+                # year, month, with date details (date detail is list)
+                # we have to sum the date detail basically
+
                 # sum by month
                 try:
+                    # first counter is trying to find what month user requested date are
+                    # why it has - 1 because if you look at constant dependencies
+                    # index and month value will result in difference of 1 (since list index starts in 0 yada yada yada)
                     first_counter = summary_issued[0]['month_index'] - 1
                 except:
+                    # if for whatever reason, above method doesn't work
+                    # then, we'll do the weird(?) way
+                    # by extracting from date
                     splits = data['start_date'].split("-")
                     month = splits[1]
                     first_counter = int(month) - 1
+
+                # with that done, we'll now process the data
                 for i in summary_issued:
                     # fill skipped month(s)
                     # check if current month (year) with start
                     if i['month_index'] - 1 < first_counter:
+                        # this is the condition for new year, where
+                        # counter month > than the earlier month of the year
+                        # we'll just gonna fill the gap
                         while first_counter < 12:
                             main_data[month[first_counter]] = 0
                             average_data[month[first_counter]] = 0
@@ -4425,6 +5212,8 @@ class TtReportDashboard(models.Model):
                         if first_counter == 12:
                             first_counter = 0
                     if i['month_index'] - 1 > first_counter:
+                        # this to catch up current month to present day ish
+                        # or present month for that matter
                         while first_counter < i['month_index'] - 1:
                             main_data[month[first_counter]] = 0
                             average_data[month[first_counter]] = 0
@@ -4432,7 +5221,11 @@ class TtReportDashboard(models.Model):
                             profit_data[month[first_counter]] = 0
                             first_counter += 1
 
-                    # for every month in summary by date
+                    # so after first counter, which doen't make any sense since
+                    # first counter was use to keep up...
+                    # after first counter catch up present month/day
+                    # we're gonna count the data
+                    # declare variable with respected month
                     main_data[i['month']] = 0
                     average_data[i['month']] = 0
                     revenue_data[i['month']] = 0
@@ -4496,17 +5289,32 @@ class TtReportDashboard(models.Model):
             # adding book_issued ratio graph
             to_return.update(book_issued)
 
-            # get by chanel
-            chanel_data = self.get_report_group_by_chanel(data, issued_values['lines'])
+            # this is a suggestion and request, if user whose accessing the report only has agent level, then we could substitute
+            # channel/agent rank graph to customer graph
+            if is_ho != 1:
+                # if agent then we will populate with customer data (aka booker)
+                customer_data = self.get_report_group_by_customer(data, issued_values['lines'])
 
-            # adding chanel_data graph
-            to_return.update(chanel_data)
+                to_return.update(customer_data)
+            else:
+                # if ho then we will populate third graph with agent
+                # however incase of something not match we'll return the agent
+                # why because the agent will return smaller data
+
+                # get by chanel
+                chanel_data = self.get_report_group_by_chanel(data, issued_values['lines'])
+
+                # adding chanel_data graph
+                to_return.update(chanel_data)
 
             return to_return
         except Exception as e:
             _logger.error(traceback.format_exc())
             raise e
 
+    # this function handle data handler and processing for passport
+    # data = form data from frontend
+    # is_ho = ho checker from main function
     def get_report_overall_passport(self, data, is_ho):
         try:
             # process datetime to GMT 0
@@ -4518,6 +5326,8 @@ class TtReportDashboard(models.Model):
             temp_start_date = start_date - timedelta(days=1)
             data['start_date'] = temp_start_date.strftime('%Y-%m-%d') + " 17:00:00"
             data['end_date'] += " 16:59:59"
+
+            # first step of this function is to get reservation date, base on issued date
 
             # prepare data to search reservation list
             temp_dict = {
@@ -4608,6 +5418,9 @@ class TtReportDashboard(models.Model):
                             total += i['amount']
                             num_data += 1
                             if i['ledger_transaction_type'] == 3:
+                                # check if commission (also known as profit) is belong to HQ or not, and if the user requesting is part of HQ or not
+                                # if HQ guy asking then we'll count everything
+                                # if not HQ guy then we'll only count respected agennt
                                 if i['ledger_agent_type_name'] == 'HO' and is_ho == 1:
                                     temp_dict['detail'][day_index]['profit'] += i['debit']
                                     profit_total += i['debit']
@@ -4629,6 +5442,9 @@ class TtReportDashboard(models.Model):
                             total += i['amount']
                             num_data += 1
                             if i['ledger_transaction_type'] == 3:
+                                # check if commission (also known as profit) is belong to HQ or not, and if the user requesting is part of HQ or not
+                                # if HQ guy asking then we'll count everything
+                                # if not HQ guy then we'll only count respected agennt
                                 if i['ledger_agent_type_name'] == 'HO' and is_ho == 1:
                                     summary_issued[month_index]['detail'][day_index]['profit'] += i['debit']
                                     profit_total += i['debit']
@@ -4649,6 +5465,9 @@ class TtReportDashboard(models.Model):
                         splits = i['reservation_issued_date'].split("-")
                         day_index = int(splits[2]) - 1
                         if i['ledger_transaction_type'] == 3:
+                            # check if commission (also known as profit) is belong to HQ or not, and if the user requesting is part of HQ or not
+                            # if HQ guy asking then we'll count everything
+                            # if not HQ guy then we'll only count respected agennt
                             if i['ledger_agent_type_name'] == 'HO' and is_ho == 1:
                                 summary_issued[month_index]['detail'][day_index]['profit'] += i['debit']
                                 profit_total += i['debit']
@@ -4695,18 +5514,37 @@ class TtReportDashboard(models.Model):
             profit_data = {}
 
             # shape the data for return
+            # a little reminder month and days mode determine by how many days in between requested report
+            # more than 35 days, automatically group by month
+            # less than 35 days, we'll return as is (divided by date)
             if mode == 'month':
+                # if so happens to be in month mode, then we'll sum every data by month
+                # because if you follow the program, you'll know that summary_issued divide the data into
+                # year, month, with date details (date detail is list)
+                # we have to sum the date detail basically
+
                 # sum by month
                 try:
+                    # first counter is trying to find what month user requested date are
+                    # why it has - 1 because if you look at constant dependencies
+                    # index and month value will result in difference of 1 (since list index starts in 0 yada yada yada)
                     first_counter = summary_issued[0]['month_index'] - 1
                 except:
+                    # if for whatever reason, above method doesn't work
+                    # then, we'll do the weird(?) way
+                    # by extracting from date
                     splits = data['start_date'].split("-")
                     month = splits[1]
                     first_counter = int(month) - 1
+
+                # with that done, we'll now process the data
                 for i in summary_issued:
                     # fill skipped month(s)
                     # check if current month (year) with start
                     if i['month_index'] - 1 < first_counter:
+                        # this is the condition for new year, where
+                        # counter month > than the earlier month of the year
+                        # we'll just gonna fill the gap
                         while first_counter < 12:
                             main_data[month[first_counter]] = 0
                             average_data[month[first_counter]] = 0
@@ -4717,6 +5555,8 @@ class TtReportDashboard(models.Model):
                         if first_counter == 12:
                             first_counter = 0
                     if i['month_index'] - 1 > first_counter:
+                        # this to catch up current month to present day ish
+                        # or present month for that matter
                         while first_counter < i['month_index'] - 1:
                             main_data[month[first_counter]] = 0
                             average_data[month[first_counter]] = 0
@@ -4724,7 +5564,11 @@ class TtReportDashboard(models.Model):
                             profit_data[month[first_counter]] = 0
                             first_counter += 1
 
-                    # for every month in summary by date
+                    # so after first counter, which doen't make any sense since
+                    # first counter was use to keep up...
+                    # after first counter catch up present month/day
+                    # we're gonna count the data
+                    # declare variable with respected month
                     main_data[i['month']] = 0
                     average_data[i['month']] = 0
                     revenue_data[i['month']] = 0
@@ -4789,16 +5633,34 @@ class TtReportDashboard(models.Model):
             # adding book_issued ratio graph
             to_return.update(book_issued)
 
-            # get by chanel
-            chanel_data = self.get_report_group_by_chanel(data, issued_values['lines'])
+            # this is a suggestion and request, if user whose accessing the report only has agent level, then we could substitute
+            # channel/agent rank graph to customer graph
+            if is_ho != 1:
+                # if agent then we will populate with customer data (aka booker)
+                customer_data = self.get_report_group_by_customer(data, issued_values['lines'])
 
-            # adding chanel_data graph
-            to_return.update(chanel_data)
+                to_return.update(customer_data)
+            else:
+                # if ho then we will populate third graph with agent
+                # however incase of something not match we'll return the agent
+                # why because the agent will return smaller data
+
+                # get by chanel
+                chanel_data = self.get_report_group_by_chanel(data, issued_values['lines'])
+
+                # adding chanel_data graph
+                to_return.update(chanel_data)
 
             return to_return
         except Exception as e:
             _logger.error(traceback.format_exc())
             raise e
+
+    ######################################################################
+    # this section contains of either old function or prototype
+    ######################################################################
+    # most of functions written under this line is not being use atm.
+    # but can be use as reference if needed.
 
     def get_report_airline(self, data):
         temp_dict = {
