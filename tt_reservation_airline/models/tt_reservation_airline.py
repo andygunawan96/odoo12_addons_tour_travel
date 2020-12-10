@@ -1434,6 +1434,19 @@ class ReservationAirline(models.Model):
         }
         res = self.env['tt.airline.api.con'].send_get_booking_for_sync(req)
 
+
+    def cron_sync_booking(self):
+        book_objs = self.search([('state', '=', 'booked')])
+        date_now = datetime.now()
+        for rec in book_objs:
+            time_delta = date_now - rec.create_date
+            if divmod(time_delta.seconds, 1800)[0] != 0: # kalau bisa search filter create date lebih dari 30 menit hapus aja if nya
+                req = {
+                    'order_number': rec.name,
+                    'user_id': rec.booked_uid.id
+                }
+                self.env['tt.airline.api.con'].send_get_booking_for_sync(req)
+
     @api.multi
     def print_eticket(self, data, ctx=None):
         # jika panggil dari backend
