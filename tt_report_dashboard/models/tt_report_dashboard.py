@@ -52,6 +52,19 @@ class TtReportDashboard(models.Model):
         return -1
 
     # input
+    #   arr -> array [{'customer_id': [something](int), 'customer_name': [something](string), ..}]
+    #   params -> dictionary {'customer_id': [something](int), 'customer_name': [something](string)}
+    # return
+    #   integer, -1 id no index found in arr
+    #
+    def customer_index(self, arr, params):
+        for i, dic in enumerate(arr):
+            if dic['customer_id'] == params['customer_id'] and dic['customer_name'] == params['customer_name']:
+                return i
+
+        return -1
+
+    # input
     #   arr -> array [{'agent_name': [something](str), 'agent_type_name': [something](str), ...}]
     #   params -> dictionary {'agent_name': [something](str), 'agent_type_name': [something](str)}
     # return
@@ -583,6 +596,121 @@ class TtReportDashboard(models.Model):
             _logger.error(traceback.format_exc())
             raise e
 
+    # this function handle and process data for customer ranking by revenue
+    # data = form data from frontend
+    # profit = reservation data from function who calls this function (reservation data contains profit data)
+    def get_report_group_by_customer(self, data, profit):
+        try:
+            # prepare data to get channel base on reservation performance in database
+            temp_dict = {
+                'start_date': data['start_date'],
+                'end_date': data['end_date'],
+                'type': data['report_type'],
+                'provider': data['provider'],
+                'agent_seq_id': data['agent_seq_id'],
+                'agent_type': data['agent_type_seq_id'],
+                # 'agent_seq_id': 8,
+                'addons': 'chanel'
+            }
+
+            # i use chanel as the variable name, because it has the same logic with chanel, also explains the addons parameter
+            # execute the query
+            chanel_values = self.env['report.tt_report_selling.report_selling']._get_reports(temp_dict)
+
+            # declare mode of group by (timewise either days or month)
+            mode = data['mode']
+            month = [
+                'January', 'February', 'March', 'April', 'May', 'June',
+                'July', 'August', 'September', 'October', 'November', 'December'
+            ]
+
+            # declare variable to temp handle processed data
+            summary_customer = []
+            current_id = ''
+
+            # iterate every value in chanel_values['lines']
+            for i in chanel_values['lines']:
+                # if for some reason current reservation_id is the same as current_id (previous iteration id)
+                # then continue
+                if i['reservation_id'] == current_id:
+                    continue
+                else:
+                    current_id = i['reservation_id']
+
+                # looking for index of particular person
+                # within the summary_customer list
+                # will return -1 if no match found
+                customer_index = self.customer_index(summary_customer, {'customer_id': i['customer_id'], 'customer_name': i['customer_name']})
+
+                if customer_index == -1:
+                    # no customer with particular data exist
+                    temp_dict = {
+                        'customer_id': i['customer_id'],
+                        'customer_name': i['customer_name'],
+                        'revenue': i['amount'],
+                        'profit': 0,
+                        'reservation': 1
+                    }
+
+                    # add to summary_customer
+                    summary_customer.append(temp_dict)
+                else:
+                    # data is exist, so we only need to update existing data yey
+                    summary_customer[customer_index]['revenue'] += i['amount']
+                    summary_customer[customer_index]['reservation'] += 1
+
+            # proceed profit
+            for i in profit:
+                person_index = self.customer_index(summary_customer, {'customer_id': i['customer_id'], 'customer_name': i['customer_name']})
+                try:
+                    summary_customer[person_index]['profit'] += i['debit']
+                except:
+                    pass
+
+                # sort data
+            summary_customer.sort(key=lambda x: (x['revenue'], x['reservation']), reverse=True)
+
+            # create return dict
+            label_data = []
+            revenue_data = []
+            reservation_data = []
+            average_data = []
+            profit_data = []
+
+            # lets populate list to return
+            if len(summary_customer) < 20:
+                for i in summary_customer:
+                    label_data.append(i['customer_name'])
+                    revenue_data.append(i['revenue'])
+                    reservation_data.append(i['reservation'])
+                    average_data.append(i['revenue'] / i['reservation'])
+                    profit_data.append(i['profit'])
+            else:
+                for i in range(20):
+                    label_data.append(summary_customer[i]['agent_name'])
+                    revenue_data.append(summary_customer[i]['revenue'])
+                    reservation_data.append(summary_customer[i]['reservation'])
+                    average_data.append(summary_customer[i]['revenue'] / summary_customer[i]['reservation'])
+                    profit_data.append(summary_customer[i]['profit'])
+
+            # lets built to return
+            to_return = {
+                'third_graph': {
+                    'label': label_data,
+                    'data': revenue_data,
+                    'data2': reservation_data,
+                    'data3': average_data,
+                    'data4': profit_data
+                },
+                'third_overview': summary_customer
+            }
+
+            # return data
+            return to_return
+        except Exception as e:
+            _logger.error(traceback.format_exc())
+            raise e
+
     # this function handle and process data for channel ranking by revenue
     # data = form data from frontend
     # profit = reservation data from function who calls this function (reservation data contains profit data)
@@ -686,7 +814,8 @@ class TtReportDashboard(models.Model):
                     'data2': reservation_data,
                     'data3': average_data,
                     'data4': profit_data
-                }
+                },
+                'third_overview': summary_chanel
             }
 
             return to_return
@@ -1020,18 +1149,37 @@ class TtReportDashboard(models.Model):
             profit_data = {}
 
             # shape the data for return
+            # a little reminder month and days mode determine by how many days in between requested report
+            # more than 35 days, automatically group by month
+            # less than 35 days, we'll return as is (divided by date)
             if mode == 'month':
+                # if so happens to be in month mode, then we'll sum every data by month
+                # because if you follow the program, you'll know that summary_issued divide the data into
+                # year, month, with date details (date detail is list)
+                # we have to sum the date detail basically
+
                 # sum by month
                 try:
+                    # first counter is trying to find what month user requested date are
+                    # why it has - 1 because if you look at constant dependencies
+                    # index and month value will result in difference of 1 (since list index starts in 0 yada yada yada)
                     first_counter = summary_issued[0]['month_index'] - 1
                 except:
+                    # if for whatever reason, above method doesn't work
+                    # then, we'll do the weird(?) way
+                    # by extracting from date
                     splits = data['start_date'].split("-")
                     month = splits[1]
                     first_counter = int(month) - 1
+
+                # with that done, we'll now process the data
                 for i in summary_issued:
                     # fill skipped month(s)
                     # check if current month (year) with start
                     if i['month_index'] - 1 < first_counter:
+                        # this is the condition for new year, where
+                        # counter month > than the earlier month of the year
+                        # we'll just gonna fill the gap
                         while first_counter < 12:
                             main_data[month[first_counter]] = 0
                             average_data[month[first_counter]] = 0
@@ -1042,6 +1190,8 @@ class TtReportDashboard(models.Model):
                         if first_counter == 12:
                             first_counter = 0
                     if i['month_index'] - 1 > first_counter:
+                        # this to catch up current month to present day ish
+                        # or present month for that matter
                         while first_counter < i['month_index'] - 1:
                             main_data[month[first_counter]] = 0
                             average_data[month[first_counter]] = 0
@@ -1049,17 +1199,24 @@ class TtReportDashboard(models.Model):
                             profit_data[month[first_counter]] = 0
                             first_counter += 1
 
-                    # for every month in summary by date
+                    # so after first counter, which doen't make any sense since
+                    # first counter was use to keep up...
+                    # after first counter catch up present month/day
+                    # we're gonna count the data
+                    # declare variable with respected month
                     main_data[i['month']] = 0
                     average_data[i['month']] = 0
                     revenue_data[i['month']] = 0
                     profit_data[i['month']] = 0
+
+                    # sum data from detail
                     for j in i['detail']:
                         # for detail in months
                         main_data[i['month']] += j['invoice']
                         average_data[i['month']] += j['average']
                         revenue_data[i['month']] += j['revenue']
                         profit_data[i['month']] += j['profit']
+                    # shift to next month yey
                     first_counter += 1
             else:
                 # seperate by date
@@ -1108,11 +1265,24 @@ class TtReportDashboard(models.Model):
             # adding book_issued ratio graph
             to_return.update(book_issued)
 
-            # get by chanel
-            chanel_data = self.get_report_group_by_chanel(data, issued_values['lines'])
+            # this is a suggestion and request, if user whose accessing the report only has agent level, then we could substitute
+            # channel/agent rank graph to customer graph
+            if is_ho != 1:
+                # if agent then we will populate with customer data (aka booker)
+                customer_data = self.get_report_group_by_customer(data, issued_values['lines'])
 
-            # adding chanel_data graph
-            to_return.update(chanel_data)
+                to_return.update(customer_data)
+            else:
+                # if ho then we will populate third graph with agent
+                # however incase of something not match we'll return the agent
+                # why because the agent will return smaller data
+
+                # get by chanel
+                chanel_data = self.get_report_group_by_chanel(data, issued_values['lines'])
+
+                # adding chanel_data graph
+                to_return.update(chanel_data)
+
 
             return to_return
         except Exception as e:
@@ -1849,19 +2019,37 @@ class TtReportDashboard(models.Model):
             profit_data = {}
 
             # shape the data for return
+            # a little reminder month and days mode determine by how many days in between requested report
+            # more than 35 days, automatically group by month
+            # less than 35 days, we'll return as is (divided by date)
             if mode == 'month':
-                # just a reminder month mode achieve when date different between start and end is more than 35 days
+                # if so happens to be in month mode, then we'll sum every data by month
+                # because if you follow the program, you'll know that summary_issued divide the data into
+                # year, month, with date details (date detail is list)
+                # we have to sum the date detail basically
+                #
                 # sum by month
                 try:
+                    # first counter is trying to find what month user requested date are
+                    # why it has - 1 because if you look at constant dependencies
+                    # index and month value will result in difference of 1 (since list index starts in 0 yada yada yada)
                     first_counter = summary_issued[0]['month_index'] - 1
                 except:
+                    # if for whatever reason, above method doesn't work
+                    # then, we'll do the weird(?) way
+                    # by extracting from date
                     splits = data['start_date'].split("-")
                     month = splits[1]
                     first_counter = int(month) - 1
+
+                # with that done, we'll now process the data
                 for i in summary_issued:
                     # fill skipped month(s)
                     # check if current month (year) with start
                     if i['month_index'] - 1 < first_counter:
+                        # this is the condition for new year, where
+                        # counter month > than the earlier month of the year
+                        # we'll just gonna fill the gap
                         while first_counter < 12:
                             main_data[month[first_counter]] = 0
                             average_data[month[first_counter]] = 0
@@ -1872,6 +2060,8 @@ class TtReportDashboard(models.Model):
                         if first_counter == 12:
                             first_counter = 0
                     if i['month_index'] - 1 > first_counter:
+                        # this to catch up current month to present day ish
+                        # or present month for that matter
                         while first_counter < i['month_index'] - 1:
                             main_data[month[first_counter]] = 0
                             average_data[month[first_counter]] = 0
@@ -1879,11 +2069,17 @@ class TtReportDashboard(models.Model):
                             profit_data[month[first_counter]] = 0
                             first_counter += 1
 
-                    # for every month in summary by date
+                    # so after first counter, which doen't make any sense since
+                    # first counter was use to keep up...
+                    # after first counter catch up present month/day
+                    # we're gonna count the data
+                    # declare variable with respected month
                     main_data[i['month']] = 0
                     average_data[i['month']] = 0
                     revenue_data[i['month']] = 0
                     profit_data[i['month']] = 0
+
+                    # sum data from detail
                     for j in i['detail']:
                         # for detail in months
                         main_data[i['month']] += j['invoice']
@@ -1989,11 +2185,23 @@ class TtReportDashboard(models.Model):
             # adding book_issued ratio graph
             to_return.update(book_issued)
 
-            # get by chanel
-            chanel_data = self.get_report_group_by_chanel(data, issued_values['lines'])
+            # this is a suggestion and request, if user whose accessing the report only has agent level, then we could substitute
+            # channel/agent rank graph to customer graph
+            if is_ho != 1:
+                # if agent then we will populate with customer data (aka booker)
+                customer_data = self.get_report_group_by_customer(data, issued_values['lines'])
 
-            # adding chanel_data graph
-            to_return.update(chanel_data)
+                to_return.update(customer_data)
+            else:
+                # if ho then we will populate third graph with agent
+                # however incase of something not match we'll return the agent
+                # why because the agent will return smaller data
+
+                # get by chanel
+                chanel_data = self.get_report_group_by_chanel(data, issued_values['lines'])
+
+                # adding chanel_data graph
+                to_return.update(chanel_data)
 
             return to_return
         except Exception as e:
@@ -2406,18 +2614,36 @@ class TtReportDashboard(models.Model):
             profit_data = {}
 
             # shape the data for return
+            # a little reminder month and days mode determine by how many days in between requested report
+            # more than 35 days, automatically group by month
+            # less than 35 days, we'll return as is (divided by date)
             if mode == 'month':
+                # if so happens to be in month mode, then we'll sum every data by month
+                # because if you follow the program, you'll know that summary_issued divide the data into
+                # year, month, with date details (date detail is list)
+                # we have to sum the date detail basically
                 # sum by month
                 try:
+                    # first counter is trying to find what month user requested date are
+                    # why it has - 1 because if you look at constant dependencies
+                    # index and month value will result in difference of 1 (since list index starts in 0 yada yada yada)
                     first_counter = summary_issued[0]['month_index'] - 1
                 except:
+                    # if for whatever reason, above method doesn't work
+                    # then, we'll do the weird(?) way
+                    # by extracting from date
                     splits = data['start_date'].split("-")
                     month = splits[1]
                     first_counter = int(month) - 1
+
+                # with that done, we'll now process the data
                 for i in summary_issued:
                     # fill skipped month(s)
                     # check if current month (year) with start
                     if i['month_index'] - 1 < first_counter:
+                        # this is the condition for new year, where
+                        # counter month > than the earlier month of the year
+                        # we'll just gonna fill the gap
                         while first_counter < 12:
                             main_data[month[first_counter]] = 0
                             average_data[month[first_counter]] = 0
@@ -2428,6 +2654,8 @@ class TtReportDashboard(models.Model):
                         if first_counter == 12:
                             first_counter = 0
                     if i['month_index'] - 1 > first_counter:
+                        # this to catch up current month to present day ish
+                        # or present month for that matter
                         while first_counter < i['month_index'] - 1:
                             main_data[month[first_counter]] = 0
                             average_data[month[first_counter]] = 0
@@ -2435,17 +2663,24 @@ class TtReportDashboard(models.Model):
                             profit_data[month[first_counter]] = 0
                             first_counter += 1
 
-                    # for every month in summary by date
+                    # so after first counter, which doen't make any sense since
+                    # first counter was use to keep up...
+                    # after first counter catch up present month/day
+                    # we're gonna count the data
+                    # declare variable with respected month
                     main_data[i['month']] = 0
                     average_data[i['month']] = 0
                     revenue_data[i['month']] = 0
                     profit_data[i['month']] = 0
+
+                    # sum data from detail
                     for j in i['detail']:
                         # for detail in months
                         main_data[i['month']] += j['invoice']
                         average_data[i['month']] += j['average']
                         revenue_data[i['month']] += j['revenue']
                         profit_data[i['month']] += j['profit']
+                    # shift to next month yey
                     first_counter += 1
 
             else:
@@ -2505,11 +2740,23 @@ class TtReportDashboard(models.Model):
             # adding book_issued ratio graph
             to_return.update(book_issued)
 
-            # get by chanel
-            chanel_data = self.get_report_group_by_chanel(data, issued_values['lines'])
+            # this is a suggestion and request, if user whose accessing the report only has agent level, then we could substitute
+            # channel/agent rank graph to customer graph
+            if is_ho != 1:
+                # if agent then we will populate with customer data (aka booker)
+                customer_data = self.get_report_group_by_customer(data, issued_values['lines'])
 
-            # adding chanel_data graph
-            to_return.update(chanel_data)
+                to_return.update(customer_data)
+            else:
+                # if ho then we will populate third graph with agent
+                # however incase of something not match we'll return the agent
+                # why because the agent will return smaller data
+
+                # get by chanel
+                chanel_data = self.get_report_group_by_chanel(data, issued_values['lines'])
+
+                # adding chanel_data graph
+                to_return.update(chanel_data)
 
             return to_return
         except Exception as e:
@@ -2853,19 +3100,37 @@ class TtReportDashboard(models.Model):
             profit_data = {}
 
             # shape the data for return
+            # a little reminder month and days mode determine by how many days in between requested report
+            # more than 35 days, automatically group by month
+            # less than 35 days, we'll return as is (divided by date)
             if mode == 'month':
-                # just a reminder month mode achieve when date different between start and end is more than 35 days
+                # if so happens to be in month mode, then we'll sum every data by month
+                # because if you follow the program, you'll know that summary_issued divide the data into
+                # year, month, with date details (date detail is list)
+                # we have to sum the date detail basically
+
                 # sum by month
                 try:
+                    # first counter is trying to find what month user requested date are
+                    # why it has - 1 because if you look at constant dependencies
+                    # index and month value will result in difference of 1 (since list index starts in 0 yada yada yada)
                     first_counter = summary_issued[0]['month_index'] - 1
                 except:
+                    # if for whatever reason, above method doesn't work
+                    # then, we'll do the weird(?) way
+                    # by extracting from date
                     splits = data['start_date'].split("-")
                     month = splits[1]
                     first_counter = int(month) - 1
+
+                # with that done, we'll now process the data
                 for i in summary_issued:
                     # fill skipped month(s)
                     # check if current month (year) with start
                     if i['month_index'] - 1 < first_counter:
+                        # this is the condition for new year, where
+                        # counter month > than the earlier month of the year
+                        # we'll just gonna fill the gap
                         while first_counter < 12:
                             main_data[month[first_counter]] = 0
                             average_data[month[first_counter]] = 0
@@ -2876,6 +3141,8 @@ class TtReportDashboard(models.Model):
                         if first_counter == 12:
                             first_counter = 0
                     if i['month_index'] - 1 > first_counter:
+                        # this to catch up current month to present day ish
+                        # or present month for that matter
                         while first_counter < i['month_index'] - 1:
                             main_data[month[first_counter]] = 0
                             average_data[month[first_counter]] = 0
@@ -2883,17 +3150,24 @@ class TtReportDashboard(models.Model):
                             profit_data[month[first_counter]] = 0
                             first_counter += 1
 
-                    # for every month in summary by date
+                    # so after first counter, which doen't make any sense since
+                    # first counter was use to keep up...
+                    # after first counter catch up present month/day
+                    # we're gonna count the data
+                    # declare variable with respected month
                     main_data[i['month']] = 0
                     average_data[i['month']] = 0
                     revenue_data[i['month']] = 0
                     profit_data[i['month']] = 0
+
+                    # sum data from detail
                     for j in i['detail']:
                         # for detail in months
                         main_data[i['month']] += j['invoice']
                         average_data[i['month']] += j['average']
                         revenue_data[i['month']] += j['revenue']
                         profit_data[i['month']] += j['profit']
+                    # shift to next month yey
                     first_counter += 1
 
             else:
@@ -2950,11 +3224,23 @@ class TtReportDashboard(models.Model):
             # adding book_issued ratio graph
             to_return.update(book_issued)
 
-            # get by chanel
-            chanel_data = self.get_report_group_by_chanel(data, issued_values['lines'])
+            # this is a suggestion and request, if user whose accessing the report only has agent level, then we could substitute
+            # channel/agent rank graph to customer graph
+            if is_ho != 1:
+                # if agent then we will populate with customer data (aka booker)
+                customer_data = self.get_report_group_by_customer(data, issued_values['lines'])
 
-            # adding chanel_data graph
-            to_return.update(chanel_data)
+                to_return.update(customer_data)
+            else:
+                # if ho then we will populate third graph with agent
+                # however incase of something not match we'll return the agent
+                # why because the agent will return smaller data
+
+                # get by chanel
+                chanel_data = self.get_report_group_by_chanel(data, issued_values['lines'])
+
+                # adding chanel_data graph
+                to_return.update(chanel_data)
 
             return to_return
         except Exception as e:
@@ -3150,18 +3436,37 @@ class TtReportDashboard(models.Model):
             profit_data = {}
 
             # shape the data for return
+            # a little reminder month and days mode determine by how many days in between requested report
+            # more than 35 days, automatically group by month
+            # less than 35 days, we'll return as is (divided by date)
             if mode == 'month':
+                # if so happens to be in month mode, then we'll sum every data by month
+                # because if you follow the program, you'll know that summary_issued divide the data into
+                # year, month, with date details (date detail is list)
+                # we have to sum the date detail basically
+
                 # sum by month
                 try:
+                    # first counter is trying to find what month user requested date are
+                    # why it has - 1 because if you look at constant dependencies
+                    # index and month value will result in difference of 1 (since list index starts in 0 yada yada yada)
                     first_counter = summary_issued[0]['month_index'] - 1
                 except:
+                    # if for whatever reason, above method doesn't work
+                    # then, we'll do the weird(?) way
+                    # by extracting from date
                     splits = data['start_date'].split("-")
                     month = splits[1]
                     first_counter = int(month) - 1
+
+                # with that done, we'll now process the data
                 for i in summary_issued:
                     # fill skipped month(s)
                     # check if current month (year) with start
                     if i['month_index'] - 1 < first_counter:
+                        # this is the condition for new year, where
+                        # counter month > than the earlier month of the year
+                        # we'll just gonna fill the gap
                         while first_counter < 12:
                             main_data[month[first_counter]] = 0
                             average_data[month[first_counter]] = 0
@@ -3172,6 +3477,8 @@ class TtReportDashboard(models.Model):
                         if first_counter == 12:
                             first_counter = 0
                     if i['month_index'] - 1 > first_counter:
+                        # this to catch up current month to present day ish
+                        # or present month for that matter
                         while first_counter < i['month_index'] - 1:
                             main_data[month[first_counter]] = 0
                             average_data[month[first_counter]] = 0
@@ -3179,17 +3486,24 @@ class TtReportDashboard(models.Model):
                             profit_data[month[first_counter]] = 0
                             first_counter += 1
 
-                    # for every month in summary by date
+                    # so after first counter, which doen't make any sense since
+                    # first counter was use to keep up...
+                    # after first counter catch up present month/day
+                    # we're gonna count the data
+                    # declare variable with respected month
                     main_data[i['month']] = 0
                     average_data[i['month']] = 0
                     revenue_data[i['month']] = 0
                     profit_data[i['month']] = 0
+
+                    # sum data from detail
                     for j in i['detail']:
                         # for detail in months
                         main_data[i['month']] += j['invoice']
                         average_data[i['month']] += j['average']
                         revenue_data[i['month']] += j['revenue']
                         profit_data[i['month']] += j['profit']
+                    # shift to next month yey
                     first_counter += 1
             else:
                 # seperate by date
@@ -3241,11 +3555,23 @@ class TtReportDashboard(models.Model):
             # adding book_issued ratio graph
             to_return.update(book_issued)
 
-            # get by chanel
-            chanel_data = self.get_report_group_by_chanel(data, issued_values['lines'])
+            # this is a suggestion and request, if user whose accessing the report only has agent level, then we could substitute
+            # channel/agent rank graph to customer graph
+            if is_ho != 1:
+                # if agent then we will populate with customer data (aka booker)
+                customer_data = self.get_report_group_by_customer(data, issued_values['lines'])
 
-            # adding chanel_data graph
-            to_return.update(chanel_data)
+                to_return.update(customer_data)
+            else:
+                # if ho then we will populate third graph with agent
+                # however incase of something not match we'll return the agent
+                # why because the agent will return smaller data
+
+                # get by chanel
+                chanel_data = self.get_report_group_by_chanel(data, issued_values['lines'])
+
+                # adding chanel_data graph
+                to_return.update(chanel_data)
 
             return to_return
         except Exception as e:
@@ -3463,18 +3789,37 @@ class TtReportDashboard(models.Model):
             profit_data = {}
 
             # shape the data for return
+            # a little reminder month and days mode determine by how many days in between requested report
+            # more than 35 days, automatically group by month
+            # less than 35 days, we'll return as is (divided by date)
             if mode == 'month':
+                # if so happens to be in month mode, then we'll sum every data by month
+                # because if you follow the program, you'll know that summary_issued divide the data into
+                # year, month, with date details (date detail is list)
+                # we have to sum the date detail basically
+
                 # sum by month
                 try:
+                    # first counter is trying to find what month user requested date are
+                    # why it has - 1 because if you look at constant dependencies
+                    # index and month value will result in difference of 1 (since list index starts in 0 yada yada yada)
                     first_counter = summary_issued[0]['month_index'] - 1
                 except:
+                    # if for whatever reason, above method doesn't work
+                    # then, we'll do the weird(?) way
+                    # by extracting from date
                     splits = data['start_date'].split("-")
                     month = splits[1]
                     first_counter = int(month) - 1
+
+                # with that done, we'll now process the data
                 for i in summary_issued:
                     # fill skipped month(s)
                     # check if current month (year) with start
                     if i['month_index'] - 1 < first_counter:
+                        # this is the condition for new year, where
+                        # counter month > than the earlier month of the year
+                        # we'll just gonna fill the gap
                         while first_counter < 12:
                             main_data[month[first_counter]] = 0
                             average_data[month[first_counter]] = 0
@@ -3485,6 +3830,8 @@ class TtReportDashboard(models.Model):
                         if first_counter == 12:
                             first_counter = 0
                     if i['month_index'] - 1 > first_counter:
+                        # this to catch up current month to present day ish
+                        # or present month for that matter
                         while first_counter < i['month_index'] - 1:
                             main_data[month[first_counter]] = 0
                             average_data[month[first_counter]] = 0
@@ -3492,7 +3839,11 @@ class TtReportDashboard(models.Model):
                             profit_data[month[first_counter]] = 0
                             first_counter += 1
 
-                    # for every month in summary by date
+                    # so after first counter, which doen't make any sense since
+                    # first counter was use to keep up...
+                    # after first counter catch up present month/day
+                    # we're gonna count the data
+                    # declare variable with respected month
                     main_data[i['month']] = 0
                     average_data[i['month']] = 0
                     revenue_data[i['month']] = 0
@@ -3503,6 +3854,7 @@ class TtReportDashboard(models.Model):
                         average_data[i['month']] += j['average']
                         revenue_data[i['month']] += j['revenue']
                         profit_data[i['month']] += j['profit']
+                    # shift to next month yey
                     first_counter += 1
 
             else:
@@ -3555,11 +3907,23 @@ class TtReportDashboard(models.Model):
             # adding book_issued ratio graph
             to_return.update(book_issued)
 
-            # get by chanel
-            chanel_data = self.get_report_group_by_chanel(data, issued_values['lines'])
+            # this is a suggestion and request, if user whose accessing the report only has agent level, then we could substitute
+            # channel/agent rank graph to customer graph
+            if is_ho != 1:
+                # if agent then we will populate with customer data (aka booker)
+                customer_data = self.get_report_group_by_customer(data, issued_values['lines'])
 
-            # adding chanel_data graph
-            to_return.update(chanel_data)
+                to_return.update(customer_data)
+            else:
+                # if ho then we will populate third graph with agent
+                # however incase of something not match we'll return the agent
+                # why because the agent will return smaller data
+
+                # get by chanel
+                chanel_data = self.get_report_group_by_chanel(data, issued_values['lines'])
+
+                # adding chanel_data graph
+                to_return.update(chanel_data)
 
             return to_return
         except Exception as e:
@@ -3774,18 +4138,37 @@ class TtReportDashboard(models.Model):
             profit_data = {}
 
             # shape the data for return
+            # a little reminder month and days mode determine by how many days in between requested report
+            # more than 35 days, automatically group by month
+            # less than 35 days, we'll return as is (divided by date)
             if mode == 'month':
+                # if so happens to be in month mode, then we'll sum every data by month
+                # because if you follow the program, you'll know that summary_issued divide the data into
+                # year, month, with date details (date detail is list)
+                # we have to sum the date detail basically
+
                 # sum by month
                 try:
+                    # first counter is trying to find what month user requested date are
+                    # why it has - 1 because if you look at constant dependencies
+                    # index and month value will result in difference of 1 (since list index starts in 0 yada yada yada)
                     first_counter = summary_issued[0]['month_index'] - 1
                 except:
+                    # if for whatever reason, above method doesn't work
+                    # then, we'll do the weird(?) way
+                    # by extracting from date
                     splits = data['start_date'].split("-")
                     month = splits[1]
                     first_counter = int(month) - 1
+
+                # with that done, we'll now process the data
                 for i in summary_issued:
                     # fill skipped month(s)
                     # check if current month (year) with start
                     if i['month_index'] - 1 < first_counter:
+                        # this is the condition for new year, where
+                        # counter month > than the earlier month of the year
+                        # we'll just gonna fill the gap
                         while first_counter < 12:
                             main_data[month[first_counter]] = 0
                             average_data[month[first_counter]] = 0
@@ -3796,6 +4179,8 @@ class TtReportDashboard(models.Model):
                         if first_counter == 12:
                             first_counter = 0
                     if i['month_index'] - 1 > first_counter:
+                        # this to catch up current month to present day ish
+                        # or present month for that matter
                         while first_counter < i['month_index'] - 1:
                             main_data[month[first_counter]] = 0
                             average_data[month[first_counter]] = 0
@@ -3803,17 +4188,24 @@ class TtReportDashboard(models.Model):
                             profit_data[month[first_counter]] = 0
                             first_counter += 1
 
-                    # for every month in summary by date
+                    # so after first counter, which doen't make any sense since
+                    # first counter was use to keep up...
+                    # after first counter catch up present month/day
+                    # we're gonna count the data
+                    # declare variable with respected month
                     main_data[i['month']] = 0
                     average_data[i['month']] = 0
                     revenue_data[i['month']] = 0
                     profit_data[i['month']] = 0
+
+                    # sum data from detail
                     for j in i['detail']:
                         # for detail in months
                         main_data[i['month']] += j['invoice']
                         average_data[i['month']] += j['average']
                         revenue_data[i['month']] += j['revenue']
                         profit_data[i['month']] += j['profit']
+                    # shift to next month yey
                     first_counter += 1
 
             else:
@@ -3865,11 +4257,23 @@ class TtReportDashboard(models.Model):
             # adding book_issued ratio graph
             to_return.update(book_issued)
 
-            # get by chanel
-            chanel_data = self.get_report_group_by_chanel(data, issued_values['lines'])
+            # this is a suggestion and request, if user whose accessing the report only has agent level, then we could substitute
+            # channel/agent rank graph to customer graph
+            if is_ho != 1:
+                # if agent then we will populate with customer data (aka booker)
+                customer_data = self.get_report_group_by_customer(data, issued_values['lines'])
 
-            # adding chanel_data graph
-            to_return.update(chanel_data)
+                to_return.update(customer_data)
+            else:
+                # if ho then we will populate third graph with agent
+                # however incase of something not match we'll return the agent
+                # why because the agent will return smaller data
+
+                # get by chanel
+                chanel_data = self.get_report_group_by_chanel(data, issued_values['lines'])
+
+                # adding chanel_data graph
+                to_return.update(chanel_data)
 
             return to_return
         except Exception as e:
@@ -4079,18 +4483,37 @@ class TtReportDashboard(models.Model):
             profit_data = {}
 
             # shape the data for return
+            # a little reminder month and days mode determine by how many days in between requested report
+            # more than 35 days, automatically group by month
+            # less than 35 days, we'll return as is (divided by date)
             if mode == 'month':
+                # if so happens to be in month mode, then we'll sum every data by month
+                # because if you follow the program, you'll know that summary_issued divide the data into
+                # year, month, with date details (date detail is list)
+                # we have to sum the date detail basically
+
                 # sum by month
                 try:
+                    # first counter is trying to find what month user requested date are
+                    # why it has - 1 because if you look at constant dependencies
+                    # index and month value will result in difference of 1 (since list index starts in 0 yada yada yada)
                     first_counter = summary_issued[0]['month_index'] - 1
                 except:
+                    # if for whatever reason, above method doesn't work
+                    # then, we'll do the weird(?) way
+                    # by extracting from date
                     splits = data['start_date'].split("-")
                     month = splits[1]
                     first_counter = int(month) - 1
+
+                # with that done, we'll now process the data
                 for i in summary_issued:
                     # fill skipped month(s)
                     # check if current month (year) with start
                     if i['month_index'] - 1 < first_counter:
+                        # this is the condition for new year, where
+                        # counter month > than the earlier month of the year
+                        # we'll just gonna fill the gap
                         while first_counter < 12:
                             main_data[month[first_counter]] = 0
                             average_data[month[first_counter]] = 0
@@ -4101,6 +4524,8 @@ class TtReportDashboard(models.Model):
                         if first_counter == 12:
                             first_counter = 0
                     if i['month_index'] - 1 > first_counter:
+                        # this to catch up current month to present day ish
+                        # or present month for that matter
                         while first_counter < i['month_index'] - 1:
                             main_data[month[first_counter]] = 0
                             average_data[month[first_counter]] = 0
@@ -4108,17 +4533,24 @@ class TtReportDashboard(models.Model):
                             profit_data[month[first_counter]] = 0
                             first_counter += 1
 
-                    # for every month in summary by date
+                    # so after first counter, which doen't make any sense since
+                    # first counter was use to keep up...
+                    # after first counter catch up present month/day
+                    # we're gonna count the data
+                    # declare variable with respected month
                     main_data[i['month']] = 0
                     average_data[i['month']] = 0
                     revenue_data[i['month']] = 0
                     profit_data[i['month']] = 0
+
+                    # sum data from detail
                     for j in i['detail']:
                         # for detail in months
                         main_data[i['month']] += j['invoice']
                         average_data[i['month']] += j['average']
                         revenue_data[i['month']] += j['revenue']
                         profit_data[i['month']] += j['profit']
+                    # shift to next month yey
                     first_counter += 1
 
             else:
@@ -4169,11 +4601,23 @@ class TtReportDashboard(models.Model):
             # adding book_issued ratio graph
             to_return.update(book_issued)
 
-            # get by chanel
-            chanel_data = self.get_report_group_by_chanel(data, issued_values['lines'])
+            # this is a suggestion and request, if user whose accessing the report only has agent level, then we could substitute
+            # channel/agent rank graph to customer graph
+            if is_ho != 1:
+                # if agent then we will populate with customer data (aka booker)
+                customer_data = self.get_report_group_by_customer(data, issued_values['lines'])
 
-            # adding chanel_data graph
-            to_return.update(chanel_data)
+                to_return.update(customer_data)
+            else:
+                # if ho then we will populate third graph with agent
+                # however incase of something not match we'll return the agent
+                # why because the agent will return smaller data
+
+                # get by chanel
+                chanel_data = self.get_report_group_by_chanel(data, issued_values['lines'])
+
+                # adding chanel_data graph
+                to_return.update(chanel_data)
 
             return to_return
         except Exception as e:
@@ -4384,18 +4828,37 @@ class TtReportDashboard(models.Model):
             profit_data = {}
 
             # shape the data for return
+            # a little reminder month and days mode determine by how many days in between requested report
+            # more than 35 days, automatically group by month
+            # less than 35 days, we'll return as is (divided by date)
             if mode == 'month':
+                # if so happens to be in month mode, then we'll sum every data by month
+                # because if you follow the program, you'll know that summary_issued divide the data into
+                # year, month, with date details (date detail is list)
+                # we have to sum the date detail basically
+
                 # sum by month
                 try:
+                    # first counter is trying to find what month user requested date are
+                    # why it has - 1 because if you look at constant dependencies
+                    # index and month value will result in difference of 1 (since list index starts in 0 yada yada yada)
                     first_counter = summary_issued[0]['month_index'] - 1
                 except:
+                    # if for whatever reason, above method doesn't work
+                    # then, we'll do the weird(?) way
+                    # by extracting from date
                     splits = data['start_date'].split("-")
                     month = splits[1]
                     first_counter = int(month) - 1
+
+                # with that done, we'll now process the data
                 for i in summary_issued:
                     # fill skipped month(s)
                     # check if current month (year) with start
                     if i['month_index'] - 1 < first_counter:
+                        # this is the condition for new year, where
+                        # counter month > than the earlier month of the year
+                        # we'll just gonna fill the gap
                         while first_counter < 12:
                             main_data[month[first_counter]] = 0
                             average_data[month[first_counter]] = 0
@@ -4406,6 +4869,8 @@ class TtReportDashboard(models.Model):
                         if first_counter == 12:
                             first_counter = 0
                     if i['month_index'] - 1 > first_counter:
+                        # this to catch up current month to present day ish
+                        # or present month for that matter
                         while first_counter < i['month_index'] - 1:
                             main_data[month[first_counter]] = 0
                             average_data[month[first_counter]] = 0
@@ -4413,7 +4878,11 @@ class TtReportDashboard(models.Model):
                             profit_data[month[first_counter]] = 0
                             first_counter += 1
 
-                    # for every month in summary by date
+                    # so after first counter, which doen't make any sense since
+                    # first counter was use to keep up...
+                    # after first counter catch up present month/day
+                    # we're gonna count the data
+                    # declare variable with respected month
                     main_data[i['month']] = 0
                     average_data[i['month']] = 0
                     revenue_data[i['month']] = 0
@@ -4424,6 +4893,7 @@ class TtReportDashboard(models.Model):
                         average_data[i['month']] += j['average']
                         revenue_data[i['month']] += j['revenue']
                         profit_data[i['month']] += j['profit']
+                    # shift to next month yey
                     first_counter += 1
 
             else:
@@ -4477,11 +4947,23 @@ class TtReportDashboard(models.Model):
             # adding book_issued ratio graph
             to_return.update(book_issued)
 
-            # get by chanel
-            chanel_data = self.get_report_group_by_chanel(data, issued_values['lines'])
+            # this is a suggestion and request, if user whose accessing the report only has agent level, then we could substitute
+            # channel/agent rank graph to customer graph
+            if is_ho != 1:
+                # if agent then we will populate with customer data (aka booker)
+                customer_data = self.get_report_group_by_customer(data, issued_values['lines'])
 
-            # adding chanel_data graph
-            to_return.update(chanel_data)
+                to_return.update(customer_data)
+            else:
+                # if ho then we will populate third graph with agent
+                # however incase of something not match we'll return the agent
+                # why because the agent will return smaller data
+
+                # get by chanel
+                chanel_data = self.get_report_group_by_chanel(data, issued_values['lines'])
+
+                # adding chanel_data graph
+                to_return.update(chanel_data)
 
             return to_return
         except Exception as e:
@@ -4689,18 +5171,37 @@ class TtReportDashboard(models.Model):
             profit_data = {}
 
             # shape the data for return
+            # a little reminder month and days mode determine by how many days in between requested report
+            # more than 35 days, automatically group by month
+            # less than 35 days, we'll return as is (divided by date)
             if mode == 'month':
+                # if so happens to be in month mode, then we'll sum every data by month
+                # because if you follow the program, you'll know that summary_issued divide the data into
+                # year, month, with date details (date detail is list)
+                # we have to sum the date detail basically
+
                 # sum by month
                 try:
+                    # first counter is trying to find what month user requested date are
+                    # why it has - 1 because if you look at constant dependencies
+                    # index and month value will result in difference of 1 (since list index starts in 0 yada yada yada)
                     first_counter = summary_issued[0]['month_index'] - 1
                 except:
+                    # if for whatever reason, above method doesn't work
+                    # then, we'll do the weird(?) way
+                    # by extracting from date
                     splits = data['start_date'].split("-")
                     month = splits[1]
                     first_counter = int(month) - 1
+
+                # with that done, we'll now process the data
                 for i in summary_issued:
                     # fill skipped month(s)
                     # check if current month (year) with start
                     if i['month_index'] - 1 < first_counter:
+                        # this is the condition for new year, where
+                        # counter month > than the earlier month of the year
+                        # we'll just gonna fill the gap
                         while first_counter < 12:
                             main_data[month[first_counter]] = 0
                             average_data[month[first_counter]] = 0
@@ -4711,6 +5212,8 @@ class TtReportDashboard(models.Model):
                         if first_counter == 12:
                             first_counter = 0
                     if i['month_index'] - 1 > first_counter:
+                        # this to catch up current month to present day ish
+                        # or present month for that matter
                         while first_counter < i['month_index'] - 1:
                             main_data[month[first_counter]] = 0
                             average_data[month[first_counter]] = 0
@@ -4718,7 +5221,11 @@ class TtReportDashboard(models.Model):
                             profit_data[month[first_counter]] = 0
                             first_counter += 1
 
-                    # for every month in summary by date
+                    # so after first counter, which doen't make any sense since
+                    # first counter was use to keep up...
+                    # after first counter catch up present month/day
+                    # we're gonna count the data
+                    # declare variable with respected month
                     main_data[i['month']] = 0
                     average_data[i['month']] = 0
                     revenue_data[i['month']] = 0
@@ -4782,11 +5289,23 @@ class TtReportDashboard(models.Model):
             # adding book_issued ratio graph
             to_return.update(book_issued)
 
-            # get by chanel
-            chanel_data = self.get_report_group_by_chanel(data, issued_values['lines'])
+            # this is a suggestion and request, if user whose accessing the report only has agent level, then we could substitute
+            # channel/agent rank graph to customer graph
+            if is_ho != 1:
+                # if agent then we will populate with customer data (aka booker)
+                customer_data = self.get_report_group_by_customer(data, issued_values['lines'])
 
-            # adding chanel_data graph
-            to_return.update(chanel_data)
+                to_return.update(customer_data)
+            else:
+                # if ho then we will populate third graph with agent
+                # however incase of something not match we'll return the agent
+                # why because the agent will return smaller data
+
+                # get by chanel
+                chanel_data = self.get_report_group_by_chanel(data, issued_values['lines'])
+
+                # adding chanel_data graph
+                to_return.update(chanel_data)
 
             return to_return
         except Exception as e:
@@ -4995,18 +5514,37 @@ class TtReportDashboard(models.Model):
             profit_data = {}
 
             # shape the data for return
+            # a little reminder month and days mode determine by how many days in between requested report
+            # more than 35 days, automatically group by month
+            # less than 35 days, we'll return as is (divided by date)
             if mode == 'month':
+                # if so happens to be in month mode, then we'll sum every data by month
+                # because if you follow the program, you'll know that summary_issued divide the data into
+                # year, month, with date details (date detail is list)
+                # we have to sum the date detail basically
+
                 # sum by month
                 try:
+                    # first counter is trying to find what month user requested date are
+                    # why it has - 1 because if you look at constant dependencies
+                    # index and month value will result in difference of 1 (since list index starts in 0 yada yada yada)
                     first_counter = summary_issued[0]['month_index'] - 1
                 except:
+                    # if for whatever reason, above method doesn't work
+                    # then, we'll do the weird(?) way
+                    # by extracting from date
                     splits = data['start_date'].split("-")
                     month = splits[1]
                     first_counter = int(month) - 1
+
+                # with that done, we'll now process the data
                 for i in summary_issued:
                     # fill skipped month(s)
                     # check if current month (year) with start
                     if i['month_index'] - 1 < first_counter:
+                        # this is the condition for new year, where
+                        # counter month > than the earlier month of the year
+                        # we'll just gonna fill the gap
                         while first_counter < 12:
                             main_data[month[first_counter]] = 0
                             average_data[month[first_counter]] = 0
@@ -5017,6 +5555,8 @@ class TtReportDashboard(models.Model):
                         if first_counter == 12:
                             first_counter = 0
                     if i['month_index'] - 1 > first_counter:
+                        # this to catch up current month to present day ish
+                        # or present month for that matter
                         while first_counter < i['month_index'] - 1:
                             main_data[month[first_counter]] = 0
                             average_data[month[first_counter]] = 0
@@ -5024,7 +5564,11 @@ class TtReportDashboard(models.Model):
                             profit_data[month[first_counter]] = 0
                             first_counter += 1
 
-                    # for every month in summary by date
+                    # so after first counter, which doen't make any sense since
+                    # first counter was use to keep up...
+                    # after first counter catch up present month/day
+                    # we're gonna count the data
+                    # declare variable with respected month
                     main_data[i['month']] = 0
                     average_data[i['month']] = 0
                     revenue_data[i['month']] = 0
@@ -5089,11 +5633,23 @@ class TtReportDashboard(models.Model):
             # adding book_issued ratio graph
             to_return.update(book_issued)
 
-            # get by chanel
-            chanel_data = self.get_report_group_by_chanel(data, issued_values['lines'])
+            # this is a suggestion and request, if user whose accessing the report only has agent level, then we could substitute
+            # channel/agent rank graph to customer graph
+            if is_ho != 1:
+                # if agent then we will populate with customer data (aka booker)
+                customer_data = self.get_report_group_by_customer(data, issued_values['lines'])
 
-            # adding chanel_data graph
-            to_return.update(chanel_data)
+                to_return.update(customer_data)
+            else:
+                # if ho then we will populate third graph with agent
+                # however incase of something not match we'll return the agent
+                # why because the agent will return smaller data
+
+                # get by chanel
+                chanel_data = self.get_report_group_by_chanel(data, issued_values['lines'])
+
+                # adding chanel_data graph
+                to_return.update(chanel_data)
 
             return to_return
         except Exception as e:
