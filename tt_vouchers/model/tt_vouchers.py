@@ -485,8 +485,8 @@ class TtVoucherDetail(models.Model):
         return super(TtVoucherDetail, self).create(vals)
     
     def write(self, vals):
-        if vals.get('voucher_reference_code'):
-            if self.search('voucher_reference_code','=',vals['voucher_reference_code'])
+        if vals.get('voucher_period_reference'):
+            if self.search('voucher_period_reference','=',vals['voucher_period_reference']):
                 raise UserError('Duplicate Reference Code')
         return super(TtVoucherDetail, self).write(vals) 
             
