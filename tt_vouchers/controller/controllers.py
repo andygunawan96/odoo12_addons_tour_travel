@@ -81,12 +81,14 @@ class TtVoucher(http.Controller):
     @http.route('/test_simulate_voucher', type='http', auth='public', csrf=False, method=['POST'])
     def simulate_vouchers(self):
         data = {
-            'voucher_reference': 'TEST001.TESTED',
+            'voucher_reference': 'TESTVOUCHER',
+            'provider': 'amadeus',
+            'provider_type': 'airline',
             'provider_type_id': 2,
             'provider_id': 6,
-            'date': datetime.datetime.today(),
+            'date': '2020-12-20',
         }
         context = {"uid": 7, "user_name": "gateway user", "user_login": "mob.it@rodextravel.tours", "agent_id": 4, "agent_name": "SKYTORS.ID", "agent_type_id": 1, "agent_type_name": "HO", "agent_type_code": "ho", "agent_frontend_security": ["ticketing", "top_up", "admin", "login"], "api_role": "admin", "device_type": "general", "host_ips": [], "configs": {"visa": {"provider_access": "all", "providers": {}}, "agent_registration": {"provider_access": "all", "providers": {}}, "offline": {"provider_access": "all", "providers": {}}}, "co_uid": 6, "co_user_name": "Ivan", "co_user_login": "ivankai", "co_agent_id": 3, "co_agent_name": "rodex travel", "co_agent_type_id": 2, "co_agent_type_name": "Agent Citra", "co_agent_type_code": "citra", "co_agent_frontend_security": ["ticketing", "top_up", "admin", "login"], "sid": "0d7a5c2c318370ec0cb080b9ead9ba06ce9ff12a", "signature": "24f4b2d6dac445f8a2b3b8574e9e5614", "expired_date": "2019-12-04 02:19:10"}
-        voucher = request.env['tt.voucher.detail'].new_simulate_voucher(data,context)
+        voucher = request.env['tt.voucher.detail'].simulate_voucher_api(data,context)
         print(voucher)
         return 0

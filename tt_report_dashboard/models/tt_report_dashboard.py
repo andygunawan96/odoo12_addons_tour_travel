@@ -443,7 +443,7 @@ class TtReportDashboard(models.Model):
                         # convert month number (1) to text and index (January) in constant
                         month_index = self.check_date_index(summary_by_date, {'year': i['booked_year'], 'month': month[int(i['booked_month']) - 1]})
                         if month_index == -1:
-                            # create dictionary seperate by month
+                            # create dictionary separate by month
                             temp_dict = {
                                 'year': i['booked_year'],
                                 'month_index': int(i['booked_month']),
@@ -452,9 +452,9 @@ class TtReportDashboard(models.Model):
                             }
                             # separate book date
                             try:
-                                splits = i['reservation_booked_date'].split("-")        # return something like splits = [2020, 12, 2]
-                                day_index = int(splits[2]) - 1                          # minus 1 because temp dict is start at index 0 (with day 1 in its first dictionary)
-                                temp_dict['detail'][day_index]['booked_counter'] += 1   # add to respected place
+                                splits = i['reservation_booked_date'].split("-")
+                                day_index = int(splits[2]) - 1
+                                temp_dict['detail'][day_index]['booked_counter'] += 1
                             except:
                                 pass
                             try:
@@ -576,6 +576,22 @@ class TtReportDashboard(models.Model):
                         # else:
                         #     book_data[str(j['day']) + "-" + str(i['month_index']) + "-" + str(i['year'])] = 0
                         #     issued_data[str(j['day']) + "-" + str(i['month_index']) + "-" + str(i['year'])] = 0
+
+            # check if date is only 1 data, we'll "try" to cheat graph
+            # instead of handle point, we'll make it handle "constant"
+            # o the idea is if there's only 1 data
+            # duplicate the data, so minimum data within graph is 2
+            # in preparation we'll make list of end result
+            book_label_list = list(book_data.keys())
+            book_content_list = list(book_data.values())
+            issued_content_list = list(issued_data.values())
+            # check if list length is exactly one,
+            # if so we're gonna dup the data
+            if len(book_label_list) == 1:
+                book_label_list.append(book_label_list[0])
+                book_content_list.append(book_content_list[0])
+                issued_content_list.append(issued_content_list[0])
+
             # build to return data
             to_return = {
                 # it will be very absurd to stand alone, however this particular graph will corenspond to second graph in front end, so theres that
@@ -583,11 +599,11 @@ class TtReportDashboard(models.Model):
                     # label for graph in frontend
                     # if mode month then label will be ['January', 'February', ...]
                     # if mode is not month then label will be ['1-11-2020', '2-11-2020', ...]
-                    'label': list(book_data.keys()),
+                    'label': book_label_list,
                     # data = list of booked reservation
-                    'data': list(book_data.values()),
+                    'data': book_content_list,
                     # data2 = list of issued reservation
-                    'data2': list(issued_data.values())
+                    'data2': issued_content_list
                 },
                 'second_overview': summary_provider
             }
@@ -687,7 +703,7 @@ class TtReportDashboard(models.Model):
                     profit_data.append(i['profit'])
             else:
                 for i in range(20):
-                    label_data.append(summary_customer[i]['agent_name'])
+                    label_data.append(summary_customer[i]['customer_name'])
                     revenue_data.append(summary_customer[i]['revenue'])
                     reservation_data.append(summary_customer[i]['reservation'])
                     average_data.append(summary_customer[i]['revenue'] / summary_customer[i]['reservation'])
