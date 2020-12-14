@@ -510,7 +510,7 @@ class TtVoucherDetail(models.Model):
                 _logger.info('Error Create Email Queue')
 
     def get_voucher_details_email(self):
-        txt_detail = '<p>Reference Code: %s.%s</p>' % (self.voucher_reference_code, self.voucher_period_reference)
+        txt_detail = '<p>Reference Code: %s</p>' % (self.voucher_period_reference, )
         txt_detail += '<p>Value: %s %s</p>' % (self.voucher_id.currency_id.name, self.voucher_id.voucher_value)
         if self.voucher_start_date:
             txt_detail += '<p>Start Date: %s</p>' % (self.voucher_start_date.strftime('%d %b %Y %H:%M'), )
