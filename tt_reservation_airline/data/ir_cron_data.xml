@@ -4,13 +4,13 @@
         <record model="ir.cron" id="cron_auto_sync_booking_airine">
             <field name="name">Auto Sync Booking Airline</field>
             <field name="user_id" ref="tt_base.base_top_up_admin"/>
-            <field name="interval_number">10</field>
+            <field name="interval_number">8</field>
             <field name="interval_type">minutes</field>
             <field name="numbercall">-1</field>
             <field name="nextcall" eval="(datetime.now().isoformat())"/>
             <field name="active">False</field>
             <field name="state">code</field>
-            <field name="model_id" ref="tt_reservation_airline.model_tt_reservation_airline"/>
+            <field name="model_id" ref="tt_base.model_tt_cron_log"/>
             <field name="code">model.cron_sync_booking()</field>
         </record>
     </data>
