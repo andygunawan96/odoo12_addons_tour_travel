@@ -534,7 +534,7 @@ class TtVoucherDetail(models.Model):
 
     def get_voucher_detail(self, voucher_id):
         voucher = self.env['tt.voucher.detail'].browse(int(voucher_id)).read()
-        voucher[0]['voucher_number'] = "%s.%s" % (voucher[0]['voucher_reference_code'], voucher[0]['voucher_period_reference'])
+        voucher[0]['voucher_number'] = "%s.%s" % (voucher[0]['voucher_reference'], voucher[0]['voucher_period_reference'])
         return voucher
 
     #function for cron
@@ -686,7 +686,7 @@ class TtVoucherDetail(models.Model):
 
         # prepare data to check if voucher is able to be use by agent
         to_check = {
-            'voucher_reference': data['voucher_reference_code'],
+            'voucher_reference': data['voucher_reference'],
             'agent_type_id': context['co_agent_type_id'],
             'agent_id': context['co_agent_id']
         }
@@ -705,7 +705,7 @@ class TtVoucherDetail(models.Model):
         if voucher_detail.voucher_id.is_customer_exclusive:
             cust_is_eligible = False
             for cust in order_obj.passenger_ids:
-                if voucher_detail.voucher_id.voucher_customer_id.first_name == cust.first_name and voucher.voucher_customer_id.last_name == cust.last_name:
+                if voucher_detail.voucher_id.voucher_customer_id.first_name == cust.first_name and voucher_detail.voucher_id.voucher_customer_id.last_name == cust.last_name:
                     cust_is_eligible = True
                     break
 
@@ -761,7 +761,7 @@ class TtVoucherDetail(models.Model):
                 # create data to check
                 # since dependencies len is < 2
                 temp_dict = {
-                    'voucher_reference': data['voucher_reference_code'],
+                    'voucher_reference': data['voucher_reference'],
                     'provider_type_id': i.provider_id.provider_type_id.id,
                     'provider_id': i.provider_id.id,
                     'provider_name': i.provider_id.code
@@ -1172,7 +1172,7 @@ class TtVoucherDetail(models.Model):
 
         # check agent
         agent_to_validate = {
-            'voucher_reference': data['voucher_reference_code'],
+            'voucher_reference': data['voucher_reference'],
             'agent_type_id': context['co_agent_type_id'],
             'agent_id': context['co_agent_id']
         }
@@ -1210,7 +1210,7 @@ class TtVoucherDetail(models.Model):
                     'provider_type_id': provider.provider_type_id.id,
                     'provider_id': provider.id,
                     'provider_name': i,
-                    'voucher_reference': data['voucher_reference_code']
+                    'voucher_reference': data['voucher_reference']
                 }
 
                 is_eligible = self.env['tt.voucher'].is_product_eligible(to_check)
@@ -1233,7 +1233,7 @@ class TtVoucherDetail(models.Model):
                 'provider_type_id': provider.provider_type_id.id,
                 'provider_id': provider.id,
                 'provider_name': data['provider'],
-                'voucher_reference': data['voucher_reference_code']
+                'voucher_reference': data['voucher_reference']
             }
             is_eligible = self.env['tt.voucher'].is_product_eligible(to_check)
             if is_eligible:
@@ -1309,7 +1309,7 @@ class TtVoucherDetail(models.Model):
         # }
 
         #corresponding voucher is within date
-        corresponding_voucher = self.env['tt.voucher.detail'].search([('voucher_reference_code', '=', data['voucher_reference'])])
+        corresponding_voucher = self.env['tt.voucher.detail'].search([('voucher_reference', '=', data['voucher_reference'])])
         if corresponding_voucher.id == False:
             _logger.error('Voucher is not exist')
             return ERR.get_error(additional_message="voucher is not exist")
@@ -1360,13 +1360,13 @@ class TtVoucherDetail(models.Model):
             simulate = self.new_simulate_voucher(data, context)
             if simulate['error_code'] == 0:
                 splits = data['voucher_reference'].split(".")
-                data['voucher_reference_code'] = splits[0]
+                data['voucher_reference'] = splits[0]
                 data['voucher_reference_period'] = splits[1]
 
-                voucher_detail = self.env['tt.voucher.detail'].search([('voucher_reference_code', '=', data['voucher_reference_code']), ('voucher_period_reference', '=', data['voucher_reference_period'])])
+                voucher_detail = self.env['tt.voucher.detail'].search([('voucher_reference', '=', data['voucher_reference']), ('voucher_period_reference', '=', data['voucher_reference_period'])])
                 provider_type = self.env['tt.provider.type'].search([('code', '=', simulate['response'][0]['provider_type_code'])], limit=1)
                 provider = self.env['tt.provider'].search([('code', '=', simulate['response'][0]['provider_code'])], limit=1)
-                voucher = self.env['tt.voucher'].search([('voucher_reference_code', '=', data['voucher_reference_code'])], limit=1)
+                voucher = self.env['tt.voucher'].search([('voucher_reference', '=', data['voucher_reference'])], limit=1)
 
                 discount_total = 0
                 for i in simulate['response']:
