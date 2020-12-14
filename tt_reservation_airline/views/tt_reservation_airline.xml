@@ -99,6 +99,9 @@
 
             <xpath expr="//group[@name='paxgroup']" position="before">
                 <group>
+                    <field name="is_hold_date_sync"/>
+                </group>
+                <group>
                     <group attrs="{'invisible': [('split_from_resv_id', '=', False)]}">
                         <field name="split_from_resv_id"/>
                     </group>

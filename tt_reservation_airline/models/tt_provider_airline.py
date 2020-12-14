@@ -71,6 +71,7 @@ class TtProviderAirline(models.Model):
     reconcile_line_id = fields.Many2one('tt.reconcile.transaction.lines','Reconciled', readonly=True, states={'draft': [('readonly', False)]})
     reconcile_time = fields.Datetime('Reconcile Time', readonly=True, states={'draft': [('readonly', False)]})
     ##
+    is_hold_date_sync = fields.Boolean('Hold Date Sync', readonly=True, default=True)
 
     ##button function
     def action_set_to_issued_from_button(self, payment_data={}):
@@ -195,7 +196,7 @@ class TtProviderAirline(models.Model):
     def set_provider_detail_info(self, provider_data):
         values = {}
         provider_data_keys = [key for key in provider_data.keys()]
-        for key in ['pnr', 'pnr2', 'reference', 'balance_due', 'balance_due_str', 'total_price', 'penalty_amount', 'penalty_currency']:
+        for key in ['pnr', 'pnr2', 'reference', 'balance_due', 'balance_due_str', 'total_price', 'penalty_amount', 'penalty_currency', 'is_hold_date_sync']:
             # if not provider_data.get(key):
             if key not in provider_data_keys:
                 continue
