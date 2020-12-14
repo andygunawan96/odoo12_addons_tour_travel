@@ -44,6 +44,16 @@ class ReservationAirline(models.Model):
     is_get_booking_from_vendor = fields.Boolean('Get Booking From Vendor')
     printout_ticket_original_ids = fields.Many2many('tt.upload.center', 'reservation_airline_attachment_rel', 'ori_ticket_id',
                                        'attachment_id', string='Attachments')
+    is_hold_date_sync = fields.Boolean('Hold Date Sync', compute='compute_hold_date_sync', default=True, store=True)
+
+    @api.multi
+    @api.depends('provider_booking_ids.is_hold_date_sync')
+    def compute_hold_date_sync(self):
+        for rec in self:
+            is_hold_date_sync = all(prov.is_hold_date_sync for prov in rec.provider_booking_ids)
+            rec.update({
+                'is_hold_date_sync': is_hold_date_sync
+            })
 
     def compute_journey_code(self):
         objs = self.env['tt.reservation.airline'].sudo().search([])
