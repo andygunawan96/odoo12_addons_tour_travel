@@ -478,18 +478,18 @@ class TtVoucherDetail(models.Model):
     @api.model
     def create(self, vals):
         if vals.get('voucher_reference_code'):
-            if self.search('voucher_reference_code','=',vals['voucher_reference_code'])
+            if self.search('voucher_reference_code','=',vals['voucher_reference_code']):
                 raise UserError('Duplicate Reference Code')
         if type(vals.get('voucher_period_reference')) == str:
             vals['voucher_period_reference'] = vals['voucher_period_reference'].upper()
         return super(TtVoucherDetail, self).create(vals)
-    
+
     def write(self, vals):
         if vals.get('voucher_period_reference'):
             if self.search('voucher_period_reference','=',vals['voucher_period_reference']):
                 raise UserError('Duplicate Reference Code')
-        return super(TtVoucherDetail, self).write(vals) 
-            
+        return super(TtVoucherDetail, self).write(vals)
+
     def create_voucher_created_email_queue(self):
         self.create_voucher_email_queue('created')
 
@@ -585,16 +585,20 @@ class TtVoucherDetail(models.Model):
         # check to see if voucher is exist
         #####################
 
+        ##########################################
+        # mark as old code
         # spliting voucher reference and detail reference by . (dot)
-        splits = data['voucher_reference'].split(".")
+        # splits = data['voucher_reference'].split(".")
+        ##########################################
 
         # extract the reference for the main voucher
         # adding the reference to the data
-        data['voucher_reference_code'] = splits[0]
+        # data['voucher_reference_code'] = splits[0]
 
         try:
             # get the detail reference code
-            data['voucher_reference_period'] = splits[1]
+            # data['voucher_reference_period'] = splits[1]
+            data['voucher_reference_period'] = data['voucher_reference']
         except:
             # incase there's no detail reference code
             # write the error to logger
@@ -605,24 +609,26 @@ class TtVoucherDetail(models.Model):
 
         # if voucher has reference and reference period
         # get the voucher data
-        voucher = self.env['tt.voucher'].search([('voucher_reference_code', '=', data['voucher_reference_code'])])
+        # voucher = self.env['tt.voucher'].search([('voucher_reference_code', '=', data['voucher_reference_code'])])
 
         # check if particular voucher do actually exist
-        if voucher.id == False:
-            # if no known voucher data
-            # write to logger
-            _logger.error("%s voucher doesn't exist" % data['voucher_reference_code'])
-
-            # raise error
-            return ERR.get_error(additional_message="Voucher doesn't exist")
+        # if voucher.id == False:
+        #     # if no known voucher data
+        #     # write to logger
+        #     _logger.error("%s voucher doesn't exist" % data['voucher_reference_code'])
+        #
+        #     # raise error
+        #     return ERR.get_error(additional_message="Voucher doesn't exist")
 
         # if main voucher exist, lets try to get the voucher detail data
         # get voucher detail data
-        voucher_detail = voucher.voucher_detail_ids.filtered(lambda x: x['voucher_period_reference'] == data[
-            'voucher_reference_period'])
+        # voucher_detail = voucher.voucher_detail_ids.filtered(lambda x: x['voucher_period_reference'] == data[
+        #     'voucher_reference_period'])
+
+        voucher_detail = self.env['tt.voucher.detail'].search([('voucher_period_reference', '=', data['voucher_reference_period'])])
 
         # check if voucher detail is actually exist
-        if voucher_detail.id == False:
+        if not voucher_detail:
             # if no known voucher detail
             # print to logger
             _logger.error("%s voucher doesn't exist" % data['voucher_reference'])
@@ -635,7 +641,7 @@ class TtVoucherDetail(models.Model):
         #####################
 
         # check for voucher state
-        if voucher.state != 'confirm':
+        if voucher_detail.voucher_id.state != 'confirm':
             # if voucher is not confirmed
             # print to logger
             _logger.error("%s voucher is either expired or inactive" % data['voucher_reference'])
@@ -654,11 +660,11 @@ class TtVoucherDetail(models.Model):
 
         # check for voucher quota
         # check if voucher is multi_usage voucher
-        if voucher.voucher_multi_usage:
+        if voucher_detail.voucher_id.voucher_multi_usage:
             # voucher is multi use
             # check if voucher value is up
             # if voucher value - voucher usage <= 0
-            if voucher.voucher_value - voucher.voucher_usage_value <= 0:
+            if voucher_detail.voucher_id.voucher_value - voucher_detail.voucher_id.voucher_usage_value <= 0:
                 # voucher value is up
                 # Print logger
                 _logger.error("%s Voucher value is up" % data['voucher_reference'])
@@ -696,10 +702,10 @@ class TtVoucherDetail(models.Model):
             return ERR.get_error(additional_message="Agent is not allowed to use voucher %s" % data['voucher_reference'])
 
         # if is_customer_exclusive is True, check if customer is eligible to use the voucher
-        if voucher.is_customer_exclusive:
+        if voucher_detail.voucher_id.is_customer_exclusive:
             cust_is_eligible = False
             for cust in order_obj.passenger_ids:
-                if voucher.voucher_customer_id.first_name == cust.first_name and voucher.voucher_customer_id.last_name == cust.last_name:
+                if voucher_detail.voucher_id.voucher_customer_id.first_name == cust.first_name and voucher.voucher_customer_id.last_name == cust.last_name:
                     cust_is_eligible = True
                     break
 
@@ -720,7 +726,7 @@ class TtVoucherDetail(models.Model):
         #####################
 
         # check for minimum purchase
-        if order_obj.total_fare < voucher.voucher_minimum_purchase:
+        if order_obj.total_fare < voucher_detail.voucher_id.voucher_minimum_purchase:
             # total fare is under the minimum_purchase
             # print logger
             _logger.error("%s, Order did not meet minimum purchase required" % order_obj['name'])
@@ -736,7 +742,7 @@ class TtVoucherDetail(models.Model):
         result_array = []
 
         # dependencies of voucher amount, and just to be safe
-        voucher_remainder = voucher.voucher_value - voucher.voucher_usage_value
+        voucher_remainder = voucher_detail.voucher_id.voucher_value - voucher_detail.voucher_id.voucher_usage_value
         voucher_usage = 0
 
         # iterate for every provider
@@ -751,7 +757,7 @@ class TtVoucherDetail(models.Model):
             temp_array = []
 
             # create eligible provider
-            if voucher.voucher_coverage != 'all':
+            if voucher_detail.voucher_id.voucher_coverage != 'all':
                 # create data to check
                 # since dependencies len is < 2
                 temp_dict = {
@@ -770,10 +776,10 @@ class TtVoucherDetail(models.Model):
                 # at this point provider within transaction is covered by voucher
 
                 # check if voucher is multiusage and percent
-                if voucher.voucher_type == 'percent' and voucher.voucher_multi_usage:
+                if voucher_detail.voucher_id.voucher_type == 'percent' and voucher_detail.voucher_id.voucher_multi_usage:
                     # voucher invalid
                     # no way multi use is percent will let it slide
-                    _logger.error("Voucher logic is invalid, %s" % voucher.voucher_reference_code)
+                    _logger.error("Voucher logic is invalid, %s" % voucher_detail.voucher_id.voucher_reference_code)
 
                     # let the data pass
                     for j in i.cost_service_charge_ids:
@@ -787,7 +793,7 @@ class TtVoucherDetail(models.Model):
                             'charge_type': j.charge_type,
                             'start_amount': j.total,
                             'discount_value': 0.0,
-                            'voucher_type': voucher.voucher_type,
+                            'voucher_type': voucher_detail.voucher_id.voucher_type,
                             'discount_amount': 0.0,
                             'final_amount': j.total
                         }
@@ -795,21 +801,21 @@ class TtVoucherDetail(models.Model):
                         # adding result to temp array
                         temp_array.append(result_temp)
 
-                elif voucher.voucher_type == 'percent' and not voucher.voucher_multi_usage:
+                elif voucher_detail.voucher_id.voucher_type == 'percent' and not voucher_detail.voucher_id.voucher_multi_usage:
                     # voucher is percent
                     _logger.info(i.cost_service_charge_ids)
                     # iterate every cost
                     for j in i.cost_service_charge_ids:
 
                         # if voucher cover all pricing
-                        if voucher.voucher_effect_all:
+                        if voucher_detail.voucher_id.voucher_effect_all:
 
                             # make sure charge type is not comission
                             if j.charge_type != 'RAC':
                                 _logger.info("Will be discount: %s, %s" % (j.charge_code, j.charge_type))
                                 # charge_type is not RAC
                                 # count the discount
-                                discount_amount = float(j.total) * voucher.voucher_value / 100
+                                discount_amount = float(j.total) * voucher_detail.voucher_id.voucher_value / 100
 
                                 # SUM discount amount
                                 final_amount = float(j.total) - float(discount_amount)
@@ -823,8 +829,8 @@ class TtVoucherDetail(models.Model):
                                     'charge_code': j.charge_code,
                                     'charge_type': j.charge_type,
                                     'start_amount': j.total,
-                                    'discount_value': voucher.voucher_value,
-                                    'voucher_type': voucher.voucher_type,
+                                    'discount_value': voucher_detail.voucher_id.voucher_value,
+                                    'voucher_type': voucher_detail.voucher_id.voucher_type,
                                     'discount_amount': float(discount_amount),
                                     'final_amount': float(final_amount)
                                 }
@@ -839,7 +845,7 @@ class TtVoucherDetail(models.Model):
                                     'charge_type': j.charge_type,
                                     'start_amount': j.total,
                                     'discount_value': 0.0,
-                                    'voucher_type': voucher.voucher_type,
+                                    'voucher_type': voucher_detail.voucher_id.voucher_type,
                                     'discount_amount': 0.0,
                                     'final_amount': j.total
                                 }
@@ -853,7 +859,7 @@ class TtVoucherDetail(models.Model):
                                 _logger.info("Will be discount: %s, %s" % (j.charge_code, j.charge_type))
                                 # charge_type is not RAC
                                 # count the discount
-                                discount_amount = float(j.total) * voucher.voucher_value / 100
+                                discount_amount = float(j.total) * voucher_detail.voucher_id.voucher_value / 100
 
                                 # SUM discount amount
                                 final_amount = float(j.total) - float(discount_amount)
@@ -867,8 +873,8 @@ class TtVoucherDetail(models.Model):
                                     'charge_code': j.charge_code,
                                     'charge_type': j.charge_type,
                                     'start_amount': j.total,
-                                    'discount_value': voucher.voucher_value,
-                                    'voucher_type': voucher.voucher_type,
+                                    'discount_value': voucher_detail.voucher_id.voucher_value,
+                                    'voucher_type': voucher_detail.voucher_id.voucher_type,
                                     'discount_amount': float(discount_amount),
                                     'final_amount': float(final_amount)
                                 }
@@ -887,7 +893,7 @@ class TtVoucherDetail(models.Model):
                                     'charge_type': j.charge_type,
                                     'start_amount': j.total,
                                     'discount_value': 0.0,
-                                    'voucher_type': voucher.voucher_type,
+                                    'voucher_type': voucher_detail.voucher_id.voucher_type,
                                     'discount_amount': 0.0,
                                     'final_amount': j.total
                                 }
@@ -905,7 +911,7 @@ class TtVoucherDetail(models.Model):
                         for j in i.cost_service_charge_ids:
 
                             # check if voucher check all
-                            if voucher.voucher_effect_all:
+                            if voucher_detail.voucher_id.voucher_effect_all:
                                 # check if price sector or voucher value is bigger
                                 if j.charge_type != 'RAC':
                                     _logger.info("Will be discount: %s, %s" % (j.charge_code, j.charge_type))
@@ -935,7 +941,7 @@ class TtVoucherDetail(models.Model):
                                         'charge_type': j.charge_type,
                                         'start_amount': j.total,
                                         'discount_value': voucher_usage,
-                                        'voucher_type': voucher.voucher_type,
+                                        'voucher_type': voucher_detail.voucher_id.voucher_type,
                                         'discount_amount': float(temp_voucher_usage),
                                         'final_amount': float(final_amount)
                                     }
@@ -949,7 +955,7 @@ class TtVoucherDetail(models.Model):
                                         'charge_type': j.charge_type,
                                         'start_amount': j.total,
                                         'discount_value': 0.0,
-                                        'voucher_type': voucher.voucher_type,
+                                        'voucher_type': voucher_detail.voucher_id.voucher_type,
                                         'discount_amount': 0.0,
                                         'final_amount': j.total
                                     }
@@ -986,7 +992,7 @@ class TtVoucherDetail(models.Model):
                                         'charge_type': j.charge_type,
                                         'start_amount': j.total,
                                         'discount_value': voucher_usage,
-                                        'voucher_type': voucher.voucher_type,
+                                        'voucher_type': voucher_detail.voucher_id.voucher_type,
                                         'discount_amount': float(temp_voucher_usage),
                                         'final_amount': float(final_amount)
                                     }
@@ -1003,7 +1009,7 @@ class TtVoucherDetail(models.Model):
                                         'charge_type': j.charge_type,
                                         'start_amount': j.total,
                                         'discount_value': 0.0,
-                                        'voucher_type': voucher.voucher_type,
+                                        'voucher_type': voucher_detail.voucher_id.voucher_type,
                                         'discount_amount': 0.0,
                                         'final_amount': j.total
                                     }
@@ -1024,7 +1030,7 @@ class TtVoucherDetail(models.Model):
                                 'charge_type': j.charge_type,
                                 'start_amount': j.total,
                                 'discount_value': 0.0,
-                                'voucher_type': voucher.voucher_type,
+                                'voucher_type': voucher_detail.voucher_id.voucher_type,
                                 'discount_amount': 0.0,
                                 'final_amount': j.total
                             }
@@ -1044,7 +1050,7 @@ class TtVoucherDetail(models.Model):
                         'charge_type': j.charge_type,
                         'start_amount': j.total,
                         'discount_value': 0.0,
-                        'voucher_type': voucher.voucher_type,
+                        'voucher_type': voucher_detail.voucher_id.voucher_type,
                         'discount_amount': 0.0,
                         'final_amount': j.total
                     }
@@ -1088,12 +1094,13 @@ class TtVoucherDetail(models.Model):
         result_array = []
 
         # split voucher reference
-        splits = data['voucher_reference'].split(".")
+        # splits = data['voucher_reference'].split(".")
         # get the first index of split
-        data['voucher_reference_code'] = splits[0]
+        # data['voucher_reference_code'] = splits[0]
         # try to get the second half
         try:
-            data['voucher_reference_period'] = splits[1]
+            # data['voucher_reference_period'] = splits[1]
+            data['voucher_reference_period'] = data['voucher_reference']
         except:
             # write to logger
             _logger.error("%s, voucher code is invalid" % data['voucher_reference'])
@@ -1102,18 +1109,21 @@ class TtVoucherDetail(models.Model):
 
         # at this point the voucher code is legal
         # check if the reference code voucher is actually exist
-        voucher = self.env['tt.voucher'].search([('voucher_reference_code', '=', data['voucher_reference_code'])])
-        if voucher.id == False:
-            # no voucher found
-            # write to logger
-            _logger.error("%s voucher is not exist" % data['voucher_reference'])
-            # return error
-            return ERR.get_error(additional_message="Voucher is NOT exist")
+        # voucher = self.env['tt.voucher'].search([('voucher_reference_code', '=', data['voucher_reference_code'])])
+        # if voucher.id == False:
+        #     # no voucher found
+        #     # write to logger
+        #     _logger.error("%s voucher is not exist" % data['voucher_reference'])
+        #     # return error
+        #     return ERR.get_error(additional_message="Voucher is NOT exist")
 
         # okay so voucher is exist, but is the particular period voucher exist
-        voucher_detail = voucher.voucher_detail_ids.filtered(
-            lambda x: x['voucher_period_reference'] == data['voucher_reference_period'])
-        if voucher_detail.id == False:
+        # voucher_detail = voucher.voucher_detail_ids.filtered(
+        #     lambda x: x['voucher_period_reference'] == data['voucher_reference_period'])
+
+        voucher_detail = self.env['tt.voucher.detail'].search([('voucher_period_reference', '=', data['voucher_reference_period'])])
+
+        if not voucher_detail:
             # no voucher detail found
             # write to logger
             _logger.error("%s voucher is not exist" % data['voucher_reference'])
@@ -1121,7 +1131,7 @@ class TtVoucherDetail(models.Model):
             return ERR.get_error(additional_message="Voucher is NOT Exist")
 
         # voucher is exist hooray, now we'll check if the voucher could be use
-        if voucher.state != 'confirm':
+        if voucher_detail.voucher_id.state != 'confirm':
             # voucher is expired dun dun dun
             # write log
             _logger.error("%s Voucher is either expired or inactive" % data['voucher_reference'])
@@ -1144,8 +1154,8 @@ class TtVoucherDetail(models.Model):
             # return error
             return ERR.get_error(additional_message="Voucher cannot be use outside designated date")
 
-        if voucher.voucher_multi_usage:
-            if voucher.voucher_value - voucher.voucher_usage_value <= 0:
+        if voucher_detail.voucher_id.voucher_multi_usage:
+            if voucher_detail.voucher_id.voucher_value - voucher_detail.voucher_id.voucher_usage_value <= 0:
                 # o no the voucher is up
                 # write to logger
                 _logger.error("%s Voucher has no value left :(" % data['voucher_reference'])
@@ -1175,9 +1185,9 @@ class TtVoucherDetail(models.Model):
             return ERR.get_error(additional_message="Agent cannot user the voucher")
 
         # if is_customer_exclusive is True, check if customer is eligible to use the voucher
-        if voucher.is_customer_exclusive:
+        if voucher_detail.voucher_id.is_customer_exclusive:
             cust_is_eligible = False
-            filtered_cust = filter(lambda x: x['first_name'] == voucher.voucher_customer_id.first_name and x['last_name'] == voucher.voucher_customer_id.last_name, data['passenger_list'])
+            filtered_cust = filter(lambda x: x['first_name'] == voucher_detail.voucher_id.voucher_customer_id.first_name and x['last_name'] == voucher_detail.voucher_id.voucher_customer_id.last_name, data['passenger_list'])
             for cust in filtered_cust:
                 if cust:
                     cust_is_eligible = True
@@ -1242,31 +1252,31 @@ class TtVoucherDetail(models.Model):
 
         # at this point the voucher can be use and will be use (?)
         # okay do something about the voucher
-        if voucher.voucher_multi_usage:
-            voucher_value = voucher.voucher_value - voucher.voucher_usage_value
+        if voucher_detail.voucher_id.voucher_multi_usage:
+            voucher_value = voucher_detail.voucher_id.voucher_value - voucher_detail.voucher_id.voucher_usage_value
         else:
-            voucher_value = voucher.voucher_value
+            voucher_value = voucher_detail.voucher_id.voucher_value
 
         # maximum_cap
-        if voucher.voucher_maximum_cap < 1:
+        if voucher_detail.voucher_id.voucher_maximum_cap < 1:
             maximum_cap = False
         else:
-            maximum_cap = voucher.voucher_maximum_cap
+            maximum_cap = voucher_detail.voucher_id.voucher_maximum_cap
 
         # minimum purchase
-        if voucher.voucher_minimum_purchase < 1:
+        if voucher_detail.voucher_id.voucher_minimum_purchase < 1:
             minimum_purchase = False
         else:
-            minimum_purchase = voucher.voucher_minimum_purchase
+            minimum_purchase = voucher_detail.voucher_id.voucher_minimum_purchase
 
         result = {
             'reference_code': data['voucher_reference'],
-            'voucher_type': voucher.voucher_type,
+            'voucher_type': voucher_detail.voucher_id.voucher_type,
             'voucher_value': voucher_value,
-            'voucher_currency': voucher.currency_id.name,
+            'voucher_currency': voucher_detail.voucher_id.currency_id.name,
             'voucher_cap': maximum_cap,
             'voucher_minimum_purchase': minimum_purchase,
-            'voucher_effect_all': voucher.voucher_effect_all,
+            'voucher_effect_all': voucher_detail.voucher_id.voucher_effect_all,
             'date_expire': voucher_detail.voucher_expire_date.strftime("%Y-%m-%d"),
             'provider_type': data['provider_type'],
             'provider': result_array,
