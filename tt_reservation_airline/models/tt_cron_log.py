@@ -11,6 +11,7 @@ class TtCronLogInhResv(models.Model):
 
     def cron_sync_booking(self):
         book_objs = self.env['tt.reservation.airline'].search([('is_hold_date_sync', '=', False),
+                                                               ('state','in',['partial_booked','partial_issued','booked']),
                                                                ('create_date','>=',(datetime.now() - timedelta(1)))])
         _logger.info("### CRON SYNC ###")
         _logger.info(book_objs.ids)
