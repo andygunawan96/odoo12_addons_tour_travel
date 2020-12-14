@@ -1366,7 +1366,7 @@ class TtVoucherDetail(models.Model):
                 voucher_detail = self.env['tt.voucher.detail'].search([('voucher_period_reference', '=', data['voucher_reference'])])
                 provider_type = self.env['tt.provider.type'].search([('code', '=', simulate['response'][0]['provider_type_code'])], limit=1)
                 provider = self.env['tt.provider'].search([('code', '=', simulate['response'][0]['provider_code'])], limit=1)
-                voucher = self.env['tt.voucher'].search([('voucher_reference', '=', data['voucher_reference'])], limit=1)
+                voucher = self.env['tt.voucher'].search([('id', '=', voucher_detail.voucher_id.id)], limit=1)
 
                 discount_total = 0
                 for i in simulate['response']:
