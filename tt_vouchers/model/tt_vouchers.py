@@ -1359,11 +1359,11 @@ class TtVoucherDetail(models.Model):
 
             simulate = self.new_simulate_voucher(data, context)
             if simulate['error_code'] == 0:
-                splits = data['voucher_reference'].split(".")
-                data['voucher_reference'] = splits[0]
-                data['voucher_reference_period'] = splits[1]
+                # splits = data['voucher_reference'].split(".")
+                # data['voucher_reference'] = splits[0]
+                data['voucher_reference_period'] = data['voucher_reference']
 
-                voucher_detail = self.env['tt.voucher.detail'].search([('voucher_reference', '=', data['voucher_reference']), ('voucher_period_reference', '=', data['voucher_reference_period'])])
+                voucher_detail = self.env['tt.voucher.detail'].search([('voucher_period_reference', '=', data['voucher_reference'])])
                 provider_type = self.env['tt.provider.type'].search([('code', '=', simulate['response'][0]['provider_type_code'])], limit=1)
                 provider = self.env['tt.provider'].search([('code', '=', simulate['response'][0]['provider_code'])], limit=1)
                 voucher = self.env['tt.voucher'].search([('voucher_reference', '=', data['voucher_reference'])], limit=1)
