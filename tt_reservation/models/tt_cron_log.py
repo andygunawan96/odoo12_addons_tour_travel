@@ -41,6 +41,15 @@ class TtCronLogInhResv(models.Model):
                     recon_obj_list = wiz_obj.send_recon_request_data()
                     for recon_obj in recon_obj_list:
                         recon_obj.compare_reconcile_data()
+                        # Todo: Fungsi Cek apakah masih ada data yg state issued / booked tpi blum ter reconcile
+                        need_to_check_obj = recon_obj.find_unreconciled_reservation(wiz_obj.date_from, wiz_obj.date_to)
+                        data = {
+                            'code': 9901,
+                            'message': 'Issued in System not issued in Vendor: ' + recon_obj.ntc_to_str(need_to_check_obj),
+                            'provider': provider_obj.name,
+                        }
+                        self.env['tt.api.con'].send_request_to_gateway('%s/notification' % (self.env['tt.api.con'].url), data, 'notification_code')
+                        # GatewayConnector().telegram_notif_api(data, gw_ctx)
                 except Exception as e:
                     error_list += '%s\n%s' % (provider_obj.name,traceback.format_exc())
             if error_list:
