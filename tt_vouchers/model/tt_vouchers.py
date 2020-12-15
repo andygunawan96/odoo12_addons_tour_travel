@@ -1204,8 +1204,13 @@ class TtVoucherDetail(models.Model):
         # check provider
         if type(data['provider']) is list:
             # if provider list pass is list type
+            # provider can be list, if particular order is multi provider
+            # if multi provider, then we need to make sure only provider eligible for voucher, get the discount
             for i in data['provider']:
+                # search the exact prvider
                 provider = self.env['tt.provider'].search([('code', '=', i)])
+
+                # create data to check if current iteration provider is eligible for voucher discount
                 to_check = {
                     'provider_type_id': provider.provider_type_id.id,
                     'provider_id': provider.id,
@@ -1213,7 +1218,9 @@ class TtVoucherDetail(models.Model):
                     'voucher_reference': data['voucher_reference']
                 }
 
+                # run the code to check
                 is_eligible = self.env['tt.voucher'].is_product_eligible(to_check)
+                # if provider is eligible
                 if is_eligible:
                     to_return = {
                         'provider_type': data['provider_type'],
@@ -1221,6 +1228,7 @@ class TtVoucherDetail(models.Model):
                         'able_to_use': True
                     }
                 else:
+                # if not
                     to_return = {
                         'provider_type': data['provider_type'],
                         'provider': i,
@@ -1346,8 +1354,13 @@ class TtVoucherDetail(models.Model):
             'response': ''
         }
 
+    ###############################################
+    # Main function that's being called for voucher
+    # well other than simulate_voucher_api, that's being called before order being booked
+    ###############################################
     def use_voucher_new(self, data, context):
         try:
+            # check if there's data being pass from frontend/gateway
             if data == None:
                 return ERR.get_error()
             # data = {
@@ -1357,21 +1370,38 @@ class TtVoucherDetail(models.Model):
             #   provider_type
             # }
 
+            # called simulate voucher (basically who runs the validator and return how many discount the voucher will give)
             simulate = self.new_simulate_voucher(data, context)
+
+            # if it success
             if simulate['error_code'] == 0:
+                # okay so the purpose of this if logic is to built and trim data for return
+
                 # splits = data['voucher_reference'].split(".")
                 # data['voucher_reference'] = splits[0]
+
+                # first get the voucher reference
                 data['voucher_reference_period'] = data['voucher_reference']
 
+                # search directly to voucher detail, since we'll not be using voucher (parent) reference
                 voucher_detail = self.env['tt.voucher.detail'].search([('voucher_period_reference', '=', data['voucher_reference'])])
+                # get all of necessary data
                 provider_type = self.env['tt.provider.type'].search([('code', '=', simulate['response'][0]['provider_type_code'])], limit=1)
                 provider = self.env['tt.provider'].search([('code', '=', simulate['response'][0]['provider_code'])], limit=1)
                 voucher = self.env['tt.voucher'].search([('id', '=', voucher_detail.voucher_id.id)], limit=1)
 
+                # set discount total variable, this variable will be very useful
+                # especially if order contains more than one provider
+                # for sum of course
                 discount_total = 0
+
+                # count all of discount
                 for i in simulate['response']:
                     discount_total += i['provider_total_discount']
 
+                # create data to add to voucher usage
+                # a.k.a tracking record of particular voucher, maybe in the future the data can be use
+                # better to record than sorry
                 use_voucher_data = {
                     'voucher_detail_id': voucher_detail.id,
                     'voucher_date_use': data['date'],
@@ -1382,13 +1412,25 @@ class TtVoucherDetail(models.Model):
                     'currency': voucher.currency_id.id,
                     'voucher_usage': discount_total,
                 }
+
+                # create used voucher data
                 res = self.env['tt.voucher.detail.used'].add_voucher_used_detail(use_voucher_data)
+
+                # if for some reason the usage failed to add, then return error
                 if res.id == False:
                     return ERR.get_error(additional_message="voucher usage failed")
                 else:
+                    # if it's success, check if voucher is multi usage type
+                    # multi usage voucher acct like digital currency
+                    # so the voucher will not be burned after one use
+                    # in order to do that, we keep track how much value the user had use
                     if voucher.voucher_multi_usage:
+                        # adding the value to voucher usage
+                        # like finalizing value of usage
                         voucher.voucher_usage_value += discount_total
                     else:
+                        # assuming other voucher are normal boring voucher
+                        # then we'll add number of usage for that particular voucher
                         number_of_use = voucher_detail.voucher_used + 1
                         voucher_detail.write({
                             'voucher_used': number_of_use
@@ -1399,6 +1441,7 @@ class TtVoucherDetail(models.Model):
                     except Exception as e:
                         _logger.info('Error Create Voucher Usage Email Queue')
 
+            # if failed then return the error from simulate
             else:
                 return simulate
             return simulate

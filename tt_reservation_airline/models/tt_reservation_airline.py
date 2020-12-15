@@ -754,6 +754,7 @@ class ReservationAirline(models.Model):
                 # END
 
                 res.update({
+                    'is_hold_date_sync': book_obj.is_hold_date_sync,
                     'direction': book_obj.direction,
                     'origin': book_obj.origin_id.code,
                     'destination': book_obj.destination_id.code,
