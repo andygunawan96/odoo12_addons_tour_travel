@@ -57,6 +57,47 @@ class TtReconcileTransaction(models.Model):
                     'reconcile_time': datetime.now()
                 })
 
+    def find_unreconciled_reservation(self, start_date=False, end_date=False):
+        # TODO: pertimbangkan apakah state booked or etc diperhitungkan juga
+        state_list = ['issued', 'refund', 'reschedule']
+        resv_date = False #Tanggal yg digunakan untuk pengecekan
+        need_to_check = {'in_range':{}, 'out_range':{}}
+        # CTH: klo state issued dia pakai issued date, klo state booking kita pakai booking date e dkk
+        for rec in self.env['tt.provider.%s' % (self.provider_type_id.code)].search([('reconcile_line_id', '=', False),('state','in',state_list)]):
+            if rec.state in ['issued', 'refund', 'reschedule']:
+                resv_date = rec.issued_date
+            elif rec.state in ['booked']:
+                resv_date = rec.booked_date
+            # Cek apakah reconcile untuk tanggal itu sdah ada?
+            # Pada tgl 15/12/2020 fungsi ini diletakan dibwah cron get reconcile
+            # Conclusion: Skip fungsi ini untuk better performance
+
+            # Filter apakah provider_booking diatas masuk dalam range tanggal yg mau kita proses?
+            if start_date <= resv_date.date() <= end_date:
+                type = 'in_range'
+            else:
+                type = 'out_range'
+                continue #Remark baris ini jika pingin di notif untuk data yg out range
+
+            if not need_to_check[type].get(str(resv_date)[:10]):
+                need_to_check[type][str(resv_date)[:10]] = []
+            need_to_check[type][str(resv_date)[:10]].append({
+                'order_number': rec.booking_id.name,
+                'pnr': rec.pnr,
+                'provider': rec.provider_id.name,
+            })
+        return need_to_check
+
+    def ntc_to_str(self, need_to_check):
+        return_str = ''
+        for ntc_key in need_to_check.keys():
+            for date in need_to_check[ntc_key].keys():
+                return_str += date + ':\n'
+                for idx, rec in enumerate(need_to_check[ntc_key][date]):
+                    return_str += str(idx + 1) + '. ' + rec['order_number'] + '(' + rec['pnr'] + ') '
+                    return_str += 'Provider:' + rec['provider'] + '\n'
+        return return_str
+
     def view_filter_tree(self):
         tree_id = self.env.ref('tt_reservation.tt_reconcile_transaction_lines_tree_view')
         return {
