@@ -1579,7 +1579,7 @@ class ReservationAirline(models.Model):
                     'filename': 'Airline Ticket Original %s.pdf' % book_obj.name,
                     'file_reference': 'Airline Ticket Original',
                     'file': base64['base64'],
-                    'delete_date': datetime.today() + timedelta(minutes=10)
+                    'delete_date': datetime.strptime(book_obj.arrival_date,'%Y-%m-%d') + timedelta(days=7)
                 },
                 {
                     'co_agent_id': co_agent_id,
@@ -1611,7 +1611,9 @@ class ReservationAirline(models.Model):
             for provider_booking_obj in book_obj.provider_booking_ids:
                 req = {
                     'pnr': provider_booking_obj.pnr,
-                    'provider': book_obj.provider_name
+                    'provider': book_obj.provider_name,
+                    'last_name': book_obj.passenger_ids[0].last_name,
+                    'pnr2': provider_booking_obj.pnr2
                 }
                 res = self.env['tt.airline.api.con'].send_get_original_ticket(req)
                 if res['error_code'] == 0:
