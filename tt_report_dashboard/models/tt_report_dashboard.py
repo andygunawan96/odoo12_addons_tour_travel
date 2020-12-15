@@ -782,22 +782,22 @@ class TtReportDashboard(models.Model):
                 # it will be very absurd if stand alone,
                 # however this particular graph will co-respond to fourth and fifth graph in front end, so theres that
                 # in front end you will also find as fourth and fifth graph and all
-                'fourth_graph': {
+                'fifth_graph': {
                     'label': label_data,
                     'data': revenue_data,
                     'data2': reservation_data,
                     'data3': average_data,
                     'data4': profit_data
                 },
-                'fourth_overview': summary_customer,
-                'fifth_graph': {
+                'fifth_overview': summary_customer,
+                'fourth_graph': {
                     'label': label_data2,
                     'data': revenue_data2,
                     'data2': reservation_data2,
                     'data3': average_data2,
                     'data4': profit_data2
                 },
-                'fifth_overview': summary_customer_parent
+                'fourth_overview': summary_customer_parent
             }
 
             # return data
