@@ -30,7 +30,7 @@ class Response:
         self.__dict__.update({
             'error_code': error_code,
             'error_msg': error_message,
-            'error_additional_message': additional_message,
+            'error_additional_msg': additional_message,
             'response': ''
         })
         return self.to_dict()
