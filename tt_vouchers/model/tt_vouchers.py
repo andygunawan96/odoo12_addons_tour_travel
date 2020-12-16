@@ -304,11 +304,18 @@ class TtVoucher(models.Model):
 
         return ERR.get_no_error(final_voucher)
 
+    # is product eligible responsible to check if the voucher allowed to effect product given
+    # andy yang nge code
     def is_product_eligible(self, data):
-        voucher = self.env['tt.voucher'].search([('voucher_reference_code', "=", data['voucher_reference'])])
+        # search voucher by id
+        voucher = self.env['tt.voucher'].search([('id', "=", data['voucher_id'])])
 
+        # set default to false, since if everything goes wrong, then the voucher will not be use
         is_provider_type_eligible = False
+
+        # check if voucher covers all product type then
         if voucher.provider_type_access_type == 'all':
+            # set to true
             is_provider_type_eligible = True
         elif voucher.provider_type_access_type == 'allow':
             if int(data['provider_type_id']) in voucher.voucher_provider_type_eligibility_ids.ids:
@@ -334,8 +341,11 @@ class TtVoucher(models.Model):
         return True
 
     #update
+    # is product eligible responsible to check if the voucher allowed to effect agent given
+    # andy yang ngecode
     def is_agent_eligible(self, data):
-        voucher = self.env['tt.voucher'].search([('voucher_reference_code', "=", data['voucher_reference'])])
+        #search voucher by id
+        voucher = self.env['tt.voucher'].search([('id', "=", data['voucher_id'])])
 
         is_agent_type_eligible = False
         if voucher.agent_type_access_type == 'all':
@@ -686,6 +696,7 @@ class TtVoucherDetail(models.Model):
 
         # prepare data to check if voucher is able to be use by agent
         to_check = {
+            'voucher_id': voucher_detail.voucher_id.id,
             'voucher_reference': data['voucher_reference'],
             'agent_type_id': context['co_agent_type_id'],
             'agent_id': context['co_agent_id']
@@ -761,6 +772,7 @@ class TtVoucherDetail(models.Model):
                 # create data to check
                 # since dependencies len is < 2
                 temp_dict = {
+                    'voucher_id': voucher_detail.voucher_id.id,
                     'voucher_reference': data['voucher_reference'],
                     'provider_type_id': i.provider_id.provider_type_id.id,
                     'provider_id': i.provider_id.id,
@@ -1172,6 +1184,7 @@ class TtVoucherDetail(models.Model):
 
         # check agent
         agent_to_validate = {
+            'voucher_id': voucher_detail.voucher_id.id,
             'voucher_reference': data['voucher_reference'],
             'agent_type_id': context['co_agent_type_id'],
             'agent_id': context['co_agent_id']
@@ -1212,6 +1225,7 @@ class TtVoucherDetail(models.Model):
 
                 # create data to check if current iteration provider is eligible for voucher discount
                 to_check = {
+                    'voucher_id': voucher_detail.voucher_id.id,
                     'provider_type_id': provider.provider_type_id.id,
                     'provider_id': provider.id,
                     'provider_name': i,
