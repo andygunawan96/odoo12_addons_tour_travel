@@ -30,6 +30,7 @@ class ReportSelling(models.Model):
         reservation.payment_method as reservation_payment_method,
         reservation.agent_id as agent_id, reservation.agent_type_id as agent_type_id,
         customer.id as customer_id, customer.name as customer_name,
+        customer_parent.id as customer_parent_id, customer_parent.name as customer_parent_name,
         agent.name as agent_name, agent_type.name as agent_type_name,
         provider.name as provider_name,
         ledger.id as ledger_id, ledger.ref as ledger_name,
@@ -63,6 +64,7 @@ class ReportSelling(models.Model):
         reservation.booked_date as reservation_booked_date_og, 
         reservation.issued_date as reservation_issued_date_og,
         customer.id as customer_id, customer.name as customer_name,
+        customer_parent.id as customer_parent_id, customer_parent.name as customer_parent_name,
         journey.id as journey_id,
         journey.departure_date as journey_departure_date,
         segment.id as segment_id,
@@ -101,6 +103,7 @@ class ReportSelling(models.Model):
         reservation.booked_date as reservation_booked_date_og, 
         reservation.issued_date as reservation_issued_date_og,
         customer.id as customer_id, customer.name as customer_name,
+        customer_parent.id as customer_parent_id, customer_parent.name as customer_parent_name,
         journey.id as journey_id,
         journey.departure_date as journey_departure_date,
         reservation.elder as reservation_elder, 
@@ -138,6 +141,7 @@ class ReportSelling(models.Model):
         reservation.hotel_city as hotel_city,
         reservation.hotel_city_id as hotel_city_id,
         customer.id as customer_id, customer.name as customer_name,
+        customer_parent.id as customer_parent_id, customer_parent.name as customer_parent_name,
         country.name as country_name,
         reservation.elder as reservation_elder, 
         reservation.adult as reservation_adult, 
@@ -167,6 +171,7 @@ class ReportSelling(models.Model):
         reservation.total as amount,
         reservation.carrier_name as carrier_name,
         customer.id as customer_id, customer.name as customer_name,
+        customer_parent.id as customer_parent_id, customer_parent.name as customer_parent_name,
         activity.name as reservation_activity_name,
         product.name as reservation_activity_product,
         activity_detail.visit_date as reservation_visit_date_og,
@@ -201,6 +206,7 @@ class ReportSelling(models.Model):
         reservation.child as reservation_child, 
         reservation.infant as reservation_infant,
         customer.id as customer_id, customer.name as customer_name,
+        customer_parent.id as customer_parent_id, customer_parent.name as customer_parent_name,
         provider_type.name as provider_type_name,
         tour.name as tour_name,
         tour.tour_category as tour_category, 
@@ -235,6 +241,7 @@ class ReportSelling(models.Model):
         reservation.child as reservation_child, 
         reservation.infant as reservation_infant,
         customer.id as customer_id, customer.name as customer_name,
+        customer_parent.id as customer_parent_id, customer_parent.name as customer_parent_name,
         provider_type.name as provider_type_name,
         provider.name as provider_name,
         country.name as country_name,
@@ -269,6 +276,7 @@ class ReportSelling(models.Model):
         reservation.offline_provider_type as reservation_offline_provider_type, 
         reservation.nta_price as reservation_nta_price, 
         customer.id as customer_id, customer.name as customer_name,
+        customer_parent.id as customer_parent_id, customer_parent.name as customer_parent_name,
         provider_type.name as provider_type_name,
         provider.name as provider_name,
         agent.name as agent_name, agent_type.name as agent_type_name,
@@ -298,6 +306,7 @@ class ReportSelling(models.Model):
         reservation.child as reservation_child, 
         reservation.infant as reservation_infant,
         customer.id as customer_id, customer.name as customer_name,
+        customer_parent.id as customer_parent_id, customer_parent.name as customer_parent_name,
         provider_type.name as provider_type_name,
         provider.name as provider_name,
         COUNT(reservation_passenger.booking_id) as reservation_passenger,
@@ -321,6 +330,7 @@ class ReportSelling(models.Model):
         reservation.payment_method as reservation_payment_method,
         reservation.agent_id as agent_id, reservation.agent_type_id as agent_type_id,
         customer.id as customer_id, customer.name as customer_name,
+        customer_parent.id as customer_parent_id, customer_parent.name as customer_parent_name,
         pro_ppob.carrier_name as carrier_name,
         provider_type.name as provider_type_name,
         provider.name as provider_name,
@@ -340,6 +350,7 @@ class ReportSelling(models.Model):
         return """tt_reservation_""" + provider_type + """ reservation
         LEFT JOIN tt_provider_type provider_type ON reservation.provider_type_id = provider_type.id
         LEFT JOIN tt_customer customer ON customer.id = reservation.booker_id
+        LEFT JOIN tt_customer_parent customer_parent ON customer_parent.id = reservation.customer_parent_id
         LEFT JOIN tt_agent agent ON agent.id = reservation.agent_id
         LEFT JOIN tt_agent_type agent_type ON agent_type.id = reservation.agent_type_id
         LEFT JOIN tt_provider_""" + provider_type + """ pro_type ON pro_type.booking_id = reservation.id
@@ -359,6 +370,7 @@ class ReportSelling(models.Model):
         return """tt_reservation_airline reservation
         LEFT JOIN tt_provider_type provider_type ON reservation.provider_type_id = provider_type.id
         LEFT JOIN tt_customer customer ON customer.id = reservation.booker_id
+        LEFT JOIN tt_customer_parent customer_parent ON customer_parent.id = reservation.customer_parent_id
         LEFT JOIN tt_destinations departure ON reservation.origin_id = departure.id
         LEFT JOIN tt_destinations destination ON reservation.destination_id = destination.id
         LEFT JOIN tt_journey_airline journey ON journey.booking_id = reservation.id
@@ -379,6 +391,7 @@ class ReportSelling(models.Model):
         return """tt_reservation_train reservation
         LEFT JOIN tt_provider_type provider_type ON reservation.provider_type_id = provider_type.id
         LEFT JOIN tt_customer customer ON customer.id = reservation.booker_id
+        LEFT JOIN tt_customer_parent customer_parent ON customer_parent.id = reservation.customer_parent_id
         LEFT JOIN tt_destinations departure ON reservation.origin_id = departure.id
         LEFT JOIN tt_destinations destination ON reservation.destination_id = destination.id
         LEFT JOIN tt_journey_train journey ON journey.booking_id = reservation.id
@@ -397,6 +410,7 @@ class ReportSelling(models.Model):
         return """tt_reservation_hotel reservation
         LEFT JOIN tt_provider_type provider_type ON reservation.provider_type_id = provider_type.id
         LEFT JOIN tt_customer customer ON customer.id = reservation.booker_id
+        LEFT JOIN tt_customer_parent customer_parent ON customer_parent.id = reservation.customer_parent_id
         LEFT JOIN tt_reservation_passenger_hotel reservation_passenger ON reservation_passenger.booking_id = reservation.id
         LEFT JOIN tt_agent agent ON agent.id = reservation.agent_id
         LEFT JOIN tt_agent_type agent_type ON agent_type.id = reservation.agent_type_id
@@ -414,6 +428,7 @@ class ReportSelling(models.Model):
         return """tt_reservation_activity reservation
         LEFT JOIN tt_reservation_activity_details activity_detail ON activity_detail.booking_id = reservation.id
         LEFT JOIN tt_customer customer ON customer.id = reservation.booker_id
+        LEFT JOIN tt_customer_parent customer_parent ON customer_parent.id = reservation.customer_parent_id
         LEFT JOIN tt_master_activity activity ON activity.id = activity_detail.activity_id
         LEFT JOIN tt_master_activity_lines product ON product.id = activity_detail.activity_product_id
         LEFT JOIN tt_provider_type provider_type ON reservation.provider_type_id = provider_type.id
@@ -431,6 +446,7 @@ class ReportSelling(models.Model):
     def _from_tour():
         return """tt_reservation_tour reservation
         LEFT JOIN tt_customer customer ON customer.id = reservation.booker_id
+        LEFT JOIN tt_customer_parent customer_parent ON customer_parent.id = reservation.customer_parent_id
         LEFT JOIN tt_master_tour tour ON tour.id = reservation.tour_id
         LEFT JOIN tt_tour_location_rel tour_location_rel ON tour_location_rel.product_id = tour.id
         LEFT JOIN tt_tour_master_locations tour_location ON tour_location.id = tour_location_rel.location_id
@@ -449,6 +465,7 @@ class ReportSelling(models.Model):
     def _from_visa():
         return """tt_reservation_visa reservation
         LEFT JOIN tt_customer customer ON customer.id = reservation.booker_id
+        LEFT JOIN tt_customer_parent customer_parent ON customer_parent.id = reservation.customer_parent_id
         LEFT JOIN tt_provider_type provider_type ON reservation.provider_type_id = provider_type.id
         LEFT JOIN res_country country ON country.id = reservation.country_id
         LEFT JOIN tt_reservation_visa_order_passengers reservation_passenger ON reservation_passenger.visa_id = reservation.id
@@ -465,6 +482,7 @@ class ReportSelling(models.Model):
     def _from_event():
         return """tt_reservation_event reservation
         LEFT JOIN tt_customer customer ON customer.id = reservation.booker_id
+        LEFT JOIN tt_customer_parent customer_parent ON customer_parent.id = reservation.customer_parent_id
         LEFT JOIN tt_provider_type provider_type ON reservation.provider_type_id = provider_type.id
         LEFT JOIN tt_reservation_passenger_activity reservation_passenger ON reservation_passenger.booking_id = reservation.id
         LEFT JOIN tt_agent agent ON agent.id = reservation.agent_id
@@ -480,6 +498,7 @@ class ReportSelling(models.Model):
     def _from_ppob():
         return """tt_reservation_ppob reservation
         LEFT JOIN tt_customer customer ON customer.id = reservation.booker_id
+        LEFT JOIN tt_customer_parent customer_parent ON customer_parent.id = reservation.customer_parent_id
         LEFT JOIN tt_provider_type provider_type ON reservation.provider_type_id = provider_type.id
         LEFT JOIN tt_reservation_passenger_activity reservation_passenger ON reservation_passenger.booking_id = reservation.id
         LEFT JOIN tt_agent agent ON agent.id = reservation.agent_id
@@ -495,6 +514,7 @@ class ReportSelling(models.Model):
     def _from_offline():
         return """tt_reservation_offline reservation
         LEFT JOIN tt_customer customer ON customer.id = reservation.booker_id
+        LEFT JOIN tt_customer_parent customer_parent ON customer_parent.id = reservation.customer_parent_id
         LEFT JOIN tt_provider_type provider_type ON reservation.provider_type_id = provider_type.id
         LEFT JOIN tt_agent agent ON agent.id = reservation.agent_id
         LEFT JOIN tt_agent_type agent_type ON agent_type.id = reservation.agent_type_id
@@ -513,24 +533,24 @@ class ReportSelling(models.Model):
     # so far works with all
     @staticmethod
     def _group_by_airline():
-        return """reservation.id, provider_type.name, departure.display_name, destination.display_name, journey.id, agent.name, agent_type.name, provider.name, ledger.id, ledger_agent.name, ledger_agent_type.name, segment.id, carrier.name, provider.code, customer.id"""
+        return """reservation.id, provider_type.name, departure.display_name, destination.display_name, journey.id, agent.name, agent_type.name, provider.name, ledger.id, ledger_agent.name, ledger_agent_type.name, segment.id, carrier.name, provider.code, customer.id, customer_parent.id"""
 
     @staticmethod
     def _group_by_train():
-        return """reservation.id, provider_type.name, departure.display_name, destination.display_name, journey.id, agent.name, agent_type.name, provider.name, ledger.id, ledger_agent.name, ledger_agent_type.name, customer.id"""
+        return """reservation.id, provider_type.name, departure.display_name, destination.display_name, journey.id, agent.name, agent_type.name, provider.name, ledger.id, ledger_agent.name, ledger_agent_type.name, customer.id, customer_parent.id"""
 
     #specified hotel
     @staticmethod
     def _group_by_hotel():
-        return """reservation.id, provider_type.name, agent.name, agent_type.name, provider.name, city.id, country.id, ledger.id, ledger_agent.name, ledger_agent_type.name, customer.id"""
+        return """reservation.id, provider_type.name, agent.name, agent_type.name, provider.name, city.id, country.id, ledger.id, ledger_agent.name, ledger_agent_type.name, customer.id, customer_parent.id"""
 
     @staticmethod
     def _group_by_activity():
-        return """reservation.id, provider_type.name, agent.name, agent_type.name, provider.name, activity.name, product.name, activity_detail.visit_date, activity_detail.timeslot, ledger.id, ledger_agent.name, ledger_agent_type.name, customer.id"""
+        return """reservation.id, provider_type.name, agent.name, agent_type.name, provider.name, activity.name, product.name, activity_detail.visit_date, activity_detail.timeslot, ledger.id, ledger_agent.name, ledger_agent_type.name, customer.id, customer_parent.id"""
 
     @staticmethod
     def _group_by_visa():
-        return """reservation.id, country.name,  provider_type.name, agent.name, agent_type.name, provider.name, ledger.id, ledger_agent.name, ledger_agent_type.name, customer.id"""
+        return """reservation.id, country.name,  provider_type.name, agent.name, agent_type.name, provider.name, ledger.id, ledger_agent.name, ledger_agent_type.name, customer.id, customer_parent.id"""
 
     @staticmethod
     def _group_by_tour():
@@ -538,15 +558,15 @@ class ReportSelling(models.Model):
         tour.tour_category, 
         tour.tour_type, 
         tour.tour_route, 
-        tour.duration, country.name,  tour_location.country_name, ledger.id, ledger_agent.name, ledger_agent_type.name, customer.id """
+        tour.duration, country.name,  tour_location.country_name, ledger.id, ledger_agent.name, ledger_agent_type.name, customer.id, customer_parent.id """
 
     @staticmethod
     def _group_by_event():
-        return """reservation.id, provider_type.name, agent.name, agent_type.name, provider.name, ledger.id, ledger_agent.name, ledger_agent_type.name, customer.id"""
+        return """reservation.id, provider_type.name, agent.name, agent_type.name, provider.name, ledger.id, ledger_agent.name, ledger_agent_type.name, customer.id, customer_parent.id"""
 
     @staticmethod
     def _group_by_ppob():
-        return """reservation.id, provider_type.name, agent.name, agent_type.name, provider.name, pro_ppob.carrier_name, ledger.id, ledger_agent.name, ledger_agent_type.name, customer.id"""
+        return """reservation.id, provider_type.name, agent.name, agent_type.name, provider.name, pro_ppob.carrier_name, ledger.id, ledger_agent.name, ledger_agent_type.name, customer.id, customer_parent.id"""
 
     @staticmethod
     def _group_by_invoice():

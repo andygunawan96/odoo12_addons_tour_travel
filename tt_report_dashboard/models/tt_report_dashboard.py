@@ -65,6 +65,19 @@ class TtReportDashboard(models.Model):
         return -1
 
     # input
+    #   arr -> array [{'customer_parent_id': [something](int), 'customer_parent_name': [something](string), ..}]
+    #   params -> dictionary {'customer_parent_id': [something](int), 'customer_parent_name': [something](string)}
+    # return
+    #   integer, -1 id no index found in arr
+    #
+    def customer_parent_index(self, arr, params):
+        for i, dic in enumerate(arr):
+            if dic['customer_parent_id'] == params['customer_parent_id'] and dic['customer_parent_name'] == params['customer_parent_name']:
+                return i
+
+        return -1
+
+    # input
     #   arr -> array [{'agent_name': [something](str), 'agent_type_name': [something](str), ...}]
     #   params -> dictionary {'agent_name': [something](str), 'agent_type_name': [something](str)}
     # return
@@ -441,7 +454,8 @@ class TtReportDashboard(models.Model):
                     if current_id != i['reservation_id']:
                         current_id = i['reservation_id']
                         # convert month number (1) to text and index (January) in constant
-                        month_index = self.check_date_index(summary_by_date, {'year': i['booked_year'], 'month': month[int(i['booked_month']) - 1]})
+                        month_index = self.check_date_index(summary_by_date, {'year': i['booked_year'],
+                                                                              'month': month[int(i['booked_month']) - 1]})
                         if month_index == -1:
                             # create dictionary separate by month
                             temp_dict = {
@@ -642,6 +656,7 @@ class TtReportDashboard(models.Model):
 
             # declare variable to temp handle processed data
             summary_customer = []
+            summary_customer_parent = []
             current_id = ''
 
             # iterate every value in chanel_values['lines']
@@ -675,23 +690,60 @@ class TtReportDashboard(models.Model):
                     summary_customer[customer_index]['revenue'] += i['amount']
                     summary_customer[customer_index]['reservation'] += 1
 
+                # looking for index of particular customer group (FPO and such)
+                # within the summary_customer_parent list
+                # will return -1 if no match found
+                customer_parent_index = self.customer_parent_index(summary_customer_parent, {'customer_parent_id': i['customer_parent_id'], 'customer_parent_name': i['customer_parent_name']})
+
+                if customer_parent_index == -1:
+                    # create temp dict because no data found
+                    temp_dict = {
+                        'customer_parent_id': i['customer_parent_id'],
+                        'customer_parent_name': i['customer_parent_name'],
+                        'revenue': i['amount'],
+                        'profit': 0,
+                        'reservation': 1
+                    }
+
+                    # add to summary_customer_parent
+                    summary_customer_parent.append(temp_dict)
+                else:
+                    summary_customer_parent[customer_parent_index]['revenue'] += i['amount']
+                    summary_customer_parent[customer_parent_index]['reservation'] += 1
+
             # proceed profit
             for i in profit:
+                # by customer
                 person_index = self.customer_index(summary_customer, {'customer_id': i['customer_id'], 'customer_name': i['customer_name']})
                 try:
                     summary_customer[person_index]['profit'] += i['debit']
                 except:
                     pass
 
-                # sort data
-            summary_customer.sort(key=lambda x: (x['revenue'], x['reservation']), reverse=True)
+                # by customer type
+                person_type_index = self.customer_parent_index(summary_customer_parent, {'customer_parent_id': i['customer_parent_id'], 'customer_parent_name': i['customer_parent_name']})
+                try:
+                    summary_customer_parent[person_type_index]['profit'] += i['debit']
+                except:
+                    pass
 
-            # create return dict
+            # sort data
+            summary_customer.sort(key=lambda x: (x['revenue'], x['reservation']), reverse=True)
+            summary_customer_parent.sort(key=lambda x: (x['revenue'], x['reservation']), reverse=True)
+
+            # create return dict for customer
             label_data = []
             revenue_data = []
             reservation_data = []
             average_data = []
             profit_data = []
+
+            # for customer_type
+            label_data2 = []
+            revenue_data2 = []
+            reservation_data2 = []
+            average_data2 = []
+            profit_data2 = []
 
             # lets populate list to return
             if len(summary_customer) < 20:
@@ -709,16 +761,43 @@ class TtReportDashboard(models.Model):
                     average_data.append(summary_customer[i]['revenue'] / summary_customer[i]['reservation'])
                     profit_data.append(summary_customer[i]['profit'])
 
+            # lets populate list to return
+            if len(summary_customer_parent) < 20:
+                for i in summary_customer_parent:
+                    label_data2.append(i['customer_parent_name'])
+                    revenue_data2.append(i['revenue'])
+                    reservation_data2.append(i['reservation'])
+                    average_data2.append(i['revenue'] / i['reservation'])
+                    profit_data2.append(i['profit'])
+            else:
+                for i in range(20):
+                    label_data2.append(summary_customer_parent[i]['customer_parent_name'])
+                    revenue_data2.append(summary_customer_parent[i]['revenue'])
+                    reservation_data2.append(summary_customer_parent[i]['reservation'])
+                    average_data2.append(summary_customer_parent[i]['revenue'] / summary_customer_parent[i]['reservation'])
+                    profit_data2.append(summary_customer_parent[i]['profit'])
+
             # lets built to return
             to_return = {
-                'third_graph': {
+                # it will be very absurd if stand alone,
+                # however this particular graph will co-respond to fourth and fifth graph in front end, so theres that
+                # in front end you will also find as fourth and fifth graph and all
+                'fifth_graph': {
                     'label': label_data,
                     'data': revenue_data,
                     'data2': reservation_data,
                     'data3': average_data,
                     'data4': profit_data
                 },
-                'third_overview': summary_customer
+                'fifth_overview': summary_customer,
+                'fourth_graph': {
+                    'label': label_data2,
+                    'data': revenue_data2,
+                    'data2': reservation_data2,
+                    'data3': average_data2,
+                    'data4': profit_data2
+                },
+                'fourth_overview': summary_customer_parent
             }
 
             # return data
@@ -1281,24 +1360,20 @@ class TtReportDashboard(models.Model):
             # adding book_issued ratio graph
             to_return.update(book_issued)
 
-            # this is a suggestion and request, if user whose accessing the report only has agent level, then we could substitute
-            # channel/agent rank graph to customer graph
-            if is_ho != 1:
-                # if agent then we will populate with customer data (aka booker)
-                customer_data = self.get_report_group_by_customer(data, issued_values['lines'])
+            # We will populate third graph with agent
+            # fourth and fifth with customer and customer parent respectively
 
-                to_return.update(customer_data)
-            else:
-                # if ho then we will populate third graph with agent
-                # however incase of something not match we'll return the agent
-                # why because the agent will return smaller data
+            # get by chanel
+            chanel_data = self.get_report_group_by_chanel(data, issued_values['lines'])
 
-                # get by chanel
-                chanel_data = self.get_report_group_by_chanel(data, issued_values['lines'])
+            # adding chanel_data graph
+            to_return.update(chanel_data)
 
-                # adding chanel_data graph
-                to_return.update(chanel_data)
+            # if agent then we will populate with customer data (aka booker, and customer parent)
+            customer_data = self.get_report_group_by_customer(data, issued_values['lines'])
 
+            # add customer to data
+            to_return.update(customer_data)
 
             return to_return
         except Exception as e:
@@ -2201,23 +2276,20 @@ class TtReportDashboard(models.Model):
             # adding book_issued ratio graph
             to_return.update(book_issued)
 
-            # this is a suggestion and request, if user whose accessing the report only has agent level, then we could substitute
-            # channel/agent rank graph to customer graph
-            if is_ho != 1:
-                # if agent then we will populate with customer data (aka booker)
-                customer_data = self.get_report_group_by_customer(data, issued_values['lines'])
+            # We will populate third graph with agent
+            # fourth and fifth with customer and customer parent respectively
 
-                to_return.update(customer_data)
-            else:
-                # if ho then we will populate third graph with agent
-                # however incase of something not match we'll return the agent
-                # why because the agent will return smaller data
+            # get by chanel
+            chanel_data = self.get_report_group_by_chanel(data, issued_values['lines'])
 
-                # get by chanel
-                chanel_data = self.get_report_group_by_chanel(data, issued_values['lines'])
+            # adding chanel_data graph
+            to_return.update(chanel_data)
 
-                # adding chanel_data graph
-                to_return.update(chanel_data)
+            # if agent then we will populate with customer data (aka booker, and customer parent)
+            customer_data = self.get_report_group_by_customer(data, issued_values['lines'])
+
+            # add customer to data
+            to_return.update(customer_data)
 
             return to_return
         except Exception as e:
@@ -2756,23 +2828,20 @@ class TtReportDashboard(models.Model):
             # adding book_issued ratio graph
             to_return.update(book_issued)
 
-            # this is a suggestion and request, if user whose accessing the report only has agent level, then we could substitute
-            # channel/agent rank graph to customer graph
-            if is_ho != 1:
-                # if agent then we will populate with customer data (aka booker)
-                customer_data = self.get_report_group_by_customer(data, issued_values['lines'])
+            # We will populate third graph with agent
+            # fourth and fifth with customer and customer parent respectively
 
-                to_return.update(customer_data)
-            else:
-                # if ho then we will populate third graph with agent
-                # however incase of something not match we'll return the agent
-                # why because the agent will return smaller data
+            # get by chanel
+            chanel_data = self.get_report_group_by_chanel(data, issued_values['lines'])
 
-                # get by chanel
-                chanel_data = self.get_report_group_by_chanel(data, issued_values['lines'])
+            # adding chanel_data graph
+            to_return.update(chanel_data)
 
-                # adding chanel_data graph
-                to_return.update(chanel_data)
+            # if agent then we will populate with customer data (aka booker, and customer parent)
+            customer_data = self.get_report_group_by_customer(data, issued_values['lines'])
+
+            # add customer to data
+            to_return.update(customer_data)
 
             return to_return
         except Exception as e:
@@ -3240,23 +3309,20 @@ class TtReportDashboard(models.Model):
             # adding book_issued ratio graph
             to_return.update(book_issued)
 
-            # this is a suggestion and request, if user whose accessing the report only has agent level, then we could substitute
-            # channel/agent rank graph to customer graph
-            if is_ho != 1:
-                # if agent then we will populate with customer data (aka booker)
-                customer_data = self.get_report_group_by_customer(data, issued_values['lines'])
+            # We will populate third graph with agent
+            # fourth and fifth with customer and customer parent respectively
 
-                to_return.update(customer_data)
-            else:
-                # if ho then we will populate third graph with agent
-                # however incase of something not match we'll return the agent
-                # why because the agent will return smaller data
+            # get by chanel
+            chanel_data = self.get_report_group_by_chanel(data, issued_values['lines'])
 
-                # get by chanel
-                chanel_data = self.get_report_group_by_chanel(data, issued_values['lines'])
+            # adding chanel_data graph
+            to_return.update(chanel_data)
 
-                # adding chanel_data graph
-                to_return.update(chanel_data)
+            # if agent then we will populate with customer data (aka booker, and customer parent)
+            customer_data = self.get_report_group_by_customer(data, issued_values['lines'])
+
+            # add customer to data
+            to_return.update(customer_data)
 
             return to_return
         except Exception as e:
@@ -3571,23 +3637,20 @@ class TtReportDashboard(models.Model):
             # adding book_issued ratio graph
             to_return.update(book_issued)
 
-            # this is a suggestion and request, if user whose accessing the report only has agent level, then we could substitute
-            # channel/agent rank graph to customer graph
-            if is_ho != 1:
-                # if agent then we will populate with customer data (aka booker)
-                customer_data = self.get_report_group_by_customer(data, issued_values['lines'])
+            # We will populate third graph with agent
+            # fourth and fifth with customer and customer parent respectively
 
-                to_return.update(customer_data)
-            else:
-                # if ho then we will populate third graph with agent
-                # however incase of something not match we'll return the agent
-                # why because the agent will return smaller data
+            # get by chanel
+            chanel_data = self.get_report_group_by_chanel(data, issued_values['lines'])
 
-                # get by chanel
-                chanel_data = self.get_report_group_by_chanel(data, issued_values['lines'])
+            # adding chanel_data graph
+            to_return.update(chanel_data)
 
-                # adding chanel_data graph
-                to_return.update(chanel_data)
+            # if agent then we will populate with customer data (aka booker, and customer parent)
+            customer_data = self.get_report_group_by_customer(data, issued_values['lines'])
+
+            # add customer to data
+            to_return.update(customer_data)
 
             return to_return
         except Exception as e:
@@ -3923,23 +3986,20 @@ class TtReportDashboard(models.Model):
             # adding book_issued ratio graph
             to_return.update(book_issued)
 
-            # this is a suggestion and request, if user whose accessing the report only has agent level, then we could substitute
-            # channel/agent rank graph to customer graph
-            if is_ho != 1:
-                # if agent then we will populate with customer data (aka booker)
-                customer_data = self.get_report_group_by_customer(data, issued_values['lines'])
+            # We will populate third graph with agent
+            # fourth and fifth with customer and customer parent respectively
 
-                to_return.update(customer_data)
-            else:
-                # if ho then we will populate third graph with agent
-                # however incase of something not match we'll return the agent
-                # why because the agent will return smaller data
+            # get by chanel
+            chanel_data = self.get_report_group_by_chanel(data, issued_values['lines'])
 
-                # get by chanel
-                chanel_data = self.get_report_group_by_chanel(data, issued_values['lines'])
+            # adding chanel_data graph
+            to_return.update(chanel_data)
 
-                # adding chanel_data graph
-                to_return.update(chanel_data)
+            # if agent then we will populate with customer data (aka booker, and customer parent)
+            customer_data = self.get_report_group_by_customer(data, issued_values['lines'])
+
+            # add customer to data
+            to_return.update(customer_data)
 
             return to_return
         except Exception as e:
@@ -4273,23 +4333,20 @@ class TtReportDashboard(models.Model):
             # adding book_issued ratio graph
             to_return.update(book_issued)
 
-            # this is a suggestion and request, if user whose accessing the report only has agent level, then we could substitute
-            # channel/agent rank graph to customer graph
-            if is_ho != 1:
-                # if agent then we will populate with customer data (aka booker)
-                customer_data = self.get_report_group_by_customer(data, issued_values['lines'])
+            # We will populate third graph with agent
+            # fourth and fifth with customer and customer parent respectively
 
-                to_return.update(customer_data)
-            else:
-                # if ho then we will populate third graph with agent
-                # however incase of something not match we'll return the agent
-                # why because the agent will return smaller data
+            # get by chanel
+            chanel_data = self.get_report_group_by_chanel(data, issued_values['lines'])
 
-                # get by chanel
-                chanel_data = self.get_report_group_by_chanel(data, issued_values['lines'])
+            # adding chanel_data graph
+            to_return.update(chanel_data)
 
-                # adding chanel_data graph
-                to_return.update(chanel_data)
+            # if agent then we will populate with customer data (aka booker, and customer parent)
+            customer_data = self.get_report_group_by_customer(data, issued_values['lines'])
+
+            # add customer to data
+            to_return.update(customer_data)
 
             return to_return
         except Exception as e:
@@ -4617,23 +4674,20 @@ class TtReportDashboard(models.Model):
             # adding book_issued ratio graph
             to_return.update(book_issued)
 
-            # this is a suggestion and request, if user whose accessing the report only has agent level, then we could substitute
-            # channel/agent rank graph to customer graph
-            if is_ho != 1:
-                # if agent then we will populate with customer data (aka booker)
-                customer_data = self.get_report_group_by_customer(data, issued_values['lines'])
+            # We will populate third graph with agent
+            # fourth and fifth with customer and customer parent respectively
 
-                to_return.update(customer_data)
-            else:
-                # if ho then we will populate third graph with agent
-                # however incase of something not match we'll return the agent
-                # why because the agent will return smaller data
+            # get by chanel
+            chanel_data = self.get_report_group_by_chanel(data, issued_values['lines'])
 
-                # get by chanel
-                chanel_data = self.get_report_group_by_chanel(data, issued_values['lines'])
+            # adding chanel_data graph
+            to_return.update(chanel_data)
 
-                # adding chanel_data graph
-                to_return.update(chanel_data)
+            # if agent then we will populate with customer data (aka booker, and customer parent)
+            customer_data = self.get_report_group_by_customer(data, issued_values['lines'])
+
+            # add customer to data
+            to_return.update(customer_data)
 
             return to_return
         except Exception as e:
@@ -4963,23 +5017,20 @@ class TtReportDashboard(models.Model):
             # adding book_issued ratio graph
             to_return.update(book_issued)
 
-            # this is a suggestion and request, if user whose accessing the report only has agent level, then we could substitute
-            # channel/agent rank graph to customer graph
-            if is_ho != 1:
-                # if agent then we will populate with customer data (aka booker)
-                customer_data = self.get_report_group_by_customer(data, issued_values['lines'])
+            # We will populate third graph with agent
+            # fourth and fifth with customer and customer parent respectively
 
-                to_return.update(customer_data)
-            else:
-                # if ho then we will populate third graph with agent
-                # however incase of something not match we'll return the agent
-                # why because the agent will return smaller data
+            # get by chanel
+            chanel_data = self.get_report_group_by_chanel(data, issued_values['lines'])
 
-                # get by chanel
-                chanel_data = self.get_report_group_by_chanel(data, issued_values['lines'])
+            # adding chanel_data graph
+            to_return.update(chanel_data)
 
-                # adding chanel_data graph
-                to_return.update(chanel_data)
+            # if agent then we will populate with customer data (aka booker, and customer parent)
+            customer_data = self.get_report_group_by_customer(data, issued_values['lines'])
+
+            # add customer to data
+            to_return.update(customer_data)
 
             return to_return
         except Exception as e:
@@ -5305,23 +5356,20 @@ class TtReportDashboard(models.Model):
             # adding book_issued ratio graph
             to_return.update(book_issued)
 
-            # this is a suggestion and request, if user whose accessing the report only has agent level, then we could substitute
-            # channel/agent rank graph to customer graph
-            if is_ho != 1:
-                # if agent then we will populate with customer data (aka booker)
-                customer_data = self.get_report_group_by_customer(data, issued_values['lines'])
+            # We will populate third graph with agent
+            # fourth and fifth with customer and customer parent respectively
 
-                to_return.update(customer_data)
-            else:
-                # if ho then we will populate third graph with agent
-                # however incase of something not match we'll return the agent
-                # why because the agent will return smaller data
+            # get by chanel
+            chanel_data = self.get_report_group_by_chanel(data, issued_values['lines'])
 
-                # get by chanel
-                chanel_data = self.get_report_group_by_chanel(data, issued_values['lines'])
+            # adding chanel_data graph
+            to_return.update(chanel_data)
 
-                # adding chanel_data graph
-                to_return.update(chanel_data)
+            # if agent then we will populate with customer data (aka booker, and customer parent)
+            customer_data = self.get_report_group_by_customer(data, issued_values['lines'])
+
+            # add customer to data
+            to_return.update(customer_data)
 
             return to_return
         except Exception as e:
@@ -5649,23 +5697,20 @@ class TtReportDashboard(models.Model):
             # adding book_issued ratio graph
             to_return.update(book_issued)
 
-            # this is a suggestion and request, if user whose accessing the report only has agent level, then we could substitute
-            # channel/agent rank graph to customer graph
-            if is_ho != 1:
-                # if agent then we will populate with customer data (aka booker)
-                customer_data = self.get_report_group_by_customer(data, issued_values['lines'])
+            # We will populate third graph with agent
+            # fourth and fifth with customer and customer parent respectively
 
-                to_return.update(customer_data)
-            else:
-                # if ho then we will populate third graph with agent
-                # however incase of something not match we'll return the agent
-                # why because the agent will return smaller data
+            # get by chanel
+            chanel_data = self.get_report_group_by_chanel(data, issued_values['lines'])
 
-                # get by chanel
-                chanel_data = self.get_report_group_by_chanel(data, issued_values['lines'])
+            # adding chanel_data graph
+            to_return.update(chanel_data)
 
-                # adding chanel_data graph
-                to_return.update(chanel_data)
+            # if agent then we will populate with customer data (aka booker, and customer parent)
+            customer_data = self.get_report_group_by_customer(data, issued_values['lines'])
+
+            # add customer to data
+            to_return.update(customer_data)
 
             return to_return
         except Exception as e:

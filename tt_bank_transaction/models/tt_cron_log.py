@@ -73,7 +73,7 @@ class ttCronTopUpValidator(models.Model):
                                     else:
                                         reference_code = result.transaction_message
                                     agent_id = self.env['tt.reservation.%s' % variables.PROVIDER_TYPE_PREFIX[top_up_obj['number'].split('.')[0]]].search([('name', '=', '%s.%s' %(top_up_obj['number'].split('.')[0], top_up_obj['number'].split('.')[1]))]).agent_id
-                                    if not self.env['tt.payment'].search([('reference', '=', reference_code)]):
+                                    if not self.env['tt.payment'].search([('reference', '=', reference_code),('total_amount','=', top_up_obj.amount + top_up_obj.unique_amount)]): #update
                                         # topup
                                         context = {
                                             'co_agent_id': agent_id.id,
@@ -109,9 +109,11 @@ class ttCronTopUpValidator(models.Model):
                                             'provider_type': variables.PROVIDER_TYPE_PREFIX[book_obj.name.split('.')[0]]
                                         }
                                         res = self.env['tt.payment.api.con'].send_payment(req)
-                                        top_up_obj.state = 'done'
+                                        if res['error_code'] == 0:
+                                            # tutup payment acq number
+                                            top_up_obj.state = 'done'
                                         _logger.info(json.dumps(res))
-                                        #tutup payment acq number
+
 
                     else:
                         _logger.error("%s ID, is not found within transaction" % top_up_obj.id)
