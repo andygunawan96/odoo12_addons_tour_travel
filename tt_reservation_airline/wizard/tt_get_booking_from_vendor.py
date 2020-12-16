@@ -89,6 +89,13 @@ class TtGetBookingFromVendor(models.TransientModel):
         else:
             self.booker_id = False
 
+    def pnr_validator_api(self, req, context):
+        try:
+            self.pnr_validator(req['pnr'])
+            return ERR.get_no_error()
+        except Exception as e:
+            return ERR.get_error(additional_message=str('duplicate pnr'))
+
     def pnr_validator(self,pnr):
         today = date.today()
         date_query = today - relativedelta(days=7)
@@ -277,14 +284,7 @@ class TtGetBookingFromVendorReview(models.TransientModel):
         res = req['response']
         get_booking_res = res['response']
 
-        today = date.today()
-        date_query = today - relativedelta(days=7)
-        airlines = self.env['tt.reservation.airline'].search([
-            ('pnr', 'ilike', get_booking_res['pnr']),
-            ('state', 'not in', ['cancel', 'draft']),
-            ('arrival_date', '>=', date_query),
-        ])
-        if not airlines or req['duplicate_pnr']:
+        if not req['duplicate_pnr']:
             wizard_form = self.env.ref('tt_reservation_airline.tt_reservation_airline_get_booking_from_vendor_review_form_view', False)
             view_id = self.env['tt.get.booking.from.vendor.review']
             journey_values = ""

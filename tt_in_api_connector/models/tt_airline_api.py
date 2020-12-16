@@ -35,6 +35,8 @@ class TtAirlineApiCon(models.Model):
             res = table_obj.split_reservation_airline_api(data,context)
         elif action == 'get_provider_booking_from_vendor':
             res = self.env['tt.get.booking.from.vendor'].get_provider_booking_from_vendor_api()
+        elif action == 'get_booking_frontend_check_pnr':
+            res = self.env['tt.get.booking.from.vendor'].pnr_validator_api(data, context)
         elif action == 'save_booking_from_vendor':
             res = self.env['tt.get.booking.from.vendor.review'].save_booking_api(data, context)
         else:

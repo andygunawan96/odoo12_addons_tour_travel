@@ -793,12 +793,13 @@ class TtReservation(models.Model):
                     book_obj.calculate_service_charge()
 
                 for provider in book_obj.provider_booking_ids:
+                    _logger.info('create quota pnr')
                     ledger_created = provider.action_create_ledger(context['co_uid'], payment_method)
                     # if agent_obj.is_using_pnr_quota: ##selalu potong quota setiap  attemp payment
                     if agent_obj.is_using_pnr_quota and ledger_created: #tidak potong quota jika tidak membuat ledger
-
                         try:
                             ledger_obj = self.env['tt.ledger'].search([('res_model', '=', book_obj._name),('res_id','=',book_obj.id),('is_reversed','=',False),('agent_id','=',self.env.ref('tt_base.rodex_ho').id)])
+                            _logger.info(str(ledger_obj[0].id))
                             amount = 0
                             for ledger in ledger_obj:
                                 amount += ledger.debit
