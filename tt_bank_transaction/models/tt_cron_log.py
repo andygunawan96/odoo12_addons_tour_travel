@@ -59,7 +59,7 @@ class ttCronTopUpValidator(models.Model):
                 self.write_cron_log('auto tup-up validator by system')
             #payment reservation
             try:
-                top_up_objs = self.env['payment.acquirer.number'].search([('state','=','close')])
+                top_up_objs = self.env['payment.acquirer.number'].search(['|',('state','=','close'), ('state', '=', 'waiting')])
                 for top_up_obj in top_up_objs:
                     transaction = self.env['tt.bank.accounts'].search([])
                     if transaction:
@@ -112,6 +112,8 @@ class ttCronTopUpValidator(models.Model):
                                         if res['error_code'] == 0:
                                             # tutup payment acq number
                                             top_up_obj.state = 'done'
+                                        else:
+                                            top_up_obj.state = 'waiting'
                                         _logger.info(json.dumps(res))
 
 
