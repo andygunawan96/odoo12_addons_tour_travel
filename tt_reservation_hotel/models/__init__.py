@@ -27,3 +27,6 @@ from . import scrapper_history
 from . import read_file
 from . import res_config
 from . import tt_refund_wizard
+
+from . import read_knb
+from . import read_dida

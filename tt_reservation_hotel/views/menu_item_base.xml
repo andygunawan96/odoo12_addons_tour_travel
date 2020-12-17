@@ -29,6 +29,13 @@
             <menuitem id="submenu_reservations_hotel_cancel" parent="tt_reservation_hotel.menu_reservations_hotel"
                       name="Cancelled/Refunded" action="tt_reservation_hotel.tt_hotel_reservation_action_cancel" sequence="5"/>
 
+<!--        <menuitem id="menu_provider_booking_hotel"-->
+<!--                  parent="top_reservations_hotel"-->
+<!--                  action="tt_reservation_hotel.tt_provider_hotel_view_action_rodex"-->
+<!--                  name="Provider Booking"-->
+<!--                  sequence="20"-->
+<!--                  groups="tt_base.group_tt_tour_travel_manager"-->
+<!--        />-->
 
     <!--Top Menu Tour & Travel Hotel-->
     <menuitem id="top_tour_travel_hotel"
@@ -47,23 +54,35 @@
                       parent="tt_reservation_hotel.menu_tour_travel_hotel"
                       name="Confirm"
                       sequence="10"
-                      action="tt_reservation_hotel.tt_hotel_view_action_rodex"/>
+                      action="tt_reservation_hotel.tt_hotel_master_view_action_rodex"/>
             <menuitem id="submenu_hotel_data_draft"
                       parent="tt_reservation_hotel.menu_tour_travel_hotel"
                       name="Draft"
-                      sequence="10"
+                      sequence="20"
                       action="tt_reservation_hotel.tt_hotel_view_action_rodex"/>
+
+        <menuitem id="menu_tour_travel_hotel_compare"
+                  name="Compare Process"
+                  parent="tt_reservation_hotel.top_tour_travel_hotel"
+                  sequence="10"
+                  action="tt_reservation_hotel.tt_hotel_comparer_view_action_rodex"/>
+
+        <menuitem id="menu_tour_travel_hotel_raw"
+                  name="Raw Data"
+                  parent="tt_reservation_hotel.top_tour_travel_hotel"
+                  sequence="20"
+                  action="tt_reservation_hotel.tt_hotel_view_action_rodex"/>
 
         <menuitem id="menu_hotel_type"
                   parent="tt_reservation_hotel.top_tour_travel_hotel"
                   name="Type"
-                  sequence="20"
+                  sequence="30"
                   action="tt_reservation_hotel.tt_hotel_type_view_action_rodex"/>
 
         <menuitem id="menu_hotel_room"
                   parent="tt_reservation_hotel.top_tour_travel_hotel"
                   name="Room"
-                  sequence="30"
+                  sequence="40"
                   action="tt_reservation_hotel.tt_room_view_action_rodex"/>
             <menuitem id="submenu_hotel_room"
                       parent="tt_reservation_hotel.menu_hotel_room"
@@ -79,7 +98,7 @@
         <menuitem id="menu_hotel_facility"
                   parent="tt_reservation_hotel.top_tour_travel_hotel"
                   name="Facility"
-                  sequence="40"
+                  sequence="50"
                   action="tt_reservation_hotel.tt_facility_view_action_rodex"/>
             <menuitem id="submenu_hotel_facility"
                       parent="tt_reservation_hotel.menu_hotel_facility"
@@ -135,4 +154,9 @@
                   name="Get Read File"
                   sequence="10"
                   action="tt_reservation_hotel.tt_hotel_read_file_view_action_rodex"/>
+            <menuitem id="submenu_hotel_read_file_v2"
+                  parent="tt_reservation_hotel.menu_hotel_get_vendor_record"
+                  name="Get Read File V2"
+                  sequence="40"
+                  action="tt_reservation_hotel.tt_hotel_read_file_2_view_action_rodex"/>
 </odoo>

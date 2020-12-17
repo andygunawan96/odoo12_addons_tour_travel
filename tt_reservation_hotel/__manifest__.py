@@ -40,6 +40,7 @@ TT_RESERVATION_HOTEL
         'views/room_information_views.xml',
         'views/room_type_views.xml',
         'views/city_views.xml',
+        'views/hotel_compare_views.xml',
         'views/tt_reservation_hotel_views.xml',
         'views/hotel_provider_views.xml',
         'views/provider_data_sync_views.xml',

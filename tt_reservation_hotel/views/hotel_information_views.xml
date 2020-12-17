@@ -335,6 +335,281 @@
         }</field>
     </record>
 
+    <record id="tt_hotel_master_view_form_rodex" model="ir.ui.view">
+        <field name="name">tt.hotel.master.view.form.rodex</field>
+        <field name="model">tt.hotel.master</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <button string="Confirm" type="object" name="action_confirm" states="draft" class="oe_highlight" groups="tt_base.group_tt_tour_travel_operator"/>
+                    <button string="Set to Draft" type="object" name="action_draft" states="confirm" class="oe_link"/>
+                    <button string="Calc Vendor Name" type="object" name="get_provider_name" class="oe_highlight"/>
+
+                    <button string="Compare This Hotel" type="object" name="compare_hotel"/>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,confirm" />
+                </header>
+
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+
+                    </div>
+                    <div class="oe_title">
+                        <label for="name">Name</label>
+                        <h1>
+                            <field name="name" default_focus="1" placeholder="Name"/>
+                        </h1>
+                    </div>
+                    <group>
+                        <group>
+                            <!--<field name="hotel_management_id"/>-->
+                            <!--<field name="hotel_partner_id"/>-->
+                            <!--<field name="brandname_id"/>-->
+                            <field name="hotel_type_id"/>
+                            <field name="rating"/>
+                            <field name="ribbon"/>
+                            <field name="email"/>
+                            <field name="website"/>
+                            <field name="provider" readonly="1"/>
+                        </group>
+                        <group>
+                            <field name="lat"/>
+                            <field name="long"/>
+                            <field name="phone"/>
+                            <field name="phone_2"/>
+                            <field name="phone_3"/>
+                            <field name="fax"/>
+                            <!--<field name="hotel_partner_city_id"/>-->
+                            <!--<field name="address" />-->
+                            <label for="street" string="Address"/>
+                            <div class="o_address_format">
+                                <field name="address" placeholder="Street..." class="o_address_street"/>
+                                <field name="address2" placeholder="Street 2..." class="o_address_street"/>
+                                <field name="address3" placeholder="Street 3..." class="o_address_street"/>
+                                <field name="city_id" placeholder="City" class="o_address_city" options='{"no_open": True, "no_create": True}'/>
+                                <field name="zip" class="o_address_zip" placeholder="ZIP"/>
+                                <field name="state_id" class="o_address_state" placeholder="State" options='{"no_open": True, "no_create": True}'/>
+                                <field name="country_id" placeholder="Country" class="o_address_country" options='{"no_open": True, "no_create": True}'/>
+                            </div>
+                        </group>
+                    </group>
+                    <separator string="Hotel Information"/>
+                    <notebook>
+                        <page string="Provider Code">
+                            <field name="provider_hotel_ids">
+                                <tree editable="bottom">
+                                    <field name="provider_id"/>
+                                    <field name="code"/>
+                                    <field name="name"/>
+                                </tree>
+                            </field>
+                        </page>
+                        <page string="Room Information" groups="base.group_no_one">
+                            <field name="room_info_ids">
+                                <tree>
+                                    <field name="name"/>
+                                    <field name="max_guest"/>
+                                    <field name="active"/>
+                                </tree>
+                                <form String="Room">
+                                    <div class="oe_button_box" name="button_box">
+                                        <button name="toggle_active" type="object"
+                                                class="oe_stat_button" icon="fa-archive">
+                                            <field name="active" widget="boolean_button"
+                                                   options='{"terminology": "archive"}'/>
+                                        </button>
+                                        <button class="oe_stat_button" type="object" name="action_open_quants" icon="fa-pencil-square-o" groups="tt_base.group_tt_tour_travel_supervisor">
+                                            <div class="o_form_field o_stat_info">
+                                                <span class="o_stat_value">
+                                                    <field name="total_voucher"/>
+                                                </span>
+                                                <span class="o_stat_text">Voucher(s)</span>
+                                            </div>
+                                        </button>
+                                    </div>
+                                    <group>
+                                        <group>
+                                            <field name="room_type_id"/>
+                                            <field name="name"/>
+                                            <field name="max_guest"/>
+                                            <field name="currency_id"/>
+                                            <field name="room_size"/>
+                                            <field name="bed_type"/>
+                                        </group>
+                                        <group>
+                                            <!--<field name="today_sale_price"/>-->
+                                            <!--<field name="today_commission_amount"/>-->
+                                            <!--<field name="minimum_pax"/>-->
+                                            <!--<field name="maximum_pax"/>-->
+                                            <!--<field name="min_validation_date"/>-->
+                                            <field name="meal_type_id"/>
+                                            <field name="cancellation_policy"/>
+                                            <field name="room_description"/>
+                                        </group>
+                                    </group>
+                                    <notebook>
+                                        <page string="Room Special Rate">
+                                            <field name="spc_room_rate_ids" domain="[('is_promo', '=', 'True')]" context="{'default_is_promo': 1, 'default_room_info_id': active_id}">
+                                                <tree>
+                                                    <field name="start_date"/>
+                                                    <field name="end_date"/>
+                                                    <field name="nationality"/>
+                                                    <field name="sale_price"/>
+                                                    <field name="currency_id"/>
+                                                    <!--<field name="availability"/>-->
+                                                    <field name="cancel_policy"/>
+                                                    <field name="active"/>
+                                                </tree>
+                                                <form>
+                                                    <group string="Date">
+                                                        <group>
+                                                            <field name="start_date"/>
+                                                        </group>
+                                                        <group>
+                                                            <field name="end_date"/>
+                                                        </group>
+                                                    </group>
+                                                    <group>
+                                                        <group>
+                                                            <field name="nationality"/>
+                                                            <!--                                                                <field name="nta_price" groups="tt_base.group_hotel_user,tt_base.group_tt_tour_travel_operator"/>-->
+                                                            <field name="nta_price" groups="tt_base.group_tt_tour_travel_operator"/>
+                                                            <field name="cost_price" groups="tt_base.group_tt_agent_user_manager,tt_base.group_tt_tour_travel_operator"/>
+                                                            <field name="sale_price"/>
+                                                            <field name="currency_id"/>
+                                                            <field name="cancel_policy"/>
+                                                            <field name="active"/>
+                                                        </group>
+                                                        <group>
+                                                            <field name="apply_on_sunday"/>
+                                                            <field name="apply_on_monday"/>
+                                                            <field name="apply_on_tuesday"/>
+                                                            <field name="apply_on_wednesday"/>
+                                                            <field name="apply_on_thursday"/>
+                                                            <field name="apply_on_friday"/>
+                                                            <field name="apply_on_saturday"/>
+                                                        </group>
+                                                    </group>
+                                                </form>
+                                            </field>
+                                        </page>
+                                        <!--<page string="Room Regular Rate">-->
+                                        <!--<button name="action_generate_room" type="object" string="Create Default"-->
+                                        <!--attrs="{'invisible': [('room_rate_ids', '=', False)]}" class="oe_edit_only pull-right"/>-->
+                                        <!--<field name="room_rate_ids" domain="[('is_promo', '=', 'False')]" context="{'default_room_info_id': active_id}">-->
+                                        <!--<tree editable="bottom">-->
+                                        <!--<field name="day"/>-->
+                                        <!--<field name="nta_price" groups="tt_base.group_hotel_user,tt_base.group_tt_agent_user_supervisor"/>-->
+                                        <!--<field name="cost_price" groups="tt_base.group_tt_agent_user_operator"/>-->
+                                        <!--<field name="sale_price"/>-->
+                                        <!--&lt;!&ndash;<field name="currency_id"/>&ndash;&gt;-->
+                                        <!--&lt;!&ndash;<field name="availability"/>&ndash;&gt;-->
+                                        <!--<field name="active"/>-->
+                                        <!--</tree>-->
+                                        <!--</field>-->
+                                        <!--</page>-->
+                                        <page string="Room Facilities">
+                                            <field name="facility_ids">
+                                                <tree>
+                                                    <field name="name"/>
+                                                    <!--<field name="group_id"/>-->
+                                                    <field name="description"/>
+                                                </tree>
+                                            </field>
+                                        </page>
+                                        <!--<page string="Room Images">-->
+                                        <!--<field name="images">-->
+                                        <!--<tree editable="bottom">-->
+                                        <!--<field name="sequence"/>-->
+                                        <!--<field name="name"/>-->
+                                        <!--<field name="image_alt"/>-->
+                                        <!--<field name="image"/>-->
+                                        <!--<field name="image_url"/>-->
+                                        <!--<field name="description"/>-->
+                                        <!--</tree>-->
+                                        <!--</field>-->
+                                        <!--</page>-->
+                                    </notebook>
+                                </form>
+                            </field>
+                        </page>
+                        <page string="Hotel Facility">
+                            <field name="facility_ids" >
+                                <tree editable="bottom">
+                                    <field name="name"/>
+                                    <field name="facility_type_id"/>
+                                    <field name="description"/>
+                                </tree>
+                                <form>
+                                    <group>
+                                        <group>
+                                            <!--<field name="hotel_id"/>-->
+                                            <field name="name"/>
+                                            <!--<field name="service_id"/>-->
+                                            <field name="facility_type_id"/>
+                                            <field name="description"/>
+                                        </group>
+                                        <group>
+                                            <field name="is_room_facility"/>
+                                            <field name="is_hotel_facility"/>
+                                            <field name="currency_id"/>
+                                        </group>
+                                    </group>
+                                </form>
+                            </field>
+                        </page>
+                        <page string="Images">
+                            <field name="image_ids">
+                                <tree editable="bottom">
+                                    <field name="sequence"/>
+                                    <field name="name"/>
+                                    <field name="branch_url"/>
+                                    <field name="url"/>
+                                    <field name="description"/>
+                                </tree>
+                            </field>
+                        </page>
+                        <page string="Information">
+                            <group>
+                                <group>
+                                    <field name="cancel_policy" />
+                                </group>
+                            </group>
+
+                            <label for="tac" string="Term and Conditions"/>
+                            <field name="tac" />
+                            <label for="description" string="Description"/>
+                            <field name="description" />
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+    <record id="tt_hotel_master_view_tree_rodex" model="ir.ui.view">
+        <field name="name">tt.hotel.master.view.tree.rodex</field>
+        <field name="model">tt.hotel.master</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="name"/>
+                <field name="city_id"/>
+                <field name="provider" string="Hotel Vendor"/>
+                <!--<field name="hotel_type_id"/>-->
+                <field name="lat"/>
+                <field name="long"/>
+                <field name="phone"/>
+                <field name="rating"/>
+                <field name="state"/>
+            </tree>
+        </field>
+    </record>
+    <record id="tt_hotel_master_view_action_rodex" model="ir.actions.act_window">
+        <field name="name">Hotel Master</field>
+        <field name="res_model">tt.hotel.master</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+        <field name="context">{}</field>
+    </record>
+
     <record id="tt_hotel_read_file_view_form_rodex" model="ir.ui.view">
         <field name="name">tt.hotel.read.file.view.form.rodex</field>
         <field name="model">tt.hotel</field>
@@ -353,6 +628,7 @@
                         <button name="remove_data_created_from_cache" class="oe_stat_button" string="B1. Remove B func" type="object" icon="fa-plus"/>
                         <button name="merge_record_for_some_source" class="oe_stat_button" string="C. Merge to Master" type="object" icon="fa-plus"/>
                         <button name="merge_record_for_with_search_result" class="oe_stat_button" string="D. Merge from GW Cache" type="object" icon="fa-plus"/>
+                        <!--<button name="edit_city_name" class="oe_stat_button" string="4. Edit City Name" type="object" icon="fa-plus"/>-->
                     </div>
                     <div class="oe_title">
                         <label for="name">Name</label>
@@ -421,5 +697,44 @@
         <field name="view_type">form</field>
         <field name="view_mode">tree,form</field>
         <field name="context" eval="{'form_view_ref': 'tt_reservation_hotel.tt_hotel_read_file_view_form_rodex'}"/>
+    </record>
+
+    <record id="tt_hotel_read_file_2_view_form_rodex" model="ir.ui.view">
+        <field name="name">tt.hotel.read.file.2.view.form.rodex</field>
+        <field name="model">tt.hotel</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,confirm" />
+                </header>
+
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="v2_collect_by_system" class="oe_stat_button" string="1a. Collect By System" type="object" icon="fa-plus"/>
+                        <button name="v2_collect_by_human" class="oe_stat_button" string="1b. Collect By Human" type="object" icon="fa-plus"/>
+                        <button name="v2_get_country_code" class="oe_stat_button" string="1c. Country Code" type="object" icon="fa-plus"/>
+                        <button name="v2_get_city_code" class="oe_stat_button" string="1d. City Code" type="object" icon="fa-plus"/>
+                        <button name="v2_get_meal_code" class="oe_stat_button" string="1e. Meal Code" type="object" icon="fa-plus"/>
+                        <button name="v2_merge_record" class="oe_stat_button" string="2. Merge" type="object" icon="fa-plus"/>
+                        <button name="v2_prepare_gateway_cache" class="oe_stat_button" string="3. Send Hotel to GW" type="object" icon="fa-plus"/>
+                        <button name="v2_render_autocomplete" class="oe_stat_button" string="4. Render AutoComplete" type="object" icon="fa-plus"/>
+                        <button name="v2_receive_data_from_gateway" class="oe_stat_button" string="5. Get New Hotel from Gateway" type="object" icon="fa-plus"/>
+                    </div>
+                    <div class="oe_title">
+                        <label for="name">Name</label>
+                        <h1>
+                            <field name="name" default_focus="1" placeholder="Name"/>
+                        </h1>
+                    </div>
+                </sheet>
+            </form>
+        </field>
+    </record>
+    <record id="tt_hotel_read_file_2_view_action_rodex" model="ir.actions.act_window">
+        <field name="name">Read File version 2</field>
+        <field name="res_model">tt.hotel</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+        <field name="context" eval="{'form_view_ref': 'tt_reservation_hotel.tt_hotel_read_file_2_view_form_rodex'}"/>
     </record>
 </odoo>
