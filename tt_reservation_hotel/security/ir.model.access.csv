@@ -22,6 +22,9 @@ access_tt_hotel_image_ho,access_tt_hotel_image_ho,model_tt_hotel_image,tt_base.g
 access_tt_hotel_info_all,access_tt_hotel_info_all,model_tt_hotel,,1,0,0,0
 access_tt_hotel_info_ho,access_tt_hotel_info_ho,model_tt_hotel,tt_base.group_tt_tour_travel_operator,1,1,1,0
 
+access_tt_hotel_master_all,access_tt_hotel_master_all,model_tt_hotel_master,,1,0,0,0
+access_tt_hotel_master_ho,access_tt_hotel_master_ho,model_tt_hotel_master,tt_base.group_tt_tour_travel_operator,1,1,1,0
+
 access_tt_reservation_hotel_all,access_tt_reservation_hotel_all,model_tt_reservation_hotel,,1,1,1,0
 access_room_date_all,access_room_date_all,model_tt_room_date,,1,1,1,0
 access_hotel_reservation_details_all,access_hotel_reservation_details_all,model_tt_hotel_reservation_details,,1,1,1,0
@@ -52,3 +55,5 @@ access_provider_hotel_all,access_provider_hotel_all,model_tt_provider_hotel,,1,1
 
 access_tt_passenger_hotel_for_admin,access_tt_passenger_hotel_for_admin,model_tt_reservation_passenger_hotel,base.user_admin,1,1,1,1
 access_tt_passenger_hotel_for_all,access_tt_passenger_hotel_for_admin,model_tt_reservation_passenger_hotel,,1,1,1,0
+
+access_meal_type_category_all,access_meal_type_category_all,model_tt_meal_category,,1,1,1,0

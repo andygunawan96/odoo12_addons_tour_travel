@@ -205,6 +205,7 @@
 <!--                    <button string="Calc Passenger Data" groups="base.group_no_one" name="action_calc_passenger_data" type="object"/>-->
 <!--                    <button string="Calc PNR + Provider" groups="base.group_no_one" name="action_calc_pnr" type="object"/>-->
 <!--                    <button string="Test Payment B2C" groups="base.group_no_one" name="test_payment_hotel_b2c" type="object"/>-->
+                    <button string="Calc Cost + Commision" groups="base.group_no_one" name="compute_total_cost" type="object"/>
 
                     <!--<field name="state" widget="statusbar" statusbar_visible="draft,confirm,issued,done" clickable='1' groups="tt_base.group_no_one"/>-->
                     <field name="state" widget="statusbar" statusbar_visible="draft,confirm,issued"/>
@@ -387,13 +388,15 @@
                         <group string="Price Information" class="oe_subtotal_footer oe_right">
                             <!--<field name="currency_id"/>-->
                             <field name="total_supplementary_price"/>
-                            <field name="total_commission_amount"
+                            <field name="total_commission"
                                    groups="tt_base.group_tt_agent_user_operator,tt_base.group_tt_tour_travel_operator"/>
                             <field name="total" class="oe_subtotal_footer_separator"/>
-                            <div class="oe_subtotal_footer_separator oe_inline">
-                                <label for="total_nta"/>
-                            </div>
-                            <field name="total_nta" nolabel='1' groups="tt_base.group_tt_tour_travel_operator" class="oe_subtotal_footer_separator"/>
+                                <!--<div class="oe_subtotal_footer_separator oe_inline">-->
+                                    <!--<label for="total_nta"/>-->
+                                <!--</div>-->
+                            <!--<field name="total_nta" nolabel='1' groups="tt_base.group_tt_tour_travel_operator" class="oe_subtotal_footer_separator"/>-->
+                            <field name="total_nta" class="oe_subtotal_footer_separator" groups="tt_base.group_tt_tour_travel_operator"/>
+                            <field name="agent_nta" class="oe_subtotal_footer_separator" groups="tt_base.group_tt_agent_user_operator, base.user_admin"/>
                         </group>
                     </group>
                 </sheet>

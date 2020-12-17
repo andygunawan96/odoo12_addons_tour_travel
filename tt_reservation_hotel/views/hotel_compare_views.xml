@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="tt_hotel_comparer_view_form_rodex" model="ir.ui.view">
+        <field name="name">tt.hotel.compare.view.form.rodex</field>
+        <field name="model">tt.hotel.compare</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <button name="merge_hotel" type="object" string="Merge" class="oe_stat_button" icon="fa-money" states="draft"/>
+                    <button name="cancel_merge_hotel" type="object" string="Decline" class="oe_stat_button" icon="fa-money" states="draft"/>
+                    <button name="set_to_draft" type="object" string="Set to Draft" class="oe_stat_button" states="merge,cancel"/>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,merge" />
+                </header>
+
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+
+                    </div>
+                    <group>
+                        <group>
+                            <field name="hotel_id"/>
+                            <field name="comp_hotel_id"/>
+                        </group>
+                        <group>
+                            <field name="score"/>
+                            <field name="similar_id"/>
+                            <label for="compare_uid" string="Compare By"/>
+                            <div>
+                                <field name="compare_uid" readonly="1" class="oe_inline"/> -
+                                <field name="compare_date" readonly="1" class="oe_inline"/>
+                            </div>
+                            <label for="merge_uid" string="Merge By"/>
+                            <div>
+                                <field name="merge_uid" readonly="1" class="oe_inline"/> -
+                                <field name="merge_date" readonly="1" class="oe_inline"/>
+                            </div>
+                        </group>
+                    </group>
+                    <group>
+                        <field name="line_ids"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+    <record id="tt_hotel_comparer_view_tree_rodex" model="ir.ui.view">
+        <field name="name">tt.hotel.compare.view.tree.rodex</field>
+        <field name="model">tt.hotel.compare</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="hotel_id"/>
+                <field name="comp_hotel_id"/>
+                <field name="compare_date"/>
+                <field name="merge_date"/>
+                <field name="score"/>
+                <field name="similar_id"/>
+            </tree>
+        </field>
+    </record>
+    <record id="tt_hotel_comparer_view_action_rodex" model="ir.actions.act_window">
+        <field name="name">Hotel Comparer</field>
+        <field name="res_model">tt.hotel.compare</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+        <field name="context">{
+            }</field>
+    </record>
+
+    <record id="tt_hotel_comparer_line_view_tree_rodex" model="ir.ui.view">
+        <field name="name">tt.hotel.compare.line.view.tree.rodex</field>
+        <field name="model">tt.hotel.compare.line</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="params"/>
+                <field name="value_1"/>
+                <field name="value_2"/>
+                <field name="is_value_1"/>
+            </tree>
+        </field>
+    </record>
+</odoo>
