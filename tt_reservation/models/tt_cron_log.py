@@ -49,7 +49,7 @@ class TtCronLogInhResv(models.Model):
                                 try:
                                     data = {
                                         'code': 9909,
-                                        'message': 'Issued in System not issued in Vendor: ' + recon_obj.ntc_to_str(need_to_check_dict),
+                                        'message': 'Issued in System not issued in Vendor:\n ' + recon_obj.ntc_to_str(need_to_check_dict),
                                         'provider': provider_obj.name,
                                     }
                                     self.env['tt.api.con'].send_request_to_gateway('%s/notification' % (self.env['tt.api.con'].url), data, 'notification_code')
