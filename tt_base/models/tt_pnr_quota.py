@@ -33,7 +33,7 @@ class TtPnrQuota(models.Model):
     def create(self, vals_list):
         package_obj = self.env['tt.pnr.quota.price.package'].browse(vals_list['price_package_id'])
         if package_obj:
-            exp_date = datetime.now() + timedelta(days=package_obj.validity)
+            exp_date = datetime.now() + timedelta(days=package_obj.validity - 1)
             now = datetime.now()
             vals_list['name'] = self.env['ir.sequence'].next_by_code('tt.pnr.quota')
             vals_list['expired_date'] = "%s-%s-%s" % (exp_date.year, exp_date.month, exp_date.day)
