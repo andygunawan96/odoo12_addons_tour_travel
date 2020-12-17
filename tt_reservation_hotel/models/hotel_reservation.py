@@ -67,9 +67,6 @@ class HotelReservation(models.Model):
     sale_service_charge_ids = fields.One2many('tt.service.charge', 'resv_hotel_id', 'Service Charges', ondelete='cascade',
                                               readonly=True, states={'draft': [('readonly', False)]})
     total_supplementary_price = fields.Monetary('Supplementary', compute='_get_total_supplement')
-    total_commission_amount = fields.Monetary('Total Commission', readonly=True, compute='_compute_total_cost',
-                                              states={'draft': [('readonly', False)]})
-
     # Agent & Others
 
     # Booker Information
@@ -87,7 +84,7 @@ class HotelReservation(models.Model):
     def get_form_id(self):
         return self.env.ref("tt_reservation_hotel.tt_hotel_reservation_form")
 
-    @api.depends('provider_booking_ids', 'provider_booking_ids.reconcile_line_id')
+    @api.depends('provider_booking_ids','provider_booking_ids.reconcile_line_id')
     def _compute_reconcile_state(self):
         for rec in self:
             if all([rec1.reconcile_line_id and rec1.reconcile_line_id.state == 'match' or False for rec1 in
@@ -139,21 +136,9 @@ class HotelReservation(models.Model):
             if rec.hotel_city_id:
                 rec.hotel_city = rec.hotel_city_id.name
 
-    def _compute_total_cost(self):
-        for hotel in self:
-            hotel.total_commission_amount = 0
-            hotel.total = 0
-            for detail in hotel.room_detail_ids:
-                hotel.total_commission_amount += detail.commission_amount * -1
-                hotel.total += detail.sale_price
-            hotel.total_nta = hotel.total - hotel.total_commission_amount
-
-    def _compute_total_sale(self):
-        total = 0
-        for data in self:
-            for line in data.room_detail_ids:
-                total += line.sale_price * line.qty
-            data.total = total
+    def compute_total_cost(self):
+        self._compute_total_nta()
+        self._compute_agent_nta()
 
     # This function similar to "print_itinerary" from other reservation
     def do_print_voucher(self, data, ctx=None):
@@ -329,12 +314,12 @@ class HotelReservation(models.Model):
         return url
 
     # @api.depends('room_detail_ids.commission_amount', 'room_detail_ids.qty')
-    def _compute_total_commission_amount(self):
-        total = 0
-        for data in self:
-            for line in data.room_detail_ids:
-                total += line.commission_amount * line.qty
-            data.total_commission_amount = total
+    # def _compute_total_commission_amount(self):
+    #     total = 0
+    #     for data in self:
+    #         for line in data.room_detail_ids:
+    #             total += line.commission_amount * line.qty
+    #         data.total_commission_amount = total
 
     def _get_total_supplement(self):
         return 0
@@ -433,8 +418,8 @@ class HotelReservation(models.Model):
     @api.one
     def action_booked(self):
         self.state = 'booked'
-        self.book_date = fields.Date.today()
-        self.env['test.search'].validation_booking(self.id)
+        self.booked_date = fields.Datetime.today()
+        # self.env['test.search'].validation_booking(self.id)
         return True
 
     # @api.one
@@ -501,11 +486,6 @@ class HotelReservation(models.Model):
         self.issued_uid = co_uid
 
         self.action_create_invoice(acquirer_id, co_uid)
-        for prov in self.provider_booking_ids:
-            prov.action_issued_api_hotel({
-                'co_uid': co_uid or self.env.user.id,
-                'signature': self.sid_issued or self.sid_booked
-            })
         self.state = 'issued'
         self.calc_voucher_name()
 
@@ -573,6 +553,12 @@ class HotelReservation(models.Model):
         self.provider_name = self.get_provider_list()
         # if state == 'done':
         #     self.action_create_invoice()
+        for prov in self.provider_booking_ids:
+            prov.action_issued_api_hotel({
+                'pnr': self.get_pnr_list(),
+                'co_uid': self.issued_uid.id or self.env.user.id,
+                'signature': self.sid_issued or self.sid_booked
+            })
         return True
 
     def action_calc_passenger_data(self):

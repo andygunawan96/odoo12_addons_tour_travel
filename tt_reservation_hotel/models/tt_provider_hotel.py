@@ -101,13 +101,15 @@ class TransportBookingProvider(models.Model):
                 'state': 'fail_booked'
             })
 
-    def action_issued_api_hotel(self, context):
+    def action_issued_api_hotel(self, vals):
         for rec in self:
             rec.write({
                 'state': 'issued',
                 'issued_date': datetime.now(),
-                'issued_uid': context.get('co_uid'),
-                'sid_issued': context.get('signature'),
+                'issued_uid': vals.get('co_uid'),
+                'sid_issued': vals.get('signature'),
+                'pnr': vals.get('pnr'),
+                'pnr2': vals.get('pnr'),
                 'balance_due': 0
             })
 
@@ -221,3 +223,10 @@ class TransportBookingProvider(models.Model):
 
     def get_carrier_name(self):
         return []
+
+    def set_pnr_pnr2(self):
+        for rec in self:
+            rec.state = rec.booking_id.state
+            if rec.booking_id.state == 'issued':
+                rec.pnr = rec.booking_id.pnr
+                rec.pnr2 = rec.booking_id.pnr

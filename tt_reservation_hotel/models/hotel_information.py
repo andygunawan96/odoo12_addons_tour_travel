@@ -107,6 +107,91 @@ class HotelInformation(models.Model):
     def render_cache_city(self):
         self.env['test.search'].update_cache_city()
 
+    def get_provider_code_fmt(self):
+        provider_fmt = {}
+        for rec in self.provider_hotel_ids:
+            provider_fmt.update({rec.provider_id.alias: rec.code})
+        return provider_fmt
+
+    def fmt_read(self, hotel_obj={}):
+        hotel = hotel_obj or self.read()[0]
+        new_hotel = {
+            'id': str(hotel['id']),
+            'name': hotel.get('name') and hotel['name'].title(),
+            'rating': hotel.get('rating', 0),
+            'prices': [],
+            'description': hotel.get('description'),
+            'location': {
+                'city_id': hotel.get('city_id') and hotel['city_id'][0] or False,
+                'address': hotel.get('address') or hotel.get('street'),
+                'city': hotel.get('city_id') and hotel['city_id'][1] or False,
+                'state': False,
+                'district': '',
+                'kelurahan': '',
+                'zipcode': hotel.get('zip')
+            },
+            'telephone': hotel.get('phone'),
+            'fax': hotel.get('fax'),
+            'ribbon': '',
+            'lat': hotel.get('lat'),
+            'long': hotel.get('long'),
+            'state': 'confirm',
+            'external_code': self.get_provider_code_fmt(),
+            'near_by_facility': [],
+            'images': hotel.get('images') or hotel.get('image'),
+            'facilities': hotel.get('facilities'),
+        }
+        if not isinstance(new_hotel['rating'], int):
+            try:
+                new_hotel['rating'] = int(new_hotel['rating'][0])
+            except:
+                new_hotel['rating'] = 0
+
+        fac_list = []
+        for img in new_hotel.get('image_ids') or []:
+            if isinstance(img, str):
+                new_img_url = 'http' in img and img or 'http://www.sunhotels.net/Sunhotels.net/HotelInfo/hotelImage.aspx' + img + '&full=1'
+                provider_id = False
+                fac_list.append({'name': '', 'url': new_img_url, 'description': '', 'provider_id': provider_id})
+            else:
+                # Digunakan hotel yg bisa dpet nama image nya
+                # Sampai tgl 11-11-2019 yg kyak gini (miki_api) formate sdah bener jadi bisa langsung break
+                # Lek misal formate beda mesti di format ulang
+                fac_list = new_hotel['images']
+                break
+        new_hotel['images'] = fac_list
+
+        new_fac = []
+        for fac in new_hotel.get('facilities') or []:
+            if isinstance(fac, dict):
+                if not fac.get('facility_name'):
+                    fac['facility_name'] = fac.pop('name')
+                fac_name = fac['facility_name']
+            else:
+                fac_name = fac
+                fac = {
+                    'facility_name': fac,
+                    'facility_id': False,
+                }
+            new_fac.append(fac)
+            # for fac_det in fac_name.split('/'):
+            #     facility = self.env['tt.hotel.facility'].search([('name', '=ilike', fac_det)])
+            #     if facility:
+            #         fac['facility_id'] = facility[0].internal_code
+            #         break
+            #     else:
+            #         facility = self.env['tt.provider.code'].search([('name', '=ilike', fac_det), ('facility_id', '!=', False)])
+            #         if facility:
+            #             fac['facility_id'] = facility[0].facility_id.internal_code
+            #             break
+            #
+            #         # Rekap Facility Other Name
+            #         with open('/var/log/cache_hotel/result log/master/new_facility.csv', 'a') as csvFile:
+            #             writer = csv.writer(csvFile)
+            #             writer.writerows([[provider, fac_det]])
+            #         csvFile.close()
+        new_hotel['facilities'] = new_fac
+        return new_hotel
 
 class HotelImage(models.Model):
     _inherit = 'tt.hotel.image'
@@ -118,13 +203,25 @@ class TtTemporaryRecord(models.Model):
     _inherit = 'tt.temporary.record'
 
     def get_obj(self):
+        new_obj = {
+            'res.country': [('tt.hotel', 'country_id')],
+            'res.country.state': [('tt.hotel', 'state_id')],
+            'res.city': [('tt.hotel', 'city_id')]
+        }
         obj_list = super(TtTemporaryRecord, self).get_obj()
-        obj_list += [('tt.hotel', 'city_id')]
+        for obj_key in new_obj.keys():
+            if obj_list.get(obj_key):
+                obj_list[obj_key] += new_obj[obj_key]
+            else:
+                obj_list[obj_key] = new_obj[obj_key]
         return obj_list
 
 
-# class HotelRaw(models.Model):
-#     _name = 'tt.hotel.raw'
-#     _inherit = 'tt.hotel'
-#     _description = 'Real Data dari vendor tanpa kita editting, cman bisa di edit ketika retrieve data dari vendor'
+class HotelMaster(models.Model):
+    _name = 'tt.hotel.master'
+    _inherit = 'tt.hotel'
+    _description = 'Hotel Comparer Data'
+
+    info_ids = fields.Many2many('tt.hotel', 'hotel_compared_info_rel', 'compared_id', 'info_id', 'Hotel Info', help='Data Hotel setelah di merge dan akan di publish')
+    compare_ids = fields.One2many('tt.hotel.compare', 'similar_id', 'Hotel Compare')
 
