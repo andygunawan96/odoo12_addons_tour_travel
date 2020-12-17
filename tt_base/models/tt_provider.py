@@ -96,6 +96,53 @@ class TtProviderCode(models.Model):
     provider_id = fields.Many2one('tt.provider', 'Provider')
     provider_type_id = fields.Many2one('tt.provider.type','Provider Type',related='provider_id.provider_type_id',store=True)
 
+    res_model = fields.Char('Related Reservation Name', index=True, readonly=False)
+    res_id = fields.Integer('Related Reservation ID', index=True, help='ID of the followed resource', readonly=False)
+
+    def open_record(self, rec_id):
+        try:
+            form_id = self.env[self.rec_model].get_form_id()
+        except:
+            form_id = self.env['ir.ui.view'].search([('type', '=', 'form'), ('model', '=', self.res_model)], limit=1)
+            form_id = form_id[0] if form_id else False
+
+        return {
+            'type': 'ir.actions.act_window',
+            'name': 'Reservation',
+            'res_model': self.res_model,
+            'res_id': rec_id,
+            'view_type': 'form',
+            'view_mode': 'form',
+            'view_id': form_id.id,
+            'context': {},
+            'target': 'current',
+        }
+
+    def open_record_parent(self):
+        return self.open_record(self.res_id)
+
+    # Temporary function untuk rubah ke format baru
+    def format_new(self):
+        for rec in self.search([]):
+            if rec.country_id:
+                rec.res_id = rec.country_id.id
+                rec.res_model = 'res.country'
+            elif rec.state_id:
+                rec.res_id = rec.state_id.id
+                rec.res_model = 'res.country.state'
+            elif rec.city_id:
+                rec.res_id = rec.city_id.id
+                rec.res_model = 'res.city'
+            elif rec.hotel_id:
+                rec.res_id = rec.hotel_id.id
+                rec.res_model = 'tt.hotel'
+            elif rec.facility_id:
+                rec.res_id = rec.facility_id.id
+                rec.res_model = 'tt.hotel.facility'
+            elif rec.type_id:
+                rec.res_id = rec.type_id.id
+                rec.res_model = 'tt.hotel.type'
+
 
 class TtProviderDestination(models.Model):
     _name = 'tt.provider.destination'
@@ -152,6 +199,8 @@ class ResCity(models.Model):
                 pass
 
         a = self.env['tt.provider.code'].sudo().search([('city_id', '=', city_id), ('provider_id', '=', provider_id)], limit=1)
+        if not a: # New Format
+            a = self.env['tt.provider.code'].sudo().search([('res_model', '=', 'res.city'), ('res_id', '=', city_id), ('provider_id', '=', provider_id)], limit=1)
         return a.code
 
     def get_city_country_provider_code(self, city_id, provider_code):
@@ -184,6 +233,8 @@ class ResCountry(models.Model):
 
     def get_provider_code(self, country_id, provider_id):
         a = self.env['tt.provider.code'].search([('country_id', '=', country_id), ('provider_id', '=', provider_id)], limit= 1)
+        if not a: # New Format
+            a = self.env['tt.provider.code'].sudo().search([('res_model', '=', 'res.country'), ('res_id', '=', country_id), ('provider_id', '=', provider_id)], limit=1)
         return a.code
 
     def update_provider_data(self, country_name, provider_uid, provider_id, continent_id=False):
