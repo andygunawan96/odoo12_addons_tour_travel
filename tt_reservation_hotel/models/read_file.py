@@ -1,10 +1,12 @@
 from odoo import api, fields, models, _
 import json
 import logging
+import xlrd
 from .ApiConnector_Hotel import ApiConnectorHotels
 import csv, glob, os
 from lxml import html
 from ...tools import xmltodict
+import csv
 
 _logger = logging.getLogger(__name__)
 API_CN_HOTEL = ApiConnectorHotels()
@@ -1394,19 +1396,21 @@ class HotelInformation(models.Model):
                 }
                 a = API_CN_HOTEL.get_record_by_api(search_req, api_context)
                 try:
-                    for gw_rec in a['response'][1]['Cities']:
+                    for gw_rec in a['response']['Cities']:
                         _logger.info("City: " + gw_rec['CityName'] + ".")
                         need_to_add_list.append([gw_rec['CityCode'], gw_rec['CityName'].encode("utf-8"),
                                                  gw_rec['CityLongName'].encode("utf-8"),
                                                  gw_rec['CountryCode'] ])
+
+                    with open('/var/log/cache_hotel/dida_pool/master/City.csv', 'w') as csvFile:
+                        writer = csv.writer(csvFile)
+                        writer.writerows(need_to_add_list)
+                    csvFile.close()
                 except:
                     _logger.info("No City for: " + rec[1] + ".")
                     continue
         f.close()
-        with open('/var/log/cache_hotel/dida_pool/master/City.csv', 'w') as csvFile:
-            writer = csv.writer(csvFile)
-            writer.writerows(need_to_add_list)
-        csvFile.close()
+        _logger.info("=== Processing City END ===")
 
     # Get Hotel Static
     def get_record_by_api7c(self):
@@ -2356,6 +2360,17 @@ class HotelInformation(models.Model):
                 return [rec,]
         return False
 
+    def advance_find_similar_name_from_database(self, hotel_name, city_name, city_ids, new_hotel_id, limit=10):
+        fmt_hotel_name = self.formatting_hotel_name(hotel_name, city_name)
+        temp = []
+        # Todo Find City
+        for rec in self.env['tt.hotel'].search([('id', '!=', new_hotel_id), ('city_id', 'in', city_ids)]):
+            if len(temp) > limit:
+                return temp
+            if all(elem in " ".join(self.formatting_hotel_name(rec.name)) for elem in fmt_hotel_name):
+                temp.append(rec)
+        return temp
+
     def exact_find_similar_name(self, hotel_name, city_name, cache_content):
         for rec in cache_content:
             if self.formatting_hotel_name(rec['name'], city_name) == self.formatting_hotel_name(hotel_name, city_name):
@@ -2411,10 +2426,24 @@ class HotelInformation(models.Model):
             self.env['tt.provider.code'].create({
                 'provider_id': self.env['tt.provider'].search([('alias', '=', vendor)], limit=1).id,
                 'code': hotel_obj['external_code'][vendor],
-                'hotel_id': create_hotel_id.id,
+                'res_id': create_hotel_id.id,
+                'res_model': 'tt.hotel',
                 'name': hotel_obj['name'],
             })
         return create_hotel_id
+
+    def create_or_edit_hotel(self, hotel_obj, file_number=-1):
+        ext_code = list(hotel_obj['external_code'].keys())[0]
+        provider_id = self.env['tt.provider'].search([('alias','=', ext_code)]).id
+        old_objs = self.env['tt.provider.code'].search([('provider_id', '=', provider_id), ('code', '=', hotel_obj['external_code'][ext_code])])
+        if old_objs:
+            self.file_log_write('Update for Hotel ' + str(old_objs[0].name) + ' with code ' + str(old_objs[0].code) )
+            # TODO: update hotel here
+            return self.env['tt.hotel'].browse(old_objs[0].res_id)
+        else:
+            self.file_log_write('Create new Hotel ' + str(hotel_obj['name']) + ' with code ' + str(hotel_obj['external_code'][ext_code]))
+            new_obj = self.create_hotel(hotel_obj, file_number)
+        return new_obj
 
     # Get Record From HOMAS, pool, api langsung jadi file cache
     # By City
@@ -2537,7 +2566,7 @@ class HotelInformation(models.Model):
             return rendered_city, length
 
     # Get Record From HOMAS, all in provider list
-    def get_record_homas_current(self):
+    def get_record_homas(self):
         # Read CSV CITY
         rendered_city, len_rendered = self.get_rendered_city()
         target_city_index = int(len_rendered)
@@ -2676,104 +2705,6 @@ class HotelInformation(models.Model):
             writer.writerows(new_to_add_list2)
         csvFile.close()
 
-        _logger.info('===============================')
-        _logger.info('==        RENDER DONE        ==')
-        _logger.info('===============================')
-
-    # Get Record From HOMAS, all in provider list
-    # Versi 2: Langsung create record di odoo, tmbahkan ada city jika tidak ketemu
-    def get_record_homas(self):
-        # Read CSV CITY
-        rendered_city, len_rendered = [], 0
-        target_city_index = int(len_rendered)
-        hotel_id = 0
-
-        provider_list = ['webbeds_pool', 'webbeds_excel_pool', 'knb', 'dida_pool']
-
-        import glob
-        for master_provider in provider_list:
-            city_ids = glob.glob("/var/log/cache_hotel/" + master_provider + "/*.json")
-
-            for target_city in city_ids:
-                city_name = target_city[22 + len(master_provider):-5]
-                if city_name.lower() in rendered_city or 'surab' not in city_name.lower():
-                    continue
-                cache_content = []
-                city_obj = self.env['res.city'].find_city_by_name(city_name, limit=1)
-                city_id = city_obj and city_obj.id or False
-                # Loop All provider
-                self.file_log_write(str(target_city_index + 1) + '. Start Render: ' + city_name)
-                # Looping untuk setiap city di alias name
-                searched_city_names = [city_name, ]
-                if city_obj:
-                    searched_city_names += [rec.name for rec in
-                                            city_obj.other_name_ids.filtered(lambda x: x.name not in city_name)]
-                else:
-                    try: #Coba catat user siapa yg buat jika user g pnya hak akses apa perlu dikasih error?
-                        city_obj = self.env['res.city'].create({'name': city_name})
-                    except: #sementara di bypass tnpa notif dan di catat create by admin
-                        city_obj = self.env['res.city'].sudo().create({'name': city_name})
-
-                for searched_city_name in searched_city_names:
-                    for provider in provider_list:
-                        a = 0
-                        try:
-                            file_url = "/var/log/cache_hotel/" + provider + "/" + searched_city_name + ".json"
-                            # Loop untuk setiap city cari file yg nama nya sma dengan  city yg dimaksud
-                            with open(file_url, 'r') as f2:
-                                file = f2.read()
-                                self.file_log_write('Provider ' + provider + ': ' + str(len(json.loads(file))))
-                                a += len(json.loads(file))
-                                for hotel in json.loads(file):
-                                    hotel_id += 1
-                                    # rubah format ke odoo
-                                    hotel_fmt = self.formating_homas(hotel, hotel_id, provider, city_id, target_city)
-                                    # Cek apakah file dengan kota tsb sdah ada di memory?
-                                    # same_name = self.advance_find_similar_name(hotel_fmt['name'], hotel_fmt['location']['city'], cache_content)
-                                    same_hotel_obj = self.exact_find_similar_name(hotel_fmt['name'],
-                                                                             hotel_fmt['location']['city'],
-                                                                             cache_content)
-                                    if same_hotel_obj:
-                                        # tambahkan detail ke record yg sama tersebut
-                                        hotel_id -= 1
-                                        if hotel.get('external_code'):
-                                            same_hotel_obj[0]['external_code'][self.masking_provider(provider)] = str(
-                                                hotel['external_code'][self.masking_provider(provider)])
-                                        else:
-                                            same_hotel_obj[0]['external_code'][self.masking_provider(provider)] = hotel[
-                                                'id']
-                                        same_hotel_obj[0]['images'] += hotel_fmt['images']
-                                        if len(same_hotel_obj[0]['facilities']) < len(hotel_fmt['facilities']):
-                                            same_hotel_obj[0]['facilities'] = hotel_fmt['facilities']
-                                        # self.file_log_write('Sync: ' + hotel_fmt['name'] + '->' + same_name[0]['name'])
-                                    else:
-                                        # create baru di memory
-                                        cache_content.append(hotel_fmt)
-                                        # self.file_log_write('New : ' + hotel_fmt['name'])
-                            f2.close()
-                        except Exception as e:
-                            self.file_log_write('Error:' + provider + ' in id ' + str(hotel_id) + '; MSG:' + str(e))
-                            try:
-                                f2.close()
-                                pass
-                            except:
-                                pass
-
-                if cache_content:
-                    self.file_log_write(
-                        'Render ' + city_name + ' End, Get:' + str(len(cache_content)) + ' Hotel(s)')
-                    # Save hasil ke odoo untuk versi 2:
-                    for cached_hotel in cache_content:
-                        self.create_hotel(cached_hotel, -1)
-
-                    # Simpan di rendered hotel
-                    for rec in searched_city_names:
-                        # Simpan all alias name juga
-                        rendered_city.append(rec)
-
-                    target_city_index += 1
-
-            break
         _logger.info('===============================')
         _logger.info('==        RENDER DONE        ==')
         _logger.info('===============================')
@@ -3201,7 +3132,9 @@ class HotelInformation(models.Model):
                     'hotel_ids': [],
                     'city_ids': self.env['test.search'].render_cache_city(),
                     'country_ids': self.env['test.search'].prepare_countries(self.env['res.country'].sudo().search([])),
-                    'landmark_ids': []
+                    'landmark_ids': [],
+                    'meal_type_ids': self.env['tt.meal.type'].render_cache(),
+                    'meal_category_ids': self.env['tt.meal.category'].render_cache(),
                 })
                 break
             file_number += 1
@@ -3212,7 +3145,9 @@ class HotelInformation(models.Model):
             'hotel_ids': [],
             'city_ids': self.env['test.search'].render_cache_city(),
             'country_ids': self.env['test.search'].prepare_countries(self.env['res.country'].sudo().search([])),
-            'landmark_ids': []
+            'landmark_ids': [],
+            'meal_type_ids': self.env['tt.meal.type'].render_cache(),
+            'meal_category_ids': self.env['tt.meal.category'].render_cache(),
         }
         # Update ke master nya
         API_CN_HOTEL.signin()
@@ -3360,3 +3295,361 @@ class HotelInformation(models.Model):
             for rec1 in rec.image_ids:
                 rec1.sudo().unlink()
             rec.sudo().unlink()
+
+    # Temporary
+    def edit_city_name(self):
+        filename = '/var/log/tour_travel/autocomplete_cache.json'
+        with open(filename) as f:
+            data = json.load(f)
+            for rec in data['city_ids']:
+                if rec['name'] == 'Surakarta':
+                    rec['name'] = 'Solo'
+        f.close()
+
+        file = open(filename, 'w')
+        file.write(json.dumps(data))
+        file.close()
+
+    ###########################################################
+    # ====================== New Format ====================  #
+    ###########################################################
+    # Versi 2: Langsung create record di odoo, tmbahkan ada city jika tidak ketemu
+
+    # 1a. Collect by System (Schedular)
+    # Compiller: Master
+    # Notes: Ambil data dari vendor (Country, Meal type, Facility, City + destination, Hotel, Other Info)
+    # Notes: Simpan ke table masing2x masukan sisane ke other
+    # Notes: cara
+    # Todo: Perlu catat source data ne
+    # Todo: Prepare Cron tiap provider
+    def v2_collect_by_system(self):
+        # params = self.env['ir.config_parameter'].sudo().get_param('hotel.city.rendered.list')
+        # rendered_city = json.loads(params)
+        #
+        # API_CN_HOTEL.signin()
+        # city_ids = glob.glob("/var/log/cache_hotel/knb/*.json")
+        #
+        # for target_city in city_ids:
+        #     target_city_name = target_city[25:-5]
+        #     if target_city_name in rendered_city:
+        #         continue
+        #     with open(target_city, 'r') as f2:
+        #         file = f2.read()
+        #         hotel_ids = [rec['id'] for rec in json.loads(file)]
+        #     f2.close()
+        #     response = API_CN_HOTEL.send_request('get_hotel_detail', {'provider': ['knb'], 'codes': hotel_ids})
+        #
+        #     name = '/var/log/cache_hotel/knb_api/' + target_city_name + ".json"
+        #     file = open(name, 'w')
+        #     file.write(json.dumps(response['response']['result']))
+        #     file.close()
+        #     rendered_city.append(target_city_name)
+        #
+        #     self.env['ir.config_parameter'].sudo().set_param('hotel.city.rendered.list', json.dumps(rendered_city))
+        #     self.env.cr.commit()
+        # self.env['ir.config_parameter'].sudo().set_param('hotel.city.rendered.list', json.dumps([]))
+
+        # Part2: Update hotel RAW
+        city_ids = glob.glob("/var/log/cache_hotel/knb_api/*.json")
+        for target_city in city_ids:
+            target_city_name = target_city[29:-5]
+            _logger.info("Processing: " + str(target_city_name))
+
+            with open(target_city, 'r') as f2:
+                file = f2.read()
+                provider_codes = json.loads(file)
+            f2.close()
+
+            for code in provider_codes.keys():
+                obj_id = self.env['tt.provider.code'].search([('code', '=', code), ('res_model', '=', 'tt.hotel')], limit=1)
+                _logger.info("Processing Hotel with Code: " + str(code))
+                if obj_id:
+                    obj_id = obj_id[0].res_id
+                    hotel_obj = self.env['tt.hotel'].browse(obj_id)
+                    if not hotel_obj.lat and provider_codes[code]['lat']:
+                        hotel_obj.lat = provider_codes[code]['lat']
+                    if not hotel_obj.long and provider_codes[code]['long']:
+                        hotel_obj.long = provider_codes[code]['long']
+                    if not hotel_obj.website and provider_codes[code]['website']:
+                        hotel_obj.website = provider_codes[code]['website']
+                    if not hotel_obj.phone and provider_codes[code]['phone']:
+                        hotel_obj.phone = provider_codes[code]['phone']
+                    if not hotel_obj.facility_ids and provider_codes[code]['facility']:
+                        for fac in provider_codes[code]['facility']:
+                            # TODO hotel facility cari by provider code
+                            fac_obj = self.env['tt.hotel.facility'].search([('name','=ilike', fac['name'])], limit=1)
+                            if fac_obj and fac_obj[0].id not in hotel_obj.facility_ids.ids:
+                                hotel_obj.facility_ids = [(4, fac_obj[0].id)]
+                            else:
+                                fac_type_id = self.env.ref('tt_reservation_hotel.hotel_facility_type_basic').id
+                                fac_obj = self.env['tt.hotel.facility'].create({'name': fac['name'], 'facility_type_id': fac_type_id})
+                                # TODO add provider code
+                                hotel_obj.facility_ids = [(4, fac_obj.id)]
+        _logger.info("===== Done =====")
+
+    # 1b. Collect by Human / File excel
+    # Compiller: Master / Local
+    # Notes: Ambil data dari vendor yg dikasih manual atau tidak bisa diakses melalui API
+    # Notes: Mesti bantuan human untuk upload file location serta formating
+    # Notes: Bagian ini bakal sering berubah
+    # Todo: Perlu catat source data ne
+    def v2_collect_by_human(self):
+        provider = ['dida', ]
+        for rec in provider:
+            def_name = 'v2_collect_by_human_%s' % rec
+            if hasattr(self, def_name):
+                return getattr(self, def_name)()
+            else:
+                _logger.error(msg='No function Collect by CSV for this provider %s' % rec)
+        return False
+
+    def v2_collect_by_human_csv(self):
+        return False
+
+    # 1c. Get Country Code
+    def v2_get_country_code(self):
+        workbook = xlrd.open_workbook('/home/rodex-it-05/Downloads/RODE_country_20201028120232.xls')
+        # worksheet = workbook.sheet_by_name('Name of the Sheet')
+        worksheet = workbook.sheet_by_index(0)
+        # worksheet.nrows
+        # worksheet.ncols
+        a = []
+        provider_id = 383
+        for row in range(1, worksheet.nrows):
+            name = worksheet.cell(row, 0).value
+            code = worksheet.cell(row, 2).value
+
+            country_obj = self.env['res.country'].find_country_by_name(name, 1)
+            country_obj = country_obj and country_obj[0] or self.env['res.country'].create({'name': name})
+
+            # Create external ID:
+            if not self.env['tt.provider.code'].search([('res_model', '=', 'res.country'), ('res_id', '=', country_obj.id),
+                                                        ('code', '=', code), ('provider_id', '=', provider_id)]):
+                self.env['tt.provider.code'].create({
+                    'res_model': 'res.country',
+                    'res_id': country_obj.id,
+                    'name': name,
+                    'code': code,
+                    'provider_id': provider_id,
+                })
+        return a
+
+    # 1d. Get City Code
+    def v2_get_city_code(self):
+        provider = ['dida',]
+        for rec in provider:
+            def_name = 'v2_get_city_code_%s' % rec
+            if hasattr(self, def_name):
+                return getattr(self, def_name)()
+            else:
+                _logger.error(msg='No function get city code for this provider %s' % rec)
+        return False
+
+    # 1e. Get Meal Code
+    def v2_get_meal_code(self):
+        provider = ['dida',]
+        for rec in provider:
+            def_name = 'v2_get_meal_code_%s' % rec
+            if hasattr(self, def_name):
+                return getattr(self, def_name)()
+            else:
+                _logger.error(msg='No function get meal code for this provider %s' % rec)
+        return False
+
+    # 1f. Get room Code
+    def v2_get_room_code(self):
+        return True
+
+    # 1g. Get Facility Code
+    def v2_get_facility_code(self):
+        return True
+
+    # 2. Merge
+    # Compiller: Master
+    # Notes: Compare Hotel lalu simpan hasil Komparasi
+    # Notes: Compare hanya 1 Vendor dengan data Master
+    # Todo: masukan inputan tingkat kepercayaan untuk langsung validasi
+    def v2_merge_record(self):
+        # Read CSV CITY
+        provider_list = ['dida_pool']
+        params = self.env['ir.config_parameter'].sudo().get_param('hotel.merge.provider')
+        if params == json.dumps(provider_list):
+            params = self.env['ir.config_parameter'].sudo().get_param('hotel.city.rendered.list')
+            rendered_city = json.loads(params)
+        else:
+            self.env['ir.config_parameter'].sudo().set_param('hotel.merge.provider', json.dumps(provider_list))
+            rendered_city = []
+        len_rendered = len(rendered_city)
+        target_city_index = int(len_rendered)
+        hotel_id = 0
+
+        import glob
+        for master_provider in provider_list:
+            base_url = "/var/log/cache_hotel/" + master_provider + "/"
+            for country in os.walk(base_url):
+                country_str = country[0][len(base_url):]
+                if not country_str or country_str != 'Indonesia':
+                    continue
+                city_ids = glob.glob("/var/log/cache_hotel/" + master_provider + "/" + country_str + "/*.json")
+                for target_city in city_ids:
+                    city_name = target_city[22 + len(master_provider) + len(country_str) + 1:-5]
+                    if city_name.lower() in rendered_city:
+                        continue
+                    city_obj = self.env['res.city'].find_city_by_name(city_name, limit=1)
+                    if not city_obj:
+                        try: #Coba catat user siapa yg buat jika user g pnya hak akses apa perlu dikasih error?
+                            city_obj = self.env['res.city'].create({'name': city_name, 'country_id':self.env['res.country'].search([('name','=ilike','other')], limit=1)[0].id})
+                        except: #sementara di bypass tnpa notif dan di catat create by admin
+                            city_obj = self.env['res.city'].sudo().create({'name': city_name, 'country_id':self.env['res.country'].search([('name','=ilike','other')], limit=1)[0].id})
+                    city_id = city_obj and city_obj.id or False
+                    self.file_log_write(str(target_city_index + 1) + '. Start Render: ' + city_name)
+                    searched_city_names = [city_name, ]
+                    searched_city_names += [rec.name for rec in city_obj.other_name_ids.filtered(lambda x: x.name not in city_name)]
+
+                    searched_city_ids = [city_obj.id]
+                    searched_city_ids += [rec.id for rec in city_obj.other_name_ids.filtered(lambda x: x.name not in city_name)]
+
+                    # Loop All provider untuk setiap city di alias name
+                    for searched_city_name in searched_city_names:
+                        for provider in provider_list:
+                            a = 0
+                            try:
+                                file_url = "/var/log/cache_hotel/" + provider + "/" + country_str + "/" + searched_city_name + ".json"
+                                # Loop untuk setiap city cari file yg nama nya sma dengan  city yg dimaksud
+                                with open(file_url, 'r') as f2:
+                                    file = f2.read()
+                                    self.file_log_write('Provider ' + provider + ', for alias name ' + searched_city_name + ': ' + str(len(json.loads(file))))
+                                    a += len(json.loads(file))
+                                    for hotel in json.loads(file):
+                                        hotel_id += 1
+                                        # rubah format ke odoo
+                                        hotel_fmt = self.formating_homas(hotel, hotel_id, provider, city_id, target_city)
+
+                                        internal_hotel_obj = self.create_or_edit_hotel(hotel_fmt, -1)
+                                        # if len(json.loads(file)):
+                                        #     same_hotel_obj = self.advance_find_similar_name_from_database(hotel_fmt['name'], hotel_fmt['location']['city'], searched_city_ids, internal_hotel_obj.id)
+                                        # else:
+                                        #     same_hotel_obj = False
+                                        # if same_hotel_obj:
+                                        #     for same_hotel_obj_id in same_hotel_obj:
+                                        #         comparing_id = self.env['tt.hotel.compare'].create({
+                                        #             'hotel_id': internal_hotel_obj.id,
+                                        #             'comp_hotel_id': same_hotel_obj_id.id,
+                                        #         })
+                                        #         comparing_id.compare_hotel()
+                                f2.close()
+                            except Exception as e:
+                                self.file_log_write('Error:' + provider + ' in id ' + str(hotel_id) + '; MSG:' + str(e))
+                                try:
+                                    f2.close()
+                                    pass
+                                except:
+                                    pass
+
+                    _logger.info('Render ' + city_name + ' End')
+
+                    # Simpan di rendered hotel
+                    for rec in searched_city_names:
+                        # Simpan all alias name juga
+                        rendered_city.append(rec.lower())
+
+                    target_city_index += 1
+
+                    self.env['ir.config_parameter'].sudo().set_param('hotel.city.rendered.list', json.dumps(rendered_city))
+                    self.env.cr.commit()
+        _logger.info('===============================')
+        _logger.info('==        RENDER DONE        ==')
+        _logger.info('===============================')
+        # Reset Parameter jika sdah selesaai
+        self.env['ir.config_parameter'].sudo().set_param('hotel.city.rendered.list', json.dumps([]))
+
+    # 3. Send Hotel to GW
+    # Compiller: Master, Send: GW Rodextrip
+    # Notes: Read Data Hotel kumpulkan per City kirim ke GW
+    # Todo: Kirimkan juga Meal Type Code yg ada di cache + data yg kita perlukan lain nya
+    def v2_prepare_gateway_cache(self):
+        # Find prefered City
+        idx = 1
+        catalog = []
+        for city in self.env['res.city'].search([('active', '=', True)]):
+            # Rename city as File_number // 7an supaya waktu send data kita bisa tau file mana yg hilang klo pakai nama city mesti buka index dulu baru tau klo ada file hilang
+            # Loop sngaja dibuat 2x ini tujuan nya buat bikin daftar isi trus kirim ke GW
+            catalog.append({
+                'index': idx,
+                'city_id': city.id,
+                'city_name': city.name,
+                'country_id': city.country_id and city.country_id.id or False,
+                'country_name': city.country_id and city.country_id.name or False,
+            })
+            idx += 1
+        # API_CN_HOTEL.send_request('send_catalog', json.dumps(catalog))
+        # Test Only: Langsung Write as DB
+        file = open('/var/log/tour_travel/cache_hotel/catalog.txt', 'w')
+        file.write(json.dumps(catalog))
+        file.close()
+
+        for city in catalog:
+            content = []
+            # Search all Mapped Data from hotel.master
+            for hotel in self.env['tt.hotel.master'].search([('city_id','=',city['city_id'])]):
+                content.append(hotel.fmt_read())
+            # Search all Done Data from hotel.raw (Done mean extinct record, to_be_merge: mean sedang dalam hotel.comparer blum diputus kan)
+            for hotel in self.env['tt.hotel'].search([('state', 'not in', ['merged',]),('city_id','=',city['city_id'])]):
+                content.append(hotel.fmt_read())
+            # Rubah ke format JSON
+            # Save as 1 File and send to GW
+            # API_CN_HOTEL.send_request('create_hotel_file', {'name': 'cache_hotel_' + str(city['index']), 'content': json.dumps(content)})
+
+            # Test Only: Langsung Write as DB
+            try:
+                file = open('/var/log/tour_travel/cache_hotel/cache_hotel_' + str(city['index']) + '.txt', 'w')
+                file.write(json.dumps(content))
+                file.close()
+                _logger.info(msg='Create hotel file ' + str(city['index']) + '. ' + city['city_name'] + ', ' + city['country_name'] + ' Done')
+            except Exception as e:
+                _logger.error(msg='Create hotel file Error')
+                continue
+        return True
+
+    # 4. Render AutoComplete
+    # Notes: Render City + Auto complete
+    # Notes: Kirim Auto Complete ke channel / B2B ne
+    # Todo: Data city sementara menggunakan data city master
+    @api.multi
+    def v2_render_autocomplete(self):
+        new_cache_dict = {
+            'hotel_ids': [],
+            'city_ids': self.env['test.search'].render_cache_city(provider='knb'),
+            'country_ids': self.env['test.search'].prepare_countries(self.env['res.country'].sudo().search([])),
+            'landmark_ids': [],
+            'meal_type_ids': self.env['tt.meal.type'].render_cache(),
+            'meal_category_ids': self.env['tt.meal.category'].render_cache(),
+        }
+        # Update ke master nya
+        # API_CN_HOTEL.signin()
+        # API_CN_HOTEL.send_request('prepare_gateway_cache', new_cache_dict)
+        name = '/var/log/tour_travel/autocomplete_hotel/' + "record_cache.json"
+        file = open(name, 'w')
+        file.write(json.dumps(new_cache_dict))
+        file.close()
+
+        _logger.info('Render Cache Done ' + str(len(new_cache_dict['city_ids'])) + ' City(s), ' + str(len(new_cache_dict['country_ids'])) + ' Countries,')
+        # Update ke BTBO2 dkk / Child / subscribers
+        _logger.info('Sending to Child')
+        vals = {
+            'provider_type': 'hotel',
+            'action': 'prepare_gateway_cache',
+            'data': new_cache_dict,
+        }
+        # self.env['tt.api.webhook.data'].notify_subscriber(vals)
+        _logger.info('Send to Child Done')
+
+    # 5. Get New Hotel from Gateway
+    # Notes: Waktu proses search bisa jadi dapat data yg tidak lengkap atau tidak ada dalam cache
+    # Notes: Simpan data ne as Raw File
+    # Todo: Perlu catat source data ne waktu kita create raw dari mana
+    # Todo: Pertimbangkan saat new hotel pnya meal type code & facility code yg tidak terdaftar
+    # Notes: Control datane disini biar next search dia tidak kosongan / gagal di tampilin
+    def v2_receive_data_from_gateway(self):
+        return True
+
