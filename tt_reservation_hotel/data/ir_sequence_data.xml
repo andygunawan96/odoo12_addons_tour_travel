@@ -9,5 +9,14 @@
             <field name="padding">5</field>
             <field name="company_id" eval="False"/>
         </record>
+
+        <record id="hotel_merged_provider_data" model="ir.config_parameter">
+            <field name="key">hotel.merge.provider</field>
+            <field name="value">[]</field>
+        </record>
+        <record id="hotel_rendered_list_data" model="ir.config_parameter">
+            <field name="key">hotel.city.rendered.list</field>
+            <field name="value">[]</field>
+        </record>
     </data>
 </odoo>

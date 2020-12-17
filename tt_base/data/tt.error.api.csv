@@ -90,3 +90,4 @@ tt_error_api_9005,9905,Booking,For Booking,,1,1
 tt_error_api_9006,9906,Issued,For Issued,,1,1
 tt_error_api_9007,9907,Top Up,For Top Up,,1,1
 tt_error_api_9008,9908,Tour Request,For Tour Request,,1,1
+tt_error_api_9009,9909,Non Transaction Notification,For Non Transaction,,1,1

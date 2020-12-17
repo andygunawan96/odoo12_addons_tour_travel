@@ -1085,5 +1085,12 @@
             <field name="charge_rate">100</field>
             <field name="currency_id" ref="base.IDR"/>
         </record>
+
+        <record id="hotel_meal_type_categ_room_only" model="tt.meal.category">
+            <field name="name">Category Room Only</field>
+        </record>
+        <record id="hotel_meal_type_categ_with_meal" model="tt.meal.category">
+            <field name="name">Category With Meal</field>
+        </record>
     </data>
 </odoo>
