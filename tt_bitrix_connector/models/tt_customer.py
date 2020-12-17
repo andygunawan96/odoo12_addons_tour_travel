@@ -88,7 +88,7 @@ class TtCustomer(models.Model):
                     #     'home': 'HOME',
                     #     'other': 'OTHER'
                     # }
-                    phone_type_conv = dict(self._fields['type'].selection)
+                    phone_type_conv = dict(self.env['phone.detail']._fields['type'].selection)
                     phone_list.append({
                         'VALUE': (rec.calling_code and rec.calling_code or '') + (rec.calling_number and rec.calling_number or ''),
                         'VALUE_TYPE': rec.type and phone_type_conv[rec.type].upper() or '',
