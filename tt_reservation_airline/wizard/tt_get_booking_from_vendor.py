@@ -10,10 +10,10 @@ import traceback, logging
 _logger = logging.getLogger(__name__)
 
 provider_selection = [
-        # ('sabre', 'Sabre'),
-        ('amadeus', 'Amadeus'),
         ('altea', 'Garuda Altea'),
+        ('amadeus', 'Amadeus'),
         ('lionair', 'Lion Air'),
+        # ('sabre', 'Sabre'),
     ]
 
 class TtGetBookingFromVendor(models.TransientModel):
