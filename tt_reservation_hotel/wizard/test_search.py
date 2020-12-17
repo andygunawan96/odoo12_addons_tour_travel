@@ -1,5 +1,5 @@
 from odoo import api, fields, models, _
-from datetime import datetime
+from datetime import datetime as dt
 from odoo.tools import DEFAULT_SERVER_DATETIME_FORMAT
 from datetime import date, datetime, timedelta
 from odoo.exceptions import UserError
@@ -39,17 +39,22 @@ class TestSearch(models.Model):
             rec_dict['country_' + rec] = rec_dict.pop(rec)
         return rec_dict
 
-    def render_cache_city(self, country_name=[], city_name='', limit=99999):
+    def render_cache_city(self, country_name=[], city_name='', provider='', limit=99999):
         domain = []
         city_cache = []
+        if provider:
+            provider_obj = self.env['tt.provider'].search(['|', ('alias', '=', provider), ('code', '=', provider)], limit=1)
+            provider_id = provider_obj.id
+            provider_city = [rec.res_id for rec in self.env['tt.provider.code'].sudo().search([('res_model', '=', 'res.city'), ('provider_id', '=', provider_id)])]
+            domain.append(('id', 'in', provider_city))
         if country_name:
             country_ids = []
             for rec in country_name:
                 country_ids += self.env['res.country'].sudo().search([('name', '=ilike', rec)]).ids
-            domain += ('country_id', 'in', country_ids)
+            domain.append(('country_id', 'in', country_ids))
 
         if city_name:
-            domain += ('name', '=ilike', city_name)
+            domain.append(('name', '=ilike', city_name))
 
         for rec in self.env['res.city'].sudo().search(domain, limit=limit):
             city_fmt = self.env['res.city'].prepare_city_for_cache(rec)
@@ -565,6 +570,7 @@ class TestSearch(models.Model):
             'checkin_date': check_in,
             'checkout_date': check_out,
             'room_count': room_count,
+            'nights': dt.strptime(check_out, "%Y-%m-%d").day - dt.strptime(check_in, "%Y-%m-%d").day,
             'booker_id': cust_partner_obj.id, #
             'contact_id': cust_partner_obj.id, #
             'contact_name': cust_partner_obj.name, #
@@ -843,7 +849,7 @@ class TestSearch(models.Model):
             'date': str(night.date),
             'currency': night.currency_id.name,
             'sale_price': night.sale_price,
-            'meal_type': meal_type,
+            'meal_type': night.meal_type or meal_type,
         } for night in nightly]
 
 
@@ -855,7 +861,7 @@ class TestSearch(models.Model):
                 'prov_issued_code': room.issued_name,
                 'prov_booking_code': room.name,
                 'provider': room.provider_id.code,
-                'dates': self.prepare_nightly_price(room.room_date_ids),
+                'dates': self.prepare_nightly_price(room.room_date_ids, room.room_info_id and room.room_info_id.meal_type or room.meal_type),
                 'room_name': room.room_info_id and room.room_info_id.name or room.room_name,
                 'room_vendor_code': room.room_vendor_code,
                 'room_type': room.room_type,
@@ -942,7 +948,7 @@ class TestSearch(models.Model):
             'total': resv_obj.total,
             'currency': resv_obj.currency_id.name,
             'voucher_no': '',
-            'commission': resv_obj.total_commission_amount,
+            'commission': resv_obj.total_commission,
             'issued_date': resv_obj.issued_date,
             'from_date': resv_obj.checkin_date,
             'to_date': resv_obj.checkout_date,
@@ -1064,7 +1070,7 @@ class TestSearch(models.Model):
     def get_provider_for_dest_name(self, dest_name):
         country = self.env['res.city'].search([('name', '=ilike', dest_name)], limit=1)
         return country and country[0].id or False
-    
+
     def get_provider_code_alias_api(self, limit):
         resp = {}
         for rec in self.env['tt.provider'].search([('active','=',True), ('alias','!=',False), ('provider_type_id', '=', self.env.ref('tt_reservation_hotel.tt_provider_type_hotel').id)], limit=limit):
@@ -1072,7 +1078,7 @@ class TestSearch(models.Model):
                 resp[rec.alias] = []
             resp[rec.alias].append(rec.code)
         return resp
-    
+
     def fail_booking_hotel(self, book_id, msg):
         resv_obj = self.env['tt.reservation.hotel'].search([('name','=',book_id)], limit=1)[0]
         return resv_obj.sudo().action_failed(msg)

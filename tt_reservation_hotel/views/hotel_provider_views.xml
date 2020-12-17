@@ -10,6 +10,7 @@
                             context="{
                         'default_provider_id': id,
                    }"/>
+                    <button string="Set PNR (Temp buat revisi)" name="set_pnr_pnr2" type="object" groups="tt_base.group_tt_ticketing_operator"/>
                     <field name="state" widget="statusbar" statusbar_visible="draft,booked,issued"/>
                 </header>
                 <sheet>
@@ -80,6 +81,14 @@
                 <field name="state"/>
             </tree>
         </field>
+    </record>
+
+    <record id="tt_provider_hotel_view_action_rodex" model="ir.actions.act_window">
+        <field name="name">Provider Hotel</field>
+        <field name="res_model">tt.provider.hotel</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+        <field name="context" eval="{}"/>
     </record>
 
 </odoo>

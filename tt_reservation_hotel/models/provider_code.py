@@ -13,7 +13,10 @@ class ProviderCode(models.Model):
 class Hotel(models.Model):
     _inherit = "tt.hotel"
 
-    provider_hotel_ids = fields.One2many('tt.provider.code', 'hotel_id', 'Provider External Code')
+    def _get_res_model_domain(self):
+        return [('res_model', '=', self._name)]
+
+    provider_hotel_ids = fields.One2many('tt.provider.code', 'res_id', 'Provider External Code', domain=_get_res_model_domain)
 
     def get_provider_code(self, hotel_id, provider_id):
         a = self.env['tt.provider.code'].search([('hotel_id', '=', hotel_id), ('provider_id', '=', provider_id)], limit= 1)

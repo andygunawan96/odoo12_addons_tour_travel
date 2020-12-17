@@ -5,12 +5,20 @@
         <field name="arch" type="xml">
             <form>
                 <group>
-                    <group>
-                        <field name="name"/>
-                        <field name="code"/>
-                        <field name="provider_id"/>
-                    </group>
+                    <field name="name"/>
+                    <field name="category_id"/>
                 </group>
+                <notebook>
+                    <page id="provider_code_page" string="Provider Code(s)">
+                        <field name="provider_code_ids">
+                            <tree editable="bottom">
+                                <field name="code"/>
+                                <field name="name"/>
+                                <field name="provider_id"/>
+                            </tree>
+                        </field>
+                    </page>
+                </notebook>
             </form>
         </field>
     </record>
@@ -20,8 +28,7 @@
         <field name="arch" type="xml">
             <tree>
                 <field name="name"/>
-                <field name="code"/>
-                <field name="provider_id"/>
+                <field name="category_id"/>
             </tree>
         </field>
     </record>
