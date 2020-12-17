@@ -65,8 +65,8 @@ class TtReconcileTransaction(models.Model):
         for rec in self.env['tt.provider.%s' % (self.provider_type_id.code)].search([('reconcile_line_id', '=', False),
                                                                                      ('state','in',state_list),
                                                                                      ('provider_id','=', self.provider_id.id),
-                                                                                     ('issued_date','<=',start_date),
-                                                                                     ('issued_date','>=',end_date)]):
+                                                                                     ('issued_date','<=',start_date.replace(hour=0,minute=0,second=0).astimezone(pytz.UTC)),
+                                                                                     ('issued_date','>=',end_date.replace(hour=23,minute=59,second=59).astimezone(pytz.UTC))]):
             issued_date = str(rec.issued_date)[:10]
             if not need_to_check.get(issued_date):
                 need_to_check[issued_date] = []
