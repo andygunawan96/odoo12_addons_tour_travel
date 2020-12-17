@@ -63,7 +63,9 @@ class TtReconcileTransaction(models.Model):
         resv_date = False #Tanggal yg digunakan untuk pengecekan
         need_to_check = {'in_range':{}, 'out_range':{}}
         # CTH: klo state issued dia pakai issued date, klo state booking kita pakai booking date e dkk
-        for rec in self.env['tt.provider.%s' % (self.provider_type_id.code)].search([('reconcile_line_id', '=', False),('state','in',state_list)]):
+        for rec in self.env['tt.provider.%s' % (self.provider_type_id.code)].search([('reconcile_line_id', '=', False),
+                                                                                     ('state','in',state_list),
+                                                                                     ('provider_id','=', self.provider_id.id)]):
             if rec.state in ['issued', 'refund', 'reschedule']:
                 resv_date = rec.issued_date
             elif rec.state in ['booked']:
@@ -87,6 +89,27 @@ class TtReconcileTransaction(models.Model):
                 'provider': rec.provider_id.name,
             })
         return need_to_check
+
+    def find_exist_in_vendor_only_reservation(self, start_date=False, end_date=False):
+        need_to_check = {'in_range': {}, 'out_range': {}}
+        for rec in self.reconcile_lines_ids.filtered(lambda x: x.state == 'not_match'):
+            resv_date = rec.issued_time
+            # Filter apakah provider_booking diatas masuk dalam range tanggal yg mau kita proses?
+            if start_date <= resv_date.date() <= end_date:
+                resv_type_by_date = 'in_range'
+            else:
+                resv_type_by_date = 'out_range'
+                continue  # Remark baris ini jika pingin di notif untuk data yg out range
+
+            if not need_to_check[resv_type_by_date].get(str(resv_date)[:10]):
+                need_to_check[resv_type_by_date][str(resv_date)[:10]] = []
+            need_to_check[resv_type_by_date][str(resv_date)[:10]].append({
+                'order_number': '',
+                'pnr': rec.pnr,
+                'provider': rec.reconcile_transaction_id.provider_id.name,
+            })
+        return need_to_check
+
 
     def ntc_to_str(self, need_to_check):
         return_str = ''
