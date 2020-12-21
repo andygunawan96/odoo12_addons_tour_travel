@@ -15,6 +15,7 @@ TT_TRANSPORT
     'data': [
         'data/ir_sequence_data.xml',
         'data/ir_cron_data.xml',
+        'data/frontend_security.xml',
         'data/tt_provider_type_data.xml',
         'data/tt_provider_activity.xml',
         'data/tt_transport_carrier_activity.xml',

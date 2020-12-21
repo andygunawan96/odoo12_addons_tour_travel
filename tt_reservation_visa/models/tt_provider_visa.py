@@ -43,6 +43,7 @@ class TtProviderVisa(models.Model):
     _description = 'Rodex Model'
 
     pnr = fields.Char('PNR')  # di isi aja order number
+    pnr2 = fields.Char('PNR2')
     provider_id = fields.Many2one('tt.provider', 'Provider')
     booking_id = fields.Many2one('tt.reservation.visa', 'Order Number', ondelete='cascade')
     agent_id = fields.Many2one('tt.agent', 'Agent', related='booking_id.agent_id')
