@@ -103,7 +103,7 @@ class TtReconcileTransaction(models.Model):
         for date,pnr_list in need_to_check.items():
             return_str += date + ':\n'
             for idx, rec in enumerate(pnr_list):
-                return_str = "{:03d}. {} ({}) Provider: {} Total Price: Rp {:,}".format(idx+1,rec['order_number'],rec['pnr'],rec['provider'],rec['total_price'])
+                return_str += "{:03d}. {} ({}) Provider: {}\nTotal Price: Rp {:,}\n\n".format(idx+1,rec['order_number'],rec['pnr'],rec['provider'],rec['total_price'])
         return return_str
 
     def view_filter_tree(self):
