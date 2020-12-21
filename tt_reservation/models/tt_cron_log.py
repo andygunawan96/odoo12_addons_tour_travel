@@ -59,7 +59,7 @@ class TtCronLogInhResv(models.Model):
                             else:
                                 data = {
                                     'code': 9909,
-                                    'message': 'Reconcile Done, All recon. found\n ',
+                                    'message': 'Reconcile Done, All record Found\n ',
                                     'provider': provider_obj.name,
                                 }
                                 self.env['tt.api.con'].send_request_to_gateway(
