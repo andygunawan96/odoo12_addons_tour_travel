@@ -14,7 +14,6 @@ TT_TRANSPORT
     'depends' : ['base_setup','tt_base','tt_reservation','base_address_city'],
     'data': [
         'data/ir_sequence_data.xml',
-        'data/frontend_security.xml',
         'data/tt_provider_type_data.xml',
         'data/tt_provider_train.xml',
         'data/tt_destination_kai.xml',

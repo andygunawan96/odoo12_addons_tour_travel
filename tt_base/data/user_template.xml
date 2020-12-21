@@ -224,8 +224,15 @@
                     (4,ref('tt_base.able_to_issued')),
                     (4,ref('tt_base.able_to_top_up')),
                     (4,ref('tt_base.able_to_login')),
-                    (4,ref('tt_base.able_to_psg_cache_1')),
-                    (4,ref('tt_base.able_to_psg_cache_2'))
+                    (4,ref('tt_base.able_to_ticketing_activity')),
+                    (4,ref('tt_base.able_to_ticketing_airline')),
+                    (4,ref('tt_base.able_to_ticketing_event')),
+                    (4,ref('tt_base.able_to_ticketing_hotel')),
+                    (4,ref('tt_base.able_to_ticketing_offline')),
+                    (4,ref('tt_base.able_to_ticketing_ppob')),
+                    (4,ref('tt_base.able_to_ticketing_tour')),
+                    (4,ref('tt_base.able_to_ticketing_train')),
+                    (4,ref('tt_base.able_to_ticketing_visa'))
                     ]"/>
         </record>
 
@@ -245,7 +252,16 @@
                     (4,ref('tt_base.able_to_top_up')),
                     (4,ref('tt_base.able_to_login')),
                     (4,ref('tt_base.able_to_psg_cache_1')),
-                    (4,ref('tt_base.able_to_psg_cache_2'))
+                    (4,ref('tt_base.able_to_psg_cache_2')),
+                    (4,ref('tt_base.able_to_ticketing_activity')),
+                    (4,ref('tt_base.able_to_ticketing_airline')),
+                    (4,ref('tt_base.able_to_ticketing_event')),
+                    (4,ref('tt_base.able_to_ticketing_hotel')),
+                    (4,ref('tt_base.able_to_ticketing_offline')),
+                    (4,ref('tt_base.able_to_ticketing_ppob')),
+                    (4,ref('tt_base.able_to_ticketing_tour')),
+                    (4,ref('tt_base.able_to_ticketing_train')),
+                    (4,ref('tt_base.able_to_ticketing_visa'))
                     ]"/>
         </record>
 
@@ -266,7 +282,16 @@
                     (4,ref('tt_base.able_to_top_up')),
                     (4,ref('tt_base.able_to_login')),
                     (4,ref('tt_base.able_to_psg_cache_1')),
-                    (4,ref('tt_base.able_to_psg_cache_2'))
+                    (4,ref('tt_base.able_to_psg_cache_2')),
+                    (4,ref('tt_base.able_to_ticketing_activity')),
+                    (4,ref('tt_base.able_to_ticketing_airline')),
+                    (4,ref('tt_base.able_to_ticketing_event')),
+                    (4,ref('tt_base.able_to_ticketing_hotel')),
+                    (4,ref('tt_base.able_to_ticketing_offline')),
+                    (4,ref('tt_base.able_to_ticketing_ppob')),
+                    (4,ref('tt_base.able_to_ticketing_tour')),
+                    (4,ref('tt_base.able_to_ticketing_train')),
+                    (4,ref('tt_base.able_to_ticketing_visa'))
                     ]"/>
         </record>
 
@@ -287,7 +312,16 @@
                     (4,ref('tt_base.able_to_top_up')),
                     (4,ref('tt_base.able_to_login')),
                     (4,ref('tt_base.able_to_psg_cache_1')),
-                    (4,ref('tt_base.able_to_psg_cache_2'))
+                    (4,ref('tt_base.able_to_psg_cache_2')),
+                    (4,ref('tt_base.able_to_ticketing_activity')),
+                    (4,ref('tt_base.able_to_ticketing_airline')),
+                    (4,ref('tt_base.able_to_ticketing_event')),
+                    (4,ref('tt_base.able_to_ticketing_hotel')),
+                    (4,ref('tt_base.able_to_ticketing_offline')),
+                    (4,ref('tt_base.able_to_ticketing_ppob')),
+                    (4,ref('tt_base.able_to_ticketing_tour')),
+                    (4,ref('tt_base.able_to_ticketing_train')),
+                    (4,ref('tt_base.able_to_ticketing_visa'))
                     ]"/>
         </record>
 
@@ -308,7 +342,16 @@
                     (4,ref('tt_base.able_to_top_up')),
                     (4,ref('tt_base.able_to_login')),
                     (4,ref('tt_base.able_to_psg_cache_1')),
-                    (4,ref('tt_base.able_to_psg_cache_2'))
+                    (4,ref('tt_base.able_to_psg_cache_2')),
+                    (4,ref('tt_base.able_to_ticketing_activity')),
+                    (4,ref('tt_base.able_to_ticketing_airline')),
+                    (4,ref('tt_base.able_to_ticketing_event')),
+                    (4,ref('tt_base.able_to_ticketing_hotel')),
+                    (4,ref('tt_base.able_to_ticketing_offline')),
+                    (4,ref('tt_base.able_to_ticketing_ppob')),
+                    (4,ref('tt_base.able_to_ticketing_tour')),
+                    (4,ref('tt_base.able_to_ticketing_train')),
+                    (4,ref('tt_base.able_to_ticketing_visa'))
                     ]"/>
         </record>
 
@@ -329,7 +372,16 @@
                     (4,ref('tt_base.able_to_top_up')),
                     (4,ref('tt_base.able_to_login')),
                     (4,ref('tt_base.able_to_psg_cache_1')),
-                    (4,ref('tt_base.able_to_psg_cache_2'))
+                    (4,ref('tt_base.able_to_psg_cache_2')),
+                    (4,ref('tt_base.able_to_ticketing_activity')),
+                    (4,ref('tt_base.able_to_ticketing_airline')),
+                    (4,ref('tt_base.able_to_ticketing_event')),
+                    (4,ref('tt_base.able_to_ticketing_hotel')),
+                    (4,ref('tt_base.able_to_ticketing_offline')),
+                    (4,ref('tt_base.able_to_ticketing_ppob')),
+                    (4,ref('tt_base.able_to_ticketing_tour')),
+                    (4,ref('tt_base.able_to_ticketing_train')),
+                    (4,ref('tt_base.able_to_ticketing_visa'))
                     ]"/>
         </record>
 
@@ -349,7 +401,16 @@
                     (4,ref('tt_base.able_to_top_up')),
                     (4,ref('tt_base.able_to_login')),
                     (4,ref('tt_base.able_to_psg_cache_1')),
-                    (4,ref('tt_base.able_to_psg_cache_2'))
+                    (4,ref('tt_base.able_to_psg_cache_2')),
+                    (4,ref('tt_base.able_to_ticketing_activity')),
+                    (4,ref('tt_base.able_to_ticketing_airline')),
+                    (4,ref('tt_base.able_to_ticketing_event')),
+                    (4,ref('tt_base.able_to_ticketing_hotel')),
+                    (4,ref('tt_base.able_to_ticketing_offline')),
+                    (4,ref('tt_base.able_to_ticketing_ppob')),
+                    (4,ref('tt_base.able_to_ticketing_tour')),
+                    (4,ref('tt_base.able_to_ticketing_train')),
+                    (4,ref('tt_base.able_to_ticketing_visa'))
                     ]"/>
         </record>
 
@@ -369,7 +430,16 @@
                     (4,ref('tt_base.able_to_top_up')),
                     (4,ref('tt_base.able_to_login')),
                     (4,ref('tt_base.able_to_psg_cache_1')),
-                    (4,ref('tt_base.able_to_psg_cache_2'))
+                    (4,ref('tt_base.able_to_psg_cache_2')),
+                    (4,ref('tt_base.able_to_ticketing_activity')),
+                    (4,ref('tt_base.able_to_ticketing_airline')),
+                    (4,ref('tt_base.able_to_ticketing_event')),
+                    (4,ref('tt_base.able_to_ticketing_hotel')),
+                    (4,ref('tt_base.able_to_ticketing_offline')),
+                    (4,ref('tt_base.able_to_ticketing_ppob')),
+                    (4,ref('tt_base.able_to_ticketing_tour')),
+                    (4,ref('tt_base.able_to_ticketing_train')),
+                    (4,ref('tt_base.able_to_ticketing_visa'))
                     ]"/>
         </record>
 
@@ -390,7 +460,16 @@
                     (4,ref('tt_base.able_to_top_up')),
                     (4,ref('tt_base.able_to_login')),
                     (4,ref('tt_base.able_to_psg_cache_1')),
-                    (4,ref('tt_base.able_to_psg_cache_2'))
+                    (4,ref('tt_base.able_to_psg_cache_2')),
+                    (4,ref('tt_base.able_to_ticketing_activity')),
+                    (4,ref('tt_base.able_to_ticketing_airline')),
+                    (4,ref('tt_base.able_to_ticketing_event')),
+                    (4,ref('tt_base.able_to_ticketing_hotel')),
+                    (4,ref('tt_base.able_to_ticketing_offline')),
+                    (4,ref('tt_base.able_to_ticketing_ppob')),
+                    (4,ref('tt_base.able_to_ticketing_tour')),
+                    (4,ref('tt_base.able_to_ticketing_train')),
+                    (4,ref('tt_base.able_to_ticketing_visa'))
                     ]"/>
         </record>
 
@@ -411,7 +490,16 @@
                     (4,ref('tt_base.able_to_top_up')),
                     (4,ref('tt_base.able_to_login')),
                     (4,ref('tt_base.able_to_psg_cache_1')),
-                    (4,ref('tt_base.able_to_psg_cache_2'))
+                    (4,ref('tt_base.able_to_psg_cache_2')),
+                    (4,ref('tt_base.able_to_ticketing_activity')),
+                    (4,ref('tt_base.able_to_ticketing_airline')),
+                    (4,ref('tt_base.able_to_ticketing_event')),
+                    (4,ref('tt_base.able_to_ticketing_hotel')),
+                    (4,ref('tt_base.able_to_ticketing_offline')),
+                    (4,ref('tt_base.able_to_ticketing_ppob')),
+                    (4,ref('tt_base.able_to_ticketing_tour')),
+                    (4,ref('tt_base.able_to_ticketing_train')),
+                    (4,ref('tt_base.able_to_ticketing_visa'))
                     ]"/>
         </record>
 
@@ -432,7 +520,16 @@
                     (4,ref('tt_base.able_to_top_up')),
                     (4,ref('tt_base.able_to_login')),
                     (4,ref('tt_base.able_to_psg_cache_1')),
-                    (4,ref('tt_base.able_to_psg_cache_2'))
+                    (4,ref('tt_base.able_to_psg_cache_2')),
+                    (4,ref('tt_base.able_to_ticketing_activity')),
+                    (4,ref('tt_base.able_to_ticketing_airline')),
+                    (4,ref('tt_base.able_to_ticketing_event')),
+                    (4,ref('tt_base.able_to_ticketing_hotel')),
+                    (4,ref('tt_base.able_to_ticketing_offline')),
+                    (4,ref('tt_base.able_to_ticketing_ppob')),
+                    (4,ref('tt_base.able_to_ticketing_tour')),
+                    (4,ref('tt_base.able_to_ticketing_train')),
+                    (4,ref('tt_base.able_to_ticketing_visa'))
                     ]"/>
         </record>
 
@@ -453,7 +550,16 @@
                     (4,ref('tt_base.able_to_top_up')),
                     (4,ref('tt_base.able_to_login')),
                     (4,ref('tt_base.able_to_psg_cache_1')),
-                    (4,ref('tt_base.able_to_psg_cache_2'))
+                    (4,ref('tt_base.able_to_psg_cache_2')),
+                    (4,ref('tt_base.able_to_ticketing_activity')),
+                    (4,ref('tt_base.able_to_ticketing_airline')),
+                    (4,ref('tt_base.able_to_ticketing_event')),
+                    (4,ref('tt_base.able_to_ticketing_hotel')),
+                    (4,ref('tt_base.able_to_ticketing_offline')),
+                    (4,ref('tt_base.able_to_ticketing_ppob')),
+                    (4,ref('tt_base.able_to_ticketing_tour')),
+                    (4,ref('tt_base.able_to_ticketing_train')),
+                    (4,ref('tt_base.able_to_ticketing_visa'))
                     ]"/>
         </record>
 
@@ -580,7 +686,16 @@
                     (4,ref('tt_base.able_to_top_up')),
                     (4,ref('tt_base.able_to_login')),
                     (4,ref('tt_base.able_to_psg_cache_1')),
-                    (4,ref('tt_base.able_to_psg_cache_2'))
+                    (4,ref('tt_base.able_to_psg_cache_2')),
+                    (4,ref('tt_base.able_to_ticketing_activity')),
+                    (4,ref('tt_base.able_to_ticketing_airline')),
+                    (4,ref('tt_base.able_to_ticketing_event')),
+                    (4,ref('tt_base.able_to_ticketing_hotel')),
+                    (4,ref('tt_base.able_to_ticketing_offline')),
+                    (4,ref('tt_base.able_to_ticketing_ppob')),
+                    (4,ref('tt_base.able_to_ticketing_tour')),
+                    (4,ref('tt_base.able_to_ticketing_train')),
+                    (4,ref('tt_base.able_to_ticketing_visa'))
                     ]"/>
         </record>
 
@@ -600,7 +715,16 @@
                     (4,ref('tt_base.able_to_top_up')),
                     (4,ref('tt_base.able_to_login')),
                     (4,ref('tt_base.able_to_psg_cache_1')),
-                    (4,ref('tt_base.able_to_psg_cache_2'))
+                    (4,ref('tt_base.able_to_psg_cache_2')),
+                    (4,ref('tt_base.able_to_ticketing_activity')),
+                    (4,ref('tt_base.able_to_ticketing_airline')),
+                    (4,ref('tt_base.able_to_ticketing_event')),
+                    (4,ref('tt_base.able_to_ticketing_hotel')),
+                    (4,ref('tt_base.able_to_ticketing_offline')),
+                    (4,ref('tt_base.able_to_ticketing_ppob')),
+                    (4,ref('tt_base.able_to_ticketing_tour')),
+                    (4,ref('tt_base.able_to_ticketing_train')),
+                    (4,ref('tt_base.able_to_ticketing_visa'))
                     ]"/>
         </record>
 
@@ -621,7 +745,16 @@
                     (4,ref('tt_base.able_to_top_up')),
                     (4,ref('tt_base.able_to_login')),
                     (4,ref('tt_base.able_to_psg_cache_1')),
-                    (4,ref('tt_base.able_to_psg_cache_2'))
+                    (4,ref('tt_base.able_to_psg_cache_2')),
+                    (4,ref('tt_base.able_to_ticketing_activity')),
+                    (4,ref('tt_base.able_to_ticketing_airline')),
+                    (4,ref('tt_base.able_to_ticketing_event')),
+                    (4,ref('tt_base.able_to_ticketing_hotel')),
+                    (4,ref('tt_base.able_to_ticketing_offline')),
+                    (4,ref('tt_base.able_to_ticketing_ppob')),
+                    (4,ref('tt_base.able_to_ticketing_tour')),
+                    (4,ref('tt_base.able_to_ticketing_train')),
+                    (4,ref('tt_base.able_to_ticketing_visa'))
                     ]"/>
         </record>
 
@@ -636,7 +769,17 @@
                           (4,ref('tt_base.able_to_book')),
                           (4,ref('tt_base.able_to_issued')),
                           (4,ref('tt_base.able_to_ticketing')),
-                          (4,ref('tt_base.b2c_limitation'))]"/>
+                          (4,ref('tt_base.b2c_limitation')),
+                          (4,ref('tt_base.able_to_ticketing_activity')),
+                          (4,ref('tt_base.able_to_ticketing_airline')),
+                          (4,ref('tt_base.able_to_ticketing_event')),
+                          (4,ref('tt_base.able_to_ticketing_hotel')),
+                          (4,ref('tt_base.able_to_ticketing_offline')),
+                          (4,ref('tt_base.able_to_ticketing_ppob')),
+                          (4,ref('tt_base.able_to_ticketing_tour')),
+                          (4,ref('tt_base.able_to_ticketing_train')),
+                          (4,ref('tt_base.able_to_ticketing_visa'))
+                          ]"/>
         </record>
 
     </data>
