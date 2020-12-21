@@ -7,7 +7,7 @@ _logger = logging.getLogger(__name__)
 
 
 class ForceIssuedWizard(models.TransientModel):
-    _name = "force.issued.wizard.hotel.try"
+    _name = "force.issued.wizard.hotel"
     _description = 'Hotel Force Issued Wizard'
 
     provider_id = fields.Many2one('tt.provider.hotel', 'Provider', readonly=True)

@@ -3,7 +3,7 @@
 
     <record id="force_issued_wizard_hotel_form_view" model="ir.ui.view">
         <field name="name">Force Issued Wizard Satu</field>
-        <field name="model">force.issued.wizard.hotel.try</field>
+        <field name="model">force.issued.wizard.hotel</field>
         <field name="arch" type="xml">
             <form string="Force Issued Wizard">
                 <group>
