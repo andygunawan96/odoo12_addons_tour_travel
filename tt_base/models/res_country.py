@@ -59,6 +59,7 @@ class Country(models.Model):
         return res
 
     def find_country_by_name(self, str_name, limit=1):
+        str_name = str_name.rstrip()
         found = self.search([('name', '=ilike', str_name)], limit=limit)
         if len(found) < limit:
             for rec in self.env['tt.destination.alias'].search([('name', 'ilike', str_name),('country_id','!=',False)], limit=limit-len(found)):
@@ -96,6 +97,7 @@ class CountryCity(models.Model):
     city_alias_name = fields.Char('Alias Name')
 
     def find_city_by_name(self, str_name, limit=1):
+        str_name = str_name.rstrip()
         found = self.search([('name', '=ilike', str_name)], limit=limit)
         if len(found) < limit:
             for rec in self.env['tt.destination.alias'].search([('name', 'ilike', str_name), ('city_id','!=',False), ('city_id','not in', found.ids)], limit=limit-len(found)):

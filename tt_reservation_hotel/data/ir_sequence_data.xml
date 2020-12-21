@@ -18,5 +18,9 @@
             <field name="key">hotel.city.rendered.list</field>
             <field name="value">[]</field>
         </record>
+        <record id="hotel_last_gw_render_idx" model="ir.config_parameter">
+            <field name="key">last.gw.render.idx</field>
+            <field name="value">0</field>
+        </record>
     </data>
 </odoo>
