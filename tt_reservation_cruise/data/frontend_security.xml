@@ -1,7 +1,0 @@
-<?xml version="1.0" encoding="UTF-8" ?>
-<odoo>
-    <record id="able_to_ticketing" model="tt.frontend.security">
-        <field name="name">Ticketing Cruise</field>
-        <field name="code">ticketing_cruise</field>
-    </record>
-</odoo>
