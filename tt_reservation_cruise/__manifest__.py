@@ -26,7 +26,6 @@
     'data': [
         'security/ir.model.access.csv',
         'data/tt_provider_type_data.xml',
-        'data/frontend_security.xml',
         'views/views.xml',
         'views/templates.xml',
     ],

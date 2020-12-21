@@ -19,7 +19,6 @@ TT_TRANSPORT
         'wizard/tt_get_booking_from_vendor.xml',
 
         'data/ir_cron_data.xml',
-        'data/frontend_security.xml',
         'data/ir_sequence_data.xml',
         'data/tt_provider_type_data.xml',
         'data/tt_provider_airline.xml',

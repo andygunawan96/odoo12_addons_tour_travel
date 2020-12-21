@@ -799,7 +799,6 @@ class TtReservation(models.Model):
                     if agent_obj.is_using_pnr_quota and ledger_created: #tidak potong quota jika tidak membuat ledger
                         try:
                             ledger_obj = self.env['tt.ledger'].search([('res_model', '=', book_obj._name),('res_id','=',book_obj.id),('is_reversed','=',False),('agent_id','=',self.env.ref('tt_base.rodex_ho').id)])
-                            _logger.info(str(ledger_obj[0].id))
                             amount = 0
                             for ledger in ledger_obj:
                                 amount += ledger.debit
