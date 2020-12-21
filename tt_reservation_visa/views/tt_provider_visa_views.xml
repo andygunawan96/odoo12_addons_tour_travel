@@ -22,6 +22,7 @@
                             <field name="is_ledger_created" readonly="1"/>
                             <field name="booking_id" readonly="1"/>
                             <field name="pnr" readonly="1"/>
+                            <field name="pnr2" readonly="1"/>
                             <field name="provider_id" readonly="1"/>
                             <field name="total_price"/>
                             <field name="reconcile_line_id"/>
@@ -92,6 +93,7 @@
             <tree create="false">
                 <field name="provider_id" groups="tt_base.group_tt_tour_travel_operator"/>
                 <field name="pnr"/>
+                <field name="pnr2"/>
                 <field name="departure_date"/>
                 <field name="state" string="Status"/>
             </tree>

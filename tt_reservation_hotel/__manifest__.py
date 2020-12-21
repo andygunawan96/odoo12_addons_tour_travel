@@ -15,6 +15,7 @@ TT_RESERVATION_HOTEL
     'data': [
         'data/provider_type_data.xml',
         'data/ir_sequence_data.xml',
+        'data/frontend_security.xml',
         'data/hotel_type_data.xml',
         'data/tt.hotel.facility.type.csv',
         'data/res.city.type.csv',

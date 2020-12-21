@@ -18,6 +18,7 @@ TT_TRANSPORT
         'data/tt_provider_type_data.xml',
         'data/tt_provider_data.xml',
         'data/tt_transport_carrier_event.xml',
+        'data/frontend_security.xml',
         # 'data/tt_provider_activity.xml',
         # 'data/tt_transport_carrier_activity.xml',
         # 'data/tt_api_webhook_data.xml',

@@ -16,6 +16,7 @@ TT_TRANSPORT
         'security/ir.model.access.csv',
         'security/ir_rule_data.xml',
         'data/ir_sequence_data.xml',
+        'data/frontend_security.xml',
         'data/tt_master_voucher_ppob_data.xml',
         'data/tt_provider_type_data.xml',
         'data/tt_provider_ppob_data.xml',

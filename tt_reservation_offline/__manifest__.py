@@ -19,6 +19,7 @@
         'security/ir.model.access.csv',
         'security/tt_reservation_offline_security.xml',
         'data/ir_sequence_data.xml',
+        'data/frontend_security.xml',
         'data/tt_provider_type_data.xml',
         'data/tt_provider_other.xml',
         'data/ir_send_email.xml',
