@@ -5,6 +5,61 @@
         <field name="code">ticketing</field>
     </record>
 
+    <record id="able_to_ticketing_activity" model="tt.frontend.security">
+        <field name="name">Ticketing Activity</field>
+        <field name="code">ticketing_activity</field>
+    </record>
+
+    <record id="able_to_ticketing_airline" model="tt.frontend.security">
+        <field name="name">Ticketing Airline</field>
+        <field name="code">ticketing_airline</field>
+    </record>
+
+    <record id="able_to_ticketing_cruise" model="tt.frontend.security">
+        <field name="name">Ticketing Cruise</field>
+        <field name="code">ticketing_cruise</field>
+    </record>
+
+    <record id="able_to_ticketing_event" model="tt.frontend.security">
+        <field name="name">Ticketing Event</field>
+        <field name="code">ticketing_event</field>
+    </record>
+
+    <record id="able_to_ticketing_hotel" model="tt.frontend.security">
+        <field name="name">Ticketing Hotel</field>
+        <field name="code">ticketing_hotel</field>
+    </record>
+
+    <record id="able_to_ticketing_offline" model="tt.frontend.security">
+        <field name="name">Ticketing Offline</field>
+        <field name="code">ticketing_offline</field>
+    </record>
+
+    <record id="able_to_ticketing_passport" model="tt.frontend.security">
+        <field name="name">Ticketing Passport</field>
+        <field name="code">ticketing_passport</field>
+    </record>
+
+    <record id="able_to_ticketing_ppob" model="tt.frontend.security">
+        <field name="name">Ticketing PPOB</field>
+        <field name="code">ticketing_ppob</field>
+    </record>
+
+    <record id="able_to_ticketing_tour" model="tt.frontend.security">
+        <field name="name">Ticketing Tour</field>
+        <field name="code">ticketing_tour</field>
+    </record>
+
+    <record id="able_to_ticketing_train" model="tt.frontend.security">
+        <field name="name">Ticketing Train</field>
+        <field name="code">ticketing_train</field>
+    </record>
+
+    <record id="able_to_ticketing_visa" model="tt.frontend.security">
+        <field name="name">Ticketing Visa</field>
+        <field name="code">ticketing_visa</field>
+    </record>
+
     <record id="able_to_top_up" model="tt.frontend.security">
         <field name="name">Top Up</field>
         <field name="code">top_up</field>

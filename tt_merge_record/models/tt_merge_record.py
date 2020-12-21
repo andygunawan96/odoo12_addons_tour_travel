@@ -24,8 +24,11 @@ class TtTemporaryRecord(models.Model):
         # Tambahkan list object yg mau dicek disini
         # Examp: waktu aku merge city maka sytems juga mesti pindah smua hotel yg reference ke city tsb jadi
         # Jadi waktu di tt_hotel_reservation aku inherit fungsi ini dan tmabahkan tuple (model name, field_name)
-        # Examp: ('tt.hotel', 'city_id'); ()
-        return []
+        # Example ada di TT Hotel same function name
+        return {
+            'res.country': [('res.country.state', 'country_id'), ('res.city', 'country_id')],
+            'res.country.state': [('res.city', 'state_id')],
+        }
 
     @api.multi
     def action_merge(self):
