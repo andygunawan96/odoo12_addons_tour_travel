@@ -6,7 +6,7 @@ from ...tools import ERR
 _logger = logging.getLogger(__name__)
 
 
-class ForceIssuedWizardHotel(models.TransientModel):
+class ForceIssuedWizard(models.TransientModel):
     _name = "force.issued.wizard.hotel"
     _description = 'Hotel Force Issued Wizard'
 
