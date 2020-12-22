@@ -207,7 +207,6 @@ class TtReservation(models.Model):
                 return booker_rec
 
         country = self.env['res.country'].sudo().search([('code', '=', vals.pop('nationality_code'))])
-        agent_obj = self.env['tt.agent'].sudo().browse(context['co_agent_id'])
 
         vals.update({
             'agent_id': context['co_agent_id'],
@@ -264,7 +263,6 @@ class TtReservation(models.Model):
                 return contact_rec
 
         country = self.env['res.country'].sudo().search([('code', '=', vals.pop('nationality_code'))])
-        agent_obj = self.env['tt.agent'].sudo().browse(context['co_agent_id'])
 
         vals.update({
             'agent_id': context['co_agent_id'],
