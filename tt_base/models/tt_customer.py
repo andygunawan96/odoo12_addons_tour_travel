@@ -176,11 +176,13 @@ class TtCustomer(models.Model):
                                      'country_id': country and country[0].id or False})for rec in psg['phone']]
                         pop_phone_list = []
                         for phone in current_passenger.phone_ids:
+                            phone_found = False
                             for idx,psg_phone in enumerate(psg['phone']):
                                 if phone.phone_number == psg_phone:
                                     pop_phone_list.append(idx)
-                                    continue
-                            phone.unlink()
+                                    phone_found = True
+                            if not phone_found:
+                                phone.unlink()
                         pop_phone_list.reverse()
                         for pop_index in pop_phone_list:
                             psg['phone'].pop(pop_index)
