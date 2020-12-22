@@ -38,8 +38,9 @@ class TtRefundWizard(models.TransientModel):
 
     def refund_api(self, data, ctx):
         try:
-            book_obj = self.env[data['res_model']].search([('name','=',data['referenced_document'])])
+            book_obj = self.env[data['res_model']].search([('name','=',data['referenced_document_external'])])
             refund_type_obj = self.env['tt.refund.type'].search([('name','=',data['refund_type_id'])], limit=1)
+            provider_type_obj = self.env['tt.provider.type'].search([('name','=',data['provider_type'])], limit=1)
             refund_obj = self.create({
                 'agent_id': ctx['co_agent_id'],
                 'agent_type_id': ctx['co_agent_type_id'],
@@ -47,7 +48,7 @@ class TtRefundWizard(models.TransientModel):
                 'customer_parent_type_id': book_obj.customer_parent_type_id.id,
                 'booker_id': book_obj.booker_id.id,
                 'currency_id': book_obj.currency_id.id,
-                'service_type': '',
+                'service_type': provider_type_obj.id,
                 'refund_type_id': refund_type_obj.id,
                 'referenced_pnr': data['referenced_pnr'],
                 'referenced_document': book_obj.name,
@@ -72,17 +73,18 @@ class TtRefundWizard(models.TransientModel):
         #tembak parent IVAN
         resv_obj = self.env[self.res_model].search([('name', '=', self.referenced_document)])
         for rec in resv_obj.provider_booking_ids:
-            if 'rodextrip' in rec.provider_id.name:
+            if 'rodextrip' in rec.provider_id.code:
                 #tembak gateway
                 data = {
                     'notes': self.notes,
                     'refund_type_id': self.refund_type_id.name,
                     'referenced_document': rec.pnr2,
+                    'provider_type': resv_obj.provider_type_id.name,
                     # 'referenced_document': 'AL.20111120102',
                     'referenced_document_external': resv_obj.name,
                     'referenced_pnr': rec.pnr,
                     'res_model': self.res_model,
-                    'provider': rec.provider_id.name,
+                    'provider': rec.provider_id.code,
                     # 'provider': 'rodextrip_airline',
                     'booking_desc': book_obj.get_aftersales_desc(),
                 }
