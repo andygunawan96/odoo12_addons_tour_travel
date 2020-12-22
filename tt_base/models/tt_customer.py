@@ -174,19 +174,16 @@ class TtCustomer(models.Model):
                     if psg.get('phone'):
                         [rec.update({'phone_number': '%s%s' % (rec['calling_code'],rec['calling_number']),
                                      'country_id': country and country[0].id or False})for rec in psg['phone']]
-                        # IVAN unlink di bawah bikin baru yang lama error karena tidak di reversed wktu unlink error
-                        for phone in reversed(current_passenger.phone_ids):
+                        pop_phone_list = []
+                        for phone in current_passenger.phone_ids:
+                            for idx,psg_phone in enumerate(psg['phone']):
+                                if phone.phone_number == psg_phone:
+                                    pop_phone_list.append(idx)
+                                    continue
                             phone.unlink()
-                        # pop_phone_list = []
-                        # for phone in current_passenger.phone_ids:
-                        #     for idx,psg_phone in enumerate(psg['phone']):
-                        #         if phone.phone_number == psg_phone:
-                        #             pop_phone_list.append(idx)
-                        #             continue
-                        #         phone.unlink()
-                        # pop_phone_list.reverse()
-                        # for pop_index in pop_phone_list:
-                        #     psg['phone'].pop(pop_index)
+                        pop_phone_list.reverse()
+                        for pop_index in pop_phone_list:
+                            psg['phone'].pop(pop_index)
 
                         phone_list = []
                         for phone in psg['phone']:
