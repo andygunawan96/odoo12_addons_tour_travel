@@ -24,7 +24,6 @@
                 'tt_reschedule',
                 'tt_merge_record',
 
-                'tt_public_holiday',
                 'tt_frontend_banner',
                 'tt_bank_transaction',
                 'tt_billing_statement',
@@ -55,6 +54,7 @@
                 'tt_report_dashboard',
                 'tt_report_selling',
                 'tt_report_vendor_event',
+                'tt_letter_guarantee_printout's
     ],
 
     # always loaded
