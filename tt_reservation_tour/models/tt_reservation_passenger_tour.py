@@ -18,6 +18,7 @@ class TtReservationCustomer(models.Model):
     tour_room_id = fields.Many2one('tt.master.tour.rooms', 'Room')
     tour_room_seq = fields.Char('Room Sequence')
     master_tour_id = fields.Many2one('tt.master.tour', 'Tour')
+    master_tour_line_id = fields.Many2one('tt.master.tour.lines', 'Tour Line')
 
     def to_dict(self):
         res = super(TtReservationCustomer, self).to_dict()

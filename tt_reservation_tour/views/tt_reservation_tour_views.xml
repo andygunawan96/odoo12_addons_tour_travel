@@ -85,6 +85,7 @@
                 <group>
                     <group>
                         <field name="tour_id" readonly="1" groups="tt_base.group_tt_tour_travel_operator"/>
+                        <field name="tour_lines_id" readonly="1" groups="tt_base.group_tt_tour_travel_operator"/>
                         <field name="tour_id_str" readonly="1" groups="tt_base.group_tt_agent_user_operator"/>
                         <field name="payment_method_tour" readonly="1" attrs="{'invisible': [('state', 'not in', ('issued'))]}"/>
                     </group>
@@ -221,9 +222,7 @@
                 <field name="booker_id"/>
                 <field name="provider_name" groups="tt_base.group_tt_tour_travel_operator"/>
                 <field name="tour_id"/>
-                <!--                    <field name="pnr"/>-->
-                <field name="departure_date"/>
-                <field name="arrival_date"/>
+                <field name="tour_lines_id"/>
                 <field name="booked_uid"/>
                 <field name="date"/>
                 <field name="hold_date"/>

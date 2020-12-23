@@ -14,7 +14,7 @@
                             <field name="provider_type_id"/>
                         </group>
                         <group>
-                            <field name="master_tour_id" invisible="1"/>
+                            <field name="master_tour_id"/>
                             <field name="is_lg_required" invisible="1"/>
                             <field name="quantity"/>
                             <field name="currency_id"/>
