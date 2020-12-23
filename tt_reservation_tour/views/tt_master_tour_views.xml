@@ -32,7 +32,6 @@
                     <button name="action_confirm" string="Confirm" type="object" groups="tt_base.group_tt_tour_division_operator,tt_base.group_tt_tour_travel_manager" attrs="{'invisible':[('state','!=', 'draft')]}"/>
                     <button name="set_to_draft" string="Set to Draft" type="object" groups="tt_base.group_tt_tour_division_operator,tt_base.group_tt_tour_travel_manager" attrs="{'invisible':[('state','=', 'draft')]}"/>
                     <button name="action_closed" string="Close" type="object" groups="tt_base.group_tt_tour_division_operator,tt_base.group_tt_tour_travel_manager" attrs="{'invisible':[('state','=', 'closed')]}"/>
-                    <button string="Calculate Adjustment" name="action_adjustment" type="object" attrs="{'invisible': ['|', ('state', '!=', 'done'), ('provider_id', '!=', %(tt_reservation_tour.tt_provider_tour_internal)d)]}" groups="tt_base.group_tt_tour_division_operator"/>
                     <!--                    <button string="Update Tour Code" name="update_tour_code_temp" type="object" groups="base.user_admin"/>-->
                     <!--                    <button string="Generate Room Codes" name="generate_all_room_codes" type="object" groups="base.user_admin"/>-->
                 </header>

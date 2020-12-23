@@ -627,35 +627,6 @@ class MasterTour(models.Model):
         for rec in self.tour_line_ids:
             rec.action_validate()
 
-    def action_adjustment(self):
-        # Calculate Adjustment
-        adt = chd = inf = 0
-        adt_price = self.adult_citra_price - self.adult_fare
-        chd_price = self.child_citra_price - self.child_fare
-        inf_price = self.infant_citra_price - self.infant_fare
-
-        for pax in self.passengers_ids:
-            if pax.pax_type == 'ADT' and pax.state == 'done':
-                adt += 1
-            if pax.pax_type == 'CHD' and pax.state == 'done':
-                chd += 1
-            if pax.pax_type == 'INF' and pax.state == 'done':
-                inf += 1
-        ho_profit = (adt * adt_price) + (chd * chd_price) + (inf * inf_price)
-        debit = credit = 0
-        for rec in self.adjustment_ids:
-            if rec.type == 'debit':
-                debit += rec.total
-            if rec.type == 'credit':
-                credit += rec.total
-        ho_profit = ho_profit + debit - credit
-        acc_debit = acc_credit = 0
-        if ho_profit >= 0:
-            acc_debit = ho_profit
-        else:
-            acc_credit = ho_profit * -1
-        self.state = 'closed'
-
     @api.multi
     def action_send_email(self, passenger_id):
         return passenger_id
