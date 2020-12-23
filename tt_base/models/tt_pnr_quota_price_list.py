@@ -57,5 +57,4 @@ class TtPnrQuotaMasterData(models.Model):
             'amount': self.amount,
             'currency': self.currency_id.name,
             'price': self.price,
-            'validity_duration': self.validity_duration
         }
