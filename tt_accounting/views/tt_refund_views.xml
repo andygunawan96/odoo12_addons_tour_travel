@@ -134,6 +134,7 @@
                             <field name="service_type"/>
                             <field name="referenced_pnr"/>
                             <field name="referenced_document"/>
+                            <field name="referenced_document_external"/>
                             <field name="res_model" groups="base.user_admin"/>
                             <field name="res_id" groups="base.user_admin"/>
                             <button name="open_reference" string="Go to reference" type="object"

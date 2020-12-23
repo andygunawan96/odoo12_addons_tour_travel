@@ -36,6 +36,33 @@ class TtRefundWizard(models.TransientModel):
 
     notes = fields.Text('Notes')
 
+    def refund_api(self, data, ctx):
+        try:
+            book_obj = self.env[data['res_model']].search([('name','=',data['referenced_document_external'])])
+            refund_type_obj = self.env['tt.refund.type'].search([('name','=',data['refund_type_id'])], limit=1)
+            provider_type_obj = self.env['tt.provider.type'].search([('name','=',data['provider_type'])], limit=1)
+            refund_obj = self.create({
+                'agent_id': ctx['co_agent_id'],
+                'agent_type_id': ctx['co_agent_type_id'],
+                'customer_parent_id': book_obj.customer_parent_id.id,
+                'customer_parent_type_id': book_obj.customer_parent_type_id.id,
+                'booker_id': book_obj.booker_id.id,
+                'currency_id': book_obj.currency_id.id,
+                'service_type': provider_type_obj.id,
+                'refund_type_id': refund_type_obj.id,
+                'referenced_pnr': data['referenced_pnr'],
+                'referenced_document': book_obj.name,
+                'referenced_document_external': data['referenced_document_external'],
+                'res_model': data['res_model'],
+                'res_id': book_obj.id,
+                'notes': data['notes']
+            })
+            refund_obj.submit_refund()
+            res = ERR.get_no_error()
+        except Exception as e:
+            res = ERR.get_error(500)
+        return res
+
     def submit_refund(self):
         try:
             book_obj = self.env[self.res_model].sudo().browse(int(self.res_id))
@@ -43,6 +70,25 @@ class TtRefundWizard(models.TransientModel):
             _logger.info('Warning: Error res_model di production')
             book_obj = self.env[self.env.context['active_model']].sudo().browse(int(self.env.context['active_id']))
 
+        #tembak parent IVAN
+        resv_obj = self.env[self.res_model].search([('name', '=', self.referenced_document)])
+        for rec in resv_obj.provider_booking_ids:
+            if 'rodextrip' in rec.provider_id.code:
+                #tembak gateway
+                data = {
+                    'notes': self.notes,
+                    'refund_type_id': self.refund_type_id.name,
+                    'referenced_document': rec.pnr2,
+                    'provider_type': resv_obj.provider_type_id.name,
+                    # 'referenced_document': 'AL.20111120102',
+                    'referenced_document_external': resv_obj.name,
+                    'referenced_pnr': rec.pnr,
+                    'res_model': self.res_model,
+                    'provider': rec.provider_id.code,
+                    # 'provider': 'rodextrip_airline',
+                    'booking_desc': book_obj.get_aftersales_desc(),
+                }
+                self.env['tt.refund.api.con'].send_refund_request(data)
         refund_obj = self.env['tt.refund'].create({
             'agent_id': self.agent_id.id,
             'customer_parent_id': self.customer_parent_id.id,

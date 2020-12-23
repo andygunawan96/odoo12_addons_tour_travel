@@ -202,6 +202,8 @@ class TtRefund(models.Model):
     referenced_pnr = fields.Char('Ref. PNR', readonly=True)
     referenced_document = fields.Char('Ref. Document', readonly=True)
 
+    referenced_document_external = fields.Char('Ref. External Document', readonly=True) #jika btbo2
+
     res_model = fields.Char('Related Reservation Name', index=True, readonly=True)
 
     res_id = fields.Integer('Related Reservation ID', index=True, help='Id of the followed resource', readonly=True)
