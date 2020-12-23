@@ -93,8 +93,8 @@ class MasterTourLines(models.Model):
         temp_seat = self.seat
         temp_seat += pax_amount
         temp_state = ''
-        if temp_seat > self.tour_id.quota:
-            temp_seat = self.tour_id.quota
+        if temp_seat > self.quota:
+            temp_seat = self.quota
         elif temp_seat == 0:
             temp_state = 'sold'  # kuota habis
         elif temp_seat <= int(0.2 * self.quota):
