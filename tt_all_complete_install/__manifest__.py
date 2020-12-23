@@ -54,7 +54,7 @@
                 'tt_report_dashboard',
                 'tt_report_selling',
                 'tt_report_vendor_event',
-                'tt_letter_guarantee_printout's
+                'tt_letter_guarantee_printout'
     ],
 
     # always loaded
