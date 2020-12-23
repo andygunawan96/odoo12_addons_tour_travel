@@ -291,14 +291,11 @@ class MasterTour(models.Model):
 
     def copy_tour(self):
         new_tour_obj = self.copy()
-        new_tour_obj.sudo().write({
-            'seat': new_tour_obj.quota
-        })
         for rec in self.tour_line_ids:
             self.env['tt.master.tour.lines'].sudo().create({
                 'departure_date': rec.departure_date,
                 'arrival_date': rec.arrival_date,
-                'seat': rec.seat,
+                'seat': rec.quota,
                 'quota': rec.quota,
                 'sequence': rec.sequence,
                 'master_tour_id': new_tour_obj.id
@@ -349,7 +346,6 @@ class MasterTour(models.Model):
             new_itin_obj = self.env['tt.reservation.tour.itinerary'].sudo().create({
                 'name': rec.name,
                 'day': rec.day,
-                'date': rec.date,
                 'tour_pricelist_id': new_tour_obj.id,
             })
             for rec2 in rec.item_ids:
@@ -530,7 +526,6 @@ class MasterTour(models.Model):
                             new_itin_obj = self.env['tt.reservation.tour.itinerary'].sudo().create({
                                 'name': rec_itin['name'],
                                 'day': rec_itin['day'],
-                                'date': rec_itin['date'],
                                 'tour_pricelist_id': new_tour_obj.id,
                             })
                             for rec_item in rec_itin['items']:
@@ -1744,7 +1739,6 @@ class MasterTour(models.Model):
                     new_itin_obj = self.env['tt.reservation.tour.itinerary'].sudo().create({
                         'name': rec2['name'],
                         'day': rec2['day'],
-                        'date': datetime.strptime(rec2['date'], "%Y-%m-%d"),
                         'tour_pricelist_id': tour_obj.id,
                     })
                     for rec3 in rec2['item_ids']:
