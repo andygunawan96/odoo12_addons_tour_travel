@@ -525,6 +525,15 @@ class TtAgent(models.Model):
 
     def use_pnr_quota(self, req):
         if self.is_using_pnr_quota:
+            if len(self.quota_ids) == 0:
+                res = self.env['tt.pnr.quota'].create_pnr_quota_api(
+                    {
+                        'quota_seq_id': self.quota_package_id.seq_id
+                    },
+                    {
+                        'co_agent_id': self.id
+                    }
+                )
             if datetime.now() < datetime.combine(self.quota_total_duration, datetime.max.time()):
                 # if self.quota_amount <= 0:
                 ##potong saldo minimum fee di sini

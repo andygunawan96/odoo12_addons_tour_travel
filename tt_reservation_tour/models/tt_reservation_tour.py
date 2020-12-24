@@ -35,7 +35,8 @@ class ReservationTour(models.Model):
     _order = 'id DESC'
     _description = 'Rodex Model'
 
-    tour_id = fields.Many2one('tt.master.tour', 'Tour Package')
+    tour_lines_id = fields.Many2one('tt.master.tour.lines', 'Tour Line')
+    tour_id = fields.Many2one('tt.master.tour', 'Tour Package', related='tour_lines_id.master_tour_id', store=True)
     tour_id_str = fields.Text('Tour Package', compute='_compute_tour_id_str')
     booking_uuid = fields.Char('Booking UUID')
 
@@ -160,19 +161,6 @@ class ReservationTour(models.Model):
     def call_create_invoice(self, acquirer_id, co_uid, customer_parent_id, payment_method):
         _logger.info('Creating Invoice for ' + self.name)
 
-    def action_reissued(self):
-        pax_amount = sum(1 for temp in self.passenger_ids if temp.pax_type != 'INF')
-        if (self.tour_id.seat - pax_amount) >= 0:
-            self.write({
-                'state': 'issued',
-                'issued_date': datetime.now(),
-                'issued_uid': self.env.user.id
-            })
-            # self.message_post(body='Order REISSUED')
-        else:
-            raise UserError(
-                _('Cannot reissued because there is not enough seat quota.'))
-
     def action_refund(self):
         self.write({
             'state': 'refund',
@@ -182,18 +170,12 @@ class ReservationTour(models.Model):
         # self.message_post(body='Order REFUNDED')
 
         pax_amount = sum(1 for temp in self.passenger_ids if temp.pax_type != 'INF')
-        temp_seat = self.tour_id.seat
-        temp_seat += pax_amount
-        if temp_seat > self.tour_id.quota:
-            temp_seat = self.tour_id.quota
-        self.tour_id.sudo().write({
-            'seat': temp_seat,
-            'state': 'open'
-        })
+        self.tour_lines_id.cancel_book_line_quota(pax_amount)
         for rec in self.tour_id.passengers_ids:
             if rec.booking_id.id == self.id:
                 rec.sudo().write({
-                    'master_tour_id': False
+                    'master_tour_id': False,
+                    'master_tour_line_id': False
                 })
 
     def action_reverse_tour(self,context):
@@ -228,18 +210,12 @@ class ReservationTour(models.Model):
 
             if rec.state != 'refund':
                 pax_amount = sum(1 for temp in rec.passenger_ids if temp.pax_type != 'INF')
-                temp_seat = rec.tour_id.seat
-                temp_seat += pax_amount
-                if temp_seat > rec.tour_id.quota:
-                    temp_seat = rec.tour_id.quota
-                rec.tour_id.sudo().write({
-                    'seat': temp_seat,
-                    'state': 'open'
-                })
+                rec.tour_lines_id.cancel_book_line_quota(pax_amount)
                 for rec2 in rec.tour_id.passengers_ids:
                     if rec2.booking_id.id == rec.id:
                         rec2.sudo().write({
-                            'master_tour_id': False
+                            'master_tour_id': False,
+                            'master_tour_line_id': False
                         })
 
         if self.payment_acquirer_number_id:
@@ -248,18 +224,12 @@ class ReservationTour(models.Model):
     def action_expired(self):
         self.state = 'cancel2'
         pax_amount = sum(1 for temp in self.passenger_ids if temp.pax_type != 'INF')
-        temp_seat = self.tour_id.seat
-        temp_seat += pax_amount
-        if temp_seat > self.tour_id.quota:
-            temp_seat = self.tour_id.quota
-        self.tour_id.sudo().write({
-            'seat': temp_seat,
-            'state': 'open'
-        })
+        self.tour_lines_id.cancel_book_line_quota(pax_amount)
         for rec in self.tour_id.passengers_ids:
             if rec.booking_id.id == self.id:
                 rec.sudo().write({
-                    'master_tour_id': False
+                    'master_tour_id': False,
+                    'master_tour_line_id': False
                 })
         try:
             for rec in self.provider_booking_ids.filtered(lambda x: x.state != 'cancel2'):
@@ -293,21 +263,7 @@ class ReservationTour(models.Model):
 
             # Kurangi seat sejumlah pax_amount, lalu cek sisa kuota tour
             pax_amount = sum(1 for temp in self.passenger_ids if temp.pax_type != 'INF')  # jumlah orang yang di book
-            temp_seat = self.tour_id.seat
-            temp_seat -= pax_amount  # seat tersisa dikurangi jumlah orang yang di book
-            temp_state = ''
-            if temp_seat <= int(0.2 * self.tour_id.quota):
-                temp_state = 'definite'  # pasti berangkat jika kuota >=80%
-            if temp_seat == 0:
-                temp_state = 'sold'  # kuota habis
-            write_vals = {
-                'seat': temp_seat
-            }
-            if temp_state:
-                write_vals.update({
-                    'state': temp_state
-                })
-            self.tour_id.sudo().write(write_vals)
+            self.tour_lines_id.book_line_quota(pax_amount)
 
             try:
                 if self.agent_type_id.is_send_email_booked:
@@ -411,6 +367,7 @@ class ReservationTour(models.Model):
             force_issued = data.get('force_issued') and int(data['force_issued']) or False
             temp_provider_code = data.get('provider') and data['provider'] or 0
             temp_tour_code = data.get('tour_code') and data['tour_code'] or ''
+            temp_tour_line_code = data.get('tour_line_code') and data['tour_line_code'] or ''
             room_list = data.get('room_list') and data['room_list'] or []
             provider_obj = self.env['tt.provider'].sudo().search([('code', '=', temp_provider_code)], limit=1)
             if not provider_obj:
@@ -421,12 +378,13 @@ class ReservationTour(models.Model):
             if not tour_data:
                 raise RequestException(1004, additional_message='Tour not found. Please check your tour code.')
             tour_data = tour_data[0]
+            tour_line_data = self.env['tt.master.tour.lines'].sudo().search([('tour_line_code', '=', temp_tour_line_code), ('master_tour_id', '=', tour_data.id)])
             pricelist_id = tour_data.id
             provider_id = tour_data.provider_id
             carrier_id = tour_data.carrier_id
             total_all_pax = int(data.get('adult')) + int(data.get('child')) + int(data.get('infant'))
-            if tour_data.seat - total_all_pax < 0:
-                raise RequestException(1004, additional_message='Not enough seats. Seats available: %s/%s' % (tour_data.seat, tour_data.quota,))
+            if tour_line_data.seat - total_all_pax < 0:
+                raise RequestException(1004, additional_message='Not enough seats. Seats available: %s/%s' % (tour_line_data.seat, tour_line_data.quota,))
 
             booker_obj = self.create_booker_api(booker_data, context)
             contact_data = contacts_data[0]
@@ -449,6 +407,7 @@ class ReservationTour(models.Model):
                     'tour_room_id': tour_room_obj and tour_room_obj[0].id or False,
                     'tour_room_seq': temp_pax.get('tour_room_seq', ''),
                     'master_tour_id': tour_data and tour_data.id or False,
+                    'master_tour_line_id': tour_line_data and tour_line_data.id or False
                 })
 
             try:
@@ -470,11 +429,11 @@ class ReservationTour(models.Model):
                 'agent_id': context['co_agent_id'],
                 'user_id': context['co_uid'],
                 'tour_id': pricelist_id,
+                'tour_lines_id': tour_line_data.id,
                 'adult': data.get('adult') and int(data['adult']) or 0,
                 'child': data.get('child') and int(data['child']) or 0,
                 'infant': data.get('infant') and int(data['infant']) or 0,
-                'departure_date': tour_data.departure_date,
-                'arrival_date': tour_data.arrival_date,
+                'departure_date': tour_line_data.departure_date, 'arrival_date': tour_line_data.arrival_date,
                 'provider_name': provider_id.name,
                 'transport_type': 'tour',
             })
@@ -496,12 +455,13 @@ class ReservationTour(models.Model):
                 provider_tour_vals = {
                     'booking_id': booking_obj.id,
                     'tour_id': pricelist_id,
+                    'tour_lines_id': tour_line_data.id,
                     'provider_id': provider_id.id,
                     'carrier_id': carrier_id.id,
                     'carrier_code': carrier_id.code,
                     'carrier_name': carrier_id.name,
-                    'departure_date': tour_data.departure_date,
-                    'arrival_date': tour_data.arrival_date,
+                    'departure_date': tour_line_data.departure_date,
+                    'arrival_date': tour_line_data.arrival_date,
                     'balance_due': balance_due,
                     'total_price': balance_due,
                     'sequence': 1
@@ -627,19 +587,18 @@ class ReservationTour(models.Model):
                 raise RequestException(1008)
 
             if book_obj.agent_id.id == context.get('co_agent_id',-1) or self.env.ref('tt_base.group_tt_process_channel_bookings').id in user_obj.groups_id.ids:
-                master = self.env['tt.master.tour'].browse(book_obj.tour_id.id)
                 image_urls = []
-                for img in master.image_ids:
+                for img in book_obj.tour_id.image_ids:
                     image_urls.append(str(img.url))
 
                 tour_package = {
-                    'id': master.id,
-                    'name': master.name,
-                    'duration': master.duration,
-                    'departure_date': master.departure_date,
-                    'arrival_date': master.arrival_date,
-                    'visa': master.visa,
-                    'flight': master.flight,
+                    'id': book_obj.tour_id.id,
+                    'name': book_obj.tour_id.name,
+                    'duration': book_obj.tour_id.duration,
+                    'departure_date': book_obj.tour_lines_id.departure_date,
+                    'arrival_date': book_obj.tour_lines_id.arrival_date,
+                    'visa': book_obj.tour_id.visa,
+                    'flight': book_obj.tour_id.flight,
                     'image_urls': image_urls,
                 }
 

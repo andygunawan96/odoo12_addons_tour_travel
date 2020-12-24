@@ -6,7 +6,7 @@
             <search string="Search Tour Package">
                 <field name="name"/>
                 <field name="tour_code"/>
-                <field name="duration"/>
+                <field name="country_str"/>
 
                 <group expand="0" string="Group By">
                     <filter name="group_by_tour_category" string="Tour Category" domain="[]" context="{'group_by':'tour_category'}"/>
@@ -28,12 +28,10 @@
             <form string="">
                 <header>
                     <!--STATE BUTTON-->
-                    <field name="state" widget="statusbar" statusbar_visible="draft,open,on_going,done,closed"/>
-                    <button string="Validate" name="action_validate" type="object" attrs="{'invisible': ['|', ('state', '!=', 'draft'), ('provider_id', '!=', %(tt_reservation_tour.tt_provider_tour_internal)d)]}" groups="tt_base.group_tt_tour_division_operator"/>  <!--groups="tt_base.group_tt_tour_travel_manager"-->
-                    <button string="Calculate Adjustment" name="action_adjustment" type="object" attrs="{'invisible': ['|', ('state', '!=', 'done'), ('provider_id', '!=', %(tt_reservation_tour.tt_provider_tour_internal)d)]}" groups="tt_base.group_tt_tour_division_operator"/>  <!--groups="tt_base.group_tt_tour_travel_manager"-->
-                    <button string="Cancel" name="action_cancel" type="object" attrs="{'invisible': ['|', ('state', 'not in', ['draft','open']), ('provider_id', '!=', %(tt_reservation_tour.tt_provider_tour_internal)d)]}" groups="tt_base.group_tt_tour_division_operator" confirm="Are you sure you want to cancel this tour?"/>  <!--groups="tt_base.group_tt_tour_travel_operator"-->
-                    <button string="Sold Out" name="action_sold" type="object" attrs="{'invisible': ['|', ('state', 'not in', ['draft','open','definite']), ('provider_id', '!=', %(tt_reservation_tour.tt_provider_tour_internal)d)]}" groups="tt_base.group_tt_tour_division_operator" confirm="Are you sure you want to set this tour as sold out?"/>  <!--groups="tt_base.group_tt_tour_travel_operator"-->
-                    <button string="Re-Open" name="action_reopen" type="object" attrs="{'invisible': ['|', ('state', 'not in', ['cancel', 'sold', 'closed']), ('provider_id', '!=', %(tt_reservation_tour.tt_provider_tour_internal)d)]}" groups="tt_base.group_tt_tour_division_operator" confirm="Are you sure you want to re-open this tour?"/>  <!--groups="tt_base.group_tt_tour_travel_manager"-->
+                    <field name="state" widget="statusbar" statusbar_visible="draft,confirm,closed"/>
+                    <button name="action_confirm" string="Confirm" type="object" groups="tt_base.group_tt_tour_division_operator,tt_base.group_tt_tour_travel_manager" attrs="{'invisible':[('state','!=', 'draft')]}"/>
+                    <button name="set_to_draft" string="Set to Draft" type="object" groups="tt_base.group_tt_tour_division_operator,tt_base.group_tt_tour_travel_manager" attrs="{'invisible':[('state','=', 'draft')]}"/>
+                    <button name="action_closed" string="Close" type="object" groups="tt_base.group_tt_tour_division_operator,tt_base.group_tt_tour_travel_manager" attrs="{'invisible':[('state','=', 'closed')]}"/>
                     <!--                    <button string="Update Tour Code" name="update_tour_code_temp" type="object" groups="base.user_admin"/>-->
                     <!--                    <button string="Generate Room Codes" name="generate_all_room_codes" type="object" groups="base.user_admin"/>-->
                 </header>
@@ -93,22 +91,10 @@
                             <field name="description" attrs="{'readonly': [('provider_id', '!=', %(tt_reservation_tour.tt_provider_tour_internal)d)]}"/>
                             <field name="tour_category" attrs="{'readonly': [('provider_id', '!=', %(tt_reservation_tour.tt_provider_tour_internal)d)]}"/>
                             <field name="tour_type" attrs="{'readonly': [('provider_id', '!=', %(tt_reservation_tour.tt_provider_tour_internal)d)]}"/>
-                            <field name="departure_date" attrs="{'readonly': [('provider_id', '!=', %(tt_reservation_tour.tt_provider_tour_internal)d)]}"/>
-                            <field name="arrival_date" attrs="{'readonly': [('provider_id', '!=', %(tt_reservation_tour.tt_provider_tour_internal)d)]}"/>
-                            <!--                            <field name="departure_date" attrs="{'invisible': [('tour_category', '=', 'private')], 'required': [('tour_category', '!=', 'private')]}"/>-->
-                            <!--                            <field name="arrival_date" attrs="{'invisible': [('tour_category', '=', 'private')], 'required': [('tour_category', '!=', 'private')]}"/>-->
-                            <!--                            <field name="start_period" attrs="{'invisible': [('tour_category', '!=', 'private')], 'required': [('tour_category', '=', 'private')]}"/>-->
-                            <!--                            <field name="end_period" attrs="{'invisible': [('tour_category', '!=', 'private')], 'required': [('tour_category', '=', 'private')]}"/>-->
                             <field name="agent_id" attrs="{'invisible': [('tour_category', '!=', 'private')], 'required': [('tour_category', '=', 'private')], 'readonly': [('provider_id', '!=', %(tt_reservation_tour.tt_provider_tour_internal)d)]}"/>
                             <field name="duration" attrs="{'readonly': [('provider_id', '!=', %(tt_reservation_tour.tt_provider_tour_internal)d)]}"/>
                             <field name="guiding_days" attrs="{'readonly': [('provider_id', '!=', %(tt_reservation_tour.tt_provider_tour_internal)d)]}"/>
                             <field name="driving_times" attrs="{'readonly': [('provider_id', '!=', %(tt_reservation_tour.tt_provider_tour_internal)d)]}"/>
-                            <field name="survey_date"/>
-                            <label for="seat" string="Available Seat"/>
-                            <div>
-                                <field name="seat" class="oe_inline" attrs="{'readonly': [('provider_id', '!=', %(tt_reservation_tour.tt_provider_tour_internal)d)]}"/> /
-                                <field name="quota" class="oe_inline" attrs="{'readonly': [('provider_id', '!=', %(tt_reservation_tour.tt_provider_tour_internal)d)]}"/>
-                            </div>
                             <field name="visa" attrs="{'readonly': [('provider_id', '!=', %(tt_reservation_tour.tt_provider_tour_internal)d)]}"/>
                             <field name="flight" attrs="{'readonly': [('provider_id', '!=', %(tt_reservation_tour.tt_provider_tour_internal)d)]}"/>
                         </group>
@@ -264,6 +250,9 @@
                     <!--Tour Details Segment-->
                     <separator string="Tour Details"/>
                     <notebook colspan="4">
+                        <page string="Tour Lines">
+                            <field name="tour_line_ids"/>
+                        </page>
                         <page string="Accommodation">
                             <field name="room_ids" string="Rooms" attrs="{'readonly': [('provider_id', '!=', %(tt_reservation_tour.tt_provider_tour_internal)d)]}">
                                 <tree>
@@ -319,17 +308,15 @@
                                 <tree>
                                     <field name="day"/>
                                     <field name="name"/>
-                                    <field name="date"/>
                                 </tree>
                                 <form>
                                     <sheet>
                                         <group>
                                             <group>
                                                 <field name="day"/>
-                                                <field name="name"/>
                                             </group>
                                             <group>
-                                                <field name="date"/>
+                                                <field name="name"/>
                                             </group>
                                         </group>
                                         <group>
@@ -404,6 +391,7 @@
                             <field name="nationality_id"/>
                             <field name="tour_room_id"/>
                             <field name="tour_room_seq"/>
+                            <field name="master_tour_line_id"/>
                             <field name="booking_id"/>
                         </tree>
                     </field>
@@ -454,11 +442,8 @@
                 <field name="name"/>
                 <field name="tour_type"/>
                 <field name="tour_route"/>
-                <field name="departure_date"/>
-                <field name="arrival_date"/>
-                <field name="duration"/>
                 <field name="country_str"/>
-                <field name="seat" string="Seat Available"/>
+                <field name="tour_line_amount"/>
                 <field name="create_uid"/>
                 <field name="provider_id" groups="tt_base.group_tt_tour_travel_operator"/>
                 <field name="state"/>
