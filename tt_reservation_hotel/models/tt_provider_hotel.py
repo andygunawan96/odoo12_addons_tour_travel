@@ -109,7 +109,7 @@ class TransportBookingProvider(models.Model):
                 'issued_uid': vals.get('co_uid'),
                 'sid_issued': vals.get('signature'),
                 'pnr': vals.get('pnr'),
-                'pnr2': vals.get('pnr'),
+                'pnr2': vals.get('pnr2'),
                 'balance_due': 0
             })
 
@@ -230,3 +230,6 @@ class TransportBookingProvider(models.Model):
             if rec.booking_id.state == 'issued':
                 rec.pnr = rec.booking_id.pnr
                 rec.pnr2 = rec.booking_id.pnr
+
+            rec.booking_id._compute_total_nta()
+            rec.total_price = rec.booking_id.total_nta
