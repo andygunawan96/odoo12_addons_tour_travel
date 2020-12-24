@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <data noupdate="1">
+    <data noupdate="0">
 
         <record id="ho_template_user_accounting_operator" model="res.users">
             <field name="name">HO Agent Template Accounting Operator</field>
@@ -13,7 +13,8 @@
                          (4, ref('tt_base.group_tt_tour_travel_operator')),
                          (4, ref('tt_base.group_tt_accounting_operator')),
                          (4, ref('account.group_account_manager')),
-                         (4, ref('hr.group_hr_user'))]"/>
+                         (4, ref('hr.group_hr_user')),
+                         (4,ref('tt_base.report'))]"/>
             <field name="frontend_security_ids"
                    eval="[(4,ref('tt_base.able_to_login')),
                          (4, ref('tt_base.able_to_ticketing'))]"/>
@@ -30,7 +31,8 @@
                          (4, ref('tt_base.group_tt_tour_travel_supervisor')),
                          (4, ref('tt_base.group_tt_accounting_supervisor')),
                          (4, ref('account.group_account_manager')),
-                         (4, ref('hr.group_hr_user'))]"/>
+                         (4, ref('hr.group_hr_user')),
+                         (4,ref('tt_base.report'))]"/>
             <field name="frontend_security_ids"
                    eval="[(4,ref('tt_base.able_to_login')),
                          (4, ref('tt_base.able_to_ticketing'))]"/>
@@ -47,7 +49,8 @@
                          (4, ref('tt_base.group_tt_tour_travel_manager')),
                          (4, ref('tt_base.group_tt_accounting_manager')),
                          (4, ref('account.group_account_manager')),
-                         (4, ref('hr.group_hr_user'))]"/>
+                         (4, ref('hr.group_hr_user')),
+                         (4,ref('tt_base.report'))]"/>
             <field name="frontend_security_ids"
                    eval="[(4,ref('tt_base.able_to_login')),
                          (4, ref('tt_base.able_to_ticketing'))]"/>
@@ -65,7 +68,8 @@
                          (4, ref('tt_base.group_tt_ticketing_operator')),
                          (4, ref('tt_base.group_tt_accounting_operator')),
                          (4, ref('account.group_account_invoice')),
-                         (4, ref('hr.group_hr_user'))]"/>
+                         (4, ref('hr.group_hr_user')),
+                         (4,ref('tt_base.report'))]"/>
             <field name="frontend_security_ids"
                    eval="[(4,ref('tt_base.able_to_login')),
                          (4, ref('tt_base.able_to_ticketing'))]"/>
@@ -83,7 +87,8 @@
                          (4, ref('tt_base.group_tt_ticketing_supervisor')),
                          (4, ref('tt_base.group_tt_accounting_operator')),
                          (4, ref('account.group_account_invoice')),
-                         (4, ref('hr.group_hr_user'))]"/>
+                         (4, ref('hr.group_hr_user')),
+                         (4,ref('tt_base.report'))]"/>
             <field name="frontend_security_ids"
                    eval="[(4,ref('tt_base.able_to_login')),
                          (4, ref('tt_base.able_to_ticketing'))]"/>
@@ -101,7 +106,8 @@
                          (4, ref('tt_base.group_tt_ticketing_manager')),
                          (4, ref('tt_base.group_tt_accounting_operator')),
                          (4, ref('account.group_account_invoice')),
-                         (4, ref('hr.group_hr_user'))]"/>
+                         (4, ref('hr.group_hr_user')),
+                         (4,ref('tt_base.report'))]"/>
             <field name="frontend_security_ids"
                    eval="[(4,ref('tt_base.able_to_login')),
                          (4, ref('tt_base.able_to_ticketing'))]"/>
@@ -118,7 +124,8 @@
                          (4, ref('tt_base.group_tt_tour_travel_operator')),
                          (4, ref('tt_base.group_tt_agent_management_operator')),
                          (4, ref('account.group_account_invoice')),
-                         (4, ref('hr.group_hr_user'))]"/>
+                         (4, ref('hr.group_hr_user')),
+                         (4,ref('tt_base.report'))]"/>
             <field name="frontend_security_ids"
                    eval="[(4,ref('tt_base.able_to_login')),
                          (4, ref('tt_base.able_to_ticketing'))]"/>
@@ -135,7 +142,8 @@
                          (4, ref('tt_base.group_tt_tour_travel_supervisor')),
                          (4, ref('tt_base.group_tt_agent_management_supervisor')),
                          (4, ref('account.group_account_invoice')),
-                         (4, ref('hr.group_hr_user'))]"/>
+                         (4, ref('hr.group_hr_user')),
+                         (4,ref('tt_base.report'))]"/>
             <field name="frontend_security_ids"
                    eval="[(4,ref('tt_base.able_to_login')),
                          (4, ref('tt_base.able_to_ticketing'))]"/>
@@ -152,7 +160,8 @@
                          (4, ref('tt_base.group_tt_tour_travel_manager')),
                          (4, ref('tt_base.group_tt_agent_management_manager')),
                          (4, ref('account.group_account_invoice')),
-                         (4, ref('hr.group_hr_user'))]"/>
+                         (4, ref('hr.group_hr_user')),
+                         (4,ref('tt_base.report'))]"/>
             <field name="frontend_security_ids"
                    eval="[(4,ref('tt_base.able_to_login')),
                          (4, ref('tt_base.able_to_ticketing'))]"/>
@@ -169,7 +178,8 @@
                          (4, ref('tt_base.group_tt_tour_travel_operator')),
                          (4, ref('tt_base.group_tt_tour_division_operator')),
                          (4, ref('account.group_account_invoice')),
-                         (4, ref('hr.group_hr_user'))]"/>
+                         (4, ref('hr.group_hr_user')),
+                         (4,ref('tt_base.report'))]"/>
             <field name="frontend_security_ids"
                    eval="[(4,ref('tt_base.able_to_login')),
                          (4, ref('tt_base.able_to_ticketing'))]"/>
@@ -186,7 +196,8 @@
                          (4, ref('tt_base.group_tt_tour_travel_supervisor')),
                          (4, ref('tt_base.group_tt_tour_division_supervisor')),
                          (4, ref('account.group_account_invoice')),
-                         (4, ref('hr.group_hr_user'))]"/>
+                         (4, ref('hr.group_hr_user')),
+                         (4,ref('tt_base.report'))]"/>
             <field name="frontend_security_ids"
                    eval="[(4,ref('tt_base.able_to_login')),
                          (4, ref('tt_base.able_to_ticketing'))]"/>
@@ -203,7 +214,8 @@
                          (4, ref('tt_base.group_tt_tour_travel_manager')),
                          (4, ref('tt_base.group_tt_tour_division_manager')),
                          (4, ref('account.group_account_invoice')),
-                         (4, ref('hr.group_hr_user'))]"/>
+                         (4, ref('hr.group_hr_user')),
+                         (4,ref('tt_base.report'))]"/>
             <field name="frontend_security_ids"
                    eval="[(4,ref('tt_base.able_to_login')),
                          (4, ref('tt_base.able_to_ticketing'))]"/>
@@ -232,7 +244,8 @@
                     (4,ref('tt_base.able_to_ticketing_ppob')),
                     (4,ref('tt_base.able_to_ticketing_tour')),
                     (4,ref('tt_base.able_to_ticketing_train')),
-                    (4,ref('tt_base.able_to_ticketing_visa'))
+                    (4,ref('tt_base.able_to_ticketing_visa')),
+                    (4,ref('tt_base.report'))
                     ]"/>
         </record>
 
@@ -261,7 +274,8 @@
                     (4,ref('tt_base.able_to_ticketing_ppob')),
                     (4,ref('tt_base.able_to_ticketing_tour')),
                     (4,ref('tt_base.able_to_ticketing_train')),
-                    (4,ref('tt_base.able_to_ticketing_visa'))
+                    (4,ref('tt_base.able_to_ticketing_visa')),
+                    (4,ref('tt_base.report'))
                     ]"/>
         </record>
 
@@ -291,7 +305,8 @@
                     (4,ref('tt_base.able_to_ticketing_ppob')),
                     (4,ref('tt_base.able_to_ticketing_tour')),
                     (4,ref('tt_base.able_to_ticketing_train')),
-                    (4,ref('tt_base.able_to_ticketing_visa'))
+                    (4,ref('tt_base.able_to_ticketing_visa')),
+                    (4,ref('tt_base.report'))
                     ]"/>
         </record>
 
@@ -321,7 +336,8 @@
                     (4,ref('tt_base.able_to_ticketing_ppob')),
                     (4,ref('tt_base.able_to_ticketing_tour')),
                     (4,ref('tt_base.able_to_ticketing_train')),
-                    (4,ref('tt_base.able_to_ticketing_visa'))
+                    (4,ref('tt_base.able_to_ticketing_visa')),
+                    (4,ref('tt_base.report'))
                     ]"/>
         </record>
 
@@ -351,7 +367,8 @@
                     (4,ref('tt_base.able_to_ticketing_ppob')),
                     (4,ref('tt_base.able_to_ticketing_tour')),
                     (4,ref('tt_base.able_to_ticketing_train')),
-                    (4,ref('tt_base.able_to_ticketing_visa'))
+                    (4,ref('tt_base.able_to_ticketing_visa')),
+                    (4,ref('tt_base.report'))
                     ]"/>
         </record>
 
@@ -381,7 +398,8 @@
                     (4,ref('tt_base.able_to_ticketing_ppob')),
                     (4,ref('tt_base.able_to_ticketing_tour')),
                     (4,ref('tt_base.able_to_ticketing_train')),
-                    (4,ref('tt_base.able_to_ticketing_visa'))
+                    (4,ref('tt_base.able_to_ticketing_visa')),
+                    (4,ref('tt_base.report'))
                     ]"/>
         </record>
 
@@ -410,7 +428,8 @@
                     (4,ref('tt_base.able_to_ticketing_ppob')),
                     (4,ref('tt_base.able_to_ticketing_tour')),
                     (4,ref('tt_base.able_to_ticketing_train')),
-                    (4,ref('tt_base.able_to_ticketing_visa'))
+                    (4,ref('tt_base.able_to_ticketing_visa')),
+                    (4,ref('tt_base.report'))
                     ]"/>
         </record>
 
@@ -439,7 +458,8 @@
                     (4,ref('tt_base.able_to_ticketing_ppob')),
                     (4,ref('tt_base.able_to_ticketing_tour')),
                     (4,ref('tt_base.able_to_ticketing_train')),
-                    (4,ref('tt_base.able_to_ticketing_visa'))
+                    (4,ref('tt_base.able_to_ticketing_visa')),
+                    (4,ref('tt_base.report'))
                     ]"/>
         </record>
 
@@ -469,7 +489,8 @@
                     (4,ref('tt_base.able_to_ticketing_ppob')),
                     (4,ref('tt_base.able_to_ticketing_tour')),
                     (4,ref('tt_base.able_to_ticketing_train')),
-                    (4,ref('tt_base.able_to_ticketing_visa'))
+                    (4,ref('tt_base.able_to_ticketing_visa')),
+                    (4,ref('tt_base.report'))
                     ]"/>
         </record>
 
@@ -499,7 +520,8 @@
                     (4,ref('tt_base.able_to_ticketing_ppob')),
                     (4,ref('tt_base.able_to_ticketing_tour')),
                     (4,ref('tt_base.able_to_ticketing_train')),
-                    (4,ref('tt_base.able_to_ticketing_visa'))
+                    (4,ref('tt_base.able_to_ticketing_visa')),
+                    (4,ref('tt_base.report'))
                     ]"/>
         </record>
 
@@ -529,7 +551,8 @@
                     (4,ref('tt_base.able_to_ticketing_ppob')),
                     (4,ref('tt_base.able_to_ticketing_tour')),
                     (4,ref('tt_base.able_to_ticketing_train')),
-                    (4,ref('tt_base.able_to_ticketing_visa'))
+                    (4,ref('tt_base.able_to_ticketing_visa')),
+                    (4,ref('tt_base.report'))
                     ]"/>
         </record>
 
@@ -559,7 +582,8 @@
                     (4,ref('tt_base.able_to_ticketing_ppob')),
                     (4,ref('tt_base.able_to_ticketing_tour')),
                     (4,ref('tt_base.able_to_ticketing_train')),
-                    (4,ref('tt_base.able_to_ticketing_visa'))
+                    (4,ref('tt_base.able_to_ticketing_visa')),
+                    (4,ref('tt_base.report'))
                     ]"/>
         </record>
 
@@ -574,7 +598,9 @@
                                                (4,ref('tt_base.group_tt_agent_user_operator'))]"/>
             <field name="frontend_security_ids"
                    eval="[(4,ref('tt_base.able_to_top_up')),
-                   (4,ref('tt_base.able_to_login'))]"/>
+                    (4,ref('tt_base.able_to_login')),
+                    (4,ref('tt_base.report'))
+                    ]"/>
         </record>
 
         <record id="btbo_template_user_supervisor" model="res.users">
@@ -588,7 +614,9 @@
                                             (4,ref('tt_base.group_tt_agent_user_supervisor'))]"/>
             <field name="frontend_security_ids"
                    eval="[(4,ref('tt_base.able_to_top_up')),
-                   (4,ref('tt_base.able_to_login'))]"/>
+                    (4,ref('tt_base.able_to_login')),
+                    (4,ref('tt_base.report'))
+                    ]"/>
         </record>
 
         <record id="btbo_template_user_manager" model="res.users">
@@ -603,7 +631,9 @@
                                             (4,ref('tt_base.group_tt_agent_finance_manager'))]"/>
             <field name="frontend_security_ids"
                    eval="[(4,ref('tt_base.able_to_top_up')),
-                   (4,ref('tt_base.able_to_login'))]"/>
+                    (4,ref('tt_base.able_to_login')),
+                    (4,ref('tt_base.report'))
+                    ]"/>
         </record>
 
         <record id="btbo_template_user_api" model="res.users">
@@ -625,9 +655,7 @@
                                             (4,ref('tt_base.group_tt_agent_invoice_operator')),
                                                (4,ref('tt_base.group_tt_agent_user_operator'))]"/>
             <field name="frontend_security_ids"
-                   eval="[(4,ref('tt_base.able_to_top_up')),
-                   (4,ref('tt_base.able_to_login')),
-                   (4,ref('tt_base.able_to_use_pnr_quota'))]"/>
+                   eval="[(6,0,[ref('tt_base.able_to_top_up'),ref('tt_base.able_to_login'),ref('tt_base.able_to_use_pnr_quota'),ref('tt_base.report')])]"/>
         </record>
 
         <record id="btbo2_template_user_supervisor" model="res.users">
@@ -641,8 +669,10 @@
                                             (4,ref('tt_base.group_tt_agent_user_supervisor'))]"/>
             <field name="frontend_security_ids"
                    eval="[(4,ref('tt_base.able_to_top_up')),
-                   (4,ref('tt_base.able_to_login')),
-                   (4,ref('tt_base.able_to_use_pnr_quota'))]"/>
+                    (4,ref('tt_base.able_to_login')),
+                    (4,ref('tt_base.able_to_use_pnr_quota')),
+                    (4,ref('tt_base.report'))
+                    ]"/>
         </record>
 
         <record id="btbo2_template_user_manager" model="res.users">
@@ -658,7 +688,9 @@
             <field name="frontend_security_ids"
                    eval="[(4,ref('tt_base.able_to_top_up')),
                     (4,ref('tt_base.able_to_login')),
-                    (4,ref('tt_base.able_to_use_pnr_quota'))]"/>
+                    (4,ref('tt_base.able_to_use_pnr_quota')),
+                    (4,ref('tt_base.report'))
+                    ]"/>
         </record>
 
         <record id="btbo2_template_user_api" model="res.users">
@@ -695,7 +727,8 @@
                     (4,ref('tt_base.able_to_ticketing_ppob')),
                     (4,ref('tt_base.able_to_ticketing_tour')),
                     (4,ref('tt_base.able_to_ticketing_train')),
-                    (4,ref('tt_base.able_to_ticketing_visa'))
+                    (4,ref('tt_base.able_to_ticketing_visa')),
+                    (4,ref('tt_base.report'))
                     ]"/>
         </record>
 
@@ -724,7 +757,8 @@
                     (4,ref('tt_base.able_to_ticketing_ppob')),
                     (4,ref('tt_base.able_to_ticketing_tour')),
                     (4,ref('tt_base.able_to_ticketing_train')),
-                    (4,ref('tt_base.able_to_ticketing_visa'))
+                    (4,ref('tt_base.able_to_ticketing_visa')),
+                    (4,ref('tt_base.report'))
                     ]"/>
         </record>
 
@@ -754,7 +788,8 @@
                     (4,ref('tt_base.able_to_ticketing_ppob')),
                     (4,ref('tt_base.able_to_ticketing_tour')),
                     (4,ref('tt_base.able_to_ticketing_train')),
-                    (4,ref('tt_base.able_to_ticketing_visa'))
+                    (4,ref('tt_base.able_to_ticketing_visa')),
+                    (4,ref('tt_base.report'))
                     ]"/>
         </record>
 
@@ -766,20 +801,21 @@
                    eval="[(4,ref('tt_base.group_tt_sub_agent_user_operator'))]"/>
             <field name="frontend_security_ids"
                    eval="[(4,ref('tt_base.able_to_login')),
-                          (4,ref('tt_base.able_to_book')),
-                          (4,ref('tt_base.able_to_issued')),
-                          (4,ref('tt_base.able_to_ticketing')),
-                          (4,ref('tt_base.b2c_limitation')),
-                          (4,ref('tt_base.able_to_ticketing_activity')),
-                          (4,ref('tt_base.able_to_ticketing_airline')),
-                          (4,ref('tt_base.able_to_ticketing_event')),
-                          (4,ref('tt_base.able_to_ticketing_hotel')),
-                          (4,ref('tt_base.able_to_ticketing_offline')),
-                          (4,ref('tt_base.able_to_ticketing_ppob')),
-                          (4,ref('tt_base.able_to_ticketing_tour')),
-                          (4,ref('tt_base.able_to_ticketing_train')),
-                          (4,ref('tt_base.able_to_ticketing_visa'))
-                          ]"/>
+                    (4,ref('tt_base.able_to_book')),
+                    (4,ref('tt_base.able_to_issued')),
+                    (4,ref('tt_base.able_to_ticketing')),
+                    (4,ref('tt_base.b2c_limitation')),
+                    (4,ref('tt_base.able_to_ticketing_activity')),
+                    (4,ref('tt_base.able_to_ticketing_airline')),
+                    (4,ref('tt_base.able_to_ticketing_event')),
+                    (4,ref('tt_base.able_to_ticketing_hotel')),
+                    (4,ref('tt_base.able_to_ticketing_offline')),
+                    (4,ref('tt_base.able_to_ticketing_ppob')),
+                    (4,ref('tt_base.able_to_ticketing_tour')),
+                    (4,ref('tt_base.able_to_ticketing_train')),
+                    (4,ref('tt_base.able_to_ticketing_visa')),
+                    (4,ref('tt_base.report'))
+                    ]"/>
         </record>
 
     </data>

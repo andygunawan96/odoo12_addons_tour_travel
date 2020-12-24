@@ -29,7 +29,8 @@
                 'tt_billing_statement',
 
                 'tt_reservation_report_airline',
-
+                'tt_agent_registration',
+                
                 'tt_agent_sales_activity',
                 'tt_agent_sales_airline',
                 'tt_agent_sales_event',
