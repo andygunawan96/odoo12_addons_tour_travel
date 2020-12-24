@@ -31,7 +31,7 @@ class MasterTourProvider(models.Model):
                 rec.is_lg_required = False
 
     def generate_lg(self):
-        lg_exist = self.env['tt.letter.guarantee'].search([('res_model', '=', self._name), ('res_id', '=', self.id)])
+        lg_exist = self.env['tt.letter.guarantee'].search([('res_model', '=', self._name), ('res_id', '=', self.id), ('type', '=', 'lg')])
         if lg_exist:
             raise UserError('Letter of Guarantee for this provider is already exist.')
         else:
@@ -47,6 +47,7 @@ class MasterTourProvider(models.Model):
                 'res_id': self.id,
                 'provider_id': self.provider_id.id,
                 'type': 'lg',
+                'parent_ref': self.master_tour_id.name,
                 'pax_description': pax_desc_str,
                 'multiplier': 'Pax',
                 'multiplier_amount': pax_amount,

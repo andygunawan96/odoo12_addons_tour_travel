@@ -49,6 +49,7 @@
                     <group string="Tour Info">
                         <group>
                             <field name="tour_id"/>
+                            <field name="tour_lines_id"/>
                             <field name="departure_date"/>
                             <field name="arrival_date"/>
                         </group>
