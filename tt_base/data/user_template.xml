@@ -16,8 +16,18 @@
                          (4, ref('hr.group_hr_user')),
                          (4,ref('tt_base.report'))]"/>
             <field name="frontend_security_ids"
-                   eval="[(4,ref('tt_base.able_to_login')),
-                         (4, ref('tt_base.able_to_ticketing'))]"/>
+                   eval="[(6,0,[ref('tt_base.able_to_login'),
+                                ref('tt_base.able_to_ticketing_activity'),
+                                ref('tt_base.able_to_ticketing_airline'),
+                                ref('tt_base.able_to_ticketing_event'),
+                                ref('tt_base.able_to_ticketing_hotel'),
+                                ref('tt_base.able_to_ticketing_offline'),
+                                ref('tt_base.able_to_ticketing_ppob'),
+                                ref('tt_base.able_to_ticketing_tour'),
+                                ref('tt_base.able_to_ticketing_train'),
+                                ref('tt_base.able_to_ticketing_visa'),
+                                ref('tt_base.report')])]"
+            />
         </record>
 
         <record id="ho_template_user_accounting_supervisor" model="res.users">
@@ -34,8 +44,18 @@
                          (4, ref('hr.group_hr_user')),
                          (4,ref('tt_base.report'))]"/>
             <field name="frontend_security_ids"
-                   eval="[(4,ref('tt_base.able_to_login')),
-                         (4, ref('tt_base.able_to_ticketing'))]"/>
+                   eval="[(6,0,[ref('tt_base.able_to_login'),
+                                ref('tt_base.able_to_ticketing_activity'),
+                                ref('tt_base.able_to_ticketing_airline'),
+                                ref('tt_base.able_to_ticketing_event'),
+                                ref('tt_base.able_to_ticketing_hotel'),
+                                ref('tt_base.able_to_ticketing_offline'),
+                                ref('tt_base.able_to_ticketing_ppob'),
+                                ref('tt_base.able_to_ticketing_tour'),
+                                ref('tt_base.able_to_ticketing_train'),
+                                ref('tt_base.able_to_ticketing_visa'),
+                                ref('tt_base.report')])]"
+            />
         </record>
 
         <record id="ho_template_user_accounting_manager" model="res.users">
@@ -52,8 +72,18 @@
                          (4, ref('hr.group_hr_user')),
                          (4,ref('tt_base.report'))]"/>
             <field name="frontend_security_ids"
-                   eval="[(4,ref('tt_base.able_to_login')),
-                         (4, ref('tt_base.able_to_ticketing'))]"/>
+                   eval="[(6,0,[ref('tt_base.able_to_login'),
+                                ref('tt_base.able_to_ticketing_activity'),
+                                ref('tt_base.able_to_ticketing_airline'),
+                                ref('tt_base.able_to_ticketing_event'),
+                                ref('tt_base.able_to_ticketing_hotel'),
+                                ref('tt_base.able_to_ticketing_offline'),
+                                ref('tt_base.able_to_ticketing_ppob'),
+                                ref('tt_base.able_to_ticketing_tour'),
+                                ref('tt_base.able_to_ticketing_train'),
+                                ref('tt_base.able_to_ticketing_visa'),
+                                ref('tt_base.report')])]"
+            />
         </record>
 
         <record id="ho_template_user_btb_operator" model="res.users">
@@ -71,8 +101,18 @@
                          (4, ref('hr.group_hr_user')),
                          (4,ref('tt_base.report'))]"/>
             <field name="frontend_security_ids"
-                   eval="[(4,ref('tt_base.able_to_login')),
-                         (4, ref('tt_base.able_to_ticketing'))]"/>
+                   eval="[(6,0,[ref('tt_base.able_to_login'),
+                                ref('tt_base.able_to_ticketing_activity'),
+                                ref('tt_base.able_to_ticketing_airline'),
+                                ref('tt_base.able_to_ticketing_event'),
+                                ref('tt_base.able_to_ticketing_hotel'),
+                                ref('tt_base.able_to_ticketing_offline'),
+                                ref('tt_base.able_to_ticketing_ppob'),
+                                ref('tt_base.able_to_ticketing_tour'),
+                                ref('tt_base.able_to_ticketing_train'),
+                                ref('tt_base.able_to_ticketing_visa'),
+                                ref('tt_base.report')])]"
+            />
         </record>
 
         <record id="ho_template_user_btb_supervisor" model="res.users">
@@ -90,8 +130,18 @@
                          (4, ref('hr.group_hr_user')),
                          (4,ref('tt_base.report'))]"/>
             <field name="frontend_security_ids"
-                   eval="[(4,ref('tt_base.able_to_login')),
-                         (4, ref('tt_base.able_to_ticketing'))]"/>
+                   eval="[(6,0,[ref('tt_base.able_to_login'),
+                                ref('tt_base.able_to_ticketing_activity'),
+                                ref('tt_base.able_to_ticketing_airline'),
+                                ref('tt_base.able_to_ticketing_event'),
+                                ref('tt_base.able_to_ticketing_hotel'),
+                                ref('tt_base.able_to_ticketing_offline'),
+                                ref('tt_base.able_to_ticketing_ppob'),
+                                ref('tt_base.able_to_ticketing_tour'),
+                                ref('tt_base.able_to_ticketing_train'),
+                                ref('tt_base.able_to_ticketing_visa'),
+                                ref('tt_base.report')])]"
+            />
         </record>
 
         <record id="ho_template_user_btb_manager" model="res.users">
@@ -109,8 +159,18 @@
                          (4, ref('hr.group_hr_user')),
                          (4,ref('tt_base.report'))]"/>
             <field name="frontend_security_ids"
-                   eval="[(4,ref('tt_base.able_to_login')),
-                         (4, ref('tt_base.able_to_ticketing'))]"/>
+                   eval="[(6,0,[ref('tt_base.able_to_login'),
+                                ref('tt_base.able_to_ticketing_activity'),
+                                ref('tt_base.able_to_ticketing_airline'),
+                                ref('tt_base.able_to_ticketing_event'),
+                                ref('tt_base.able_to_ticketing_hotel'),
+                                ref('tt_base.able_to_ticketing_offline'),
+                                ref('tt_base.able_to_ticketing_ppob'),
+                                ref('tt_base.able_to_ticketing_tour'),
+                                ref('tt_base.able_to_ticketing_train'),
+                                ref('tt_base.able_to_ticketing_visa'),
+                                ref('tt_base.report')])]"
+            />
         </record>
 
         <record id="ho_template_user_nd_operator" model="res.users">
@@ -127,8 +187,18 @@
                          (4, ref('hr.group_hr_user')),
                          (4,ref('tt_base.report'))]"/>
             <field name="frontend_security_ids"
-                   eval="[(4,ref('tt_base.able_to_login')),
-                         (4, ref('tt_base.able_to_ticketing'))]"/>
+                   eval="[(6,0,[ref('tt_base.able_to_login'),
+                                ref('tt_base.able_to_ticketing_activity'),
+                                ref('tt_base.able_to_ticketing_airline'),
+                                ref('tt_base.able_to_ticketing_event'),
+                                ref('tt_base.able_to_ticketing_hotel'),
+                                ref('tt_base.able_to_ticketing_offline'),
+                                ref('tt_base.able_to_ticketing_ppob'),
+                                ref('tt_base.able_to_ticketing_tour'),
+                                ref('tt_base.able_to_ticketing_train'),
+                                ref('tt_base.able_to_ticketing_visa'),
+                                ref('tt_base.report')])]"
+            />
         </record>
 
         <record id="ho_template_user_nd_supervisor" model="res.users">
@@ -145,8 +215,18 @@
                          (4, ref('hr.group_hr_user')),
                          (4,ref('tt_base.report'))]"/>
             <field name="frontend_security_ids"
-                   eval="[(4,ref('tt_base.able_to_login')),
-                         (4, ref('tt_base.able_to_ticketing'))]"/>
+                   eval="[(6,0,[ref('tt_base.able_to_login'),
+                                ref('tt_base.able_to_ticketing_activity'),
+                                ref('tt_base.able_to_ticketing_airline'),
+                                ref('tt_base.able_to_ticketing_event'),
+                                ref('tt_base.able_to_ticketing_hotel'),
+                                ref('tt_base.able_to_ticketing_offline'),
+                                ref('tt_base.able_to_ticketing_ppob'),
+                                ref('tt_base.able_to_ticketing_tour'),
+                                ref('tt_base.able_to_ticketing_train'),
+                                ref('tt_base.able_to_ticketing_visa'),
+                                ref('tt_base.report')])]"
+            />
         </record>
 
         <record id="ho_template_user_nd_manager" model="res.users">
@@ -163,8 +243,18 @@
                          (4, ref('hr.group_hr_user')),
                          (4,ref('tt_base.report'))]"/>
             <field name="frontend_security_ids"
-                   eval="[(4,ref('tt_base.able_to_login')),
-                         (4, ref('tt_base.able_to_ticketing'))]"/>
+                   eval="[(6,0,[ref('tt_base.able_to_login'),
+                                ref('tt_base.able_to_ticketing_activity'),
+                                ref('tt_base.able_to_ticketing_airline'),
+                                ref('tt_base.able_to_ticketing_event'),
+                                ref('tt_base.able_to_ticketing_hotel'),
+                                ref('tt_base.able_to_ticketing_offline'),
+                                ref('tt_base.able_to_ticketing_ppob'),
+                                ref('tt_base.able_to_ticketing_tour'),
+                                ref('tt_base.able_to_ticketing_train'),
+                                ref('tt_base.able_to_ticketing_visa'),
+                                ref('tt_base.report')])]"
+            />
         </record>
 
         <record id="ho_template_user_tour_operator" model="res.users">
@@ -181,8 +271,18 @@
                          (4, ref('hr.group_hr_user')),
                          (4,ref('tt_base.report'))]"/>
             <field name="frontend_security_ids"
-                   eval="[(4,ref('tt_base.able_to_login')),
-                         (4, ref('tt_base.able_to_ticketing'))]"/>
+                   eval="[(6,0,[ref('tt_base.able_to_login'),
+                                ref('tt_base.able_to_ticketing_activity'),
+                                ref('tt_base.able_to_ticketing_airline'),
+                                ref('tt_base.able_to_ticketing_event'),
+                                ref('tt_base.able_to_ticketing_hotel'),
+                                ref('tt_base.able_to_ticketing_offline'),
+                                ref('tt_base.able_to_ticketing_ppob'),
+                                ref('tt_base.able_to_ticketing_tour'),
+                                ref('tt_base.able_to_ticketing_train'),
+                                ref('tt_base.able_to_ticketing_visa'),
+                                ref('tt_base.report')])]"
+            />
         </record>
 
         <record id="ho_template_user_tour_supervisor" model="res.users">
@@ -199,8 +299,18 @@
                          (4, ref('hr.group_hr_user')),
                          (4,ref('tt_base.report'))]"/>
             <field name="frontend_security_ids"
-                   eval="[(4,ref('tt_base.able_to_login')),
-                         (4, ref('tt_base.able_to_ticketing'))]"/>
+                   eval="[(6,0,[ref('tt_base.able_to_login'),
+                                ref('tt_base.able_to_ticketing_activity'),
+                                ref('tt_base.able_to_ticketing_airline'),
+                                ref('tt_base.able_to_ticketing_event'),
+                                ref('tt_base.able_to_ticketing_hotel'),
+                                ref('tt_base.able_to_ticketing_offline'),
+                                ref('tt_base.able_to_ticketing_ppob'),
+                                ref('tt_base.able_to_ticketing_tour'),
+                                ref('tt_base.able_to_ticketing_train'),
+                                ref('tt_base.able_to_ticketing_visa'),
+                                ref('tt_base.report')])]"
+            />
         </record>
 
         <record id="ho_template_user_tour_manager" model="res.users">
@@ -217,8 +327,18 @@
                          (4, ref('hr.group_hr_user')),
                          (4,ref('tt_base.report'))]"/>
             <field name="frontend_security_ids"
-                   eval="[(4,ref('tt_base.able_to_login')),
-                         (4, ref('tt_base.able_to_ticketing'))]"/>
+                   eval="[(6,0,[ref('tt_base.able_to_login'),
+                                ref('tt_base.able_to_ticketing_activity'),
+                                ref('tt_base.able_to_ticketing_airline'),
+                                ref('tt_base.able_to_ticketing_event'),
+                                ref('tt_base.able_to_ticketing_hotel'),
+                                ref('tt_base.able_to_ticketing_offline'),
+                                ref('tt_base.able_to_ticketing_ppob'),
+                                ref('tt_base.able_to_ticketing_tour'),
+                                ref('tt_base.able_to_ticketing_train'),
+                                ref('tt_base.able_to_ticketing_visa'),
+                                ref('tt_base.report')])]"
+            />
         </record>
 
         <record id="citra_template_user_operator" model="res.users">
@@ -231,22 +351,24 @@
                           (4,ref('tt_base.group_tt_agent_invoice_operator')),
                           (4,ref('tt_base.group_tt_agent_user_operator'))]"/>
             <field name="frontend_security_ids"
-                   eval="[(4,ref('tt_base.able_to_ticketing')),
-                    (4,ref('tt_base.able_to_book')),
-                    (4,ref('tt_base.able_to_issued')),
-                    (4,ref('tt_base.able_to_top_up')),
-                    (4,ref('tt_base.able_to_login')),
-                    (4,ref('tt_base.able_to_ticketing_activity')),
-                    (4,ref('tt_base.able_to_ticketing_airline')),
-                    (4,ref('tt_base.able_to_ticketing_event')),
-                    (4,ref('tt_base.able_to_ticketing_hotel')),
-                    (4,ref('tt_base.able_to_ticketing_offline')),
-                    (4,ref('tt_base.able_to_ticketing_ppob')),
-                    (4,ref('tt_base.able_to_ticketing_tour')),
-                    (4,ref('tt_base.able_to_ticketing_train')),
-                    (4,ref('tt_base.able_to_ticketing_visa')),
-                    (4,ref('tt_base.report'))
-                    ]"/>
+                   eval="[(6,0,[ref('tt_base.able_to_ticketing'),
+                                ref('tt_base.able_to_book'),
+                                ref('tt_base.able_to_issued'),
+                                ref('tt_base.able_to_top_up'),
+                                ref('tt_base.able_to_login'),
+                                ref('tt_base.able_to_psg_cache_1'),
+                                ref('tt_base.able_to_psg_cache_2'),
+                                ref('tt_base.able_to_ticketing_activity'),
+                                ref('tt_base.able_to_ticketing_airline'),
+                                ref('tt_base.able_to_ticketing_event'),
+                                ref('tt_base.able_to_ticketing_hotel'),
+                                ref('tt_base.able_to_ticketing_offline'),
+                                ref('tt_base.able_to_ticketing_ppob'),
+                                ref('tt_base.able_to_ticketing_tour'),
+                                ref('tt_base.able_to_ticketing_train'),
+                                ref('tt_base.able_to_ticketing_visa'),
+                                ref('tt_base.report')])]"
+            />
         </record>
 
         <record id="citra_template_user_supervisor" model="res.users">
@@ -259,24 +381,24 @@
                                             (4,ref('tt_base.group_tt_agent_invoice_supervisor')),
                                             (4,ref('tt_base.group_tt_agent_user_supervisor'))]"/>
             <field name="frontend_security_ids"
-                   eval="[(4,ref('tt_base.able_to_ticketing')),
-                    (4,ref('tt_base.able_to_book')),
-                    (4,ref('tt_base.able_to_issued')),
-                    (4,ref('tt_base.able_to_top_up')),
-                    (4,ref('tt_base.able_to_login')),
-                    (4,ref('tt_base.able_to_psg_cache_1')),
-                    (4,ref('tt_base.able_to_psg_cache_2')),
-                    (4,ref('tt_base.able_to_ticketing_activity')),
-                    (4,ref('tt_base.able_to_ticketing_airline')),
-                    (4,ref('tt_base.able_to_ticketing_event')),
-                    (4,ref('tt_base.able_to_ticketing_hotel')),
-                    (4,ref('tt_base.able_to_ticketing_offline')),
-                    (4,ref('tt_base.able_to_ticketing_ppob')),
-                    (4,ref('tt_base.able_to_ticketing_tour')),
-                    (4,ref('tt_base.able_to_ticketing_train')),
-                    (4,ref('tt_base.able_to_ticketing_visa')),
-                    (4,ref('tt_base.report'))
-                    ]"/>
+                   eval="[(6,0,[ref('tt_base.able_to_ticketing'),
+                                ref('tt_base.able_to_book'),
+                                ref('tt_base.able_to_issued'),
+                                ref('tt_base.able_to_top_up'),
+                                ref('tt_base.able_to_login'),
+                                ref('tt_base.able_to_psg_cache_1'),
+                                ref('tt_base.able_to_psg_cache_2'),
+                                ref('tt_base.able_to_ticketing_activity'),
+                                ref('tt_base.able_to_ticketing_airline'),
+                                ref('tt_base.able_to_ticketing_event'),
+                                ref('tt_base.able_to_ticketing_hotel'),
+                                ref('tt_base.able_to_ticketing_offline'),
+                                ref('tt_base.able_to_ticketing_ppob'),
+                                ref('tt_base.able_to_ticketing_tour'),
+                                ref('tt_base.able_to_ticketing_train'),
+                                ref('tt_base.able_to_ticketing_visa'),
+                                ref('tt_base.report')])]"
+            />
         </record>
 
         <record id="citra_template_user_manager" model="res.users">
@@ -290,24 +412,24 @@
                                             (4,ref('tt_base.group_tt_agent_user_manager')),
                                             (4,ref('tt_base.group_tt_agent_finance_manager'))]"/>
             <field name="frontend_security_ids"
-                   eval="[(4,ref('tt_base.able_to_ticketing')),
-                    (4,ref('tt_base.able_to_book')),
-                    (4,ref('tt_base.able_to_issued')),
-                    (4,ref('tt_base.able_to_top_up')),
-                    (4,ref('tt_base.able_to_login')),
-                    (4,ref('tt_base.able_to_psg_cache_1')),
-                    (4,ref('tt_base.able_to_psg_cache_2')),
-                    (4,ref('tt_base.able_to_ticketing_activity')),
-                    (4,ref('tt_base.able_to_ticketing_airline')),
-                    (4,ref('tt_base.able_to_ticketing_event')),
-                    (4,ref('tt_base.able_to_ticketing_hotel')),
-                    (4,ref('tt_base.able_to_ticketing_offline')),
-                    (4,ref('tt_base.able_to_ticketing_ppob')),
-                    (4,ref('tt_base.able_to_ticketing_tour')),
-                    (4,ref('tt_base.able_to_ticketing_train')),
-                    (4,ref('tt_base.able_to_ticketing_visa')),
-                    (4,ref('tt_base.report'))
-                    ]"/>
+                   eval="[(6,0,[ref('tt_base.able_to_ticketing'),
+                                ref('tt_base.able_to_book'),
+                                ref('tt_base.able_to_issued'),
+                                ref('tt_base.able_to_top_up'),
+                                ref('tt_base.able_to_login'),
+                                ref('tt_base.able_to_psg_cache_1'),
+                                ref('tt_base.able_to_psg_cache_2'),
+                                ref('tt_base.able_to_ticketing_activity'),
+                                ref('tt_base.able_to_ticketing_airline'),
+                                ref('tt_base.able_to_ticketing_event'),
+                                ref('tt_base.able_to_ticketing_hotel'),
+                                ref('tt_base.able_to_ticketing_offline'),
+                                ref('tt_base.able_to_ticketing_ppob'),
+                                ref('tt_base.able_to_ticketing_tour'),
+                                ref('tt_base.able_to_ticketing_train'),
+                                ref('tt_base.able_to_ticketing_visa'),
+                                ref('tt_base.report')])]"
+            />
         </record>
 
         <record id="citra_template_finance_operator" model="res.users">
@@ -321,24 +443,24 @@
                           (4,ref('tt_base.group_tt_agent_user_operator')),
                           (4,ref('tt_base.group_tt_agent_finance_operator'))]"/>
             <field name="frontend_security_ids"
-                   eval="[(4,ref('tt_base.able_to_ticketing')),
-                    (4,ref('tt_base.able_to_book')),
-                    (4,ref('tt_base.able_to_issued')),
-                    (4,ref('tt_base.able_to_top_up')),
-                    (4,ref('tt_base.able_to_login')),
-                    (4,ref('tt_base.able_to_psg_cache_1')),
-                    (4,ref('tt_base.able_to_psg_cache_2')),
-                    (4,ref('tt_base.able_to_ticketing_activity')),
-                    (4,ref('tt_base.able_to_ticketing_airline')),
-                    (4,ref('tt_base.able_to_ticketing_event')),
-                    (4,ref('tt_base.able_to_ticketing_hotel')),
-                    (4,ref('tt_base.able_to_ticketing_offline')),
-                    (4,ref('tt_base.able_to_ticketing_ppob')),
-                    (4,ref('tt_base.able_to_ticketing_tour')),
-                    (4,ref('tt_base.able_to_ticketing_train')),
-                    (4,ref('tt_base.able_to_ticketing_visa')),
-                    (4,ref('tt_base.report'))
-                    ]"/>
+                   eval="[(6,0,[ref('tt_base.able_to_ticketing'),
+                                ref('tt_base.able_to_book'),
+                                ref('tt_base.able_to_issued'),
+                                ref('tt_base.able_to_top_up'),
+                                ref('tt_base.able_to_login'),
+                                ref('tt_base.able_to_psg_cache_1'),
+                                ref('tt_base.able_to_psg_cache_2'),
+                                ref('tt_base.able_to_ticketing_activity'),
+                                ref('tt_base.able_to_ticketing_airline'),
+                                ref('tt_base.able_to_ticketing_event'),
+                                ref('tt_base.able_to_ticketing_hotel'),
+                                ref('tt_base.able_to_ticketing_offline'),
+                                ref('tt_base.able_to_ticketing_ppob'),
+                                ref('tt_base.able_to_ticketing_tour'),
+                                ref('tt_base.able_to_ticketing_train'),
+                                ref('tt_base.able_to_ticketing_visa'),
+                                ref('tt_base.report')])]"
+            />
         </record>
 
         <record id="citra_template_finance_supervisor" model="res.users">
@@ -352,24 +474,24 @@
                           (4,ref('tt_base.group_tt_agent_user_operator')),
                           (4,ref('tt_base.group_tt_agent_finance_supervisor'))]"/>
             <field name="frontend_security_ids"
-                   eval="[(4,ref('tt_base.able_to_ticketing')),
-                    (4,ref('tt_base.able_to_book')),
-                    (4,ref('tt_base.able_to_issued')),
-                    (4,ref('tt_base.able_to_top_up')),
-                    (4,ref('tt_base.able_to_login')),
-                    (4,ref('tt_base.able_to_psg_cache_1')),
-                    (4,ref('tt_base.able_to_psg_cache_2')),
-                    (4,ref('tt_base.able_to_ticketing_activity')),
-                    (4,ref('tt_base.able_to_ticketing_airline')),
-                    (4,ref('tt_base.able_to_ticketing_event')),
-                    (4,ref('tt_base.able_to_ticketing_hotel')),
-                    (4,ref('tt_base.able_to_ticketing_offline')),
-                    (4,ref('tt_base.able_to_ticketing_ppob')),
-                    (4,ref('tt_base.able_to_ticketing_tour')),
-                    (4,ref('tt_base.able_to_ticketing_train')),
-                    (4,ref('tt_base.able_to_ticketing_visa')),
-                    (4,ref('tt_base.report'))
-                    ]"/>
+                   eval="[(6,0,[ref('tt_base.able_to_ticketing'),
+                                ref('tt_base.able_to_book'),
+                                ref('tt_base.able_to_issued'),
+                                ref('tt_base.able_to_top_up'),
+                                ref('tt_base.able_to_login'),
+                                ref('tt_base.able_to_psg_cache_1'),
+                                ref('tt_base.able_to_psg_cache_2'),
+                                ref('tt_base.able_to_ticketing_activity'),
+                                ref('tt_base.able_to_ticketing_airline'),
+                                ref('tt_base.able_to_ticketing_event'),
+                                ref('tt_base.able_to_ticketing_hotel'),
+                                ref('tt_base.able_to_ticketing_offline'),
+                                ref('tt_base.able_to_ticketing_ppob'),
+                                ref('tt_base.able_to_ticketing_tour'),
+                                ref('tt_base.able_to_ticketing_train'),
+                                ref('tt_base.able_to_ticketing_visa'),
+                                ref('tt_base.report')])]"
+            />
         </record>
 
         <record id="citra_template_finance_manager" model="res.users">
@@ -383,24 +505,24 @@
                           (4,ref('tt_base.group_tt_agent_user_operator')),
                           (4,ref('tt_base.group_tt_agent_finance_manager'))]"/>
             <field name="frontend_security_ids"
-                   eval="[(4,ref('tt_base.able_to_ticketing')),
-                    (4,ref('tt_base.able_to_book')),
-                    (4,ref('tt_base.able_to_issued')),
-                    (4,ref('tt_base.able_to_top_up')),
-                    (4,ref('tt_base.able_to_login')),
-                    (4,ref('tt_base.able_to_psg_cache_1')),
-                    (4,ref('tt_base.able_to_psg_cache_2')),
-                    (4,ref('tt_base.able_to_ticketing_activity')),
-                    (4,ref('tt_base.able_to_ticketing_airline')),
-                    (4,ref('tt_base.able_to_ticketing_event')),
-                    (4,ref('tt_base.able_to_ticketing_hotel')),
-                    (4,ref('tt_base.able_to_ticketing_offline')),
-                    (4,ref('tt_base.able_to_ticketing_ppob')),
-                    (4,ref('tt_base.able_to_ticketing_tour')),
-                    (4,ref('tt_base.able_to_ticketing_train')),
-                    (4,ref('tt_base.able_to_ticketing_visa')),
-                    (4,ref('tt_base.report'))
-                    ]"/>
+                   eval="[(6,0,[ref('tt_base.able_to_ticketing'),
+                                ref('tt_base.able_to_book'),
+                                ref('tt_base.able_to_issued'),
+                                ref('tt_base.able_to_top_up'),
+                                ref('tt_base.able_to_login'),
+                                ref('tt_base.able_to_psg_cache_1'),
+                                ref('tt_base.able_to_psg_cache_2'),
+                                ref('tt_base.able_to_ticketing_activity'),
+                                ref('tt_base.able_to_ticketing_airline'),
+                                ref('tt_base.able_to_ticketing_event'),
+                                ref('tt_base.able_to_ticketing_hotel'),
+                                ref('tt_base.able_to_ticketing_offline'),
+                                ref('tt_base.able_to_ticketing_ppob'),
+                                ref('tt_base.able_to_ticketing_tour'),
+                                ref('tt_base.able_to_ticketing_train'),
+                                ref('tt_base.able_to_ticketing_visa'),
+                                ref('tt_base.report')])]"
+            />
         </record>
 
         <record id="japro_template_user_operator" model="res.users">
@@ -413,24 +535,24 @@
                                             (4,ref('tt_base.group_tt_agent_invoice_operator')),
                                             (4,ref('tt_base.group_tt_agent_user_operator'))]"/>
             <field name="frontend_security_ids"
-                   eval="[(4,ref('tt_base.able_to_ticketing')),
-                    (4,ref('tt_base.able_to_book')),
-                    (4,ref('tt_base.able_to_issued')),
-                    (4,ref('tt_base.able_to_top_up')),
-                    (4,ref('tt_base.able_to_login')),
-                    (4,ref('tt_base.able_to_psg_cache_1')),
-                    (4,ref('tt_base.able_to_psg_cache_2')),
-                    (4,ref('tt_base.able_to_ticketing_activity')),
-                    (4,ref('tt_base.able_to_ticketing_airline')),
-                    (4,ref('tt_base.able_to_ticketing_event')),
-                    (4,ref('tt_base.able_to_ticketing_hotel')),
-                    (4,ref('tt_base.able_to_ticketing_offline')),
-                    (4,ref('tt_base.able_to_ticketing_ppob')),
-                    (4,ref('tt_base.able_to_ticketing_tour')),
-                    (4,ref('tt_base.able_to_ticketing_train')),
-                    (4,ref('tt_base.able_to_ticketing_visa')),
-                    (4,ref('tt_base.report'))
-                    ]"/>
+                   eval="[(6,0,[ref('tt_base.able_to_ticketing'),
+                                ref('tt_base.able_to_book'),
+                                ref('tt_base.able_to_issued'),
+                                ref('tt_base.able_to_top_up'),
+                                ref('tt_base.able_to_login'),
+                                ref('tt_base.able_to_psg_cache_1'),
+                                ref('tt_base.able_to_psg_cache_2'),
+                                ref('tt_base.able_to_ticketing_activity'),
+                                ref('tt_base.able_to_ticketing_airline'),
+                                ref('tt_base.able_to_ticketing_event'),
+                                ref('tt_base.able_to_ticketing_hotel'),
+                                ref('tt_base.able_to_ticketing_offline'),
+                                ref('tt_base.able_to_ticketing_ppob'),
+                                ref('tt_base.able_to_ticketing_tour'),
+                                ref('tt_base.able_to_ticketing_train'),
+                                ref('tt_base.able_to_ticketing_visa'),
+                                ref('tt_base.report')])]"
+            />
         </record>
 
         <record id="japro_template_user_supervisor" model="res.users">
@@ -443,24 +565,24 @@
                                             (4,ref('tt_base.group_tt_agent_invoice_supervisor')),
                                             (4,ref('tt_base.group_tt_agent_user_supervisor'))]"/>
             <field name="frontend_security_ids"
-                   eval="[(4,ref('tt_base.able_to_ticketing')),
-                    (4,ref('tt_base.able_to_book')),
-                    (4,ref('tt_base.able_to_issued')),
-                    (4,ref('tt_base.able_to_top_up')),
-                    (4,ref('tt_base.able_to_login')),
-                    (4,ref('tt_base.able_to_psg_cache_1')),
-                    (4,ref('tt_base.able_to_psg_cache_2')),
-                    (4,ref('tt_base.able_to_ticketing_activity')),
-                    (4,ref('tt_base.able_to_ticketing_airline')),
-                    (4,ref('tt_base.able_to_ticketing_event')),
-                    (4,ref('tt_base.able_to_ticketing_hotel')),
-                    (4,ref('tt_base.able_to_ticketing_offline')),
-                    (4,ref('tt_base.able_to_ticketing_ppob')),
-                    (4,ref('tt_base.able_to_ticketing_tour')),
-                    (4,ref('tt_base.able_to_ticketing_train')),
-                    (4,ref('tt_base.able_to_ticketing_visa')),
-                    (4,ref('tt_base.report'))
-                    ]"/>
+                   eval="[(6,0,[ref('tt_base.able_to_ticketing'),
+                                ref('tt_base.able_to_book'),
+                                ref('tt_base.able_to_issued'),
+                                ref('tt_base.able_to_top_up'),
+                                ref('tt_base.able_to_login'),
+                                ref('tt_base.able_to_psg_cache_1'),
+                                ref('tt_base.able_to_psg_cache_2'),
+                                ref('tt_base.able_to_ticketing_activity'),
+                                ref('tt_base.able_to_ticketing_airline'),
+                                ref('tt_base.able_to_ticketing_event'),
+                                ref('tt_base.able_to_ticketing_hotel'),
+                                ref('tt_base.able_to_ticketing_offline'),
+                                ref('tt_base.able_to_ticketing_ppob'),
+                                ref('tt_base.able_to_ticketing_tour'),
+                                ref('tt_base.able_to_ticketing_train'),
+                                ref('tt_base.able_to_ticketing_visa'),
+                                ref('tt_base.report')])]"
+            />
         </record>
 
         <record id="japro_template_user_manager" model="res.users">
@@ -474,24 +596,24 @@
                                             (4,ref('tt_base.group_tt_agent_user_manager')),
                                             (4,ref('tt_base.group_tt_agent_finance_manager'))]"/>
             <field name="frontend_security_ids"
-                   eval="[(4,ref('tt_base.able_to_ticketing')),
-                    (4,ref('tt_base.able_to_book')),
-                    (4,ref('tt_base.able_to_issued')),
-                    (4,ref('tt_base.able_to_top_up')),
-                    (4,ref('tt_base.able_to_login')),
-                    (4,ref('tt_base.able_to_psg_cache_1')),
-                    (4,ref('tt_base.able_to_psg_cache_2')),
-                    (4,ref('tt_base.able_to_ticketing_activity')),
-                    (4,ref('tt_base.able_to_ticketing_airline')),
-                    (4,ref('tt_base.able_to_ticketing_event')),
-                    (4,ref('tt_base.able_to_ticketing_hotel')),
-                    (4,ref('tt_base.able_to_ticketing_offline')),
-                    (4,ref('tt_base.able_to_ticketing_ppob')),
-                    (4,ref('tt_base.able_to_ticketing_tour')),
-                    (4,ref('tt_base.able_to_ticketing_train')),
-                    (4,ref('tt_base.able_to_ticketing_visa')),
-                    (4,ref('tt_base.report'))
-                    ]"/>
+                   eval="[(6,0,[ref('tt_base.able_to_ticketing'),
+                                ref('tt_base.able_to_book'),
+                                ref('tt_base.able_to_issued'),
+                                ref('tt_base.able_to_top_up'),
+                                ref('tt_base.able_to_login'),
+                                ref('tt_base.able_to_psg_cache_1'),
+                                ref('tt_base.able_to_psg_cache_2'),
+                                ref('tt_base.able_to_ticketing_activity'),
+                                ref('tt_base.able_to_ticketing_airline'),
+                                ref('tt_base.able_to_ticketing_event'),
+                                ref('tt_base.able_to_ticketing_hotel'),
+                                ref('tt_base.able_to_ticketing_offline'),
+                                ref('tt_base.able_to_ticketing_ppob'),
+                                ref('tt_base.able_to_ticketing_tour'),
+                                ref('tt_base.able_to_ticketing_train'),
+                                ref('tt_base.able_to_ticketing_visa'),
+                                ref('tt_base.report')])]"
+            />
         </record>
 
         <record id="japro_template_finance_operator" model="res.users">
@@ -505,24 +627,24 @@
                           (4,ref('tt_base.group_tt_agent_user_operator')),
                           (4,ref('tt_base.group_tt_agent_finance_operator'))]"/>
             <field name="frontend_security_ids"
-                   eval="[(4,ref('tt_base.able_to_ticketing')),
-                    (4,ref('tt_base.able_to_book')),
-                    (4,ref('tt_base.able_to_issued')),
-                    (4,ref('tt_base.able_to_top_up')),
-                    (4,ref('tt_base.able_to_login')),
-                    (4,ref('tt_base.able_to_psg_cache_1')),
-                    (4,ref('tt_base.able_to_psg_cache_2')),
-                    (4,ref('tt_base.able_to_ticketing_activity')),
-                    (4,ref('tt_base.able_to_ticketing_airline')),
-                    (4,ref('tt_base.able_to_ticketing_event')),
-                    (4,ref('tt_base.able_to_ticketing_hotel')),
-                    (4,ref('tt_base.able_to_ticketing_offline')),
-                    (4,ref('tt_base.able_to_ticketing_ppob')),
-                    (4,ref('tt_base.able_to_ticketing_tour')),
-                    (4,ref('tt_base.able_to_ticketing_train')),
-                    (4,ref('tt_base.able_to_ticketing_visa')),
-                    (4,ref('tt_base.report'))
-                    ]"/>
+                   eval="[(6,0,[ref('tt_base.able_to_ticketing'),
+                                ref('tt_base.able_to_book'),
+                                ref('tt_base.able_to_issued'),
+                                ref('tt_base.able_to_top_up'),
+                                ref('tt_base.able_to_login'),
+                                ref('tt_base.able_to_psg_cache_1'),
+                                ref('tt_base.able_to_psg_cache_2'),
+                                ref('tt_base.able_to_ticketing_activity'),
+                                ref('tt_base.able_to_ticketing_airline'),
+                                ref('tt_base.able_to_ticketing_event'),
+                                ref('tt_base.able_to_ticketing_hotel'),
+                                ref('tt_base.able_to_ticketing_offline'),
+                                ref('tt_base.able_to_ticketing_ppob'),
+                                ref('tt_base.able_to_ticketing_tour'),
+                                ref('tt_base.able_to_ticketing_train'),
+                                ref('tt_base.able_to_ticketing_visa'),
+                                ref('tt_base.report')])]"
+            />
         </record>
 
         <record id="japro_template_finance_supervisor" model="res.users">
@@ -536,24 +658,24 @@
                           (4,ref('tt_base.group_tt_agent_user_operator')),
                           (4,ref('tt_base.group_tt_agent_finance_supervisor'))]"/>
             <field name="frontend_security_ids"
-                   eval="[(4,ref('tt_base.able_to_ticketing')),
-                    (4,ref('tt_base.able_to_book')),
-                    (4,ref('tt_base.able_to_issued')),
-                    (4,ref('tt_base.able_to_top_up')),
-                    (4,ref('tt_base.able_to_login')),
-                    (4,ref('tt_base.able_to_psg_cache_1')),
-                    (4,ref('tt_base.able_to_psg_cache_2')),
-                    (4,ref('tt_base.able_to_ticketing_activity')),
-                    (4,ref('tt_base.able_to_ticketing_airline')),
-                    (4,ref('tt_base.able_to_ticketing_event')),
-                    (4,ref('tt_base.able_to_ticketing_hotel')),
-                    (4,ref('tt_base.able_to_ticketing_offline')),
-                    (4,ref('tt_base.able_to_ticketing_ppob')),
-                    (4,ref('tt_base.able_to_ticketing_tour')),
-                    (4,ref('tt_base.able_to_ticketing_train')),
-                    (4,ref('tt_base.able_to_ticketing_visa')),
-                    (4,ref('tt_base.report'))
-                    ]"/>
+                   eval="[(6,0,[ref('tt_base.able_to_ticketing'),
+                                ref('tt_base.able_to_book'),
+                                ref('tt_base.able_to_issued'),
+                                ref('tt_base.able_to_top_up'),
+                                ref('tt_base.able_to_login'),
+                                ref('tt_base.able_to_psg_cache_1'),
+                                ref('tt_base.able_to_psg_cache_2'),
+                                ref('tt_base.able_to_ticketing_activity'),
+                                ref('tt_base.able_to_ticketing_airline'),
+                                ref('tt_base.able_to_ticketing_event'),
+                                ref('tt_base.able_to_ticketing_hotel'),
+                                ref('tt_base.able_to_ticketing_offline'),
+                                ref('tt_base.able_to_ticketing_ppob'),
+                                ref('tt_base.able_to_ticketing_tour'),
+                                ref('tt_base.able_to_ticketing_train'),
+                                ref('tt_base.able_to_ticketing_visa'),
+                                ref('tt_base.report')])]"
+            />
         </record>
 
         <record id="japro_template_finance_manager" model="res.users">
@@ -567,24 +689,24 @@
                           (4,ref('tt_base.group_tt_agent_user_operator')),
                           (4,ref('tt_base.group_tt_agent_finance_manager'))]"/>
             <field name="frontend_security_ids"
-                   eval="[(4,ref('tt_base.able_to_ticketing')),
-                    (4,ref('tt_base.able_to_book')),
-                    (4,ref('tt_base.able_to_issued')),
-                    (4,ref('tt_base.able_to_top_up')),
-                    (4,ref('tt_base.able_to_login')),
-                    (4,ref('tt_base.able_to_psg_cache_1')),
-                    (4,ref('tt_base.able_to_psg_cache_2')),
-                    (4,ref('tt_base.able_to_ticketing_activity')),
-                    (4,ref('tt_base.able_to_ticketing_airline')),
-                    (4,ref('tt_base.able_to_ticketing_event')),
-                    (4,ref('tt_base.able_to_ticketing_hotel')),
-                    (4,ref('tt_base.able_to_ticketing_offline')),
-                    (4,ref('tt_base.able_to_ticketing_ppob')),
-                    (4,ref('tt_base.able_to_ticketing_tour')),
-                    (4,ref('tt_base.able_to_ticketing_train')),
-                    (4,ref('tt_base.able_to_ticketing_visa')),
-                    (4,ref('tt_base.report'))
-                    ]"/>
+                   eval="[(6,0,[ref('tt_base.able_to_ticketing'),
+                                ref('tt_base.able_to_book'),
+                                ref('tt_base.able_to_issued'),
+                                ref('tt_base.able_to_top_up'),
+                                ref('tt_base.able_to_login'),
+                                ref('tt_base.able_to_psg_cache_1'),
+                                ref('tt_base.able_to_psg_cache_2'),
+                                ref('tt_base.able_to_ticketing_activity'),
+                                ref('tt_base.able_to_ticketing_airline'),
+                                ref('tt_base.able_to_ticketing_event'),
+                                ref('tt_base.able_to_ticketing_hotel'),
+                                ref('tt_base.able_to_ticketing_offline'),
+                                ref('tt_base.able_to_ticketing_ppob'),
+                                ref('tt_base.able_to_ticketing_tour'),
+                                ref('tt_base.able_to_ticketing_train'),
+                                ref('tt_base.able_to_ticketing_visa'),
+                                ref('tt_base.report')])]"
+            />
         </record>
 
         <record id="btbo_template_user_operator" model="res.users">
@@ -597,10 +719,10 @@
                                             (4,ref('tt_base.group_tt_agent_invoice_operator')),
                                                (4,ref('tt_base.group_tt_agent_user_operator'))]"/>
             <field name="frontend_security_ids"
-                   eval="[(4,ref('tt_base.able_to_top_up')),
-                    (4,ref('tt_base.able_to_login')),
-                    (4,ref('tt_base.report'))
-                    ]"/>
+                   eval="[(6,0,[ref('tt_base.able_to_top_up'),
+                                ref('tt_base.able_to_login'),
+                                ref('tt_base.report')])]"
+            />
         </record>
 
         <record id="btbo_template_user_supervisor" model="res.users">
@@ -613,10 +735,10 @@
                                             (4,ref('tt_base.group_tt_agent_invoice_supervisor')),
                                             (4,ref('tt_base.group_tt_agent_user_supervisor'))]"/>
             <field name="frontend_security_ids"
-                   eval="[(4,ref('tt_base.able_to_top_up')),
-                    (4,ref('tt_base.able_to_login')),
-                    (4,ref('tt_base.report'))
-                    ]"/>
+                   eval="[(6,0,[ref('tt_base.able_to_top_up'),
+                                ref('tt_base.able_to_login'),
+                                ref('tt_base.report')])]"
+            />
         </record>
 
         <record id="btbo_template_user_manager" model="res.users">
@@ -630,10 +752,10 @@
                                             (4,ref('tt_base.group_tt_agent_user_manager')),
                                             (4,ref('tt_base.group_tt_agent_finance_manager'))]"/>
             <field name="frontend_security_ids"
-                   eval="[(4,ref('tt_base.able_to_top_up')),
-                    (4,ref('tt_base.able_to_login')),
-                    (4,ref('tt_base.report'))
-                    ]"/>
+                   eval="[(6,0,[ref('tt_base.able_to_top_up'),
+                                ref('tt_base.able_to_login'),
+                                ref('tt_base.report')])]"
+            />
         </record>
 
         <record id="btbo_template_user_api" model="res.users">
@@ -655,7 +777,11 @@
                                             (4,ref('tt_base.group_tt_agent_invoice_operator')),
                                                (4,ref('tt_base.group_tt_agent_user_operator'))]"/>
             <field name="frontend_security_ids"
-                   eval="[(6,0,[ref('tt_base.able_to_top_up'),ref('tt_base.able_to_login'),ref('tt_base.able_to_use_pnr_quota'),ref('tt_base.report')])]"/>
+                   eval="[(6,0,[ref('tt_base.able_to_top_up'),
+                                ref('tt_base.able_to_login'),
+                                ref('tt_base.able_to_use_pnr_quota'),
+                                ref('tt_base.report')])]"
+            />
         </record>
 
         <record id="btbo2_template_user_supervisor" model="res.users">
@@ -668,11 +794,11 @@
                                             (4,ref('tt_base.group_tt_agent_invoice_supervisor')),
                                             (4,ref('tt_base.group_tt_agent_user_supervisor'))]"/>
             <field name="frontend_security_ids"
-                   eval="[(4,ref('tt_base.able_to_top_up')),
-                    (4,ref('tt_base.able_to_login')),
-                    (4,ref('tt_base.able_to_use_pnr_quota')),
-                    (4,ref('tt_base.report'))
-                    ]"/>
+                   eval="[(6,0,[ref('tt_base.able_to_top_up'),
+                                ref('tt_base.able_to_login'),
+                                ref('tt_base.able_to_use_pnr_quota'),
+                                ref('tt_base.report')])]"
+            />
         </record>
 
         <record id="btbo2_template_user_manager" model="res.users">
@@ -686,11 +812,11 @@
                                             (4,ref('tt_base.group_tt_agent_user_manager')),
                                             (4,ref('tt_base.group_tt_agent_finance_manager'))]"/>
             <field name="frontend_security_ids"
-                   eval="[(4,ref('tt_base.able_to_top_up')),
-                    (4,ref('tt_base.able_to_login')),
-                    (4,ref('tt_base.able_to_use_pnr_quota')),
-                    (4,ref('tt_base.report'))
-                    ]"/>
+                   eval="[(6,0,[ref('tt_base.able_to_top_up'),
+                                ref('tt_base.able_to_login'),
+                                ref('tt_base.able_to_use_pnr_quota'),
+                                ref('tt_base.report')])]"
+            />
         </record>
 
         <record id="btbo2_template_user_api" model="res.users">
@@ -712,24 +838,24 @@
                                             (4,ref('tt_base.group_tt_agent_invoice_operator')),
                                             (4,ref('tt_base.group_tt_agent_user_operator'))]"/>
             <field name="frontend_security_ids"
-                   eval="[(4,ref('tt_base.able_to_ticketing')),
-                    (4,ref('tt_base.able_to_book')),
-                    (4,ref('tt_base.able_to_issued')),
-                    (4,ref('tt_base.able_to_top_up')),
-                    (4,ref('tt_base.able_to_login')),
-                    (4,ref('tt_base.able_to_psg_cache_1')),
-                    (4,ref('tt_base.able_to_psg_cache_2')),
-                    (4,ref('tt_base.able_to_ticketing_activity')),
-                    (4,ref('tt_base.able_to_ticketing_airline')),
-                    (4,ref('tt_base.able_to_ticketing_event')),
-                    (4,ref('tt_base.able_to_ticketing_hotel')),
-                    (4,ref('tt_base.able_to_ticketing_offline')),
-                    (4,ref('tt_base.able_to_ticketing_ppob')),
-                    (4,ref('tt_base.able_to_ticketing_tour')),
-                    (4,ref('tt_base.able_to_ticketing_train')),
-                    (4,ref('tt_base.able_to_ticketing_visa')),
-                    (4,ref('tt_base.report'))
-                    ]"/>
+                   eval="[(6,0,[ref('tt_base.able_to_ticketing'),
+                                ref('tt_base.able_to_book'),
+                                ref('tt_base.able_to_issued'),
+                                ref('tt_base.able_to_top_up'),
+                                ref('tt_base.able_to_login'),
+                                ref('tt_base.able_to_psg_cache_1'),
+                                ref('tt_base.able_to_psg_cache_2'),
+                                ref('tt_base.able_to_ticketing_activity'),
+                                ref('tt_base.able_to_ticketing_airline'),
+                                ref('tt_base.able_to_ticketing_event'),
+                                ref('tt_base.able_to_ticketing_hotel'),
+                                ref('tt_base.able_to_ticketing_offline'),
+                                ref('tt_base.able_to_ticketing_ppob'),
+                                ref('tt_base.able_to_ticketing_tour'),
+                                ref('tt_base.able_to_ticketing_train'),
+                                ref('tt_base.able_to_ticketing_visa'),
+                                ref('tt_base.report')])]"
+            />
         </record>
 
         <record id="btbr_template_user_supervisor" model="res.users">
@@ -742,24 +868,24 @@
                                             (4,ref('tt_base.group_tt_agent_invoice_supervisor')),
                                             (4,ref('tt_base.group_tt_agent_user_supervisor'))]"/>
             <field name="frontend_security_ids"
-                   eval="[(4,ref('tt_base.able_to_ticketing')),
-                    (4,ref('tt_base.able_to_book')),
-                    (4,ref('tt_base.able_to_issued')),
-                    (4,ref('tt_base.able_to_top_up')),
-                    (4,ref('tt_base.able_to_login')),
-                    (4,ref('tt_base.able_to_psg_cache_1')),
-                    (4,ref('tt_base.able_to_psg_cache_2')),
-                    (4,ref('tt_base.able_to_ticketing_activity')),
-                    (4,ref('tt_base.able_to_ticketing_airline')),
-                    (4,ref('tt_base.able_to_ticketing_event')),
-                    (4,ref('tt_base.able_to_ticketing_hotel')),
-                    (4,ref('tt_base.able_to_ticketing_offline')),
-                    (4,ref('tt_base.able_to_ticketing_ppob')),
-                    (4,ref('tt_base.able_to_ticketing_tour')),
-                    (4,ref('tt_base.able_to_ticketing_train')),
-                    (4,ref('tt_base.able_to_ticketing_visa')),
-                    (4,ref('tt_base.report'))
-                    ]"/>
+                   eval="[(6,0,[ref('tt_base.able_to_ticketing'),
+                                ref('tt_base.able_to_book'),
+                                ref('tt_base.able_to_issued'),
+                                ref('tt_base.able_to_top_up'),
+                                ref('tt_base.able_to_login'),
+                                ref('tt_base.able_to_psg_cache_1'),
+                                ref('tt_base.able_to_psg_cache_2'),
+                                ref('tt_base.able_to_ticketing_activity'),
+                                ref('tt_base.able_to_ticketing_airline'),
+                                ref('tt_base.able_to_ticketing_event'),
+                                ref('tt_base.able_to_ticketing_hotel'),
+                                ref('tt_base.able_to_ticketing_offline'),
+                                ref('tt_base.able_to_ticketing_ppob'),
+                                ref('tt_base.able_to_ticketing_tour'),
+                                ref('tt_base.able_to_ticketing_train'),
+                                ref('tt_base.able_to_ticketing_visa'),
+                                ref('tt_base.report')])]"
+            />
         </record>
 
         <record id="btbr_template_user_manager" model="res.users">
@@ -773,24 +899,24 @@
                                             (4,ref('tt_base.group_tt_agent_user_manager')),
                                             (4,ref('tt_base.group_tt_agent_finance_manager'))]"/>
             <field name="frontend_security_ids"
-                   eval="[(4,ref('tt_base.able_to_ticketing')),
-                    (4,ref('tt_base.able_to_book')),
-                    (4,ref('tt_base.able_to_issued')),
-                    (4,ref('tt_base.able_to_top_up')),
-                    (4,ref('tt_base.able_to_login')),
-                    (4,ref('tt_base.able_to_psg_cache_1')),
-                    (4,ref('tt_base.able_to_psg_cache_2')),
-                    (4,ref('tt_base.able_to_ticketing_activity')),
-                    (4,ref('tt_base.able_to_ticketing_airline')),
-                    (4,ref('tt_base.able_to_ticketing_event')),
-                    (4,ref('tt_base.able_to_ticketing_hotel')),
-                    (4,ref('tt_base.able_to_ticketing_offline')),
-                    (4,ref('tt_base.able_to_ticketing_ppob')),
-                    (4,ref('tt_base.able_to_ticketing_tour')),
-                    (4,ref('tt_base.able_to_ticketing_train')),
-                    (4,ref('tt_base.able_to_ticketing_visa')),
-                    (4,ref('tt_base.report'))
-                    ]"/>
+                   eval="[(6,0,[ref('tt_base.able_to_ticketing'),
+                                ref('tt_base.able_to_book'),
+                                ref('tt_base.able_to_issued'),
+                                ref('tt_base.able_to_top_up'),
+                                ref('tt_base.able_to_login'),
+                                ref('tt_base.able_to_psg_cache_1'),
+                                ref('tt_base.able_to_psg_cache_2'),
+                                ref('tt_base.able_to_ticketing_activity'),
+                                ref('tt_base.able_to_ticketing_airline'),
+                                ref('tt_base.able_to_ticketing_event'),
+                                ref('tt_base.able_to_ticketing_hotel'),
+                                ref('tt_base.able_to_ticketing_offline'),
+                                ref('tt_base.able_to_ticketing_ppob'),
+                                ref('tt_base.able_to_ticketing_tour'),
+                                ref('tt_base.able_to_ticketing_train'),
+                                ref('tt_base.able_to_ticketing_visa'),
+                                ref('tt_base.report')])]"
+            />
         </record>
 
         <record id="customer_template_user" model="res.users">
@@ -800,22 +926,22 @@
             <field name="groups_id"
                    eval="[(4,ref('tt_base.group_tt_sub_agent_user_operator'))]"/>
             <field name="frontend_security_ids"
-                   eval="[(4,ref('tt_base.able_to_login')),
-                    (4,ref('tt_base.able_to_book')),
-                    (4,ref('tt_base.able_to_issued')),
-                    (4,ref('tt_base.able_to_ticketing')),
-                    (4,ref('tt_base.b2c_limitation')),
-                    (4,ref('tt_base.able_to_ticketing_activity')),
-                    (4,ref('tt_base.able_to_ticketing_airline')),
-                    (4,ref('tt_base.able_to_ticketing_event')),
-                    (4,ref('tt_base.able_to_ticketing_hotel')),
-                    (4,ref('tt_base.able_to_ticketing_offline')),
-                    (4,ref('tt_base.able_to_ticketing_ppob')),
-                    (4,ref('tt_base.able_to_ticketing_tour')),
-                    (4,ref('tt_base.able_to_ticketing_train')),
-                    (4,ref('tt_base.able_to_ticketing_visa')),
-                    (4,ref('tt_base.report'))
-                    ]"/>
+                   eval="[(6,0,[ref('tt_base.able_to_ticketing'),
+                                ref('tt_base.able_to_book'),
+                                ref('tt_base.able_to_issued'),
+                                ref('tt_base.able_to_login'),
+                                ref('tt_base.b2c_limitation'),
+                                ref('tt_base.able_to_ticketing_activity'),
+                                ref('tt_base.able_to_ticketing_airline'),
+                                ref('tt_base.able_to_ticketing_event'),
+                                ref('tt_base.able_to_ticketing_hotel'),
+                                ref('tt_base.able_to_ticketing_offline'),
+                                ref('tt_base.able_to_ticketing_ppob'),
+                                ref('tt_base.able_to_ticketing_tour'),
+                                ref('tt_base.able_to_ticketing_train'),
+                                ref('tt_base.able_to_ticketing_visa'),
+                                ref('tt_base.report')])]"
+            />
         </record>
 
     </data>
