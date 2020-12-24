@@ -28,9 +28,9 @@ class TtProviderTour(models.Model):
     balance_due = fields.Float('Balance Due')
     total_price = fields.Float('Total Price', readonly=True, default=0)
     tour_id = fields.Many2one('tt.master.tour', 'Tour')
-    departure_date = fields.Datetime('Departure Date')
-    return_date = fields.Datetime('Return Date')
-    arrival_date = fields.Datetime('Arrival Date')
+    tour_lines_id = fields.Many2one('tt.master.tour.lines', 'Tour Line')
+    departure_date = fields.Date('Departure Date')
+    arrival_date = fields.Date('Arrival Date')
 
     sid_issued = fields.Char('SID Issued')#signature generate sendiri
 

@@ -1,0 +1,80 @@
+<odoo>
+    <record model="ir.ui.view" id="tt_master_tour_lines_view_form">
+        <field name="name">tt.master.tour.lines.view.form</field>
+        <field name="model">tt.master.tour.lines</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <button string="Validate" name="action_validate" type="object" attrs="{'invisible': ['|', ('state', '!=', 'draft'), ('provider_id', '!=', %(tt_reservation_tour.tt_provider_tour_internal)d)]}" groups="tt_base.group_tt_tour_division_operator"/>
+                    <button string="Cancel" name="action_cancel" type="object" attrs="{'invisible': ['|', ('state', 'not in', ['draft','open']), ('provider_id', '!=', %(tt_reservation_tour.tt_provider_tour_internal)d)]}" groups="tt_base.group_tt_tour_division_operator"/>
+                    <button string="Sold Out" name="action_sold" type="object" attrs="{'invisible': ['|', ('state', 'not in', ['draft','open','definite']), ('provider_id', '!=', %(tt_reservation_tour.tt_provider_tour_internal)d)]}" groups="tt_base.group_tt_tour_division_operator"/>
+                    <button string="Close" name="action_closed" type="object" attrs="{'invisible': ['|', ('state', 'in', ['cancel', 'closed']), ('provider_id', '!=', %(tt_reservation_tour.tt_provider_tour_internal)d)]}" groups="tt_base.group_tt_tour_division_operator"/>
+                    <button string="Re-Open" name="action_reopen" type="object" attrs="{'invisible': ['|', ('state', 'not in', ['cancel', 'sold', 'closed']), ('provider_id', '!=', %(tt_reservation_tour.tt_provider_tour_internal)d)]}" groups="tt_base.group_tt_tour_division_operator"/>
+                    <button string="Set to Draft" name="set_to_draft" type="object" attrs="{'invisible': ['|', ('state', '=', 'draft'), ('provider_id', '!=', %(tt_reservation_tour.tt_provider_tour_internal)d)]}" groups="tt_base.group_tt_tour_division_operator"/>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,open,on_going,done,closed"/>
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="toggle_active" type="object"
+                                class="oe_stat_button" icon="fa-archive"
+                                groups="tt_base.group_tt_tour_division_operator,base.user_admin">
+                            <field name="active" widget="boolean_button"
+                                   options='{"terminology": "archive"}'/>
+                        </button>
+                    </div>
+                    <div class="oe_title">
+                        <h1>
+                            <field name="name" default_focus="1" placeholder="Name"/>
+                        </h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="provider_id" invisible="1"/>
+                            <field name="tour_line_code"/>
+                            <field name="departure_date"/>
+                            <field name="arrival_date"/>
+                        </group>
+                        <group>
+                            <field name="master_tour_id" invisible="1"/>
+                            <label for="seat" string="Available Seat"/>
+                            <div>
+                                <field name="seat" class="oe_inline"/> /
+                                <field name="quota" class="oe_inline"/>
+                            </div>
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record model="ir.ui.view" id="tt_master_tour_lines_view_tree" >
+        <field name="name">tt.master.tour.lines.view.tree</field>
+        <field name="model">tt.master.tour.lines</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="sequence" widget="handle"/>
+                <field name="tour_line_code"/>
+                <field name="departure_date"/>
+                <field name="arrival_date"/>
+                <field name="seat"/>
+                <field name="quota"/>
+                <field name="state"/>
+            </tree>
+        </field>
+    </record>
+
+    <record model="ir.actions.act_window" id="tt_master_tour_lines_view_action">
+        <field name="name">Master Tour Lines</field>
+        <field name="res_model">tt.master.tour.lines</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+        <field name="domain">[]</field>
+        <field name="context">
+            {
+            'form_view_ref': 'tt_reservation_tour.tt_master_tour_lines_view_form',
+            'tree_view_ref': 'tt_reservation_tour.tt_master_tour_lines_view_tree',
+            }
+        </field>
+    </record>
+</odoo>
