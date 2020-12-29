@@ -49,6 +49,7 @@ class HotelInformation(models.Model):
 
     zip = fields.Char()
     # district_id = fields.Many2one("res.country.district", string='District')
+    destination_id = fields.Many2one("tt.hotel.destination", string='Destination / Searchable in Auto Complete')
     state_id = fields.Many2one("res.country.state", string='State')
     country_id = fields.Many2one('res.country', string='Country')
     message = fields.Text('Message')

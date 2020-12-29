@@ -1,7 +1,7 @@
 from odoo import models, fields, api
 from datetime import date, datetime, timedelta
 
-
+# TODO remove this part
 class ProviderCode(models.Model):
     _inherit = 'tt.provider.code'
 
@@ -26,7 +26,10 @@ class Hotel(models.Model):
 class HotelFacility(models.Model):
     _inherit = "tt.hotel.facility"
 
-    provider_ids = fields.One2many('tt.provider.code', 'facility_id', 'Provider External Code')
+    def _get_res_model_domain(self):
+        return [('res_model', '=', self._name)]
+
+    provider_ids = fields.One2many('tt.provider.code', 'facility_id', 'Provider External Code', domain=_get_res_model_domain)
 
     def get_provider_code(self, facility_id, provider_id):
         a = self.env['tt.provider.code'].search([('facility_id', '=', facility_id), ('provider_id', '=', provider_id)], limit= 1)
@@ -36,7 +39,21 @@ class HotelFacility(models.Model):
 class HotelType(models.Model):
     _inherit = "tt.hotel.type"
 
-    provider_ids = fields.One2many('tt.provider.code', 'type_id', 'Provider External Code')
+    def _get_res_model_domain(self):
+        return [('res_model', '=', self._name)]
+    provider_ids = fields.One2many('tt.provider.code', 'type_id', 'Provider External Code', domain=_get_res_model_domain)
+
+    def get_provider_code(self, type_id, provider_id):
+        a = self.env['tt.provider.code'].search([('type_id', '=', type_id), ('provider_id', '=', provider_id)], limit= 1)
+        return a.code
+
+
+class HotelDestination(models.Model):
+    _inherit = "tt.hotel.destination"
+
+    def _get_res_model_domain(self):
+        return [('res_model', '=', self._name)]
+    provider_ids = fields.One2many('tt.provider.code', 'type_id', 'Provider External Code', domain=_get_res_model_domain)
 
     def get_provider_code(self, type_id, provider_id):
         a = self.env['tt.provider.code'].search([('type_id', '=', type_id), ('provider_id', '=', provider_id)], limit= 1)
