@@ -78,6 +78,13 @@ class CountryState(models.Model):
     other_name_ids = fields.One2many('tt.destination.alias', 'state_id', 'Dest. Alias', help='Destination Alias or Other Name')
     address_detail_ids = fields.One2many('address.detail', 'state_id', string='Addresses')
 
+    def find_state_by_name(self, str_name, limit=1):
+        str_name = str_name.rstrip()
+        found = self.search([('name', '=ilike', str_name)], limit=limit)
+        if len(found) < limit:
+            for rec in self.env['tt.destination.alias'].search([('name', 'ilike', str_name),('state_id','!=',False)], limit=limit-len(found)):
+                found += rec.country_id
+        return found
 
 class CountryCity(models.Model):
     _inherit = 'res.city'

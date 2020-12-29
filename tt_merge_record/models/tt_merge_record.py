@@ -32,17 +32,18 @@ class TtTemporaryRecord(models.Model):
 
     @api.multi
     def action_merge(self):
-        for obj in self.get_obj():
-            # Todo Check apakah obj yg di self = obj[1] di list tsb
-            model_name, field_name = obj
-            for rec in self.env[model_name].search([(field_name, '=', self.remove_rec_id)]):
-                rec.update({field_name: self.parent_rec_id})
+        objs = self.get_obj()
+        if objs.get(self.rec_model):
+            for obj in objs[self.rec_model]:
+                model_name, field_name = obj
+                for rec in self.env[model_name].search([(field_name, '=', self.remove_rec_id)]):
+                    rec.update({field_name: self.parent_rec_id})
 
-                self.env['tt.record.move.line'].create({
-                    'temp_rec_id': self.id,
-                    'rec_id': rec.id,
-                    'rec_model': model_name,
-                })
+                    self.env['tt.record.move.line'].create({
+                        'temp_rec_id': self.id,
+                        'rec_id': rec.id,
+                        'rec_model': model_name,
+                    })
         parent_obj = self.env[self.rec_model].browse(self.parent_rec_id)
         remove_obj = self.env[self.rec_model].browse(self.remove_rec_id)
         if self.rec_model in ['res.city', 'res.country.state', 'res.country']:
@@ -50,19 +51,22 @@ class TtTemporaryRecord(models.Model):
             # Pindah smua alias name dari object ke target merge nya
             for alias in parent_obj.other_name_ids:
                 if alias.name != parent_obj.name:
-                    if self.rec_model == 'res.city':
-                        alias.city_id = self.parent_rec_id
-                    elif self.rec_model == 'res.country':
-                        alias.country_id = self.parent_rec_id
-                    elif self.rec_model == 'res.country.state':
-                        alias.state_id = self.parent_rec_id
+                    alias.res_id = self.parent_rec_id
+                    alias.res_model = self.rec_model
                 alias_name_list.append(alias.name)
             # Pindah smua nama asli obj yg ingin di remove ke target merge nya
             if remove_obj.name not in alias_name_list:
-                self.env['tt.destination.alias'].create({'name': remove_obj.name, 'city_id': self.parent_rec_id, })
+                a = {'name': remove_obj.name}
+                if self.rec_model == 'res.city':
+                   a.update({'city_id': self.parent_rec_id})
+                elif self.rec_model == 'res.country.state':
+                    a.update({'state_id': self.parent_rec_id})
+                elif self.rec_model == 'res.country':
+                    a.update({'country_id': self.parent_rec_id})
+                self.env['tt.destination.alias'].create(a)
 
             for a in remove_obj.provide_code_ids:
-                a.update({field_name: self.parent_rec_id})
+                a.update({'res_id': self.parent_rec_id})
 
         remove_obj.active = False
         remove_obj.other_name_ids = False
@@ -72,15 +76,14 @@ class TtTemporaryRecord(models.Model):
     def action_revert(self):
         self.env[self.rec_model].browse(self.remove_rec_id).active = True
         for rec in self.env['tt.record.move.line'].search([('temp_rec_id', '=', self.id)]):
-            for obj in self.get_obj():
-                model_name, field_name = obj
-                if model_name == rec.rec_model:
+            objs = self.get_obj()
+            target_obj = self.env[rec.rec_model].browse(rec.rec_id)
+            for obj_list in objs[self.rec_model]:
+                if obj_list[0] == rec.rec_model:
+                    target_obj.update({
+                        obj_list[1]: self.remove_rec_id
+                    })
                     break
-
-            target_obj = self.env[model_name].browse(rec.rec_id)
-            target_obj.update({
-                field_name: self.remove_rec_id
-            })
             rec.sudo().unlink()
         self.state = 'new'
 

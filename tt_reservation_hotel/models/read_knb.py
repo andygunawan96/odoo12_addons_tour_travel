@@ -285,8 +285,8 @@ class HotelInformation(models.Model):
                 })
         return a
 
-    # 1d. Get City Code
-    def v2_get_city_code_knb(self):
+    # 1d. Get City Code save in res.city
+    def v2_get_city_code_knb1(self):
         workbook = xlrd.open_workbook('/home/rodex-it-05/Downloads/RODE_city_20200307090456.xls')
         # worksheet = workbook.sheet_by_name('Name of the Sheet')
         worksheet = workbook.sheet_by_index(0)
@@ -329,6 +329,50 @@ class HotelInformation(models.Model):
             else:
                 _logger.info('Code already Exist Code')
             _logger.info('Render Done')
+        return a
+
+    # 1d. Get City Code save in tt.hotel.destination
+    def v2_get_city_code_knb(self):
+        workbook = xlrd.open_workbook('/home/rodex-it-05/Downloads/RODE_city_20200307090456.xls')
+        # worksheet = workbook.sheet_by_name('Name of the Sheet')
+        worksheet = workbook.sheet_by_index(0)
+        # worksheet.nrows
+        # worksheet.ncols
+        a = []
+        provider_id = 383
+        for row in range(1, worksheet.nrows):
+            name = worksheet.cell(row, 0).value
+            code = worksheet.cell(row, 2).value
+            # state_name = worksheet.cell(row, 0).value
+            country_name = worksheet.cell(row, 3).value
+
+            if row % 100 == 0:
+                _logger.info('Saving row number ' + str(row))
+                self.env.cr.commit()
+            _logger.info('Render ' + name + ' Start')
+
+            # Create external ID:
+            old_obj = self.env['tt.provider.code'].search([('res_model', '=', 'tt.hotel.destination'), ('code', '=', code), ('provider_id', '=', provider_id)])
+            if not old_obj:
+                new_obj = self.env['tt.hotel.destination'].create({
+                    'name': name,
+                    'city_str': name,
+                    'state_str': '',
+                    'country_str': country_name,
+                })
+                new_obj.fill_obj_by_str()
+                self.env['tt.provider.code'].create({
+                    'res_model': 'tt.hotel.destination',
+                    'res_id': new_obj.id,
+                    'name': name,
+                    'code': code,
+                    'provider_id': provider_id,
+                })
+                new_obj.in_active_this_record_if_similar()
+                # _logger.info('Create New Code')
+            else:
+                _logger.info('Code already Exist Code in {} with id {}'.format(old_obj.res_model, str(old_obj.res_id)))
+        _logger.info('Render Done')
         return a
 
     # 1e. Get Meal Code

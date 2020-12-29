@@ -5,14 +5,15 @@
         <field name="model">tt.reservation.hotel</field>
         <field name="arch" type="xml">
             <search string="Search Hotel Reservation">
-                <field name="name" string="Hotel"/>
+                <field name="name"/>
+                <field name="pnr"/>
+                <field name="hotel_name"/>
                 <field name="provider_name" groups="tt_base.group_tt_tour_travel_operator"/>
-                <field name="contact_name" string="Contact Name"/>
-                <field name="display_mobile" string="Contact Mobile"/>
                 <field name="agent_id" groups="tt_base.group_tt_tour_travel_operator"/>
                 <field name="agent_type_id" groups="tt_base.group_tt_tour_travel_operator"/>
                 <field name="customer_parent_id" groups="tt_base.group_tt_agent_user_operator,tt_base.group_tt_tour_travel_operator"/>
                 <field name="customer_parent_type_id" groups="tt_base.group_tt_agent_user_operator,tt_base.group_tt_tour_travel_operator"/>
+                <field name="contact_id"/>
                 <newline/>
                 <group>
                     <filter string="All" name="all"/>
@@ -26,6 +27,11 @@
                     <filter string="Not Reconciled" name="reconciled" domain="[('reconcile_state','=','not_reconciled')]"/>
                     <filter string="Partial Reconciled" name="reconciled" domain="[('reconcile_state','=','partial')]"/>
                     <filter string="Reconciled" name="reconciled" domain="[('reconcile_state','=','reconciled')]"/>
+                </group>
+                <separator/>
+                <group>
+                    <filter string="Hotel Name" name="group_by_hotel_name" domain="" context="{'group_by':'hotel_name'}"/>
+                    <filter string="City" name="group_by_city" domain="" context="{'group_by':'hotel_city'}"/>
                 </group>
                 <separator/>
                 <filter string="Sale Today" name="sale_today" domain="[('date','&gt;=',time.strftime('%%Y-%%m-%%d'))]"/>

@@ -707,8 +707,6 @@ class TestSearch(models.Model):
             # todo Room Info IDS
             total_rate += float(room_rate['price_total'])
             total_commision += float(room_rate['commission'])
-
-        total_commision = abs(total_commision)
         resv_id.total = total_rate
 
         # Create provider_booking_ids
