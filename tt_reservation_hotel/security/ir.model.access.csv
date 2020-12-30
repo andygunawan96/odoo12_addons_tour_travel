@@ -57,3 +57,4 @@ access_tt_passenger_hotel_for_admin,access_tt_passenger_hotel_for_admin,model_tt
 access_tt_passenger_hotel_for_all,access_tt_passenger_hotel_for_admin,model_tt_reservation_passenger_hotel,,1,1,1,0
 
 access_meal_type_category_all,access_meal_type_category_all,model_tt_meal_category,,1,1,1,0
+access_hotel_destination,access_hotel_destination,model_tt_hotel_destination,,1,1,1,0

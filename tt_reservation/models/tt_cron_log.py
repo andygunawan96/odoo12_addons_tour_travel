@@ -29,6 +29,7 @@ class TtCronLogInhResv(models.Model):
     def cron_auto_reconcile(self,check_unreconciled_reservation=False):
         try:
             error_list = ''
+            ok_provider = []
             yesterday_datetime = datetime.now(pytz.timezone("Asia/Jakarta")) - timedelta(days=1)
             for provider_obj in self.env['tt.provider'].search([('is_reconcile', '=', True)]):
                 wiz_obj = self.env['tt.reconcile.transaction.wizard'].create({
@@ -57,13 +58,7 @@ class TtCronLogInhResv(models.Model):
                                 except Exception as e:
                                     _logger.error('Notification Find Unreconciled Reservation.\n %s' % (traceback.format_exc()))
                             else:
-                                data = {
-                                    'code': 9909,
-                                    'message': 'Reconcile Done, All record Found\n ',
-                                    'provider': provider_obj.name,
-                                }
-                                self.env['tt.api.con'].send_request_to_gateway(
-                                    '%s/notification' % (self.env['tt.api.con'].url), data, 'notification_code')
+                                ok_provider.append(provider_obj.name)
 
                 except Exception as e:
                     error_list += '%s\n%s' % (provider_obj.name,traceback.format_exc())
@@ -71,6 +66,15 @@ class TtCronLogInhResv(models.Model):
 
             if error_list:
                 raise Exception("Some provider error during reconcile")
+
+            if ok_provider:
+                data = {
+                    'code': 9909,
+                    'message': 'Reconcile Done, Provider:\n\n ' + '\n'.join(ok_provider),
+                    'provider': 'Cron Reconcile',
+                }
+                self.env['tt.api.con'].send_request_to_gateway('%s/notification' % (self.env['tt.api.con'].url), data,'notification_code')
+
         except:
             self.create_cron_log_folder()
             self.write_cron_log('cron_auto_reconcile',error_list)

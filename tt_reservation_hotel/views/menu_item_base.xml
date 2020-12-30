@@ -139,6 +139,12 @@
                       sequence="20"
                       action="tt_reservation_hotel.tt_landmark_type_action"/>
 
+        <menuitem id="menu_hotel_destination"
+                  name="Destination"
+                  parent="tt_reservation_hotel.top_tour_travel_hotel"
+                  sequence="75"
+                  action="tt_reservation_hotel.tt_hotel_destination_view_action_rodex"/>
+
         <!--Vendor Record-->
         <menuitem id="menu_hotel_get_vendor_record"
                   parent="tt_reservation_hotel.top_tour_travel_hotel"

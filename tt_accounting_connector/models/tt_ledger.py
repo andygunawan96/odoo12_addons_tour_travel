@@ -13,7 +13,7 @@ class TtLedger(models.Model):
     @api.model
     def create(self, vals):
         ledger = super(TtLedger, self).create(vals)
-        self.env.cr.commit()
+        # self.env.cr.commit()
 
         try:
             ho_name_search = self.env['tt.agent'].sudo().search([('agent_type_id', '=', self.env.ref('tt_base.agent_type_ho').id)], limit=1)

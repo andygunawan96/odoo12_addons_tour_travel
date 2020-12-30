@@ -44,5 +44,9 @@ class TbServiceCharge(models.Model):
         }
 
     def get_total_for_payment(self):
-        self.is_ledger_created = True
+        # 30 dec 2020 joshua di ganti ke fungsi saja karena kalau ledgerny gagal buat tetap True
+        # self.is_ledger_created = True
         return self.total
+
+    def change_ledger_created(self,value):
+        self.is_ledger_created = value

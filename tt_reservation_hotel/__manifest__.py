@@ -44,6 +44,7 @@ TT_RESERVATION_HOTEL
         'views/tt_reservation_hotel_views.xml',
         'views/hotel_provider_views.xml',
         'views/provider_data_sync_views.xml',
+        'views/hotel_destination_views.xml',
         'views/menu_item_base.xml',
     ],
     'demo': [],

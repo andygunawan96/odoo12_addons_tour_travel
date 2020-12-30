@@ -3571,23 +3571,30 @@ class HotelInformation(models.Model):
         # Find prefered City
         idx = 1
         catalog = []
-        for city in self.env['res.city'].search([('active', '=', True)]):
-            # Rename city as File_number // 7an supaya waktu send data kita bisa tau file mana yg hilang klo pakai nama city mesti buka index dulu baru tau klo ada file hilang
-            # Loop sngaja dibuat 2x ini tujuan nya buat bikin daftar isi trus kirim ke GW
-            catalog.append({
-                'index': idx,
-                'city_id': city.id,
-                'city_name': city.name,
-                'country_id': city.country_id and city.country_id.id or False,
-                'country_name': city.country_id and city.country_id.name or False,
-            })
-            idx += 1
-        # API_CN_HOTEL.send_request('send_catalog', json.dumps(catalog))
-        # Test Only: Langsung Write as DB
-        file = open('/var/log/tour_travel/cache_hotel/catalog.txt', 'w')
-        file.write(json.dumps(catalog))
-        file.close()
-
+        last_render = self.env['ir.config_parameter'].sudo().get_param('last.gw.render.idx')
+        if last_render == int(0): #Jika mulai baru
+            for destination in self.env['tt.hotel.destination'].search([('active', '=', True)]):
+                # Rename city as File_number // 7an supaya waktu send data kita bisa tau file mana yg hilang klo pakai nama city mesti buka index dulu baru tau klo ada file hilang
+                # Loop sngaja dibuat 2x ini tujuan nya buat bikin daftar isi trus kirim ke GW
+                city = destination.city_id
+                catalog.append({
+                    'index': idx,
+                    'destination_id': destination.id,
+                    'city_id': city.id,
+                    'city_name': city.name,
+                    'country_id': city.country_id and city.country_id.id or destination.country_id,
+                    'country_name': city.country_id and city.country_id.name or destination.country_id.name,
+                })
+                idx += 1
+            # API_CN_HOTEL.send_request('send_catalog', json.dumps(catalog))
+            # Test Only: Langsung Write as DB
+            file = open('/var/log/tour_travel/cache_hotel/catalog.txt', 'w')
+            file.write(json.dumps(catalog))
+            file.close()
+        else:  #Jika Error atau last blum selesai
+            f2 = open('/var/log/tour_travel/cache_hotel/catalog.txt', 'r')
+            f2 = f2.read()
+            catalog = json.loads(f2)
         for city in catalog:
             content = []
             # Search all Mapped Data from hotel.master
@@ -3606,9 +3613,12 @@ class HotelInformation(models.Model):
                 file.write(json.dumps(content))
                 file.close()
                 _logger.info(msg='Create hotel file ' + str(city['index']) + '. ' + city['city_name'] + ', ' + city['country_name'] + ' Done')
+                # Last Render ID Here:
+                self.env['ir.config_parameter'].sudo().set_param('last.gw.render.idx', city['index'])
             except Exception as e:
                 _logger.error(msg='Create hotel file Error')
                 continue
+        self.env['ir.config_parameter'].sudo().set_param('last.gw.render.idx', 0)
         return True
 
     # 4. Render AutoComplete
@@ -3653,3 +3663,53 @@ class HotelInformation(models.Model):
     def v2_receive_data_from_gateway(self):
         return True
 
+    # Tgl 22 Desember 2020:
+    # Buat fungsi temporary untuk baca all data dari 1 table google lalu simpan ke odoo
+    # target table: meta_location
+    # Kriteria khusus: type="CO => Country, RE => State, CI => City", in_location = Parent_id nya
+    def temp_func(self):
+        query = 'SELECT * FROM meta_location WHERE type = '
+        self.env.cr.execute(query + "'CO' order by id")
+        country_dict = {}
+        for rec in self.env.cr.fetchall():
+            # Find Exist Country using Country Code
+            country_obj = self.env['res.country'].search([('code','=', rec[7])], limit=1)
+            if country_obj:
+                country_dict[str(rec[0])] = [country_obj.name, country_obj.id]
+            else:
+                country_dict[str(rec[0])] = [country_obj.name, country_obj.id]
+
+        state_dict = {}
+        self.env.cr.execute(query + "'RE' order by id")
+        for rec in self.env.cr.fetchall():
+            state_obj = self.env['res.country.state'].create({
+                'name': rec[2],
+                'code': rec[1],
+                'country_id': country_dict[str(rec[4])][1],
+            })
+            state_dict[str(rec[0])] = [state_obj.name, state_obj.id, state_obj.country_id.id]
+
+        self.env.cr.execute(query + "'CI' order by id")
+        for rec in self.env.cr.fetchall():
+            try:
+                if state_dict.get(str(rec[4])):
+                    state_data = state_dict[str(rec[4])]
+                else:
+                    state_data = country_dict[str(rec[4])] # No State for this City
+                self.env['res.city'].create({
+                    'name': rec[2],
+                    'code': rec[1],
+                    'state_id': len(state_data) > 2 and state_data[1] or False,
+                    'country_id': len(state_data) > 2 and state_data[2] or state_data[1],
+                    'latitude': rec[5],
+                    'longitude': rec[6],
+                })
+            except:
+                self.env['res.city'].create({
+                    'name': rec[2],
+                    'code': rec[1],
+                    'state_id': len(state_data) > 2 and state_data[1] or False,
+                    'country_id': len(state_data) > 2 and state_data[2] or state_data[1],
+                    'latitude': rec[5],
+                    'longitude': rec[6],
+                })
