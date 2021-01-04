@@ -1919,6 +1919,7 @@ class TourSyncProductsChildren(models.TransientModel):
                 'provider_type': 'tour',
                 'action': 'sync_products_to_children',
                 'data': tour_data_list,
+                'timeout': len(tour_data_list) / 3
             }
             self.env['tt.api.webhook.data'].notify_subscriber(vals)
         except Exception as e:

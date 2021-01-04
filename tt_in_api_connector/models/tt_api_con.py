@@ -118,7 +118,7 @@ class TtApiCon(models.Model):
         return self.send_request_to_gateway('%s/notification' % self.url, request, 'notification_api')
 
     def send_webhook_to_children(self, request):
-        return self.send_request_to_gateway('%s/content' % self.url, request, 'send_webhook_to_children', timeout=300)
+        return self.send_request_to_gateway('%s/content' % self.url, request, 'send_webhook_to_children', timeout=request.get('timeout', 300))
 
     def send_reconcile_request(self,request):
         return self.send_request_to_gateway('%s/account/%s' % (self.url,request['provider_type']),
