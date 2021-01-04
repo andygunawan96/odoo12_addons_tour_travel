@@ -42,7 +42,7 @@ class TtCronLogInhResv(models.Model):
                 try:
                     recon_obj_list = wiz_obj.send_recon_request_data()
                     for recon_obj in recon_obj_list:
-                        recon_obj.compare_reconcile_data()
+                        recon_obj.compare_reconcile_data(notif_to_telegram=True)
 
                         # Todo: Fungsi Cek apakah masih ada data yg state issued / booked tpi blum ter reconcile
                         if check_unreconciled_reservation:
@@ -51,7 +51,7 @@ class TtCronLogInhResv(models.Model):
                                 try:
                                     data = {
                                         'code': 9909,
-                                        'message': 'Issued in System not issued in Vendor:\n ' + recon_obj.ntc_to_str(need_to_check_dict),
+                                        'message': 'Issued in System not issued in Vendor:\n' + recon_obj.ntc_to_str(need_to_check_dict),
                                         'provider': provider_obj.name,
                                     }
                                     self.env['tt.api.con'].send_request_to_gateway('%s/notification' % (self.env['tt.api.con'].url), data, 'notification_code')
@@ -59,6 +59,7 @@ class TtCronLogInhResv(models.Model):
                                     _logger.error('Notification Find Unreconciled Reservation.\n %s' % (traceback.format_exc()))
                             else:
                                 ok_provider.append(provider_obj.name)
+
 
                 except Exception as e:
                     error_list.append('%s\n%s\n\n' % (provider_obj.name,traceback.format_exc()))
@@ -76,4 +77,4 @@ class TtCronLogInhResv(models.Model):
                 raise Exception("Some provider error during reconcile")
         except:
             self.create_cron_log_folder()
-            self.write_cron_log('cron_auto_reconcile', ','.join(error_list))
+            self.write_cron_log('cron_auto_reconcile', ''.join(error_list))

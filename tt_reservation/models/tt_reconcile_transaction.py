@@ -5,7 +5,10 @@ from io import BytesIO
 import xlsxwriter
 import base64
 import pytz
+import logging,traceback
 from ...tools import tools_excel
+
+_logger = logging.getLogger()
 
 class TtReconcileTransaction(models.Model):
     _inherit = ['tt.history']
@@ -41,8 +44,9 @@ class TtReconcileTransaction(models.Model):
         for rec in self:
             rec.total_lines = len(rec.reconcile_lines_ids)
 
-    def compare_reconcile_data(self):
-        for rec in self.reconcile_lines_ids.filtered(lambda x: x.state == 'not_match'):
+    def compare_reconcile_data(self,ctx=False,notif_to_telegram=False):
+        not_match_str = ''
+        for idx,rec in enumerate(self.reconcile_lines_ids.filtered(lambda x: x.state == 'not_match')):
             found_rec = self.env['tt.provider.%s' % (self.provider_type_id.code)].search([('pnr','=',rec.pnr),
                                                                                  ('total_price','=',abs(rec.total)),
                                                                                 ('reconcile_line_id','=',False)],limit=1)
@@ -56,6 +60,21 @@ class TtReconcileTransaction(models.Model):
                     'reconcile_line_id': rec.id,
                     'reconcile_time': datetime.now()
                 })
+            else:
+                if notif_to_telegram:
+                    not_match_str += "{:03d}. {} Total Price: Rp {:,}\n\n".format(idx+1,rec['pnr'],rec['total'])
+
+        if not_match_str:
+            try:
+                data = {
+                    'code': 9909,
+                    'message': 'Issued in Vendor not found/issued in system:\n%s\n%s' %(self.transaction_date,not_match_str),
+                    'provider': self.provider_id.name,
+                }
+                self.env['tt.api.con'].send_request_to_gateway('%s/notification' % (self.env['tt.api.con'].url), data,
+                                                               'notification_code')
+            except Exception as e:
+                _logger.error('Notification Compare Data Reconcile.\n %s' % (traceback.format_exc()))
 
     def find_unreconciled_reservation(self, start_date=False, end_date=False):
         # TODO: pertimbangkan apakah state booked or etc diperhitungkan juga
@@ -65,8 +84,8 @@ class TtReconcileTransaction(models.Model):
         for rec in self.env['tt.provider.%s' % (self.provider_type_id.code)].search([('reconcile_line_id', '=', False),('state','in',state_list),
                                                                                      ('provider_id','=', self.provider_id.id),
                                                                                      ('issued_date','>=',start_date.replace(hour=0,minute=0,second=0).astimezone(pytz.UTC)),
-                                                                                     ('issued_date','<=',end_date.replace(hour=23,minute=59,second=59).astimezone(pytz.UTC))]):
-            issued_date = str(rec.issued_date)[:10]
+                                                                                     ('issued_date' ,'<=',end_date.replace(hour=23,minute=59,second=59).astimezone(pytz.UTC))]):
+            issued_date = str(rec.issued_date.astimezone(pytz.timezone('Asia/Jakarta')))[:10]
             if not need_to_check.get(issued_date):
                 need_to_check[issued_date] = []
             need_to_check[issued_date].append({
@@ -96,7 +115,6 @@ class TtReconcileTransaction(models.Model):
                 'provider': rec.reconcile_transaction_id.provider_id.name,
             })
         return need_to_check
-
 
     def ntc_to_str(self, need_to_check):
         return_str = ''
