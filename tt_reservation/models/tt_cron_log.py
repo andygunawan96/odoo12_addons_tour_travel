@@ -61,17 +61,8 @@ class TtCronLogInhResv(models.Model):
                                 ok_provider.append(provider_obj.name)
 
                 except Exception as e:
-                    error_list.append('%s\n%s' % (provider_obj.name,traceback.format_exc()))
+                    error_list.append('%s\n%s\n\n' % (provider_obj.name,traceback.format_exc()))
 
-
-            if error_list:
-                # raise Exception("Some provider error during reconcile")
-                data = {
-                    'code': 9909,
-                    'message': 'Some provider error during reconcile,\nProvider:\n' + '\n-'.join(error_list),
-                    'provider': 'Error Cron Reconcile',
-                }
-                self.env['tt.api.con'].send_request_to_gateway('%s/notification' % (self.env['tt.api.con'].url), data, 'notification_code')
 
             if ok_provider:
                 data = {
@@ -81,6 +72,8 @@ class TtCronLogInhResv(models.Model):
                 }
                 self.env['tt.api.con'].send_request_to_gateway('%s/notification' % (self.env['tt.api.con'].url), data,'notification_code')
 
+            if error_list:
+                raise Exception("Some provider error during reconcile")
         except:
             self.create_cron_log_folder()
-            self.write_cron_log('cron_auto_reconcile', ''.join(error_list))
+            self.write_cron_log('cron_auto_reconcile', ','.join(error_list))
