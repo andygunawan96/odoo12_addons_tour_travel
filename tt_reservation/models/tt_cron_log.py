@@ -28,7 +28,7 @@ class TtCronLogInhResv(models.Model):
 
     def cron_auto_reconcile(self,check_unreconciled_reservation=False):
         try:
-            error_list = ''
+            error_list = []
             ok_provider = []
             yesterday_datetime = datetime.now(pytz.timezone("Asia/Jakarta")) - timedelta(days=1)
             for provider_obj in self.env['tt.provider'].search([('is_reconcile', '=', True)]):
@@ -61,20 +61,26 @@ class TtCronLogInhResv(models.Model):
                                 ok_provider.append(provider_obj.name)
 
                 except Exception as e:
-                    error_list += '%s\n%s' % (provider_obj.name,traceback.format_exc())
+                    error_list.append('%s\n%s' % (provider_obj.name,traceback.format_exc()))
 
 
             if error_list:
-                raise Exception("Some provider error during reconcile")
+                # raise Exception("Some provider error during reconcile")
+                data = {
+                    'code': 9909,
+                    'message': 'Some provider error during reconcile,\nProvider:\n' + '\n-'.join(error_list),
+                    'provider': 'Error Cron Reconcile',
+                }
+                self.env['tt.api.con'].send_request_to_gateway('%s/notification' % (self.env['tt.api.con'].url), data, 'notification_code')
 
             if ok_provider:
                 data = {
                     'code': 9909,
-                    'message': 'Reconcile Done, Provider:\n\n ' + '\n'.join(ok_provider),
+                    'message': 'Reconcile Done, Provider:\n' + '\n-'.join(ok_provider),
                     'provider': 'Cron Reconcile',
                 }
                 self.env['tt.api.con'].send_request_to_gateway('%s/notification' % (self.env['tt.api.con'].url), data,'notification_code')
 
         except:
             self.create_cron_log_folder()
-            self.write_cron_log('cron_auto_reconcile',error_list)
+            self.write_cron_log('cron_auto_reconcile', ''.join(error_list))
