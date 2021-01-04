@@ -99,7 +99,7 @@ class TtApiCon(models.Model):
         }
         return self.send_request_to_gateway('%s/notification' % (self.url),
                                             request
-                                            ,'notification_api')
+                                            ,'notification_code')
 
     def send_ban_user_error_notification(self, user_name, reason):
         request = {

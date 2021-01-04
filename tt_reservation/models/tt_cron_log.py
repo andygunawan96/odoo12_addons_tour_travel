@@ -28,7 +28,7 @@ class TtCronLogInhResv(models.Model):
 
     def cron_auto_reconcile(self,check_unreconciled_reservation=False):
         try:
-            error_list = ''
+            error_list = []
             ok_provider = []
             yesterday_datetime = datetime.now(pytz.timezone("Asia/Jakarta")) - timedelta(days=1)
             for provider_obj in self.env['tt.provider'].search([('is_reconcile', '=', True)]):
@@ -42,7 +42,7 @@ class TtCronLogInhResv(models.Model):
                 try:
                     recon_obj_list = wiz_obj.send_recon_request_data()
                     for recon_obj in recon_obj_list:
-                        recon_obj.compare_reconcile_data()
+                        recon_obj.compare_reconcile_data(notif_to_telegram=True)
 
                         # Todo: Fungsi Cek apakah masih ada data yg state issued / booked tpi blum ter reconcile
                         if check_unreconciled_reservation:
@@ -51,7 +51,7 @@ class TtCronLogInhResv(models.Model):
                                 try:
                                     data = {
                                         'code': 9909,
-                                        'message': 'Issued in System not issued in Vendor:\n ' + recon_obj.ntc_to_str(need_to_check_dict),
+                                        'message': 'Issued in System not issued in Vendor:\n' + recon_obj.ntc_to_str(need_to_check_dict),
                                         'provider': provider_obj.name,
                                     }
                                     self.env['tt.api.con'].send_request_to_gateway('%s/notification' % (self.env['tt.api.con'].url), data, 'notification_code')
@@ -60,21 +60,21 @@ class TtCronLogInhResv(models.Model):
                             else:
                                 ok_provider.append(provider_obj.name)
 
+
                 except Exception as e:
-                    error_list += '%s\n%s' % (provider_obj.name,traceback.format_exc())
+                    error_list.append('%s\n%s\n\n' % (provider_obj.name,traceback.format_exc()))
 
-
-            if error_list:
-                raise Exception("Some provider error during reconcile")
 
             if ok_provider:
                 data = {
                     'code': 9909,
-                    'message': 'Reconcile Done, Provider:\n\n ' + '\n'.join(ok_provider),
+                    'message': 'Reconcile Done, Provider:\n' + '\n-'.join(ok_provider),
                     'provider': 'Cron Reconcile',
                 }
                 self.env['tt.api.con'].send_request_to_gateway('%s/notification' % (self.env['tt.api.con'].url), data,'notification_code')
 
+            if error_list:
+                raise Exception("Some provider error during reconcile")
         except:
             self.create_cron_log_folder()
-            self.write_cron_log('cron_auto_reconcile',error_list)
+            self.write_cron_log('cron_auto_reconcile', ''.join(error_list))

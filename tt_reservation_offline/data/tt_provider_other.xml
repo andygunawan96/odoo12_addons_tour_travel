@@ -2,8 +2,8 @@
 <odoo>
     <data noupdate="1">
         <record id="tt_provider_rodextrip_other" model="tt.provider">
-            <field name="name">Rodextrip Other</field>
-            <field name="code">rodextrip_other</field>
+            <field name="name">Other</field>
+            <field name="code">other</field>
             <field name="active" eval="True"/>
             <field name="provider_type_id" ref="tt_provider_type_offline"/>
         </record>

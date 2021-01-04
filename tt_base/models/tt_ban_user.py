@@ -20,7 +20,7 @@ class TtBanUser(models.Model):
         if not user_obj.create_date:
             raise Exception("User not found.")
         current_ban_time = self.search([('user_id','=',user_obj.id)],order='id desc',limit=1)
-        if current_ban_time.create_date:
+        if current_ban_time:
             current_ban_time.write({
                 'end_datetime': datetime.now() + timedelta(minutes=duration_minutes)
             })

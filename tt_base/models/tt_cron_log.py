@@ -92,7 +92,7 @@ class TtCronLog(models.Model):
                     rec.state = 'failed'
 
         except Exception as e:
-            _logger.error(traceback.format_exc(e))
+            _logger.error(traceback.format_exc())
             self.create_cron_log_folder()
             self.write_cron_log('auto-payment quota pnr')
 
