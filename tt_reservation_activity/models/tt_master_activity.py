@@ -2744,11 +2744,13 @@ class ActivitySyncProductsChildren(models.TransientModel):
                     'line_ids': product_type_list
                 })
                 activity_data_list.append(dict_vals)
+
+            gw_timeout = int(len(activity_data_list) / 3) > 60 and int(len(activity_data_list) / 3) or 60
             vals = {
                 'provider_type': 'activity',
                 'action': 'sync_products_to_children',
                 'data': activity_data_list,
-                'timeout': len(activity_data_list) / 3
+                'timeout': gw_timeout
             }
             self.env['tt.api.webhook.data'].notify_subscriber(vals)
         except Exception as e:
