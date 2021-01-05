@@ -73,7 +73,7 @@ class TtRefundWizard(models.TransientModel):
         #tembak parent IVAN
         resv_obj = self.env[self.res_model].search([('name', '=', self.referenced_document)])
         for rec in resv_obj.provider_booking_ids:
-            if 'rodextrip' in rec.provider_id.code:
+            if 'rodextrip' in rec.provider_id.code and not 'rodextrip_other' in rec.provider_id.code:
                 #tembak gateway
                 data = {
                     'notes': self.notes,
