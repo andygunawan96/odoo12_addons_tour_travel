@@ -28,6 +28,7 @@ class TtRefundWizard(models.TransientModel):
 
     referenced_pnr = fields.Char('Ref. PNR',required=True,readonly=True)
     referenced_document = fields.Char('Ref. Document',required=True,readonly=True)
+    referenced_document_external = fields.Char('Ref. Document External',required=True,readonly=True) # btbo2
 
     res_model = fields.Char(
         'Related Reservation Name', index=True, readonly=True)
@@ -102,6 +103,7 @@ class TtRefundWizard(models.TransientModel):
             'res_model': self.res_model,
             'res_id': self.res_id,
             'booking_desc': book_obj.get_aftersales_desc(),
+            'referenced_document_external': self.referenced_document_external,
             'notes': self.notes
         })
         for pax in book_obj.passenger_ids:
