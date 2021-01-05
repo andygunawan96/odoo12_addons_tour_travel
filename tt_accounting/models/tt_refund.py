@@ -361,6 +361,20 @@ class TtRefund(models.Model):
         for rec in self.refund_line_ids:
             rec.set_to_confirm()
 
+    def refund_confirm_api(self, data, ctx):
+        try:
+            refund_obj = self.search([('referenced_document', '=', data['referenced_document_external'])])
+            if refund_obj:
+                self.confirm_refund_from_button()
+                res = ERR.get_no_error()
+            else:
+                res = ERR.get_error(500)
+        except Exception as e:
+            _logger.error(traceback.format_exc())
+            res = ERR.get_error(500, additional_message='refund not found')
+        return res
+
+
     def confirm_refund_from_button(self):
         if self.state != 'draft':
             raise UserError("Cannot Confirm because state is not 'draft'.")
