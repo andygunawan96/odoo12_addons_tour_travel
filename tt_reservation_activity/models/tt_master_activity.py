@@ -1,4 +1,4 @@
-from odoo import api, fields, models
+from odoo import api, fields, models, _
 from odoo.http import request
 from ...tools import util,variables,ERR
 from ...tools.ERR import RequestException
@@ -2700,22 +2700,29 @@ class ActivitySyncProductsChildren(models.TransientModel):
                     for rec3 in rec2.option_ids:
                         item_list = []
                         for rec4 in rec3.items:
-                            new_rec4_price = rec.reprice_currency({
-                                'provider': rec.provider_id.code,
-                                'from_currency': rec4.currency_id.name,
-                                'base_amount': rec4.price
-                            })
+                            if rec4.currency_id and rec4.price:
+                                new_rec4_price = rec.reprice_currency({
+                                    'provider': rec.provider_id.code,
+                                    'from_currency': rec4.currency_id.name,
+                                    'base_amount': rec4.price
+                                })
+                            else:
+                                new_rec4_price = 0
                             item_list.append({
                                 'label': rec4.label,
                                 'value': rec4.value,
                                 'price': new_rec4_price,
                                 'currency_code': new_currency,
                             })
-                        new_rec3_price = rec.reprice_currency({
-                            'provider': rec.provider_id.code,
-                            'from_currency': rec3.currency_id.name,
-                            'base_amount': rec3.price
-                        })
+
+                        if rec3.currency_id and rec3.price:
+                            new_rec3_price = rec.reprice_currency({
+                                'provider': rec.provider_id.code,
+                                'from_currency': rec3.currency_id.name,
+                                'base_amount': rec3.price
+                            })
+                        else:
+                            new_rec3_price = 0
                         option_list.append({
                             'uuid': rec3.uuid,
                             'name': rec3.name,
