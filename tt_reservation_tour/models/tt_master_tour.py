@@ -1628,7 +1628,7 @@ class MasterTour(models.Model):
                     'tipping_driver_infant': rec['tipping_driver_infant'],
                     'down_payment': rec['down_payment'],
                 }
-                tour_obj = self.env['tt.master.tour'].sudo().search([('tour_code', '=', rec['tour_code']), ('provider_id', '=', provider_id[0].id)], limit=1)
+                tour_obj = self.env['tt.master.tour'].sudo().search([('tour_code', '=',  prefix + rec['tour_code']), ('provider_id', '=', provider_id[0].id)], limit=1)
                 if tour_obj:
                     tour_obj = tour_obj[0]
                     tour_obj.sudo().write(vals)
