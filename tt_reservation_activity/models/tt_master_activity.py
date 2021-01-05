@@ -2106,9 +2106,9 @@ class MasterActivity(models.Model):
             raise RequestException(1002)
         provider_id = provider_id[0]
         activity_id = self.env['tt.master.activity'].sudo().search(
-            [('uuid', '=', req['productUuid']), ('provider_id', '=', provider_id.id)], limit=1)
+            [('uuid', '=', provider_id[0].alias + '~' + req['productUuid']), ('provider_id', '=', provider_id.id)], limit=1)
         product_id = activity_id[0].id
-        activity_type_exist = self.env['tt.master.activity.lines'].search([('activity_id', '=', product_id), ('uuid', '=', req['data']['uuid']), '|', ('active', '=', False), ('active', '=', True)], limit=1)
+        activity_type_exist = self.env['tt.master.activity.lines'].search([('activity_id', '=', product_id), ('uuid', '=', provider_id[0].alias + '~' + req['data']['uuid']), '|', ('active', '=', False), ('active', '=', True)], limit=1)
         cancellationPolicies = ''
         if req['data']['cancellationPolicies']:
             for cancel in req['data']['cancellationPolicies']:
@@ -2117,7 +2117,7 @@ class MasterActivity(models.Model):
                     cancel['refundPercentage']) + '% cashback.\n'
         vals = {
             'activity_id': product_id,
-            'uuid': req['data']['uuid'],
+            'uuid': provider_id[0].alias + '~' + req['data']['uuid'],
             'name': req['data']['title'],
             'description': req['data']['description'],
             'durationDays': req['data']['durationDays'],
@@ -2344,9 +2344,9 @@ class MasterActivity(models.Model):
         if not provider_id:
             raise RequestException(1002)
         provider_id = provider_id[0]
-        activity_id = self.env['tt.master.activity'].sudo().search([('uuid', '=', req['productUuid']), ('provider_id', '=', provider_id.id)], limit=1)
+        activity_id = self.env['tt.master.activity'].sudo().search([('uuid', '=', provider_id[0].alias + '~' + req['productUuid']), ('provider_id', '=', provider_id.id)], limit=1)
         activity_id = activity_id[0]
-        product_type_obj = self.env['tt.master.activity.lines'].sudo().search([('uuid', '=', req['productTypeUuid']), ('activity_id', '=', activity_id.id)], limit=1)
+        product_type_obj = self.env['tt.master.activity.lines'].sudo().search([('uuid', '=', provider_id[0].alias + '~' + req['productTypeUuid']), ('activity_id', '=', activity_id.id)], limit=1)
         for rec in product_type_obj:
             rec.sudo().write({
                 'active': False
@@ -2366,7 +2366,7 @@ class MasterActivity(models.Model):
                 currency_obj = self.env['res.currency'].sudo().search([('name', '=', rec['currency_code'])], limit=1)
                 vals = {
                     'name': rec['name'],
-                    'uuid': rec['uuid'],
+                    'uuid': provider_id[0].alias + '~' + rec['uuid'],
                     'latitude': rec['latitude'],
                     'longitude': rec['longitude'],
                     'businessHoursFrom': rec['businessHoursFrom'],
@@ -2390,7 +2390,7 @@ class MasterActivity(models.Model):
                     'safety': rec['safety'],
                     'can_hold_booking': rec['can_hold_booking'],
                 }
-                activity_obj = self.env['tt.master.activity'].sudo().search([('uuid', '=', rec['uuid']), ('provider_id', '=', provider_id[0].id)], limit=1)
+                activity_obj = self.env['tt.master.activity'].sudo().search([('uuid', '=', provider_id[0].alias + '~' + rec['uuid']), ('provider_id', '=', provider_id[0].id)], limit=1)
                 if activity_obj:
                     activity_obj = activity_obj[0]
                     activity_obj.sudo().write(vals)
@@ -2465,7 +2465,7 @@ class MasterActivity(models.Model):
                 for rec2 in rec['line_ids']:
                     line_vals = {
                         'activity_id': activity_obj.id,
-                        'uuid': rec2['uuid'],
+                        'uuid': provider_id[0].alias + '~' + rec2['uuid'],
                         'name': rec2['name'],
                         'description': rec2['description'],
                         'durationDays': rec2['durationDays'],
@@ -2489,7 +2489,7 @@ class MasterActivity(models.Model):
                         'instantConfirmation': rec2['instantConfirmation'],
                         'active': True
                     }
-                    line_obj = self.env['tt.master.activity.lines'].sudo().search([('uuid', '=', rec2['uuid']), ('activity_id', '=', activity_obj.id), '|', ('active', '=', False), ('active', '=', True)], limit=1)
+                    line_obj = self.env['tt.master.activity.lines'].sudo().search([('uuid', '=', provider_id[0].alias + '~' + rec2['uuid']), ('activity_id', '=', activity_obj.id), '|', ('active', '=', False), ('active', '=', True)], limit=1)
                     if line_obj:
                         line_obj = line_obj[0]
                         line_obj.sudo().write(line_vals)
