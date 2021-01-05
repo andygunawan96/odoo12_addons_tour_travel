@@ -1915,10 +1915,13 @@ class TourSyncProductsChildren(models.TransientModel):
                     'other_info_ids': other_info_list,
                 })
                 tour_data_list.append(dict_vals)
+
+            gw_timeout = int(len(tour_data_list) / 3) > 60 and int(len(tour_data_list) / 3) or 60
             vals = {
                 'provider_type': 'tour',
                 'action': 'sync_products_to_children',
                 'data': tour_data_list,
+                'timeout': gw_timeout
             }
             self.env['tt.api.webhook.data'].notify_subscriber(vals)
         except Exception as e:
