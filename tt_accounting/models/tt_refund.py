@@ -404,15 +404,76 @@ class TtRefund(models.Model):
                     'co_agent_id': self.agent_id.id
                 }
                 self.env['tt.email.queue'].create_email_queue(temp_data, temp_context)
+                # jika book_obj provider ada rodextrip kirim
+                resv_obj = self.env[self.res_model].search([('name', '=', self.referenced_document)])
+                for rec in resv_obj.provider_booking_ids:
+                    if 'rodextrip' in rec.provider_id.name:
+                        # tembak gateway
+                        data = {
+                            'referenced_document_external': 'AL.20120301695',
+                            # 'referenced_document_external': rec.pnr2,
+                            'res_model': self.res_model,
+                            'provider': rec.provider_id.code,
+                            'type': 'confirm'
+                        }
+                        self.env['tt.refund.api.con'].send_refund_request(data)
             else:
                 _logger.info('Refund Confirmed email for {} is already created!'.format(self.name))
                 raise Exception('Refund Confirmed email for {} is already created!'.format(self.name))
         except Exception as e:
             _logger.info('Error Create Email Queue')
 
+    def refund_request_sent_to_agent_api(self, data, ctx):
+        try:
+            refund_obj = self.search([('referenced_document', '=', data['reference_document'])])
+            if refund_obj:
+                refund_type_obj = self.env['tt.refund.type'].search([('name', '=', data['refund_type'])], limit=1)
+                for rec in refund_obj:
+                    rec.refund_type_id = refund_type_obj
+                    for idx, refund_data in enumerate(rec.refund_line_ids):
+                        refund_data.commission_fee = data['refund_list'][idx]['commission_fee']
+                        refund_data.charge_fee = data['refund_list'][idx]['charge_fee']
+                self.send_refund_from_button()
+                res = ERR.get_no_error()
+            else:
+                res = ERR.get_error(500)
+        except Exception as e:
+            _logger.error(traceback.format_exc())
+            res = ERR.get_error(500, additional_message='refund not found')
+        return res
+
     def send_refund_from_button(self):
         if self.state != 'confirm':
             raise UserError("Cannot Send because state is not 'confirm'.")
+
+        # klik dari HO tetapi untuk bookingan BTBO2
+        resv_obj = self.env[self.res_model].search([('name', '=', self.referenced_document)])
+        if resv_obj.agent_type_id == self.env.ref('tt_base.agent_type_btbo2'):
+            for credential in self.user_id.credential_ids.webhook_rel_ids:
+                if "webhook/content" in credential.url:
+                    ## check lebih efisien check api ccredential usernya punya webhook visa, atau kalau api user selalu di notify
+                    ## tetapi nanti filterny sendiri ke kirm ato enda
+                    refund_list = []
+                    for rec in self.refund_line_ids:
+                        refund_list.append({
+                            'name': rec.name,
+                            'commission_fee': rec.commission_fee,
+                            'charge_fee': rec.charge_fee
+                        })
+                    data = {
+                        'refund_type': self.refund_type_id.name,
+                        'type': 'send_to_agent_api',
+                        'refund_list': refund_list,
+                        'reference_document': self.referenced_document
+                    }
+                    vals = {
+                        'provider_type': 'offline',
+                        'action': 'refund_request_sent_to_agent_api',
+                        'data': data,
+                        'child_id': self.user_id.id
+                    }
+                    self.env['tt.api.webhook.data'].notify_subscriber(vals)
+                    break
 
         self.write({
             'state': 'sent',
