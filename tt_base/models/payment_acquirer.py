@@ -355,6 +355,10 @@ class PaymentAcquirerNumber(models.Model):
                 payment = {'order_number': payment_acq_number[len(payment_acq_number)-1].number}
                 booking_obj.payment_acquirer_number_id = payment_acq_number[len(payment_acq_number)-1].id
         else:
+            if booking_obj.hold_date < datetime.now() + timedelta(minutes=45):
+                hold_date = booking_obj.hold_date
+            else:
+                hold_date = datetime.now() + timedelta(minutes=45)
             payment = self.env['payment.acquirer.number'].create({
                 'state': 'close',
                 'number': data['order_number'],
@@ -363,6 +367,7 @@ class PaymentAcquirerNumber(models.Model):
                 'amount': data['amount'],
                 'res_model': provider_type,
                 'res_id': booking_obj.id,
+                'time_limit': hold_date
             })
             booking_obj.payment_acquirer_number_id = payment.id
             payment = {'order_number': payment.number}

@@ -127,7 +127,7 @@ class TtCronLog(models.Model):
 
     def cron_expire_payment_acq_number(self):
         try:
-            payment_acq = self.env['payment.acquirer.number'].search([('create_date','<',datetime.now() - timedelta(hours=1)), ('state', '=', 'close')])
+            payment_acq = self.env['payment.acquirer.number'].search([('state', '=', 'close'), '|', ('create_date','<',datetime.now() - timedelta(hours=1)), ('time_limit','<',datetime.now())])
             for rec in payment_acq:
                 rec.state = 'cancel'
         except:
