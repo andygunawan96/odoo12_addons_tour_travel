@@ -432,7 +432,8 @@ class ReservationTour(models.Model):
                 'adult': data.get('adult') and int(data['adult']) or 0,
                 'child': data.get('child') and int(data['child']) or 0,
                 'infant': data.get('infant') and int(data['infant']) or 0,
-                'departure_date': tour_line_data.departure_date, 'arrival_date': tour_line_data.arrival_date,
+                'departure_date': tour_line_data.departure_date,
+                'arrival_date': tour_line_data.arrival_date,
                 'provider_name': provider_id.name,
                 'transport_type': 'tour',
             })
