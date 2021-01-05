@@ -600,6 +600,9 @@ class ReservationTour(models.Model):
                     'visa': book_obj.tour_id.visa,
                     'flight': book_obj.tour_id.flight,
                     'image_urls': image_urls,
+                    'flight_segments': book_obj.tour_id.get_flight_segment(),
+                    'itinerary_ids': book_obj.tour_id.get_itineraries(),
+                    'other_infos': book_obj.tour_id.get_tour_other_info()
                 }
 
                 passengers = []
