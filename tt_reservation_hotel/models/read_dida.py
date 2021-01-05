@@ -29,6 +29,7 @@ class HotelInformation(models.Model):
     # Todo: Perlu catat source data ne
     # Todo: Prepare Cron tiap provider
     def v2_collect_by_system_dida(self):
+        base_cache_directory = self.env['ir.config_parameter'].sudo().get_param('hotel.cache.directory')
         api_context = {
             'co_uid': self.env.user.id
         }
@@ -55,7 +56,7 @@ class HotelInformation(models.Model):
                     for gw_rec in a[rec + 's']:
                         need_to_add_list.append([gw_rec['ID'], gw_rec.get('Name') or gw_rec.get('Description_EN')])
 
-                with open('/var/log/cache_hotel/dida_pool/master/' + rec + '.csv', 'w') as csvFile:
+                with open(base_cache_directory + 'dida_pool/00_master/' + rec + '.csv', 'w') as csvFile:
                     writer = csv.writer(csvFile)
                     writer.writerows(need_to_add_list)
                 csvFile.close()
@@ -64,7 +65,7 @@ class HotelInformation(models.Model):
                 continue
 
         # Get City by country Start
-        with open('/var/log/cache_hotel/dida_pool/master/Country.csv', 'r') as f:
+        with open(base_cache_directory + 'dida_pool/00_master/Country.csv', 'r') as f:
             country_ids = csv.reader(f)
             need_to_add_list = []
             for rec in country_ids:
@@ -87,7 +88,7 @@ class HotelInformation(models.Model):
                     _logger.info("No City for: " + rec[1] + ".")
                     continue
         f.close()
-        with open('/var/log/cache_hotel/dida_pool/master/City.csv', 'w') as csvFile:
+        with open(base_cache_directory + 'dida_pool/00_master/City.csv', 'w') as csvFile:
             writer = csv.writer(csvFile)
             writer.writerows(need_to_add_list)
         csvFile.close()
@@ -101,7 +102,8 @@ class HotelInformation(models.Model):
     # Notes: Mesti bantuan human untuk upload file location serta formating
     # Notes: Bagian ini bakal sering berubah
     def v2_collect_by_human_dida(self):
-        with open('/var/log/cache_hotel/dida_pool/master/AvailHotelSummary_V0.csv', 'r') as f:
+        base_cache_directory = self.env['ir.config_parameter'].sudo().get_param('hotel.cache.directory')
+        with open(base_cache_directory + 'dida_pool/00_master/AvailHotelSummary_V0.csv', 'r') as f:
             hotel_ids = csv.reader(f, delimiter="|")
 
             hotel_fmt_list = {}
@@ -140,7 +142,7 @@ class HotelInformation(models.Model):
 
             for country in hotel_fmt_list.keys():
                 txt_country = country.replace('/', '-').replace('(and vicinity)', '').replace(' (', '-').replace(')', '')
-                filename = "/var/log/cache_hotel/dida_pool/" + txt_country
+                filename = base_cache_directory + "dida_pool/" + txt_country
                 if not os.path.exists(filename):
                     os.mkdir(filename)
                 for city in hotel_fmt_list[country].keys():
@@ -157,7 +159,8 @@ class HotelInformation(models.Model):
 
     # 1c. Get Country Code
     def v2_get_country_code_dida(self):
-        with open('/var/log/cache_hotel/dida_pool/master/Country.csv', 'r') as f:
+        base_cache_directory = self.env['ir.config_parameter'].sudo().get_param('hotel.cache.directory')
+        with open(base_cache_directory + 'dida_pool/00_master/Country.csv', 'r') as f:
             country_ids = csv.reader(f)
             for rec in country_ids:
                 _logger.info("=== Processing (" + rec[1] + ") ===")
@@ -182,7 +185,8 @@ class HotelInformation(models.Model):
 
     # 1d. Get City Code
     def v2_get_city_code_dida(self):
-        with open('/var/log/cache_hotel/dida_pool/master/City.csv', 'r') as f:
+        base_cache_directory = self.env['ir.config_parameter'].sudo().get_param('hotel.cache.directory')
+        with open(base_cache_directory + 'dida_pool/00_master/City.csv', 'r') as f:
             city_ids = csv.reader(f)
             for rec in city_ids:
                 code = rec[0] #6051357
@@ -223,7 +227,8 @@ class HotelInformation(models.Model):
     # 1e. Get Meal Code
     def v2_get_meal_code_dida(self):
         model = 'tt.meal.type'
-        with open('/var/log/cache_hotel/dida_pool/master/MealType.csv', 'r') as f:
+        base_cache_directory = self.env['ir.config_parameter'].sudo().get_param('hotel.cache.directory')
+        with open(base_cache_directory + 'dida_pool/00_master/MealType.csv', 'r') as f:
             meal_type_ids = csv.reader(f)
             for rec in meal_type_ids:
                 code = rec[0]
@@ -249,7 +254,8 @@ class HotelInformation(models.Model):
     # 1f. Get Room Type Code
     def v2_get_room_code_dida(self):
         model = 'tt.room.type'
-        with open('/var/log/cache_hotel/dida_pool/master/BedType.csv', 'r') as f:
+        base_cache_directory = self.env['ir.config_parameter'].sudo().get_param('hotel.cache.directory')
+        with open(base_cache_directory + 'dida_pool/00_master/BedType.csv', 'r') as f:
             bed_type_ids = csv.reader(f)
             for rec in bed_type_ids:
                 code = rec[0]
