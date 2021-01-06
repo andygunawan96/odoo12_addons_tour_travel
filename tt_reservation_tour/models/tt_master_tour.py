@@ -808,38 +808,34 @@ class MasterTour(models.Model):
                             'url': img.url and img.url or '',
                             'filename': img.filename and img.filename or '',
                         })
-                    if rec.tour_type == 'open':
-                        tour_line_qualify = True
-                        tour_line_list = []
-                    else:
-                        tour_line_qualify = False
-                        tour_line_list = []
-                        for rec2 in rec.tour_line_ids:
-                            if rec2.active:
-                                tour_line_list.append({
-                                    'tour_line_code': rec2.tour_line_code,
-                                    'departure_date': rec2.departure_date.strftime("%Y-%m-%d"),
-                                    'arrival_date': rec2.arrival_date.strftime("%Y-%m-%d"),
-                                    'seat': rec2.seat,
-                                    'quota': rec2.quota,
-                                    'state': rec2.state,
-                                    'state_str': dict(rec2._fields['state'].selection).get(rec2.state),
-                                    'sequence': rec2.sequence
-                                })
-                                if rec2.departure_date:
-                                    str_dept_date = rec2.departure_date.strftime("%Y-%m-%d")
-                                    if search_request['departure_month'] != '00':
-                                        if search_request['departure_year'] != '0000':
-                                            if str_dept_date[:7] == search_request['departure_date']:
-                                                tour_line_qualify = True
-                                        else:
-                                            if str_dept_date[5:7] == search_request['departure_month']:
-                                                tour_line_qualify = True
-                                    elif search_request['departure_year'] != '0000':
-                                        if str_dept_date[:4] == search_request['departure_year']:
+                    tour_line_qualify = False
+                    tour_line_list = []
+                    for rec2 in rec.tour_line_ids:
+                        if rec2.active:
+                            tour_line_list.append({
+                                'tour_line_code': rec2.tour_line_code,
+                                'departure_date': rec2.departure_date.strftime("%Y-%m-%d"),
+                                'arrival_date': rec2.arrival_date.strftime("%Y-%m-%d"),
+                                'seat': rec2.seat,
+                                'quota': rec2.quota,
+                                'state': rec2.state,
+                                'state_str': dict(rec2._fields['state'].selection).get(rec2.state),
+                                'sequence': rec2.sequence
+                            })
+                            if rec2.departure_date:
+                                str_dept_date = rec2.departure_date.strftime("%Y-%m-%d")
+                                if search_request['departure_month'] != '00':
+                                    if search_request['departure_year'] != '0000':
+                                        if str_dept_date[:7] == search_request['departure_date']:
                                             tour_line_qualify = True
                                     else:
+                                        if str_dept_date[5:7] == search_request['departure_month']:
+                                            tour_line_qualify = True
+                                elif search_request['departure_year'] != '0000':
+                                    if str_dept_date[:4] == search_request['departure_year']:
                                         tour_line_qualify = True
+                                else:
+                                    tour_line_qualify = True
                     if tour_line_qualify:
                         result.append({
                             'name': rec.name,
@@ -1823,8 +1819,8 @@ class TourSyncProductsChildren(models.TransientModel):
                 for rec2 in rec.tour_line_ids:
                     tour_line_list.append({
                         'tour_line_code': rec2.tour_line_code,
-                        'departure_date': rec2.departure_date,
-                        'arrival_date': rec2.arrival_date,
+                        'departure_date': rec2.departure_date and rec2.departure_date.strftime("%Y-%m-%d") or False,
+                        'arrival_date': rec2.arrival_date and rec2.arrival_date.strftime("%Y-%m-%d") or False,
                         'seat': rec2.seat,
                         'quota': rec2.quota,
                         'state': rec2.state,
@@ -1897,7 +1893,6 @@ class TourSyncProductsChildren(models.TransientModel):
                     itinerary_list.append({
                         'name': rec2.name,
                         'day': rec2.day,
-                        'date': rec2.date and rec2.date.strftime("%Y-%m-%d") or False,
                         'item_ids': item_list,
                     })
 
