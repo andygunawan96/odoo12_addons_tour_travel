@@ -57,7 +57,7 @@
             <form create="false">
                 <header>
                     <button name="confirm_refund_from_button" string="Confirm" type="object" groups="tt_base.group_tt_agent_user_operator" attrs="{'invisible':[('state','!=', 'draft')]}"/>
-                    <button name="send_refund_from_button" string="Send to Agent" type="object" groups="tt_base.group_tt_tour_travel_operator" attrs="{'invisible':[('state','!=', 'confirm')]}"/>
+                    <button name="send_refund_from_button_backend" string="Send to Agent" type="object" groups="tt_base.group_tt_tour_travel_operator" attrs="{'invisible':[('state','!=', 'confirm')]}"/>
                     <button name="validate_refund_from_button" string="Validate" type="object" groups="tt_base.group_tt_agent_user_operator,tt_base.group_tt_tour_travel_operator" attrs="{'invisible':[('state','!=', 'sent')]}"/>
                     <button name="finalize_refund_from_button" string="Finalize" type="object" groups="tt_base.group_tt_accounting_operator" attrs="{'invisible':[('state','!=', 'validate')]}"/>
                     <button name="action_approve" string="Force Approve" type="object" groups="tt_base.group_tt_accounting_manager" attrs="{'invisible':[('state','!=', 'final')]}"/>

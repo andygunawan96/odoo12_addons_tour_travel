@@ -433,7 +433,7 @@ class TtRefund(models.Model):
                         if rec.refund_line_ids.total_vendor != 0:
                             refund_data.commission_fee += data['refund_list'][idx]['commission_fee']
                             refund_data.charge_fee += data['refund_list'][idx]['charge_fee']
-                self.send_refund_from_button()
+                self.send_refund_from_button([[]])
                 res = ERR.get_no_error()
             else:
                 res = ERR.get_error(500)
@@ -441,6 +441,9 @@ class TtRefund(models.Model):
             _logger.error(traceback.format_exc())
             res = ERR.get_error(500, additional_message='refund not found')
         return res
+
+    def send_refund_from_button_backend(self):
+        self.send_refund_from_button()
 
     def send_refund_from_button(self, list=[]):
         if self.state != 'confirm':
