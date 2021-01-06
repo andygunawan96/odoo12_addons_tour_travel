@@ -572,7 +572,7 @@ class MasterTour(models.Model):
                             'location_ids': [(6, 0, new_loc_ids)]
                         })
                         if new_tour_obj.state == 'draft':
-                            new_tour_obj.action_validate()
+                            new_tour_obj.action_confirm()
                 else:
                     raise UserError(det_res['error_msg'])
 
@@ -1756,7 +1756,7 @@ class MasterTour(models.Model):
                 })
 
                 if tour_obj.state == 'draft':
-                    tour_obj.action_validate()
+                    tour_obj.action_confirm()
             response = {
                 'success': True
             }
