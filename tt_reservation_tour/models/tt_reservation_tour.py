@@ -416,6 +416,11 @@ class ReservationTour(models.Model):
             except Exception:
                 agent_obj = self.env['res.users'].browse(int(context['co_uid'])).agent_id
 
+            if tour_data.tour_type == 'open' and (not data.get('departure_date') or not data.get('arrival_date')):
+                raise RequestException(1004, additional_message='Departure Date and Arrival Date parameters are required for Open Tour!')
+
+            temp_dept_date = data.get('departure_date') and data['departure_date'] or tour_line_data.departure_date
+            temp_arr_date = data.get('arrival_date') and data['arrival_date'] or tour_line_data.arrival_date
             booking_obj = self.env['tt.reservation.tour'].sudo().create({
                 'contact_id': contact_obj.id,
                 'booker_id': booker_obj.id,
@@ -432,8 +437,8 @@ class ReservationTour(models.Model):
                 'adult': data.get('adult') and int(data['adult']) or 0,
                 'child': data.get('child') and int(data['child']) or 0,
                 'infant': data.get('infant') and int(data['infant']) or 0,
-                'departure_date': tour_line_data.departure_date,
-                'arrival_date': tour_line_data.arrival_date,
+                'departure_date': temp_dept_date,
+                'arrival_date': temp_arr_date,
                 'provider_name': provider_id.name,
                 'transport_type': 'tour',
             })
@@ -460,8 +465,8 @@ class ReservationTour(models.Model):
                     'carrier_id': carrier_id.id,
                     'carrier_code': carrier_id.code,
                     'carrier_name': carrier_id.name,
-                    'departure_date': tour_line_data.departure_date,
-                    'arrival_date': tour_line_data.arrival_date,
+                    'departure_date': temp_dept_date,
+                    'arrival_date': temp_arr_date,
                     'balance_due': balance_due,
                     'total_price': balance_due,
                     'sequence': 1
