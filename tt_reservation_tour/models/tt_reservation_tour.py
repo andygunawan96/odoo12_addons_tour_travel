@@ -602,6 +602,8 @@ class ReservationTour(models.Model):
                     'duration': book_obj.tour_id.duration,
                     'departure_date': book_obj.tour_lines_id.departure_date,
                     'arrival_date': book_obj.tour_lines_id.arrival_date,
+                    'tour_category': book_obj.tour_id.tour_category,
+                    'tour_type': book_obj.tour_id.tour_type,
                     'visa': book_obj.tour_id.visa,
                     'flight': book_obj.tour_id.flight,
                     'image_urls': image_urls,
