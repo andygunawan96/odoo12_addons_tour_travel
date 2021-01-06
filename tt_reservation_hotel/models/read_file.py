@@ -3580,17 +3580,19 @@ class HotelInformation(models.Model):
             f2 = f2.read()
             catalog = json.loads(f2)
 
+        catalog.sort(key=lambda k: k['index'])
         for city in catalog:
-            if not city.get('city_id') or (last_render != 0 and int(city['index']) < int(last_render)):
+            if last_render != 0 and int(city['index']) < int(last_render):
                 _logger.info(msg=str(city['index']) +'. Skip hotel Destination: ' + city.get('destination_name') or '-' + ', Country: ' + city.get('country_name') or '-')
                 continue
             content = []
-            # Search all Mapped Data from hotel.master
-            for hotel in self.env['tt.hotel.master'].search([('city_id','=',city['city_id'])]):
-                content.append(hotel.fmt_read())
-            # Search all Done Data from hotel.raw (Done mean extinct record, to_be_merge: mean sedang dalam hotel.comparer blum diputus kan)
-            for hotel in self.env['tt.hotel'].search([('state', 'not in', ['merged',]),('city_id','=',city['city_id'])]):
-                content.append(hotel.fmt_read())
+            if city.get('city_id'):
+                # Search all Mapped Data from hotel.master
+                for hotel in self.env['tt.hotel.master'].search([('city_id','=',city['city_id'])]):
+                    content.append(hotel.fmt_read())
+                # Search all Done Data from hotel.raw (Done mean extinct record, to_be_merge: mean sedang dalam hotel.comparer blum diputus kan)
+                for hotel in self.env['tt.hotel'].search([('state', 'not in', ['merged',]),('city_id','=',city['city_id'])]):
+                    content.append(hotel.fmt_read())
             # Rubah ke format JSON
             # Save as 1 File and send to GW
             # API_CN_HOTEL.send_request('create_hotel_file', {'name': 'cache_hotel_' + str(city['index']), 'content': json.dumps(content)})
@@ -3600,7 +3602,10 @@ class HotelInformation(models.Model):
                 file = open('/var/log/tour_travel/cache_hotel/cache_hotel_' + str(city['index']) + '.txt', 'w')
                 file.write(json.dumps(content))
                 file.close()
-                _logger.info(msg=str(city['index']) +'. Create hotel file . ' + city['city_name'] + ', ' + city['country_name'] + ' with ' + str(len(content)) + ' Hotel(s) Done')
+                if city.get('city_id'):
+                    _logger.info(msg=str(city['index']) +'. Create hotel file ' + city['city_name'] + ', ' + city['country_name'] + ' with ' + str(len(content)) + ' Hotel(s) Done')
+                else:
+                    _logger.info(msg=str(city['index']) + '. Create hotel file ' + city['destination_name'] + ' with empty Hotel(s)')
                 # Last Render ID Here:
                 self.env['ir.config_parameter'].sudo().set_param('last.gw.render.idx', city['index'])
                 self.env.cr.commit()

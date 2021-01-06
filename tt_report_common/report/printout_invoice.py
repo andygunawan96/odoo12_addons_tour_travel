@@ -1058,11 +1058,14 @@ class PrintoutInvoice(models.AbstractModel):
     """Abstract Model for report template.
         for `_name` model, please use `report.` as prefix then add `module_name.report_name`.
     """
+    def format_description(self, desc_str):
+        # desc_str.replace('\n','&lt;br/&gt;')
+        return desc_str
 
     def get_invoice_data(self, line, rec, inv):
         a = {}
         if rec._name == 'tt.reservation.offline':
-            a = {'descs': line.desc, 'pnr': inv.pnr.split(','), 'line_detail': [], 'total_after_tax': line.total_after_tax}
+            a = {'descs': self.format_description(line.desc), 'pnr': inv.pnr.split(','), 'line_detail': [], 'total_after_tax': line.total_after_tax}
             # for provider in rec.provider_booking_ids:
             #     a['pnr'].append(provider.pnr)
             for line_detail in line.invoice_line_detail_ids:
@@ -1123,7 +1126,7 @@ class PrintoutInvoice(models.AbstractModel):
             #                 'total': (line_detail.price_subtotal if line_detail.price_subtotal else '')
             #             })
         elif rec._name == 'tt.reservation.hotel':
-            a = {'descs': line.desc, 'pnr': [], 'line_detail': [], 'total_after_tax': line.total_after_tax}
+            a = {'descs': self.format_description(line.desc), 'pnr': [], 'line_detail': [], 'total_after_tax': line.total_after_tax}
             for room in rec.room_detail_ids:
                 if room.issued_name and room.issued_name not in a['pnr']:
                     a['pnr'].append(room.issued_name)
@@ -1160,7 +1163,7 @@ class PrintoutInvoice(models.AbstractModel):
                 #         'total': (line_detail.price_subtotal if line_detail.price_subtotal else '')
                 #     })
         elif rec._name == 'tt.reschedule':
-            a = {'descs': line.desc, 'pnr': [], 'line_detail': [], 'total_after_tax': line.total_after_tax}
+            a = {'descs': self.format_description(line.desc), 'pnr': [], 'line_detail': [], 'total_after_tax': line.total_after_tax}
             a['pnr'].append(rec.pnr or '-')
             for line_detail in line.invoice_line_detail_ids:
                 a['line_detail'].append({
@@ -1181,7 +1184,7 @@ class PrintoutInvoice(models.AbstractModel):
             #         'total': (line_detail.price_subtotal if line_detail.price_subtotal else '')
             #     })
         else:
-            a = {'descs': line.desc, 'pnr': inv.pnr.split(','), 'line_detail': [], 'total_after_tax': line.total_after_tax}
+            a = {'descs': self.format_description(line.desc), 'pnr': inv.pnr.split(','), 'line_detail': [], 'total_after_tax': line.total_after_tax}
             for line_detail in line.invoice_line_detail_ids:
                 a['line_detail'].append({
                     'name': line_detail.desc,
