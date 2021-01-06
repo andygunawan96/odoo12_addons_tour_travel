@@ -39,7 +39,7 @@ class TtRefundWizard(models.TransientModel):
 
     def refund_api(self, data, ctx):
         try:
-            book_obj = self.env[data['res_model']].search([('name','=',data['referenced_document_external'])])
+            book_obj = self.env[data['res_model']].search([('name','=',data['referenced_document_external'])], limit=1)
             refund_type_obj = self.env['tt.refund.type'].search([('name','=',data['refund_type_id'])], limit=1)
             provider_type_obj = self.env['tt.provider.type'].search([('name','=',data['provider_type'])], limit=1)
             refund_obj = self.env['tt.refund'].search([('referenced_document','=',data['referenced_document_external']), ('state','!=','cancel')])
@@ -102,6 +102,8 @@ class TtRefundWizard(models.TransientModel):
                     referenced_document_external += ', '
                 referenced_document_external = rec.pnr2
                 self.env['tt.refund.api.con'].send_refund_request(data)
+        if referenced_document_external == '':
+            referenced_document_external = self.referenced_document_external
         refund_obj = self.env['tt.refund'].create({
             'agent_id': self.agent_id.id,
             'customer_parent_id': self.customer_parent_id.id,

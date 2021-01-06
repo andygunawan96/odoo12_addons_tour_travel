@@ -426,7 +426,9 @@ class TtRefund(models.Model):
 
     def refund_request_sent_to_agent_api(self, data, ctx):
         try:
-            refund_obj = self.search([('referenced_document', '=', data['reference_document'])])
+            _logger.info('get webhook refund api finalization')
+            _logger.info(json.dumps(data))
+            refund_obj = self.search([('referenced_document_external', '=', data['reference_document'])])
             if refund_obj:
                 for rec in refund_obj:
                     for idx, refund_data in enumerate(rec.refund_line_ids):
@@ -452,8 +454,10 @@ class TtRefund(models.Model):
         # klik dari HO tetapi untuk bookingan BTBO2
         resv_obj = self.env[self.res_model].search([('name', '=', self.referenced_document)])
         if resv_obj.agent_type_id == self.env.ref('tt_base.agent_type_btbo2'):
+            _logger.info('btbo2 send refund api')
             for credential in resv_obj.user_id.credential_ids.webhook_rel_ids:
                 if "webhook/content" in credential.url:
+                    _logger.info('send webhook to child refund')
                     ## check lebih efisien check api ccredential usernya punya webhook visa, atau kalau api user selalu di notify
                     ## tetapi nanti filterny sendiri ke kirm ato enda
                     refund_list = []
