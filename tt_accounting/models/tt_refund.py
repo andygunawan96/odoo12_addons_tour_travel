@@ -428,6 +428,7 @@ class TtRefund(models.Model):
         try:
             _logger.info('get webhook refund api finalization')
             _logger.info(json.dumps(data))
+            data = data['data']
             refund_obj = self.search([('referenced_document_external', '=', data['reference_document'])])
             if refund_obj:
                 for rec in refund_obj:
@@ -478,7 +479,7 @@ class TtRefund(models.Model):
                         'provider_type': 'offline',
                         'action': 'refund_request_sent_to_agent_api',
                         'data': data,
-                        'child_id': self.user_id.id
+                        'child_id': resv_obj.user_id.id
                     }
                     self.env['tt.api.webhook.data'].notify_subscriber(vals)
                     break
