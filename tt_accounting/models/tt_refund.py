@@ -28,6 +28,7 @@ class TtRefundLine(models.Model):
     extra_charge_amount = fields.Monetary('Extra Charge Fee', default=0, readonly=True, states={'finalize': [('readonly', False)]})
     refund_id = fields.Many2one('tt.refund', 'Refund', readonly=True)
     state = fields.Selection([('draft', 'Draft'), ('confirm', 'Confirmed'), ('sent', 'Sent'), ('finalize', 'Finalized'), ('done', 'Done')], 'State', default='draft', related='')
+    total_vendor = fields.Integer('Total Vendor')
 
     @api.multi
     def write(self, vals):
@@ -363,9 +364,9 @@ class TtRefund(models.Model):
 
     def refund_confirm_api(self, data, ctx):
         try:
-            refund_obj = self.search([('referenced_document', '=', data['referenced_document_external'])])
+            refund_obj = self.search([('referenced_document', '=', data['referenced_document_external'])], limit=1)
             if refund_obj:
-                self.confirm_refund_from_button()
+                refund_obj.confirm_refund_from_button()
                 res = ERR.get_no_error()
             else:
                 res = ERR.get_error(500)
@@ -407,11 +408,11 @@ class TtRefund(models.Model):
                 # jika book_obj provider ada rodextrip kirim
                 resv_obj = self.env[self.res_model].search([('name', '=', self.referenced_document)])
                 for rec in resv_obj.provider_booking_ids:
-                    if 'rodextrip' in rec.provider_id.name:
+                    if 'rodextrip' in rec.provider_id.code:
                         # tembak gateway
                         data = {
-                            'referenced_document_external': 'AL.20120301695',
-                            # 'referenced_document_external': rec.pnr2,
+                            # 'referenced_document_external': 'AL.20120301695',
+                            'referenced_document_external': rec.pnr2,
                             'res_model': self.res_model,
                             'provider': rec.provider_id.code,
                             'type': 'confirm'
@@ -427,12 +428,11 @@ class TtRefund(models.Model):
         try:
             refund_obj = self.search([('referenced_document', '=', data['reference_document'])])
             if refund_obj:
-                refund_type_obj = self.env['tt.refund.type'].search([('name', '=', data['refund_type'])], limit=1)
                 for rec in refund_obj:
-                    rec.refund_type_id = refund_type_obj
                     for idx, refund_data in enumerate(rec.refund_line_ids):
-                        refund_data.commission_fee = data['refund_list'][idx]['commission_fee']
-                        refund_data.charge_fee = data['refund_list'][idx]['charge_fee']
+                        if rec.refund_line_ids.total_vendor != 0:
+                            refund_data.commission_fee += data['refund_list'][idx]['commission_fee']
+                            refund_data.charge_fee += data['refund_list'][idx]['charge_fee']
                 self.send_refund_from_button()
                 res = ERR.get_no_error()
             else:
@@ -442,14 +442,14 @@ class TtRefund(models.Model):
             res = ERR.get_error(500, additional_message='refund not found')
         return res
 
-    def send_refund_from_button(self):
+    def send_refund_from_button(self, list=[]):
         if self.state != 'confirm':
             raise UserError("Cannot Send because state is not 'confirm'.")
 
         # klik dari HO tetapi untuk bookingan BTBO2
         resv_obj = self.env[self.res_model].search([('name', '=', self.referenced_document)])
         if resv_obj.agent_type_id == self.env.ref('tt_base.agent_type_btbo2'):
-            for credential in self.user_id.credential_ids.webhook_rel_ids:
+            for credential in resv_obj.user_id.credential_ids.webhook_rel_ids:
                 if "webhook/content" in credential.url:
                     ## check lebih efisien check api ccredential usernya punya webhook visa, atau kalau api user selalu di notify
                     ## tetapi nanti filterny sendiri ke kirm ato enda
@@ -464,7 +464,8 @@ class TtRefund(models.Model):
                         'refund_type': self.refund_type_id.name,
                         'type': 'send_to_agent_api',
                         'refund_list': refund_list,
-                        'reference_document': self.referenced_document
+                        'reference_document': self.referenced_document,
+                        # 'referenced_document': 'AL.20120301695',
                     }
                     vals = {
                         'provider_type': 'offline',
@@ -474,15 +475,25 @@ class TtRefund(models.Model):
                     }
                     self.env['tt.api.webhook.data'].notify_subscriber(vals)
                     break
-
-        self.write({
-            'state': 'sent',
-            'sent_uid': self.env.user.id,
-            'sent_date': datetime.now(),
-            'hold_date': datetime.now() + relativedelta(days=3),
-        })
-        for rec in self.refund_line_ids:
-            rec.set_to_sent()
+        total_vendor = 100
+        if len(list) == 0:
+            total_vendor = 0
+            for rec in self.refund_line_ids:
+                rec.total_vendor = 0
+        else:
+            for rec in self.refund_line_ids:
+                rec.total_vendor = rec.total_vendor - len(list)
+                if total_vendor == 100:
+                    total_vendor = rec.total_vendor
+        if total_vendor == 0:
+            self.write({
+                'state': 'sent',
+                'sent_uid': self.env.user.id,
+                'sent_date': datetime.now(),
+                'hold_date': datetime.now() + relativedelta(days=3),
+            })
+            for rec in self.refund_line_ids:
+                rec.set_to_sent()
 
     def validate_refund_from_button(self):
         if self.state != 'sent':

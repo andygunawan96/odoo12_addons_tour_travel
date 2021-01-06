@@ -39,10 +39,10 @@ class TtRefundWizard(models.TransientModel):
 
     def refund_api(self, data, ctx):
         try:
-            book_obj = self.env[data['res_model']].search([('name','=',data['referenced_document_external']), ('state','!=','cancel')])
+            book_obj = self.env[data['res_model']].search([('name','=',data['referenced_document_external'])])
             refund_type_obj = self.env['tt.refund.type'].search([('name','=',data['refund_type_id'])], limit=1)
             provider_type_obj = self.env['tt.provider.type'].search([('name','=',data['provider_type'])], limit=1)
-            refund_obj = self.env['tt.refund'].search([('referenced_document','=',data['referenced_document_external'])])
+            refund_obj = self.env['tt.refund'].search([('referenced_document','=',data['referenced_document_external']), ('state','!=','cancel')])
             if not refund_obj:
                 refund_obj = self.create({
                     'agent_id': ctx['co_agent_id'],
@@ -66,6 +66,7 @@ class TtRefundWizard(models.TransientModel):
                     rec.referenced_document_external = data['referenced_document'] # update reference doc (mungkin di HO bikin belum ke catat no ref dari BTBO2)
             res = ERR.get_no_error()
         except Exception as e:
+            _logger.error(traceback.format_exc())
             res = ERR.get_error(500)
         return res
 
@@ -78,6 +79,7 @@ class TtRefundWizard(models.TransientModel):
 
         #tembak parent IVAN
         resv_obj = self.env[self.res_model].search([('name', '=', self.referenced_document)])
+        total_vendor = len(resv_obj.provider_booking_ids)
         referenced_document_external = ''
         for rec in resv_obj.provider_booking_ids:
             if 'rodextrip' in rec.provider_id.code and not 'rodextrip_other' in rec.provider_id.code:
@@ -126,6 +128,7 @@ class TtRefundWizard(models.TransientModel):
                 'name': (pax.title or '') + ' ' + (pax.name or ''),
                 'birth_date': pax.birth_date,
                 'pax_price': pax_price,
+                'total_vendor': total_vendor
             })
 
         base_url = self.env['ir.config_parameter'].sudo().get_param('web.base.url')

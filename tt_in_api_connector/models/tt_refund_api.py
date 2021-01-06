@@ -11,7 +11,7 @@ class TtRefundApiCon(models.Model):
 
         if action == 'refund_request_api':
             res = self.env['tt.refund.wizard'].refund_api(data, context)
-        elif action == 'refund_request_api':
+        elif action == 'refund_request_confirm_api':
             res = self.env['tt.refund'].refund_confirm_api(data, context)
         elif action == 'refund_request_sent_to_agent':
             res = self.env['tt.refund'].refund_request_sent_to_agent_api(data, context)
