@@ -2340,8 +2340,8 @@ class HotelInformation(models.Model):
         fmt_hotel_name = fmt_hotel_name.replace('  ', ' ')
         fmt_hotel_name = fmt_hotel_name.split(' ')
         # 3. Remove Selected String (Hotel, Motel, Apartement , dsb)
-        # 4. Remove City Name
         ext_param = ['hotel', 'motel', 'villa', 'villas', 'apartment', 'and', '&', '&amp;']
+        # 4. Remove City Name
         ext_param += city_name and city_name.lower().split(' ') or []
 
         # 5. Remove Ex/Formerly Name
@@ -3394,7 +3394,7 @@ class HotelInformation(models.Model):
     # Notes: Bagian ini bakal sering berubah
     # Todo: Perlu catat source data ne
     def v2_collect_by_human(self):
-        provider = ['dida', ]
+        provider = self.env['ir.config_parameter'].sudo().get_param('hotel.cache.provider').split(',') #'knb',dida,webbeds
         for rec in provider:
             def_name = 'v2_collect_by_human_%s' % rec
             if hasattr(self, def_name):
@@ -3408,35 +3408,18 @@ class HotelInformation(models.Model):
 
     # 1c. Get Country Code
     def v2_get_country_code(self):
-        workbook = xlrd.open_workbook('/home/rodex-it-05/Downloads/RODE_country_20201028120232.xls')
-        # worksheet = workbook.sheet_by_name('Name of the Sheet')
-        worksheet = workbook.sheet_by_index(0)
-        # worksheet.nrows
-        # worksheet.ncols
-        a = []
-        provider_id = 383
-        for row in range(1, worksheet.nrows):
-            name = worksheet.cell(row, 0).value
-            code = worksheet.cell(row, 2).value
-
-            country_obj = self.env['res.country'].find_country_by_name(name, 1)
-            country_obj = country_obj and country_obj[0] or self.env['res.country'].create({'name': name})
-
-            # Create external ID:
-            if not self.env['tt.provider.code'].search([('res_model', '=', 'res.country'), ('res_id', '=', country_obj.id),
-                                                        ('code', '=', code), ('provider_id', '=', provider_id)]):
-                self.env['tt.provider.code'].create({
-                    'res_model': 'res.country',
-                    'res_id': country_obj.id,
-                    'name': name,
-                    'code': code,
-                    'provider_id': provider_id,
-                })
-        return a
+        provider = self.env['ir.config_parameter'].sudo().get_param('hotel.cache.provider').split(',')
+        for rec in provider:
+            def_name = 'v2_get_country_code_%s' % rec
+            if hasattr(self, def_name):
+                return getattr(self, def_name)()
+            else:
+                _logger.error(msg='No function get country code for this provider %s' % rec)
+        return False
 
     # 1d. Get City Code
     def v2_get_city_code(self):
-        provider = ['dida',]
+        provider = self.env['ir.config_parameter'].sudo().get_param('hotel.cache.provider').split(',') #'knb',dida,webbeds
         for rec in provider:
             def_name = 'v2_get_city_code_%s' % rec
             if hasattr(self, def_name):
@@ -3447,7 +3430,7 @@ class HotelInformation(models.Model):
 
     # 1e. Get Meal Code
     def v2_get_meal_code(self):
-        provider = ['dida',]
+        provider = self.env['ir.config_parameter'].sudo().get_param('hotel.cache.provider').split(',') #'knb',dida,webbeds
         for rec in provider:
             def_name = 'v2_get_meal_code_%s' % rec
             if hasattr(self, def_name):
@@ -3471,7 +3454,7 @@ class HotelInformation(models.Model):
     # Todo: masukan inputan tingkat kepercayaan untuk langsung validasi
     def v2_merge_record(self):
         # Read CSV CITY
-        provider_list = ['dida_pool']
+        provider_list = self.env['ir.config_parameter'].sudo().get_param('hotel.cache.provider').split(',')
         params = self.env['ir.config_parameter'].sudo().get_param('hotel.merge.provider')
         if params == json.dumps(provider_list):
             params = self.env['ir.config_parameter'].sudo().get_param('hotel.city.rendered.list')
@@ -3526,17 +3509,17 @@ class HotelInformation(models.Model):
                                         hotel_fmt = self.formating_homas(hotel, hotel_id, provider, city_id, target_city)
 
                                         internal_hotel_obj = self.create_or_edit_hotel(hotel_fmt, -1)
-                                        # if len(json.loads(file)):
-                                        #     same_hotel_obj = self.advance_find_similar_name_from_database(hotel_fmt['name'], hotel_fmt['location']['city'], searched_city_ids, internal_hotel_obj.id)
-                                        # else:
-                                        #     same_hotel_obj = False
-                                        # if same_hotel_obj:
-                                        #     for same_hotel_obj_id in same_hotel_obj:
-                                        #         comparing_id = self.env['tt.hotel.compare'].create({
-                                        #             'hotel_id': internal_hotel_obj.id,
-                                        #             'comp_hotel_id': same_hotel_obj_id.id,
-                                        #         })
-                                        #         comparing_id.compare_hotel()
+                                        if len(json.loads(file)):
+                                            same_hotel_obj = self.advance_find_similar_name_from_database(hotel_fmt['name'], hotel_fmt['location']['city'], searched_city_ids, internal_hotel_obj.id)
+                                        else:
+                                            same_hotel_obj = False
+                                        if same_hotel_obj:
+                                            for same_hotel_obj_id in same_hotel_obj:
+                                                comparing_id = self.env['tt.hotel.compare'].create({
+                                                    'hotel_id': internal_hotel_obj.id,
+                                                    'comp_hotel_id': same_hotel_obj_id.id,
+                                                })
+                                                comparing_id.compare_hotel()
                                 f2.close()
                             except Exception as e:
                                 self.file_log_write('Error:' + provider + ' in id ' + str(hotel_id) + '; MSG:' + str(e))
@@ -3571,8 +3554,8 @@ class HotelInformation(models.Model):
         # Find prefered City
         idx = 1
         catalog = []
-        last_render = self.env['ir.config_parameter'].sudo().get_param('last.gw.render.idx')
-        if last_render == int(0): #Jika mulai baru
+        last_render = int(self.env['ir.config_parameter'].sudo().get_param('last.gw.render.idx'))
+        if last_render == 0: #Jika mulai baru
             for destination in self.env['tt.hotel.destination'].search([('active', '=', True)]):
                 # Rename city as File_number // 7an supaya waktu send data kita bisa tau file mana yg hilang klo pakai nama city mesti buka index dulu baru tau klo ada file hilang
                 # Loop sngaja dibuat 2x ini tujuan nya buat bikin daftar isi trus kirim ke GW
@@ -3580,9 +3563,10 @@ class HotelInformation(models.Model):
                 catalog.append({
                     'index': idx,
                     'destination_id': destination.id,
+                    'destination_name': destination.name,
                     'city_id': city.id,
                     'city_name': city.name,
-                    'country_id': city.country_id and city.country_id.id or destination.country_id,
+                    'country_id': city.country_id and city.country_id.id or destination.country_id.id,
                     'country_name': city.country_id and city.country_id.name or destination.country_id.name,
                 })
                 idx += 1
@@ -3595,14 +3579,20 @@ class HotelInformation(models.Model):
             f2 = open('/var/log/tour_travel/cache_hotel/catalog.txt', 'r')
             f2 = f2.read()
             catalog = json.loads(f2)
+
+        catalog.sort(key=lambda k: k['index'])
         for city in catalog:
+            if last_render != 0 and int(city['index']) < int(last_render):
+                _logger.info(msg=str(city['index']) +'. Skip hotel Destination: ' + city.get('destination_name') or '-' + ', Country: ' + city.get('country_name') or '-')
+                continue
             content = []
-            # Search all Mapped Data from hotel.master
-            for hotel in self.env['tt.hotel.master'].search([('city_id','=',city['city_id'])]):
-                content.append(hotel.fmt_read())
-            # Search all Done Data from hotel.raw (Done mean extinct record, to_be_merge: mean sedang dalam hotel.comparer blum diputus kan)
-            for hotel in self.env['tt.hotel'].search([('state', 'not in', ['merged',]),('city_id','=',city['city_id'])]):
-                content.append(hotel.fmt_read())
+            if city.get('city_id'):
+                # Search all Mapped Data from hotel.master
+                for hotel in self.env['tt.hotel.master'].search([('city_id','=',city['city_id'])]):
+                    content.append(hotel.fmt_read())
+                # Search all Done Data from hotel.raw (Done mean extinct record, to_be_merge: mean sedang dalam hotel.comparer blum diputus kan)
+                for hotel in self.env['tt.hotel'].search([('state', 'not in', ['merged',]),('city_id','=',city['city_id'])]):
+                    content.append(hotel.fmt_read())
             # Rubah ke format JSON
             # Save as 1 File and send to GW
             # API_CN_HOTEL.send_request('create_hotel_file', {'name': 'cache_hotel_' + str(city['index']), 'content': json.dumps(content)})
@@ -3612,13 +3602,18 @@ class HotelInformation(models.Model):
                 file = open('/var/log/tour_travel/cache_hotel/cache_hotel_' + str(city['index']) + '.txt', 'w')
                 file.write(json.dumps(content))
                 file.close()
-                _logger.info(msg='Create hotel file ' + str(city['index']) + '. ' + city['city_name'] + ', ' + city['country_name'] + ' Done')
+                if city.get('city_id'):
+                    _logger.info(msg=str(city['index']) +'. Create hotel file ' + city['city_name'] + ', ' + city['country_name'] + ' with ' + str(len(content)) + ' Hotel(s) Done')
+                else:
+                    _logger.info(msg=str(city['index']) + '. Create hotel file ' + city['destination_name'] + ' with empty Hotel(s)')
                 # Last Render ID Here:
                 self.env['ir.config_parameter'].sudo().set_param('last.gw.render.idx', city['index'])
+                self.env.cr.commit()
             except Exception as e:
                 _logger.error(msg='Create hotel file Error')
                 continue
         self.env['ir.config_parameter'].sudo().set_param('last.gw.render.idx', 0)
+        _logger.info(msg='============== Render Done ==============')
         return True
 
     # 4. Render AutoComplete
@@ -3638,7 +3633,7 @@ class HotelInformation(models.Model):
         # Update ke master nya
         # API_CN_HOTEL.signin()
         # API_CN_HOTEL.send_request('prepare_gateway_cache', new_cache_dict)
-        name = '/var/log/tour_travel/autocomplete_hotel/' + "record_cache.json"
+        name = '/var/log/tour_travel/autocomplete_hotel/record_cache.json'
         file = open(name, 'w')
         file.write(json.dumps(new_cache_dict))
         file.close()

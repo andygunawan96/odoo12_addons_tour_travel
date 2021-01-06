@@ -28,11 +28,12 @@ class HotelInformation(models.Model):
     # Todo: Perlu catat source data ne
     # Todo: Prepare Cron tiap provider
     def v2_collect_by_system_knb(self):
+        base_cache_directory = self.env['ir.config_parameter'].sudo().get_param('hotel.cache.directory')
         # params = self.env['ir.config_parameter'].sudo().get_param('hotel.city.rendered.list')
         # rendered_city = json.loads(params)
         #
         # API_CN_HOTEL.signin()
-        # city_ids = glob.glob("/var/log/cache_hotel/knb/*.json")
+        # city_ids = glob.glob(base_cache_directory + "knb/*.json")
         #
         # for target_city in city_ids:
         #     target_city_name = target_city[25:-5]
@@ -44,7 +45,7 @@ class HotelInformation(models.Model):
         #     f2.close()
         #     response = API_CN_HOTEL.send_request('get_hotel_detail', {'provider': ['knb'], 'codes': hotel_ids})
         #
-        #     name = '/var/log/cache_hotel/knb_api/' + target_city_name + ".json"
+        #     name = base_cache_directory + 'knb_api/' + target_city_name + ".json"
         #     file = open(name, 'w')
         #     file.write(json.dumps(response['response']['result']))
         #     file.close()
@@ -55,7 +56,7 @@ class HotelInformation(models.Model):
         # self.env['ir.config_parameter'].sudo().set_param('hotel.city.rendered.list', json.dumps([]))
 
         # Part2: Update hotel RAW
-        city_ids = glob.glob("/var/log/cache_hotel/knb_api/*.json")
+        city_ids = glob.glob(base_cache_directory + "knb_api/*.json")
         for target_city in city_ids:
             target_city_name = target_city[29:-5]
             _logger.info("Processing: " + str(target_city_name))
@@ -99,9 +100,10 @@ class HotelInformation(models.Model):
     # Notes: Bagian ini bakal sering berubah
     # Todo: Perlu catat source data ne
     def v2_collect_by_human_knb(self):
+        base_cache_directory = self.env['ir.config_parameter'].sudo().get_param('hotel.cache.directory')
         need_to_add_list = [['No', 'City', 'Country', 'Hotel qty']]
         # Find all xls file in selected directory
-        path = '/var/log/cache_hotel/knb/master/'
+        path = base_cache_directory + 'knb/00_master/'
         for country_file in glob.glob(os.path.join(path, '*.xls')):
             _logger.info("========================================")
             _logger.info("Write Country " + country_file.split('/')[-1].split('_')[2])
@@ -157,7 +159,7 @@ class HotelInformation(models.Model):
                         # hotel_list[last_city][-1]['description'] += ';;'
                         continue
             f.close()
-            path = "/var/log/cache_hotel/knb/" + country_file.split('/')[-1].split('_')[2]
+            path = base_cache_directory + "knb/" + country_file.split('/')[-1].split('_')[2]
             if not os.path.isfile(path):
                 os.makedirs(path)
             for city in hotel_list.keys():
@@ -171,16 +173,17 @@ class HotelInformation(models.Model):
                                          country_file.split('/')[-1].split('_')[2].encode("utf-8"),
                                          len(hotel_list[city])])
 
-        with open('/var/log/cache_hotel/knb/result/Result.csv', 'w') as csvFile:
+        with open(base_cache_directory + 'knb/result/Result.csv', 'w') as csvFile:
             writer = csv.writer(csvFile)
             writer.writerows(need_to_add_list)
         csvFile.close()
         return True
 
     def v2_collect_by_human_csv_knb(self):
+        base_cache_directory = self.env['ir.config_parameter'].sudo().get_param('hotel.cache.directory')
         need_to_add_list = [['No', 'City', 'Country', 'Hotel qty']]
         # Find all xls file in selected directory
-        path = '/var/log/cache_hotel/knb/master/'
+        path = base_cache_directory + 'knb/master/'
         for country_file in glob.glob(os.path.join(path, '*.csv')):
             _logger.info("========================================")
             _logger.info("Write Country arc" + country_file.split('/')[-1].split('_')[2])
@@ -237,7 +240,7 @@ class HotelInformation(models.Model):
                     last_city = body['CityName']
             f.close()
             # Create Folder Country Here
-            path = "/var/log/cache_hotel/knb/" + country_file.split('/')[-1].split('_')[2]
+            path = base_cache_directory + "knb/" + country_file.split('/')[-1].split('_')[2]
             if not os.path.isfile(path):
                 os.makedirs(path)
             for city in hotel_list.keys():
@@ -251,7 +254,7 @@ class HotelInformation(models.Model):
                                          country_file.split('/')[-1].split('_')[2].encode("utf-8"),
                                          len(hotel_list[city])])
 
-        with open('/var/log/cache_hotel/knb/result/Result.csv', 'w') as csvFile:
+        with open(base_cache_directory + 'knb/result/Result.csv', 'w') as csvFile:
             writer = csv.writer(csvFile)
             writer.writerows(need_to_add_list)
         csvFile.close()
@@ -339,7 +342,7 @@ class HotelInformation(models.Model):
         # worksheet.nrows
         # worksheet.ncols
         a = []
-        provider_id = 383
+        provider_id = self.env.ref('tt_reservation_hotel.tt_hotel_provider_knb').id
         for row in range(1, worksheet.nrows):
             name = worksheet.cell(row, 0).value
             code = worksheet.cell(row, 2).value
@@ -354,13 +357,20 @@ class HotelInformation(models.Model):
             # Create external ID:
             old_obj = self.env['tt.provider.code'].search([('res_model', '=', 'tt.hotel.destination'), ('code', '=', code), ('provider_id', '=', provider_id)])
             if not old_obj:
-                new_obj = self.env['tt.hotel.destination'].create({
+                new_dict = {
                     'name': name,
                     'city_str': name,
                     'state_str': '',
                     'country_str': country_name,
-                })
-                new_obj.fill_obj_by_str()
+                }
+                if not self.env['tt.hotel.destination'].find_similar_obj(new_dict):
+                    new_obj = self.env['tt.hotel.destination'].create(new_dict)
+                    new_obj.fill_obj_by_str()
+                    _logger.info('Create New Destination {} with code {}'.format(name, code))
+                else:
+                    is_exact, new_obj = self.env['tt.hotel.destination'].find_similar_obj(new_dict)
+                    _logger.info('Destination already Exist Code for {}, Country {}'.format(name, country_name))
+
                 self.env['tt.provider.code'].create({
                     'res_model': 'tt.hotel.destination',
                     'res_id': new_obj.id,
@@ -368,10 +378,9 @@ class HotelInformation(models.Model):
                     'code': code,
                     'provider_id': provider_id,
                 })
-                new_obj.in_active_this_record_if_similar()
-                # _logger.info('Create New Code')
+                _logger.info('Create External ID {} with id {}'.format(code, str(new_obj.res_id)))
             else:
-                _logger.info('Code already Exist Code in {} with id {}'.format(old_obj.res_model, str(old_obj.res_id)))
+                _logger.info('External ID {} already Exist in {} with id {}'.format(code, old_obj.res_model, str(old_obj.res_id)))
         _logger.info('Render Done')
         return a
 

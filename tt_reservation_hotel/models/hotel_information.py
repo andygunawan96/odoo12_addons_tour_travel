@@ -226,3 +226,9 @@ class HotelMaster(models.Model):
     info_ids = fields.Many2many('tt.hotel', 'hotel_compared_info_rel', 'compared_id', 'info_id', 'Hotel Info', help='Data Hotel setelah di merge dan akan di publish')
     compare_ids = fields.One2many('tt.hotel.compare', 'similar_id', 'Hotel Compare')
 
+    def get_provider_code_fmt(self):
+        provider_fmt = {}
+        for hotel in self.info_ids:
+            for rec in hotel.provider_hotel_ids:
+                provider_fmt.update({rec.provider_id.alias: rec.code})
+        return provider_fmt

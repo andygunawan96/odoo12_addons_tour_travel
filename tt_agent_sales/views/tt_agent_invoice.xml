@@ -246,6 +246,20 @@
         </field>
     </record>
 
+    <record id="tt_agent_invoice_line_tree_can_edit_view" model="ir.ui.view">
+        <field name="name">tt.agent.invoice.line.tree.can.edit.view</field>
+        <field name="model">tt.agent.invoice.line</field>
+        <field name="inherit_id" ref="tt_agent_sales.tt_agent_invoice_line_tree_view"/>
+        <field name="mode">primary</field>
+        <field name="priority" eval="90"/>
+        <field name="arch" type="xml">
+            <xpath expr="//tree" position="attributes">
+                <attribute name="create">1</attribute>
+                <attribute name="edit">1</attribute>
+            </xpath>
+        </field>
+    </record>
+
     <record id="tt_agent_invoice_action_line_view" model="ir.actions.act_window" >
         <field name="name">Agent Invoice Line</field>
         <field name="type">ir.actions.act_window</field>

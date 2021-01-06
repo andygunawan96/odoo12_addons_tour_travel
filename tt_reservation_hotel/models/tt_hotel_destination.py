@@ -57,30 +57,29 @@ class HotelDestination(models.Model):
             rec.find_state_obj()
             rec.find_city_obj()
 
+    def revisi_data_city(self):
+        for rec in self.sudo().search([]):
+            if rec.city_str and not rec.city_id:
+                rec.find_city_obj()
+
     # Func render Name
 
     # Func Find Similar Destination
-    def find_similar_obj(self):
-        params = [('id','!=',self.id)]
+    def find_similar_obj(self, new_dict):
+        params = [('id','!=', new_dict['id'])]
 
-        country_exist = self.country_id or self.country_str
-        state_exist = self.state_id or self.state_str
-        city_exist = self.city_id or self.city_str
+        country_exist = new_dict['country_str']
+        state_exist = new_dict['state_str']
+        city_exist = new_dict['city_str']
 
-        if self.country_id:
-            params.append(('country_id','=',self.country_id.id))
-        elif self.country_str:
-            params.append(('country_str','=',self.country_str))
+        if new_dict['country_str']:
+            params.append(('country_str','=',new_dict['country_str']))
 
-        if self.city_id:
-            params.append(('city_id', '=', self.city_id.id))
-        elif self.city_str:
-            params.append(('city_str', '=', self.city_str))
+        if new_dict['city_str']:
+            params.append(('city_str', '=',new_dict['city_str']))
 
-        if self.state_id:
-            params.append(('state_id','=',self.state_id.id))
-        elif self.state_str:
-            params.append(('state_str','=',self.state_str))
+        if new_dict['state_str']:
+            params.append(('state_str','=',new_dict['state_str']))
 
         similar_rec = self.env['tt.hotel.destination'].search(params, limit=1)
 
@@ -93,7 +92,7 @@ class HotelDestination(models.Model):
     # In Active Record jika sdah exist
     def in_active_this_record_if_similar(self):
         for rec in self:
-            is_exact, resp = rec.find_similar_obj()
+            is_exact, resp = self.find_similar_obj(rec)
             if is_exact:
                 # Pindah Code nya current data ke data yg telah exist
                 for provider_id in rec.provider_ids:

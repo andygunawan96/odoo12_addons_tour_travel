@@ -96,6 +96,9 @@
                             <field name="city_id"/>
                             <!--<field name="facility_id"/>-->
                             <!--<field name="hotel_id"/>-->
+                            <field name="res_model"/>
+                            <field name="res_id"/>
+                            <button string="View Record" name="open_record_parent" type="object" class="oe_inline"/>
                         </group>
                         <group>
                             <field name="code"/>
