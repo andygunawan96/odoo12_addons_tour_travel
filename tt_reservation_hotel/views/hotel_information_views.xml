@@ -710,9 +710,6 @@
                     <div class="oe_button_box" name="button_box">
                         <button name="v2_collect_by_system" class="oe_stat_button" string="1a. Collect By System" type="object" icon="fa-plus"/>
                         <button name="v2_collect_by_human" class="oe_stat_button" string="1b. Collect By Human" type="object" icon="fa-plus"/>
-                        <button name="v2_get_country_code" class="oe_stat_button" string="1c. Country Code" type="object" icon="fa-plus"/>
-                        <button name="v2_get_city_code" class="oe_stat_button" string="1d. City Code" type="object" icon="fa-plus"/>
-                        <button name="v2_get_meal_code" class="oe_stat_button" string="1e. Meal Code" type="object" icon="fa-plus"/>
                         <button name="v2_merge_record" class="oe_stat_button" string="2. Merge" type="object" icon="fa-plus"/>
                         <button name="v2_prepare_gateway_cache" class="oe_stat_button" string="3. Send Hotel to GW" type="object" icon="fa-plus"/>
                         <button name="v2_render_autocomplete" class="oe_stat_button" string="4. Render AutoComplete" type="object" icon="fa-plus"/>
@@ -724,6 +721,13 @@
                             <field name="name" default_focus="1" placeholder="Name"/>
                         </h1>
                     </div>
+                    <group>
+                        <button name="v2_get_country_code" class="oe_stat_button" string="1c. Country Code" type="object" icon="fa-plus"/>
+                        <button name="v2_get_city_code" class="oe_stat_button" string="1d. City Code" type="object" icon="fa-plus"/>
+                        <button name="v2_get_meal_code" class="oe_stat_button" string="1e. Meal Code" type="object" icon="fa-plus"/>
+                        <button name="v2_get_room_code" class="oe_stat_button" string="1f. Room Code" type="object" icon="fa-plus"/>
+                        <button name="v2_get_facility_code" class="oe_stat_button" string="1g. Facility Code" type="object" icon="fa-plus"/>
+                    </group>
                 </sheet>
             </form>
         </field>
