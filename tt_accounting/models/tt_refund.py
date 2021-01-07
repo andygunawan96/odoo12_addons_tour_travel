@@ -61,6 +61,9 @@ class TtRefundLine(models.Model):
         })
 
     def set_to_confirm(self):
+        # tanya boleh tidak IVAN
+        self.commission_fee = 0
+        self.charge_fee = 0
         self.write({
             'state': 'confirm',
         })
@@ -352,19 +355,48 @@ class TtRefund(models.Model):
             'state': 'expired',
         })
 
+    def set_to_confirm_api(self, data, ctx):
+        try:
+            refund_obj = self.search([('referenced_document', '=', data['referenced_document_external']),('state','=', data['state'])], limit=1)
+            if refund_obj:
+                refund_obj.set_to_confirm()
+                res = ERR.get_no_error()
+            else:
+                res = ERR.get_error(500)
+        except Exception as e:
+            _logger.error(traceback.format_exc())
+            res = ERR.get_error(500, additional_message='refund not found')
+        return res
+
     def set_to_confirm(self):
+        # jika ada provider rodextrip untuk BTBO2 IVAN
+        resv_obj = self.env[self.res_model].search([('name', '=', self.referenced_document)])
+        for rec in resv_obj.provider_booking_ids:
+            if 'rodextrip' in rec.provider_id.code:
+                # tembak gateway
+                data = {
+                    # 'referenced_document_external': 'AL.20120301695',
+                    'referenced_document_external': rec.get('pnr2') or '',
+                    'res_model': self.res_model,
+                    'provider': rec.provider_id.code,
+                    'state': self.state,
+                    'type': 'set_to_confirm'
+                }
+                self.env['tt.refund.api.con'].send_refund_request(data)
+
         self.write({
             'state': 'confirm',
             'confirm_uid': self.env.user.id,
             'confirm_date': datetime.now(),
             'hold_date': False
         })
+
         for rec in self.refund_line_ids:
             rec.set_to_confirm()
 
     def refund_confirm_api(self, data, ctx):
         try:
-            refund_obj = self.search([('referenced_document', '=', data['referenced_document_external'])], limit=1)
+            refund_obj = self.search([('referenced_document', '=', data['referenced_document_external']),('state','=','draft')], limit=1)
             if refund_obj:
                 refund_obj.confirm_refund_from_button()
                 res = ERR.get_no_error()
@@ -429,14 +461,15 @@ class TtRefund(models.Model):
             _logger.info('get webhook refund api finalization')
             _logger.info(json.dumps(data))
             data = data['data']
-            refund_obj = self.search([('referenced_document_external', '=', data['reference_document'])])
+            refund_obj = self.search([('referenced_document_external', '=', data['reference_document']), ('state','=','confirm')], limit=1)
             if refund_obj:
                 for rec in refund_obj:
                     for idx, refund_data in enumerate(rec.refund_line_ids):
                         if rec.refund_line_ids.total_vendor != 0:
                             refund_data.commission_fee += data['refund_list'][idx]['commission_fee']
                             refund_data.charge_fee += data['refund_list'][idx]['charge_fee']
-                self.send_refund_from_button([[]])
+                refund_obj.send_refund_from_button([[]])
+                _logger.info('webhook done send back to HO')
                 res = ERR.get_no_error()
             else:
                 res = ERR.get_error(500)
@@ -481,7 +514,9 @@ class TtRefund(models.Model):
                         'data': data,
                         'child_id': resv_obj.user_id.id
                     }
+                    _logger.info('webhook start')
                     self.env['tt.api.webhook.data'].notify_subscriber(vals)
+                    _logger.info('webhook done')
                     break
         total_vendor = 100
         if len(list) == 0:
@@ -503,9 +538,36 @@ class TtRefund(models.Model):
             for rec in self.refund_line_ids:
                 rec.set_to_sent()
 
+    def validate_refund_from_button_api(self, data, ctx):
+        try:
+            refund_obj = self.search([('referenced_document', '=', data['referenced_document_external']),('state','=','sent')], limit=1)
+            if refund_obj:
+                refund_obj.validate_refund_from_button()
+                res = ERR.get_no_error()
+            else:
+                res = ERR.get_error(500)
+        except Exception as e:
+            _logger.error(traceback.format_exc())
+            res = ERR.get_error(500, additional_message='refund not found')
+        return res
+
     def validate_refund_from_button(self):
         if self.state != 'sent':
             raise UserError("Cannot Validate because state is not 'Sent'.")
+
+        # agent to HO
+        resv_obj = self.env[self.res_model].search([('name', '=', self.referenced_document)])
+        for rec in resv_obj.provider_booking_ids:
+            if 'rodextrip' in rec.provider_id.code:
+                # tembak gateway
+                data = {
+                    # 'referenced_document_external': 'AL.20120301695',
+                    'referenced_document_external': rec.pnr2,
+                    'res_model': self.res_model,
+                    'provider': rec.provider_id.code,
+                    'type': 'validate'
+                }
+                self.env['tt.refund.api.con'].send_refund_request(data)
 
         self.write({
             'state': 'validate',
