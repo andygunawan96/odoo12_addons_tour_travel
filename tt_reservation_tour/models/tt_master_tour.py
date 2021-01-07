@@ -1588,12 +1588,16 @@ class MasterTour(models.Model):
             if not provider_id:
                 raise RequestException(1002)
             prefix = provider_id[0].alias and provider_id[0].alias + '~' or ''
+            carrier_id = self.env['tt.transport.carrier'].sudo().search([('code', '=', req['carrier'])], limit=1)
+            if not carrier_id:
+                raise RequestException(1002)
             for rec in req['data']:
                 currency_obj = self.env['res.currency'].sudo().search([('name', '=', rec['currency_code'])], limit=1)
                 vals = {
                     'name': rec['name'],
                     'tour_code': prefix + rec['tour_code'],
                     'provider_id': provider_id[0].id,
+                    'carrier_id': carrier_id[0].id,
                     'tour_route': rec['tour_route'],
                     'sequence': rec['sequence'],
                     'is_can_hold': rec['is_can_hold'],
