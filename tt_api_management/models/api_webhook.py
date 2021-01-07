@@ -37,9 +37,12 @@ class ApiWebhookData(models.Model):
                                 'url': rec.url,
                                 'signature': hashlib.sha256(temp_sha.encode()).hexdigest(),
                                 'datetime': temp_date,
-                                'data': req['data']
+                                'data': req['data'],
+                                'timeout': req.get('timeout', 300)
                             }
                             res = self.env['tt.api.con'].send_webhook_to_children(vals)
+                            _logger.info("Receive webhook data from children...")
+                            _logger.info(json.dumps(res))
                             if not res.get('error_code'):
                                 sent_data.append(rec.id)
                             else:

@@ -114,7 +114,7 @@ class PaymentAcquirer(models.Model):
         # NB:  BCA /payment/tt_transfer/feedback?acq_id=27
         # NB:  MANDIRI /payment/tt_transfer/feedback?acq_id=28
         payment_acq = self.env['payment.acquirer'].browse(acq.payment_acquirer_id.id)
-        loss_or_profit, fee, uniq = self.compute_fee(unique)
+        loss_or_profit, fee, uniq = acq.payment_acquirer_id.compute_fee(unique)
         return {
             'seq_id': payment_acq.seq_id,
             'name': payment_acq.name,
@@ -355,6 +355,10 @@ class PaymentAcquirerNumber(models.Model):
                 payment = {'order_number': payment_acq_number[len(payment_acq_number)-1].number}
                 booking_obj.payment_acquirer_number_id = payment_acq_number[len(payment_acq_number)-1].id
         else:
+            if booking_obj.hold_date < datetime.now() + timedelta(minutes=45):
+                hold_date = booking_obj.hold_date
+            else:
+                hold_date = datetime.now() + timedelta(minutes=45)
             payment = self.env['payment.acquirer.number'].create({
                 'state': 'close',
                 'number': data['order_number'],
@@ -363,6 +367,7 @@ class PaymentAcquirerNumber(models.Model):
                 'amount': data['amount'],
                 'res_model': provider_type,
                 'res_id': booking_obj.id,
+                'time_limit': hold_date
             })
             booking_obj.payment_acquirer_number_id = payment.id
             payment = {'order_number': payment.number}

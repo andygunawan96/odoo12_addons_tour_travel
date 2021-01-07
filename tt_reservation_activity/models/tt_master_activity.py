@@ -1,4 +1,4 @@
-from odoo import api, fields, models
+from odoo import api, fields, models, _
 from odoo.http import request
 from ...tools import util,variables,ERR
 from ...tools.ERR import RequestException
@@ -109,7 +109,7 @@ class MasterActivity(models.Model):
     def _compute_provider_code(self):
         self.provider_code = self.provider_id.code
 
-    def reprice_currency(self, req, context):
+    def reprice_currency(self, req, context={}):
         _logger.info('REPRICE CURRENCY ACTIVITY')
         _logger.info(json.dumps(req))
         provider = req['provider']
@@ -2106,9 +2106,9 @@ class MasterActivity(models.Model):
             raise RequestException(1002)
         provider_id = provider_id[0]
         activity_id = self.env['tt.master.activity'].sudo().search(
-            [('uuid', '=', req['productUuid']), ('provider_id', '=', provider_id.id)], limit=1)
+            [('uuid', '=', provider_id[0].alias + '~' + req['productUuid']), ('provider_id', '=', provider_id.id)], limit=1)
         product_id = activity_id[0].id
-        activity_type_exist = self.env['tt.master.activity.lines'].search([('activity_id', '=', product_id), ('uuid', '=', req['data']['uuid']), '|', ('active', '=', False), ('active', '=', True)], limit=1)
+        activity_type_exist = self.env['tt.master.activity.lines'].search([('activity_id', '=', product_id), ('uuid', '=', provider_id[0].alias + '~' + req['data']['uuid']), '|', ('active', '=', False), ('active', '=', True)], limit=1)
         cancellationPolicies = ''
         if req['data']['cancellationPolicies']:
             for cancel in req['data']['cancellationPolicies']:
@@ -2117,7 +2117,7 @@ class MasterActivity(models.Model):
                     cancel['refundPercentage']) + '% cashback.\n'
         vals = {
             'activity_id': product_id,
-            'uuid': req['data']['uuid'],
+            'uuid': provider_id[0].alias + '~' + req['data']['uuid'],
             'name': req['data']['title'],
             'description': req['data']['description'],
             'durationDays': req['data']['durationDays'],
@@ -2344,9 +2344,9 @@ class MasterActivity(models.Model):
         if not provider_id:
             raise RequestException(1002)
         provider_id = provider_id[0]
-        activity_id = self.env['tt.master.activity'].sudo().search([('uuid', '=', req['productUuid']), ('provider_id', '=', provider_id.id)], limit=1)
+        activity_id = self.env['tt.master.activity'].sudo().search([('uuid', '=', provider_id[0].alias + '~' + req['productUuid']), ('provider_id', '=', provider_id.id)], limit=1)
         activity_id = activity_id[0]
-        product_type_obj = self.env['tt.master.activity.lines'].sudo().search([('uuid', '=', req['productTypeUuid']), ('activity_id', '=', activity_id.id)], limit=1)
+        product_type_obj = self.env['tt.master.activity.lines'].sudo().search([('uuid', '=', provider_id[0].alias + '~' + req['productTypeUuid']), ('activity_id', '=', activity_id.id)], limit=1)
         for rec in product_type_obj:
             rec.sudo().write({
                 'active': False
@@ -2366,7 +2366,7 @@ class MasterActivity(models.Model):
                 currency_obj = self.env['res.currency'].sudo().search([('name', '=', rec['currency_code'])], limit=1)
                 vals = {
                     'name': rec['name'],
-                    'uuid': rec['uuid'],
+                    'uuid': provider_id[0].alias + '~' + rec['uuid'],
                     'latitude': rec['latitude'],
                     'longitude': rec['longitude'],
                     'businessHoursFrom': rec['businessHoursFrom'],
@@ -2390,7 +2390,7 @@ class MasterActivity(models.Model):
                     'safety': rec['safety'],
                     'can_hold_booking': rec['can_hold_booking'],
                 }
-                activity_obj = self.env['tt.master.activity'].sudo().search([('uuid', '=', rec['uuid']), ('provider_id', '=', provider_id[0].id)], limit=1)
+                activity_obj = self.env['tt.master.activity'].sudo().search([('uuid', '=', provider_id[0].alias + '~' + rec['uuid']), ('provider_id', '=', provider_id[0].id)], limit=1)
                 if activity_obj:
                     activity_obj = activity_obj[0]
                     activity_obj.sudo().write(vals)
@@ -2465,7 +2465,7 @@ class MasterActivity(models.Model):
                 for rec2 in rec['line_ids']:
                     line_vals = {
                         'activity_id': activity_obj.id,
-                        'uuid': rec2['uuid'],
+                        'uuid': provider_id[0].alias + '~' + rec2['uuid'],
                         'name': rec2['name'],
                         'description': rec2['description'],
                         'durationDays': rec2['durationDays'],
@@ -2489,7 +2489,7 @@ class MasterActivity(models.Model):
                         'instantConfirmation': rec2['instantConfirmation'],
                         'active': True
                     }
-                    line_obj = self.env['tt.master.activity.lines'].sudo().search([('uuid', '=', rec2['uuid']), ('activity_id', '=', activity_obj.id), '|', ('active', '=', False), ('active', '=', True)], limit=1)
+                    line_obj = self.env['tt.master.activity.lines'].sudo().search([('uuid', '=', provider_id[0].alias + '~' + rec2['uuid']), ('activity_id', '=', activity_obj.id), '|', ('active', '=', False), ('active', '=', True)], limit=1)
                     if line_obj:
                         line_obj = line_obj[0]
                         line_obj.sudo().write(line_vals)
@@ -2593,6 +2593,13 @@ class ActivitySyncProductsChildren(models.TransientModel):
             activity_data_list = []
             activity_datas = self.env['tt.master.activity'].sudo().search([('basePrice', '>', 0)])
             for rec in activity_datas:
+                ho_obj = self.env['tt.agent'].sudo().search([('agent_type_id', '=', self.env.ref('tt_base.agent_type_ho').id)], limit=1)
+                new_currency = ho_obj[0].currency_id and ho_obj[0].currency_id.name or 'IDR'
+                new_base_amt = rec.reprice_currency({
+                    'provider': rec.provider_id.code,
+                    'from_currency': rec.currency_id.name,
+                    'base_amount': rec.basePrice
+                })
                 dict_vals = {
                     'name': rec.name,
                     'uuid': rec.uuid,
@@ -2606,8 +2613,8 @@ class ActivitySyncProductsChildren(models.TransientModel):
                     'reviewCount': rec.reviewCount,
                     'airportPickup': rec.airportPickup,
                     'hotelPickup': rec.hotelPickup,
-                    'currency_code': rec.currency_id.name,
-                    'basePrice': rec.basePrice,
+                    'currency_code': new_currency,
+                    'basePrice': new_base_amt,
                     'priceIncludes': rec.priceIncludes,
                     'priceExcludes': rec.priceExcludes,
                     'description': rec.description,
@@ -2693,12 +2700,29 @@ class ActivitySyncProductsChildren(models.TransientModel):
                     for rec3 in rec2.option_ids:
                         item_list = []
                         for rec4 in rec3.items:
+                            if rec4.currency_id and rec4.price:
+                                new_rec4_price = rec.reprice_currency({
+                                    'provider': rec.provider_id.code,
+                                    'from_currency': rec4.currency_id.name,
+                                    'base_amount': rec4.price
+                                })
+                            else:
+                                new_rec4_price = 0
                             item_list.append({
                                 'label': rec4.label,
                                 'value': rec4.value,
-                                'price': rec4.price,
-                                'currency_code': rec4.currency_id.name,
+                                'price': new_rec4_price,
+                                'currency_code': new_currency,
                             })
+
+                        if rec3.currency_id and rec3.price:
+                            new_rec3_price = rec.reprice_currency({
+                                'provider': rec.provider_id.code,
+                                'from_currency': rec3.currency_id.name,
+                                'base_amount': rec3.price
+                            })
+                        else:
+                            new_rec3_price = 0
                         option_list.append({
                             'uuid': rec3.uuid,
                             'name': rec3.name,
@@ -2707,8 +2731,8 @@ class ActivitySyncProductsChildren(models.TransientModel):
                             'formatRegex': rec3.formatRegex,
                             'inputType': rec3.inputType,
                             'type': rec3.type,
-                            'price': rec3.price,
-                            'currency_code': rec3.currency_id.name,
+                            'price': new_rec3_price,
+                            'currency_code': new_currency,
                             'items': item_list,
                         })
 
@@ -2727,10 +2751,13 @@ class ActivitySyncProductsChildren(models.TransientModel):
                     'line_ids': product_type_list
                 })
                 activity_data_list.append(dict_vals)
+
+            gw_timeout = int(len(activity_data_list) / 3) > 60 and int(len(activity_data_list) / 3) or 60
             vals = {
                 'provider_type': 'activity',
                 'action': 'sync_products_to_children',
                 'data': activity_data_list,
+                'timeout': gw_timeout
             }
             self.env['tt.api.webhook.data'].notify_subscriber(vals)
         except Exception as e:

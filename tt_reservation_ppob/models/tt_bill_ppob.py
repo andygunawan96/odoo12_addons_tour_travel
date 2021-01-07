@@ -25,6 +25,7 @@ class TtBillPPOB(models.Model):
 
     currency_id = fields.Many2one('res.currency', default=lambda self: self.env.user.company_id.currency_id.id, string='Currency')
     admin_fee = fields.Monetary('Admin Fee', default=0)
+    admin_fee_switcher = fields.Monetary('Admin Fee Switcher', default=0)
     stamp_fee = fields.Monetary('Stamp Fee', default=0)
     ppn_tax_amount = fields.Monetary('PPN', default=0)
     ppj_tax_amount = fields.Monetary('PPJ', default=0)
@@ -54,6 +55,7 @@ class TtBillPPOB(models.Model):
             'meter_history': history_list,
             'currency': self.currency_id and self.currency_id.name or '',
             'admin_fee': self.admin_fee and self.admin_fee or 0,
+            'admin_fee_switcher': self.admin_fee_switcher and self.admin_fee_switcher or 0,
             'stamp_fee': self.stamp_fee and self.stamp_fee or 0,
             'ppn_tax_amount': self.ppn_tax_amount and self.ppn_tax_amount or 0,
             'ppj_tax_amount': self.ppj_tax_amount and self.ppj_tax_amount or 0,

@@ -22,5 +22,13 @@
             <field name="key">last.gw.render.idx</field>
             <field name="value">0</field>
         </record>
+        <record id="hotel_cache_directory" model="ir.config_parameter">
+            <field name="key">hotel.cache.directory</field>
+            <field name="value">/var/log/cache_hotel/</field>
+        </record>
+        <record id="hotel_cache_provider" model="ir.config_parameter">
+            <field name="key">hotel.cache.provider</field>
+            <field name="value">'knb',</field>
+        </record>
     </data>
 </odoo>

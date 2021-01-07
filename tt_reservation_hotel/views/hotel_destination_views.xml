@@ -4,6 +4,9 @@
         <field name="model">tt.hotel.destination</field>
         <field name="arch" type="xml">
             <form>
+                <header>
+                    <button name="revisi_data_city" type="object" string="Get Data City" class="oe_highlight"/>
+                </header>
                 <sheet>
                     <div class="oe_title">
                         <h1>
@@ -25,6 +28,11 @@
                     </group>
 
                     <notebook>
+                        <page string="Provider Code">
+                            <group>
+                                <field name="provider_ids"/>
+                            </group>
+                        </page>
                     </notebook>
                 </sheet>
             </form>

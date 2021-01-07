@@ -28,6 +28,7 @@ class TtRefundWizard(models.TransientModel):
 
     referenced_pnr = fields.Char('Ref. PNR',required=True,readonly=True)
     referenced_document = fields.Char('Ref. Document',required=True,readonly=True)
+    referenced_document_external = fields.Char('Ref. Document External',readonly=True) # btbo2
 
     res_model = fields.Char(
         'Related Reservation Name', index=True, readonly=True)
@@ -38,28 +39,34 @@ class TtRefundWizard(models.TransientModel):
 
     def refund_api(self, data, ctx):
         try:
-            book_obj = self.env[data['res_model']].search([('name','=',data['referenced_document_external'])])
+            book_obj = self.env[data['res_model']].search([('name','=',data['referenced_document_external'])], limit=1)
             refund_type_obj = self.env['tt.refund.type'].search([('name','=',data['refund_type_id'])], limit=1)
             provider_type_obj = self.env['tt.provider.type'].search([('name','=',data['provider_type'])], limit=1)
-            refund_obj = self.create({
-                'agent_id': ctx['co_agent_id'],
-                'agent_type_id': ctx['co_agent_type_id'],
-                'customer_parent_id': book_obj.customer_parent_id.id,
-                'customer_parent_type_id': book_obj.customer_parent_type_id.id,
-                'booker_id': book_obj.booker_id.id,
-                'currency_id': book_obj.currency_id.id,
-                'service_type': provider_type_obj.id,
-                'refund_type_id': refund_type_obj.id,
-                'referenced_pnr': data['referenced_pnr'],
-                'referenced_document': book_obj.name,
-                'referenced_document_external': data['referenced_document_external'],
-                'res_model': data['res_model'],
-                'res_id': book_obj.id,
-                'notes': data['notes']
-            })
-            refund_obj.submit_refund()
+            refund_obj = self.env['tt.refund'].search([('referenced_document','=',data['referenced_document_external']), ('state','!=','cancel')])
+            if not refund_obj:
+                refund_obj = self.create({
+                    'agent_id': ctx['co_agent_id'],
+                    'agent_type_id': ctx['co_agent_type_id'],
+                    'customer_parent_id': book_obj.customer_parent_id.id,
+                    'customer_parent_type_id': book_obj.customer_parent_type_id.id,
+                    'booker_id': book_obj.booker_id.id,
+                    'currency_id': book_obj.currency_id.id,
+                    'service_type': provider_type_obj.id,
+                    'refund_type_id': refund_type_obj.id,
+                    'referenced_pnr': data['referenced_pnr'],
+                    'referenced_document': book_obj.name,
+                    'referenced_document_external': data['referenced_document'],
+                    'res_model': data['res_model'],
+                    'res_id': book_obj.id,
+                    'notes': data['notes']
+                })
+                refund_obj.submit_refund()
+            else:
+                for rec in refund_obj:
+                    rec.referenced_document_external = data['referenced_document'] # update reference doc (mungkin di HO bikin belum ke catat no ref dari BTBO2)
             res = ERR.get_no_error()
         except Exception as e:
+            _logger.error(traceback.format_exc())
             res = ERR.get_error(500)
         return res
 
@@ -72,23 +79,31 @@ class TtRefundWizard(models.TransientModel):
 
         #tembak parent IVAN
         resv_obj = self.env[self.res_model].search([('name', '=', self.referenced_document)])
+        total_vendor = len(resv_obj.provider_booking_ids)
+        referenced_document_external = ''
         for rec in resv_obj.provider_booking_ids:
-            if 'rodextrip' in rec.provider_id.code:
+            if 'rodextrip' in rec.provider_id.code and not 'rodextrip_other' in rec.provider_id.code:
                 #tembak gateway
                 data = {
                     'notes': self.notes,
                     'refund_type_id': self.refund_type_id.name,
-                    'referenced_document': rec.pnr2,
+                    'referenced_document': resv_obj.name,
                     'provider_type': resv_obj.provider_type_id.name,
-                    # 'referenced_document': 'AL.20111120102',
-                    'referenced_document_external': resv_obj.name,
+                    # 'referenced_document_external': 'AL.20120301695',
+                    'referenced_document_external': rec.pnr2,
                     'referenced_pnr': rec.pnr,
                     'res_model': self.res_model,
                     'provider': rec.provider_id.code,
                     # 'provider': 'rodextrip_airline',
                     'booking_desc': book_obj.get_aftersales_desc(),
+                    'type': 'refund_request_api'
                 }
+                if referenced_document_external != '':
+                    referenced_document_external += ', '
+                referenced_document_external = rec.pnr2
                 self.env['tt.refund.api.con'].send_refund_request(data)
+        if referenced_document_external == '':
+            referenced_document_external = self.referenced_document_external
         refund_obj = self.env['tt.refund'].create({
             'agent_id': self.agent_id.id,
             'customer_parent_id': self.customer_parent_id.id,
@@ -102,6 +117,7 @@ class TtRefundWizard(models.TransientModel):
             'res_model': self.res_model,
             'res_id': self.res_id,
             'booking_desc': book_obj.get_aftersales_desc(),
+            'referenced_document_external': referenced_document_external,
             'notes': self.notes
         })
         for pax in book_obj.passenger_ids:
@@ -114,6 +130,7 @@ class TtRefundWizard(models.TransientModel):
                 'name': (pax.title or '') + ' ' + (pax.name or ''),
                 'birth_date': pax.birth_date,
                 'pax_price': pax_price,
+                'total_vendor': total_vendor
             })
 
         base_url = self.env['ir.config_parameter'].sudo().get_param('web.base.url')

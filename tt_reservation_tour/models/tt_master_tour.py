@@ -175,7 +175,7 @@ class MasterTour(models.Model):
     itinerary_ids = fields.One2many('tt.reservation.tour.itinerary', 'tour_pricelist_id', 'Itinerary')
     provider_id = fields.Many2one('tt.provider', 'Provider', domain=get_domain, readonly=True,
                                   default=lambda self: self.env.ref('tt_reservation_tour.tt_provider_tour_internal'), copy=False)
-    carrier_id = fields.Many2one('tt.transport.carrier', 'Carrier', domain=get_domain, readonly=True,
+    carrier_id = fields.Many2one('tt.transport.carrier', 'Carrier', domain=get_domain, required=True,
                                  default=lambda self: self.env.ref('tt_reservation_tour.tt_transport_carrier_tour_itt'), copy=False)
     document_url = fields.Many2one('tt.upload.center', 'Document URL')
     related_provider_ids = fields.One2many('tt.master.tour.provider', 'master_tour_id', 'Related Vendor(s)')
@@ -572,7 +572,7 @@ class MasterTour(models.Model):
                             'location_ids': [(6, 0, new_loc_ids)]
                         })
                         if new_tour_obj.state == 'draft':
-                            new_tour_obj.action_validate()
+                            new_tour_obj.action_confirm()
                 else:
                     raise UserError(det_res['error_msg'])
 
@@ -808,38 +808,34 @@ class MasterTour(models.Model):
                             'url': img.url and img.url or '',
                             'filename': img.filename and img.filename or '',
                         })
-                    if rec.tour_type == 'open':
-                        tour_line_qualify = True
-                        tour_line_list = []
-                    else:
-                        tour_line_qualify = False
-                        tour_line_list = []
-                        for rec2 in rec.tour_line_ids:
-                            if rec2.active:
-                                tour_line_list.append({
-                                    'tour_line_code': rec2.tour_line_code,
-                                    'departure_date': rec2.departure_date.strftime("%Y-%m-%d"),
-                                    'arrival_date': rec2.arrival_date.strftime("%Y-%m-%d"),
-                                    'seat': rec2.seat,
-                                    'quota': rec2.quota,
-                                    'state': rec2.state,
-                                    'state_str': dict(rec2._fields['state'].selection).get(rec2.state),
-                                    'sequence': rec2.sequence
-                                })
-                                if rec2.departure_date:
-                                    str_dept_date = rec2.departure_date.strftime("%Y-%m-%d")
-                                    if search_request['departure_month'] != '00':
-                                        if search_request['departure_year'] != '0000':
-                                            if str_dept_date[:7] == search_request['departure_date']:
-                                                tour_line_qualify = True
-                                        else:
-                                            if str_dept_date[5:7] == search_request['departure_month']:
-                                                tour_line_qualify = True
-                                    elif search_request['departure_year'] != '0000':
-                                        if str_dept_date[:4] == search_request['departure_year']:
+                    tour_line_qualify = False
+                    tour_line_list = []
+                    for rec2 in rec.tour_line_ids:
+                        if rec2.active:
+                            tour_line_list.append({
+                                'tour_line_code': rec2.tour_line_code,
+                                'departure_date': rec2.departure_date.strftime("%Y-%m-%d"),
+                                'arrival_date': rec2.arrival_date.strftime("%Y-%m-%d"),
+                                'seat': rec2.seat,
+                                'quota': rec2.quota,
+                                'state': rec2.state,
+                                'state_str': dict(rec2._fields['state'].selection).get(rec2.state),
+                                'sequence': rec2.sequence
+                            })
+                            if rec2.departure_date:
+                                str_dept_date = rec2.departure_date.strftime("%Y-%m-%d")
+                                if search_request['departure_month'] != '00':
+                                    if search_request['departure_year'] != '0000':
+                                        if str_dept_date[:7] == search_request['departure_date']:
                                             tour_line_qualify = True
                                     else:
+                                        if str_dept_date[5:7] == search_request['departure_month']:
+                                            tour_line_qualify = True
+                                elif search_request['departure_year'] != '0000':
+                                    if str_dept_date[:4] == search_request['departure_year']:
                                         tour_line_qualify = True
+                                else:
+                                    tour_line_qualify = True
                     if tour_line_qualify:
                         result.append({
                             'name': rec.name,
@@ -849,6 +845,7 @@ class MasterTour(models.Model):
                             'tour_category': rec.tour_category,
                             'tour_route': rec.tour_route,
                             'tour_type': rec.tour_type,
+                            'tour_type_str': dict(rec._fields['tour_type'].selection).get(rec.tour_type),
                             'flight': rec.flight,
                             'visa': rec.visa,
                             'description': rec.description,
@@ -1132,7 +1129,9 @@ class MasterTour(models.Model):
                 'tour_route': tour_obj.tour_route,
                 'tour_category': tour_obj.tour_category,
                 'tour_type': tour_obj.tour_type,
+                'tour_type_str': dict(tour_obj._fields['tour_type'].selection).get(tour_obj.tour_type),
                 'tour_lines': tour_line_list,
+                'carrier_code': tour_obj.carrier_id.code,
                 'visa': tour_obj.visa,
                 'flight': tour_obj.flight,
                 'accommodations': accommodation,
@@ -1594,10 +1593,14 @@ class MasterTour(models.Model):
             prefix = provider_id[0].alias and provider_id[0].alias + '~' or ''
             for rec in req['data']:
                 currency_obj = self.env['res.currency'].sudo().search([('name', '=', rec['currency_code'])], limit=1)
+                carrier_id = self.env['tt.transport.carrier'].sudo().search([('code', '=', rec['carrier_code'])], limit=1)
+                if not carrier_id:
+                    carrier_id = [self.env.ref('tt_reservation_tour.tt_transport_carrier_tour_itt')]
                 vals = {
                     'name': rec['name'],
                     'tour_code': prefix + rec['tour_code'],
                     'provider_id': provider_id[0].id,
+                    'carrier_id': carrier_id[0].id,
                     'tour_route': rec['tour_route'],
                     'sequence': rec['sequence'],
                     'is_can_hold': rec['is_can_hold'],
@@ -1628,7 +1631,7 @@ class MasterTour(models.Model):
                     'tipping_driver_infant': rec['tipping_driver_infant'],
                     'down_payment': rec['down_payment'],
                 }
-                tour_obj = self.env['tt.master.tour'].sudo().search([('tour_code', '=', rec['tour_code']), ('provider_id', '=', provider_id[0].id)], limit=1)
+                tour_obj = self.env['tt.master.tour'].sudo().search([('tour_code', '=',  prefix + rec['tour_code']), ('provider_id', '=', provider_id[0].id)], limit=1)
                 if tour_obj:
                     tour_obj = tour_obj[0]
                     tour_obj.sudo().write(vals)
@@ -1760,7 +1763,7 @@ class MasterTour(models.Model):
                 })
 
                 if tour_obj.state == 'draft':
-                    tour_obj.action_validate()
+                    tour_obj.action_confirm()
             response = {
                 'success': True
             }
@@ -1790,6 +1793,7 @@ class TourSyncProductsChildren(models.TransientModel):
                     'name': rec.name,
                     'tour_code': rec.tour_code,
                     'tour_route': rec.tour_route,
+                    'carrier_code': rec.carrier_id.code,
                     'sequence': rec.sequence,
                     'is_can_hold': rec.is_can_hold,
                     'currency_code': rec.currency_id.name,
@@ -1823,8 +1827,8 @@ class TourSyncProductsChildren(models.TransientModel):
                 for rec2 in rec.tour_line_ids:
                     tour_line_list.append({
                         'tour_line_code': rec2.tour_line_code,
-                        'departure_date': rec2.departure_date,
-                        'arrival_date': rec2.arrival_date,
+                        'departure_date': rec2.departure_date and rec2.departure_date.strftime("%Y-%m-%d") or False,
+                        'arrival_date': rec2.arrival_date and rec2.arrival_date.strftime("%Y-%m-%d") or False,
                         'seat': rec2.seat,
                         'quota': rec2.quota,
                         'state': rec2.state,
@@ -1897,7 +1901,6 @@ class TourSyncProductsChildren(models.TransientModel):
                     itinerary_list.append({
                         'name': rec2.name,
                         'day': rec2.day,
-                        'date': rec2.date and rec2.date.strftime("%Y-%m-%d") or False,
                         'item_ids': item_list,
                     })
 
@@ -1915,10 +1918,13 @@ class TourSyncProductsChildren(models.TransientModel):
                     'other_info_ids': other_info_list,
                 })
                 tour_data_list.append(dict_vals)
+
+            gw_timeout = int(len(tour_data_list) / 3) > 60 and int(len(tour_data_list) / 3) or 60
             vals = {
                 'provider_type': 'tour',
                 'action': 'sync_products_to_children',
                 'data': tour_data_list,
+                'timeout': gw_timeout
             }
             self.env['tt.api.webhook.data'].notify_subscriber(vals)
         except Exception as e:

@@ -45,8 +45,9 @@ class TestSearch(models.Model):
         if provider:
             provider_obj = self.env['tt.provider'].search(['|', ('alias', '=', provider), ('code', '=', provider)], limit=1)
             provider_id = provider_obj.id
-            provider_city = [rec.res_id for rec in self.env['tt.provider.code'].sudo().search([('res_model', '=', 'res.city'), ('provider_id', '=', provider_id)])]
-            domain.append(('id', 'in', provider_city))
+            provider_destination_ids = [rec.res_id for rec in self.env['tt.provider.code'].sudo().search([('res_model', '=', 'tt.hotel.destination'), ('provider_id', '=', provider_id)])]
+            city_ids = [rec.city_id.id for rec in self.env['tt.hotel.destination'].browse(provider_destination_ids) if rec.city_id]
+            domain.append(('id', 'in', city_ids))
         if country_name:
             country_ids = []
             for rec in country_name:

@@ -85,6 +85,18 @@ class TtReconcileTransactionWizard(models.TransientModel):
                     pass
 
                 trans_lines = recon_data.reconcile_lines_ids.filtered(lambda x: x.pnr == transaction['pnr'] and x.type == transaction['type'])
+                if len(trans_lines) > 1:
+                    total_found = False
+                    for rec in trans_lines:
+                        if rec.total == transaction['total']:
+                            trans_lines = rec
+                            total_found = True
+                            break
+                    if not total_found:
+                        for rec in trans_lines:
+                            if rec.sequence == transaction['sequence']:
+                                trans_lines = rec
+
                 if trans_lines:
                     found_trans_lines.append(trans_lines[0].id)
                     if transaction['sequence'] != trans_lines[0].sequence:  # update sequence dari vendor

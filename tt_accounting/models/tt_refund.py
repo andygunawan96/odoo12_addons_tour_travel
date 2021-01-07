@@ -28,6 +28,7 @@ class TtRefundLine(models.Model):
     extra_charge_amount = fields.Monetary('Extra Charge Fee', default=0, readonly=True, states={'finalize': [('readonly', False)]})
     refund_id = fields.Many2one('tt.refund', 'Refund', readonly=True)
     state = fields.Selection([('draft', 'Draft'), ('confirm', 'Confirmed'), ('sent', 'Sent'), ('finalize', 'Finalized'), ('done', 'Done')], 'State', default='draft', related='')
+    total_vendor = fields.Integer('Total Vendor')
 
     @api.multi
     def write(self, vals):
@@ -60,6 +61,9 @@ class TtRefundLine(models.Model):
         })
 
     def set_to_confirm(self):
+        # tanya boleh tidak IVAN
+        self.commission_fee = 0
+        self.charge_fee = 0
         self.write({
             'state': 'confirm',
         })
@@ -351,15 +355,58 @@ class TtRefund(models.Model):
             'state': 'expired',
         })
 
+    def set_to_confirm_api(self, data, ctx):
+        try:
+            refund_obj = self.search([('referenced_document', '=', data['referenced_document_external']),('state','=', data['state'])], limit=1)
+            if refund_obj:
+                refund_obj.set_to_confirm()
+                res = ERR.get_no_error()
+            else:
+                res = ERR.get_error(500)
+        except Exception as e:
+            _logger.error(traceback.format_exc())
+            res = ERR.get_error(500, additional_message='refund not found')
+        return res
+
     def set_to_confirm(self):
+        # jika ada provider rodextrip untuk BTBO2 IVAN
+        resv_obj = self.env[self.res_model].search([('name', '=', self.referenced_document)])
+        for rec in resv_obj.provider_booking_ids:
+            if 'rodextrip' in rec.provider_id.code:
+                # tembak gateway
+                data = {
+                    # 'referenced_document_external': 'AL.20120301695',
+                    'referenced_document_external': rec.get('pnr2') or '',
+                    'res_model': self.res_model,
+                    'provider': rec.provider_id.code,
+                    'state': self.state,
+                    'type': 'set_to_confirm'
+                }
+                self.env['tt.refund.api.con'].send_refund_request(data)
+
         self.write({
             'state': 'confirm',
             'confirm_uid': self.env.user.id,
             'confirm_date': datetime.now(),
             'hold_date': False
         })
+
         for rec in self.refund_line_ids:
             rec.set_to_confirm()
+
+    def refund_confirm_api(self, data, ctx):
+        try:
+            refund_obj = self.search([('referenced_document', '=', data['referenced_document_external']),('state','=','draft')], limit=1)
+            if refund_obj:
+                refund_obj.confirm_refund_from_button()
+                res = ERR.get_no_error()
+            else:
+                res = ERR.get_error(500)
+        except Exception as e:
+            _logger.error(traceback.format_exc())
+            res = ERR.get_error(500, additional_message='refund not found')
+        return res
+
 
     def confirm_refund_from_button(self):
         if self.state != 'draft':
@@ -390,28 +437,146 @@ class TtRefund(models.Model):
                     'co_agent_id': self.agent_id.id
                 }
                 self.env['tt.email.queue'].create_email_queue(temp_data, temp_context)
+                # jika book_obj provider ada rodextrip kirim
+                resv_obj = self.env[self.res_model].search([('name', '=', self.referenced_document)])
+                for rec in resv_obj.provider_booking_ids:
+                    if 'rodextrip' in rec.provider_id.code:
+                        # tembak gateway
+                        data = {
+                            # 'referenced_document_external': 'AL.20120301695',
+                            'referenced_document_external': rec.pnr2,
+                            'res_model': self.res_model,
+                            'provider': rec.provider_id.code,
+                            'type': 'confirm'
+                        }
+                        self.env['tt.refund.api.con'].send_refund_request(data)
             else:
                 _logger.info('Refund Confirmed email for {} is already created!'.format(self.name))
                 raise Exception('Refund Confirmed email for {} is already created!'.format(self.name))
         except Exception as e:
             _logger.info('Error Create Email Queue')
 
-    def send_refund_from_button(self):
+    def refund_request_sent_to_agent_api(self, data, ctx):
+        try:
+            _logger.info('get webhook refund api finalization')
+            _logger.info(json.dumps(data))
+            data = data['data']
+            refund_obj = self.search([('referenced_document_external', '=', data['reference_document']), ('state','=','confirm')], limit=1)
+            if refund_obj:
+                for rec in refund_obj:
+                    for idx, refund_data in enumerate(rec.refund_line_ids):
+                        if rec.refund_line_ids.total_vendor != 0:
+                            refund_data.commission_fee += data['refund_list'][idx]['commission_fee']
+                            refund_data.charge_fee += data['refund_list'][idx]['charge_fee']
+                refund_obj.send_refund_from_button([[]])
+                _logger.info('webhook done send back to HO')
+                res = ERR.get_no_error()
+            else:
+                res = ERR.get_error(500)
+        except Exception as e:
+            _logger.error(traceback.format_exc())
+            res = ERR.get_error(500, additional_message='refund not found')
+        return res
+
+    def send_refund_from_button_backend(self):
+        self.send_refund_from_button()
+
+    def send_webhook_refund(self, data, action, child_id):
+        vals = {
+            'provider_type': 'offline',
+            'action': action,
+            'data': data,
+            'child_id': child_id
+        }
+        _logger.info('webhook start')
+        self.env['tt.api.webhook.data'].notify_subscriber(vals)
+        _logger.info('webhook done')
+
+    def send_refund_from_button(self, list=[]):
         if self.state != 'confirm':
             raise UserError("Cannot Send because state is not 'confirm'.")
 
-        self.write({
-            'state': 'sent',
-            'sent_uid': self.env.user.id,
-            'sent_date': datetime.now(),
-            'hold_date': datetime.now() + relativedelta(days=3),
-        })
-        for rec in self.refund_line_ids:
-            rec.set_to_sent()
+        # klik dari HO tetapi untuk bookingan BTBO2
+        resv_obj = self.env[self.res_model].search([('name', '=', self.referenced_document)])
+        if resv_obj.agent_type_id == self.env.ref('tt_base.agent_type_btbo2'):
+            _logger.info('btbo2 send refund api')
+            for credential in resv_obj.user_id.credential_ids.webhook_rel_ids:
+                if "webhook/content" in credential.url:
+                    _logger.info('send webhook to child refund')
+                    ## check lebih efisien check api ccredential usernya punya webhook visa, atau kalau api user selalu di notify
+                    ## tetapi nanti filterny sendiri ke kirm ato enda
+                    refund_list = []
+                    for rec in self.refund_line_ids:
+                        refund_list.append({
+                            'name': rec.name,
+                            'commission_fee': rec.commission_fee,
+                            'charge_fee': rec.charge_fee
+                        })
+                    data = {
+                        'refund_type': self.refund_type_id.name,
+                        'type': 'send_to_agent_api',
+                        'refund_list': refund_list,
+                        'reference_document': self.referenced_document,
+                        # 'referenced_document': 'AL.20120301695',
+                    }
+
+                    self.send_webhook_refund(data, 'refund_request_sent_to_agent_api', resv_obj.user_id.id)
+                    break
+        total_vendor = 100
+        if len(list) == 0:
+            total_vendor = 0
+            for rec in self.refund_line_ids:
+                rec.total_vendor = 0
+        else:
+            for rec in self.refund_line_ids:
+                rec.total_vendor = rec.total_vendor - len(list)
+                if total_vendor == 100:
+                    total_vendor = rec.total_vendor
+        if total_vendor == 0:
+            self.write({
+                'state': 'sent',
+                'sent_uid': self.env.user.id,
+                'sent_date': datetime.now(),
+                'hold_date': datetime.now() + relativedelta(days=3),
+            })
+            for rec in self.refund_line_ids:
+                rec.set_to_sent()
+
+    def validate_refund_from_button_api(self, data, ctx):
+        try:
+            refund_obj = self.search([('referenced_document', '=', data['referenced_document_external']),('state','=','sent')], limit=1)
+            if refund_obj:
+                refund_obj.validate_refund_from_button()
+                res = ERR.get_no_error()
+            else:
+                res = ERR.get_error(500)
+        except Exception as e:
+            _logger.error(traceback.format_exc())
+            res = ERR.get_error(500, additional_message='refund not found')
+        return res
 
     def validate_refund_from_button(self):
         if self.state != 'sent':
             raise UserError("Cannot Validate because state is not 'Sent'.")
+
+        # agent to HO
+        resv_obj = self.env[self.res_model].search([('name', '=', self.referenced_document)])
+        total_vendor = 0
+        for rec in resv_obj.provider_booking_ids:
+            total_vendor += 1
+            if 'rodextrip' in rec.provider_id.code:
+                # tembak gateway
+                data = {
+                    # 'referenced_document_external': 'AL.20120301695',
+                    'referenced_document_external': rec.pnr2,
+                    'res_model': self.res_model,
+                    'provider': rec.provider_id.code,
+                    'type': 'validate'
+                }
+                self.env['tt.refund.api.con'].send_refund_request(data)
+
+        for rec in self.refund_line_ids:
+            rec.total_vendor = total_vendor
 
         self.write({
             'state': 'validate',
@@ -423,127 +588,184 @@ class TtRefund(models.Model):
             'hold_date': False
         })
 
-    def finalize_refund_from_button(self):
+        # jika rodextrip send webhook ke BTBO jika btbo check book_obj provider ada rodextrip kirim
+
+    def finalize_refund_from_button_api(self, data, ctx):
+        try:
+            _logger.info('get webhook refund api finalization')
+            _logger.info(json.dumps(data))
+            data = data['data']
+            refund_obj = self.search([('referenced_document_external', '=', data['reference_document']), ('state','=','confirm')], limit=1)
+            if refund_obj:
+                for rec in refund_obj:
+                    for idx, refund_data in enumerate(rec.refund_line_ids):
+                        if rec.refund_line_ids.total_vendor != 0:
+                            refund_data.extra_charge_amount += data['refund_list'][idx]['extra_charge_amount']
+                            refund_data.real_refund_amount += data['refund_list'][idx]['real_refund_amount']
+                refund_obj.finalize_refund_from_button([[]])
+                _logger.info('webhook done send back to HO')
+                res = ERR.get_no_error()
+            else:
+                res = ERR.get_error(500)
+        except Exception as e:
+            _logger.error(traceback.format_exc())
+            res = ERR.get_error(500, additional_message='refund not found')
+        return res
+
+    def finalize_refund_from_button_backend(self):
+        self.send_refund_from_button()
+
+    def finalize_refund_from_button(self, list=[]):
         if self.state != 'validate':
             raise UserError("Cannot finalize because state is not 'Validated'.")
 
-        book_obj = self.env[self.res_model].browse(int(self.res_id))
-        provider_len = len(book_obj.provider_booking_ids.ids)
-        for idx, rec in enumerate(book_obj.provider_booking_ids):
-            if idx == provider_len - 1:
-                rec.action_refund(True)
-            else:
-                rec.action_refund()
+        # klik dari HO tetapi untuk bookingan BTBO2
+        total_vendor_reset = 0
+        resv_obj = self.env[self.res_model].search([('name', '=', self.referenced_document)])
+        for rec in resv_obj.provider_booking_ids:
+            total_vendor_reset += 1
+        if resv_obj.agent_type_id == self.env.ref('tt_base.agent_type_btbo2'):
+            _logger.info('btbo2 send refund api')
+            for credential in resv_obj.user_id.credential_ids.webhook_rel_ids:
+                if "webhook/content" in credential.url:
+                    _logger.info('send webhook to child refund')
+                    ## check lebih efisien check api ccredential usernya punya webhook visa, atau kalau api user selalu di notify
+                    ## tetapi nanti filterny sendiri ke kirm ato enda
+                    refund_list = []
+                    for rec in self.refund_line_ids:
+                        refund_list.append({
+                            'name': rec.name,
+                            'extra_charge_amount': rec.extra_charge_amount,
+                            'real_refund_amount': rec.real_refund_amount
+                        })
+                    data = {
+                        'refund_type': self.refund_type_id.name,
+                        'type': 'finalize_refund_from_button_api',
+                        'refund_list': refund_list,
+                        'reference_document': self.referenced_document,
+                        # 'reference_document': 'TN.21010627702',
+                    }
 
-        self.write({
-            'state': 'final',
-            'final_uid': self.env.user.id,
-            'final_date': datetime.now()
-        })
+                    self.send_webhook_refund(data, 'refund_request_sent_to_agent_api', resv_obj.user_id.id)
+                    break
 
-        for rec in self.refund_line_ids:
-            rec.set_to_finalize()
+        total_vendor = 100
+        if len(list) == 0:
+            total_vendor = 0
+            for rec in self.refund_line_ids:
+                rec.total_vendor = 0
+        else:
+            for rec in self.refund_line_ids:
+                rec.total_vendor = rec.total_vendor - len(list)
+                if total_vendor == 100:
+                    total_vendor = rec.total_vendor
+        if total_vendor == 0:
+            for rec in self.refund_line_ids:
+                rec.total_vendor = total_vendor_reset
+            book_obj = self.env[self.res_model].browse(int(self.res_id))
+            provider_len = len(book_obj.provider_booking_ids.ids)
+            for idx, rec in enumerate(book_obj.provider_booking_ids):
+                if idx == provider_len - 1:
+                    rec.action_refund(True)
+                else:
+                    rec.action_refund()
 
+            self.write({
+                'state': 'final',
+                'final_uid': self.env.user.id,
+                'final_date': datetime.now()
+            })
+
+            for rec in self.refund_line_ids:
+                rec.set_to_finalize()
+
+            try:
+                mail_created = self.env['tt.email.queue'].sudo().search(
+                    [('res_id', '=', self.id), ('res_model', '=', self._name), ('type', '=', 'refund_finalized')],
+                    limit=1)
+                if not mail_created:
+                    temp_data = {
+                        'provider_type': 'refund',
+                        'order_number': self.name,
+                        'type': 'finalized',
+                    }
+                    temp_context = {
+                        'co_agent_id': self.agent_id.id
+                    }
+                    self.env['tt.email.queue'].create_email_queue(temp_data, temp_context)
+                else:
+                    _logger.info('Refund Finalized email for {} is already created!'.format(self.name))
+                    raise Exception('Refund Finalized email for {} is already created!'.format(self.name))
+            except Exception as e:
+                _logger.info('Error Create Email Queue')
+
+    def action_approve_api(self, data, ctx):
         try:
-            mail_created = self.env['tt.email.queue'].sudo().search(
-                [('res_id', '=', self.id), ('res_model', '=', self._name), ('type', '=', 'refund_finalized')],
-                limit=1)
-            if not mail_created:
-                temp_data = {
-                    'provider_type': 'refund',
-                    'order_number': self.name,
-                    'type': 'finalized',
-                }
-                temp_context = {
-                    'co_agent_id': self.agent_id.id
-                }
-                self.env['tt.email.queue'].create_email_queue(temp_data, temp_context)
+            _logger.info('get webhook refund api finalization')
+            _logger.info(json.dumps(data))
+            data = data['data']
+            refund_obj = self.search([('referenced_document_external', '=', data['reference_document']), ('state','=','confirm')], limit=1)
+            if refund_obj:
+                refund_obj.action_approve([[]])
+                _logger.info('webhook done send back to HO')
+                res = ERR.get_no_error()
             else:
-                _logger.info('Refund Finalized email for {} is already created!'.format(self.name))
-                raise Exception('Refund Finalized email for {} is already created!'.format(self.name))
+                res = ERR.get_error(500)
         except Exception as e:
-            _logger.info('Error Create Email Queue')
+            _logger.error(traceback.format_exc())
+            res = ERR.get_error(500, additional_message='refund not found')
+        return res
 
-    def action_approve(self):
+    def action_approve_backend(self):
+        self.send_refund_from_button()
+
+    def action_approve(self, list=[]):
         if self.state != 'final':
             raise UserError("Cannot approve because state is not 'Final'.")
         if not self.is_vendor_received:
             raise UserError("Please wait until you received the refund payment from vendor!")
 
-        credit = 0
-        debit = self.refund_amount
-        if debit < 0:
-            credit = debit * -1
-            debit = 0
+        resv_obj = self.env[self.res_model].search([('name', '=', self.referenced_document)])
+        if resv_obj.agent_type_id == self.env.ref('tt_base.agent_type_btbo2'):
+            _logger.info('btbo2 send refund api')
+            for credential in resv_obj.user_id.credential_ids.webhook_rel_ids:
+                if "webhook/content" in credential.url:
+                    _logger.info('send webhook to child refund')
+                    ## check lebih efisien check api ccredential usernya punya webhook visa, atau kalau api user selalu di notify
+                    ## tetapi nanti filterny sendiri ke kirm ato enda
+                    data = {
+                        'refund_type': self.refund_type_id.name,
+                        'type': 'action_approve_api',
+                        'reference_document': self.referenced_document,
+                        # 'reference_document': 'TN.21010627702',
+                    }
 
-        ledger_type = 4
-        self.env['tt.ledger'].create_ledger_vanilla(
-            self.res_model,
-            self.res_id,
-            'Refund : %s' % (self.name),
-            self.name,
-            datetime.now(pytz.timezone('Asia/Jakarta')).date(),
-            ledger_type,
-            self.currency_id.id,
-            self.env.user.id,
-            self.agent_id.id,
-            False,
-            debit,
-            credit,
-            'Refund for %s (Ref PNR: %s)' % (self.referenced_document, self.referenced_pnr),
-            **{'refund_id': self.id}
-        )
+                    self.send_webhook_refund(data, 'refund_request_sent_to_agent_api', resv_obj.user_id.id)
+                    break
 
-        if self.final_admin_fee_ho:
-            debit = 0
-            credit = self.final_admin_fee_ho
-            ledger_type = 6
-            self.env['tt.ledger'].create_ledger_vanilla(
-                self.res_model,
-                self.res_id,
-                'Refund Admin Fee: %s' % (self.name),
-                self.name,
-                datetime.now(pytz.timezone('Asia/Jakarta')).date(),
-                ledger_type,
-                self.currency_id.id,
-                self.env.user.id,
-                self.agent_id.id,
-                False,
-                debit,
-                credit,
-                'Refund Admin Fee for %s (Ref PNR: %s)' % (self.referenced_document, self.referenced_pnr),
-                **{'refund_id': self.id}
-            )
+        total_vendor = 100
+        if len(list) == 0:
+            total_vendor = 0
+            for rec in self.refund_line_ids:
+                rec.total_vendor = 0
+        else:
+            for rec in self.refund_line_ids:
+                rec.total_vendor = rec.total_vendor - len(list)
+                if total_vendor == 100:
+                    total_vendor = rec.total_vendor
 
-            ho_agent = self.env['tt.agent'].sudo().search(
-                [('agent_type_id.id', '=', self.env.ref('tt_base.agent_type_ho').id)], limit=1)
+        if total_vendor == 0:
             credit = 0
-            debit = self.final_admin_fee_ho
-            self.env['tt.ledger'].create_ledger_vanilla(
-                self.res_model,
-                self.res_id,
-                'Refund Admin Fee: %s' % (self.name),
-                self.name,
-                datetime.now(pytz.timezone('Asia/Jakarta')).date(),
-                ledger_type,
-                self.currency_id.id,
-                self.env.user.id,
-                ho_agent and ho_agent[0].id or False,
-                False,
-                debit,
-                credit,
-                'Refund Admin Fee for %s (Ref PNR: %s)' % (self.referenced_document, self.referenced_pnr),
-                **{'refund_id': self.id}
-            )
+            debit = self.refund_amount
+            if debit < 0:
+                credit = debit * -1
+                debit = 0
 
-        if self.final_admin_fee_agent:
-            debit = 0
-            credit = self.final_admin_fee_agent
             ledger_type = 4
             self.env['tt.ledger'].create_ledger_vanilla(
                 self.res_model,
                 self.res_id,
-                'Refund Agent Admin Fee: %s' % (self.name),
+                'Refund : %s' % (self.name),
                 self.name,
                 datetime.now(pytz.timezone('Asia/Jakarta')).date(),
                 ledger_type,
@@ -553,38 +775,101 @@ class TtRefund(models.Model):
                 False,
                 debit,
                 credit,
-                'Refund Agent Admin Fee for %s (Ref PNR: %s)' % (self.referenced_document, self.referenced_pnr),
+                'Refund for %s (Ref PNR: %s)' % (self.referenced_document, self.referenced_pnr),
                 **{'refund_id': self.id}
             )
 
-            credit = 0
-            debit = self.final_admin_fee_agent
-            ledger_type = 3
-            self.env['tt.ledger'].create_ledger_vanilla(
-                self.res_model,
-                self.res_id,
-                'Refund Agent Admin Fee: %s' % (self.name),
-                self.name,
-                datetime.now(pytz.timezone('Asia/Jakarta')).date(),
-                ledger_type,
-                self.currency_id.id,
-                self.env.user.id,
-                self.agent_id.id,
-                False,
-                debit,
-                credit,
-                'Refund Agent Admin Fee for %s (Ref PNR: %s)' % (self.referenced_document, self.referenced_pnr),
-                **{'refund_id': self.id}
-            )
+            if self.final_admin_fee_ho:
+                debit = 0
+                credit = self.final_admin_fee_ho
+                ledger_type = 6
+                self.env['tt.ledger'].create_ledger_vanilla(
+                    self.res_model,
+                    self.res_id,
+                    'Refund Admin Fee: %s' % (self.name),
+                    self.name,
+                    datetime.now(pytz.timezone('Asia/Jakarta')).date(),
+                    ledger_type,
+                    self.currency_id.id,
+                    self.env.user.id,
+                    self.agent_id.id,
+                    False,
+                    debit,
+                    credit,
+                    'Refund Admin Fee for %s (Ref PNR: %s)' % (self.referenced_document, self.referenced_pnr),
+                    **{'refund_id': self.id}
+                )
 
-        self.write({
-            'state': 'approve',
-            'approve_uid': self.env.user.id,
-            'approve_date': datetime.now()
-        })
+                ho_agent = self.env['tt.agent'].sudo().search(
+                    [('agent_type_id.id', '=', self.env.ref('tt_base.agent_type_ho').id)], limit=1)
+                credit = 0
+                debit = self.final_admin_fee_ho
+                self.env['tt.ledger'].create_ledger_vanilla(
+                    self.res_model,
+                    self.res_id,
+                    'Refund Admin Fee: %s' % (self.name),
+                    self.name,
+                    datetime.now(pytz.timezone('Asia/Jakarta')).date(),
+                    ledger_type,
+                    self.currency_id.id,
+                    self.env.user.id,
+                    ho_agent and ho_agent[0].id or False,
+                    False,
+                    debit,
+                    credit,
+                    'Refund Admin Fee for %s (Ref PNR: %s)' % (self.referenced_document, self.referenced_pnr),
+                    **{'refund_id': self.id}
+                )
 
-        for rec in self.refund_line_ids:
-            rec.set_to_done()
+            if self.final_admin_fee_agent:
+                debit = 0
+                credit = self.final_admin_fee_agent
+                ledger_type = 4
+                self.env['tt.ledger'].create_ledger_vanilla(
+                    self.res_model,
+                    self.res_id,
+                    'Refund Agent Admin Fee: %s' % (self.name),
+                    self.name,
+                    datetime.now(pytz.timezone('Asia/Jakarta')).date(),
+                    ledger_type,
+                    self.currency_id.id,
+                    self.env.user.id,
+                    self.agent_id.id,
+                    False,
+                    debit,
+                    credit,
+                    'Refund Agent Admin Fee for %s (Ref PNR: %s)' % (self.referenced_document, self.referenced_pnr),
+                    **{'refund_id': self.id}
+                )
+
+                credit = 0
+                debit = self.final_admin_fee_agent
+                ledger_type = 3
+                self.env['tt.ledger'].create_ledger_vanilla(
+                    self.res_model,
+                    self.res_id,
+                    'Refund Agent Admin Fee: %s' % (self.name),
+                    self.name,
+                    datetime.now(pytz.timezone('Asia/Jakarta')).date(),
+                    ledger_type,
+                    self.currency_id.id,
+                    self.env.user.id,
+                    self.agent_id.id,
+                    False,
+                    debit,
+                    credit,
+                    'Refund Agent Admin Fee for %s (Ref PNR: %s)' % (self.referenced_document, self.referenced_pnr),
+                    **{'refund_id': self.id}
+                )
+
+            self.write({
+                'state': 'approve',
+                'approve_uid': self.env.user.id,
+                'approve_date': datetime.now()
+            })
+
+            for rec in self.refund_line_ids:
+                rec.set_to_done()
 
     def create_profit_loss_ledger(self):
         value = self.real_refund_amount - self.refund_amount

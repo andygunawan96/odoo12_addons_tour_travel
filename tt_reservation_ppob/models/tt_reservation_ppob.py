@@ -495,6 +495,7 @@ class ReservationPpob(models.Model):
                 'amount_of_month': rec.get('amount_of_month') and rec['amount_of_month'] or 1,
                 'fare_amount': rec.get('fare_amount') and rec['fare_amount'] or 0,
                 'admin_fee': rec.get('admin_fee') and rec['admin_fee'] or 0,
+                'admin_fee_switcher': rec.get('admin_fee_switcher') and rec['admin_fee_switcher'] or 0,
                 'period_end_date': rec.get('period_end_date') and datetime.strptime(rec['period_end_date'], '%Y-%m-%d') or False,
                 'meter_read_date': rec.get('meter_read_date') and datetime.strptime(rec['meter_read_date'], '%Y-%m-%d') or False,
                 'incentive': rec.get('incentive') and rec['incentive'] or 0,
