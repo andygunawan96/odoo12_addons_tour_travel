@@ -15,6 +15,10 @@ class TtRefundApiCon(models.Model):
             res = self.env['tt.refund'].refund_confirm_api(data, context)
         elif action == 'refund_request_sent_to_agent':
             res = self.env['tt.refund'].refund_request_sent_to_agent_api(data, context)
+        elif action == 'refund_request_set_to_confirm_api':
+            res = self.env['tt.refund'].set_to_confirm_api(data, context)
+        elif action == 'refund_request_validate_api':
+            res = self.env['tt.refund'].validate_refund_from_button(data, context)
         else:
             raise RequestException(999)
 
