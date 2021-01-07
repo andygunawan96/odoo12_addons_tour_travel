@@ -613,7 +613,7 @@ class TtRefund(models.Model):
         return res
 
     def finalize_refund_from_button_backend(self):
-        self.send_refund_from_button()
+        self.finalize_refund_from_button()
 
     def finalize_refund_from_button(self, list=[]):
         if self.state != 'validate':
@@ -717,7 +717,7 @@ class TtRefund(models.Model):
         return res
 
     def action_approve_backend(self):
-        self.send_refund_from_button()
+        self.action_approve()
 
     def action_approve(self, list=[]):
         if self.state != 'final':
