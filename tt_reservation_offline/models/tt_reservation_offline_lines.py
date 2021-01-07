@@ -198,8 +198,8 @@ class IssuedOfflineLines(models.Model):
         vals += 'Room : ' + (self.room if self.room else '') + ' (' + (self.meal_type if self.meal_type else '') + ') ' + str(self.obj_qty) + 'x\n'
         vals += 'Date : ' + str(self.check_in) + ' - ' if self.check_in else 'Date : - '
         vals += str(self.check_out) + '\n' if self.check_out else '\n'
-        vals += 'Passengers : \n' + str(self.get_passengers_list())
-        vals += 'Description : ' + self.description if self.description else 'Description : '
+        # vals += 'Passengers : \n' + str(self.get_passengers_list())
+        # vals += 'Description : ' + self.description if self.description else 'Description : '
         return vals
 
     def get_all_line_hotel_description(self):

@@ -5,7 +5,7 @@
         <field name="name">Invoice Wizard</field>
         <field name="model">tt.agent.invoice.wizard</field>
         <field name="arch" type="xml">
-            <form string="Split Options">
+            <form string="Move Options">
                 <group>
                     <group>
                         <field name="invoice_id1"/>

@@ -6,7 +6,6 @@ PRICE_TYPE = [
     ('pax', 'Passenger'),
 ]
 
-
 class TtPnrQuotaMasterData(models.Model):
     _name = 'tt.pnr.quota.price.list'
     _rec_name = 'name'
@@ -37,7 +36,7 @@ class TtPnrQuotaMasterData(models.Model):
     carrier_id = fields.Many2one('tt.transport.carrier', 'Carrier Code', domain=get_domain_carrier)
     carrier_access_type = fields.Selection([("all", "ALL"), ("allow", "Allowed"), ("restrict", "Restricted")],
                                                  'Carrier Access Type', default='all')
-    currency_id = fields.Many2one('res.currency', 'Currency', default=lambda self:self.env.user.company_id.currency_id)
+    currency_id = fields.Many2one('res.currency', 'Currency', default=lambda self:self.env.user.company_id.currency_id.id)
     price = fields.Monetary('Price')
     active = fields.Boolean('Active', default=True)
     used_package_list_ids = fields.Many2many('tt.pnr.quota.price.package',

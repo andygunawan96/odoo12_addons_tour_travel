@@ -29,6 +29,8 @@ TT_TRANSPORT
         'data/ir_send_email.xml',
         'data/tt_loyalty_program_data.xml',
         'data/tt_frequent_flyer_airline_data.xml',
+        'data/tt_pnr_quota_price_list_airline_data.xml',
+        'data/tt_pricing_agent_airline_data.xml',
 
         # 'data/test_destination/tt_destination_airline_26_feb_2020_0.xml',
         # 'data/test_destination/tt_destination_airline_26_feb_2020_1.xml',

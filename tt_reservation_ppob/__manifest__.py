@@ -21,6 +21,8 @@ TT_TRANSPORT
         'data/tt_provider_ppob_data.xml',
         'data/tt_transport_carrier_ppob_data.xml',
         'data/ir_send_email.xml',
+        'data/tt_pricing_agent_ppob_data.xml',
+
         'wizard/force_issued_wizard_views.xml',
         'views/menu_item_base.xml',
         'views/tt_master_voucher_ppob_views.xml',

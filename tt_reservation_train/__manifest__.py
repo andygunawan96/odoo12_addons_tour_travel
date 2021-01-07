@@ -20,6 +20,9 @@ TT_TRANSPORT
         'data/tt_transport_carrier_train.xml',
         'data/tt_api_monitor_rule_data.xml',
         'data/ir_send_email.xml',
+        'data/tt_pnr_quota_price_list_train_data.xml',
+        'data/tt_pricing_agent_train_data.xml',
+
         'security/ir.model.access.csv',
         'security/ir_rule_data.xml',
 

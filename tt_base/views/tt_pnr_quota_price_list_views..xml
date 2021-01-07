@@ -70,7 +70,7 @@
                   groups="tt_base.group_tt_accounting_operator,tt_base.group_tt_agent_management_operator"
                   action="tt_pnr_quota_price_list_action_view"
                   name="PNR Quota Price List"
-                  sequence="17"/>
+                  sequence="19"/>
 
     </data>
 </odoo>
