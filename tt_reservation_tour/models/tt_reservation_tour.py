@@ -416,11 +416,11 @@ class ReservationTour(models.Model):
             except Exception:
                 agent_obj = self.env['res.users'].browse(int(context['co_uid'])).agent_id
 
-            if tour_data.tour_type == 'open' and (not data.get('departure_date') or not data.get('arrival_date')):
-                raise RequestException(1004, additional_message='Departure Date and Arrival Date parameters are required for Open Tour!')
+            if tour_data.tour_type == 'open' and not data.get('departure_date'):
+                raise RequestException(1004, additional_message='Departure Date parameter is required for Open Tour!')
 
             temp_dept_date = data.get('departure_date') and data['departure_date'] or tour_line_data.departure_date
-            temp_arr_date = data.get('arrival_date') and data['arrival_date'] or tour_line_data.arrival_date
+            temp_arr_date = data.get('departure_date') and (datetime.strptime(data['departure_date'], '%Y-%m-%d') + timedelta(days=int(tour_data.duration))).strftime('%Y-%m-%d') or tour_line_data.arrival_date
             booking_obj = self.env['tt.reservation.tour'].sudo().create({
                 'contact_id': contact_obj.id,
                 'booker_id': booker_obj.id,
