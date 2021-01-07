@@ -73,7 +73,7 @@
                   groups="tt_base.group_tt_accounting_operator,tt_base.group_tt_agent_management_operator"
                   action="tt_pnr_quota_usage_action_view"
                   name="PNR Quota Usage"
-                  sequence="18"/>
+                  sequence="20"/>
 
     </data>
 </odoo>

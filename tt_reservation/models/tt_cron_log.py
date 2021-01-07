@@ -26,11 +26,11 @@ class TtCronLogInhResv(models.Model):
             self.create_cron_log_folder()
             self.write_cron_log('auto expired booking')
 
-    def cron_auto_reconcile(self,check_unreconciled_reservation=False):
+    def cron_auto_reconcile(self,timedelta_days=1,check_unreconciled_reservation=False):
         try:
             error_list = []
             ok_provider = []
-            yesterday_datetime = datetime.now(pytz.timezone("Asia/Jakarta")) - timedelta(days=1)
+            yesterday_datetime = datetime.now(pytz.timezone("Asia/Jakarta")) - timedelta(days=timedelta_days)
             for provider_obj in self.env['tt.provider'].search([('is_reconcile', '=', True)]):
                 wiz_obj = self.env['tt.reconcile.transaction.wizard'].create({
                     'provider_type_id': provider_obj.provider_type_id.id,

@@ -11,7 +11,7 @@ TT_TRANSPORT
     'category': 'booking',
     'website': '',
     'images' : [],
-    'depends' : ['base_setup','tt_base','tt_reservation','base_address_city','tt_agent_sales'],
+    'depends' : ['base_setup','tt_base','tt_reservation','base_address_city'],
     'data': [
         'data/ir_sequence_data.xml',
         'data/ir_cron_data.xml',
@@ -20,6 +20,8 @@ TT_TRANSPORT
         'data/tt_transport_carrier_activity.xml',
         'data/tt_api_webhook_data.xml',
         'data/ir_send_email.xml',
+        'data/tt_pricing_agent_activity_data.xml',
+
         'security/ir.model.access.csv',
         'security/ir_rule_data.xml',
         'wizard/force_issued_wizard_views.xml',

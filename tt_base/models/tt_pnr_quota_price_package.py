@@ -11,8 +11,8 @@ class TtPnrQuotaMasterPackage(models.Model):
                                            'tt_pnr_quota_price_package_list_rel',
                                            'price_package_id','price_list_id',
                                            'Available Price List')
-    minimum_fee = fields.Monetary('Minimum Fee')
-    validity = fields.Integer('Validity Days', default=1)
+    minimum_fee = fields.Monetary('Minimum Fee',default=0)
+    validity = fields.Integer('Validity Days', default=30)
     fix_profit_share = fields.Boolean('Fix Profit Share', default=True)
     currency_id = fields.Many2one('res.currency', 'Currency', default=lambda self:self.env.user.company_id.currency_id.id)
     active = fields.Boolean('Active', default=True)

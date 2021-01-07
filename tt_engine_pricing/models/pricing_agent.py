@@ -11,7 +11,7 @@ class PricingAgent(models.Model):
     _name = 'tt.pricing.agent'
     _inherit = 'tt.history'
     _order = 'sequence'
-    _description = 'Rodex Model'
+    _description = 'Rodex Pricing Agent Model'
 
     name = fields.Char('Name', compute='_compute_name_pricing', store=True)
     sequence = fields.Integer('Sequence', default=50, required=True)
