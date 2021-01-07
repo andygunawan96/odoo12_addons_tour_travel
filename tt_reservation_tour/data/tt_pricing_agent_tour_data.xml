@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <data>
+    <data noupdate="1">
         <!-- Sequences for default tour pricing agent -->
         <!--        Pricing Agent Line-->
         <record id="tt_pricing_agent_default_citra_tour_line_HO" model="tt.pricing.agent.line">
