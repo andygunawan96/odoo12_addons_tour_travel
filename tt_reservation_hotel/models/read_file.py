@@ -333,6 +333,7 @@ class HotelInformation(models.Model):
                         file.close()
                     break
             number += 1
+
     # Hotelspro: Tools untuk hitung jumlah hotel per city dan kelengkapan data nya
     def get_record_by_file_4(self):
         with open("/var/log/tour_travel/file_hotelspro_master/master_dest.txt") as f:
@@ -3441,11 +3442,25 @@ class HotelInformation(models.Model):
 
     # 1f. Get room Code
     def v2_get_room_code(self):
-        return True
+        provider = self.env['ir.config_parameter'].sudo().get_param('hotel.cache.provider').split(',')  # 'knb',dida,webbeds
+        for rec in provider:
+            def_name = 'v2_get_room_code_%s' % rec
+            if hasattr(self, def_name):
+                return getattr(self, def_name)()
+            else:
+                _logger.error(msg='No function get meal code for this provider %s' % rec)
+        return False
 
     # 1g. Get Facility Code
     def v2_get_facility_code(self):
-        return True
+        provider = self.env['ir.config_parameter'].sudo().get_param('hotel.cache.provider').split(',')  # 'knb',dida,webbeds
+        for rec in provider:
+            def_name = 'v2_get_facility_code_%s' % rec
+            if hasattr(self, def_name):
+                return getattr(self, def_name)()
+            else:
+                _logger.error(msg='No function get Facility code for this provider %s' % rec)
+        return False
 
     # 2. Merge
     # Compiller: Master
