@@ -3,22 +3,15 @@
     <data noupdate="1">
 
         <record id="tt_transport_carrier_tour_itt" model="tt.transport.carrier">
-            <field name="name">Internal Tour</field>
+            <field name="name">International Tour</field>
             <field name="code">ITT</field>
             <field name="active">1</field>
             <field name="provider_type_id" ref="tt_reservation_tour.tt_provider_type_tour"/>
         </record>
 
-        <record id="tt_transport_carrier_tour_gcn" model="tt.transport.carrier">
-            <field name="name">GoChina</field>
-            <field name="code">GCN</field>
-            <field name="active">1</field>
-            <field name="provider_type_id" ref="tt_reservation_tour.tt_provider_type_tour"/>
-        </record>
-
-        <record id="tt_transport_carrier_tour_rxt" model="tt.transport.carrier">
-            <field name="name">Rodextrip Tour</field>
-            <field name="code">RXT</field>
+        <record id="tt_transport_carrier_tour_dmt" model="tt.transport.carrier">
+            <field name="name">Domestic Tour</field>
+            <field name="code">DMT</field>
             <field name="active">1</field>
             <field name="provider_type_id" ref="tt_reservation_tour.tt_provider_type_tour"/>
         </record>

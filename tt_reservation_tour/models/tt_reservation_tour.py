@@ -604,6 +604,7 @@ class ReservationTour(models.Model):
                     'arrival_date': book_obj.tour_lines_id.arrival_date,
                     'tour_category': book_obj.tour_id.tour_category,
                     'tour_type': book_obj.tour_id.tour_type,
+                    'tour_type_str': dict(book_obj.tour_id._fields['tour_type'].selection).get(book_obj.tour_id.tour_type),
                     'visa': book_obj.tour_id.visa,
                     'flight': book_obj.tour_id.flight,
                     'image_urls': image_urls,

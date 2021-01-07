@@ -66,43 +66,43 @@
                     </div>
                     <div class="oe_title">
                         <h1>
-                            <field name="name" default_focus="1" placeholder="Tour Name" attrs="{'readonly': [('provider_id', '!=', %(tt_reservation_tour.tt_provider_tour_internal)d)]}"/>
+                            <field name="name" default_focus="1" placeholder="Tour Name" attrs="{'readonly': ['|', ('state', '!=', 'draft'), ('provider_id', '!=', %(tt_reservation_tour.tt_provider_tour_internal)d)]}"/>
                         </h1>
                     </div>
                     <group>
                         <group>
-                            <field name="location_ids" attrs="{'readonly': [('provider_id', '!=', %(tt_reservation_tour.tt_provider_tour_internal)d)]}">
+                            <field name="location_ids" attrs="{'readonly': ['|', ('state', '!=', 'draft'), ('provider_id', '!=', %(tt_reservation_tour.tt_provider_tour_internal)d)]}">
                                 <tree>
                                     <field name="city_id"/>
                                     <field name="state_id"/>
                                     <field name="country_id"/>
                                 </tree>
                             </field>
-                            <field name="tour_route" attrs="{'readonly': [('provider_id', '!=', %(tt_reservation_tour.tt_provider_tour_internal)d)]}"/>
-                            <field name="sequence" attrs="{'readonly': [('provider_id', '!=', %(tt_reservation_tour.tt_provider_tour_internal)d)]}"/>
-                            <field name="is_can_hold" attrs="{'readonly': [('provider_id', '!=', %(tt_reservation_tour.tt_provider_tour_internal)d)]}"/>
-                            <field name="document_url"/>
+                            <field name="tour_route" attrs="{'readonly': ['|', ('state', '!=', 'draft'), ('provider_id', '!=', %(tt_reservation_tour.tt_provider_tour_internal)d)]}"/>
+                            <field name="sequence" attrs="{'readonly': ['|', ('state', '!=', 'draft'), ('provider_id', '!=', %(tt_reservation_tour.tt_provider_tour_internal)d)]}"/>
+                            <field name="is_can_hold" attrs="{'readonly': ['|', ('state', '!=', 'draft'), ('provider_id', '!=', %(tt_reservation_tour.tt_provider_tour_internal)d)]}"/>
+                            <field name="document_url" attrs="{'readonly': ['|', ('state', '!=', 'draft'), ('provider_id', '!=', %(tt_reservation_tour.tt_provider_tour_internal)d)]}"/>
                         </group>
                         <group>
                             <field name="tour_code" readonly="1"/>
                             <field name="provider_id" groups="tt_base.group_tt_tour_travel_operator"/>
-                            <field name="carrier_id" groups="tt_base.group_tt_tour_travel_operator"/>
-                            <field name="currency_id" attrs="{'readonly': [('provider_id', '!=', %(tt_reservation_tour.tt_provider_tour_internal)d)]}"/>
-                            <field name="description" attrs="{'readonly': [('provider_id', '!=', %(tt_reservation_tour.tt_provider_tour_internal)d)]}"/>
-                            <field name="tour_category" attrs="{'readonly': [('provider_id', '!=', %(tt_reservation_tour.tt_provider_tour_internal)d)]}"/>
-                            <field name="tour_type" attrs="{'readonly': [('provider_id', '!=', %(tt_reservation_tour.tt_provider_tour_internal)d)]}"/>
-                            <field name="agent_id" attrs="{'invisible': [('tour_category', '!=', 'private')], 'required': [('tour_category', '=', 'private')], 'readonly': [('provider_id', '!=', %(tt_reservation_tour.tt_provider_tour_internal)d)]}"/>
-                            <field name="duration" attrs="{'readonly': [('provider_id', '!=', %(tt_reservation_tour.tt_provider_tour_internal)d)]}"/>
-                            <field name="guiding_days" attrs="{'readonly': [('provider_id', '!=', %(tt_reservation_tour.tt_provider_tour_internal)d)]}"/>
-                            <field name="driving_times" attrs="{'readonly': [('provider_id', '!=', %(tt_reservation_tour.tt_provider_tour_internal)d)]}"/>
-                            <field name="visa" attrs="{'readonly': [('provider_id', '!=', %(tt_reservation_tour.tt_provider_tour_internal)d)]}"/>
-                            <field name="flight" attrs="{'readonly': [('provider_id', '!=', %(tt_reservation_tour.tt_provider_tour_internal)d)]}"/>
+                            <field name="carrier_id" groups="tt_base.group_tt_tour_travel_operator" attrs="{'readonly': ['|', ('state', '!=', 'draft'), ('provider_id', '!=', %(tt_reservation_tour.tt_provider_tour_internal)d)]}"/>
+                            <field name="currency_id" attrs="{'readonly': ['|', ('state', '!=', 'draft'), ('provider_id', '!=', %(tt_reservation_tour.tt_provider_tour_internal)d)]}"/>
+                            <field name="description" attrs="{'readonly': ['|', ('state', '!=', 'draft'), ('provider_id', '!=', %(tt_reservation_tour.tt_provider_tour_internal)d)]}"/>
+                            <field name="tour_category" attrs="{'readonly': ['|', ('state', '!=', 'draft'), ('provider_id', '!=', %(tt_reservation_tour.tt_provider_tour_internal)d)]}"/>
+                            <field name="tour_type" attrs="{'readonly': ['|', ('state', '!=', 'draft'), ('provider_id', '!=', %(tt_reservation_tour.tt_provider_tour_internal)d)]}"/>
+                            <field name="agent_id" attrs="{'invisible': [('tour_category', '!=', 'private')], 'required': [('tour_category', '=', 'private')], 'readonly': ['|', ('state', '!=', 'draft'), ('provider_id', '!=', %(tt_reservation_tour.tt_provider_tour_internal)d)]}"/>
+                            <field name="duration" attrs="{'readonly': ['|', ('state', '!=', 'draft'), ('provider_id', '!=', %(tt_reservation_tour.tt_provider_tour_internal)d)]}"/>
+                            <field name="guiding_days" attrs="{'readonly': ['|', ('state', '!=', 'draft'), ('provider_id', '!=', %(tt_reservation_tour.tt_provider_tour_internal)d)]}"/>
+                            <field name="driving_times" attrs="{'readonly': ['|', ('state', '!=', 'draft'), ('provider_id', '!=', %(tt_reservation_tour.tt_provider_tour_internal)d)]}"/>
+                            <field name="visa" attrs="{'readonly': ['|', ('state', '!=', 'draft'), ('provider_id', '!=', %(tt_reservation_tour.tt_provider_tour_internal)d)]}"/>
+                            <field name="flight" attrs="{'readonly': ['|', ('state', '!=', 'draft'), ('provider_id', '!=', %(tt_reservation_tour.tt_provider_tour_internal)d)]}"/>
                         </group>
                     </group>
 
                     <!--Flight Segment-->
                     <separator string="Segments Flight" attrs="{'invisible':[('flight','!=', 'include')]}"/>
-                    <field name="flight_segment_ids" attrs="{'invisible':[('flight','!=', 'include')], 'readonly': [('provider_id', '!=', %(tt_reservation_tour.tt_provider_tour_internal)d)]}">
+                    <field name="flight_segment_ids" attrs="{'invisible':[('flight','!=', 'include')], 'readonly': ['|', ('state', '!=', 'draft'), ('provider_id', '!=', %(tt_reservation_tour.tt_provider_tour_internal)d)]}">
                         <tree>
                             <field name="journey_type"/>
                             <field name="carrier_id"/>
@@ -149,38 +149,38 @@
                             <group col="3">
                                 <field name="currency_id" invisible="1"/>
                                 <group>
-                                    <field name="adult_fare" groups="tt_base.group_tt_tour_travel_operator" attrs="{'readonly': [('provider_id', '!=', %(tt_reservation_tour.tt_provider_tour_internal)d)]}"/>
-                                    <field name="adult_commission" groups="tt_base.group_tt_tour_travel_operator" attrs="{'invisible': [('provider_id', '!=', %(tt_reservation_tour.tt_provider_tour_internal)d)], 'readonly': [('provider_id', '!=', %(tt_reservation_tour.tt_provider_tour_internal)d)]}"/>
+                                    <field name="adult_fare" groups="tt_base.group_tt_tour_travel_operator" attrs="{'readonly': ['|', ('state', '!=', 'draft'), ('provider_id', '!=', %(tt_reservation_tour.tt_provider_tour_internal)d)]}"/>
+                                    <field name="adult_commission" groups="tt_base.group_tt_tour_travel_operator" attrs="{'invisible': [('provider_id', '!=', %(tt_reservation_tour.tt_provider_tour_internal)d)], 'readonly': ['|', ('state', '!=', 'draft'), ('provider_id', '!=', %(tt_reservation_tour.tt_provider_tour_internal)d)]}"/>
                                 </group>
                                 <group>
-                                    <field name="child_fare" groups="tt_base.group_tt_tour_travel_operator" attrs="{'readonly': [('provider_id', '!=', %(tt_reservation_tour.tt_provider_tour_internal)d)]}"/>
-                                    <field name="child_commission" groups="tt_base.group_tt_tour_travel_operator" attrs="{'invisible': [('provider_id', '!=', %(tt_reservation_tour.tt_provider_tour_internal)d)], 'readonly': [('provider_id', '!=', %(tt_reservation_tour.tt_provider_tour_internal)d)]}"/>
+                                    <field name="child_fare" groups="tt_base.group_tt_tour_travel_operator" attrs="{'readonly': ['|', ('state', '!=', 'draft'), ('provider_id', '!=', %(tt_reservation_tour.tt_provider_tour_internal)d)]}"/>
+                                    <field name="child_commission" groups="tt_base.group_tt_tour_travel_operator" attrs="{'invisible': [('provider_id', '!=', %(tt_reservation_tour.tt_provider_tour_internal)d)], 'readonly': ['|', ('state', '!=', 'draft'), ('provider_id', '!=', %(tt_reservation_tour.tt_provider_tour_internal)d)]}"/>
                                 </group>
                                 <group>
-                                    <field name="infant_fare" groups="tt_base.group_tt_tour_travel_operator" attrs="{'readonly': [('provider_id', '!=', %(tt_reservation_tour.tt_provider_tour_internal)d)]}"/>
-                                    <field name="infant_commission" groups="tt_base.group_tt_tour_travel_operator" attrs="{'invisible': [('provider_id', '!=', %(tt_reservation_tour.tt_provider_tour_internal)d)], 'readonly': [('provider_id', '!=', %(tt_reservation_tour.tt_provider_tour_internal)d)]}"/>
+                                    <field name="infant_fare" groups="tt_base.group_tt_tour_travel_operator" attrs="{'readonly': ['|', ('state', '!=', 'draft'), ('provider_id', '!=', %(tt_reservation_tour.tt_provider_tour_internal)d)]}"/>
+                                    <field name="infant_commission" groups="tt_base.group_tt_tour_travel_operator" attrs="{'invisible': [('provider_id', '!=', %(tt_reservation_tour.tt_provider_tour_internal)d)], 'readonly': ['|', ('state', '!=', 'draft'), ('provider_id', '!=', %(tt_reservation_tour.tt_provider_tour_internal)d)]}"/>
                                 </group>
                             </group>
                         </page>
                         <page string="Additional Charge">
                             <group>
-                                <field name="airport_tax" attrs="{'readonly': [('provider_id', '!=', %(tt_reservation_tour.tt_provider_tour_internal)d)]}"/>
+                                <field name="airport_tax" attrs="{'readonly': ['|', ('state', '!=', 'draft'), ('provider_id', '!=', %(tt_reservation_tour.tt_provider_tour_internal)d)]}"/>
                             </group>
                             <group col="3">
                                 <group>
-                                    <field name="tipping_guide" attrs="{'readonly': [('provider_id', '!=', %(tt_reservation_tour.tt_provider_tour_internal)d)]}"/>
-                                    <field name="tipping_tour_leader" attrs="{'invisible': [('tour_type', '=', 'sic')], 'readonly': [('provider_id', '!=', %(tt_reservation_tour.tt_provider_tour_internal)d)]}"/>
-                                    <field name="tipping_driver" attrs="{'readonly': [('provider_id', '!=', %(tt_reservation_tour.tt_provider_tour_internal)d)]}"/>
+                                    <field name="tipping_guide" attrs="{'readonly': ['|', ('state', '!=', 'draft'), ('provider_id', '!=', %(tt_reservation_tour.tt_provider_tour_internal)d)]}"/>
+                                    <field name="tipping_tour_leader" attrs="{'invisible': [('tour_type', '=', 'sic')], 'readonly': ['|', ('state', '!=', 'draft'), ('provider_id', '!=', %(tt_reservation_tour.tt_provider_tour_internal)d)]}"/>
+                                    <field name="tipping_driver" attrs="{'readonly': ['|', ('state', '!=', 'draft'), ('provider_id', '!=', %(tt_reservation_tour.tt_provider_tour_internal)d)]}"/>
                                 </group>
                                 <group>
-                                    <field name="tipping_guide_child" attrs="{'readonly': [('provider_id', '!=', %(tt_reservation_tour.tt_provider_tour_internal)d)]}"/>
-                                    <field name="tipping_tour_leader_child" attrs="{'invisible': [('tour_type', '=', 'sic')], 'readonly': [('provider_id', '!=', %(tt_reservation_tour.tt_provider_tour_internal)d)]}"/>
-                                    <field name="tipping_driver_child" attrs="{'readonly': [('provider_id', '!=', %(tt_reservation_tour.tt_provider_tour_internal)d)]}"/>
+                                    <field name="tipping_guide_child" attrs="{'readonly': ['|', ('state', '!=', 'draft'), ('provider_id', '!=', %(tt_reservation_tour.tt_provider_tour_internal)d)]}"/>
+                                    <field name="tipping_tour_leader_child" attrs="{'invisible': [('tour_type', '=', 'sic')], 'readonly': ['|', ('state', '!=', 'draft'), ('provider_id', '!=', %(tt_reservation_tour.tt_provider_tour_internal)d)]}"/>
+                                    <field name="tipping_driver_child" attrs="{'readonly': ['|', ('state', '!=', 'draft'), ('provider_id', '!=', %(tt_reservation_tour.tt_provider_tour_internal)d)]}"/>
                                 </group>
                                 <group>
-                                    <field name="tipping_guide_infant" attrs="{'readonly': [('provider_id', '!=', %(tt_reservation_tour.tt_provider_tour_internal)d)]}"/>
-                                    <field name="tipping_tour_leader_infant" attrs="{'invisible': [('tour_type', '=', 'sic')], 'readonly': [('provider_id', '!=', %(tt_reservation_tour.tt_provider_tour_internal)d)]}"/>
-                                    <field name="tipping_driver_infant" attrs="{'readonly': [('provider_id', '!=', %(tt_reservation_tour.tt_provider_tour_internal)d)]}"/>
+                                    <field name="tipping_guide_infant" attrs="{'readonly': ['|', ('state', '!=', 'draft'), ('provider_id', '!=', %(tt_reservation_tour.tt_provider_tour_internal)d)]}"/>
+                                    <field name="tipping_tour_leader_infant" attrs="{'invisible': [('tour_type', '=', 'sic')], 'readonly': ['|', ('state', '!=', 'draft'), ('provider_id', '!=', %(tt_reservation_tour.tt_provider_tour_internal)d)]}"/>
+                                    <field name="tipping_driver_infant" attrs="{'readonly': ['|', ('state', '!=', 'draft'), ('provider_id', '!=', %(tt_reservation_tour.tt_provider_tour_internal)d)]}"/>
                                 </group>
                             </group>
                         </page>
@@ -208,13 +208,13 @@
                         <page string="Installment Payment Rules">
                             <group>
                                 <group>
-                                    <field name="down_payment" attrs="{'readonly': [('provider_id', '!=', %(tt_reservation_tour.tt_provider_tour_internal)d)]}"/>
+                                    <field name="down_payment" attrs="{'readonly': ['|', ('state', '!=', 'draft'), ('provider_id', '!=', %(tt_reservation_tour.tt_provider_tour_internal)d)]}"/>
                                 </group>
                                 <group>
 
                                 </group>
                             </group>
-                            <field name="payment_rules_ids" string="Payment Rules" attrs="{'readonly': [('provider_id', '!=', %(tt_reservation_tour.tt_provider_tour_internal)d)]}">
+                            <field name="payment_rules_ids" string="Payment Rules" attrs="{'readonly': ['|', ('state', '!=', 'draft'), ('provider_id', '!=', %(tt_reservation_tour.tt_provider_tour_internal)d)]}">
                                 <tree>
                                     <field name="name"/>
                                     <field name="payment_percentage"/>
@@ -251,10 +251,10 @@
                     <separator string="Tour Details"/>
                     <notebook colspan="4">
                         <page string="Tour Lines">
-                            <field name="tour_line_ids"/>
+                            <field name="tour_line_ids" attrs="{'readonly': ['|', ('state', '!=', 'draft'), ('provider_id', '!=', %(tt_reservation_tour.tt_provider_tour_internal)d)]}"/>
                         </page>
                         <page string="Accommodation">
-                            <field name="room_ids" string="Rooms" attrs="{'readonly': [('provider_id', '!=', %(tt_reservation_tour.tt_provider_tour_internal)d)]}">
+                            <field name="room_ids" string="Rooms" attrs="{'readonly': ['|', ('state', '!=', 'draft'), ('provider_id', '!=', %(tt_reservation_tour.tt_provider_tour_internal)d)]}">
                                 <tree>
                                     <field name="room_code"/>
                                     <field name="hotel"/>
@@ -304,7 +304,7 @@
                             </field>
                         </page>
                         <page string="Itinerary">
-                            <field name="itinerary_ids" attrs="{'readonly': [('provider_id', '!=', %(tt_reservation_tour.tt_provider_tour_internal)d)]}">
+                            <field name="itinerary_ids" attrs="{'readonly': ['|', ('state', '!=', 'draft'), ('provider_id', '!=', %(tt_reservation_tour.tt_provider_tour_internal)d)]}">
                                 <tree>
                                     <field name="day"/>
                                     <field name="name"/>
@@ -353,22 +353,22 @@
                             <separator string="Input"/>
                             <group>
                                 <group>
-                                    <field name="import_other_info" filename="file_name" attrs="{'readonly': [('provider_id', '!=', %(tt_reservation_tour.tt_provider_tour_internal)d)]}"/>
+                                    <field name="import_other_info" filename="file_name" attrs="{'readonly': ['|', ('state', '!=', 'draft'), ('provider_id', '!=', %(tt_reservation_tour.tt_provider_tour_internal)d)]}"/>
                                     <button name="import_other_info_json" type="object" string="Import" attrs="{'invisible': [('provider_id', '!=', %(tt_reservation_tour.tt_provider_tour_internal)d)]}"/>
                                 </group>
                                 <group>
-                                    <field name="export_other_info" filename="file_name" attrs="{'readonly': [('provider_id', '!=', %(tt_reservation_tour.tt_provider_tour_internal)d)]}"/>
+                                    <field name="export_other_info" filename="file_name" attrs="{'readonly': ['|', ('state', '!=', 'draft'), ('provider_id', '!=', %(tt_reservation_tour.tt_provider_tour_internal)d)]}"/>
                                     <button name="export_other_info_json" type="object" string="Export" attrs="{'invisible': [('provider_id', '!=', %(tt_reservation_tour.tt_provider_tour_internal)d)]}"/>
                                 </group>
                             </group>
-                            <field name="other_info_ids" attrs="{'readonly': [('provider_id', '!=', %(tt_reservation_tour.tt_provider_tour_internal)d)]}"/>
+                            <field name="other_info_ids" attrs="{'readonly': ['|', ('state', '!=', 'draft'), ('provider_id', '!=', %(tt_reservation_tour.tt_provider_tour_internal)d)]}"/>
                             <separator string="Preview"/>
                             <button name="generate_other_info_preview" type="object" string="Generate"/>
                             <separator/>
                             <field name="other_info_preview"/>
                         </page>
                         <page string="Images">
-                            <field name="image_ids" attrs="{'readonly': [('provider_id', '!=', %(tt_reservation_tour.tt_provider_tour_internal)d)]}">
+                            <field name="image_ids" attrs="{'readonly': ['|', ('state', '!=', 'draft'), ('provider_id', '!=', %(tt_reservation_tour.tt_provider_tour_internal)d)]}">
                                 <tree>
                                     <field name="sequence" widget="handle"/>
                                     <field name="seq_id"/>
