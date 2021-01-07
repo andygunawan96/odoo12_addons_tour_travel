@@ -175,7 +175,7 @@ class MasterTour(models.Model):
     itinerary_ids = fields.One2many('tt.reservation.tour.itinerary', 'tour_pricelist_id', 'Itinerary')
     provider_id = fields.Many2one('tt.provider', 'Provider', domain=get_domain, readonly=True,
                                   default=lambda self: self.env.ref('tt_reservation_tour.tt_provider_tour_internal'), copy=False)
-    carrier_id = fields.Many2one('tt.transport.carrier', 'Carrier', domain=get_domain, readonly=True,
+    carrier_id = fields.Many2one('tt.transport.carrier', 'Carrier', domain=get_domain, required=True,
                                  default=lambda self: self.env.ref('tt_reservation_tour.tt_transport_carrier_tour_itt'), copy=False)
     document_url = fields.Many2one('tt.upload.center', 'Document URL')
     related_provider_ids = fields.One2many('tt.master.tour.provider', 'master_tour_id', 'Related Vendor(s)')
@@ -845,6 +845,7 @@ class MasterTour(models.Model):
                             'tour_category': rec.tour_category,
                             'tour_route': rec.tour_route,
                             'tour_type': rec.tour_type,
+                            'tour_type_str': dict(rec._fields['tour_type'].selection).get(rec.tour_type),
                             'flight': rec.flight,
                             'visa': rec.visa,
                             'description': rec.description,
@@ -1128,7 +1129,9 @@ class MasterTour(models.Model):
                 'tour_route': tour_obj.tour_route,
                 'tour_category': tour_obj.tour_category,
                 'tour_type': tour_obj.tour_type,
+                'tour_type_str': dict(tour_obj._fields['tour_type'].selection).get(tour_obj.tour_type),
                 'tour_lines': tour_line_list,
+                'carrier_code': tour_obj.carrier_id.code,
                 'visa': tour_obj.visa,
                 'flight': tour_obj.flight,
                 'accommodations': accommodation,
@@ -1588,11 +1591,11 @@ class MasterTour(models.Model):
             if not provider_id:
                 raise RequestException(1002)
             prefix = provider_id[0].alias and provider_id[0].alias + '~' or ''
-            carrier_id = self.env['tt.transport.carrier'].sudo().search([('code', '=', req['carrier'])], limit=1)
-            if not carrier_id:
-                raise RequestException(1002)
             for rec in req['data']:
                 currency_obj = self.env['res.currency'].sudo().search([('name', '=', rec['currency_code'])], limit=1)
+                carrier_id = self.env['tt.transport.carrier'].sudo().search([('code', '=', rec['carrier_code'])], limit=1)
+                if not carrier_id:
+                    carrier_id = [self.env.ref('tt_reservation_tour.tt_transport_carrier_tour_itt')]
                 vals = {
                     'name': rec['name'],
                     'tour_code': prefix + rec['tour_code'],
@@ -1790,6 +1793,7 @@ class TourSyncProductsChildren(models.TransientModel):
                     'name': rec.name,
                     'tour_code': rec.tour_code,
                     'tour_route': rec.tour_route,
+                    'carrier_code': rec.carrier_id.code,
                     'sequence': rec.sequence,
                     'is_can_hold': rec.is_can_hold,
                     'currency_code': rec.currency_id.name,
