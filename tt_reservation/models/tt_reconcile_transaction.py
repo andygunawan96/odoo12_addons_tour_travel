@@ -53,9 +53,10 @@ class TtReconcileTransaction(models.Model):
                                                                                 ('reconcile_line_id','=',False)],limit=1)
 
             ##kalau tidak ketemu di provider masing masing cari di offline
-            found_rec = self.env['tt.provider.offline'].search([('pnr', '=', rec.pnr),
-                                                                  ('total_price', '=', abs(rec.total)),
-                                                                  ('reconcile_line_id', '=',False)], limit=1)
+            if not found_rec:
+                found_rec = self.env['tt.provider.offline'].search([('pnr', '=', rec.pnr),
+                                                                      ('total_price', '=', abs(rec.total)),
+                                                                      ('reconcile_line_id', '=',False)], limit=1)
 
             if found_rec:
                 rec.write({
