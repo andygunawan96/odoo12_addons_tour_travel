@@ -43,8 +43,6 @@ class MasterTourLines(models.Model):
             self.state = 'open'
             if not self.tour_line_code:
                 self.tour_line_code = self.env['ir.sequence'].next_by_code('master.tour.line.code')
-            else:
-                raise UserError('Master Tour needs to be confirmed before you can validate the tour lines.')
 
     def action_closed(self):
         self.state = 'on_going'

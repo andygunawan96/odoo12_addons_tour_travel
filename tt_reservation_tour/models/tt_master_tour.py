@@ -1590,7 +1590,6 @@ class MasterTour(models.Model):
             provider_id = self.env['tt.provider'].sudo().search([('code', '=', req['provider'])], limit=1)
             if not provider_id:
                 raise RequestException(1002)
-            prefix = provider_id[0].alias and provider_id[0].alias + '~' or ''
             for rec in req['data']:
                 currency_obj = self.env['res.currency'].sudo().search([('name', '=', rec['currency_code'])], limit=1)
                 carrier_id = self.env['tt.transport.carrier'].sudo().search([('code', '=', rec['carrier_code'])], limit=1)
@@ -1598,7 +1597,7 @@ class MasterTour(models.Model):
                     carrier_id = [self.env.ref('tt_reservation_tour.tt_transport_carrier_tour_itt')]
                 vals = {
                     'name': rec['name'],
-                    'tour_code': prefix + rec['tour_code'],
+                    'tour_code': rec['tour_code'],
                     'provider_id': provider_id[0].id,
                     'carrier_id': carrier_id[0].id,
                     'tour_route': rec['tour_route'],
@@ -1631,7 +1630,7 @@ class MasterTour(models.Model):
                     'tipping_driver_infant': rec['tipping_driver_infant'],
                     'down_payment': rec['down_payment'],
                 }
-                tour_obj = self.env['tt.master.tour'].sudo().search([('tour_code', '=',  prefix + rec['tour_code']), ('provider_id', '=', provider_id[0].id)], limit=1)
+                tour_obj = self.env['tt.master.tour'].sudo().search([('tour_code', '=',  rec['tour_code']), ('provider_id', '=', provider_id[0].id)], limit=1)
                 if tour_obj:
                     tour_obj = tour_obj[0]
                     tour_obj.sudo().write(vals)
