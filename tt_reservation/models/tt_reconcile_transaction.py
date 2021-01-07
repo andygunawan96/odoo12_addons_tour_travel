@@ -47,10 +47,16 @@ class TtReconcileTransaction(models.Model):
     def compare_reconcile_data(self,ctx=False,notif_to_telegram=False):
         not_match_str = ''
         idx = 1
-        for rec in enumerate(self.reconcile_lines_ids.filtered(lambda x: x.state == 'not_match')):
+        for rec in self.reconcile_lines_ids.filtered(lambda x: x.state == 'not_match'):
             found_rec = self.env['tt.provider.%s' % (self.provider_type_id.code)].search([('pnr','=',rec.pnr),
                                                                                  ('total_price','=',abs(rec.total)),
                                                                                 ('reconcile_line_id','=',False)],limit=1)
+
+            ##kalau tidak ketemu di provider masing masing cari di offline
+            found_rec = self.env['tt.provider.offline'].search([('pnr', '=', rec.pnr),
+                                                                  ('total_price', '=', abs(rec.total)),
+                                                                  ('reconcile_line_id', '=',False)], limit=1)
+
             if found_rec:
                 rec.write({
                     'res_model': found_rec._name,
