@@ -2365,7 +2365,8 @@ class HotelInformation(models.Model):
         fmt_hotel_name = self.formatting_hotel_name(hotel_name, city_name)
         temp = []
         # Todo Find City
-        for rec in self.env['tt.hotel'].search([('id', '!=', new_hotel_id), ('city_id', 'in', city_ids)]):
+        # for rec in self.env['tt.hotel'].search([('id', '!=', new_hotel_id), ('city_id', 'in', city_ids), ('state', 'not in', ['merged',])]):
+        for rec in self.env['tt.hotel.master'].search([('city_id', 'in', city_ids)]):
             if len(temp) > limit:
                 return temp
             if all(elem in " ".join(self.formatting_hotel_name(rec.name)) for elem in fmt_hotel_name):
