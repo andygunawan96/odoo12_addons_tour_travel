@@ -27,6 +27,6 @@
     # always loaded
     'data': [
         'data/res.country.state.csv',
-        # 'data/res.city.csv', #ku upload langsung 100k dia error one2many file, solusi split 3 csv
+        'data/res.city.csv',
     ],
 }

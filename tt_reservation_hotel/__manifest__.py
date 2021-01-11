@@ -23,7 +23,7 @@ TT_RESERVATION_HOTEL
         'data/ir_send_email.xml',
         'data/tt_transport_carrier_hotel.xml',
         'data/tt_api_webhook_data.xml',
-	'data/tt_pnr_quota_price_list_hotel_data.xml',
+	    'data/tt_pnr_quota_price_list_hotel_data.xml',
         'data/tt_pricing_agent_hotel_data.xml',
 
         # 'data/tt.provider.code.csv',

@@ -50,6 +50,16 @@
                                 ('checkin_date', '&lt;=', (context_today() + relativedelta(weekday=6)).strftime('%Y-%m-%d')),
                             ]"/>
                 <filter string="Check In This Month" name="thismonth" domain="[('checkin_date','&gt;=',time.strftime('%%Y-%%m-01'))]"/>
+
+                <group expand="0" string="Group By">
+                    <filter name="group_by_hotel" string="Hotel" domain="[]" context="{'group_by':'hotel_name'}" groups="tt_base.group_tt_tour_travel_operator"/>
+                    <filter name="group_by_city" string="City" domain="[]" context="{'group_by':'hotel_city'}" groups="tt_base.group_tt_tour_travel_operator"/>
+                    <filter name="group_by_agent_id" string="Agent" domain="[]" context="{'group_by':'agent_id'}" groups="tt_base.group_tt_tour_travel_operator"/>
+                    <filter name="group_by_agent_type_id" string="Agent Type" domain="[]" context="{'group_by':'agent_type_id'}" groups="tt_base.group_tt_tour_travel_operator"/>
+                    <filter name="group_by_customer_parent_id" string="Customer Parent" domain="[]" context="{'group_by':'customer_parent_id'}" groups="tt_base.group_tt_agent_user_operator,tt_base.group_tt_tour_travel_operator"/>
+                    <filter name="group_by_customer_parent_type_id" string="Customer Parent Type" domain="[]" context="{'group_by':'customer_parent_type_id'}" groups="tt_base.group_tt_agent_user_operator,tt_base.group_tt_tour_travel_operator"/>
+                    <filter name="group_by_state" string="State" domain="[]" context="{'group_by':'state'}"/>
+                </group>
             </search>
         </field>
     </record>

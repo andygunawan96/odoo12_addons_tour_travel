@@ -211,6 +211,8 @@ class HotelInformation(models.Model):
         for filename in filenames:
             for country in cache_hotel[filename[:-1]]:
                 country_obj = self.env['res.country'].search([('code', '=', country)], limit=1)
+                if not country_obj:
+                    continue
                 _logger.info("===== Processing " + country_obj.name + " =====")
                 for key, val in cache_hotel[filename[:-1]][country].items():
                     _logger.info("=== Processing (" + val + ", " + country_obj.name + ") ===")
