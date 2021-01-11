@@ -106,7 +106,7 @@ class ResUsers(models.Model):
     
     def unlink(self):
         for rec in self:
-            if rec.id == self.env.ref('base.user_admin'):
+            if rec.id == self.env.ref('base.user_admin').id:
                 raise UserError('Cannot delete superadmin.')
         super(ResUsers, self).unlink()
 
