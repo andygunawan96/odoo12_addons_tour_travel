@@ -7,7 +7,8 @@
             <form>
                 <header>
                     <button name="compare_hotel" type="object" string="Compare Line" class="oe_stat_button" icon="fa-money" states="draft"/>
-                    <button name="merge_hotel" type="object" string="Merge" class="oe_stat_button" icon="fa-money" attrs="{'invisible': ['|',('state', '!=', 'draft'),('line_ids', '=', False)]}"/>
+                    <button name="to_merge_hotel" type="object" string="To Merge" class="oe_stat_button" icon="fa-money" attrs="{'invisible': ['|',('state', '!=', 'draft')]}"/>
+                    <button name="merge_hotel" type="object" string="Merge" class="oe_stat_button" icon="fa-money" attrs="{'invisible': [('state', '!=', 'merge')]}"/>
                     <button name="cancel_merge_hotel" type="object" string="Decline" class="oe_stat_button" icon="fa-money" states="draft"/>
                     <button name="set_to_draft" type="object" string="Set to Draft" class="oe_stat_button" states="merge,cancel"/>
                     <field name="state" widget="statusbar" statusbar_visible="draft,merge" />
