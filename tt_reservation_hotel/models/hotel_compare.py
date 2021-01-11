@@ -108,8 +108,8 @@ class HotelInformationCompare(models.Model):
     _name = 'tt.hotel.compare'
     _description = 'Merging between 2 hotel that being considered have similarities'
 
-    hotel_id = fields.Many2one('tt.hotel', 'Hotel #1', required="True")
-    comp_hotel_id = fields.Many2one('tt.hotel', 'Hotel #2', required=0)
+    hotel_id = fields.Many2one('tt.hotel', 'Hotel #1', required="True", description='Raw Data')
+    comp_hotel_id = fields.Many2one('tt.hotel.master', 'Hotel Master', required=0, description='Master Data(Record Merged into this record)')
 
     line_ids = fields.One2many('tt.hotel.compare.line', 'compare_id', 'Line(s)')
 
@@ -287,11 +287,15 @@ class HotelInformationCompare(models.Model):
         for provider in self.comp_hotel_id.provider_hotel_ids:
             provider.hotel_id = self.similar_id.id
 
+    def to_merge_hotel(self):
+        self.hotel_id.state = 'tobe_merge'
+        self.state = 'merge'
+
     # Merge di Hotel #1 & Hotel #2 di non-aktifkan
     # Provider Code di Hotel #2 di pindah ke Hotel #1
     def merge_hotel(self):
         vals = {}
-        if not self.similar_id:
+        if not self.comp_hotel_id:
             hotel_dict = self.hotel_id.read()[0]
             pop_list = []
             for key in hotel_dict.keys():
@@ -302,23 +306,23 @@ class HotelInformationCompare(models.Model):
             for key in pop_list:
                 hotel_dict.pop(key)
             self.similar_id = self.env['tt.hotel.master'].create(hotel_dict)
+        else:
+            self.similar_id = self.comp_hotel_id
+
         for rec in self.line_ids:
             if rec.params == 'rating':
                 vals[rec.params] = rec.is_value_1 and int(rec.value_1) or int(rec.value_2)
             else:
                 vals[rec.params] = rec.is_value_1 and rec.value_1 or rec.value_2
         self.similar_id.update(vals)
-        self.similar_id.info_ids = [(4, self.hotel_id.id), (4, self.comp_hotel_id.id)]
+        self.similar_id.info_ids = [(4, self.hotel_id.id)]
         self.merge_image()
         self.merge_provider_code()
         self.similar_id.get_provider_name()
 
         self.merge_uid = self.env.uid
         self.merge_date = fields.Datetime.now()
-
         self.hotel_id.state = 'merged'
-        self.comp_hotel_id.state = 'merged'
-        self.state = 'merge'
 
     def cancel_merge_hotel(self):
         if self.hotel_id.state == 'merged' and self.comp_hotel_id.state == 'merged':
