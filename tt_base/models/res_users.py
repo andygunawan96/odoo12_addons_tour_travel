@@ -1,5 +1,5 @@
 from odoo import api, fields, models, _
-from odoo.http import request
+from odoo.exceptions import UserError
 import time
 
 LANGUAGE = [
@@ -103,6 +103,12 @@ class ResUsers(models.Model):
         if 'password' in vals and self.id == admin_obj_id and self.env.user.id != admin_obj_id:
             vals.pop('password')
         return super(ResUsers, self).write(vals)
+    
+    def unlink(self):
+        for rec in self:
+            if rec.id == self.env.ref('base.user_admin'):
+                raise UserError('Cannot delete superadmin.')
+        super(ResUsers, self).unlink()
 
     # 28 OKT 2020, comment IP log karena isinya 127.0.0.1
     # @api.model
