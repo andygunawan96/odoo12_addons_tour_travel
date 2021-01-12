@@ -1012,7 +1012,7 @@ class TtReportDashboard(models.Model):
             summary_provider = []
 
             # declare current id
-            current_id = ''
+            current_id = [] # IVAN testing ganti list karena jika case beda id id sama tetapi beda order bisa ketambah
             current_journey = ''
             current_segment = ''
             current_pnr = ''
@@ -1025,7 +1025,7 @@ class TtReportDashboard(models.Model):
                 try:
                     # check if reservation id is not equal to current reservation id
                     # by default current id is empty string ('')
-                    if i['reservation_id'] != current_id:
+                    if i['reservation_id'] not in current_id:
                         #reset pnr list
                         pnr_within = []
                         # if reservation id is not equal to current id it means, it's a different reservation than previous line
@@ -1129,7 +1129,7 @@ class TtReportDashboard(models.Model):
                                 summary_provider[provider_index][i['reservation_state']] += 1
                             except:
                                 summary_provider[provider_index][i['reservation_state']] = 1
-                        current_id = i['reservation_id']
+                        current_id.append(i['reservation_id'])
                     else:
                         # if current id equal to i['reservation_id']
                         # get current journey
