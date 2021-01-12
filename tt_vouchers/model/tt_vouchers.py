@@ -68,6 +68,23 @@ class TtVoucher(models.Model):
         res = super(TtVoucher, self).create(vals)
         return res
 
+    # function for cron
+    def expire_voucher(self):
+        voucher = self.env['tt.voucher'].search([('state', '=', 'confirm')])
+        for voucher_obj in voucher:
+            expired = True
+            for voucher_detail_obj in voucher_obj.voucher_detail_ids:
+                if voucher_detail_obj.voucher_expire_date.strftime("%Y-%m-%d") < datetime.today().strftime("%Y-%m-%d"):
+                    voucher_detail_obj.write({
+                        'state': 'expire'
+                    })
+                if voucher_detail_obj.state != 'active':
+                    expired = False
+            if expired:
+                voucher_obj.state = 'done'
+
+        return 0
+
     #harus di cek sama dengan atasnya
     def create_voucher(self, data):
         result = self.env['tt.voucher'].create({
@@ -472,7 +489,7 @@ class TtVoucherDetail(models.Model):
     voucher_quota = fields.Integer("Voucher quota")
     voucher_blackout_ids = fields.One2many("tt.voucher.detail.blackout", 'voucher_detail_id')
     voucher_used_ids = fields.One2many("tt.voucher.detail.used", "voucher_detail_id")
-    state = fields.Selection([('not-active', 'Not Active'), ('active', 'Active'), ('expire', 'Expire')], default="active")
+    state = fields.Selection([('not-active', 'Not Active'), ('active', 'Active'), ('expire', 'Expire'), ('done', 'Done')], default="active")
     display_name = fields.Char('Display Name', compute='_compute_display_name')
     is_agent = fields.Boolean("For Agent", default=False)
     printout_voucher_id = fields.Many2one('tt.upload.center', 'Printout Voucher', readonly=True)
@@ -558,7 +575,7 @@ class TtVoucherDetail(models.Model):
         return 0
 
     #function for cron
-    def expire_voucher(self):
+    def expire_detail_voucher(self):
         voucher = self.env['tt.voucher.detail'].search([('state', '=', 'active')])
         for i in voucher:
             if i.voucher_expire_date.strftime("%Y-%m-%d") < datetime.today().strftime("%Y-%m-%d"):
@@ -1443,6 +1460,8 @@ class TtVoucherDetail(models.Model):
                         # like finalizing value of usage
                         voucher.voucher_usage_value += discount_total
                         if voucher.voucher_usage_value >= voucher.voucher_value:
+                            for voucher_detail_obj in voucher.voucher_detail_ids:
+                                voucher_detail_obj.state = 'done'
                             voucher.state = 'done'
                     else:
                         # assuming other voucher are normal boring voucher
@@ -1452,6 +1471,12 @@ class TtVoucherDetail(models.Model):
                             'voucher_used': number_of_use
                         })
                         if voucher_detail.voucher_used >= voucher_detail.voucher_quota:
+                            voucher_detail.state = 'done'
+                        update_state = True
+                        for voucher_detail_obj in voucher.voucher_detail_ids:
+                            if voucher_detail_obj.state != 'done':
+                                update_state = False
+                        if update_state:
                             voucher.state = 'done'
 
                     try:
