@@ -32,7 +32,7 @@ class TtVoucher(models.Model):
     voucher_effect_all = fields.Boolean("Total", default=True, readonly=True, states={'draft': [('readonly', False)]})
     voucher_effect_base_fare = fields.Boolean("Base Fare", readonly=True, states={'draft': [('readonly', False)]})
 
-    state = fields.Selection([('draft', 'Draft'), ('confirm', 'Confirm'), ('not-active', 'Not Active')], default="draft")
+    state = fields.Selection([('draft', 'Draft'), ('confirm', 'Confirm'), ('not-active', 'Not Active'), ('done', 'Done')], default="draft")
     agent_type_access_type = fields.Selection([("all", "ALL"), ("allow", "Allowed"), ("restrict", "Restricted")], 'Agent Type Access Type', default='all', readonly=True, states={'draft': [('readonly', False)]})
     voucher_agent_type_eligibility_ids = fields.Many2many("tt.agent.type", "tt_agent_type_tt_voucher_rel", "tt_voucher_id", "tt_agent_type_id", "Agent Type", readonly=True, states={'draft': [('readonly', False)]})      #type of user that are able to use the voucher
     agent_access_type = fields.Selection([("all", "ALL"), ("allow", "Allowed"), ("restrict", "Restricted")], 'Agent Access Type', default='all', readonly=True, states={'draft': [('readonly', False)]})
@@ -1442,6 +1442,8 @@ class TtVoucherDetail(models.Model):
                         # adding the value to voucher usage
                         # like finalizing value of usage
                         voucher.voucher_usage_value += discount_total
+                        if voucher.voucher_usage_value >= voucher.voucher_value:
+                            voucher.state = 'done'
                     else:
                         # assuming other voucher are normal boring voucher
                         # then we'll add number of usage for that particular voucher
@@ -1449,6 +1451,8 @@ class TtVoucherDetail(models.Model):
                         voucher_detail.write({
                             'voucher_used': number_of_use
                         })
+                        if voucher_detail.voucher_used >= voucher_detail.voucher_quota:
+                            voucher.state = 'done'
 
                     try:
                         voucher_detail.create_voucher_email_queue('used')
