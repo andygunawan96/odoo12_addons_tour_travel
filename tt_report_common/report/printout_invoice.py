@@ -2094,6 +2094,7 @@ class PrintoutTopUp(models.AbstractModel):
         return {
             'doc_ids': data['context']['active_ids'],
             'doc_model': data['context']['active_model'],
+            'doc_type': 'top_up',
             'docs': self.env[data['context']['active_model']].browse(data['context']['active_ids']),
             'values': values,
             'terbilang': self.compute_terbilang_from_objs(
