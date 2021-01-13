@@ -32,7 +32,7 @@ class TtVoucher(models.Model):
     voucher_effect_all = fields.Boolean("Total", default=True, readonly=True, states={'draft': [('readonly', False)]})
     voucher_effect_base_fare = fields.Boolean("Base Fare", readonly=True, states={'draft': [('readonly', False)]})
 
-    state = fields.Selection([('draft', 'Draft'), ('confirm', 'Confirm'), ('not-active', 'Not Active')], default="draft")
+    state = fields.Selection([('draft', 'Draft'), ('confirm', 'Confirm'), ('not-active', 'Not Active'), ('done', 'Done')], default="draft")
     agent_type_access_type = fields.Selection([("all", "ALL"), ("allow", "Allowed"), ("restrict", "Restricted")], 'Agent Type Access Type', default='all', readonly=True, states={'draft': [('readonly', False)]})
     voucher_agent_type_eligibility_ids = fields.Many2many("tt.agent.type", "tt_agent_type_tt_voucher_rel", "tt_voucher_id", "tt_agent_type_id", "Agent Type", readonly=True, states={'draft': [('readonly', False)]})      #type of user that are able to use the voucher
     agent_access_type = fields.Selection([("all", "ALL"), ("allow", "Allowed"), ("restrict", "Restricted")], 'Agent Access Type', default='all', readonly=True, states={'draft': [('readonly', False)]})
@@ -67,6 +67,23 @@ class TtVoucher(models.Model):
             vals['voucher_reference_code'] = vals['voucher_reference_code'].upper()
         res = super(TtVoucher, self).create(vals)
         return res
+
+    # function for cron
+    def expire_voucher(self):
+        voucher = self.env['tt.voucher'].search([('state', '=', 'confirm')])
+        for voucher_obj in voucher:
+            expired = True
+            for voucher_detail_obj in voucher_obj.voucher_detail_ids:
+                if voucher_detail_obj.voucher_expire_date.strftime("%Y-%m-%d") < datetime.today().strftime("%Y-%m-%d"):
+                    voucher_detail_obj.write({
+                        'state': 'expire'
+                    })
+                if voucher_detail_obj.state != 'active':
+                    expired = False
+            if expired:
+                voucher_obj.state = 'done'
+
+        return 0
 
     #harus di cek sama dengan atasnya
     def create_voucher(self, data):
@@ -472,7 +489,7 @@ class TtVoucherDetail(models.Model):
     voucher_quota = fields.Integer("Voucher quota")
     voucher_blackout_ids = fields.One2many("tt.voucher.detail.blackout", 'voucher_detail_id')
     voucher_used_ids = fields.One2many("tt.voucher.detail.used", "voucher_detail_id")
-    state = fields.Selection([('not-active', 'Not Active'), ('active', 'Active'), ('expire', 'Expire')], default="active")
+    state = fields.Selection([('not-active', 'Not Active'), ('active', 'Active'), ('expire', 'Expire'), ('done', 'Done')], default="active")
     display_name = fields.Char('Display Name', compute='_compute_display_name')
     is_agent = fields.Boolean("For Agent", default=False)
     printout_voucher_id = fields.Many2one('tt.upload.center', 'Printout Voucher', readonly=True)
@@ -558,7 +575,7 @@ class TtVoucherDetail(models.Model):
         return 0
 
     #function for cron
-    def expire_voucher(self):
+    def expire_detail_voucher(self):
         voucher = self.env['tt.voucher.detail'].search([('state', '=', 'active')])
         for i in voucher:
             if i.voucher_expire_date.strftime("%Y-%m-%d") < datetime.today().strftime("%Y-%m-%d"):
@@ -1442,6 +1459,10 @@ class TtVoucherDetail(models.Model):
                         # adding the value to voucher usage
                         # like finalizing value of usage
                         voucher.voucher_usage_value += discount_total
+                        if voucher.voucher_usage_value >= voucher.voucher_value:
+                            for voucher_detail_obj in voucher.voucher_detail_ids:
+                                voucher_detail_obj.state = 'done'
+                            voucher.state = 'done'
                     else:
                         # assuming other voucher are normal boring voucher
                         # then we'll add number of usage for that particular voucher
@@ -1449,6 +1470,14 @@ class TtVoucherDetail(models.Model):
                         voucher_detail.write({
                             'voucher_used': number_of_use
                         })
+                        if voucher_detail.voucher_used >= voucher_detail.voucher_quota:
+                            voucher_detail.state = 'done'
+                        update_state = True
+                        for voucher_detail_obj in voucher.voucher_detail_ids:
+                            if voucher_detail_obj.state != 'done':
+                                update_state = False
+                        if update_state:
+                            voucher.state = 'done'
 
                     try:
                         voucher_detail.create_voucher_email_queue('used')

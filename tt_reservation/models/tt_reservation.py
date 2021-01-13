@@ -774,6 +774,7 @@ class TtReservation(models.Model):
                 if discount['error_code'] == 0:
                     discount = self.env['tt.voucher.detail'].use_voucher_new(voucher, context)
                     if discount['error_code'] == 0:
+                        book_obj.voucher_code = voucher['voucher_reference']
                         for idx, rec in enumerate(discount['response']):
                             service_charge = [{
                                 "charge_code": "disc",
