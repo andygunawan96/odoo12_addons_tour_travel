@@ -809,7 +809,7 @@ class TtReportDashboard(models.Model):
     # this function handle and process data for channel ranking by revenue
     # data = form data from frontend
     # profit = reservation data from function who calls this function (reservation data contains profit data)
-    def get_report_group_by_chanel(self, data, profit):
+    def get_report_group_by_chanel(self, data, profit, is_ho):
         try:
             # prepare data to get channel base on reservation performance in database
             temp_dict = {
@@ -867,11 +867,18 @@ class TtReportDashboard(models.Model):
                     summary_chanel[person_index]['revenue'] += i['amount']
                     summary_chanel[person_index]['reservation'] += 1
 
+            summary_ho = False
+            for i in summary_chanel:
+                if i['agent_type_name'] == self.env.ref('tt_base.agent_type_ho').name:
+                    summary_ho = True
+                    break
             # proceed profit
             for i in profit:
                 person_index = self.person_index_by_name(summary_chanel, {'agent_name': i['ledger_agent_name'], 'agent_type_name': i['ledger_agent_type_name']})
                 try:
-                    summary_chanel[person_index]['profit'] += i['debit']
+                    if is_ho == True and summary_ho == True or i['ledger_agent_type_name'] != self.env.ref('tt_base.agent_type_ho').name:
+                        summary_chanel[person_index]['profit'] += i['debit']
+
                 except:
                     pass
 
@@ -1364,7 +1371,7 @@ class TtReportDashboard(models.Model):
             # fourth and fifth with customer and customer parent respectively
 
             # get by chanel
-            chanel_data = self.get_report_group_by_chanel(data, issued_values['lines'])
+            chanel_data = self.get_report_group_by_chanel(data, issued_values['lines'], is_ho)
 
             # adding chanel_data graph
             to_return.update(chanel_data)
