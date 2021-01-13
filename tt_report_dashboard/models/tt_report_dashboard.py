@@ -716,14 +716,16 @@ class TtReportDashboard(models.Model):
                 # by customer
                 person_index = self.customer_index(summary_customer, {'customer_id': i['customer_id'], 'customer_name': i['customer_name']})
                 try:
-                    summary_customer[person_index]['profit'] += i['debit']
+                    if i['ledger_agent_type_name'] != self.env.ref('tt_base.agent_type_ho').name:
+                        summary_customer[person_index]['profit'] += i['debit']
                 except:
                     pass
 
                 # by customer type
                 person_type_index = self.customer_parent_index(summary_customer_parent, {'customer_parent_id': i['customer_parent_id'], 'customer_parent_name': i['customer_parent_name']})
                 try:
-                    summary_customer_parent[person_type_index]['profit'] += i['debit']
+                    if i['ledger_agent_type_name'] != self.env.ref('tt_base.agent_type_ho').name:
+                        summary_customer_parent[person_type_index]['profit'] += i['debit']
                 except:
                     pass
 
@@ -2287,7 +2289,7 @@ class TtReportDashboard(models.Model):
             # fourth and fifth with customer and customer parent respectively
 
             # get by chanel
-            chanel_data = self.get_report_group_by_chanel(data, issued_values['lines'])
+            chanel_data = self.get_report_group_by_chanel(data, issued_values['lines'], is_ho)
 
             # adding chanel_data graph
             to_return.update(chanel_data)
@@ -2839,7 +2841,7 @@ class TtReportDashboard(models.Model):
             # fourth and fifth with customer and customer parent respectively
 
             # get by chanel
-            chanel_data = self.get_report_group_by_chanel(data, issued_values['lines'])
+            chanel_data = self.get_report_group_by_chanel(data, issued_values['lines'], is_ho)
 
             # adding chanel_data graph
             to_return.update(chanel_data)
@@ -3320,7 +3322,7 @@ class TtReportDashboard(models.Model):
             # fourth and fifth with customer and customer parent respectively
 
             # get by chanel
-            chanel_data = self.get_report_group_by_chanel(data, issued_values['lines'])
+            chanel_data = self.get_report_group_by_chanel(data, issued_values['lines'], is_ho)
 
             # adding chanel_data graph
             to_return.update(chanel_data)
@@ -3648,7 +3650,7 @@ class TtReportDashboard(models.Model):
             # fourth and fifth with customer and customer parent respectively
 
             # get by chanel
-            chanel_data = self.get_report_group_by_chanel(data, issued_values['lines'])
+            chanel_data = self.get_report_group_by_chanel(data, issued_values['lines'], is_ho)
 
             # adding chanel_data graph
             to_return.update(chanel_data)
@@ -3997,7 +3999,7 @@ class TtReportDashboard(models.Model):
             # fourth and fifth with customer and customer parent respectively
 
             # get by chanel
-            chanel_data = self.get_report_group_by_chanel(data, issued_values['lines'])
+            chanel_data = self.get_report_group_by_chanel(data, issued_values['lines'], is_ho)
 
             # adding chanel_data graph
             to_return.update(chanel_data)
@@ -4344,7 +4346,7 @@ class TtReportDashboard(models.Model):
             # fourth and fifth with customer and customer parent respectively
 
             # get by chanel
-            chanel_data = self.get_report_group_by_chanel(data, issued_values['lines'])
+            chanel_data = self.get_report_group_by_chanel(data, issued_values['lines'], is_ho)
 
             # adding chanel_data graph
             to_return.update(chanel_data)
@@ -4685,7 +4687,7 @@ class TtReportDashboard(models.Model):
             # fourth and fifth with customer and customer parent respectively
 
             # get by chanel
-            chanel_data = self.get_report_group_by_chanel(data, issued_values['lines'])
+            chanel_data = self.get_report_group_by_chanel(data, issued_values['lines'], is_ho)
 
             # adding chanel_data graph
             to_return.update(chanel_data)
@@ -5028,7 +5030,7 @@ class TtReportDashboard(models.Model):
             # fourth and fifth with customer and customer parent respectively
 
             # get by chanel
-            chanel_data = self.get_report_group_by_chanel(data, issued_values['lines'])
+            chanel_data = self.get_report_group_by_chanel(data, issued_values['lines'], is_ho)
 
             # adding chanel_data graph
             to_return.update(chanel_data)
@@ -5367,7 +5369,7 @@ class TtReportDashboard(models.Model):
             # fourth and fifth with customer and customer parent respectively
 
             # get by chanel
-            chanel_data = self.get_report_group_by_chanel(data, issued_values['lines'])
+            chanel_data = self.get_report_group_by_chanel(data, issued_values['lines'], is_ho)
 
             # adding chanel_data graph
             to_return.update(chanel_data)
@@ -5708,7 +5710,7 @@ class TtReportDashboard(models.Model):
             # fourth and fifth with customer and customer parent respectively
 
             # get by chanel
-            chanel_data = self.get_report_group_by_chanel(data, issued_values['lines'])
+            chanel_data = self.get_report_group_by_chanel(data, issued_values['lines'], is_ho)
 
             # adding chanel_data graph
             to_return.update(chanel_data)
