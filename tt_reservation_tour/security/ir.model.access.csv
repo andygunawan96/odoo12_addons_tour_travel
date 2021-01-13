@@ -24,6 +24,11 @@ tt_master_tour_lines_for_tour_division_operator,tt.master.tour.lines.for.tour.di
 tt_master_tour_lines_for_tour_division_supervisor,tt.master.tour.lines.for.tour.division.supervisor,model_tt_master_tour_lines,tt_base.group_tt_tour_division_supervisor,1,1,1,1
 tt_master_tour_lines_for_tour_division_manager,tt.master.tour.lines.for.tour.division.manager,model_tt_master_tour_lines,tt_base.group_tt_tour_division_manager,1,1,1,1
 ,,,,,,,
+tt_master_tour_special_dates_for_all,tt.master.tour.special.dates.for.all,model_tt_master_tour_special_dates,,1,0,0,0
+tt_master_tour_special_dates_for_tour_division_operator,tt.master.tour.special.dates.for.tour.division.operator,model_tt_master_tour_special_dates,tt_base.group_tt_tour_division_operator,1,1,1,0
+tt_master_tour_special_dates_for_tour_division_supervisor,tt.master.tour.special.dates.for.tour.division.supervisor,model_tt_master_tour_special_dates,tt_base.group_tt_tour_division_supervisor,1,1,1,1
+tt_master_tour_special_dates_for_tour_division_manager,tt.master.tour.special.dates.for.tour.division.manager,model_tt_master_tour_special_dates,tt_base.group_tt_tour_division_manager,1,1,1,1
+,,,,,,,
 flight_segment_for_all,flight.segment.for.all,model_flight_segment,,1,0,0,0
 flight_segment_for_tour_travel_operator,flight.segment.for.tour.travel.operator,model_flight_segment,tt_base.group_tt_tour_travel_operator,1,1,1,1
 flight_segment_for_tour_travel_supervisor,flight.segment.for.tour.travel.supervisor,model_flight_segment,tt_base.group_tt_tour_travel_supervisor,1,1,1,1
