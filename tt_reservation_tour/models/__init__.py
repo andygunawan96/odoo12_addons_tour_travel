@@ -7,6 +7,7 @@ from . import tt_provider_tour
 from . import tt_ticket_tour
 from . import tt_master_tour
 from . import tt_master_tour_lines
+from . import tt_master_tour_special_dates
 from . import tt_master_tour_rooms
 from . import tt_master_tour_quotation
 from . import tt_master_tour_discount

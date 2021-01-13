@@ -28,6 +28,7 @@ class MasterTourLines(models.Model):
     quota = fields.Integer('Quota', required=True, default=1, readonly=True, states={'draft': [('readonly', False)]})
     sequence = fields.Integer('Sequence', default=3, required=True, readonly=True, states={'draft': [('readonly', False)]})
     provider_id = fields.Many2one('tt.provider', 'Provider', readonly=True, related='master_tour_id.provider_id', store=True)
+    special_dates_ids = fields.One2many('tt.master.tour.special.dates', 'tour_line_id', 'Special Dates', readonly=True, states={'draft': [('readonly', False)]})
     master_tour_id = fields.Many2one('tt.master.tour', 'Master Tour', readonly=True)
     active = fields.Boolean('Active', default=True)
 

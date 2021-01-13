@@ -43,6 +43,8 @@
                             </div>
                         </group>
                     </group>
+                    <separator string="Tour Special Dates (For Open Tour Only)"/>
+                    <field name="special_dates_ids"/>
                 </sheet>
             </form>
         </field>
