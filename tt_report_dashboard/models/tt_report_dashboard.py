@@ -711,19 +711,25 @@ class TtReportDashboard(models.Model):
                     summary_customer_parent[customer_parent_index]['revenue'] += i['amount']
                     summary_customer_parent[customer_parent_index]['reservation'] += 1
 
+            list_person = []
+            list_customer = []
             # proceed profit
             for i in profit:
                 # by customer
                 person_index = self.customer_index(summary_customer, {'customer_id': i['customer_id'], 'customer_name': i['customer_name']})
                 try:
-                    summary_customer[person_index]['profit'] += i['debit']
+                    if i['ledger_agent_type_name'] != self.env.ref('tt_base.agent_type_ho').name and i['reservation_id'] not in list_person:
+                        summary_customer[person_index]['profit'] += i['debit']
+                        list_person.append(i['reservation_id'])
                 except:
                     pass
 
                 # by customer type
                 person_type_index = self.customer_parent_index(summary_customer_parent, {'customer_parent_id': i['customer_parent_id'], 'customer_parent_name': i['customer_parent_name']})
                 try:
-                    summary_customer_parent[person_type_index]['profit'] += i['debit']
+                    if i['ledger_agent_type_name'] != self.env.ref('tt_base.agent_type_ho').name and i['reservation_id'] not in list_customer:
+                        summary_customer_parent[person_type_index]['profit'] += i['debit']
+                        list_customer.append(i['reservation_id'])
                 except:
                     pass
 
@@ -809,7 +815,7 @@ class TtReportDashboard(models.Model):
     # this function handle and process data for channel ranking by revenue
     # data = form data from frontend
     # profit = reservation data from function who calls this function (reservation data contains profit data)
-    def get_report_group_by_chanel(self, data, profit):
+    def get_report_group_by_chanel(self, data, profit, is_ho):
         try:
             # prepare data to get channel base on reservation performance in database
             temp_dict = {
@@ -867,11 +873,20 @@ class TtReportDashboard(models.Model):
                     summary_chanel[person_index]['revenue'] += i['amount']
                     summary_chanel[person_index]['reservation'] += 1
 
+            summary_ho = False
+            for i in summary_chanel:
+                if i['agent_type_name'] == self.env.ref('tt_base.agent_type_ho').name:
+                    summary_ho = True
+                    break
+            list_id = []
             # proceed profit
             for i in profit:
                 person_index = self.person_index_by_name(summary_chanel, {'agent_name': i['ledger_agent_name'], 'agent_type_name': i['ledger_agent_type_name']})
                 try:
-                    summary_chanel[person_index]['profit'] += i['debit']
+                    if is_ho == True and summary_ho == True and i['reservation_id'] not in list_id or i['ledger_agent_type_name'] != self.env.ref('tt_base.agent_type_ho').name and i['reservation_id'] not in list_id:
+                        summary_chanel[person_index]['profit'] += i['debit']
+                        list_id.append(i['reservation_id'])
+
                 except:
                     pass
 
@@ -1012,7 +1027,7 @@ class TtReportDashboard(models.Model):
             summary_provider = []
 
             # declare current id
-            current_id = ''
+            current_id = [] # IVAN testing ganti list karena jika case beda id id sama tetapi beda order bisa ketambah
             current_journey = ''
             current_segment = ''
             current_pnr = ''
@@ -1025,7 +1040,7 @@ class TtReportDashboard(models.Model):
                 try:
                     # check if reservation id is not equal to current reservation id
                     # by default current id is empty string ('')
-                    if i['reservation_id'] != current_id:
+                    if i['reservation_id'] not in current_id:
                         #reset pnr list
                         pnr_within = []
                         # if reservation id is not equal to current id it means, it's a different reservation than previous line
@@ -1129,7 +1144,7 @@ class TtReportDashboard(models.Model):
                                 summary_provider[provider_index][i['reservation_state']] += 1
                             except:
                                 summary_provider[provider_index][i['reservation_state']] = 1
-                        current_id = i['reservation_id']
+                        current_id.append(i['reservation_id'])
                     else:
                         # if current id equal to i['reservation_id']
                         # get current journey
@@ -1364,7 +1379,7 @@ class TtReportDashboard(models.Model):
             # fourth and fifth with customer and customer parent respectively
 
             # get by chanel
-            chanel_data = self.get_report_group_by_chanel(data, issued_values['lines'])
+            chanel_data = self.get_report_group_by_chanel(data, issued_values['lines'], is_ho)
 
             # adding chanel_data graph
             to_return.update(chanel_data)
@@ -2280,7 +2295,7 @@ class TtReportDashboard(models.Model):
             # fourth and fifth with customer and customer parent respectively
 
             # get by chanel
-            chanel_data = self.get_report_group_by_chanel(data, issued_values['lines'])
+            chanel_data = self.get_report_group_by_chanel(data, issued_values['lines'], is_ho)
 
             # adding chanel_data graph
             to_return.update(chanel_data)
@@ -2832,7 +2847,7 @@ class TtReportDashboard(models.Model):
             # fourth and fifth with customer and customer parent respectively
 
             # get by chanel
-            chanel_data = self.get_report_group_by_chanel(data, issued_values['lines'])
+            chanel_data = self.get_report_group_by_chanel(data, issued_values['lines'], is_ho)
 
             # adding chanel_data graph
             to_return.update(chanel_data)
@@ -3313,7 +3328,7 @@ class TtReportDashboard(models.Model):
             # fourth and fifth with customer and customer parent respectively
 
             # get by chanel
-            chanel_data = self.get_report_group_by_chanel(data, issued_values['lines'])
+            chanel_data = self.get_report_group_by_chanel(data, issued_values['lines'], is_ho)
 
             # adding chanel_data graph
             to_return.update(chanel_data)
@@ -3641,7 +3656,7 @@ class TtReportDashboard(models.Model):
             # fourth and fifth with customer and customer parent respectively
 
             # get by chanel
-            chanel_data = self.get_report_group_by_chanel(data, issued_values['lines'])
+            chanel_data = self.get_report_group_by_chanel(data, issued_values['lines'], is_ho)
 
             # adding chanel_data graph
             to_return.update(chanel_data)
@@ -3990,7 +4005,7 @@ class TtReportDashboard(models.Model):
             # fourth and fifth with customer and customer parent respectively
 
             # get by chanel
-            chanel_data = self.get_report_group_by_chanel(data, issued_values['lines'])
+            chanel_data = self.get_report_group_by_chanel(data, issued_values['lines'], is_ho)
 
             # adding chanel_data graph
             to_return.update(chanel_data)
@@ -4337,7 +4352,7 @@ class TtReportDashboard(models.Model):
             # fourth and fifth with customer and customer parent respectively
 
             # get by chanel
-            chanel_data = self.get_report_group_by_chanel(data, issued_values['lines'])
+            chanel_data = self.get_report_group_by_chanel(data, issued_values['lines'], is_ho)
 
             # adding chanel_data graph
             to_return.update(chanel_data)
@@ -4678,7 +4693,7 @@ class TtReportDashboard(models.Model):
             # fourth and fifth with customer and customer parent respectively
 
             # get by chanel
-            chanel_data = self.get_report_group_by_chanel(data, issued_values['lines'])
+            chanel_data = self.get_report_group_by_chanel(data, issued_values['lines'], is_ho)
 
             # adding chanel_data graph
             to_return.update(chanel_data)
@@ -5021,7 +5036,7 @@ class TtReportDashboard(models.Model):
             # fourth and fifth with customer and customer parent respectively
 
             # get by chanel
-            chanel_data = self.get_report_group_by_chanel(data, issued_values['lines'])
+            chanel_data = self.get_report_group_by_chanel(data, issued_values['lines'], is_ho)
 
             # adding chanel_data graph
             to_return.update(chanel_data)
@@ -5360,7 +5375,7 @@ class TtReportDashboard(models.Model):
             # fourth and fifth with customer and customer parent respectively
 
             # get by chanel
-            chanel_data = self.get_report_group_by_chanel(data, issued_values['lines'])
+            chanel_data = self.get_report_group_by_chanel(data, issued_values['lines'], is_ho)
 
             # adding chanel_data graph
             to_return.update(chanel_data)
@@ -5701,7 +5716,7 @@ class TtReportDashboard(models.Model):
             # fourth and fifth with customer and customer parent respectively
 
             # get by chanel
-            chanel_data = self.get_report_group_by_chanel(data, issued_values['lines'])
+            chanel_data = self.get_report_group_by_chanel(data, issued_values['lines'], is_ho)
 
             # adding chanel_data graph
             to_return.update(chanel_data)

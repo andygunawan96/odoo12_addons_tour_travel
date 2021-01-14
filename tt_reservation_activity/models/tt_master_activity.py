@@ -64,6 +64,7 @@ class ActivitySyncProducts(models.TransientModel):
 
 
 class MasterActivity(models.Model):
+    _inherit = ['tt.history']
     _name = 'tt.master.activity'
     _description = 'Rodex Model'
 

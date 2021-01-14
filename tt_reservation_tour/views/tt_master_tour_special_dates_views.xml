@@ -1,0 +1,84 @@
+<odoo>
+    <record model="ir.ui.view" id="tt_master_tour_special_dates_view_form">
+        <field name="name">tt.master.tour.special.dates.view.form</field>
+        <field name="model">tt.master.tour.special.dates</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="toggle_active" type="object"
+                                class="oe_stat_button" icon="fa-archive"
+                                groups="tt_base.group_tt_tour_division_operator,base.user_admin">
+                            <field name="active" widget="boolean_button"
+                                   options='{"terminology": "archive"}'/>
+                        </button>
+                    </div>
+                    <div class="oe_title">
+                        <h1>
+                            <field name="name" default_focus="1" placeholder="Name"/>
+                        </h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="date"/>
+                            <field name="tour_line_id" invisible="1"/>
+                            <field name="currency_id" invisible="1"/>
+                        </group>
+                        <group>
+
+                        </group>
+                    </group>
+                    <group col="3">
+                        <group>
+                            <field name="additional_adult_fare"/>
+                            <field name="additional_adult_commission"/>
+                        </group>
+                        <group>
+                            <field name="additional_child_fare"/>
+                            <field name="additional_child_commission"/>
+                        </group>
+                        <group>
+                            <field name="additional_infant_fare"/>
+                            <field name="additional_infant_commission"/>
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record model="ir.ui.view" id="tt_master_tour_special_dates_view_tree" >
+        <field name="name">tt.master.tour.special.dates.view.tree</field>
+        <field name="model">tt.master.tour.special.dates</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="name"/>
+                <field name="date"/>
+                <field name="currency_id"/>
+                <field name="additional_adult_fare"/>
+                <field name="additional_adult_commission"/>
+                <field name="additional_child_fare"/>
+                <field name="additional_child_commission"/>
+                <field name="additional_infant_fare"/>
+                <field name="additional_infant_commission"/>
+            </tree>
+        </field>
+    </record>
+
+    <record model="ir.actions.act_window" id="tt_master_tour_special_dates_view_action">
+        <field name="name">Master Tour Special Dates</field>
+        <field name="res_model">tt.master.tour.special.dates</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+        <field name="domain">[]</field>
+        <field name="context">
+            {
+            'form_view_ref': 'tt_reservation_tour.tt_master_tour_special_dates_view_form',
+            'tree_view_ref': 'tt_reservation_tour.tt_master_tour_special_dates_view_tree',
+            }
+        </field>
+    </record>
+</odoo>
