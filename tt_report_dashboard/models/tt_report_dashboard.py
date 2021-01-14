@@ -711,21 +711,25 @@ class TtReportDashboard(models.Model):
                     summary_customer_parent[customer_parent_index]['revenue'] += i['amount']
                     summary_customer_parent[customer_parent_index]['reservation'] += 1
 
+            list_person = []
+            list_customer = []
             # proceed profit
             for i in profit:
                 # by customer
                 person_index = self.customer_index(summary_customer, {'customer_id': i['customer_id'], 'customer_name': i['customer_name']})
                 try:
-                    if i['ledger_agent_type_name'] != self.env.ref('tt_base.agent_type_ho').name:
+                    if i['ledger_agent_type_name'] != self.env.ref('tt_base.agent_type_ho').name and i['reservation_id'] not in list_person:
                         summary_customer[person_index]['profit'] += i['debit']
+                        list_person.append(i['reservation_id'])
                 except:
                     pass
 
                 # by customer type
                 person_type_index = self.customer_parent_index(summary_customer_parent, {'customer_parent_id': i['customer_parent_id'], 'customer_parent_name': i['customer_parent_name']})
                 try:
-                    if i['ledger_agent_type_name'] != self.env.ref('tt_base.agent_type_ho').name:
+                    if i['ledger_agent_type_name'] != self.env.ref('tt_base.agent_type_ho').name and i['reservation_id'] not in list_customer:
                         summary_customer_parent[person_type_index]['profit'] += i['debit']
+                        list_customer.append(i['reservation_id'])
                 except:
                     pass
 
@@ -874,12 +878,14 @@ class TtReportDashboard(models.Model):
                 if i['agent_type_name'] == self.env.ref('tt_base.agent_type_ho').name:
                     summary_ho = True
                     break
+            list_id = []
             # proceed profit
             for i in profit:
                 person_index = self.person_index_by_name(summary_chanel, {'agent_name': i['ledger_agent_name'], 'agent_type_name': i['ledger_agent_type_name']})
                 try:
-                    if is_ho == True and summary_ho == True or i['ledger_agent_type_name'] != self.env.ref('tt_base.agent_type_ho').name:
+                    if is_ho == True and summary_ho == True and i['reservation_id'] not in list_id or i['ledger_agent_type_name'] != self.env.ref('tt_base.agent_type_ho').name and i['reservation_id'] not in list_id:
                         summary_chanel[person_index]['profit'] += i['debit']
+                        list_id.append(i['reservation_id'])
 
                 except:
                     pass
