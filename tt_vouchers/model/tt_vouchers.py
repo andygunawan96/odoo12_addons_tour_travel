@@ -23,7 +23,7 @@ class TtVoucher(models.Model):
     voucher_coverage = fields.Selection([("all", "All"), ("product", "Specified Product"), ("provider", "Specified Provider")], default='all', readonly=True, states={'draft': [('readonly', False)]})
     voucher_type = fields.Selection([("percent", "Percentage"), ("amount", "Some Amount")], default='amount', readonly=True, states={'draft': [('readonly', False)]})
     currency_id = fields.Many2one("res.currency", readonly=True, states={'draft': [('readonly', False)]})
-    voucher_value = fields.Float("Voucher value", default=0, readonly=True, states={'draft': [('readonly', False)]})
+    voucher_value = fields.Monetary("Voucher value", default=0, readonly=True, states={'draft': [('readonly', False)]})
     voucher_maximum_cap = fields.Float("Voucher Cap", readonly=True, states={'draft': [('readonly', False)]})
     voucher_minimum_purchase = fields.Float('Voucher Minimum Purchase', default=0, readonly=True, states={'draft': [('readonly', False)]})
     voucher_detail_ids = fields.One2many("tt.voucher.detail", "voucher_id", "Voucher Detail", readonly=True, states={'draft': [('readonly', False)]})
