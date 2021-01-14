@@ -38,6 +38,8 @@
             <field name="provider_type_id" ref="tt_provider_type_ppob"/>
             <field name="basic_amount">100</field>
             <field name="currency_id" ref="base.IDR"/>
+            <field name="sequence">999</field>
+            <field name="active" eval="False"/>
         </record>
 
         <record id="tt_pricing_agent_default_citra_ppob" model="tt.pricing.agent">
@@ -45,6 +47,8 @@
             <field name="provider_type_id" ref="tt_provider_type_ppob"/>
             <field name="basic_amount">70</field>
             <field name="currency_id" ref="base.IDR"/>
+            <field name="sequence">999</field>
+            <field name="active" eval="False"/>
             <field name="line_ids" eval="[(6,0, [
                                         ref('tt_pricing_agent_default_citra_ppob_line_HO')
                                         ])]"/>
@@ -56,6 +60,8 @@
             <field name="basic_amount">70</field>
             <field name="loop_level">1</field>
             <field name="currency_id" ref="base.IDR"/>
+            <field name="sequence">999</field>
+            <field name="active" eval="False"/>
             <field name="line_ids" eval="[(6,0, [
                                         ref('tt_pricing_agent_default_japro_ppob_line_citra'),
                                         ref('tt_pricing_agent_default_japro_ppob_line_HO')
@@ -67,6 +73,8 @@
             <field name="provider_type_id" ref="tt_provider_type_ppob"/>
             <field name="basic_amount">0</field>
             <field name="currency_id" ref="base.IDR"/>
+            <field name="sequence">999</field>
+            <field name="active" eval="False"/>
             <field name="line_ids" eval="[(6,0, [
                                         ref('tt_pricing_agent_default_btc_ppob_line_HO')
                                         ])]"/>

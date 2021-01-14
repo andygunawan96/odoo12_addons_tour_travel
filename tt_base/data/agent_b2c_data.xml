@@ -17,12 +17,22 @@
                           (4,ref('tt_base.group_tt_agent_invoice_operator')),
                           (4,ref('tt_base.group_tt_agent_user_operator'))]"/>
             <field name="frontend_security_ids"
-                   eval="[(4,ref('tt_base.able_to_ticketing')),
-                    (4,ref('tt_base.able_to_book')),
-                    (4,ref('tt_base.able_to_issued')),
-                    (4,ref('tt_base.able_to_login')),
-                    (4,ref('tt_base.b2c_limitation')),
-                    ]"/>
+                   eval="[(6,0,[ref('tt_base.able_to_login'),
+                                ref('tt_base.able_to_ticketing_activity'),
+                                ref('tt_base.able_to_ticketing_airline'),
+                                ref('tt_base.able_to_ticketing_event'),
+                                ref('tt_base.able_to_ticketing_hotel'),
+                                ref('tt_base.able_to_ticketing_offline'),
+                                ref('tt_base.able_to_ticketing_ppob'),
+                                ref('tt_base.able_to_ticketing_tour'),
+                                ref('tt_base.able_to_ticketing_train'),
+                                ref('tt_base.able_to_ticketing_visa'),
+                                ref('tt_base.report',
+                                ref('tt_base.able_to_book'),
+                                ref('tt_base.able_to_issued'),
+                                ref('tt_base.able_to_login'),
+                                ref('tt_base.b2c_limitation'))])]"
+            />
         </record>
     </data>
 </odoo>
