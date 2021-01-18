@@ -130,6 +130,8 @@ class TtPaymentApiCon(models.Model):
             res = self.env['payment.acquirer.number'].set_va_number_api(data)
         elif action == 'use_pnr_quota':
             res = self.env['tt.reservation'].use_pnr_quota_api(data,context)
+        elif action == 'set_sync_reservation':
+            res = self.env['tt.reservation'].set_sync_reservation_api(data,context)
         else:
             raise RequestException(999)
         return res
@@ -195,6 +197,23 @@ class TtPaymentApiCon(models.Model):
         }
         action = 'merchant_info'
         return self.send_request_to_gateway('%s/payment' % (self.url),
+                                            request,
+                                            action,
+                                            timeout=60)
+
+
+    def sync_reservation_btbo_quota_pnr(self,req):
+        request = {
+            'carriers': req['carriers'],
+            'pnr': req['pnr'],
+            'pax': req['pax'],
+            'provider': req['provider'],
+            'provider_type': req['provider_type'],
+            'order_number': req['order_number'],
+            'r_n': req['r_n']
+        }
+        action = 'send_quota_pnr'
+        return self.send_request_to_gateway('%s/booking/%s' % (self.url, req['provider_type']),
                                             request,
                                             action,
                                             timeout=60)
