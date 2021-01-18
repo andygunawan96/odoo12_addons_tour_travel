@@ -3562,6 +3562,17 @@ class HotelInformation(models.Model):
         # Reset Parameter jika sdah selesaai
         self.env['ir.config_parameter'].sudo().set_param('hotel.city.rendered.list', json.dumps([]))
 
+    # 2a. Get Hotel Image
+    def v2_get_hotel_image(self):
+        provider = self.env['ir.config_parameter'].sudo().get_param('hotel.cache.provider').split(',')  # 'knb',dida,webbeds
+        for rec in provider:
+            def_name = 'v2_get_hotel_image_%s' % rec
+            if hasattr(self, def_name):
+                return getattr(self, def_name)()
+            else:
+                _logger.error(msg='No function get Hotel Image for this provider %s' % rec)
+        return False
+
     # 3. Send Hotel to GW
     # Compiller: Master, Send: GW Rodextrip
     # Notes: Read Data Hotel kumpulkan per City kirim ke GW

@@ -102,3 +102,16 @@ class HotelDestination(models.Model):
                 # Create Notif to Merge Possible Similar
                 return True
         return True
+
+    def multi_merge_destination(self):
+        code_list = []
+        max_len = 0
+        max_obj = False
+        for rec in self:
+            code_list += rec.provider_ids.ids
+            if max_len < len(rec.provider_ids.ids):
+                max_len = len(rec.provider_ids.ids)
+                max_obj = rec
+        if max_obj:
+            max_obj.provider_ids.update([(6, 0, code_list)])
+        return True
