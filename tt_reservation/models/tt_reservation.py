@@ -874,7 +874,7 @@ class TtReservation(models.Model):
         # if agent_obj.is_using_pnr_quota: ##selalu potong quota setiap  attemp payment
         # if agent_obj.is_using_pnr_quota and ledger_created:  # tidak potong quota jika tidak membuat ledger
         try:
-            quota_usage_obj = self.env['tt.pnr.quota.usage'].search([('ref_name','=', "EXT.%s" % req['order_number'])])
+            quota_usage_obj = self.env['tt.pnr.quota.usage'].search([('ref_name','=', "EXT.%s" % req['order_number']),('ref_pnrs','=', req['pnr'])])
             if not quota_usage_obj:
                 carrier_str = ''
                 for carrier in req.get('carriers'):

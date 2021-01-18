@@ -62,18 +62,6 @@ class TtCronLogInhResv(models.Model):
             self.create_cron_log_folder()
             self.write_cron_log('auto expired booking')
 
-    def cron_sync_reservation_auto_true(self):
-        try:
-            for rec in variables.PROVIDER_TYPE:
-                new_bookings = self.env['tt.reservation.%s' % rec].search(
-                    [('state', 'in', ['issued']),
-                     ('sync_reservation','=',False)])
-                for book_obj in new_bookings:
-                    book_obj.sync_reservation = True
-        except Exception as e:
-            self.create_cron_log_folder()
-            self.write_cron_log('auto expired booking')
-
     def cron_auto_reconcile(self,timedelta_days=1,check_unreconciled_reservation=False):
         try:
             error_list = []
