@@ -1133,18 +1133,6 @@ class TestSearch(models.Model):
 
     def get_provider_for_destination_dest_name(self, dest_name):
         def provider_to_dic(vendor, city_id):
-            def price_to_dic(price_rule):
-                vals = {
-                    'sequence': price_rule.sequence,
-                    'min_price': price_rule.min_price,
-                    'max_price': price_rule.max_price,
-                    'start_date': price_rule.start_date,
-                    'end_date': price_rule.end_date,
-                    'amount': price_rule.amount,
-                    'percentage': price_rule.percentage,
-                }
-                return vals
-
             def vendor_rate_to_dic(recs):
                 # vals = {
                 #     'currency_id': price_rule.currency_id.code,
@@ -1178,6 +1166,19 @@ class TestSearch(models.Model):
             a = provider_to_dic(rec, city_id)
             if a:
                 providers.append(a)
+
+        # BTBO2: jika data city / alias antara BTBO2 dengan master berbeda
+        # mekanisme ini perlu supaya bisa search all autocomplete dari master tnpa perlu sync data city
+        prov_rdx_hotel_obj = self.env.ref('tt_reservation_hotel.tt_hotel_provider_rodextrip_hotel')
+        if prov_rdx_hotel_obj.id not in [rec.provider_id.id for rec in vendor_ids] and prov_rdx_hotel_obj.active:
+            providers.append({
+                'provider_id': prov_rdx_hotel_obj.id,
+                'name': prov_rdx_hotel_obj.name,
+                'provider': prov_rdx_hotel_obj.code or prov_rdx_hotel_obj.name.lower(),
+                'provider_city_id': dest_name.upper(),
+                'provider_country_id': False,
+                'currency_rule': {},
+            })
         return providers
 
     def get_hotel_by_city(self, provider_code, dest_id):

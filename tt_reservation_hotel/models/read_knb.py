@@ -186,7 +186,7 @@ class HotelInformation(models.Model):
         path = base_cache_directory + 'knb/master/'
         for country_file in glob.glob(os.path.join(path, '*.csv')):
             _logger.info("========================================")
-            _logger.info("Write Country arc" + country_file.split('/')[-1].split('_')[2])
+            _logger.info("Write Country arc " + country_file.split('/')[-1].split('_')[2])
             _logger.info("========================================")
             # Baca file
             with open(country_file, 'r') as f:
@@ -422,3 +422,24 @@ class HotelInformation(models.Model):
     # 1g. Get Facility Code
     def v2_get_facility_code_knb(self):
         return True
+
+    # 2a. Get Hotel Image
+    def v2_get_hotel_image_knb(self):
+        api_context = {
+            'co_uid': self.env.user.id
+        }
+        city_obj = self.env['res.city'].search([('name', '=ilike', 'semarang')], limit=1)
+        hotel_list = [rec.name for rec in self.env['tt.hotel'].search([('city_id','=', city_obj.id)])]
+        for rec in hotel_list[:50]:
+            search_req = {
+                'provider': 'knb',
+                'type': 'GetImageList',
+                'limit': '',
+                'offset': '',
+                'codes': rec,
+            }
+            try:
+                a = API_CN_HOTEL.get_record_by_api(search_req, api_context)
+                a = a['response'][1]
+            except:
+                continue

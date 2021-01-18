@@ -728,6 +728,9 @@
                         <button name="v2_get_room_code" class="oe_stat_button" string="1f. Room Code" type="object" icon="fa-plus"/>
                         <button name="v2_get_facility_code" class="oe_stat_button" string="1g. Facility Code" type="object" icon="fa-plus"/>
                     </group>
+                    <group>
+                        <button name="v2_get_hotel_image_knb" class="oe_stat_button" string="2a. Get Image KNB" type="object" icon="fa-plus"/>
+                    </group>
                 </sheet>
             </form>
         </field>
