@@ -31,7 +31,7 @@
                                 ref('tt_base.able_to_book'),
                                 ref('tt_base.able_to_issued'),
                                 ref('tt_base.able_to_login'),
-                                ref('tt_base.b2c_limitation'))])]"
+                                ref('tt_base.b2c_limitation')])]"
             />
         </record>
     </data>
