@@ -26,6 +26,42 @@ class TtCronLogInhResv(models.Model):
             self.create_cron_log_folder()
             self.write_cron_log('auto expired booking')
 
+    def cron_sync_reservation(self):
+        try:
+            for rec in variables.PROVIDER_TYPE:
+                new_bookings = self.env['tt.reservation.%s' % rec].search(
+                    [('state', 'in', ['issued']),
+                     ('sync_reservation','=',False)])
+                for book_obj in new_bookings:
+                    try:
+                        for provider in book_obj.provider_booking_ids:
+                            carrier_code = []
+                            if hasattr(provider, 'journey_ids'):
+                                for journey in provider.journey_ids:
+                                    if hasattr(journey, 'segment_ids'):
+                                        for segment in journey.segment_ids:
+                                            carrier_code.append(segment.carrier_code)
+                                    else:
+                                        carrier_code.append(journey.carrier_code)
+                            data = {
+                                'carriers': carrier_code,
+                                'pnr': book_obj.pnr,
+                                'pax': hasattr(book_obj, 'passenger_ids') and len(book_obj.passenger_ids) or 0,
+                                'provider': provider.provider_id.code,
+                                'provider_type': rec,
+                                'order_number': book_obj.name,
+                                'r_n': hasattr(book_obj, 'nights') and book_obj.nights or 0,  # room/night
+                            }
+                            # tembak gateway
+                            self.env['tt.payment.api.con'].sync_reservation_btbo_quota_pnr(data)
+                        book_obj.sync_reservation = True
+                    except Exception as e:
+                        _logger.error(
+                            '%s something failed during expired cron.\n' % (book_obj.name) + traceback.format_exc())
+        except Exception as e:
+            self.create_cron_log_folder()
+            self.write_cron_log('auto expired booking')
+
     def cron_auto_reconcile(self,timedelta_days=1,check_unreconciled_reservation=False):
         try:
             error_list = []

@@ -52,7 +52,7 @@ class TtReservation(models.Model):
     refund_uid = fields.Many2one('res.users', 'Refund by', readonly=False)
     refund_date = fields.Datetime('Refund Date', readonly=True)
     user_id = fields.Many2one('res.users', 'Create by', readonly=True)  # create_uid
-
+    sync_reservation = fields.Boolean('Sync Reservation', default=False)
     #utk adjustment
     res_model = fields.Char('Res Model', invisible=1, readonly=True)
 
@@ -680,6 +680,18 @@ class TtReservation(models.Model):
         for rec in self.ledger_ids:
             rec.update({'pnr': new_pnr})
 
+    def set_sync_reservation_api(self, req, context):
+        try:
+            if req.get('book_id'):
+                book_obj = self.env['tt.reservation.%s' % (req['table_name'])].browse(req.get('book_id'))
+            else:
+                book_obj = self.env['tt.reservation.%s' % (req['table_name'])].search([('name', '=', req.get('order_number'))],
+                                                                               limit=1)
+            book_obj.sync_reservation = True
+        except Exception as e:
+            _logger.error(traceback.format_exc())
+
+
     ##ini potong ledger
     def payment_reservation_api(self,table_name,req,context):
         _logger.info("Payment\n" + json.dumps(req))
@@ -828,7 +840,11 @@ class TtReservation(models.Model):
                             _logger.error(traceback.format_exc(e))
                         # if not quota_used:
                         #     print("5k woi")
-
+                data = {
+                    'order_number': book_obj.name,
+                    'table_name': table_name
+                }
+                self.set_sync_reservation_api(data, context)
                 return ERR.get_no_error()
             else:
                 raise RequestException(1001)
@@ -858,28 +874,34 @@ class TtReservation(models.Model):
         # if agent_obj.is_using_pnr_quota: ##selalu potong quota setiap  attemp payment
         # if agent_obj.is_using_pnr_quota and ledger_created:  # tidak potong quota jika tidak membuat ledger
         try:
-            carrier_str = ''
-            for carrier in req.get('carriers'):
-                if carrier_str != '':
-                    carrier += ', '
-                carrier_str += carrier
-            agent_obj.use_pnr_quota({
-                'res_model_resv': '',
-                'res_id_resv': '',
-                'res_model_prov': '',
-                'res_id_prov': '',
-                'ref_pnrs': req['pnr'],
-                'ref_carriers': carrier_str,
-                'ref_provider': req['provider'],
-                'provider_type': req['provider_type'],
-                'ref_name': "EXT.%s" % req['order_number'],
-                'ref_pax': req.get('pax'), # total pax
-                'ref_r_n': req.get('r_n'), # room/night
-                'inventory': 'external'
-            })
+            quota_usage_obj = self.env['tt.pnr.quota.usage'].search([('ref_name','=', "EXT.%s" % req['order_number']),('ref_pnrs','=', req['pnr'])])
+            if not quota_usage_obj:
+                carrier_str = ''
+                for carrier in req.get('carriers'):
+                    if carrier_str != '':
+                        carrier += ', '
+                    carrier_str += carrier
+                agent_obj.use_pnr_quota({
+                    'res_model_resv': '',
+                    'res_id_resv': '',
+                    'res_model_prov': '',
+                    'res_id_prov': '',
+                    'ref_pnrs': req['pnr'],
+                    'ref_carriers': carrier_str,
+                    'ref_provider': req['provider'],
+                    'provider_type': req['provider_type'],
+                    'ref_name': "EXT.%s" % req['order_number'],
+                    'ref_pax': req.get('pax'), # total pax
+                    'ref_r_n': req.get('r_n'), # room/night
+                    'inventory': 'external'
+                })
+                res = ERR.get_no_error()
+            else:
+                res = ERR.get_error(500, additional_message='duplicate external')
         except Exception as e:
-            _logger.info(str(e))
-        return ERR.get_no_error()
+            _logger.error(traceback.format_exc())
+            res = ERR.get_error(500)
+        return res
 
     def get_btc_hold_date(self):
         if (self.booked_date + timedelta(hours=1)) >= self.hold_date:
