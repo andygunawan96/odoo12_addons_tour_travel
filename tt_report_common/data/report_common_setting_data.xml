@@ -1,0 +1,373 @@
+<odoo>
+    <data noupdate="1">
+
+        <record id="train_printout_footer" model="tt.report.common.setting">
+            <field name="name">Train Ticket</field>
+            <field name="code">train_ticket</field>
+            <field name="html" type="html">
+                <div class="row" style="font-size: 20px; border-top: 1px black solid; border-bottom: 1px black solid; margin-top: 40px; font-weight: 300">
+                    <div class="col-12">
+                        <ul>
+                            <li style=" margin-top: 5px;">Ini adalah bukan tiket resmi dari PT. KAI, Gunakan tiket ini untuk mencetak boarding pass di check in counter di stasiun keberangkatan mulai dari 7x24 jam sebelum keberangkatan</li>
+                            <li style=" margin-top: 5px;">Untuk boarding, pastikan anda membawa tanda pengenal resmi (KTP, SIM, Passport) jika lebih dari 17 tahun. Apabila penumpang masih di bawah 17 tahun disarankan untuk membawa Kartu Pelajar atau kartu keluarga</li>
+                            <li style=" margin-top: 5px;">Mohon tiba di stasiun setidaknya 60 menit sebelum keberangkatan</li>
+                            <li style=" margin-top: 5px;">Untuk informasi lebih lanjut silahkan mengacu pada situs PT Kereta Api Indonesia (KAI) di https://kai.id atau hubungi contact center PT. KAI di 021-121</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="row" style="font-size: 20px; margin-top: 30px; font-weight: 300">
+                    <div class="col-12">
+                        Protokol Kesehatan KAI di masa New Normal:
+                        <table style="width: 100%; line-height: normal; page-break-inside:auto">
+                            <tr style="page-break-inside:avoid; page-break-after:auto">
+                                <td valign="top" style="width: 4%;">
+                                    1.
+                                </td>
+                                <td style="width: 96%;">
+                                    1. Menunjukkan surat keterangan uji tes PCR dengan hasil negatif yang berlaku 7 hari atau surat keterangan uji Rapid-Test dengan hasil non reaktif yang berlaku 3 hari pada saat keberangkatan.
+                                </td>
+                            </tr>
+                            <tr style="page-break-inside:avoid; page-break-after:auto">
+                                <td valign="top" style="width: 4%;">
+                                    2.
+                                </td>
+                                <td style="width: 96%;">
+                                    Menunjukkan surat keterangan bebas gejala seperti influenza yang dikeluarkan oleh dokter rumah sakit/puskesmas bagi daerah yang tidak memliki fasilitas test PCR dan/atau Rapid-Test.
+                                </td>
+                            </tr>
+                            <tr style="page-break-inside:avoid; page-break-after:auto">
+                                <td valign="top" style="width: 4%;">
+                                    3.
+                                </td>
+                                <td style="width: 96%;">
+                                    Penumpang dari/ke tujuan Jakarta wajib memiliki Surat Ijin Keluar Masuk (SIKM) wilayah DKI Jakarta, kecuali bagi sektor yang dikecualikan berdasarkan Pergub DKI Jakarta No 47 Tahun 2020
+                                </td>
+                            </tr>
+                            <tr style="page-break-inside:avoid; page-break-after:auto">
+                                <td valign="top" style="width: 4%;">
+                                    4.
+                                </td>
+                                <td style="width: 96%;">
+                                    Penumpang dalam kondisi sehat tidak menderita flu, pilek batuk dan demam
+                                </td>
+                            </tr>
+                            <tr style="page-break-inside:avoid; page-break-after:auto">
+                                <td valign="top" style="width: 4%;">
+                                    5.
+                                </td>
+                                <td style="width: 96%;">
+                                    Penumpang Wajib menggunakan masker
+                                </td>
+                            </tr>
+                            <tr style="page-break-inside:avoid; page-break-after:auto">
+                                <td valign="top" style="width: 4%;">
+                                    6.
+                                </td>
+                                <td style="width: 96%;">
+                                    Suhu badan penumpang tidak lebih dari 37,3 °C*
+                                </td>
+                            </tr>
+                            <tr style="page-break-inside:avoid; page-break-after:auto">
+                                <td valign="top" style="width: 4%;">
+                                    7.
+                                </td>
+                                <td style="width: 96%;">
+                                    Penumpang menggunakan pakaian pelindung (jaket atau pakaian lengan panjang)
+                                </td>
+                            </tr>
+                            <tr style="page-break-inside:avoid; page-break-after:auto">
+                                <td valign="top" style="width: 4%;">
+                                    8.
+                                </td>
+                                <td style="width: 96%;">
+                                    Apabila pada saat proses boarding terdapat penumpang yang tidak memenuhi syarat dan ketentuan diatas maka penumpang tersebut tidak diperkenakan melakukan perjalanan kereta api dan tiket dapat dibatalkan melalui loket stasiun dan mendapatkan bea pembatalan penuh secara tunai
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+            </field>
+            <field name="active" eval="True"/>
+        </record>
+
+        <record id="airline_ticket_footer" model="tt.report.common.setting">
+            <field name="name">Airline Ticket</field>
+            <field name="code">airline_ticket</field>
+            <field name="html" type="html">
+                <div>
+                    <span>* Please arrive at the airport 90 minutes before domestic flight and 2 hours before international flight</span>
+                </div>
+                <div>
+                    <span>* Passengers agree with Terms and Conditions of Carriage outlined by Carrier.</span>
+                </div>
+                <br/>
+                <!-- refund -->
+                <div>
+                    <h4>Cancellation / Refund Terms:</h4>
+                </div>
+                <div>
+                    <span>* Estimated time for cancellation / refund process is 1-3 months (3-6 months for outbreak / force majeure).</span>
+                </div>
+                <div>
+                    <span>* Refunds / cancellations can be in the form of travel deposits / travel vouchers / cash, depending on the provisions from the airline / hotel.</span>
+                </div>
+                 <div>
+                     <span>* The refund amount is in accordance with the amount returned by the airline / hotel minus the admin fee of IDR
+                         <span /> IDR 30,000/ passenger.
+                     </span>
+                </div>
+                <br/>
+                <!-- reschedule -->
+                <div>
+                    <h4>Reschedule Terms:</h4>
+                </div>
+                <div>
+                    <span>* A reschedule fee will be charged to the customer in accordance with airline / hotel regulations plus admin fee of IDR
+                        <span t-esc="reschedule_fee"/> IDR 20,000 / PNR (Personal Number Reservation).
+                    </span>
+                </div>
+                <div>
+                    <span>* Estimated time for reschedule process depends on the airline / hotel.</span>
+                </div>
+            </field>
+            <field name="active" eval="True"/>
+        </record>
+
+        <record id="printout_itinerary_footer" model="tt.report.common.setting">
+            <field name="name">Itinerary</field>
+            <field name="code">printout_itinerary</field>
+            <field name="html" type="html">
+                <div>
+                    <span>I, the undersigned, declare that the reservations I have made correspond to my true IDs and I made this
+statement consciously without any enforcement from anyone.</span>
+                </div>
+            </field>
+            <field name="active" eval="True"/>
+        </record>
+
+        <record id="visa_ticket_customer_footer" model="tt.report.common.setting">
+            <field name="name">Visa Ticket</field>
+            <field name="code">visa_ticket_customer</field>
+            <field name="html" type="html">
+                <div class="row mt8" style="font-family: Times New Roman, Georgia, Serif; font-size: 16px;">
+                    <span class="bold">Terms and Conditions</span>
+                    <br/>
+                    <span style="color: white;">..</span><span>1. Visa handling process is done in weekdays.</span><br/>
+                    <span style="color: white;">..</span><span>2. No refund of any kind when the visa application is rejected</span><br/>
+                    <span style="color: white;">..</span><span>3. Time estimated given can change according to the immigration's policies. Time difference's may occur and</span><br/>
+                    <span style="color: white;">......</span><span>will not be responsible as it will be the consulate full authorities.</span><br/>
+                    <span style="color: white;">..</span><span>4. When needed, consulate will ask for additional documents, the applicant must full fill the in quiries.</span>
+                </div>
+                <div class="row mt16" style="font-family: Times New Roman, Georgia, Serif; font-size: 16px;">
+                    <p>With this statement, I have given my documents for visa handling and correspond to my true ID's and agree with terms and conditions stated above.</p>
+                </div>
+            </field>
+            <field name="active" eval="True"/>
+        </record>
+
+        <record id="activity_ticket_footer" model="tt.report.common.setting">
+            <field name="name">Activity Ticket</field>
+            <field name="code">activity_ticket</field>
+            <field name="html" type="html">
+                <!-- refund -->
+                <div>
+                    <h4>Cancellation / Refund Terms:</h4>
+                </div>
+                <div>
+                    <span>* Estimated time for cancellation / refund process is 1-3 months (3-6 months for outbreak / force majeure).</span>
+                </div>
+                <div>
+                    <span>* Refunds / cancellations can be in the form of travel deposits / travel vouchers / cash, depending on the provisions from the activity.</span>
+                </div>
+                 <div>
+                     <span>* The refund amount is in accordance with the amount returned by the activity minus the admin fee of IDR
+                         <span /> IDR 30,000/ passenger.
+                     </span>
+                </div>
+                <br/>
+                <!-- reschedule -->
+                <div>
+                    <h4>Reschedule Terms:</h4>
+                </div>
+                <div>
+                    <span>* A reschedule fee will be charged to the customer in accordance with activity regulations plus admin fee of IDR
+                        <span t-esc="reschedule_fee"/> IDR 20,000 / PNR (Personal Number Reservation).
+                    </span>
+                </div>
+                <div>
+                    <span>* Estimated time for reschedule process depends on the activity.</span>
+                </div>
+            </field>
+            <field name="active" eval="True"/>
+        </record>
+
+        <record id="tour_ticket_footer" model="tt.report.common.setting">
+            <field name="name">Tour Ticket</field>
+            <field name="code">tour_ticket</field>
+            <field name="html" type="html">
+                <!-- refund -->
+                <div>
+                    <h4>Cancellation / Refund Terms:</h4>
+                </div>
+                <div>
+                    <span>* Estimated time for cancellation / refund process is 1-3 months (3-6 months for outbreak / force majeure).</span>
+                </div>
+                <div>
+                    <span>* Refunds / cancellations can be in the form of travel deposits / travel vouchers / cash, depending on the provisions from the tour.</span>
+                </div>
+                 <div>
+                     <span>* The refund amount is in accordance with the amount returned by the tour minus the admin fee of IDR
+                         <span /> IDR 30,000/ passenger.
+                     </span>
+                </div>
+                <br/>
+                <!-- reschedule -->
+                <div>
+                    <h4>Reschedule Terms:</h4>
+                </div>
+                <div>
+                    <span>* A reschedule fee will be charged to the customer in accordance with tour regulations plus admin fee of IDR
+                        <span t-esc="reschedule_fee"/> IDR 20,000 / PNR (Personal Number Reservation).
+                    </span>
+                </div>
+                <div>
+                    <span>* Estimated time for reschedule process depends on the tour.</span>
+                </div>
+            </field>
+            <field name="active" eval="True"/>
+        </record>
+
+        <record id="hotel_ticket_footer" model="tt.report.common.setting">
+            <field name="name">Hotel Ticket</field>
+            <field name="code">hotel_ticket</field>
+            <field name="html" type="html">
+                <!-- refund -->
+                <div>
+                    <h4>Cancellation / Refund Terms:</h4>
+                </div>
+                <div>
+                    <span>* Estimated time for cancellation / refund process is 1-3 months (3-6 months for outbreak / force majeure).</span>
+                </div>
+                <div>
+                    <span>* Refunds / cancellations can be in the form of travel deposits / travel vouchers / cash, depending on the provisions from the hotel.</span>
+                </div>
+                 <div>
+                     <span>* The refund amount is in accordance with the amount returned by the hotel minus the admin fee of IDR
+                         <span /> IDR 30,000/ passenger.
+                     </span>
+                </div>
+                <br/>
+                <!-- reschedule -->
+                <div>
+                    <h4>Reschedule Terms:</h4>
+                </div>
+                <div>
+                    <span>* A reschedule fee will be charged to the customer in accordance with hotel regulations plus admin fee of IDR
+                        <span t-esc="reschedule_fee"/> IDR 20,000 / PNR (Personal Number Reservation).
+                    </span>
+                </div>
+                <div>
+                    <span>* Estimated time for reschedule process depends on the hotel.</span>
+                </div>
+            </field>
+            <field name="active" eval="True"/>
+        </record>
+
+        <record id="ppob_bpjs_footer" model="tt.report.common.setting">
+            <field name="name">PPOB BPJS</field>
+            <field name="code">ppob_bpjs</field>
+            <field name="html" type="html">
+                <h3 style="padding-left: 20px; text-align:center; font-weight: 600; font-size: 18px">Informasi Hubungi Call Center 123 Atau hubungi PLN Terdekat.</h3>
+                <h3 style="padding-left: 20px; text-align:center; font-weight: 600; font-size: 18px">Segera daftar di Kanal yang tersedia. Info 1500400</h3>
+            </field>
+            <field name="active" eval="True"/>
+        </record>
+
+        <record id="bpjs_pln_footer" model="tt.report.common.setting">
+            <field name="name">PPOB PLN</field>
+            <field name="code">ppob_pln</field>
+            <field name="html" type="html">
+                <h3 style="padding-left: 20px; text-align:center; font-weight: 600; font-size: 18px">Informasi Hubungi Call Center 123 Atau hubungi PLN Terdekat</h3>
+            </field>
+            <field name="active" eval="True"/>
+        </record>
+
+        <record id="prepaid_mobile_pln_footer" model="tt.report.common.setting">
+            <field name="name">PPOB Prepaid Mobile</field>
+            <field name="code">ppob_prepaid_mobile</field>
+            <field name="html"></field>
+            <field name="active" eval="True"/>
+        </record>
+
+        <record id="agent_invoice_footer" model="tt.report.common.setting">
+            <field name="name">Agent Invoice</field>
+            <field name="code">agent_invoice</field>
+            <field name="html" type="html">
+                <li>Payment by transfer/cheque/giro is valid after being credited &amp; confirmed by the bank in full amount.</li>
+            </field>
+            <field name="active" eval="True"/>
+        </record>
+
+        <record id="top_up_footer" model="tt.report.common.setting">
+            <field name="name">Top Up</field>
+            <field name="code">top_up</field>
+            <field name="html" type="html">
+                <li>Payment by transfer/cheque/giro is valid after being credited &amp; confirmed by the bank in full amount.</li>
+            </field>
+            <field name="active" eval="True"/>
+        </record>
+
+        <record id="printout_billing_statement_footer" model="tt.report.common.setting">
+            <field name="name">Billing Statement</field>
+            <field name="code">billing_statement</field>
+            <field name="html" type="html">
+                <li>Payment by transfer/cheque/giro is valid after being credited &amp; confirmed by the bank in full amount.</li>
+            </field>
+            <field name="active" eval="True"/>
+        </record>
+
+        <record id="refund_agent_footer" model="tt.report.common.setting">
+            <field name="name">Refund To Agent</field>
+            <field name="code">refund_to_agent</field>
+            <field name="html"></field>
+            <field name="active" eval="True"/>
+        </record>
+
+        <record id="refund_customer_footer" model="tt.report.common.setting">
+            <field name="name">Refund To Customer</field>
+            <field name="code">refund_to_Customer</field>
+            <field name="html"></field>
+            <field name="active" eval="True"/>
+        </record>
+
+        <record id="reschedule_footer" model="tt.report.common.setting">
+            <field name="name">Reschedule</field>
+            <field name="code">reschedule_ticket</field>
+            <field name="html"></field>
+            <field name="active" eval="True"/>
+        </record>
+
+        <record id="letter_guarantee_po_footer" model="tt.report.common.setting">
+            <field name="name">Letter Guarantee PO</field>
+            <field name="code">letter_guarantee_po</field>
+            <field name="html" type="html">
+                <div class="col-12" style="margin-top:20px;">
+                    We hereby requesting to purchase the above services as per credit term agreement. We appreciate your kind cooperation.
+                </div>
+            </field>
+            <field name="active" eval="True"/>
+        </record>
+
+        <record id="letter_guarantee_no_po_footer" model="tt.report.common.setting">
+            <field name="name">Letter Guarantee</field>
+            <field name="code">letter_guarantee</field>
+            <field name="html" type="html">
+                <div class="col-12" style="margin-top:20px;">
+                    We hereby guaranteed to settle the payment of the above services as per credit term agreement. We appreciate your kind cooperation.
+                </div>
+            </field>
+            <field name="active" eval="True"/>
+        </record>
+
+    </data>
+</odoo>

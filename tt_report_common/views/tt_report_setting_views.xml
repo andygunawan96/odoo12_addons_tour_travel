@@ -1,0 +1,53 @@
+<odoo>
+    <record model="ir.ui.view" id="tt_report_common_setting_view_form" >
+        <field name="name">tt.report.common.setting.form</field>
+        <field name="model">tt.report.common.setting</field>
+        <field name="arch" type="xml">
+            <form string="Report Common">
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="toggle_active" type="object"
+                                class="oe_stat_button" icon="fa-archive"
+                                groups="tt_base.group_tt_tour_travel_supervisor">
+                            <field name="active" widget="boolean_button"
+                                   options='{"terminology": "archive"}'/>
+                        </button>
+                    </div>
+                    <div class="oe_title">
+                        <h1>
+                            <field name="name"/>
+                        </h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="code"/>
+                            <field name="html"/>
+
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record model="ir.ui.view" id="tt_report_common_setting_view_tree" >
+        <field name="name">tt.report.common.setting.form</field>
+        <field name="model">tt.report.common.setting</field>
+        <field name="arch" type="xml">
+            <tree string="Report Setting">
+                <field name="name"/>
+                <field name="code"/>
+                <field name="active"/>
+            </tree>
+        </field>
+    </record>
+
+    <record model="ir.actions.act_window" id="tt_report_common_setting_action">
+        <field name="name">Report Setting</field>
+        <field name="res_model">tt.report.common.setting</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+        <field name="context">{}</field>
+    </record>
+</odoo>
+
