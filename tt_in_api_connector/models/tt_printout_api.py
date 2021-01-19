@@ -70,6 +70,13 @@ class TtPrintoutApiCon(models.Model):
                 res = {
                     'url': res['url']
                 }
+
+        elif action == 'set_color_printout':
+            res = self.env['tt.report.common.setting'].set_color_printout_api(data, context)
+        elif action == 'get_list_report_footer':
+            res = self.env['tt.report.common.setting'].get_list_report_footer_api(data, context)
+        elif action == 'set_report_footer':
+            res = self.env['tt.report.common.setting'].set_report_footer_api(data, context)
         else:
             raise RequestException(999)
 

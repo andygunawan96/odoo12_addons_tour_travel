@@ -34,6 +34,7 @@ class TtCronLogInhResv(models.Model):
                      ('sync_reservation','=',False)])
                 for book_obj in new_bookings:
                     try:
+                        sync = True
                         for provider in book_obj.provider_booking_ids:
                             carrier_code = []
                             if hasattr(provider, 'journey_ids'):
@@ -53,8 +54,11 @@ class TtCronLogInhResv(models.Model):
                                 'r_n': hasattr(book_obj, 'nights') and book_obj.nights or 0,  # room/night
                             }
                             # tembak gateway
-                            self.env['tt.payment.api.con'].sync_reservation_btbo_quota_pnr(data)
-                        book_obj.sync_reservation = True
+                            res = self.env['tt.payment.api.con'].sync_reservation_btbo_quota_pnr(data)
+                            if res['error_code']:
+                                sync = False
+                        if sync == True:
+                            book_obj.sync_reservation = True
                     except Exception as e:
                         _logger.error(
                             '%s something failed during expired cron.\n' % (book_obj.name) + traceback.format_exc())

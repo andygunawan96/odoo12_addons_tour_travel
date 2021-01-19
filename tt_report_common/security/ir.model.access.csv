@@ -1,0 +1,3 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+tt_report_common_for_all,tt.report.common.for.all,model_tt_report_common_setting,,0,0,0,0
+tt_report_common_for_tour_travel_operator,tt.report.common.for.tour.travel.operator,model_tt_report_common_setting,tt_base.group_tt_tour_travel_operator,1,1,1,1
