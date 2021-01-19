@@ -1,68 +1,7 @@
 <odoo>
     <data noupdate="1">
 
-        <record id="voucher_footer" model="tt.report.common.setting">
-            <field name="name">Voucher Ticket</field>
-            <field name="code">voucher_ticket</field>
-            <field name="html" type="html">
-                We hope you will enjoy your trip. Thank you.
-            </field>
-            <field name="active" eval="True"/>
-        </record>
-
-        <record id="vendor_invoice_footer" model="tt.report.common.setting">
-            <field name="name">Vendor Invoice</field>
-            <field name="code">vendor_invoice</field>
-            <field name="html" type="html"></field>
-            <field name="active" eval="True"/>
-        </record>
-
-        <record id="top_up_footer" model="tt.report.common.setting">
-            <field name="name">Top Up</field>
-            <field name="code">top_up</field>
-            <field name="html" type="html">
-                <div class="row">
-                    <div class="col-11">
-                        <br/>
-                        <span style="font-size: 28px; font-weight: 730">IMPORTANT NOTES</span><br/>
-                        <ol style="margin: 0 25px;">
-                            <li>Payment by transfer/cheque/giro is valid after being credited &amp; confirmed by the bank in full amount.</li>
-                            <li>Please transfer to the following account:<br/></li>
-                        </ol>
-                    </div>
-                </div>
-            </field>
-            <field name="active" eval="True"/>
-        </record>
-
-        <record id="printout_billing_footer" model="tt.report.common.setting">
-            <field name="name">Billing</field>
-            <field name="code">billing</field>
-            <field name="html" type="html">
-                <span style="font-size: 28px; font-weight: 730">Important Note(s)</span><br/>
-                    <ol style="margin: 0 25px;">
-                        <li>Payment by transfer/cheque/giro is valid after being credited &amp; confirmed by the bank in full amount.</li>
-                        <li>
-                            Please transfer to the following account:
-                            <ul>
-                                <t t-set="current" t-value="0"/>
-                                <t t-foreach="doc.agent_id.payment_acquirer_ids" t-as="payment_id">
-                                    <t t-if="payment_id.type == 'transfer' and payment_id.account_number and payment_id.account_name and payment_id.website_published">
-                                        <li><span t-field="payment_id.bank_id.name"/> (IDR) <span t-field="payment_id.account_number"/> A/N <span t-field="payment_id.account_name"/></li>
-                                        <t t-set="current" t-value="current + 1"/>
-                                    </t>
-                                </t>
-                                <t t-if="current == 0">
-                                    <li>Direct payment (cash) at <span t-field="doc.agent_id.name"/></li>
-                                </t>
-                            </ul>
-                        </li>
-                    </ol>
-            </field>
-            <field name="active" eval="True"/>
-        </record>
-
-        <record id="train_footer" model="tt.report.common.setting">
+        <record id="train_printout_footer" model="tt.report.common.setting">
             <field name="name">Train Ticket</field>
             <field name="code">train_ticket</field>
             <field name="html" type="html">
@@ -151,12 +90,10 @@
             <field name="active" eval="True"/>
         </record>
 
-        <record id="airline_footer" model="tt.report.common.setting">
+        <record id="airline_ticket_footer" model="tt.report.common.setting">
             <field name="name">Airline Ticket</field>
             <field name="code">airline_ticket</field>
             <field name="html" type="html">
-                <!-- Important Notes -->
-                <h4 style="margin-top: 30px; margin-bottom: 10px;">Important Note(s)</h4>
                 <div>
                     <span>* Please arrive at the airport 90 minutes before domestic flight and 2 hours before international flight</span>
                 </div>
@@ -176,7 +113,7 @@
                 </div>
                  <div>
                      <span>* The refund amount is in accordance with the amount returned by the airline / hotel minus the admin fee of IDR
-                         <span t-esc="refund_fee" t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/> / passenger.
+                         <span /> IDR 30,000/ passenger.
                      </span>
                 </div>
                 <br/>
@@ -186,7 +123,7 @@
                 </div>
                 <div>
                     <span>* A reschedule fee will be charged to the customer in accordance with airline / hotel regulations plus admin fee of IDR
-                        <span t-esc="reschedule_fee"/> IDR 30.000 / PNR (Personal Number Reservation).
+                        <span t-esc="reschedule_fee"/> IDR 20,000 / PNR (Personal Number Reservation).
                     </span>
                 </div>
                 <div>
@@ -196,50 +133,217 @@
             <field name="active" eval="True"/>
         </record>
 
-        <record id="airline_2_footer" model="tt.report.common.setting">
-            <field name="name">Airline Ticket 2</field>
-            <field name="code">airline_ticket2</field>
+        <record id="printout_itinerary_footer" model="tt.report.common.setting">
+            <field name="name">Itinerary</field>
+            <field name="code">printout_itinerary</field>
             <field name="html" type="html">
-                <div class="">
-                    <h4 class="sub-table">Important Notes</h4>
-                    <div class="space">
-                        <p>- Mohon tiba di Bandara selambat - lambatnya 90 menit sebelum keberangkatan untuk domestik atau 2 jam untuk internasional</p>
-                    </div>
-                    <div class="space">
-                        <p class="space">- Penumpang / pemegang tiket ini tunduk kepada syarat dan ketentuan penerbangan yang ditetapkan oleh Maskapai</p>
-                    </div>
+                <div>
+                    <span>I, the undersigned, declare that the reservations I have made correspond to my true IDs and I made this
+statement consciously without any enforcement from anyone.</span>
                 </div>
             </field>
+            <field name="active" eval="True"/>
+        </record>
+
+        <record id="visa_ticket_customer_footer" model="tt.report.common.setting">
+            <field name="name">Visa Ticket</field>
+            <field name="code">visa_ticket_customer</field>
+            <field name="html" type="html">
+                <div class="row mt8" style="font-family: Times New Roman, Georgia, Serif; font-size: 16px;">
+                    <span class="bold">Terms and Conditions</span>
+                    <br/>
+                    <span style="color: white;">..</span><span>1. Visa handling process is done in weekdays.</span><br/>
+                    <span style="color: white;">..</span><span>2. No refund of any kind when the visa application is rejected</span><br/>
+                    <span style="color: white;">..</span><span>3. Time estimated given can change according to the immigration's policies. Time difference's may occur and</span><br/>
+                    <span style="color: white;">......</span><span>will not be responsible as it will be the consulate full authorities.</span><br/>
+                    <span style="color: white;">..</span><span>4. When needed, consulate will ask for additional documents, the applicant must full fill the in quiries.</span>
+                </div>
+                <div class="row mt16" style="font-family: Times New Roman, Georgia, Serif; font-size: 16px;">
+                    <p>With this statement, I have given my documents for visa handling and correspond to my true ID's and agree with terms and conditions stated above.</p>
+                </div>
+            </field>
+            <field name="active" eval="True"/>
+        </record>
+
+        <record id="activity_ticket_footer" model="tt.report.common.setting">
+            <field name="name">Activity Ticket</field>
+            <field name="code">activity_ticket</field>
+            <field name="html" type="html">
+                <!-- refund -->
+                <div>
+                    <h4>Cancellation / Refund Terms:</h4>
+                </div>
+                <div>
+                    <span>* Estimated time for cancellation / refund process is 1-3 months (3-6 months for outbreak / force majeure).</span>
+                </div>
+                <div>
+                    <span>* Refunds / cancellations can be in the form of travel deposits / travel vouchers / cash, depending on the provisions from the activity.</span>
+                </div>
+                 <div>
+                     <span>* The refund amount is in accordance with the amount returned by the activity minus the admin fee of IDR
+                         <span /> IDR 30,000/ passenger.
+                     </span>
+                </div>
+                <br/>
+                <!-- reschedule -->
+                <div>
+                    <h4>Reschedule Terms:</h4>
+                </div>
+                <div>
+                    <span>* A reschedule fee will be charged to the customer in accordance with activity regulations plus admin fee of IDR
+                        <span t-esc="reschedule_fee"/> IDR 20,000 / PNR (Personal Number Reservation).
+                    </span>
+                </div>
+                <div>
+                    <span>* Estimated time for reschedule process depends on the activity.</span>
+                </div>
+            </field>
+            <field name="active" eval="True"/>
+        </record>
+
+        <record id="tour_ticket_footer" model="tt.report.common.setting">
+            <field name="name">Tour Ticket</field>
+            <field name="code">tour_ticket</field>
+            <field name="html" type="html">
+                <!-- refund -->
+                <div>
+                    <h4>Cancellation / Refund Terms:</h4>
+                </div>
+                <div>
+                    <span>* Estimated time for cancellation / refund process is 1-3 months (3-6 months for outbreak / force majeure).</span>
+                </div>
+                <div>
+                    <span>* Refunds / cancellations can be in the form of travel deposits / travel vouchers / cash, depending on the provisions from the tour.</span>
+                </div>
+                 <div>
+                     <span>* The refund amount is in accordance with the amount returned by the tour minus the admin fee of IDR
+                         <span /> IDR 30,000/ passenger.
+                     </span>
+                </div>
+                <br/>
+                <!-- reschedule -->
+                <div>
+                    <h4>Reschedule Terms:</h4>
+                </div>
+                <div>
+                    <span>* A reschedule fee will be charged to the customer in accordance with tour regulations plus admin fee of IDR
+                        <span t-esc="reschedule_fee"/> IDR 20,000 / PNR (Personal Number Reservation).
+                    </span>
+                </div>
+                <div>
+                    <span>* Estimated time for reschedule process depends on the tour.</span>
+                </div>
+            </field>
+            <field name="active" eval="True"/>
+        </record>
+
+        <record id="hotel_ticket_footer" model="tt.report.common.setting">
+            <field name="name">Hotel Ticket</field>
+            <field name="code">hotel_ticket</field>
+            <field name="html" type="html">
+                <!-- refund -->
+                <div>
+                    <h4>Cancellation / Refund Terms:</h4>
+                </div>
+                <div>
+                    <span>* Estimated time for cancellation / refund process is 1-3 months (3-6 months for outbreak / force majeure).</span>
+                </div>
+                <div>
+                    <span>* Refunds / cancellations can be in the form of travel deposits / travel vouchers / cash, depending on the provisions from the hotel.</span>
+                </div>
+                 <div>
+                     <span>* The refund amount is in accordance with the amount returned by the hotel minus the admin fee of IDR
+                         <span /> IDR 30,000/ passenger.
+                     </span>
+                </div>
+                <br/>
+                <!-- reschedule -->
+                <div>
+                    <h4>Reschedule Terms:</h4>
+                </div>
+                <div>
+                    <span>* A reschedule fee will be charged to the customer in accordance with hotel regulations plus admin fee of IDR
+                        <span t-esc="reschedule_fee"/> IDR 20,000 / PNR (Personal Number Reservation).
+                    </span>
+                </div>
+                <div>
+                    <span>* Estimated time for reschedule process depends on the hotel.</span>
+                </div>
+            </field>
+            <field name="active" eval="True"/>
+        </record>
+
+        <record id="ppob_bpjs_footer" model="tt.report.common.setting">
+            <field name="name">PPOB BPJS</field>
+            <field name="code">ppob_bpjs</field>
+            <field name="html" type="html">
+                <h3 style="padding-left: 20px; text-align:center; font-weight: 600; font-size: 18px">Informasi Hubungi Call Center 123 Atau hubungi PLN Terdekat.</h3>
+                <h3 style="padding-left: 20px; text-align:center; font-weight: 600; font-size: 18px">Segera daftar di Kanal yang tersedia. Info 1500400</h3>
+            </field>
+            <field name="active" eval="True"/>
+        </record>
+
+        <record id="bpjs_pln_footer" model="tt.report.common.setting">
+            <field name="name">PPOB PLN</field>
+            <field name="code">ppob_pln</field>
+            <field name="html" type="html">
+                <h3 style="padding-left: 20px; text-align:center; font-weight: 600; font-size: 18px">Informasi Hubungi Call Center 123 Atau hubungi PLN Terdekat</h3>
+            </field>
+            <field name="active" eval="True"/>
+        </record>
+
+        <record id="prepaid_mobile_pln_footer" model="tt.report.common.setting">
+            <field name="name">PPOB Prepaid Mobile</field>
+            <field name="code">ppob_prepaid_mobile</field>
+            <field name="html"></field>
+            <field name="active" eval="True"/>
+        </record>
+
+        <record id="agent_invoice_footer" model="tt.report.common.setting">
+            <field name="name">Agent Invoice</field>
+            <field name="code">agent_invoice</field>
+            <field name="html" type="html">
+                <li>Payment by transfer/cheque/giro is valid after being credited &amp; confirmed by the bank in full amount.</li>
+            </field>
+            <field name="active" eval="True"/>
+        </record>
+
+        <record id="top_up_footer" model="tt.report.common.setting">
+            <field name="name">Top Up</field>
+            <field name="code">top_up</field>
+            <field name="html" type="html">
+                <li>Payment by transfer/cheque/giro is valid after being credited &amp; confirmed by the bank in full amount.</li>
+            </field>
+            <field name="active" eval="True"/>
+        </record>
+
+        <record id="printout_billing_statement_footer" model="tt.report.common.setting">
+            <field name="name">Billing Statement</field>
+            <field name="code">billing_statement</field>
+            <field name="html" type="html">
+                <li>Payment by transfer/cheque/giro is valid after being credited &amp; confirmed by the bank in full amount.</li>
+            </field>
+            <field name="active" eval="True"/>
+        </record>
+
+        <record id="refund_agent_footer" model="tt.report.common.setting">
+            <field name="name">Refund To Agent</field>
+            <field name="code">refund_to_agent</field>
+            <field name="html"></field>
+            <field name="active" eval="True"/>
+        </record>
+
+        <record id="refund_customer_footer" model="tt.report.common.setting">
+            <field name="name">Refund To Customer</field>
+            <field name="code">refund_to_Customer</field>
+            <field name="html"></field>
             <field name="active" eval="True"/>
         </record>
 
         <record id="reschedule_footer" model="tt.report.common.setting">
             <field name="name">Reschedule</field>
             <field name="code">reschedule_ticket</field>
-            <field name="html" type="html"></field>
-            <field name="active" eval="True"/>
-        </record>
-
-        <record id="refund_footer" model="tt.report.common.setting">
-            <field name="name">Refund</field>
-            <field name="code">refund_ticket</field>
-            <field name="html" type="html"></field>
-            <field name="active" eval="True"/>
-        </record>
-
-        <record id="ppob_footer" model="tt.report.common.setting">
-            <field name="name">PPOB Ticket</field>
-            <field name="code">ppob_ticket</field>
-            <field name="html" type="html">
-                <div class="row" style="">
-                    <div class="col-1"/>
-                    <div class="col-10">
-                        <h3 style="padding-left: 20px; text-align:center; font-weight: 600; font-size: 18px">Mulai 1 September 2020 pembayaran iuran JKN wajib Autodebit.</h3>
-                        <h3 style="padding-left: 20px; text-align:center; font-weight: 600; font-size: 18px">Segera daftar di Kanal yang tersedia. Info 1500400</h3>
-                    </div>
-                    <div class="col-1"/>
-                </div>
-            </field>
+            <field name="html"></field>
             <field name="active" eval="True"/>
         </record>
 
@@ -247,26 +351,8 @@
             <field name="name">Letter Guarantee PO</field>
             <field name="code">letter_guarantee_po</field>
             <field name="html" type="html">
-                <div class="row">
-                    <div class="col-12" style="margin-top:20px;">
-                        We hereby requesting to purchase the above services as per credit term agreement. We appreciate your kind cooperation.
-                    </div>
-                </div>
-                <br/><br/>
-                <div class="row">
-                    <div class="col-3">
-                    </div>
-                    <div class="col-3">
-                    </div>
-                    <div class="col-3">
-                    </div>
-                    <div class="col-3">
-                        Yours Faithfully
-                        <br/>
-                        <br/>
-                        <br/>
-                        <span t-field="doc.confirm_uid.name"/>
-                    </div>
+                <div class="col-12" style="margin-top:20px;">
+                    We hereby requesting to purchase the above services as per credit term agreement. We appreciate your kind cooperation.
                 </div>
             </field>
             <field name="active" eval="True"/>
@@ -276,86 +362,9 @@
             <field name="name">Letter Guarantee</field>
             <field name="code">letter_guarantee</field>
             <field name="html" type="html">
-                <div class="row">
-                    <div class="col-12" style="margin-top:20px;">
-                        We hereby guaranteed to settle the payment of the above services as per credit term agreement. We appreciate your kind cooperation.
-                    </div>
+                <div class="col-12" style="margin-top:20px;">
+                    We hereby guaranteed to settle the payment of the above services as per credit term agreement. We appreciate your kind cooperation.
                 </div>
-                <br/><br/>
-                <div class="row">
-                    <div class="col-3">
-                    </div>
-                    <div class="col-3">
-                    </div>
-                    <div class="col-3">
-                    </div>
-                    <div class="col-3">
-                        Yours Faithfully
-                        <br/>
-                        <br/>
-                        <br/>
-                        <span t-field="doc.confirm_uid.name"/>
-                    </div>
-                </div>
-            </field>
-            <field name="active" eval="True"/>
-        </record>
-
-        <record id="itinerary_signature_footer" model="tt.report.common.setting">
-            <field name="name">Itinerary Signature</field>
-            <field name="code">itinerary_signature</field>
-            <field name="html" type="html">
-                <div class="row">
-                    <div class="col-11">
-                        I, the undersigned, declare that the reservations I have made correspond to my true IDs and I made this statement consciously without any
-                        enforcement from anyone.
-                    </div>
-                </div>
-                <br/><br/>
-                <table width="100%">
-                    <tr>
-                        <td width="70%"/>
-                        <td width="25%" style="text-align:center">
-                            Surabaya, <t t-esc="date_now"/><br/>
-                            <p>Buyer</p>
-                            <p style="color: white;">.</p>
-                            <p style="color: white;">.</p>
-                            <p style="color: white;">.</p>
-                            <p>(.................................)</p>
-                            <p style="border-top: 1px solid black">Representative Signature</p>
-                        </td>
-                    </tr>
-                </table>
-            </field>
-            <field name="active" eval="True"/>
-        </record>
-
-        <record id="price_n_sign_footer" model="tt.report.common.setting">
-            <field name="name">Price n Sign</field>
-            <field name="code">price_n_sign</field>
-            <field name="html" type="html">
-                <span style="font-size: 24px; font-weight: 730">IMPORTANT NOTES</span><br/>
-                    <ol style="margin: 0 25px;">
-                        <li>Payment by transfer/cheque/giro is valid after being credited &amp; confirmed by the bank in full amount.</li>
-                        <li>
-                            Please transfer to the following account:
-                            <ul>
-                                <!-- <t t-set="limit" t-value="3"/>-->
-                                <t t-set="current" t-value="0"/>
-                                <t t-foreach="doc.agent_id.payment_acquirer_ids" t-as="payment_id">
-                                    <!-- <t t-if="payment_id.type == 'transfer' and payment_id.account_number and payment_id.account_name and current &lt; limit">-->
-                                    <t t-if="payment_id.type == 'transfer' and payment_id.account_number and payment_id.account_name and payment_id.website_published">
-                                        <li style="font-size: 14px;"><span t-field="payment_id.bank_id.name"/> (IDR) <span t-field="payment_id.account_number"/> A/N <span t-field="payment_id.account_name"/></li>
-                                        <t t-set="current" t-value="current + 1"/>
-                                    </t>
-                                </t>
-                                <t t-if="current == 0">
-                                    <li>Direct payment (cash) at <span t-field="doc.agent_id.name"/></li>
-                                </t>
-                            </ul>
-                        </li>
-                        <li>This invoice is generated by computer system and is considered as a legal invoice of <t t-esc="doc.agent_id.name"/></li>
-                    </ol>
             </field>
             <field name="active" eval="True"/>
         </record>

@@ -42,7 +42,10 @@
         'report/printout_reschedule_template.xml',
         'report/printout_expenses_invoice_template.xml',
         'report/printout_voucher_template.xml',
-        'report/printout_letter_guarantee_template.xml'
+        'report/printout_letter_guarantee_template.xml',
+        'security/ir.model.access.csv',
+        'views/tt_report_setting_views.xml',
+        'views/menu_item_base.xml',
     ],
     # only loaded in demonstration mode
     'demo': [
