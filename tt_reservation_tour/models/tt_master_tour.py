@@ -1,5 +1,5 @@
 from odoo import api, fields, models, _
-from datetime import datetime, date
+from datetime import datetime, date, timedelta
 from ...tools import util,variables,ERR
 from ...tools.ERR import RequestException
 from dateutil.relativedelta import relativedelta
@@ -469,13 +469,33 @@ class MasterTour(models.Model):
                                 'quota': rec_det['quota'],
                                 'sequence': rec_det['sequence'],
                                 'master_tour_id': new_tour_obj.id,
-                                'active': True,
+                                'active': True
                             }
                             new_tour_line_obj = self.env['tt.master.tour.lines'].sudo().search([('tour_line_code', '=', rec_det['tour_line_code']), ('master_tour_id', '=', new_tour_obj.id), '|', ('active', '=', False), ('active', '=', True)], limit=1)
                             if new_tour_line_obj:
                                 new_tour_line_obj[0].sudo().write(new_tour_line_vals)
                             else:
                                 self.env['tt.master.tour.lines'].sudo().create(new_tour_line_vals)
+
+                            if rec_det.get('special_date_list'):
+                                for rec_det2 in rec_det['special_date_list']:
+                                    tour_special_date_currency_obj = self.env['res.currency'].sudo().search([('name', '=', rec_det2['currency_code'])], limit=1)
+                                    new_tour_special_date_vals = {
+                                        'name': rec_det2['name'],
+                                        'date': rec_det2['date'],
+                                        'currency_id': tour_special_date_currency_obj and tour_special_date_currency_obj[0].id or False,
+                                        'additional_adult_fare': rec_det2['additional_adult_price'],
+                                        'additional_child_fare': rec_det2['additional_child_price'],
+                                        'additional_infant_fare': rec_det2['additional_infant_price'],
+                                        'tour_line_id': new_tour_line_obj.id,
+                                        'active': True
+                                    }
+                                    new_tour_special_date_obj = self.env['tt.master.tour.special.dates'].sudo().search([('date', '=', rec_det2['date']), ('tour_line_id', '=', new_tour_line_obj.id), '|', ('active', '=', False), ('active', '=', True)], limit=1)
+                                    if new_tour_special_date_obj:
+                                        new_tour_special_date_obj[0].sudo().write(new_tour_special_date_vals)
+                                    else:
+                                        self.env['tt.master.tour.special.dates'].sudo().create(new_tour_special_date_vals)
+
                         for rec_det in detail_dat['accommodations']:
                             new_acco_vals = {
                                 'name': rec_det['name'],
@@ -802,7 +822,7 @@ class MasterTour(models.Model):
 
                 if qualify:
                     image_list = []
-                    for img in rec.image_ids:
+                    for img in rec.image_ids.sorted('sequence'):
                         image_list.append({
                             'seq_id': img.seq_id and img.seq_id or '',
                             'url': img.url and img.url or '',
@@ -812,16 +832,7 @@ class MasterTour(models.Model):
                     tour_line_list = []
                     for rec2 in rec.tour_line_ids:
                         if rec2.active:
-                            tour_line_list.append({
-                                'tour_line_code': rec2.tour_line_code,
-                                'departure_date': rec2.departure_date.strftime("%Y-%m-%d"),
-                                'arrival_date': rec2.arrival_date.strftime("%Y-%m-%d"),
-                                'seat': rec2.seat,
-                                'quota': rec2.quota,
-                                'state': rec2.state,
-                                'state_str': dict(rec2._fields['state'].selection).get(rec2.state),
-                                'sequence': rec2.sequence
-                            })
+                            tour_line_list.append(rec2.to_dict())
                             if rec2.departure_date:
                                 str_dept_date = rec2.departure_date.strftime("%Y-%m-%d")
                                 if search_request['departure_month'] != '00':
@@ -849,7 +860,7 @@ class MasterTour(models.Model):
                             'flight': rec.flight,
                             'visa': rec.visa,
                             'description': rec.description,
-                            'currency_code': rec.currency_id.code,
+                            'currency_code': rec.currency_id.name,
                             'carrier_code': rec.carrier_id.code,
                             'duration': rec.duration,
                             'driving_times': rec.driving_times,
@@ -1041,16 +1052,7 @@ class MasterTour(models.Model):
 
             tour_line_list = []
             for line in tour_obj.tour_line_ids:
-                tour_line_list.append({
-                    'tour_line_code': line.tour_line_code,
-                    'departure_date': line.departure_date.strftime("%Y-%m-%d"),
-                    'arrival_date': line.arrival_date.strftime("%Y-%m-%d"),
-                    'seat': line.seat,
-                    'quota': line.quota,
-                    'state': line.state,
-                    'state_str': dict(line._fields['state'].selection).get(line.state),
-                    'sequence': line.sequence
-                })
+                tour_line_list.append(line.to_dict())
 
             location_list = []
             country_names = []
@@ -1105,7 +1107,7 @@ class MasterTour(models.Model):
                         })
 
             try:
-                self.env.cr.execute("""SELECT tuc.* FROM tt_upload_center tuc LEFT JOIN tour_images_rel tir ON tir.image_id = tuc.id WHERE tir.tour_id = %s AND tuc.active = True;""", (tour_obj.id,))
+                self.env.cr.execute("""SELECT tuc.* FROM tt_upload_center tuc LEFT JOIN tour_images_rel tir ON tir.image_id = tuc.id WHERE tir.tour_id = %s AND tuc.active = True ORDER BY sequence;""", (tour_obj.id,))
                 images = self.env.cr.dictfetchall()
             except Exception:
                 images = []
@@ -1506,6 +1508,56 @@ class MasterTour(models.Model):
                 'total_child': total_chd,
                 'total_infant': total_inf,
             })
+            if tour_data.tour_type == 'open':
+                if not req.get('tour_line_code') or not req.get('departure_date'):
+                    raise RequestException(1022, additional_message='A valid tour line code and your departure date are required to check Open Tour Price.')
+                tour_line_data_list = self.env['tt.master.tour.lines'].sudo().search([('tour_line_code', '=', req['tour_line_code']), ('master_tour_id', '=', tour_data.id)], limit=1)
+                if not tour_line_data_list:
+                    raise RequestException(1022, additional_message='Tour line not found.')
+                tour_line_data = tour_line_data_list[0]
+                temp_departure_date = req['departure_date']
+                visited_date_list = []
+                for i in range(tour_data.duration + 1):
+                    cur_iteration = datetime.strptime(temp_departure_date, '%Y-%m-%d') + timedelta(days=i)
+                    visited_date_list.append(cur_iteration.strftime('%Y-%m-%d'))
+                for rec in tour_line_data.special_dates_ids:
+                    if rec.date.strftime('%Y-%m-%d') in visited_date_list:
+                        if not price_itinerary.get('adult_fare'):
+                            price_itinerary.update({
+                                'adult_fare': rec.additional_adult_fare
+                            })
+                        else:
+                            price_itinerary['adult_fare'] += rec.additional_adult_fare
+                        if not price_itinerary.get('adult_commission'):
+                            price_itinerary.update({
+                                'adult_commission': rec.additional_adult_commission
+                            })
+                        else:
+                            price_itinerary['adult_commission'] += rec.additional_adult_commission
+                        if not price_itinerary.get('child_fare'):
+                            price_itinerary.update({
+                                'child_fare': rec.additional_child_fare
+                            })
+                        else:
+                            price_itinerary['child_fare'] += rec.additional_child_fare
+                        if not price_itinerary.get('child_commission'):
+                            price_itinerary.update({
+                                'child_commission': rec.additional_child_commission
+                            })
+                        else:
+                            price_itinerary['child_commission'] += rec.additional_child_commission
+                        if not price_itinerary.get('infant_fare'):
+                            price_itinerary.update({
+                                'infant_fare': rec.additional_infant_fare
+                            })
+                        else:
+                            price_itinerary['infant_fare'] += rec.additional_infant_fare
+                        if not price_itinerary.get('infant_commission'):
+                            price_itinerary.update({
+                                'infant_commission': rec.additional_infant_commission
+                            })
+                        else:
+                            price_itinerary['infant_commission'] += rec.additional_infant_commission
             return ERR.get_no_error(price_itinerary)
         except RequestException as e:
             _logger.error(traceback.format_exc())
@@ -1656,7 +1708,7 @@ class MasterTour(models.Model):
                         'state': rec2['state'],
                         'sequence': rec2['sequence'],
                         'master_tour_id': tour_obj.id,
-                        'active': True,
+                        'active': True
                     }
                     tour_line_obj = self.env['tt.master.tour.lines'].sudo().search([('tour_line_code', '=', rec2['tour_line_code']), ('master_tour_id', '=', tour_obj.id), '|',('active', '=', False), ('active', '=', True)], limit=1)
                     if tour_line_obj:
@@ -1664,6 +1716,26 @@ class MasterTour(models.Model):
                         tour_line_obj.sudo().write(line_vals)
                     else:
                         tour_line_obj = self.env['tt.master.tour.lines'].sudo().create(line_vals)
+
+                    if rec['tour_type'] == 'open' and rec2.get('special_date_list'):
+                        for rec3 in rec2['special_date_list']:
+                            special_date_currency_obj = self.env['res.currency'].sudo().search([('name', '=', rec3['currency_code'])], limit=1)
+                            special_date_vals = {
+                                'name': rec3['name'],
+                                'date': rec3['date'],
+                                'currency_id': special_date_currency_obj and special_date_currency_obj[0].id or False,
+                                'additional_adult_fare': rec3['additional_adult_price'],
+                                'additional_child_fare': rec3['additional_child_price'],
+                                'additional_infant_fare': rec3['additional_infant_price'],
+                                'tour_line_id': tour_line_obj.id,
+                                'active': True
+                            }
+                            special_date_obj = self.env['tt.master.tour.special.dates'].sudo().search([('date', '=', rec3['date']), ('tour_line_id', '=', tour_line_obj.id), '|',('active', '=', False), ('active', '=', True)], limit=1)
+                            if special_date_obj:
+                                special_date_obj = special_date_obj[0]
+                                special_date_obj.sudo().write(special_date_vals)
+                            else:
+                                special_date_obj = self.env['tt.master.tour.special.dates'].sudo().create(special_date_vals)
 
                 location_list = []
                 for rec2 in rec['location_ids']:
@@ -1824,7 +1896,7 @@ class TourSyncProductsChildren(models.TransientModel):
                 }
                 tour_line_list = []
                 for rec2 in rec.tour_line_ids:
-                    tour_line_list.append({
+                    tour_line_dict = {
                         'tour_line_code': rec2.tour_line_code,
                         'departure_date': rec2.departure_date and rec2.departure_date.strftime("%Y-%m-%d") or False,
                         'arrival_date': rec2.arrival_date and rec2.arrival_date.strftime("%Y-%m-%d") or False,
@@ -1832,7 +1904,22 @@ class TourSyncProductsChildren(models.TransientModel):
                         'quota': rec2.quota,
                         'state': rec2.state,
                         'sequence': rec2.sequence
-                    })
+                    }
+                    if rec.tour_type == 'open':
+                        special_date_list = []
+                        for rec3 in rec2.special_dates_ids:
+                            special_date_list.append({
+                                'name': rec3.name,
+                                'date': rec3.date.strftime("%Y-%m-%d"),
+                                'currency_code': rec3.currency_id.name,
+                                'additional_adult_price': rec3.additional_adult_fare + rec3.additional_adult_commission,
+                                'additional_child_price': rec3.additional_child_fare + rec3.additional_child_commission,
+                                'additional_infant_price': rec3.additional_infant_fare + rec3.additional_infant_commission
+                            })
+                        tour_line_dict.update({
+                            'special_date_list': special_date_list
+                        })
+                    tour_line_list.append(tour_line_dict)
 
                 location_list = []
                 for rec2 in rec.location_ids:
