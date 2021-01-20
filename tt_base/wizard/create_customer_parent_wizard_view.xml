@@ -23,7 +23,7 @@
     </record>
 
     <record id="create_customer_parent_wizard_action_view" model="ir.actions.act_window">
-        <field name="name">create.customer.parent.wizard.action.view</field>
+        <field name="name">Create Customer Parent Wizard</field>
         <field name="res_model">create.customer.parent.wizard</field>
         <field name="view_type">form</field>
         <field name="view_mode">form</field>
@@ -35,6 +35,12 @@
               groups="tt_base.group_tt_agent_user_operator"
               name="Create Customer Parent"
               sequence="2"
+              action="create_customer_parent_wizard_action_view"/>
+
+    <menuitem id="menu_create_customer_parent_wizard_ho"
+              parent="tt_base.menu_customer_customer_parent"
+              name="Create Customer Parent"
+              sequence="10"
               action="create_customer_parent_wizard_action_view"/>
 
 </odoo>
