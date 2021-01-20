@@ -27,3 +27,12 @@ class MasterTourSpecialDates(models.Model):
     additional_infant_commission = fields.Monetary('Additional Infant Commission', default=0)
     active = fields.Boolean('Active', default=True)
 
+    def to_dict(self):
+        return {
+            'name': self.name,
+            'date': self.date.strftime("%Y-%m-%d"),
+            'currency_code': self.currency_id.name,
+            'additional_adult_price': self.additional_adult_fare + self.additional_adult_commission,
+            'additional_child_price': self.additional_child_fare + self.additional_child_commission,
+            'additional_infant_price': self.additional_infant_fare + self.additional_infant_commission
+        }

@@ -109,3 +109,23 @@ class MasterTourLines(models.Model):
                 'state': temp_state
             })
         self.write(write_vals)
+
+    def to_dict(self):
+        res_dict = {
+            'tour_line_code': self.tour_line_code,
+            'departure_date': self.departure_date.strftime("%Y-%m-%d"),
+            'arrival_date': self.arrival_date.strftime("%Y-%m-%d"),
+            'seat': self.seat,
+            'quota': self.quota,
+            'state': self.state,
+            'state_str': dict(self._fields['state'].selection).get(self.state),
+            'sequence': self.sequence
+        }
+        if self.master_tour_id.tour_type == 'open':
+            special_dates = []
+            for rec in self.special_dates_ids:
+                special_dates.append(rec.to_dict())
+            res_dict.update({
+                'special_date_list': special_dates
+            })
+        return res_dict
