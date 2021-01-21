@@ -181,6 +181,7 @@
                             <field name="unique_amount"/>
                             <field name="fee_amount"/>
                             <field name="agent_id"/>
+                            <field name="email"/>
                             <field name="va_number"/>
                             <field name="bank_name"/>
                             <field name="time_limit"/>

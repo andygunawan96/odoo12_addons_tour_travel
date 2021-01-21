@@ -13,8 +13,15 @@
                     </div>
                     <group>
                         <notebook>
-                            <page string="Images">
+                            <page string="Images Old">
                                 <field name="image_ids"/>
+                            </page>
+                        </notebook>
+                    </group>
+                    <group>
+                        <notebook>
+                            <page string="Images">
+                                <field name="image_line_ids"/>
                             </page>
                         </notebook>
                     </group>
@@ -29,6 +36,37 @@
         <field name="arch" type="xml">
             <tree>
                 <field name="type"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="tt_frontend_banner_line_form_view" model="ir.ui.view">
+        <field name="name">tt.frontend.banner.line.form.view</field>
+        <field name="model">tt.frontend.banner.line</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <group>
+                        <field name="url"/>
+                        <field name="image_id"/>
+                        <field name="provider_type_id"/>
+                    </group>
+                    <group>
+                        <field name="active"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="tt_frontend_banner_line_tree_view" model="ir.ui.view">
+        <field name="name">tt.frontend.banner.line.tree.view</field>
+        <field name="model">tt.frontend.banner.line</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="url"/>
+                <field name="image_id"/>
+                <field name="provider_type_id"/>
             </tree>
         </field>
     </record>
@@ -50,7 +88,7 @@
     <menuitem id="sub_menu_tt_frontend_banner"
               parent="tt_base.top_tour_travel_upload"
               action="tt_frontend_banner.tt_frontend_banner_action_view"
-              name="Image"
+              name="Banner Frontend"
               sequence="50"
               groups="base.group_user"/>
 </odoo>
