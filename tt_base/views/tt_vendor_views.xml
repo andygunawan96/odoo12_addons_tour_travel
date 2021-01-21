@@ -107,7 +107,7 @@
               parent="tt_base.top_tour_travel_customers"
               groups="group_tt_tour_travel_operator"
               name="Vendor"
-              sequence="2"/>
+              sequence="30"/>
 
     <menuitem id="submenu_tour_travel_vendor"
               parent="tt_base.menu_tour_travel_vendor"

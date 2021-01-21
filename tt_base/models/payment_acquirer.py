@@ -316,6 +316,7 @@ class PaymentAcquirerNumber(models.Model):
     time_limit = fields.Datetime('Time Limit', readonly=True)
     amount = fields.Float('Amount')
     state = fields.Selection([('open', 'Open'), ('close', 'Closed'), ('waiting', 'Waiting Next Cron'), ('done','Done'), ('cancel','Expired')], 'Payment Type')
+    email = fields.Char(string="Email")
     display_name_payment = fields.Char('Display Name',compute="_compute_display_name_payment")
 
     @api.depends('number','payment_acquirer_id')

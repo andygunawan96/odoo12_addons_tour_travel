@@ -1,9 +1,7 @@
 from odoo import api, fields, models, _
-from datetime import datetime, timedelta
-from dateutil.relativedelta import relativedelta
 import pytz
 from odoo.exceptions import UserError
-
+from dateutil.relativedelta import relativedelta
 
 class CustomerReportPassportExpiration(models.TransientModel):
     _name = 'tt.customer.report.passport.expiration.wizard'
@@ -27,12 +25,12 @@ class CustomerReportPassportExpiration(models.TransientModel):
         user_tz = pytz.timezone('Asia/Jakarta')
         date_now = fields.datetime.now(tz=user_tz)
         data['form']['date_now'] = date_now
+        form_type_value = data['form'].pop('type_value')
+        form_int_value = data['form'].pop('int_value')
 
-        data['form']['month_from'] = self.month_from
-        data['form']['month_to'] = self.month_to
-
+        data['form']['date_before'] = (date_now + (form_type_value == 'days' and relativedelta(days=form_int_value) or relativedelta(months=form_int_value))).date()
         # ============= subtitle process ==========
-        data['form']['subtitle'] = "{} to {}".format(self.month_from, self.month_to)
+        data['form']['subtitle'] = "Before {}".format(data['form']['date_before'])
 
         # ============= agent id and name ==========
         if self.all_agent == True:
@@ -77,7 +75,7 @@ class CustomerReportPassportExpiration(models.TransientModel):
         self.ensure_one()
         data = ({
             'model': self.env.context.get('active_model', 'ir.ui.menu'),
-            'form': self.read(['month_from', 'month_to', 'agent_id', 'all_agent'])[0]
+            'form': self.read(['int_value', 'type_value', 'agent_id', 'all_agent'])[0]
         })
         self._prepare_form(data)
         used_context = self._build_contexts(data)

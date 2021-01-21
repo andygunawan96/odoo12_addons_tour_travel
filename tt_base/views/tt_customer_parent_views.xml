@@ -229,7 +229,7 @@
               parent="tt_base.top_tour_travel_customers"
               groups="tt_base.group_tt_agent_user_operator,tt_base.group_tt_tour_travel_operator"
               name="Customer Parent"
-              sequence="1"/>
+              sequence="5"/>
 
     <menuitem id="submenu_customer_customer_parent_all"
               parent="tt_base.menu_customer_customer_parent"
