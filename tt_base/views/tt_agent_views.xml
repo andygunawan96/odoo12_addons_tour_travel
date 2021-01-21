@@ -316,7 +316,7 @@
               parent="tt_base.top_tour_travel_customers"
               groups="group_tt_tour_travel_operator"
               name="Agent"
-              sequence="2"/>
+              sequence="20"/>
 
     <menuitem id="submenu_tour_travel_all_agent"
               parent="tt_base.menu_tour_travel_agent"

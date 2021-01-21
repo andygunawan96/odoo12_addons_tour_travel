@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
 {
-    'name': "tt_customer_report_birthday",
+    'name': "tt_customer_report_passport_expiration",
 
     'summary': """
-        Short (1 phrase/line) summary of the module's purpose, used as
-        subtitle on modules listing or apps.openerp.com""",
+        Generate Report of Customer Passport Expiration
+        """,
 
     'description': """
         Long description of module's purpose
@@ -25,8 +25,8 @@
     # always loaded
     'data': [
         'security/ir.model.access.csv',
-        'wizard/tt_customer_report_birthday_view.xml',
-        'report/tt_customer_report_birthday_menu.xml'
+        'wizard/tt_customer_report_passport_expiration_view.xml',
+        'report/tt_customer_report_passport_expiration_menu.xml'
     ],
     # only loaded in demonstration mode
     'demo': [

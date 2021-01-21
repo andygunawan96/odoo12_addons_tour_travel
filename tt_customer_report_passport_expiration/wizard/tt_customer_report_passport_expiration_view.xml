@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <record model="ir.ui.view" id="detail_customer_report_birthday_form">
-        <field name="name">Customer Birthday Report Form</field>
-        <field name="model">tt.customer.report.birthday.wizard</field>
+    <record model="ir.ui.view" id="detail_customer_report_passport_expiration_form">
+        <field name="name">Customer Passport Expiration Report Form</field>
+        <field name="model">tt.customer.report.passport.expiration.wizard</field>
         <field name="arch" type="xml">
-            <form string="Birthday Report">
+            <form string="Passport Expiration Report">
                 <group>
-                    <field name="month_from" required="1"/>
-                    <field name="month_to" required="1"/>
+                    <field name="int_value" required="1"/>
+                    <field name="type_value" required="1"/>
                 </group>
                 <group>
                     <field name="is_ho" invisible="1"/>
@@ -23,30 +23,30 @@
         </field>
     </record>
 
-    <record id="action_customer_report_birthday_menu" model="ir.actions.act_window">
+    <record id="action_customer_report_passport_expiration_menu" model="ir.actions.act_window">
         <field name="name">Common Report</field>
         <field name="type">ir.actions.act_window</field>
-        <field name="res_model">tt.customer.report.birthday.wizard</field>
+        <field name="res_model">tt.customer.report.passport.expiration.wizard</field>
         <field name="view_type">form</field>
         <field name="view_mode">form</field>
-        <field name="view_id" ref="detail_customer_report_birthday_form"/>
+        <field name="view_id" ref="detail_customer_report_passport_expiration_form"/>
         <field name="target">new</field>
     </record>
 
     <menuitem
-        id="sub_menu_customer_birthday_report_HO"
-        name="Customer Birthday Report"
+        id="sub_menu_customer_passport_expiration_report_HO"
+        name="Customer Passport Expiration Report"
         parent="tt_base.top_tour_travel_customers"
-        action="action_customer_report_birthday_menu"
-        sequence="1"
+        action="action_customer_report_passport_expiration_menu"
+        sequence="13"
     />
 
     <menuitem
-        id="sub_menu_customer_birthday_report_nonHO"
-        name="Customer Birthday Report"
+        id="sub_menu_customer_passport_expiration_report_nonHO"
+        name="Customer Passport Expiration Report"
         parent="tt_base.top_customers_customers"
-        action="action_customer_report_birthday_menu"
-        sequence="1"
+        action="action_customer_report_passport_expiration_menu"
+        sequence="13"
     />
 
 </odoo>
