@@ -279,14 +279,10 @@
 
                             <div class="row">
                                 <t t-if="doc.type == 'po'">
-                                    <div class="col-12" style="margin-top:20px;">
-                                        We hereby requesting to purchase the above services as per credit term agreement. We appreciate your kind cooperation.
-                                    </div>
+                                    <span t-raw="lg_po_footer"/>
                                 </t>
                                 <t t-else="">
-                                    <div class="col-12" style="margin-top:20px;">
-                                        We hereby guaranteed to settle the payment of the above services as per credit term agreement. We appreciate your kind cooperation.
-                                    </div>
+                                    <span t-raw="lg_footer"/>
                                 </t>
                             </div>
                             <br/><br/>

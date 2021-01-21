@@ -111,10 +111,10 @@
                 <div>
                     <span>* Refunds / cancellations can be in the form of travel deposits / travel vouchers / cash, depending on the provisions from the airline / hotel.</span>
                 </div>
-                 <div>
-                     <span>* The refund amount is in accordance with the amount returned by the airline / hotel minus the admin fee of IDR
-                         <span /> IDR 30,000/ passenger.
-                     </span>
+                <div>
+                    <span>* The refund amount is in accordance with the amount returned by the airline / hotel minus the admin fee of IDR
+                        <span /> IDR 30,000/ passenger.
+                    </span>
                 </div>
                 <br/>
                 <!-- reschedule -->
@@ -139,7 +139,7 @@
             <field name="html" type="html">
                 <div>
                     <span>I, the undersigned, declare that the reservations I have made correspond to my true IDs and I made this
-statement consciously without any enforcement from anyone.</span>
+                        statement consciously without any enforcement from anyone.</span>
                 </div>
             </field>
             <field name="active" eval="True"/>
@@ -148,6 +148,26 @@ statement consciously without any enforcement from anyone.</span>
         <record id="visa_ticket_customer_footer" model="tt.report.common.setting">
             <field name="name">Visa Ticket</field>
             <field name="code">visa_ticket_customer</field>
+            <field name="html" type="html">
+                <div class="row mt8" style="font-family: Times New Roman, Georgia, Serif; font-size: 16px;">
+                    <span class="bold">Terms and Conditions</span>
+                    <br/>
+                    <span style="color: white;">..</span><span>1. Visa handling process is done in weekdays.</span><br/>
+                    <span style="color: white;">..</span><span>2. No refund of any kind when the visa application is rejected</span><br/>
+                    <span style="color: white;">..</span><span>3. Time estimated given can change according to the immigration's policies. Time difference's may occur and</span><br/>
+                    <span style="color: white;">......</span><span>will not be responsible as it will be the consulate full authorities.</span><br/>
+                    <span style="color: white;">..</span><span>4. When needed, consulate will ask for additional documents, the applicant must full fill the in quiries.</span>
+                </div>
+                <div class="row mt16" style="font-family: Times New Roman, Georgia, Serif; font-size: 16px;">
+                    <p>With this statement, I have given my documents for visa handling and correspond to my true ID's and agree with terms and conditions stated above.</p>
+                </div>
+            </field>
+            <field name="active" eval="True"/>
+        </record>
+
+        <record id="visa_ticket_ho_footer" model="tt.report.common.setting">
+            <field name="name">Visa Ticket</field>
+            <field name="code">visa_ticket_ho</field>
             <field name="html" type="html">
                 <div class="row mt8" style="font-family: Times New Roman, Georgia, Serif; font-size: 16px;">
                     <span class="bold">Terms and Conditions</span>
@@ -179,10 +199,10 @@ statement consciously without any enforcement from anyone.</span>
                 <div>
                     <span>* Refunds / cancellations can be in the form of travel deposits / travel vouchers / cash, depending on the provisions from the activity.</span>
                 </div>
-                 <div>
-                     <span>* The refund amount is in accordance with the amount returned by the activity minus the admin fee of IDR
-                         <span /> IDR 30,000/ passenger.
-                     </span>
+                <div>
+                    <span>* The refund amount is in accordance with the amount returned by the activity minus the admin fee of IDR
+                        <span /> IDR 30,000/ passenger.
+                    </span>
                 </div>
                 <br/>
                 <!-- reschedule -->
@@ -215,10 +235,10 @@ statement consciously without any enforcement from anyone.</span>
                 <div>
                     <span>* Refunds / cancellations can be in the form of travel deposits / travel vouchers / cash, depending on the provisions from the tour.</span>
                 </div>
-                 <div>
-                     <span>* The refund amount is in accordance with the amount returned by the tour minus the admin fee of IDR
-                         <span /> IDR 30,000/ passenger.
-                     </span>
+                <div>
+                    <span>* The refund amount is in accordance with the amount returned by the tour minus the admin fee of IDR
+                        <span /> IDR 30,000/ passenger.
+                    </span>
                 </div>
                 <br/>
                 <!-- reschedule -->
@@ -251,10 +271,10 @@ statement consciously without any enforcement from anyone.</span>
                 <div>
                     <span>* Refunds / cancellations can be in the form of travel deposits / travel vouchers / cash, depending on the provisions from the hotel.</span>
                 </div>
-                 <div>
-                     <span>* The refund amount is in accordance with the amount returned by the hotel minus the admin fee of IDR
-                         <span /> IDR 30,000/ passenger.
-                     </span>
+                <div>
+                    <span>* The refund amount is in accordance with the amount returned by the hotel minus the admin fee of IDR
+                        <span /> IDR 30,000/ passenger.
+                    </span>
                 </div>
                 <br/>
                 <!-- reschedule -->
@@ -277,13 +297,13 @@ statement consciously without any enforcement from anyone.</span>
             <field name="name">PPOB BPJS</field>
             <field name="code">ppob_bpjs</field>
             <field name="html" type="html">
-                <h3 style="padding-left: 20px; text-align:center; font-weight: 600; font-size: 18px">Informasi Hubungi Call Center 123 Atau hubungi PLN Terdekat.</h3>
+                <h3 style="padding-left: 20px; text-align:center; font-weight: 600; font-size: 18px">Mulai 1 September 2020 pembayaran iuran JKN wajib Autodebit.</h3>
                 <h3 style="padding-left: 20px; text-align:center; font-weight: 600; font-size: 18px">Segera daftar di Kanal yang tersedia. Info 1500400</h3>
             </field>
             <field name="active" eval="True"/>
         </record>
 
-        <record id="bpjs_pln_footer" model="tt.report.common.setting">
+        <record id="ppob_pln_footer" model="tt.report.common.setting">
             <field name="name">PPOB PLN</field>
             <field name="code">ppob_pln</field>
             <field name="html" type="html">

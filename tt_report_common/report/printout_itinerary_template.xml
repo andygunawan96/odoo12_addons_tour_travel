@@ -1072,10 +1072,7 @@
 
     <template id="itinerary_signature">
         <div class="row">
-            <div class="col-11">
-                I, the undersigned, declare that the reservations I have made correspond to my true IDs and I made this statement consciously without any
-                enforcement from anyone.
-            </div>
+            <span t-raw="printout_itinerary_footer"/>
         </div>
         <br/><br/>
         <table width="100%">

@@ -22,10 +22,12 @@ class PrintoutVisaHO(models.AbstractModel):
     @api.model
     def _get_report_values(self, docids, data=None):
         # print('docids : ' + str(self.env['tt.reservation.visa'].browse(data['ids'])))
+        visa_ho_footer = self.env['tt.report.common.setting'].sudo().search([('code', '=', 'visa_ticket_ho')], limit=1)
         return {
             'doc_ids': data['ids'],
             'doc_model': data['model'],
             'vals': self.get_values(data['ids']),
+            'visa_ho_footer': visa_ho_footer and visa_ho_footer[0].html or '',
             'docs': self.env['tt.reservation.visa'].browse(data['ids']),
         }
 
@@ -42,8 +44,10 @@ class PrintoutVisaCustomer(models.AbstractModel):
     @api.model
     def _get_report_values(self, docids, data=None):
         print('docids : ' + str(self.env['tt.reservation.visa'].browse(data['ids'])))
+        visa_customer_footer = self.env['tt.report.common.setting'].sudo().search([('code', '=', 'visa_ticket_customer')], limit=1)
         return {
             'doc_ids': data['ids'],
             'doc_model': data['model'],
+            'visa_customer_footer': visa_customer_footer and visa_customer_footer[0].html or '',
             'docs': self.env['tt.reservation.visa'].browse(data['ids']),
         }
