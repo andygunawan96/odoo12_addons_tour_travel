@@ -345,8 +345,7 @@
         <div class="row" style="">
             <div class="col-1"/>
             <div class="col-10">
-                <h3 style="padding-left: 20px; text-align:center; font-weight: 600; font-size: 18px">Mulai 1 September 2020 pembayaran iuran JKN wajib Autodebit.</h3>
-                <h3 style="padding-left: 20px; text-align:center; font-weight: 600; font-size: 18px">Segera daftar di Kanal yang tersedia. Info 1500400</h3>
+                <span t-raw="footer_ppob_bpjs"/>
             </div>
             <div class="col-1"/>
         </div>
