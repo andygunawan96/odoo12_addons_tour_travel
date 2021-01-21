@@ -81,9 +81,6 @@ class PhoneDetail(models.Model):
                             'number': rec['number'],
                             'email': agent.email,
                         })
-                        self.agent_id.write({
-                            'payment_acquirer_ids': [(4, pay_acq_number_obj.id)]
-                        })
                         for rec in agent.phone_ids:
                             rec.va_create = False
                         self.va_create = True
