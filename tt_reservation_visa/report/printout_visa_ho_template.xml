@@ -40,18 +40,7 @@
                     </t>
                 </p>
             </div>
-            <div class="row mt8" style="font-family: Times New Roman, Georgia, Serif; font-size: 16px;">
-                <span class="bold">Terms and Conditions</span>
-                <br/>
-                <span style="color: white;">..</span><span>1. Visa handling process is done in weekdays.</span><br/>
-                <span style="color: white;">..</span><span>2. No refund of any kind when the visa application is rejected</span><br/>
-                <span style="color: white;">..</span><span>3. Time estimated given can change according to the immigration's policies. Time difference's may occur and</span><br/>
-                <span style="color: white;">......</span><span>will not be responsible as it will be the consulate full authorities.</span><br/>
-                <span style="color: white;">..</span><span>4. When needed, consulate will ask for additional documents, the applicant must full fill the in quiries.</span>
-            </div>
-            <div class="row mt16" style="font-family: Times New Roman, Georgia, Serif; font-size: 16px;">
-                <p>With this statement, I have given my documents for visa handling and correspond to my true ID's and agree with terms and conditions stated above.</p>
-            </div>
+            <span t-raw="visa_ho_footer"/>
             <div class="row mt16" style="font-family: Times New Roman, Georgia, Serif; font-size: 16px;">
                 <div class="col-6 text-center">
                     <span><strong>Applicant</strong></span>

@@ -357,41 +357,7 @@
 
         <!-- Important Notes -->
         <h4 style="margin-top: 30px; margin-bottom: 10px;">Important Note(s)</h4>
-        <div>
-            <span>* Please arrive at the airport 90 minutes before domestic flight and 2 hours before international flight</span>
-        </div>
-        <div>
-            <span>* Passengers agree with Terms and Conditions of Carriage outlined by Carrier.</span>
-        </div>
-        <br/>
-        <!-- refund -->
-        <div>
-            <h4>Cancellation / Refund Terms:</h4>
-        </div>
-        <div>
-            <span>* Estimated time for cancellation / refund process is 1-3 months (3-6 months for outbreak / force majeure).</span>
-        </div>
-        <div>
-            <span>* Refunds / cancellations can be in the form of travel deposits / travel vouchers / cash, depending on the provisions from the airline / hotel.</span>
-        </div>
-         <div>
-             <span>* The refund amount is in accordance with the amount returned by the airline / hotel minus the admin fee of IDR
-                 <span t-esc="refund_fee" t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/> / passenger.
-             </span>
-        </div>
-        <br/>
-        <!-- reschedule -->
-        <div>
-            <h4>Reschedule Terms:</h4>
-        </div>
-        <div>
-            <span>* A reschedule fee will be charged to the customer in accordance with airline / hotel regulations plus admin fee of IDR
-                <span t-esc="reschedule_fee" t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/> / PNR (Personal Number Reservation).
-            </span>
-        </div>
-        <div>
-            <span>* Estimated time for reschedule process depends on the airline / hotel.</span>
-        </div>
+        <span t-raw="airline_ticket_footer"/>
         <t t-set="pnr_index" t-value="pnr_index+1"/>
     </template>
 

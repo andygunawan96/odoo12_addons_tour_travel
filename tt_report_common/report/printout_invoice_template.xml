@@ -601,7 +601,7 @@
                 <t t-if="doc.agent_id.payment_acquirer_ids">
                     <span style="font-size: 24px; font-weight: 730">IMPORTANT NOTES</span><br/>
                     <ol style="margin: 0 25px;">
-                        <li>Payment by transfer/cheque/giro is valid after being credited &amp; confirmed by the bank in full amount.</li>
+                        <span t-raw="invoice_footer"/>
                         <li>
                             Please transfer to the following account:
                             <ul>
