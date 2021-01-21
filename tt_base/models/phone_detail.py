@@ -41,12 +41,13 @@ class PhoneDetail(models.Model):
             rec.phone_number = (rec.calling_code and rec.calling_code or '') + (rec.calling_number and rec.calling_number or '')
 
     def generate_va_number(self):
-        check_number = self.env['payment.acquirer.number'].search([('number', 'ilike', self.calling_number[-8:])])
         agent_open_payment_acqurier = self.env['payment.acquirer.number'].search([
             ('agent_id','=',self.agent_id.id),
             ('state','=','open')
         ])
         agent = self.env['tt.agent'].search([('id', '=', self.agent_id.id)])
+        check_number = self.env['payment.acquirer.number'].search(
+            ['|', ('number', 'ilike', self.calling_number[-8:]), ('email', '=', agent.email)])
         if len(check_number) == 0 and len(agent_open_payment_acqurier) == 0 and agent.email and agent.name:
             data = {
                 'number': self.calling_number[-8:],
@@ -73,11 +74,15 @@ class PhoneDetail(models.Model):
                                 'website_published': False,
                                 'name': 'Virtual Account %s' % (bank_obj.name),
                             })
-                        self.env['payment.acquirer.number'].create({
+                        pay_acq_number_obj = self.env['payment.acquirer.number'].create({
                             'agent_id': agent.id,
                             'payment_acquirer_id': existing_payment_acquirer.id,
                             'state': 'open',
-                            'number': rec['number']
+                            'number': rec['number'],
+                            'email': agent.email,
+                        })
+                        self.agent_id.write({
+                            'payment_acquirer_ids': [(4, pay_acq_number_obj.id)]
                         })
                         for rec in agent.phone_ids:
                             rec.va_create = False
@@ -95,7 +100,7 @@ class PhoneDetail(models.Model):
         elif not agent.name:
             raise UserError(_("Please fill agent name"))
         elif len(check_number) > 0:
-            raise UserError(_("Phone number has been registered in our system please use other number"))
+            raise UserError(_("Phone number or email has been registered in our system please use other number"))
         elif len(agent_open_payment_acqurier) > 0:
             raise UserError(_("You have already registered a VA account"))
 
