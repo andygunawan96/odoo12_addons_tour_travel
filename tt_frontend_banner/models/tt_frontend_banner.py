@@ -59,6 +59,7 @@ class FrontendBanner(models.Model):
             for img in banner_objs.image_line_ids:
                 if img.image_id.seq_id == data['seq_id']:
                     img.url = data['url']
+                    img.sequence = data['sequence']
                     img.provider_type_id = self.env['tt.provider.type'].search([('code', '=', data['provider_type'])], limit=1).id
                     if data['action'] == 'active':
                         img.toggle_active()
@@ -89,7 +90,8 @@ class FrontendBanner(models.Model):
                 'active': img.image_id['active'],
                 'seq_id': img.image_id['seq_id'],
                 'url_page': img.url,
-                'provider_type': img.provider_type_id.code
+                'provider_type': img.provider_type_id.code,
+                'sequence': img.sequence
             })
 
         return ERR.get_no_error(imgs)
@@ -98,10 +100,12 @@ class FrontendBannerLine(models.Model):
     _name = 'tt.frontend.banner.line'
     _description = 'Frontend Banner Line'
     _rec_name = 'url'
+    _order = 'sequence asc'
 
     url = fields.Char('URL')
     frontend_banner_line_id = fields.Many2one('tt.frontend.banner', 'Image List')
     image_id = fields.Many2one('tt.upload.center', 'Image', invisible=True)
     provider_type_id = fields.Many2one('tt.provider.type', 'Provider Type')
+    sequence = fields.Char('Sequence')
     active = fields.Boolean('Active', default=True)
 

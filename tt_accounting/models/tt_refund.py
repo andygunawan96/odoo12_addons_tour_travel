@@ -458,17 +458,21 @@ class TtRefund(models.Model):
 
     def refund_request_sent_to_agent_api(self, data, ctx):
         try:
-            _logger.info('get webhook refund api finalization')
+            _logger.info('get webhook refund api confirm')
             _logger.info(json.dumps(data))
             data = data['data']
+            total_vendor = 100
             refund_obj = self.search([('referenced_document_external', '=', data['reference_document']), ('state','=','confirm')], limit=1)
             if refund_obj:
                 for rec in refund_obj:
                     for idx, refund_data in enumerate(rec.refund_line_ids):
-                        if rec.refund_line_ids.total_vendor != 0:
+                        if refund_data.total_vendor != 0:
                             refund_data.commission_fee += data['refund_list'][idx]['commission_fee']
                             refund_data.charge_fee += data['refund_list'][idx]['charge_fee']
-                refund_obj.send_refund_from_button([[]])
+                            refund_data.total_vendor -= 1
+                            total_vendor = refund_data.total_vendor
+                if total_vendor == 0:
+                    refund_obj.send_refund_from_button([[]])
                 _logger.info('webhook done send back to HO')
                 res = ERR.get_no_error()
             else:
@@ -533,6 +537,9 @@ class TtRefund(models.Model):
                 if total_vendor == 100:
                     total_vendor = rec.total_vendor
         if total_vendor == 0:
+            total_vendor_reset = len(resv_obj.provider_booking_ids)
+            for rec in self.refund_line_ids:
+                rec.total_vendor = total_vendor_reset
             self.write({
                 'state': 'sent',
                 'sent_uid': self.env.user.id,
@@ -542,14 +549,40 @@ class TtRefund(models.Model):
             for rec in self.refund_line_ids:
                 rec.set_to_sent()
 
+    def validate_refund_api(self, data, ctx):
+        try:
+            _logger.info('get webhook refund api confirm')
+            _logger.info(json.dumps(data))
+            data = data['data']
+            refund_obj = self.search([('referenced_document_external', '=', data['reference_document']), ('state','=','sent')], limit=1)
+            total_refund = 100
+            if refund_obj:
+                for rec in refund_obj:
+                    for idx, refund_data in enumerate(rec.refund_line_ids):
+                        if refund_data.total_vendor != 0:
+                            refund_data.total_vendor -= 1
+                            total_refund = refund_data.total_vendor
+                if total_refund == 0:
+                    refund_obj.validate_refund_from_button()
+                _logger.info('webhook done send back to HO')
+                res = ERR.get_no_error()
+            else:
+                res = ERR.get_error(500)
+        except Exception as e:
+            _logger.error(traceback.format_exc())
+            res = ERR.get_error(500, additional_message='refund not found')
+        return res
+
     def validate_refund_from_button_api(self, data, ctx):
         try:
+            _logger.info(json.dumps(data))
             refund_obj = self.search([('referenced_document', '=', data['referenced_document_external']),('state','=','sent')], limit=1)
             if refund_obj:
                 refund_obj.validate_refund_from_button()
                 res = ERR.get_no_error()
             else:
                 res = ERR.get_error(500)
+            _logger.info(json.dumps(res))
         except Exception as e:
             _logger.error(traceback.format_exc())
             res = ERR.get_error(500, additional_message='refund not found')
@@ -575,6 +608,32 @@ class TtRefund(models.Model):
                 }
                 self.env['tt.refund.api.con'].send_refund_request(data)
 
+        # HO ke BTBO2
+        if resv_obj.agent_type_id == self.env.ref('tt_base.agent_type_btbo2'):
+            _logger.info('btbo2 send refund api')
+            for credential in resv_obj.user_id.credential_ids.webhook_rel_ids:
+                if "webhook/content" in credential.url:
+                    _logger.info('send webhook to child refund')
+                    ## check lebih efisien check api ccredential usernya punya webhook visa, atau kalau api user selalu di notify
+                    ## tetapi nanti filterny sendiri ke kirm ato enda
+                    refund_list = []
+                    for rec in self.refund_line_ids:
+                        refund_list.append({
+                            'name': rec.name,
+                            'extra_charge_amount': rec.extra_charge_amount,
+                            'real_refund_amount': rec.real_refund_amount
+                        })
+                    data = {
+                        'refund_type': self.refund_type_id.name,
+                        'type': 'validate_from_button_api',
+                        'refund_list': refund_list,
+                        'reference_document': self.referenced_document,
+                        # 'reference_document': 'TN.21010627702',
+                    }
+
+                    self.send_webhook_refund(data, 'finalize_refund_from_button_api', resv_obj.user_id.id)
+                    break
+
         for rec in self.refund_line_ids:
             rec.total_vendor = total_vendor
 
@@ -593,16 +652,19 @@ class TtRefund(models.Model):
     def finalize_refund_from_button_api(self, data, ctx):
         try:
             _logger.info('get webhook refund api finalization')
-            _logger.info(json.dumps(data))
             data = data['data']
-            refund_obj = self.search([('referenced_document_external', '=', data['reference_document']), ('state','=','confirm')], limit=1)
+            total_vendor = 100
+            refund_obj = self.search([('referenced_document_external', '=', data['reference_document']), ('state','=','validate')], limit=1)
             if refund_obj:
                 for rec in refund_obj:
                     for idx, refund_data in enumerate(rec.refund_line_ids):
-                        if rec.refund_line_ids.total_vendor != 0:
+                        if refund_data.total_vendor != 0:
                             refund_data.extra_charge_amount += data['refund_list'][idx]['extra_charge_amount']
                             refund_data.real_refund_amount += data['refund_list'][idx]['real_refund_amount']
-                refund_obj.finalize_refund_from_button([[]])
+                            refund_data.total_vendor -= 1
+                            total_vendor = refund_data.total_vendor
+                if total_vendor == 0:
+                    refund_obj.finalize_refund_from_button([[]])
                 _logger.info('webhook done send back to HO')
                 res = ERR.get_no_error()
             else:
@@ -646,7 +708,7 @@ class TtRefund(models.Model):
                         # 'reference_document': 'TN.21010627702',
                     }
 
-                    self.send_webhook_refund(data, 'refund_request_sent_to_agent_api', resv_obj.user_id.id)
+                    self.send_webhook_refund(data, 'finalize_refund_from_button_api', resv_obj.user_id.id)
                     break
 
         total_vendor = 100
@@ -701,11 +763,12 @@ class TtRefund(models.Model):
 
     def action_approve_api(self, data, ctx):
         try:
-            _logger.info('get webhook refund api finalization')
+            _logger.info('get webhook refund api approve')
             _logger.info(json.dumps(data))
             data = data['data']
-            refund_obj = self.search([('referenced_document_external', '=', data['reference_document']), ('state','=','confirm')], limit=1)
+            refund_obj = self.search([('referenced_document_external', '=', data['reference_document']), ('state','=','final')], limit=1)
             if refund_obj:
+                refund_obj.is_vendor_received = True
                 refund_obj.action_approve([[]])
                 _logger.info('webhook done send back to HO')
                 res = ERR.get_no_error()
@@ -740,7 +803,7 @@ class TtRefund(models.Model):
                         # 'reference_document': 'TN.21010627702',
                     }
 
-                    self.send_webhook_refund(data, 'refund_request_sent_to_agent_api', resv_obj.user_id.id)
+                    self.send_webhook_refund(data, 'action_approve_api', resv_obj.user_id.id)
                     break
 
         total_vendor = 100
