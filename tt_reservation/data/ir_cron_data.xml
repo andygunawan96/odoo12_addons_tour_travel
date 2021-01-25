@@ -31,7 +31,7 @@
             <field name='name'>Auto Sync Reservation BTBO</field>
             <field name="user_id" ref="base.user_root"/>
             <field name='interval_number'>1</field>
-            <field name='interval_type'>days</field>
+            <field name='interval_type'>hours</field>
             <field name="numbercall">-1</field>
             <field name="nextcall" eval="(datetime.now().replace(hour=1,minute=0,second=0).isoformat())"/>
             <field name="active">False</field>

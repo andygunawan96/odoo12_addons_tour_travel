@@ -47,6 +47,7 @@
             <form>
                 <sheet>
                     <group>
+                        <field name="sequence"/>
                         <field name="url"/>
                         <field name="image_id"/>
                         <field name="provider_type_id"/>
@@ -64,6 +65,7 @@
         <field name="model">tt.frontend.banner.line</field>
         <field name="arch" type="xml">
             <tree>
+                <field name="sequence"/>
                 <field name="url"/>
                 <field name="image_id"/>
                 <field name="provider_type_id"/>
