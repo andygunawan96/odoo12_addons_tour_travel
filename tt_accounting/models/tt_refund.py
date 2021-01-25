@@ -458,7 +458,7 @@ class TtRefund(models.Model):
 
     def refund_request_sent_to_agent_api(self, data, ctx):
         try:
-            _logger.info('get webhook refund api finalization')
+            _logger.info('get webhook refund api confirm')
             _logger.info(json.dumps(data))
             data = data['data']
             total_vendor = 100
@@ -599,10 +599,9 @@ class TtRefund(models.Model):
     def finalize_refund_from_button_api(self, data, ctx):
         try:
             _logger.info('get webhook refund api finalization')
-            _logger.info(json.dumps(data))
             data = data['data']
             total_vendor = 100
-            refund_obj = self.search([('referenced_document_external', '=', data['reference_document']), ('state','=','confirm')], limit=1)
+            refund_obj = self.search([('referenced_document_external', '=', data['reference_document']), ('state','=','validate')], limit=1)
             if refund_obj:
                 for rec in refund_obj:
                     for idx, refund_data in enumerate(rec.refund_line_ids):
@@ -711,7 +710,7 @@ class TtRefund(models.Model):
 
     def action_approve_api(self, data, ctx):
         try:
-            _logger.info('get webhook refund api finalization')
+            _logger.info('get webhook refund api approve')
             _logger.info(json.dumps(data))
             data = data['data']
             refund_obj = self.search([('referenced_document_external', '=', data['reference_document']), ('state','=','confirm')], limit=1)
