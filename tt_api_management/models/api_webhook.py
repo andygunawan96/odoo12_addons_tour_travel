@@ -22,7 +22,7 @@ class ApiWebhookData(models.Model):
             webhook_data_obj = self.search([('provider_type_id.code','=',req['provider_type'])],limit=1)
             if webhook_data_obj:
                 sent_data = []
-                send_limit = 3
+                error_list = []
                 # while len(sent_data) < len(webhook_data_obj[0].webhook_rel_ids.ids) and send_limit > 0:
                 # 25 jan 2021 kalau error timeout kirim ke children yang sama terus" an padahal sudah masuk
                 if req.get('child_id'):
@@ -30,26 +30,35 @@ class ApiWebhookData(models.Model):
                 else:
                     children_list = webhook_data_obj[0].webhook_rel_ids
                 for rec in children_list:
-                    _logger.info("children name %s" % rec.credential_data_id.user_id.name)
-                    if rec.id not in sent_data:
-                        temp_date = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-                        temp_sha = rec.api_key + temp_date
-                        vals = {
-                            'action': req['action'],
-                            'url': rec.url,
-                            'signature': hashlib.sha256(temp_sha.encode()).hexdigest(),
-                            'datetime': temp_date,
-                            'data': req['data'],
-                            'timeout': req.get('timeout', 300)
-                        }
-                        res = self.env['tt.api.con'].send_webhook_to_children(vals)
-                        _logger.info("Receive webhook data from children...")
-                        _logger.info(json.dumps(res))
-                        if not res.get('error_code'):
-                            sent_data.append(rec.id)
-                        else:
-                            _logger.info(res['error_msg'])
-                        send_limit -= 1
+                    send_limit = 1 # tiap child punya jatah 3x fail
+                    while send_limit <= 3:
+                        try:
+                            _logger.info("children name %s" % rec.credential_data_id.user_id.name)
+                            if rec.id not in sent_data:
+                                temp_date = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+                                temp_sha = rec.api_key + temp_date
+                                vals = {
+                                    'action': req['action'],
+                                    'url': rec.url,
+                                    'signature': hashlib.sha256(temp_sha.encode()).hexdigest(),
+                                    'datetime': temp_date,
+                                    'data': req['data'],
+                                    'timeout': req.get('timeout', 300)
+                                }
+                                res = self.env['tt.api.con'].send_webhook_to_children(vals)
+                                _logger.info("Receive webhook data from children...")
+                                _logger.info(json.dumps(res))
+                                send_limit += 1
+                                if not res.get('error_code'):
+                                    sent_data.append(rec.id)
+                                    break
+                                else:
+                                    _logger.info(res['error_msg'])
+
+                        except Exception as e:
+                            error_list.append('%s\n%s\n%s\n\n' % (send_limit, rec.credential_data_id.user_id.name, traceback.format_exc()))
+            if len(error_list) != 0:
+                raise Exception("\n".join(error_list))
             _logger.info('end webhook')
         except Exception as e:
             _logger.error(traceback.format_exc())
