@@ -2753,7 +2753,7 @@ class ActivitySyncProductsChildren(models.TransientModel):
                 })
                 activity_data_list.append(dict_vals)
 
-            gw_timeout = int(len(activity_data_list) / 3) > 60 and int(len(activity_data_list) / 3) or 60
+            gw_timeout = int(len(activity_data_list) / 3) > 120 and int(len(activity_data_list) / 3) or 120 # kalau 60 timeout
             vals = {
                 'provider_type': 'activity',
                 'action': 'sync_products_to_children',
