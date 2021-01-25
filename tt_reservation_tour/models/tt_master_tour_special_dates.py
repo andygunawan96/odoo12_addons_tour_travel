@@ -15,8 +15,8 @@ class MasterTourSpecialDates(models.Model):
     _name = "tt.master.tour.special.dates"
     _description = 'Rodex Model'
 
-    name = fields.Char('Name')
-    date = fields.Date('Date')
+    name = fields.Char('Name', required=True, default='Special Date Charge')
+    date = fields.Date('Date', required=True)
     tour_line_id = fields.Many2one('tt.master.tour.lines', 'Master Tour Lines')
     currency_id = fields.Many2one('res.currency', 'Currency', required=True, default=lambda self: self.env.user.company_id.currency_id)
     additional_adult_fare = fields.Monetary('Additional Adult Fare', default=0)
