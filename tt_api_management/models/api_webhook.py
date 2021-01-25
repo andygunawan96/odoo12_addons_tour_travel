@@ -29,6 +29,7 @@ class ApiWebhookData(models.Model):
                     else:
                         children_list = webhook_data_obj[0].webhook_rel_ids
                     for rec in children_list:
+                        _logger.info("children name %s" % rec.credential_data_id.user_id.name)
                         if rec.id not in sent_data:
                             temp_date = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
                             temp_sha = rec.api_key + temp_date
