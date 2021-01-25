@@ -461,14 +461,18 @@ class TtRefund(models.Model):
             _logger.info('get webhook refund api finalization')
             _logger.info(json.dumps(data))
             data = data['data']
+            total_vendor = 100
             refund_obj = self.search([('referenced_document_external', '=', data['reference_document']), ('state','=','confirm')], limit=1)
             if refund_obj:
                 for rec in refund_obj:
                     for idx, refund_data in enumerate(rec.refund_line_ids):
-                        if rec.refund_line_ids.total_vendor != 0:
+                        if refund_data.total_vendor != 0:
                             refund_data.commission_fee += data['refund_list'][idx]['commission_fee']
                             refund_data.charge_fee += data['refund_list'][idx]['charge_fee']
-                refund_obj.send_refund_from_button([[]])
+                            refund_data.total_vendor -= 1
+                            total_vendor = refund_data.total_vendor
+                if total_vendor == 0:
+                    refund_obj.send_refund_from_button([[]])
                 _logger.info('webhook done send back to HO')
                 res = ERR.get_no_error()
             else:
@@ -544,12 +548,14 @@ class TtRefund(models.Model):
 
     def validate_refund_from_button_api(self, data, ctx):
         try:
+            _logger.info(json.dumps(data))
             refund_obj = self.search([('referenced_document', '=', data['referenced_document_external']),('state','=','sent')], limit=1)
             if refund_obj:
                 refund_obj.validate_refund_from_button()
                 res = ERR.get_no_error()
             else:
                 res = ERR.get_error(500)
+            _logger.info(json.dumps(res))
         except Exception as e:
             _logger.error(traceback.format_exc())
             res = ERR.get_error(500, additional_message='refund not found')
@@ -595,14 +601,18 @@ class TtRefund(models.Model):
             _logger.info('get webhook refund api finalization')
             _logger.info(json.dumps(data))
             data = data['data']
+            total_vendor = 100
             refund_obj = self.search([('referenced_document_external', '=', data['reference_document']), ('state','=','confirm')], limit=1)
             if refund_obj:
                 for rec in refund_obj:
                     for idx, refund_data in enumerate(rec.refund_line_ids):
-                        if rec.refund_line_ids.total_vendor != 0:
+                        if refund_data.total_vendor != 0:
                             refund_data.extra_charge_amount += data['refund_list'][idx]['extra_charge_amount']
                             refund_data.real_refund_amount += data['refund_list'][idx]['real_refund_amount']
-                refund_obj.finalize_refund_from_button([[]])
+                            refund_data.total_vendor -= 1
+                            total_vendor = refund_data.total_vendor
+                if total_vendor == 0:
+                    refund_obj.finalize_refund_from_button([[]])
                 _logger.info('webhook done send back to HO')
                 res = ERR.get_no_error()
             else:
