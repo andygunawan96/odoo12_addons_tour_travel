@@ -1579,7 +1579,7 @@ class PrintoutIteneraryForm(models.AbstractModel):
                 if header_width > 105:
                     header_width = 105
 
-        printout_itinerary_footer = self.env['tt.report.common.setting'].sudo().search([('code', '=', 'train_ticket')], limit=1)
+        printout_itinerary_footer = self.env['tt.report.common.setting'].sudo().search([('code', '=', 'printout_itinerary')], limit=1)
         return {
             'doc_ids': data['context']['active_ids'],
             'doc_model': data['context']['active_model'],
