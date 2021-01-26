@@ -115,7 +115,7 @@ class TtApiCon(models.Model):
             'title': title,
             'message': message
         }
-        return self.send_request_to_gateway('%s/notification' % self.url, request, 'notification_api')
+        return self.send_request_to_gateway('%s/notification' % self.url, request, 'notification_code')
 
     def send_webhook_to_children(self, request):
         return self.send_request_to_gateway('%s/content' % self.url, request, 'send_webhook_to_children', timeout=request.get('timeout', 300))

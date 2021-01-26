@@ -74,6 +74,7 @@ class FrontendBanner(models.Model):
         return ERR.get_no_error('success')
 
         #
+
     def get_banner_api(self, data):
         imgs = []
 
@@ -109,3 +110,7 @@ class FrontendBannerLine(models.Model):
     sequence = fields.Char('Sequence')
     active = fields.Boolean('Active', default=True)
 
+    def unlink(self):
+        for rec in self:
+            rec.image_id.unlink()
+        return super(FrontendBannerLine, self).unlink()

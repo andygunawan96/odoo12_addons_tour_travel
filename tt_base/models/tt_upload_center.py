@@ -39,5 +39,5 @@ class TtUploadFile(models.Model):
             if rec.path:
                 if os.path.exists(rec.path):
                     os.remove(rec.path)
-            return super(TtUploadFile, self).unlink()
+        return super(TtUploadFile, self).unlink()
 
