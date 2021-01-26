@@ -62,7 +62,7 @@ class FrontendBanner(models.Model):
                     img.sequence = data['sequence']
                     img.provider_type_id = self.env['tt.provider.type'].search([('code', '=', data['provider_type'])], limit=1).id
                     if data['action'] == 'active':
-                        img.toggle_active()
+                        img.active = not img.active
                     elif data['action'] == 'delete':
                         img.unlink()
                     break
@@ -87,7 +87,7 @@ class FrontendBanner(models.Model):
         for img in image_objs.image_line_ids:
             imgs.append({
                 'url': img.image_id['url'],
-                'active': img.image_id['active'],
+                'active': img.active,
                 'seq_id': img.image_id['seq_id'],
                 'url_page': img.url,
                 'provider_type': img.provider_type_id.code,

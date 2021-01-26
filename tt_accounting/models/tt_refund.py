@@ -461,7 +461,6 @@ class TtRefund(models.Model):
             _logger.info('get webhook refund api confirm')
             _logger.info(json.dumps(data))
             data = data['data']
-            total_vendor = 100
             refund_obj = self.search([('referenced_document_external', '=', data['reference_document']), ('state','=','confirm')], limit=1)
             if refund_obj:
                 for rec in refund_obj:
@@ -469,10 +468,7 @@ class TtRefund(models.Model):
                         if refund_data.total_vendor != 0:
                             refund_data.commission_fee += data['refund_list'][idx]['commission_fee']
                             refund_data.charge_fee += data['refund_list'][idx]['charge_fee']
-                            refund_data.total_vendor -= 1
-                            total_vendor = refund_data.total_vendor
-                if total_vendor == 0:
-                    refund_obj.send_refund_from_button([[]])
+                refund_obj.send_refund_from_button([[]])
                 _logger.info('webhook done send back to HO')
                 res = ERR.get_no_error()
             else:
@@ -661,10 +657,7 @@ class TtRefund(models.Model):
                         if refund_data.total_vendor != 0:
                             refund_data.extra_charge_amount += data['refund_list'][idx]['extra_charge_amount']
                             refund_data.real_refund_amount += data['refund_list'][idx]['real_refund_amount']
-                            refund_data.total_vendor -= 1
-                            total_vendor = refund_data.total_vendor
-                if total_vendor == 0:
-                    refund_obj.finalize_refund_from_button([[]])
+                refund_obj.finalize_refund_from_button([[]])
                 _logger.info('webhook done send back to HO')
                 res = ERR.get_no_error()
             else:
