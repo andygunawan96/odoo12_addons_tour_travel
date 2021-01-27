@@ -3,6 +3,7 @@ from odoo import models, api
 
 class PrintoutInvoice(models.AbstractModel):
     _name = 'report.tt_agent_registration.printout_invoice'
+    _description = 'Report Agent Registration Printout Invoice'
 
     """Abstract Model for report template.
 

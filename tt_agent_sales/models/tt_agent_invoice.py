@@ -15,7 +15,7 @@ class Ledger(models.Model):
 class AgentInvoice(models.Model):
     _name = 'tt.agent.invoice'
     _inherit = 'tt.history'
-    _description = 'Rodex Model'
+    _description = 'Agent Invoice'
     _order = 'id desc'
 
     name = fields.Char('Name', default='New', readonly=True)

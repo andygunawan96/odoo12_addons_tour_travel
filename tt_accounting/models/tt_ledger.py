@@ -437,7 +437,7 @@ class Ledger(models.Model):
 
 class TtLedgerWaitingList(models.Model):
     _name = 'tt.ledger.waiting.list'
-    _description = 'Rodex Model ledger Waiting List'
+    _description = 'Ledger Waiting List'
     _order = 'create_date desc'
 
     agent_id = fields.Many2one('tt.agent','Agent')

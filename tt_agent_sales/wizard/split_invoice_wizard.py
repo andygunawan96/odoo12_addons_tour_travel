@@ -3,7 +3,7 @@ from odoo.exceptions import UserError
 
 class SplitInvoice(models.Model):
     _name = "tt.split.invoice.wizard"
-    _description = 'Rodex Model'
+    _description = 'Split Invoice Wizard'
 
     # invoice_id1 = fields.Many2one('tt.agent.invoice','Source Invoice', readonly="1")
     # invoice_id2 = fields.Many2one('tt.agent.invoice','Target Invoice')

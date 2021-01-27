@@ -16,7 +16,7 @@ STATE_INVOICE = [
 
 class InstallmentInvoice(models.Model):
     _name = 'tt.installment.invoice'
-    _description = 'Rodex Model'
+    _description = 'Installment Invoice'
 
     currency_id = fields.Many2one('res.currency', 'Currency', required=True, readonly=True,
                                   default=lambda self: self.env.user.company_id.currency_id)

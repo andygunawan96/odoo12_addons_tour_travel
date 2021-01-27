@@ -302,7 +302,7 @@ class PaymentAcquirer(models.Model):
 class PaymentAcquirerNumber(models.Model):
     _name = 'payment.acquirer.number'
     _rec_name = 'display_name_payment'
-    _description = 'Rodex Model Payment Acquirer Number'
+    _description = 'Payment Acquirer Number'
 
     res_id = fields.Integer('Res ID')
     res_model = fields.Char('Res Model')
@@ -413,7 +413,7 @@ class PaymentAcquirerNumber(models.Model):
 
 class PaymentUniqueAmount(models.Model):
     _name = 'unique.amount'
-    _description = 'Rodex Model Unique Amount'
+    _description = 'Unique Amount'
     # OLD segment
     #
     #     amount = fields.Float('Amount', required=True)

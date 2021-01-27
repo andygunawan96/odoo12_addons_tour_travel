@@ -29,7 +29,7 @@ class UserEncryptInherit(models.Model):
 
 class UserEncryptWizard(models.TransientModel):
     _name = 'tt.user.encrypt'
-    _description = 'Rodex Model'
+    _description = 'User Encrypt'
 
     uid = fields.Integer(string='User ID', readonly=1)
     username = fields.Char(string='Username', readonly=1)

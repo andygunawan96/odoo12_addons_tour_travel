@@ -16,7 +16,7 @@ class TtFrequentFlyerAirline(models.Model):
     _name = 'tt.frequent.flyer.airline'
     _inherit = 'tt.history'
     _order = 'sequence'
-    _description = 'Rodex Model'
+    _description = 'Frequent Flyer Airline'
 
     name = fields.Char('Name', required=True)
     sequence = fields.Integer('Sequence', default=50)

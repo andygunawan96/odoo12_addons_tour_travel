@@ -6,10 +6,10 @@ PRICE_TYPE = [
     ('pax', 'Passenger'),
 ]
 
-class TtPnrQuotaMasterData(models.Model):
+class TtPnrQuotaPriceList(models.Model):
     _name = 'tt.pnr.quota.price.list'
     _rec_name = 'name'
-    _description = 'Rodex Model PNR Quota Master Data'
+    _description = 'PNR Quota Price List'
 
     def get_domain_provider(self):
         if self.provider_type_id:

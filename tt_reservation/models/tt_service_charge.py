@@ -3,7 +3,7 @@ from ...tools import variables
 
 class TbServiceCharge(models.Model):
     _name = 'tt.service.charge'
-    _description = 'Rodex Model'
+    _description = 'Service Charge Model'
 
     charge_code = fields.Char('Charge Code', default='fare', required=True)
     charge_type = fields.Char('Charge Type')  # FARE, INF, TAX, SSR, CHR

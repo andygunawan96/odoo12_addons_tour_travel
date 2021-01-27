@@ -8,7 +8,7 @@ _logger = logging.getLogger(__name__)
 
 class ApiMonitor(models.Model):
     _name = 'tt.api.monitor'
-    _description = 'Rodex Model API Monitor'
+    _description = 'API Monitor'
 
     user_id = fields.Many2one('res.users', 'User')
     name = fields.Char('Name', related='user_id.name')
@@ -62,7 +62,7 @@ class ApiMonitor(models.Model):
 
 class ApiMonitorData(models.Model):
     _name = 'tt.api.monitor.data'
-    _description = 'Rodex Model API Monitor Data'
+    _description = 'API Monitor Data'
 
     action = fields.Char('Action')
     monitor_id = fields.Many2one('tt.api.monitor', 'Monitor',ondelete='cascade')
@@ -93,7 +93,7 @@ class ApiMonitorData(models.Model):
 
 class ApiMonitorDataRecord(models.Model):
     _name = 'tt.api.monitor.data.record'
-    _description = 'Rodex Model API Monitor Data Record'
+    _description = 'API Monitor Data Record'
 
     is_verified = fields.Boolean('Verified')
     monitor_data_id = fields.Many2one('tt.api.monitor.data','Monitor Data',ondelete='cascade')
@@ -101,7 +101,7 @@ class ApiMonitorDataRecord(models.Model):
 
 class ApiMonitorRule(models.Model):
     _name = 'tt.api.monitor.rule'
-    _description = 'Rodex Model API Monitor'
+    _description = 'API Monitor'
     _rec_name = 'provider_type_id'
 
     provider_type_id = fields.Many2one('tt.provider.type','Provider Type')

@@ -3,7 +3,7 @@ from ...tools import variables
 
 class TtFfPassengerAirline(models.Model):
     _name = 'tt.ff.passenger.airline'
-    _description = 'Rodex Model'
+    _description = 'FF Passenger Airline'
 
     name = fields.Char('Name', default='')
     first_name = fields.Char('First Name', default='')
@@ -31,7 +31,7 @@ class TtFfPassengerAirline(models.Model):
 
 class TtReservationPassengerAirlineInherit(models.Model):
     _inherit = 'tt.reservation.passenger.airline'
-    _description = 'Rodex Model'
+    _description = 'Reservation Passenger Airline'
 
     frequent_flyer_ids = fields.One2many('tt.ff.passenger.airline', 'passenger_id', 'Frequent Flyers')
 

@@ -4,6 +4,7 @@ from ...tt_base.models.address_detail import ADDRESS_TYPE
 
 class AgentRegistrationAddress(models.Model):
     _name = 'tt.agent.registration.address'
+    _description = 'Agent Registration Address'
 
     agent_registration_id = fields.Many2one('tt.agent.registration', string='Agent Registration ID')
     type = fields.Selection(ADDRESS_TYPE, 'Address Type', required=True)

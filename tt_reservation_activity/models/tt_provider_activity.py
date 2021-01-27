@@ -7,7 +7,7 @@ from datetime import datetime
 class TtProviderActivity(models.Model):
     _name = 'tt.provider.activity'
     _rec_name = 'pnr'
-    _description = 'Rodex Model'
+    _description = 'Provider Activity'
 
     pnr = fields.Char('PNR')
     pnr2 = fields.Char('PNR2')

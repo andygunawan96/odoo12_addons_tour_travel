@@ -7,7 +7,7 @@ from datetime import datetime
 class TtReservationCustomer(models.Model):
     _name = 'tt.reservation.passenger.airline'
     _inherit = 'tt.reservation.passenger'
-    _description = 'Rodex Model'
+    _description = 'Reservation Passenger Airline'
 
     cost_service_charge_ids = fields.Many2many('tt.service.charge','tt_reservation_airline_cost_charge_rel', 'passenger_id', 'service_charge_id', 'Cost Service Charges')
     channel_service_charge_ids = fields.Many2many('tt.service.charge','tt_reservation_airline_channel_charge_rel', 'passenger_id', 'service_charge_id', 'Channel Service Charges')

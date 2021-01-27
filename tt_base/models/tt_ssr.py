@@ -11,7 +11,7 @@ _gw_con = GatewayConnector()
 
 class TtSSRCategory(models.Model):
     _name = 'tt.ssr.category'
-    _description = 'Rodex Model'
+    _description = 'SSR Category'
 
     name = fields.Char('Name', required=True)
     code = fields.Char('Code', required=True)
@@ -39,7 +39,7 @@ class TtSSRCategory(models.Model):
 
 class TtSSRList(models.Model):
     _name = 'tt.ssr.list'
-    _description = 'Rodex Model'
+    _description = 'SSR List'
 
     name = fields.Char('Name', required=True)
     code = fields.Char('Code', required=True)
@@ -164,7 +164,7 @@ class TtSSRList(models.Model):
 
 class TtSSRListLine(models.Model):
     _name = 'tt.ssr.list.line'
-    _description = 'Rodex Model'
+    _description = 'SSR List Line'
 
     name = fields.Char('Name', required=True)
     sequence = fields.Integer(default=50, readonly=1)

@@ -5,7 +5,7 @@ from odoo.exceptions import UserError
 class PaymentRules(models.Model):
     _name = 'tt.payment.rules'
     _order = 'due_date'
-    _description = 'Rodex Model'
+    _description = 'Payment Rules'
 
     name = fields.Char('Name', required=True, default='Full Payment')
     description = fields.Char('Description')

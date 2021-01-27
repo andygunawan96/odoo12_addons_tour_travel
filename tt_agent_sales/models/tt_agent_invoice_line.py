@@ -5,7 +5,7 @@ class AgentInvoice(models.Model):
 
     _name = 'tt.agent.invoice.line'
     _rec_name = 'name'
-    _description = 'Rodex Model'
+    _description = 'Agent Invoice Line'
 
     name = fields.Char('Name')
 

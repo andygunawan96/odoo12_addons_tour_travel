@@ -3,7 +3,7 @@ from odoo import models, fields, api, _
 
 class ApiHost(models.Model):
     _name = 'tt.api.host'
-    _description = 'Rodex Model'
+    _description = 'API Host'
 
     ip = fields.Char(string='IP', required=1)
     active = fields.Boolean(string='Active')

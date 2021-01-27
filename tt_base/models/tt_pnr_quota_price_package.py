@@ -1,9 +1,9 @@
 from odoo import api,fields,models
 
-class TtPnrQuotaMasterPackage(models.Model):
+class TtPnrQuotaPricePackage(models.Model):
     _name = 'tt.pnr.quota.price.package'
     _rec_name = 'name'
-    _description = 'Rodex Model PNR Quota Master Data'
+    _description = 'PNR Quota Price Package'
 
     name = fields.Char('Name')
     seq_id = fields.Char('Sequence ID',readonly=True)

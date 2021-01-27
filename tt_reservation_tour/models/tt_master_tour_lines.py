@@ -9,7 +9,7 @@ _logger = logging.getLogger(__name__)
 class MasterTourLines(models.Model):
     _inherit = ['tt.history']
     _name = 'tt.master.tour.lines'
-    _description = 'Rodex Model'
+    _description = 'Master Tour Lines'
     _order = 'sequence'
 
     name = fields.Char('Name', readonly=True, compute='_compute_name')

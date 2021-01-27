@@ -5,7 +5,7 @@ from ..accounting_models.tt_accounting_connector import SalesOrder
 class TtAccountingHistory(models.Model):
     _name = 'tt.accounting.history'
     _inherit = 'tt.history'
-    _description = 'Rodex Model'
+    _description = 'Accounting History'
     _order = 'id DESC'
 
     request = fields.Text('Request', readonly=True)

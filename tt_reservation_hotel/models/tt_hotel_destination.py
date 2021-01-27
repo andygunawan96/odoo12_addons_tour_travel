@@ -4,6 +4,7 @@ from datetime import date, datetime, timedelta
 
 class HotelDestination(models.Model):
     _name = "tt.hotel.destination"
+    _description = 'Hotel Destination'
     _desc = "Model ini digunakan untuk menyimpan seluruh data destination / city / satuan terkecil non hotel dari vendor yg dpat digunakan untuk pencarian"
 
     name = fields.Char('Name', required=True)

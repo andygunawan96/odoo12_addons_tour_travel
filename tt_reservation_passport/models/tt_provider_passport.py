@@ -21,7 +21,7 @@ STATE_PASSPORT = [
 
 class ProviderPassportPassengers(models.Model):
     _name = 'tt.provider.passport.passengers'
-    _description = 'Rodex Model'
+    _description = 'Provider Passport Passengers'
 
     provider_id = fields.Many2one('tt.provider.passport', 'Provider')
     passenger_id = fields.Many2one('tt.reservation.passport.order.passengers', 'Passenger')
@@ -39,7 +39,7 @@ class ProviderPassportPassengers(models.Model):
 class TtProviderPassport(models.Model):
     _name = 'tt.provider.passport'
     _rec_name = 'pnr'
-    _description = 'Rodex Model'
+    _description = 'Provider Passport'
 
     pnr = fields.Char('PNR')  # di isi aja order number
     pnr2 = fields.Char('PNR2')

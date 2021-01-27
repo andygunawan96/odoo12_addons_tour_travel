@@ -5,7 +5,7 @@ import time
 class TtProvider(models.Model):
     _name = 'tt.provider'
     _inherit = 'tt.history'
-    _description = 'Rodex Model'
+    _description = 'Provider Model'
 
     name = fields.Char('Name', required=True)
     alias = fields.Char(string='Alias')
@@ -86,7 +86,7 @@ class TtProvider(models.Model):
 
 class TtProviderCode(models.Model):
     _name = 'tt.provider.code'
-    _description = 'Rodex Model'
+    _description = 'Provider Code Model'
 
     name = fields.Char('Name')
     code = fields.Char('Code')
@@ -146,7 +146,7 @@ class TtProviderCode(models.Model):
 
 class TtProviderDestination(models.Model):
     _name = 'tt.provider.destination'
-    _description = 'Rodex Model'
+    _description = 'Provider Destination'
 
     provider_id = fields.Many2one('tt.provider', 'Provider')
     country_id = fields.Many2one('res.country', 'Country', required=True)
@@ -157,7 +157,7 @@ class TtProviderDestination(models.Model):
 
 class TtProviderDestinationCity(models.Model):
     _name = 'tt.provider.destination.city'
-    _description = 'Rodex Model'
+    _description = 'Provider Destination City'
 
     search_id = fields.Many2one('tt.provider.destination', 'Destination')
     city_id = fields.Many2one('res.city', 'City', required=True)
@@ -166,7 +166,7 @@ class TtProviderDestinationCity(models.Model):
 
 class TtProviderCurrency(models.Model):
     _name = 'tt.provider.currency'
-    _description = 'Rodex Model'
+    _description = 'Provider Currency'
 
     provider_id = fields.Many2one('tt.provider', 'Provider')
     currency_id = fields.Many2one('res.currency', 'Currency', required=True)

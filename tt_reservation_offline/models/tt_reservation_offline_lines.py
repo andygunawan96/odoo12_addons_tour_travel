@@ -50,7 +50,7 @@ MEAL_TYPE = [
 
 class IssuedOfflineLines(models.Model):
     _name = 'tt.reservation.offline.lines'
-    _description = 'Rodex Model'
+    _description = 'Issued Offline Lines'
 
     pnr = fields.Char('PNR')
 

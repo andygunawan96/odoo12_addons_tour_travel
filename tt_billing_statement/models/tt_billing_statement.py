@@ -7,7 +7,7 @@ import base64
 class TtBillingStatement(models.Model):
     _name = 'tt.billing.statement'
     _inherit = 'tt.history'
-    _description = 'Rodex Model'
+    _description = 'Billing Statement'
     _order = 'id desc'
 
     name = fields.Char('Number', required=True, readonly=True, default='New')

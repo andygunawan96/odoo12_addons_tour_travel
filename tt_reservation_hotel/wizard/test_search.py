@@ -8,6 +8,7 @@ import json
 
 class TestSearch(models.Model):
     _name = 'test.search'
+    _description = 'Test Search Model'
 
     name = fields.Char('City / Hotel Name', default=' ')
     hotel_id = fields.Many2one('tt.hotel', 'Hotel', related='rate_id.room_info_id.hotel_id')
@@ -1264,6 +1265,7 @@ class TestSearch(models.Model):
 
 class TestSearchLine(models.Model):
     _name = 'test.search.line'
+    _description = 'Test Search Line'
 
     name = fields.Char('name')
     reservation_id = fields.Many2one('test.search', 'Reservation No')
@@ -1297,6 +1299,7 @@ class TestSearchLine2(models.Model):
 
 class TestSearchWizard(models.TransientModel):
     _name = 'test.search.wizard'
+    _description = 'Test Search Wizard'
 
     name = fields.Char('City / Hotel Name')
     rate_id = fields.Many2one('tt.room.rate', 'Room')

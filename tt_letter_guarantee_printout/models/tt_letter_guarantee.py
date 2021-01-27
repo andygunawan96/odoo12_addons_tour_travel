@@ -5,7 +5,6 @@ import base64,pytz
 
 class TtLetterGuarantee(models.Model):
     _inherit = 'tt.letter.guarantee'
-    _description = 'Rodex Model'
 
     printout_lg_id = fields.Many2one('tt.upload.center', 'Printout Letter of Guarantee', readonly=True)
 

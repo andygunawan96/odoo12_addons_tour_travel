@@ -8,7 +8,7 @@ class TtBillPPOB(models.Model):
     _name = 'tt.bill.ppob'
     _rec_name = 'period'
     _order = 'period'
-    _description = 'Rodex Model'
+    _description = 'Bill PPOB'
 
     provider_booking_id = fields.Many2one('tt.provider.ppob', 'Provider Booking', ondelete='cascade')
     booking_id = fields.Many2one('tt.reservation.ppob', 'Order Number', related='provider_booking_id.booking_id', store=True)
@@ -73,7 +73,7 @@ class TtBillPPOB(models.Model):
 class TtPPOBMeterHistory(models.Model):
     _name = 'tt.ppob.meter.history'
     _order = 'sequence'
-    _description = 'Rodex Model'
+    _description = 'PPOB Meter History'
 
     before_meter = fields.Integer('Before Meter')
     after_meter = fields.Integer('After Meter')
@@ -91,7 +91,7 @@ class TtPPOBMeterHistory(models.Model):
 class TtBillDetailPPOB(models.Model):
     _name = 'tt.bill.detail.ppob'
     _rec_name = 'customer_number'
-    _description = 'Rodex Model'
+    _description = 'Bill Detail PPOB'
 
     provider_booking_id = fields.Many2one('tt.provider.ppob', 'Provider Booking', ondelete='cascade')
     booking_id = fields.Many2one('tt.reservation.ppob', 'Order Number', related='provider_booking_id.booking_id', store=True)

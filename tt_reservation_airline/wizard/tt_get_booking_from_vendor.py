@@ -18,7 +18,7 @@ provider_selection = [
 
 class TtGetBookingFromVendor(models.TransientModel):
     _name = "tt.get.booking.from.vendor"
-    _description = "Rodex Model Get Booking from Vendor"
+    _description = "Get Booking from Vendor"
 
     pnr = fields.Char('PNR', required=True)
     provider = fields.Selection(provider_selection, string='Provider', required=True)
@@ -253,7 +253,7 @@ class TtGetBookingFromVendor(models.TransientModel):
 
 class TtGetBookingFromVendorReview(models.TransientModel):
     _name = "tt.get.booking.from.vendor.review"
-    _description = "Rodex Model Get Booking from Vendor Review"
+    _description = "Get Booking from Vendor Review"
 
     pnr = fields.Char("PNR")
     status = fields.Char("Status")

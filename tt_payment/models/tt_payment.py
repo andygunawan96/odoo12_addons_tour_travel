@@ -7,7 +7,7 @@ class PaymentTransaction(models.Model):
     _name = 'tt.payment'
     _rec_name = 'display_name'
     _inherit = 'tt.history'
-    _description = 'Rodex Model'
+    _description = 'Payment Model'
     _order = 'id desc'
 
     name = fields.Char('Name', default='New', help='Sequence number set on Confirm state example:PAY.XXX',readonly=True)

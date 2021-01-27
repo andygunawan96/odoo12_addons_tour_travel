@@ -9,7 +9,7 @@ class TtSegmentAirline(models.Model):
     _name = 'tt.segment.airline'
     _rec_name = 'name'
     _order = 'departure_date'
-    _description = 'Rodex Model'
+    _description = 'Segment Airline'
 
     name = fields.Char('Name', compute='_fill_name')
     segment_code = fields.Char('Segment Code')

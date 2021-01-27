@@ -7,6 +7,7 @@ import copy
 
 class MonthlyManagementFeeRule(models.Model):
     _name = 'tt.monthly.fee.rule'
+    _description = 'Monthly Fee Rule'
 
     agent_id = fields.Many2one('tt.agent', 'Agent')
     agent_type_id = fields.Many2one('tt.agent.type', 'Agent Type')
@@ -65,6 +66,7 @@ class MonthlyManagementFeeRule(models.Model):
 class MonthlyManagementFee(models.Model):
     _name = 'tt.monthly.fee'
     _order = 'id desc'
+    _description = 'Monthly Fee Model'
 
     name = fields.Char('Name', required=True)
     agent_id = fields.Many2one('tt.agent', 'Agent', required=True, readonly=True, states={'draft':[('readonly',False)]})
@@ -343,6 +345,7 @@ class MonthlyManagementFeeLine(models.Model):
     _name = 'tt.monthly.fee.line'
     # _inherit = 'tt.history'
     _order = 'id desc'
+    _description = 'Monthly Fee Line'
 
     mmf_id = fields.Many2one('tt.monthly.fee', 'Monthly Management Fee', ondelete='cascade')
     ledger_id = fields.Many2one('tt.ledger', 'Ledger', readonly=True, states={'draft':[('readonly',False)]})

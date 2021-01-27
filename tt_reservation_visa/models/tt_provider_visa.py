@@ -22,7 +22,7 @@ STATE_VISA = [
 
 class ProviderVisaPassengers(models.Model):
     _name = 'tt.provider.visa.passengers'
-    _description = 'Rodex Model'
+    _description = 'Visa Passengers'
 
     provider_id = fields.Many2one('tt.provider.visa', 'Provider')
     passenger_id = fields.Many2one('tt.reservation.visa.order.passengers', 'Passenger')
@@ -40,7 +40,7 @@ class ProviderVisaPassengers(models.Model):
 class TtProviderVisa(models.Model):
     _name = 'tt.provider.visa'
     _rec_name = 'pnr'
-    _description = 'Rodex Model'
+    _description = 'Provider Visa'
 
     pnr = fields.Char('PNR')  # di isi aja order number
     pnr2 = fields.Char('PNR2')

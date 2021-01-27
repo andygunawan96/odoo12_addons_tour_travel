@@ -6,7 +6,7 @@ _logger = logging.getLogger(__name__)
 
 class SkippedKeys(models.Model):
     _name = 'tt.skipped.keys'
-    _description = 'Rodex Model'
+    _description = 'Skipped Keys'
 
     model_name = fields.Char('Model Name')
     field_name = fields.Char('Field Name')
@@ -46,7 +46,7 @@ class SkippedKeys(models.Model):
 class TtHistory(models.Model):
     _name = 'tt.history'
     _inherit = ['mail.thread']
-    _description = 'Rodex Model'
+    _description = 'History Model'
 
     def update_ids_only(self, target_objs, key_list):
         for obj in target_objs:
