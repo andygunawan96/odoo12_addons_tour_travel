@@ -3,7 +3,7 @@
     'name': "Google State and City Code",
 
     'summary': """
-        Data City from google code, need to update external code for better understandable meaning
+        Data City from google code Part 3
     """,
 
     'description': """
