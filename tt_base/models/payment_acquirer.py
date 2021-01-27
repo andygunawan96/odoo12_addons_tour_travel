@@ -252,7 +252,10 @@ class PaymentAcquirer(models.Model):
                         if book_obj.unique_amount_id.active:
                             unique = book_obj.unique_amount_id.get_unique_amount()
                     if not unique:
-                        unique_obj = self.generate_unique_amount(amount, downsell=True)  #penjualan
+                        if book_obj.user_id == self.env.ref('tt_base.agent_b2c_user'):
+                            unique_obj = self.generate_unique_amount(amount, downsell=True)  #penjualan
+                        else:
+                            unique_obj = self.generate_unique_amount(amount, downsell=False)  # penjualan
                         book_obj.unique_amount_id = unique_obj.id
                         unique = unique_obj.get_unique_amount()
 
