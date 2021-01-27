@@ -3,7 +3,7 @@ from odoo import api, fields, models, _
 
 class PassportVendor(models.Model):
     _name = 'tt.reservation.passport.vendor'
-    _description = 'Rodex Model'
+    _description = 'Reservation Passport Vendor'
 
     name = fields.Char('Name')
     description = fields.Text('Description')
@@ -11,7 +11,7 @@ class PassportVendor(models.Model):
 
 class PassportVendorLines(models.Model):
     _name = 'tt.reservation.passport.vendor.lines'
-    _description = 'Rodex Model'
+    _description = 'Reservation Passport Vendor Lines'
 
     provider_id = fields.Many2one('tt.provider.passport', 'Provider')
     passport_id = fields.Many2one('tt.reservation.passport', 'passport ID')

@@ -8,7 +8,7 @@ from datetime import datetime
 class TtLegAirline(models.Model):
     _name = 'tt.leg.airline'
     _order = 'sequence'
-    _description = 'Rodex Model'
+    _description = 'Leg Airline'
 
     leg_code = fields.Char('Leg Code')
 

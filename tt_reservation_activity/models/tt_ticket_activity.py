@@ -3,7 +3,7 @@ from ...tools import variables
 
 class TtTicketActivity(models.Model):
     _name = 'tt.ticket.activity'
-    _description = 'Rodex Model'
+    _description = 'Ticket Activity'
 
     provider_id = fields.Many2one('tt.provider.activity', 'Provider')
     passenger_id = fields.Many2one('tt.reservation.passenger.activity', 'Passenger')

@@ -3,7 +3,7 @@ from odoo import api, fields, models, _
 
 class VisaVendor(models.Model):
     _name = 'tt.reservation.visa.vendor'
-    _description = 'Rodex Model'
+    _description = 'Reservation Visa Vendor'
 
     name = fields.Char('Name')
     description = fields.Text('Description')
@@ -11,7 +11,7 @@ class VisaVendor(models.Model):
 
 class VisaVendorLines(models.Model):
     _name = 'tt.reservation.visa.vendor.lines'
-    _description = 'Rodex Model'
+    _description = 'Reservation Visa Vendor Lines'
 
     provider_id = fields.Many2one('tt.provider.visa', 'Provider')
     visa_id = fields.Many2one('tt.reservation.visa', 'Visa ID')

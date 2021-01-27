@@ -29,7 +29,7 @@ STATE = [
 
 class AgentRegistration(models.Model):
     _name = 'tt.agent.registration'
-    _description = 'Rodex Model'
+    _description = 'Agent Registration'
     _rec_name = 'registration_num'
     _order = 'registration_num desc'
 

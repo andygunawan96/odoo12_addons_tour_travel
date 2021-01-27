@@ -4,6 +4,7 @@ from datetime import date, datetime, timedelta
 
 class HotelDestination(models.Model):
     _name = "tt.hotel.destination"
+    _description = 'Hotel Destination'
     _desc = "Model ini digunakan untuk menyimpan seluruh data destination / city / satuan terkecil non hotel dari vendor yg dpat digunakan untuk pencarian"
 
     name = fields.Char('Name', required=True)
@@ -24,18 +25,15 @@ class HotelDestination(models.Model):
     # Func Find City
     def find_city_obj(self):
         self.city_id = self.env['res.city'].find_city_by_name(self.city_str, 1)
-        if self.city_id.state_id and self.state_id:
+        if self.city_id.country_id == self.country_id:
             if self.city_id.state_id == self.state_id:
                 return True
             else:
                 # TODO langkah jika hasil tidak sama diapakan
                 return True
         else:
-            if self.city_id.country_id == self.country_id:
-                return True
-            else:
-                # TODO langkah jika hasil tidak sama diapakan
-                return True
+            # TODO langkah jika hasil tidak sama diapakan
+            return True
 
     # Func Find State
     def find_state_obj(self):
@@ -115,3 +113,9 @@ class HotelDestination(models.Model):
         if max_obj:
             max_obj.provider_ids.update([(6, 0, code_list)])
         return True
+
+    def prepare_destination_for_cache(self, curr_obj):
+        return {
+            'id': curr_obj.id,
+            'name': curr_obj.name,
+        }

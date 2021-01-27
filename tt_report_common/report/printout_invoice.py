@@ -7,7 +7,7 @@ import pytz
 
 class PrintoutTicketForm(models.AbstractModel):
     _name = 'report.tt_report_common.printout_ticket'
-    _description = 'Rodex Model'
+    _description = 'Report Common Printout Ticket'
 
     # Dipindah ke tt_refund karena tt_refund, refund by api sma report perlu fungsi ini.
     def get_refund_fee_amount(self, agent_id):
@@ -157,7 +157,7 @@ class PrintoutTicketForm(models.AbstractModel):
 
 class PrintoutTicketTrainForm(models.AbstractModel):
     _name = 'report.tt_report_common.printout_train_ticket'
-    _description = 'Rodex Model'
+    _description = 'Report Common Printout Train Ticket'
 
     @api.model
     def _get_report_values(self, docids, data=None):
@@ -212,7 +212,7 @@ class PrintoutTicketTrainForm(models.AbstractModel):
 
 class PrintoutTicketEventForm(models.AbstractModel):
     _name = 'report.tt_report_common.printout_event_ticket'
-    _description = 'Rodex Model'
+    _description = 'Report Common Printout Event Ticket'
 
     @api.model
     def _get_report_values(self, docids, data=None):
@@ -298,7 +298,7 @@ class PrintoutTicketEventForm(models.AbstractModel):
 
 class PrintoutVoucherHotelForm(models.AbstractModel):
     _name = 'report.tt_report_common.printout_hotel_voucher'
-    _description = 'Rodex Model'
+    _description = 'Report Common Printout Hotel Voucher'
 
     # Dipindah ke tt_refund karena tt_refund, refund by api sma report perlu fungsi ini.
     def get_refund_fee_amount(self, agent_id):
@@ -391,7 +391,7 @@ class PrintoutVoucherHotelForm(models.AbstractModel):
 
 class PrintoutPPOBBillsForm(models.AbstractModel):
     _name = 'report.tt_report_common.printout_ppob_bills'
-    _description = 'Rodex Model'
+    _description = 'Report Common Printout PPOB Bills'
 
     @staticmethod
     def format_token_number(token):
@@ -637,7 +637,7 @@ class PrintoutPPOBBillsForm(models.AbstractModel):
 
 class PrintoutInvoiceVendor(models.AbstractModel):
     _name = 'report.tt_report_common.printout_invoice_vendor'
-    _description = 'Rodex Model'
+    _description = 'Report Common Printout Invoice Vendor'
 
     def get_invoice_data(self, rec, context, data):
         invoice_data = {}
@@ -730,7 +730,7 @@ class PrintoutInvoiceVendor(models.AbstractModel):
 
 class PrintoutInvoiceHO(models.AbstractModel):
     _name = 'report.tt_report_common.printout_invoice_ho'
-    _description = 'Rodex Model'
+    _description = 'Report Common Printout Invoice HO'
 
     def get_invoice_data(self, rec, context, data):
         a = {}
@@ -1091,7 +1091,7 @@ class PrintoutInvoiceHO(models.AbstractModel):
 
 class PrintoutInvoice(models.AbstractModel):
     _name = 'report.tt_report_common.printout_invoice'
-    _description = 'Rodex Model'
+    _description = 'Report Common Printout Invoice'
 
     """Abstract Model for report template.
         for `_name` model, please use `report.` as prefix then add `module_name.report_name`.
@@ -1459,7 +1459,7 @@ class PrintoutInvoice(models.AbstractModel):
 
 class PrintoutExpenses(models.AbstractModel):
     _name = 'report.tt_report_common.printout_expenses_invoice'
-    _description = 'Rodex Model'
+    _description = 'Report Common Printout Expenses Invoice'
 
     def get_invoice_data(self, rec, context, data):
         a = {}
@@ -1530,7 +1530,7 @@ class PrintoutExpenses(models.AbstractModel):
 
 class PrintoutIteneraryForm(models.AbstractModel):
     _name = 'report.tt_report_common.printout_itinerary'
-    _description = 'Rodex Model'
+    _description = 'Report Common Printout Itinerary'
 
     @api.model
     def _get_report_values(self, docids, data=None):
@@ -1579,7 +1579,7 @@ class PrintoutIteneraryForm(models.AbstractModel):
                 if header_width > 105:
                     header_width = 105
 
-        printout_itinerary_footer = self.env['tt.report.common.setting'].sudo().search([('code', '=', 'train_ticket')], limit=1)
+        printout_itinerary_footer = self.env['tt.report.common.setting'].sudo().search([('code', '=', 'printout_itinerary')], limit=1)
         return {
             'doc_ids': data['context']['active_ids'],
             'doc_model': data['context']['active_model'],
@@ -1597,7 +1597,7 @@ class PrintoutIteneraryForm(models.AbstractModel):
 
 class PrintoutActivityIteneraryForm(models.AbstractModel):
     _name = 'report.tt_report_common.printout_activity_itinerary'
-    _description = 'Rodex Model'
+    _description = 'Report Common Printout Activity Itinerary'
 
     @api.model
     def _get_report_values(self, docids, data=None):
@@ -1660,7 +1660,7 @@ class PrintoutActivityIteneraryForm(models.AbstractModel):
 
 class PrintoutEventIteneraryForm(models.AbstractModel):
     _name = 'report.tt_report_common.printout_event_itinerary'
-    _description = 'Rodex Model'
+    _description = 'Report Common Event Itinerary'
 
     @api.model
     def _get_report_values(self, docids, data=None):
@@ -1724,7 +1724,7 @@ class PrintoutEventIteneraryForm(models.AbstractModel):
 
 class PrintoutTourIteneraryForm(models.AbstractModel):
     _name = 'report.tt_report_common.printout_tour_itinerary'
-    _description = 'Rodex Model'
+    _description = 'Report Common Printout Tour Itinerary'
 
     @api.model
     def _get_report_values(self, docids, data=None):
@@ -1787,7 +1787,7 @@ class PrintoutTourIteneraryForm(models.AbstractModel):
 
 class PrintoutPassportItineraryForm(models.AbstractModel):
     _name = 'report.tt_report_common.printout_passport_itinerary'
-    _description = 'Rodex Model'
+    _description = 'Report Common Printout Passport Itinerary'
 
     @api.model
     def _get_report_values(self, docids, data=None):
@@ -1850,7 +1850,7 @@ class PrintoutPassportItineraryForm(models.AbstractModel):
 
 class PrintoutPPOBItineraryForm(models.AbstractModel):
     _name = 'report.tt_report_common.printout_ppob_itinerary'
-    _description = 'Rodex Model'
+    _description = 'Report Common Printout PPOB Itinerary'
 
     @api.model
     def _get_report_values(self, docids, data=None):
@@ -1917,7 +1917,7 @@ class PrintoutPPOBItineraryForm(models.AbstractModel):
 
 class PrintoutVisaItineraryForm(models.AbstractModel):
     _name = 'report.tt_report_common.printout_visa_itinerary'
-    _description = 'Rodex Model'
+    _description = 'Report Common Printout Visa Itinerary'
 
     @api.model
     def _get_report_values(self, docids, data=None):
@@ -1976,7 +1976,7 @@ class PrintoutVisaItineraryForm(models.AbstractModel):
 
 class PrintoutJSONIteneraryForm(models.AbstractModel):
     _name = 'report.tt_report_common.printout_json_itinerary'
-    _description = 'Rodex Model'
+    _description = 'Report Common Printout JSON Itinerary'
 
     @api.model
     def _get_report_values(self, docids, data=None):
@@ -2075,7 +2075,7 @@ class PrintoutJSONIteneraryForm(models.AbstractModel):
 
 class PrintoutBilling(models.AbstractModel):
     _name = 'report.tt_report_common.printout_billing'
-    _description = 'Rodex Model'
+    _description = 'Report Common Printout Billing'
 
     def compute_terbilang_from_objs(self, recs, currency_str='rupiah'):
         a = {}
@@ -2110,7 +2110,7 @@ class PrintoutBilling(models.AbstractModel):
 
 class PrintoutTopUp(models.AbstractModel):
     _name = 'report.tt_report_common.printout_topup'
-    _description = 'Rodex Model'
+    _description = 'Report Common Printout Topup'
 
     def compute_terbilang_from_objs(self, recs, currency_str='Rupiah'):
         a = {}
@@ -2156,7 +2156,7 @@ class PrintoutTopUp(models.AbstractModel):
 
 class PrintoutRefund(models.AbstractModel):
     _name = 'report.tt_report_common.printout_refund'
-    _description = 'Rodex Model'
+    _description = 'Report Common Printout Refund'
 
     def compute_terbilang_from_objs(self, recs, is_ho=False, currency_str='rupiah'):
         a = {}
@@ -2204,7 +2204,7 @@ class PrintoutRefund(models.AbstractModel):
 
 class PrintoutReschedule(models.AbstractModel):
     _name = 'report.tt_report_common.printout_reschedule'
-    _description = 'Rodex Model'
+    _description = 'Report Common Printout Reschedule'
 
     @api.model
     def _get_report_values(self, docids, data=None):
@@ -2230,7 +2230,7 @@ class PrintoutReschedule(models.AbstractModel):
 
 class PrintoutVoucher(models.AbstractModel):
     _name = 'report.tt_report_common.printout_voucher'
-    _description = 'Rodex Model'
+    _description = 'Report Common Printout Voucher'
 
     @api.model
     def _get_report_values(self, docids, data=None):
@@ -2260,7 +2260,7 @@ class PrintoutVoucher(models.AbstractModel):
 
 class PrintoutLetterOfGuarantee(models.AbstractModel):
     _name = 'report.tt_report_common.printout_letter_guarantee'
-    _description = 'Rodex Model'
+    _description = 'Report Common Printout Letter Guarantee'
 
     @api.model
     def _get_report_values(self, docids, data=None):

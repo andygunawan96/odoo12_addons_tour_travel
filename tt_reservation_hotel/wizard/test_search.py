@@ -8,6 +8,7 @@ import json
 
 class TestSearch(models.Model):
     _name = 'test.search'
+    _description = 'Test Search Model'
 
     name = fields.Char('City / Hotel Name', default=' ')
     hotel_id = fields.Many2one('tt.hotel', 'Hotel', related='rate_id.room_info_id.hotel_id')
@@ -33,21 +34,16 @@ class TestSearch(models.Model):
     vendor_payment = fields.Float('Total', compute='onchange_calc_sub')
 
     ##### Cache Odoo12 START #####
-    def compute_country_for_city(self, rec_dict):
-        key_item = rec_dict.keys()
-        for rec in key_item:
-            rec_dict['country_' + rec] = rec_dict.pop(rec)
-        return rec_dict
-
-    def render_cache_city(self, country_name=[], city_name='', provider='', limit=99999):
+    def render_cache_city_for_gw(self, country_name=[], city_name='', providers='', limit=99999):
         domain = []
         city_cache = []
-        if provider:
-            provider_obj = self.env['tt.provider'].search(['|', ('alias', '=', provider), ('code', '=', provider)], limit=1)
-            provider_id = provider_obj.id
-            provider_destination_ids = [rec.res_id for rec in self.env['tt.provider.code'].sudo().search([('res_model', '=', 'tt.hotel.destination'), ('provider_id', '=', provider_id)])]
-            city_ids = [rec.city_id.id for rec in self.env['tt.hotel.destination'].browse(provider_destination_ids) if rec.city_id]
-            domain.append(('id', 'in', city_ids))
+        if providers:
+            provider_destination_ids = []
+            for provider in providers.split(','):
+                provider_obj = self.env['tt.provider'].search(['|', ('alias', '=', provider), ('code', '=', provider)], limit=1)
+                provider_id = provider_obj.id
+                provider_destination_ids += [rec.res_id for rec in self.env['tt.provider.code'].sudo().search([('res_model', '=', 'tt.hotel.destination'), ('provider_id', '=', provider_id)])]
+            domain.append(('id', 'in', provider_destination_ids))
         if country_name:
             country_ids = []
             for rec in country_name:
@@ -57,15 +53,15 @@ class TestSearch(models.Model):
         if city_name:
             domain.append(('name', '=ilike', city_name))
 
-        for rec in self.env['res.city'].sudo().search(domain, limit=limit):
-            city_fmt = self.env['res.city'].prepare_city_for_cache(rec)
-            # Updating State for this city
-            # city_fmt.update(self.prepare_state_for_cache(rec.state_id))
-            # Updating Country for this city
-            city_fmt.update( self.compute_country_for_city(rec.country_id.get_country_data()) )
-            # Updating Provider code for this city
-            # city_fmt.update(self.prepare_provider_code_city_for_cache(rec.country_id))
-            city_cache.append(city_fmt)
+        for rec in self.env['tt.hotel.destination'].sudo().search(domain, limit=limit):
+            f2 = open('/var/log/tour_travel/cache_hotel/catalog.txt', 'r')
+            f2 = f2.read()
+            catalog = json.loads(f2)
+            catalog.sort(key=lambda k: k['index'])
+            for city in catalog:
+                if city['destination_id'] == rec.id:
+                    city_cache.append(city)
+                    break
         return city_cache
 
     def create_cache_city(self):
@@ -180,38 +176,15 @@ class TestSearch(models.Model):
         elif provider == 'itank':
             return 'A12'
         elif provider == 'rodextrip_hotel':
-            return 'A13'
+            return 'A99'
         else:
             return provider
 
     # TODO Lepas masking
     def unmasking_provider(self, provider):
-        if provider == 'A1':
-            return 'webbeds'
-        elif provider == 'A2':
-            return 'dida'
-        elif provider == 'A3':
-            return 'knb'
-        elif provider == 'A4':
-            return 'miki'
-        elif provider == 'A5':
-            return 'quantum'
-        elif provider == 'A6':
-            return 'mg'
-        elif provider == 'A7':
-            return 'hotelbeds'
-        elif provider == 'A8':
-            return 'hotelspro'
-        elif provider == 'A9':
-            return 'tbo'
-        elif provider == 'A10':
-            return 'welcomebeds'
-        elif provider == 'A11':
-            return 'oyo'
-        elif provider == 'A12':
-            return 'itank'
-        elif provider == 'A13':
-            return 'rodextrip_hotel'
+        x = self.env['tt.provider'].search([('alias','=',provider)], limit=1)
+        if x:
+            return x.code
         else:
             return provider
 
@@ -1264,6 +1237,7 @@ class TestSearch(models.Model):
 
 class TestSearchLine(models.Model):
     _name = 'test.search.line'
+    _description = 'Test Search Line'
 
     name = fields.Char('name')
     reservation_id = fields.Many2one('test.search', 'Reservation No')
@@ -1297,6 +1271,7 @@ class TestSearchLine2(models.Model):
 
 class TestSearchWizard(models.TransientModel):
     _name = 'test.search.wizard'
+    _description = 'Test Search Wizard'
 
     name = fields.Char('City / Hotel Name')
     rate_id = fields.Many2one('tt.room.rate', 'Room')

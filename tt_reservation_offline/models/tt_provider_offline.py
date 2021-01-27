@@ -17,7 +17,7 @@ STATE_OFFLINE = [
 
 class ProviderOffline(models.Model):
     _name = 'tt.provider.offline'
-    _description = 'Rodex Model'
+    _description = 'Provider Offline'
 
     _rec_name = 'pnr'
     # _order = 'sequence'

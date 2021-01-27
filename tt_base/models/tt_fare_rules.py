@@ -9,7 +9,7 @@ _logger = logging.getLogger(__name__)
 
 class FareRules(models.Model):
     _name = 'tt.fare.rules'
-    _description = 'Rodex Model'
+    _description = 'Fare Rules'
 
     name = fields.Char('Name', required=True)
     carrier_ids = fields.Many2many('tt.transport.carrier', 'tt_product_class_rel', 'product_class_id', 'carrier_id', string='Carriers')

@@ -9,7 +9,7 @@ class TtProviderTrain(models.Model):
     _name = 'tt.provider.train'
     _rec_name = 'pnr'
     _order = 'departure_date'
-    _description = 'Rodex Model'
+    _description = 'Provider Train'
 
     pnr = fields.Char('PNR')
     pnr2 = fields.Char('PNR2')

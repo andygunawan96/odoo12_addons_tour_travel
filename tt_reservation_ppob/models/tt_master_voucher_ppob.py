@@ -12,7 +12,7 @@ class TtMasterVoucherPPOB(models.Model):
     _name = 'tt.master.voucher.ppob'
     _rec_name = 'display_name'
     _order = 'sequence'
-    _description = 'Rodex Model'
+    _description = 'Master Voucher PPOB'
 
     name = fields.Char('Operator Name', default='Unnamed')
     code = fields.Char('Code', default='')

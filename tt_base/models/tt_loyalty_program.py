@@ -13,7 +13,7 @@ _logger = logging.getLogger(__name__)
 class TtLoyaltyProgram(models.Model):
     _name = 'tt.loyalty.program'
     _inherit = 'tt.history'
-    _description = 'Rodex Model'
+    _description = 'Loyalty Program'
 
     name = fields.Char('Name', required=True)
     code = fields.Char('Code', default='')

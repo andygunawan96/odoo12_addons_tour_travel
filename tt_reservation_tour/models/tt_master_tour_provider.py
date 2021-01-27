@@ -6,7 +6,7 @@ from datetime import datetime
 class MasterTourProvider(models.Model):
     _name = 'tt.master.tour.provider'
     _rec_name = 'provider_id'
-    _description = 'Rodex Model'
+    _description = 'Master Tour Provider'
 
     provider_id = fields.Many2one('tt.provider', 'Provider', required=True)
     provider_type_id = fields.Many2one('tt.provider.type', 'Provider Type', related='provider_id.provider_type_id',

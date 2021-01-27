@@ -6,7 +6,7 @@ class TtLetterGuarantee(models.Model):
     _name = 'tt.letter.guarantee'
     _inherit = 'tt.history'
     _order = 'id DESC'
-    _description = 'Rodex Model'
+    _description = 'Letter Guarantee'
 
     name = fields.Char('Name', required=True, readonly=True)
     res_model = fields.Char('Related Reservation Name', index=True)
@@ -104,7 +104,7 @@ class TtLetterGuarantee(models.Model):
 class TtLetterGuaranteeLines(models.Model):
     _name = 'tt.letter.guarantee.lines'
     _order = 'id DESC'
-    _description = 'Rodex Model'
+    _description = 'Letter Guarantee Lines'
 
     ref_number = fields.Char('Reference Number', required=True, readonly=True, states={'draft': [('readonly', False)]})
     description = fields.Html('Description', required=True, readonly=True, states={'draft': [('readonly', False)]})

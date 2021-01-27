@@ -22,7 +22,7 @@ EXTRA_TYPE = [
 
 class TourPackageQuotation(models.Model):
     _name = 'tt.master.tour.quotation'
-    _description = 'Rodex Model'
+    _description = 'Master Tour Quotation'
 
     state = fields.Selection(STATE, 'State', default='draft')
 
@@ -361,7 +361,7 @@ class TourPackageQuotation(models.Model):
 
 class TourQuotationExtra(models.Model):
     _name = 'tt.master.tour.quotation.extra'
-    _description = 'Rodex Model'
+    _description = 'Master Tour Quotation Extra'
 
     tour_quotation_id = fields.Many2one('tt.master.tour.quotation', 'Tour Quotation')
 
@@ -385,7 +385,7 @@ class TourQuotationExtra(models.Model):
 
 class TourQuotationPorter(models.Model):
     _name = 'tt.master.tour.quotation.porter'
-    _description = 'Rodex Model'
+    _description = 'Master Tour Quotation Porter'
 
     tour_quotation_id = fields.Many2one('tt.master.tour.quotation', 'Tour Quotation')
 

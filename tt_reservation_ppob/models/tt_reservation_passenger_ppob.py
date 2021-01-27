@@ -6,7 +6,7 @@ import logging, traceback
 class TtReservationCustomer(models.Model):
     _name = 'tt.reservation.passenger.ppob'
     _inherit = 'tt.reservation.passenger'
-    _description = 'Rodex Model'
+    _description = 'Reservation Passenger PPOB'
 
     cost_service_charge_ids = fields.Many2many('tt.service.charge', 'tt_reservation_ppob_cost_charge_rel',
                                                'passenger_id', 'service_charge_id', 'Cost Service Charges')

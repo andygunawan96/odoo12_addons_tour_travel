@@ -43,7 +43,7 @@ class TtPassport(models.Model):
     _name = 'tt.reservation.passport'
     _inherit = 'tt.reservation'
     _order = 'name desc'
-    _description = 'Rodex Model'
+    _description = 'Reservation Passport'
 
     provider_type_id = fields.Many2one('tt.provider.type', string='Provider Type',
                                        default=lambda self: self.env.ref('tt_reservation_passport.tt_provider_type_passport'))

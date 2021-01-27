@@ -6,7 +6,7 @@ import json
 
 class TtPromoCodeAirline(models.Model):
     _name = 'tt.promo.code.airline'
-    _description = 'Rodex Model'
+    _description = 'Promo Code Airline'
 
     promo_code = fields.Char('Promo Code')
     carrier_code = fields.Char('Carrier Code')
@@ -23,14 +23,13 @@ class TtPromoCodeAirline(models.Model):
 
 class TtReservationAirlineInherit(models.Model):
     _inherit = 'tt.reservation.airline'
-    _description = 'Rodex Model'
+    _description = 'Reservation Airline'
 
     promo_code_ids = fields.One2many('tt.promo.code.airline', 'booking_airline_id', 'Promo Codes')
 
 
 class TtProviderAirlineInherit(models.Model):
     _inherit = 'tt.provider.airline'
-    _description = 'Rodex Model'
 
     promo_code_ids = fields.One2many('tt.promo.code.airline', 'provider_airline_booking_id', 'Promo Codes')
 

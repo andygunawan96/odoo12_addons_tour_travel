@@ -176,7 +176,7 @@ class TtAgentTypeBenefit(models.Model):
 
 class CommissionRule(models.Model):
     _name = 'tt.commission.rule'
-    _description = 'Rodex Model'
+    _description = 'Commission Rule'
 
     agent_type_id = fields.Many2one('tt.agent.type', 'Agent Type')
     agent_type2_id = fields.Many2one('tt.agent.type', 'Agent Type')

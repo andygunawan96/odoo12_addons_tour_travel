@@ -26,7 +26,7 @@ PROVIDER_TYPE_SELECTION = {
 class TtReservation(models.Model):
     _name = 'tt.reservation'
     _inherit = 'tt.history'
-    _description = 'Rodex Model'
+    _description = 'Reservation Model'
 
     name = fields.Char('Order Number', index=True, default='New', readonly=True)
     pnr = fields.Char('PNR', readonly=True, states={'draft': [('readonly', False)]})

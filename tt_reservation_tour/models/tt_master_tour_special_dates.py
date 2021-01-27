@@ -13,7 +13,7 @@ _logger = logging.getLogger(__name__)
 
 class MasterTourSpecialDates(models.Model):
     _name = "tt.master.tour.special.dates"
-    _description = 'Rodex Model'
+    _description = 'Master Tour Special Dates'
 
     name = fields.Char('Name', required=True, default='Special Date Charge')
     date = fields.Date('Date', required=True)

@@ -7,7 +7,7 @@ _logger = logging.getLogger(__name__)
 
 class ReservationActivityDetails(models.Model):
     _name = 'tt.reservation.activity.details'
-    _description = 'Rodex Model'
+    _description = 'Reservation Activity Details'
 
     activity_id = fields.Many2one('tt.master.activity', 'Activity')
     activity_product_id = fields.Many2one('tt.master.activity.lines', 'Activity Product')

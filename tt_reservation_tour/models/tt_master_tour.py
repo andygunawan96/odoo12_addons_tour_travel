@@ -23,7 +23,7 @@ class Survey(models.Model):
 
 class TourSyncProducts(models.TransientModel):
     _name = "tour.sync.product.wizard"
-    _description = 'Rodex Model'
+    _description = 'Tour Sync Product Wizard'
 
     def get_domain(self):
         domain_id = self.env.ref('tt_reservation_tour.tt_provider_type_tour').id
@@ -63,7 +63,7 @@ class TourSyncProducts(models.TransientModel):
 
 class TourItineraryItem(models.Model):
     _name = 'tt.reservation.tour.itinerary.item'
-    _description = 'Rodex Model'
+    _description = 'Reservation Tour Itinerary Item'
     _order = 'sequence asc'
 
     name = fields.Char('Title')
@@ -76,7 +76,7 @@ class TourItineraryItem(models.Model):
 
 class TourItinerary(models.Model):
     _name = 'tt.reservation.tour.itinerary'
-    _description = 'Rodex Model'
+    _description = 'Reservation Tour Itinerary'
     _order = 'day asc'
 
     name = fields.Char('Title')
@@ -88,7 +88,7 @@ class TourItinerary(models.Model):
 class MasterTour(models.Model):
     _inherit = ['tt.history']
     _name = 'tt.master.tour'
-    _description = 'Rodex Model'
+    _description = 'Master Tour'
     _order = 'sequence'
 
     def get_domain(self):
@@ -1853,7 +1853,7 @@ class MasterTour(models.Model):
 
 class TourSyncProductsChildren(models.TransientModel):
     _name = "tour.sync.product.children.wizard"
-    _description = 'Rodex Model'
+    _description = 'Tour Sync Product Children Wizard'
 
     def sync_data_to_children(self):
         try:

@@ -11,7 +11,7 @@ class TtMasterNominalPPOB(models.Model):
     _name = 'tt.master.nominal.ppob'
     _rec_name = 'display_name'
     _order = 'nominal'
-    _description = 'Rodex Model'
+    _description = 'Master Nominal PPOB'
 
     nominal = fields.Monetary('Nominal')
     currency_id = fields.Many2one('res.currency', default=lambda self: self.env.user.company_id.currency_id.id, string='Currency')

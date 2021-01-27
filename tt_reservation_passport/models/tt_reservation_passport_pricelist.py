@@ -31,7 +31,7 @@ PROCESS_TYPE = [
 
 class PassportSyncProducts(models.TransientModel):
     _name = "passport.sync.product.wizard"
-    _description = 'Rodex Model'
+    _description = 'Passport Sync Product Wizard'
 
     def get_domain(self):
         domain_id = self.env.ref('tt_reservation_passport.tt_provider_type_passport').id
@@ -210,7 +210,7 @@ class PassportSyncProducts(models.TransientModel):
 class PassportPricelist(models.Model):
     _inherit = ['tt.history']
     _name = 'tt.reservation.passport.pricelist'
-    _description = 'Rodex Model'
+    _description = 'Reservation Passport Pricelist'
 
     def get_domain(self):
         domain_id = self.env.ref('tt_reservation_passport.tt_provider_type_passport').id

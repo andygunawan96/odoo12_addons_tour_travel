@@ -11,7 +11,7 @@ class TtProviderAirline(models.Model):
     _inherit = 'tt.history'
     _rec_name = 'pnr'
     _order = 'departure_date'
-    _description = 'Rodex Model'
+    _description = 'Provider Airline'
 
     pnr = fields.Char('PNR', readonly=True, states={'draft': [('readonly', False)]})
     pnr2 = fields.Char('PNR2', readonly=True, states={'draft': [('readonly', False)]})

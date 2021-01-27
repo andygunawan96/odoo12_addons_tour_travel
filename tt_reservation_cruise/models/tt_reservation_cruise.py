@@ -5,7 +5,7 @@ class ReservationCruise(models.Model):
     _name = 'tt.reservation.cruise'
     _inherit = 'tt.reservation'
     _order = 'name desc'
-    _description = 'Rodex Model'
+    _description = 'Reservation Cruise'
 
     provider_type_id = fields.Many2one('tt.provider.type', required=True, readonly=True,
                                        states={'draft': [('readonly', False)]}, string='Transaction Type',

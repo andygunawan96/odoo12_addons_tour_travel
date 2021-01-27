@@ -23,7 +23,7 @@ class TtRequestTour(models.Model):
     _name = 'tt.request.tour'
     _inherit = 'tt.history'
     _order = 'id desc'
-    _description = 'Rodex Model'
+    _description = 'Request Tour'
 
     name = fields.Char('Request Order Number', default='New', readonly=True)
     agent_id = fields.Many2one('tt.agent', 'Agent', required=True, readonly=True, default=lambda self: self.env.user.agent_id.id)

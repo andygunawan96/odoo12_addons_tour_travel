@@ -3,7 +3,7 @@ from odoo import api, fields, models, _
 
 class TtSeatTrain(models.Model):
     _name = 'tt.seat.train'
-    _description = 'Rodex Model'
+    _description = 'Seat Train'
 
     seat = fields.Char('Seat')
     seat_code = fields.Char('Seat Code')##auto findketika req parser assign seat KAI..

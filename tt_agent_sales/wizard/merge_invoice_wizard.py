@@ -4,7 +4,7 @@ from odoo.exceptions import UserError
 
 class MergeInvoice(models.Model):
     _name = "tt.merge.invoice.wizard"
-    _description = 'Rodex Model'
+    _description = 'Merge Invoice Wizard'
 
     current_invoice_line = fields.Many2one('tt.agent.invoice.line', 'Current Invoice Line')
     current_invoice_name = fields.Char('Current Invoice Name', related="current_invoice_line.name")

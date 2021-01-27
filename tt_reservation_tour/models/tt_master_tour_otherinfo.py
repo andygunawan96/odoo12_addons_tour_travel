@@ -3,7 +3,7 @@ from odoo import api, fields, models, _
 
 class TtMasterTourOtherInfoMsg(models.Model):
     _name = 'tt.master.tour.otherinfo.messages'
-    _description = 'Rodex Model'
+    _description = 'Master Tour Other Info Messages'
     _order = 'sequence asc'
 
     name = fields.Text('Text', required=True, default='New')
@@ -14,7 +14,7 @@ class TtMasterTourOtherInfoMsg(models.Model):
 
 class TtMasterTourOtherInfo(models.Model):
     _name = 'tt.master.tour.otherinfo'
-    _description = 'Rodex Model'
+    _description = 'Master Tour Other Info'
     _order = 'sequence asc'
 
     name = fields.Text('Name', related='info_message_ids.name')

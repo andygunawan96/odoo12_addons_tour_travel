@@ -10,7 +10,7 @@ SESSION_NT = session.Session()
 
 class MasterActivityLines(models.Model):
     _name = 'tt.master.activity.lines'
-    _description = 'Rodex Model'
+    _description = 'Master Activity Lines'
 
     activity_id = fields.Many2one('tt.master.activity', 'Activity Names', ondelete="cascade")
     uuid = fields.Char('Uuid')
@@ -52,7 +52,7 @@ class MasterActivityLines(models.Model):
 class MasterActivitySKU(models.Model):
     _name = 'tt.master.activity.sku'
     _rec_name = 'title'
-    _description = 'Rodex Model'
+    _description = 'Master Activity SKU'
 
     sku_id = fields.Char('SKU ID')
     title = fields.Char('SKU Title')

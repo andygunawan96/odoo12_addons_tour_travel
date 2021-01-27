@@ -56,7 +56,7 @@ class IssuedOffline(models.Model):
     _inherit = 'tt.reservation'
     _name = 'tt.reservation.offline'
     _order = 'name desc'
-    _description = 'Rodex Model'
+    _description = 'Reservation Offline'
 
     state = fields.Selection(variables.BOOKING_STATE, 'State', default='draft')
     state_offline = fields.Selection(STATE_OFFLINE, 'State Offline', default='draft')

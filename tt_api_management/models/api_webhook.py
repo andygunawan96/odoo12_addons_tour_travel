@@ -10,7 +10,7 @@ _logger = logging.getLogger(__name__)
 
 class ApiWebhookData(models.Model):
     _name = 'tt.api.webhook.data'
-    _description = 'Rodex Model API Webhook'
+    _description = 'API Webhook Data'
 
     name = fields.Char('Name')
     provider_type_id = fields.Many2one('tt.provider.type','Provider Type')
@@ -65,7 +65,7 @@ class ApiWebhookData(models.Model):
 
 class ApiWebhook(models.Model):
     _name = 'tt.api.webhook'
-    _description = 'Rodex Model API Webhook data'
+    _description = 'API Webhook'
 
     webhook_data_id = fields.Many2one('tt.api.webhook.data')
     credential_data_id = fields.Many2one('tt.api.credential')

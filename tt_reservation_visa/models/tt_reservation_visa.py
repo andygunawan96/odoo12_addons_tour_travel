@@ -44,7 +44,7 @@ class TtVisa(models.Model):
     _name = 'tt.reservation.visa'
     _inherit = 'tt.reservation'
     _order = 'name desc'
-    _description = 'Rodex Model'
+    _description = 'Reservation Visa'
 
     provider_type_id = fields.Many2one('tt.provider.type', string='Provider Type',
                                        default=lambda self: self.env.ref('tt_reservation_visa.tt_provider_type_visa'))

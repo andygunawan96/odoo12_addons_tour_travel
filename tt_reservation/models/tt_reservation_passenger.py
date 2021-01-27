@@ -5,7 +5,7 @@ from datetime import datetime
 
 class TtReservationCustomer(models.Model):
     _name = 'tt.reservation.passenger'
-    _description = 'Rodex Model'
+    _description = 'Reservation Passenger'
 
     name = fields.Char(string='Name')
     first_name = fields.Char('First Name')

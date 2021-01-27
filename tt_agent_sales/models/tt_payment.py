@@ -3,7 +3,7 @@ from odoo import exceptions
 
 class TtPaymentInvoiceRel(models.Model):
     _name = 'tt.payment.invoice.rel'
-    _description = 'Rodex Model'
+    _description = 'Payment Invoice Rel'
 
     invoice_id = fields.Many2one('tt.agent.invoice', 'Invoice', readonly="True")
     inv_customer_parent_id = fields.Many2one('tt.customer.parent','Invoice Customer Parent',related='invoice_id.customer_parent_id',store=True)

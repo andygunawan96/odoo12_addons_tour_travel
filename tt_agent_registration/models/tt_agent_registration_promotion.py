@@ -8,7 +8,7 @@ AMOUNT_TYPE = [
 
 class AgentRegistrationPromotion(models.Model):
     _name = 'tt.agent.registration.promotion'
-    _description = 'Rodex Model'
+    _description = 'Agent Registration Promotion'
     _order = 'sequence desc'
 
     name = fields.Char('Name', required=True)
@@ -73,7 +73,7 @@ class AgentRegistrationPromotion(models.Model):
 
 class AgentRegistrationPromotionAgentType(models.Model):
     _name = 'tt.agent.registration.promotion.agent.type'
-    _description = 'Rodex Model'
+    _description = 'Agent Registration Promotion Agent Type'
 
     promotion_id = fields.Many2one('tt.agent.registration.promotion', 'Promotion', readonly=True)
     agent_type_id = fields.Many2one('tt.agent.type', 'Agent Type')
@@ -99,7 +99,7 @@ class AgentRegistrationPromotionAgentType(models.Model):
 
 class AgentRegistrationPromotionLine(models.Model):
     _name = 'tt.agent.registration.promotion.line'
-    _description = 'Rodex Model'
+    _description = 'Agent Registration Promotion Line'
 
     res_id = fields.Many2one('tt.agent.registration.promotion.agent.type', 'Res ID')
     currency_id = fields.Many2one('res.currency', string='Currency', default=lambda self: self.env.user.company_id)

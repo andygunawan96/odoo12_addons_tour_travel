@@ -10,7 +10,7 @@ _logger = logging.getLogger(__name__)
 class TtPnrQuota(models.Model):
     _name = 'tt.pnr.quota'
     _rec_name = 'name'
-    _description = 'Rodex Model PNR Quota'
+    _description = 'PNR Quota'
     _order = 'id desc'
 
     name = fields.Char('Name')

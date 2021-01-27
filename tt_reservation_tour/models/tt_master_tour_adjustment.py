@@ -8,7 +8,7 @@ TYPE = [
 
 class TourAdjustment(models.Model):
     _name = 'tt.master.tour.adjustment'
-    _description = 'Rodex Model'
+    _description = 'Master Tour Adjustment'
 
     description = fields.Text('Description')
     type = fields.Selection(TYPE, 'Type')

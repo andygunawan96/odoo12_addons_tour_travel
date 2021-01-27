@@ -4,7 +4,7 @@ from ...tools import variables
 
 class ApiCarrier(models.Model):
     _name = 'tt.api.carrier'
-    _description = 'Rodex Model'
+    _description = 'API Carrier'
 
     active = fields.Boolean(string='Active', default=True)
     provider_id = fields.Many2one(comodel_name='tt.api.provider', string='Provider')

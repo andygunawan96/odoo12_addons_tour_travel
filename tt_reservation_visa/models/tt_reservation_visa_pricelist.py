@@ -37,7 +37,7 @@ PROCESS_TYPE = [
 
 class VisaSyncProducts(models.TransientModel):
     _name = "visa.sync.product.wizard"
-    _description = 'Rodex Model'
+    _description = 'Visa Sync Product Wizard'
 
     def get_domain(self):
         domain_id = self.env.ref('tt_reservation_visa.tt_provider_type_visa').id
@@ -228,7 +228,7 @@ class VisaSyncProducts(models.TransientModel):
 class VisaPricelist(models.Model):
     _inherit = ['tt.history']
     _name = 'tt.reservation.visa.pricelist'
-    _description = 'Rodex Model'
+    _description = 'Reservation Visa Pricelist'
 
     def get_domain(self):
         domain_id = self.env.ref('tt_reservation_visa.tt_provider_type_visa').id

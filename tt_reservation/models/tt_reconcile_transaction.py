@@ -13,7 +13,7 @@ _logger = logging.getLogger()
 class TtReconcileTransaction(models.Model):
     _inherit = ['tt.history']
     _name = 'tt.reconcile.transaction'
-    _description = 'Rodex Model Reconcile'
+    _description = 'Reconcile'
     _rec_name = 'display_reconcile_name'
     _order = 'transaction_date desc'
 
@@ -185,7 +185,7 @@ class TtReconcileTransaction(models.Model):
 
 class TtReconcileTransactionLines(models.Model):
     _name = 'tt.reconcile.transaction.lines'
-    _description = 'Rodex Model Reconcile Lines'
+    _description = 'Reconcile Lines'
     _rec_name = 'pnr'
 
     reconcile_transaction_id = fields.Many2one('tt.reconcile.transaction','Reconcile Transaction',readonly=True, ondelete='cascade' )
@@ -277,7 +277,7 @@ class TtReconcileTransactionLines(models.Model):
 
 class PrintoutReconcile(models.AbstractModel):
     _name = 'tt.report.printout.reconcile'
-    _description = 'Rodex Model'
+    _description = 'Report Printout Reconcile'
 
     @staticmethod
     def _select():

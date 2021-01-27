@@ -21,7 +21,7 @@ PAYMENT_METHOD = [
 
 class ReservationTourRoom(models.Model):
     _name = 'tt.reservation.tour.room'
-    _description = 'Rodex Model'
+    _description = 'Reservation Tour Room'
 
     booking_id = fields.Many2one('tt.reservation.tour', 'Reservation Tour')
     room_id = fields.Many2one('tt.master.tour.rooms', 'Room')
@@ -33,7 +33,7 @@ class ReservationTour(models.Model):
     _inherit = ['tt.reservation']
     _name = 'tt.reservation.tour'
     _order = 'id DESC'
-    _description = 'Rodex Model'
+    _description = 'Reservation Tour'
 
     tour_lines_id = fields.Many2one('tt.master.tour.lines', 'Tour Line')
     tour_id = fields.Many2one('tt.master.tour', 'Tour Package', related='tour_lines_id.master_tour_id', store=True)

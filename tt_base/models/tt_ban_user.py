@@ -3,7 +3,7 @@ from datetime import datetime,timedelta
 from ...tools import ERR
 class TtBanUser(models.Model):
     _name = 'tt.ban.user'
-    _description = 'Rodex Model Ban User'
+    _description = 'Ban User'
 
     name = fields.Char('Username')
     user_id = fields.Many2one('res.users','User')

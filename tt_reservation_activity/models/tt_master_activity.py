@@ -19,7 +19,7 @@ SESSION_NT = session.Session()
 
 class ActivitySyncProducts(models.TransientModel):
     _name = "activity.sync.product.wizard"
-    _description = 'Rodex Model'
+    _description = 'Activity Sync Products Wizard'
 
     def get_domain(self):
         domain_id = self.env.ref('tt_reservation_activity.tt_provider_type_activity').id
@@ -66,7 +66,7 @@ class ActivitySyncProducts(models.TransientModel):
 class MasterActivity(models.Model):
     _inherit = ['tt.history']
     _name = 'tt.master.activity'
-    _description = 'Rodex Model'
+    _description = 'Master Activity'
 
     uuid = fields.Char('Uuid', readonly=True)
     name = fields.Char('Activity Name', readonly=True)
@@ -2587,7 +2587,7 @@ class MasterActivity(models.Model):
 
 class ActivitySyncProductsChildren(models.TransientModel):
     _name = "activity.sync.product.children.wizard"
-    _description = 'Rodex Model'
+    _description = 'Activity Sync Product Children Wizard'
 
     def sync_data_to_children(self):
         try:

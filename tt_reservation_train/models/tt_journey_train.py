@@ -6,7 +6,7 @@ class TtJourneyTrain(models.Model):
     _name = 'tt.journey.train'
     _rec_name = 'pnr'
     _order = 'departure_date'
-    _description = 'Rodex Model'
+    _description = 'Journey Train'
 
     provider_booking_id = fields.Many2one('tt.provider.train', 'Provider Booking', ondelete='cascade')
     provider_id = fields.Many2one('tt.provider', related='provider_booking_id.provider_id', store=True)

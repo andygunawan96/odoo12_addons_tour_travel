@@ -9,7 +9,7 @@ _logger = logging.getLogger(__name__)
 
 class ProductClass(models.Model):
     _name = 'tt.product.class'
-    _description = 'Rodex Model'
+    _description = 'Product Class'
 
     name = fields.Char('Name', required=True)
     code = fields.Char('Code', required=True)

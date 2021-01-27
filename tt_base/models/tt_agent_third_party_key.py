@@ -7,7 +7,7 @@ class TtAgentThirdPartyKey(models.Model):
     _name = 'tt.agent.third.party.key'
     _inherit = 'tt.history'
     _rec_name = 'name'
-    _description = 'Rodex Model Agent 3rd Party Key'
+    _description = 'Agent 3rd Party Key'
 
     name = fields.Char('Name', required=True, default='New Key')
     key = fields.Char('Key')

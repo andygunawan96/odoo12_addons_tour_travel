@@ -8,7 +8,7 @@ INVENTORY_TYPE = [
 class TtPnrQuotaUsage(models.Model):
     _name = 'tt.pnr.quota.usage'
     _rec_name = 'pnr_quota_id'
-    _description = 'Rodex Model PNR Quota'
+    _description = 'PNR Quota Usage'
     _order = 'id desc'
 
     res_model_resv = fields.Char('Res Model')

@@ -10,7 +10,7 @@ LEVEL = [
 
 class AgentRegistrationCustomerContact(models.Model):
     _name = 'tt.agent.registration.customer'
-    _description = 'Rodex Model'
+    _description = 'Agent Registration Customer'
 
     agent_registration_id = fields.Many2one('tt.agent.registration', 'Agent Registration ID')
     first_name = fields.Char('First Name', required=True)

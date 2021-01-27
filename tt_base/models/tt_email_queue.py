@@ -11,7 +11,7 @@ _logger = logging.getLogger(__name__)
 class TtEmailQueue(models.Model):
     _name = 'tt.email.queue'
     _inherit = 'tt.history'
-    _description = 'Rodex Model'
+    _description = 'Email Queue'
     _order = 'id DESC'
 
     name = fields.Char('Name', default='No Name', readonly=True)

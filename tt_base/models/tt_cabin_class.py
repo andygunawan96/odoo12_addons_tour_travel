@@ -8,7 +8,7 @@ _logger = logging.getLogger(__name__)
 
 class CabinClass(models.Model):
     _name = 'tt.cabin.class'
-    _description = 'Rodex Model'
+    _description = 'Cabin Class'
 
     name = fields.Char('Name', required=True)
     code = fields.Char('Code', required=True)

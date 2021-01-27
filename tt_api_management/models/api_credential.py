@@ -14,7 +14,7 @@ _logger = logging.getLogger(__name__)
 
 class ApiManagement(models.Model):
     _name = 'tt.api.credential'
-    _description = 'Rodex Model'
+    _description = 'API Credential'
 
     name = fields.Char('Name', required=True)
     api_key = fields.Char(string='API Key')

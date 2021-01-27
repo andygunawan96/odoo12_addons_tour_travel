@@ -25,7 +25,7 @@ _logger = logging.getLogger(__name__)
 
 class ActivityResendVoucher(models.TransientModel):
     _name = "activity.voucher.wizard"
-    _description = 'Rodex Model'
+    _description = 'Activity Voucher Wizard'
 
     def get_default_email(self):
         context = self.env.context
@@ -64,7 +64,7 @@ class ActivityResendVoucher(models.TransientModel):
 
 class TtReservationActivityOption(models.Model):
     _name = 'tt.reservation.activity.option'
-    _description = 'Rodex Model'
+    _description = 'Reservation Activity Option'
 
     name = fields.Char('Information')
     value = fields.Char('Value')
@@ -74,7 +74,7 @@ class TtReservationActivityOption(models.Model):
 
 class TtReservationActivityVouchers(models.Model):
     _name = 'tt.reservation.activity.vouchers'
-    _description = 'Rodex Model'
+    _description = 'Reservation Activity Vouchers'
 
     name = fields.Char('URL')
     booking_id = fields.Many2one('tt.reservation.activity', 'Reservation')
@@ -84,7 +84,7 @@ class ReservationActivity(models.Model):
     _inherit = ['tt.reservation']
     _name = 'tt.reservation.activity'
     _order = 'id DESC'
-    _description = 'Rodex Model'
+    _description = 'Reservation Activity'
 
     booking_uuid = fields.Char('Booking UUID')
 
@@ -1234,6 +1234,7 @@ class ReservationActivity(models.Model):
 
 class PrintoutActivityInvoice(models.AbstractModel):
     _name = 'report.tt_reservation_activity.printout_activity_invoice'
+    _description = 'Report Reservation Activity Printout Invoice'
 
     @api.model
     def render_html(self, docids, data=None):

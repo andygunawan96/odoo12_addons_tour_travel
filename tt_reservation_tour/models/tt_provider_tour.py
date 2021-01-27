@@ -15,7 +15,7 @@ class TtProviderTour(models.Model):
     _name = 'tt.provider.tour'
     _rec_name = 'pnr'
     _order = 'departure_date'
-    _description = 'Rodex Model'
+    _description = 'Provider Tour'
 
     pnr = fields.Char('PNR')
     pnr2 = fields.Char('PNR2')

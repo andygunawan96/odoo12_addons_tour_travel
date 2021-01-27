@@ -12,7 +12,7 @@ class PricingProvider(models.Model):
     _name = 'tt.pricing.provider'
     _inherit = 'tt.history'
     _order = 'sequence'
-    _description = 'Rodex Model'
+    _description = 'Pricing Provider'
 
     name = fields.Char('Name', readonly=1, compute="_compute_name", store=True)
     sequence = fields.Integer('Sequence', default=50, required=True)
@@ -235,7 +235,7 @@ class PricingProviderLine(models.Model):
     _name = 'tt.pricing.provider.line'
     _inherit = 'tt.history'
     _order = 'sequence'
-    _description = 'Rodex Model'
+    _description = 'Pricing Provider Line'
 
     name = fields.Char('Name', requried=True)
     sequence = fields.Integer('Sequence', default=50, required=True)
@@ -411,7 +411,7 @@ class PricingProviderLine(models.Model):
 class PricingChargeCode(models.Model):
     _name = 'tt.pricing.charge.code'
     _inherit = 'tt.history'
-    _description = 'Rodex Model'
+    _description = 'Pricing Charge Code'
 
     name = fields.Char('Name')
     code = fields.Char('Code', required=True)
@@ -429,7 +429,7 @@ class PricingChargeCode(models.Model):
 class PricingClassOfService(models.Model):
     _name = 'tt.pricing.class.of.service'
     _inherit = 'tt.history'
-    _description = 'Rodex Model'
+    _description = 'Pricing Class of Service'
 
     name = fields.Char('Name')
     code = fields.Char('Code', required=True)

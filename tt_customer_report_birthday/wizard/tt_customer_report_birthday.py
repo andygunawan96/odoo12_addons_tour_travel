@@ -21,6 +21,7 @@ months_list = [
 
 class CustomerReportBirthday(models.TransientModel):
     _name = 'tt.customer.report.birthday.wizard'
+    _description = 'Customer Report Birthday Wizard'
 
     def _check_ho_user(self):
         return self.env.user.agent_id.agent_type_id.id == self.env.ref('tt_base.agent_type_ho').id

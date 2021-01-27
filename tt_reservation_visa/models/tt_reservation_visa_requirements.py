@@ -3,7 +3,7 @@ from odoo import api, fields, models, _
 
 class VisaRequirement(models.Model):
     _name = 'tt.reservation.visa.requirements'
-    _description = 'Rodex Model'
+    _description = 'Reservation Visa Requirements'
 
     name = fields.Char('Name', related='type_id.name')
     type_id = fields.Many2one('tt.traveldoc.type', 'Document Type')

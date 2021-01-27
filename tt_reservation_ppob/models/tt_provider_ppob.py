@@ -12,7 +12,7 @@ class TtProviderPPOB(models.Model):
     _name = 'tt.provider.ppob'
     _rec_name = 'pnr'
     # _order = 'departure_date'
-    _description = 'Rodex Model'
+    _description = 'Provider PPOB'
 
     pnr = fields.Char('PNR')
     pnr2 = fields.Char('PNR2')

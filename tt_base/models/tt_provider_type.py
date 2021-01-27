@@ -9,7 +9,7 @@ _logger = logging.getLogger(__name__)
 
 class ProviderType(models.Model):
     _name = 'tt.provider.type'
-    _description = 'Rodex Model'
+    _description = 'Provider Type'
 
     name = fields.Char(string='Name', required=True)
     code = fields.Char(string='Code', required=True)
