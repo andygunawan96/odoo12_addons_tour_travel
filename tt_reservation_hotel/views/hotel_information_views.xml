@@ -49,6 +49,7 @@
                             <field name="email"/>
                             <field name="website"/>
                             <field name="provider" readonly="1"/>
+                            <field name="destination_id"/>
                         </group>
                         <group>
                             <field name="lat"/>
@@ -275,11 +276,12 @@
             <tree>
                 <field name="name"/>
                 <field name="city_id"/>
+                <field name="country_id"/>
+                <field name="destination_id"/>
                 <field name="provider" string="Hotel Vendor"/>
                 <!--<field name="hotel_type_id"/>-->
-                <field name="lat"/>
-                <field name="long"/>
-                <field name="phone"/>
+                <!--<field name="lat"/>-->
+                <!--<field name="long"/>-->
                 <field name="rating"/>
                 <field name="state"/>
             </tree>
@@ -292,6 +294,7 @@
             <search string="member Type">
                 <field name="name" string="Name"/>
                 <field name="city_id" string="City"/>
+                <field name="country_id" string="Country"/>
                 <field name="provider" string="Vendor"/>
                 <filter string="Draft" name="draft" domain="[('state', '=', 'draft')]"/>
                 <filter string="Confirm" name="confirm" domain="[('state', '=', 'confirm')]"/>
@@ -730,6 +733,9 @@
                     </group>
                     <group>
                         <button name="v2_get_hotel_image_knb" class="oe_stat_button" string="2a. Get Image KNB" type="object" icon="fa-plus"/>
+                    </group>
+                    <group>
+                        <button name="v3_partial_send_cache" class="oe_stat_button" string="3a. Partial Update Data" type="object" icon="fa-plus"/>
                     </group>
                 </sheet>
             </form>

@@ -111,14 +111,6 @@ class CountryCity(models.Model):
                 found += rec.city_id
         return found
 
-    def prepare_city_for_cache(self, city_obj):
-        return {
-            'name': city_obj.name,
-            'id': city_obj.id,
-            # 'city_alias_list': [rec.name for rec in city_obj.other_name_ids],
-            'alias': ','.join([rec.name for rec in city_obj.other_name_ids]),
-        }
-
     @api.onchange('name', 'other_name_ids')
     def city_search_name(self):
         for rec1 in self:

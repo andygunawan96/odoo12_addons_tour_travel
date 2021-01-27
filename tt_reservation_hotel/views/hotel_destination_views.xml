@@ -45,8 +45,9 @@
             <tree>
                 <field name="name"/>
                 <field name="city_str"/>
-                <field name="state_str"/>
+                <field name="city_id"/>
                 <field name="country_str"/>
+                <field name="country_id"/>
                 <field name="active"/>
             </tree>
         </field>
