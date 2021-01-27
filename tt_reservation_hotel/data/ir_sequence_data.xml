@@ -30,5 +30,9 @@
             <field name="key">hotel.cache.provider</field>
             <field name="value">'knb',</field>
         </record>
+        <record id="hotel_rewrite_city" model="ir.config_parameter">
+            <field name="key">rewrite.city</field>
+            <field name="value">semarang,</field>
+        </record>
     </data>
 </odoo>

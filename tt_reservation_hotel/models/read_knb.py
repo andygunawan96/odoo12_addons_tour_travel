@@ -7,6 +7,7 @@ import csv, glob, os
 from lxml import html
 from ...tools import xmltodict
 import csv
+import math
 
 _logger = logging.getLogger(__name__)
 API_CN_HOTEL = ApiConnectorHotels()
@@ -160,7 +161,7 @@ class HotelInformation(models.Model):
                         continue
             f.close()
             path = base_cache_directory + "knb/" + country_file.split('/')[-1].split('_')[2]
-            if not os.path.isfile(path):
+            if not os.path.isdir(path):
                 os.makedirs(path)
             for city in hotel_list.keys():
                 _logger.info("City: " + city + ' Get:' + str(len(hotel_list[city])) + 'Hotel(s)')
@@ -173,7 +174,7 @@ class HotelInformation(models.Model):
                                          country_file.split('/')[-1].split('_')[2].encode("utf-8"),
                                          len(hotel_list[city])])
 
-        with open(base_cache_directory + 'knb/result/Result.csv', 'w') as csvFile:
+        with open(base_cache_directory + 'knb/00_result/Result.csv', 'w') as csvFile:
             writer = csv.writer(csvFile)
             writer.writerows(need_to_add_list)
         csvFile.close()
@@ -262,13 +263,14 @@ class HotelInformation(models.Model):
 
     # 1c. Get Country Code
     def v2_get_country_code_knb(self):
-        workbook = xlrd.open_workbook('/home/rodex-it-05/Downloads/RODE_country_20201028120232.xls')
+        base_cache_directory = self.env['ir.config_parameter'].sudo().get_param('hotel.cache.directory')
+        workbook = xlrd.open_workbook(base_cache_directory + 'knb/00_other/RODE_country_20201028120232.xls')
         # worksheet = workbook.sheet_by_name('Name of the Sheet')
         worksheet = workbook.sheet_by_index(0)
         # worksheet.nrows
         # worksheet.ncols
         a = []
-        provider_id = 383
+        provider_id = self.env.ref('tt_reservation_hotel.tt_hotel_provider_knb').id
         for row in range(1, worksheet.nrows):
             name = worksheet.cell(row, 0).value
             code = worksheet.cell(row, 2).value
@@ -290,16 +292,20 @@ class HotelInformation(models.Model):
 
     # 1d. Get City Code save in res.city
     def v2_get_city_code_knb1(self):
-        workbook = xlrd.open_workbook('/home/rodex-it-05/Downloads/RODE_city_20200307090456.xls')
+        base_cache_directory = self.env['ir.config_parameter'].sudo().get_param('hotel.cache.directory')
+        workbook = xlrd.open_workbook(base_cache_directory + 'knb/00_other/RODE_city_20200307090456.xls')
         # worksheet = workbook.sheet_by_name('Name of the Sheet')
         worksheet = workbook.sheet_by_index(0)
         # worksheet.nrows
         # worksheet.ncols
         a = []
-        provider_id = 383
+        provider_id = self.env.ref('tt_reservation_hotel.tt_hotel_provider_knb').id
         for row in range(1, worksheet.nrows):
             name = worksheet.cell(row, 0).value
             code = worksheet.cell(row, 2).value
+
+            if row < 0: #Edit this value if render stop by other reason
+                continue
 
             if row % 100 == 0:
                 _logger.info('Saving row number ' + str(row))
@@ -336,63 +342,70 @@ class HotelInformation(models.Model):
 
     # 1d. Get City Code save in tt.hotel.destination
     def v2_get_city_code_knb(self):
-        workbook = xlrd.open_workbook('/home/rodex-it-05/Downloads/RODE_city_20200307090456.xls')
+        base_cache_directory = self.env['ir.config_parameter'].sudo().get_param('hotel.cache.directory')
+        for xls_sheet in ['RODE_city_20200307090456.xls', 'RODE_city_20201028120241.xls']:
+            workbook = xlrd.open_workbook(base_cache_directory + 'knb/00_other/' + xls_sheet)
+            # worksheet = workbook.sheet_by_name('Name of the Sheet')
+            worksheet = workbook.sheet_by_index(0)
+            # worksheet.nrows
+            # worksheet.ncols
+            a = []
+            provider_id = self.env.ref('tt_reservation_hotel.tt_hotel_provider_knb').id
+            for row in range(1, worksheet.nrows):
+                name = worksheet.cell(row, 0).value
+                code = worksheet.cell(row, 2).value
+                # state_name = worksheet.cell(row, 0).value
+                country_name = worksheet.cell(row, 3).value
+
+                if row < 0:  # Edit this value if render stop by other reason
+                    continue
+
+                if row % 100 == 0:
+                    _logger.info('Saving row number ' + str(row))
+                    self.env.cr.commit()
+                _logger.info('Render ' + name + ' Start')
+
+                # Create external ID:
+                old_obj = self.env['tt.provider.code'].search([('res_model', '=', 'tt.hotel.destination'), ('code', '=', code), ('provider_id', '=', provider_id)])
+                if not old_obj:
+                    new_dict = {
+                        'id': False,
+                        'name': name,
+                        'city_str': name,
+                        'state_str': '',
+                        'country_str': country_name,
+                    }
+                    is_exact, new_obj = self.env['tt.hotel.destination'].find_similar_obj(new_dict)
+                    if not is_exact:
+                        new_obj = self.env['tt.hotel.destination'].create(new_dict)
+                        new_obj.fill_obj_by_str()
+                        _logger.info('Create New Destination {} with code {}'.format(name, code))
+                    else:
+                        _logger.info('Destination already Exist Code for {}, Country {}'.format(name, country_name))
+
+                    self.env['tt.provider.code'].create({
+                        'res_model': 'tt.hotel.destination',
+                        'res_id': new_obj.id,
+                        'name': name,
+                        'code': code,
+                        'provider_id': provider_id,
+                    })
+                    _logger.info('Create External ID {} with id {}'.format(code, str(new_obj.id)))
+                else:
+                    _logger.info('External ID {} already Exist in {} with id {}'.format(code, old_obj.res_model, str(old_obj.res_id)))
+        _logger.info('Render Done')
+        return a
+
+    # 1e. Get Meal Code
+    def v2_get_meal_code_knb(self):
+        base_cache_directory = self.env['ir.config_parameter'].sudo().get_param('hotel.cache.directory')
+        workbook = xlrd.open_workbook(base_cache_directory + 'knb/00_other/RODE_mealtype_20201028120355.xls')
         # worksheet = workbook.sheet_by_name('Name of the Sheet')
         worksheet = workbook.sheet_by_index(0)
         # worksheet.nrows
         # worksheet.ncols
         a = []
         provider_id = self.env.ref('tt_reservation_hotel.tt_hotel_provider_knb').id
-        for row in range(1, worksheet.nrows):
-            name = worksheet.cell(row, 0).value
-            code = worksheet.cell(row, 2).value
-            # state_name = worksheet.cell(row, 0).value
-            country_name = worksheet.cell(row, 3).value
-
-            if row % 100 == 0:
-                _logger.info('Saving row number ' + str(row))
-                self.env.cr.commit()
-            _logger.info('Render ' + name + ' Start')
-
-            # Create external ID:
-            old_obj = self.env['tt.provider.code'].search([('res_model', '=', 'tt.hotel.destination'), ('code', '=', code), ('provider_id', '=', provider_id)])
-            if not old_obj:
-                new_dict = {
-                    'name': name,
-                    'city_str': name,
-                    'state_str': '',
-                    'country_str': country_name,
-                }
-                if not self.env['tt.hotel.destination'].find_similar_obj(new_dict):
-                    new_obj = self.env['tt.hotel.destination'].create(new_dict)
-                    new_obj.fill_obj_by_str()
-                    _logger.info('Create New Destination {} with code {}'.format(name, code))
-                else:
-                    is_exact, new_obj = self.env['tt.hotel.destination'].find_similar_obj(new_dict)
-                    _logger.info('Destination already Exist Code for {}, Country {}'.format(name, country_name))
-
-                self.env['tt.provider.code'].create({
-                    'res_model': 'tt.hotel.destination',
-                    'res_id': new_obj.id,
-                    'name': name,
-                    'code': code,
-                    'provider_id': provider_id,
-                })
-                _logger.info('Create External ID {} with id {}'.format(code, str(new_obj.res_id)))
-            else:
-                _logger.info('External ID {} already Exist in {} with id {}'.format(code, old_obj.res_model, str(old_obj.res_id)))
-        _logger.info('Render Done')
-        return a
-
-    # 1e. Get Meal Code
-    def v2_get_meal_code_knb(self):
-        workbook = xlrd.open_workbook('/home/rodex-it-05/Downloads/RODE_mealtype_20201028120355.xls')
-        # worksheet = workbook.sheet_by_name('Name of the Sheet')
-        worksheet = workbook.sheet_by_index(0)
-        # worksheet.nrows
-        # worksheet.ncols
-        a = []
-        provider_id = 383
         for row in range(1, worksheet.nrows):
             name = worksheet.cell(row, 1).value
             code = worksheet.cell(row, 0).value
@@ -416,8 +429,40 @@ class HotelInformation(models.Model):
         return a
 
     # 1f. Get room Code
+    # Note: Dari KNB waktu search sdha dikasih room caateg beserta deskripsi nya jadi bisa di skip bagian ini
+    # Note: Blum ku code
     def v2_get_room_code_knb(self):
         return True
+        # base_cache_directory = self.env['ir.config_parameter'].sudo().get_param('hotel.cache.directory')
+        # workbook = xlrd.open_workbook(base_cache_directory + 'knb/00_other/RODE_roomcat_20201028120323.xls')
+        # # worksheet = workbook.sheet_by_name('Name of the Sheet')
+        # worksheet = workbook.sheet_by_index(0)
+        # # worksheet.nrows
+        # # worksheet.ncols
+        # a = []
+        # provider_id = self.env.ref('tt_reservation_hotel.tt_hotel_provider_knb').id
+        # for row in range(1, worksheet.nrows):
+        #     name = worksheet.cell(row, 1).value
+        #     code = worksheet.cell(row, 0).value
+        # #Need to code start Here
+        #     meal_obj = self.env['tt.meal.type'].search([('name', '=ilike', name)], limit=1)
+        #     if meal_obj:
+        #         meal_obj = meal_obj[0]
+        #     else:
+        #         meal_obj = self.env['tt.meal.type'].create({'name': name, })
+        #
+        #     # Create external ID:
+        #     if not self.env['tt.provider.code'].search(
+        #             [('res_model', '=', 'tt.meal.type'), ('res_id', '=', meal_obj.id),
+        #              ('code', '=', code), ('provider_id', '=', provider_id)]):
+        #         self.env['tt.provider.code'].create({
+        #             'res_model': 'tt.meal.type',
+        #             'res_id': meal_obj.id,
+        #             'name': name,
+        #             'code': code,
+        #             'provider_id': provider_id,
+        #         })
+        # return a
 
     # 1g. Get Facility Code
     def v2_get_facility_code_knb(self):
@@ -428,18 +473,36 @@ class HotelInformation(models.Model):
         api_context = {
             'co_uid': self.env.user.id
         }
-        city_obj = self.env['res.city'].search([('name', '=ilike', 'semarang')], limit=1)
-        hotel_list = [rec.name for rec in self.env['tt.hotel'].search([('city_id','=', city_obj.id)])]
-        for rec in hotel_list[:50]:
+        # city_obj = self.env['res.city'].browse(694)
+        hotel_objs = self.env['tt.hotel'].search([('city_id','=', 694),('provider','ilike','klik and book'),('image_ids','=',False)])
+        const = 3
+        for idx in range(math.ceil(len(hotel_objs)/const)):
+            # if idx < 105:
+            #     continue
+            start = idx * const
+            end = (idx + 1) * const
+            _logger.info('Render ' + str(start) + ' to ' + str(end))
             search_req = {
                 'provider': 'knb',
                 'type': 'GetImageList',
                 'limit': '',
                 'offset': '',
-                'codes': rec,
+                'codes': [(rec.id, rec.name) for rec in hotel_objs[start:end]],
             }
             try:
                 a = API_CN_HOTEL.get_record_by_api(search_req, api_context)
-                a = a['response'][1]
+                for hotel_resp in a['response']:
+                    for img in a['response'][hotel_resp]:
+                        self.env['tt.hotel.image'].create({
+                            'url': img,
+                            'hotel_id': int(hotel_resp),
+                        })
             except:
-                continue
+                a = False
+
+            if idx % 5 == 0:
+                _logger.info('======= Saving #' + str((idx+1) * const) + '/' + str(len(hotel_objs)) + ' =======')
+                self.env.cr.commit()
+        _logger.info('================================')
+        _logger.info('========== Proses End ==========')
+        _logger.info('================================')

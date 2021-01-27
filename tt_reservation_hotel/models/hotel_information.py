@@ -49,7 +49,7 @@ class HotelInformation(models.Model):
 
     zip = fields.Char()
     # district_id = fields.Many2one("res.country.district", string='District')
-    destination_id = fields.Many2one("tt.hotel.destination", string='Destination / Searchable in Auto Complete')
+    destination_id = fields.Many2one("tt.hotel.destination", 'Destination', help='Destination Name or Searchable in Auto Complete')
     state_id = fields.Many2one("res.country.state", string='State')
     country_id = fields.Many2one('res.country', string='Country')
     message = fields.Text('Message')
@@ -114,7 +114,18 @@ class HotelInformation(models.Model):
             provider_fmt.update({rec.provider_id.alias: rec.code})
         return provider_fmt
 
-    def fmt_read(self, hotel_obj={}):
+    def get_hotel_image_fmt(self):
+        hotel_fmt_list = []
+        for rec in self.image_ids:
+            hotel_fmt_list.append({
+                'name': rec.name,
+                'url': rec.url,
+                'description': rec.description,
+                'provider_id': self.provider,
+            })
+        return hotel_fmt_list
+
+    def fmt_read(self, hotel_obj={}, city_idx=0):
         hotel = hotel_obj or self.read()[0]
         new_hotel = {
             'id': str(hotel['id']),
@@ -139,8 +150,9 @@ class HotelInformation(models.Model):
             'state': 'confirm',
             'external_code': self.get_provider_code_fmt(),
             'near_by_facility': [],
-            'images': hotel.get('images') or hotel.get('image'),
+            'images': self.get_hotel_image_fmt(),
             'facilities': hotel.get('facilities'),
+            'id2': city_idx,
         }
         if not isinstance(new_hotel['rating'], int):
             try:
@@ -148,19 +160,19 @@ class HotelInformation(models.Model):
             except:
                 new_hotel['rating'] = 0
 
-        fac_list = []
-        for img in new_hotel.get('image_ids') or []:
-            if isinstance(img, str):
-                new_img_url = 'http' in img and img or 'http://www.sunhotels.net/Sunhotels.net/HotelInfo/hotelImage.aspx' + img + '&full=1'
-                provider_id = False
-                fac_list.append({'name': '', 'url': new_img_url, 'description': '', 'provider_id': provider_id})
-            else:
-                # Digunakan hotel yg bisa dpet nama image nya
-                # Sampai tgl 11-11-2019 yg kyak gini (miki_api) formate sdah bener jadi bisa langsung break
-                # Lek misal formate beda mesti di format ulang
-                fac_list = new_hotel['images']
-                break
-        new_hotel['images'] = fac_list
+        # fac_list = []
+        # for img in new_hotel.get('image_ids') or []:
+        #     if isinstance(img, str):
+        #         new_img_url = 'http' in img and img or 'http://www.sunhotels.net/Sunhotels.net/HotelInfo/hotelImage.aspx' + img + '&full=1'
+        #         provider_id = False
+        #         fac_list.append({'name': '', 'url': new_img_url, 'description': '', 'provider_id': provider_id})
+        #     else:
+        #         # Digunakan hotel yg bisa dpet nama image nya
+        #         # Sampai tgl 11-11-2019 yg kyak gini (miki_api) formate sdah bener jadi bisa langsung break
+        #         # Lek misal formate beda mesti di format ulang
+        #         fac_list = new_hotel['images']
+        #         break
+        # new_hotel['images'] = fac_list
 
         new_fac = []
         for fac in new_hotel.get('facilities') or []:
@@ -193,6 +205,16 @@ class HotelInformation(models.Model):
             #         csvFile.close()
         new_hotel['facilities'] = new_fac
         return new_hotel
+
+    def set_country_by_destination_and_city(self):
+        for rec in self.env['tt.hotel'].search([]):
+            rec.country_id = rec.city_id and rec.city_id.country_id.id or False
+
+    @api.onchange('city_id')
+    @api.depends('city_id')
+    def onchange_city(self):
+        for rec in self:
+            rec.country_id = rec.city_id and rec.city_id.country_id.id or False
 
 class HotelImage(models.Model):
     _inherit = 'tt.hotel.image'
