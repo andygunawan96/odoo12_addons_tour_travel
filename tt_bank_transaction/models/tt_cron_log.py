@@ -85,7 +85,7 @@ class ttCronTopUpValidator(models.Model):
                                             'currency_code': result.currency_id.name,
                                             'payment_ref': reference_code,
                                             'payment_seq_id': self.env.ref('tt_base.payment_acquirer_ho_payment_gateway_bca').seq_id,
-                                            'subsidy': abs(top_up_obj.unique_amount)
+                                            'subsidy': top_up_obj.unique_amount if top_up_obj.unique_amount <= 0 else 0
                                         }
 
                                         res = self.env['tt.top.up'].create_top_up_api(request, context, True)
