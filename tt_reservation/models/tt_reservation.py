@@ -245,8 +245,11 @@ class TtReservation(models.Model):
                     book_obj = self.env['tt.reservation.%s' % req['product']].get_booking_airline_api(req, context)
                     # check res
                     # kalau lupa booking origin, destination, tanggal, phone number
-                    if req['date'] == book_obj['response']['departure_date'] and req['phone_number'] == book_obj['response']['contact']['phone']:
-                        res = book_obj
+                    if book_obj:
+                        if req['date'] == book_obj['response']['departure_date'] and req['phone_number'] == book_obj['response']['contact']['phone']:
+                            res = book_obj
+                        else:
+                            return ERR.get_error(1013)
                     else:
                         return ERR.get_error(1013)
 
@@ -265,8 +268,11 @@ class TtReservation(models.Model):
                     book_obj = self.env['tt.reservation.%s' % req['product']].get_booking_train_api(req, context)
                     # check res
                     # kalau lupa booking origin, destination, tanggal, phone number
-                    if req['date'] == book_obj['response']['departure_date'] and req['phone_number'] == book_obj['response']['contact']['phone']:
-                        res = book_obj
+                    if book_obj:
+                        if req['date'] == book_obj['response']['departure_date'] and req['phone_number'] == book_obj['response']['contact']['phone']:
+                            res = book_obj
+                        else:
+                            return ERR.get_error(1013)
                     else:
                         return ERR.get_error(1013)
             elif req['product'] == 'hotel':
@@ -281,13 +287,16 @@ class TtReservation(models.Model):
                     res = ERR.get_no_error(res)
                 else:
                     book_obj = self.env['test.search'].get_booking_result(req['order_number'], context)
-                    if req['date'] == book_obj['checkin_date'] and req['phone_number'] == book_obj['response']['contact']['phone']:
-                        res = book_obj
-                    # if True: #testing
-                    #     res = book_obj #testing
+                    if book_obj:
+                        if req['date'] == book_obj['checkin_date'] and req['phone_number'] == book_obj['response']['contact']['phone']:
+                            res = book_obj
+                        # if True: #testing
+                        #     res = book_obj #testing
+                        else:
+                            return ERR.get_error(1013)
+                        res = ERR.get_no_error(res)
                     else:
                         return ERR.get_error(1013)
-                    res = ERR.get_no_error(res)
                 # kalau lupa booking nama hotel, checkin, phone number
             elif req['product'] == 'activity':
                 res = self.env['tt.reservation.%s' % req['product']].get_booking_by_api(req, context)
