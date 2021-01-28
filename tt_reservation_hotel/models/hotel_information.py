@@ -17,7 +17,7 @@ class HotelInformation(models.Model):
     facility_ids = fields.Many2many('tt.hotel.facility', 'hotel_facility_rel', 'hotel_id', 'facility_id')
     tac = fields.Text('Terms & Conditions')
     description = fields.Text('Description')
-    state = fields.Selection([('draft', 'Draft'), ('confirm', 'Confirmed'), ('expired', 'Not Avaliable'),
+    state = fields.Selection([('draft', 'Draft'), ('confirm', 'Confirmed'), ('expired', 'Not Available'),
                               ('tobe_merge', 'To Be Merge'), ('merged', 'Merged')], default='draft')
     rating = fields.Selection([
         (0, 'No Star'),
@@ -206,15 +206,35 @@ class HotelInformation(models.Model):
         new_hotel['facilities'] = new_fac
         return new_hotel
 
+    def fill_country_city(self):
+        if not self.city_id and self.destination_id.city_id:
+            self.city_id = self.destination_id.city_id.id
+        if not self.country_id:
+            self.country_id = self.city_id and self.city_id.country_id.id or self.destination_id.country_id.id
+
+    def mass_fill_country_city(self):
+        for rec in self:
+            rec.fill_country_city()
+
+    # Temporary Function digunakan untuk feeling mass empty data
     def set_country_by_destination_and_city(self):
-        for rec in self.env['tt.hotel'].search([]):
+        idx = 0
+        for rec in self.env['tt.hotel'].search([('country_id','=',False),'|',('city_id','!=',False),('destination_id','!=',False)]):
             rec.country_id = rec.city_id and rec.city_id.country_id.id or False
+            if not rec.country_id:
+                rec.country_id = rec.destination_id and rec.destination_id.country_id.id or False
+            idx += 1
+
+            if idx > 1001:
+                self.env.cr.commit()
+                idx = 0
 
     @api.onchange('city_id')
     @api.depends('city_id')
     def onchange_city(self):
         for rec in self:
             rec.country_id = rec.city_id and rec.city_id.country_id.id or False
+
 
 class HotelImage(models.Model):
     _inherit = 'tt.hotel.image'
@@ -254,3 +274,12 @@ class HotelMaster(models.Model):
             for rec in hotel.provider_hotel_ids:
                 provider_fmt.update({rec.provider_id.alias: rec.code})
         return provider_fmt
+
+    def get_hotel_info(self):
+        for rec in self.compare_ids:
+            self.info_ids = [(4, rec.hotel_id.id)]
+
+    def calc_get_provider_name(self):
+        for rec in self.search([('city_id', '=', self.city_id.id)]):
+            rec.get_provider_name()
+            rec.get_hotel_info()

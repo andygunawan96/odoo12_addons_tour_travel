@@ -10,7 +10,6 @@ import csv
 
 _logger = logging.getLogger(__name__)
 API_CN_HOTEL = ApiConnectorHotels()
-provider_id = 358
 
 
 class HotelInformation(models.Model):
@@ -160,6 +159,7 @@ class HotelInformation(models.Model):
     # 1c. Get Country Code
     def v2_get_country_code_dida(self):
         base_cache_directory = self.env['ir.config_parameter'].sudo().get_param('hotel.cache.directory')
+        provider_id = self.env.ref('tt_reservation_hotel.tt_hotel_provider_dida').id
         with open(base_cache_directory + 'dida_pool/00_master/Country.csv', 'r') as f:
             country_ids = csv.reader(f)
             for rec in country_ids:
@@ -183,9 +183,10 @@ class HotelInformation(models.Model):
                     })
         return True
 
-    # 1d. Get City Code
-    def v2_get_city_code_dida(self):
+    # 1d. Get City Code Old Ver cari City
+    def v2_get_city_code_dida_old(self):
         base_cache_directory = self.env['ir.config_parameter'].sudo().get_param('hotel.cache.directory')
+        provider_id = self.env.ref('tt_reservation_hotel.tt_hotel_provider_dida').id
         with open(base_cache_directory + 'dida_pool/00_master/City.csv', 'r') as f:
             city_ids = csv.reader(f)
             for rec in city_ids:
@@ -224,10 +225,63 @@ class HotelInformation(models.Model):
             _logger.info('Render Done')
         return True
 
+    # 1d. Get City Code
+    def v2_get_city_code_dida(self):
+        base_cache_directory = self.env['ir.config_parameter'].sudo().get_param('hotel.cache.directory')
+        provider_id = self.env.ref('tt_reservation_hotel.tt_hotel_provider_dida').id
+        with open(base_cache_directory + 'dida_pool/00_master/City.csv', 'r') as f:
+            city_ids = csv.reader(f)
+            idx = 0
+            for rec in city_ids:
+                if idx < 2300:
+                    idx += 1
+                    continue
+                code = rec[0] #6051357
+                name = rec[1].split("'")[1] #b'Ransol'
+                code_name = rec[2].split("'")[1] #b'Ransol, Andorra'
+                country_code = rec[3] #AD
+                country_name = self.env['res.country'].search([('code','=',country_code)], limit=1).name
+
+                _logger.info('Render ' + name + ' Start')
+                old_obj = self.env['tt.provider.code'].search([('res_model', '=', 'tt.hotel.destination'), ('code', '=', code), ('provider_id', '=', provider_id)])
+                if not old_obj:
+                    new_dict = {
+                        'id': False,
+                        'name': name,
+                        'city_str': name,
+                        'state_str': '',
+                        'country_str': country_name,
+                    }
+                    is_exact, new_obj = self.env['tt.hotel.destination'].find_similar_obj(new_dict)
+                    if not is_exact:
+                        new_obj = self.env['tt.hotel.destination'].create(new_dict)
+                        new_obj.fill_obj_by_str()
+                        _logger.info('Create New Destination {} with code {}'.format(name, code))
+                    else:
+                        _logger.info('Destination already Exist Code for {}, Country {}'.format(name, country_name))
+
+                    self.env['tt.provider.code'].create({
+                        'res_model': 'tt.hotel.destination',
+                        'res_id': new_obj.id,
+                        'name': code_name,
+                        'code': code,
+                        'provider_id': provider_id,
+                    })
+                    _logger.info('Create External ID {} with id {}'.format(code, str(new_obj.id)))
+                else:
+                    _logger.info('External ID {} already Exist in {} with id {}'.format(code, old_obj.res_model, str(old_obj.res_id)))
+                idx += 1
+                if idx % 100 == 0:
+                    _logger.info('Saving Record until ' + str(idx))
+                    self.env.cr.commit()
+            _logger.info('Render Done')
+        return True
+
     # 1e. Get Meal Code
     def v2_get_meal_code_dida(self):
         model = 'tt.meal.type'
         base_cache_directory = self.env['ir.config_parameter'].sudo().get_param('hotel.cache.directory')
+        provider_id = self.env.ref('tt_reservation_hotel.tt_hotel_provider_dida').id
         with open(base_cache_directory + 'dida_pool/00_master/MealType.csv', 'r') as f:
             meal_type_ids = csv.reader(f)
             for rec in meal_type_ids:
@@ -255,6 +309,7 @@ class HotelInformation(models.Model):
     def v2_get_room_code_dida(self):
         model = 'tt.room.type'
         base_cache_directory = self.env['ir.config_parameter'].sudo().get_param('hotel.cache.directory')
+        provider_id = self.env.ref('tt_reservation_hotel.tt_hotel_provider_dida').id
         with open(base_cache_directory + 'dida_pool/00_master/BedType.csv', 'r') as f:
             bed_type_ids = csv.reader(f)
             for rec in bed_type_ids:

@@ -5,7 +5,7 @@ from dateutil.relativedelta import relativedelta
 
 class CustomerReportPassportExpiration(models.TransientModel):
     _name = 'tt.customer.report.passport.expiration.wizard'
-    _description = 'CUstomer Report Passport Expiration Wizard'
+    _description = 'Customer Report Passport Expiration Wizard'
 
     def _check_ho_user(self):
         return self.env.user.agent_id.agent_type_id.id == self.env.ref('tt_base.agent_type_ho').id

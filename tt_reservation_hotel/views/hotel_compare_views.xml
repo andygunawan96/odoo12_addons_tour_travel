@@ -7,11 +7,13 @@
             <form>
                 <header>
                     <button name="compare_hotel" type="object" string="Compare Line" class="oe_stat_button" icon="fa-money" states="draft"/>
-                    <button name="to_merge_hotel" type="object" string="To Merge" class="oe_stat_button" icon="fa-money" attrs="{'invisible': ['|',('state', '!=', 'draft')]}"/>
-                    <button name="merge_hotel" type="object" string="Merge" class="oe_stat_button" icon="fa-money" attrs="{'invisible': [('state', '!=', 'merge')]}"/>
-                    <button name="cancel_merge_hotel" type="object" string="Decline" class="oe_stat_button" icon="fa-money" states="draft"/>
-                    <button name="set_to_draft" type="object" string="Set to Draft" class="oe_stat_button" states="merge,cancel"/>
-                    <field name="state" widget="statusbar" statusbar_visible="draft,merge" />
+                    <button name="to_merge_hotel" type="object" string="To Merge" class="oe_stat_button" icon="fa-money" states="draft"/>
+                    <button name="decline_merge_hotel" type="object" string="Decline" class="oe_stat_button" icon="fa-money" states="draft"/>
+
+                    <button name="merge_hotel" type="object" string="Merge" class="oe_stat_button" icon="fa-money" states="tobe_merge"/>
+                    <button name="cancel_merge_hotel" type="object" string="Cancel Merge" class="oe_stat_button" icon="fa-money" states="merge"/>
+                    <button name="set_to_draft" type="object" string="Set to Draft" class="oe_stat_button" states="tobe_merge,cancel"/>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,tobe_merge,merge" />
                 </header>
 
                 <sheet>
@@ -56,6 +58,7 @@
                 <field name="merge_date"/>
                 <field name="score"/>
                 <field name="similar_id"/>
+                <field name="state"/>
             </tree>
         </field>
     </record>
@@ -68,7 +71,7 @@
                 <field name="comp_hotel_id"/>
                 <field name="similar_id"/>
                 <field name="score"/>
-                <filter string="Need to check" name="need_to_check" domain="[('merge_date','=',False)]"/>
+                <filter string="Need to check" name="need_to_check" domain="[('state','in',['draft','tobe_merge'])]"/>
                 <filter string="Low Score" name="low_score" domain="[('score','&lt;',30)]"/>
                 <filter string="Medium Score" name="med_score" domain="[('score','&lt;',65)]"/>
                 <filter string="High Score" name="high_score" domain="[('score','&gt;',64)]"/>

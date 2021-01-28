@@ -23,7 +23,7 @@
                             <field name="state_id"/>
                             <field name="latitude"/>
                             <field name="longitude"/>
-                            <field name="city_alias_name"/>
+                            <field name="city_alias_name" groups="tt_base.group_tt_tour_travel_manager"/>
                             <!--<field name="address_detail_ids"/>-->
                             <!--<field name="provide_code_ids"/>-->
                         </group>
