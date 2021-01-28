@@ -7,6 +7,7 @@ import csv, glob, os
 from lxml import html
 from ...tools import xmltodict
 import csv
+from odoo.exceptions import UserError, ValidationError
 
 _logger = logging.getLogger(__name__)
 API_CN_HOTEL = ApiConnectorHotels()
@@ -3562,6 +3563,33 @@ class HotelInformation(models.Model):
                 _logger.error(msg='No function get Hotel Image for this provider %s' % rec)
         return False
 
+    # 2b. Proses Hotel Raw yg blum ada di comparer
+    def v2_sent_all_hotel_to_comparer(self):
+        # Cari hotel_id yg draft
+        err_list = []
+        for rec in self.env['tt.hotel'].search([('state','=','draft'),('state','!=',False)]): #Test pakai sandton('city_id','=',396925)
+            try:
+                # Create Comparer ulang sebagai record sja
+                comparing_id = self.env['tt.hotel.compare'].create({
+                    'hotel_id': rec.id,
+                    'comp_hotel_id': False,
+                })
+                comparing_id.to_merge_hotel()
+            except:
+                err_list.append(rec.id)
+                continue
+        return True
+
+    # 2c. Proses Hotel dari comparer
+    def v2_proceeding_hotel_comparer(self):
+        # Baca Smua comparer jika ada status draft kasih notif g bisa di proses
+        if self.env['tt.hotel.compare'].search([('state','=','draft')]):
+            raise UserError('Some Record still in Draft State:')
+        # Merge smua yg tobe_merge
+        for rec in self.env['tt.hotel.compare'].search([('state', '=', 'tobe_merge')]):
+            rec.merge_hotel()
+        return True
+
     # 3. Send Hotel to GW
     # Compiller: Master, Send: GW Rodextrip
     # Notes: Read Data Hotel kumpulkan per City kirim ke GW
@@ -3572,11 +3600,13 @@ class HotelInformation(models.Model):
         catalog = []
         last_render = int(self.env['ir.config_parameter'].sudo().get_param('last.gw.render.idx'))
         if last_render == 0: #Jika mulai baru
-            for destination in self.env['tt.hotel.destination'].search([('active', '=', True)]):
+            for destination in self.env['tt.hotel.destination'].search([('active', '=', True),('country_id','=',247)]): #Test pakai south africa ('country_id','=',247)
                 # Rename city as File_number // 7an supaya waktu send data kita bisa tau file mana yg hilang klo pakai nama city mesti buka index dulu baru tau klo ada file hilang
                 # Loop sngaja dibuat 2x ini tujuan nya buat bikin daftar isi trus kirim ke GW
                 daaata = {
                     'index': idx,
+                    'id': destination.id,
+                    'name': destination.name,
                     'destination_id': destination.id,
                     'destination_name': destination.name,
                     'city_id': False,
@@ -3683,19 +3713,15 @@ class HotelInformation(models.Model):
         provider_list = self.env['ir.config_parameter'].sudo().get_param('hotel.cache.provider').split(',')
         new_cache_dict = {
             'hotel_ids': [],
-            'city_ids': self.env['test.search'].render_cache_city_for_gw(provider=provider_list),
+            'city_ids': self.env['test.search'].render_cache_city_for_gw(providers=provider_list),
             'country_ids': self.env['test.search'].prepare_countries(self.env['res.country'].sudo().search([])),
             'landmark_ids': [],
             'meal_type_ids': self.env['tt.meal.type'].render_cache(),
             'meal_category_ids': self.env['tt.meal.category'].render_cache(),
         }
         # Update ke master nya
-        # API_CN_HOTEL.signin()
-        # API_CN_HOTEL.send_request('prepare_gateway_cache', new_cache_dict)
-        name = '/var/log/tour_travel/autocomplete_hotel/record_cache.json'
-        file = open(name, 'w')
-        file.write(json.dumps(new_cache_dict))
-        file.close()
+        API_CN_HOTEL.signin()
+        API_CN_HOTEL.send_request('prepare_gateway_cache', new_cache_dict)
 
         _logger.info('Render Cache Done ' + str(len(new_cache_dict['city_ids'])) + ' City(s), ' + str(len(new_cache_dict['country_ids'])) + ' Countries,')
         # Update ke BTBO2 dkk / Child / subscribers

@@ -39,7 +39,10 @@ class TestSearch(models.Model):
         city_cache = []
         if providers:
             provider_destination_ids = []
-            for provider in providers.split(','):
+            for provider in providers:
+                if not provider:
+                    continue
+                provider = provider.split('_')[0]
                 provider_obj = self.env['tt.provider'].search(['|', ('alias', '=', provider), ('code', '=', provider)], limit=1)
                 provider_id = provider_obj.id
                 provider_destination_ids += [rec.res_id for rec in self.env['tt.provider.code'].sudo().search([('res_model', '=', 'tt.hotel.destination'), ('provider_id', '=', provider_id)])]
@@ -53,15 +56,15 @@ class TestSearch(models.Model):
         if city_name:
             domain.append(('name', '=ilike', city_name))
 
-        for rec in self.env['tt.hotel.destination'].sudo().search(domain, limit=limit):
-            f2 = open('/var/log/tour_travel/cache_hotel/catalog.txt', 'r')
-            f2 = f2.read()
-            catalog = json.loads(f2)
-            catalog.sort(key=lambda k: k['index'])
-            for city in catalog:
-                if city['destination_id'] == rec.id:
-                    city_cache.append(city)
-                    break
+        f2 = open('/var/log/tour_travel/cache_hotel/catalog.txt', 'r')
+        f2 = f2.read()
+        catalog = json.loads(f2)
+        catalog.sort(key=lambda k: k['index'])
+
+        destination_ids = self.env['tt.hotel.destination'].sudo().search(domain, limit=limit).ids
+        for city in catalog:
+            if city['destination_id'] in destination_ids:
+                city_cache.append(city)
         return city_cache
 
     def create_cache_city(self):
@@ -1133,6 +1136,7 @@ class TestSearch(models.Model):
 
         city_id = self.env['res.city'].find_city_by_name(dest_name, 1)
         country_id = city_id.state_id and city_id.state_id.country_id or city_id.country_id
+        
         vendor_ids = self.env['tt.provider.destination'].sudo().search([('country_id', '=', country_id.id), ('is_apply', '=', True)])
         providers = []
         for rec in vendor_ids:
