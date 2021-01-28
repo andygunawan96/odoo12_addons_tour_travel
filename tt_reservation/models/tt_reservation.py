@@ -227,6 +227,108 @@ class TtReservation(models.Model):
         })
         return booker_obj.create(vals)
 
+    def get_booking_b2c_api(self, req, context):
+        try:
+            res = {}
+            if req['product'] == 'airline':
+                if req['forget_booking']:
+                    origin = self.env['tt.destinations'].search([('code','=',req['origin'])],limit=1)
+                    destination = self.env['tt.destinations'].search([('code','=',req['destination'])],limit=1)
+                    if origin and destination:
+                        book_objs = self.env['tt.reservation.%s' % req['product']].search([('origin_id','=',origin.id), ('destination_id','=',destination.id), ('contact_phone','=',req['phone_number']), ('departure_date','=',req['date'])])
+                        res = []
+                        for rec in book_objs:
+                            book = self.env['tt.reservation.%s' % req['product']].get_booking_airline_api({'order_number':rec.name}, context)
+                            if book['error_code'] == 0:
+                                res.append(book['response'])
+                        if len(res) == 0:
+                            return ERR.get_error(1013)
+                        res = ERR.get_no_error(res)
+                    else:
+                        return ERR.get_error(1013)
+                else:
+                    book_obj = self.env['tt.reservation.%s' % req['product']].get_booking_airline_api(req, context)
+                    # check res
+                    # kalau lupa booking origin, destination, tanggal, phone number
+                    if book_obj['error_code'] == 0:
+                        if req['date'] == book_obj['response']['departure_date'] and req['phone_number'] == book_obj['response']['contact']['phone']:
+                            res = book_obj
+                        else:
+                            return ERR.get_error(1013)
+                    else:
+                        return ERR.get_error(1013)
+
+            elif req['product'] == 'train':
+                if req['forget_booking']:
+                    origin = self.env['tt.destinations'].search([('code','=',req['origin'])],limit=1)
+                    destination = self.env['tt.destinations'].search([('code','=',req['destination'])],limit=1)
+                    if origin and destination:
+                        book_objs = self.env['tt.reservation.%s' % req['product']].search([('origin_id','=',origin.id), ('destination_id','=',destination.id), ('contact_phone','=',req['phone_number']), ('departure_date','=',req['date'])])
+                        res = []
+                        for rec in book_objs:
+                            book = self.env['tt.reservation.%s' % req['product']].get_booking_train_api({'order_number':rec.name}, context)
+                            if book['error_code'] == 0:
+                                res.append(book['response'])
+                        if len(res) == 0:
+                            return ERR.get_error(1013)
+                        res = ERR.get_no_error(res)
+                    else:
+                        return ERR.get_error(1013)
+                else:
+                    book_obj = self.env['tt.reservation.%s' % req['product']].get_booking_train_api(req, context)
+                    # check res
+                    # kalau lupa booking origin, destination, tanggal, phone number
+                    if book_obj['error_code'] == 0:
+                        if req['date'] == book_obj['response']['departure_date'] and req['phone_number'] == book_obj['response']['contact']['phone']:
+                            res = book_obj
+                        else:
+                            return ERR.get_error(1013)
+                    else:
+                        return ERR.get_error(1013)
+            elif req['product'] == 'hotel':
+                if req['forget_booking']:
+                    book_objs = self.env['tt.reservation.%s' % req['product']].search([('hotel_city', '=', req['city']), ('checkin_date', '=', req['date']),('contact_phone', '=', req['phone_number'])])
+                    # book_objs = self.env['tt.reservation.%s' % req['product']].search([('hotel_city', 'ilike', ''), ('checkin_date', '=', req['date']),('contact_phone', '=', False)]) # testing
+                    res = []
+                    for rec in book_objs:
+                        res.append(self.env['test.search'].get_booking_result(rec.name, context))
+                    if len(res) == 0:
+                        return ERR.get_error(1013)
+                    res = ERR.get_no_error(res)
+                else:
+                    book_obj = self.env['test.search'].get_booking_result(req['order_number'], context)
+                    if book_obj:
+                        if req['date'] == book_obj['checkin_date'] and req['phone_number'] == book_obj['response']['contact']['phone']:
+                            res = book_obj
+                        # if True: #testing
+                        #     res = book_obj #testing
+                        else:
+                            return ERR.get_error(1013)
+                        res = ERR.get_no_error(res)
+                    else:
+                        return ERR.get_error(1013)
+                # kalau lupa booking nama hotel, checkin, phone number
+            elif req['product'] == 'activity':
+                res = self.env['tt.reservation.%s' % req['product']].get_booking_by_api(req, context)
+                # kalau lupa booking nama activity, tanggal, phone number
+            elif req['product'] == 'tour':
+                res = self.env['tt.reservation.%s' % req['product']].get_booking_api(req, context)
+                # kalau lupa booking nama tour, tanggal, phone number
+            elif req['product'] == 'ppob':
+                res = self.env['tt.reservation.%s' % req['product']].get_inquiry_api(req, context)
+                # kalau lupa booking nomor pelanggan, bulan, phone number
+            elif req['product'] == 'visa':
+                res = self.env['tt.reservation.%s' % req['product']].get_booking_visa_api(req, context)
+            elif req['product'] == 'passport':
+                res = self.env['tt.reservation.%s' % req['product']].get_booking_passport_api(req, context)
+            elif req['product'] == 'event':
+                res = self.env['tt.reservation.%s' % req['product']].get_booking_from_backend(req, context)
+            return res
+        except Exception as e:
+            _logger.error(traceback.format_exc())
+            return ERR.get_error(1013)
+
+
     def create_contact_api(self, vals, booker, context):
         contact_obj = self.env['tt.customer'].sudo()
         get_contact_seq_id = util.get_without_empty(vals,'contact_seq_id',False)
