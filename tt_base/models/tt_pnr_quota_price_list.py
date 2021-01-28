@@ -47,7 +47,7 @@ class TtPnrQuotaPriceList(models.Model):
     @api.model
     def create(self, vals_list):
         vals_list['seq_id'] = self.env['ir.sequence'].next_by_code('tt.pnr.quota.price.list')
-        return super(TtPnrQuotaMasterData, self).create(vals_list)
+        return super(TtPnrQuotaPriceList, self).create(vals_list)
 
     def to_dict(self):
         return {
