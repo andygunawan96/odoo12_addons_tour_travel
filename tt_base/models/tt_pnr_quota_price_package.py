@@ -20,7 +20,7 @@ class TtPnrQuotaPricePackage(models.Model):
     @api.model
     def create(self, vals_list):
         vals_list['seq_id'] = self.env['ir.sequence'].next_by_code('tt.pnr.quota.price.package')
-        return super(TtPnrQuotaMasterPackage, self).create(vals_list)
+        return super(TtPnrQuotaPricePackage, self).create(vals_list)
         
     def to_dict(self):
         price_list = []
