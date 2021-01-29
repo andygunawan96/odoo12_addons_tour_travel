@@ -9,7 +9,8 @@
                 <header>
                     <button string="Confirm" type="object" name="action_confirm" states="draft" class="oe_highlight" groups="tt_base.group_tt_tour_travel_operator"/>
                     <button string="Set to Draft" type="object" name="action_draft" states="confirm" class="oe_link"/>
-                    <button string="Calc Vendor Name" type="object" name="get_provider_name" class="oe_highlight"/>
+                    <button string="Calc Country City" type="object" name="fill_country_city"/>
+                    <!--<button string="Calc Vendor Name" type="object" name="get_provider_name"/>-->
                     <!--<button string="Calc Vendor Name in Same City" type="object" name="calc_get_provider_name" class="oe_highlight"/>-->
                     <!--Tester ONLY-->
                     <!--<button string="Get Record (HotelPro / File)" type="object" name="get_record_by_file"/>-->
@@ -295,6 +296,7 @@
                 <field name="name" string="Name"/>
                 <field name="city_id" string="City"/>
                 <field name="country_id" string="Country"/>
+                <field name="destination_id" string="Destination"/>
                 <field name="provider" string="Vendor"/>
                 <filter string="Draft" name="draft" domain="[('state', '=', 'draft')]"/>
                 <filter string="Confirm" name="confirm" domain="[('state', '=', 'confirm')]"/>
@@ -400,6 +402,8 @@
                     <notebook>
                         <page string="Provider Code">
                             <field name="info_ids"/>
+                        </page>
+                        <page string="Comparing Process">
                             <field name="compare_ids"/>
                         </page>
                         <page string="Room Information" groups="base.group_no_one">
@@ -735,6 +739,8 @@
                         <button name="v2_get_hotel_image_knb" class="oe_stat_button" string="2a. Get Image KNB" type="object" icon="fa-plus"/>
                     </group>
                     <group>
+                        <button name="v2_sent_all_hotel_to_comparer" class="oe_stat_button" string="2b. Proses Hotel Raw uncompared" type="object" icon="fa-plus"/>
+                        <button name="v2_proceeding_hotel_comparer" class="oe_stat_button" string="2c. Merge Compared Hotel" type="object" icon="fa-plus"/>
                         <button name="v3_partial_send_cache" class="oe_stat_button" string="3a. Partial Update Data" type="object" icon="fa-plus"/>
                     </group>
                 </sheet>
@@ -747,5 +753,16 @@
         <field name="view_type">form</field>
         <field name="view_mode">tree,form</field>
         <field name="context" eval="{'form_view_ref': 'tt_reservation_hotel.tt_hotel_read_file_2_view_form_rodex'}"/>
+    </record>
+
+    <record model="ir.actions.server" id="action_mass_fill_country_city">
+        <field name="name">Fill Country City</field>
+        <field name="model_id" ref="tt_reservation_hotel.model_tt_hotel"/>
+        <field name="binding_model_id" ref="tt_reservation_hotel.model_tt_hotel"/>
+        <field name="state">code</field>
+        <field name="code">
+            if records:
+                action = records.mass_fill_country_city()
+        </field>
     </record>
 </odoo>

@@ -21,7 +21,7 @@
 
     # any module necessary for this one to work correctly
     'depends': [
-        'base_address_city', 'tt_city_google_1',
+        'base_address_city', 'tt_city_google',
     ],
 
     # always loaded

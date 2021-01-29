@@ -59,6 +59,19 @@ class HotelDestination(models.Model):
         a = self.env['tt.provider.code'].search([('type_id', '=', type_id), ('provider_id', '=', provider_id)], limit= 1)
         return a.code
 
+    def multi_merge_destination(self):
+        code_list = []
+        max_len = 0
+        max_obj = False
+        for rec in self:
+            code_list += rec.provider_ids.ids
+            if max_len < len(rec.provider_ids.ids):
+                max_len = len(rec.provider_ids.ids)
+                max_obj = rec
+        if max_obj:
+            max_obj.provider_ids.update([(6, 0, code_list)])
+        return True
+
 # class HotelMaster(models.Model):
 #     _inherit = "tt.hotel.master"
 

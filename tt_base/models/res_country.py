@@ -86,6 +86,7 @@ class CountryState(models.Model):
                 found += rec.country_id
         return found
 
+
 class CountryCity(models.Model):
     _inherit = 'res.city'
     _description = 'Tour & Travel - Res City'
@@ -101,7 +102,7 @@ class CountryCity(models.Model):
 
     latitude = fields.Float('Latitude Degree', digits=(3, 7))
     longitude = fields.Float('Longitude Degree', digits=(3, 7))
-    city_alias_name = fields.Char('Alias Name')
+    city_alias_name = fields.Char('Alias Name', compute='city_search_name', store=True)
 
     def find_city_by_name(self, str_name, limit=1):
         str_name = str_name.rstrip()
@@ -112,6 +113,7 @@ class CountryCity(models.Model):
         return found
 
     @api.onchange('name', 'other_name_ids')
+    @api.depends('name', 'other_name_ids')
     def city_search_name(self):
         for rec1 in self:
             new_str = rec1.name

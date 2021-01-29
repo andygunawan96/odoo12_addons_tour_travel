@@ -1,5 +1,6 @@
 from odoo import models, fields, api
 from datetime import date, datetime, timedelta
+from odoo.exceptions import UserError
 
 
 class HotelDestination(models.Model):
@@ -55,11 +56,6 @@ class HotelDestination(models.Model):
             rec.find_state_obj()
             rec.find_city_obj()
 
-    def revisi_data_city(self):
-        for rec in self.sudo().search([]):
-            if rec.city_str and not rec.city_id:
-                rec.find_city_obj()
-
     # Func render Name
 
     # Func Find Similar Destination
@@ -71,18 +67,18 @@ class HotelDestination(models.Model):
         city_exist = new_dict['city_str']
 
         if new_dict['country_str']:
-            params.append(('country_str','=',new_dict['country_str']))
+            params.append(('country_str','=ilike',new_dict['country_str']))
 
         if new_dict['city_str']:
-            params.append(('city_str', '=',new_dict['city_str']))
+            params.append(('city_str', '=ilike',new_dict['city_str']))
 
         if new_dict['state_str']:
-            params.append(('state_str','=',new_dict['state_str']))
+            params.append(('state_str','=ilike',new_dict['state_str']))
 
         similar_rec = self.env['tt.hotel.destination'].search(params, limit=1)
 
         if similar_rec:
-            is_exact = country_exist and state_exist and city_exist
+            is_exact = country_exist and city_exist
             return is_exact, similar_rec
         else:
             return False, similar_rec
@@ -102,16 +98,6 @@ class HotelDestination(models.Model):
         return True
 
     def multi_merge_destination(self):
-        code_list = []
-        max_len = 0
-        max_obj = False
-        for rec in self:
-            code_list += rec.provider_ids.ids
-            if max_len < len(rec.provider_ids.ids):
-                max_len = len(rec.provider_ids.ids)
-                max_obj = rec
-        if max_obj:
-            max_obj.provider_ids.update([(6, 0, code_list)])
         return True
 
     def prepare_destination_for_cache(self, curr_obj):
@@ -119,3 +105,32 @@ class HotelDestination(models.Model):
             'id': curr_obj.id,
             'name': curr_obj.name,
         }
+
+    def save_this_destination_as_alias_city_name(self):
+        if self.city_id:
+            #Cek apakah alias dengan nama destinasi ini telah ada?
+            if self.env['tt.destination.alias'].search([('name','=ilike',self.name), ('city_id','=',self.city_id.id)]):
+                # Jika iya notif
+                raise UserError('Alias Name Already Exist')
+            else:
+                # Jika Tidak Create
+                self.env['tt.destination.alias'].create({
+                    'name': self.name,
+                    'city_id': self.city_id.id,
+                })
+                # self.city_id.city_search_name()
+
+        else:
+            raise UserError('You must set city First')
+
+    def write(self, vals):
+        # Jika Ganti nama Destinasi cek City nya
+        if 'name' in vals:
+            # Jika destinasi ini digunakan sebagai data alias maka ganti juga nama nya
+            for rec in self.env['tt.destination.alias'].search([('name', '=ilike', self.name), ('city_id', '=', self.city_id.id)]):
+                rec.name = vals['name']
+        # Jika ada Alias dengan exact name as this destination Ganti City_ID ne
+        if 'city_id' in vals:
+            for rec in self.env['tt.destination.alias'].search([('name', '=ilike', self.name), ('city_id', '=', self.city_id.id)]):
+                rec.city_id = vals['city_id']
+        return super(HotelDestination, self).write(vals)

@@ -109,7 +109,7 @@ class HotelInformationCompare(models.Model):
     _description = 'Merging between 2 hotel that being considered have similarities'
 
     hotel_id = fields.Many2one('tt.hotel', 'Hotel #1', required="True", description='Raw Data')
-    comp_hotel_id = fields.Many2one('tt.hotel.master', 'Hotel Master', required=0, description='Master Data(Record Merged into this record)')
+    comp_hotel_id = fields.Many2one('tt.hotel.master', 'Hotel #2', required=0, description='Master Data(Record Merged into this record)')
 
     line_ids = fields.One2many('tt.hotel.compare.line', 'compare_id', 'Line(s)')
 
@@ -120,7 +120,7 @@ class HotelInformationCompare(models.Model):
 
     score = fields.Integer('Score')
     similar_id = fields.Many2one('tt.hotel.master', 'Master Hotel', help='Final Product after merged')
-    state = fields.Selection([('draft', 'Draft'), ('merge', 'Merged'), ('cancel', 'Cancel')], string='State', default='draft')
+    state = fields.Selection([('draft', 'Draft'), ('tobe_merge', 'To Be Merged'), ('merge', 'Merged'), ('cancel', 'Cancel')], string='State', default='draft')
 
     def get_compared_param(self):
         return ['name','rating','address','address2','address3','lat','long','email','city_id','phone','state_id','country_id','provider']
@@ -278,6 +278,59 @@ class HotelInformationCompare(models.Model):
         self.compare_date = fields.Datetime.now()
         self.comp_hotel_id.state = 'tobe_merge'
 
+    # ======= Part Rubah State blum merge trigger Start=======
+    def to_merge_hotel(self):
+        # TODO: Cek tiap mau merge apa hotel yg yg mau di bandingkan masih ready?
+        # TODO: Jika Hotel status tobe_Merge kita kluarkan Notif user untuk pilih hotel raw tersebut
+        # ingin di merge Hotel Master yg mana
+        if self.hotel_id.state == 'tobe_merge':
+            # Find Comparer ambil(Nama Comparer, Nama Master, Total Score)
+            similar_str = []
+            for rec in self.search([('state', '=', 'tobe_merge'), ('hotel_id', '=', self.hotel_id.id)]):
+                similar_str.append('{}: {}({})'.format(rec.name, rec.comp_hotel_id and rec.comp_hotel_id.name or 'New Record', rec.score))
+            raise UserError('Hotel #1 Already Merged in other Comparer with ID: ' + ', '.join(similar_str))
+        self.hotel_id.state = 'tobe_merge'
+        self.state = 'tobe_merge'
+
+    def decline_merge_hotel(self):
+        if self.state != 'draft':
+            raise UserError('Hotel #1 state Must Draft')
+        self.state = 'cancel'
+
+    def set_to_draft(self):
+        if self.state == 'cancel':
+            self.state = 'draft'
+        elif self.hotel_id.state != 'tobe_merge':
+            raise UserError('Hotel #1 state Must be To be Merge')
+        elif self.state != 'tobe_merge':
+            if self.state == 'merge':
+                raise UserError('Cannot Cancelling Merge Document already Merged')
+            else:
+                raise UserError('Cannot Cancelling Merge')
+        else:
+            self.hotel_id.state = 'draft'
+            self.state = 'draft'
+
+    # Cancel klo dah ke merge
+    def cancel_merge_hotel(self):
+        if self.hotel_id.state == 'merged' and self.state == 'merge':
+            # Update Value ke value sebelum merge
+            for rec in self.line_ids:
+                if rec.is_value_1:
+                    self.comp_hotel_id.update({
+                        rec.params: rec.params == 'rating' and int(rec.value_2) or rec.value_2
+                    })
+            self.similar_id.info_ids = [(3, self.hotel_id.id)]
+            self.hotel_id.state = 'draft'
+            self.state = 'cancel'
+
+            if all(rec.state == 'cancel' for rec in self.comp_hotel_id.compare_ids):
+                self.similar_id.sudo().unlink()
+        else:
+            raise UserError('Cannot UnMerge this comparing process')
+
+    # ======= Part Rubah State blum merge trigger END  =======
+
     def merge_image(self):
         for img in self.comp_hotel_id.image_ids:
             new_img_id = img.copy()
@@ -287,12 +340,6 @@ class HotelInformationCompare(models.Model):
         for provider in self.comp_hotel_id.provider_hotel_ids:
             provider.hotel_id = self.similar_id.id
 
-    def to_merge_hotel(self):
-        self.hotel_id.state = 'tobe_merge'
-        self.state = 'merge'
-
-    # Merge di Hotel #1 & Hotel #2 di non-aktifkan
-    # Provider Code di Hotel #2 di pindah ke Hotel #1
     def merge_hotel(self):
         vals = {}
         if not self.comp_hotel_id:
@@ -306,38 +353,30 @@ class HotelInformationCompare(models.Model):
             for key in pop_list:
                 hotel_dict.pop(key)
             self.similar_id = self.env['tt.hotel.master'].create(hotel_dict)
+            self.similar_id.state = 'draft'
         else:
             self.similar_id = self.comp_hotel_id
+            for rec in self.line_ids:
+                if rec.params == 'rating':
+                    vals[rec.params] = rec.is_value_1 and int(rec.value_1) or int(rec.value_2)
+                else:
+                    vals[rec.params] = rec.is_value_1 and rec.value_1 or rec.value_2
+            self.similar_id.update(vals)
+            self.merge_image()
+            self.merge_provider_code()
 
-        for rec in self.line_ids:
-            if rec.params == 'rating':
-                vals[rec.params] = rec.is_value_1 and int(rec.value_1) or int(rec.value_2)
-            else:
-                vals[rec.params] = rec.is_value_1 and rec.value_1 or rec.value_2
-        self.similar_id.update(vals)
         self.similar_id.info_ids = [(4, self.hotel_id.id)]
-        self.merge_image()
-        self.merge_provider_code()
         self.similar_id.get_provider_name()
 
         self.merge_uid = self.env.uid
         self.merge_date = fields.Datetime.now()
         self.hotel_id.state = 'merged'
+        self.state = 'merge'
 
-    def cancel_merge_hotel(self):
-        if self.hotel_id.state == 'merged' and self.comp_hotel_id.state == 'merged':
-            self.hotel_id.state = 'draft'
-            self.comp_hotel_id.state = 'draft'
-            self.state = 'cancel'
-
+    # ======= Part Extra tool(s) =======
     def multi_merge_hotel(self):
         for rec in self:
             rec.merge_hotel()
-
-    def set_to_draft(self):
-        if self.state == 'merged':
-            self.cancel_merge_hotel()
-        self.state = 'draft'
 
     def clear_compare_list(self):
         for rec in self.line_ids:
