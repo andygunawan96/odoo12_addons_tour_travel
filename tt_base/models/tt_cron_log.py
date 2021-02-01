@@ -87,7 +87,7 @@ class TtCronLog(models.Model):
             pnr_quota_obj = self.env['tt.pnr.quota'].search([('state', '=', 'waiting')])
             for rec in pnr_quota_obj:
                 rec.payment_pnr_quota_api()
-                if rec.state != 'payment':
+                if rec.state != 'done':
                     rec.agent_id.ban_user_api()
                     rec.state = 'failed'
 
@@ -95,16 +95,6 @@ class TtCronLog(models.Model):
             _logger.error(traceback.format_exc())
             self.create_cron_log_folder()
             self.write_cron_log('auto-payment quota pnr')
-
-    def cron_done_pnr_quota(self):
-        try:
-            pnr_quota_obj = self.env['tt.pnr.quota'].search([('state', '=', 'payment')])
-            for rec in pnr_quota_obj:
-                rec.state = 'done'
-        except Exception as e:
-            _logger.error(traceback.format_exc(e))
-            self.create_cron_log_folder()
-            self.write_cron_log('auto-done quota pnr')
 
     def cron_send_email_queue(self):
         try:

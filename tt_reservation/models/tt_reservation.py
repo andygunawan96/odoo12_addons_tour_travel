@@ -992,6 +992,7 @@ class TtReservation(models.Model):
                     'ref_carriers': carrier_str,
                     'ref_provider': req['provider'],
                     'provider_type': req['provider_type'],
+                    'ref_provider_type': req['provider_type'],
                     'ref_name': "EXT.%s" % req['order_number'],
                     'ref_pax': req.get('pax'), # total pax
                     'ref_r_n': req.get('r_n'), # room/night
