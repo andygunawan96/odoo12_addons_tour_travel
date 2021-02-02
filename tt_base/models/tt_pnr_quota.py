@@ -4,6 +4,7 @@ from ...tools import ERR
 from ...tools.ERR import RequestException
 import json,logging,traceback,pytz
 import calendar
+from dateutil.relativedelta import relativedelta
 
 _logger = logging.getLogger(__name__)
 
@@ -33,7 +34,7 @@ class TtPnrQuota(models.Model):
     def create(self, vals_list):
         package_obj = self.env['tt.pnr.quota.price.package'].browse(vals_list['price_package_id'])
         if package_obj:
-            exp_date = datetime.now() + timedelta(days=package_obj.validity * 30)
+            exp_date = datetime.now() + relativedelta(month=package_obj.validity)
             now = datetime.now()
             vals_list['name'] = self.env['ir.sequence'].next_by_code('tt.pnr.quota')
             vals_list['expired_date'] = "%s-%s-%s" % (exp_date.year, exp_date.month, calendar.monthrange(exp_date.year, exp_date.month)[1])

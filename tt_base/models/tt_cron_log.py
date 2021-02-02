@@ -1,6 +1,7 @@
 from odoo import api,models,fields
 import os,traceback,pytz,logging
 from datetime import datetime,timedelta
+from dateutil.relativedelta import relativedelta
 
 _logger = logging.getLogger(__name__)
 
@@ -90,7 +91,8 @@ class TtCronLog(models.Model):
                 if rec.state != 'done':
                     rec.agent_id.ban_user_api()
                     rec.state = 'failed'
-
+            next_month = datetime.now() + relativedelta(month=1)
+            self.env.ref('tt_base.cron_payment_pnr_quota').nextcall = datetime(year=next_month.year, month=next_month.month, day=15)
         except Exception as e:
             _logger.error(traceback.format_exc())
             self.create_cron_log_folder()
