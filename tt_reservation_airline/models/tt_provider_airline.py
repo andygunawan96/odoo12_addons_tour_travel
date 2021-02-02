@@ -521,6 +521,7 @@ class TtProviderAirline(models.Model):
                     'passenger_id': psg_with_no_ticket[idx].id
                 }))
                 psg_with_no_ticket[idx].is_ticketed = True
+                psg_with_no_ticket[idx].create_ssr(psg['fees'],pnr,self.id)
 
         self.write({
             'ticket_ids': ticket_list
