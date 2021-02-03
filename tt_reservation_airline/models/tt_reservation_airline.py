@@ -1861,11 +1861,13 @@ class ReservationAirline(models.Model):
                 'res_id': airline_obj.id,
                 'booking_desc': airline_obj.get_aftersales_desc(),
                 'notes': data.get('notes') and data['notes'] or '',
-                'refund_line_ids': [(6, 0, refund_line_ids)],
                 'created_by_api': True,
             }
             res_obj = self.env['tt.refund'].create(res_vals)
             res_obj.confirm_refund_from_button()
+            res_obj.update({
+                'refund_line_ids': [(6, 0, refund_line_ids)],
+            })
             res_obj.send_refund_from_button()
             res_obj.validate_refund_from_button()
             res_obj.finalize_refund_from_button()
