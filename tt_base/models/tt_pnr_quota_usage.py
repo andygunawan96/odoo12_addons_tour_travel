@@ -26,6 +26,8 @@ class TtPnrQuotaUsage(models.Model):
     amount = fields.Monetary('Amount')
     pnr_quota_state = fields.Selection('Quota State', related='pnr_quota_id.state')
     pnr_quota_id = fields.Many2one('tt.pnr.quota', 'Quota')
+    ref_provider_type = fields.Char('Ref Provider Type')
+    ref_provider = fields.Char('Ref Provider')
     active = fields.Boolean('Active', default=True)
 
     def open_reservation(self):

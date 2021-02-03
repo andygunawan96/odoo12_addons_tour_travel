@@ -574,17 +574,19 @@ class TtAgent(models.Model):
                 if req['inventory'] == 'external':
                     for quota_obj in self.quota_ids:
                         if quota_obj.state == 'active':
-                            for quota_list_obj in quota_obj.price_package_id.available_price_list_ids:
-                                if req['provider_type'] == quota_list_obj.provider_type_id.code:
-                                    if quota_list_obj.provider_access_type == 'all' or quota_list_obj.provider_id.code == req['ref_provider'] and quota_list_obj.provider_access_type == 'allow' or quota_list_obj.provider_access_type == 'restrict' and req['ref_provider'] != quota_list_obj.provider_id.code:
-                                        for pnr in pnrs:
-                                            if quota_list_obj.carrier_access_type == 'all' or quota_list_obj.carrier_access_type == 'restrict' and quota_list_obj.carrier_id.name != pnr or quota_list_obj.carrier_id.name != pnr:
-                                                if quota_list_obj.price_type == 'pnr':
-                                                    amount += quota_list_obj.price * len(pnrs)
-                                                elif quota_list_obj.price_type == 'r/n':
-                                                    amount += quota_list_obj.price * req.get('ref_r_n')
-                                                elif quota_list_obj.price_type == 'pax':
-                                                    amount += quota_list_obj.price * req.get('ref_pax')
+                            amount = self.env['tt.pnr.quota'].calculate_price(quota_obj.price_package_id.available_price_list_ids, req)
+                            break
+                            # for quota_list_obj in quota_obj.price_package_id.available_price_list_ids:
+                            #     if req['provider_type'] == quota_list_obj.provider_type_id.code:
+                            #         if quota_list_obj.provider_access_type == 'all' or quota_list_obj.provider_id.code == req['ref_provider'] and quota_list_obj.provider_access_type == 'allow' or quota_list_obj.provider_access_type == 'restrict' and req['ref_provider'] != quota_list_obj.provider_id.code:
+                            #             for pnr in pnrs:
+                            #                 if quota_list_obj.carrier_access_type == 'all' or quota_list_obj.carrier_access_type == 'restrict' and quota_list_obj.carrier_id.name != pnr or quota_list_obj.carrier_id.name != pnr:
+                            #                     if quota_list_obj.price_type == 'pnr':
+                            #                         amount += quota_list_obj.price * len(pnrs)
+                            #                     elif quota_list_obj.price_type == 'r/n':
+                            #                         amount += quota_list_obj.price * req.get('ref_r_n')
+                            #                     elif quota_list_obj.price_type == 'pax':
+                            #                         amount += quota_list_obj.price * req.get('ref_pax')
                 else:
                     amount = req.get('amount')
                 self.env['tt.pnr.quota.usage'].create({
@@ -596,6 +598,8 @@ class TtAgent(models.Model):
                     'ref_pnrs': req.get('ref_pnrs'),
                     'ref_carriers': req.get('ref_carriers'),
                     'ref_name': req.get('ref_name'),
+                    'ref_provider': req['ref_provider'],
+                    'ref_provider_type': req['ref_provider_type'],
                     'ref_pax': req.get('ref_pax') and int(req.get('ref_pax')) or 0,
                     'ref_r_n': req.get('ref_r_n') and int(req.get('ref_r_n')) or 0,
                     'amount': amount,

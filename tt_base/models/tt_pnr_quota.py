@@ -4,6 +4,7 @@ from ...tools import ERR
 from ...tools.ERR import RequestException
 import json,logging,traceback,pytz
 import calendar
+from dateutil.relativedelta import relativedelta
 
 _logger = logging.getLogger(__name__)
 
@@ -20,11 +21,11 @@ class TtPnrQuota(models.Model):
                                   default=lambda self: self.env.user.company_id.currency_id)
     price_package_id = fields.Many2one('tt.pnr.quota.price.package', 'Price Package')
     start_date = fields.Date('Start')
-    expired_date = fields.Date('Expired Date', store=True)
+    expired_date = fields.Date('Valid Until', store=True)
     usage_ids = fields.One2many('tt.pnr.quota.usage', 'pnr_quota_id','Quota Usage', readonly=True, domain=['|',('active', '=', True),('active', '=', False)])
     agent_id = fields.Many2one('tt.agent','Agent', domain="[('is_using_pnr_quota','=',True)]")
     is_expired = fields.Boolean('Expired')
-    state = fields.Selection([('active', 'Active'), ('waiting', 'Waiting'), ('payment', 'Payment'), ('done', 'Done'), ('failed', 'Failed')], 'State',compute="_compute_state",store=True)
+    state = fields.Selection([('active', 'Active'), ('waiting', 'Waiting'), ('done', 'Done'), ('failed', 'Failed')], 'State',compute="_compute_state",store=True)
     transaction_amount_internal = fields.Monetary('Transaction Amount Internal', copy=False, readonly=True)
     transaction_amount_external = fields.Monetary('Transaction Amount External', copy=False, readonly=True)
     total_amount = fields.Monetary('Total Amount', copy=False, readonly=True)
@@ -33,13 +34,13 @@ class TtPnrQuota(models.Model):
     def create(self, vals_list):
         package_obj = self.env['tt.pnr.quota.price.package'].browse(vals_list['price_package_id'])
         if package_obj:
-            exp_date = datetime.now() + timedelta(days=package_obj.validity - 1)
+            exp_date = datetime.now() + relativedelta(month=package_obj.validity)
             now = datetime.now()
             vals_list['name'] = self.env['ir.sequence'].next_by_code('tt.pnr.quota')
-            vals_list['expired_date'] = "%s-%s-%s" % (exp_date.year, exp_date.month, exp_date.day)
+            vals_list['expired_date'] = "%s-%s-%s" % (exp_date.year, exp_date.month, calendar.monthrange(exp_date.year, exp_date.month)[1])
             vals_list['start_date'] = "%s-%s-%s" % (now.year, now.month, now.day)
             vals_list['state'] = 'active'
-            vals_list['amount'] = package_obj.minimum_fee
+            vals_list['amount'] = int(package_obj.minimum_fee)
         else:
             raise Exception('Package not fount')
         return super(TtPnrQuota, self).create(vals_list)
@@ -129,7 +130,7 @@ class TtPnrQuota(models.Model):
                                                             credit=rec.total_amount,
                                                             description='Buying PNR Quota for %s' % (rec.agent_id.name)
                                                             )
-                rec.state = 'payment'
+                rec.state = 'done'
 
 
     def get_pnr_quota_api(self,data,context):
@@ -206,3 +207,40 @@ class TtPnrQuota(models.Model):
             _logger.error(traceback.format_exc())
             return ERR.get_error(1031)
 
+    def calculate_price(self, quota_list, req):
+        price = 0
+        try:
+            carriers = req.get('ref_carriers').split(', ') # dari api
+        except:
+            carriers = req.ref_carriers.split(', ') # recalculate
+        for price_list_obj in quota_list:
+            try:
+                provider_type = req.get('ref_provider_type')
+                provider = req.get('ref_provider')
+            except:
+                provider_type = req.ref_provider_type
+                provider = req.ref_provider
+            if provider_type == price_list_obj.provider_type_id.code:
+                if price_list_obj.provider_access_type == 'all' or price_list_obj.provider_access_type == 'allow' and provider == price_list_obj.provider_id.code or price_list_obj.provider_access_type == 'restrict' and provider != price_list_obj.provider_id.code:
+                    for carrier in carriers:
+                        if price_list_obj.carrier_access_type == 'all' or price_list_obj.carrier_access_type == 'restrict' and price_list_obj.carrier_id.name != carrier or price_list_obj.carrier_id.name != carrier:
+                            if price_list_obj.price_type == 'pnr':
+                                price += price_list_obj.price * 1
+                            elif price_list_obj.price_type == 'r/n':
+                                try:
+                                    price += price_list_obj.price * req.get('ref_r_n') #dari api
+                                except:
+                                    price += price_list_obj.price * req.ref_r_n  # recalculate
+                            elif price_list_obj.price_type == 'pax':
+                                try:
+                                    price += price_list_obj.price * req.get('ref_pax') #dari api
+                                except:
+                                    price += price_list_obj.price * req.ref_pax #recalculate
+        return price
+
+    def recompute_wrong_value_amount(self):
+        self.amount = int(self.price_package_id.minimum_fee)
+        for rec in self.usage_ids:
+            if rec.inventory == 'external':
+                price = self.calculate_price(self.price_package_id.available_price_list_ids, rec)
+                rec.amount = price

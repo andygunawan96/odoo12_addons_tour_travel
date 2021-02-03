@@ -916,20 +916,27 @@ class TtReservation(models.Model):
                             for ledger in ledger_obj:
                                 amount += ledger.debit
                             carrier_code = []
+                            carrier_str = ''
                             if hasattr(provider, 'journey_ids'):
                                 for journey in provider.journey_ids:
                                     if hasattr(journey, 'segment_ids'):
                                         for segment in journey.segment_ids:
-                                            carrier_code.append(segment.carrier_code)
+                                            if segment.carrier_code not in carrier_code:
+                                                carrier_code.append(segment.carrier_code)
                                     else:
-                                        carrier_code.append(journey.carrier_code)
+                                        if journey.carrier_code not in carrier_code:
+                                            carrier_code.append(journey.carrier_code)
+                            for carrier in carrier_code:
+                                if carrier_str != '' and carrier != '':
+                                    carrier += ', '
+                                carrier_str += carrier
                             agent_obj.use_pnr_quota({
                                 'res_model_resv': book_obj._name,
                                 'res_id_resv': book_obj.id,
                                 'res_model_prov': provider._name,
                                 'res_id_prov': provider.id,
                                 'ref_pnrs': provider.pnr,
-                                'ref_carriers': carrier_code,
+                                'ref_carriers': carrier_str,
                                 'ref_provider': provider.provider_id.code,
                                 'ref_name': book_obj.name,
                                 'ref_provider_type': PROVIDER_TYPE_SELECTION[book_obj.name.split('.')[0]], #parser code al to provider type
@@ -980,7 +987,7 @@ class TtReservation(models.Model):
             if not quota_usage_obj:
                 carrier_str = ''
                 for carrier in req.get('carriers'):
-                    if carrier_str != '':
+                    if carrier_str != '' and carrier != '':
                         carrier += ', '
                     carrier_str += carrier
                 agent_obj.use_pnr_quota({
@@ -992,6 +999,7 @@ class TtReservation(models.Model):
                     'ref_carriers': carrier_str,
                     'ref_provider': req['provider'],
                     'provider_type': req['provider_type'],
+                    'ref_provider_type': req['provider_type'],
                     'ref_name': "EXT.%s" % req['order_number'],
                     'ref_pax': req.get('pax'), # total pax
                     'ref_r_n': req.get('r_n'), # room/night
