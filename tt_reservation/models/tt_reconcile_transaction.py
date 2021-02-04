@@ -359,8 +359,7 @@ class PrintoutReconcile(models.AbstractModel):
 
         # ======= TITLE, SUBTITLE & FILENAME ============
         filename = 'Reconcile Report ' + values['data']['form']['display_reconcile_name']
-        filename_str_list = filename.split(' ')
-        filename_str = '_'.join(filename_str_list)
+        filename_str = filename.replace(' ','_')
 
         sheet.merge_range('A1:L2', 'Reconcile Report', style.title)  # set merge cells for agent name
         sheet.merge_range('A3:L4', values['data']['form']['display_reconcile_name'], style.title2)  # set merge cells for title
