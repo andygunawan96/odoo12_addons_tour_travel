@@ -216,8 +216,10 @@ class TtPnrQuota(models.Model):
         price = 0
         try:
             carriers = req.get('ref_carriers').split(', ') # dari api
+            pnr = req.get('ref_pnrs').split(', ') # dari api
         except:
             carriers = req.ref_carriers.split(', ') # recalculate
+            pnr = req.ref_pnrs.split(', ')  # dari api
         for price_list_obj in quota_list:
             try:
                 provider_type = req.get('ref_provider_type')
@@ -227,10 +229,27 @@ class TtPnrQuota(models.Model):
                 provider = req.ref_provider
             if provider_type == price_list_obj.provider_type_id.code:
                 if price_list_obj.provider_access_type == 'all' or price_list_obj.provider_access_type == 'allow' and provider == price_list_obj.provider_id.code or price_list_obj.provider_access_type == 'restrict' and provider != price_list_obj.provider_id.code:
-                    for carrier in carriers:
-                        if price_list_obj.carrier_access_type == 'all' or price_list_obj.carrier_access_type == 'restrict' and price_list_obj.carrier_id.name != carrier or price_list_obj.carrier_id.name != carrier:
+                    if price_list_obj.carrier_access_type == 'all':
+                        if price_list_obj.price_type == 'pnr':
+                            price += price_list_obj.price * len(pnr)
+                        elif price_list_obj.price_type == 'r/n':
+                            try:
+                                price += price_list_obj.price * req.get('ref_r_n')  # dari api
+                            except:
+                                price += price_list_obj.price * req.ref_r_n  # recalculate
+                        elif price_list_obj.price_type == 'pax':
+                            try:
+                                price += price_list_obj.price * req.get('ref_pax')  # dari api
+                            except:
+                                price += price_list_obj.price * req.ref_pax  # recalculate
+                    else:
+                        price_add = True
+                        for carrier in carriers:
+                            if price_list_obj.carrier_access_type == 'restrict' and price_list_obj.carrier_id.name == carrier or price_list_obj.carrier_id.name != carrier:
+                                price_add = False
+                        if price_add == True:
                             if price_list_obj.price_type == 'pnr':
-                                price += price_list_obj.price * 1
+                                price += price_list_obj.price * len(pnr)
                             elif price_list_obj.price_type == 'r/n':
                                 try:
                                     price += price_list_obj.price * req.get('ref_r_n') #dari api
