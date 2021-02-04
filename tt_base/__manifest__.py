@@ -38,7 +38,7 @@ Key Features
         'security/ir_rule_data.xml',
 
         'wizard/tt_upload_center_wizard_view.xml',
-        'wizard/create_customer_parent_wizard_view.xml',
+
 
         'views/res_country_views.xml',
         'views/res_country_state_views.xml',
@@ -90,6 +90,7 @@ Key Features
         'wizard/tt_upload_center_wizard_view.xml',
         'wizard/create_user_wizard_view.xml',
         'wizard/notification_pop_up_wizard.xml',
+        'wizard/create_customer_parent_wizard_view.xml',
         'views/tt_upload_center_views.xml',
         'views/tt_vendor_views.xml',
 
