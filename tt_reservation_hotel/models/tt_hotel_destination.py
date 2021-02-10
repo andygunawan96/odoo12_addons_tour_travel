@@ -22,6 +22,12 @@ class HotelDestination(models.Model):
     country_id = fields.Many2one('res.country', 'Country Obj', help='Object with same name as Country field')
 
     active = fields.Boolean('Active', default=True)
+    state = fields.Selection([('draft', 'Draft'), ('confirm', 'Confirmed'), ('merged', 'Merged')], default='draft')
+
+    confirm_uid = fields.Many2one('res.users', 'Confirmed by', readonly=True)
+    confirm_date = fields.Datetime('Confirmed Date', readonly=True)
+    cancel_uid = fields.Many2one('res.users', 'Cancel by', readonly=True)
+    cancel_date = fields.Datetime('Cancel Date', readonly=True)
 
     # Func Find City
     def find_city_obj(self):
@@ -134,3 +140,23 @@ class HotelDestination(models.Model):
             for rec in self.env['tt.destination.alias'].search([('name', '=ilike', self.name), ('city_id', '=', self.city_id.id)]):
                 rec.city_id = vals['city_id']
         return super(HotelDestination, self).write(vals)
+
+    # View Function Start
+    def action_confirm(self):
+        self.update({
+            'state': 'confirm',
+            'confirm_uid': self.env.user.id,
+            'confirm_date': datetime.now(),
+        })
+
+    def action_set_to_draft(self):
+        if self.state == 'confirm':
+            self.update({
+                'state': 'draft',
+                'confirm_uid': self.env.user.id,
+                'confirm_date': datetime.now(),
+            })
+        else:
+            self.state = 'draft'
+
+    # View Function END
