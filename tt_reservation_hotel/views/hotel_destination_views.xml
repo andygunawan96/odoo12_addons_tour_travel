@@ -7,6 +7,9 @@
                 <header>
                     <button name="fill_obj_by_str" type="object" string="Search City, State, Country"/>
                     <button name="save_this_destination_as_alias_city_name" type="object" string="Save as Alias Name"/>
+                    <button name="action_confirm" type="object" string="Confirm" states="draft" class="btn-primary"/>
+                    <button name="action_set_to_draft" type="object" string="Set to Draft" states="confirm"/>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,confirm" />
                 </header>
                 <sheet>
                     <div class="oe_title">
@@ -49,10 +52,30 @@
                 <field name="city_id"/>
                 <field name="country_str"/>
                 <field name="country_id"/>
+                <!--<field name="state"/>-->
                 <field name="active"/>
             </tree>
         </field>
     </record>
+
+    <record model="ir.ui.view" id="tt_hotel_destination_view_search_rodex" >
+        <field name="name">tt.hotel.destination.view.tree.rodex</field>
+        <field name="model">tt.hotel.destination</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+                <field name="city_str"/>
+                <field name="city_id"/>
+                <field name="country_str"/>
+                <field name="country_id"/>
+                <filter name="find_active" string="Active" domain="[('active','=',True)]"/>
+                <filter name="inactive" string="Archived" domain="[('active','=',False)]"/>
+
+                <filter name="need_to_check" string="Need to check" domain="[('state','=','draft'),('city_id','=',False)]"/>
+            </search>
+        </field>
+    </record>
+
     <record model="ir.actions.act_window" id="tt_hotel_destination_view_action_rodex">
         <field name="name">Hotel Destination</field>
         <field name="res_model">tt.hotel.destination</field>

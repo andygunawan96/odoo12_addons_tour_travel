@@ -1525,7 +1525,7 @@ class HotelInformation(models.Model):
                             a += 1
                 f.close()
                 for city in hotel_list.keys():
-                    _logger.info("City: " + city + ' Get:' + str(len(hotel_list[city])) + 'Hotel(s)')
+                    _logger.info("City: " + city + ' Get:' + str(len(hotel_list[city])) + ' Hotel(s)')
                     filename = "/var/log/cache_hotel/mg_pool/" + city.strip().split('/')[0] + ".json"
                     file = open(filename, 'w')
                     file.write(json.dumps(hotel_list[city]))
@@ -1756,7 +1756,7 @@ class HotelInformation(models.Model):
                 file = open(filename, 'w')
                 file.write(json.dumps(hotel_fmt))
                 file.close()
-            _logger.info("Get Hotel for Country " + rec + " END get " + str(all_obj) + "Hotel(s)")
+            _logger.info("Get Hotel for Country " + rec + " END get " + str(all_obj) + " Hotel(s)")
         return True
 
     # OYO TMC
@@ -1928,7 +1928,7 @@ class HotelInformation(models.Model):
                         a += 1
             f.close()
             for city in hotel_list.keys():
-                _logger.info("City: " + city + ' Get:' + str(len(hotel_list[city])) + 'Hotel(s)')
+                _logger.info("City: " + city + ' Get:' + str(len(hotel_list[city])) + ' Hotel(s)')
                 filename = "/var/log/cache_hotel/knb/" + city.strip().split('/')[0] + ".json"
                 file = open(filename, 'w')
                 file.write(json.dumps(hotel_list[city]))
@@ -3687,17 +3687,20 @@ class HotelInformation(models.Model):
         rewrite_city = self.env['ir.config_parameter'].sudo().get_param('rewrite.city')
         for city in catalog:
             if city['destination_name'].lower() not in rewrite_city.split(','):
+            # if city['city_name'].lower() not in rewrite_city.split(','): #Old Version
                 continue
             content = []
             # Search all Mapped Data from hotel.master
 
             for hotel in self.env['tt.hotel.master'].search([('city_id','=',city['city_id'])]):
+            # for hotel in self.env['tt.hotel'].search([('city_id','=',city['city_id'])]):  #Old Version
                 content.append(hotel.fmt_read(city_idx=city['index']))
             try:
                 file = open('/var/log/tour_travel/cache_hotel/cache_hotel_' + str(city['index']) + '.txt', 'w')
                 file.write(json.dumps(content))
                 file.close()
                 _logger.info(msg=str(city['index']) + '. ReWrite hotel file ' + city['destination_name'] + ', ' + city['country_name'] + ' with ' + str(len(content)) + ' Hotel(s) Done')
+                # _logger.info(msg=str(city['index']) + '. ReWrite hotel file ' + city['city_name'] + ' with ' + str(len(content)) + ' Hotel(s) Done')  #Old Version
             except Exception as e:
                 _logger.error(msg=str(city['index']) + '. ReWrite hotel file ' + city['destination_name'] + ', ' + city['country_name'] + ' Error Render')
                 continue

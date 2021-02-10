@@ -178,6 +178,11 @@ class HotelInformation(models.Model):
             writer = csv.writer(csvFile)
             writer.writerows(need_to_add_list)
         csvFile.close()
+
+        _logger.info("========================================")
+        _logger.info("             Write DONE                 ")
+        _logger.info("========================================")
+
         return True
 
     def v2_collect_by_human_csv_knb(self):
@@ -473,36 +478,37 @@ class HotelInformation(models.Model):
         api_context = {
             'co_uid': self.env.user.id
         }
-        # city_obj = self.env['res.city'].browse(694)
-        hotel_objs = self.env['tt.hotel'].search([('city_id','=', 694),('provider','ilike','klik and book'),('image_ids','=',False)])
-        const = 3
-        for idx in range(math.ceil(len(hotel_objs)/const)):
-            # if idx < 105:
-            #     continue
-            start = idx * const
-            end = (idx + 1) * const
-            _logger.info('Render ' + str(start) + ' to ' + str(end))
-            search_req = {
-                'provider': 'knb',
-                'type': 'GetImageList',
-                'limit': '',
-                'offset': '',
-                'codes': [(rec.id, rec.name) for rec in hotel_objs[start:end]],
-            }
-            try:
-                a = API_CN_HOTEL.get_record_by_api(search_req, api_context)
-                for hotel_resp in a['response']:
-                    for img in a['response'][hotel_resp]:
-                        self.env['tt.hotel.image'].create({
-                            'url': img,
-                            'hotel_id': int(hotel_resp),
-                        })
-            except:
-                a = False
+        for city_id in [797, 644, 712]:
+            # city_obj = self.env['res.city'].browse(694)
+            hotel_objs = self.env['tt.hotel'].search([('city_id','=', city_id),('provider','ilike','klik and book'),('image_ids','=',False)])
+            const = 3
+            for idx in range(math.ceil(len(hotel_objs)/const)):
+                # if idx < 105:
+                #     continue
+                start = idx * const
+                end = (idx + 1) * const
+                _logger.info('Render ' + str(start) + ' to ' + str(end))
+                search_req = {
+                    'provider': 'knb',
+                    'type': 'GetImageList',
+                    'limit': '',
+                    'offset': '',
+                    'codes': [(rec.id, rec.name) for rec in hotel_objs[start:end]],
+                }
+                try:
+                    a = API_CN_HOTEL.get_record_by_api(search_req, api_context)
+                    for hotel_resp in a['response']:
+                        for img in a['response'][hotel_resp]:
+                            self.env['tt.hotel.image'].create({
+                                'url': img,
+                                'hotel_id': int(hotel_resp),
+                            })
+                except:
+                    a = False
 
-            if idx % 5 == 0:
-                _logger.info('======= Saving #' + str((idx+1) * const) + '/' + str(len(hotel_objs)) + ' =======')
-                self.env.cr.commit()
+                if idx % 5 == 0:
+                    _logger.info('======= Saving #' + str((idx+1) * const) + '/' + str(len(hotel_objs)) + ' =======')
+                    self.env.cr.commit()
         _logger.info('================================')
         _logger.info('========== Proses End ==========')
         _logger.info('================================')
