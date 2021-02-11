@@ -2272,8 +2272,9 @@ class ReservationAirline(models.Model):
             # Loop per Provider Bookings
             for prov_booking_dict in data['provider_bookings']:
                 passenger_data_sequence_list = []
-                for psg in prov_booking_dict['new_data']['passengers']:
-                    passenger_data_sequence_list.append(book_passenger_seq[psg['sequence']])
+                if len(prov_booking_dict['new_data']['passengers']) != len(book_obj.passenger_ids):
+                    for psg in prov_booking_dict['new_data']['passengers']:
+                        passenger_data_sequence_list.append(book_passenger_seq[psg['sequence']])
 
                 provider_data_list = False
                 if len(book_obj.provider_booking_ids) > 1:
