@@ -2270,49 +2270,54 @@ class ReservationAirline(models.Model):
                 book_passenger_seq.update({rec.sequence: rec.id})
 
             # Loop per Provider Bookings
+            passenger_data_sequence_list = []
             for prov_booking_dict in data['provider_bookings']:
-                passenger_data_sequence_list = []
                 if len(prov_booking_dict['new_data']['passengers']) != len(book_obj.passenger_ids):
                     for psg in prov_booking_dict['new_data']['passengers']:
-                        passenger_data_sequence_list.append(book_passenger_seq[psg['sequence']])
+                        # Pax sdah pernah ada tidak di add lagi
+                        if book_passenger_seq[psg['sequence']] not in passenger_data_sequence_list:
+                            passenger_data_sequence_list.append(book_passenger_seq[psg['sequence']])
 
-                provider_data_list = False
-                if len(book_obj.provider_booking_ids) > 1:
-                    provider_data_list = [(6, 0, [book_provider_obj.id for book_provider_obj in book_obj.provider_booking_ids if book_provider_obj.pnr == prov_booking_dict['new_data']['pnr2']])]
-                # Create Wizard
-                wizard_obj = self.env['tt.split.reservation.wizard'].create({
-                    'res_id': book_obj.id,
-                    'referenced_document': book_obj.name,
-                    'new_pnr': prov_booking_dict['new_data']['pnr'],
-                    'provider_ids': provider_data_list,
-                    'passenger_ids': [(6,0,passenger_data_sequence_list)],
-                })
-                # Call submit function
-                wizard_obj.submit_split_reservation()
+            provider_data_list = []
+            if len(book_obj.provider_booking_ids) > 1:
+                if len(data['provider_bookings']) != len(book_obj.provider_booking_ids):
+                    provider_data_list = [book_provider_obj.id for book_provider_obj in book_obj.provider_booking_ids if book_provider_obj.pnr in [prov_booking_dict['new_data']['pnr2'] for prov_booking_dict in data['provider_bookings']]]
+            # Create Wizard
+            wizard_obj = self.env['tt.split.reservation.wizard'].create({
+                'res_id': book_obj.id,
+                'referenced_document': book_obj.name,
+                'new_pnr': ','.join([prov_booking_dict['new_data']['pnr'] for prov_booking_dict in data['provider_bookings']]),
+                'provider_ids': [(6,0,provider_data_list)],
+                'passenger_ids': [(6,0,passenger_data_sequence_list)],
+            })
+            # Call submit function
+            wizard_obj.submit_split_reservation()
 
-                # Find Created Split Document
-                # Asumsikan bahwa dia adalah file split yg terbaru
-                # Notes: Lbih bagus fungsi ne di wizard mungkin(wizard return object yg baru tersplit krena bisa jadi miss klo pake metode idx 0)
-                new_booking_obj = book_obj.split_to_resv_ids[0]
+            # Find Created Split Document
+            # Asumsikan bahwa dia adalah file split yg terbaru
+            # Notes: Lbih bagus fungsi ne di wizard mungkin(wizard return object yg baru tersplit krena bisa jadi miss klo pake metode idx 0)
+            new_booking_obj = book_obj.split_to_resv_ids[0]
 
-                # Update penalty_currency + penalty_amount(?)
-                # Notes: Harus nya update bukan disini tapi di GW setelah split dia panggil update booking
-                for new_prov_obj in new_booking_obj.provider_booking_ids:
-                    new_prov_obj.update({
-                        'penalty_currency': prov_booking_dict['new_data'].get('penalty_currency') or 'IDR',
-                        'penalty_amount': prov_booking_dict['new_data'].get('penalty_amount',0),
-                    })
+            # Update penalty_currency + penalty_amount(?)
+            # Notes: Harus nya update bukan disini tapi di GW setelah split dia panggil update booking
+            for new_prov_obj in new_booking_obj.provider_booking_ids:
+                for prov_booking_dict in data['provider_bookings']:
+                    if new_prov_obj.pnr in [prov_booking_dict['new_data']['pnr'],prov_booking_dict['new_data']['pnr2']]:
+                        new_prov_obj.update({
+                            'penalty_currency': prov_booking_dict['new_data'].get('penalty_currency') or 'IDR',
+                            'penalty_amount': prov_booking_dict['new_data'].get('penalty_amount',0),
+                        })
 
-                response = new_booking_obj.to_dict()
+            response = new_booking_obj.to_dict()
 
-                psg_list = [rec.to_dict() for rec in new_booking_obj.sudo().passenger_ids]
-                prov_list = [rec.to_dict() for rec in new_booking_obj.provider_booking_ids]
-                response.update({
-                    'passengers': psg_list,
-                    'provider_bookings': prov_list,
-                })
+            psg_list = [rec.to_dict() for rec in new_booking_obj.sudo().passenger_ids]
+            prov_list = [rec.to_dict() for rec in new_booking_obj.provider_booking_ids]
+            response.update({
+                'passengers': psg_list,
+                'provider_bookings': prov_list,
+            })
 
-                return ERR.get_no_error(response)
+            return ERR.get_no_error(response)
         except RequestException as e:
             _logger.error('Error Split Reservation Airline API, %s' % traceback.format_exc())
             return e.error_dict()
