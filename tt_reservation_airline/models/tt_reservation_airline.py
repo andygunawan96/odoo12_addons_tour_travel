@@ -2276,13 +2276,13 @@ class ReservationAirline(models.Model):
                     passenger_data_sequence_list.append(book_passenger_seq[psg['sequence']])
 
                 provider_data_list = False
-                if len(data['provider_bookings']) > 1:
-                    provider_data_list = [(6, 0, [])]
+                if len(book_obj.provider_booking_ids) > 1:
+                    provider_data_list = [(6, 0, [book_provider_obj.id for book_provider_obj in book_obj.provider_booking_ids if book_provider_obj.pnr == prov_booking_dict['new_data']['pnr2']])]
                 # Create Wizard
                 wizard_obj = self.env['tt.split.reservation.wizard'].create({
                     'res_id': book_obj.id,
                     'referenced_document': book_obj.name,
-                    'new_pnr': prov_booking_dict['pnr'],
+                    'new_pnr': prov_booking_dict['new_data']['pnr'],
                     'provider_ids': provider_data_list,
                     'passenger_ids': [(6,0,passenger_data_sequence_list)],
                 })
