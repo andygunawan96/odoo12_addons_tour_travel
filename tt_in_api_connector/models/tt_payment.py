@@ -16,22 +16,23 @@ class TtPaymentApiCon(models.Model):
         if action == 'payment':
             if data['va_type'] == 'open':
                 if self.env['payment.acquirer.number'].search([('number', '=', data['virtual_account'])])[0].state == 'open':
-                    self.env['payment.acquirer.number'].search([('number', '=', data['virtual_account'])])[0].fee = data['fee']
+                    payment_acq_number_obj = self.env['payment.acquirer.number'].search([('number', '=', data['virtual_account'])])[0]
+                    payment_acq_number_obj.fee = data['fee']
                     # check ada payment ref yg kembar ngga
                     if not self.env['tt.payment'].search([('reference', '=', data['payment_ref'])]):
                         # topup
 
-                        agent_id = self.env['tt.agent'].browse(self.env['payment.acquirer.number'].search([('number', '=', data['virtual_account'])])[0].agent_id.id)
+                        agent_id = self.env['tt.agent'].browse(payment_acq_number_obj.agent_id.id)
                         context = {
                             'co_agent_id': agent_id.id,
                             'co_uid': self.env.ref('tt_base.base_top_up_admin').id
                         }
                         request = {
                             'amount': data['amount'],
-                            'seq_id': self.env['payment.acquirer.number'].search([('number', '=', data['virtual_account'])])[0].payment_acquirer_id.seq_id,
+                            'seq_id': payment_acq_number_obj.payment_acquirer_id.seq_id,
                             'currency_code': data['ccy'],
                             'payment_ref': data['payment_ref'],
-                            'payment_seq_id': self.env['payment.acquirer.number'].search([('number', '=', data['virtual_account'])])[0].payment_acquirer_id.seq_id
+                            'payment_seq_id': payment_acq_number_obj.payment_acquirer_id.seq_id
                         }
 
                         res = self.env['tt.top.up'].create_top_up_api(request,context, True)
@@ -42,7 +43,7 @@ class TtPaymentApiCon(models.Model):
                                 'payment_ref': data['payment_ref'],
                                 'fee': data['fee']
                             }
-                            res = self.env['tt.top.up'].action_va_top_up(request, context)
+                            res = self.env['tt.top.up'].action_va_top_up(request, context, payment_acq_number_obj.id)
                     else:
                         res = ERR.get_error(500, additional_message="double payment")
                 else:
@@ -77,7 +78,7 @@ class TtPaymentApiCon(models.Model):
                             'payment_ref': data['payment_ref'],
                             'fee': data['fee']
                         }
-                        res = self.env['tt.top.up'].action_va_top_up(request, context)
+                        res = self.env['tt.top.up'].action_va_top_up(request, context, pay_acq_num.id)
 
                 book_obj = self.env['tt.reservation.%s' % data['provider_type']].search([('name', '=', data['order_number']), ('state', 'in', ['booked'])], limit=1)
                 _logger.info(data['order_number'])
