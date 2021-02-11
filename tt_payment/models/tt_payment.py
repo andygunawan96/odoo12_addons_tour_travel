@@ -68,6 +68,7 @@ class PaymentTransaction(models.Model):
                                           'validated2': [('readonly', True)],
                                           'approved': [('readonly', True)]},
                                   domain="[('agent_id','=',customer_parent_id)]")
+    payment_acq_number_id = fields.Many2one('payment.acquirer.number', 'Payment Acquirer Number', readonly=True)
 
     # #Todo:
     # # 1. Pertimbangkan penggunaan monetary field untuk integer field (pertimbangkan multi currency juga)
