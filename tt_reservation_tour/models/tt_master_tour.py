@@ -2005,7 +2005,9 @@ class TourSyncProductsChildren(models.TransientModel):
                 })
                 tour_data_list.append(dict_vals)
 
-            gw_timeout = int(len(tour_data_list) / 3) > 60 and int(len(tour_data_list) / 3) or 60
+            # gw_timeout = int(len(tour_data_list) / 3) > 60 and int(len(tour_data_list) / 3) or 60
+            #di perpendek krn di child kerjany lama, di buat timeout utk langsung next child
+            gw_timeout = 10
             vals = {
                 'provider_type': 'tour',
                 'action': 'sync_products_to_children',
