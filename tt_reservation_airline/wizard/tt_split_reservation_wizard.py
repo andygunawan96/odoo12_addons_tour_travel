@@ -411,6 +411,10 @@ class TtSplitReservationWizard(models.TransientModel):
             provider_dict = {}
             temp_pax_list = []
             temp_pax_dict = {}
+
+            unlink_provider_booking_ids = []
+            exists_passenger_ids = []
+            exists_passenger_type = {'ADT':0,'CHD':0,'INF':0}
             for rec in book_obj.provider_booking_ids:
                 if rec.id in self.provider_ids.ids:
                     old_cost_list = []
@@ -596,6 +600,26 @@ class TtSplitReservationWizard(models.TransientModel):
                                 elif rec3.pax_type == 'INF':
                                     tot_infant += 1
                             rec3.provider_id = new_prov_obj.id
+                    if len(rec.ticket_ids) == 0:
+                        unlink_provider_booking_ids.append(rec.id)
+
+                for tkt in rec.ticket_ids:
+                    if tkt.passenger_id.id not in exists_passenger_ids:
+                        exists_passenger_ids.append(tkt.passenger_id.id)
+                        exists_passenger_type[tkt.passenger_id.pax_type] += 1
+            for x in unlink_provider_booking_ids:
+                book_obj.provider_booking_ids = [(3, x)] # use 2 / 3
+
+            if len(book_obj.passenger_ids) != len(exists_passenger_ids):
+                for x in book_obj.passenger_ids:
+                    if x.id not in exists_passenger_ids:
+                        x.booking_id = False
+                        # x.unlink() # Pertimbangkan untuk remove object
+                book_obj.sudo().write({
+                    'adult': exists_passenger_type['ADT'],
+                    'child': exists_passenger_type['CHD'],
+                    'infant': exists_passenger_type['INF'],
+                })
 
             new_book_obj.sudo().write({
                 'adult': int(tot_adult),
