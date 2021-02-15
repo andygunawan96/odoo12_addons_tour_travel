@@ -194,9 +194,14 @@ class TtReconcileTransactionLines(models.Model):
     pnr = fields.Char('PNR',readonly=True)
     transaction_code = fields.Char('Transaction Code',readonly=True)
     type = fields.Selection([('nta','NTA'),
-                             ('insentif','Insentif'), ('refund_ssr','Refund SSR'),
-                             ('top_up','Top Up'), ('admin_bank','Admin Fee Bank'),
-                             ('refund','Refund'), ('reissue','ReIssue'), ('other','Other')],'Type', readonly=True)
+                             ('insentif','Insentif'),
+                             ('refund_ssr','Refund SSR'),
+                             ('top_up','Top Up'),
+                             ('admin_bank','Admin Fee Bank'),
+                             ('refund','Refund'),
+                             ('reissue','ReIssue'),
+                             ('reversal','Reversal'),
+                             ('other','Other')],'Type', readonly=True)
     booking_time = fields.Datetime('Booking Time',readonly=True)
     issued_time = fields.Datetime('Issued Time',readonly=True)
     base_price = fields.Monetary('Base Price', readonly=True, currency_field='currency_id')
