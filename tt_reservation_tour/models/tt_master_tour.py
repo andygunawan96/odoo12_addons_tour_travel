@@ -145,6 +145,7 @@ class MasterTour(models.Model):
     guiding_days = fields.Integer('Guiding Days', default=1)
     driving_times = fields.Integer('Driving Times', default=0)
 
+    # deprecated
     adult_fare = fields.Monetary('Adult Fare', default=0)
     adult_commission = fields.Monetary('Adult Commission', default=0)
 
@@ -153,6 +154,7 @@ class MasterTour(models.Model):
 
     infant_fare = fields.Monetary('Infant Fare', default=0)
     infant_commission = fields.Monetary('Infant Commission', default=0)
+    # end of deprecated
 
     discount_ids = fields.One2many('tt.master.tour.discount', 'tour_id')
     room_ids = fields.One2many('tt.master.tour.rooms', 'tour_pricelist_id', required=True)
@@ -295,8 +297,17 @@ class MasterTour(models.Model):
                     'due_date': rec2.due_date,
                     'tour_lines_id': new_tour_line_obj.id,
                 })
+        for rec in self.other_charges_ids:
+            self.env['tt.master.tour.other.charges'].sudo().create({
+                'name': rec.name,
+                'pax_type': rec.pax_type,
+                'currency_id': rec.currency_id.id,
+                'amount': rec.amount,
+                'charge_type': rec.charge_type,
+                'master_tour_id': new_tour_obj.id
+            })
         for rec in self.room_ids:
-            self.env['tt.master.tour.rooms'].sudo().create({
+            new_tour_room_obj = self.env['tt.master.tour.rooms'].sudo().create({
                 'name': rec.name,
                 'room_code': rec.room_code,
                 'bed_type': rec.bed_type,
@@ -313,6 +324,19 @@ class MasterTour(models.Model):
                 'extra_bed_limit': rec.extra_bed_limit,
                 'tour_pricelist_id': new_tour_obj.id,
             })
+            for rec2 in rec.tour_pricing_ids:
+                self.env['tt.master.tour.pricing'].sudo().create({
+                    'currency_id': rec2.currency_id.id,
+                    'min_pax': rec2.min_pax,
+                    'is_infant_included': rec2.is_infant_included,
+                    'adult_fare': rec2.adult_fare,
+                    'adult_commission': rec2.adult_commission,
+                    'child_fare': rec2.child_fare,
+                    'child_commission': rec2.child_commission,
+                    'infant_fare': rec2.infant_fare,
+                    'infant_commission': rec2.infant_commission,
+                    'room_id': new_tour_room_obj.id
+                })
         for rec in self.flight_segment_ids:
             self.env['flight.segment'].sudo().create({
                 'journey_type': rec.journey_type,
