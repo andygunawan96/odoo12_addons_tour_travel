@@ -287,6 +287,7 @@ class MasterTour(models.Model):
                 'seat': rec.quota,
                 'quota': rec.quota,
                 'sequence': rec.sequence,
+                'down_payment': rec.down_payment,
                 'master_tour_id': new_tour_obj.id
             })
             for rec2 in rec.payment_rules_ids:
@@ -296,6 +297,19 @@ class MasterTour(models.Model):
                     'description': rec2.description,
                     'due_date': rec2.due_date,
                     'tour_lines_id': new_tour_line_obj.id,
+                })
+            for rec2 in rec.special_dates_ids:
+                self.env['tt.master.tour.special.dates'].sudo().create({
+                    'name': rec2.name,
+                    'date': rec2.date,
+                    'currency_id': rec2.currency_id.id,
+                    'additional_adult_fare': rec2.additional_adult_fare,
+                    'additional_adult_commission': rec2.additional_adult_commission,
+                    'additional_child_fare': rec2.additional_child_fare,
+                    'additional_child_commission': rec2.additional_child_commission,
+                    'additional_infant_fare': rec2.additional_infant_fare,
+                    'additional_infant_commission': rec2.additional_infant_commission,
+                    'tour_line_id': new_tour_line_obj.id,
                 })
         for rec in self.other_charges_ids:
             self.env['tt.master.tour.other.charges'].sudo().create({
@@ -1948,12 +1962,6 @@ class TourSyncProductsChildren(models.TransientModel):
                     'driving_times': rec.driving_times,
                     'visa': rec.visa,
                     'flight': rec.flight,
-                    'adult_fare': rec.adult_fare,
-                    'child_fare': rec.child_fare,
-                    'infant_fare': rec.infant_fare,
-                    'adult_commission': rec.adult_commission,
-                    'child_commission': rec.child_commission,
-                    'infant_commission': rec.infant_commission,
                     'adult_airport_tax': rec.adult_airport_tax,
                     'tipping_guide': rec.tipping_guide,
                     'tipping_tour_leader': rec.tipping_tour_leader,
@@ -1963,8 +1971,7 @@ class TourSyncProductsChildren(models.TransientModel):
                     'tipping_driver_child': rec.tipping_driver_child,
                     'tipping_guide_infant': rec.tipping_guide_infant,
                     'tipping_tour_leader_infant': rec.tipping_tour_leader_infant,
-                    'tipping_driver_infant': rec.tipping_driver_infant,
-                    'down_payment': rec.down_payment,
+                    'tipping_driver_infant': rec.tipping_driver_infant
                 }
                 tour_line_list = []
                 for rec2 in rec.tour_line_ids:
@@ -1975,6 +1982,7 @@ class TourSyncProductsChildren(models.TransientModel):
                         'seat': rec2.seat,
                         'quota': rec2.quota,
                         'state': rec2.state,
+                        'down_payment': rec2.down_payment,
                         'sequence': rec2.sequence
                     }
                     if rec.tour_type == 'open':
