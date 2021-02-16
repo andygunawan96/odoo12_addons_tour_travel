@@ -182,8 +182,9 @@ class PricingAgent(models.Model):
 
     def write(self, values):
         res = super(PricingAgent, self).write(values)
-        if not values.get('name'):
-            self.write({'name': self.get_name()})
+        # 16feb2021, comment karena membuat error singleton. seharusnya yang di compute_name_pricing sudah ckup
+        # if not values.get('name'):
+        #     self.write({'name': self.get_name()})
         return res
 
     def get_pricing_agent_api(self, _provider_type):
