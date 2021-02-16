@@ -10,6 +10,7 @@
                 <field name="agent_id" groups="tt_base.group_tt_tour_travel_operator"/>
                 <field name="customer_parent_id" groups="tt_base.group_tt_tour_travel_operator"/>
                 <field name="acquirer_id" groups="tt_base.group_tt_tour_travel_operator"/>
+                <field name="reference" groups="tt_base.group_tt_tour_travel_operator"/>
                 <separator/>
                 <filter string="All" name='all'/>
                 <filter string="Draft" name='draft' domain="[('state', '=', 'draft')]"/>
