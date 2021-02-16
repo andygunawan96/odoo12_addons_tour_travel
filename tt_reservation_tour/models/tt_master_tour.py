@@ -1532,11 +1532,11 @@ class MasterTour(models.Model):
             }
             for rec_charges in tour_data.other_charges_ids:
                 price_itinerary['other_charges'].append({
-                    'name': rec_charges['name'],
-                    'pax_type': rec_charges['pax_type'],
-                    'pax_count': pax_type_conv[rec_charges['pax_type']],
-                    'charge_type': rec_charges['charge_type'],
-                    'amount': rec_charges['amount']
+                    'name': rec_charges.name,
+                    'pax_type': rec_charges.pax_type,
+                    'pax_count': pax_type_conv[rec_charges.pax_type],
+                    'charge_type': rec_charges.charge_type,
+                    'amount': rec_charges.amount
                 })
 
             if tour_data.tour_type == 'open':
