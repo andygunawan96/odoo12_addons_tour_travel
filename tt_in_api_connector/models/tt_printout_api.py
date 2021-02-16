@@ -1,6 +1,8 @@
 from odoo import api,models,fields
+import json
+import logging
 from ...tools.ERR import RequestException
-
+_logger = logging.getLogger(__name__)
 class TtPrintoutApiCon(models.Model):
     _name = 'tt.printout.api.con'
     _inherit = 'tt.api.con'
@@ -10,6 +12,7 @@ class TtPrintoutApiCon(models.Model):
     def action_call(self, table_obj, action, data, context):
 
         if action == 'get_printout_api':
+            _logger.info(json.dumps(data)) #agar tau kalau ada error params printout apa
             user_obj = self.env['res.users'].browse(context['co_uid'])
             if data['provider_type'] == 'top_up':
                 book_obj = self.env['tt.top.up'].search([('name', '=', data['order_number'])], limit=1)

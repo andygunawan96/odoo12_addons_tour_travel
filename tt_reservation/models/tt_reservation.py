@@ -298,7 +298,7 @@ class TtReservation(models.Model):
                 else:
                     book_obj = self.env['test.search'].get_booking_result(req['order_number'], context)
                     if book_obj:
-                        if req['date'] == book_obj['checkin_date'] and req['phone_number'] == book_obj['response']['contact']['phone']:
+                        if req['date'] == book_obj['checkin_date'] and req['phone_number'] == book_obj['contact']['phone']:
                             res = book_obj
                         # if True: #testing
                         #     res = book_obj #testing

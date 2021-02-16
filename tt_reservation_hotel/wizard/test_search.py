@@ -4,6 +4,7 @@ from odoo.tools import DEFAULT_SERVER_DATETIME_FORMAT
 from datetime import date, datetime, timedelta
 from odoo.exceptions import UserError
 import json
+from ...tools.ERR import RequestException
 
 
 class TestSearch(models.Model):
@@ -903,73 +904,81 @@ class TestSearch(models.Model):
             return 'Not Found'
         else:
             resv_obj = resv_obj[0]
-        rooms = self.sudo().prepare_booking_room(resv_obj.room_detail_ids, resv_obj.passenger_ids)
-        passengers = self.sudo().prepare_passengers(resv_obj.passenger_ids)
-        bookers = self.sudo().prepare_bookers(resv_obj.booker_id)
+        user_obj = self.env['res.users'].browse(context['co_uid'])
+        try:
+            user_obj.create_date
+        except:
+            raise RequestException(1008)
+        if resv_obj.agent_id.id == context.get('co_agent_id', -1) or self.env.ref('tt_base.group_tt_process_channel_bookings').id in user_obj.groups_id.ids or resv_obj.agent_type_id.name == self.env.ref('tt_base.agent_b2c').agent_type_id.name:
+            rooms = self.sudo().prepare_booking_room(resv_obj.room_detail_ids, resv_obj.passenger_ids)
+            passengers = self.sudo().prepare_passengers(resv_obj.passenger_ids)
+            bookers = self.sudo().prepare_bookers(resv_obj.booker_id)
 
-        passengers[0]['sale_service_charges'] = self.sudo().prepare_service_charge(resv_obj.sale_service_charge_ids, resv_obj.pnr or resv_obj.name)
-        vals = {
-            'adult': resv_obj.adult,
-            'checkin_date': resv_obj.checkin_date,
-            'checkout_date': resv_obj.checkout_date,
-            'child': resv_obj.child,
-            'room_count': resv_obj.room_count,
-            'booking_id': resv_obj.id,
-            'booking_name': resv_obj.name,
-            'os_res_no': resv_obj.name, #resv_obj.number,
-            'status': resv_obj.state,
-            'total': resv_obj.total,
-            'currency': resv_obj.currency_id.name,
-            'voucher_no': '',
-            'commission': resv_obj.total_commission,
-            'issued_date': resv_obj.issued_date,
-            'from_date': resv_obj.checkin_date,
-            'to_date': resv_obj.checkout_date,
-            'agent_id': resv_obj.agent_id.id,
-            'hotel_id': resv_obj.hotel_id.id,
-            'hotel_name': resv_obj.hotel_name,
-            'hotel_address': resv_obj.hotel_address,
-            'hotel_phone': resv_obj.hotel_phone,
-            'hotel_city_name': resv_obj.hotel_city,
-            'hotel_rooms': rooms,
-            'passengers': passengers,
-            'sid_booked': resv_obj.sid_booked,
-            'uid_booked': self.sudo().env.ref('tt_base.agent_b2c_user').id,
-            'uname_booked': self.sudo().env.ref('tt_base.agent_b2c_user').name,
-            'hotel_rating': 0,
-            'images': [],
-            'cancellation_policy': [],
-            'lat': '',
-            'long': '',
-            'bookers': bookers,
-            # 'sale_service_charge': self.prepare_service_charge(resv_obj.sale_service_charge_ids, resv_obj.pnr),
-        }
-        new_vals = resv_obj.to_dict()
-        for a in ['arrival_date', 'departure_date']:
-            new_vals.pop(a)
-        new_vals.update({
-            "state_description": dict(self.env['tt.reservation.hotel']._fields['state'].selection).get(resv_obj.state),
-            "room_count": resv_obj.room_count,
-            "checkin_date": str(resv_obj.checkin_date),
-            "checkout_date": str(resv_obj.checkout_date),
-            # "provider_type": "hotel",
-            'passengers': passengers,
-            'hotel_name': resv_obj.hotel_name,
-            'hotel_address': resv_obj.hotel_address,
-            'hotel_phone': resv_obj.hotel_phone,
-            'hotel_city_name': resv_obj.hotel_city,
-            'hotel_rating': 0,
-            'images': [],
-            'cancellation_policy': [],
-            'lat': '',
-            'long': '',
-            'hotel_rooms': rooms,
-            'sid_booked': resv_obj.sid_booked,
-            'uid_booked': self.sudo().env.ref('tt_base.agent_b2c_user').id,
-            'uname_booked': self.sudo().env.ref('tt_base.agent_b2c_user').name,
-            'currency': resv_obj.currency_id.name,
-            'total': resv_obj.total,
-        })
+            passengers[0]['sale_service_charges'] = self.sudo().prepare_service_charge(resv_obj.sale_service_charge_ids, resv_obj.pnr or resv_obj.name)
+            vals = {
+                'adult': resv_obj.adult,
+                'checkin_date': resv_obj.checkin_date,
+                'checkout_date': resv_obj.checkout_date,
+                'child': resv_obj.child,
+                'room_count': resv_obj.room_count,
+                'booking_id': resv_obj.id,
+                'booking_name': resv_obj.name,
+                'os_res_no': resv_obj.name, #resv_obj.number,
+                'status': resv_obj.state,
+                'total': resv_obj.total,
+                'currency': resv_obj.currency_id.name,
+                'voucher_no': '',
+                'commission': resv_obj.total_commission,
+                'issued_date': resv_obj.issued_date,
+                'from_date': resv_obj.checkin_date,
+                'to_date': resv_obj.checkout_date,
+                'agent_id': resv_obj.agent_id.id,
+                'hotel_id': resv_obj.hotel_id.id,
+                'hotel_name': resv_obj.hotel_name,
+                'hotel_address': resv_obj.hotel_address,
+                'hotel_phone': resv_obj.hotel_phone,
+                'hotel_city_name': resv_obj.hotel_city,
+                'hotel_rooms': rooms,
+                'passengers': passengers,
+                'sid_booked': resv_obj.sid_booked,
+                'uid_booked': self.sudo().env.ref('tt_base.agent_b2c_user').id,
+                'uname_booked': self.sudo().env.ref('tt_base.agent_b2c_user').name,
+                'hotel_rating': 0,
+                'images': [],
+                'cancellation_policy': [],
+                'lat': '',
+                'long': '',
+                'bookers': bookers,
+                # 'sale_service_charge': self.prepare_service_charge(resv_obj.sale_service_charge_ids, resv_obj.pnr),
+            }
+            new_vals = resv_obj.to_dict()
+            for a in ['arrival_date', 'departure_date']:
+                new_vals.pop(a)
+            new_vals.update({
+                "state_description": dict(self.env['tt.reservation.hotel']._fields['state'].selection).get(resv_obj.state),
+                "room_count": resv_obj.room_count,
+                "checkin_date": str(resv_obj.checkin_date),
+                "checkout_date": str(resv_obj.checkout_date),
+                # "provider_type": "hotel",
+                'passengers': passengers,
+                'hotel_name': resv_obj.hotel_name,
+                'hotel_address': resv_obj.hotel_address,
+                'hotel_phone': resv_obj.hotel_phone,
+                'hotel_city_name': resv_obj.hotel_city,
+                'hotel_rating': 0,
+                'images': [],
+                'cancellation_policy': [],
+                'lat': '',
+                'long': '',
+                'hotel_rooms': rooms,
+                'sid_booked': resv_obj.sid_booked,
+                'uid_booked': self.sudo().env.ref('tt_base.agent_b2c_user').id,
+                'uname_booked': self.sudo().env.ref('tt_base.agent_b2c_user').name,
+                'currency': resv_obj.currency_id.name,
+                'total': resv_obj.total,
+            })
+        else:
+            raise RequestException(1001)
         return new_vals
 
     @api.multi
