@@ -1985,6 +1985,17 @@ class TourSyncProductsChildren(models.TransientModel):
                         'down_payment': rec2.down_payment,
                         'sequence': rec2.sequence
                     }
+                    payment_rules_list = []
+                    for rec3 in rec2.payment_rules_ids:
+                        payment_rules_list.append({
+                            'name': rec3.name,
+                            'payment_percentage': rec3.payment_percentage,
+                            'description': rec3.description,
+                            'due_date': rec3.due_date,
+                        })
+                    tour_line_dict.update({
+                        'payment_rules_list': payment_rules_list
+                    })
                     if rec.tour_type == 'open':
                         special_date_list = []
                         for rec3 in rec2.special_dates_ids:
@@ -2030,8 +2041,28 @@ class TourSyncProductsChildren(models.TransientModel):
                         'filename': rec2.filename
                     })
 
+                other_charges_list = []
+                for rec2 in rec.other_charges_ids:
+                    other_charges_list.append({
+                        'name': rec2.name,
+                        'pax_type': rec2.pax_type,
+                        'currency_id': rec2.currency_id.name,
+                        'amount': rec2.amount,
+                        'charge_type': rec2.charge_type
+                    })
+
                 room_list = []
                 for rec2 in rec.room_ids:
+                    tour_pricing_list = []
+                    for rec3 in rec2.tour_pricing_ids:
+                        tour_pricing_list.append({
+                            'currency_id': rec3.currency_id.id,
+                            'min_pax': rec3.min_pax,
+                            'is_infant_included': rec3.is_infant_included,
+                            'adult_price': rec3.adult_fare + rec3.adult_commission,
+                            'child_price': rec3.child_fare + rec3.child_commission,
+                            'infant_price': rec3.infant_fare + rec3.infant_commission
+                        })
                     room_list.append({
                         'room_code': rec2.room_code,
                         'hotel': rec2.hotel,
@@ -2047,6 +2078,7 @@ class TourSyncProductsChildren(models.TransientModel):
                         'adult_surcharge': rec2.adult_surcharge,
                         'child_surcharge': rec2.child_surcharge,
                         'additional_charge': rec2.additional_charge,
+                        'tour_pricing_list': tour_pricing_list
                     })
 
                 itinerary_list = []
