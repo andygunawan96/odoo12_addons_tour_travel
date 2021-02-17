@@ -130,7 +130,7 @@ class ReservationTour(models.Model):
                 inv_line_obj.write({
                     'invoice_line_detail_ids': [(0, 0, {
                         'desc': desc_text,
-                        'price_unit': (self.tour_id.down_payment / 100) * price_unit,
+                        'price_unit': (self.tour_lines_id.down_payment / 100) * price_unit,
                         'quantity': 1,
                         'invoice_line_id': invoice_line_id,
                     })]
@@ -162,7 +162,7 @@ class ReservationTour(models.Model):
                 'payment_rules_id': False,
             })
 
-            for rec in self.tour_id.payment_rules_ids:
+            for rec in self.tour_lines_id.payment_rules_ids:
                 invoice_id = self.env['tt.agent.invoice'].create({
                     'booker_id': self.booker_id.id,
                     'agent_id': self.agent_id.id,

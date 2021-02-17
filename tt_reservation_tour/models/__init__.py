@@ -9,6 +9,8 @@ from . import tt_master_tour
 from . import tt_master_tour_lines
 from . import tt_master_tour_special_dates
 from . import tt_master_tour_rooms
+from . import tt_master_tour_pricing
+from . import tt_master_tour_other_charges
 from . import tt_master_tour_quotation
 from . import tt_master_tour_discount
 from . import tt_master_tour_checklist

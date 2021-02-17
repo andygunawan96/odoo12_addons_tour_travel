@@ -439,7 +439,7 @@ class TtProviderTour(models.Model):
 
     def action_create_ledger(self, issued_uid, pay_method=None):
         if pay_method == 'installment':
-            total_amount = (self.booking_id.tour_id.down_payment / 100) * self.booking_id.total
+            total_amount = (self.booking_id.tour_lines_id.down_payment / 100) * self.booking_id.total
 
             res_model = self.booking_id._name
             res_id = self.booking_id.id
