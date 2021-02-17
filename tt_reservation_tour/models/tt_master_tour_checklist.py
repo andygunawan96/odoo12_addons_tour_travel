@@ -9,4 +9,4 @@ class TourChecklist(models.Model):
     description = fields.Char('Description')
     quantity = fields.Integer('Quantity')
     is_checked = fields.Boolean('Is Checked')
-    tour_pricelist_id = fields.Many2one('tt.master.tour', 'Pricelist ID', readonly=True)
+    tour_pricelist_id = fields.Many2one('tt.master.tour', 'Master Tour', readonly=True)
