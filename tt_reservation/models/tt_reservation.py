@@ -790,8 +790,10 @@ class TtReservation(models.Model):
                 book_obj = self.env['tt.reservation.%s' % (req['table_name'])].search([('name', '=', req.get('order_number'))],
                                                                                limit=1)
             book_obj.sync_reservation = True
+            return ERR.get_no_error()
         except Exception as e:
             _logger.error(traceback.format_exc())
+            return ERR.get_error(500)
 
 
     ##ini potong ledger
