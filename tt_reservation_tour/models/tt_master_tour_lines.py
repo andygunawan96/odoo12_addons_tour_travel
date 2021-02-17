@@ -137,10 +137,23 @@ class MasterTourLines(models.Model):
             'arrival_date': self.arrival_date.strftime("%Y-%m-%d"),
             'seat': self.seat,
             'quota': self.quota,
+            'down_payment': self.down_payment,
             'state': self.state,
             'state_str': dict(self._fields['state'].selection).get(self.state),
             'sequence': self.sequence
         }
+        payment_rules = []
+        for rec in self.payment_rules_ids:
+            payment_rules.append({
+                'name': rec.name,
+                'payment_percentage': rec.payment_percentage,
+                'description': rec.description,
+                'due_date': rec.due_date,
+            })
+        res_dict.update({
+            'payment_rules_list': payment_rules
+        })
+
         if self.master_tour_id.tour_type == 'open':
             special_dates = []
             for rec in self.special_dates_ids:
