@@ -26,6 +26,7 @@ class MasterTourPricing(models.Model):
         return {
             'min_pax': self.min_pax,
             'is_infant_included': self.is_infant_included,
+            'currency_id': self.currency_id and self.currency_id.name or '',
             'adult_price': self.adult_fare + self.adult_commission,
             'child_price': self.child_fare + self.child_commission,
             'infant_price': self.infant_fare + self.infant_commission,
