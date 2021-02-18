@@ -431,14 +431,18 @@ class MasterTour(models.Model):
                     'tour_route': rec['tour_route'],
                     'tour_category': rec['tour_category'],
                     'tour_type': rec['tour_type'],
-                    'adult_fare': rec['adult_sale_price'],
-                    'child_fare': rec['child_sale_price'],
-                    'infant_fare': rec['infant_sale_price'],
                     'duration': rec['duration'],
                     'is_can_hold': rec['is_can_hold'],
-                    'visa': rec['visa'],
-                    'flight': rec['flight'],
+                    'est_starting_price': rec['est_starting_price'],
+                    'adult_flight_fare': rec['adult_flight_fare'],
+                    'child_flight_fare': rec['child_flight_fare'],
+                    'infant_flight_fare': rec['infant_flight_fare'],
+                    'adult_visa_fare': rec['adult_visa_fare'],
+                    'child_visa_fare': rec['child_visa_fare'],
+                    'infant_visa_fare': rec['infant_visa_fare'],
                     'adult_airport_tax': rec['adult_airport_tax'],
+                    'child_airport_tax': rec['child_airport_tax'],
+                    'infant_airport_tax': rec['infant_airport_tax'],
                     'tipping_guide': rec['tipping_guide'],
                     'tipping_tour_leader': rec['tipping_tour_leader'],
                     'tipping_driver': rec['tipping_driver'],
@@ -472,6 +476,10 @@ class MasterTour(models.Model):
                         temp_line.sudo().write({
                             'active': False
                         })
+                    for temp_charge in new_tour_obj.other_charges_ids:
+                        temp_charge.sudo().write({
+                            'active': False
+                        })
                     for temp_room in new_tour_obj.room_ids:
                         temp_room.sudo().write({
                             'active': False
@@ -493,14 +501,35 @@ class MasterTour(models.Model):
                                 'seat': rec_det['seat'],
                                 'quota': rec_det['quota'],
                                 'sequence': rec_det['sequence'],
+                                'down_payment': rec_det['down_payment'],
                                 'master_tour_id': new_tour_obj.id,
                                 'active': True
                             }
                             new_tour_line_obj = self.env['tt.master.tour.lines'].sudo().search([('tour_line_code', '=', rec_det['tour_line_code']), ('master_tour_id', '=', new_tour_obj.id), '|', ('active', '=', False), ('active', '=', True)], limit=1)
                             if new_tour_line_obj:
-                                new_tour_line_obj[0].sudo().write(new_tour_line_vals)
+                                new_tour_line_obj = new_tour_line_obj[0]
+                                new_tour_line_obj.sudo().write(new_tour_line_vals)
                             else:
-                                self.env['tt.master.tour.lines'].sudo().create(new_tour_line_vals)
+                                new_tour_line_obj = self.env['tt.master.tour.lines'].sudo().create(new_tour_line_vals)
+
+                            for pay_rules in new_tour_line_obj.payment_rules_ids:
+                                pay_rules.sudo().unlink()
+
+                            if rec_det.get('payment_rules_list'):
+                                for rec_det2 in rec_det['payment_rules_list']:
+                                    payment_rules_vals = {
+                                        'name': rec_det2['name'],
+                                        'payment_percentage': rec_det2['payment_percentage'],
+                                        'description': rec_det2['description'],
+                                        'due_date': rec_det2['due_date'],
+                                        'tour_lines_id': new_tour_line_obj.id
+                                    }
+                                    self.env['tt.payment.rules'].sudo().create(payment_rules_vals)
+
+                            for spec_date in new_tour_line_obj.special_dates_ids:
+                                spec_date.sudo().write({
+                                    'active': False
+                                })
 
                             if rec_det.get('special_date_list'):
                                 for rec_det2 in rec_det['special_date_list']:
@@ -520,6 +549,23 @@ class MasterTour(models.Model):
                                         new_tour_special_date_obj[0].sudo().write(new_tour_special_date_vals)
                                     else:
                                         self.env['tt.master.tour.special.dates'].sudo().create(new_tour_special_date_vals)
+
+                        for rec_det in detail_dat['other_charges']:
+                            tour_other_charges_currency_obj = self.env['res.currency'].sudo().search([('name', '=', rec_det['currency_id'])], limit=1)
+                            new_tour_other_charges_vals = {
+                                'name': rec_det['name'],
+                                'pax_type': rec_det['pax_type'],
+                                'currency_id': tour_other_charges_currency_obj and tour_other_charges_currency_obj[0].id or False,
+                                'amount': rec_det['amount'],
+                                'charge_type': rec_det['charge_type'],
+                                'master_tour_id': new_tour_obj.id,
+                                'active': True
+                            }
+                            new_other_charges_obj = self.env['tt.master.tour.other.charges'].sudo().search([('name', '=', rec_det['name']), ('pax_type', '=', rec_det['pax_type']), ('master_tour_id', '=', new_tour_obj.id), '|', ('active', '=', False), ('active', '=', True)], limit=1)
+                            if new_other_charges_obj:
+                                new_other_charges_obj[0].sudo().write(new_tour_other_charges_vals)
+                            else:
+                                self.env['tt.master.tour.other.charges'].sudo().create(new_tour_other_charges_vals)
 
                         for rec_det in detail_dat['accommodations']:
                             new_acco_vals = {
@@ -544,7 +590,30 @@ class MasterTour(models.Model):
                             if new_acco_obj:
                                 new_acco_obj[0].sudo().write(new_acco_vals)
                             else:
-                                self.env['tt.master.tour.rooms'].sudo().create(new_acco_vals)
+                                new_acco_obj = self.env['tt.master.tour.rooms'].sudo().create(new_acco_vals)
+
+                            if rec_det.get('pricing'):
+                                for rec_det2 in rec_det['pricing']:
+                                    tour_pricing_currency_obj = self.env['res.currency'].sudo().search([('name', '=', rec_det2['currency_id'])], limit=1)
+                                    new_tour_pricing_vals = {
+                                        'min_pax': rec_det2['min_pax'],
+                                        'is_infant_included': rec_det2['is_infant_included'],
+                                        'currency_id': tour_pricing_currency_obj and tour_pricing_currency_obj[0].id or False,
+                                        'adult_fare': rec_det2['adult_price'],
+                                        'adult_commission': 0,
+                                        'child_fare': rec_det2['child_price'],
+                                        'child_commission': 0,
+                                        'infant_fare': rec_det2['infant_price'],
+                                        'infant_commission': 0,
+                                        'room_id': new_acco_obj.id,
+                                        'active': True
+                                    }
+                                    new_tour_pricing_obj = self.env['tt.master.tour.pricing'].sudo().search([('min_pax', '=', int(rec_det2['min_pax'])), ('room_id', '=', new_acco_obj.id), '|', ('active', '=', False), ('active', '=', True)], limit=1)
+                                    if new_tour_pricing_obj:
+                                        new_tour_pricing_obj[0].sudo().write(new_tour_pricing_vals)
+                                    else:
+                                        self.env['tt.master.tour.pricing'].sudo().create(new_tour_pricing_vals)
+
                         for rec_flight in detail_dat['flight_segments']:
                             carrier_obj = self.env['tt.transport.carrier'].sudo().search([('code', '=', rec_flight['carrier_code']), ('provider_type_id', '=', self.env.ref('tt_reservation_airline.tt_provider_type_airline').id)], limit=1)
                             carrier_obj = carrier_obj and carrier_obj[0] or False
@@ -893,6 +962,26 @@ class MasterTour(models.Model):
                             'provider': rec.provider_id.code,
                             'images_obj': image_list,
                             'est_starting_price': rec.est_starting_price,
+                            'adult_flight_fare': rec.adult_flight_fare,
+                            'child_flight_fare': rec.child_flight_fare,
+                            'infant_flight_fare': rec.infant_flight_fare,
+                            'adult_visa_fare': rec.adult_visa_fare,
+                            'child_visa_fare': rec.child_visa_fare,
+                            'infant_visa_fare': rec.infant_visa_fare,
+                            'adult_airport_tax': rec.adult_airport_tax,
+                            'child_airport_tax': rec.child_airport_tax,
+                            'infant_airport_tax': rec.infant_airport_tax,
+                            'tipping_guide': rec.tipping_guide,
+                            'tipping_tour_leader': rec.tipping_tour_leader,
+                            'tipping_driver': rec.tipping_driver,
+                            'tipping_guide_child': rec.tipping_guide_child,
+                            'tipping_tour_leader_child': rec.tipping_tour_leader_child,
+                            'tipping_driver_child': rec.tipping_driver_child,
+                            'tipping_guide_infant': rec.tipping_guide_infant,
+                            'tipping_tour_leader_infant': rec.tipping_tour_leader_infant,
+                            'tipping_driver_infant': rec.tipping_driver_infant,
+                            'guiding_days': rec.guiding_days,
+                            'driving_times': rec.driving_times,
                             'state': rec.state
                         })
 
@@ -1731,15 +1820,16 @@ class MasterTour(models.Model):
                     'duration': rec['duration'],
                     'guiding_days': rec['guiding_days'],
                     'driving_times': rec['driving_times'],
-                    'visa': rec['visa'],
-                    'flight': rec['flight'],
-                    'adult_fare': rec['adult_fare'],
-                    'child_fare': rec['child_fare'],
-                    'infant_fare': rec['infant_fare'],
-                    'adult_commission': rec['adult_commission'],
-                    'child_commission': rec['child_commission'],
-                    'infant_commission': rec['infant_commission'],
+                    'est_starting_price': rec['est_starting_price'],
+                    'adult_flight_fare': rec['adult_flight_fare'],
+                    'child_flight_fare': rec['child_flight_fare'],
+                    'infant_flight_fare': rec['infant_flight_fare'],
+                    'adult_visa_fare': rec['adult_visa_fare'],
+                    'child_visa_fare': rec['child_visa_fare'],
+                    'infant_visa_fare': rec['infant_visa_fare'],
                     'adult_airport_tax': rec['adult_airport_tax'],
+                    'child_airport_tax': rec['child_airport_tax'],
+                    'infant_airport_tax': rec['infant_airport_tax'],
                     'tipping_guide': rec['tipping_guide'],
                     'tipping_tour_leader': rec['tipping_tour_leader'],
                     'tipping_driver': rec['tipping_driver'],
@@ -1749,7 +1839,6 @@ class MasterTour(models.Model):
                     'tipping_guide_infant': rec['tipping_guide_infant'],
                     'tipping_tour_leader_infant': rec['tipping_tour_leader_infant'],
                     'tipping_driver_infant': rec['tipping_driver_infant'],
-                    'down_payment': rec['down_payment'],
                 }
                 tour_obj = self.env['tt.master.tour'].sudo().search([('tour_code', '=',  rec['tour_code']), ('provider_id', '=', provider_id[0].id)], limit=1)
                 if tour_obj:
@@ -1759,6 +1848,10 @@ class MasterTour(models.Model):
                         fli.sudo().unlink()
                     for itin in tour_obj.itinerary_ids:
                         itin.sudo().unlink()
+                    for temp_charge in tour_obj.other_charges_ids:
+                        temp_charge.sudo().write({
+                            'active': False
+                        })
                     for temp_room in tour_obj.room_ids:
                         temp_room.sudo().write({
                             'active': False
@@ -1776,6 +1869,7 @@ class MasterTour(models.Model):
                         'quota': rec2['quota'],
                         'state': rec2['state'],
                         'sequence': rec2['sequence'],
+                        'down_payment': rec2['down_payment'],
                         'master_tour_id': tour_obj.id,
                         'active': True
                     }
@@ -1786,8 +1880,27 @@ class MasterTour(models.Model):
                     else:
                         tour_line_obj = self.env['tt.master.tour.lines'].sudo().create(line_vals)
 
-                    if rec['tour_type'] == 'open' and rec2.get('special_date_list'):
-                        for rec3 in rec2['special_date_list']:
+                    for pay_rules in tour_line_obj.payment_rules_ids:
+                        pay_rules.sudo().unlink()
+
+                    if rec2.get('payment_rules_ids'):
+                        for rec3 in rec2['payment_rules_ids']:
+                            payment_rules_vals = {
+                                'name': rec3['name'],
+                                'payment_percentage': rec3['payment_percentage'],
+                                'description': rec3['description'],
+                                'due_date': rec3['due_date'],
+                                'tour_lines_id': tour_line_obj.id
+                            }
+                            self.env['tt.payment.rules'].sudo().create(payment_rules_vals)
+
+                    for spec_date in tour_line_obj.special_dates_ids:
+                        spec_date.sudo().write({
+                            'active': False
+                        })
+
+                    if rec['tour_type'] == 'open' and rec2.get('special_date_ids'):
+                        for rec3 in rec2['special_date_ids']:
                             special_date_currency_obj = self.env['res.currency'].sudo().search([('name', '=', rec3['currency_code'])], limit=1)
                             special_date_vals = {
                                 'name': rec3['name'],
@@ -1825,6 +1938,24 @@ class MasterTour(models.Model):
                         })
                     location_list.append(loc_obj.id)
 
+                for rec2 in rec['other_charges_ids']:
+                    other_charges_currency_obj = self.env['res.currency'].sudo().search([('name', '=', rec2['currency_code'])], limit=1)
+                    other_charges_vals = {
+                        'name': rec2['name'],
+                        'pax_type': rec2['pax_type'],
+                        'currency_id': other_charges_currency_obj and other_charges_currency_obj[0].id or False,
+                        'amount': rec2['amount'],
+                        'charge_type': rec2['charge_type'],
+                        'master_tour_id': tour_obj.id,
+                        'active': True
+                    }
+                    other_charges_obj = self.env['tt.master.tour.other.charges'].sudo().search([('name', '=', rec2['name']), ('pax_type', '=', rec2['pax_type']), ('master_tour_id', '=', tour_obj.id), '|',('active', '=', False), ('active', '=', True)], limit=1)
+                    if other_charges_obj:
+                        other_charges_obj = other_charges_obj[0]
+                        other_charges_obj.sudo().write(other_charges_vals)
+                    else:
+                        other_charges_obj = self.env['tt.master.tour.other.charges'].sudo().create(other_charges_vals)
+
                 for rec2 in rec['room_ids']:
                     room_vals = {
                         'name': rec2['name'],
@@ -1850,6 +1981,34 @@ class MasterTour(models.Model):
                         room_obj.sudo().write(room_vals)
                     else:
                         room_obj = self.env['tt.master.tour.rooms'].sudo().create(room_vals)
+
+                    for temp_pricing in room_obj.tour_pricing_ids:
+                        temp_pricing.sudo().write({
+                            'active': False
+                        })
+
+                    if rec2.get('tour_pricing_ids'):
+                        for rec3 in rec2['tour_pricing_ids']:
+                            tour_pricing_currency_obj = self.env['res.currency'].sudo().search([('name', '=', rec3['currency_code'])], limit=1)
+                            tour_pricing_vals = {
+                                'currency_id': tour_pricing_currency_obj and tour_pricing_currency_obj[0].id or '',
+                                'min_pax': rec3['min_pax'],
+                                'is_infant_included': rec3['is_infant_included'],
+                                'adult_fare': rec3['adult_price'],
+                                'adult_commission': 0,
+                                'child_fare': rec3['child_price'],
+                                'child_commission': 0,
+                                'infant_fare': rec3['infant_price'],
+                                'infant_commission': 0,
+                                'room_id': room_obj.id,
+                                'active': True
+                            }
+                            tour_pricing_obj = self.env['tt.master.tour.pricing'].sudo().search([('min_pax', '=', int(rec3['min_pax'])), ('room_id', '=', room_obj.id), '|', ('active', '=', False), ('active', '=', True)], limit=1)
+                            if tour_pricing_obj:
+                                tour_pricing_obj = tour_pricing_obj[0]
+                                tour_pricing_obj.sudo().write(tour_pricing_vals)
+                            else:
+                                tour_pricing_obj = self.env['tt.master.tour.pricing'].sudo().create(tour_pricing_vals)
 
                 for rec2 in rec['flight_segment_ids']:
                     carrier_obj = self.env['tt.transport.carrier'].sudo().search([('code', '=', rec2['carrier_code']),('provider_type_id', '=', self.env.ref('tt_reservation_airline.tt_provider_type_airline').id)],limit=1)
@@ -1899,7 +2058,7 @@ class MasterTour(models.Model):
 
                 tour_obj.sudo().write({
                     'location_ids': [(6, 0, location_list)],
-                    'image_ids': [(6, 0, image_list)],
+                    'image_ids': [(6, 0, image_list)]
                 })
 
                 if tour_obj.state == 'draft':
@@ -1960,9 +2119,16 @@ class TourSyncProductsChildren(models.TransientModel):
                     'duration': rec.duration,
                     'guiding_days': rec.guiding_days,
                     'driving_times': rec.driving_times,
-                    'visa': rec.visa,
-                    'flight': rec.flight,
+                    'est_starting_price': rec.est_starting_price,
+                    'adult_flight_fare': rec.adult_flight_fare,
+                    'child_flight_fare': rec.child_flight_fare,
+                    'infant_flight_fare': rec.infant_flight_fare,
+                    'adult_visa_fare': rec.adult_visa_fare,
+                    'child_visa_fare': rec.child_visa_fare,
+                    'infant_visa_fare': rec.infant_visa_fare,
                     'adult_airport_tax': rec.adult_airport_tax,
+                    'child_airport_tax': rec.adult_airport_tax,
+                    'infant_airport_tax': rec.adult_airport_tax,
                     'tipping_guide': rec.tipping_guide,
                     'tipping_tour_leader': rec.tipping_tour_leader,
                     'tipping_driver': rec.tipping_driver,
@@ -1994,7 +2160,7 @@ class TourSyncProductsChildren(models.TransientModel):
                             'due_date': rec3.due_date,
                         })
                     tour_line_dict.update({
-                        'payment_rules_list': payment_rules_list
+                        'payment_rules_ids': payment_rules_list
                     })
                     if rec.tour_type == 'open':
                         special_date_list = []
@@ -2008,7 +2174,7 @@ class TourSyncProductsChildren(models.TransientModel):
                                 'additional_infant_price': rec3.additional_infant_fare + rec3.additional_infant_commission
                             })
                         tour_line_dict.update({
-                            'special_date_list': special_date_list
+                            'special_date_ids': special_date_list
                         })
                     tour_line_list.append(tour_line_dict)
 
@@ -2046,7 +2212,7 @@ class TourSyncProductsChildren(models.TransientModel):
                     other_charges_list.append({
                         'name': rec2.name,
                         'pax_type': rec2.pax_type,
-                        'currency_id': rec2.currency_id.name,
+                        'currency_code': rec2.currency_id.name,
                         'amount': rec2.amount,
                         'charge_type': rec2.charge_type
                     })
@@ -2056,7 +2222,7 @@ class TourSyncProductsChildren(models.TransientModel):
                     tour_pricing_list = []
                     for rec3 in rec2.tour_pricing_ids:
                         tour_pricing_list.append({
-                            'currency_id': rec3.currency_id.id,
+                            'currency_code': rec3.currency_id.name,
                             'min_pax': rec3.min_pax,
                             'is_infant_included': rec3.is_infant_included,
                             'adult_price': rec3.adult_fare + rec3.adult_commission,
@@ -2078,7 +2244,7 @@ class TourSyncProductsChildren(models.TransientModel):
                         'adult_surcharge': rec2.adult_surcharge,
                         'child_surcharge': rec2.child_surcharge,
                         'additional_charge': rec2.additional_charge,
-                        'tour_pricing_list': tour_pricing_list
+                        'tour_pricing_ids': tour_pricing_list
                     })
 
                 itinerary_list = []
@@ -2110,6 +2276,7 @@ class TourSyncProductsChildren(models.TransientModel):
                     'location_ids': location_list,
                     'flight_segment_ids': flight_list,
                     'image_ids': image_list,
+                    'other_charges_ids': other_charges_list,
                     'room_ids': room_list,
                     'itinerary_ids': itinerary_list,
                     'other_info_ids': other_info_list,
