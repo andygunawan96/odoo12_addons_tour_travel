@@ -594,7 +594,7 @@ class MasterTour(models.Model):
 
                             if rec_det.get('pricing'):
                                 for rec_det2 in rec_det['pricing']:
-                                    tour_pricing_currency_obj = self.env['res.currency'].sudo().search([('name', '=', rec_det2['currency_code'])], limit=1)
+                                    tour_pricing_currency_obj = self.env['res.currency'].sudo().search([('name', '=', rec_det2['currency_id'])], limit=1)
                                     new_tour_pricing_vals = {
                                         'min_pax': rec_det2['min_pax'],
                                         'is_infant_included': rec_det2['is_infant_included'],
