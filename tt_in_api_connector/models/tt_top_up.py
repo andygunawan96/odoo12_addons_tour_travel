@@ -17,6 +17,8 @@ class TtTopUpApiCon(models.Model):
             res = table_obj.get_top_up_api(data,context)
         elif action == 'get_va_number':
             res = self.env['payment.acquirer'].get_va_number(data,context)
+        elif action == 'get_va_bank':
+            res = self.env['payment.acquirer'].get_va_bank(data,context)
         elif action == 'cancel_top_up':
             res = table_obj.cancel_top_up_api(data,context)
         elif action == 'get_top_up_amount':
