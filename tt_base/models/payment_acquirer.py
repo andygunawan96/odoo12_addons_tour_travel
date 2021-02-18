@@ -224,7 +224,7 @@ class PaymentAcquirer(models.Model):
 
             values = {}
             now_time = datetime.now(pytz.timezone('Asia/Jakarta'))
-            if self.env['tt.agent'].browse(co_agent_id).agent_type_id.name != self.env.ref('tt_base.agent_b2c').agent_type_id.name:
+            if self.env['tt.agent'].browse(co_agent_id).agent_type_id != self.env.ref('tt_base.agent_type_btc'):
                 for acq in self.sudo().search(dom):
                     # self.test_validate(acq) utk testig saja
                     if self.validate_time(acq, now_time):
