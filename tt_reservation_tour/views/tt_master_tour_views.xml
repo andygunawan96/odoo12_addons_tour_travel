@@ -144,7 +144,7 @@
                     <!--Pricing Segment-->
                     <separator string="Pricing"/>
                     <group>
-                        <field name="est_starting_price"/>
+                        <field name="est_starting_price" attrs="{'readonly': ['|', ('state', '!=', 'draft'), ('provider_id', '!=', %(tt_reservation_tour.tt_provider_tour_internal)d)]}"/>
                     </group>
                     <notebook colspan="4">
                         <page string="Additional Charges">
