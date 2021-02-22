@@ -2594,8 +2594,8 @@ class ActivitySyncProductsChildren(models.TransientModel):
             activity_data_list = []
             activity_datas = self.env['tt.master.activity'].sudo().search([('basePrice', '>', 0)])
             for rec in activity_datas:
-                ho_obj = self.env['tt.agent'].sudo().search([('agent_type_id', '=', self.env.ref('tt_base.agent_type_ho').id)], limit=1)
-                new_currency = ho_obj[0].currency_id and ho_obj[0].currency_id.name or 'IDR'
+                ho_obj = self.env.ref('tt_base.rodex_ho')
+                new_currency = ho_obj.currency_id and ho_obj.currency_id.name or 'IDR'
                 new_base_amt = rec.reprice_currency({
                     'provider': rec.provider_id.code,
                     'from_currency': rec.currency_id.name,
