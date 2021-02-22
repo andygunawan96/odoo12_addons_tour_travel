@@ -34,7 +34,7 @@
                     <button name="action_closed" string="Close" type="object" groups="tt_base.group_tt_tour_division_operator,tt_base.group_tt_tour_travel_manager" attrs="{'invisible':[('state','=', 'closed')]}"/>
                     <!--                    <button string="Update Tour Code" name="update_tour_code_temp" type="object" groups="base.user_admin"/>-->
                     <!--                    <button string="Generate Room Codes" name="generate_all_room_codes" type="object" groups="base.user_admin"/>-->
-                    <button string="Convert to New Pricing" name="convert_to_new_pricing" type="object" groups="base.user_admin"/>
+<!--                    <button string="Convert to New Pricing" name="convert_to_new_pricing" type="object" groups="base.user_admin"/>-->
                 </header>
                 <sheet>
                     <!--PRINT REPORT BUTTON-->

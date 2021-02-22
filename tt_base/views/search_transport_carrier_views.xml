@@ -5,7 +5,7 @@
         <field name="arch" type="xml">
             <form>
                 <header>
-                    <button name="get_carrier_list_search_api" string="Test Search API" type="object"/>
+<!--                    <button name="get_carrier_list_search_api" string="Test Search API" type="object"/>-->
                 </header>
                 <sheet>
                     <div class="oe_button_box" name="button_box">

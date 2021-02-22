@@ -63,7 +63,7 @@ class PhoneDetail(models.Model):
                 if len(res['response']) > 0:
                     ho_agent_obj = self.env['tt.agent'].browse(self.env.ref('tt_base.rodex_ho').id)
                     for rec in res['response']:
-                        bank_obj = self.env['tt.bank'].search([('name', '=ilike', rec['bank'])],limit=1)
+                        bank_obj = self.env['tt.bank'].search([('code', '=', rec['code'])],limit=1)
                         existing_payment_acquirer = self.env['payment.acquirer'].search([('agent_id','=',ho_agent_obj.id), ('type','=','va'), ('bank_id','=',bank_obj.id)])
                         if not existing_payment_acquirer:
                             existing_payment_acquirer = self.env['payment.acquirer'].create({

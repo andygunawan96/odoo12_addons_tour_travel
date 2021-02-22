@@ -144,7 +144,7 @@ class TtPaymentApiCon(models.Model):
             'email': req['email'],
             'provider': 'espay'
         }
-        return self.send_request_to_gateway('%s/payment' % (self.url), data, 'set_va')
+        return self.send_request_to_gateway('%s/payment' % (self.url), data, 'set_va', timeout=600)
 
     def test(self, req):
         data = {
