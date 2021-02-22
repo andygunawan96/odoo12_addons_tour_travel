@@ -8,7 +8,7 @@ class TourDiscountFit(models.Model):
     currency_id = fields.Many2one('res.currency', 'Currency', required=True,
                                   default=lambda self: self.env.user.company_id.currency_id)
 
-    tour_id = fields.Many2one('tt.master.tour', 'Pricelist ID', readonly=True)
+    tour_id = fields.Many2one('tt.master.tour', 'Master Tour', readonly=True)
     min_pax = fields.Integer('Min Pax')
     max_pax = fields.Integer('Max Pax')
     pax_amount = fields.Char('Participant Amount', compute="_compute_pax_amount")

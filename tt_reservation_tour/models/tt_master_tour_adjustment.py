@@ -19,4 +19,4 @@ class TourAdjustment(models.Model):
     price = fields.Monetary('Price', default=0, required=True)
     total = fields.Monetary('Total')
 
-    tour_pricelist_id = fields.Many2one('tt.master.tour', 'Pricelist ID', readonly=True)
+    tour_pricelist_id = fields.Many2one('tt.master.tour', 'Master Tour', readonly=True)

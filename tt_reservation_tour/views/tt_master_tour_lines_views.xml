@@ -43,8 +43,45 @@
                             </div>
                         </group>
                     </group>
-                    <separator string="Tour Special Dates (For Open Tour Only)"/>
-                    <field name="special_dates_ids"/>
+                    <notebook>
+                        <page string="Tour Special Dates (For Open Tour Only)">
+                            <field name="special_dates_ids"/>
+                        </page>
+                        <page string="Installment Payment Rules">
+                            <group>
+                                <group>
+                                    <field name="down_payment"/>
+                                </group>
+                                <group>
+
+                                </group>
+                            </group>
+                            <field name="payment_rules_ids" string="Payment Rules">
+                                <tree>
+                                    <field name="name"/>
+                                    <field name="payment_percentage"/>
+                                    <field name="description"/>
+                                    <field name="due_date"/>
+                                    <field name="tour_lines_id" invisible="1"/>
+                                </tree>
+                                <form>
+                                    <sheet>
+                                        <group>
+                                            <group>
+                                                <field name="name"/>
+                                                <field name="payment_percentage"/>
+                                            </group>
+                                            <group>
+                                                <field name="description"/>
+                                                <field name="due_date"/>
+                                                <field name="tour_lines_id" invisible="1"/>
+                                            </group>
+                                        </group>
+                                    </sheet>
+                                </form>
+                            </field>
+                        </page>
+                    </notebook>
                 </sheet>
             </form>
         </field>

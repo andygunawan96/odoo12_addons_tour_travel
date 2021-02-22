@@ -34,6 +34,7 @@
                     <button name="action_closed" string="Close" type="object" groups="tt_base.group_tt_tour_division_operator,tt_base.group_tt_tour_travel_manager" attrs="{'invisible':[('state','=', 'closed')]}"/>
                     <!--                    <button string="Update Tour Code" name="update_tour_code_temp" type="object" groups="base.user_admin"/>-->
                     <!--                    <button string="Generate Room Codes" name="generate_all_room_codes" type="object" groups="base.user_admin"/>-->
+                    <button string="Convert to New Pricing" name="convert_to_new_pricing" type="object" groups="base.user_admin"/>
                 </header>
                 <sheet>
                     <!--PRINT REPORT BUTTON-->
@@ -95,14 +96,12 @@
                             <field name="duration" attrs="{'readonly': ['|', ('state', '!=', 'draft'), ('provider_id', '!=', %(tt_reservation_tour.tt_provider_tour_internal)d)]}"/>
                             <field name="guiding_days" attrs="{'readonly': ['|', ('state', '!=', 'draft'), ('provider_id', '!=', %(tt_reservation_tour.tt_provider_tour_internal)d)]}"/>
                             <field name="driving_times" attrs="{'readonly': ['|', ('state', '!=', 'draft'), ('provider_id', '!=', %(tt_reservation_tour.tt_provider_tour_internal)d)]}"/>
-                            <field name="visa" attrs="{'readonly': ['|', ('state', '!=', 'draft'), ('provider_id', '!=', %(tt_reservation_tour.tt_provider_tour_internal)d)]}"/>
-                            <field name="flight" attrs="{'readonly': ['|', ('state', '!=', 'draft'), ('provider_id', '!=', %(tt_reservation_tour.tt_provider_tour_internal)d)]}"/>
                         </group>
                     </group>
 
                     <!--Flight Segment-->
-                    <separator string="Segments Flight" attrs="{'invisible':[('flight','!=', 'include')]}"/>
-                    <field name="flight_segment_ids" attrs="{'invisible':[('flight','!=', 'include')], 'readonly': ['|', ('state', '!=', 'draft'), ('provider_id', '!=', %(tt_reservation_tour.tt_provider_tour_internal)d)]}">
+                    <separator string="Segments Flight"/>
+                    <field name="flight_segment_ids" attrs="{'readonly': ['|', ('state', '!=', 'draft'), ('provider_id', '!=', %(tt_reservation_tour.tt_provider_tour_internal)d)]}">
                         <tree>
                             <field name="journey_type"/>
                             <field name="carrier_id"/>
@@ -144,27 +143,34 @@
 
                     <!--Pricing Segment-->
                     <separator string="Pricing"/>
+                    <group>
+                        <field name="est_starting_price"/>
+                    </group>
                     <notebook colspan="4">
-                        <page string="Tour Price">
-                            <group col="3">
-                                <field name="currency_id" invisible="1"/>
+                        <page string="Additional Charges">
+                            <group>
                                 <group>
-                                    <field name="adult_fare" groups="tt_base.group_tt_tour_travel_operator" attrs="{'readonly': ['|', ('state', '!=', 'draft'), ('provider_id', '!=', %(tt_reservation_tour.tt_provider_tour_internal)d)]}"/>
-                                    <field name="adult_commission" groups="tt_base.group_tt_tour_travel_operator" attrs="{'invisible': [('provider_id', '!=', %(tt_reservation_tour.tt_provider_tour_internal)d)], 'readonly': ['|', ('state', '!=', 'draft'), ('provider_id', '!=', %(tt_reservation_tour.tt_provider_tour_internal)d)]}"/>
+                                    <field name="adult_flight_fare" attrs="{'readonly': ['|', ('state', '!=', 'draft'), ('provider_id', '!=', %(tt_reservation_tour.tt_provider_tour_internal)d)]}"/>
+                                    <field name="child_flight_fare" attrs="{'readonly': ['|', ('state', '!=', 'draft'), ('provider_id', '!=', %(tt_reservation_tour.tt_provider_tour_internal)d)]}"/>
+                                    <field name="infant_flight_fare" attrs="{'readonly': ['|', ('state', '!=', 'draft'), ('provider_id', '!=', %(tt_reservation_tour.tt_provider_tour_internal)d)]}"/>
                                 </group>
                                 <group>
-                                    <field name="child_fare" groups="tt_base.group_tt_tour_travel_operator" attrs="{'readonly': ['|', ('state', '!=', 'draft'), ('provider_id', '!=', %(tt_reservation_tour.tt_provider_tour_internal)d)]}"/>
-                                    <field name="child_commission" groups="tt_base.group_tt_tour_travel_operator" attrs="{'invisible': [('provider_id', '!=', %(tt_reservation_tour.tt_provider_tour_internal)d)], 'readonly': ['|', ('state', '!=', 'draft'), ('provider_id', '!=', %(tt_reservation_tour.tt_provider_tour_internal)d)]}"/>
-                                </group>
-                                <group>
-                                    <field name="infant_fare" groups="tt_base.group_tt_tour_travel_operator" attrs="{'readonly': ['|', ('state', '!=', 'draft'), ('provider_id', '!=', %(tt_reservation_tour.tt_provider_tour_internal)d)]}"/>
-                                    <field name="infant_commission" groups="tt_base.group_tt_tour_travel_operator" attrs="{'invisible': [('provider_id', '!=', %(tt_reservation_tour.tt_provider_tour_internal)d)], 'readonly': ['|', ('state', '!=', 'draft'), ('provider_id', '!=', %(tt_reservation_tour.tt_provider_tour_internal)d)]}"/>
+                                    <field name="adult_visa_fare" attrs="{'readonly': ['|', ('state', '!=', 'draft'), ('provider_id', '!=', %(tt_reservation_tour.tt_provider_tour_internal)d)]}"/>
+                                    <field name="child_visa_fare" attrs="{'readonly': ['|', ('state', '!=', 'draft'), ('provider_id', '!=', %(tt_reservation_tour.tt_provider_tour_internal)d)]}"/>
+                                    <field name="infant_visa_fare" attrs="{'readonly': ['|', ('state', '!=', 'draft'), ('provider_id', '!=', %(tt_reservation_tour.tt_provider_tour_internal)d)]}"/>
                                 </group>
                             </group>
-                        </page>
-                        <page string="Additional Charge">
                             <group>
-                                <field name="airport_tax" attrs="{'readonly': ['|', ('state', '!=', 'draft'), ('provider_id', '!=', %(tt_reservation_tour.tt_provider_tour_internal)d)]}"/>
+                                <group>
+                                    <field name="adult_airport_tax" attrs="{'readonly': ['|', ('state', '!=', 'draft'), ('provider_id', '!=', %(tt_reservation_tour.tt_provider_tour_internal)d)]}"/>
+                                    <field name="child_airport_tax" attrs="{'readonly': ['|', ('state', '!=', 'draft'), ('provider_id', '!=', %(tt_reservation_tour.tt_provider_tour_internal)d)]}"/>
+                                    <field name="infant_airport_tax" attrs="{'readonly': ['|', ('state', '!=', 'draft'), ('provider_id', '!=', %(tt_reservation_tour.tt_provider_tour_internal)d)]}"/>
+                                </group>
+                                <group>
+                                    <field name="single_supplement" attrs="{'readonly': ['|', ('state', '!=', 'draft'), ('provider_id', '!=', %(tt_reservation_tour.tt_provider_tour_internal)d)]}"/>
+                                </group>
+                                <separator string="Other Charges"/>
+                                <field name="other_charges_ids"/>
                             </group>
                             <group col="3">
                                 <group>
@@ -184,61 +190,6 @@
                                 </group>
                             </group>
                         </page>
-                        <!--                        <page string="Discount" attrs="{'invisible': [('tour_category', '!=', 'private')]}">-->
-                        <!--                            <field name="discount_ids">-->
-                        <!--                                <tree>-->
-                        <!--                                    <field name="pax_amount"/>-->
-                        <!--                                    <field name="discount_per_pax"/>-->
-                        <!--                                    <field name="discount_total"/>-->
-                        <!--                                    <field name="currency_id" invisible="1"/>-->
-                        <!--                                </tree>-->
-                        <!--                                <form>-->
-                        <!--                                    <group>-->
-                        <!--                                        <field name="tour_id" invisible="1"/>-->
-                        <!--                                        <field name="min_pax"/>-->
-                        <!--                                        <field name="max_pax"/>-->
-                        <!--                                        <field name="pax_amount" invisible="1"/>-->
-                        <!--                                        <field name="discount_per_pax"/>-->
-                        <!--                                        <field name="discount_total"/>-->
-                        <!--                                        <field name="currency_id" invisible="1"/>-->
-                        <!--                                    </group>-->
-                        <!--                                </form>-->
-                        <!--                            </field>-->
-                        <!--                        </page>-->
-                        <page string="Installment Payment Rules">
-                            <group>
-                                <group>
-                                    <field name="down_payment" attrs="{'readonly': ['|', ('state', '!=', 'draft'), ('provider_id', '!=', %(tt_reservation_tour.tt_provider_tour_internal)d)]}"/>
-                                </group>
-                                <group>
-
-                                </group>
-                            </group>
-                            <field name="payment_rules_ids" string="Payment Rules" attrs="{'readonly': ['|', ('state', '!=', 'draft'), ('provider_id', '!=', %(tt_reservation_tour.tt_provider_tour_internal)d)]}">
-                                <tree>
-                                    <field name="name"/>
-                                    <field name="payment_percentage"/>
-                                    <field name="description"/>
-                                    <field name="due_date"/>
-                                    <field name="pricelist_id" invisible="1"/>
-                                </tree>
-                                <form>
-                                    <sheet>
-                                        <group>
-                                            <group>
-                                                <field name="name"/>
-                                                <field name="payment_percentage"/>
-                                            </group>
-                                            <group>
-                                                <field name="description"/>
-                                                <field name="due_date"/>
-                                                <field name="pricelist_id" invisible="1"/>
-                                            </group>
-                                        </group>
-                                    </sheet>
-                                </form>
-                            </field>
-                        </page>
                         <page string="Related Vendor(s)" groups="tt_base.group_tt_tour_travel_operator">
                             <field name="related_provider_ids"/>
                         </page>
@@ -256,6 +207,7 @@
                         <page string="Accommodation">
                             <field name="room_ids" string="Rooms" attrs="{'readonly': ['|', ('state', '!=', 'draft'), ('provider_id', '!=', %(tt_reservation_tour.tt_provider_tour_internal)d)]}">
                                 <tree>
+                                    <field name="sequence" widget="handle"/>
                                     <field name="room_code"/>
                                     <field name="hotel"/>
                                     <field name="name" string="Room"/>
@@ -285,6 +237,7 @@
                                                 <field name="name" string="Room"/>
                                                 <field name="bed_type"/>
                                                 <field name="description"/>
+                                                <field name="sequence"/>
                                                 <field name="currency_id" invisible="1"/>
                                                 <field name="tour_pricelist_id" invisible="1"/>
                                             </group>
@@ -295,10 +248,11 @@
                                                 <field name="extra_bed_limit"/>
                                                 <field name="adult_surcharge"/>
                                                 <field name="child_surcharge"/>
-                                                <field name="single_supplement"/>
                                                 <field name="additional_charge"/>
                                             </group>
                                         </group>
+                                        <separator string="Tour Pricing"/>
+                                        <field name="tour_pricing_ids"/>
                                     </sheet>
                                 </form>
                             </field>

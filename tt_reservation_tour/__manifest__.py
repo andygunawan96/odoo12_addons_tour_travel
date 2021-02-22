@@ -41,6 +41,8 @@
         'views/tt_master_tour_views.xml',
         'views/tt_master_tour_lines_views.xml',
         'views/tt_master_tour_special_dates_views.xml',
+        'views/tt_master_tour_pricing_views.xml',
+        'views/tt_master_tour_other_charges_views.xml',
         'views/tt_master_tour_quotation_views.xml',
         'views/tt_tour_master_locations_views.xml',
         'views/tt_master_tour_provider_views.xml',

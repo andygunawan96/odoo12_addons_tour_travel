@@ -26,14 +26,16 @@ class TourRooms(models.Model):
     child_surcharge = fields.Monetary('Child Extra Bed Charge', default=0, required=True)
     additional_charge = fields.Monetary('Additional Charge', default=0, help="charge for upgrade room or hotel",
                                         required=True)
-    single_supplement = fields.Monetary('Single Supplement', default=0, required=True)
 
     pax_minimum = fields.Integer('Pax Minimum', default=0, help="required pax to avoid single sup", required=True)
     pax_limit = fields.Integer('Pax Limit', default=0, help="max pax in a room", required=True)
     adult_limit = fields.Integer('Adult Limit', default=0, help="max adult in a room", required=True)
     extra_bed_limit = fields.Integer('Extra Bed Limit', default=0, help="max extra bed in a room", required=True)
 
-    tour_pricelist_id = fields.Many2one('tt.master.tour', 'Pricelist ID', readonly=True)
+    tour_pricelist_id = fields.Many2one('tt.master.tour', 'Master Tour', readonly=True)
+    tour_pricing_ids = fields.One2many('tt.master.tour.pricing', 'room_id', 'Tour Pricing')
+
+    sequence = fields.Integer('Sequence', required=True, default=50)
     active = fields.Boolean('Active', default=True)
 
     @api.model
@@ -41,3 +43,10 @@ class TourRooms(models.Model):
         if not vals.get('room_code'):
             vals['room_code'] = self.env['ir.sequence'].next_by_code('master.tour.room.code') or 'New'
         return super(TourRooms, self).create(vals)
+
+    def check_confirm_validity(self):
+        is_valid = False
+        for rec in self.tour_pricing_ids:
+            if rec.active and 0 <= rec.min_pax < 2:
+                is_valid = True
+        return is_valid

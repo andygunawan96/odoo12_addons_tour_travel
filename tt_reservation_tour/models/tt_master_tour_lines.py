@@ -29,8 +29,20 @@ class MasterTourLines(models.Model):
     sequence = fields.Integer('Sequence', default=3, required=True, readonly=True, states={'draft': [('readonly', False)]})
     provider_id = fields.Many2one('tt.provider', 'Provider', readonly=True, related='master_tour_id.provider_id', store=True)
     special_dates_ids = fields.One2many('tt.master.tour.special.dates', 'tour_line_id', 'Special Dates', readonly=True, states={'draft': [('readonly', False)]})
+    down_payment = fields.Float('Down Payment (%)', default=100)
+    payment_rules_ids = fields.One2many('tt.payment.rules', 'tour_lines_id')
     master_tour_id = fields.Many2one('tt.master.tour', 'Master Tour', readonly=True)
     active = fields.Boolean('Active', default=True)
+
+    @api.multi
+    def write(self, vals):
+        if vals.get('down_payment'):
+            total_percent = 0
+            for rec in self.payment_rules_ids:
+                total_percent += rec.payment_percentage
+            if total_percent + vals['down_payment'] > 100.00:
+                raise UserError(_('Total Installments and Down Payment cannot be more than 100%. Please re-adjust your Installment Payment Rules!'))
+        return super(MasterTourLines, self).write(vals)
 
     @api.depends('departure_date', 'arrival_date')
     @api.onchange('departure_date', 'arrival_date')
@@ -38,6 +50,14 @@ class MasterTourLines(models.Model):
         for rec in self:
             if rec.departure_date and rec.arrival_date:
                 rec.name = rec.departure_date.strftime('%d %b %Y') + ' - ' + rec.arrival_date.strftime('%d %b %Y')
+
+    @api.onchange('payment_rules_ids')
+    def _calc_dp(self):
+        dp = 100
+        for rec in self:
+            for pp in rec.payment_rules_ids:
+                dp -= pp.payment_percentage
+            rec.dp = dp
 
     def action_validate(self):
         if self.state == 'draft':

@@ -30,7 +30,7 @@ class TourPackageQuotation(models.Model):
                                   default=lambda self: self.env.user.company_id.currency_id)
 
     tour_id = fields.Many2one('tt.master.tour', 'Tour')
-    airport_tax = fields.Monetary('Airport Tax', readonly=True, related='tour_id.airport_tax')
+    airport_tax = fields.Monetary('Airport Tax', readonly=True, related='')
 
     # PAX
     pax_type = fields.Selection(PAX_TYPE, 'Pax Type', default='ADT', readonly=True, states={'draft': [('readonly', False)]})

@@ -49,6 +49,16 @@ tt_master_tour_rooms_for_tour_travel_operator,tt.master.tour.rooms.for.tour.trav
 tt_master_tour_rooms_for_tour_travel_supervisor,tt.master.tour.rooms.for.tour.travel.supervisor,model_tt_master_tour_rooms,tt_base.group_tt_tour_travel_supervisor,1,1,1,1
 tt_master_tour_rooms_for_tour_travel_manager,tt.master.tour.rooms.for.tour.travel.manager,model_tt_master_tour_rooms,tt_base.group_tt_tour_travel_manager,1,1,1,1
 ,,,,,,,
+tt_master_tour_pricing_for_all,tt.master.tour.pricing.for.all,model_tt_master_tour_pricing,,1,0,0,0
+tt_master_tour_pricing_for_tour_travel_operator,tt.master.tour.pricing.for.tour.travel.operator,model_tt_master_tour_pricing,tt_base.group_tt_tour_travel_operator,1,1,1,1
+tt_master_tour_pricing_for_tour_travel_supervisor,tt.master.tour.pricing.for.tour.travel.supervisor,model_tt_master_tour_pricing,tt_base.group_tt_tour_travel_supervisor,1,1,1,1
+tt_master_tour_pricing_for_tour_travel_manager,tt.master.tour.pricing.for.tour.travel.manager,model_tt_master_tour_pricing,tt_base.group_tt_tour_travel_manager,1,1,1,1
+,,,,,,,
+tt_master_tour_other_charges_for_all,tt.master.tour.other.charges.for.all,model_tt_master_tour_other_charges,,1,0,0,0
+tt_master_tour_other_charges_for_tour_travel_operator,tt.master.tour.other.charges.for.tour.travel.operator,model_tt_master_tour_other_charges,tt_base.group_tt_tour_travel_operator,1,1,1,1
+tt_master_tour_other_charges_for_tour_travel_supervisor,tt.master.tour.other.charges.for.tour.travel.supervisor,model_tt_master_tour_other_charges,tt_base.group_tt_tour_travel_supervisor,1,1,1,1
+tt_master_tour_other_charges_for_tour_travel_manager,tt.master.tour.other.charges.for.tour.travel.manager,model_tt_master_tour_other_charges,tt_base.group_tt_tour_travel_manager,1,1,1,1
+,,,,,,,
 tt_master_tour_checklist_for_all,tt.master.tour.checklist.for.all,model_tt_master_tour_checklist,,1,0,0,0
 tt_master_tour_checklist_for_tour_travel_operator,tt.master.tour.checklist.for.tour.travel.operator,model_tt_master_tour_checklist,tt_base.group_tt_tour_travel_operator,1,1,1,1
 tt_master_tour_checklist_for_tour_travel_supervisor,tt.master.tour.checklist.for.tour.travel.supervisor,model_tt_master_tour_checklist,tt_base.group_tt_tour_travel_supervisor,1,1,1,1

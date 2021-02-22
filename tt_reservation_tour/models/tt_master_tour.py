@@ -120,11 +120,17 @@ class MasterTour(models.Model):
     location_ids = fields.Many2many('tt.tour.master.locations', 'tt_tour_location_rel', 'product_id',
                                     'location_id', string='Location')
     country_str = fields.Char('Countries', compute='_compute_country_str', store=True)
-    visa = fields.Selection([('include', 'Include'), ('exclude', 'Exclude')],
-                            'Visa', required=True, default='include')
-    flight = fields.Selection([('include', 'Include'), ('exclude', 'Exclude')],
-                              'Flight', required=True, default='exclude')
-    airport_tax = fields.Monetary('Airport Tax', help="(/pax)", default=0)
+    est_starting_price = fields.Monetary('Estimated Starting Price', default=0)
+    single_supplement = fields.Monetary('Single Supplement', default=0)
+    adult_flight_fare = fields.Monetary('Adult Flight Fare', help="(/pax)", default=0)
+    child_flight_fare = fields.Monetary('Child Flight Fare', help="(/pax)", default=0)
+    infant_flight_fare = fields.Monetary('Infant Flight Fare', help="(/pax)", default=0)
+    adult_visa_fare = fields.Monetary('Adult Visa Fare', help="(/pax)", default=0)
+    child_visa_fare = fields.Monetary('Child Visa Fare', help="(/pax)", default=0)
+    infant_visa_fare = fields.Monetary('Infant Visa Fare', help="(/pax)", default=0)
+    adult_airport_tax = fields.Monetary('Adult Airport Tax', help="(/pax)", default=0)
+    child_airport_tax = fields.Monetary('Child Airport Tax', help="(/pax)", default=0)
+    infant_airport_tax = fields.Monetary('Infant Airport Tax', help="(/pax)", default=0)
     tipping_guide = fields.Monetary('Tipping Guide', help="(/pax /day)", default=0)
     tipping_tour_leader = fields.Monetary('Tipping Tour Leader', help="(/pax /day)", default=0)
     tipping_driver = fields.Monetary('Tipping Driver', help="(/pax /day)", default=0)
@@ -134,10 +140,12 @@ class MasterTour(models.Model):
     tipping_guide_infant = fields.Boolean('Apply for Infant', default=True)
     tipping_tour_leader_infant = fields.Boolean('Apply for Infant', default=True)
     tipping_driver_infant = fields.Boolean('Apply for Infant', default=True)
+    other_charges_ids = fields.One2many('tt.master.tour.other.charges', 'master_tour_id', 'Other Charges')
     duration = fields.Integer('Duration (days)', help="in day(s)", default=1)
     guiding_days = fields.Integer('Guiding Days', default=1)
     driving_times = fields.Integer('Driving Times', default=0)
 
+    # deprecated
     adult_fare = fields.Monetary('Adult Fare', default=0)
     adult_commission = fields.Monetary('Adult Commission', default=0)
 
@@ -146,12 +154,11 @@ class MasterTour(models.Model):
 
     infant_fare = fields.Monetary('Infant Fare', default=0)
     infant_commission = fields.Monetary('Infant Commission', default=0)
+    # end of deprecated
 
     discount_ids = fields.One2many('tt.master.tour.discount', 'tour_id')
     room_ids = fields.One2many('tt.master.tour.rooms', 'tour_pricelist_id', required=True)
 
-    down_payment = fields.Float('Down Payment (%)', default=100)
-    payment_rules_ids = fields.One2many('tt.payment.rules', 'pricelist_id')
     tour_leader_ids = fields.Many2many('res.employee', string="Tour Leader")
     # tour_leader_ids = fields.Many2many('res.employee', 'tour_leader_rel', 'pricelist_id', 'partner_id',
     #                                    string="Tour Leader")
@@ -184,16 +191,6 @@ class MasterTour(models.Model):
     file_name = fields.Char("Filename", compute="_compute_filename", store=True)
     active = fields.Boolean('Active', default=True)
 
-    @api.multi
-    def write(self, vals):
-        if vals.get('down_payment'):
-            total_percent = 0
-            for rec in self.payment_rules_ids:
-                total_percent += rec.payment_percentage
-            if total_percent + vals['down_payment'] > 100.00:
-                raise UserError(_('Total Installments and Down Payment cannot be more than 100%. Please re-adjust your Installment Payment Rules!'))
-        return super(MasterTour, self).write(vals)
-
     @api.depends("name")
     def _compute_filename(self):
         for rec in self:
@@ -217,14 +214,6 @@ class MasterTour(models.Model):
                 if rec2.active and rec2.state in ['open', 'definite']:
                     line_amt += 1
             rec.tour_line_amount = line_amt
-
-    @api.onchange('payment_rules_ids')
-    def _calc_dp(self):
-        dp = 100
-        for rec in self:
-            for pp in rec.payment_rules_ids:
-                dp -= pp.payment_percentage
-            rec.dp = dp
 
     @api.onchange('tour_type')
     def _set_to_null(self):
@@ -292,24 +281,47 @@ class MasterTour(models.Model):
     def copy_tour(self):
         new_tour_obj = self.copy()
         for rec in self.tour_line_ids:
-            self.env['tt.master.tour.lines'].sudo().create({
+            new_tour_line_obj = self.env['tt.master.tour.lines'].sudo().create({
                 'departure_date': rec.departure_date,
                 'arrival_date': rec.arrival_date,
                 'seat': rec.quota,
                 'quota': rec.quota,
                 'sequence': rec.sequence,
+                'down_payment': rec.down_payment,
                 'master_tour_id': new_tour_obj.id
             })
-        for rec in self.payment_rules_ids:
-            self.env['tt.payment.rules'].sudo().create({
+            for rec2 in rec.payment_rules_ids:
+                self.env['tt.payment.rules'].sudo().create({
+                    'name': rec2.name,
+                    'payment_percentage': rec2.payment_percentage,
+                    'description': rec2.description,
+                    'due_date': rec2.due_date,
+                    'tour_lines_id': new_tour_line_obj.id,
+                })
+            for rec2 in rec.special_dates_ids:
+                self.env['tt.master.tour.special.dates'].sudo().create({
+                    'name': rec2.name,
+                    'date': rec2.date,
+                    'currency_id': rec2.currency_id.id,
+                    'additional_adult_fare': rec2.additional_adult_fare,
+                    'additional_adult_commission': rec2.additional_adult_commission,
+                    'additional_child_fare': rec2.additional_child_fare,
+                    'additional_child_commission': rec2.additional_child_commission,
+                    'additional_infant_fare': rec2.additional_infant_fare,
+                    'additional_infant_commission': rec2.additional_infant_commission,
+                    'tour_line_id': new_tour_line_obj.id,
+                })
+        for rec in self.other_charges_ids:
+            self.env['tt.master.tour.other.charges'].sudo().create({
                 'name': rec.name,
-                'payment_percentage': rec.payment_percentage,
-                'description': rec.description,
-                'due_date': rec.due_date,
-                'pricelist_id': new_tour_obj.id,
+                'pax_type': rec.pax_type,
+                'currency_id': rec.currency_id.id,
+                'amount': rec.amount,
+                'charge_type': rec.charge_type,
+                'master_tour_id': new_tour_obj.id
             })
         for rec in self.room_ids:
-            self.env['tt.master.tour.rooms'].sudo().create({
+            new_tour_room_obj = self.env['tt.master.tour.rooms'].sudo().create({
                 'name': rec.name,
                 'room_code': rec.room_code,
                 'bed_type': rec.bed_type,
@@ -326,6 +338,19 @@ class MasterTour(models.Model):
                 'extra_bed_limit': rec.extra_bed_limit,
                 'tour_pricelist_id': new_tour_obj.id,
             })
+            for rec2 in rec.tour_pricing_ids:
+                self.env['tt.master.tour.pricing'].sudo().create({
+                    'currency_id': rec2.currency_id.id,
+                    'min_pax': rec2.min_pax,
+                    'is_infant_included': rec2.is_infant_included,
+                    'adult_fare': rec2.adult_fare,
+                    'adult_commission': rec2.adult_commission,
+                    'child_fare': rec2.child_fare,
+                    'child_commission': rec2.child_commission,
+                    'infant_fare': rec2.infant_fare,
+                    'infant_commission': rec2.infant_commission,
+                    'room_id': new_tour_room_obj.id
+                })
         for rec in self.flight_segment_ids:
             self.env['flight.segment'].sudo().create({
                 'journey_type': rec.journey_type,
@@ -413,7 +438,7 @@ class MasterTour(models.Model):
                     'is_can_hold': rec['is_can_hold'],
                     'visa': rec['visa'],
                     'flight': rec['flight'],
-                    'airport_tax': rec['airport_tax'],
+                    'adult_airport_tax': rec['adult_airport_tax'],
                     'tipping_guide': rec['tipping_guide'],
                     'tipping_tour_leader': rec['tipping_tour_leader'],
                     'tipping_driver': rec['tipping_driver'],
@@ -631,6 +656,8 @@ class MasterTour(models.Model):
             raise UserError(_('Please fill Provider!'))
         if not self.tour_line_ids:
             raise UserError(_('Please add at least 1 Tour Line(s)!'))
+        if any(not rec.check_confirm_validity() for rec in self.room_ids):
+            raise UserError(_('Please make sure every accommodation rooms in this tour have an active default pricing (pricing for min 1 pax)'))
 
         self.state = 'confirm'
         prefix = self.provider_id.alias and self.provider_id.alias + '~' or ''
@@ -764,7 +791,7 @@ class MasterTour(models.Model):
 
     def get_tour_other_info(self):
         list_of_dict = []
-        for rec in self.other_info_ids:
+        for rec in self.other_info_ids.sorted('sequence'):
             list_of_dict.append(rec.convert_info_to_dict())
 
         return list_of_dict
@@ -857,30 +884,15 @@ class MasterTour(models.Model):
                             'tour_route': rec.tour_route,
                             'tour_type': rec.tour_type,
                             'tour_type_str': dict(rec._fields['tour_type'].selection).get(rec.tour_type),
-                            'flight': rec.flight,
-                            'visa': rec.visa,
                             'description': rec.description,
                             'currency_code': rec.currency_id.name,
                             'carrier_code': rec.carrier_id.code,
                             'duration': rec.duration,
-                            'driving_times': rec.driving_times,
-                            'guiding_days': rec.guiding_days,
                             'is_can_hold': rec.is_can_hold,
                             'locations': location_list,
                             'provider': rec.provider_id.code,
                             'images_obj': image_list,
-                            'adult_sale_price': int(rec.adult_fare) + int(rec.adult_commission),
-                            'child_sale_price': int(rec.child_fare) + int(rec.child_commission),
-                            'infant_sale_price': int(rec.infant_fare) + int(rec.infant_commission),
-                            'tipping_guide': rec.tipping_guide,
-                            'tipping_guide_child': rec.tipping_guide_child,
-                            'tipping_guide_infant': rec.tipping_guide_infant,
-                            'tipping_tour_leader': rec.tipping_tour_leader,
-                            'tipping_tour_leader_child': rec.tipping_tour_leader_child,
-                            'tipping_tour_leader_infant': rec.tipping_tour_leader_infant,
-                            'tipping_driver': rec.tipping_driver,
-                            'tipping_driver_child': rec.tipping_driver_child,
-                            'tipping_driver_infant': rec.tipping_driver_infant,
+                            'est_starting_price': rec.est_starting_price,
                             'state': rec.state
                         })
 
@@ -1077,34 +1089,30 @@ class MasterTour(models.Model):
                     'city_name': temp_city,
                 })
 
-            try:
-                self.env.cr.execute(
-                    """SELECT * FROM tt_master_tour_rooms WHERE tour_pricelist_id = %s;""", (tour_obj.id,))
-                accommodation = self.env.cr.dictfetchall()
-            except Exception:
-                accommodation = []
-
+            accommodations = []
             hotel_names = []
-            for acc in accommodation:
-                if acc.get('hotel'):
-                    if acc['hotel'] not in hotel_names:
-                        hotel_names.append(acc['hotel'])
-
-                if acc.get('active'):
-                    acc.pop('active')
-                if acc.get('write_date'):
-                    acc.pop('write_date')
-                if acc.get('write_uid'):
-                    acc.pop('write_uid')
-                if acc.get('currency_id'):
-                    acc.pop('currency_id')
-
-                acc_key_list = [key for key in acc.keys()]
-                for key in acc_key_list:
-                    if acc[key] is None:
-                        acc.update({
-                            key: ''
-                        })
+            for acc in tour_obj.room_ids:
+                accommodations.append({
+                    'room_code': acc.room_code and acc.room_code or '',
+                    'name': acc.name and acc.name or '',
+                    'sequence': acc.sequence and acc.sequence or 0,
+                    'bed_type': acc.bed_type and acc.bed_type or '',
+                    'description': acc.description and acc.description or '',
+                    'hotel': acc.hotel and acc.hotel or '',
+                    'address': acc.address and acc.address or '',
+                    'star': acc.star and acc.star or 0,
+                    'currency_id': acc.currency_id and acc.currency_id.name or '',
+                    'adult_surcharge': acc.adult_surcharge and acc.adult_surcharge or 0,
+                    'child_surcharge': acc.child_surcharge and acc.child_surcharge or 0,
+                    'additional_charge': acc.additional_charge and acc.additional_charge or 0,
+                    'pax_minimum': acc.pax_minimum and acc.pax_minimum or 0,
+                    'pax_limit': acc.pax_limit and acc.pax_limit or 0,
+                    'adult_limit': acc.adult_limit and acc.adult_limit or 0,
+                    'extra_bed_limit': acc.extra_bed_limit and acc.extra_bed_limit or 0,
+                    'pricing': [rec.to_dict() for rec in acc.tour_pricing_ids]
+                })
+                if acc.hotel:
+                    hotel_names.append(acc.hotel)
 
             try:
                 self.env.cr.execute("""SELECT tuc.* FROM tt_upload_center tuc LEFT JOIN tour_images_rel tir ON tir.image_id = tuc.id WHERE tir.tour_id = %s AND tuc.active = True ORDER BY sequence;""", (tour_obj.id,))
@@ -1120,10 +1128,6 @@ class MasterTour(models.Model):
                     'filename': img_temp.get('filename') and img_temp['filename'] or False,
                 })
 
-            adult_sale_price = int(tour_obj.adult_fare) + int(tour_obj.adult_commission)
-            child_sale_price = int(tour_obj.child_fare) + int(tour_obj.child_commission)
-            infant_sale_price = int(tour_obj.infant_fare) + int(tour_obj.infant_commission)
-
             selected_tour = {
                 'name': tour_obj.name,
                 'description': tour_obj.description,
@@ -1134,13 +1138,29 @@ class MasterTour(models.Model):
                 'tour_type_str': dict(tour_obj._fields['tour_type'].selection).get(tour_obj.tour_type),
                 'tour_lines': tour_line_list,
                 'carrier_code': tour_obj.carrier_id.code,
-                'visa': tour_obj.visa,
-                'flight': tour_obj.flight,
-                'accommodations': accommodation,
+                'accommodations': accommodations,
                 'currency_code': tour_obj.currency_id.name,
-                'adult_sale_price': adult_sale_price <= 0 and '0' or adult_sale_price,
-                'child_sale_price': child_sale_price <= 0 and '0' or child_sale_price,
-                'infant_sale_price': infant_sale_price <= 0 and '0' or infant_sale_price,
+                'est_starting_price': tour_obj.est_starting_price,
+                'single_supplement': tour_obj.single_supplement,
+                'adult_flight_fare': tour_obj.adult_flight_fare,
+                'child_flight_fare': tour_obj.child_flight_fare,
+                'infant_flight_fare': tour_obj.infant_flight_fare,
+                'adult_visa_fare': tour_obj.adult_visa_fare,
+                'child_visa_fare': tour_obj.child_visa_fare,
+                'infant_visa_fare': tour_obj.infant_visa_fare,
+                'adult_airport_tax': tour_obj.adult_airport_tax,
+                'child_airport_tax': tour_obj.child_airport_tax,
+                'infant_airport_tax': tour_obj.infant_airport_tax,
+                'tipping_guide': tour_obj.tipping_guide,
+                'tipping_guide_child': tour_obj.tipping_guide_child,
+                'tipping_guide_infant': tour_obj.tipping_guide_infant,
+                'tipping_tour_leader': tour_obj.tipping_tour_leader,
+                'tipping_tour_leader_child': tour_obj.tipping_tour_leader_child,
+                'tipping_tour_leader_infant': tour_obj.tipping_tour_leader_infant,
+                'tipping_driver': tour_obj.tipping_driver,
+                'tipping_driver_child': tour_obj.tipping_driver_child,
+                'tipping_driver_infant': tour_obj.tipping_driver_infant,
+                'other_charges': [rec.to_dict() for rec in tour_obj.other_charges_ids],
                 'locations': location_list,
                 'country_names': country_names,
                 'flight_segments': tour_obj.get_flight_segment(),
@@ -1148,6 +1168,8 @@ class MasterTour(models.Model):
                 'other_infos': tour_obj.get_tour_other_info(),
                 'hotel_names': hotel_names,
                 'duration': tour_obj.duration and tour_obj.duration or 0,
+                'guiding_days': tour_obj.guiding_days and tour_obj.guiding_days or 0,
+                'driving_times': tour_obj.driving_times and tour_obj.driving_times or 0,
                 'images_obj': final_images,
                 'document_url': tour_obj.document_url and tour_obj.document_url.url or '',
                 'provider': tour_obj.provider_id and tour_obj.provider_id.code or '',
@@ -1171,6 +1193,7 @@ class MasterTour(models.Model):
         try:
             search_request = {
                 'tour_code': data.get('tour_code') and data['tour_code'] or '',
+                'tour_line_code': data.get('tour_line_code') and data['tour_line_code'] or '',
                 'provider': data.get('provider') and data['provider'] or ''
             }
             provider_obj = self.env['tt.provider'].sudo().search([('code', '=', search_request['provider'])], limit=1)
@@ -1181,16 +1204,20 @@ class MasterTour(models.Model):
             if not search_tour_obj:
                 raise RequestException(1022, additional_message='Tour not found.')
             search_tour_obj = search_tour_obj[0]
+            search_tour_line_obj = self.env['tt.master.tour.lines'].sudo().search([('tour_line_code', '=', search_request['tour_line_code']), ('master_tour_id', '=', search_tour_obj.id)], limit=1)
+            if not search_tour_line_obj:
+                raise RequestException(1022, additional_message='Tour Line not found.')
+            search_tour_line_obj = search_tour_line_obj[0]
             payment_rules = [
                 {
                     'name': 'Down Payment',
                     'description': 'Down Payment',
-                    'payment_percentage': search_tour_obj.down_payment,
+                    'payment_percentage': search_tour_line_obj.down_payment,
                     'due_date': date.today(),
                     'is_dp': True
                 }
             ]
-            for payment in search_tour_obj.payment_rules_ids:
+            for payment in search_tour_line_obj.payment_rules_ids:
                 vals = {
                     'name': payment.name,
                     'description': payment.description,
@@ -1215,6 +1242,7 @@ class MasterTour(models.Model):
         try:
             search_request = {
                 'tour_code': data.get('tour_code') and data['tour_code'] or '',
+                'tour_line_code': data.get('tour_line_code') and data['tour_line_code'] or '',
                 'provider': data.get('provider') and data['provider'] or ''
             }
             provider_obj = self.env['tt.provider'].sudo().search([('code', '=', search_request['provider'])], limit=1)
@@ -1225,12 +1253,16 @@ class MasterTour(models.Model):
             if not search_tour_obj:
                 raise RequestException(1022, additional_message='Tour not found.')
             search_tour_obj = search_tour_obj[0]
+            search_tour_line_obj = self.env['tt.master.tour.lines'].sudo().search([('tour_line_code', '=', search_request['tour_line_code']), ('master_tour_id', '=', search_tour_obj.id)], limit=1)
+            if not search_tour_line_obj:
+                raise RequestException(1022, additional_message='Tour Line not found.')
+            search_tour_line_obj = search_tour_line_obj[0]
             new_pay_rules = data.get('payment_rules') and data['payment_rules']['payment_rules'] or []
             new_pay_ids = []
             for rec in new_pay_rules:
                 if rec.get('is_dp'):
-                    if float(rec['payment_percentage']) != float(search_tour_obj.down_payment):
-                        search_tour_obj.sudo().write({
+                    if float(rec['payment_percentage']) != float(search_tour_line_obj.down_payment):
+                        search_tour_line_obj.sudo().write({
                             'down_payment': float(rec['payment_percentage'])
                         })
                 else:
@@ -1243,7 +1275,7 @@ class MasterTour(models.Model):
                     new_pay_ids.append(new_pay_obj.id)
                 self.env.cr.commit()
 
-            search_tour_obj.sudo().write({
+            search_tour_line_obj.sudo().write({
                 'payment_rules_ids': [(6, 0, new_pay_ids)]
             })
 
@@ -1380,15 +1412,21 @@ class MasterTour(models.Model):
             tour_data = tour_data_list[0]
             price_itinerary = {
                 'carrier_code': tour_data.carrier_id.code,
-                'adult_fare': tour_data.adult_fare,
-                'adult_commission': tour_data.adult_commission,
-                'child_fare': tour_data.child_fare,
-                'child_commission': tour_data.child_commission,
-                'infant_fare': tour_data.infant_fare,
-                'infant_commission': tour_data.infant_commission,
-                'adult_airport_tax': tour_data.airport_tax,
-                'child_airport_tax': tour_data.airport_tax,
-                'infant_airport_tax': tour_data.airport_tax,
+                'adult_flight_fare': tour_data.adult_flight_fare,
+                'child_flight_fare': tour_data.child_flight_fare,
+                'infant_flight_fare': tour_data.infant_flight_fare,
+                'adult_visa_fare': tour_data.adult_visa_fare,
+                'child_visa_fare': tour_data.child_visa_fare,
+                'infant_visa_fare': tour_data.infant_visa_fare,
+                'adult_airport_tax': tour_data.adult_airport_tax,
+                'child_airport_tax': tour_data.child_airport_tax,
+                'infant_airport_tax': tour_data.infant_airport_tax,
+                'adult_additional_fare': 0,
+                'adult_additional_commission': 0,
+                'child_additional_fare': 0,
+                'child_additional_commission': 0,
+                'infant_additional_fare': 0,
+                'infant_additional_commission': 0,
                 'adult_tipping_guide': tour_data.tipping_guide,
                 'adult_tipping_tour_leader': tour_data.tipping_tour_leader,
                 'adult_tipping_driver': tour_data.tipping_driver,
@@ -1401,7 +1439,8 @@ class MasterTour(models.Model):
                 'guiding_days': tour_data.guiding_days,
                 'driving_times': tour_data.driving_times,
                 'duration': tour_data.duration,
-                'accommodations': []
+                'accommodations': [],
+                'other_charges': []
             }
             if tour_data.tipping_guide_child:
                 price_itinerary.update({
@@ -1432,39 +1471,46 @@ class MasterTour(models.Model):
             total_adt = 0
             total_chd = 0
             total_inf = 0
-            grand_total_pax = 0
-            grand_total_pax_no_infant = 0
             for rec in temp_room_list:
                 tour_room_list = self.env['tt.master.tour.rooms'].sudo().search([('room_code', '=', rec['room_code']), ('tour_pricelist_id', '=', tour_data.id)], limit=1)
                 tour_room = tour_room_list[0]
-                total_amount = int(rec['adult']) + int(rec['child']) + int(rec['infant'])
-                grand_total_pax += total_amount
-                total_amount_no_infant = int(rec['adult']) + int(rec['child'])
-                grand_total_pax_no_infant += total_amount_no_infant
-                adult_amt = child_amt = infant_amt = adult_sur_amt = child_sur_amt = adult_sur = child_sur = 0
+                adult_amt = child_amt = infant_amt = adult_sur_amt = child_sur_amt = single_sup = 0
+                total_pax = int(rec['adult']) + int(rec['child']) + int(rec['infant'])
+                total_pax_no_infant = int(rec['adult']) + int(rec['child'])
+
+                used_price = tour_room.tour_pricing_ids[0]
+                for rec_price in tour_room.tour_pricing_ids:
+                    if rec_price.is_infant_included:
+                        total_pax_price = total_pax
+                    else:
+                        total_pax_price = total_pax_no_infant
+                    if total_pax_price >= rec_price.min_pax >= used_price.min_pax:
+                        used_price = rec_price
+
+                adult_fare = used_price.adult_fare
+                adult_com = used_price.adult_commission
+                child_fare = used_price.child_fare
+                child_com = used_price.child_commission
+                infant_fare = used_price.infant_fare
+                infant_com = used_price.infant_commission
+
                 extra_bed_limit = tour_room.extra_bed_limit
-                single_sup = 0
-                if total_amount_no_infant < tour_room.pax_minimum:
-                    single_sup = (tour_room.pax_minimum - total_amount_no_infant) * int(tour_room.single_supplement)
-                    adult_amt += total_amount_no_infant
+                if total_pax_no_infant < tour_room.pax_minimum:
+                    adult_amt += total_pax_no_infant
                     infant_amt += rec['infant']
                 else:
                     if rec['adult'] >= tour_room.pax_minimum:
                         adult_amt += rec['adult']
                         if int(rec['adult']) - int(tour_room.pax_minimum) <= int(extra_bed_limit):
                             adult_sur_amt += rec['adult'] - tour_room.pax_minimum
-                            adult_sur += (rec['adult'] - tour_room.pax_minimum) * int(tour_room.adult_surcharge)
                             extra_bed_limit -= rec['adult'] - tour_room.pax_minimum
                             child_amt += rec['child']
                             if int(rec['child']) <= extra_bed_limit:
                                 child_sur_amt += rec['child']
-                                child_sur += rec['child'] * int(tour_room.child_surcharge)
                             else:
                                 child_sur_amt += rec['child'] - extra_bed_limit
-                                child_sur += (rec['child'] - extra_bed_limit) * int(tour_room.child_surcharge)
                         else:
                             adult_sur_amt += rec['adult'] - tour_room.pax_minimum - extra_bed_limit
-                            adult_sur += adult_sur * int(tour_room.adult_surcharge)
                             child_amt += rec['child']
                         infant_amt += rec['infant']
                     else:
@@ -1476,7 +1522,6 @@ class MasterTour(models.Model):
                                     child_sur_amt += rec['child'] - (tour_room.pax_minimum - rec['adult']) - extra_bed_limit
                                 else:
                                     child_sur_amt += rec['child'] - (tour_room.pax_minimum - rec['adult'])
-                                child_sur += child_sur_amt * int(tour_room.child_surcharge)
                         if rec['infant'] > 0:
                             if rec['adult'] + rec['child'] < tour_room.pax_minimum:
                                 if rec['infant'] - (tour_room.pax_minimum - rec['adult'] - rec['child']) > 0:
@@ -1486,16 +1531,25 @@ class MasterTour(models.Model):
                             else:
                                 infant_amt += rec['infant']
 
+                if total_pax < 2:
+                    single_sup += tour_data.single_supplement
+
                 temp_accom = {
                     'room_id': tour_room.id,
                     'room_code': tour_room.room_code,
+                    'adult_fare': adult_fare,
+                    'adult_commission': adult_com,
+                    'child_fare': child_fare,
+                    'child_commission': child_com,
+                    'infant_fare': infant_fare,
+                    'infant_commission': infant_com,
                     'adult_amount': adult_amt,
                     'child_amount': child_amt,
                     'infant_amount': infant_amt,
                     'adult_surcharge_amount': adult_sur_amt,
                     'child_surcharge_amount': child_sur_amt,
-                    'adult_surcharge': tour_room.adult_surcharge,
-                    'child_surcharge': tour_room.child_surcharge,
+                    'adult_surcharge': int(tour_room.adult_surcharge),
+                    'child_surcharge': int(tour_room.child_surcharge),
                     'single_supplement': single_sup,
                     'additional_charge': int(tour_room.additional_charge),
                 }
@@ -1508,6 +1562,21 @@ class MasterTour(models.Model):
                 'total_child': total_chd,
                 'total_infant': total_inf,
             })
+
+            pax_type_conv = {
+                'ADT': total_adt,
+                'CHD': total_chd,
+                'INF': total_inf,
+            }
+            for rec_charges in tour_data.other_charges_ids:
+                price_itinerary['other_charges'].append({
+                    'name': rec_charges.name,
+                    'pax_type': rec_charges.pax_type,
+                    'pax_count': pax_type_conv[rec_charges.pax_type],
+                    'charge_type': rec_charges.charge_type,
+                    'amount': rec_charges.amount
+                })
+
             if tour_data.tour_type == 'open':
                 if not req.get('tour_line_code') or not req.get('departure_date'):
                     raise RequestException(1022, additional_message='A valid tour line code and your departure date are required to check Open Tour Price.')
@@ -1522,42 +1591,42 @@ class MasterTour(models.Model):
                     visited_date_list.append(cur_iteration.strftime('%Y-%m-%d'))
                 for rec in tour_line_data.special_dates_ids:
                     if rec.date.strftime('%Y-%m-%d') in visited_date_list:
-                        if not price_itinerary.get('adult_fare'):
+                        if not price_itinerary.get('adult_additional_fare'):
                             price_itinerary.update({
-                                'adult_fare': rec.additional_adult_fare
+                                'adult_additional_fare': rec.additional_adult_fare
                             })
                         else:
-                            price_itinerary['adult_fare'] += rec.additional_adult_fare
-                        if not price_itinerary.get('adult_commission'):
+                            price_itinerary['adult_additional_fare'] += rec.additional_adult_fare
+                        if not price_itinerary.get('adult_additional_commission'):
                             price_itinerary.update({
-                                'adult_commission': rec.additional_adult_commission
+                                'adult_additional_commission': rec.additional_adult_commission
                             })
                         else:
-                            price_itinerary['adult_commission'] += rec.additional_adult_commission
-                        if not price_itinerary.get('child_fare'):
+                            price_itinerary['adult_additional_commission'] += rec.additional_adult_commission
+                        if not price_itinerary.get('child_additional_fare'):
                             price_itinerary.update({
-                                'child_fare': rec.additional_child_fare
+                                'child_additional_fare': rec.additional_child_fare
                             })
                         else:
-                            price_itinerary['child_fare'] += rec.additional_child_fare
-                        if not price_itinerary.get('child_commission'):
+                            price_itinerary['child_additional_fare'] += rec.additional_child_fare
+                        if not price_itinerary.get('child_additional_commission'):
                             price_itinerary.update({
-                                'child_commission': rec.additional_child_commission
+                                'child_additional_commission': rec.additional_child_commission
                             })
                         else:
-                            price_itinerary['child_commission'] += rec.additional_child_commission
-                        if not price_itinerary.get('infant_fare'):
+                            price_itinerary['child_additional_commission'] += rec.additional_child_commission
+                        if not price_itinerary.get('infant_additional_fare'):
                             price_itinerary.update({
-                                'infant_fare': rec.additional_infant_fare
+                                'infant_additional_fare': rec.additional_infant_fare
                             })
                         else:
-                            price_itinerary['infant_fare'] += rec.additional_infant_fare
-                        if not price_itinerary.get('infant_commission'):
+                            price_itinerary['infant_additional_fare'] += rec.additional_infant_fare
+                        if not price_itinerary.get('infant_additional_commission'):
                             price_itinerary.update({
-                                'infant_commission': rec.additional_infant_commission
+                                'infant_additional_commission': rec.additional_infant_commission
                             })
                         else:
-                            price_itinerary['infant_commission'] += rec.additional_infant_commission
+                            price_itinerary['infant_additional_commission'] += rec.additional_infant_commission
             return ERR.get_no_error(price_itinerary)
         except RequestException as e:
             _logger.error(traceback.format_exc())
@@ -1670,7 +1739,7 @@ class MasterTour(models.Model):
                     'adult_commission': rec['adult_commission'],
                     'child_commission': rec['child_commission'],
                     'infant_commission': rec['infant_commission'],
-                    'airport_tax': rec['airport_tax'],
+                    'adult_airport_tax': rec['adult_airport_tax'],
                     'tipping_guide': rec['tipping_guide'],
                     'tipping_tour_leader': rec['tipping_tour_leader'],
                     'tipping_driver': rec['tipping_driver'],
@@ -1850,6 +1919,23 @@ class MasterTour(models.Model):
     #             'room_code': self.env['ir.sequence'].next_by_code('master.tour.room.code') or 'New'
     #         })
 
+    # temporary function
+    def convert_to_new_pricing(self):
+        all_tours = self.env['tt.master.tour'].sudo().search([])
+        for rec in all_tours:
+            for rec2 in rec.room_ids:
+                if not rec2.tour_pricing_ids:
+                    self.env['tt.master.tour.pricing'].sudo().create({
+                        'room_id': rec2.id,
+                        'min_pax': 1,
+                        'adult_fare': rec.adult_fare,
+                        'adult_commission': rec.adult_commission,
+                        'child_fare': rec.child_fare,
+                        'child_commission': rec.child_commission,
+                        'infant_fare': rec.infant_fare,
+                        'infant_commission': rec.infant_commission
+                    })
+
 
 class TourSyncProductsChildren(models.TransientModel):
     _name = "tour.sync.product.children.wizard"
@@ -1876,13 +1962,7 @@ class TourSyncProductsChildren(models.TransientModel):
                     'driving_times': rec.driving_times,
                     'visa': rec.visa,
                     'flight': rec.flight,
-                    'adult_fare': rec.adult_fare,
-                    'child_fare': rec.child_fare,
-                    'infant_fare': rec.infant_fare,
-                    'adult_commission': rec.adult_commission,
-                    'child_commission': rec.child_commission,
-                    'infant_commission': rec.infant_commission,
-                    'airport_tax': rec.airport_tax,
+                    'adult_airport_tax': rec.adult_airport_tax,
                     'tipping_guide': rec.tipping_guide,
                     'tipping_tour_leader': rec.tipping_tour_leader,
                     'tipping_driver': rec.tipping_driver,
@@ -1891,8 +1971,7 @@ class TourSyncProductsChildren(models.TransientModel):
                     'tipping_driver_child': rec.tipping_driver_child,
                     'tipping_guide_infant': rec.tipping_guide_infant,
                     'tipping_tour_leader_infant': rec.tipping_tour_leader_infant,
-                    'tipping_driver_infant': rec.tipping_driver_infant,
-                    'down_payment': rec.down_payment,
+                    'tipping_driver_infant': rec.tipping_driver_infant
                 }
                 tour_line_list = []
                 for rec2 in rec.tour_line_ids:
@@ -1903,8 +1982,20 @@ class TourSyncProductsChildren(models.TransientModel):
                         'seat': rec2.seat,
                         'quota': rec2.quota,
                         'state': rec2.state,
+                        'down_payment': rec2.down_payment,
                         'sequence': rec2.sequence
                     }
+                    payment_rules_list = []
+                    for rec3 in rec2.payment_rules_ids:
+                        payment_rules_list.append({
+                            'name': rec3.name,
+                            'payment_percentage': rec3.payment_percentage,
+                            'description': rec3.description,
+                            'due_date': rec3.due_date,
+                        })
+                    tour_line_dict.update({
+                        'payment_rules_list': payment_rules_list
+                    })
                     if rec.tour_type == 'open':
                         special_date_list = []
                         for rec3 in rec2.special_dates_ids:
@@ -1950,8 +2041,28 @@ class TourSyncProductsChildren(models.TransientModel):
                         'filename': rec2.filename
                     })
 
+                other_charges_list = []
+                for rec2 in rec.other_charges_ids:
+                    other_charges_list.append({
+                        'name': rec2.name,
+                        'pax_type': rec2.pax_type,
+                        'currency_id': rec2.currency_id.name,
+                        'amount': rec2.amount,
+                        'charge_type': rec2.charge_type
+                    })
+
                 room_list = []
                 for rec2 in rec.room_ids:
+                    tour_pricing_list = []
+                    for rec3 in rec2.tour_pricing_ids:
+                        tour_pricing_list.append({
+                            'currency_id': rec3.currency_id.id,
+                            'min_pax': rec3.min_pax,
+                            'is_infant_included': rec3.is_infant_included,
+                            'adult_price': rec3.adult_fare + rec3.adult_commission,
+                            'child_price': rec3.child_fare + rec3.child_commission,
+                            'infant_price': rec3.infant_fare + rec3.infant_commission
+                        })
                     room_list.append({
                         'room_code': rec2.room_code,
                         'hotel': rec2.hotel,
@@ -1966,8 +2077,8 @@ class TourSyncProductsChildren(models.TransientModel):
                         'extra_bed_limit': rec2.extra_bed_limit,
                         'adult_surcharge': rec2.adult_surcharge,
                         'child_surcharge': rec2.child_surcharge,
-                        'single_supplement': rec2.single_supplement,
                         'additional_charge': rec2.additional_charge,
+                        'tour_pricing_list': tour_pricing_list
                     })
 
                 itinerary_list = []
@@ -2006,7 +2117,7 @@ class TourSyncProductsChildren(models.TransientModel):
                 tour_data_list.append(dict_vals)
 
             # gw_timeout = int(len(tour_data_list) / 3) > 60 and int(len(tour_data_list) / 3) or 60
-            #di perpendek krn di child kerjany lama, di buat timeout utk langsung next child
+            # di perpendek krn di child kerjany lama, di buat timeout utk langsung next child
             gw_timeout = 10
             vals = {
                 'provider_type': 'tour',

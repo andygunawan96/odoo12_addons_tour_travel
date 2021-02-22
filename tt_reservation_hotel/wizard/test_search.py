@@ -909,7 +909,7 @@ class TestSearch(models.Model):
             user_obj.create_date
         except:
             raise RequestException(1008)
-        if resv_obj.agent_id.id == context.get('co_agent_id', -1) or self.env.ref('tt_base.group_tt_process_channel_bookings').id in user_obj.groups_id.ids or resv_obj.agent_type_id.name == self.env.ref('tt_base.agent_b2c').agent_type_id.name:
+        if resv_obj.agent_id.id == context.get('co_agent_id', -1) or self.env.ref('tt_base.group_tt_process_channel_bookings').id in user_obj.groups_id.ids or resv_obj.agent_type_id.name == self.env.ref('tt_base.agent_b2c').agent_type_id.name or book_obj.user_id.login == self.env.ref('tt_base.agent_b2c_user').login:
             rooms = self.sudo().prepare_booking_room(resv_obj.room_detail_ids, resv_obj.passenger_ids)
             passengers = self.sudo().prepare_passengers(resv_obj.passenger_ids)
             bookers = self.sudo().prepare_bookers(resv_obj.booker_id)

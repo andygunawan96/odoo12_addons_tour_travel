@@ -1,0 +1,78 @@
+<odoo>
+    <record model="ir.ui.view" id="tt_master_tour_pricing_view_form">
+        <field name="name">tt.master.tour.pricing.view.form</field>
+        <field name="model">tt.master.tour.pricing</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="toggle_active" type="object"
+                                class="oe_stat_button" icon="fa-archive"
+                                groups="tt_base.group_tt_tour_division_operator,base.user_admin">
+                            <field name="active" widget="boolean_button"
+                                   options='{"terminology": "archive"}'/>
+                        </button>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="min_pax"/>
+                            <field name="is_infant_included"/>
+                        </group>
+                        <group>
+                            <field name="currency_id"/>
+                        </group>
+                    </group>
+                    <group col="3">
+                        <group>
+                            <field name="adult_fare"/>
+                            <field name="adult_commission"/>
+                        </group>
+                        <group>
+                            <field name="child_fare"/>
+                            <field name="child_commission"/>
+                        </group>
+                        <group>
+                            <field name="infant_fare"/>
+                            <field name="infant_commission"/>
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record model="ir.ui.view" id="tt_master_tour_pricing_view_tree" >
+        <field name="name">tt.master.tour.pricing.view.tree</field>
+        <field name="model">tt.master.tour.pricing</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="min_pax"/>
+                <field name="is_infant_included"/>
+                <field name="currency_id"/>
+                <field name="adult_fare"/>
+                <field name="adult_commission"/>
+                <field name="child_fare"/>
+                <field name="child_commission"/>
+                <field name="infant_fare"/>
+                <field name="infant_commission"/>
+            </tree>
+        </field>
+    </record>
+
+    <record model="ir.actions.act_window" id="tt_master_tour_pricing_view_action">
+        <field name="name">Master Tour Pricing</field>
+        <field name="res_model">tt.master.tour.pricing</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+        <field name="domain">[]</field>
+        <field name="context">
+            {
+            'form_view_ref': 'tt_reservation_tour.tt_master_tour_pricing_view_form',
+            'tree_view_ref': 'tt_reservation_tour.tt_master_tour_pricing_view_tree',
+            }
+        </field>
+    </record>
+</odoo>

@@ -8,5 +8,5 @@ class VisaRequirement(models.Model):
     name = fields.Char('Name', related='type_id.name')
     type_id = fields.Many2one('tt.traveldoc.type', 'Document Type')
     reference_code = fields.Char('Reference Code', required=False)
-    pricelist_id = fields.Many2one('tt.reservation.visa.pricelist', 'Pricelist ID', readonly=False)
+    pricelist_id = fields.Many2one('tt.reservation.visa.pricelist', 'Master Tour', readonly=False)
     required = fields.Boolean('Required', default=False)

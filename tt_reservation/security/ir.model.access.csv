@@ -1,6 +1,7 @@
 id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
 access_tt_reservation,access_tt_reservation.tt_reservation,model_tt_reservation,,1,1,1,0
 access_tt_service_charge,access_tt_reservation.tt_service_charge,model_tt_service_charge,,1,1,1,0
+access_tt_service_charge_for_accounting,access_tt_reservation.tt_service_charge_for_accounting,model_tt_service_charge,tt_base.group_tt_accounting_operator,1,1,1,1
 access_tt_service_charge_for_admin,access_tt_reservation.tt_service_charge_for_admin,model_tt_service_charge,base.user_admin,1,1,1,1
 access_tt_reservation_err_history,access_tt_reservation.tt_reservation_err_history,model_tt_reservation_err_history,,1,1,1,0
 

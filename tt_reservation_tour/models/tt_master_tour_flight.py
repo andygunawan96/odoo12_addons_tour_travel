@@ -42,4 +42,4 @@ class TtMasterTourFlight(models.Model):
     return_date = fields.Datetime('Return Date')
 
     class_of_service = fields.Selection(CLASS_OF_SERVICE, 'Service Class')
-    tour_pricelist_id = fields.Many2one('tt.master.tour', 'Pricelist ID', readonly=True)
+    tour_pricelist_id = fields.Many2one('tt.master.tour', 'Master Tour', readonly=True)

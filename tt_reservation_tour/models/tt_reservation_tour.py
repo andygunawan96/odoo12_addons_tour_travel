@@ -603,7 +603,6 @@ class ReservationTour(models.Model):
                     image_urls.append(str(img.url))
 
                 tour_package = {
-                    'id': book_obj.tour_id.id,
                     'name': book_obj.tour_id.name,
                     'duration': book_obj.tour_id.duration,
                     'departure_date': book_obj.tour_lines_id.departure_date,
@@ -611,8 +610,6 @@ class ReservationTour(models.Model):
                     'tour_category': book_obj.tour_id.tour_category,
                     'tour_type': book_obj.tour_id.tour_type,
                     'tour_type_str': dict(book_obj.tour_id._fields['tour_type'].selection).get(book_obj.tour_id.tour_type),
-                    'visa': book_obj.tour_id.visa,
-                    'flight': book_obj.tour_id.flight,
                     'image_urls': image_urls,
                     'flight_segments': book_obj.tour_id.get_flight_segment(),
                     'itinerary_ids': book_obj.tour_id.get_itineraries(),
@@ -657,12 +654,12 @@ class ReservationTour(models.Model):
                     {
                         'name': 'Down Payment',
                         'description': 'Down Payment',
-                        'payment_percentage': book_obj.tour_id.down_payment,
+                        'payment_percentage': book_obj.tour_lines_id.down_payment,
                         'due_date': date.today(),
                         'is_dp': True
                     }
                 ]
-                for payment in book_obj.tour_id.payment_rules_ids:
+                for payment in book_obj.tour_lines_id.payment_rules_ids:
                     temp_pay = {
                         'name': payment.name,
                         'description': payment.description,
@@ -759,13 +756,13 @@ class ReservationTour(models.Model):
 
     def get_nta_amount(self,method = 'full'):
         if method == 'installment':
-            return (self.tour_id.down_payment / 100) * self.agent_nta
+            return (self.tour_lines_id.down_payment / 100) * self.agent_nta
         else:
             return super(ReservationTour, self).get_nta_amount()
 
     def get_total_amount(self,method = 'full'):
         if method == 'installment':
-            return (self.tour_id.down_payment / 100) * self.total
+            return (self.tour_lines_id.down_payment / 100) * self.total
         else:
             return super(ReservationTour, self).get_total_amount()
 
