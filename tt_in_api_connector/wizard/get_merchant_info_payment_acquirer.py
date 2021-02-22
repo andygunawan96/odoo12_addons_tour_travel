@@ -15,7 +15,7 @@ class GetMerchantInfoPaymentAcquirer(models.TransientModel):
             if res['error_code'] == 0:
                 ho_obj = self.env.ref('tt_base.rodex_ho')
                 for bank_res in res['response']:
-                    bank_obj = self.env['tt.bank'].search([('code','=',bank_res['bankCode'])])
+                    bank_obj = self.env['tt.bank'].search([('code','=',bank_res['bankCode'])], limit=1)
                     existing_payment_acquirer = self.env['payment.acquirer'].search([
                         ('type','=','payment_gateway'),
                         ('agent_id','=',ho_obj.id),
