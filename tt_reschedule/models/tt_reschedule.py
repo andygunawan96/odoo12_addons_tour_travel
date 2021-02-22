@@ -392,8 +392,7 @@ class TtReschedule(models.Model):
             )
 
             if rec.admin_fee_ho:
-                ho_agent = self.env['tt.agent'].sudo().search(
-                    [('agent_type_id.id', '=', self.env.ref('tt_base.agent_type_ho').id)], limit=1)
+                ho_agent = self.env.ref('tt_base.rodex_ho')
                 credit = 0
                 debit = rec.admin_fee_ho
                 ledger_type = 6
@@ -406,7 +405,7 @@ class TtReschedule(models.Model):
                     ledger_type,
                     self.currency_id.id,
                     self.env.user.id,
-                    ho_agent and ho_agent[0].id or False,
+                    ho_agent and ho_agent.id or False,
                     False,
                     debit,
                     credit,

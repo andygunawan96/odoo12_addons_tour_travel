@@ -75,7 +75,7 @@ class TtTopUp(models.Model):
     @api.model
     def create(self, vals_list):
         vals_list['name'] = self.env['ir.sequence'].next_by_code('tt.top.up')
-        vals_list['due_date'] = datetime.now() + timedelta(hours=3)
+        vals_list['due_date'] = datetime.now() + timedelta(hours=48)
         return super(TtTopUp, self).create(vals_list)
 
     @api.depends('amount', 'unique_amount', 'fees')#'amount_fix_va'

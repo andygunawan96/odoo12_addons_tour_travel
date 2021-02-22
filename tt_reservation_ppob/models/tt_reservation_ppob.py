@@ -534,8 +534,8 @@ class ReservationPpob(models.Model):
 
     def create_inquiry_api(self, data, context):
         try:
-            ho_obj = self.env['tt.agent'].sudo().search([('agent_type_id', '=', self.env.ref('tt_base.agent_type_ho').id)], limit=1)
-            placeholder_email = ho_obj[0].email and ho_obj[0].email or 'placeholder@email.com'
+            ho_obj = self.env.ref('tt_base.rodex_ho')
+            placeholder_email = ho_obj.email and ho_obj.email or 'placeholder@email.com'
             cust_first_name = data['data'].get('customer_name') and data['data']['customer_name'] or 'Customer'
             cust_email = data['data'].get('customer_email') and data['data']['customer_email'] or placeholder_email
             booker = {
