@@ -90,7 +90,7 @@ class TtAgent(models.Model):
     def create(self, vals_list):
         ho_type_id = self.env.ref('tt_base.agent_type_ho').id
         if vals_list['agent_type_id'] == self.env.ref('tt_base.agent_type_ho').id:
-            ho_agent_objs = self.search([('agent_type_id','=',ho_type_id)])
+            ho_agent_objs = self.search([('agent_type_id','=',ho_type_id), '|', ('active', '=', True), ('active', '=', False)])
             if ho_agent_objs:
                 raise UserError('Cannot create more than 1 HO.')
             if 'parent_agent_id' in vals_list:
@@ -121,7 +121,7 @@ class TtAgent(models.Model):
         ho_type_id = self.env.ref('tt_base.agent_type_ho').id
         if 'agent_type_id' in vals:
             if vals['agent_type_id'] == ho_type_id:
-                ho_agent_objs = self.search([('agent_type_id','=',ho_type_id)])
+                ho_agent_objs = self.search([('agent_type_id','=',ho_type_id), '|', ('active', '=', True), ('active', '=', False)])
                 if ho_agent_objs:
                     raise UserError('Cannot create more than 1 HO.')
         if 'parent_agent_id' in vals:

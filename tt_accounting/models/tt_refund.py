@@ -856,8 +856,7 @@ class TtRefund(models.Model):
                     **{'refund_id': self.id}
                 )
 
-                ho_agent = self.env['tt.agent'].sudo().search(
-                    [('agent_type_id.id', '=', self.env.ref('tt_base.agent_type_ho').id)], limit=1)
+                ho_agent = self.env.ref('tt_base.rodex_ho')
                 credit = 0
                 debit = self.final_admin_fee_ho
                 self.env['tt.ledger'].create_ledger_vanilla(
@@ -869,7 +868,7 @@ class TtRefund(models.Model):
                     ledger_type,
                     self.currency_id.id,
                     self.env.user.id,
-                    ho_agent and ho_agent[0].id or False,
+                    ho_agent and ho_agent.id or False,
                     False,
                     debit,
                     credit,
@@ -934,8 +933,7 @@ class TtRefund(models.Model):
             credit = value < 0 and value * -1 or 0
 
             ledger_type = 4
-            ho_agent = self.env['tt.agent'].sudo().search(
-                [('agent_type_id.id', '=', self.env.ref('tt_base.agent_type_ho').id)], limit=1)
+            ho_agent = self.env.ref('tt_base.rodex_ho')
 
             self.env['tt.ledger'].create_ledger_vanilla(
                 self.res_model,
@@ -946,7 +944,7 @@ class TtRefund(models.Model):
                 ledger_type,
                 self.currency_id.id,
                 self.env.user.id,
-                ho_agent and ho_agent[0].id or False,
+                ho_agent and ho_agent.id or False,
                 False,
                 debit,
                 credit,

@@ -340,9 +340,9 @@ class ProviderOffline(models.Model):
                 'total': self.booking_id.admin_fee_ho / len(self.booking_id.line_ids)
             })
 
-            ho_agent = self.env['tt.agent'].sudo().search([('agent_type_id.id', '=', self.env.ref('tt_base.agent_type_ho').id)], limit=1)
+            ho_agent = self.env.ref('tt_base.rodex_ho')
             scs_list_2.append({
-                'commission_agent_id': ho_agent and ho_agent[0].id or False,
+                'commission_agent_id': ho_agent and ho_agent.id or False,
                 'currency_id': currency_obj and currency_obj[0].id or self.booking_id.agent_id.currency_id.id,
                 'charge_code': 'hsc',
                 'charge_type': 'RAC',

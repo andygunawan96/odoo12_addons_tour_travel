@@ -1069,7 +1069,7 @@ class PrintoutInvoiceHO(models.AbstractModel):
                 header_width += 3 * (abs(27 - pnr_length))
                 if header_width > 105:
                     header_width = 105
-        ho_obj = self.env['tt.agent'].sudo().search([('agent_type_id', '=', self.env.ref('tt_base.agent_type_ho').id)], limit=1)
+        ho_obj = self.env.ref('tt_base.rodex_ho')
         vals = {
             'doc_ids': data['context']['active_ids'],
             'doc_model': data['context']['active_model'],
@@ -1081,7 +1081,7 @@ class PrintoutInvoiceHO(models.AbstractModel):
             'terbilang': self.compute_terbilang_from_objs(
                 self.env[data['context']['active_model']].browse(data['context']['active_ids'])),
             'date_now': fields.Date.today().strftime('%d %b %Y'),
-            'ho_obj': ho_obj[0],
+            'ho_obj': ho_obj,
             'header_width': str(header_width),
             'base_color': self.sudo().env['ir.config_parameter'].get_param('tt_base.website_default_color', default='#FFFFFF'),
             'img_url': "url('/tt_report_common/static/images/background footer airline.jpg');",
@@ -2136,7 +2136,7 @@ class PrintoutTopUp(models.AbstractModel):
                 'total_with_fees': rec.total_with_fees
             })
         top_up_footer = self.env['tt.report.common.setting'].sudo().search([('code', '=', 'top_up')], limit=1)
-        ho_obj = self.env['tt.agent'].sudo().search([('agent_type_id', '=', self.env.ref('tt_base.agent_type_ho').id)], limit=1)
+        ho_obj = self.env.ref('tt_base.rodex_ho')
         header_width = 90
         return {
             'doc_ids': data['context']['active_ids'],
@@ -2147,7 +2147,7 @@ class PrintoutTopUp(models.AbstractModel):
             'terbilang': self.compute_terbilang_from_objs(
                 self.env[data['context']['active_model']].browse(data['context']['active_ids'])),
             'header_width': str(header_width),
-            'ho_obj': ho_obj[0],
+            'ho_obj': ho_obj,
             'top_up_footer': top_up_footer and top_up_footer[0].html or '',
             'base_color': self.sudo().env['ir.config_parameter'].get_param('tt_base.website_default_color', default='#FFFFFF'),
             'img_url': "url('/tt_report_common/static/images/background footer airline.jpg');"
@@ -2193,10 +2193,10 @@ class PrintoutRefund(models.AbstractModel):
         }
 
         if data['data'].get('is_ho'):
-            ho_obj = self.env['tt.agent'].sudo().search([('agent_type_id', '=', self.env.ref('tt_base.agent_type_ho').id)], limit=1)
+            ho_obj = self.env.ref('tt_base.rodex_ho')
             if ho_obj:
                 return_dat.update({
-                    'ho_obj': ho_obj[0]
+                    'ho_obj': ho_obj
                 })
 
         return return_dat
@@ -2243,7 +2243,7 @@ class PrintoutVoucher(models.AbstractModel):
 
         temp_docs = self.env[data['context']['active_model']].browse(data['context']['active_ids'])
         header_width = 90
-        ho_obj = self.env['tt.agent'].sudo().search([('agent_type_id', '=', self.env.ref('tt_base.agent_type_ho').id)], limit=1)
+        ho_obj = self.env.ref('tt_base.rodex_ho')
         return {
             'doc_ids': data['context']['active_ids'],
             'doc_model': data['context']['active_model'],
@@ -2254,7 +2254,7 @@ class PrintoutVoucher(models.AbstractModel):
             'header_width': str(header_width),
             'base_color': self.sudo().env['ir.config_parameter'].get_param('tt_base.website_default_color', default='#FFFFFF'),
             'img_url': "url('/tt_report_common/static/images/background footer airline.jpg');",
-            'ho_obj': ho_obj and ho_obj[0] or False
+            'ho_obj': ho_obj and ho_obj or False
         }
 
 
@@ -2276,7 +2276,7 @@ class PrintoutLetterOfGuarantee(models.AbstractModel):
 
         lg_po_footer = self.env['tt.report.common.setting'].sudo().search([('code', '=', 'letter_guarantee_po')], limit=1)
         lg_footer = self.env['tt.report.common.setting'].sudo().search([('code', '=', 'letter_guarantee')], limit=1)
-        ho_obj = self.env['tt.agent'].sudo().search([('agent_type_id', '=', self.env.ref('tt_base.agent_type_ho').id)], limit=1)
+        ho_obj = self.env.ref('tt_base.rodex_ho')
         return {
             'doc_ids': data['context']['active_ids'],
             'doc_model': data['context']['active_model'],
@@ -2287,5 +2287,5 @@ class PrintoutLetterOfGuarantee(models.AbstractModel):
             'header_width': str(header_width),
             'base_color': self.sudo().env['ir.config_parameter'].get_param('tt_base.website_default_color', default='#FFFFFF'),
             'img_url': "url('/tt_report_common/static/images/background footer airline.jpg');",
-            'ho_obj': ho_obj and ho_obj[0] or False
+            'ho_obj': ho_obj and ho_obj or False
         }

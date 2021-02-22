@@ -16,8 +16,8 @@ class TtLedger(models.Model):
         # self.env.cr.commit()
 
         try:
-            ho_name_search = self.env['tt.agent'].sudo().search([('agent_type_id', '=', self.env.ref('tt_base.agent_type_ho').id)], limit=1)
-            ho_name = ho_name_search[0].name
+            ho_name_search = self.env.ref('tt_base.rodex_ho')
+            ho_name = ho_name_search.name
             pay_method = ''
             pay_acquirer = ''
             nta = 0
