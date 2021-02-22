@@ -144,10 +144,10 @@
                     <!--Pricing Segment-->
                     <separator string="Pricing"/>
                     <group>
-                        <field name="est_starting_price"/>
+                        <field name="est_starting_price" attrs="{'readonly': ['|', ('state', '!=', 'draft'), ('provider_id', '!=', %(tt_reservation_tour.tt_provider_tour_internal)d)]}"/>
                     </group>
                     <notebook colspan="4">
-                        <page string="Additional Charges">
+                        <page string="Charges">
                             <group>
                                 <group>
                                     <field name="adult_flight_fare" attrs="{'readonly': ['|', ('state', '!=', 'draft'), ('provider_id', '!=', %(tt_reservation_tour.tt_provider_tour_internal)d)]}"/>
@@ -169,8 +169,6 @@
                                 <group>
                                     <field name="single_supplement" attrs="{'readonly': ['|', ('state', '!=', 'draft'), ('provider_id', '!=', %(tt_reservation_tour.tt_provider_tour_internal)d)]}"/>
                                 </group>
-                                <separator string="Other Charges"/>
-                                <field name="other_charges_ids"/>
                             </group>
                             <group col="3">
                                 <group>
@@ -189,6 +187,8 @@
                                     <field name="tipping_driver_infant" attrs="{'readonly': ['|', ('state', '!=', 'draft'), ('provider_id', '!=', %(tt_reservation_tour.tt_provider_tour_internal)d)]}"/>
                                 </group>
                             </group>
+                            <separator string="Other Charges"/>
+                            <field name="other_charges_ids"/>
                         </page>
                         <page string="Related Vendor(s)" groups="tt_base.group_tt_tour_travel_operator">
                             <field name="related_provider_ids"/>

@@ -147,6 +147,18 @@ class PaymentAcquirer(models.Model):
                 values['va'].append(self.acquirer_format_VA(acq, 0, 0))
         return ERR.get_no_error(values)
 
+    def get_va_bank(self, req, context):
+        ho_agent_obj = self.env['tt.agent'].browse(self.env.ref('tt_base.rodex_ho').id)
+        existing_payment_acquirer = self.env['payment.acquirer'].search([('agent_id', '=', ho_agent_obj.id), ('type', '!=', 'cash')])
+        values = []
+        for acq in existing_payment_acquirer:
+            values.append({
+                "seq_id": acq.seq_id,
+                "name": acq.name,
+                "type": acq.type
+            })
+        return ERR.get_no_error(values)
+
     def convert_time_to_float(self,time):
         str_time = time.strftime("%H:%M").split(':')
         float_time = int(str_time[0]) + (float(str_time[1])/60)
@@ -224,7 +236,7 @@ class PaymentAcquirer(models.Model):
 
             values = {}
             now_time = datetime.now(pytz.timezone('Asia/Jakarta'))
-            if self.env['tt.agent'].browse(co_agent_id).agent_type_id.name != self.env.ref('tt_base.agent_b2c').agent_type_id.name:
+            if self.env['tt.agent'].browse(co_agent_id).agent_type_id != self.env.ref('tt_base.agent_type_btc'):
                 for acq in self.sudo().search(dom):
                     # self.test_validate(acq) utk testig saja
                     if self.validate_time(acq, now_time):
@@ -392,7 +404,8 @@ class PaymentAcquirerNumber(models.Model):
                     'nomor_rekening': payment_acq_number.payment_acquirer_id.account_number,
                     'amount': payment_acq_number.amount + payment_acq_number.fee_amount + payment_acq_number.unique_amount,
                     'va_number': payment_acq_number.va_number,
-                    'bank_name': payment_acq_number.bank_name
+                    'bank_name': payment_acq_number.bank_name,
+                    'seq_id': payment_acq_number.payment_acquirer_id.seq_id
                 }
                 return ERR.get_no_error(res)
             else:

@@ -64,7 +64,7 @@ class PhoneDetail(models.Model):
                     ho_agent_obj = self.env['tt.agent'].browse(self.env.ref('tt_base.rodex_ho').id)
                     for rec in res['response']:
                         bank_obj = self.env['tt.bank'].search([('name', '=ilike', rec['bank'])],limit=1)
-                        existing_payment_acquirer = self.env['payment.acquirer'].search([('agent_id','=',ho_agent_obj.id),('name','=','Virtual Account %s' % (bank_obj.name))])
+                        existing_payment_acquirer = self.env['payment.acquirer'].search([('agent_id','=',ho_agent_obj.id), ('type','=','va'), ('bank_id','=',bank_obj.id)])
                         if not existing_payment_acquirer:
                             existing_payment_acquirer = self.env['payment.acquirer'].create({
                                 'type': 'va',
@@ -72,24 +72,24 @@ class PhoneDetail(models.Model):
                                 'agent_id': ho_agent_obj.id,
                                 'provider': 'manual',
                                 'website_published': False,
-                                'name': 'Virtual Account %s' % (bank_obj.name),
+                                'name': 'Your Virtual Account at %s' % (bank_obj.name),
                             })
-                        pay_acq_number_obj = self.env['payment.acquirer.number'].create({
+                        self.env['payment.acquirer.number'].create({
                             'agent_id': agent.id,
                             'payment_acquirer_id': existing_payment_acquirer.id,
                             'state': 'open',
                             'number': rec['number'],
                             'email': agent.email,
                         })
-                        for rec in agent.phone_ids:
-                            rec.va_create = False
-                        self.va_create = True
-                        return {
-                            'type': 'ir.actions.client',
-                            'tag': 'reload',
-                        }
                 else:
                     raise UserError(_("Phone number has been use, please change first phone number"))
+                for rec in agent.phone_ids:
+                    rec.va_create = False
+                self.va_create = True
+                return {
+                    'type': 'ir.actions.client',
+                    'tag': 'reload',
+                }
             else:
                 raise UserError(_(res['error_msg']))
         elif not agent.email:
