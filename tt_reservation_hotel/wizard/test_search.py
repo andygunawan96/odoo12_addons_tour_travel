@@ -708,7 +708,7 @@ class TestSearch(models.Model):
         vend_hotel.create_service_charge(resv_id.sale_service_charge_ids)
 
         resv_id.action_booked()
-        return self.get_booking_result(resv_id.id)
+        return self.get_booking_result(resv_id.id, context)
 
     def create_reservation_old(self, provider_name, hotel_id, cust_names, check_in, check_out, room_rates, cancellation_str, booker_detail, guest_count=0, os_res_no='', provider_data='', email='', mobile='', special_req=''):
     # def create_reservation(self, provider_name, hotel_id, hotel_name, hotel_city_id, room_count, cust_name, check_in, check_out, room_rates, guest_count=0, os_res_no='', provider_data='', email='', mobile='', special_req=''):
