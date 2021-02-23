@@ -51,6 +51,33 @@ class PricingProvider(models.Model):
                 line.update({'sequence': line_count})
                 line_count += 10
 
+    def do_testing_pricing(self):
+        from ...tools.repricing_tools import RepricingTools
+        import json
+        repr_obj = RepricingTools('airline')
+        user_info = self.env['tt.agent'].sudo().get_agent_level(3)
+        pricing_values = {
+            'fare_amount': 3580000,
+            'tax_amount': 265000,
+            'currency': 'IDR',
+            'provider': 'amadeus',
+            'origin': 'SUB',
+            'destination': 'DPS',
+            'carrier_code': 'SQ',
+            'class_of_service': 'V',
+            'route_count': 1,
+            'segment_count': 1,
+            'pax_count': 1,
+            'pax_type': 'ADT',
+            'agent_type_code': 'japro',
+            'agent_id': 3,
+            'user_info': user_info,
+        }
+        res = repr_obj.get_service_charge_pricing(**pricing_values)
+        print('### HERE ###')
+        print(json.dumps(res))
+        print('### HERE END ###')
+
     @api.multi
     @api.depends('provider_access_type', 'provider_ids', 'carrier_access_type', 'carrier_ids', 'agent_type_access_type', 'agent_type_ids', 'agent_access_type', 'agent_ids')
     def _compute_name(self):

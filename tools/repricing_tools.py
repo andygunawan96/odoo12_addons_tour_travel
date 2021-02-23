@@ -20,7 +20,6 @@ class RepricingTools(object):
         self.carrier_code_list = carrier_code_list
         self.context = context
         self.is_filter = is_filter
-        self._cache_name_format = 'Pricing%s%sData'
         self.pricing_providers = self.get_and_update_provider_repricing_data()
         self.pricing_agents = self.get_and_update_agent_repricing_data()
         self.destination_tools = DestinationTools(provider_type)
@@ -81,20 +80,10 @@ class RepricingTools(object):
             res = data
         return res
 
-    def get_provider_cache_name(self):
-        return self._cache_name_format % ('Provider', self.provider_type.title())
-
-    def get_agent_cache_name(self):
-        return self._cache_name_format % ('Agent', self.provider_type.title())
-
-    def get_cache_time(self):
-        cache_time = datetime.now() - timedelta(seconds=self.cache_time_sec)
-        return cache_time
-
     def get_datetime_now(self):
         return datetime.now().strftime('%Y-%m-%d %H:%M:%S')
 
-    def get_and_update_provider_repricing_data(self, force_update=False):
+    def get_and_update_provider_repricing_data(self):
         self.validate()
         res = request.env['tt.pricing.provider'].sudo().get_pricing_provider_api(self.provider_type)
         if res['error_code'] != 0:
@@ -104,7 +93,7 @@ class RepricingTools(object):
         new_data = res['response']['pricing_providers']
         return new_data
 
-    def get_and_update_agent_repricing_data(self, force_update=False):
+    def get_and_update_agent_repricing_data(self):
         self.validate()
         res = request.env['tt.pricing.agent'].sudo().get_pricing_agent_api(self.provider_type)
         if res['error_code'] != 0:
