@@ -37,6 +37,7 @@ class TtEmailQueue(models.Model):
                     type_str = 'Booked'
                 else:
                     type_str = 'Issued'
+
                 template = self.env.ref('tt_reservation_{}.template_mail_reservation_{}_{}'.format(data['provider_type'], data.get('type', 'issued'), data['provider_type'])).id
                 self.env['tt.email.queue'].sudo().create({
                     'name': type_str + ' ' + resv.name,
@@ -45,6 +46,16 @@ class TtEmailQueue(models.Model):
                     'res_model': resv._name,
                     'res_id': resv.id,
                 })
+
+                if resv.agent_id.is_send_email_cust:
+                    template = self.env.ref('tt_reservation_{}.template_mail_reservation_{}_{}_cust'.format(data['provider_type'], data.get('type', 'issued'), data['provider_type'])).id
+                    self.env['tt.email.queue'].sudo().create({
+                        'name': type_str + ' ' + resv.name,
+                        'type': '{}_{}'.format(data.get('type', 'issued'), data['provider_type']),
+                        'template_id': template,
+                        'res_model': resv._name,
+                        'res_id': resv.id,
+                    })
             else:
                 raise RequestException(1001)
         elif data.get('provider_type') == 'billing_statement':
