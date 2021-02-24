@@ -4,6 +4,61 @@
 
 		<record model="mail.template" id="template_mail_reservation_issued_tour">
 			<field name="name">Template Mail Reservation Issued</field>
+			<field name="email_from">info@rodextrip.com</field>
+			<field name="subject">Reservation Issued: ${object.name}</field>
+			<field name="email_to">${object.agent_id.email}</field>
+            <field name="email_cc"/>
+			<field name="model_id" ref="tt_reservation_tour.model_tt_reservation_tour"/>
+			<field name="auto_delete" eval="False"/>
+			<field name="lang"/>
+			<field name="copyvalue"/>
+			<field name="body_html">
+<![CDATA[
+<p>Dear ${object.agent_id.name},</p>
+<br/>
+<p>Your ${object.provider_type_id.name} reservation for ${object.contact_title} ${object.contact_name} has been issued with the following information:</p>
+<p>PNR: ${object.pnr}</p>
+<p>Order Number: ${object.name}</p>
+<p>Issued Date: ${object.get_btc_issued_date()}</p>
+<p>Booker Name: ${object.booker_id.name}</p>
+<br/>
+<p>Your Invoice is attached in this E-mail. Thank you for your trust and support in using our service.</p>
+<br/>
+<p>Regards,</p>
+<p>Rodex Tours and Travel</p>
+]]>
+			</field>
+		</record>
+
+		<record model="mail.template" id="template_mail_reservation_booked_tour">
+			<field name="name">Template Mail Reservation Booked</field>
+			<field name="email_from">info@rodextrip.com</field>
+			<field name="subject">Reservation Booked: ${object.name}</field>
+			<field name="email_to">${object.agent_id.email}</field>
+            <field name="email_cc"/>
+			<field name="model_id" ref="tt_reservation_tour.model_tt_reservation_tour"/>
+			<field name="auto_delete" eval="False"/>
+			<field name="lang"/>
+			<field name="copyvalue"/>
+			<field name="body_html">
+<![CDATA[
+<p>Dear ${object.agent_id.name},</p>
+<br/>
+<p>Your ${object.provider_type_id.name} reservation for ${object.contact_title} ${object.contact_name} has been booked with the following information:</p>
+<p>Order Number: ${object.name}</p>
+<p>Booked Date: ${object.get_btc_booked_date()}</p>
+<p>Booker Name: ${object.booker_id.name}</p>
+<p>Booking Url: ${object.get_btc_url()}</p><br/>
+<p>Please complete your payment by ${object.get_btc_hold_date()}, otherwise your reservation will be expired. Thank you for your trust and support in using our service.</p>
+<br/>
+<p>Regards,</p>
+<p>Rodex Tours and Travel</p>
+]]>
+			</field>
+		</record>
+
+		<record model="mail.template" id="template_mail_reservation_issued_tour_cust">
+			<field name="name">Template Mail Reservation Issued</field>
 			<field name="email_from">${object.agent_id.email}</field>
 			<field name="subject">Reservation Issued: ${object.name}</field>
 			<field name="email_to">${object.contact_email}</field>
@@ -30,7 +85,7 @@
 			</field>
 		</record>
 
-		<record model="mail.template" id="template_mail_reservation_booked_tour">
+		<record model="mail.template" id="template_mail_reservation_booked_tour_cust">
 			<field name="name">Template Mail Reservation Booked</field>
 			<field name="email_from">${object.agent_id.email}</field>
 			<field name="subject">Reservation Booked: ${object.name}</field>

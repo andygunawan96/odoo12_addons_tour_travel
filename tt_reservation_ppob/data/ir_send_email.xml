@@ -2,7 +2,7 @@
 <odoo>
     <data noupdate="0">
 
-        <record model="mail.template" id="template_mail_reservation_issued_ppob">
+		<record model="mail.template" id="template_mail_reservation_issued_ppob">
 			<field name="name">Template Mail Reservation Issued</field>
 			<field name="email_from">${object.agent_id.email}</field>
 			<field name="subject">Bills Paid: ${object.name}</field>
@@ -53,6 +53,61 @@
 <br/>
 <p>Regards,</p>
 <p>${object.agent_id.name}</p>
+]]>
+			</field>
+		</record>
+
+        <record model="mail.template" id="template_mail_reservation_issued_ppob_cust">
+			<field name="name">Template Mail Reservation Issued</field>
+			<field name="email_from">info@rodextrip.com</field>
+			<field name="subject">Bills Paid: ${object.name}</field>
+			<field name="email_to">${object.agent_id.email}</field>
+            <field name="email_cc"/>
+			<field name="model_id" ref="tt_reservation_ppob.model_tt_reservation_ppob"/>
+			<field name="auto_delete" eval="False"/>
+			<field name="lang"/>
+			<field name="copyvalue"/>
+			<field name="body_html">
+<![CDATA[
+<p>Dear ${object.agent_id.name},</p>
+<br/>
+<p>Your ${object.get_filename()} bills for ${object.contact_title} ${object.contact_name} has been paid with the following information:</p>
+<p>Ref Number: ${object.pnr}</p>
+<p>Order Number: ${object.name}</p>
+<p>Paid Date: ${object.get_btc_issued_date()}</p>
+<p>Booker Name: ${object.booker_id.name}</p>
+<br/>
+<p>Your Receipt and Invoice are attached in this E-mail. Thank you for your trust and support in using our service.</p>
+<br/>
+<p>Regards,</p>
+<p>Rodex Tours and Travel</p>
+]]>
+			</field>
+		</record>
+
+		<record model="mail.template" id="template_mail_reservation_booked_ppob_cust">
+			<field name="name">Template Mail Reservation Booked</field>
+			<field name="email_from">info@rodextrip.com</field>
+			<field name="subject">Bills Data Registered: ${object.name}</field>
+			<field name="email_to">${object.agent_id.email}</field>
+            <field name="email_cc"/>
+			<field name="model_id" ref="tt_reservation_ppob.model_tt_reservation_ppob"/>
+			<field name="auto_delete" eval="False"/>
+			<field name="lang"/>
+			<field name="copyvalue"/>
+			<field name="body_html">
+<![CDATA[
+<p>Dear ${object.agent_id.name},</p>
+<br/>
+<p>Your ${object.get_filename()} bills for ${object.contact_title} ${object.contact_name} has been registered with the following information:</p>
+<p>Order Number: ${object.name}</p>
+<p>Registered Date: ${object.get_btc_booked_date()}</p>
+<p>Registered Name: ${object.booker_id.name}</p>
+<p>Registration Url: ${object.get_btc_url()}</p><br/>
+<p>Thank you for your trust and support in using our service.</p>
+<br/>
+<p>Regards,</p>
+<p>Rodex Tours and Travel</p>
 ]]>
 			</field>
 		</record>
