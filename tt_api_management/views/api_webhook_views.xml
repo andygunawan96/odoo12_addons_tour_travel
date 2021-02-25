@@ -11,6 +11,60 @@
         </field>
     </record>
 
+
+    <record id="api_webhook_form_view" model="ir.ui.view">
+        <field name="name">api.webhook.form.view</field>
+        <field name="model">tt.api.webhook</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="toggle_active" type="object"
+                                class="oe_stat_button" icon="fa-archive"
+                                groups="tt_base.group_tt_tour_division_operator,base.user_admin">
+                            <field name="active" widget="boolean_button"
+                                   options='{"terminology": "archive"}'/>
+                        </button>
+                    </div>
+                    <group>
+                        <field name="webhook_data_id"/>
+                        <field name="credential_data_id"/>
+                        <field name="api_key"/>
+                        <field name="url"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="api_webhook_tree_view" model="ir.ui.view">
+        <field name="name">api.webhook.tree.view</field>
+        <field name="model">tt.api.webhook</field>
+        <field name="arch" type="xml">
+            <tree decoration-muted="active == False">
+                <field name="webhook_data_id"/>
+                <field name="credential_data_id"/>
+                <field name="url"/>
+                <field name="active"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="api_webhook_action_view" model="ir.actions.act_window">
+        <field name="name">API Webhook</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">tt.api.webhook</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+        <field name="domain">['|',('active','=',True),('active','=',False)]</field>
+        <field name="context">
+            {
+            'form_view_ref': 'tt_api_management.api_webhook_form_view',
+            'tree_view_ref': 'tt_api_management.api_webhook_tree_view'
+            }
+        </field>
+    </record>
+
     <record id="api_webhook_data_search_view" model="ir.ui.view">
         <field name="name">api.webhook.data.search.view</field>
         <field name="model">tt.api.webhook.data</field>
@@ -56,35 +110,6 @@
             <tree>
                 <field name="name"/>
                 <field name="provider_type_id"/>
-            </tree>
-        </field>
-    </record>
-
-    <record id="api_webhook_form_view" model="ir.ui.view">
-        <field name="name">api.webhook.form.view</field>
-        <field name="model">tt.api.webhook</field>
-        <field name="arch" type="xml">
-            <form>
-                <sheet>
-                    <group>
-                        <field name="webhook_data_id"/>
-                        <field name="credential_data_id"/>
-                        <field name="api_key"/>
-                        <field name="url"/>
-                    </group>
-                </sheet>
-            </form>
-        </field>
-    </record>
-
-    <record id="api_webhook_tree_view" model="ir.ui.view">
-        <field name="name">api.webhook.tree.view</field>
-        <field name="model">tt.api.webhook</field>
-        <field name="arch" type="xml">
-            <tree>
-                <field name="webhook_data_id"/>
-                <field name="credential_data_id"/>
-                <field name="url"/>
             </tree>
         </field>
     </record>
