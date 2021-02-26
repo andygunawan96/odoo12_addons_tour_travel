@@ -63,7 +63,7 @@ class ReservationAirline(models.Model):
                                     'destination_terminal': seg['destination_terminal'],
                                     'departure_date': seg['departure_date'],
                                     'arrival_date': seg['arrival_date'],
-                                    'class_of_service': '',
+                                    'class_of_service': seg.get('class_of_service') or '', #di connector uda kasih di webservice hilang
                                     'cabin_class': '',
                                     'sequence': seg.get('sequence', 0),
                                 }
@@ -295,7 +295,9 @@ class ReservationAirline(models.Model):
             reschedule_type = ''
             note_list = []
             admin_fee_obj = None
+            reschedule_line_list = []
             for rec in vals['update_booking_provider']:
+                total_amount = 0.0
                 if rec.get('status', 'FAILED') == 'FAILED':
                     continue
 
@@ -319,19 +321,23 @@ class ReservationAirline(models.Model):
                         note_list.append(text)
                     note_list.append('')
 
-            if not reschedule_type or not admin_fee_obj:
-                raise Exception('Required Field is not set, Reschedule Type : %s, Admin Fee Obj : %s' % (reschedule_type, 1 if admin_fee_obj else 0))
+                if not reschedule_type or not admin_fee_obj:
+                    raise Exception('Required Field is not set, Reschedule Type : %s, Admin Fee Obj : %s' % (reschedule_type, 1 if admin_fee_obj else 0))
 
-            # Menambahkan untuk field harga
-            rsch_line_values = {
-                'reschedule_type': reschedule_type,
-                'reschedule_amount': total_amount,
-                'reschedule_amount_ho': total_amount,
-                'real_reschedule_amount': total_amount,
-                'admin_fee_id': admin_fee_obj.id,
-            }
-            rsch_line_obj = self.env['tt.reschedule.line'].sudo().create(rsch_line_values)
-            reschedule_line_list = [rsch_line_obj.id]
+                # per provider
+                # Menambahkan untuk field harga
+                provider = self.env['tt.provider'].search([('code', '=', rec['provider'])]).id
+                rsch_line_values = {
+                    'reschedule_type': reschedule_type,
+                    'reschedule_amount': total_amount,
+                    'reschedule_amount_ho': total_amount,
+                    'real_reschedule_amount': total_amount,
+                    'admin_fee_id': admin_fee_obj.id,
+                    'provider_id': provider
+                }
+                rsch_line_obj = self.env['tt.reschedule.line'].sudo().create(rsch_line_values)
+                reschedule_line_list.append(rsch_line_obj.id)
+
             reschedule_obj.write({
                 'reschedule_line_ids': [(6, 0, reschedule_line_list)],
                 'notes': '\n'.join(note_list),
@@ -347,7 +353,7 @@ class ReservationAirline(models.Model):
                 reschedule_obj.send_reschedule_from_button()
                 reschedule_obj.validate_reschedule_from_button()
                 reschedule_obj.finalize_reschedule_from_button()
-                # reschedule_obj.action_done()
+                reschedule_obj.action_done()
                 # END
             else:
                 reschedule_obj.cancel_reschedule_from_button()

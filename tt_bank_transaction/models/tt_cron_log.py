@@ -9,8 +9,10 @@ _logger = logging.getLogger(__name__)
 class ttCronTopUpValidator(models.Model):
     _inherit = 'tt.cron.log'
 
-    def cron_auto_top_up_validator(self):
-        if 3 <= datetime.now(pytz.timezone('Asia/Jakarta')).hour < 21:
+    def cron_auto_top_up_validator(self,start_time="03:00",end_time="23:00"):
+        start_time_obj = datetime.strptime(start_time,"%H:%M")
+        end_time_obj = datetime.strptime(end_time,"%H:%M")
+        if start_time_obj.time() <= datetime.now(pytz.timezone('Asia/Jakarta')).time() < end_time_obj.time():
             try:
                 # get data from top up
                 top_up_objs = self.env['tt.top.up'].sudo().search([('state', '=', 'request')])
@@ -124,12 +126,14 @@ class ttCronTopUpValidator(models.Model):
             except Exception as e:
                 self.create_cron_log_folder()
                 self.write_cron_log('auto tup-up validator by system')
-
         else:
-            _logger.error("Cron only works between 0300 to 2100 UTC +7")
+            # _logger.error("Cron only works between 0300 to 2100 UTC +7")
+            _logger.error("Outside of Cron work time")
 
-    def cron_auto_get_bank_transaction(self):
-        if 3 <= datetime.now(pytz.timezone('Asia/Jakarta')).hour < 21:
+    def cron_auto_get_bank_transaction(self,start_time="03:00",end_time="22:00"):
+        start_time_obj = datetime.strptime(start_time,"%H:%M")
+        end_time_obj = datetime.strptime(end_time,"%H:%M")
+        if start_time_obj.time() <= datetime.now(pytz.timezone('Asia/Jakarta')).time() < end_time_obj.time():
             account_objs = self.env['tt.bank.accounts'].search([('is_get_transaction','=',True)])
             for rec in account_objs:
                 try:
@@ -149,8 +153,8 @@ class ttCronTopUpValidator(models.Model):
                     self.create_cron_log_folder()
                     self.write_cron_log('auto get bank transaction',rec.bank_account_number)
         else:
-            _logger.error("Cron only works between 0300 AM to 2100 PM UTC+7")
-
+            # _logger.error("Cron only works between 0300 AM to 2100 PM UTC+7")
+            _logger.error("Outside of Cron work time")
     def cron_auto_proceed_bank_transaction(self):
         try:
             bank_transaction_data = self.env['tt.bank.transaction'].search([('transaction_date', '<', datetime.today()), ('transaction_process', '=', 'unprocess')])

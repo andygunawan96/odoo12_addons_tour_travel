@@ -604,6 +604,7 @@ class ReservationAirline(models.Model):
                     # if provider_obj.state == 'booked' and hold_date == provider_obj.hold_date:
                     #     continue
                     self.update_pnr_booked(provider_obj,provider,context)
+                    book_obj.update_journey(provider)
                     provider_obj.update_ticket_api(provider['passengers'])
                     any_provider_changed = True
                 elif provider['status'] == 'ISSUED' and not provider.get('error_code'):
@@ -718,6 +719,30 @@ class ReservationAirline(models.Model):
 
     def to_dict_reschedule(self):
         return []
+
+    def update_journey(self, provider):
+        if 'sell_reschedule' in provider:
+            for idx, provider_obj in enumerate(self.provider_booking_ids):
+                if provider_obj.pnr == provider['pnr']:
+                    for idy, journey_obj in enumerate(provider_obj.journey_ids):
+                        for idz, segment_obj in enumerate(journey_obj.segment_ids):
+
+                            segment_obj.arrival_date = provider['journeys'][idy]['segments'][idz]['arrival_date']
+                            segment_obj.departure_date = provider['journeys'][idy]['segments'][idz]['departure_date']
+                            segment_obj.class_of_service = provider['journeys'][idy]['segments'][idz]['class_of_service']
+                            for count, leg_obj in enumerate(segment_obj.leg_ids):
+                                leg_obj.arrival_date = provider['journeys'][idy]['segments'][idz]['arrival_date']
+                                leg_obj.departure_date = provider['journeys'][idy]['segments'][idz]['departure_date']
+                        journey_obj.arrival_date = journey_obj.segment_ids[0]['arrival_date']
+                        journey_obj.departure_date = journey_obj.segment_ids[len(journey_obj.segment_ids)-1]['departure_date']
+                    provider_obj.arrival_date = provider_obj.journey_ids[len(provider_obj.journey_ids)-1]['arrival_date']
+                    provider_obj.departure_date = provider_obj.journey_ids[0]['departure_date']
+            self.departure_date = self.provider_booking_ids[0].depature_date[:10]
+            if self.direction != 'OW':
+                if len(self.provider_booking_ids) == 0:
+                    self.arrival_date = self.provider_booking_ids[len(self.provider_booking_ids)-1].arrival_date[:10]
+                else:
+                    self.provider_booking_ids[len(self.provider_booking_ids) - 1].departure_date[:10]
 
     def get_booking_airline_api(self,req, context):
         try:
