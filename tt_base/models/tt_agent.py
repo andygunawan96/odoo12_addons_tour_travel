@@ -58,7 +58,6 @@ class TtAgent(models.Model):
     is_using_pnr_quota = fields.Boolean('Using PNR Quota', related='agent_type_id.is_using_pnr_quota', store=True)
     quota_package_id = fields.Many2one('tt.pnr.quota.price.package', 'Package', readonly=True)
     quota_ids = fields.One2many('tt.pnr.quota','agent_id','Quota', readonly=False)
-    quota_amount = fields.Integer('Quota', compute='_compute_quota_amount', store=True, readonly=True)
     quota_total_duration = fields.Date('Max Duration', compute='_compute_quota_duration',store=True, readonly=True)
     is_send_email_cust = fields.Boolean('Send Notification Email to Customer', default=False)
 
@@ -179,22 +178,9 @@ class TtAgent(models.Model):
     #
     #     return vals
 
-    # @api.depends('quota_ids','quota_ids.available_amount','quota_ids.state')
-    @api.depends('quota_ids','quota_ids.state')
-    def _compute_quota_amount(self):
-        for rec in self:
-            quota_amount = 0
-            # for quota_id in rec.quota_ids.filtered(lambda x: x.state == 'active'):
-            #     quota_amount += quota_id.available_amount
-            rec.quota_amount = quota_amount
-
-    @api.depends('quota_ids','quota_ids.is_expired','quota_ids.state')
+    @api.depends('quota_ids','quota_ids.state','quota_ids.expired_date')
     def _compute_quota_duration(self):
         for rec in self:
-            # expiry_date = date.today()
-            # for quota_id in rec.quota_ids:
-            #     if expiry_date < quota_id.expired_date:
-            #         expiry_date = quota_id.expired_date
             if rec.quota_ids.filtered(lambda x: x.state == 'active'):
                 rec.quota_total_duration = rec.quota_ids[0].expired_date
 
@@ -525,8 +511,10 @@ class TtAgent(models.Model):
 
     def use_pnr_quota(self, req):
         if self.is_using_pnr_quota:
-            if len(self.quota_ids) == 0:
-                res = self.env['tt.pnr.quota'].create_pnr_quota_api(
+            quota_obj_list = self.quota_ids.filtered(lambda x: x.state == 'active')
+
+            if len(quota_obj_list) == 0:## kalau tidak ada quota_obj yg aktif di buatkan 1
+                self.env['tt.pnr.quota'].create_pnr_quota_api(
                     {
                         'quota_seq_id': self.quota_package_id.seq_id
                     },
@@ -534,80 +522,30 @@ class TtAgent(models.Model):
                         'co_agent_id': self.id
                     }
                 )
-            if datetime.now() < datetime.combine(self.quota_total_duration, datetime.max.time()):
-                # if self.quota_amount <= 0:
-                ##potong saldo minimum fee di sini
-                # try:
-                #     # inventory rodex
-                #     resv_obj = self.env[req.get('res_model_resv')].browse(int(req.get('res_id_resv')))
-                #     resv_obj.create_date
-                #     name = resv_obj.name
-                # except:
-                #     # inventory btbo
-                #     name = req['res_model_resv']
-                #     pass
-                # pnr_quota_obj = self.quota_ids.filtered(lambda x: x.state == 'active')[0]
-                # self.env['tt.ledger'].create_ledger_vanilla(pnr_quota_obj._name,
-                #                                             pnr_quota_obj.id,
-                #                                             'Excess Quota Penalty: %s' % (name),
-                #                                             resv_obj.name,
-                #                                             datetime.now(pytz.timezone('Asia/Jakarta')).date(),
-                #                                             2,
-                #                                             self.quota_package_id.currency_id.id,
-                #                                             self.env.ref('base.user_root').id,
-                #                                             self.id,
-                #                                             False,
-                #                                             debit=0,
-                #                                             credit=self.quota_package_id.excess_quota_fee,
-                #                                             description='Excess Quota Penalty for %s' % (name)
-                #                                             )
-                #     price_list_id = pnr_quota_obj.id
-                # else:
-                    # price_list_id = self.quota_ids.filtered(lambda x: x.state == 'active' and x.available_amount > 0)[0].id
-                price_list_id = self.quota_ids.filtered(lambda x: x.state == 'active')[0].id
-                #check usage
-                amount = 0
-                try:
-                    pnrs = req.get('ref_pnrs').split(', ')
-                except:
-                    pnrs = req.get('ref_pnrs')
-                if req['inventory'] == 'external':
-                    for quota_obj in self.quota_ids:
-                        if quota_obj.state == 'active':
-                            amount = self.env['tt.pnr.quota'].calculate_price(quota_obj.price_package_id.available_price_list_ids, req)
-                            break
-                            # for quota_list_obj in quota_obj.price_package_id.available_price_list_ids:
-                            #     if req['provider_type'] == quota_list_obj.provider_type_id.code:
-                            #         if quota_list_obj.provider_access_type == 'all' or quota_list_obj.provider_id.code == req['ref_provider'] and quota_list_obj.provider_access_type == 'allow' or quota_list_obj.provider_access_type == 'restrict' and req['ref_provider'] != quota_list_obj.provider_id.code:
-                            #             for pnr in pnrs:
-                            #                 if quota_list_obj.carrier_access_type == 'all' or quota_list_obj.carrier_access_type == 'restrict' and quota_list_obj.carrier_id.name != pnr or quota_list_obj.carrier_id.name != pnr:
-                            #                     if quota_list_obj.price_type == 'pnr':
-                            #                         amount += quota_list_obj.price * len(pnrs)
-                            #                     elif quota_list_obj.price_type == 'r/n':
-                            #                         amount += quota_list_obj.price * req.get('ref_r_n')
-                            #                     elif quota_list_obj.price_type == 'pax':
-                            #                         amount += quota_list_obj.price * req.get('ref_pax')
-                else:
-                    amount = req.get('amount')
-                self.env['tt.pnr.quota.usage'].create({
-                    'res_model_resv': req.get('res_model_resv'),
-                    'res_id_resv': req.get('res_id_resv'),
-                    'res_model_prov': req.get('res_model_prov'),
-                    'res_id_prov': req.get('res_id_prov'),
-                    'pnr_quota_id': price_list_id,
-                    'ref_pnrs': req.get('ref_pnrs'),
-                    'ref_carriers': req.get('ref_carriers'),
-                    'ref_name': req.get('ref_name'),
-                    'ref_provider': req['ref_provider'],
-                    'ref_provider_type': req['ref_provider_type'],
-                    'ref_pax': req.get('ref_pax') and int(req.get('ref_pax')) or 0,
-                    'ref_r_n': req.get('ref_r_n') and int(req.get('ref_r_n')) or 0,
-                    'amount': amount,
-                    'inventory': req['inventory']
-                })
+
+            #ambl yg index 0, terbaru
+            quota_obj = quota_obj_list[0]
+
+            if req['inventory'] == 'external':
+                amount = self.env['tt.pnr.quota'].calculate_price(quota_obj.price_package_id.available_price_list_ids, req)
             else:
-                ##ban user here because no quota left
-                self.ban_user_api()
+                amount = req.get('amount')
+            self.env['tt.pnr.quota.usage'].create({
+                'res_model_resv': req.get('res_model_resv'),
+                'res_id_resv': req.get('res_id_resv'),
+                'res_model_prov': req.get('res_model_prov'),
+                'res_id_prov': req.get('res_id_prov'),
+                'pnr_quota_id': quota_obj.id,
+                'ref_pnrs': req.get('ref_pnrs'),
+                'ref_carriers': req.get('ref_carriers'),
+                'ref_name': req.get('ref_name'),
+                'ref_provider': req['ref_provider'],
+                'ref_provider_type': req['ref_provider_type'],
+                'ref_pax': req.get('ref_pax') and int(req.get('ref_pax')) or 0,
+                'ref_r_n': req.get('ref_r_n') and int(req.get('ref_r_n')) or 0,
+                'amount': amount,
+                'inventory': req['inventory']
+            })
 
     def get_available_pnr_price_list_api(self,context):
         try:

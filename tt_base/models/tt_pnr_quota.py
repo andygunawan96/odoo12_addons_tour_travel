@@ -27,7 +27,6 @@ class TtPnrQuota(models.Model):
     expired_date = fields.Date('Valid Until', store=True)
     usage_ids = fields.One2many('tt.pnr.quota.usage', 'pnr_quota_id','Quota Usage', readonly=True, domain=['|',('active', '=', True),('active', '=', False)])
     agent_id = fields.Many2one('tt.agent','Agent', domain="[('is_using_pnr_quota','=',True)]")
-    is_expired = fields.Boolean('Expired')
     state = fields.Selection([('active', 'Active'), ('waiting', 'Waiting'), ('done', 'Done'), ('failed', 'Failed')], 'State',compute="_compute_state",store=True)
     transaction_amount_internal = fields.Monetary('Transaction Amount Internal', copy=False, readonly=True)
     transaction_amount_external = fields.Monetary('Transaction Amount External', copy=False, readonly=True)
@@ -47,7 +46,7 @@ class TtPnrQuota(models.Model):
             vals_list['state'] = 'active'
             vals_list['amount'] = int(package_obj.minimum_fee)
         else:
-            raise Exception('Package not fount')
+            raise Exception('Package not found')
         return super(TtPnrQuota, self).create(vals_list)
 
     @api.onchange('usage_ids', 'usage_ids.active')
@@ -185,22 +184,6 @@ class TtPnrQuota(models.Model):
                 'agent_id': agent_obj.id,
                 'price_package_id': price_package_obj.id
             })
-            agent_obj.quota_total_duration = new_pnr_quota.expired_date
-
-            # self.env['tt.ledger'].create_ledger_vanilla(new_pnr_quota._name,
-            #                                             new_pnr_quota.id,
-            #                                             'Order: %s' % (new_pnr_quota.name),
-            #                                             new_pnr_quota.name,
-            #                                             datetime.now(pytz.timezone('Asia/Jakarta')).date(),
-            #                                             2,
-            #                                             price_list_obj.currency_id.id,
-            #                                             self.env.user.id,
-            #                                             agent_obj.id,
-            #                                             False,
-            #                                             debit=0,
-            #                                             credit=price_list_obj.price,
-            #                                             description='Buying PNR Quota for %s' % (agent_obj.name)
-            #                                             )
 
             agent_obj.unban_user_api()
 

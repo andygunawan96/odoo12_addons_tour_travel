@@ -102,7 +102,6 @@
                         <page string="Quota" attrs="{'invisible': [('is_using_pnr_quota','=',False)]}">
                             <group>
                                 <field name="quota_package_id" attrs="{'required': [('is_using_pnr_quota','=',True)]}"/>
-                                <field name="quota_amount"/>
                                 <field name="quota_total_duration"/>
                             </group>
                             <field name="quota_ids"/>
