@@ -25,7 +25,7 @@ class ttCronTopUpValidator(models.Model):
                                 account_number += acc_number
                     transaction = self.env['tt.bank.accounts'].search([('bank_account_number_without_dot', '=', account_number)])
                     if transaction:
-                        date_exist = transaction.bank_transaction_date_ids.filtered(lambda x: x.date == datetime.today().strftime("%Y-%m-%d"))
+                        date_exist = transaction.bank_transaction_date_ids.filtered(lambda x: x.date == datetime.now(pytz.timezone('Asia/Jakarta')).strftime("%Y-%m-%d"))
                         if date_exist:
                             result = date_exist.transaction_ids.filtered(lambda x: x.transaction_amount == top_up_obj.total and x.transaction_type == 'C')
                             if result:

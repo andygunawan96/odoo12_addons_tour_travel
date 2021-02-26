@@ -233,8 +233,8 @@ class TtReschedule(models.Model):
     refund_type_id = fields.Many2one('tt.refund.type', 'Refund Type', required=False, readonly=True)
 
     def get_reschedule_admin_fee_rule(self, agent_id):
-        current_refund_env = self.env.ref('tt_accounting.admin_fee_refund_regular')
-        refund_admin_fee_list = self.env['tt.master.admin.fee'].search([('after_sales_type', '=', 'reschedule')])
+        current_refund_env = self.env.ref('tt_accounting.admin_fee_reschedule')
+        refund_admin_fee_list = self.env['tt.master.admin.fee'].search([('after_sales_type', '=', 'after_sales')])
         for admin_fee in refund_admin_fee_list:
             if agent_id in admin_fee.agent_ids.ids:
                 current_refund_env = admin_fee

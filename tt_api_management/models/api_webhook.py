@@ -14,7 +14,9 @@ class ApiWebhookData(models.Model):
 
     name = fields.Char('Name')
     provider_type_id = fields.Many2one('tt.provider.type','Provider Type')
-    webhook_rel_ids = fields.One2many('tt.api.webhook','webhook_data_id','Webhook Rel')
+    webhook_rel_ids = fields.One2many('tt.api.webhook','webhook_data_id','Webhook Rel',
+                                      domain=['|', ('active', '=', True), ('active', '=', False)],
+                                      context={'active_test': False})
 
     def notify_subscriber(self,req):
         try:
@@ -72,6 +74,7 @@ class ApiWebhook(models.Model):
     url = fields.Text('URL')
     api_key = fields.Text('API Key', compute='_compute_api_key', store=True)
     provider_type_id = fields.Many2one('tt.provider.type','Provider Type',related='webhook_data_id.provider_type_id')
+    active = fields.Boolean('Active', default=True)
 
     @api.multi
     @api.depends('credential_data_id')
