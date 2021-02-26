@@ -981,9 +981,6 @@ class TtReservation(models.Model):
         except:
             raise RequestException(1008)
         agent_obj = user_obj.agent_id
-        # ledger_created = provider.action_create_ledger(context['co_uid'], payment_method)
-        # if agent_obj.is_using_pnr_quota: ##selalu potong quota setiap  attemp payment
-        # if agent_obj.is_using_pnr_quota and ledger_created:  # tidak potong quota jika tidak membuat ledger
         try:
             quota_usage_obj = self.env['tt.pnr.quota.usage'].search([('ref_name','=', "EXT.%s" % req['order_number']),('ref_pnrs','=', req['pnr'])])
             if not quota_usage_obj:
