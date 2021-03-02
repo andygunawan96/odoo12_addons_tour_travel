@@ -1845,7 +1845,9 @@ class ReservationAirline(models.Model):
             else:
                 raise Exception('Book ID or Order Number is not found')
 
-            admin_fee_obj = self.env.ref('tt_accounting.admin_fee_refund_regular')
+            # VIN: 2021/03/02: admin fee tdak bisa di hardcode
+            # TODO: refund type tdak boleh hardcode lagi, jika frontend sdah support pilih refund type regular / quick
+            admin_fee_obj = self.env['tt.refund'].get_refund_admin_fee_rule(airline_obj.agent_id.id)
             refund_type = self.env.ref('tt_accounting.refund_type_regular_refund').id
             # refund_type = 'regular'
 
