@@ -128,5 +128,12 @@
             <field name="active" eval="True"/>
             <field name="provider_type_id" ref="tt_reservation_hotel.tt_provider_type_hotel"/>
         </record>
+        <record id="tt_hotel_provider_traveloka" model="tt.provider">
+            <field name="name">Traveloka Hotel</field>
+            <field name="alias">A14</field>
+            <field name="code">traveloka_hotel</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_hotel.tt_provider_type_hotel"/>
+        </record>
     </data>
 </odoo>
