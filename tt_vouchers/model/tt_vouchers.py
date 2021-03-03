@@ -1175,8 +1175,8 @@ class TtVoucherDetail(models.Model):
             return ERR.get_error(additional_message="Voucher is either expired or inactive")
 
         # voucher may not be expired at this point, but maybe just maybe voucher can only be use on certain date(s)
-        if voucher_detail.voucher_start_date.strftime("%Y-%m-%d") > data[
-            'date'] and voucher_detail.voucher_expire_date.strftime("%Y-%m-%d") < data['date']:
+        if voucher_detail.voucher_start_date != False and voucher_detail.voucher_expire_date != False and voucher_detail.voucher_start_date.strftime("%Y-%m-%d") > data['date'] and voucher_detail.voucher_expire_date.strftime("%Y-%m-%d") < data['date'] or \
+                voucher_detail.voucher_expire_date != False and voucher_detail.voucher_expire_date.strftime("%Y-%m-%d") < data['date']:
             # today's date (the day users pass to use the date) is not covered by the voucher #ouch!
             # write log
             _logger.error("%s Voucher cannot be use outside the designated date" % data['voucher_reference'])
@@ -1238,7 +1238,7 @@ class TtVoucherDetail(models.Model):
             # if multi provider, then we need to make sure only provider eligible for voucher, get the discount
             for i in data['provider']:
                 # search the exact prvider
-                provider = self.env['tt.provider'].search([('code', '=', i)])
+                provider = self.env['tt.provider'].search([('code', '=', i)], limit=1)
 
                 # create data to check if current iteration provider is eligible for voucher discount
                 to_check = {
@@ -1316,7 +1316,7 @@ class TtVoucherDetail(models.Model):
             'voucher_cap': maximum_cap,
             'voucher_minimum_purchase': minimum_purchase,
             'voucher_effect_all': voucher_detail.voucher_id.voucher_effect_all,
-            'date_expire': voucher_detail.voucher_expire_date.strftime("%Y-%m-%d"),
+            'date_expire': '' if voucher_detail.voucher_expire_date == False else voucher_detail.voucher_expire_date.strftime("%Y-%m-%d"),
             'provider_type': data['provider_type'],
             'provider': result_array,
             'is_agent': voucher_detail.is_agent
