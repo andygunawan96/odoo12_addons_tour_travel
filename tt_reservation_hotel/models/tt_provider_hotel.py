@@ -144,11 +144,11 @@ class TransportBookingProvider(models.Model):
             'signature': self.booking_id.sid_issued or self.booking_id.sid_booked
         })
 
-        if self.booking_id.invoice_line_ids:
-            # Jika Error dan sdah buat invoice tidak kita create invoice lagi
-            self.booking_id.state = 'issued'
-        else:
-            self.booking_id.action_issued(payment_data, self.issued_uid.id)
+        # if self.booking_id.invoice_line_ids:
+        #     # Jika Error dan sdah buat invoice tidak kita create invoice lagi
+        #     self.booking_id.state = 'issued'
+        # else:
+        self.booking_id.action_issued(payment_data, self.issued_uid.id)
 
     def action_set_to_issued_from_button(self, payment_data={}):
         if self.state == 'issued':
