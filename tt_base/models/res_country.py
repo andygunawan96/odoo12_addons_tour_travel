@@ -59,12 +59,14 @@ class Country(models.Model):
         return res
 
     def find_country_by_name(self, str_name, limit=1):
-        str_name = str_name.rstrip()
-        found = self.search([('name', '=ilike', str_name)], limit=limit)
-        if len(found) < limit:
-            for rec in self.env['tt.destination.alias'].search([('name', 'ilike', str_name),('country_id','!=',False)], limit=limit-len(found)):
-                found += rec.country_id
-        return found
+        if str_name:
+            str_name = str_name.rstrip()
+            found = self.search([('name', '=ilike', str_name)], limit=limit)
+            if len(found) < limit:
+                for rec in self.env['tt.destination.alias'].search([('name', 'ilike', str_name),('country_id','!=',False)], limit=limit-len(found)):
+                    found += rec.country_id
+            return found
+        return False
 
 
 class CountryState(models.Model):
@@ -79,12 +81,14 @@ class CountryState(models.Model):
     address_detail_ids = fields.One2many('address.detail', 'state_id', string='Addresses')
 
     def find_state_by_name(self, str_name, limit=1):
-        str_name = str_name.rstrip()
-        found = self.search([('name', '=ilike', str_name)], limit=limit)
-        if len(found) < limit:
-            for rec in self.env['tt.destination.alias'].search([('name', 'ilike', str_name),('state_id','!=',False)], limit=limit-len(found)):
-                found += rec.country_id
-        return found
+        if str_name:
+            str_name = str_name.rstrip()
+            found = self.search([('name', '=ilike', str_name)], limit=limit)
+            if len(found) < limit:
+                for rec in self.env['tt.destination.alias'].search([('name', 'ilike', str_name),('state_id','!=',False)], limit=limit-len(found)):
+                    found += rec.country_id
+            return found
+        return False
 
 
 class CountryCity(models.Model):
@@ -105,12 +109,15 @@ class CountryCity(models.Model):
     city_alias_name = fields.Char('Alias Name', compute='city_search_name', store=True)
 
     def find_city_by_name(self, str_name, limit=1):
-        str_name = str_name.rstrip()
-        found = self.search([('name', '=ilike', str_name)], limit=limit)
-        if len(found) < limit:
-            for rec in self.env['tt.destination.alias'].search([('name', 'ilike', str_name), ('city_id','!=',False), ('city_id','not in', found.ids)], limit=limit-len(found)):
-                found += rec.city_id
-        return found
+        if str_name:
+            str_name = str_name.rstrip()
+            found = self.search([('name', '=ilike', str_name)], limit=limit)
+            if len(found) < limit:
+                for rec in self.env['tt.destination.alias'].search([('name', 'ilike', str_name), ('city_id','!=',False), ('city_id','not in', found.ids)], limit=limit-len(found)):
+                    found += rec.city_id
+            return found
+        else:
+            return False
 
     @api.onchange('name', 'other_name_ids')
     @api.depends('name', 'other_name_ids')

@@ -3306,69 +3306,14 @@ class HotelInformation(models.Model):
     # Todo: Perlu catat source data ne
     # Todo: Prepare Cron tiap provider
     def v2_collect_by_system(self):
-        # params = self.env['ir.config_parameter'].sudo().get_param('hotel.city.rendered.list')
-        # rendered_city = json.loads(params)
-        #
-        # API_CN_HOTEL.signin()
-        # city_ids = glob.glob("/var/log/cache_hotel/knb/*.json")
-        #
-        # for target_city in city_ids:
-        #     target_city_name = target_city[25:-5]
-        #     if target_city_name in rendered_city:
-        #         continue
-        #     with open(target_city, 'r') as f2:
-        #         file = f2.read()
-        #         hotel_ids = [rec['id'] for rec in json.loads(file)]
-        #     f2.close()
-        #     response = API_CN_HOTEL.send_request('get_hotel_detail', {'provider': ['knb'], 'codes': hotel_ids})
-        #
-        #     name = '/var/log/cache_hotel/knb_api/' + target_city_name + ".json"
-        #     file = open(name, 'w')
-        #     file.write(json.dumps(response['response']['result']))
-        #     file.close()
-        #     rendered_city.append(target_city_name)
-        #
-        #     self.env['ir.config_parameter'].sudo().set_param('hotel.city.rendered.list', json.dumps(rendered_city))
-        #     self.env.cr.commit()
-        # self.env['ir.config_parameter'].sudo().set_param('hotel.city.rendered.list', json.dumps([]))
-
-        # Part2: Update hotel RAW
-        city_ids = glob.glob("/var/log/cache_hotel/knb_api/*.json")
-        for target_city in city_ids:
-            target_city_name = target_city[29:-5]
-            _logger.info("Processing: " + str(target_city_name))
-
-            with open(target_city, 'r') as f2:
-                file = f2.read()
-                provider_codes = json.loads(file)
-            f2.close()
-
-            for code in provider_codes.keys():
-                obj_id = self.env['tt.provider.code'].search([('code', '=', code), ('res_model', '=', 'tt.hotel')], limit=1)
-                _logger.info("Processing Hotel with Code: " + str(code))
-                if obj_id:
-                    obj_id = obj_id[0].res_id
-                    hotel_obj = self.env['tt.hotel'].browse(obj_id)
-                    if not hotel_obj.lat and provider_codes[code]['lat']:
-                        hotel_obj.lat = provider_codes[code]['lat']
-                    if not hotel_obj.long and provider_codes[code]['long']:
-                        hotel_obj.long = provider_codes[code]['long']
-                    if not hotel_obj.website and provider_codes[code]['website']:
-                        hotel_obj.website = provider_codes[code]['website']
-                    if not hotel_obj.phone and provider_codes[code]['phone']:
-                        hotel_obj.phone = provider_codes[code]['phone']
-                    if not hotel_obj.facility_ids and provider_codes[code]['facility']:
-                        for fac in provider_codes[code]['facility']:
-                            # TODO hotel facility cari by provider code
-                            fac_obj = self.env['tt.hotel.facility'].search([('name','=ilike', fac['name'])], limit=1)
-                            if fac_obj and fac_obj[0].id not in hotel_obj.facility_ids.ids:
-                                hotel_obj.facility_ids = [(4, fac_obj[0].id)]
-                            else:
-                                fac_type_id = self.env.ref('tt_reservation_hotel.hotel_facility_type_basic').id
-                                fac_obj = self.env['tt.hotel.facility'].create({'name': fac['name'], 'facility_type_id': fac_type_id})
-                                # TODO add provider code
-                                hotel_obj.facility_ids = [(4, fac_obj.id)]
-        _logger.info("===== Done =====")
+        provider = self.env['ir.config_parameter'].sudo().get_param('hotel.cache.provider').split(',')  # 'knb',dida,webbeds
+        for rec in provider:
+            def_name = 'v2_collect_by_system_%s' % rec
+            if hasattr(self, def_name):
+                return getattr(self, def_name)()
+            else:
+                _logger.error(msg='No function Collect by CSV for this provider %s' % rec)
+        return False
 
     # 1b. Collect by Human / File excel
     # Compiller: Master / Local

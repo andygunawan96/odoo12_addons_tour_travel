@@ -33,3 +33,4 @@ from . import read_knb
 from . import read_dida
 from . import read_hotelspro
 from . import read_quantum
+from . import read_traveloka

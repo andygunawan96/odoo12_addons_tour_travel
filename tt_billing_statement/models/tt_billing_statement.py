@@ -153,7 +153,7 @@ class TtBillingStatement(models.Model):
             raise UserError('You can not set to confirm this billing. Please cancel the "Payment" first')
 
     def check_status_bs(self):
-        if all([rec.state == 'paid' for rec in self.invoice_ids]):
+        if all([rec.state == 'paid' for rec in self.invoice_ids]) or self.paid_amount == self.amount_total:
             self.state = 'paid'
         elif any([rec.state == 'paid' for rec in self.invoice_ids]):
             self.state = 'partial'
