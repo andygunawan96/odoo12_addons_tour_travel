@@ -3,7 +3,7 @@
     <record id="tt_reservation_hotel_sales_form_view" model="ir.ui.view">
         <field name="name">tt.reservation.hotel.sales.form.view</field>
         <field name="model">tt.reservation.hotel</field>
-        <field name="inherit_id" ref="tt_reservation_hotel.tt_hotel_reservation_form"/>
+        <field name="inherit_id" ref="tt_reservation_hotel.tt_reservation_hotel_form_views"/>
         <field name="arch" type="xml">
             <xpath expr="//page[@name='prices']" position="after">
                 <page string="Agent Invoice" name="agent_invoice">

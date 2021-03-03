@@ -20,6 +20,35 @@ class HotelInformation(models.Model):
     # ====================== New Format ====================  #
     ###########################################################
     # Versi 2: Langsung create record di odoo, tmbahkan ada city jika tidak ketemu
+    def split_per_city(self, hotel_list, file_loc):
+        hotel_per_city_dict = {}
+        for hotel in hotel_list:
+            try:
+                city_name_fmt = hotel['location']['city'].strip().title()
+            except:
+                city_name_fmt = 'Others'
+            if not hotel_per_city_dict.get(city_name_fmt):
+                hotel_per_city_dict[city_name_fmt] = []
+            hotel_per_city_dict[city_name_fmt].append(hotel)
+
+        if not os.path.exists(file_loc):
+            os.makedirs(file_loc)
+
+        for city, hotel_datas in hotel_per_city_dict.items():
+            file = open(file_loc + '/' + city + '.json', 'w')
+            file.write(json.dumps(hotel_datas))
+            file.close()
+        return hotel_per_city_dict
+
+    def get_data_form_file(self):
+        master_loc = '/var/log/cache_hotel/traveloka/00_master/country/'
+        for country_file in glob.glob(master_loc + "*.json"):
+            file = open(country_file, 'r')
+            hotel_list = json.loads(file.read())
+            file.close()
+
+            hotel_list = self.split_per_city(hotel_list, country_file[:-5])
+        return True
 
     # 1a. Collect by System (Schedular)
     # Compiller: Master
@@ -34,15 +63,15 @@ class HotelInformation(models.Model):
             'co_uid': self.env.user.id
         }
         API_CN_HOTEL.signin()
-        # for type in ['geo_list', 'property_list']:
-        for type in ['geo_list']:
+        for type in ['geo_list', 'property_list']:
+        # for type in ['property_list']:
             search_req = {
                 'provider': 'traveloka_hotel',
                 'type': type,
                 'limit': 100,
-                'offset': 100,
+                'offset': 3,
                 # 'codes': ['ID', 'PH', 'SG', 'MY', 'VN'],
-                'codes': ['ID',],
+                'codes': ['ID','SG'],
             }
             a = API_CN_HOTEL.get_record_by_api(search_req, api_context)
 
@@ -58,12 +87,8 @@ class HotelInformation(models.Model):
             if type == 'property_list':
                 for dict_key, dict_value in a['response'].items():
                     _logger.info("Write File " + dict_key)
-                    dict_value = dict_value
-                    for city_name, city_result in dict_value:
-                        filename1 = base_cache_directory + 'traveloka/00_master/country/' + dict_key + '/' + city_name + ".json"
-                        file = open(filename1, 'w')
-                        file.write(json.dumps(city_result))
-                        file.close()
+                    file_url = base_cache_directory + 'traveloka/' + dict_key
+                    self.split_per_city(dict_value, file_url)
             else:
                 for rec in a['response'].values():
                     for data in rec:
