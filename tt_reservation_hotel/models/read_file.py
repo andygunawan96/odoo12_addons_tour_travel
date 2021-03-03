@@ -2185,6 +2185,8 @@ class HotelInformation(models.Model):
             return 'A12'
         elif provider == 'rodextrip_hotel':
             return 'A13'
+        elif provider == 'traveloka':
+            return 'A14'
         elif provider == 'from':
             return 'A3'
         else:
@@ -2416,7 +2418,7 @@ class HotelInformation(models.Model):
         # Create Facility
         fac_link_ids = []
         for fac in hotel_obj['facilities']:
-            if fac['facility_id']:
+            if fac.get('facility_id'):
                 fac_link_ids.append(int(fac['facility_id']))
             else:
                 fac_link_ids.append(self.env['tt.hotel.facility'].sudo().find_by_name(fac['facility_name']))

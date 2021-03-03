@@ -34,7 +34,7 @@ class HotelFacility(models.Model):
     # Search Facility by name + alias name
     def find_by_name(self, fac_name):
         # parse_name = fac_name.replace('(s)', '').replace("`s", '').replace('facilities', 'facility').replace('(chargeable)', '')
-        parse_name = fac_name
+        parse_name = fac_name.replace('_', ' ').replace('-', ' ')
         fac_id = self.env['tt.hotel.facility'].search([('name', '=ilike', parse_name)], limit=1)
         if not fac_id:
             found_obj = False
@@ -46,7 +46,7 @@ class HotelFacility(models.Model):
 
             if not found_obj:
                 fac_id = self.env['tt.hotel.facility'].create({
-                    'name': fac_name,
+                    'name': parse_name,
                     'facility_type_id': self.env.ref('tt_reservation_hotel.tt_facility_type_1').id
                 })
                 # Todo: Create Provider Code for this facility Here
