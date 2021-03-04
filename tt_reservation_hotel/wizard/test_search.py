@@ -529,7 +529,7 @@ class TestSearch(models.Model):
         return ids
 
     def prepare_resv_value(self, backend_hotel_obj, hotel_obj, check_in, check_out, room_rates,
-                           cust_partner_obj, provider_data, special_req, guest_list,
+                           booker_obj, contact_obj, provider_data, special_req, guest_list,
                            agent_id, cancellation_policy, hold_date):
         room_count = 0
         for rec in room_rates:
@@ -549,10 +549,10 @@ class TestSearch(models.Model):
             'checkout_date': check_out,
             'room_count': room_count,
             'nights': dt.strptime(check_out, "%Y-%m-%d").day - dt.strptime(check_in, "%Y-%m-%d").day,
-            'booker_id': cust_partner_obj.id, #
-            'contact_id': cust_partner_obj.id, #
-            'contact_name': cust_partner_obj.name, #
-            'contact_email': cust_partner_obj.email, #
+            'booker_id': booker_obj.id, #
+            'contact_id': contact_obj.id, #
+            'contact_name': contact_obj.name, #
+            'contact_email': contact_obj.email, #
             'display_mobile': False, #
             'adult': len(list(filter(lambda i: i['pax_type'] == 'ADT', guest_list))),
             'provider_data': provider_data,
@@ -591,54 +591,58 @@ class TestSearch(models.Model):
     # Todo Create Contact fungsi sendiri
     # Todo cek apakah detail guest sdah ada kumpul kan
 
-    def create_reservation(self, hotel_obj, provider_name, cust_names, check_in, check_out, room_rates,
-                           booker_detail, acquirer_id, provider_data='', special_req='', cancellation_policy='', context={}):
+    # def create_reservation(self, hotel_obj, provider_name, cust_names, check_in, check_out, room_rates,
+    #                        booker_detail, acquirer_id, provider_data='', special_req='', cancellation_policy='', context={}):
+    def create_reservation(self, req, context={}):
         total_rate = 0
         total_commision = 0
+
+        provider_data = req.get('provider_data', '')
+        special_req = req.get('special_request', 'No Special Request')
+        cancellation_policy = req.get('cancellation_policy', '')
+
         context['agent_id'] = self.sudo().env['res.users'].browse(context['co_uid']).agent_id.id
 
-        booker_detail = isinstance(booker_detail, list) and booker_detail[0] or booker_detail
-        booker_obj = self.env['tt.reservation.hotel'].create_booker_api(booker_detail, context)
-        booker_detail['contact_id'] = booker_obj.id
-        cust_partner_obj = booker_obj
-        # try:
-        #     cust_partner_obj = self.env['tt.reservation.hotel'].create_contact_api(booker_detail, {}, context)
-        # except:
-        #     cust_partner_obj = booker_obj
+        booker_obj = self.env['tt.reservation.hotel'].create_booker_api(req['booker'], context)
+        contact_objs = []
+        for con in req['contact']:
+            contact_objs.append(self.env['tt.reservation.hotel'].create_contact_api(con, booker_obj, context))
+        contact_obj = contact_objs[0]
 
-        backend_hotel_obj = self.get_backend_object(room_rates[0]['provider'], hotel_obj['id'])
-        vals = self.prepare_resv_value(backend_hotel_obj, hotel_obj, check_in, check_out, room_rates,
-                                       cust_partner_obj, provider_data, special_req, cust_names,
+        backend_hotel_obj = self.get_backend_object(req['price_codes'][0]['provider'], req['hotel_obj']['id'])
+        vals = self.prepare_resv_value(backend_hotel_obj, req['hotel_obj'], req['checkin_date'], req['checkout_date'], req['price_codes'],
+                                       booker_obj, contact_obj, provider_data, special_req, req['passengers'],
                                        context['agent_id'], cancellation_policy, context.get('hold_date', False))
         # Set Customer Type by Payment
-        if acquirer_id:
-            acq_obj = self.env['payment.acquirer'].search([('seq_id', '=', acquirer_id['seq_id'])])
+        if req['payment_id']:
+            acq_obj = self.env['payment.acquirer'].search([('seq_id', '=', req['payment_id']['seq_id'])])
         else:
             acq_obj = False
 
         if acq_obj:
             customer_parent_id = self.env['tt.agent'].sudo().browse(context['agent_id']).customer_parent_walkin_id.id  ##fpo
-        elif not acquirer_id:
+        elif not req['payment_id']:
             if context['hold_date']:
                 customer_parent_id = self.env['tt.agent'].sudo().browse(context['agent_id']).customer_parent_walkin_id.id
             else:
                 customer_parent_id = False
         else:
-            customer_parent_id = self.env['tt.customer.parent'].search([('seq_id', '=', acquirer_id['seq_id'])], limit=1).id
+            customer_parent_id = self.env['tt.customer.parent'].search([('seq_id', '=', req['payment_id']['seq_id'])], limit=1).id
 
         vals.update({
             'customer_parent_id': customer_parent_id,
             'sid_booked': context['signature'],
         })
-        passenger_objs = self.env['tt.reservation.hotel'].create_customer_api(cust_names, context, booker_obj.id, cust_partner_obj.id)  # create passenger
+        passenger_objs = self.env['tt.reservation.hotel'].create_customer_api(req['passengers'], context, booker_obj.id, contact_obj.id)  # create passenger
 
         resv_id = self.env['tt.reservation.hotel'].create(vals)
         resv_id.hold_date = context.get('hold_date', False)
         # resv_id.write({'passenger_ids': [(6, 0, [rec[0].id for rec in passenger_objs])]})
-        for rec in passenger_objs:
+        for idx, rec in enumerate(passenger_objs):
             self.env['tt.reservation.passenger.hotel'].create({
                 'booking_id': resv_id.id,
                 'customer_id': rec.id,
+                'tittle': req['passengers'][idx]['title'],
                 'first_name': rec.first_name,
                 'last_name': rec.last_name,
                 'gender': rec.gender,
@@ -648,43 +652,44 @@ class TestSearch(models.Model):
                 'identity_number': rec.identity_ids and rec.identity_ids[0].identity_number or '',
             })
 
-        for room_rate in room_rates[0]['rooms']:
-            vendor_currency_id = self.env['res.currency'].sudo().search([('name', '=', room_rate['currency'])], limit=1).id
-            provider_id = self.env['tt.provider'].search([('code','=', self.unmasking_provider(room_rates[0]['provider']))], limit=1).id
-            detail = self.env['tt.hotel.reservation.details'].sudo().create({
-                'provider_id': provider_id,
-                'reservation_id': resv_id.id,
-                'date': fields.Datetime.from_string(check_in),
-                'date_end': fields.Datetime.from_string(check_out),
-                'sale_price': float(room_rate['price_total']),
-                'prov_sale_price': float(room_rate['price_total_currency']),
-                'prov_currency_id': vendor_currency_id,
-                'room_name': room_rate['description'],
-                'room_vendor_code': room_rates[0]['price_code'],
-                'room_type': room_rate['type'],
-                'meal_type': room_rates[0]['meal_type'],
-                'commission_amount': float(room_rate.get('commission', 0)),
-            })
-            self.env.cr.commit()
-            for charge_id in room_rate['nightly_prices']:
-                self.env['tt.room.date'].sudo().create({
-                    'detail_id': detail.id,
-                    'date': charge_id['date'],
-                    'sale_price': charge_id['price'], #charge_id['price_currency'],
-                    'commission_amount': charge_id['commission'],
-                    'meal_type': '',
+        for price_obj in req['price_codes']:
+            for room_rate in price_obj['rooms']:
+                vendor_currency_id = self.env['res.currency'].sudo().search([('name', '=', room_rate['currency'])], limit=1).id
+                provider_id = self.env['tt.provider'].search([('code','=', self.unmasking_provider(price_obj['provider']))], limit=1).id
+                detail = self.env['tt.hotel.reservation.details'].sudo().create({
+                    'provider_id': provider_id,
+                    'reservation_id': resv_id.id,
+                    'date': fields.Datetime.from_string(req['checkin_date']),
+                    'date_end': fields.Datetime.from_string(req['checkout_date']),
+                    'sale_price': float(room_rate['price_total']),
+                    'prov_sale_price': float(room_rate['price_total_currency']),
+                    'prov_currency_id': vendor_currency_id,
+                    'room_name': room_rate['description'],
+                    'room_vendor_code': price_obj['price_code'],
+                    'room_type': room_rate['type'],
+                    'meal_type': price_obj['meal_type'],
+                    'commission_amount': float(room_rate.get('commission', 0)),
                 })
-                # Merge Jika Room type yg sama 2
-                for price in charge_id['service_charges']:
-                    price.update({
-                        'resv_hotel_id': resv_id.id,
-                        'total': price['amount'] * price['pax_count'],
+                self.env.cr.commit()
+                for charge_id in room_rate['nightly_prices']:
+                    self.env['tt.room.date'].sudo().create({
+                        'detail_id': detail.id,
+                        'date': charge_id['date'],
+                        'sale_price': charge_id['price'], #charge_id['price_currency'],
+                        'commission_amount': charge_id['commission'],
+                        'meal_type': '',
                     })
-                    self.env['tt.service.charge'].create(price)
+                    # Merge Jika Room type yg sama 2
+                    for price in charge_id['service_charges']:
+                        price.update({
+                            'resv_hotel_id': resv_id.id,
+                            'total': price['amount'] * price['pax_count'],
+                        })
+                        self.env['tt.service.charge'].create(price)
 
-            # todo Room Info IDS
-            total_rate += float(room_rate['price_total'])
-            total_commision += float(room_rate['commission'])
+                # todo Room Info IDS
+                total_rate += float(room_rate['price_total'])
+                total_commision += float(room_rate['commission'])
         resv_id.total = total_rate
 
         # Create provider_booking_ids
@@ -695,8 +700,8 @@ class TestSearch(models.Model):
             'pnr2': '',
             'balance_due': resv_id.total_nta,
             'total_price': resv_id.total_nta,
-            'checkin_date': check_in,
-            'checkout_date': check_out,
+            'checkin_date': req['checkin_date'],
+            'checkout_date': req['checkout_date'],
             'hotel_id': resv_id.hotel_id.id,
             'hotel_name': resv_id.hotel_name,
             'hotel_address': resv_id.hotel_address,

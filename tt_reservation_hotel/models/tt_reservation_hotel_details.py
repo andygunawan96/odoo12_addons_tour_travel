@@ -70,6 +70,7 @@ class HotelReservationDetails(models.Model):
     def set_domain_voucher2(self):
         for a in self:
             a.set_domain_voucher()
+
     @api.multi
     def open_record(self):
         # first you need to get the id of your record
