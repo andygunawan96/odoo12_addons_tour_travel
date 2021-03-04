@@ -8,7 +8,7 @@ from . import hotel_image
 from . import hotel_information
 from . import room_info
 from . import room_rate
-# from . import tt_banner
+from . import tt_banner
 from . import landmark
 from . import res_country
 from . import tt_hotel_destination
