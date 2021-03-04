@@ -423,6 +423,76 @@
             </form>
         </field>
     </record>
+
+    <record id="tt_reservation_hotel_form_views" model="ir.ui.view">
+        <field name="name">tt.reservation.hotel.form.view</field>
+        <field name="model">tt.reservation.hotel</field>
+        <field name="mode">primary</field>
+        <field name="inherit_id" ref="tt_reservation.tt_reservation_form_views"/>
+        <field name="arch" type="xml">
+            <xpath expr="//form" position="attributes">
+                <attribute name="edit">false</attribute>
+            </xpath>
+
+            <xpath expr="//page[@name='anchor']" position="before">
+                <page string="Reservation">
+                    <field name="room_detail_ids">
+                        <tree>
+                            <field name="name"/>
+                            <field name="issued_name" string="Voucher Code"/>
+                            <field name="provider_id" groups="tt_base.group_tt_tour_travel_operator"/>
+                            <!--<field name="date"/>-->
+                            <!--<field name="date_end"/>-->
+                            <!--<field name="room_info_id"/>-->
+                            <field name="room_name"/>
+                            <field name="sale_price"/>
+                            <!--<field name="commission_amount" groups="tt_base.group_tt_agent_user_operator, tt_base.group_tt_tour_travel_operator"/>-->
+                            <!--<field name="payment_method" groups="tt_base.group_tt_tour_travel_operator"/>-->
+                            <field name="meal_type"/>
+                        </tree>
+                    </field>
+                    <group>
+                        <field name="provider_data" states="confirm" groups="tt_base.group_tt_agent_user_operator"/>
+                        <field name="cancellation_policy_str"/>
+                        <field name="special_req"/>
+                    </group>
+                </page>
+            </xpath>
+            <xpath expr="//page[@name='anchor']" position="before">
+                <page string="Passengers">
+                    <field name="passenger_ids" readonly="1">
+                        <tree>
+                            <field name="title"/>
+                            <field name="first_name"/>
+                            <field name="last_name"/>
+                            <field name="gender"/>
+                            <field name="birth_date"/>
+                            <field name="nationality_id"/>
+                            <field name="customer_id"/>
+                        </tree>
+                    </field>
+                </page>
+                <page string="Prices" name="prices">
+                    <field name="sale_service_charge_ids">
+                        <tree editable="bottom">
+                            <field name="charge_code"/>
+                            <field name="charge_type"/>
+                            <field name="foreign_currency_id" groups="tt_base.group_tt_tour_travel_operator"/>
+                            <field name="foreign_amount"/>
+                            <field name="amount"/>
+                            <field name="pax_count" string="Count"/>
+                            <field name="total"/>
+                            <field name="currency_id" invisible="1"/>
+                            <field name="description"/>
+                        </tree>
+                    </field>
+                </page>
+                <page string="Vendor">
+                    <field name="provider_booking_ids"/>
+                </page>
+            </xpath>
+        </field>
+    </record>
     <record model="ir.ui.view" id="tt_hotel_reservation_view_tree" >
         <field name="name">tt.hotel.reservation.view.tree</field>
         <field name="model">tt.reservation.hotel</field>
@@ -453,7 +523,7 @@
         <field name="domain">[]</field>
         <field name="context">
             {
-            'form_view_ref': 'tt_reservation_hotel.tt_hotel_reservation_form',
+            'form_view_ref': 'tt_reservation_hotel.tt_reservation_hotel_form_views',
             'tree_view_ref': 'tt_reservation_hotel.tt_hotel_reservation_view_tree',
             'search_default_all': 1
             }
