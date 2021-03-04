@@ -97,29 +97,10 @@ class TtBankTransaction(models.Model):
         return result
 
     def get_data(self, data):
-        #logs
-        logs = {
-            'data_recieve': 0,
-            'process': 0,
-            'ignore': 0,
-            'successful': 0,
-            'unsuccessful': 0,
-            'failed_data': []
-        }
-
-        #search date range
-        splits = data['startdate'].split("-")
-        start_year = splits[0]
-        start_month = splits[1]
-        splits = data['enddate'].split("-")
-        end_year = splits[0]
-        end_month = splits[1]
-
         result = self.env['tt.bank.api.con'].get_transaction(data)
         if result['error_code'] != 0:
             raise Exception("Unable to get bank Transaction, %s" % (result['error_msg']))
 
-        logs['data_recieve'] = len(result['response']['Data'])
 
         #look for currency_id
         currency_id = self.env['res.currency'].sudo().search([('name', 'ilike', result['response']['Currency'])]).read()
@@ -128,20 +109,9 @@ class TtBankTransaction(models.Model):
         #get bank code
         bank_code = self.env['tt.bank'].sudo().browse(int(bank_owner[0]['bank_id'][0]))
 
-        #for debugging purpose
-        # temp_dates = datetime.today() - timedelta(days=1)
 
-        if datetime.today().strftime('%a') == 'sat':
-        # if temp_dates.strftime('%a') == 'Sat':
-            temp_day = datetime.today() + timedelta(days=2)
-            date = bank_owner.bank_transaction_date_ids.filtered(lambda x: x.date == temp_day.strftime("%Y-%m-%d"))
-        elif datetime.today().strftime('%a') == 'sun':
-        # elif temp_dates.strftime('%a') == 'Sun':
-            temp_day = datetime.today() + timedelta(days=1)
-            date = bank_owner.bank_transaction_date_ids.filtered(lambda x: x.date == temp_day.strftime("%Y-%m-%d"))
-        else:
-            temp_day = datetime.today()
-            date = bank_owner.bank_transaction_date_ids.filtered(lambda x: x.date == temp_day.strftime("%Y-%m-%d"))
+        temp_day = datetime.today()
+        date = bank_owner.bank_transaction_date_ids.filtered(lambda x: x.date == temp_day.strftime("%Y-%m-%d"))
 
         if not date:
             new_day = {
@@ -153,49 +123,9 @@ class TtBankTransaction(models.Model):
         #get starting balance
         balance_modified = result['response']['StartBalance']
 
-        #compare if data already exist in our database
-        # transaction = self.env['tt.bank.transaction'].sudo().search([('bank_transaction_date_ids', '=', date.id)])
-
-        #modified transaction to match the
-        # content of transaction
-        # [( transaction_bank_branch, transaction_type, transaction_amount, transaction_name, transaction_message)]
-
-        # for i in transaction:
-        #     i.pop('id')
-        #     i.pop('transaction_code')
-        #     i.pop('bank_account_id')
-        #     i.pop('bank_transaction_date_id')
-        #     i.pop('currency_id')
-        #     i.pop('bank_balance')
-        #     i.pop('transaction_date')
-        #     i.pop('transaction_debit')
-        #     i.pop('transaction_credit')
-        #     i.pop('transaction_connection')
-        #     i.pop('transaction_process')
-        #     i.pop('top_up_id')
-        #     i.pop('create_uid')
-        #     i.pop('create_date')
-        #     i.pop('write_uid')
-        #     i.pop('write_date')
-        #     i.pop('display_name')
-        #     i.pop('__last_update')
-
         #add data to transaction
         for i in result['response']['Data']:
-
-            # temp_dictionary = {
-            #     'transaction_bank_branch': i['BranchCode'],
-            #     'transaction_type': i['TransactionType'],
-            #     'transaction_original': str(i['TransactionAmount']),
-            #     'transaction_amount': round(float(i['TransactionAmount'])),
-            #     'transaction_name': i['TransactionName'],
-            #     'transaction_message': i['Trailer']
-            # }
-            is_exist = date.transaction_ids.filtered(lambda x: x.transaction_original == str(i['TransactionAmount']) and x.transaction_type == i['TransactionType'] and x.transaction_name == i['TransactionName'])
-            if not is_exist:
-
-                logs['process'] += 1
-
+            if not self.search([('transaction_message', '=', i['Trailer']), ('transaction_amount', '=', i['TransactionAmount'])]):
                 temp_date = i['TransactionDate'].split("-")
 
                 debit_value = 0
@@ -222,28 +152,18 @@ class TtBankTransaction(models.Model):
                     'transaction_name': i['TransactionName'],
                     'transaction_message': i['Trailer']
                 }
-                check_data = self.search([('transaction_message', '=', i['Trailer']), ('transaction_amount', '=', i['TransactionAmount'])])
-                try:
-                    if not check_data:
-                        added = self.create_bank_statement(data)
-                        # create transaction code
-                        merge_date = "".join(temp_date)
-                        transaction_code = "MUT." + str(merge_date) + str(bank_code.code) + str(added.id)
+                added = self.create_bank_statement(data)
+                # create transaction code
+                merge_date = "".join(temp_date)
+                transaction_code = "MUT." + str(merge_date) + str(bank_code.code) + str(added.id)
 
-                        added.write({
-                            'transaction_code': transaction_code
-                        })
-                        logs['successful'] += 1
-                except:
-                    logs['unsuccessful'] += 1
-            else:
-                logs['ignore'] += 1
+                added.write({
+                    'transaction_code': transaction_code
+                })
                 if i['TransactionType'] == 'D':
                     balance_modified = float(balance_modified) + float(i['TransactionAmount'])
                 else:
                     balance_modified = float(balance_modified) + float(i['TransactionAmount'])
-
-        return logs
 
     def process_data(self):
         #get data from top up
