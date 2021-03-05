@@ -434,6 +434,28 @@
                 <attribute name="edit">false</attribute>
             </xpath>
 
+            <xpath expr="//group[@name='paxgroup']" position="before">
+                <separator string="Trip Information"/>
+                <group>
+                    <group>
+                        <!--<field name="type" readonly="1"/>-->
+                        <field name="hotel_id"/>
+                        <field name="hotel_name" required="1" attrs="{'invisible':[('hotel_id','!=',False)] }"/>
+                        <field name="hotel_address"/>
+                        <field name="hotel_city_id" attrs="{'invisible':[('hotel_city_id','!=',False)] }"/>
+                        <field name="hotel_city" attrs="{'invisible':[('hotel_city_id','!=',False)] }"/>
+                        <field name="hotel_phone"/>
+                    </group>
+                    <group>
+                        <field name="checkin_date" required="1" options="{'datepicker': {'minDate': 'now'}}"/>
+                        <field name="checkout_date" required="1"/>
+                        <field name="nights"/>
+                        <field name="room_count"/>
+                        <field name="refundable" string="Internal Refund" help=""/>
+                    </group>
+                </group>
+            </xpath>
+
             <xpath expr="//page[@name='anchor']" position="before">
                 <page string="Reservation">
                     <field name="room_detail_ids">
@@ -493,6 +515,7 @@
             </xpath>
         </field>
     </record>
+
     <record model="ir.ui.view" id="tt_hotel_reservation_view_tree" >
         <field name="name">tt.hotel.reservation.view.tree</field>
         <field name="model">tt.reservation.hotel</field>

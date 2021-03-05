@@ -110,7 +110,7 @@ class TtBankTransaction(models.Model):
         bank_code = self.env['tt.bank'].sudo().browse(int(bank_owner[0]['bank_id'][0]))
 
 
-        temp_day = datetime.today()
+        temp_day = datetime.now(pytz.timezone('Asia/Jakarta'))
         date = bank_owner.bank_transaction_date_ids.filtered(lambda x: x.date == temp_day.strftime("%Y-%m-%d"))
 
         if not date:
