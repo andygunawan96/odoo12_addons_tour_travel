@@ -85,19 +85,19 @@ class TtReconcileTransactionWizard(models.TransientModel):
                     pass
 
                 trans_lines = recon_data.reconcile_lines_ids.filtered(lambda x: x.pnr == transaction['pnr'] and x.type == transaction['type'])
-                if len(trans_lines) > 1:
-                    total_found = False
-                    for rec in trans_lines:
-                        if rec.total == transaction['total']:
-                            trans_lines = rec
-                            total_found = True
-                            break
-                    if not total_found:
-                        trans_lines = False
-                        # 5 Mar 2021 Joshua, tidak lagi match by sequence, karena kalau NTA 2 PNR kembar tidak masuk 2 2nya
-                        # for rec in trans_lines:
-                        #     if rec.sequence == transaction['sequence']:
-                        #         trans_lines = rec
+
+                total_matching_found = False
+                for rec in trans_lines:
+                    if rec.total == transaction['total']:
+                        trans_lines = rec
+                        total_matching_found = True
+                        break
+                if not total_matching_found:
+                    trans_lines = False
+                    # 5 Mar 2021 Joshua, tidak lagi match by sequence, karena kalau NTA 2 PNR kembar tidak masuk 2 2nya
+                    # for rec in trans_lines:
+                    #     if rec.sequence == transaction['sequence']:
+                    #         trans_lines = rec
 
                 if trans_lines:
                     found_trans_lines.append(trans_lines[0].id)
