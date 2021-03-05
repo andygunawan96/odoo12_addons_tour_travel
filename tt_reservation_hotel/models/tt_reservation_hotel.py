@@ -416,7 +416,7 @@ class HotelReservation(models.Model):
     def action_booked(self):
         self.state = 'booked'
         self.booked_date = fields.Datetime.today()
-        # self.env['test.search'].validation_booking(self.id)
+        self.booked_uid = self.env.user.id,
         return True
 
     # @api.one
@@ -446,9 +446,20 @@ class HotelReservation(models.Model):
             'tag': 'reload',
         }
 
-    @api.one
-    def action_draft(self):
-        self.state = 'draft'
+    @api.multi
+    def action_set_as_draft(self):
+        for rec in self:
+            rec.state = 'draft'
+
+    @api.multi
+    def action_set_as_booked(self):
+        for rec in self:
+            rec.state = 'booked'
+
+    @api.multi
+    def action_set_as_issued(self):
+        for rec in self:
+            rec.state = 'issued'
 
     def action_create_invoice(self, acquirer_id, customer_parent_id):
         return True
@@ -873,7 +884,9 @@ class HotelReservation(models.Model):
             pass
         elif all(rec.state == 'issued' for rec in self.provider_booking_ids):
             # issued
-            pass
+            acquirer_id, customer_parent_id = self.get_acquirer_n_c_parent_id(req)
+            # self.action_issued_api_ppob(acquirer_id and acquirer_id.id or False, customer_parent_id, context)
+            self.action_issued(acquirer_id and acquirer_id.id or False, context['co_uid'])
         elif all(rec.state == 'refund' for rec in self.provider_booking_ids):
             # refund
             self.write({

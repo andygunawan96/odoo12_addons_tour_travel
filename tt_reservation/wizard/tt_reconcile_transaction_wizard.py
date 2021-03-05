@@ -93,9 +93,11 @@ class TtReconcileTransactionWizard(models.TransientModel):
                             total_found = True
                             break
                     if not total_found:
-                        for rec in trans_lines:
-                            if rec.sequence == transaction['sequence']:
-                                trans_lines = rec
+                        trans_lines = False
+                        # 5 Mar 2021 Joshua, tidak lagi match by sequence, karena kalau NTA 2 PNR kembar tidak masuk 2 2nya
+                        # for rec in trans_lines:
+                        #     if rec.sequence == transaction['sequence']:
+                        #         trans_lines = rec
 
                 if trans_lines:
                     found_trans_lines.append(trans_lines[0].id)

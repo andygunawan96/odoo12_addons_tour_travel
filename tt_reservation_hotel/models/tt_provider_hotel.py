@@ -137,29 +137,63 @@ class TransportBookingProvider(models.Model):
         if self.state == 'issued':
             raise UserError("Has been Issued.")
 
-        self.action_force_issued(self.pnr)
-        self.action_create_ledger(self.issued_uid.id)
-        self.action_issued_api_hotel({
-            'co_uid': self.env.user.id,
-            'signature': self.booking_id.sid_issued or self.booking_id.sid_booked
-        })
+        req = {
+            'book_id': self.booking_id.id,
+            'member': payment_data.get('member'),
+            'acquirer_seq_id': payment_data.get('acquirer_seq_id'),
+        }
+        context = {
+            'co_agent_id': self.booking_id.agent_id.id,
+            'co_agent_type_id': self.booking_id.agent_type_id.id,
+            'co_uid': self.env.user.id
+        }
+        payment_res = self.booking_id.payment_reservation_api('activity', req, context)
+        if payment_res['error_code'] != 0:
+            raise UserError(payment_res['error_msg'])
 
-        # if self.booking_id.invoice_line_ids:
-        #     # Jika Error dan sdah buat invoice tidak kita create invoice lagi
-        #     self.booking_id.state = 'issued'
-        # else:
-        self.booking_id.action_issued(payment_data, self.issued_uid.id)
+        # balance_res = self.env['tt.agent'].check_balance_limit_api(self.booking_id.agent_id.id,self.booking_id.agent_nta)
+        # if balance_res['error_code'] != 0:
+        #     raise UserError("Balance not enough.")
+        #
+        # self.action_create_ledger(self.env.user.id)
+        self.action_set_to_issued_from_button(payment_data)
+
+        return {
+            'type': 'ir.actions.client',
+            'tag': 'reload',
+        }
 
     def action_set_to_issued_from_button(self, payment_data={}):
         if self.state == 'issued':
             raise UserError("Has been Issued.")
+        self.write({
+            'state': 'issued',
+            'issued_uid': self.env.user.id,
+            'issued_date': datetime.now()
+        })
+        self.booking_id.check_provider_state({'co_uid': self.env.user.id}, [], False, payment_data)
 
-        if self.booking_id.invoice_line_ids:
-            # Jika Error dan sdah buat invoice tidak kita create invoice lagi
-            self.booking_id.state = 'issued'
-        else:
-            self.booking_id.action_issued(payment_data, self.issued_uid.id)
+        return {
+            'type': 'ir.actions.client',
+            'tag': 'reload',
+        }
 
+    def action_set_to_book_from_button(self):
+        if self.state == 'booked':
+            raise UserError("Has been Booked.")
+
+        self.write({
+            'state': 'booked',
+            'booked_uid': self.env.user.id,
+            'booked_date': datetime.now()
+        })
+
+        self.booking_id.check_provider_state({'co_uid':self.env.user.id})
+
+        return {
+            'type': 'ir.actions.client',
+            'tag': 'reload',
+        }
     # TODO START
     def create_service_charge(self, service_charge_vals):
         service_chg_obj = self.env['tt.service.charge']

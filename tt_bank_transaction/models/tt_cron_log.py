@@ -147,7 +147,7 @@ class ttCronTopUpValidator(models.Model):
                         'enddate': datetime.now(pytz.timezone('Asia/Jakarta')).strftime("%Y-%m-%d"),
                     }
                     #called function to proceed data and input in bank transaction
-                    result = self.env['tt.bank.transaction'].get_data(data)
+                    self.env['tt.bank.transaction'].get_data(data)
                     self.cron_auto_top_up_validator()
                 except Exception as e:
                     self.create_cron_log_folder()
