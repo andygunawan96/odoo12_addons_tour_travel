@@ -416,7 +416,7 @@ class HotelReservation(models.Model):
     def action_booked(self):
         self.state = 'booked'
         self.booked_date = fields.Datetime.today()
-        # self.env['test.search'].validation_booking(self.id)
+        self.booked_uid = self.env.user.id,
         return True
 
     # @api.one
