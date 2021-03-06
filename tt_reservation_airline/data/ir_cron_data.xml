@@ -8,7 +8,7 @@
             <field name="interval_type">minutes</field>
             <field name="numbercall">-1</field>
             <field name="nextcall" eval="(datetime.now().isoformat())"/>
-            <field name="active">False</field>
+            <field name="active">True</field>
             <field name="state">code</field>
             <field name="model_id" ref="tt_base.model_tt_cron_log"/>
             <field name="code">model.cron_sync_booking()</field>
