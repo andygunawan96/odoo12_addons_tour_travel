@@ -423,10 +423,11 @@ class TtReservationTrain(models.Model):
         dest1= searchRQ['journey_list'][0]['origin']
         dest_idx = 0
         dest2=dest1
-        while(dest1 == dest2):
-            dest_idx -= 1
-            dest2 = searchRQ['journey_list'][dest_idx]['destination']
 
+        if len(searchRQ['journey_list']) > 1:
+            while(dest1 == dest2):
+                dest_idx -= 1
+                dest2 = searchRQ['journey_list'][dest_idx]['destination']
 
         booking_tmp = {
             'direction': searchRQ.get('direction'),
