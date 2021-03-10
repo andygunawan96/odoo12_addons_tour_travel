@@ -46,3 +46,4 @@ from . import tt_vendor
 from . import tt_loyalty_program
 from . import tt_public_holiday
 from . import tt_letter_guarantee
+from . import ir_mail_server

@@ -361,3 +361,5 @@ tt_letter_guarantee_for_accounting_manager,tt.letter.guarantee.for.accounting.ma
 tt_letter_guarantee_lines_for_public,tt.letter.guarantee.lines.for.public,model_tt_letter_guarantee_lines,,1,0,0,0
 tt_letter_guarantee_lines_for_tour_travel_manager,tt.letter.guarantee.lines.for.tour.travel.manager,model_tt_letter_guarantee_lines,tt_base.group_tt_tour_travel_manager,1,1,1,0
 tt_letter_guarantee_lines_for_accounting_manager,tt.letter.guarantee.lines.for.accounting.manager,model_tt_letter_guarantee_lines,tt_base.group_tt_accounting_manager,1,1,1,1
+
+tt_base_access_ir_mail_server,tt.base.access.ir.mail.server,base.model_ir_mail_server,base.group_erp_manager,1,1,1,1
