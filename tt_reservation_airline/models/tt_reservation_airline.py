@@ -624,7 +624,9 @@ class ReservationAirline(models.Model):
                     # END
 
                     #action issued dan create ticket number
-                    provider_obj.update_ticket_api(provider['passengers'])
+                    # Apabila status sudah issued, biasanya connector tidak melakukan proses sehingga variabel passengers tidak ada
+                    if 'passengers' in provider:
+                        provider_obj.update_ticket_api(provider['passengers'])
 
                     # October 12, 2020 - SAM
                     # Hanya akan melakukan update ticket apabila state sebelumnya adalah issued
@@ -762,8 +764,12 @@ class ReservationAirline(models.Model):
             if book_obj.agent_id.id == context.get('co_agent_id',-1) or self.env.ref('tt_base.group_tt_process_channel_bookings').id in user_obj.groups_id.ids or book_obj.agent_type_id.name == self.env.ref('tt_base.agent_b2c').agent_type_id.name or book_obj.user_id.login == self.env.ref('tt_base.agent_b2c_user').login:
                 res = book_obj.to_dict(context['co_agent_id'] == self.env.ref('tt_base.rodex_ho').id)
                 psg_list = []
-                for rec in book_obj.sudo().passenger_ids:
-                    psg_list.append(rec.to_dict())
+                for rec_idx, rec in enumerate(book_obj.sudo().passenger_ids):
+                    rec_data = rec.to_dict()
+                    rec_data.update({
+                        'passenger_number': rec.sequence
+                    })
+                    psg_list.append(rec_data)
                 prov_list = []
                 for rec in book_obj.provider_booking_ids:
                     prov_list.append(rec.to_dict())
