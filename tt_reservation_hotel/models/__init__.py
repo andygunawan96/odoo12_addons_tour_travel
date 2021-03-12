@@ -24,9 +24,6 @@ from . import tt_reservation_hotel_details
 from . import tt_reservation_passenger_hotel
 from . import tt_refund_wizard
 
-###### Data Pelengkap FrontEnd ######
-# from . import res_config
-
 ###### Read File dari vendor ######
 from . import scrapper_history
 from . import read_file

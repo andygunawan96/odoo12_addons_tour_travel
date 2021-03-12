@@ -37,7 +37,6 @@ access_landmark_all,access_landmark_all,model_tt_landmark,,1,1,1,0
 access_landmark_type_all,access_landmark_type_all,model_tt_landmark_type,,1,1,1,0
 access_landmark_distance_all,access_landmark_distance_all,model_tt_landmark_distance,,1,1,1,0
 access_meal_type_all,access_meal_type_all,model_tt_meal_type,,1,1,1,0
-access_hotel_image_settings_all,access_hotel_image_settings_all,model_hotel_image_settings,,1,1,1,0
 access_room_info_all,access_room_info_all,model_tt_room_info,,1,1,1,0
 access_room_rate_all,access_room_rate_all,model_tt_room_rate,,1,1,1,0
 access_room_type_all,access_room_type_all,model_tt_room_type,,1,1,1,0
