@@ -194,5 +194,6 @@
     <menuitem id="main_reservations"
               name="Reservations"
               web_icon="hr,static/description/icon.png"
-              sequence="2"/>
+              sequence="2"
+              groups="tt_base.group_tt_tour_travel_operator,tt_base.group_tt_agent_user_operator"/>
 </odoo>

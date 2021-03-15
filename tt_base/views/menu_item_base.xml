@@ -46,7 +46,7 @@
                   name="Transactions"
                   web_icon="hr,static/description/icon.png"
                   sequence="3"
-                  groups="base.group_user"/>
+                  groups="tt_base.group_tt_tour_travel_operator,tt_base.group_tt_agent_user_operator"/>
 
         <!--External Vendor Login-->
         <menuitem id="main_external_vendor"
