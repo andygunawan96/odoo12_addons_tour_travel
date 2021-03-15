@@ -12,9 +12,9 @@
                     <field name="customer_parent_id"/>
                     <field name="customer_parent_type_id"/>
                     <field name="currency_id"/>
-                    <field name="referenced_document" groups="base.user_admin" />
-                    <field name="res_model" groups="base.user_admin" />
-                    <field name="res_id" groups="base.user_admin" />
+                    <field name="referenced_document" groups="base.group_system" />
+                    <field name="res_model" groups="base.group_system" />
+                    <field name="res_id" groups="base.group_system" />
                     <field name="component_type" invisible="context.get('hide_component_type',False)"/>
                     <field name="adjust_side"/>
                     <field name="adjust_amount"/>

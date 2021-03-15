@@ -121,7 +121,7 @@
 
     <menuitem id="sub_menu_tour_travel_provider_code"
                   parent="tt_base.menu_tour_travel_provider"
-                  groups="base.user_admin"
+                  groups="base.group_system"
                   name="Provider Code"
                   sequence="3"
                   action="tt_provider_code_action_view"/>

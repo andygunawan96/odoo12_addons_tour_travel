@@ -29,7 +29,7 @@
                     <group>
                         <group>
                             <!--<field name='agent_id' groups="base.group_user" readonly="False"/>-->
-                            <field name='email' groups="base.user_admin"/>
+                            <field name='email' groups="base.group_system"/>
                             <field name='currency_id' groups="base.group_user" readonly="False"/>
                             <field name='language' groups="base.group_user" readonly="False"/>
                             <field name='transaction_limit' groups="base.group_user" readonly="False"/>

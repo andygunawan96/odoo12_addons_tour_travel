@@ -53,6 +53,6 @@
               action="tt_base.tt_frontend_security_action_views"
               name="Frontend Security"
               sequence="4"
-              groups="base.user_admin"/>
+              groups="base.group_system"/>
 
 </odoo>

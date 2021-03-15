@@ -18,10 +18,10 @@
                             </button>
                         </div>
                         <group>
-                            <field name="res_model_resv" groups="base.user_admin"/>
-                            <field name="res_id_resv" groups="base.user_admin"/>
-                            <field name="res_model_prov" groups="base.user_admin"/>
-                            <field name="res_id_prov" groups="base.user_admin"/>
+                            <field name="res_model_resv" groups="base.group_system"/>
+                            <field name="res_id_resv" groups="base.group_system"/>
+                            <field name="res_model_prov" groups="base.group_system"/>
+                            <field name="res_id_prov" groups="base.group_system"/>
                             <field name="ref_name"/>
                             <field name="ref_pnrs"/>
                             <field name="ref_carriers"/>

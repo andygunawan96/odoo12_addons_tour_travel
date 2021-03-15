@@ -412,7 +412,7 @@
                                 <!--</div>-->
                             <!--<field name="total_nta" nolabel='1' groups="tt_base.group_tt_tour_travel_operator" class="oe_subtotal_footer_separator"/>-->
                             <field name="total_nta" class="oe_subtotal_footer_separator" groups="tt_base.group_tt_tour_travel_operator"/>
-                            <field name="agent_nta" class="oe_subtotal_footer_separator" groups="tt_base.group_tt_agent_user_operator, base.user_admin"/>
+                            <field name="agent_nta" class="oe_subtotal_footer_separator" groups="tt_base.group_tt_agent_user_operator, base.group_system"/>
                         </group>
                     </group>
                 </sheet>

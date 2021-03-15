@@ -32,9 +32,9 @@
                     <button name="action_confirm" string="Confirm" type="object" groups="tt_base.group_tt_tour_division_operator,tt_base.group_tt_tour_travel_manager" attrs="{'invisible':[('state','!=', 'draft')]}"/>
                     <button name="set_to_draft" string="Set to Draft" type="object" groups="tt_base.group_tt_tour_division_operator,tt_base.group_tt_tour_travel_manager" attrs="{'invisible':[('state','=', 'draft')]}"/>
                     <button name="action_closed" string="Close" type="object" groups="tt_base.group_tt_tour_division_operator,tt_base.group_tt_tour_travel_manager" attrs="{'invisible':[('state','=', 'closed')]}"/>
-                    <!--                    <button string="Update Tour Code" name="update_tour_code_temp" type="object" groups="base.user_admin"/>-->
-                    <!--                    <button string="Generate Room Codes" name="generate_all_room_codes" type="object" groups="base.user_admin"/>-->
-<!--                    <button string="Convert to New Pricing" name="convert_to_new_pricing" type="object" groups="base.user_admin"/>-->
+                    <!--                    <button string="Update Tour Code" name="update_tour_code_temp" type="object" groups="base.group_system"/>-->
+                    <!--                    <button string="Generate Room Codes" name="generate_all_room_codes" type="object" groups="base.group_system"/>-->
+<!--                    <button string="Convert to New Pricing" name="convert_to_new_pricing" type="object" groups="base.group_system"/>-->
                 </header>
                 <sheet>
                     <!--PRINT REPORT BUTTON-->
@@ -50,17 +50,17 @@
                         <button name="copy_tour"
                                 class="oe_stat_button"
                                 string="Copy Tour" type="object" icon="fa-copy"
-                                groups="tt_base.group_tt_tour_division_operator,base.user_admin"/>
+                                groups="tt_base.group_tt_tour_division_operator,base.group_system"/>
                         <button name="%(tt_base.tt_upload_center_wizard_action_view)d" string="Upload Image" type="action"
-                                class="oe_stat_button" icon="fa-upload" groups="tt_base.group_tt_tour_division_operator,base.user_admin"
+                                class="oe_stat_button" icon="fa-upload" groups="tt_base.group_tt_tour_division_operator,base.group_system"
                                 context="{'default_target_field_name': 'image_ids'}"
                                 attrs="{'invisible': [('provider_id', '!=', %(tt_reservation_tour.tt_provider_tour_internal)d)]}"/>
                         <button name="%(tt_base.tt_upload_center_wizard_action_view)d" string="Upload Itinerary" type="action"
-                                class="oe_stat_button" icon="fa-upload" groups="tt_base.group_tt_tour_division_operator,base.user_admin"
+                                class="oe_stat_button" icon="fa-upload" groups="tt_base.group_tt_tour_division_operator,base.group_system"
                                 context="{'default_target_field_name': 'document_url'}"/>
                         <button name="toggle_active" type="object"
                                 class="oe_stat_button" icon="fa-archive"
-                                groups="tt_base.group_tt_tour_division_operator,base.user_admin">
+                                groups="tt_base.group_tt_tour_division_operator,base.group_system">
                             <field name="active" widget="boolean_button"
                                    options='{"terminology": "archive"}'/>
                         </button>

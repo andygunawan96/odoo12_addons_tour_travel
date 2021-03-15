@@ -100,7 +100,7 @@
                         'default_currency_id': currency_id,
                         'default_adj_type': provider_type_id
                     }"/>
-                        <button string="Refund Request" name="%(tt_accounting.tt_refund_wizard_action_view)d" type="action" groups="tt_base.group_tt_agent_user_operator, base.user_admin"
+                        <button string="Refund Request" name="%(tt_accounting.tt_refund_wizard_action_view)d" type="action" groups="tt_base.group_tt_agent_user_operator, base.group_system"
                                 context="{
                         'default_res_model': res_model,
                         'default_res_id': id,
@@ -115,8 +115,8 @@
                         <button string="Set Back to Confirm" name="set_back_to_confirm" type="object" states="cancel2"/>
                         <!--                        <button string="Print Invoice Ticket" name="print_invoice_ticket" type="object" states="paid,posted"/>-->
                         <!--                        <button string="Get Config API" name="get_config_api" type="object"/>-->
-                        <!--                        <button string="Sync ALL Carrier List" name="sync_all_carrier_list" type="object" groups="base.user_admin"/>-->
-                        <!--                        <button string="Sync ALL Service Charge" name="sync_all_service_charge" type="object" groups="base.user_admin"/>-->
+                        <!--                        <button string="Sync ALL Carrier List" name="sync_all_carrier_list" type="object" groups="base.group_system"/>-->
+                        <!--                        <button string="Sync ALL Service Charge" name="sync_all_service_charge" type="object" groups="base.group_system"/>-->
                         <!--                        <button string="Get Booking Offline" name="get_booking_offline" type="object"/>-->
                         <!--                        <button string="Test Repricing Offline" name="test_repricing_offline" type="object"/>-->
                         <!--                        <button string="Sync Service Charge" name="sync_service_charge" type="object"/>-->

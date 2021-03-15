@@ -17,8 +17,8 @@
                     <field name="refund_type_id"/>
                     <field name="referenced_pnr"/>
                     <field name="referenced_document"/>
-                    <field name="res_model" groups="base.user_admin"/>
-                    <field name="res_id" groups="base.user_admin"/>
+                    <field name="res_model" groups="base.group_system"/>
+                    <field name="res_id" groups="base.group_system"/>
                     <field name="notes"/>
                 </group>
                 <footer>
