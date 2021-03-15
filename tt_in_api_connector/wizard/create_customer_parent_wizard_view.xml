@@ -27,7 +27,7 @@
 
     <menuitem id="menu_get_merchant_info_payment_acquirer_wizard"
               parent="tt_base.menu_transaction_accounting_payment_acquirer"
-              groups="base.user_admin"
+              groups="base.group_system"
               name="Sync Merchant Info"
               sequence="100"
               action="get_merchant_info_payment_acquirer_wizard_action_view"/>

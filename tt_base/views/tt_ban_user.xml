@@ -7,7 +7,7 @@
             <field name="arch" type="xml">
                 <form>
                     <header>
-                        <button name="unban_user_from_button" string="Unban" type="object" groups="base.user_admin"/>
+                        <button name="unban_user_from_button" string="Unban" type="object" groups="base.group_system"/>
                     </header>
                     <sheet>
                         <div class="oe_button_box" name="button_box">

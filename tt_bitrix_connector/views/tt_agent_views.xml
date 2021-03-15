@@ -6,8 +6,8 @@
         <field name="inherit_id" ref="tt_base.tt_agent_form_view"/>
         <field name="arch" type="xml">
             <field name="est_date" position="after">
-                <field name="is_using_bitrix" groups="base.user_admin"/>
-                <field name="is_default_bitrix_agent" groups="base.user_admin" attrs="{'invisible': [('is_using_bitrix', '=', False)]}"/>
+                <field name="is_using_bitrix" groups="base.group_system"/>
+                <field name="is_default_bitrix_agent" groups="base.group_system" attrs="{'invisible': [('is_using_bitrix', '=', False)]}"/>
             </field>
         </field>
     </record>

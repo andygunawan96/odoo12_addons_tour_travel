@@ -11,9 +11,9 @@
                     <field name="file_reference"/>
                     <field name="file" filename="filename"/>
                     <field name="delete_time"/>
-                    <field name="target_field_name" readonly="1" groups="base.user_admin"/>
-                    <field name="agent_id" readonly="1" groups="base.user_admin"/>
-                    <field name="owner_id" readonly="1" groups="base.user_admin"/>
+                    <field name="target_field_name" readonly="1" groups="base.group_system"/>
+                    <field name="agent_id" readonly="1" groups="base.group_system"/>
+                    <field name="owner_id" readonly="1" groups="base.group_system"/>
                 </group>
                 <footer>
                     <button name="upload_from_button" string="Upload" type="object" default_focus="1" class="oe_highlight"/>

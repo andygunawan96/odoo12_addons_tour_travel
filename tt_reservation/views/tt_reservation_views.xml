@@ -7,11 +7,11 @@
             <form create="false">
                 <header>
                     <field name="refundable" invisible="1"/>
-                    <button string="Set to Draft" name="action_set_as_draft" groups="base.user_admin" type="object"/>
-                    <button string="Set to Booked" name="action_set_as_booked" groups="base.user_admin" type="object"/>
-                    <button string="Set to Issued" name="action_set_as_issued" groups="base.user_admin" type="object"/>
-                    <!--                    <button string="Fixing Prices" name="fixing_commission_agent_id_prices" groups="base.user_admin" type="object"/>-->
-                    <button string="Set Booking State" name="action_check_provider_state" groups="base.user_admin" type="object" confirm="Are you sure you want to set booking state?"/>
+                    <button string="Set to Draft" name="action_set_as_draft" groups="base.group_system" type="object"/>
+                    <button string="Set to Booked" name="action_set_as_booked" groups="base.group_system" type="object"/>
+                    <button string="Set to Issued" name="action_set_as_issued" groups="base.group_system" type="object"/>
+                    <!--                    <button string="Fixing Prices" name="fixing_commission_agent_id_prices" groups="base.group_system" type="object"/>-->
+                    <button string="Set Booking State" name="action_check_provider_state" groups="base.group_system" type="object" confirm="Are you sure you want to set booking state?"/>
                     <button string="Cancel" name="action_cancel" states="booked,issued" groups="tt_base.group_tt_tour_travel_operator" type="object" confirm="Are you sure you want to cancel?"/>
                     <button string="Adjustment" name="%(tt_accounting.tt_adjustment_wizard_action_view)d" type="action"
                             groups="tt_base.group_tt_accounting_operator"
@@ -48,7 +48,7 @@
 
                     <!--                    <button string="Sync Date" name="action_sync_date" states="booked" type="object"/>-->
 
-                    <!--                    <button string="Compute Total Price.." type="object" groups="base.user_admin" name="compute_all_provider_total_price"/>-->
+                    <!--                    <button string="Compute Total Price.." type="object" groups="base.group_system" name="compute_all_provider_total_price"/>-->
                     <field name="state" widget="statusbar" statusbar_visible="draft,booked,issued"/>
                 </header>
                 <sheet>
@@ -81,10 +81,10 @@
 
                             <!--                        ### untuk default value adjustment -->
                             <field name="res_model" invisible="1"/>
-                            <field name="payment_acquirer_number_id" groups="base.user_admin"/>
-                            <field name="unique_amount_id" groups="base.user_admin"/>
-                            <field name="is_force_issued" groups="base.user_admin"/>
-                            <field name="is_halt_process" groups="base.user_admin"/>
+                            <field name="payment_acquirer_number_id" groups="base.group_system"/>
+                            <field name="unique_amount_id" groups="base.group_system"/>
+                            <field name="is_force_issued" groups="base.group_system"/>
+                            <field name="is_halt_process" groups="base.group_system"/>
                         </group>
                         <group>
                             <field name="date"/>
@@ -174,7 +174,7 @@
                             <field name="total_discount" class="oe_subtotal_footer_separator"/>
                             <field name="total_commission" class="oe_subtotal_footer_separator" groups="tt_base.group_tt_tour_travel_operator"/>
                             <field name="total_nta" class="oe_subtotal_footer_separator" groups="tt_base.group_tt_tour_travel_operator"/>
-                            <field name="agent_nta" class="oe_subtotal_footer_separator" groups="tt_base.group_tt_agent_user_operator, base.user_admin"/>
+                            <field name="agent_nta" class="oe_subtotal_footer_separator" groups="tt_base.group_tt_agent_user_operator, base.group_system"/>
                         </group>
                         <group>
                             <field name="notes" groups="tt_base.group_tt_tour_travel_operator"/>

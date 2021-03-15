@@ -128,5 +128,5 @@ class PhoneDetail(models.Model):
 
     def generate_phone_number(self):
         for rec in self.search([]):
-            _logger.info('%s %s' % (self.agent_id,self.id))
+            _logger.info('%s %s' % (rec.agent_id,rec.id))
             rec.compute_number()

@@ -50,8 +50,8 @@
         <field name="arch" type="xml">
             <form>
                 <header>
-                    <button name="test_set_as_draft" string="set as draft" type="object" groups="base.user_admin"/>
-                    <button name="test_set_as_confirm" string="set as confirm" type="object" groups="base.user_admin"/>
+                    <button name="test_set_as_draft" string="set as draft" type="object" groups="base.group_system"/>
+                    <button name="test_set_as_confirm" string="set as confirm" type="object" groups="base.group_system"/>
                     <button string="Validate" name="action_validate_from_button"
                             type="object" groups="tt_base.group_tt_accounting_operator"
                             attrs="{'invisible':[('state','!=','confirm')]}"/>

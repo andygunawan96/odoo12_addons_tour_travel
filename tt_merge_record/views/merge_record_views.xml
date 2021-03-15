@@ -80,5 +80,5 @@
     </record>
 
     <menuitem id="top_merge_record" parent="tt_base.top_tour_travel_administration" name="New City Records" sequence="1"
-              action="tt_merge_record.temporary_record_action" groups="base.user_admin"/>
+              action="tt_merge_record.temporary_record_action" groups="base.group_system"/>
 </odoo>

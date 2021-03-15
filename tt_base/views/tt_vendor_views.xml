@@ -18,7 +18,7 @@
         <field name="arch" type="xml">
             <form create="false">
                 <header>
-<!--                    <button name="get_current_agent_target" type="object" string="Calc Target" groups="base.user_admin"/>-->
+<!--                    <button name="get_current_agent_target" type="object" string="Calc Target" groups="base.group_system"/>-->
                 </header>
                 <sheet>
                     <div class="oe_button_box" name="button_box">
