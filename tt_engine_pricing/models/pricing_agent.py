@@ -134,7 +134,7 @@ class PricingAgent(models.Model):
     @api.depends('charge_code_ids')
     def _compute_display_agents(self):
         for rec in self:
-            res = [data.code for data in rec.agent_ids]
+            res = [data.name for data in rec.agent_ids]
             rec.display_agents = ','.join(res)
 
     @api.multi
