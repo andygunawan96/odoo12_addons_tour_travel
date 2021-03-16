@@ -147,7 +147,7 @@ class TransportBookingProvider(models.Model):
             'co_agent_type_id': self.booking_id.agent_type_id.id,
             'co_uid': self.env.user.id
         }
-        payment_res = self.booking_id.payment_reservation_api('activity', req, context)
+        payment_res = self.booking_id.payment_reservation_api('hotel', req, context)
         if payment_res['error_code'] != 0:
             raise UserError(payment_res['error_msg'])
 

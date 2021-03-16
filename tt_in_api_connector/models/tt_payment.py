@@ -194,7 +194,8 @@ class TtPaymentApiCon(models.Model):
 
     def get_merchant_info(self,req):
         request = {
-            'provider': req['provider']
+            'provider': req['provider'],
+            'type': req['type']
         }
         action = 'merchant_info'
         return self.send_request_to_gateway('%s/payment' % (self.url),
