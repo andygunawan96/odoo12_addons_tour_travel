@@ -47,7 +47,7 @@
                 <header>
                     <!-- JNGAN di SYNC -->
                     <!-- Trial Reverse -->
-                    <button string="Reverse Ledger" name="reverse_ledger" type="object" groups="tt_base.group_tt_tour_travel_manager" attrs="{'invisible':[('is_reversed','=',True)]}" confirm="Are you sure you want to reverse this ledger?"/>
+                    <button string="Reverse Ledger" name="reverse_ledger" type="object" groups="tt_base.group_tt_accounting_manager" attrs="{'invisible':[('is_reversed','=',True)]}" confirm="Are you sure you want to reverse this ledger?"/>
 <!--                    <button string="Fixing Description Adjustment Ledger" name="fixing_description_ledger_adjustment" type="object" groups="base.group_system"/>-->
                 </header>
                 <sheet>
