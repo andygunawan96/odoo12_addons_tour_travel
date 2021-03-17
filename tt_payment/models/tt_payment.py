@@ -67,7 +67,7 @@ class PaymentTransaction(models.Model):
                                   states={'validated': [('readonly', True)],
                                           'validated2': [('readonly', True)],
                                           'approved': [('readonly', True)]},
-                                  domain="[('agent_id','=',customer_parent_id)]")
+                                  domain="[('agent_id','=',agent_id)]")
     payment_acq_number_id = fields.Many2one('payment.acquirer.number', 'Payment Acquirer Number', readonly=True)
 
     # #Todo:

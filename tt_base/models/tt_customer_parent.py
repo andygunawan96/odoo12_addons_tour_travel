@@ -55,7 +55,14 @@ class TtCustomerParent(models.Model):
             for rec2 in invoice_objs:
                 for rec3 in rec2.invoice_line_ids:
                     total_amt += rec3.total_after_tax
-            rec.unprocessed_amount = total_amt
+
+            ## check invoice billed tetapi sudah di bayar
+            invoice_bill_objs = self.env['tt.agent.invoice'].sudo().search(
+                [('customer_parent_id', '=', rec.id), ('state', 'in', ['bill','bill2']), ('paid_amount','>',0)])
+            paid_amount = 0
+            for billed_invoice in invoice_bill_objs:
+                paid_amount += billed_invoice.paid_amount
+            rec.unprocessed_amount = total_amt-paid_amount
 
     def _compute_actual_balance(self):
         for rec in self:
