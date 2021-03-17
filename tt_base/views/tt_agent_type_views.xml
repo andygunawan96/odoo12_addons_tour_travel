@@ -69,6 +69,7 @@
                                     <field name="sequence_prefix_id" attrs="{'invisible':[('sequence_prefix_id','!=',False)]}"/>
                                     <field name="rounding_amount_type"/>
                                     <field name="rounding_places"/>
+                                    <field name="menuitem_id"/>
 <!--                                    <field name="recruitment_fee"/>-->
                                 </group>
                             </group>
