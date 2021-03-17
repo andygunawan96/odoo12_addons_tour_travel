@@ -112,102 +112,102 @@ class TtAgentType(models.Model):
         })
         self.menuitem_id = menuitem_obj.id
 
-def delete_menuitem(self):
-    if self.menuitem_id:
-        self.menuitem_id.action.search_view_id.sudo().unlink()
-        self.menuitem_id.action.sudo().unlink()
-        self.menuitem_id.sudo().unlink()
+    def delete_menuitem(self):
+        if self.menuitem_id:
+            self.menuitem_id.action.search_view_id.sudo().unlink()
+            self.menuitem_id.action.sudo().unlink()
+            self.menuitem_id.sudo().unlink()
 
-# fixme : nanti akan diubah
-def calc_commission(self, amount, multiplier, carrier_id=False):
-    rule_id = self.commission_rule_ids.filtered(lambda x: x.carrier_id.id == carrier_id or x.carrier_id.id == False)
-    print(rule_id)
-    if rule_id:
-        rule_id = rule_id[0]
-    else:
-        return 0, 0, amount
-    if rule_id.amount > 0:
-        multiplier = rule_id.amount_multiplier == 'pppr' and multiplier or 1
-        parent_commission = rule_id.amount * multiplier
-        agent_commission = amount - parent_commission
-        print('Amount : ' + str(amount))
-        print('Parent Comm : ' + str(parent_commission))
-        print('Agent Comm : ' + str(agent_commission))
-    else:
-        parent_commission = rule_id.parent_agent_amount * amount / 100
-        agent_commission = rule_id.percentage * amount / 100
-        print('Amount : ' + str(amount))
-        print('Parent Comm : ' + str(parent_commission))
-        print('Agent Comm : ' + str(agent_commission))
+    # fixme : nanti akan diubah
+    def calc_commission(self, amount, multiplier, carrier_id=False):
+        rule_id = self.commission_rule_ids.filtered(lambda x: x.carrier_id.id == carrier_id or x.carrier_id.id == False)
+        print(rule_id)
+        if rule_id:
+            rule_id = rule_id[0]
+        else:
+            return 0, 0, amount
+        if rule_id.amount > 0:
+            multiplier = rule_id.amount_multiplier == 'pppr' and multiplier or 1
+            parent_commission = rule_id.amount * multiplier
+            agent_commission = amount - parent_commission
+            print('Amount : ' + str(amount))
+            print('Parent Comm : ' + str(parent_commission))
+            print('Agent Comm : ' + str(agent_commission))
+        else:
+            parent_commission = rule_id.parent_agent_amount * amount / 100
+            agent_commission = rule_id.percentage * amount / 100
+            print('Amount : ' + str(amount))
+            print('Parent Comm : ' + str(parent_commission))
+            print('Agent Comm : ' + str(agent_commission))
 
-    ho_commission = amount - parent_commission - agent_commission
-    print('HO Comm : ' + str(ho_commission))
-    return agent_commission, parent_commission, ho_commission
+        ho_commission = amount - parent_commission - agent_commission
+        print('HO Comm : ' + str(ho_commission))
+        return agent_commission, parent_commission, ho_commission
 
-@api.multi
-def calc_recruitment_commission(self, agent_type_id, total_payment):
-    comm_objs = self.recruitment_commission_ids.filtered(lambda x: x.rec_agent_type_id.id == agent_type_id.id)
-    if comm_objs:
-        return comm_objs[0].amount, comm_objs[0].parent_agent_amount, total_payment - comm_objs[0].amount - \
-               comm_objs[0].parent_agent_amount
-    else:
-        return 0, 0, total_payment
+    @api.multi
+    def calc_recruitment_commission(self, agent_type_id, total_payment):
+        comm_objs = self.recruitment_commission_ids.filtered(lambda x: x.rec_agent_type_id.id == agent_type_id.id)
+        if comm_objs:
+            return comm_objs[0].amount, comm_objs[0].parent_agent_amount, total_payment - comm_objs[0].amount - \
+                   comm_objs[0].parent_agent_amount
+        else:
+            return 0, 0, total_payment
 
-def get_data(self):
-    res = {
-        'id': self.id,
-        'name': self.name,
-        'code': self.code,
-        'rounding_amount_type': self.rounding_amount_type,
-        'rounding_places': self.rounding_places,
-    }
-    return res
+    def get_data(self):
+        res = {
+            'id': self.id,
+            'name': self.name,
+            'code': self.code,
+            'rounding_amount_type': self.rounding_amount_type,
+            'rounding_places': self.rounding_places,
+        }
+        return res
 
-def toggle_non_updateable(self):
-    templates_user = self.env['ir.model.data'].search([('module','=','tt_base'),
-                                                       ('name','ilike','_template_user_')])
-    value = not templates_user[0].noupdate
-    for rec in templates_user:
-        rec.noupdate = value
+    def toggle_non_updateable(self):
+        templates_user = self.env['ir.model.data'].search([('module','=','tt_base'),
+                                                           ('name','ilike','_template_user_')])
+        value = not templates_user[0].noupdate
+        for rec in templates_user:
+            rec.noupdate = value
 
-class TtAgentTypeBenefit(models.Model):
-    _name = 'tt.agent.type.benefit'
-    _description = 'Tour & Travel - Agent Type Benefit'
+    class TtAgentTypeBenefit(models.Model):
+        _name = 'tt.agent.type.benefit'
+        _description = 'Tour & Travel - Agent Type Benefit'
 
-    title = fields.Text('Title', required=True)
-    benefit = fields.Html('Benefit', required=True)
+        title = fields.Text('Title', required=True)
+        benefit = fields.Html('Benefit', required=True)
 
-class CommissionRule(models.Model):
-    _name = 'tt.commission.rule'
-    _description = 'Commission Rule'
+    class CommissionRule(models.Model):
+        _name = 'tt.commission.rule'
+        _description = 'Commission Rule'
 
-    agent_type_id = fields.Many2one('tt.agent.type', 'Agent Type')
-    agent_type2_id = fields.Many2one('tt.agent.type', 'Agent Type')
-    rec_agent_type_id = fields.Many2one('tt.agent.type', 'Recruit By')
-    carrier_id = fields.Many2one('tt.transport.carrier', 'Carrier', help='Set Empty for All Product Rule')
-    carrier_code = fields.Char('Code', related='carrier_id.code')
-    percentage = fields.Float('Commission (%)', default=100)
-    amount = fields.Float('Amount')
-    amount_multiplier = fields.Selection([('code', 'Booking Code'), ('pppr', 'Per Person Per Pax')],
-                                         'Multiplier', help='Parent Agent commission Type', default='code')
-    parent_agent_type = fields.Selection([('per', 'Percentage'), ('amo', 'Amount')], 'Parent Type',
-                                         help='Parent Agent commission Type')
-    parent_agent_amount = fields.Float('Parent Amount')
-    ho_commission_type = fields.Selection([('per', 'Percentage'), ('amo', 'Amount')],
-                                          'HO Commission Type', help='Head Office commission Type')
-    ho_amount = fields.Float('HO Amount')
-    active = fields.Boolean('Active', default=True)
+        agent_type_id = fields.Many2one('tt.agent.type', 'Agent Type')
+        agent_type2_id = fields.Many2one('tt.agent.type', 'Agent Type')
+        rec_agent_type_id = fields.Many2one('tt.agent.type', 'Recruit By')
+        carrier_id = fields.Many2one('tt.transport.carrier', 'Carrier', help='Set Empty for All Product Rule')
+        carrier_code = fields.Char('Code', related='carrier_id.code')
+        percentage = fields.Float('Commission (%)', default=100)
+        amount = fields.Float('Amount')
+        amount_multiplier = fields.Selection([('code', 'Booking Code'), ('pppr', 'Per Person Per Pax')],
+                                             'Multiplier', help='Parent Agent commission Type', default='code')
+        parent_agent_type = fields.Selection([('per', 'Percentage'), ('amo', 'Amount')], 'Parent Type',
+                                             help='Parent Agent commission Type')
+        parent_agent_amount = fields.Float('Parent Amount')
+        ho_commission_type = fields.Selection([('per', 'Percentage'), ('amo', 'Amount')],
+                                              'HO Commission Type', help='Head Office commission Type')
+        ho_amount = fields.Float('HO Amount')
+        active = fields.Boolean('Active', default=True)
 
-    # @api.multi
-    # def write(self, value):
-    #     self_dict = self.read()
-    #     key_list = [key for key in value.keys()]
-    #     for key in key_list:
-    #         print(self.fields_get().get(key)['string'])
-    #         self.message_post(body=_("%s has been changed from %s to %s by %s.") %
-    #                                 (self.fields_get().get(key)['string'],  # Model String / Label
-    #                                  self_dict[0].get(key),  # Old Value
-    #                                  value[key],  # New Value
-    #                                  self.env.user.name))  # User that Changed the Value
-    #     return super(TtAgentType, self).write(value)
+        # @api.multi
+        # def write(self, value):
+        #     self_dict = self.read()
+        #     key_list = [key for key in value.keys()]
+        #     for key in key_list:
+        #         print(self.fields_get().get(key)['string'])
+        #         self.message_post(body=_("%s has been changed from %s to %s by %s.") %
+        #                                 (self.fields_get().get(key)['string'],  # Model String / Label
+        #                                  self_dict[0].get(key),  # Old Value
+        #                                  value[key],  # New Value
+        #                                  self.env.user.name))  # User that Changed the Value
+        #     return super(TtAgentType, self).write(value)
 
