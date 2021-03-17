@@ -10,7 +10,7 @@ class GetMerchantInfoPaymentAcquirer(models.TransientModel):
 
     def sync_info(self):
         try:
-            res = self.env['tt.payment.api.con'].get_merchant_info({'provider':self.provider})
+            res = self.env['tt.payment.api.con'].get_merchant_info({'provider':self.provider, 'type': 'close'})
             _logger.info(json.dumps(res))
             if res['error_code'] == 0:
                 ho_obj = self.env.ref('tt_base.rodex_ho')
