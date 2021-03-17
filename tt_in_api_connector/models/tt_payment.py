@@ -142,6 +142,7 @@ class TtPaymentApiCon(models.Model):
             'phone_number': req['number'],
             'name': req['name'],
             'email': req['email'],
+            'bank_code_list': req['bank_code_list'],
             'provider': 'espay'
         }
         return self.send_request_to_gateway('%s/payment' % (self.url), data, 'set_va', timeout=600)
