@@ -2231,7 +2231,7 @@ class HotelInformation(models.Model):
                     'description': hotel.get('description'),
                     'location': {
                         'destination_id': destination_id,
-                        'city_id': city_id,
+                        'city_id': isinstance(city_id, int) and city_id or city_id.id,
                         'address': hotel.get('address') or hotel.get('street'),
                         'city': hotel.get('city', city_name),
                         'state': hotel.get('state_id.name'),
@@ -3437,7 +3437,7 @@ class HotelInformation(models.Model):
                         'country_str': country_str,
                     })
                     city_obj = destination_obj.city_id
-                    city_id = city_obj and city_obj.id or False
+                    city_id = city_obj and city_obj.id or self.env['res.city'].find_city_by_name(city_name, 1)
                     self.file_log_write(str(target_city_index + 1) + '. Start Render: ' + city_name)
                     searched_city_names = [city_name, ]
                     searched_city_names += [rec.name for rec in city_obj.other_name_ids.filtered(lambda x: x.name not in city_name)]
@@ -3459,7 +3459,7 @@ class HotelInformation(models.Model):
                                     for hotel in json.loads(file):
                                         hotel_id += 1
                                         # rubah format ke odoo
-                                        hotel_fmt = self.formating_homas(hotel, hotel_id, provider, city_id, target_city, destination_obj.id)
+                                        hotel_fmt = self.formating_homas(hotel, hotel_id, provider, city_id, city_name, destination_obj.id)
 
                                         internal_hotel_obj = self.create_or_edit_hotel(hotel_fmt, -1)
                                         if len(json.loads(file)):

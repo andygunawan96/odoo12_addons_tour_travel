@@ -247,7 +247,7 @@ class ReservationEvent(models.Model):
             return idx
 
         try:
-            #recieve and handling data
+            #retrieve and handling data
             booker_data = req.get('booker')
             contacts_data = req.get('contact')
             passengers = req.get('passengers')
@@ -441,19 +441,7 @@ class ReservationEvent(models.Model):
             } for rec in self.event_id.location_ids] or [],
             'hold_date': self.hold_date,
             'description': self.event_id and self.event_id.description or '',
-            'options': [self.option_ids and {
-                'image_url': rec.event_option_id.option_image_ids and rec.event_option_id.option_image_ids[0].url or '',
-                'name': rec.event_option_id.grade,
-                'description': rec.event_option_id.description,
-                'qty': 1,
-                'currency': rec.event_option_id.currency_id.name,
-                'price': rec.event_option_id.price,
-                'answers': [{
-                    'question': rec1.question,
-                    'answer': rec1.answer or '',
-                } for rec1 in rec.extra_question_ids],
-                'ticket_number': rec.ticket_number,
-            } for rec in self.option_ids] or [],
+            'options': [rec.to_dict() for rec in self.passenger_ids],
             'notes': '',
             'booker': self.booker_id.to_dict(),
             'contact': self.contact_id.to_dict(),
@@ -852,9 +840,9 @@ class TtReservationEventOption(models.Model):
     validator_sequence = fields.Char('Sequence')
 
     def to_dict(self):
-        a = self.read(['event_option_name', 'description', 'ticket_number', 'validator_sequence'])
+        a = self.read(['ticket_number', 'validator_sequence'])
         a[0].update({
-            'option_code': self.event_option_id.option_code,
+            'event_option_id': self.event_option_id.to_dict()[0],
             'extra_question': [rec.read(['question', 'answer'])[0] for rec in self.extra_question_ids]
         })
         return a[0]

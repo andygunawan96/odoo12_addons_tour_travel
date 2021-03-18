@@ -102,9 +102,9 @@
                                 </form>
                             </field>
                         </group>
-                        <group>
-                            <field name="option_image_ids"/>
-                        </group>
+                        <!--<group>-->
+                            <!--<field name="option_image_ids"/>-->
+                        <!--</group>-->
                     </group>
                     <!--                            <group>-->
                     <!--                                <field name="voucherUse"/>-->
@@ -312,12 +312,15 @@
                             <field name="event_date_start"/>
                             <field name="event_date_end"/>
                         </group>
-                        <group><field name="category_ids">
+                        <group>
+                            <field name="category_ids">
                                 <tree>
                                     <field name="parent_id"/>
                                     <field name="name"/>
                                 </tree>
-                            </field></group>
+                            </field>
+                            <field name="guests"/>
+                        </group>
                         <group><field name="includes"/></group>
                         <group><field name="excludes"/></group>
                     </group>
