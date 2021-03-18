@@ -64,6 +64,7 @@
                                 <field name="module_state" invisible="1"/>
                                 <field name="agent_id"/>
                                 <field name="type"/>
+                                <field name="online_wallet" attrs="{'invisible': [('type','not in','payment_gateway')]}"/>
                             </group>
                             <group name="acquirer_right">
                                 <field name="bank_id" attrs="{'invisible': [('type','=','cash')]}"/>
