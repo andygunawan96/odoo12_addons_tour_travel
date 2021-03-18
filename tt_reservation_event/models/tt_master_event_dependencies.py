@@ -133,6 +133,7 @@ class MasterEventCategory(models.Model):
 
     uid = fields.Char('UID', readonly=True)
     name = fields.Char('Category Name')
+    desc = fields.Char('Category description')
     parent_id = fields.Many2one('tt.event.category', 'Parent ID')
     child_ids = fields.One2many('tt.event.category', 'parent_id', 'Child')
     event_ids = fields.Many2many('tt.master.event','tt_event_category_rel', 'category_id', 'event_id', string='Event', readonly=True)
@@ -178,7 +179,7 @@ class EventOptions(models.Model):
     max_ticket = fields.Integer('Max Ticket', help='Max Ticket purchase per reservation; if -1 then it will give current quota', default=-1)
     sales = fields.Integer('Sales', readonly=True)
 
-    date_start = fields.Datetime('Date Selling Start')
+    date_start = fields.Datetime('Date Selling Start', required=True, default=datetime.now())
     date_end = fields.Datetime('Date Selling End')
     description = fields.Char('Description')
 
@@ -236,6 +237,11 @@ class EventOptions(models.Model):
             return {
                 'response': "Unable to make purchase"
             }
+
+    def to_dict(self):
+        return self.read(['option_image_ids', 'option_code', 'grade', 'description',
+                          'date_start', 'date_end'])
+
 
 class MasterTimeslot(models.Model):
     _name = 'tt.event.timeslot'
