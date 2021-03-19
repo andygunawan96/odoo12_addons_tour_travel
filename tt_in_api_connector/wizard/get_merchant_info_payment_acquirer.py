@@ -20,7 +20,8 @@ class GetMerchantInfoPaymentAcquirer(models.TransientModel):
                         ('type','=','payment_gateway'),
                         ('agent_id','=',ho_obj.id),
                         ('bank_id','=',bank_obj.id),
-                        ('account_number','=',False)
+                        ('account_number','=',False),
+                        ('name', '=', bank_res['productName'])
                     ])
                     if not existing_payment_acquirer:
                         self.env['payment.acquirer'].create({
