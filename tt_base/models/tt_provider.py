@@ -1,6 +1,7 @@
 from odoo import api, fields, models
 import time
-
+from ...tools.ERR import RequestException
+from ...tools.api import Response
 
 class TtProvider(models.Model):
     _name = 'tt.provider'
@@ -83,6 +84,21 @@ class TtProvider(models.Model):
                     'country_id': country.id,
                 })
 
+    def get_vendor_balance_api(self,context):
+        user_obj = self.env['res.users'].browse(context['co_uid'])
+        if user_obj.agent_id.id == self.env.ref('tt_base.rodex_ho').id:
+            provider_obj = self.search([('track_balance', '=', True)])
+            res = []
+            for rec in provider_obj:
+                res.append({
+                    "code": rec.code,
+                    "provider_type": rec.provider_type_id.code,
+                    "balance": rec.balance,
+                    "currency": rec.currency_id.name
+                })
+            return Response().get_no_error(res)
+        else:
+            raise RequestException(500)
 
 class TtProviderCode(models.Model):
     _name = 'tt.provider.code'

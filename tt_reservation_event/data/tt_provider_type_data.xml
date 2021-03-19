@@ -18,6 +18,7 @@
         </record>
         <record id="event_category_sport" model="tt.event.category">
             <field name="name">Sport</field>
+            <field name="desc">Festivals, events, classes, clinics, training events</field>
         </record>
         <record id="event_category_exhibition" model="tt.event.category">
             <field name="name">Exhibition</field>
@@ -47,5 +48,49 @@
             <field name="name">Transportation</field>
         </record>
 
+        <record id="event_category_business" model="tt.event.category">
+            <field name="name">Business</field>
+            <field name="desc">Workshops, classes, conferences, seminars, meetups</field>
+        </record>
+        <record id="event_category_comedy" model="tt.event.category">
+            <field name="name">Comedy</field>
+            <field name="desc">Comedy shows, standups, clubs</field>
+        </record>
+        <record id="event_category_craft" model="tt.event.category">
+            <field name="name">Craft</field>
+            <field name="desc">Workshops, markets, fairs, series, clubs</field>
+        </record>
+        <record id="event_category_fashion" model="tt.event.category">
+            <field name="name">Fashion</field>
+            <field name="desc">Expos, shows, meetups</field>
+        </record>
+        <record id="event_category_film" model="tt.event.category">
+            <field name="name">Film / Movie</field>
+            <field name="desc">Indie Films, premieres festival, competions, meetups</field>
+        </record>
+        <record id="event_category_food" model="tt.event.category">
+            <field name="name">Food and Drinks</field>
+            <field name="desc">Dinner series, festivals, classes, food tours, workshops</field>
+        </record>
+        <record id="event_category_gallery" model="tt.event.category">
+            <field name="name">Galleries</field>
+            <field name="desc">Museums, exhibitions, fundraisers</field>
+        </record>
+        <record id="event_category_music" model="tt.event.category">
+            <field name="name">Music</field>
+            <field name="desc">Concerts, festivals, classes, live music</field>
+        </record>
+        <record id="event_category_performance" model="tt.event.category">
+            <field name="name">Performance</field>
+            <field name="desc">Theatre, live entertainment</field>
+        </record>
+        <record id="event_category_social" model="tt.event.category">
+            <field name="name">Social</field>
+            <field name="desc">Meetups, summit, festivals, networking, workshops</field>
+        </record>
+        <record id="event_category_tech" model="tt.event.category">
+            <field name="name">Tech</field>
+            <field name="desc">Conferences, meetups, galas, dinners, workshops</field>
+        </record>
     </data>
 </odoo>

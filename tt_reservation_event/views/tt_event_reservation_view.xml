@@ -27,7 +27,7 @@
                     <button name="action_request" type="object" string="Request" states="draft"/>
                     <button name="action_confirm" type="object" string="Confirm" states="request"/>
                     <button name="action_paid" type="object" string="Paid" states="confirm"/>
-                    <button name="action_calc_sales_date" type="object" string="TEMP calc sales Date" groups=""/>
+                    <!--<button name="action_calc_sales_date" type="object" string="TEMP calc sales Date" groups=""/>-->
                     <field name="state" widget="statusbar" statusbar_visible="draft,request,confirm,paid"/>
                 </header>
                 <sheet>

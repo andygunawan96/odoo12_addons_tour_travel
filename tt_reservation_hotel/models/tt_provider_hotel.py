@@ -128,7 +128,7 @@ class TransportBookingProvider(models.Model):
             self.booking_id.check_provider_state({'co_uid': self.env.user.id})
 
     def action_force_issued(self, pnr=''):
-        self.pnr =pnr
+        self.pnr = pnr
         self.pnr2 = pnr
         for rec in self.cost_service_charge_ids:
             rec.is_ledger_created = False
