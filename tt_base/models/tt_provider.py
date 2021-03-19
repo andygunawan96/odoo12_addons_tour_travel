@@ -92,7 +92,7 @@ class TtProvider(models.Model):
             for rec in provider_obj:
                 res.append({
                     "code": rec.code,
-                    "provider_type": rec.provider_type_id.name,
+                    "provider_type": rec.provider_type_id.code,
                     "balance": rec.balance,
                     "currency": rec.currency_id.name
                 })
