@@ -150,4 +150,9 @@
         <field name="code">get_booking_b2c</field>
     </record>
 
+    <record id="is_agent_HO" model="tt.frontend.security">
+        <field name="name">Agent HO</field>
+        <field name="code">agent_ho</field>
+    </record>
+
 </odoo>
