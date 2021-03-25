@@ -33,7 +33,7 @@ TT_TRANSPORT
         # 'views/tt_reservation_event_option_views.xml',
         'views/tt_master_event_views.xml',
         'views/tt_reservation_event_views.xml',
-        'views/tt_provider_event_view.xml',
+        'views/tt_provider_views.xml',
         'views/tt_service_charge_views.xml',
         'views/tt_reservation_passenger_event_form_views.xml',
         'views/tt_external_vendor.xml',

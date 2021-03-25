@@ -6,6 +6,7 @@ from ...tools import variables
 from ...tools import ERR,util
 from ...tools.ERR import RequestException
 from datetime import datetime, timedelta
+import math
 import pytz
 _logger = logging.getLogger(__name__)
 
@@ -23,11 +24,13 @@ class PaymentAcquirer(models.Model):
     cust_fee = fields.Float('Customer Fee')
     bank_fee = fields.Float('Bank Fee')
     va_fee = fields.Float('VA Fee')
+    online_wallet = fields.Boolean('Online Wallet')
     is_sunday_off = fields.Boolean('Sunday Off')
     is_specific_time = fields.Boolean('Specific Time')
     start_time = fields.Float(string='Start Time', help="Format: HH:mm Range 00:00 => 24:00")
     end_time = fields.Float(string='End Time', help="Format: HH:mm Range 00:00 => 24:00")
     description_msg = fields.Text('Description')
+    va_fee_type = fields.Selection([('flat', 'Flat'), ('percentage', 'Percentage')], 'Fee Type VA', default='flat')
 
     @api.model
     def create(self, vals_list):
@@ -56,7 +59,11 @@ class PaymentAcquirer(models.Model):
         ##untuk VA fee, jika VA fee pasti bukan EDC jadi bisa replace
 
         if self.va_fee:
-            return 0,self.va_fee,uniq
+            if self.va_fee_type == 'flat':
+                return 0,self.va_fee,uniq
+            else:
+                return 0,math.ceil(self.va_fee*amount/100),uniq
+
         else:
             lost_or_profit = cust_fee-bank_fee
             return lost_or_profit,cust_fee, uniq
@@ -103,6 +110,7 @@ class PaymentAcquirer(models.Model):
                 'fee': fee,
                 'unique_amount': uniq,
             },
+            'online_wallet': self.online_wallet,
             'total_amount': float(amount) + uniq + fee,
             'image': self.bank_id.image_id and self.bank_id.image_id.url or '',
             'description_msg': self.description_msg or ''
@@ -330,7 +338,7 @@ class PaymentAcquirerNumber(models.Model):
     fee_amount = fields.Float('Fee Amount')
     time_limit = fields.Datetime('Time Limit', readonly=True)
     amount = fields.Float('Amount')
-    state = fields.Selection([('open', 'Open'), ('close', 'Closed'), ('waiting', 'Waiting Next Cron'), ('done','Done'), ('cancel','Expired')], 'Payment Type')
+    state = fields.Selection([('open', 'Open'), ('close', 'Closed'), ('waiting', 'Waiting Next Cron'), ('done','Done'), ('cancel','Expired'), ('fail', 'Failed')], 'Payment Type')
     email = fields.Char(string="Email")
     display_name_payment = fields.Char('Display Name',compute="_compute_display_name_payment")
 
@@ -423,6 +431,19 @@ class PaymentAcquirerNumber(models.Model):
             payment_acq_number.payment_acquirer_id.va_fee = data['fee_amount']
 
             return ERR.get_no_error()
+        else:
+            return ERR.get_error(additional_message='Payment Acquirer not found')
+
+    def set_va_number_fail_api(self, data):
+        payment_acq_number = self.search([('number', 'ilike', data['order_number'])], order='create_date desc', limit=1)
+        if payment_acq_number:
+            payment_acq_number.state = 'fail'
+            provider_type = 'tt.reservation.%s' % variables.PROVIDER_TYPE_PREFIX[data['order_number'].split('.')[0]]
+            booking_obj = self.env[provider_type].search([('name', '=', data['order_number'])])
+            if booking_obj:
+                booking_obj.payment_acquirer_number_id = False
+
+            return ERR.get_error(additional_message='Set payment acq number fail, error vendor')
         else:
             return ERR.get_error(additional_message='Payment Acquirer not found')
 
