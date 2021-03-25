@@ -35,7 +35,7 @@
         <!--Customers-->
         <menuitem id="main_customers"
                   name="Customers"
-                  groups="group_tt_agent_user_operator"
+                  groups="group_tt_agent_user_operator,group_tt_tour_travel_operator"
                   web_icon="hr,static/description/icon.png"
                   sequence="4"/>
 

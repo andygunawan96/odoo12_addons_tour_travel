@@ -367,12 +367,14 @@ class TtReservationTrain(models.Model):
                     # provider_obj.update_ticket_api(provider['passengers'])
                     any_provider_changed = True
 
+
+                    ## 23 Mar 2021, di pindahkan ke gateway tidak lagi sync sendiri
                     #get balance vendor
-                    if provider_obj.provider_id.track_balance:
-                        try:
-                            provider_obj.provider_id.sync_balance()
-                        except Exception as e:
-                            _logger.error(traceback.format_exc())
+                    # if provider_obj.provider_id.track_balance:
+                    #     try:
+                    #         provider_obj.provider_id.sync_balance()
+                    #     except Exception as e:
+                    #         _logger.error(traceback.format_exc())
                 elif provider['state'] == 'cancel':
                     provider_obj.action_cancel()
                     any_provider_changed = True
@@ -794,7 +796,7 @@ class TtReservationTrain(models.Model):
                     'filename': 'Train Ticket %s.pdf' % book_obj.name,
                     'file_reference': 'Train Ticket',
                     'file': base64.b64encode(pdf_report_bytes[0]),
-                    'delete_date': datetime.today() + timedelta(minutes=10)
+                    'delete_date': datetime.strptime(book_obj.arrival_date or book_obj.departure_date,"%Y-%m-%d") + timedelta(days=7)
                 },
                 {
                     'co_agent_id': co_agent_id,
@@ -852,7 +854,7 @@ class TtReservationTrain(models.Model):
                     'filename': 'Train Ticket (Price) %s.pdf' % book_obj.name,
                     'file_reference': 'Train Ticket with Price',
                     'file': base64.b64encode(pdf_report_bytes[0]),
-                    'delete_date': datetime.today() + timedelta(minutes=10)
+                    'delete_date': datetime.strptime(book_obj.arrival_date or book_obj.departure_date,"%Y-%m-%d") + timedelta(days=7)
                 },
                 {
                     'co_agent_id': co_agent_id,

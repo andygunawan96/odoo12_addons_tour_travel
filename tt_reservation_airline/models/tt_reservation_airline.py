@@ -640,13 +640,15 @@ class ReservationAirline(models.Model):
                     # END
                     any_provider_changed = True
 
-                    #get balance vendor
-                    if provider_obj.provider_id.track_balance:
-                        try:
-                            # print("GET BALANCE : "+str(self.env['tt.airline.api.con'].get_balance(provider_obj.provider_id.code)['response']['balance']))
-                            provider_obj.provider_id.sync_balance()
-                        except Exception as e:
-                            _logger.error(traceback.format_exc())
+
+                    ## 23 Mar 2021, di pindahkan ke gateway tidak lagi sync sendiri
+                    # #get balance vendor
+                    # if provider_obj.provider_id.track_balance:
+                    #     try:
+                    #         # print("GET BALANCE : "+str(self.env['tt.airline.api.con'].get_balance(provider_obj.provider_id.code)['response']['balance']))
+                    #         provider_obj.provider_id.sync_balance()
+                    #     except Exception as e:
+                    #         _logger.error(traceback.format_exc())
                 elif provider['status'] == 'FAIL_BOOKED':
                     provider_obj.action_failed_booked_api_airline(provider.get('error_code', -1),provider.get('error_msg', ''))
                     any_provider_changed = True

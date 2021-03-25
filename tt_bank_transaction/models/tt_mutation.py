@@ -125,7 +125,7 @@ class TtBankTransaction(models.Model):
 
         #add data to transaction
         for i in result['response']['Data']:
-            if not self.search([('transaction_message', '=', i['Trailer']), ('transaction_amount', '=', i['TransactionAmount'])]):
+            if not self.search([('transaction_message', '=', i['Trailer']), ('transaction_original', '=', i['TransactionAmount'])]):
                 temp_date = i['TransactionDate'].split("-")
 
                 debit_value = 0

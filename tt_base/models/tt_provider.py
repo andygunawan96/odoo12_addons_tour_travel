@@ -1,5 +1,9 @@
 from odoo import api, fields, models
-import time
+from ...tools import ERR
+from ...tools.ERR import RequestException
+import logging,traceback
+
+_logger = logging.getLogger(__name__)
 
 
 class TtProvider(models.Model):
@@ -44,12 +48,26 @@ class TtProvider(models.Model):
 
     def sync_balance(self):
         ##send request to gateway
-        if self.track_balance:
-            self.env['tt.provider.ledger'].sudo().create({
-                    'balance': self.env['tt.%s.api.con' % (self.provider_type_id.code)].get_balance(self.code)['response']['balance'],
-                    'provider_id': self.id
-                })
+        self.create_provider_ledger(self.env['tt.%s.api.con' % (self.provider_type_id.code)].get_balance(self.code)['response']['balance'])
 
+
+    def create_provider_ledger(self,balance):
+        self.env['tt.provider.ledger'].sudo().create({
+                'balance': balance,
+                'provider_id': self.id
+            })
+
+    def create_provider_ledger_api(self,data,context):
+        try:
+            provider_obj = self.search([('code','=',data['provider_code'])], limit=1)
+            if provider_obj:
+                provider_obj.create_provider_ledger(data['balance'])
+            else:
+                raise RequestException(1002)
+        except:
+            _logger.error(traceback.format_exc())
+            return Exception("Create Provider Ledger Failed")
+        return ERR.get_no_error()
 
     def to_dict(self):
         return {
