@@ -56,12 +56,12 @@
                             <field name="response"/>
                             <label for="create_uid" string="Created By"/>
                             <div>
-                                <field name="create_uid" class="oe_inline" readonly="True"/> -
+                                <field name="create_uid" class="oe_inline" readonly="True"/> /
                                 <field name="create_date" class="oe_inline" readonly="True"/>
                             </div>
                             <label for="resend_uid" string="Last Retried By"/>
                             <div>
-                                <field name="resend_uid" class="oe_inline" readonly="True"/> -
+                                <field name="resend_uid" class="oe_inline" readonly="True"/> /
                                 <field name="resend_date" class="oe_inline" readonly="True"/>
                             </div>
                         </group>

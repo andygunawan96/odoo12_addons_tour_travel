@@ -94,7 +94,7 @@ Key Features
         'views/tt_upload_center_views.xml',
         'views/tt_vendor_views.xml',
 
-        'views/ir_ui_menu_views.xml',
+        'views/change_default_odoo.xml',
         'views/tt_loyalty_program_views.xml',
         'views/tt_public_holiday_views.xml',
         'views/tt_letter_guarantee_views.xml',

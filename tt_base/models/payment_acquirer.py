@@ -6,6 +6,7 @@ from ...tools import variables
 from ...tools import ERR,util
 from ...tools.ERR import RequestException
 from datetime import datetime, timedelta
+import math
 import pytz
 _logger = logging.getLogger(__name__)
 
@@ -29,6 +30,7 @@ class PaymentAcquirer(models.Model):
     start_time = fields.Float(string='Start Time', help="Format: HH:mm Range 00:00 => 24:00")
     end_time = fields.Float(string='End Time', help="Format: HH:mm Range 00:00 => 24:00")
     description_msg = fields.Text('Description')
+    va_fee_type = fields.Selection([('flat', 'Flat'), ('percentage', 'Percentage')], 'Fee Type VA', default='flat')
 
     @api.model
     def create(self, vals_list):
@@ -57,7 +59,11 @@ class PaymentAcquirer(models.Model):
         ##untuk VA fee, jika VA fee pasti bukan EDC jadi bisa replace
 
         if self.va_fee:
-            return 0,self.va_fee,uniq
+            if self.va_fee_type == 'flat':
+                return 0,self.va_fee,uniq
+            else:
+                return 0,math.ceil(self.va_fee*amount/100),uniq
+
         else:
             lost_or_profit = cust_fee-bank_fee
             return lost_or_profit,cust_fee, uniq

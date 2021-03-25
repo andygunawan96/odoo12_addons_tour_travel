@@ -93,22 +93,22 @@
                             <field name="price"/>
                             <label for="create_uid" string="Created by"/>
                             <div>
-                                <field name="create_uid" readonly="1" class="oe_inline"/> -
+                                <field name="create_uid" readonly="1" class="oe_inline"/> /
                                 <field name="create_date" readonly="1" class="oe_inline"/>
                             </div>
                             <label for="confirm_uid" string="Confirmed by"/>
                             <div>
-                                <field name="confirm_uid" readonly="1" class="oe_inline"/> -
+                                <field name="confirm_uid" readonly="1" class="oe_inline"/> /
                                 <field name="confirm_date" readonly="1" class="oe_inline"/>
                             </div>
                             <label for="sent_uid" string="Sent by"/>
                             <div>
-                                <field name="sent_uid" readonly="1" class="oe_inline"/> -
+                                <field name="sent_uid" readonly="1" class="oe_inline"/> /
                                 <field name="sent_date" readonly="1" class="oe_inline"/>
                             </div>
                             <label for="paid_uid" string="Paid by"/>
                             <div>
-                                <field name="paid_uid" readonly="1" class="oe_inline"/> -
+                                <field name="paid_uid" readonly="1" class="oe_inline"/> /
                                 <field name="paid_date" readonly="1" class="oe_inline"/>
                             </div>
                         </group>

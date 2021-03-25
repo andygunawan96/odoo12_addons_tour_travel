@@ -108,7 +108,7 @@
                     <group attrs="{'invisible': [('split_from_resv_id', '=', False),('split_to_resv_ids', '=', [])]}">
                         <label for="split_uid" string="Splitted By"/>
                         <div>
-                            <field name="split_uid" readonly="1" class="oe_inline"/> -
+                            <field name="split_uid" readonly="1" class="oe_inline"/> /
                             <field name="split_date" readonly="1" class="oe_inline"/>
                         </div>
                     </group>
