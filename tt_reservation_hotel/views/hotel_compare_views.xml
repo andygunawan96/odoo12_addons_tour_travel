@@ -30,12 +30,12 @@
                             <field name="similar_id"/>
                             <label for="compare_uid" string="Compare By"/>
                             <div>
-                                <field name="compare_uid" readonly="1" class="oe_inline"/> -
+                                <field name="compare_uid" readonly="1" class="oe_inline"/> /
                                 <field name="compare_date" readonly="1" class="oe_inline"/>
                             </div>
                             <label for="merge_uid" string="Merge By"/>
                             <div>
-                                <field name="merge_uid" readonly="1" class="oe_inline"/> -
+                                <field name="merge_uid" readonly="1" class="oe_inline"/> /
                                 <field name="merge_date" readonly="1" class="oe_inline"/>
                             </div>
                         </group>

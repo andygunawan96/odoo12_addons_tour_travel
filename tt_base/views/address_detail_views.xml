@@ -69,11 +69,4 @@
     <!--name="Address Detail"-->
     <!--sequence="6"-->
     <!--groups="base.group_user"/>-->
-
-    <!-- TODO buat mekanisme yg lbih bagus untuk hide and show manage by ... -->
-    <template id="ms_disable_manage_db" name="Login Layout" inherit_id="web.login_layout">
-        <xpath expr="//div//div//div//div" position="before">
-            <t t-set="disable_footer" t-value="1"/>
-        </xpath>
-    </template>
 </odoo>
