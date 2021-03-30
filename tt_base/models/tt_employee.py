@@ -1,8 +1,8 @@
 from odoo import models, fields, api
 
 
-class ResEmployee(models.Model):
-    _name = 'res.employee'
+class TtEmployee(models.Model):
+    _name = 'tt.employee'
     _rec_name = 'name'
     _description = 'Tour & Travel - Res Employee'
 

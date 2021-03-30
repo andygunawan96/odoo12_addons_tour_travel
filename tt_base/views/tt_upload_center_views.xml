@@ -25,7 +25,7 @@
                         <field name="name"/>
                         <field name="filename"/>
                         <field name="file_reference"/>
-                        <field name="path" groups="base.user_admin"/>
+                        <field name="path" groups="base.group_system"/>
                         <field name="url" widget="url"/>
                         <field name="agent_id"/>
                         <field name="upload_uid"/>
@@ -83,7 +83,7 @@
             <tree decoration-muted="active == False" create="false">
                 <field name="seq_id"/>
                 <field name="name"/>
-                <field name="path" groups="base.user_admin"/>
+                <field name="path" groups="base.group_system"/>
                 <field name="url"/>
                 <field name="create_date"/>
                 <field name="active" invisible="1"/>

@@ -10,7 +10,7 @@
                                         'default_reschedule_line_id': id,
                                         'default_real_reschedule_amount': real_reschedule_amount,
                                         }" attrs="{'invisible':[('state','not in', ['final','done'])]}"/>
-                    <button string="Generate Purchase Order" class="oe_highlight" name="generate_po" type="object" attrs="{'invisible': ['|', ('is_po_required', '!=', True), ('state', '!=', 'final')]}" groups="tt_base.group_tt_accounting_manager,tt_base.group_tt_tour_travel_manager,base.user_admin"/>
+                    <button string="Generate Purchase Order" class="oe_highlight" name="generate_po" type="object" attrs="{'invisible': ['|', ('is_po_required', '!=', True), ('state', '!=', 'final')]}" groups="tt_base.group_tt_accounting_manager,tt_base.group_tt_tour_travel_manager,base.group_system"/>
                     <field name="state" widget="statusbar" statusbar_visible="draft,confirm,sent,validate,final,done"/>
                 </header>
                 <sheet>

@@ -48,13 +48,13 @@
         <field name="arch" type="xml">
             <form create="false">
                 <header>
-                    <button name="set_to_bill" string="Set as Bill" type="object" groups="base.user_admin"/>
-                    <button name="set_as_confirm" string="Set as Confirm" type="object" groups="base.user_admin"/>
-                    <button name="set_as_paid" string="Set as Paid" type="object" groups="base.user_admin"/>
+                    <button name="set_to_bill" string="Set as Bill" type="object" groups="base.group_system"/>
+                    <button name="set_as_confirm" string="Set as Confirm" type="object" groups="base.group_system"/>
+                    <button name="set_as_paid" string="Set as Paid" type="object" groups="base.group_system"/>
 
                     <button name="%(tt_agent_invoice_wizard_action_view)d" string="Move Line" type="action" states="confirm" context="{'default_invoice_id1': id}"/>
                     <button name="action_cancel_invoice" string="Cancel Invoice" type="object"
-                            groups="tt_base.group_tt_accounting_operator,tt_base.group_tt_agent_finance_manager,base.user_admin"
+                            groups="tt_base.group_tt_accounting_operator,tt_base.group_tt_agent_finance_manager,base.group_system"
                             states="confirm,bill,bill2"
                             confirm="Are you sure you want to cancel?"/>
                     <button string="Adjustment" name="%(tt_accounting.tt_adjustment_wizard_action_view)d" type="action"

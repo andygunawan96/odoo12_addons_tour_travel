@@ -1,3 +1,4 @@
 id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
 tt_accounting_history_for_all,tt.accounting.history.for.all,model_tt_accounting_history,,1,1,1,0
+tt_accounting_history_for_admin,tt.accounting.history.for.admin,model_tt_accounting_history,base.user_root,1,1,1,1
 

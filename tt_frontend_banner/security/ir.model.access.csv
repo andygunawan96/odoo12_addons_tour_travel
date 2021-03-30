@@ -1,3 +1,15 @@
 id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
 tt_frontend_banner,tt.frontend.banner,model_tt_frontend_banner,,1,1,1,1
 tt_frontend_banner_line,tt.frontend.banner.line,model_tt_frontend_banner_line,,1,1,1,1
+
+tt_frontend_banner_for_frontend_banner_level_1,tt.frontend.banner.for.frontend.banner.level.1,model_tt_frontend_banner,tt_base.group_frontend_banner_level_1,1,0,0,0
+tt_frontend_banner_for_frontend_banner_level_2,tt.frontend.banner.for.frontend.banner.level.2,model_tt_frontend_banner,tt_base.group_frontend_banner_level_2,1,0,1,0
+tt_frontend_banner_for_frontend_banner_level_3,tt.frontend.banner.for.frontend.banner.level.3,model_tt_frontend_banner,tt_base.group_frontend_banner_level_3,1,1,1,0
+tt_frontend_banner_for_frontend_banner_level_4,tt.frontend.banner.for.frontend.banner.level.4,model_tt_frontend_banner,tt_base.group_frontend_banner_level_4,1,1,1,0
+tt_frontend_banner_for_frontend_banner_level_5,tt.frontend.banner.for.frontend.banner.level.5,model_tt_frontend_banner,tt_base.group_frontend_banner_level_5,1,1,1,1
+
+tt_frontend_banner_line_for_frontend_banner_level_1,tt.frontend.banner.line.for.frontend.banner.level.1,model_tt_frontend_banner_line,tt_base.group_frontend_banner_level_1,1,0,0,0
+tt_frontend_banner_line_for_frontend_banner_level_2,tt.frontend.banner.line.for.frontend.banner.level.2,model_tt_frontend_banner_line,tt_base.group_frontend_banner_level_2,1,0,1,0
+tt_frontend_banner_line_for_frontend_banner_level_3,tt.frontend.banner.line.for.frontend.banner.level.3,model_tt_frontend_banner_line,tt_base.group_frontend_banner_level_3,1,1,1,0
+tt_frontend_banner_line_for_frontend_banner_level_4,tt.frontend.banner.line.for.frontend.banner.level.4,model_tt_frontend_banner_line,tt_base.group_frontend_banner_level_4,1,1,1,0
+tt_frontend_banner_line_for_frontend_banner_level_5,tt.frontend.banner.line.for.frontend.banner.level.5,model_tt_frontend_banner_line,tt_base.group_frontend_banner_level_5,1,1,1,1

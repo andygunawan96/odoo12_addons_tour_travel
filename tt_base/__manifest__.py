@@ -59,7 +59,7 @@ Key Features
         'views/search_transport_carrier_views.xml',
         'views/tt_agent_views_customer.xml',
         'views/tt_agent_type_views.xml',
-        'views/res_employee_views.xml',
+        'views/tt_employee_views.xml',
         'views/tt_customer_views.xml',
         'views/tt_customer_views_customer.xml',
         'views/res_currency_views.xml',

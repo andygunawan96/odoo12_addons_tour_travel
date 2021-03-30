@@ -153,9 +153,9 @@
                             <field name="vendor_balance_currency_id" invisible="1"/>
                             <field name="vendor_start_balance"/>
                             <field name="vendor_end_balance"/>
-                            <field name="res_model" groups="base.user_admin"/>
-                            <field name="res_id" groups="base.user_admin"/>
-                            <field name="sequence" groups="base.user_admin"/>
+                            <field name="res_model" groups="base.group_system"/>
+                            <field name="res_id" groups="base.group_system"/>
+                            <field name="sequence" groups="base.group_system"/>
                             <button string="Go to linked data" type="object" name="open_reference"
                                     attrs="{'invisible':[('state','!=','match')]}"/>
                         </group>
@@ -233,6 +233,6 @@
     <!--              parent="tt_base.menu_transaction_accounting_reconcile"-->
     <!--              name="Reconcile Lines"-->
     <!--              action="tt_monthly_fee_rule_action"-->
-    <!--              groups="base.user_admin"-->
+    <!--              groups="base.group_system"-->
     <!--              sequence="20"/>-->
 </odoo>

@@ -9,7 +9,7 @@
                 <group>
                     <group>
                         <field name="pnr"/>
-                        <field name="is_bypass_pnr_validator" groups="base.user_admin"/>
+                        <field name="is_bypass_pnr_validator" groups="base.group_system"/>
                         <field name="provider"/>
                     </group>
                     <group attrs="{'invisible': ['|',('provider','=',False),('pnr', '=', False)]}">
@@ -83,7 +83,7 @@
                     <field name="grand_total" readonly="1"/>
                     <field name="total_commission" readonly="1"/>
                 </group>
-                <field name="get_booking_json" readonly="1" groups="base.user_admin"/>
+                <field name="get_booking_json" readonly="1" groups="base.group_system"/>
                 <footer>
                     <button name="save_booking" string="Save Booking" type="object" default_focus="1" class="oe_highlight"/>
                     or
