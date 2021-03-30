@@ -4,7 +4,6 @@
 <!--    <record id="hr.menu_hr_root" model="ir.ui.menu">-->
 <!--        <field name="active" eval="False"></field>-->
 <!--    </record>-->
-    <menuitem id="hr.menu_hr_root" active="False"/>
 
     <!-- TODO buat mekanisme yg lbih bagus untuk hide and show manage by ... -->
     <template id="ms_disable_manage_db" name="Login Layout" inherit_id="web.login_layout">
