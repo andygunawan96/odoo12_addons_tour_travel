@@ -129,7 +129,7 @@
         <!-- Administration -->
         <menuitem id="top_tour_travel_administration"
                   name="Administration"
-                  groups="base.user_admin,tt_base.group_tt_agent_management_operator"
+                  groups="base.group_system,tt_base.group_tt_agent_management_operator"
                   parent="tt_base.main_tour_travel"
                   sequence = "220"/>
 

@@ -57,7 +57,7 @@
                     <!--                            states="draft,confirm,paid" type="object"/>-->
                     <!--<button name="compute_double_payment" string="Compute double payment" type="object" class="btn-primary"/>-->
                     <button name="compute_date_billing_all" string="Compute Date All" type="object"
-                            groups="base.user_admin"/>
+                            groups="base.group_system"/>
                     <field name="state" widget="statusbar" statusbar_visible="draft,confirm,paid"/>
                 </header>
                 <sheet>

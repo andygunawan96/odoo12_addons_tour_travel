@@ -70,8 +70,8 @@
                         'default_referenced_document': name,
                    }"/>
                 <button name="sync_booking_with_vendor" type="object" string="Sync Reservation"
-                        groups="base.user_admin"/>
-                <!--                <button name="CR8" string="CR8" type="object" groups="base.user_admin"/>-->
+                        groups="base.group_system"/>
+                <!--                <button name="CR8" string="CR8" type="object" groups="base.group_system"/>-->
             </xpath>
             <xpath expr="//div[hasclass('oe_title')]" position="inside">
                 <label for="is_get_booking_from_vendor" string="Retrieved From Vendor" attrs="{'invisible': [('is_get_booking_from_vendor','=',False)]}"/>
