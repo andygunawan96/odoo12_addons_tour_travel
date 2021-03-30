@@ -1,8 +1,0 @@
-id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
-access_tt_reservation_train_tt_reservation_train,access_tt_reservation_train.tt_reservation_train,model_tt_reservation_train,,1,1,1,1
-access_tt_tb_journey_train,access_tt_reservation_train.tt_tb_journey_train,model_tt_tb_journey_train,,1,1,1,1
-access_tt_tb_leg_train,access_tt_reservation_train.tt_tb_leg_train,model_tt_tb_leg_train,,1,1,1,1
-access_tt_tb_provider_train,access_tt_reservation_train.tt_tb_provider_train,model_tt_tb_provider_train,,1,1,1,1
-access_tt_tb_seat_train,access_tt_reservation_train.tt_tb_seat_train,model_tt_tb_seat_train,,1,1,1,1
-access_tt_tb_segment_train,access_tt_reservation_train.tt_tb_segment_train,model_tt_tb_segment_train,,1,1,1,1
-access_tt_tb_ticket_train,access_tt_reservation_train.tt_tb_ticket_train,model_tt_tb_ticket_train,,1,1,1,1

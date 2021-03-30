@@ -86,6 +86,9 @@
                             <page string="Terms and Condition" name="terms_and_condition">
                                 <field name="terms_and_condition"/>
                             </page>
+                            <page string="User Templates" name="user_templates">
+                                <field name="user_template_ids"/>
+                            </page>
                         </notebook>
                     </sheet>
                     <div class="oe_chatter">

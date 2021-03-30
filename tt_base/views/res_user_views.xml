@@ -21,8 +21,10 @@
                 <label for ="toggle_active" string="Banned" attrs="{'invisible': [('is_banned','=',False)]}"/>
             </xpath>
             <xpath expr="//div[hasclass('oe_title')]/group/field[@name='partner_id']" position="after">
-                <field name='agent_id' groups="base.group_user" readonly="False"/>
-                <field name='vendor_id' groups="base.group_user" readonly="False"/>
+                <field name="is_user_template"/>
+                <field name="agent_type_id" attrs="{'invisible': [('is_user_template','=',False)]}"/>
+                <field name='agent_id' groups="base.group_user" readonly="False" attrs="{'invisible': [('is_user_template','=',True)]}"/>
+                <field name='vendor_id' groups="base.group_user" readonly="False" attrs="{'invisible': [('is_user_template','=',True)]}"/>
             </xpath>
             <xpath expr="//notebook/page[last()]" position="after">
                 <page string="User Info" name="skytors">

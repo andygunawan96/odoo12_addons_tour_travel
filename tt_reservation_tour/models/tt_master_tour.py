@@ -159,8 +159,8 @@ class MasterTour(models.Model):
     discount_ids = fields.One2many('tt.master.tour.discount', 'tour_id')
     room_ids = fields.One2many('tt.master.tour.rooms', 'tour_pricelist_id', required=True)
 
-    tour_leader_ids = fields.Many2many('res.employee', string="Tour Leader")
-    # tour_leader_ids = fields.Many2many('res.employee', 'tour_leader_rel', 'pricelist_id', 'partner_id',
+    tour_leader_ids = fields.Many2many('tt.employee', string="Tour Leader")
+    # tour_leader_ids = fields.Many2many('tt.employee', 'tour_leader_rel', 'pricelist_id', 'partner_id',
     #                                    string="Tour Leader")
     # tour_checklist_ids = fields.Char('Tour Checklist')
     tour_checklist_ids = fields.One2many('tt.master.tour.checklist', 'tour_pricelist_id', string="Tour Checklist")
@@ -717,6 +717,9 @@ class MasterTour(models.Model):
 
     def set_to_draft(self):
         self.state = 'draft'
+        for rec in self.tour_line_ids:
+            if rec.state == 'closed':
+                rec.action_reopen()
 
     def action_confirm(self):
         if self.state != 'draft':
@@ -737,6 +740,11 @@ class MasterTour(models.Model):
                 self.tour_code = prefix + self.env['ir.sequence'].next_by_code('master.tour.code.group')
         for rec in self.tour_line_ids:
             rec.action_validate()
+
+    def action_closed(self):
+        self.state = 'closed'
+        for rec in self.tour_line_ids:
+            rec.action_closed()
 
     @api.multi
     def action_send_email(self, passenger_id):

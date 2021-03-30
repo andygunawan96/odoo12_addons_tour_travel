@@ -29,6 +29,7 @@ class TtAgentType(models.Model):
     sequence_prefix_id = fields.Many2one('ir.sequence','Sequence Prefix')
     rounding_amount_type = fields.Selection(selection=variables.ROUNDING_AMOUNT_TYPE, string='Rounding Amount Type', help='Set rounding type amount in pricing', default='round')
     rounding_places = fields.Integer('Rounding Places', default=0)
+    user_template_ids = fields.One2many('res.users', 'agent_type_id', 'User Templates', readonly=True)
 
     @api.model
     def create(self, vals_list):
@@ -174,37 +175,4 @@ class TtAgentTypeBenefit(models.Model):
     title = fields.Text('Title', required=True)
     benefit = fields.Html('Benefit', required=True)
 
-class CommissionRule(models.Model):
-    _name = 'tt.commission.rule'
-    _description = 'Commission Rule'
-
-    agent_type_id = fields.Many2one('tt.agent.type', 'Agent Type')
-    agent_type2_id = fields.Many2one('tt.agent.type', 'Agent Type')
-    rec_agent_type_id = fields.Many2one('tt.agent.type', 'Recruit By')
-    carrier_id = fields.Many2one('tt.transport.carrier', 'Carrier', help='Set Empty for All Product Rule')
-    carrier_code = fields.Char('Code', related='carrier_id.code')
-    percentage = fields.Float('Commission (%)', default=100)
-    amount = fields.Float('Amount')
-    amount_multiplier = fields.Selection([('code', 'Booking Code'), ('pppr', 'Per Person Per Pax')],
-                                         'Multiplier', help='Parent Agent commission Type', default='code')
-    parent_agent_type = fields.Selection([('per', 'Percentage'), ('amo', 'Amount')], 'Parent Type',
-                                         help='Parent Agent commission Type')
-    parent_agent_amount = fields.Float('Parent Amount')
-    ho_commission_type = fields.Selection([('per', 'Percentage'), ('amo', 'Amount')],
-                                          'HO Commission Type', help='Head Office commission Type')
-    ho_amount = fields.Float('HO Amount')
-    active = fields.Boolean('Active', default=True)
-
-    # @api.multi
-    # def write(self, value):
-    #     self_dict = self.read()
-    #     key_list = [key for key in value.keys()]
-    #     for key in key_list:
-    #         print(self.fields_get().get(key)['string'])
-    #         self.message_post(body=_("%s has been changed from %s to %s by %s.") %
-    #                                 (self.fields_get().get(key)['string'],  # Model String / Label
-    #                                  self_dict[0].get(key),  # Old Value
-    #                                  value[key],  # New Value
-    #                                  self.env.user.name))  # User that Changed the Value
-    #     return super(TtAgentType, self).write(value)
 
