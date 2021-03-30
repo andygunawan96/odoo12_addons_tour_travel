@@ -31,6 +31,7 @@ class PaymentAcquirer(models.Model):
     end_time = fields.Float(string='End Time', help="Format: HH:mm Range 00:00 => 24:00")
     description_msg = fields.Text('Description')
     va_fee_type = fields.Selection([('flat', 'Flat'), ('percentage', 'Percentage')], 'Fee Type VA', default='flat')
+    show_device_type = fields.Selection([('web', 'Website'), ('mobile', 'Mobile'), ('all', 'All')], 'Show Device', default='all')
 
     @api.model
     def create(self, vals_list):
@@ -111,6 +112,7 @@ class PaymentAcquirer(models.Model):
                 'unique_amount': uniq,
             },
             'online_wallet': self.online_wallet,
+            'show_device_type': self.show_device_type,
             'total_amount': float(amount) + uniq + fee,
             'image': self.bank_id.image_id and self.bank_id.image_id.url or '',
             'description_msg': self.description_msg or ''
@@ -333,6 +335,7 @@ class PaymentAcquirerNumber(models.Model):
     payment_acquirer_id = fields.Many2one('payment.acquirer','Payment Acquirer')
     number = fields.Char('Number')
     va_number = fields.Char('VA Number')
+    url = fields.Char('URL')
     bank_name = fields.Char('Bank Name')
     unique_amount = fields.Float('Unique Amount')
     fee_amount = fields.Float('Fee Amount')
@@ -360,7 +363,7 @@ class PaymentAcquirerNumber(models.Model):
             #check datetime
             date_now = datetime.now()
             time_delta = date_now - payment_acq_number[len(payment_acq_number)-1].create_date
-            if divmod(time_delta.seconds, 3600)[0] > 0 or self.time_limit and datetime.now() > self.time_limit:
+            if divmod(time_delta.seconds, 3600)[0] > 0 or self.time_limit and datetime.now() > self.time_limit or  payment_acq_number[len(payment_acq_number)-1] != 'close':
                 for rec in payment_acq_number:
                     if rec.state == 'close':
                         rec.state = 'cancel'
@@ -403,7 +406,7 @@ class PaymentAcquirerNumber(models.Model):
             # check datetime
             date_now = datetime.now()
             time_delta = date_now - payment_acq_number[len(payment_acq_number) - 1].create_date
-            if divmod(time_delta.seconds, 3600)[0] == 0 or datetime.now() < self.time_limit and self.time_limit:
+            if divmod(time_delta.seconds, 3600)[0] == 0 or datetime.now() < self.time_limit and self.time_limit and payment_acq_number[len(payment_acq_number) - 1].state == 'close':
                 book_obj = self.env['tt.reservation.%s' % data['provider']].search([('name', '=', '%s.%s' % (data['order_number'].split('.')[0],data['order_number'].split('.')[1]))], limit=1)
                 res = {
                     'order_number': data['order_number'],
@@ -412,6 +415,7 @@ class PaymentAcquirerNumber(models.Model):
                     'nomor_rekening': payment_acq_number.payment_acquirer_id.account_number,
                     'amount': payment_acq_number.amount + payment_acq_number.fee_amount + payment_acq_number.unique_amount,
                     'va_number': payment_acq_number.va_number,
+                    'url': payment_acq_number.url,
                     'bank_name': payment_acq_number.bank_name,
                     'seq_id': payment_acq_number.payment_acquirer_id.seq_id
                 }
@@ -424,11 +428,12 @@ class PaymentAcquirerNumber(models.Model):
     def set_va_number_api(self, data):
         payment_acq_number = self.search([('number', 'ilike', data['order_number'])], order='create_date desc', limit=1)
         if payment_acq_number:
-            payment_acq_number.va_number = data['va_number']
-            payment_acq_number.bank_name = data['bank_name']
-            payment_acq_number.fee_amount = data['fee_amount']
-            payment_acq_number.time_limit = data['time_limit']
-            payment_acq_number.payment_acquirer_id.va_fee = data['fee_amount']
+            payment_acq_number.va_number = data.get('va_number')
+            payment_acq_number.bank_name = data.get('bank_name')
+            payment_acq_number.fee_amount = data.get('fee_amount')
+            payment_acq_number.time_limit = data.get('time_limit')
+            payment_acq_number.url = data.get('url')
+            payment_acq_number.payment_acquirer_id.va_fee = data.get('fee_amount')
 
             return ERR.get_no_error()
         else:
