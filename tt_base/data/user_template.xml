@@ -13,6 +13,7 @@
                          (4, ref('tt_base.group_tt_tour_travel_operator')),
                          (4, ref('tt_base.group_tt_accounting_operator')),
                          (4, ref('account.group_account_manager')),
+                         (4, ref('hr.group_hr_user')),
                          (4,ref('tt_base.report'))]"/>
             <field name="frontend_security_ids"
                    eval="[(6,0,[ref('tt_base.able_to_login'),
@@ -40,6 +41,7 @@
                          (4, ref('tt_base.group_tt_tour_travel_supervisor')),
                          (4, ref('tt_base.group_tt_accounting_supervisor')),
                          (4, ref('account.group_account_manager')),
+                         (4, ref('hr.group_hr_user')),
                          (4,ref('tt_base.report'))]"/>
             <field name="frontend_security_ids"
                    eval="[(6,0,[ref('tt_base.able_to_login'),
@@ -67,6 +69,7 @@
                          (4, ref('tt_base.group_tt_tour_travel_manager')),
                          (4, ref('tt_base.group_tt_accounting_manager')),
                          (4, ref('account.group_account_manager')),
+                         (4, ref('hr.group_hr_user')),
                          (4,ref('tt_base.report'))]"/>
             <field name="frontend_security_ids"
                    eval="[(6,0,[ref('tt_base.able_to_login'),
@@ -95,6 +98,7 @@
                          (4, ref('tt_base.group_tt_ticketing_operator')),
                          (4, ref('tt_base.group_tt_accounting_operator')),
                          (4, ref('account.group_account_invoice')),
+                         (4, ref('hr.group_hr_user')),
                          (4,ref('tt_base.report'))]"/>
             <field name="frontend_security_ids"
                    eval="[(6,0,[ref('tt_base.able_to_login'),
@@ -123,6 +127,7 @@
                          (4, ref('tt_base.group_tt_ticketing_supervisor')),
                          (4, ref('tt_base.group_tt_accounting_operator')),
                          (4, ref('account.group_account_invoice')),
+                         (4, ref('hr.group_hr_user')),
                          (4,ref('tt_base.report'))]"/>
             <field name="frontend_security_ids"
                    eval="[(6,0,[ref('tt_base.able_to_login'),
@@ -151,6 +156,7 @@
                          (4, ref('tt_base.group_tt_ticketing_manager')),
                          (4, ref('tt_base.group_tt_accounting_operator')),
                          (4, ref('account.group_account_invoice')),
+                         (4, ref('hr.group_hr_user')),
                          (4,ref('tt_base.report'))]"/>
             <field name="frontend_security_ids"
                    eval="[(6,0,[ref('tt_base.able_to_login'),
@@ -178,6 +184,7 @@
                          (4, ref('tt_base.group_tt_tour_travel_operator')),
                          (4, ref('tt_base.group_tt_agent_management_operator')),
                          (4, ref('account.group_account_invoice')),
+                         (4, ref('hr.group_hr_user')),
                          (4,ref('tt_base.report'))]"/>
             <field name="frontend_security_ids"
                    eval="[(6,0,[ref('tt_base.able_to_login'),
@@ -205,6 +212,7 @@
                          (4, ref('tt_base.group_tt_tour_travel_supervisor')),
                          (4, ref('tt_base.group_tt_agent_management_supervisor')),
                          (4, ref('account.group_account_invoice')),
+                         (4, ref('hr.group_hr_user')),
                          (4,ref('tt_base.report'))]"/>
             <field name="frontend_security_ids"
                    eval="[(6,0,[ref('tt_base.able_to_login'),
@@ -232,6 +240,7 @@
                          (4, ref('tt_base.group_tt_tour_travel_manager')),
                          (4, ref('tt_base.group_tt_agent_management_manager')),
                          (4, ref('account.group_account_invoice')),
+                         (4, ref('hr.group_hr_user')),
                          (4,ref('tt_base.report'))]"/>
             <field name="frontend_security_ids"
                    eval="[(6,0,[ref('tt_base.able_to_login'),
@@ -259,6 +268,7 @@
                          (4, ref('tt_base.group_tt_tour_travel_operator')),
                          (4, ref('tt_base.group_tt_tour_division_operator')),
                          (4, ref('account.group_account_invoice')),
+                         (4, ref('hr.group_hr_user')),
                          (4,ref('tt_base.report'))]"/>
             <field name="frontend_security_ids"
                    eval="[(6,0,[ref('tt_base.able_to_login'),
@@ -286,6 +296,7 @@
                          (4, ref('tt_base.group_tt_tour_travel_supervisor')),
                          (4, ref('tt_base.group_tt_tour_division_supervisor')),
                          (4, ref('account.group_account_invoice')),
+                         (4, ref('hr.group_hr_user')),
                          (4,ref('tt_base.report'))]"/>
             <field name="frontend_security_ids"
                    eval="[(6,0,[ref('tt_base.able_to_login'),
@@ -313,6 +324,7 @@
                          (4, ref('tt_base.group_tt_tour_travel_manager')),
                          (4, ref('tt_base.group_tt_tour_division_manager')),
                          (4, ref('account.group_account_invoice')),
+                         (4, ref('hr.group_hr_user')),
                          (4,ref('tt_base.report'))]"/>
             <field name="frontend_security_ids"
                    eval="[(6,0,[ref('tt_base.able_to_login'),
