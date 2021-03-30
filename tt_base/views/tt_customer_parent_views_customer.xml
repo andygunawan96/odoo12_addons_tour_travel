@@ -196,34 +196,34 @@
 
     <menuitem id="menu_customers_customer_customer_parent"
               parent="tt_base.top_customers_customers"
-              groups="tt_base.group_tt_agent_user_operator"
+              groups="tt_base.group_tt_agent_user_operator,tt_base.group_tt_tour_travel_operator"
               name="Customer Parent"
               sequence="2"/>
 
     <menuitem id="submenu_customers_customer_customer_parent_all"
               parent="tt_base.menu_customers_customer_customer_parent"
-              groups="tt_base.group_tt_agent_user_operator"
+              groups="tt_base.group_tt_agent_user_operator,tt_base.group_tt_tour_travel_operator"
               name="All"
               sequence="1"
               action="tt_customer_parent_action_view_customer"/>
 
     <menuitem id="submenu_customers_customer_customer_parent_fpo"
               parent="tt_base.menu_customers_customer_customer_parent"
-              groups="tt_base.group_tt_agent_user_operator"
+              groups="tt_base.group_tt_agent_user_operator,tt_base.group_tt_tour_travel_operator"
               name="FPO"
               sequence="2"
               action="tt_customer_parent_action_view_customer_fpo"/>
 
     <menuitem id="submenu_customers_customer_customer_parent_cor"
               parent="tt_base.menu_customers_customer_customer_parent"
-              groups="tt_base.group_tt_agent_user_operator"
+              groups="tt_base.group_tt_agent_user_operator,tt_base.group_tt_tour_travel_operator"
               name="COR"
               sequence="3"
               action="tt_customer_parent_action_view_customer_cor"/>
 
     <menuitem id="submenu_customers_customer_customer_parent_por"
               parent="tt_base.menu_customers_customer_customer_parent"
-              groups="tt_base.group_tt_agent_user_operator"
+              groups="tt_base.group_tt_agent_user_operator,tt_base.group_tt_tour_travel_operator"
               name="POR"
               sequence="4"
               action="tt_customer_parent_action_view_customer_por"/>

@@ -960,13 +960,14 @@ class PrintoutInvoiceHO(models.AbstractModel):
                 desc += '%s - %s\n ' % (journey.departure_date[:16], journey.arrival_date[:16])
         elif data['context']['active_model'] == 'tt.reservation.activity':
             desc = ''
-            desc += '%s (%s), ' % (
-                rec.booking_id.activity_id.name if rec.booking_id.activity_id.name else '',
-                rec.booking_id.activity_product_id.name if rec.booking_id.activity_product_id.name else '')
-            desc += '%s ' % (rec.booking_id.visit_date if rec.booking_id.visit_date else '')
-            if rec.booking_id.timeslot:
-                desc += '(%s) ' % (rec.booking_id.timeslot if rec.booking_id.timeslot else '')
-            desc += '\n '
+            for rec2 in rec.activity_detail_ids:
+                desc += '%s (%s), ' % (
+                    rec2.activity_id.name if rec2.activity_id.name else '',
+                    rec2.activity_product_id.name if rec2.activity_product_id.name else '')
+                desc += '%s ' % (rec2.visit_date if rec2.visit_date else '')
+                if rec2.timeslot:
+                    desc += '(%s) ' % rec2.timeslot
+                desc += '\n '
             return desc
         elif data['context']['active_model'] == 'tt.reservation.tour':
             desc = ''

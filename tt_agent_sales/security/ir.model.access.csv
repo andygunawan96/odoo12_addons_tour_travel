@@ -1,5 +1,5 @@
 id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
-access_tt_agent_invoice_for_public,access_tt_agent_invoice_for_public,model_tt_agent_invoice,,1,0,0,0
+access_tt_agent_invoice_for_public,access_tt_agent_invoice_for_public,model_tt_agent_invoice,,1,1,1,0
 access_tt_agent_invoice_for_admin,access_tt_agent_invoice_for_public,model_tt_agent_invoice,base.group_system,1,1,1,1
 
 access_tt_agent_invoice_for_agent_invoice_level_1,access_tt_agent_invoice_for_agent_invoice_level_1,model_tt_agent_invoice,tt_base.group_agent_invoice_level_1,1,0,0,0

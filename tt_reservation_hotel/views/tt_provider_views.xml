@@ -11,7 +11,7 @@
                             context="{
                         'default_provider_id': id,
                    }"/>
-                    <button string="Reverse Ledger" name="action_reverse_ledger_from_button" states="issued,cancel2,fail_issued" type="object"/>
+                    <button string="Reverse Ledger" name="action_reverse_ledger_from_button" states="issued,cancel2,fail_issued,draft" type="object"/>
                     <button string="Sync Refund Status" name="action_sync_refund_status" states="refund_pending" type="object"/>
                     <field name="state" widget="statusbar" statusbar_visible="draft,booked,issued"/>
                 </header>
