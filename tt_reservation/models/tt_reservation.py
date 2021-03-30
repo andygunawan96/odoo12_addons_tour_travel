@@ -606,6 +606,7 @@ class TtReservation(models.Model):
                     'nomor_rekening': self.payment_acquirer_number_id.payment_acquirer_id.account_number,
                     'account_name': self.payment_acquirer_number_id.payment_acquirer_id.account_name,
                     'va_number': self.payment_acquirer_number_id.va_number,
+                    'url': self.payment_acquirer_number_id.url,
                     'amount': self.payment_acquirer_number_id.amount - self.payment_acquirer_number_id.unique_amount,
                     'order_number': self.payment_acquirer_number_id.number
                 }
