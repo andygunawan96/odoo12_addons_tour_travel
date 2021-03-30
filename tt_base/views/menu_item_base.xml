@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <data>
-
         <!-- Settings Top menu item (Users) -->
         <menuitem name="Settings"
                   id="base.menu_administration"
@@ -36,7 +35,7 @@
         <!--Customers-->
         <menuitem id="main_customers"
                   name="Customers"
-                  groups="group_tt_agent_user_operator"
+                  groups="group_tt_agent_user_operator,group_tt_tour_travel_operator"
                   web_icon="hr,static/description/icon.png"
                   sequence="4"/>
 
@@ -46,7 +45,7 @@
                   name="Transactions"
                   web_icon="hr,static/description/icon.png"
                   sequence="3"
-                  groups="base.group_user"/>
+                  groups="tt_base.group_tt_tour_travel_operator,tt_base.group_tt_agent_user_operator"/>
 
         <!--External Vendor Login-->
         <menuitem id="main_external_vendor"

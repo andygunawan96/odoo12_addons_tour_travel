@@ -37,10 +37,4 @@
               sequence="2"
               action="create_customer_parent_wizard_action_view"/>
 
-    <menuitem id="menu_create_customer_parent_wizard_ho"
-              parent="tt_base.menu_customer_customer_parent"
-              name="Create Customer Parent"
-              sequence="10"
-              action="create_customer_parent_wizard_action_view"/>
-
 </odoo>

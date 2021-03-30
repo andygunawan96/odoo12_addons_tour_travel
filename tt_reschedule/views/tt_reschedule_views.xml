@@ -108,32 +108,32 @@
                             <field name="hold_date" readonly="1" class="oe_inline"/>
                             <label for="confirm_uid" string="Confirmed by"/>
                             <div>
-                                <field name="confirm_uid" readonly="1" class="oe_inline"/> -
+                                <field name="confirm_uid" readonly="1" class="oe_inline"/> /
                                 <field name="confirm_date" readonly="1" class="oe_inline"/>
                             </div>
                             <label for="sent_uid" string="Sent by"/>
                             <div>
-                                <field name="sent_uid" readonly="1" class="oe_inline"/> -
+                                <field name="sent_uid" readonly="1" class="oe_inline"/> /
                                 <field name="sent_date" readonly="1" class="oe_inline"/>
                             </div>
                             <label for="validate_uid" string="Validated by"/>
                             <div>
-                                <field name="validate_uid" readonly="1" class="oe_inline"/> -
+                                <field name="validate_uid" readonly="1" class="oe_inline"/> /
                                 <field name="validate_date" readonly="1" class="oe_inline"/>
                             </div>
                             <label for="final_uid" string="Finalized by"/>
                             <div>
-                                <field name="final_uid" readonly="1" class="oe_inline"/> -
+                                <field name="final_uid" readonly="1" class="oe_inline"/> /
                                 <field name="final_date" readonly="1" class="oe_inline"/>
                             </div>
                             <label for="done_uid" string="Done by"/>
                             <div>
-                                <field name="done_uid" readonly="1" class="oe_inline"/> -
+                                <field name="done_uid" readonly="1" class="oe_inline"/> /
                                 <field name="done_date" readonly="1" class="oe_inline"/>
                             </div>
                             <label for="cancel_uid" string="Cancelled by"/>
                             <div>
-                                <field name="cancel_uid" readonly="1" class="oe_inline"/> -
+                                <field name="cancel_uid" readonly="1" class="oe_inline"/> /
                                 <field name="cancel_date" readonly="1" class="oe_inline"/>
                             </div>
                             <field name="cancel_message"/>

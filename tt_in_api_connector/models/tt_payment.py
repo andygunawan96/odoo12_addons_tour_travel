@@ -129,6 +129,8 @@ class TtPaymentApiCon(models.Model):
             res = self.env['payment.acquirer.number'].get_payment_acq_api(data)
         elif action == 'set_va_number':
             res = self.env['payment.acquirer.number'].set_va_number_api(data)
+        elif action == 'set_va_number_fail':
+            res = self.env['payment.acquirer.number'].set_va_number_fail_api(data)
         elif action == 'use_pnr_quota':
             res = self.env['tt.reservation'].use_pnr_quota_api(data,context)
         elif action == 'set_sync_reservation':
@@ -142,6 +144,7 @@ class TtPaymentApiCon(models.Model):
             'phone_number': req['number'],
             'name': req['name'],
             'email': req['email'],
+            'bank_code_list': req['bank_code_list'],
             'provider': 'espay'
         }
         return self.send_request_to_gateway('%s/payment' % (self.url), data, 'set_va', timeout=600)
@@ -194,7 +197,8 @@ class TtPaymentApiCon(models.Model):
 
     def get_merchant_info(self,req):
         request = {
-            'provider': req['provider']
+            'provider': req['provider'],
+            'type': req['type']
         }
         action = 'merchant_info'
         return self.send_request_to_gateway('%s/payment' % (self.url),

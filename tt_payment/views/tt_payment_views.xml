@@ -96,22 +96,22 @@
                         <group string="User">
                             <label for="confirm_uid" string="Confirm By"/>
                             <div>
-                                <field name="confirm_uid" readonly="1" class="oe_inline"/> -
+                                <field name="confirm_uid" readonly="1" class="oe_inline"/> /
                                 <field name="confirm_date" readonly="1" class="oe_inline"/>
                             </div>
                             <label for="validate_uid" string="Validate By"/>
                             <div>
-                                <field name="validate_uid" readonly="1" class="oe_inline"/> -
+                                <field name="validate_uid" readonly="1" class="oe_inline"/> /
                                 <field name="validate_date" readonly="1" class="oe_inline"/>
                             </div>
                             <label for="approve_uid" string="Approve By"/>
                             <div>
-                                <field name="approve_uid" readonly="1" class="oe_inline"/> -
+                                <field name="approve_uid" readonly="1" class="oe_inline"/> /
                                 <field name="approve_date" readonly="1" class="oe_inline"/>
                             </div>
                             <label for="cancel_uid" string="Cancel By"/>
                             <div>
-                                <field name="cancel_uid" readonly="1" class="oe_inline"/> -
+                                <field name="cancel_uid" readonly="1" class="oe_inline"/> /
                                 <field name="cancel_date" readonly="1" class="oe_inline"/>
                             </div>
                             <field name="payment_date"/>

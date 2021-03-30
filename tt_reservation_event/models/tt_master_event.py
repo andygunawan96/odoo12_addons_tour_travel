@@ -44,6 +44,7 @@ class MasterEvent(models.Model):
 
     location_ids = fields.One2many('tt.event.location', 'event_id', readonly=True, states={'draft': [('readonly', False)]})
     locations = fields.Char('Locations', readonly=True)
+    guests = fields.Char('Guest / Speaker')
 
     # event_by_id = fields.Many2one('tt.event.by', 'Event By', readonly=True, states={'draft': [('readonly', False)]})
     event_date_start = fields.Datetime(string="Starting Time", readonly=True, states={'draft': [('readonly', False)]}, required=True)
@@ -171,7 +172,7 @@ class MasterEvent(models.Model):
 
             limitation = [('state', 'in', ['confirm', 'sold-out', 'expired'])]
             if name != '': #Check by name jika category tidak di kirim
-                limitation.append(('name', 'ilike', name))
+                limitation = ['|',('name', 'ilike', name),('guests', 'ilike', name)]
             if vendor != '':
                 limitation = [('state', 'in', ['confirm', 'expired']), ('event_vendor_id', '=', vendor)]
             if category != '' and category != 'all':
@@ -226,6 +227,7 @@ class MasterEvent(models.Model):
                     # 'age_restriction': i.age_restriction,
                     'eligible_age': i.eligible_age,
                     'utc': utc,
+                    'guests': i.guests,
                 }
                 # temp_dict = i.format_api()
                 to_return.append(temp_dict)
@@ -287,7 +289,14 @@ class MasterEvent(models.Model):
 
     def format_api_option(self, option_id, currency='IDR'):
         timeslot = self.env['tt.event.option'].sudo().browse(option_id)
-        ticket_qty = timeslot.quota == -1 and 99 or timeslot.quota
+        if timeslot.date_end and datetime.now() > timeslot.date_end:
+            # Sdah Lewat waktu jual nya
+            ticket_qty = 0
+        elif timeslot.date_start and datetime.now() < timeslot.date_start:
+            # Blum Waktu nya jual
+            ticket_qty = -1
+        else:
+            ticket_qty = timeslot.quota == -1 and 99 or timeslot.quota
         utc = 7
         return {
             'option_id': timeslot.option_code,
@@ -400,7 +409,7 @@ class MasterEvent(models.Model):
         pnr = self.env['ir.sequence'].next_by_code('pnr_sequence')
 
         for rec in req['option_ids']:
-            opt_id = self.env['tt.event.option'].search([('event_id', '=', event_id.id), ('option_code', '=', rec['option']['option_code'])], limit=1)
+            opt_id = self.env['tt.event.option'].search([('event_id', '=', event_id.id), ('option_code', '=', rec['option']['event_option_id']['option_code'])], limit=1)
             temp_event_reservation_dict = {
                 'event_id': event_id.id,
                 'event_option_id': opt_id.id,
@@ -437,16 +446,17 @@ class MasterEvent(models.Model):
     def issued_master_event_from_api(self, pnr, context={}):
         try:
             #search all of the reservation
-            booking_event_obj = self.env['tt.event.reservation'].sudo().search([('pnr', '=', pnr)], limit=1)
+            booking_event_objs = self.env['tt.event.reservation'].sudo().search([('pnr', '=', pnr)])
 
             email_content = "<ul>"
-            for i in booking_event_obj:
+            for i in booking_event_objs:
                 i.action_request_by_api(context.get('co_uid'))
                 i.event_option_id.making_sales(1)
                 email_content += "<li>{}</li>".format(i.order_number)
             email_content += "</ul>"
 
             #notificate the vendor
+            booking_event_obj = booking_event_objs[0]
             booking_event_obj.email_content = email_content
             template = self.env.ref('tt_reservation_event.template_mail_vendor_notification')
             mail = self.env['mail.template'].browse(template.id)

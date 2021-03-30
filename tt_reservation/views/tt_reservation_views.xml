@@ -94,27 +94,27 @@
                             <!--<field name="is_manual"/>-->
                             <label for="user_id" string="Created by"/>
                             <div>
-                                <field name="user_id" readonly="1" class="oe_inline"/> -
+                                <field name="user_id" readonly="1" class="oe_inline"/> /
                                 <field name="create_date" readonly="1" class="oe_inline"/>
                             </div>
                             <label for="booked_uid" string="Booked By"/>
                             <div>
-                                <field name="booked_uid" readonly="1" class="oe_inline"/> -
+                                <field name="booked_uid" readonly="1" class="oe_inline"/> /
                                 <field name="booked_date" readonly="1" class="oe_inline"/>
                             </div>
                             <label for="issued_uid" string="Issued By"/>
                             <div>
-                                <field name="issued_uid" readonly="1" class="oe_inline"/> -
+                                <field name="issued_uid" readonly="1" class="oe_inline"/> /
                                 <field name="issued_date" readonly="1" class="oe_inline"/>
                             </div>
                             <label for="cancel_uid" string="Cancel By"/>
                             <div>
-                                <field name="cancel_uid" readonly="1" class="oe_inline"/> -
+                                <field name="cancel_uid" readonly="1" class="oe_inline"/> /
                                 <field name="cancel_date" readonly="1" class="oe_inline"/>
                             </div>
                             <label for="refund_uid" string="Refund By"/>
                             <div>
-                                <field name="refund_uid" readonly="1" class="oe_inline"/> -
+                                <field name="refund_uid" readonly="1" class="oe_inline"/> /
                                 <field name="refund_date" readonly="1" class="oe_inline"/>
                             </div>
                             <label for="reschedule_uid" string="Rescheduled By"/>
@@ -194,5 +194,6 @@
     <menuitem id="main_reservations"
               name="Reservations"
               web_icon="hr,static/description/icon.png"
-              sequence="2"/>
+              sequence="2"
+              groups="tt_base.group_tt_tour_travel_operator,tt_base.group_tt_agent_user_operator"/>
 </odoo>

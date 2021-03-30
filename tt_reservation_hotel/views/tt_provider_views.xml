@@ -31,12 +31,12 @@
                             <field name="expired_date"/>
                             <label for="booked_uid" string="Booked By"/>
                             <div>
-                                <field name="booked_uid" readonly="1" class="oe_inline"/> -
+                                <field name="booked_uid" readonly="1" class="oe_inline"/> /
                                 <field name="booked_date" readonly="1" class="oe_inline"/>
                             </div>
                             <label for="issued_uid" string="Issued By"/>
                             <div>
-                                <field name="issued_uid" readonly="1" class="oe_inline"/> -
+                                <field name="issued_uid" readonly="1" class="oe_inline"/> /
                                 <field name="issued_date" readonly="1" class="oe_inline"/>
                             </div>
                         </group>

@@ -49,10 +49,16 @@ class PhoneDetail(models.Model):
         check_number = self.env['payment.acquirer.number'].search(
             ['|', ('number', 'ilike', self.calling_number[-8:]), ('email', '=', agent.email)])
         if len(check_number) == 0 and len(agent_open_payment_acqurier) == 0 and agent.email and agent.name:
+            ho_obj = self.env.ref('tt_base.rodex_ho')
+            bank_code_list = []
+            existing_payment_acquirer_open = self.env['payment.acquirer'].search([('agent_id', '=', ho_obj.id), ('type', '=', 'va')])
+            for rec in existing_payment_acquirer_open:
+                bank_code_list.append(rec.bank_id.code)
             data = {
                 'number': self.calling_number[-8:],
                 'email': agent.email,
-                'name': agent.name
+                'name': agent.name,
+                'bank_code_list': bank_code_list
             }
             res = self.env['tt.payment.api.con'].set_VA(data)
             # res = self.env['tt.payment.api.con'].test(data)
@@ -128,5 +134,5 @@ class PhoneDetail(models.Model):
 
     def generate_phone_number(self):
         for rec in self.search([]):
-            _logger.info('%s %s' % (self.agent_id,self.id))
+            _logger.info('%s %s' % (rec.agent_id,rec.id))
             rec.compute_number()

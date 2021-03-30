@@ -117,13 +117,13 @@
             <xpath expr="//label[@for='issued_uid']" position="before">
                 <label for="confirmed_uid" string="Confirmed"/>
                 <div>
-                    <field name="confirmed_uid" readonly="1" class="oe_inline"/> -
+                    <field name="confirmed_uid" readonly="1" class="oe_inline"/> /
                     <field name="confirmed_date" readonly="1" class="oe_inline"/>
                 </div>
 
                 <label for="validate_uid" string="Validated"/>
                 <div>
-                    <field name="validate_uid" readonly="1" class="oe_inline"/> -
+                    <field name="validate_uid" readonly="1" class="oe_inline"/> /
                     <field name="validate_date" readonly="1" class="oe_inline"/>
                 </div>
             </xpath>

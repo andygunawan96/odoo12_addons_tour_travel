@@ -881,7 +881,7 @@ class HotelReservation(models.Model):
     def check_provider_state(self, context, pnr_list=[], hold_date=False,req={}):
         if all(rec.state == 'booked' for rec in self.provider_booking_ids):
             # booked
-            pass
+            self.action_booked()
         elif all(rec.state == 'issued' for rec in self.provider_booking_ids):
             # issued
             acquirer_id, customer_parent_id = self.get_acquirer_n_c_parent_id(req)

@@ -624,7 +624,9 @@ class ReservationAirline(models.Model):
                     # END
 
                     #action issued dan create ticket number
-                    provider_obj.update_ticket_api(provider['passengers'])
+                    # Apabila status sudah issued, biasanya connector tidak melakukan proses sehingga variabel passengers tidak ada
+                    if 'passengers' in provider:
+                        provider_obj.update_ticket_api(provider['passengers'])
 
                     # October 12, 2020 - SAM
                     # Hanya akan melakukan update ticket apabila state sebelumnya adalah issued
@@ -638,13 +640,15 @@ class ReservationAirline(models.Model):
                     # END
                     any_provider_changed = True
 
-                    #get balance vendor
-                    if provider_obj.provider_id.track_balance:
-                        try:
-                            # print("GET BALANCE : "+str(self.env['tt.airline.api.con'].get_balance(provider_obj.provider_id.code)['response']['balance']))
-                            provider_obj.provider_id.sync_balance()
-                        except Exception as e:
-                            _logger.error(traceback.format_exc())
+
+                    ## 23 Mar 2021, di pindahkan ke gateway tidak lagi sync sendiri
+                    # #get balance vendor
+                    # if provider_obj.provider_id.track_balance:
+                    #     try:
+                    #         # print("GET BALANCE : "+str(self.env['tt.airline.api.con'].get_balance(provider_obj.provider_id.code)['response']['balance']))
+                    #         provider_obj.provider_id.sync_balance()
+                    #     except Exception as e:
+                    #         _logger.error(traceback.format_exc())
                 elif provider['status'] == 'FAIL_BOOKED':
                     provider_obj.action_failed_booked_api_airline(provider.get('error_code', -1),provider.get('error_msg', ''))
                     any_provider_changed = True
@@ -722,27 +726,44 @@ class ReservationAirline(models.Model):
 
     def update_journey(self, provider):
         if 'sell_reschedule' in provider:
+            departure_date = ''
+            arrival_date = ''
             for idx, provider_obj in enumerate(self.provider_booking_ids):
                 if provider_obj.pnr == provider['pnr']:
                     for idy, journey_obj in enumerate(provider_obj.journey_ids):
                         for idz, segment_obj in enumerate(journey_obj.segment_ids):
-
+                            segment_obj.segment_code = provider['journeys'][idy]['segments'][idz]['segment_code']
+                            segment_obj.carrier_code = provider['journeys'][idy]['segments'][idz]['carrier_code']
+                            segment_obj.carrier_number = provider['journeys'][idy]['segments'][idz]['carrier_number']
                             segment_obj.arrival_date = provider['journeys'][idy]['segments'][idz]['arrival_date']
                             segment_obj.departure_date = provider['journeys'][idy]['segments'][idz]['departure_date']
                             segment_obj.class_of_service = provider['journeys'][idy]['segments'][idz]['class_of_service']
                             for count, leg_obj in enumerate(segment_obj.leg_ids):
-                                leg_obj.arrival_date = provider['journeys'][idy]['segments'][idz]['arrival_date']
-                                leg_obj.departure_date = provider['journeys'][idy]['segments'][idz]['departure_date']
+                                if provider['journeys'][idy]['segments'][idz].get('legs'):
+                                    leg_obj.leg_code = provider['journeys'][idy]['segments'][idz]['legs'][count]['leg_code']
+                                    leg_obj.arrival_date = provider['journeys'][idy]['segments'][idz]['legs'][count]['arrival_date']
+                                    leg_obj.departure_date = provider['journeys'][idy]['segments'][idz]['legs'][count]['departure_date']
+                        journey_obj.journey_code = "%s,%s,%s,%s,%s,%s,%s" % (journey_obj.segment_ids[0].carrier_code, journey_obj.segment_ids[0].carrier_number, journey_obj.segment_ids[0].origin_id.code, journey_obj.segment_ids[len(journey_obj.segment_ids)-1]['departure_date'], journey_obj.segment_ids[0].destination_id.code, journey_obj.segment_ids[0]['arrival_date'], journey_obj.segment_ids[0].provider_id.code)
                         journey_obj.arrival_date = journey_obj.segment_ids[0]['arrival_date']
                         journey_obj.departure_date = journey_obj.segment_ids[len(journey_obj.segment_ids)-1]['departure_date']
                     provider_obj.arrival_date = provider_obj.journey_ids[len(provider_obj.journey_ids)-1]['arrival_date']
                     provider_obj.departure_date = provider_obj.journey_ids[0]['departure_date']
-            self.departure_date = self.provider_booking_ids[0].depature_date[:10]
-            if self.direction != 'OW':
-                if len(self.provider_booking_ids) == 0:
-                    self.arrival_date = self.provider_booking_ids[len(self.provider_booking_ids)-1].arrival_date[:10]
+                if idx == 0:
+                    departure_date = provider_obj.departure_date[:10]
+                    arrival_date = provider_obj.arrival_date[:10]
                 else:
-                    self.provider_booking_ids[len(self.provider_booking_ids) - 1].departure_date[:10]
+                    arrival_date = provider_obj.departure_date[:10]
+            self.departure_date = departure_date
+            if self.direction != 'OW':
+                self.arrival_date = arrival_date
+
+            #add seat here
+
+            # if self.direction != 'OW':
+            #     if len(self.provider_booking_ids) == 0:
+            #         self.arrival_date = self.provider_booking_ids[len(self.provider_booking_ids)-1].arrival_date[:10]
+            #     else:
+            #         self.provider_booking_ids[len(self.provider_booking_ids) - 1].departure_date[:10]
 
     def get_booking_airline_api(self,req, context):
         try:
@@ -762,8 +783,12 @@ class ReservationAirline(models.Model):
             if book_obj.agent_id.id == context.get('co_agent_id',-1) or self.env.ref('tt_base.group_tt_process_channel_bookings').id in user_obj.groups_id.ids or book_obj.agent_type_id.name == self.env.ref('tt_base.agent_b2c').agent_type_id.name or book_obj.user_id.login == self.env.ref('tt_base.agent_b2c_user').login:
                 res = book_obj.to_dict(context['co_agent_id'] == self.env.ref('tt_base.rodex_ho').id)
                 psg_list = []
-                for rec in book_obj.sudo().passenger_ids:
-                    psg_list.append(rec.to_dict())
+                for rec_idx, rec in enumerate(book_obj.sudo().passenger_ids):
+                    rec_data = rec.to_dict()
+                    rec_data.update({
+                        'passenger_number': rec.sequence
+                    })
+                    psg_list.append(rec_data)
                 prov_list = []
                 for rec in book_obj.provider_booking_ids:
                     prov_list.append(rec.to_dict())

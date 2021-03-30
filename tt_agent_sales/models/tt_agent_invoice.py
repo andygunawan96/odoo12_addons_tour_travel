@@ -52,7 +52,7 @@ class AgentInvoice(models.Model):
              " * The 'Bill (by system)' status is set when billing statement was created automaticaly by system.\n"
              " * The 'Paid' status is set when the payment total .\n"
              " * The 'Cancelled' status is used when user cancel invoice.")
-
+    prev_state = fields.Char("Previous Status", readonly=True)
     agent_id = fields.Many2one('tt.agent', string='Agent', required=True, readonly=True, states={'draft': [('readonly', False)]})
     customer_parent_id = fields.Many2one('tt.customer.parent', 'Customer', readonly=True, states={'draft': [('readonly', False)]}, help='COR/POR Name')
     customer_parent_type_id = fields.Many2one('tt.customer.parent.type', 'Customer Parent Type',
@@ -163,10 +163,12 @@ class AgentInvoice(models.Model):
         for rec in self.payment_ids:
             if rec.state in ['approved']:
                 paid_amount += rec.pay_amount
+        self.prev_state = self.state
         if self.state != 'paid' and (paid_amount >= self.total and self.total != 0):
             self.state = 'paid'
         elif self.state not in ['confirm','bill','bill2'] and (paid_amount < self.total and self.total != 0):
             self.state = 'bill2'
+
         # return
 
 

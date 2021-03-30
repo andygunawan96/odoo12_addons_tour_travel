@@ -50,22 +50,22 @@
                         <group string="User">
                             <label for="confirm_uid" string="Confirm By"/>
                             <div>
-                                <field name="confirm_uid" readonly="1" class="oe_inline"/> -
+                                <field name="confirm_uid" readonly="1" class="oe_inline"/> /
                                 <field name="confirm_date" readonly="1" class="oe_inline"/>
                             </div>
                             <label for="validate_uid" string="Validate By"/>
                             <div>
-                                <field name="validate_uid" readonly="1" class="oe_inline"/> -
+                                <field name="validate_uid" readonly="1" class="oe_inline"/> /
                                 <field name="validate_date" readonly="1" class="oe_inline"/>
                             </div>
 <!--                            <label for="recheck_uid" string="Recheck By"/>-->
 <!--                            <div>-->
-<!--                                <field name="recheck_uid" readonly="1" class="oe_inline"/> - -->
+<!--                                <field name="recheck_uid" readonly="1" class="oe_inline"/> / -->
 <!--                                <field name="recheck_date" readonly="1" class="oe_inline"/>-->
 <!--                            </div>-->
                             <label for="done_uid" string="Done By"/>
                             <div>
-                                <field name="done_uid" readonly="1" class="oe_inline"/> -
+                                <field name="done_uid" readonly="1" class="oe_inline"/> /
                                 <field name="done_date" readonly="1" class="oe_inline"/>
                             </div>
                         </group>
@@ -150,12 +150,12 @@
                         <group string="User">
                             <label for="confirm_uid" string="Confirm By"/>
                             <div>
-                                <field name="confirm_uid" readonly="1" class="oe_inline"/> -
+                                <field name="confirm_uid" readonly="1" class="oe_inline"/> /
                                 <field name="confirm_date" readonly="1" class="oe_inline"/>
                             </div>
                             <label for="inactive_uid" string="Inactive By"/>
                             <div>
-                                <field name="inactive_uid" readonly="1" class="oe_inline"/> -
+                                <field name="inactive_uid" readonly="1" class="oe_inline"/> /
                                 <field name="inactive_date" readonly="1" class="oe_inline"/>
                             </div>
                         </group>

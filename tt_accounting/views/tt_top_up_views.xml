@@ -30,17 +30,17 @@
                         <group>
                             <label for="request_uid" string="Request By"/>
                             <div>
-                                <field name="request_uid" readonly="1" class="oe_inline"/> -
+                                <field name="request_uid" readonly="1" class="oe_inline"/> /
                                 <field name="request_date" readonly="1" class="oe_inline"/>
                             </div>
                             <label for="approve_uid" string="Approve By"/>
                             <div>
-                                <field name="approve_uid" readonly="1" class="oe_inline"/> -
+                                <field name="approve_uid" readonly="1" class="oe_inline"/> /
                                 <field name="approve_date" readonly="1" class="oe_inline"/>
                             </div>
                             <label for="cancel_uid" string="Cancel By"/>
                             <div>
-                                <field name="cancel_uid" readonly="1" class="oe_inline"/> -
+                                <field name="cancel_uid" readonly="1" class="oe_inline"/> /
                                 <field name="cancel_date" readonly="1" class="oe_inline"/>
                             </div>
                             <field name="ledger_id"/>

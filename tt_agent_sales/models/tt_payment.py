@@ -80,7 +80,10 @@ class TtPaymentInvoiceRel(models.Model):
             missing_ammount = self.invoice_id.grand_total - self.invoice_id.paid_amount
             if self.payment_id.available_amount >= missing_ammount and self.pay_amount > missing_ammount:
                 self.pay_amount = missing_ammount
-                # raise exceptions.UserError("Pay amount c8hanged to missing amount")
+                # raise exceptions.UserError("Pay amount changed to missing amount")
+
+            if self.payment_id.available_amount < 0:
+                raise exceptions.UserError("Pay amount exceeded available amount")
 
     def action_approve(self):
         if self.pay_amount > self.payment_id.available_amount:
