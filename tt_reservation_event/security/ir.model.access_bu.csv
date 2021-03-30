@@ -1,5 +1,0 @@
-id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
-tt_ticket_event_for_all,tt_ticket_event_for_all,model_tt_ticket_event,,1,0,0,0
-tt_ticket_event_tour_travel_operator,tt_ticket_event_tour_travel_operator,model_tt_ticket_event,tt_base.group_tt_tour_travel_operator,1,1,0,0
-tt_ticket_event_external_vendor_operator,tt_ticket_event_external_vendor_operator,model_tt_ticket_event,tt_base.group_tt_external_vendor_operator,1,1,1,0
-tt_ticket_event_agent_user_operator,tt_ticket_event_agent_user_operator,model_tt_ticket_event,tt_base.group_tt_agent_user_operator,1,0,0,0

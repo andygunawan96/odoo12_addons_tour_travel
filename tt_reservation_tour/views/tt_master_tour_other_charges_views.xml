@@ -11,7 +11,7 @@
                     <div class="oe_button_box" name="button_box">
                         <button name="toggle_active" type="object"
                                 class="oe_stat_button" icon="fa-archive"
-                                groups="tt_base.group_tt_tour_division_operator,base.user_admin">
+                                groups="tt_base.group_tt_tour_division_operator,base.group_system">
                             <field name="active" widget="boolean_button"
                                    options='{"terminology": "archive"}'/>
                         </button>

@@ -7,14 +7,14 @@
         <field name="arch" type="xml">
             <form create="false">
                 <header>
-                    <button name="action_confirm" string="Confirm" type="object" groups="tt_base.group_tt_agent_finance_operator,tt_base.group_tt_agent_user_operator,base.user_admin" attrs="{'invisible':[('state','!=', 'draft')]}"/>
-                    <button name="action_request" string="Submit Request" type="object" groups="tt_base.group_tt_agent_finance_operator,tt_base.group_tt_agent_user_supervisor,base.user_admin" attrs="{'invisible':[('state','!=', 'confirm')]}"/>
-                    <button name="action_validate" string="Validate" type="object" groups="tt_base.group_tt_agent_finance_operator,base.user_admin" attrs="{'invisible':[('state','!=', 'request')]}"/>
-                    <button name="set_to_validate" string="Set to Validate" type="object" groups="tt_base.group_tt_agent_finance_manager,base.user_admin" attrs="{'invisible':[('state','!=', 'done')]}"/>
-                    <button name="action_done" string="Approve" type="object" groups="tt_base.group_tt_agent_finance_manager,base.user_admin" attrs="{'invisible':[('state','!=', 'validate')]}"/>
-                    <button name="action_reject" string="Reject" type="object" groups="tt_base.group_tt_agent_user_operator,base.user_admin" attrs="{'invisible':[('state','=','done')]}"/>
-                    <button name="set_to_done" string="Set to Done" type="object" groups="base.user_admin" attrs="{'invisible':[('state','=','done')]}"/>
-                    <button name="set_to_draft" string="Set to Draft" type="object" groups="tt_base.group_tt_agent_user_operator,base.user_admin" attrs="{'invisible':[('state','!=','reject')]}"/>
+                    <button name="action_confirm" string="Confirm" type="object" groups="tt_base.group_tt_agent_finance_operator,tt_base.group_tt_agent_user_operator,base.group_system" attrs="{'invisible':[('state','!=', 'draft')]}"/>
+                    <button name="action_request" string="Submit Request" type="object" groups="tt_base.group_tt_agent_finance_operator,tt_base.group_tt_agent_user_supervisor,base.group_system" attrs="{'invisible':[('state','!=', 'confirm')]}"/>
+                    <button name="action_validate" string="Validate" type="object" groups="tt_base.group_tt_agent_finance_operator,base.group_system" attrs="{'invisible':[('state','!=', 'request')]}"/>
+                    <button name="set_to_validate" string="Set to Validate" type="object" groups="tt_base.group_tt_agent_finance_manager,base.group_system" attrs="{'invisible':[('state','!=', 'done')]}"/>
+                    <button name="action_done" string="Approve" type="object" groups="tt_base.group_tt_agent_finance_manager,base.group_system" attrs="{'invisible':[('state','!=', 'validate')]}"/>
+                    <button name="action_reject" string="Reject" type="object" groups="tt_base.group_tt_agent_user_operator,base.group_system" attrs="{'invisible':[('state','=','done')]}"/>
+                    <button name="set_to_done" string="Set to Done" type="object" groups="base.group_system" attrs="{'invisible':[('state','=','done')]}"/>
+                    <button name="set_to_draft" string="Set to Draft" type="object" groups="tt_base.group_tt_agent_user_operator,base.group_system" attrs="{'invisible':[('state','!=','reject')]}"/>
                     <field name="state" widget="statusbar" statusbar_visible="draft,confirm,request,validate,done"/>
                 </header>
                 <sheet>
@@ -94,7 +94,7 @@
         <field name="name">tt.customer.parent.form.view.customer.admin</field>
         <field name="model">tt.customer.parent</field>
         <field name="inherit_id" ref="tt_base.tt_customer_parent_form_view_customer"/>
-        <field name="groups_id" eval="[(6, 0, [ref('base.user_admin') ])]" />
+        <field name="groups_id" eval="[(6, 0, [ref('base.group_system') ])]" />
         <field name="priority">40</field>
         <field name="arch" type="xml">
             <field name="customer_parent_type_id" position="replace">

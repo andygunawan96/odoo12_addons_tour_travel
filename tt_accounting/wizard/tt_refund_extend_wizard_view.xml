@@ -7,7 +7,7 @@
         <field name="arch" type="xml">
             <form string="Refund Extend Wizard">
                 <group>
-                    <field name="refund_id" groups="base.user_admin"/>
+                    <field name="refund_id" groups="base.group_system"/>
                     <field name="new_refund_date"/>
                 </group>
                 <footer>

@@ -7,8 +7,8 @@
             <form>
                 <header>
                     <button string="Go to Reservation" name="open_reservation" type="object"/>
-<!--                    <button string="Fill Reference" name="fill_reference" type="object" help="Fill the reference field for empty IVL" groups="base.user_admin"/>-->
-<!--                    <button string="Compute PNR" name="compute_pnr" type="object" help="Compute PNR" groups="base.user_admin"/>-->
+<!--                    <button string="Fill Reference" name="fill_reference" type="object" help="Fill the reference field for empty IVL" groups="base.group_system"/>-->
+<!--                    <button string="Compute PNR" name="compute_pnr" type="object" help="Compute PNR" groups="base.group_system"/>-->
                     <button name="open_split_wizard" string="Split" type="object"
                             context = "{'default_reservation_model': res_model_resv,'default_reservation_id': res_id_resv }"/>
                     <button name="open_merge_wizard" string="Merge" type="object"
@@ -24,8 +24,8 @@
                         <field name="invoice_id"/>
                         <field name="reference"/>
                         <field name="pnr"/>
-                        <field name="res_model_resv" groups="base.user_admin"/>
-                        <field name="res_id_resv" groups="base.user_admin"/>
+                        <field name="res_model_resv" groups="base.group_system"/>
+                        <field name="res_id_resv" groups="base.group_system"/>
                         <field name="desc"/>
                         <field name="currency_id" invisible="1"/>
                     </group>

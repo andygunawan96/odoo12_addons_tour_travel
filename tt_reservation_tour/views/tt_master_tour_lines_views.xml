@@ -8,6 +8,7 @@
                     <button string="Validate" name="action_validate" type="object" attrs="{'invisible': ['|', ('state', '!=', 'draft'), ('provider_id', '!=', %(tt_reservation_tour.tt_provider_tour_internal)d)]}" groups="tt_base.group_tt_tour_division_operator"/>
                     <button string="Cancel" name="action_cancel" type="object" attrs="{'invisible': ['|', ('state', 'not in', ['draft','open']), ('provider_id', '!=', %(tt_reservation_tour.tt_provider_tour_internal)d)]}" groups="tt_base.group_tt_tour_division_operator"/>
                     <button string="Sold Out" name="action_sold" type="object" attrs="{'invisible': ['|', ('state', 'not in', ['draft','open','definite']), ('provider_id', '!=', %(tt_reservation_tour.tt_provider_tour_internal)d)]}" groups="tt_base.group_tt_tour_division_operator"/>
+                    <button string="Set to On Going" name="action_on_going" type="object" attrs="{'invisible': ['|', ('state', 'not in', ['open','definite','sold']), ('provider_id', '!=', %(tt_reservation_tour.tt_provider_tour_internal)d)]}" groups="tt_base.group_tt_tour_division_operator"/>
                     <button string="Close" name="action_closed" type="object" attrs="{'invisible': ['|', ('state', 'in', ['cancel', 'closed']), ('provider_id', '!=', %(tt_reservation_tour.tt_provider_tour_internal)d)]}" groups="tt_base.group_tt_tour_division_operator"/>
                     <button string="Re-Open" name="action_reopen" type="object" attrs="{'invisible': ['|', ('state', 'not in', ['cancel', 'sold', 'closed']), ('provider_id', '!=', %(tt_reservation_tour.tt_provider_tour_internal)d)]}" groups="tt_base.group_tt_tour_division_operator"/>
                     <button string="Set to Draft" name="set_to_draft" type="object" attrs="{'invisible': ['|', ('state', '=', 'draft'), ('provider_id', '!=', %(tt_reservation_tour.tt_provider_tour_internal)d)]}" groups="tt_base.group_tt_tour_division_operator"/>
@@ -17,7 +18,7 @@
                     <div class="oe_button_box" name="button_box">
                         <button name="toggle_active" type="object"
                                 class="oe_stat_button" icon="fa-archive"
-                                groups="tt_base.group_tt_tour_division_operator,base.user_admin">
+                                groups="tt_base.group_tt_tour_division_operator,base.group_system">
                             <field name="active" widget="boolean_button"
                                    options='{"terminology": "archive"}'/>
                         </button>

@@ -8,7 +8,7 @@
             <form string="Create User Wizard">
                 <group>
 <!--                    <field name="level"/>-->
-                    <field name="user_template" domain="[('name', 'ilike', context.get('agent_type_code') + ' Agent Template')]" options="{'no_create_edit':True}" required="1"/>
+                    <field name="user_template" domain="[('is_user_template', '=', True), ('agent_type_id', '=', context.get('agent_type_id'))]" options="{'no_create_edit':True}" required="1"/>
                 </group>
                 <footer>
                     <button name="create_user" string="Create User" type="object" default_focus="1" class="oe_highlight"/>

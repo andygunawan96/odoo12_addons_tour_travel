@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <record id="res_employee_form_view" model="ir.ui.view">
-        <field name="name">res.employee.form.view</field>
-        <field name="model">res.employee</field>
+    <record id="tt_employee_form_view" model="ir.ui.view">
+        <field name="name">tt.employee.form.view</field>
+        <field name="model">tt.employee</field>
         <field name="arch" type="xml">
             <form>
                 <sheet>
@@ -29,9 +29,9 @@
         </field>
     </record>
 
-    <record id="res_employee_tree_view" model="ir.ui.view">
-        <field name="name">res.employee.tree.view</field>
-        <field name="model">res.employee</field>
+    <record id="tt_employee_tree_view" model="ir.ui.view">
+        <field name="name">tt.employee.tree.view</field>
+        <field name="model">tt.employee</field>
         <field name="arch" type="xml">
             <tree>
                 <field name="name"/>
@@ -40,24 +40,24 @@
         </field>
     </record>
 
-    <record id="res_employee_action_view" model="ir.actions.act_window">
+    <record id="tt_employee_action_view" model="ir.actions.act_window">
         <field name="name">Employee</field>
         <field name="type">ir.actions.act_window</field>
-        <field name="res_model">res.employee</field>
+        <field name="res_model">tt.employee</field>
         <field name="view_type">form</field>
         <field name="view_mode">tree,form</field>
         <field name="domain">[]</field>
         <field name="context">
             {
-            'form_view_ref': 'tt_base.res_employee_form_view',
-            'tree_view_ref': 'tt_base.res_employee_tree_view'
+            'form_view_ref': 'tt_base.tt_employee_form_view',
+            'tree_view_ref': 'tt_base.tt_employee_tree_view'
             }
         </field>
     </record>
 
 <!--    <menuitem id="menu_tour_travel_employee"-->
 <!--              parent="tt_base.top_tour_travel_customers"-->
-<!--              action="tt_base.res_employee_action_view"-->
+<!--              action="tt_base.tt_employee_action_view"-->
 <!--              name="Employee"-->
 <!--              sequence="4"-->
 <!--              groups="base.group_user"/>-->

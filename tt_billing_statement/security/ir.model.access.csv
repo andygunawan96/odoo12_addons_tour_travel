@@ -2,3 +2,15 @@ id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
 access_tt_billing_statement_tt_billing_statement,access.tt.billing.statement.tt.billing.statement.tt.billing.statement,model_tt_billing_statement,,1,1,1,1
 access_tt_billing_statement_tt_billing_cycle_for_admin,access.tt.billing.statement.tt.billing.statement,model_tt_billing_cycle,base.group_system,1,1,1,1
 access_tt_billing_statement_tt_billing_cycle_for_public,access.tt.billing.statement.tt.billing.cycle.for.public,model_tt_billing_cycle,,1,0,0,0
+
+access_tt_billing_statement_for_billing_statement_level_1,access.tt.billing.statement.for.billing.statement.level.1,model_tt_billing_statement,tt_base.group_billing_statement_level_1,1,0,0,0
+access_tt_billing_statement_for_billing_statement_level_2,access.tt.billing.statement.for.billing.statement.level.2,model_tt_billing_statement,tt_base.group_billing_statement_level_2,1,0,1,0
+access_tt_billing_statement_for_billing_statement_level_3,access.tt.billing.statement.for.billing.statement.level.3,model_tt_billing_statement,tt_base.group_billing_statement_level_3,1,1,1,0
+access_tt_billing_statement_for_billing_statement_level_4,access.tt.billing.statement.for.billing.statement.level.4,model_tt_billing_statement,tt_base.group_billing_statement_level_4,1,1,1,0
+access_tt_billing_statement_for_billing_statement_level_5,access.tt.billing.statement.for.billing.statement.level.5,model_tt_billing_statement,tt_base.group_billing_statement_level_5,1,1,1,1
+
+access_tt_billing_cycle_for_billing_statement_level_1,access.tt.billing.cycle.for.billing.statement.level.1,model_tt_billing_cycle,tt_base.group_billing_statement_level_1,1,0,0,0
+access_tt_billing_cycle_for_billing_statement_level_2,access.tt.billing.cycle.for.billing.statement.level.2,model_tt_billing_cycle,tt_base.group_billing_statement_level_2,1,0,1,0
+access_tt_billing_cycle_for_billing_statement_level_3,access.tt.billing.cycle.for.billing.statement.level.3,model_tt_billing_cycle,tt_base.group_billing_statement_level_3,1,1,1,0
+access_tt_billing_cycle_for_billing_statement_level_4,access.tt.billing.cycle.for.billing.statement.level.4,model_tt_billing_cycle,tt_base.group_billing_statement_level_4,1,1,1,0
+access_tt_billing_cycle_for_billing_statement_level_5,access.tt.billing.cycle.for.billing.statement.level.5,model_tt_billing_cycle,tt_base.group_billing_statement_level_5,1,1,1,1
