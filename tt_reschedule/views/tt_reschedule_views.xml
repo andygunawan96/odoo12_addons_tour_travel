@@ -99,8 +99,8 @@
                             <field name="pnr"/>
                             <field name="referenced_pnr"/>
                             <field name="referenced_document"/>
-                            <field name="res_model" groups="base.user_admin"/>
-                            <field name="res_id" groups="base.user_admin"/>
+                            <field name="res_model" groups="base.group_system"/>
+                            <field name="res_id" groups="base.group_system"/>
                             <button name="open_reference" string="Go to reference" type="object"
                                     attrs="{'invisible':['|',('res_model','=',False),('res_id','=',0)]}"/>
                         </group>

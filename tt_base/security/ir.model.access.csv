@@ -48,7 +48,7 @@ access_tt_agent_for_agent_level_5,tt.agent.for.agent.level.5,model_tt_agent,tt_b
 
 access_tt_agent_third_party_key_for_agent_user_operator,access.tt.agent.third.party.key.for.agent.user.operator,model_tt_agent_third_party_key,group_tt_agent_user_operator,1,1,0,0
 access_tt_agent_third_party_key_for_tour_travel_operator,access.tt.agent.third.party.key.for.tour.travel.operator,model_tt_agent_third_party_key,group_tt_tour_travel_operator,1,0,0,0
-access_tt_agent_third_party_key_for_admin,access.tt.agent.third.party.key.for.admin,model_tt_agent_third_party_key,base.user_admin,1,1,1,0
+access_tt_agent_third_party_key_for_admin,access.tt.agent.third.party.key.for.admin,model_tt_agent_third_party_key,base.group_system,1,1,1,0
 
 access_tt_customer_for_public,tt.customer.for.public,model_tt_customer,,1,0,0,0
 access_tt_customer_for_agent_user_operator,tt_customer.for.agent.user.operator,model_tt_customer,tt_base.group_tt_agent_user_operator,1,1,1,0
@@ -299,7 +299,7 @@ access_payment_acquirer_number_for_payment_acquirer_level_4,payment.acquirer.num
 access_payment_acquirer_number_for_payment_acquirer_level_5,payment.acquirer.number.for.payment.acquirer.level.5,model_payment_acquirer_number,tt_base.group_payment_acquirer_level_5,1,1,1,1
 
 access_unique_amount_for_public,unique.amount,model_unique_amount,,1,0,0,0
-access_unique_amount_for_admin,unique.amount,model_unique_amount,base.user_admin,1,1,1,1
+access_unique_amount_for_admin,unique.amount,model_unique_amount,base.group_system,1,1,1,1
 
 access_unique_amount_for_unique_amount_level_1,unique.amount.for.unique.amount.level.1,model_unique_amount,tt_base.group_unique_amount_level_1,1,0,0,0
 access_unique_amount_for_unique_amount_level_2,unique.amount.for.unique.amount.level.2,model_unique_amount,tt_base.group_unique_amount_level_2,1,0,1,0
@@ -461,7 +461,7 @@ access_tt_provider_code_for_public,tt.provider.code.for.public,model_tt_provider
 access_tt_provider_code_for_tour_travel_operator,tt.provider.code.for.tour.travel.operator,model_tt_provider_code,tt_base.group_tt_tour_travel_operator,1,0,0,0
 access_tt_provider_code_for_tour_travel_supervisor,tt.provider.code.for.tour.travel.supervisor,model_tt_provider_code,tt_base.group_tt_tour_travel_supervisor,1,0,1,0
 access_tt_provider_code_for_tour_travel_manager,tt.provider.code.for.tour.travel.manager,model_tt_provider_code,tt_base.group_tt_tour_travel_manager,1,1,1,0
-access_tt_provider_code_for_admin,tt.provider.code.for.admin,model_tt_provider_code,base.user_admin,1,1,1,1
+access_tt_provider_code_for_admin,tt.provider.code.for.admin,model_tt_provider_code,base.group_system,1,1,1,1
 
 access_tt_provider_code_for_provider_level_1,tt.provider.code.for.provider.level.1,model_tt_provider_code,tt_base.group_provider_level_1,1,0,0,0
 access_tt_provider_code_for_provider_level_2,tt.provider.code.for.provider.level.2,model_tt_provider_code,tt_base.group_provider_level_2,1,0,1,0
@@ -571,7 +571,7 @@ access_tt_provider_destination_city_for_provider_level_5,tt.provider.destination
 
 access_tt_provider_code_for_public,tt.provider.code.for.public,model_tt_provider_code,,1,0,0,0
 access_tt_provider_code_for_tour_travel_operator,tt.provider.code.for.tour_travel_operator,model_tt_provider_code,group_tt_tour_travel_operator,1,1,1,0
-access_tt_provider_code_for_admin,tt.provider.code.for.admin,model_tt_provider_code,base.user_admin,1,1,1,1
+access_tt_provider_code_for_admin,tt.provider.code.for.admin,model_tt_provider_code,base.group_system,1,1,1,1
 
 access_tt_provider_currency_for_public,tt.provider.currency.for.public,model_tt_provider_currency,,1,0,0,0
 access_tt_provider_currency_for_tour_travel_operator,tt.provider.currency.for.tour_travel_operator,model_tt_provider_currency,group_tt_tour_travel_operator,1,1,1,0
@@ -603,7 +603,7 @@ access_tt_frontend_security_for_frontend_security_level_5,tt.frontend.security.f
 access_tt_upload_center_for_agent_user_operator,tt.upload.center.for.agent.user.operator,model_tt_upload_center,,1,1,1,0
 access_tt_upload_center_for_tour_travel_operator,tt.upload.center.for.tour.travel.operator,model_tt_upload_center,,1,1,1,0
 access_tt_upload_center_for_tour_division_manager,tt.upload.center.for.tour.division.manager,model_tt_upload_center,group_tt_tour_division_manager,1,1,1,1
-access_tt_upload_center_for_admin,tt.upload.center.for.admin,model_tt_upload_center,base.user_admin,1,1,1,1
+access_tt_upload_center_for_admin,tt.upload.center.for.admin,model_tt_upload_center,base.group_system,1,1,1,1
 
 access_tt_upload_center_for_upload_center_level_1,tt.upload.center.for.upload.center.level.1,model_tt_upload_center,tt_base.group_upload_center_level_1,1,0,0,0
 access_tt_upload_center_for_upload_center_level_2,tt.upload.center.for.upload.center.level.2,model_tt_upload_center,tt_base.group_upload_center_level_2,1,0,1,0
@@ -657,7 +657,7 @@ tt_fare_rules_for_transport_carrier_level_5,tt.fare.rules.for.transport.carrier.
 
 tt_ban_user_for_public,tt_base.tt_ban_user_for_public,model_tt_ban_user,,1,0,0,0
 tt_ban_user_for_agent_management_operator,tt_base.tt_ban_user_for_agent_management_operator,model_tt_ban_user,tt_base.group_tt_agent_management_operator,1,1,1,0
-tt_ban_user_for_admin,tt_base.tt_ban_user_for_admin,model_tt_ban_user,base.user_admin,1,1,1,1
+tt_ban_user_for_admin,tt_base.tt_ban_user_for_admin,model_tt_ban_user,base.group_system,1,1,1,1
 
 tt_ban_user_for_banned_users_level_1,tt_base.tt_ban_user_for_banned_users_level_1,model_tt_ban_user,tt_base.group_banned_users_level_1,1,0,0,0
 tt_ban_user_for_banned_users_level_2,tt_base.tt_ban_user_for_banned_users_level_2,model_tt_ban_user,tt_base.group_banned_users_level_2,1,0,1,0
@@ -667,7 +667,7 @@ tt_ban_user_for_banned_users_level_5,tt_base.tt_ban_user_for_banned_users_level_
 
 access_for_tt_pnr_quota_for_public,tt_base.access_for_tt_pnr_quota_for_public,model_tt_pnr_quota,,1,0,0,0
 access_for_tt_pnr_quota_for_agent_management_operator,tt_base.access_for_tt_pnr_quota_for_agent_management_operator,model_tt_pnr_quota,tt_base.group_tt_agent_management_operator,1,1,1,0
-access_for_tt_pnr_quota_for_admin,tt_base.access_for_tt_pnr_quota_for_admin,model_tt_pnr_quota,base.user_admin,1,1,1,1
+access_for_tt_pnr_quota_for_admin,tt_base.access_for_tt_pnr_quota_for_admin,model_tt_pnr_quota,base.group_system,1,1,1,1
 
 access_for_tt_pnr_quota_for_pnr_quota_level_1,tt_base.access_for_tt_pnr_quota_for_pnr_quota_level_1,model_tt_pnr_quota,tt_base.group_pnr_quota_level_1,1,0,0,0
 access_for_tt_pnr_quota_for_pnr_quota_level_2,tt_base.access_for_tt_pnr_quota_for_pnr_quota_level_2,model_tt_pnr_quota,tt_base.group_pnr_quota_level_2,1,0,1,0
@@ -677,7 +677,7 @@ access_for_tt_pnr_quota_for_pnr_quota_level_5,tt_base.access_for_tt_pnr_quota_fo
 
 access_for_tt_pnr_quota_price_list_for_public,tt_base.access_for_tt_pnr_quota_price_list_for_public,model_tt_pnr_quota_price_list,,1,0,0,0
 access_for_tt_pnr_quota_price_list_for_agent_management_operator,tt_base.access_for_tt_pnr_quota_price_list_for_agent_management_operator,model_tt_pnr_quota_price_list,tt_base.group_tt_agent_management_operator,1,1,1,0
-access_for_tt_pnr_quota_price_list_for_admin,tt_base.access_for_tt_pnr_quota_price_list_for_admin,model_tt_pnr_quota_price_list,base.user_admin,1,1,1,1
+access_for_tt_pnr_quota_price_list_for_admin,tt_base.access_for_tt_pnr_quota_price_list_for_admin,model_tt_pnr_quota_price_list,base.group_system,1,1,1,1
 
 access_for_tt_pnr_quota_price_list_for_pnr_quota_level_1,tt_base.access_for_tt_pnr_quota_price_list_for_pnr_quota_level_1,model_tt_pnr_quota_price_list,tt_base.group_pnr_quota_level_1,1,0,0,0
 access_for_tt_pnr_quota_price_list_for_pnr_quota_level_2,tt_base.access_for_tt_pnr_quota_price_list_for_pnr_quota_level_2,model_tt_pnr_quota_price_list,tt_base.group_pnr_quota_level_2,1,0,1,0
@@ -687,7 +687,7 @@ access_for_tt_pnr_quota_price_list_for_pnr_quota_level_5,tt_base.access_for_tt_p
 
 access_for_tt_pnr_quota_price_package_for_public,tt_base.access_for_tt_pnr_quota_price_package_for_public,model_tt_pnr_quota_price_package,,1,0,0,0
 access_for_tt_pnr_quota_price_package_for_agent_management_operator,tt_base.access_for_tt_pnr_quota_price_package_for_agent_management_operator,model_tt_pnr_quota_price_package,tt_base.group_tt_agent_management_operator,1,1,1,0
-access_for_tt_pnr_quota_price_package_for_admin,tt_base.access_for_tt_pnr_quota_price_package_for_admin,model_tt_pnr_quota_price_package,base.user_admin,1,1,1,1
+access_for_tt_pnr_quota_price_package_for_admin,tt_base.access_for_tt_pnr_quota_price_package_for_admin,model_tt_pnr_quota_price_package,base.group_system,1,1,1,1
 
 access_for_tt_pnr_quota_price_package_for_pnr_quota_level_1,tt_base.access_for_tt_pnr_quota_price_package_for_pnr_quota_level_1,model_tt_pnr_quota_price_package,tt_base.group_pnr_quota_level_1,1,0,0,0
 access_for_tt_pnr_quota_price_package_for_pnr_quota_level_2,tt_base.access_for_tt_pnr_quota_price_package_for_pnr_quota_level_2,model_tt_pnr_quota_price_package,tt_base.group_pnr_quota_level_2,1,0,1,0
@@ -697,7 +697,7 @@ access_for_tt_pnr_quota_price_package_for_pnr_quota_level_5,tt_base.access_for_t
 
 access_for_tt_pnr_quota_usage_for_public,tt_base.access_for_tt_pnr_quota_usage_for_public,model_tt_pnr_quota_usage,,1,0,0,0
 access_for_tt_pnr_quota_usage_for_agent_management_operator,tt_base.access_for_tt_pnr_quota_usage_for_agent_management_operator,model_tt_pnr_quota_usage,tt_base.group_tt_agent_management_operator,1,1,1,0
-access_for_tt_pnr_quota_usage_for_admin,tt_base.access_for_tt_pnr_quota_usage_for_admin,model_tt_pnr_quota_usage,base.user_admin,1,1,1,1
+access_for_tt_pnr_quota_usage_for_admin,tt_base.access_for_tt_pnr_quota_usage_for_admin,model_tt_pnr_quota_usage,base.group_system,1,1,1,1
 
 access_for_tt_pnr_quota_usage_for_pnr_quota_level_1,tt_base.access_for_tt_pnr_quota_usage_for_pnr_quota_level_1,model_tt_pnr_quota_usage,tt_base.group_pnr_quota_level_1,1,0,0,0
 access_for_tt_pnr_quota_usage_for_pnr_quota_level_2,tt_base.access_for_tt_pnr_quota_usage_for_pnr_quota_level_2,model_tt_pnr_quota_usage,tt_base.group_pnr_quota_level_2,1,0,1,0
@@ -706,7 +706,7 @@ access_for_tt_pnr_quota_usage_for_pnr_quota_level_4,tt_base.access_for_tt_pnr_qu
 access_for_tt_pnr_quota_usage_for_pnr_quota_level_5,tt_base.access_for_tt_pnr_quota_usage_for_pnr_quota_level_5,model_tt_pnr_quota_usage,tt_base.group_pnr_quota_level_5,1,1,1,1
 
 access_for_tt_email_queue_for_public,tt_base.access_for_tt_email_queue_for_public,model_tt_email_queue,,1,0,0,0
-access_for_tt_email_queue_for_admin,tt_base.access_for_tt_email_queue_for_admin,model_tt_email_queue,base.user_admin,1,1,1,1
+access_for_tt_email_queue_for_admin,tt_base.access_for_tt_email_queue_for_admin,model_tt_email_queue,base.group_system,1,1,1,1
 
 access_for_tt_email_queue_for_email_queue_level_1,tt_base.access_for_tt_email_queue_for_email_queue_level_1,model_tt_email_queue,tt_base.group_email_queue_level_1,1,0,0,0
 access_for_tt_email_queue_for_email_queue_level_1,tt_base.access_for_tt_email_queue_for_email_queue_level_1,model_tt_email_queue,tt_base.group_email_queue_level_2,1,0,1,0
@@ -737,7 +737,7 @@ tt_loyalty_program_for_loyalty_program_level_1,tt.loyalty.program.for.loyalty.pr
 
 tt_public_holiday_for_all,tt.public.holiday.for.all,model_tt_public_holiday,,0,0,0,0
 tt_public_holiday_for_tour_travel_operator,tt.public.holiday.for.tour.travel.operator,model_tt_public_holiday,tt_base.group_tt_tour_travel_operator,1,1,1,0
-tt_public_holiday_for_admin,tt.public.holiday.for.admin,model_tt_public_holiday,base.user_admin,1,1,1,1
+tt_public_holiday_for_admin,tt.public.holiday.for.admin,model_tt_public_holiday,base.group_system,1,1,1,1
 
 tt_public_holiday_for_public_holiday_level_1,tt.public.holiday.for.public.holiday.level.1,model_tt_public_holiday,tt_base.group_public_holiday_level_1,1,0,0,0
 tt_public_holiday_for_public_holiday_level_2,tt.public.holiday.for.public.holiday.level.2,model_tt_public_holiday,tt_base.group_public_holiday_level_2,1,0,1,0

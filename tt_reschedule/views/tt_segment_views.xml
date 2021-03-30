@@ -90,7 +90,7 @@
                             </group>
                         </form>
                     </field>
-                    <field name="passenger_ids" groups="base.user_admin"/>
+                    <field name="passenger_ids" groups="base.group_system"/>
                 </sheet>
             </form>
         </field>

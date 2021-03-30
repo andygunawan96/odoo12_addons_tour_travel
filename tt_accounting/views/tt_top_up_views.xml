@@ -6,8 +6,8 @@
         <field name="arch" type="xml">
             <form string="Partners Travel Customer" create="false">
                 <header>
-                    <button name="test_set_as_draft" string="set as draft" type="object" groups="base.user_admin"/>
-                    <button name="test_set_as_request" string="set as request" type="object" groups="base.user_admin"/>
+                    <button name="test_set_as_draft" string="set as draft" type="object" groups="base.group_system"/>
+                    <button name="test_set_as_request" string="set as request" type="object" groups="base.group_system"/>
                     <button name="action_set_back_to_request" string="Set back to request" type="object" state="expired" groups="tt_base.group_tt_accounting_supervisor"/>
                     <button name="action_reject_from_button" string="Reject" attrs="{'invisible':[('state','!=','request')]}" type="object" groups="tt_base.group_tt_tour_travel_operator"/>
                     <field name="state" widget="statusbar" statusbar_visible="draft,request,validated,approved"/>

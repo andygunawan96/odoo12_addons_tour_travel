@@ -9,8 +9,8 @@
                 <form edit="false" create="false">
                     <header>
                         <field name="state_offline" invisible="1"/>
-                        <button string="Generate Letter of Guarantee" class="oe_highlight" name="generate_lg" type="object" attrs="{'invisible': ['|', ('is_lg_required', '!=', True), ('state_offline', 'not in', ['validate', 'done'])]}" groups="tt_base.group_tt_accounting_manager,tt_base.group_tt_tour_travel_manager,base.user_admin"/>
-                        <button string="Generate Purchase Order" class="oe_highlight" name="generate_po" type="object" attrs="{'invisible': ['|', ('is_po_required', '!=', True), ('state_offline', 'not in', ['validate', 'done'])]}" groups="tt_base.group_tt_accounting_manager,tt_base.group_tt_tour_travel_manager,base.user_admin"/>
+                        <button string="Generate Letter of Guarantee" class="oe_highlight" name="generate_lg" type="object" attrs="{'invisible': ['|', ('is_lg_required', '!=', True), ('state_offline', 'not in', ['validate', 'done'])]}" groups="tt_base.group_tt_accounting_manager,tt_base.group_tt_tour_travel_manager,base.group_system"/>
+                        <button string="Generate Purchase Order" class="oe_highlight" name="generate_po" type="object" attrs="{'invisible': ['|', ('is_po_required', '!=', True), ('state_offline', 'not in', ['validate', 'done'])]}" groups="tt_base.group_tt_accounting_manager,tt_base.group_tt_tour_travel_manager,base.group_system"/>
                         <field name="state" readonly="1" widget="statusbar" statusbar_visible="draft,booked,issued"/>
                     </header>
                     <sheet>
