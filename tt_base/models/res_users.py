@@ -67,6 +67,8 @@ class ResUsers(models.Model):
     time_format = fields.Selection(TIME_FORMAT, 'Time Format')
     user_type = fields.Selection(USER_TYPE, 'User Type')
     device_type = fields.Selection(DEVICE_TYPE, 'Device Type')
+    is_user_template = fields.Boolean('Is User Template', default=False)
+    agent_type_id = fields.Many2one('tt.agent.type', 'Agent Type')
     access_activity_ids = fields.One2many('tt.access.activity', 'user_id', 'Access Activities')
 
     ####security utk django

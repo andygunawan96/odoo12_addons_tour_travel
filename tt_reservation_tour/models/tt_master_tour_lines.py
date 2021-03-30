@@ -66,10 +66,13 @@ class MasterTourLines(models.Model):
                 self.tour_line_code = self.env['ir.sequence'].next_by_code('master.tour.line.code')
 
     def action_closed(self):
-        self.state = 'on_going'
+        self.state = 'closed'
 
     def action_definite(self):
         self.state = 'definite'
+
+    def action_on_going(self):
+        self.state = 'on_going'
 
     def action_cancel(self):
         self.state = 'cancel'

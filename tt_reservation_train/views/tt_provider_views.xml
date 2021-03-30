@@ -30,7 +30,7 @@
                 <sheet>
                     <group>
                         <group>
-                            <!--                            <field name="is_ledger_created" groups="base.user_admin"/>-->
+                            <!--                            <field name="is_ledger_created" groups="base.group_system"/>-->
                             <field name="sequence"/>
                             <field name="booking_id"/>
                             <field name="pnr"/>

@@ -21,8 +21,8 @@
         <field name="arch" type="xml">
             <form string="">
                 <header>
-<!--                    <button string="Update Activity UUID" name="update_activity_uuid_temp" type="object" groups="base.user_admin"/>-->
-<!--                    <button string="Update Activity Lines UUID" name="update_activity_lines_uuid_temp" type="object" groups="base.user_admin"/>-->
+<!--                    <button string="Update Activity UUID" name="update_activity_uuid_temp" type="object" groups="base.group_system"/>-->
+<!--                    <button string="Update Activity Lines UUID" name="update_activity_lines_uuid_temp" type="object" groups="base.group_system"/>-->
                 </header>
                 <sheet>
                     <div class="oe_button_box" name="button_box">

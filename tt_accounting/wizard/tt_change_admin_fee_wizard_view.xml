@@ -7,10 +7,10 @@
         <field name="arch" type="xml">
             <form string="Change Admin Fee Wizard">
                 <group>
-                    <field name="agent_id" groups="base.user_admin"/>
-                    <field name="agent_type_id" groups="base.user_admin"/>
-                    <field name="res_model" groups="base.user_admin"/>
-                    <field name="res_id" groups="base.user_admin"/>
+                    <field name="agent_id" groups="base.group_system"/>
+                    <field name="agent_type_id" groups="base.group_system"/>
+                    <field name="res_model" groups="base.group_system"/>
+                    <field name="res_id" groups="base.group_system"/>
                     <field name="admin_fee_id"/>
                 </group>
                 <footer>

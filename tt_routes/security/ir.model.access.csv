@@ -1,9 +1,0 @@
-id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
-
-access_tt_agent_type_for_public,tt.agent.type.for.public,model_tt_agent_type,,1,0,0,0
-access_tt_agent_type_for_agent_management_operator,tt.agent.type.for.agent.man.operator,model_tt_agent_type,group_tt_agent_management_operator,1,0,0,0
-access_tt_agent_type_for_agent_management_supervisor,tt.agent.type.for.agent.man.supervisor,model_tt_agent_type,group_tt_agent_management_supervisor,1,1,1,0
-access_tt_agent_type_for_agent_management_manager,tt.agent.type.for.agent.man.manager,model_tt_agent_type,group_tt_agent_management_manager,1,1,1,1
-access_tt_agent_type_for_tour_travel_operator,tt.agent.type.for.tour.travel.operator,model_tt_agent_type,group_tt_tour_travel_operator,1,0,0,0
-access_tt_agent_type_for_tour_travel_supervisor,tt.agent.type.for.tour.travel.supervisor,model_tt_agent_type,group_tt_tour_travel_supervisor,1,0,0,0
-access_tt_agent_type_for_tour_travel_manager,tt.agent.type.for.tour.travel.manager,model_tt_agent_type,group_tt_tour_travel_manager,1,0,0,0

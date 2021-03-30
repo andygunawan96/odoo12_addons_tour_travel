@@ -149,8 +149,7 @@ class TtAgent(models.Model):
             'target': 'new',
             'context': {
                 'agent_id': self.id,
-                'agent_type_id': self.agent_type_id.id,
-                'agent_type_code': self.agent_type_id.code,
+                'agent_type_id': self.agent_type_id.id
             },
         }
         return vals
