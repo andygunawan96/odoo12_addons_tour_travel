@@ -73,6 +73,7 @@
                                 <field name="account_name" attrs="{'invisible': [('type','not in',['payment_gateway','transfer','debit','credit','va'])]}"/>
                                 <field name="cust_fee" attrs="{'invisible': [('type','not in',['debit','credit'])]}"/>
                                 <field name="bank_fee" attrs="{'invisible': [('type','not in',['debit','credit'])]}"/>
+                                <field name="show_device_type" attrs="{'invisible': [('type','not in',['va','payment_gateway'])]}"/>
                                 <field name="va_fee_type" attrs="{'invisible': [('type','not in',['va','payment_gateway'])]}"/>
                                 <field name="va_fee" attrs="{'invisible': [('type','not in',['va','payment_gateway'])]}"/>
                             </group>
@@ -130,6 +131,7 @@
                                 <field name="account_number" attrs="{'invisible': [('type','not in',['transfer','debit','credit','va','payment_gateway'])]}" readonly="1"/>
                                 <field name="account_name" attrs="{'invisible': [('type','not in',['transfer','debit','credit','va','payment_gateway'])]}" readonly="1"/>
                                 <field name="cust_fee" attrs="{'invisible': [('type','not in',['debit','credit'])]}" readonly="1"/>
+                                <field name="show_device_type" attrs="{'invisible': [('type','not in',['va','payment_gateway'])]}"/>
                                 <field name="bank_fee" attrs="{'invisible': [('type','not in',['debit','credit'])]}" readonly="1"/>
                                 <field name="va_fee" attrs="{'invisible': [('type','not in',['va','payment_gateway'])]}" readonly="1"/>
                             </group>
