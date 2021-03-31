@@ -5,6 +5,7 @@
             <field name="name">Rodextrip</field>
             <field name="agent_type_id" ref="agent_type_btc"/>
             <field name="email">info@rodextrip.com</field>
+            <field name="is_send_email_cust" eval="True"/>
         </record>
 
         <record id="agent_b2c_user" model="res.users">
