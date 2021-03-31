@@ -32,6 +32,7 @@ class PaymentAcquirer(models.Model):
     description_msg = fields.Text('Description')
     va_fee_type = fields.Selection([('flat', 'Flat'), ('percentage', 'Percentage')], 'Fee Type VA', default='flat')
     show_device_type = fields.Selection([('web', 'Website'), ('mobile', 'Mobile'), ('all', 'All')], 'Show Device', default='all')
+    save_url = fields.Boolean('Save URL')
 
     @api.model
     def create(self, vals_list):
@@ -112,6 +113,7 @@ class PaymentAcquirer(models.Model):
                 'unique_amount': uniq,
             },
             'online_wallet': self.online_wallet,
+            'save_url': self.save_url,
             'show_device_type': self.show_device_type,
             'total_amount': float(amount) + uniq + fee,
             'image': self.bank_id.image_id and self.bank_id.image_id.url or '',
