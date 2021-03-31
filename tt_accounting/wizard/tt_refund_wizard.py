@@ -104,6 +104,8 @@ class TtRefundWizard(models.TransientModel):
                 self.env['tt.refund.api.con'].send_refund_request(data)
         if referenced_document_external == '':
             referenced_document_external = self.referenced_document_external
+
+        default_adm_fee = self.env['tt.refund'].get_refund_admin_fee_rule(self.agent_id.id)
         refund_obj = self.env['tt.refund'].create({
             'agent_id': self.agent_id.id,
             'customer_parent_id': self.customer_parent_id.id,
@@ -111,7 +113,7 @@ class TtRefundWizard(models.TransientModel):
             'currency_id': self.currency_id.id,
             'service_type': self.service_type,
             'refund_type_id': self.refund_type_id.id,
-            'admin_fee_id': self.env.ref('tt_accounting.admin_fee_refund_regular').id,
+            'admin_fee_id': default_adm_fee.id,
             'referenced_document': self.referenced_document,
             'referenced_pnr': self.referenced_pnr,
             'res_model': self.res_model,

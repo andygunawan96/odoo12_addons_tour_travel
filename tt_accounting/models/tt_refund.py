@@ -275,12 +275,15 @@ class TtRefund(models.Model):
             rec.real_refund_amount = temp_total
 
     def get_refund_admin_fee_rule(self, agent_id):
-        current_refund_env = self.env.ref('tt_accounting.admin_fee_refund_regular')
-        refund_admin_fee_list = self.env['tt.master.admin.fee'].search([('after_sales_type', '=', 'refund')])
+        refund_admin_fee_list = self.env['tt.master.admin.fee'].search([('after_sales_type', '=', 'refund')], order='sequence, id desc')
+        if not refund_admin_fee_list:
+            current_refund_env = self.env.ref('tt_accounting.admin_fee_refund_regular')
+        else:
+            current_refund_env = refund_admin_fee_list[0]
         for admin_fee in refund_admin_fee_list:
             if agent_id in admin_fee.agent_ids.ids:
                 current_refund_env = admin_fee
-                # TODO perlu di break disini atau ambil yg paling trakhir?
+                break
         return current_refund_env
 
     def get_refund_fee_amount(self, agent_id, order_number='', order_type='', refund_amount=0, passenger_count=0):

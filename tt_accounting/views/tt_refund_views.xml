@@ -94,7 +94,7 @@
                         'default_adj_type': -3,
                         'hide_component_type': True
                    }"/>
-                    <button name="convert_refund_type" string="Convert Refund Type" type="object" groups="base.group_system"/>
+<!--                    <button name="convert_refund_type" string="Convert Refund Type" type="object" groups="base.group_system"/>-->
                     <field name="state" widget="statusbar" statusbar_visible="draft,confirm,sent,validate,final,approve,done"/>
                 </header>
                 <sheet>
