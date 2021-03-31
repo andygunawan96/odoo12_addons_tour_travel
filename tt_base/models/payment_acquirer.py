@@ -363,7 +363,7 @@ class PaymentAcquirerNumber(models.Model):
             #check datetime
             date_now = datetime.now()
             time_delta = date_now - payment_acq_number[len(payment_acq_number)-1].create_date
-            if divmod(time_delta.seconds, 3600)[0] > 0 or self.time_limit and datetime.now() > self.time_limit or  payment_acq_number[len(payment_acq_number)-1] != 'close':
+            if divmod(time_delta.seconds, 3600)[0] > 0 or payment_acq_number[len(payment_acq_number)-1].time_limit and datetime.now() > payment_acq_number[len(payment_acq_number)-1].time_limit or payment_acq_number[len(payment_acq_number)-1] != 'close':
                 for rec in payment_acq_number:
                     if rec.state == 'close':
                         rec.state = 'cancel'
@@ -406,7 +406,7 @@ class PaymentAcquirerNumber(models.Model):
             # check datetime
             date_now = datetime.now()
             time_delta = date_now - payment_acq_number[len(payment_acq_number) - 1].create_date
-            if divmod(time_delta.seconds, 3600)[0] == 0 or datetime.now() < self.time_limit and self.time_limit and payment_acq_number[len(payment_acq_number) - 1].state == 'close':
+            if divmod(time_delta.seconds, 3600)[0] == 0 or datetime.now() < payment_acq_number[len(payment_acq_number)-1].time_limit and payment_acq_number[len(payment_acq_number)-1].time_limit and payment_acq_number[len(payment_acq_number) - 1].state == 'close':
                 book_obj = self.env['tt.reservation.%s' % data['provider']].search([('name', '=', '%s.%s' % (data['order_number'].split('.')[0],data['order_number'].split('.')[1]))], limit=1)
                 res = {
                     'order_number': data['order_number'],

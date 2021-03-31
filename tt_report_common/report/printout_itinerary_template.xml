@@ -199,15 +199,17 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <tr>
-                                <td><span t-field="provider_itin_id.pnr"/></td>
-                                <!--Jadi nya MM/DD/YYYY-->
-                                <!--<td><span t-field="provider_itin_id.visit_date" t-options="{'widget': 'date'}"/></td> -->
-                                <td><span t-esc="provider_itin_id.visit_date.strftime('%d %B %Y')"/></td>
-                                <td><t t-if="doc.timeslot"><span t-field="doc.timeslot"/></t><t t-else=""><span>-</span></t></td>
-                                <td><span t-field="provider_itin_id.activity_id.name"/><br/></td>
-                                <td><span t-field="provider_itin_id.activity_product_id.name"/></td>
-                            </tr>
+                            <t t-foreach="provider_itin_id.activity_detail_ids" t-as="activity_details">
+                                <tr>
+                                    <td><span t-field="provider_itin_id.pnr"/></td>
+                                    <!--Jadi nya MM/DD/YYYY-->
+                                    <!--<td><span t-field="provider_itin_id.visit_date" t-options="{'widget': 'date'}"/></td> -->
+                                    <td><span t-esc="activity_details.visit_date.strftime('%d %B %Y')"/></td>
+                                    <td><t t-if="activity_details.timeslot"><span t-field="activity_details.timeslot"/></t><t t-else=""><span>-</span></t></td>
+                                    <td><span t-field="activity_details.activity_id.name"/><br/></td>
+                                    <td><span t-field="activity_details.activity_product_id.name"/></td>
+                                </tr>
+                            </t>
                         </tbody>
                     </table>
 
