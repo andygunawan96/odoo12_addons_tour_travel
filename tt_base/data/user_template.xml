@@ -486,7 +486,8 @@
             <field name="is_user_template" eval="True"/>
             <field name="agent_type_id" eval="ref('tt_base.agent_type_ho')"/>
             <field name="groups_id"
-                   eval="[(4, ref('tt_base.group_tt_agent_finance')),
+                   eval="[(4, ref('tt_base.group_tt_agent_user')),
+                         (4, ref('tt_base.group_tt_agent_finance')),
                          (4, ref('tt_base.group_master_data_hotel_level_1')),
                          (4, ref('tt_base.group_master_data_passport_level_1')),
                          (4, ref('tt_base.group_master_data_activity_level_1')),
@@ -563,7 +564,8 @@
             <field name="is_user_template" eval="True"/>
             <field name="agent_type_id" eval="ref('tt_base.agent_type_ho')"/>
             <field name="groups_id"
-                   eval="[(4, ref('tt_base.group_tt_agent_finance')),
+                   eval="[(4, ref('tt_base.group_tt_agent_user')),
+                         (4, ref('tt_base.group_tt_agent_finance')),
                          (4, ref('tt_base.group_master_data_hotel_level_1')),
                          (4, ref('tt_base.group_master_data_passport_level_1')),
                          (4, ref('tt_base.group_master_data_activity_level_1')),
@@ -640,7 +642,8 @@
             <field name="is_user_template" eval="True"/>
             <field name="agent_type_id" eval="ref('tt_base.agent_type_ho')"/>
             <field name="groups_id"
-                   eval="[(4, ref('tt_base.group_tt_agent_finance')),
+                   eval="[(4, ref('tt_base.group_tt_agent_user')),
+                         (4, ref('tt_base.group_tt_agent_finance')),
                          (4, ref('tt_base.group_master_data_hotel_level_1')),
                          (4, ref('tt_base.group_master_data_passport_level_1')),
                          (4, ref('tt_base.group_master_data_activity_level_1')),
@@ -694,6 +697,252 @@
                          (4, ref('tt_base.group_report_level_3')),
                          (4, ref('tt_base.group_voucher_level_3')),
                          (4, ref('tt_base.group_user_data_level_1'))]"/>
+            <field name="frontend_security_ids"
+                   eval="[(6,0,[ref('tt_base.able_to_login'),
+                                ref('tt_base.able_to_ticketing_activity'),
+                                ref('tt_base.able_to_ticketing_airline'),
+                                ref('tt_base.able_to_ticketing_event'),
+                                ref('tt_base.able_to_ticketing_hotel'),
+                                ref('tt_base.able_to_ticketing_offline'),
+                                ref('tt_base.able_to_ticketing_ppob'),
+                                ref('tt_base.able_to_ticketing_tour'),
+                                ref('tt_base.able_to_ticketing_train'),
+                                ref('tt_base.able_to_ticketing_visa'),
+                                ref('tt_base.report')])]"
+            />
+        </record>
+
+        <!--        new template-->
+        <record id="template_ho_user_operational_operator" model="res.users">
+            <field name="name">Template HO Operational Operator</field>
+            <field name="login">template_ho_operational_operator</field>
+            <field name="password">Gx3`>J2Q!gUh3MXnQbEh</field>
+            <field name="is_user_template" eval="True"/>
+            <field name="agent_type_id" eval="ref('tt_base.agent_type_ho')"/>
+            <field name="groups_id"
+                   eval="[(4, ref('tt_base.group_tt_tour_travel')),
+                         (4, ref('tt_base.group_master_data_hotel_level_3')),
+                         (4, ref('tt_base.group_master_data_passport_level_3')),
+                         (4, ref('tt_base.group_master_data_activity_level_3')),
+                         (4, ref('tt_base.group_master_data_visa_level_3')),
+                         (4, ref('tt_base.group_master_data_tour_level_3')),
+                         (4, ref('tt_base.group_master_data_ppob_level_3')),
+                         (4, ref('tt_base.group_master_data_event_level_3')),
+                         (4, ref('tt_base.group_reservation_level_4')),
+                         (4, ref('tt_base.group_reservation_provider_level_4')),
+                         (4, ref('tt_base.group_service_charge_level_4')),
+                         (4, ref('tt_base.group_agent_invoice_level_3')),
+                         (4, ref('tt_base.group_billing_statement_level_3')),
+                         (4, ref('tt_base.group_top_up_level_3')),
+                         (4, ref('tt_base.group_refund_level_3')),
+                         (4, ref('tt_base.group_after_sales_master_level_3')),
+                         (4, ref('tt_base.group_after_sales_level_3')),
+                         (4, ref('tt_base.group_payment_level_3')),
+                         (4, ref('tt_base.group_payment_acquirer_level_3')),
+                         (4, ref('tt_base.group_adjustment_level_1')),
+                         (4, ref('tt_base.group_lg_po_level_3')),
+                         (4, ref('tt_base.group_reconcile_level_1')),
+                         (4, ref('tt_base.group_ledger_level_2')),
+                         (4, ref('tt_base.group_agent_registration_master_level_3')),
+                         (4, ref('tt_base.group_agent_registration_level_3')),
+                         (4, ref('tt_base.group_agent_level_3')),
+                         (4, ref('tt_base.group_agent_type_level_3')),
+                         (4, ref('tt_base.group_pnr_quota_level_3')),
+                         (4, ref('tt_base.group_customer_level_3')),
+                         (4, ref('tt_base.group_customer_parent_level_1')),
+                         (4, ref('tt_base.group_customer_parent_type_level_3')),
+                         (4, ref('tt_base.group_vendor_level_3')),
+                         (4, ref('tt_base.group_upload_center_level_3')),
+                         (4, ref('tt_base.group_frontend_banner_level_3')),
+                         (4, ref('tt_base.group_location_level_3')),
+                         (4, ref('tt_base.group_currency_rate_level_1')),
+                         (4, ref('tt_base.group_unique_amount_level_2')),
+                         (4, ref('tt_base.group_provider_level_3')),
+                         (4, ref('tt_base.group_provider_type_level_3')),
+                         (4, ref('tt_base.group_ssr_level_3')),
+                         (4, ref('tt_base.group_bank_level_3')),
+                         (4, ref('tt_base.group_bank_transactions_level_1')),
+                         (4, ref('tt_base.group_agent_bank_detail_level_3')),
+                         (4, ref('tt_base.group_customer_bank_detail_level_3')),
+                         (4, ref('tt_base.group_monthly_fee_level_3')),
+                         (4, ref('tt_base.group_destination_level_3')),
+                         (4, ref('tt_base.group_route_level_3')),
+                         (4, ref('tt_base.group_transport_carrier_level_3')),
+                         (4, ref('tt_base.group_loyalty_program_level_3')),
+                         (4, ref('tt_base.group_frequent_flyer_level_3')),
+                         (4, ref('tt_base.group_social_info_level_3')),
+                         (4, ref('tt_base.group_rule_whitelist_level_3')),
+                         (4, ref('tt_base.group_public_holiday_level_4')),
+                         (4, ref('tt_base.group_report_level_3')),
+                         (4, ref('tt_base.group_pricing_provider_level_1')),
+                         (4, ref('tt_base.group_pricing_agent_level_1')),
+                         (4, ref('tt_base.group_search_configuration_level_3')),
+                         (4, ref('tt_base.group_voucher_level_3')),
+                         (4, ref('tt_base.group_user_data_level_1'))]"/>
+            <field name="frontend_security_ids"
+                   eval="[(6,0,[ref('tt_base.able_to_login'),
+                                ref('tt_base.able_to_ticketing_activity'),
+                                ref('tt_base.able_to_ticketing_airline'),
+                                ref('tt_base.able_to_ticketing_event'),
+                                ref('tt_base.able_to_ticketing_hotel'),
+                                ref('tt_base.able_to_ticketing_offline'),
+                                ref('tt_base.able_to_ticketing_ppob'),
+                                ref('tt_base.able_to_ticketing_tour'),
+                                ref('tt_base.able_to_ticketing_train'),
+                                ref('tt_base.able_to_ticketing_visa'),
+                                ref('tt_base.report')])]"
+            />
+        </record>
+
+        <!--        new template-->
+        <record id="template_ho_user_operational_supervisor" model="res.users">
+            <field name="name">Template HO Operational Supervisor</field>
+            <field name="login">template_ho_user_operational_supervisor</field>
+            <field name="password">Gx3`>J2Q!gUh3MXnQbEh</field>
+            <field name="is_user_template" eval="True"/>
+            <field name="agent_type_id" eval="ref('tt_base.agent_type_ho')"/>
+            <field name="groups_id"
+                   eval="[(4, ref('tt_base.group_tt_tour_travel')),
+                         (4, ref('tt_base.group_master_data_hotel_level_3')),
+                         (4, ref('tt_base.group_master_data_passport_level_3')),
+                         (4, ref('tt_base.group_master_data_activity_level_3')),
+                         (4, ref('tt_base.group_master_data_visa_level_3')),
+                         (4, ref('tt_base.group_master_data_tour_level_3')),
+                         (4, ref('tt_base.group_master_data_ppob_level_3')),
+                         (4, ref('tt_base.group_master_data_event_level_3')),
+                         (4, ref('tt_base.group_reservation_level_4')),
+                         (4, ref('tt_base.group_reservation_provider_level_4')),
+                         (4, ref('tt_base.group_service_charge_level_4')),
+                         (4, ref('tt_base.group_agent_invoice_level_3')),
+                         (4, ref('tt_base.group_billing_statement_level_3')),
+                         (4, ref('tt_base.group_top_up_level_3')),
+                         (4, ref('tt_base.group_refund_level_3')),
+                         (4, ref('tt_base.group_after_sales_master_level_3')),
+                         (4, ref('tt_base.group_after_sales_level_3')),
+                         (4, ref('tt_base.group_payment_level_3')),
+                         (4, ref('tt_base.group_payment_acquirer_level_3')),
+                         (4, ref('tt_base.group_adjustment_level_1')),
+                         (4, ref('tt_base.group_lg_po_level_3')),
+                         (4, ref('tt_base.group_reconcile_level_1')),
+                         (4, ref('tt_base.group_ledger_level_2')),
+                         (4, ref('tt_base.group_agent_registration_master_level_3')),
+                         (4, ref('tt_base.group_agent_registration_level_3')),
+                         (4, ref('tt_base.group_agent_level_3')),
+                         (4, ref('tt_base.group_agent_type_level_3')),
+                         (4, ref('tt_base.group_pnr_quota_level_3')),
+                         (4, ref('tt_base.group_customer_level_3')),
+                         (4, ref('tt_base.group_customer_parent_level_1')),
+                         (4, ref('tt_base.group_customer_parent_type_level_3')),
+                         (4, ref('tt_base.group_vendor_level_3')),
+                         (4, ref('tt_base.group_upload_center_level_3')),
+                         (4, ref('tt_base.group_frontend_banner_level_3')),
+                         (4, ref('tt_base.group_location_level_3')),
+                         (4, ref('tt_base.group_currency_rate_level_1')),
+                         (4, ref('tt_base.group_unique_amount_level_2')),
+                         (4, ref('tt_base.group_provider_level_3')),
+                         (4, ref('tt_base.group_provider_type_level_3')),
+                         (4, ref('tt_base.group_ssr_level_3')),
+                         (4, ref('tt_base.group_bank_level_3')),
+                         (4, ref('tt_base.group_bank_transactions_level_1')),
+                         (4, ref('tt_base.group_agent_bank_detail_level_3')),
+                         (4, ref('tt_base.group_customer_bank_detail_level_3')),
+                         (4, ref('tt_base.group_monthly_fee_level_3')),
+                         (4, ref('tt_base.group_destination_level_3')),
+                         (4, ref('tt_base.group_route_level_3')),
+                         (4, ref('tt_base.group_transport_carrier_level_3')),
+                         (4, ref('tt_base.group_loyalty_program_level_3')),
+                         (4, ref('tt_base.group_frequent_flyer_level_3')),
+                         (4, ref('tt_base.group_social_info_level_3')),
+                         (4, ref('tt_base.group_rule_whitelist_level_3')),
+                         (4, ref('tt_base.group_public_holiday_level_4')),
+                         (4, ref('tt_base.group_report_level_3')),
+                         (4, ref('tt_base.group_pricing_provider_level_3')),
+                         (4, ref('tt_base.group_pricing_agent_level_3')),
+                         (4, ref('tt_base.group_search_configuration_level_3')),
+                         (4, ref('tt_base.group_voucher_level_3')),
+                         (4, ref('tt_base.group_user_data_level_3'))]"/>
+            <field name="frontend_security_ids"
+                   eval="[(6,0,[ref('tt_base.able_to_login'),
+                                ref('tt_base.able_to_ticketing_activity'),
+                                ref('tt_base.able_to_ticketing_airline'),
+                                ref('tt_base.able_to_ticketing_event'),
+                                ref('tt_base.able_to_ticketing_hotel'),
+                                ref('tt_base.able_to_ticketing_offline'),
+                                ref('tt_base.able_to_ticketing_ppob'),
+                                ref('tt_base.able_to_ticketing_tour'),
+                                ref('tt_base.able_to_ticketing_train'),
+                                ref('tt_base.able_to_ticketing_visa'),
+                                ref('tt_base.report')])]"
+            />
+        </record>
+
+        <!--        new template-->
+        <record id="template_ho_user_operational_manager" model="res.users">
+            <field name="name">Template HO Operational Manager</field>
+            <field name="login">template_ho_user_operational_manager</field>
+            <field name="password">Gx3`>J2Q!gUh3MXnQbEh</field>
+            <field name="is_user_template" eval="True"/>
+            <field name="agent_type_id" eval="ref('tt_base.agent_type_ho')"/>
+            <field name="groups_id"
+                   eval="[(4, ref('tt_base.group_tt_tour_travel')),
+                         (4, ref('tt_base.group_master_data_hotel_level_4')),
+                         (4, ref('tt_base.group_master_data_passport_level_4')),
+                         (4, ref('tt_base.group_master_data_activity_level_4')),
+                         (4, ref('tt_base.group_master_data_visa_level_4')),
+                         (4, ref('tt_base.group_master_data_tour_level_4')),
+                         (4, ref('tt_base.group_master_data_ppob_level_4')),
+                         (4, ref('tt_base.group_master_data_event_level_4')),
+                         (4, ref('tt_base.group_reservation_level_4')),
+                         (4, ref('tt_base.group_reservation_provider_level_4')),
+                         (4, ref('tt_base.group_service_charge_level_4')),
+                         (4, ref('tt_base.group_agent_invoice_level_4')),
+                         (4, ref('tt_base.group_billing_statement_level_4')),
+                         (4, ref('tt_base.group_top_up_level_4')),
+                         (4, ref('tt_base.group_refund_level_4')),
+                         (4, ref('tt_base.group_after_sales_master_level_4')),
+                         (4, ref('tt_base.group_after_sales_level_4')),
+                         (4, ref('tt_base.group_payment_level_4')),
+                         (4, ref('tt_base.group_payment_acquirer_level_4')),
+                         (4, ref('tt_base.group_adjustment_level_1')),
+                         (4, ref('tt_base.group_lg_po_level_3')),
+                         (4, ref('tt_base.group_reconcile_level_1')),
+                         (4, ref('tt_base.group_ledger_level_2')),
+                         (4, ref('tt_base.group_agent_registration_master_level_4')),
+                         (4, ref('tt_base.group_agent_registration_level_4')),
+                         (4, ref('tt_base.group_agent_level_4')),
+                         (4, ref('tt_base.group_agent_type_level_4')),
+                         (4, ref('tt_base.group_pnr_quota_level_4')),
+                         (4, ref('tt_base.group_customer_level_3')),
+                         (4, ref('tt_base.group_customer_parent_level_3')),
+                         (4, ref('tt_base.group_customer_parent_type_level_4')),
+                         (4, ref('tt_base.group_vendor_level_4')),
+                         (4, ref('tt_base.group_upload_center_level_4')),
+                         (4, ref('tt_base.group_frontend_banner_level_4')),
+                         (4, ref('tt_base.group_location_level_4')),
+                         (4, ref('tt_base.group_currency_rate_level_1')),
+                         (4, ref('tt_base.group_unique_amount_level_2')),
+                         (4, ref('tt_base.group_provider_level_4')),
+                         (4, ref('tt_base.group_provider_type_level_4')),
+                         (4, ref('tt_base.group_ssr_level_4')),
+                         (4, ref('tt_base.group_bank_level_4')),
+                         (4, ref('tt_base.group_bank_transactions_level_1')),
+                         (4, ref('tt_base.group_agent_bank_detail_level_4')),
+                         (4, ref('tt_base.group_customer_bank_detail_level_4')),
+                         (4, ref('tt_base.group_monthly_fee_level_4')),
+                         (4, ref('tt_base.group_destination_level_4')),
+                         (4, ref('tt_base.group_route_level_4')),
+                         (4, ref('tt_base.group_transport_carrier_level_4')),
+                         (4, ref('tt_base.group_loyalty_program_level_4')),
+                         (4, ref('tt_base.group_frequent_flyer_level_4')),
+                         (4, ref('tt_base.group_social_info_level_4')),
+                         (4, ref('tt_base.group_rule_whitelist_level_4')),
+                         (4, ref('tt_base.group_public_holiday_level_4')),
+                         (4, ref('tt_base.group_report_level_4')),
+                         (4, ref('tt_base.group_pricing_provider_level_4')),
+                         (4, ref('tt_base.group_pricing_agent_level_4')),
+                         (4, ref('tt_base.group_search_configuration_level_4')),
+                         (4, ref('tt_base.group_voucher_level_4')),
+                         (4, ref('tt_base.group_user_data_level_4'))]"/>
             <field name="frontend_security_ids"
                    eval="[(6,0,[ref('tt_base.able_to_login'),
                                 ref('tt_base.able_to_ticketing_activity'),
@@ -1633,9 +1882,9 @@
         </record>
 
         <!--        new template-->
-        <record id="template_ho_user_nd_operator" model="res.users">
-            <field name="name">Template HO ND Operator</field>
-            <field name="login">template_ho_user_nd_operator</field>
+        <record id="template_ho_user_agent_management_operator" model="res.users">
+            <field name="name">Template HO Agent Management Operator</field>
+            <field name="login">template_ho_user_agent_management_operator</field>
             <field name="password">XuJ5XfHahbXzJ9SYs5kc</field>
             <field name="is_user_template" eval="True"/>
             <field name="agent_type_id" eval="ref('tt_base.agent_type_ho')"/>
@@ -1742,9 +1991,9 @@
         </record>
 
         <!--        new template-->
-        <record id="template_ho_user_nd_supervisor" model="res.users">
-            <field name="name">Template HO ND Supervisor</field>
-            <field name="login">template_ho_user_nd_supervisor</field>
+        <record id="template_ho_user_agent_management_supervisor" model="res.users">
+            <field name="name">Template HO Agent Management Supervisor</field>
+            <field name="login">template_ho_user_agent_management_supervisor</field>
             <field name="password">HVmJVyku2GCByZ7P6DTy</field>
             <field name="is_user_template" eval="True"/>
             <field name="agent_type_id" eval="ref('tt_base.agent_type_ho')"/>
@@ -1851,9 +2100,9 @@
         </record>
 
         <!--        new template-->
-        <record id="template_ho_user_nd_manager" model="res.users">
-            <field name="name">Template HO ND Manager</field>
-            <field name="login">template_ho_user_nd_manager</field>
+        <record id="template_ho_user_agent_management_manager" model="res.users">
+            <field name="name">Template HO Agent Management Manager</field>
+            <field name="login">template_ho_user_agent_management_manager</field>
             <field name="password">k24Tr596uuRHNBLQrTv3</field>
             <field name="is_user_template" eval="True"/>
             <field name="agent_type_id" eval="ref('tt_base.agent_type_ho')"/>
@@ -4620,7 +4869,8 @@
             <field name="is_user_template" eval="True"/>
             <field name="agent_type_id" eval="ref('tt_base.agent_type_citra')"/>
             <field name="groups_id"
-                   eval="[(4, ref('tt_base.group_tt_agent_finance')),
+                   eval="[(4, ref('tt_base.group_tt_agent_user')),
+                         (4, ref('tt_base.group_tt_agent_finance')),
                          (4, ref('tt_base.group_master_data_hotel_level_1')),
                          (4, ref('tt_base.group_master_data_passport_level_1')),
                          (4, ref('tt_base.group_master_data_activity_level_1')),
@@ -4733,7 +4983,8 @@
             <field name="is_user_template" eval="True"/>
             <field name="agent_type_id" eval="ref('tt_base.agent_type_citra')"/>
             <field name="groups_id"
-                   eval="[(4, ref('tt_base.group_tt_agent_finance')),
+                   eval="[(4, ref('tt_base.group_tt_agent_user')),
+                         (4, ref('tt_base.group_tt_agent_finance')),
                          (4, ref('tt_base.group_master_data_hotel_level_1')),
                          (4, ref('tt_base.group_master_data_passport_level_1')),
                          (4, ref('tt_base.group_master_data_activity_level_1')),
@@ -4846,7 +5097,8 @@
             <field name="is_user_template" eval="True"/>
             <field name="agent_type_id" eval="ref('tt_base.agent_type_citra')"/>
             <field name="groups_id"
-                   eval="[(4, ref('tt_base.group_tt_agent_finance')),
+                   eval="[(4, ref('tt_base.group_tt_agent_user')),
+                         (4, ref('tt_base.group_tt_agent_finance')),
                          (4, ref('tt_base.group_master_data_hotel_level_1')),
                          (4, ref('tt_base.group_master_data_passport_level_1')),
                          (4, ref('tt_base.group_master_data_activity_level_1')),
@@ -5293,7 +5545,8 @@
             <field name="is_user_template" eval="True"/>
             <field name="agent_type_id" eval="ref('tt_base.agent_type_japro')"/>
             <field name="groups_id"
-                   eval="[(4, ref('tt_base.group_tt_agent_finance')),
+                   eval="[(4, ref('tt_base.group_tt_agent_user')),
+                         (4, ref('tt_base.group_tt_agent_finance')),
                          (4, ref('tt_base.group_master_data_hotel_level_1')),
                          (4, ref('tt_base.group_master_data_passport_level_1')),
                          (4, ref('tt_base.group_master_data_activity_level_1')),
@@ -5406,7 +5659,8 @@
             <field name="is_user_template" eval="True"/>
             <field name="agent_type_id" eval="ref('tt_base.agent_type_japro')"/>
             <field name="groups_id"
-                   eval="[(4, ref('tt_base.group_tt_agent_finance')),
+                   eval="[(4, ref('tt_base.group_tt_agent_user')),
+                         (4, ref('tt_base.group_tt_agent_finance')),
                          (4, ref('tt_base.group_master_data_hotel_level_1')),
                          (4, ref('tt_base.group_master_data_passport_level_1')),
                          (4, ref('tt_base.group_master_data_activity_level_1')),
@@ -5519,7 +5773,8 @@
             <field name="is_user_template" eval="True"/>
             <field name="agent_type_id" eval="ref('tt_base.agent_type_japro')"/>
             <field name="groups_id"
-                   eval="[(4, ref('tt_base.group_tt_agent_finance')),
+                   eval="[(4, ref('tt_base.group_tt_agent_user')),
+                         (4, ref('tt_base.group_tt_agent_finance')),
                          (4, ref('tt_base.group_master_data_hotel_level_1')),
                          (4, ref('tt_base.group_master_data_passport_level_1')),
                          (4, ref('tt_base.group_master_data_activity_level_1')),

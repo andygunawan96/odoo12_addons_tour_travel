@@ -8,6 +8,7 @@
             <field name="min_amount_agent">0</field>
             <field name="agent_type_access_type">all</field>
             <field name="agent_access_type">all</field>
+            <field name="sequence">100</field>
         </record>
         <record id="admin_fee_refund_regular_special" model="tt.master.admin.fee">
             <field name="name">Regular Refund (Special Agents)</field>
@@ -16,6 +17,7 @@
             <field name="min_amount_agent">0</field>
             <field name="agent_type_access_type">all</field>
             <field name="agent_access_type">allow</field>
+            <field name="sequence">101</field>
         </record>
         <record id="admin_fee_refund_quick" model="tt.master.admin.fee">
             <field name="name">Quick Refund</field>
@@ -24,6 +26,7 @@
             <field name="min_amount_agent">0</field>
             <field name="agent_type_access_type">all</field>
             <field name="agent_access_type">all</field>
+            <field name="sequence">102</field>
         </record>
         <record id="admin_fee_refund_free" model="tt.master.admin.fee">
             <field name="name">No Admin Fee</field>
@@ -31,6 +34,7 @@
             <field name="min_amount">0</field>
             <field name="agent_type_access_type">all</field>
             <field name="agent_access_type">all</field>
+            <field name="sequence">103</field>
         </record>
         <record id="admin_fee_reschedule" model="tt.master.admin.fee">
             <field name="name">Reschedule</field>
@@ -39,6 +43,7 @@
             <field name="min_amount_agent">0</field>
             <field name="agent_type_access_type">all</field>
             <field name="agent_access_type">all</field>
+            <field name="sequence">100</field>
         </record>
         <record id="admin_fee_reschedule_special" model="tt.master.admin.fee">
             <field name="name">Reschedule (Special Agents)</field>
@@ -47,6 +52,7 @@
             <field name="min_amount_agent">0</field>
             <field name="agent_type_access_type">all</field>
             <field name="agent_access_type">allow</field>
+            <field name="sequence">101</field>
         </record>
         <record id="admin_fee_photo_printing" model="tt.master.admin.fee">
             <field name="name">Photo Printing</field>
@@ -55,6 +61,7 @@
             <field name="min_amount_agent">0</field>
             <field name="agent_type_access_type">all</field>
             <field name="agent_access_type">all</field>
+            <field name="sequence">102</field>
         </record>
         <record id="admin_fee_delivery" model="tt.master.admin.fee">
             <field name="name">Delivery</field>
@@ -63,6 +70,7 @@
             <field name="min_amount_agent">0</field>
             <field name="agent_type_access_type">all</field>
             <field name="agent_access_type">all</field>
+            <field name="sequence">103</field>
         </record>
         <record id="admin_fee_free" model="tt.master.admin.fee">
             <field name="name">No Admin Fee</field>
@@ -71,6 +79,7 @@
             <field name="min_amount_agent">0</field>
             <field name="agent_type_access_type">all</field>
             <field name="agent_access_type">all</field>
+            <field name="sequence">104</field>
         </record>
         <record id="admin_fee_offline_airline_gds" model="tt.master.admin.fee">
             <field name="name">Airline Issued Offline (GDS)</field>
@@ -79,6 +88,7 @@
             <field name="min_amount_agent">0</field>
             <field name="agent_type_access_type">all</field>
             <field name="agent_access_type">all</field>
+            <field name="sequence">100</field>
         </record>
         <record id="admin_fee_offline_airline_nongds" model="tt.master.admin.fee">
             <field name="name">Airline Issued Offline (Non GDS)</field>
@@ -87,6 +97,7 @@
             <field name="min_amount_agent">0</field>
             <field name="agent_type_access_type">all</field>
             <field name="agent_access_type">all</field>
+            <field name="sequence">101</field>
         </record>
         <record id="admin_fee_offline_hotel" model="tt.master.admin.fee">
             <field name="name">Hotel Issued Offline</field>
@@ -95,6 +106,7 @@
             <field name="min_amount_agent">0</field>
             <field name="agent_type_access_type">all</field>
             <field name="agent_access_type">all</field>
+            <field name="sequence">102</field>
         </record>
         <record id="admin_fee_offline_free" model="tt.master.admin.fee">
             <field name="name">No Admin Fee</field>
@@ -103,6 +115,7 @@
             <field name="min_amount_agent">0</field>
             <field name="agent_type_access_type">all</field>
             <field name="agent_access_type">all</field>
+            <field name="sequence">103</field>
         </record>
     </data>
 </odoo>
