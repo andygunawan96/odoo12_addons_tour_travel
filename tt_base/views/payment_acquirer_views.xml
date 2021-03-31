@@ -76,6 +76,7 @@
                                 <field name="show_device_type" attrs="{'invisible': [('type','not in',['va','payment_gateway'])]}"/>
                                 <field name="va_fee_type" attrs="{'invisible': [('type','not in',['va','payment_gateway'])]}"/>
                                 <field name="va_fee" attrs="{'invisible': [('type','not in',['va','payment_gateway'])]}"/>
+                                <field name="save_url" attrs="{'invisible': [('type','not in',['va','payment_gateway'])]}"/>
                             </group>
                         </group>
                         <group name="acquirer_base2">
@@ -134,6 +135,7 @@
                                 <field name="show_device_type" attrs="{'invisible': [('type','not in',['va','payment_gateway'])]}"/>
                                 <field name="bank_fee" attrs="{'invisible': [('type','not in',['debit','credit'])]}" readonly="1"/>
                                 <field name="va_fee" attrs="{'invisible': [('type','not in',['va','payment_gateway'])]}" readonly="1"/>
+                                <field name="save_url" attrs="{'invisible': [('type','not in',['va','payment_gateway'])]}" readonly="1"/>
                             </group>
                         </group>
                         <group name="acquirer_base2">
@@ -186,6 +188,7 @@
                             <field name="fee_amount"/>
                             <field name="agent_id"/>
                             <field name="email"/>
+                            <field name="url"/>
                             <field name="va_number"/>
                             <field name="bank_name"/>
                             <field name="time_limit"/>
