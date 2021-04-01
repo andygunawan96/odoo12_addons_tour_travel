@@ -101,6 +101,10 @@ class TransportBookingProvider(models.Model):
                 'state': 'fail_booked'
             })
 
+    def action_in_progress_api_hotel(self):
+        self.write({'state': 'in_progress'})
+        self.booking_id.check_provider_state({'co_uid': self.env.uid})
+
     def action_issued_api_hotel(self, vals):
         for rec in self:
             rec.write({

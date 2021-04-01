@@ -1148,6 +1148,10 @@ class TestSearch(models.Model):
                 return vals
             return False
 
+        # Cari di destination
+
+        # Jika tidak ada baru cari di city dan country
+        # Flow lama
         city_id = self.env['res.city'].find_city_by_name(dest_name, 1)
         country_id = city_id.state_id and city_id.state_id.country_id or city_id.country_id
         
@@ -1170,6 +1174,18 @@ class TestSearch(models.Model):
                 'provider_country_id': False,
                 'currency_rule': {},
             })
+        # Temporary only
+        prov_traveloka_obj = self.env.ref('tt_reservation_hotel.tt_hotel_provider_traveloka')
+        if prov_traveloka_obj.id in [rec.provider_id.id for rec in vendor_ids]:
+            prov_city_obj = self.env['tt.provider.code'].search([('provider_id','=',prov_traveloka_obj.id),('name','=ilike',dest_name)],limit=1)
+            providers = [{
+                'provider_id': prov_traveloka_obj.id,
+                'name': prov_traveloka_obj.name,
+                'provider': prov_traveloka_obj.code or prov_traveloka_obj.name.lower(),
+                'provider_city_id': prov_city_obj and prov_city_obj.code or False,
+                'provider_country_id': False,
+                'currency_rule': {},
+            }]
         return providers
 
     def get_hotel_by_city(self, provider_code, dest_id):

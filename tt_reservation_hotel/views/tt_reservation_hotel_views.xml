@@ -434,6 +434,13 @@
                 <attribute name="edit">false</attribute>
             </xpath>
 
+            <xpath expr="//button[@name='action_cancel']" position="after">
+                <button string="Check Booking Status" name="check_booking_status" type="object" states="in_progress,fail_issued,cancel" />
+                <!-- Test Start -->
+                <!--<button string="Check Booking Status" name="check_booking_status" type="object" states="confirm,issued,fail_issued,cancel" />-->
+                <!--<button string="Cancel Booking (Policy Applied)" groups="base.group_no_one" name="cancel_booking" states="issued" type="object"/>-->
+            </xpath>
+
             <xpath expr="//group[@name='paxgroup']" position="before">
                 <separator string="Trip Information"/>
                 <group>

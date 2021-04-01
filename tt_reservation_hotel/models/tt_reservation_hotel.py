@@ -540,34 +540,38 @@ class HotelReservation(models.Model):
     #         else:
     #             rec.action_issued()
 
+    def action_in_progress_by_api(self):
+        values = {
+            'state': 'in_progress',
+        }
+        self.write(values)
+
     @api.one
     def action_done(self, issued_response={}):
-        state = 'issued'
         for room_detail in self.room_detail_ids:
             if issued_response.get(room_detail.provider_id.code):
                 provider = issued_response[room_detail.provider_id.code]
-                room_detail.name = provider['booking_code']
-                room_detail.issued_name = provider['issued_code']
-                # room_detail.state = provider['status']
-            else:
-                if not room_detail.issued_name:
-                    state = 'partial_issued'
-        self.state = state
+                room_detail.name = provider.get('booking_code') or room_detail.name
+                room_detail.issued_name = provider.get('issued_code') or room_detail.issued_name
         self.env.cr.commit()
 
-        pnr_list = ','.join([rec['issued_code'] for rec in issued_response.values()])
+        pnr_list = ','.join([rec.get('issued_code') or '' for rec in issued_response.values()])
         self.update_ledger_pnr(pnr_list)
         self.pnr = self.get_pnr_list()
         self.provider_name = self.get_provider_list()
         # if state == 'done':
         #     self.action_create_invoice()
         for prov in self.provider_booking_ids:
-            prov.action_issued_api_hotel({
-                'pnr': self.get_pnr_list(),
-                'pnr2': prov.provider_id.id == self.env.ref('tt_reservation_hotel.tt_hotel_provider_rodextrip_hotel').id and issued_response[room_detail.provider_id.code]['booking_code'] or '', #isi PNR 2 untuk BTBO2
-                'co_uid': self.issued_uid.id or self.env.user.id,
-                'signature': self.sid_issued or self.sid_booked
-            })
+            if prov.state != 'issued' and issued_response.get(prov.provider_id.code) and issued_response[prov.provider_id.code]['status'] == 'issued':
+                prov.action_issued_api_hotel({
+                    'pnr': self.get_pnr_list(),
+                    'pnr2': prov.provider_id.id == self.env.ref('tt_reservation_hotel.tt_hotel_provider_rodextrip_hotel').id and issued_response[room_detail.provider_id.code]['booking_code'] or '', #isi PNR 2 untuk BTBO2
+                    'co_uid': self.issued_uid.id or self.env.user.id,
+                    'signature': self.sid_issued or self.sid_booked
+                })
+            elif issued_response[prov.provider_id.code]['status'] == 'in_process':
+                prov.action_in_progress_api_hotel()
+        self.check_provider_state({'co_uid': self.env.uid})
         return True
 
     def action_calc_passenger_data(self):
@@ -880,15 +884,14 @@ class HotelReservation(models.Model):
 
     def check_provider_state(self, context, pnr_list=[], hold_date=False,req={}):
         if all(rec.state == 'booked' for rec in self.provider_booking_ids):
-            # booked
             self.action_booked()
+        elif any(rec.state == 'in_progress' for rec in self.provider_booking_ids):
+            self.action_in_progress_by_api()
         elif all(rec.state == 'issued' for rec in self.provider_booking_ids):
-            # issued
             acquirer_id, customer_parent_id = self.get_acquirer_n_c_parent_id(req)
             # self.action_issued_api_ppob(acquirer_id and acquirer_id.id or False, customer_parent_id, context)
             self.action_issued(acquirer_id and acquirer_id.id or False, context['co_uid'])
         elif all(rec.state == 'refund' for rec in self.provider_booking_ids):
-            # refund
             self.write({
                 'state': 'refund',
                 'refund_uid': context['co_uid'],
@@ -900,10 +903,14 @@ class HotelReservation(models.Model):
                 'refund_uid': context['co_uid'],
                 'refund_date': datetime.now()
             })
+        elif all(rec.state == 'cancel2' for rec in self.provider_booking_ids):
+            self.write({
+                'state': 'cancel2',
+            })
         else:
             # entah status apa
             self.write({
-                'state': 'draft',
+                'state': 'cancel2',
             })
 
     def test_payment_hotel_b2c(self):
