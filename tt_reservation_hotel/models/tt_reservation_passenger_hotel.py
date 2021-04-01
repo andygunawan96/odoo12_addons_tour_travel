@@ -28,34 +28,9 @@ class TtReservationCustomer(models.Model):
         #     res['channel_service_charges'] = self.get_channel_service_charges()
         return res
 
-    def create_ssr(self,ssr_param,pnr,provider_id):
-        # service_chg_obj = self.env['tt.service.charge']
-        # currency_obj = self.env['res.currency']
-        # ssr_list = []
-        # for ssr in ssr_param:
-        #     amount = 0
-        #     for sc in ssr['service_charges']:
-        #         sc['currency_id'] = currency_obj.search([('name','=',sc.pop('currency'))],limit=1).id
-        #         sc['foreign_currency_id'] = currency_obj.search([('name','=',sc.pop('foreign_currency'))],limit=1).id
-        #         sc['description'] = pnr
-        #         sc['passenger_airline_ids'] = [(4,self.id)]
-        #         sc['provider_airline_booking_id'] = provider_id
-        #         sc['is_extra_fees'] = True
-        #         amount += sc['amount']
-        #         service_chg_obj.create(sc)
-        #
-        #     ssr_list.append((0,0,{
-        #         'name': ssr['fee_name'],
-        #         'type': ssr['fee_type'],
-        #         'code': ssr['fee_code'],
-        #         'value': ssr['fee_value'],
-        #         'description': json.dumps(ssr['description']),
-        #         'amount': amount,
-        #         'passenger_id': self.id,
-        #     }))
-        #
-        # self.write({'fee_ids': ssr_list})
-        return True
+    # def create_ssr(self,ssr_param,pnr,provider_id):
+        # Tmbahan lain sperti breakfast, free ticket activity or etc
+        # return True
 
 
 
