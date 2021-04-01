@@ -125,6 +125,17 @@ class HotelInformation(models.Model):
             })
         return hotel_fmt_list
 
+    def get_hotel_facility_fmt(self):
+        hotel_fmt_list = []
+        for rec in self.facility_ids:
+            hotel_fmt_list.append({
+                'facility_id': rec.id,
+                'name': rec.name,
+                'facility_name': rec.name,
+                'description': rec.description,
+            })
+        return hotel_fmt_list
+
     def fmt_read(self, hotel_obj={}, city_idx=0):
         hotel = hotel_obj or self.read()[0]
         new_hotel = {
@@ -151,7 +162,7 @@ class HotelInformation(models.Model):
             'external_code': self.get_provider_code_fmt(),
             'near_by_facility': [],
             'images': self.get_hotel_image_fmt(),
-            'facilities': hotel.get('facilities'),
+            'facilities': hotel.get('facilities') or self.get_hotel_facility_fmt(),
             'id2': city_idx,
         }
         if not isinstance(new_hotel['rating'], int):
@@ -179,9 +190,9 @@ class HotelInformation(models.Model):
             if isinstance(fac, dict):
                 if not fac.get('facility_name'):
                     fac['facility_name'] = fac.pop('name')
-                fac_name = fac['facility_name']
+                # fac_name = fac['facility_name']
             else:
-                fac_name = fac
+                # fac_name = fac
                 fac = {
                     'facility_name': fac,
                     'facility_id': False,
