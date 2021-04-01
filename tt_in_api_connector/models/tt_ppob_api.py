@@ -1,8 +1,8 @@
 from odoo import api,models,fields
 from ...tools.ERR import RequestException
 
-class TtReservationPPOBApiCon(models.Model):
-    _name = 'tt.reservation.ppob.api.con'
+class TtPPOBApiCon(models.Model):
+    _name = 'tt.ppob.api.con'
     _inherit = 'tt.api.con'
 
     table_name = 'tt.reservation.ppob'
@@ -38,5 +38,5 @@ class TtReservationPPOBApiCon(models.Model):
         return res
 
     def get_balance(self, provider):
-        return self.send_request_to_gateway('%s/account/ppob' % (self.url), {'provider': provider}, 'get_vendor_balance')
+        return self.send_request_to_gateway('%s/account/ppob' % (self.url), {'provider': provider,'product_code': 524}, 'get_vendor_balance')
 
