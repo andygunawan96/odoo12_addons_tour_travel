@@ -233,13 +233,16 @@ class TtReschedule(models.Model):
     refund_type_id = fields.Many2one('tt.refund.type', 'Refund Type', required=False, readonly=True)
 
     def get_reschedule_admin_fee_rule(self, agent_id):
-        current_refund_env = self.env.ref('tt_accounting.admin_fee_reschedule')
-        refund_admin_fee_list = self.env['tt.master.admin.fee'].search([('after_sales_type', '=', 'after_sales')])
-        for admin_fee in refund_admin_fee_list:
+        reschedule_admin_fee_list = self.env['tt.master.admin.fee'].search([('after_sales_type', '=', 'after_sales')], order='sequence, id desc')
+        if not reschedule_admin_fee_list:
+            current_reschedule_env = self.env.ref('tt_accounting.admin_fee_reschedule')
+        else:
+            current_reschedule_env = reschedule_admin_fee_list[0]
+        for admin_fee in reschedule_admin_fee_list:
             if agent_id in admin_fee.agent_ids.ids:
-                current_refund_env = admin_fee
-                # TODO perlu di break disini atau ambil yg paling trakhir?
-        return current_refund_env
+                current_reschedule_env = admin_fee
+                break
+        return current_reschedule_env
 
     def get_reschedule_fee_amount(self, agent_id, order_number='', order_type='', refund_amount=0, passenger_count=0):
         admin_fee_obj = self.get_reschedule_admin_fee_rule(agent_id)

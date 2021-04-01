@@ -2439,6 +2439,27 @@ class HotelInformation(models.Model):
             })
         return create_hotel_id
 
+    def update_hotel(self, create_hotel_id, hotel_obj):
+        # Create Image
+        create_hotel_id.image_ids = [(5,)]
+        for img in hotel_obj['images']:
+            img.update({
+                'hotel_id': create_hotel_id.id,
+                'provider_id': '',
+            })
+            self.env['tt.hotel.image'].create(img)
+
+        # Create Facility
+        fac_link_ids = []
+        for fac in hotel_obj['facilities']:
+            if fac.get('facility_id'):
+                fac_link_ids.append(int(fac['facility_id']))
+            else:
+                fac_link_ids.append(self.env['tt.hotel.facility'].sudo().find_by_name(fac['facility_name']))
+        create_hotel_id.update({'facility_ids': [(6, 0, fac_link_ids)]})
+        return create_hotel_id
+
+
     def create_or_edit_hotel(self, hotel_obj, file_number=-1):
         ext_code = list(hotel_obj['external_code'].keys())[0]
         provider_id = self.env['tt.provider'].search([('alias','=', ext_code)]).id
@@ -2446,7 +2467,7 @@ class HotelInformation(models.Model):
         if old_objs:
             self.file_log_write('Update for Hotel ' + str(old_objs[0].name) + ' with code ' + str(old_objs[0].code) )
             # TODO: update hotel here
-            return self.env['tt.hotel'].browse(old_objs[0].res_id)
+            new_obj = self.update_hotel(self.env['tt.hotel'].browse(old_objs[0].res_id), hotel_obj)
         else:
             self.file_log_write('Create new Hotel ' + str(hotel_obj['name']) + ' with code ' + str(hotel_obj['external_code'][ext_code]))
             new_obj = self.create_hotel(hotel_obj, file_number)
@@ -3418,6 +3439,12 @@ class HotelInformation(models.Model):
                 city_ids = glob.glob("/var/log/cache_hotel/" + master_provider + "/" + country_str + "/*.json")
                 for target_city in city_ids:
                     city_name = target_city[22 + len(master_provider) + len(country_str) + 1:-5]
+                    if len(country_str.split('/')) == 2:
+                        state_name = country_str.split('/')[-1]
+                        country_name = country_str.split('/')[0]
+                    else:
+                        state_name = ''
+                        country_name = country_str
                     if city_name.lower() in rendered_city:
                         continue
                     # Versi 2020/12 hotel di hubungkan dengan City langsung
@@ -3433,8 +3460,8 @@ class HotelInformation(models.Model):
                         'id': False,
                         'name': False,
                         'city_str': city_name,
-                        'state_str': '',
-                        'country_str': country_str,
+                        'state_str': state_name,
+                        'country_str': country_name,
                     })
                     city_obj = destination_obj.city_id
                     city_id = city_obj and city_obj.id or self.env['res.city'].find_city_by_name(city_name, 1)
@@ -3514,7 +3541,9 @@ class HotelInformation(models.Model):
     def v2_sent_all_hotel_to_comparer(self):
         # Cari hotel_id yg draft
         err_list = []
+        x = 0
         for rec in self.env['tt.hotel'].search([('state','=','draft'),('state','!=',False)]): #Test pakai sandton('city_id','=',396925)
+            x += 1
             try:
                 # Create Comparer ulang sebagai record sja
                 comparing_id = self.env['tt.hotel.compare'].create({
@@ -3524,7 +3553,12 @@ class HotelInformation(models.Model):
                 comparing_id.to_merge_hotel()
             except:
                 err_list.append(rec.id)
+                _logger.info('Error while processing: ' + str(rec.id))
                 continue
+
+            if x % 80 == 0:
+                _logger.info('Saving Record (v2_sent_all_hotel_to_comparer) to ' + str(x))
+                self.env.cr.commit()
         return True
 
     # 2c. Proses Hotel dari comparer
@@ -3533,8 +3567,14 @@ class HotelInformation(models.Model):
         if self.env['tt.hotel.compare'].search([('state','=','draft')]):
             raise UserError('Some Record still in Draft State:')
         # Merge smua yg tobe_merge
+        x = 0
         for rec in self.env['tt.hotel.compare'].search([('state', '=', 'tobe_merge')]):
             rec.merge_hotel()
+            x += 1
+
+            if x % 100 == 0:
+                _logger.info(msg='Writing to ' + str(x))
+                self.env.cr.commit()
         return True
 
     # 3. Send Hotel to GW
@@ -3547,7 +3587,7 @@ class HotelInformation(models.Model):
         catalog = []
         last_render = int(self.env['ir.config_parameter'].sudo().get_param('last.gw.render.idx'))
         if last_render == 0: #Jika mulai baru
-            for destination in self.env['tt.hotel.destination'].search([('active', '=', True),('country_id','=',247)]): #Test pakai south africa ('country_id','=',247)
+            for destination in self.env['tt.hotel.destination'].search([('active', '=', True)]): #Test pakai south africa ('country_id','=',247)
                 # Rename city as File_number // 7an supaya waktu send data kita bisa tau file mana yg hilang klo pakai nama city mesti buka index dulu baru tau klo ada file hilang
                 # Loop sngaja dibuat 2x ini tujuan nya buat bikin daftar isi trus kirim ke GW
                 daaata = {
@@ -3556,13 +3596,13 @@ class HotelInformation(models.Model):
                     'name': destination.name,
                     'destination_id': destination.id,
                     'destination_name': destination.name,
-                    'city_id': False,
-                    'city_name': False,
+                    'city_id': '',
+                    'city_name': '',
                     'alias': '',
-                    'country_id': False,
-                    'country_name': False,
-                    'country_code': False,
-                    'country_phone_code': False,
+                    'country_id': '',
+                    'country_name': '',
+                    'country_code': '',
+                    'country_phone_code': '',
                 }
                 city = destination.city_id
                 if city:
@@ -3598,7 +3638,7 @@ class HotelInformation(models.Model):
                 continue
             content = []
             # Search all Mapped Data from hotel.master
-            for hotel in self.env['tt.hotel.master'].search([('destination_id','=',city['destination_id'])]):
+            for hotel in self.env['tt.hotel'].search([('destination_id','=',city['destination_id'])]):
                 content.append(hotel.fmt_read())
 
             # Rubah ke format JSON
@@ -3632,25 +3672,27 @@ class HotelInformation(models.Model):
 
         catalog.sort(key=lambda k: k['index'])
         rewrite_city = self.env['ir.config_parameter'].sudo().get_param('rewrite.city')
-        for city in catalog:
-            if city['destination_name'].lower() not in rewrite_city.split(','):
-            # if city['city_name'].lower() not in rewrite_city.split(','): #Old Version
-                continue
-            content = []
-            # Search all Mapped Data from hotel.master
+        for rewrite_city_name in rewrite_city.split(','):
+            for city in catalog:
+                if city['destination_name'].lower() != rewrite_city_name:
+                # if city['city_name'].lower() not in rewrite_city.split(','): #Old Version
+                    continue
+                content = []
+                # Search all Mapped Data from hotel.master
 
-            for hotel in self.env['tt.hotel.master'].search([('city_id','=',city['city_id'])]):
-            # for hotel in self.env['tt.hotel'].search([('city_id','=',city['city_id'])]):  #Old Version
-                content.append(hotel.fmt_read(city_idx=city['index']))
-            try:
-                file = open('/var/log/tour_travel/cache_hotel/cache_hotel_' + str(city['index']) + '.txt', 'w')
-                file.write(json.dumps(content))
-                file.close()
-                _logger.info(msg=str(city['index']) + '. ReWrite hotel file ' + city['destination_name'] + ', ' + city['country_name'] + ' with ' + str(len(content)) + ' Hotel(s) Done')
-                # _logger.info(msg=str(city['index']) + '. ReWrite hotel file ' + city['city_name'] + ' with ' + str(len(content)) + ' Hotel(s) Done')  #Old Version
-            except Exception as e:
-                _logger.error(msg=str(city['index']) + '. ReWrite hotel file ' + city['destination_name'] + ', ' + city['country_name'] + ' Error Render')
-                continue
+                for hotel in self.env['tt.hotel'].search(['|',('city_id','=',city['city_id']),('destination_id','=',city['destination_id'])]):
+                # for hotel in self.env['tt.hotel'].search([('city_id','=',city['city_id'])]):  #Old Version
+                    content.append(hotel.fmt_read(city_idx=city['index']))
+                try:
+                    file = open('/var/log/tour_travel/cache_hotel/cache_hotel_' + str(city['index']) + '.txt', 'w')
+                    file.write(json.dumps(content))
+                    file.close()
+                    _logger.info(msg=str(city['index']) + '. ReWrite hotel file ' + city['destination_name'] + ', ' + city['country_name'] + ' with ' + str(len(content)) + ' Hotel(s) With File Index: '+ str(city['index']) +' Done')
+                    # _logger.info(msg=str(city['index']) + '. ReWrite hotel file ' + city['city_name'] + ' with ' + str(len(content)) + ' Hotel(s) Done')  #Old Version
+                except Exception as e:
+                    _logger.error(msg=str(city['index']) + '. ReWrite hotel file ' + city['destination_name'] + ', ' + city['country_name'] + ' Error Render')
+                    continue
+                break
         _logger.info(msg='============== Render Done ==============')
         return True
 

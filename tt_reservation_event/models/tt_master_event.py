@@ -312,9 +312,9 @@ class MasterEvent(models.Model):
             'cancellation_policy': timeslot.cancellation_policies,
             'description': timeslot.description,
             'timeslot': [self.format_api_timeslot(slot.id) for slot in timeslot.timeslot_ids],
-            'ticket_sale_start_day': timeslot.date_start and datetime.strftime(timeslot.date_start + relativedelta(hours=utc), '%d %B %Y') or '',
+            'ticket_sale_start_day': timeslot.date_start and datetime.strftime(timeslot.date_start + relativedelta(hours=utc), '%Y-%m-%d') or '',
             'ticket_sale_start_hour': timeslot.date_start and datetime.strftime(timeslot.date_start + relativedelta(hours=utc), '%H:%M') or '',
-            'ticket_sale_end_day': timeslot.date_end and datetime.strftime(timeslot.date_end + relativedelta(hours=utc), '%d %B %Y') or '',
+            'ticket_sale_end_day': timeslot.date_end and datetime.strftime(timeslot.date_end + relativedelta(hours=utc), '%Y-%m-%d') or '',
             'ticket_sale_end_hour': timeslot.date_end and datetime.strftime(timeslot.date_end + relativedelta(hours=utc), '%H:%M') or '',
             'utc': utc
         }
