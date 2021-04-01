@@ -38,5 +38,5 @@ class TtPPOBApiCon(models.Model):
         return res
 
     def get_balance(self, provider):
-        return self.send_request_to_gateway('%s/account/ppob' % (self.url), {'provider': provider,'provider_code': 524}, 'get_vendor_balance')
+        return self.send_request_to_gateway('%s/account/ppob' % (self.url), {'provider': provider,'product_code': 524}, 'get_vendor_balance')
 
