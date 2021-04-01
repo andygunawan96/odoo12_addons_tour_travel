@@ -2,7 +2,7 @@ from odoo import api,models,fields
 from ...tools.ERR import RequestException
 
 class TtReservationPPOBApiCon(models.Model):
-    _name = 'tt.reservation.ppob.api.con'
+    _name = 'tt.ppob.api.con'
     _inherit = 'tt.api.con'
 
     table_name = 'tt.reservation.ppob'
