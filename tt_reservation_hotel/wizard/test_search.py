@@ -1152,40 +1152,52 @@ class TestSearch(models.Model):
 
         # Jika tidak ada baru cari di city dan country
         # Flow lama
-        city_id = self.env['res.city'].find_city_by_name(dest_name, 1)
-        country_id = city_id.state_id and city_id.state_id.country_id or city_id.country_id
-        
-        vendor_ids = self.env['tt.provider.destination'].sudo().search([('country_id', '=', country_id.id), ('is_apply', '=', True)])
         providers = []
-        for rec in vendor_ids:
-            a = provider_to_dic(rec, city_id)
-            if a:
-                providers.append(a)
+
+        city_id = self.env['res.city'].find_city_by_name(dest_name, 1)
+        if city_id:
+            country_id = city_id.state_id and city_id.state_id.country_id or city_id.country_id
+
+            vendor_ids = self.env['tt.provider.destination'].sudo().search([('country_id', '=', country_id.id), ('is_apply', '=', True)])
+            for rec in vendor_ids:
+                a = provider_to_dic(rec, city_id)
+                if a:
+                    providers.append(a)
 
         # BTBO2: jika data city / alias antara BTBO2 dengan master berbeda
         # mekanisme ini perlu supaya bisa search all autocomplete dari master tnpa perlu sync data city
         prov_rdx_hotel_obj = self.env.ref('tt_reservation_hotel.tt_hotel_provider_rodextrip_hotel')
-        if prov_rdx_hotel_obj.id not in [rec.provider_id.id for rec in vendor_ids] and prov_rdx_hotel_obj.active:
+        if prov_rdx_hotel_obj.active:
+            new_provider = []
+            for x in providers:
+                if x['provider_id'] != prov_rdx_hotel_obj.id:
+                    new_provider.append(x)
             providers.append({
-                'provider_id': prov_rdx_hotel_obj.id,
-                'name': prov_rdx_hotel_obj.name,
-                'provider': prov_rdx_hotel_obj.code or prov_rdx_hotel_obj.name.lower(),
-                'provider_city_id': dest_name.upper(),
-                'provider_country_id': False,
-                'currency_rule': {},
-            })
+                    'provider_id': prov_rdx_hotel_obj.id,
+                    'name': prov_rdx_hotel_obj.name,
+                    'provider': prov_rdx_hotel_obj.code or prov_rdx_hotel_obj.name.lower(),
+                    'provider_city_id': dest_name.upper(),
+                    'provider_country_id': False,
+                    'currency_rule': {},
+                })
+
         # Temporary only
         prov_traveloka_obj = self.env.ref('tt_reservation_hotel.tt_hotel_provider_traveloka')
-        if prov_traveloka_obj.id in [rec.provider_id.id for rec in vendor_ids]:
-            prov_city_obj = self.env['tt.provider.code'].search([('provider_id','=',prov_traveloka_obj.id),('name','=ilike',dest_name)],limit=1)
-            providers = [{
+        prov_city_obj = self.env['tt.provider.code'].search([('provider_id','=',prov_traveloka_obj.id),('name','=ilike',dest_name)],limit=1)
+        if prov_traveloka_obj.active:
+            new_provider = []
+            for x in providers:
+                if x['provider_id'] != prov_traveloka_obj.id:
+                    new_provider.append(x)
+            providers = new_provider
+            providers.append({
                 'provider_id': prov_traveloka_obj.id,
                 'name': prov_traveloka_obj.name,
                 'provider': prov_traveloka_obj.code or prov_traveloka_obj.name.lower(),
                 'provider_city_id': prov_city_obj and prov_city_obj.code or False,
                 'provider_country_id': False,
                 'currency_rule': {},
-            }]
+            })
         return providers
 
     def get_hotel_by_city(self, provider_code, dest_id):
