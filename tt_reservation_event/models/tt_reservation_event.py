@@ -99,14 +99,6 @@ class ReservationEvent(models.Model):
     def get_form_id(self):
         return self.env.ref("tt_reservation_event.tt_reservation_event_form_view")
 
-    @api.model
-    def create(self, vals_list):
-        try:
-            vals_list['user_id'] = self.env.user.id
-        except:
-            pass
-        return super(ReservationEvent, self).create(vals_list)
-
     @api.depends('provider_booking_ids', 'provider_booking_ids.reconcile_line_id')
     def _compute_reconcile_state(self):
         for rec in self:
@@ -143,13 +135,13 @@ class ReservationEvent(models.Model):
             i.total = i.total_fare + i.total_tax
             i.total_nta = i.total - i.total_commission
 
-    def action_booked(self):
+    def action_booked(self, context):
         # Create Order Number
         order_number = self.env['ir.sequence'].next_by_code(self._name)
         self.name = order_number
         self.write({
             'state': 'booked',
-            'booked_uid': self.env.user.id,
+            'booked_uid': context['co_uid'],
             'booked_date': datetime.now(),
         })
 
@@ -280,6 +272,8 @@ class ReservationEvent(models.Model):
                 'contact_email': contact_obj.email,
                 'contact_phone': contact_obj.phone_ids and contact_obj.phone_ids[0].phone_number or False,
                 'agent_id': context['co_agent_id'],
+                'user_id': context['co_uid'],
+                'sid_booked': context['signature'],
                 # 'passenger_ids': [6,0,[x.id for x in pax_ids]],
                 'special_request': special_request,
             }
@@ -378,7 +372,7 @@ class ReservationEvent(models.Model):
 
             # Create Provider Ids
             prov_event_id['balance_due'] = balance_due  # di PNR
-            book_obj.action_booked()
+            book_obj.action_booked(context)
             response = {
                 'book_id': book_obj.id,
                 'order_number': book_obj.name,
