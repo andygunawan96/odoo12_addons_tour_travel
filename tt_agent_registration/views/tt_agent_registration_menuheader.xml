@@ -13,7 +13,8 @@
             <menuitem id="menu_tour_travel_agent_registration_master"
                   name="Master"
                   parent="top_tour_travel_agent_registration"
-                  sequence="1"/>
+                  sequence="1"
+                  groups="tt_base.group_agent_registration_master_level_1"/>
 
     </data>
 </odoo>

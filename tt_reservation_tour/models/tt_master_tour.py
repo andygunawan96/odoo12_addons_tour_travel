@@ -103,7 +103,7 @@ class MasterTour(models.Model):
                                   'Route', required=True, default='international')
     tour_category = fields.Selection([('group', 'For All Agents'), ('private', 'For Selected Agent')],
                                      'Tour Category', required=True, default='group')
-    tour_type = fields.Selection([('series', 'Series (With Tour Leader)'), ('sic', 'SIC (Without Tour Leader)'), ('land', 'Land Only'), ('city', 'City Tour'), ('open', 'Open Tour'), ('private', 'Private Tour')], 'Tour Type', default='series')
+    tour_type = fields.Selection([('series', 'Series (With Tour Leader)'), ('sic', 'SIC (Without Tour Leader)'), ('land', 'Land Only'), ('city', 'City Tour'), ('open', 'Open Trip'), ('private', 'Private Tour')], 'Tour Type', default='series')
 
     tour_line_ids = fields.One2many('tt.master.tour.lines', 'master_tour_id', 'Tour Lines')
     tour_line_amount = fields.Integer('Available Schedule(s)', readonly=True, compute='_compute_tour_line_amount')
@@ -1676,7 +1676,7 @@ class MasterTour(models.Model):
 
             if tour_data.tour_type == 'open':
                 if not req.get('tour_line_code') or not req.get('departure_date'):
-                    raise RequestException(1022, additional_message='A valid tour line code and your departure date are required to check Open Tour Price.')
+                    raise RequestException(1022, additional_message='A valid tour line code and your departure date are required to check Open Trip Price.')
                 tour_line_data_list = self.env['tt.master.tour.lines'].sudo().search([('tour_line_code', '=', req['tour_line_code']), ('master_tour_id', '=', tour_data.id)], limit=1)
                 if not tour_line_data_list:
                     raise RequestException(1022, additional_message='Tour line not found.')

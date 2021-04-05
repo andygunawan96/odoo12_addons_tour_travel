@@ -356,6 +356,6 @@
     </record>
 
     <menuitem id="menu_transaction_refund" parent="tt_base.top_transaction_aftersales"
-              name="Refund" action="tt_refund_action" sequence="10"/>
+              name="Refund" action="tt_refund_action" sequence="10" groups="tt_base.group_tt_tour_travel_operator,tt_base.group_refund_level_1"/>
 
 </odoo>
