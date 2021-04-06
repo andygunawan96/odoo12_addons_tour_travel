@@ -66,7 +66,7 @@ class TtPaymentApiCon(models.Model):
                         'amount': data['amount'],
                         'currency_code': data['ccy'],
                         'payment_ref': data['payment_ref'],
-                        'payment_seq_id': pay_acq_num.payment_acquirer_id.seq_id,
+                        'payment_seq_id': pay_acq_num[len(pay_acq_num)-1].payment_acquirer_id.seq_id,
                         'fee': data['fee']
                     }
 
@@ -78,7 +78,7 @@ class TtPaymentApiCon(models.Model):
                             'payment_ref': data['payment_ref'],
                             'fee': data['fee']
                         }
-                        res = self.env['tt.top.up'].action_va_top_up(request, context, pay_acq_num.id)
+                        res = self.env['tt.top.up'].action_va_top_up(request, context, pay_acq_num[len(pay_acq_num)-1].id)
 
                 book_obj = self.env['tt.reservation.%s' % data['provider_type']].search([('name', '=', data['order_number']), ('state', 'in', ['booked'])], limit=1)
                 _logger.info(data['order_number'])

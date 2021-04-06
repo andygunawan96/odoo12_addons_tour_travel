@@ -150,7 +150,7 @@
 
     <menuitem id="menu_transaction_accounting_transaction_adjustment" parent="tt_base.top_menu_accounting"
               name="Adjustment" sequence="20"
-                groups="tt_base.group_tt_tour_travel_operator"/>
+                groups="tt_base.group_tt_tour_travel_operator,tt_base.group_adjustment_level_1"/>
 
     <menuitem id="menu_transaction_adjustment" parent="tt_accounting.menu_transaction_accounting_transaction_adjustment"
               name="Adjustment" action="tt_adjustment_action" sequence="10"/>
