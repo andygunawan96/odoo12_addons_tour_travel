@@ -354,19 +354,18 @@ class MasterActivity(models.Model):
                 vendor_id = self.env['tt.provider'].search([('code', '=', provider)], limit=1)
                 vendor_id = vendor_id[0].id
                 continent_id = False
-                if file.get('locations'):
-                    for continent in file['locations']:
-                        if continent.get('countries'):
-                            for country in continent['countries']:
-                                country_id = self.env['res.country'].update_provider_data(country['name'], country['uuid'], vendor_id, continent_id)
-                                if country.get('states'):
-                                    for state in country['states']:
-                                        state_id = False
-                                        if state.get('name'):
-                                            state_id = self.env['res.country.state'].update_provider_data(state['name'], state['uuid'], vendor_id, country_id)
-                                        if state.get('cities'):
-                                            for city in state['cities']:
-                                                self.env['res.city'].update_provider_data(city['name'], city['uuid'], vendor_id, state_id, country_id)
+                if file.get('countries'):
+                    for key, country in file['countries'].items():
+                        country_id = self.env['res.country'].update_provider_data(country['name'], country['uuid'], vendor_id, continent_id)
+                        if country.get('states'):
+                            for key2, state in country['states'].items():
+                                state_id = False
+                                if state.get('name'):
+                                    state_id = self.env['res.country.state'].update_provider_data(state['name'], state['uuid'], vendor_id, country_id)
+                                if state.get('cities'):
+                                    for key3, city in state['cities'].items():
+                                        self.env['res.city'].update_provider_data(city['name'], city['uuid'], vendor_id, state_id, country_id)
+
                 type_lib = {
                     'categories': 'category',
                     'types': 'type',
@@ -1428,111 +1427,184 @@ class MasterActivity(models.Model):
                     'uuid': type.id,
                 })
 
-            countries_list = []
+            countries_dict = {}
             country_objs = self.env['res.country'].sudo().search([('provider_city_ids', '!=', False)])
-            for country in country_objs:
-                state = self.get_states_by_api(country.id)
-                if state.get('error_code'):
-                    _logger.info(state['error_msg'])
-                    raise Exception(state['error_msg'])
-                if len(state['response']) > 0:
-                    state_list = []
-                    for temp_state in state['response']:
-                        city = self.get_cities_state_by_api(int(temp_state['uuid']))
-                        if city.get('error_code'):
-                            _logger.info(city['error_msg'])
-                            raise Exception(city['error_msg'])
-                        city_list = []
-                        for temp_city in city['response']:
-                            city_list.append(temp_city)
-                        temp_state.update({
-                            'cities': city_list
-                        })
-                        state_list.append(temp_state)
-                else:
-                    city = self.get_cities_by_api(country.id)
-                    if city.get('error_code'):
-                        _logger.info(city['error_msg'])
-                        raise Exception(city['error_msg'])
-                    city_list = []
-                    for temp_city in city['response']:
-                        city_list.append(temp_city)
-                    state_list = [{
-                        'name': False,
-                        'uuid': False,
-                        'cities': city_list
-                    }]
+            state_objs = self.env['res.country.state'].sudo().search([])
+            city_objs = self.env['res.city'].sudo().search([])
 
-                countries_list.append({
-                    'name': country.name,
-                    'code': country.code,
-                    'uuid': country.id,
-                    'states': state_list
+            for country in country_objs:
+                countries_dict.update({
+                    country.code: {
+                        'name': country.name,
+                        'code': country.code,
+                        'uuid': str(country.id),
+                        'states': {}
+                    }
                 })
+
+            for state in state_objs:
+                if state.country_id:
+                    if countries_dict.get(state.country_id.code):
+                        countries_dict[state.country_id.code]['states'].update({
+                            str(state.id): {
+                                'name': state.name,
+                                'uuid': str(state.id),
+                                'cities': {}
+                            }
+                        })
+                    else:
+                        countries_dict.update({
+                            state.country_id.code: {
+                                'name': state.country_id.name,
+                                'code': state.country_id.code,
+                                'uuid': str(state.country_id.id),
+                                'states': {
+                                    str(state.id): {
+                                        'name': state.name,
+                                        'uuid': str(state.id),
+                                        'cities': {}
+                                    }
+                                }
+                            }
+                        })
+
+            for city in city_objs:
+                if city.state_id:
+                    if city.state_id.country_id:
+                        if countries_dict.get(city.state_id.country_id.code):
+                            if countries_dict[city.state_id.country_id.code]['states'].get(str(city.state_id.id)):
+                                countries_dict[city.state_id.country_id.code]['states'][str(city.state_id.id)]['cities'].update({
+                                    str(city.id): {
+                                        'name': city.name,
+                                        'uuid': str(city.id),
+                                    }
+                                })
+                            else:
+                                countries_dict[city.state_id.country_id.code]['states'].update({
+                                    str(city.state_id.id): {
+                                        'name': city.state_id.name,
+                                        'uuid': str(city.state_id.id),
+                                        'cities': {
+                                            str(city.id): {
+                                                'name': city.name,
+                                                'uuid': str(city.id),
+                                            }
+                                        }
+                                    }
+                                })
+                        else:
+                            countries_dict.update({
+                                city.state_id.country_id.code: {
+                                    'name': city.state_id.country_id.name,
+                                    'code': city.state_id.country_id.code,
+                                    'uuid': str(city.state_id.country_id.id),
+                                    'states': {
+                                        str(city.state_id.id): {
+                                            'name': city.state_id.name,
+                                            'uuid': str(city.state_id.id),
+                                            'cities': {
+                                                str(city.id): {
+                                                    'name': city.name,
+                                                    'uuid': str(city.id),
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            })
+                    else:
+                        if city.country_id:
+                            if countries_dict.get(city.country_id.code):
+                                if countries_dict[city.country_id.code]['states'].get(str(city.state_id.id)):
+                                    countries_dict[city.country_id.code]['states'][str(city.state_id.id)]['cities'].update({
+                                        str(city.id): {
+                                            'name': city.name,
+                                            'uuid': str(city.id),
+                                        }
+                                    })
+                                else:
+                                    countries_dict[city.country_id.code]['states'].update({
+                                        str(city.state_id.id): {
+                                            'name': city.state_id.name,
+                                            'uuid': str(city.state_id.id),
+                                            'cities': {
+                                                str(city.id): {
+                                                    'name': city.name,
+                                                    'uuid': str(city.id),
+                                                }
+                                            }
+                                        }
+                                    })
+                            else:
+                                countries_dict.update({
+                                    city.country_id.code: {
+                                        'name': city.country_id.name,
+                                        'code': city.country_id.code,
+                                        'uuid': city.country_id.id,
+                                        'states': {
+                                            str(city.state_id.id): {
+                                                'name': city.state_id.name,
+                                                'uuid': str(city.state_id.id),
+                                                'cities': {
+                                                    str(city.id): {
+                                                        'name': city.name,
+                                                        'uuid': str(city.id),
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                })
+                else:
+                    if city.country_id:
+                        if countries_dict.get(city.country_id.code):
+                            if countries_dict[city.country_id.code]['states'].get('0'):
+                                countries_dict[city.country_id.code]['states']['0']['cities'].update({
+                                    str(city.id): {
+                                        'name': city.name,
+                                        'uuid': str(city.id),
+                                    }
+                                })
+                            else:
+                                countries_dict[city.country_id.code]['states'].update({
+                                    '0': {
+                                        'name': 'No State',
+                                        'uuid': '0',
+                                        'cities': {
+                                            str(city.id): {
+                                                'name': city.name,
+                                                'uuid': str(city.id),
+                                            }
+                                        }
+                                    }
+                                })
+                        else:
+                            countries_dict.update({
+                                city.country_id.code: {
+                                    'name': city.country_id.name,
+                                    'code': city.country_id.code,
+                                    'uuid': str(city.country_id.id),
+                                    'states': {
+                                        '0': {
+                                            'name': 'No State',
+                                            'uuid': '0',
+                                            'cities': {
+                                                str(city.id): {
+                                                    'name': city.name,
+                                                    'uuid': str(city.id),
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            })
 
             values = {
-                'categories': {
-                    'data': categories_list
-                },
-                'types': {
-                    'data': types_list
-                },
-                'locations': [{
-                    'countries': countries_list
-                }],
+                'categories': categories_list,
+                'types': types_list,
+                'countries': countries_dict,
             }
             return ERR.get_no_error(values)
-        except RequestException as e:
-            _logger.error(traceback.format_exc())
-            return e.error_dict()
-        except Exception as e:
-            _logger.error(traceback.format_exc())
-            return ERR.get_error(1021)
-
-    def get_cities_by_api(self, id):
-        try:
-            result_objs = self.env['res.city'].sudo().search([('country_id', '=', int(id))])
-            cities = []
-            for rec in result_objs:
-                cities.append({
-                    'name': rec.name,
-                    'uuid': rec.id,
-                })
-            return ERR.get_no_error(cities)
-        except RequestException as e:
-            _logger.error(traceback.format_exc())
-            return e.error_dict()
-        except Exception as e:
-            _logger.error(traceback.format_exc())
-            return ERR.get_error(1021)
-
-    def get_states_by_api(self, id):
-        try:
-            result_objs = self.env['res.country.state'].sudo().search([('country_id', '=', int(id))])
-            states = []
-            for rec in result_objs:
-                states.append({
-                    'name': rec.name,
-                    'uuid': rec.id,
-                })
-            return ERR.get_no_error(states)
-        except RequestException as e:
-            _logger.error(traceback.format_exc())
-            return e.error_dict()
-        except Exception as e:
-            _logger.error(traceback.format_exc())
-            return ERR.get_error(1021)
-
-    def get_cities_state_by_api(self, id):
-        try:
-            result_objs = self.env['res.city'].sudo().search([('state_id', '=', int(id))])
-            cities = []
-            for rec in result_objs:
-                cities.append({
-                    'name': rec.name,
-                    'uuid': rec.id,
-                })
-            return ERR.get_no_error(cities)
         except RequestException as e:
             _logger.error(traceback.format_exc())
             return e.error_dict()
