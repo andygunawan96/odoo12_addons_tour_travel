@@ -1453,20 +1453,21 @@ class MasterActivity(models.Model):
                             }
                         })
                     else:
-                        countries_dict.update({
-                            state.country_id.code: {
-                                'name': state.country_id.name,
-                                'code': state.country_id.code,
-                                'uuid': str(state.country_id.id),
-                                'states': {
-                                    str(state.id): {
-                                        'name': state.name,
-                                        'uuid': str(state.id),
-                                        'cities': {}
+                        if state.country_id.code:
+                            countries_dict.update({
+                                state.country_id.code: {
+                                    'name': state.country_id.name,
+                                    'code': state.country_id.code,
+                                    'uuid': str(state.country_id.id),
+                                    'states': {
+                                        str(state.id): {
+                                            'name': state.name,
+                                            'uuid': str(state.id),
+                                            'cities': {}
+                                        }
                                     }
                                 }
-                            }
-                        })
+                            })
 
             for city in city_objs:
                 if city.state_id:
@@ -1493,25 +1494,26 @@ class MasterActivity(models.Model):
                                     }
                                 })
                         else:
-                            countries_dict.update({
-                                city.state_id.country_id.code: {
-                                    'name': city.state_id.country_id.name,
-                                    'code': city.state_id.country_id.code,
-                                    'uuid': str(city.state_id.country_id.id),
-                                    'states': {
-                                        str(city.state_id.id): {
-                                            'name': city.state_id.name,
-                                            'uuid': str(city.state_id.id),
-                                            'cities': {
-                                                str(city.id): {
-                                                    'name': city.name,
-                                                    'uuid': str(city.id),
+                            if city.state_id.country_id.code:
+                                countries_dict.update({
+                                    city.state_id.country_id.code: {
+                                        'name': city.state_id.country_id.name,
+                                        'code': city.state_id.country_id.code,
+                                        'uuid': str(city.state_id.country_id.id),
+                                        'states': {
+                                            str(city.state_id.id): {
+                                                'name': city.state_id.name,
+                                                'uuid': str(city.state_id.id),
+                                                'cities': {
+                                                    str(city.id): {
+                                                        'name': city.name,
+                                                        'uuid': str(city.id),
+                                                    }
                                                 }
                                             }
                                         }
                                     }
-                                }
-                            })
+                                })
                     else:
                         if city.country_id:
                             if countries_dict.get(city.country_id.code):
@@ -1536,25 +1538,26 @@ class MasterActivity(models.Model):
                                         }
                                     })
                             else:
-                                countries_dict.update({
-                                    city.country_id.code: {
-                                        'name': city.country_id.name,
-                                        'code': city.country_id.code,
-                                        'uuid': city.country_id.id,
-                                        'states': {
-                                            str(city.state_id.id): {
-                                                'name': city.state_id.name,
-                                                'uuid': str(city.state_id.id),
-                                                'cities': {
-                                                    str(city.id): {
-                                                        'name': city.name,
-                                                        'uuid': str(city.id),
+                                if city.country_id.code:
+                                    countries_dict.update({
+                                        city.country_id.code: {
+                                            'name': city.country_id.name,
+                                            'code': city.country_id.code,
+                                            'uuid': city.country_id.id,
+                                            'states': {
+                                                str(city.state_id.id): {
+                                                    'name': city.state_id.name,
+                                                    'uuid': str(city.state_id.id),
+                                                    'cities': {
+                                                        str(city.id): {
+                                                            'name': city.name,
+                                                            'uuid': str(city.id),
+                                                        }
                                                     }
                                                 }
                                             }
                                         }
-                                    }
-                                })
+                                    })
                 else:
                     if city.country_id:
                         if countries_dict.get(city.country_id.code):
@@ -1579,25 +1582,26 @@ class MasterActivity(models.Model):
                                     }
                                 })
                         else:
-                            countries_dict.update({
-                                city.country_id.code: {
-                                    'name': city.country_id.name,
-                                    'code': city.country_id.code,
-                                    'uuid': str(city.country_id.id),
-                                    'states': {
-                                        '0': {
-                                            'name': 'No State',
-                                            'uuid': '0',
-                                            'cities': {
-                                                str(city.id): {
-                                                    'name': city.name,
-                                                    'uuid': str(city.id),
+                            if city.country_id.code:
+                                countries_dict.update({
+                                    city.country_id.code: {
+                                        'name': city.country_id.name,
+                                        'code': city.country_id.code,
+                                        'uuid': str(city.country_id.id),
+                                        'states': {
+                                            '0': {
+                                                'name': 'No State',
+                                                'uuid': '0',
+                                                'cities': {
+                                                    str(city.id): {
+                                                        'name': city.name,
+                                                        'uuid': str(city.id),
+                                                    }
                                                 }
                                             }
                                         }
                                     }
-                                }
-                            })
+                                })
 
             values = {
                 'categories': categories_list,
