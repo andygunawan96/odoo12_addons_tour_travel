@@ -244,12 +244,12 @@
 
     <menuitem id="top_transaction_ledger" parent="tt_base.main_transaction"
               name="Ledger" sequence="20"
-              groups="tt_base.group_tt_tour_travel_operator,tt_base.group_tt_agent_user_operator"
+              groups="tt_base.group_tt_tour_travel_operator,tt_base.group_tt_agent_user_operator,tt_base.group_ledger_level_1"
     />
 
     <menuitem id="menu_transaction_ledger" parent="tt_accounting.top_transaction_ledger"
               name="Ledger" action="tt_ledger_action" sequence="10"
-              groups="tt_base.group_tt_tour_travel_operator,tt_base.group_tt_agent_user_operator"
+              groups="tt_base.group_tt_tour_travel_operator,tt_base.group_tt_agent_user_operator,tt_base.group_ledger_level_1"
     />
 
     <menuitem id="menu_transaction_ledger_waiting_list" parent="tt_accounting.top_transaction_ledger"

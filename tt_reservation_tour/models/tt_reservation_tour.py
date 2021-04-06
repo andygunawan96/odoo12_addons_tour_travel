@@ -418,7 +418,7 @@ class ReservationTour(models.Model):
 
             if tour_data.tour_type == 'open':
                 if not data.get('departure_date'):
-                    raise RequestException(1004, additional_message='Departure Date parameter is required for Open Tour!')
+                    raise RequestException(1004, additional_message='Departure Date parameter is required for Open Trip!')
                 temp_dept_date = data['departure_date']
                 temp_arr_date = (datetime.strptime(data['departure_date'], '%Y-%m-%d') + timedelta(days=int(tour_data.duration))).strftime('%Y-%m-%d')
                 if temp_dept_date < tour_line_data.departure_date.strftime('%Y-%m-%d') or temp_arr_date > tour_line_data.arrival_date.strftime('%Y-%m-%d'):
