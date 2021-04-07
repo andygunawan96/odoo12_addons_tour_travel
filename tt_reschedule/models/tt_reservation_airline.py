@@ -416,13 +416,9 @@ class ReservationAirline(models.Model):
                 resv_journey_dict[key] = journey
 
             resv_passenger_number_dict = {}
-            resv_passenger_name_dict = {}
             for psg in airline_obj.passenger_ids:
                 key_number = psg.sequence
                 resv_passenger_number_dict[key_number] = psg
-
-                key_name = util.generate_passenger_key_name(psg.to_dict())
-                resv_passenger_name_dict[key_name] = psg
 
             resv_provider_dict = {}
             for prov in airline_obj.provider_booking_ids:
