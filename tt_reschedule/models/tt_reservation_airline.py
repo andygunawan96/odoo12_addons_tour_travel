@@ -731,13 +731,13 @@ class ReservationAirline(models.Model):
 
                 admin_fee_obj = None
                 if commit_data['status'] == 'BOOKED' and rsv_prov_obj.state == 'booked':
-                    ledger_created = rsv_prov_obj.delete_service_charge()
+                    ledger_created = rsv_prov_obj.sudo().delete_service_charge()
                     if ledger_created:
                         rsv_prov_obj.action_reverse_ledger()
                         rsv_prov_obj.delete_service_charge()
 
-                    rsv_prov_obj.delete_passenger_fees()
-                    rsv_prov_obj.delete_passenger_tickets()
+                    rsv_prov_obj.sudo().delete_passenger_fees()
+                    rsv_prov_obj.sudo().delete_passenger_tickets()
                     rsv_prov_obj.create_ticket_api(commit_data['passengers'], commit_data['pnr'])
                     for journey in commit_data['journeys']:
                         for segment in journey['segments']:
