@@ -48,7 +48,7 @@
 
         <menuitem id="sub_menu_tour_travel_user_ban_user"
                   parent="tt_base.top_tour_travel_administration"
-                  groups="tt_base.group_tt_agent_management_operator"
+                  groups="tt_base.group_tt_agent_management_operator,tt_base.group_banned_users_level_1"
                   name="Banned Users"
                   sequence="3"
                   action="tt_ban_user_action_view"/>

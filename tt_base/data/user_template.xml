@@ -1914,7 +1914,7 @@
                          (4, ref('tt_base.group_ledger_level_2')),
                          (4, ref('tt_base.group_agent_registration_master_level_3')),
                          (4, ref('tt_base.group_agent_registration_level_3')),
-                         (4, ref('tt_base.group_agent_level_3')),
+                         (4, ref('tt_base.group_agent_level_4')),
                          (4, ref('tt_base.group_agent_type_level_3')),
                          (4, ref('tt_base.group_pnr_quota_level_3')),
                          (4, ref('tt_base.group_customer_level_3')),

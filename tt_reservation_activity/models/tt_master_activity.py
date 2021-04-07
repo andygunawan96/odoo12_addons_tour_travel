@@ -1433,14 +1433,15 @@ class MasterActivity(models.Model):
             city_objs = self.env['res.city'].sudo().search([])
 
             for country in country_objs:
-                countries_dict.update({
-                    country.code: {
-                        'name': country.name,
-                        'code': country.code,
-                        'uuid': str(country.id),
-                        'states': {}
-                    }
-                })
+                if country.code:
+                    countries_dict.update({
+                        country.code: {
+                            'name': country.name,
+                            'code': country.code,
+                            'uuid': str(country.id),
+                            'states': {}
+                        }
+                    })
 
             for state in state_objs:
                 if state.country_id:
