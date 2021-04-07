@@ -39,8 +39,8 @@ class TtAirlineApiCon(models.Model):
             res = self.env['tt.get.booking.from.vendor'].pnr_validator_api(data, context)
         elif action == 'save_booking_from_vendor':
             res = self.env['tt.get.booking.from.vendor.review'].save_booking_api(data, context)
-        elif action == 'process_reschedule':
-            res = table_obj.process_reschedule_airline_api(data,context)
+        elif action == 'process_update_booking':
+            res = table_obj.process_update_booking_airline_api(data,context)
         else:
             raise RequestException(999)
 
