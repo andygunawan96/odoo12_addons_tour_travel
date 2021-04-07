@@ -175,7 +175,7 @@
         <field name="name">tt.agent.form.view.customer.agent.user</field>
         <field name="model">tt.agent</field>
         <field name="inherit_id" ref="tt_base.tt_agent_form_view_customer"/>
-        <field name="groups_id" eval="[(6, 0, [ref('tt_base.group_tt_agent_user_operator') ])]" />
+        <field name="groups_id" eval="[(6, 0, [ref('tt_base.group_tt_agent_user_operator'),ref('tt_base.group_tt_agent_user')])]" />
         <field name="priority">40</field>
         <field name="arch" type="xml">
             <field name="payment_acquirer_ids" position="replace">
@@ -261,13 +261,13 @@
 
     <menuitem id="menu_customers_agent"
               parent="tt_base.top_customers_agent"
-              groups="group_tt_agent_user_operator"
+              groups="group_tt_agent_user_operator,tt_base.group_agent_level_1"
               name="Agent"
               sequence="2"/>
 
     <menuitem id="submenu_customers_all_agent"
               parent="tt_base.menu_customers_agent"
-              groups="group_tt_agent_user_operator"
+              groups="group_tt_agent_user_operator,tt_base.group_agent_level_1"
               name="My Agent"
               sequence="2"
               action="tt_agent_customer_action_view"/>
