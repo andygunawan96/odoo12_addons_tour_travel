@@ -86,7 +86,7 @@
 
     <record model="ir.actions.server" id="action_multi_merge_comparer_hotel">
         <field name="name">Merge Destination</field>
-        <field name="model_id" ref="tt_reservation_hotel.model_tt_hotel_compare"/>
+        <field name="model_id" ref="tt_reservation_hotel.model_tt_hotel_destination"/>
         <field name="binding_model_id" ref="tt_reservation_hotel.model_tt_hotel_destination"/>
         <field name="state">code</field>
         <field name="code">
