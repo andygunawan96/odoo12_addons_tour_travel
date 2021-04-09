@@ -30,6 +30,13 @@ class TtTemporaryRecord(models.Model):
             'res.country.state': [('res.city', 'state_id')],
         }
 
+    def get_field_in_prov_code(self):
+        return {
+            'res.country': 'country_id',
+            'res.country.state': 'state_id',
+            'res.city': 'city_id',
+        }
+
     @api.multi
     def action_merge(self):
         objs = self.get_obj()
@@ -56,17 +63,14 @@ class TtTemporaryRecord(models.Model):
                 alias_name_list.append(alias.name)
             # Pindah smua nama asli obj yg ingin di remove ke target merge nya
             if remove_obj.name not in alias_name_list:
-                a = {'name': remove_obj.name}
-                if self.rec_model == 'res.city':
-                   a.update({'city_id': self.parent_rec_id})
-                elif self.rec_model == 'res.country.state':
-                    a.update({'state_id': self.parent_rec_id})
-                elif self.rec_model == 'res.country':
-                    a.update({'country_id': self.parent_rec_id})
-                self.env['tt.destination.alias'].create(a)
+                data = self.get_field_in_prov_code()
+                self.env['tt.destination.alias'].create({
+                    'name': remove_obj.name,
+                    data[self.rec_model]: self.parent_rec_id
+                })
 
-            for a in remove_obj.provide_code_ids:
-                a.update({'res_id': self.parent_rec_id})
+            # for a in remove_obj.provide_code_ids:
+            #     a.update({'res_id': self.parent_rec_id})
 
         remove_obj.active = False
         remove_obj.other_name_ids = False
@@ -78,13 +82,13 @@ class TtTemporaryRecord(models.Model):
         for rec in self.env['tt.record.move.line'].search([('temp_rec_id', '=', self.id)]):
             objs = self.get_obj()
             target_obj = self.env[rec.rec_model].browse(rec.rec_id)
-            for obj_list in objs[self.rec_model]:
+            for obj_list in objs.get(self.rec_model) or []:
                 if obj_list[0] == rec.rec_model:
                     target_obj.update({
                         obj_list[1]: self.remove_rec_id
                     })
+                    rec.sudo().unlink()
                     break
-            rec.sudo().unlink()
         self.state = 'new'
 
     @api.multi

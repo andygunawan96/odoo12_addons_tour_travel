@@ -106,6 +106,16 @@ class HotelDestination(models.Model):
     def multi_merge_destination(self):
         return True
 
+    def copy_value_if_empty(self, target_id):
+        target_obj = self.sudo().browse(target_id)
+        need_to_check = ['city_str', 'state_str', 'country_str', 'city_id', 'state_id', 'country_id']
+        x = {}
+        for data in need_to_check:
+            if not getattr(self, data):
+                x[data] = getattr(target_obj, data)
+        self.update(x)
+        return True
+
     def prepare_destination_for_cache(self, curr_obj):
         return {
             'id': curr_obj.id,
