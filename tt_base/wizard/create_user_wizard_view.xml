@@ -18,23 +18,23 @@
         </field>
     </record>
 
-        <record id="create_user_wizard_corp_form_view" model="ir.ui.view">
-        <field name="name">create.user.wizard.corp.form.view</field>
-        <field name="model">create.user.wizard.corp</field>
-        <field name="arch" type="xml">
-            <form string="Create User Wizard">
-                <group>
-                    <field name="name"/>
-                    <field name="login"/>
-                </group>
-                <footer>
-                    <button name="create_user_corp" string="Create User" type="object" default_focus="1" class="oe_highlight"/>
-                    or
-                    <button string="Cancel" class="oe_link" special="cancel" />
-                </footer>
-            </form>
-        </field>
-    </record>
+<!--        <record id="create_user_wizard_corp_form_view" model="ir.ui.view">-->
+<!--        <field name="name">create.user.wizard.corp.form.view</field>-->
+<!--        <field name="model">create.user.wizard.corp</field>-->
+<!--        <field name="arch" type="xml">-->
+<!--            <form string="Create User Wizard">-->
+<!--                <group>-->
+<!--                    <field name="name"/>-->
+<!--                    <field name="login"/>-->
+<!--                </group>-->
+<!--                <footer>-->
+<!--                    <button name="create_user_corp" string="Create User" type="object" default_focus="1" class="oe_highlight"/>-->
+<!--                    or-->
+<!--                    <button string="Cancel" class="oe_link" special="cancel" />-->
+<!--                </footer>-->
+<!--            </form>-->
+<!--        </field>-->
+<!--    </record>-->
 
 
     <record id="create_user_wizard_action_view" model="ir.actions.act_window">
