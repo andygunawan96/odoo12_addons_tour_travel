@@ -16,17 +16,15 @@ _logger = logging.getLogger(__name__)
 
 
 STATE_VISA = [
-    ('fail_booked', 'Failed (Book)'),
     ('draft', 'Request'),
     ('confirm', 'Confirm to HO'),
+    ('expired', 'Expired'),
     ('partial_validate', 'Partial Validate'),
     ('validate', 'Validated by HO'),
     ('to_vendor', 'Send to Vendor'),
     ('vendor_process', 'Proceed by Vendor'),
-    ('cancel', 'Canceled'),
     ('in_process', 'In Process'),
     ('payment', 'Payment'),
-    ('refund', 'Refund'),
     ('process_by_consulate', 'Process by Consulate'),
     ('partial_proceed', 'Partial Proceed'),
     ('proceed', 'Proceed'),
@@ -36,7 +34,9 @@ STATE_VISA = [
     ('delivered', 'Delivered'),
     # ('ready', 'Sent'),
     ('done', 'Done'),
-    ('expired', 'Expired')
+    ('fail_booked', 'Failed (Book)'),
+    ('cancel', 'Canceled'),
+    ('refund', 'Refund')
 ]
 
 
@@ -1698,6 +1698,16 @@ class TtVisa(models.Model):
                         },
                         'sequence': idx
                     })
+                state_visa = []
+                for rec in STATE_VISA:
+                    if 'draft' in rec[0] or 'confirm' in rec[0] or 'validate' in rec[0] and 'partial' not in rec[0] or 'vendor_process' in rec[0] or \
+                            'cancel' in rec[0] or 'in_process' in rec[0] or 'payment' in rec[0] or 'refund' in rec[0] or \
+                            'process_by_consulate' in rec[0] or 'proceed' in rec[0] and 'partial' not in rec[0] or 'approve' in rec[0] and 'partial' not in rec[0] or 'reject' in rec[0] or \
+                            'delivered' in rec[0] or 'done' in rec[0] or 'expired' in rec[0]:
+                        state_visa.append(rec[1])
+
+                    if res_dict['state'] == rec[0]:
+                        break
                 res = {
                     'contact': {
                         'title': res_dict['contact']['title'],
@@ -1715,7 +1725,8 @@ class TtVisa(models.Model):
                         'state': res_dict['state'],
                         'state_visa': dict(book_obj._fields['state_visa'].selection).get(book_obj.state_visa)
                     },
-                    'passengers': passenger
+                    'passengers': passenger,
+                    'state_visa_arr': state_visa
                 }
                 _logger.info("Get resp\n" + json.dumps(res))
                 return Response().get_no_error(res)
