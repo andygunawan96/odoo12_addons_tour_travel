@@ -1079,8 +1079,8 @@ class TestSearch(models.Model):
                 csc.resv_hotel_id = resv_obj.id
                 csc.total = csc.amount * csc.pax_count
                 resv_obj.total += csc.total
-        if resv_obj.state not in ['issued', 'fail_issued']:
-            resv_obj.sudo().action_issued(acq_id, co_uid)
+        # if resv_obj.state not in ['issued', 'fail_issued']:
+        #     resv_obj.sudo().action_issued(acq_id, co_uid)
         return resv_obj.sudo().action_done(issued_res)
 
     # Asumsi Destinasi sdah berupa kode negara
