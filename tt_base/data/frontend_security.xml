@@ -125,6 +125,11 @@
         <field name="code">b2c_limitation</field>
     </record>
 
+    <record id="corp_limitation" model="tt.frontend.security">
+        <field name="name">Corporate limitation</field>
+        <field name="code">corp_limitation</field>
+    </record>
+
     <record id="get_booking_from_vendor" model="tt.frontend.security">
         <field name="name">Get booking from vendor</field>
         <field name="code">get_booking_from_vendor</field>

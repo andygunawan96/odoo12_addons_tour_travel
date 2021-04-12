@@ -42,6 +42,7 @@
                                 <field name="gender"/>
                                 <field name="marital_status"/>
                                 <field name="nationality_id"/>
+                                <field name="position"/>
                                 <field name="religion"/>
                                 <field name="birth_date"/>
                                 <field name="face_image_id" options="{'no_create': True}"/>
@@ -59,6 +60,11 @@
                                         </tree>
                                     </field>
                                 </page>
+                                <page string="Booker Parent">
+                                    <field name="booker_parent_ids"
+                                           domain="[('parent_agent_id', '=', agent_id)]"
+                                           context="{'form_view_ref' : 'tt_base.tt_customer_parent_form_view_customer'}"/>
+                                </page>
                                 <page string="Customer Parent">
                                     <field name="customer_parent_ids"
                                            domain="[('parent_agent_id', '=', agent_id)]"
@@ -73,9 +79,6 @@
                                 <page string="Social Media">
                                     <field name="social_media_ids"/>
                                 </page>
-<!--                                <page string="Bank Detail">-->
-<!--                                    <field name="customer_bank_detail_ids"/>-->
-<!--                                </page>-->
                                 <page string="Users">
                                     <field name="user_ids"/>
                                 </page>

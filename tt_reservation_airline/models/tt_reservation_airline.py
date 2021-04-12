@@ -910,6 +910,7 @@ class ReservationAirline(models.Model):
             'child': searchRQ['child'],
             'infant': searchRQ['infant'],
             'agent_id': context_gateway['co_agent_id'],
+            'customer_parent_id': context_gateway.get('co_customer_parent_id',False),
             'user_id': context_gateway['co_uid'],
             'is_get_booking_from_vendor': searchRQ.get('is_get_booking_from_vendor', False)
         }

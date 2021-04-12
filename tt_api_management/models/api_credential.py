@@ -163,6 +163,10 @@ class ResUsersApiInherit(models.Model):
         }
         if self.agent_id:
             res.update(self.agent_id.get_credential(prefix))
+        if self.customer_parent_id:
+            res.update(self.customer_parent_id.get_credential(prefix))
+        if self.customer_id:
+            res.update(self.customer_id.get_credential(prefix))
         return res
 
     def reset_password_api(self, data, context):
@@ -215,5 +219,36 @@ class TtAgentTypeApiInherit(models.Model):
             '%sagent_type_name' % prefix: self.name,
             '%sagent_type_code' % prefix: self.code,
             # '%sagent_type_quota' % prefix: self.is_using_pnr_quota
+        }
+        return res
+
+class TtCustomerParentApiInherit(models.Model):
+    _inherit = 'tt.customer.parent'
+
+    def get_credential(self, prefix=''):
+        res = {
+            '%scustomer_parent_id' % prefix: self.id,
+            '%scustomer_parent_name' % prefix: self.name,
+        }
+        if self.customer_parent_type_id:
+            res.update(self.customer_parent_type_id.get_credential(prefix))
+        return res
+
+class TtCustomerParentTypeApiInherit(models.Model):
+    _inherit = 'tt.customer.parent.type'
+
+    def get_credential(self, prefix=''):
+        res = {
+            '%scustomer_parent_type_id' % prefix: self.id,
+            '%scustomer_parent_type_name' % prefix: self.name,
+        }
+        return res
+
+class TtCustomerApiInherit(models.Model):
+    _inherit = 'tt.customer'
+
+    def get_credential(self, prefix=''):
+        res = {
+            '%scustomer_seq_id' % prefix: self.seq_id,
         }
         return res

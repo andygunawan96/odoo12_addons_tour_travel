@@ -189,6 +189,7 @@ class TtReservation(models.Model):
                     vals_phone_number = '%s%s' % (vals.get('calling_code', ''), vals['mobile'])
                     for phone in booker_rec.phone_ids:
                         if phone.phone_number == vals_phone_number:
+                            phone.last_updated_time = time.time()
                             number_entered = True
                             break
 
@@ -348,6 +349,7 @@ class TtReservation(models.Model):
                     vals_phone_number = '%s%s' % (vals.get('calling_code', ''), vals['mobile'])
                     for phone in contact_rec.phone_ids:
                         if phone.phone_number == vals_phone_number:
+                            phone.last_updated_time = time.time()
                             number_entered = True
                             break
                     if not number_entered:
@@ -440,16 +442,24 @@ class TtReservation(models.Model):
                 'is_get_booking_from_vendor': psg.get('is_get_booking_from_vendor', False),
                 'register_uid': context['co_uid']
             })
-            #if ada phone, kalau dari frontend cache passenger
-            if psg.get('phone'):
+            # sepertinya tidak terpakai
+            # #if ada phone, kalau dari frontend cache passenger
+            # if psg.get('phone'):
+            #     psg.update({
+            #         'phone_ids': [(0, 0, {
+            #             'calling_code': psg.get('phone_id', ''),
+            #             'calling_number': psg.get('phone', ''),
+            #             'phone_number': '%s%s' % (psg.get('phone_id', ''), psg.get('phone', '')),
+            #             'country_id': country and country[0].id or False,
+            #         })]
+            #     })
+
+            ##ngelink kan customer yg baru di create ke corporate login user, seharusnya hanya terjadi kalau corpnya login sendiri
+            if context.get('co_customer_parent_id'):
                 psg.update({
-                    'phone_ids': [(0, 0, {
-                        'calling_code': psg.get('phone_id', ''),
-                        'calling_number': psg.get('phone', ''),
-                        'phone_number': '%s%s' % (psg.get('phone_id', ''), psg.get('phone', '')),
-                        'country_id': country and country[0].id or False,
-                    })]
+                    'customer_parent_ids': [(4,context['co_customer_parent_id'])]
                 })
+
             psg_obj = passenger_obj.create(psg)
             if psg.get('identity'):
                 psg_obj.add_or_update_identity(psg['identity'])

@@ -28,7 +28,8 @@ class TtCustomerParent(models.Model):
     phone_ids = fields.One2many('phone.detail', 'customer_parent_id', string='Phones')
     social_media_ids = fields.One2many('social.media.detail', 'customer_parent_id', 'Social Media')
     customer_ids = fields.Many2many('tt.customer', 'tt_customer_customer_parent_rel','customer_parent_id','customer_id','Customer')
-    user_ids = fields.One2many('res.users', 'agent_id', 'User')
+    booker_ids = fields.Many2many('tt.customer', 'tt_customer_booker_customer_parent_rel', 'customer_parent_id','customer_id', 'Booker')
+    user_ids = fields.One2many('res.users', 'customer_parent_id', 'User')
     payment_acquirer_ids = fields.Char(string="Payment Acquirer", required=False, )  # payment_acquirer
     agent_bank_detail_ids = fields.One2many('agent.bank.detail', 'agent_id', 'Agent Bank')  # agent_bank_detail
     tac = fields.Text('Terms and Conditions', readonly=True)

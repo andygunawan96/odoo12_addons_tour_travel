@@ -1,3 +1,5 @@
+import time
+
 from odoo import api, fields, models, _
 from odoo.exceptions import UserError
 import logging
@@ -14,6 +16,7 @@ _logger = logging.getLogger(__name__)
 class PhoneDetail(models.Model):
     _name = 'phone.detail'
     _description = 'Tour & Travel - Phone Detail'
+    _order = 'last_updated_time desc'
 
     type = fields.Selection(TYPE, 'Phone Type', required=True, default='work')
     country_id = fields.Many2one('res.country', string='Country')
@@ -26,6 +29,12 @@ class PhoneDetail(models.Model):
     customer_parent_id = fields.Many2one('tt.customer.parent', string='Customer Parent')
     va_create = fields.Boolean('VA Create', default=False)
     active = fields.Boolean('Active', default=True)
+    last_updated_time = fields.Integer('Last Update',default=0)
+
+    @api.model
+    def create(self, vals_list):
+        vals_list['last_updated_time'] = time.time()
+        return super(PhoneDetail, self).create(vals_list)
 
     def to_dict(self):
         return {

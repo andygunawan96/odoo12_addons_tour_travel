@@ -70,6 +70,7 @@
                                     <field name="birth_date"/>
                                 </group>
                                 <group>
+                                    <field name="position"/>
                                     <field name="religion"/>
                                     <field name="face_image_id"/>
                                     <field name="register_uid" groups="tt_base.group_tt_tour_travel_operator"/>
@@ -88,6 +89,9 @@
                                         </tree>
                                     </field>
                                 </page>
+                                <page string="Booker Parent">
+                                    <field name="booker_parent_ids" context="{'form_view_ref' : 'tt_base.tt_customer_parent_form_view'}"/>
+                                </page>
                                 <page string="Customer Parent">
                                     <field name="customer_parent_ids" context="{'form_view_ref' : 'tt_base.tt_customer_parent_form_view'}"/>
                                 </page>
@@ -100,9 +104,9 @@
                                 <page string="Social Media">
                                     <field name="social_media_ids"/>
                                 </page>
-<!--                                <page string="Bank Detail">-->
-<!--                                    <field name="customer_bank_detail_ids"/>-->
-<!--                                </page>-->
+                                <!--                                <page string="Bank Detail">-->
+                                <!--                                    <field name="customer_bank_detail_ids"/>-->
+                                <!--                                </page>-->
                                 <page string="Users">
                                     <field name="user_ids"/>
                                 </page>
