@@ -60,17 +60,26 @@ class HotelDestination(models.Model):
         return a.code
 
     def multi_merge_destination(self):
-        code_list = []
         max_len = 0
         max_obj = False
+        # Cari provider ids terpanjang
         for rec in self:
-            code_list += rec.provider_ids.ids
             if max_len < len(rec.provider_ids.ids):
                 max_len = len(rec.provider_ids.ids)
                 max_obj = rec
-        if max_obj:
-            max_obj.provider_ids.update([(6, 0, code_list)])
-        return True
+
+        # Buat Merge Record
+        for rec in self:
+            if rec.id != max_obj.id:
+                # Ambil data slave jika data dari master kosong
+                max_obj.copy_value_if_empty(rec.id)
+                new_temp_obj = self.env['tt.temporary.record'].sudo().create({
+                    'name': rec.name,
+                    'parent_rec_id': max_obj.id,
+                    'remove_rec_id': rec.id,
+                    'rec_model': self._name,
+                })
+                new_temp_obj.action_merge()
 
 # class HotelMaster(models.Model):
 #     _inherit = "tt.hotel.master"
@@ -83,3 +92,41 @@ class HotelDestination(models.Model):
     # def get_provider_code(self, hotel_id, provider_id):
     #     a = self.env['tt.provider.code'].search([('hotel_id', '=', hotel_id), ('provider_id', '=', provider_id)], limit= 1)
     #     return a.code
+
+
+class TtTemporaryRecord(models.Model):
+    _inherit = 'tt.temporary.record'
+
+    @api.multi
+    def action_merge(self):
+        result = super(TtTemporaryRecord, self).action_merge()
+        # Move Provider Code e juga
+        update_obj = []
+        for rec in self.env['tt.provider.code'].search([('res_model','=',self.rec_model),('res_id','=',self.remove_rec_id)]):
+            rec.res_id = self.parent_rec_id
+            update_obj.append(rec.id)
+
+        data = self.get_field_in_prov_code()
+        if data.get(self.rec_model):
+            for rec in self.env['tt.provider.code'].search([(data[self.rec_model], '=', self.remove_rec_id)]):
+                rec.update({data[self.rec_model]: self.parent_rec_id})
+                update_obj.append(rec.id)
+
+        for rec in list( dict.fromkeys(update_obj) ):
+            self.env['tt.record.move.line'].create({
+                'temp_rec_id': self.id,
+                'rec_id': rec,
+                'rec_model': 'tt.provider.code',
+            })
+        return result
+
+    @api.multi
+    def action_revert(self):
+        result = super(TtTemporaryRecord, self).action_revert()
+        for rec in self.env['tt.record.move.line'].search([('temp_rec_id', '=', self.id)]):
+            if rec.rec_model == 'tt.provider.code':
+                code_obj = self.env[rec.rec_model].browse(rec.rec_id)
+                code_obj.res_id = self.remove_rec_id
+                code_obj.format_old()
+                rec.sudo().unlink()
+        return result

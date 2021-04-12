@@ -435,8 +435,6 @@ class PaymentAcquirerNumber(models.Model):
             payment_acq_number.fee_amount = data.get('fee_amount')
             payment_acq_number.time_limit = data.get('time_limit')
             payment_acq_number.url = data.get('url')
-            payment_acq_number.payment_acquirer_id.va_fee = data.get('fee_amount')
-
             return ERR.get_no_error()
         else:
             return ERR.get_error(additional_message='Payment Acquirer not found')
