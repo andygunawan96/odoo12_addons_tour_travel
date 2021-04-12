@@ -36,7 +36,7 @@
         <field name="name">customer.parent.billing.inh.finance</field>
         <field name="model">tt.customer.parent</field>
         <field name="inherit_id" ref="tt_billing_statement.customer_parent_tt_billing_inh"/>
-        <field name="groups_id" eval="[(6, 0, [ref('tt_base.group_tt_agent_finance_operator'), ref('base.group_system') ])]" />
+        <field name="groups_id" eval="[(6, 0, [ref('tt_base.group_tt_agent_finance_operator'),ref('base.group_system'),ref('tt_base.group_tt_agent_finance')])]" />
         <field name="arch" type="xml">
             <field name="billing_cycle_ids" position="replace">
                 <field name="billing_cycle_ids" widget="many2many_tags" options="{'no_create_edit': True,'color_field': 'color'}" readonly="0"/>
@@ -54,7 +54,7 @@
         <field name="name">customer.parent.customer.billing.inh.finance</field>
         <field name="model">tt.customer.parent</field>
         <field name="inherit_id" ref="tt_billing_statement.customer_parent_customer_tt_billing_inh"/>
-        <field name="groups_id" eval="[(6, 0, [ref('tt_base.group_tt_agent_finance_operator'), ref('base.group_system') ])]" />
+        <field name="groups_id" eval="[(6, 0, [ref('tt_base.group_tt_agent_finance_operator'),ref('base.group_system'),ref('tt_base.group_tt_agent_finance')])]" />
         <field name="arch" type="xml">
             <field name="billing_cycle_ids" position="replace">
                 <field name="billing_cycle_ids" widget="many2many_tags" options="{'no_create_edit': True,'color_field': 'color'}" readonly="0"/>

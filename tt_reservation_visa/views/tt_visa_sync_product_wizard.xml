@@ -42,6 +42,6 @@
 				parent="menu_tour_travel_visa_configuration"
 				action="action_visa_sync_product_wizard"
 				sequence="2"
-				groups="tt_base.group_tt_tour_travel_operator"/>
+				groups="tt_base.group_tt_tour_travel_operator,tt_base.group_master_data_visa_level_3"/>
 	</data>
 </odoo>

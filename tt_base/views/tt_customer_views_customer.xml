@@ -132,7 +132,7 @@
 
     <menuitem id="menu_customers_customer"
               parent="tt_base.top_customers_customers"
-              groups="tt_base.group_tt_agent_user_operator"
+              groups="tt_base.group_tt_agent_user_operator,tt_base.group_customer_level_1"
               name="Customer List"
               sequence="1"
               action="tt_customer_action_view_customer"/>
@@ -141,7 +141,7 @@
         <field name="name">tt.customer.form.view.customer.agent</field>
         <field name="model">tt.customer</field>
         <field name="inherit_id" ref="tt_base.tt_customer_form_view_customer"/>
-        <field name="groups_id" eval="[(6, 0, [ref('tt_base.group_tt_agent_user_operator') ])]" />
+        <field name="groups_id" eval="[(6, 0, [ref('tt_base.group_tt_agent_user_operator'),ref('tt_base.group_tt_agent_user')])]" />
         <field name="priority">40</field>
         <field name="arch" type="xml">
             <field name="agent_id" position="replace">

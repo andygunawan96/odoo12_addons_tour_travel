@@ -12,4 +12,11 @@
         <field name="domain_force">[('agent_id','=',user.agent_id.id)]</field>  <!--,('sub_agent_id.id','=',user.agent_id.id)-->
         <field name="groups" eval="[(4,ref('tt_base.group_tt_agent_user'))]"/>  <!--Record rule biasanya 4-->
     </record>
+
+    <record id="tt_reservation_offline_for_corpor_user" model="ir.rule">
+        <field name="name">Reservation Offline For Corporate User</field>
+        <field name="model_id" ref="model_tt_reservation_offline"/>
+        <field name="domain_force">[('agent_id','=',user.agent_id.id),('customer_parent_id','=',user.customer_parent_id.id)]</field>  <!--['|',('agent_id','=',user.agent_id.id),('sub_agent_id','=',user.agent_id.id)]-->  <!--[('agent_id','=',user.agent_id.id)]-->
+        <field name="groups" eval="[(4,ref('tt_base.group_tt_corpor_user'))]"/>  <!--,(4,ref('tt_base.group_tt_sub_agent_user_operator'))-->
+    </record>
 </odoo>

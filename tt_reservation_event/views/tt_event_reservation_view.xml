@@ -114,7 +114,7 @@
     <menuitem id="top_external_vendor_event_reservation"
               parent="tt_base.top_external_vendor_transaction"
               name="Event Reservation"
-              groups="tt_base.group_tt_external_vendor_operator"
+              groups="tt_base.group_tt_external_vendor_operator,tt_base.group_tt_external_user"
               action="tt_reservation_event.tt_master_event_reservation_view_action"
     />
 
