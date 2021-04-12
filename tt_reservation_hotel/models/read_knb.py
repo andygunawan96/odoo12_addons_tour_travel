@@ -292,6 +292,7 @@ class HotelInformation(models.Model):
                     'name': name,
                     'code': code,
                     'provider_id': provider_id,
+                    'country_id': country_obj.id,
                 })
         return a
 
@@ -348,7 +349,7 @@ class HotelInformation(models.Model):
     # 1d. Get City Code save in tt.hotel.destination
     def v2_get_city_code_knb(self):
         base_cache_directory = self.env['ir.config_parameter'].sudo().get_param('hotel.cache.directory')
-        for xls_sheet in ['RODE_city_20200307090456.xls', 'RODE_city_20201028120241.xls']:
+        for xls_sheet in ['RODE_city_20200307090456.xls', 'RODE_city_20201028120241.xls', 'RODE_city_20210406091638.xls']:
             workbook = xlrd.open_workbook(base_cache_directory + 'knb/00_other/' + xls_sheet)
             # worksheet = workbook.sheet_by_name('Name of the Sheet')
             worksheet = workbook.sheet_by_index(0)
