@@ -189,7 +189,7 @@
         <field name="name">tt.payment.form.view.agent</field>
         <field name="model">tt.payment</field>
         <field name="inherit_id" ref="tt_payment.tt_payment_form_view"/>
-        <field name="groups_id" eval="[(6, 0, [ref('tt_base.group_tt_agent_user_operator') ])]" />
+        <field name="groups_id" eval="[(6, 0, [ref('tt_base.group_tt_agent_user_operator'),ref('tt_base.group_tt_agent_user')])]" />
         <field name="priority">40</field>
         <field name="arch" type="xml">
             <field name="acquirer_id" position="replace">

@@ -13,6 +13,13 @@
         <field name="groups" eval="[(4,ref('tt_base.group_tt_agent_user'))]"/>  <!--,(4,ref('tt_base.group_tt_sub_agent_user_operator'))-->
     </record>
 
+    <record id="tt_reservation_tour_for_corpor_user" model="ir.rule">
+        <field name="name">Reservation Tour For Corporate User</field>
+        <field name="model_id" ref="model_tt_reservation_tour"/>
+        <field name="domain_force">[('agent_id','=',user.agent_id.id),('customer_parent_id','=',user.customer_parent_id.id)]</field>  <!--['|',('agent_id','=',user.agent_id.id),('sub_agent_id','=',user.agent_id.id)]-->  <!--[('agent_id','=',user.agent_id.id)]-->
+        <field name="groups" eval="[(4,ref('tt_base.group_tt_corpor_user'))]"/>  <!--,(4,ref('tt_base.group_tt_sub_agent_user_operator'))-->
+    </record>
+
     <record id="tt_request_tour_for_agent" model="ir.rule">
         <field name="name">Request Tour For Agent</field>
         <field name="model_id" ref="model_tt_request_tour"/>
@@ -25,5 +32,12 @@
         <field name="model_id" ref="model_tt_request_tour"/>
         <field name="domain_force">[('agent_id','=',user.agent_id.id)]</field>  <!--['|',('agent_id','=',user.agent_id.id),('sub_agent_id','=',user.agent_id.id)]-->  <!--[('agent_id','=',user.agent_id.id)]-->
         <field name="groups" eval="[(4,ref('tt_base.group_tt_agent_user'))]"/>  <!--,(4,ref('tt_base.group_tt_sub_agent_user_operator'))-->
+    </record>
+
+    <record id="tt_request_tour_for_corpor_user" model="ir.rule">
+        <field name="name">Request Tour For Corporate User</field>
+        <field name="model_id" ref="model_tt_request_tour"/>
+        <field name="domain_force">[('agent_id','=',user.agent_id.id)]</field>  <!--['|',('agent_id','=',user.agent_id.id),('sub_agent_id','=',user.agent_id.id)]-->  <!--[('agent_id','=',user.agent_id.id)]-->
+        <field name="groups" eval="[(4,ref('tt_base.group_tt_corpor_user'))]"/>  <!--,(4,ref('tt_base.group_tt_sub_agent_user_operator'))-->
     </record>
 </odoo>

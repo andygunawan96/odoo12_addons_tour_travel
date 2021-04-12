@@ -105,7 +105,7 @@
 
     <menuitem id="menu_email_outgoing"
               parent="tt_base.top_tour_travel_administration"
-              groups="base.user_admin"
+              groups="base.user_admin,tt_base.group_email_queue_level_1"
               name="Outgoing Mail Server"
               sequence="6"
               action="base.action_ir_mail_server_list"/>

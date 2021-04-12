@@ -223,7 +223,7 @@
               parent="tt_monthly_fee.menu_transaction_accounting_monthly_fee"
               name="Monthly Fee Rule"
               action="tt_monthly_fee_rule_action"
-              groups="tt_base.group_tt_tour_travel_operator"
+              groups="tt_base.group_tt_tour_travel_operator,tt_base.group_monthly_fee_level_3"
               sequence="20"/>
 
 </odoo>
