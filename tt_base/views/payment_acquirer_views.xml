@@ -246,20 +246,20 @@
 
         <menuitem id="menu_transaction_accounting_payment_acquirer"
                   parent="tt_base.top_menu_accounting"
-                  groups="tt_base.group_tt_tour_travel_operator"
+                  groups="tt_base.group_tt_tour_travel_operator,tt_base.group_payment_acquirer_level_1"
                   name="Payment Acquirer"
                   sequence="10"/>
 
         <menuitem id="sub_menu_transaction_payment_acquirer"
                   parent="tt_base.menu_transaction_accounting_payment_acquirer"
-                  groups="tt_base.group_tt_tour_travel_operator"
+                  groups="tt_base.group_tt_tour_travel_operator,tt_base.group_payment_acquirer_level_1"
                   name="Payment Acquirer"
                   sequence="10"
                   action="payment_acquirer_action_view"/>
 
         <menuitem id="sub_menu_transaction_payment_acquirer_number"
                   parent="tt_base.menu_transaction_accounting_payment_acquirer"
-                  groups="tt_base.group_tt_tour_travel_operator"
+                  groups="tt_base.group_tt_tour_travel_operator,tt_base.group_payment_acquirer_level_1"
                   name="Payment Acquirer Number"
                   sequence="20"
                   action="payment_acquirer_number_action_view"/>
@@ -319,7 +319,7 @@
 
         <menuitem id="sub_menu_item_tour_travel_unique_amount"
                   parent="tt_base.menu_tour_travel_master_currency"
-                  groups="group_tt_tour_travel_operator"
+                  groups="group_tt_tour_travel_operator,tt_base.group_unique_amount_level_1"
                   name="Unique Amount"
                   sequence="2"
                   action="unique_amount_action_view"/>

@@ -632,6 +632,7 @@ class TestSearch(models.Model):
         vals.update({
             'customer_parent_id': customer_parent_id,
             'sid_booked': context['signature'],
+            'user_id': context.get('co_uid') or self.env.user.id,
         })
         passenger_objs = self.env['tt.reservation.hotel'].create_customer_api(req['passengers'], context, booker_obj.id, contact_obj.id)  # create passenger
 
@@ -712,7 +713,7 @@ class TestSearch(models.Model):
 
         vend_hotel.create_service_charge(resv_id.sale_service_charge_ids)
 
-        resv_id.action_booked()
+        resv_id.action_booked(context)
         return self.get_booking_result(resv_id.id, context)
 
     def create_reservation_old(self, provider_name, hotel_id, cust_names, check_in, check_out, room_rates, cancellation_str, booker_detail, guest_count=0, os_res_no='', provider_data='', email='', mobile='', special_req=''):
@@ -1078,8 +1079,8 @@ class TestSearch(models.Model):
                 csc.resv_hotel_id = resv_obj.id
                 csc.total = csc.amount * csc.pax_count
                 resv_obj.total += csc.total
-        if resv_obj.state not in ['issued', 'fail_issued']:
-            resv_obj.sudo().action_issued(acq_id, co_uid)
+        # if resv_obj.state not in ['issued', 'fail_issued']:
+        #     resv_obj.sudo().action_issued(acq_id, co_uid)
         return resv_obj.sudo().action_done(issued_res)
 
     # Asumsi Destinasi sdah berupa kode negara

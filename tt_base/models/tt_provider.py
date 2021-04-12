@@ -156,25 +156,41 @@ class TtProviderCode(models.Model):
 
     # Temporary function untuk rubah ke format baru
     def format_new(self):
-        for rec in self.search([]):
-            if rec.country_id:
-                rec.res_id = rec.country_id.id
-                rec.res_model = 'res.country'
-            elif rec.state_id:
-                rec.res_id = rec.state_id.id
-                rec.res_model = 'res.country.state'
-            elif rec.city_id:
-                rec.res_id = rec.city_id.id
-                rec.res_model = 'res.city'
-            elif rec.hotel_id:
-                rec.res_id = rec.hotel_id.id
-                rec.res_model = 'tt.hotel'
-            elif rec.facility_id:
-                rec.res_id = rec.facility_id.id
-                rec.res_model = 'tt.hotel.facility'
-            elif rec.type_id:
-                rec.res_id = rec.type_id.id
-                rec.res_model = 'tt.hotel.type'
+        rec = self
+        if rec.country_id:
+            rec.res_id = rec.country_id.id
+            rec.res_model = 'res.country'
+        elif rec.state_id:
+            rec.res_id = rec.state_id.id
+            rec.res_model = 'res.country.state'
+        elif rec.city_id:
+            rec.res_id = rec.city_id.id
+            rec.res_model = 'res.city'
+        elif rec.hotel_id:
+            rec.res_id = rec.hotel_id.id
+            rec.res_model = 'tt.hotel'
+        elif rec.facility_id:
+            rec.res_id = rec.facility_id.id
+            rec.res_model = 'tt.hotel.facility'
+        elif rec.type_id:
+            rec.res_id = rec.type_id.id
+            rec.res_model = 'tt.hotel.type'
+
+    # function untuk rubah dari res_model res_id ke city_id / state_id / country_id
+    def format_old(self):
+        rec = self
+        if rec.res_model == 'res.country':
+            rec.country_id = rec.res_id
+        elif rec.res_model == 'res.country.state':
+            rec.state_id = rec.res_id
+        elif rec.res_model == 'res.city':
+            rec.city_id = rec.res_id
+        elif rec.res_model == 'tt.hotel':
+            rec.hotel_id = rec.res_id
+        elif rec.res_model == 'tt.hotel.facility':
+            rec.facility_id = rec.res_id
+        elif rec.res_model == 'tt.hotel.type':
+            rec.type_id = rec.res_id
 
 
 class TtProviderDestination(models.Model):

@@ -5,7 +5,7 @@
         <record id="template_ho_user_operator" model="res.users">
             <field name="name">Template HO Operator</field>
             <field name="login">template_ho_user_operator</field>
-            <field name="password">Gx3`>J2Q!gUh3MXnQbEh</field>
+            <field name="password">fmGe4M4fAXcBQjy24wkU</field>
             <field name="is_user_template" eval="True"/>
             <field name="agent_type_id" eval="ref('tt_base.agent_type_ho')"/>
             <field name="groups_id"
@@ -87,7 +87,7 @@
         <record id="template_ho_user_supervisor" model="res.users">
             <field name="name">Template HO Supervisor</field>
             <field name="login">template_ho_user_supervisor</field>
-            <field name="password">Gx3`>J2Q!gUh3MXnQbEh</field>
+            <field name="password">2dgVkHFVwWA77wQu7vZT</field>
             <field name="is_user_template" eval="True"/>
             <field name="agent_type_id" eval="ref('tt_base.agent_type_ho')"/>
             <field name="groups_id"
@@ -169,7 +169,7 @@
         <record id="template_ho_user_manager" model="res.users">
             <field name="name">Template HO Manager</field>
             <field name="login">template_ho_user_manager</field>
-            <field name="password">Gx3`>J2Q!gUh3MXnQbEh</field>
+            <field name="password">uvX6YantVqZJ8BBfnHjz</field>
             <field name="is_user_template" eval="True"/>
             <field name="agent_type_id" eval="ref('tt_base.agent_type_ho')"/>
             <field name="groups_id"
@@ -251,7 +251,7 @@
         <record id="template_ho_ticketing_user_operator" model="res.users">
             <field name="name">Template HO Ticketing Operator</field>
             <field name="login">template_ho_ticketing_user_operator</field>
-            <field name="password">Gx3`>J2Q!gUh3MXnQbEh</field>
+            <field name="password">37MTqhhz72M3Nme3zuVn</field>
             <field name="is_user_template" eval="True"/>
             <field name="agent_type_id" eval="ref('tt_base.agent_type_ho')"/>
             <field name="groups_id"
@@ -328,7 +328,7 @@
         <record id="template_ho_ticketing_user_supervisor" model="res.users">
             <field name="name">Template HO Ticketing Supervisor</field>
             <field name="login">template_ho_ticketing_user_supervisor</field>
-            <field name="password">Gx3`>J2Q!gUh3MXnQbEh</field>
+            <field name="password">N3X5zsEU34tCbzp4psWC</field>
             <field name="is_user_template" eval="True"/>
             <field name="agent_type_id" eval="ref('tt_base.agent_type_ho')"/>
             <field name="groups_id"
@@ -405,7 +405,7 @@
         <record id="template_ho_ticketing_user_manager" model="res.users">
             <field name="name">Template HO Ticketing Manager</field>
             <field name="login">template_ho_ticketing_user_manager</field>
-            <field name="password">Gx3`>J2Q!gUh3MXnQbEh</field>
+            <field name="password">mw2QJVVd6C3yt2KAuzKj</field>
             <field name="is_user_template" eval="True"/>
             <field name="agent_type_id" eval="ref('tt_base.agent_type_ho')"/>
             <field name="groups_id"
@@ -482,7 +482,7 @@
         <record id="template_ho_ticketing_finance_operator" model="res.users">
             <field name="name">Template HO Ticketing Finance Operator</field>
             <field name="login">template_ho_ticketing_finance_operator</field>
-            <field name="password">Gx3`>J2Q!gUh3MXnQbEh</field>
+            <field name="password">YBcFQ3c7spuGE2sRp347</field>
             <field name="is_user_template" eval="True"/>
             <field name="agent_type_id" eval="ref('tt_base.agent_type_ho')"/>
             <field name="groups_id"
@@ -560,7 +560,7 @@
         <record id="template_ho_ticketing_finance_supervisor" model="res.users">
             <field name="name">Template HO Ticketing Finance Supervisor</field>
             <field name="login">template_ho_ticketing_finance_supervisor</field>
-            <field name="password">Gx3`>J2Q!gUh3MXnQbEh</field>
+            <field name="password">GkZutqVS9Y5nFNyftHNV</field>
             <field name="is_user_template" eval="True"/>
             <field name="agent_type_id" eval="ref('tt_base.agent_type_ho')"/>
             <field name="groups_id"
@@ -638,7 +638,7 @@
         <record id="template_ho_ticketing_finance_manager" model="res.users">
             <field name="name">Template HO Ticketing Finance Manager</field>
             <field name="login">template_ho_ticketing_finance_manager</field>
-            <field name="password">Gx3`>J2Q!gUh3MXnQbEh</field>
+            <field name="password">WxJxdmnq5s5HYPQV7RKp</field>
             <field name="is_user_template" eval="True"/>
             <field name="agent_type_id" eval="ref('tt_base.agent_type_ho')"/>
             <field name="groups_id"
@@ -716,7 +716,7 @@
         <record id="template_ho_user_operational_operator" model="res.users">
             <field name="name">Template HO Operational Operator</field>
             <field name="login">template_ho_operational_operator</field>
-            <field name="password">Gx3`>J2Q!gUh3MXnQbEh</field>
+            <field name="password">eGsQWbjD76fRURARUTn3</field>
             <field name="is_user_template" eval="True"/>
             <field name="agent_type_id" eval="ref('tt_base.agent_type_ho')"/>
             <field name="groups_id"
@@ -798,7 +798,7 @@
         <record id="template_ho_user_operational_supervisor" model="res.users">
             <field name="name">Template HO Operational Supervisor</field>
             <field name="login">template_ho_user_operational_supervisor</field>
-            <field name="password">Gx3`>J2Q!gUh3MXnQbEh</field>
+            <field name="password">BPXxJSC3wFQh6pA32UG8</field>
             <field name="is_user_template" eval="True"/>
             <field name="agent_type_id" eval="ref('tt_base.agent_type_ho')"/>
             <field name="groups_id"
@@ -880,7 +880,7 @@
         <record id="template_ho_user_operational_manager" model="res.users">
             <field name="name">Template HO Operational Manager</field>
             <field name="login">template_ho_user_operational_manager</field>
-            <field name="password">Gx3`>J2Q!gUh3MXnQbEh</field>
+            <field name="password">s96Absf4tV3KbMK94RWN</field>
             <field name="is_user_template" eval="True"/>
             <field name="agent_type_id" eval="ref('tt_base.agent_type_ho')"/>
             <field name="groups_id"
@@ -988,7 +988,7 @@
         <record id="template_ho_user_accounting_operator" model="res.users">
             <field name="name">Template HO Accounting Operator</field>
             <field name="login">template_ho_user_accounting_operator</field>
-            <field name="password">mC/JdmC@D>sE`r2tbb*c</field>
+            <field name="password">cm4hFQ4vGAxJ3qvYE5jn</field>
             <field name="is_user_template" eval="True"/>
             <field name="agent_type_id" eval="ref('tt_base.agent_type_ho')"/>
             <field name="groups_id"
@@ -1096,7 +1096,7 @@
         <record id="template_ho_user_accounting_supervisor" model="res.users">
             <field name="name">Template HO Accounting Supervisor</field>
             <field name="login">template_ho_user_accounting_supervisor</field>
-            <field name="password">Gx3`>J2Q!gUh3MXnQbEh</field>
+            <field name="password">kgbVDZMUGe2ZBe2c8NzZ</field>
             <field name="is_user_template" eval="True"/>
             <field name="agent_type_id" eval="ref('tt_base.agent_type_ho')"/>
             <field name="groups_id"
@@ -1204,7 +1204,7 @@
         <record id="template_ho_user_accounting_manager" model="res.users">
             <field name="name">Template HO Accounting Manager</field>
             <field name="login">template_ho_user_accounting_manager</field>
-            <field name="password">g3ND*Gw;S/3J}=}Bt3Dr</field>
+            <field name="password">Nc4WdZcpguCx7W24uX25</field>
             <field name="is_user_template" eval="True"/>
             <field name="agent_type_id" eval="ref('tt_base.agent_type_ho')"/>
             <field name="groups_id"
@@ -1286,7 +1286,7 @@
         <record id="template_ho_user_marketing_operator" model="res.users">
             <field name="name">Template HO Marketing Operator</field>
             <field name="login">template_ho_user_marketing_operator</field>
-            <field name="password">Gx3`>J2Q!gUh3MXnQbEh</field>
+            <field name="password">xDMhx8GpFm2Avwk6YPa5</field>
             <field name="is_user_template" eval="True"/>
             <field name="agent_type_id" eval="ref('tt_base.agent_type_ho')"/>
             <field name="groups_id"
@@ -1368,7 +1368,7 @@
         <record id="template_ho_user_marketing_supervisor" model="res.users">
             <field name="name">Template HO Marketing Supervisor</field>
             <field name="login">template_ho_user_marketing_supervisor</field>
-            <field name="password">Gx3`>J2Q!gUh3MXnQbEh</field>
+            <field name="password">6KQzbmfdEBW6DEh8Jz29</field>
             <field name="is_user_template" eval="True"/>
             <field name="agent_type_id" eval="ref('tt_base.agent_type_ho')"/>
             <field name="groups_id"
@@ -1450,7 +1450,7 @@
         <record id="template_ho_user_marketing_manager" model="res.users">
             <field name="name">Template HO Marketing Manager</field>
             <field name="login">template_ho_user_marketing_manager</field>
-            <field name="password">Gx3`>J2Q!gUh3MXnQbEh</field>
+            <field name="password">VF3m2sg5RjaT9TxFfu7S</field>
             <field name="is_user_template" eval="True"/>
             <field name="agent_type_id" eval="ref('tt_base.agent_type_ho')"/>
             <field name="groups_id"
@@ -1559,7 +1559,7 @@
         <record id="template_ho_user_btb_operator" model="res.users">
             <field name="name">Template HO BTB Operator</field>
             <field name="login">template_ho_user_btb_operator</field>
-            <field name="password">x4L"36v,2?qsh$G?q6#+</field>
+            <field name="password">VDAb2xnhn2ymzkwYRk9z</field>
             <field name="is_user_template" eval="True"/>
             <field name="agent_type_id" eval="ref('tt_base.agent_type_ho')"/>
             <field name="groups_id"
@@ -1668,7 +1668,7 @@
         <record id="template_ho_user_btb_supervisor" model="res.users">
             <field name="name">Template HO BTB Supervisor</field>
             <field name="login">template_ho_user_btb_supervisor</field>
-            <field name="password">rr5KxjM4)P7;^%dMvaz5</field>
+            <field name="password">xEKRNe4Qb6ULzC4U3sjw</field>
             <field name="is_user_template" eval="True"/>
             <field name="agent_type_id" eval="ref('tt_base.agent_type_ho')"/>
             <field name="groups_id"
@@ -1777,7 +1777,7 @@
         <record id="template_ho_user_btb_manager" model="res.users">
             <field name="name">Template HO BTB Manager</field>
             <field name="login">template_ho_user_btb_manager</field>
-            <field name="password">\E\a/46}(bj~QbEwZg8~</field>
+            <field name="password">m4FCwK3JyVSQnhKN6Usx</field>
             <field name="is_user_template" eval="True"/>
             <field name="agent_type_id" eval="ref('tt_base.agent_type_ho')"/>
             <field name="groups_id"
@@ -1885,7 +1885,7 @@
         <record id="template_ho_user_agent_management_operator" model="res.users">
             <field name="name">Template HO Agent Management Operator</field>
             <field name="login">template_ho_user_agent_management_operator</field>
-            <field name="password">XuJ5XfHahbXzJ9SYs5kc</field>
+            <field name="password">3BaCJMVvbTABQf8LU6fp</field>
             <field name="is_user_template" eval="True"/>
             <field name="agent_type_id" eval="ref('tt_base.agent_type_ho')"/>
             <field name="groups_id"
@@ -1914,7 +1914,7 @@
                          (4, ref('tt_base.group_ledger_level_2')),
                          (4, ref('tt_base.group_agent_registration_master_level_3')),
                          (4, ref('tt_base.group_agent_registration_level_3')),
-                         (4, ref('tt_base.group_agent_level_3')),
+                         (4, ref('tt_base.group_agent_level_4')),
                          (4, ref('tt_base.group_agent_type_level_3')),
                          (4, ref('tt_base.group_pnr_quota_level_3')),
                          (4, ref('tt_base.group_customer_level_3')),
@@ -1994,7 +1994,7 @@
         <record id="template_ho_user_agent_management_supervisor" model="res.users">
             <field name="name">Template HO Agent Management Supervisor</field>
             <field name="login">template_ho_user_agent_management_supervisor</field>
-            <field name="password">HVmJVyku2GCByZ7P6DTy</field>
+            <field name="password">6jHj2dP6V7AVWVh5mx8m</field>
             <field name="is_user_template" eval="True"/>
             <field name="agent_type_id" eval="ref('tt_base.agent_type_ho')"/>
             <field name="groups_id"
@@ -2103,7 +2103,7 @@
         <record id="template_ho_user_agent_management_manager" model="res.users">
             <field name="name">Template HO Agent Management Manager</field>
             <field name="login">template_ho_user_agent_management_manager</field>
-            <field name="password">k24Tr596uuRHNBLQrTv3</field>
+            <field name="password">3EK6GPDTKZ3gNmBbFtB9</field>
             <field name="is_user_template" eval="True"/>
             <field name="agent_type_id" eval="ref('tt_base.agent_type_ho')"/>
             <field name="groups_id"
@@ -2186,7 +2186,7 @@
         <record id="template_ho_user_hotel_management_operator" model="res.users">
             <field name="name">Template HO Hotel Management Operator</field>
             <field name="login">template_ho_user_hotel_management_operator</field>
-            <field name="password">mC/JdmC@D>sE`r2tbb*c</field>
+            <field name="password">qkhpBM6CGHrHE8aRVPu6</field>
             <field name="is_user_template" eval="True"/>
             <field name="agent_type_id" eval="ref('tt_base.agent_type_ho')"/>
             <field name="groups_id"
@@ -2268,7 +2268,7 @@
         <record id="template_ho_user_hotel_management_supervisor" model="res.users">
             <field name="name">Template HO Hotel Management Supervisor</field>
             <field name="login">template_ho_user_hotel_management_supervisor</field>
-            <field name="password">mC/JdmC@D>sE`r2tbb*c</field>
+            <field name="password">GNS7VKvV72yVYG5nXKek</field>
             <field name="is_user_template" eval="True"/>
             <field name="agent_type_id" eval="ref('tt_base.agent_type_ho')"/>
             <field name="groups_id"
@@ -2350,7 +2350,7 @@
         <record id="template_ho_user_hotel_management_manager" model="res.users">
             <field name="name">Template HO Hotel Management Manager</field>
             <field name="login">template_ho_user_hotel_management_manager</field>
-            <field name="password">mC/JdmC@D>sE`r2tbb*c</field>
+            <field name="password">SMCd7ubqG5bW2gYkHeE5</field>
             <field name="is_user_template" eval="True"/>
             <field name="agent_type_id" eval="ref('tt_base.agent_type_ho')"/>
             <field name="groups_id"
@@ -2432,7 +2432,7 @@
         <record id="template_ho_user_passport_management_operator" model="res.users">
             <field name="name">Template HO Passport Management Operator</field>
             <field name="login">template_ho_user_passport_management_operator</field>
-            <field name="password">mC/JdmC@D>sE`r2tbb*c</field>
+            <field name="password">jdnZUXUKC8Y2SNPKk6Pd</field>
             <field name="is_user_template" eval="True"/>
             <field name="agent_type_id" eval="ref('tt_base.agent_type_ho')"/>
             <field name="groups_id"
@@ -2514,7 +2514,7 @@
         <record id="template_ho_user_passport_management_supervisor" model="res.users">
             <field name="name">Template HO Passport Management Supervisor</field>
             <field name="login">template_ho_user_passport_management_supervisor</field>
-            <field name="password">mC/JdmC@D>sE`r2tbb*c</field>
+            <field name="password">Frfr2M3gZLXqz3MCuuvr</field>
             <field name="is_user_template" eval="True"/>
             <field name="agent_type_id" eval="ref('tt_base.agent_type_ho')"/>
             <field name="groups_id"
@@ -2596,7 +2596,7 @@
         <record id="template_ho_user_passport_management_manager" model="res.users">
             <field name="name">Template HO Passport Management Manager</field>
             <field name="login">template_ho_user_passport_management_manager</field>
-            <field name="password">mC/JdmC@D>sE`r2tbb*c</field>
+            <field name="password">24EGYXr2qMaNrMH38FYX</field>
             <field name="is_user_template" eval="True"/>
             <field name="agent_type_id" eval="ref('tt_base.agent_type_ho')"/>
             <field name="groups_id"
@@ -2678,7 +2678,7 @@
         <record id="template_ho_user_visa_management_operator" model="res.users">
             <field name="name">Template HO Visa Management Operator</field>
             <field name="login">template_ho_user_visa_management_operator</field>
-            <field name="password">mC/JdmC@D>sE`r2tbb*c</field>
+            <field name="password">FKqVupqtxV38mkVGFwcz</field>
             <field name="is_user_template" eval="True"/>
             <field name="agent_type_id" eval="ref('tt_base.agent_type_ho')"/>
             <field name="groups_id"
@@ -2760,7 +2760,7 @@
         <record id="template_ho_user_visa_management_supervisor" model="res.users">
             <field name="name">Template HO Visa Management Supervisor</field>
             <field name="login">template_ho_user_visa_management_supervisor</field>
-            <field name="password">mC/JdmC@D>sE`r2tbb*c</field>
+            <field name="password">s6AhEXNwPQQX5GXpGcmH</field>
             <field name="is_user_template" eval="True"/>
             <field name="agent_type_id" eval="ref('tt_base.agent_type_ho')"/>
             <field name="groups_id"
@@ -2842,7 +2842,7 @@
         <record id="template_ho_user_visa_management_manager" model="res.users">
             <field name="name">Template HO Visa Management Manager</field>
             <field name="login">template_ho_user_visa_management_manager</field>
-            <field name="password">mC/JdmC@D>sE`r2tbb*c</field>
+            <field name="password">QNyCPDfmGYh6rbAcTWg8</field>
             <field name="is_user_template" eval="True"/>
             <field name="agent_type_id" eval="ref('tt_base.agent_type_ho')"/>
             <field name="groups_id"
@@ -2924,7 +2924,7 @@
         <record id="template_ho_user_activity_management_operator" model="res.users">
             <field name="name">Template HO Activity Management Operator</field>
             <field name="login">template_ho_user_activity_management_operator</field>
-            <field name="password">mC/JdmC@D>sE`r2tbb*c</field>
+            <field name="password">xqb9c2HvVqj2adkNueLa</field>
             <field name="is_user_template" eval="True"/>
             <field name="agent_type_id" eval="ref('tt_base.agent_type_ho')"/>
             <field name="groups_id"
@@ -3006,7 +3006,7 @@
         <record id="template_ho_user_activity_management_supervisor" model="res.users">
             <field name="name">Template HO Activity Management Supervisor</field>
             <field name="login">template_ho_user_activity_management_supervisor</field>
-            <field name="password">mC/JdmC@D>sE`r2tbb*c</field>
+            <field name="password">uRDs7vZbD3JuTHNCSzvN</field>
             <field name="is_user_template" eval="True"/>
             <field name="agent_type_id" eval="ref('tt_base.agent_type_ho')"/>
             <field name="groups_id"
@@ -3088,7 +3088,7 @@
         <record id="template_ho_user_activity_management_manager" model="res.users">
             <field name="name">Template HO Activity Management Manager</field>
             <field name="login">template_ho_user_activity_management_manager</field>
-            <field name="password">mC/JdmC@D>sE`r2tbb*c</field>
+            <field name="password">adGkJzHP44nDvQ9D5Qks</field>
             <field name="is_user_template" eval="True"/>
             <field name="agent_type_id" eval="ref('tt_base.agent_type_ho')"/>
             <field name="groups_id"
@@ -3196,7 +3196,7 @@
         <record id="template_ho_user_tour_management_operator" model="res.users">
             <field name="name">Template HO Tour Management Operator</field>
             <field name="login">template_ho_user_tour_management_operator</field>
-            <field name="password">mC/JdmC@D>sE`r2tbb*c</field>
+            <field name="password">ZnapXgy8t6ewgemVTpST</field>
             <field name="is_user_template" eval="True"/>
             <field name="agent_type_id" eval="ref('tt_base.agent_type_ho')"/>
             <field name="groups_id"
@@ -3304,7 +3304,7 @@
         <record id="template_ho_user_tour_management_supervisor" model="res.users">
             <field name="name">Template HO Tour Management Supervisor</field>
             <field name="login">template_ho_user_tour_management_supervisor</field>
-            <field name="password">mC/JdmC@D>sE`r2tbb*c</field>
+            <field name="password">7hQ2nf7A5376cmNBKm59</field>
             <field name="is_user_template" eval="True"/>
             <field name="agent_type_id" eval="ref('tt_base.agent_type_ho')"/>
             <field name="groups_id"
@@ -3412,7 +3412,7 @@
         <record id="template_ho_user_tour_management_manager" model="res.users">
             <field name="name">Template HO Tour Management Manager</field>
             <field name="login">template_ho_user_tour_management_manager</field>
-            <field name="password">mC/JdmC@D>sE`r2tbb*c</field>
+            <field name="password">aDwxQVEmh6q37V2nD7bb</field>
             <field name="is_user_template" eval="True"/>
             <field name="agent_type_id" eval="ref('tt_base.agent_type_ho')"/>
             <field name="groups_id"
@@ -3494,7 +3494,7 @@
         <record id="template_ho_user_ppob_management_operator" model="res.users">
             <field name="name">Template HO PPOB Management Operator</field>
             <field name="login">template_ho_user_ppob_management_operator</field>
-            <field name="password">mC/JdmC@D>sE`r2tbb*c</field>
+            <field name="password">hCJWvf63FDgvUbxydhZb</field>
             <field name="is_user_template" eval="True"/>
             <field name="agent_type_id" eval="ref('tt_base.agent_type_ho')"/>
             <field name="groups_id"
@@ -3576,7 +3576,7 @@
         <record id="template_ho_user_ppob_management_supervisor" model="res.users">
             <field name="name">Template HO PPOB Management Supervisor</field>
             <field name="login">template_ho_user_ppob_management_supervisor</field>
-            <field name="password">mC/JdmC@D>sE`r2tbb*c</field>
+            <field name="password">TQ4Cz5g82h4vYxNnXzrE</field>
             <field name="is_user_template" eval="True"/>
             <field name="agent_type_id" eval="ref('tt_base.agent_type_ho')"/>
             <field name="groups_id"
@@ -3658,7 +3658,7 @@
         <record id="template_ho_user_ppob_management_manager" model="res.users">
             <field name="name">Template HO PPOB Management Manager</field>
             <field name="login">template_ho_user_ppob_management_manager</field>
-            <field name="password">mC/JdmC@D>sE`r2tbb*c</field>
+            <field name="password">59qWhBTyBkc6vV4FsCfK</field>
             <field name="is_user_template" eval="True"/>
             <field name="agent_type_id" eval="ref('tt_base.agent_type_ho')"/>
             <field name="groups_id"
@@ -3740,7 +3740,7 @@
         <record id="template_ho_user_event_management_operator" model="res.users">
             <field name="name">Template HO Event Management Operator</field>
             <field name="login">template_ho_user_event_management_operator</field>
-            <field name="password">mC/JdmC@D>sE`r2tbb*c</field>
+            <field name="password">Mr7yLQbE8vvVdQbaT57z</field>
             <field name="is_user_template" eval="True"/>
             <field name="agent_type_id" eval="ref('tt_base.agent_type_ho')"/>
             <field name="groups_id"
@@ -3822,7 +3822,7 @@
         <record id="template_ho_user_event_management_supervisor" model="res.users">
             <field name="name">Template HO Event Management Supervisor</field>
             <field name="login">template_ho_user_event_management_supervisor</field>
-            <field name="password">mC/JdmC@D>sE`r2tbb*c</field>
+            <field name="password">prKCCWmpK92An6ejJm7s</field>
             <field name="is_user_template" eval="True"/>
             <field name="agent_type_id" eval="ref('tt_base.agent_type_ho')"/>
             <field name="groups_id"
@@ -3904,7 +3904,7 @@
         <record id="template_ho_user_event_management_manager" model="res.users">
             <field name="name">Template HO Event Management Manager</field>
             <field name="login">template_ho_user_event_management_manager</field>
-            <field name="password">mC/JdmC@D>sE`r2tbb*c</field>
+            <field name="password">R3kyQ7w27ztE4rs8bjkJ</field>
             <field name="is_user_template" eval="True"/>
             <field name="agent_type_id" eval="ref('tt_base.agent_type_ho')"/>
             <field name="groups_id"
@@ -3986,7 +3986,7 @@
         <record id="template_ho_user_all_product_management_operator" model="res.users">
             <field name="name">Template HO All Product Management Operator</field>
             <field name="login">template_ho_user_all_product_management_operator</field>
-            <field name="password">mC/JdmC@D>sE`r2tbb*c</field>
+            <field name="password">GYZmADT4KRX4ztYTEbt2</field>
             <field name="is_user_template" eval="True"/>
             <field name="agent_type_id" eval="ref('tt_base.agent_type_ho')"/>
             <field name="groups_id"
@@ -4068,7 +4068,7 @@
         <record id="template_ho_user_all_product_management_supervisor" model="res.users">
             <field name="name">Template HO All Product Management Supervisor</field>
             <field name="login">template_ho_user_all_product_management_supervisor</field>
-            <field name="password">mC/JdmC@D>sE`r2tbb*c</field>
+            <field name="password">EZ3BT68tE7Ar97LHAFpu</field>
             <field name="is_user_template" eval="True"/>
             <field name="agent_type_id" eval="ref('tt_base.agent_type_ho')"/>
             <field name="groups_id"
@@ -4150,7 +4150,7 @@
         <record id="template_ho_user_all_product_management_manager" model="res.users">
             <field name="name">Template HO All Product Management Manager</field>
             <field name="login">template_ho_user_all_product_management_manager</field>
-            <field name="password">mC/JdmC@D>sE`r2tbb*c</field>
+            <field name="password">hmBkBpy3QP6g44XbY2JP</field>
             <field name="is_user_template" eval="True"/>
             <field name="agent_type_id" eval="ref('tt_base.agent_type_ho')"/>
             <field name="groups_id"
@@ -4232,7 +4232,7 @@
         <record id="template_external_user_manager" model="res.users">
             <field name="name">Template External User Manager</field>
             <field name="login">template_external_user_manager</field>
-            <field name="password">tCBttKJ52_ts3/^#Cyr_</field>
+            <field name="password">HEwF7bYwKqG7exAFNpsk</field>
             <field name="is_user_template" eval="True"/>
             <field name="groups_id"
                    eval="[(4, ref('tt_base.group_tt_external_user')),
@@ -4260,7 +4260,7 @@
         <record id="template_corpor_user_operator" model="res.users">
             <field name="name">Template Corporate User Operator</field>
             <field name="login">template_corpor_user_operator</field>
-            <field name="password">R$^}j>UG4Ye{rzvb"/3_</field>
+            <field name="password">NF4eZ2kb85e5V9TQxsjb</field>
             <field name="is_user_template" eval="True"/>
             <field name="groups_id"
                    eval="[(4, ref('tt_base.group_tt_corpor_user')),
@@ -4340,7 +4340,7 @@
         <record id="template_corpor_user_supervisor" model="res.users">
             <field name="name">Template Corporate User Supervisor</field>
             <field name="login">template_corpor_user_supervisor</field>
-            <field name="password">R$^}j>UG4Ye{rzvb"/3_</field>
+            <field name="password">BBUbmtJ8KBhQZ8F6bEFd</field>
             <field name="is_user_template" eval="True"/>
             <field name="groups_id"
                    eval="[(4, ref('tt_base.group_tt_corpor_user')),
@@ -4420,7 +4420,7 @@
         <record id="template_corpor_user_manager" model="res.users">
             <field name="name">Template Corporate User Manager</field>
             <field name="login">template_corpor_user_manager</field>
-            <field name="password">R$^}j>UG4Ye{rzvb"/3_</field>
+            <field name="password">D8Cu26xhrVRd42HQ8E2v</field>
             <field name="is_user_template" eval="True"/>
             <field name="groups_id"
                    eval="[(4, ref('tt_base.group_tt_corpor_user')),
@@ -4529,7 +4529,7 @@
         <record id="template_citra_agent_user_operator" model="res.users">
             <field name="name">Template Citra Agent Operator</field>
             <field name="login">template_citra_agent_user_operator</field>
-            <field name="password">R$^}j>UG4Ye{rzvb"/3_</field>
+            <field name="password">rjeGajnzN5YBSXjYHtd3</field>
             <field name="is_user_template" eval="True"/>
             <field name="agent_type_id" eval="ref('tt_base.agent_type_citra')"/>
             <field name="groups_id"
@@ -4640,7 +4640,7 @@
         <record id="template_citra_agent_user_supervisor" model="res.users">
             <field name="name">Template Citra Agent Supervisor</field>
             <field name="login">template_citra_agent_user_supervisor</field>
-            <field name="password">Jk]FvLK-5cPK$*=\>tbC</field>
+            <field name="password">wNzyVDHhxX4cNrkZGxkQ</field>
             <field name="is_user_template" eval="True"/>
             <field name="agent_type_id" eval="ref('tt_base.agent_type_citra')"/>
             <field name="groups_id"
@@ -4752,7 +4752,7 @@
         <record id="template_citra_agent_user_manager" model="res.users">
             <field name="name">Template Citra Agent Manager</field>
             <field name="login">template_citra_agent_user_manager</field>
-            <field name="password">tCBttKJ52_ts3/^#Cyr_</field>
+            <field name="password">HLDs6ZV7THfhNtfYsbTJ</field>
             <field name="is_user_template" eval="True"/>
             <field name="agent_type_id" eval="ref('tt_base.agent_type_citra')"/>
             <field name="groups_id"
@@ -4865,7 +4865,7 @@
         <record id="template_citra_agent_finance_operator" model="res.users">
             <field name="name">Template Citra Agent Finance Operator</field>
             <field name="login">template_citra_agent_finance_operator</field>
-            <field name="password">%7e+xCrRpKj$gEArQAq!</field>
+            <field name="password">v5NhEATe8pCaGgJVVXP9</field>
             <field name="is_user_template" eval="True"/>
             <field name="agent_type_id" eval="ref('tt_base.agent_type_citra')"/>
             <field name="groups_id"
@@ -4979,7 +4979,7 @@
         <record id="template_citra_agent_finance_supervisor" model="res.users">
             <field name="name">Template Citra Agent Finance Supervisor</field>
             <field name="login">template_citra_agent_finance_supervisor</field>
-            <field name="password">_XWTW5X#7FEhNfrw$+tv</field>
+            <field name="password">eDnNb9QPfmAYa9NXz9vM</field>
             <field name="is_user_template" eval="True"/>
             <field name="agent_type_id" eval="ref('tt_base.agent_type_citra')"/>
             <field name="groups_id"
@@ -5093,7 +5093,7 @@
         <record id="template_citra_agent_finance_manager" model="res.users">
             <field name="name">Template Citra Agent Finance Manager</field>
             <field name="login">template_citra_agent_finance_manager</field>
-            <field name="password">t6jWNK-kR7FJgs_z8XYX</field>
+            <field name="password">dyLK2xc4RrDCtMjttmNg</field>
             <field name="is_user_template" eval="True"/>
             <field name="agent_type_id" eval="ref('tt_base.agent_type_citra')"/>
             <field name="groups_id"
@@ -5205,7 +5205,7 @@
         <record id="template_japro_agent_user_operator" model="res.users">
             <field name="name">Template Japro Agent Operator</field>
             <field name="login">template_japro_agent_user_operator</field>
-            <field name="password">*b6\hTq5!{FkP8Hbt2g-</field>
+            <field name="password">VLtXKpvjfcW8xQ6H7E3R</field>
             <field name="is_user_template" eval="True"/>
             <field name="agent_type_id" eval="ref('tt_base.agent_type_japro')"/>
             <field name="groups_id"
@@ -5316,7 +5316,7 @@
         <record id="template_japro_agent_user_supervisor" model="res.users">
             <field name="name">Template Japro Agent Supervisor</field>
             <field name="login">template_japro_agent_user_supervisor</field>
-            <field name="password">j@JZY9r`5^qY.AL-Us3f</field>
+            <field name="password">69rdVDv2Z4y8jW5xBrEN</field>
             <field name="is_user_template" eval="True"/>
             <field name="agent_type_id" eval="ref('tt_base.agent_type_japro')"/>
             <field name="groups_id"
@@ -5428,7 +5428,7 @@
         <record id="template_japro_agent_user_manager" model="res.users">
             <field name="name">Template Japro Agent Manager</field>
             <field name="login">template_japro_agent_user_manager</field>
-            <field name="password">es!cR-!+Q#p256sKPKzs</field>
+            <field name="password">Q7MVxnsCntVsZr7YmW6u</field>
             <field name="is_user_template" eval="True"/>
             <field name="agent_type_id" eval="ref('tt_base.agent_type_japro')"/>
             <field name="groups_id"
@@ -5541,7 +5541,7 @@
         <record id="template_japro_agent_finance_operator" model="res.users">
             <field name="name">Template Japro Agent Finance Operator</field>
             <field name="login">template_japro_agent_finance_operator</field>
-            <field name="password">8+bq#C3Y-wfL*K4EU#@-</field>
+            <field name="password">t2B3b4QMfNrwfj5Cv3HY</field>
             <field name="is_user_template" eval="True"/>
             <field name="agent_type_id" eval="ref('tt_base.agent_type_japro')"/>
             <field name="groups_id"
@@ -5655,7 +5655,7 @@
         <record id="template_japro_agent_finance_supervisor" model="res.users">
             <field name="name">Template Japro Agent Finance Supervisor</field>
             <field name="login">template_japro_agent_finance_supervisor</field>
-            <field name="password">AypT@H45!885TRq@C55u</field>
+            <field name="password">exbudW9vUFgCdk2YZEQL</field>
             <field name="is_user_template" eval="True"/>
             <field name="agent_type_id" eval="ref('tt_base.agent_type_japro')"/>
             <field name="groups_id"
@@ -5769,7 +5769,7 @@
         <record id="template_japro_agent_finance_manager" model="res.users">
             <field name="name">Template Japro Agent Finance Manager</field>
             <field name="login">template_japro_agent_finance_manager</field>
-            <field name="password">L_NrqXg8cqA*_sy%6xmu</field>
+            <field name="password">GB77nxPz89fF9JzX5ATn</field>
             <field name="is_user_template" eval="True"/>
             <field name="agent_type_id" eval="ref('tt_base.agent_type_japro')"/>
             <field name="groups_id"
@@ -5867,7 +5867,7 @@
         <record id="template_btbo_agent_user_operator" model="res.users">
             <field name="name">Template BTBO Agent Operator</field>
             <field name="login">template_btbo_agent_user_operator</field>
-            <field name="password">E-/'dFSAmg'}e(c6)]{$</field>
+            <field name="password">k9abE9GRVWt6tm7ZB5mJ</field>
             <field name="is_user_template" eval="True"/>
             <field name="agent_type_id" eval="ref('tt_base.agent_type_btbo')"/>
             <field name="groups_id"
@@ -5950,7 +5950,7 @@
         <record id="template_btbo_agent_user_supervisor" model="res.users">
             <field name="name">Template BTBO Agent Supervisor</field>
             <field name="login">template_btbo_agent_user_supervisor</field>
-            <field name="password">h.Cxy+jY-eSpsM7Gz:95</field>
+            <field name="password">zJsQPwKSAeu5y8zRN3ZG</field>
             <field name="is_user_template" eval="True"/>
             <field name="agent_type_id" eval="ref('tt_base.agent_type_btbo')"/>
             <field name="groups_id"
@@ -6034,7 +6034,7 @@
         <record id="template_btbo_agent_user_manager" model="res.users">
             <field name="name">Template BTBO Agent Manager</field>
             <field name="login">template_btbo_agent_user_manager</field>
-            <field name="password">frdC~ypYs9@*BQ/EPzS\</field>
+            <field name="password">Yv5ZcveT8s7fM5S93tx9</field>
             <field name="is_user_template" eval="True"/>
             <field name="agent_type_id" eval="ref('tt_base.agent_type_btbo')"/>
             <field name="groups_id"
@@ -6112,7 +6112,7 @@
         <record id="template_btbo_user_api" model="res.users">
             <field name="name">Template BTBO User API</field>
             <field name="login">template_btbo_user_api</field>
-            <field name="password">Vg@rtf]jF}dx^/9Sf9h5</field>
+            <field name="password">k82q4AA3NNkS4xzq6C8S</field>
             <field name="is_user_template" eval="True"/>
             <field name="agent_type_id" eval="ref('tt_base.agent_type_btbo')"/>
             <field name="groups_id" eval="[(4,ref('tt_base.group_billing_statement_level_3')),
@@ -6139,7 +6139,7 @@
         <record id="template_btbo2_agent_user_operator" model="res.users">
             <field name="name">Template BTBO2 Agent Operator</field>
             <field name="login">template_btbo2_agent_user_operator</field>
-            <field name="password">E-/'dFSAmg'}e(c6)]{$</field>
+            <field name="password">5zYX5vQNx7vdJSMZcYYC</field>
             <field name="is_user_template" eval="True"/>
             <field name="agent_type_id" eval="ref('tt_base.agent_type_btbo2')"/>
             <field name="groups_id"
@@ -6224,7 +6224,7 @@
         <record id="template_btbo2_agent_user_supervisor" model="res.users">
             <field name="name">Template BTBO2 Agent Supervisor</field>
             <field name="login">template_btbo2_agent_user_supervisor</field>
-            <field name="password">h.Cxy+jY-eSpsM7Gz:95</field>
+            <field name="password">fbwQa9CLQ3TxApb28MHY</field>
             <field name="is_user_template" eval="True"/>
             <field name="agent_type_id" eval="ref('tt_base.agent_type_btbo2')"/>
             <field name="groups_id"
@@ -6310,7 +6310,7 @@
         <record id="template_btbo2_agent_user_manager" model="res.users">
             <field name="name">Template BTBO2 Agent Manager</field>
             <field name="login">template_btbo2_agent_user_manager</field>
-            <field name="password">frdC~ypYs9@*BQ/EPzS\</field>
+            <field name="password">NyphWAsGb2FRVKx8stNK</field>
             <field name="is_user_template" eval="True"/>
             <field name="agent_type_id" eval="ref('tt_base.agent_type_btbo2')"/>
             <field name="groups_id"
@@ -6389,7 +6389,7 @@
         <record id="template_btbo2_user_api" model="res.users">
             <field name="name">Template BTBO2 User API</field>
             <field name="login">template_btbo2_user_api</field>
-            <field name="password">Vg@rtf]jF}dx^/9Sf9h5</field>
+            <field name="password">r8Ch2VyskVKZC8aWxNgm</field>
             <field name="is_user_template" eval="True"/>
             <field name="agent_type_id" eval="ref('tt_base.agent_type_btbo2')"/>
             <field name="groups_id" eval="[(4,ref('tt_base.group_billing_statement_level_3')),
@@ -6429,7 +6429,7 @@
         <record id="template_btbr_agent_user_operator" model="res.users">
             <field name="name">Template BTBR Agent Operator</field>
             <field name="login">template_btbr_agent_user_operator</field>
-            <field name="password">D{,8zFhX~KNQpXuYR4TS</field>
+            <field name="password">yA9GbzQEj69SX29X4DmX</field>
             <field name="is_user_template" eval="True"/>
             <field name="agent_type_id" eval="ref('tt_base.agent_type_btbr')"/>
             <field name="groups_id"
@@ -6492,7 +6492,7 @@
         <record id="template_btbr_agent_user_supervisor" model="res.users">
             <field name="name">Template BTBR Agent Supervisor</field>
             <field name="login">template_btbr_agent_user_supervisor</field>
-            <field name="password">3@2>N8s"4c*j~zWBU>A@</field>
+            <field name="password">YA7przak8nCRCC4hWh9b</field>
             <field name="is_user_template" eval="True"/>
             <field name="agent_type_id" eval="ref('tt_base.agent_type_btbr')"/>
             <field name="groups_id"
@@ -6556,7 +6556,7 @@
         <record id="template_btbr_agent_user_manager" model="res.users">
             <field name="name">Template BTBR Agent Manager</field>
             <field name="login">template_btbr_agent_user_manager</field>
-            <field name="password">x\#T6M"rCR}v`"XWx^V"</field>
+            <field name="password">JbxYPu8jbcrLztJ58YjP</field>
             <field name="is_user_template" eval="True"/>
             <field name="agent_type_id" eval="ref('tt_base.agent_type_btbr')"/>
             <field name="groups_id"
@@ -6616,7 +6616,7 @@
         <record id="template_btc_agent_user" model="res.users">
             <field name="name">Template BTC Agent</field>
             <field name="login">template_btc_agent_user</field>
-            <field name="password">CU_`yK8xZ*2f\7M}nG(7</field>
+            <field name="password">D2x3Rk6HbVYVARJtHbEV</field>
             <field name="is_user_template" eval="True"/>
             <field name="agent_type_id" eval="ref('tt_base.agent_type_btc')"/>
             <field name="groups_id"

@@ -182,18 +182,18 @@
     <menuitem id="top_top_up"
               parent="tt_base.main_transaction"
               name="Top Up"
-              sequence="5"/>
+              sequence="5" groups="tt_base.group_tt_tour_travel_operator,tt_base.group_tt_agent_user_operator,tt_base.group_top_up_level_1"/>
 
     <menuitem id="menu_top_up_all" parent="tt_accounting.top_top_up"
-              name="All" action="tt_top_up_action" sequence="1"/>
+              name="All" action="tt_top_up_action" sequence="1" groups="tt_base.group_tt_tour_travel_operator,tt_base.group_tt_agent_user_operator,tt_base.group_top_up_level_1"/>
 
     <menuitem id="menu_top_up_request" parent="tt_accounting.top_top_up"
-              name="Request" action="tt_top_up_action_request" sequence="2"/>
+              name="Request" action="tt_top_up_action_request" sequence="2" groups="tt_base.group_tt_tour_travel_operator,tt_base.group_tt_agent_user_operator,tt_base.group_top_up_level_1"/>
 
     <menuitem id="menu_top_up_validated" parent="tt_accounting.top_top_up"
-              name="On Progress" action="tt_top_up_action_validated" sequence="3"/>
+              name="On Progress" action="tt_top_up_action_validated" sequence="3" groups="tt_base.group_tt_tour_travel_operator,tt_base.group_tt_agent_user_operator,tt_base.group_top_up_level_1"/>
 
     <menuitem id="menu_top_up_approved" parent="tt_accounting.top_top_up"
-              name="Done" action="tt_top_up_action_approved" sequence="4"/>
+              name="Done" action="tt_top_up_action_approved" sequence="4" groups="tt_base.group_tt_tour_travel_operator,tt_base.group_tt_agent_user_operator,tt_base.group_top_up_level_1"/>
 
 </odoo>

@@ -413,10 +413,10 @@ class HotelReservation(models.Model):
 
 
     @api.one
-    def action_booked(self):
+    def action_booked(self, context):
         self.state = 'booked'
         self.booked_date = fields.Datetime.today()
-        self.booked_uid = self.env.user.id,
+        self.booked_uid = context.get('co_uid') or self.env.user.id,
         return True
 
     # @api.one
@@ -884,7 +884,7 @@ class HotelReservation(models.Model):
 
     def check_provider_state(self, context, pnr_list=[], hold_date=False,req={}):
         if all(rec.state == 'booked' for rec in self.provider_booking_ids):
-            self.action_booked()
+            self.action_booked(context)
         elif any(rec.state == 'in_progress' for rec in self.provider_booking_ids):
             self.action_in_progress_by_api()
         elif all(rec.state == 'issued' for rec in self.provider_booking_ids):

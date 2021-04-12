@@ -221,3 +221,55 @@ def vals_cleaner(vals,obj):
         del vals[key]
 
 
+def generate_passenger_key_name_1(first_name, last_name, **kwargs):
+    key_name = '%s%s' % (first_name, last_name)
+    res = key_name.lower().replace(' ', '')
+    return res
+
+
+def generate_passenger_key_name_2(first_name, **kwargs):
+    key_name = '%s%s' % (first_name, first_name)
+    res = key_name.lower().replace(' ', '')
+    return res
+
+
+def match_passenger_data(provider_passengers, passenger_objs):
+    psg_obj_data = []
+    for psg_obj in passenger_objs:
+        psg_val = psg_obj.to_dict()
+        key_name_1 = generate_passenger_key_name_1(**psg_val)
+        key_name_2 = generate_passenger_key_name_2(**psg_val)
+        psg_val.update({
+            'key_name_1': key_name_1,
+            'key_name_2': key_name_2,
+            'passenger_number': psg_obj.sequence,
+            'passenger_id': psg_obj.id,
+        })
+        psg_obj_data.append(psg_val)
+
+    provider_passenger_temp = []
+    for psg in provider_passengers:
+        key_name_1 = generate_passenger_key_name_1(**psg)
+        key_name_2 = generate_passenger_key_name_2(**psg)
+        del_idx = -1
+        for idx, psg_data in enumerate(psg_obj_data):
+            if key_name_1 == psg_data['key_name_1'] or key_name_2 == psg_data['key_name_2']:
+                del_idx = idx
+                psg.update({
+                    'passenger_id': psg_data['passenger_id'],
+                    'passenger_number': psg_data['passenger_number'],
+                })
+                break
+        if del_idx > -1:
+            del psg_obj_data[del_idx]
+        else:
+            provider_passenger_temp.append(psg)
+
+    if provider_passenger_temp:
+        _logger.error('Found unmatch passenger data, total %s' % len(provider_passenger_temp))
+    return provider_passengers
+
+
+def generate_journey_key_name(journey_obj):
+    res = '%s%s' % (journey_obj['origin'], journey_obj['destination'])
+    return res
