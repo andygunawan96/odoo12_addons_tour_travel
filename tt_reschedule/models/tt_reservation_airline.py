@@ -483,7 +483,7 @@ class ReservationAirline(models.Model):
 
                         pax_count = sc_obj.pax_count - total_pax
                         if pax_count < 1:
-                            sc_obj.unlink()
+                            sc_obj.sudo().unlink()
                         else:
                             total = pax_count * sc_obj.amount
                             sc_obj.write({
@@ -497,7 +497,7 @@ class ReservationAirline(models.Model):
                             psg_obj = resv_passenger_number_dict[psg['passenger_number']]
                             if tkt_obj.passenger_id and tkt_obj.passenger_id.id == psg_obj.id:
                                 pax_type_dict[psg_obj.id] = tkt_obj.pax_type
-                                tkt_obj.unlink()
+                                tkt_obj.sudo().unlink()
                                 break
 
                     # Fee
@@ -505,7 +505,7 @@ class ReservationAirline(models.Model):
                         for psg in commit_data['passengers']:
                             psg_obj = resv_passenger_number_dict[psg['passenger_number']]
                             if fee_obj.passenger_id and fee_obj.passenger_id.id == psg_obj.id:
-                                fee_obj.unlink()
+                                fee_obj.sudo().unlink()
                                 break
 
                     # for psg_obj in airline_obj.passenger_ids:
@@ -673,47 +673,27 @@ class ReservationAirline(models.Model):
                     })
 
                 # # TODO CEK DATA SSR DAN SEAT
-                # for psg in commit_data['passengers']:
-                #     # Fee ids di provider, nanti rencana cek code dan compare dengan passenger_id yang ada di fee ids
-                #     psg_key_name = util.generate_passenger_key_name(psg)
-                #     for psg_fee in psg['fees']:
-                #         is_proceed = False
-                #         if psg_fee['fee_type'] != 'MEAL':
-                #             for fee_obj in rsv_prov_obj.fee_ids:
-                #                 if psg_fee['journey_code'] == fee_obj.journey_code and psg_fee['fee_category'] == fee_obj.category:
-                #                     psg_data = fee_obj.passenger_id.to_dict()
-                #                     if psg_key_name in util.generate_passenger_key_name(psg_data):
-                #                         is_proceed = True
-                #                         fee_obj.write({
-                #                             'code': psg_fee['fee_code'],
-                #                             'value': psg_fee['fee_value'],
-                #                             'name': psg_fee['fee_name'],
-                #                             'description': json.dumps(psg_fee['description'])
-                #                         })
-                #
-                #         if not is_proceed:
-                #             passenger_id = None
-                #             for tkt_obj in rsv_prov_obj.ticket_ids:
-                #                 if not tkt_obj.passenger_id:
-                #                     continue
-                #
-                #                 psg_data = tkt_obj.passenger_id.to_dict()
-                #                 psg_data_key_name = util.generate_passenger_key_name(psg_data)
-                #                 if psg_key_name in psg_data_key_name:
-                #                     passenger_id = tkt_obj.passenger_id.id
-                #
-                #             rsv_prov_obj.fee_ids.create({
-                #                 'name': psg_fee['fee_name'],
-                #                 'code': psg_fee['fee_name'],
-                #                 'category': psg_fee['fee_category'],
-                #                 'description': json.dumps(psg_fee['description']),
-                #                 'passenger_id': passenger_id,
-                #                 'type': psg_fee['fee_type'],
-                #                 'value': psg_fee['fee_value'],
-                #                 'pnr': rsv_prov_obj.pnr,
-                #                 'journey_code': psg_fee['journey_code'],
-                #                 'provider_id': rsv_prov_obj.id,
-                #             })
+                is_any_ssr_change = False
+                for psg in commit_data['passengers']:
+                    psg_obj = resv_passenger_number_dict[psg['passenger_number']]
+
+                    fee_data_list = []
+                    for fee in psg['fees']:
+                        key = '%s%s%s%s' % (fee['journey_code'], fee['fee_type'], fee['fee_code'], fee['fee_value'])
+                        fee_data_list.append(key)
+
+                    obj_fee_data_list = []
+                    for fee_obj in psg_obj.fee_ids:
+                        fee_journey_code = fee_obj.journey_code and fee_obj.journey_code or ''
+                        fee_type = fee_obj.type and fee_obj.type or ''
+                        fee_code = fee_obj.code and fee_obj.code or ''
+                        fee_value = fee_obj.value and fee_obj.value or ''
+                        key = '%s%s%s%s' % (fee_journey_code, fee_type, fee_code, fee_value)
+                        obj_fee_data_list.append(key)
+
+                    if set(fee_data_list).difference(set(obj_fee_data_list)):
+                        is_any_ssr_change = True
+                        break
                 # # TODO END
 
                 total_amount = commit_data['total_price'] - rsv_prov_obj.total_price
@@ -734,7 +714,7 @@ class ReservationAirline(models.Model):
                     ledger_created = rsv_prov_obj.sudo().delete_service_charge()
                     if ledger_created:
                         rsv_prov_obj.action_reverse_ledger()
-                        rsv_prov_obj.delete_service_charge()
+                        rsv_prov_obj.sudo().delete_service_charge()
 
                     rsv_prov_obj.sudo().delete_passenger_fees()
                     rsv_prov_obj.sudo().delete_passenger_tickets()
@@ -743,17 +723,21 @@ class ReservationAirline(models.Model):
                         for segment in journey['segments']:
                             for fare in segment['fares']:
                                 rsv_prov_obj.create_service_charge(fare['service_charges'])
-
-                    rsv_prov_obj.write({
-                        'total_price': commit_data['total_price'],
-                        'balance_due': commit_data['balance_due'],
-                        'balance_due_str': commit_data['balance_due_str'],
-                    })
                 elif commit_data['status'] == 'ISSUED' and rsv_prov_obj.state == 'issued':
                     admin_fee_obj = self.env.ref('tt_accounting.admin_fee_reschedule')
+                    rsv_prov_obj.sudo().delete_passenger_fees()
+                    for psg in commit_data['passengers']:
+                        psg_obj = resv_passenger_number_dict[psg['passenger_number']]
+                        psg_obj.create_ssr(psg['fees'], rsv_prov_obj.pnr, rsv_prov_obj.id)
 
-                if not old_segment_list and not new_segment_list:
+                if not old_segment_list and not new_segment_list and not is_any_ssr_change:
                     continue
+
+                rsv_prov_obj.write({
+                    'total_price': commit_data['total_price'],
+                    'balance_due': commit_data['balance_due'],
+                    'balance_due_str': commit_data['balance_due_str'],
+                })
 
                 res_vals = {
                     'agent_id': airline_obj.agent_id.id,
@@ -952,7 +936,7 @@ class ReservationAirline(models.Model):
                         child -= 1
                     elif pax_type == 'INF':
                         infant -= 1
-                    psg_obj.unlink()
+                    psg_obj.sudo().unlink()
 
             airline_obj.write({
                 'adult': adult,
