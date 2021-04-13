@@ -79,7 +79,7 @@
     <record id="tt_res_users_for_corpor_user" model="ir.rule">
         <field name="name">Res Users For Corporate User</field>
         <field name="model_id" ref="model_res_users"/>
-        <field name="domain_force">['|',('is_user_template', '=', True),('agent_id','=',user.agent_id.id),('customer_parent_id','=',user.customer_parent_id.id)]</field>  <!--CHECK PREFIX RECORD RULE-->
+        <field name="domain_force">['|',('is_user_template', '=', True),('customer_parent_id','=',user.customer_parent_id.id)]</field>  <!--NO AGENT CHECK-->
         <field name="groups" eval="[(4,ref('tt_base.group_tt_corpor_user'))]"/>  <!--,(4,ref('tt_base.group_tt_sub_agent_user_operator'))-->
     </record>
 

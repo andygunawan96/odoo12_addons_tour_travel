@@ -34,6 +34,13 @@
         <field name="groups" eval="[(4,ref('tt_base.group_tt_agent_user'))]"/>  <!--,(4,ref('tt_base.group_tt_sub_agent_user_operator'))-->
     </record>
 
+    <record id="tt_top_up_for_corpor_user" model="ir.rule">
+        <field name="name">Top Up For Corporate User</field>
+        <field name="model_id" ref="model_tt_top_up"/>
+        <field name="domain_force">[('agent_id','=',user.agent_id.id)]</field>  <!--['|',('agent_id','=',user.agent_id.id),('sub_agent_id','=',user.agent_id.id)]-->  <!--[('agent_id','=',user.agent_id.id)]-->
+        <field name="groups" eval="[(4,ref('tt_base.group_tt_corpor_user'))]"/>  <!--,(4,ref('tt_base.group_tt_sub_agent_user_operator'))-->
+    </record>
+
     <record id="tt_adjustment_for_agent" model="ir.rule">
         <field name="name">Adjustment For Agent</field>
         <field name="model_id" ref="model_tt_adjustment"/>
