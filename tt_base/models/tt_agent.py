@@ -15,6 +15,7 @@ class TtAgent(models.Model):
     _description = 'Tour & Travel - Agent'
 
     name = fields.Char('Name', required=True, default='')
+    legal_name = fields.Char('Legal Name')
     logo = fields.Binary('Agent Logo')  # , attachment=True
 
     seq_id = fields.Char('Sequence ID', index=True, readonly=True)
@@ -190,11 +191,22 @@ class TtAgent(models.Model):
             return False
 
     def get_balance_agent_api(self,context):
-        agent_obj = self.browse(context['co_agent_id'])
+        customer_parent_id = context.get('co_customer_parent_id')
+        if customer_parent_id:
+            customer_parent_obj = self.env['tt.customer.parent'].browse(customer_parent_id)
+            balance = customer_parent_obj.actual_balance
+            currency_code = customer_parent_obj.currency_id.name
+            credit_limit = customer_parent_obj.credit_limit
+        else:
+            agent_obj = self.browse(context['co_agent_id'])
+            balance = agent_obj.balance
+            currency_code =  agent_obj.currency_id.name
+            credit_limit = 0
+
         return ERR.get_no_error({
-            'balance': agent_obj.balance,
-            'credit_limit': 0,
-            'currency_code': agent_obj.currency_id.name
+            'balance': balance,
+            'credit_limit': credit_limit,
+            'currency_code': currency_code
         })
 
     def get_data(self):
@@ -443,6 +455,8 @@ class TtAgent(models.Model):
             if req.get('state'):
                 if req.get('state') != 'all':
                     dom.append(('state', '=', req['state']))
+            if util.get_without_empty(context,'co_customer_parent_id'):
+                dom.append(('customer_parent_id','=',context['co_customer_parent_id']))
 
             res_dict = {}
             for type in types:

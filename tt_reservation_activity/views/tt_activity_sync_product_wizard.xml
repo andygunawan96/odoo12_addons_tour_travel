@@ -43,7 +43,7 @@
 				parent="tt_reservation_activity.menu_tour_travel_activity_config"
 				action="action_activity_sync_product_wizard"
 				sequence="1"
-				groups="tt_base.group_tt_tour_travel_operator"
+				groups="tt_base.group_tt_tour_travel_operator,tt_base.group_master_data_activity_level_3"
 		/>
 
 	</data>

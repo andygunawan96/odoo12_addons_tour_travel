@@ -239,7 +239,7 @@ class TtReschedule(models.Model):
         else:
             current_reschedule_env = reschedule_admin_fee_list[0]
         for admin_fee in reschedule_admin_fee_list:
-            if agent_id in admin_fee.agent_ids.ids:
+            if admin_fee.agent_access_type == 'allow' and agent_id in admin_fee.agent_ids.ids:
                 current_reschedule_env = admin_fee
                 break
         return current_reschedule_env

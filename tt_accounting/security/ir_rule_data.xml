@@ -13,6 +13,13 @@
         <field name="groups" eval="[(4,ref('tt_base.group_tt_agent_user'))]"/>  <!--,(4,ref('tt_base.group_tt_sub_agent_user_operator'))-->
     </record>
 
+    <record id="tt_ledger_for_corpor_user" model="ir.rule">
+        <field name="name">Ledger For Corporate User</field>
+        <field name="model_id" ref="model_tt_ledger"/>
+        <field name="domain_force">[('agent_id','=',user.agent_id.id),('customer_parent_id','=',user.customer_parent_id.id)]</field>  <!--['|',('agent_id','=',user.agent_id.id),('sub_agent_id','=',user.agent_id.id)]-->  <!--[('agent_id','=',user.agent_id.id)]-->
+        <field name="groups" eval="[(4,ref('tt_base.group_tt_corpor_user'))]"/>  <!--,(4,ref('tt_base.group_tt_sub_agent_user_operator'))-->
+    </record>
+
     <record id="tt_top_up_for_agent" model="ir.rule">
         <field name="name">Top Up For Agent</field>
         <field name="model_id" ref="model_tt_top_up"/>
@@ -25,6 +32,13 @@
         <field name="model_id" ref="model_tt_top_up"/>
         <field name="domain_force">[('agent_id','=',user.agent_id.id)]</field>  <!--['|',('agent_id','=',user.agent_id.id),('sub_agent_id','=',user.agent_id.id)]-->  <!--[('agent_id','=',user.agent_id.id)]-->
         <field name="groups" eval="[(4,ref('tt_base.group_tt_agent_user'))]"/>  <!--,(4,ref('tt_base.group_tt_sub_agent_user_operator'))-->
+    </record>
+
+    <record id="tt_top_up_for_corpor_user" model="ir.rule">
+        <field name="name">Top Up For Corporate User</field>
+        <field name="model_id" ref="model_tt_top_up"/>
+        <field name="domain_force">[('agent_id','=',user.agent_id.id)]</field>  <!--['|',('agent_id','=',user.agent_id.id),('sub_agent_id','=',user.agent_id.id)]-->  <!--[('agent_id','=',user.agent_id.id)]-->
+        <field name="groups" eval="[(4,ref('tt_base.group_tt_corpor_user'))]"/>  <!--,(4,ref('tt_base.group_tt_sub_agent_user_operator'))-->
     </record>
 
     <record id="tt_adjustment_for_agent" model="ir.rule">
@@ -41,6 +55,13 @@
         <field name="groups" eval="[(4,ref('tt_base.group_tt_agent_user'))]"/>  <!--,(4,ref('tt_base.group_tt_sub_agent_user_operator'))-->
     </record>
 
+    <record id="tt_adjustment_for_corpor_user" model="ir.rule">
+        <field name="name">Adjustment For Corporate User</field>
+        <field name="model_id" ref="model_tt_adjustment"/>
+        <field name="domain_force">[('agent_id','=',user.agent_id.id),('customer_parent_id','=',user.customer_parent_id.id)]</field>  <!--['|',('agent_id','=',user.agent_id.id),('sub_agent_id','=',user.agent_id.id)]-->  <!--[('agent_id','=',user.agent_id.id)]-->
+        <field name="groups" eval="[(4,ref('tt_base.group_tt_corpor_user'))]"/>  <!--,(4,ref('tt_base.group_tt_sub_agent_user_operator'))-->
+    </record>
+
     <record id="tt_refund_for_agent" model="ir.rule">
         <field name="name">Refund For Agent</field>
         <field name="model_id" ref="model_tt_refund"/>
@@ -53,6 +74,13 @@
         <field name="model_id" ref="model_tt_refund"/>
         <field name="domain_force">[('agent_id','=',user.agent_id.id)]</field>  <!--['|',('agent_id','=',user.agent_id.id),('sub_agent_id','=',user.agent_id.id)]-->  <!--[('agent_id','=',user.agent_id.id)]-->
         <field name="groups" eval="[(4,ref('tt_base.group_tt_agent_user'))]"/>  <!--,(4,ref('tt_base.group_tt_sub_agent_user_operator'))-->
+    </record>
+
+    <record id="tt_refund_for_corpor_user" model="ir.rule">
+        <field name="name">Refund For Corporate User</field>
+        <field name="model_id" ref="model_tt_refund"/>
+        <field name="domain_force">[('agent_id','=',user.agent_id.id),('customer_parent_id','=',user.customer_parent_id.id)]</field>  <!--['|',('agent_id','=',user.agent_id.id),('sub_agent_id','=',user.agent_id.id)]-->  <!--[('agent_id','=',user.agent_id.id)]-->
+        <field name="groups" eval="[(4,ref('tt_base.group_tt_corpor_user'))]"/>  <!--,(4,ref('tt_base.group_tt_sub_agent_user_operator'))-->
     </record>
 
 </odoo>

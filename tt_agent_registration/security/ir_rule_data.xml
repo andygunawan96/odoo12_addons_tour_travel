@@ -24,5 +24,17 @@
             <field name="groups" eval="[(4, ref('tt_base.group_tt_agent_user'))]"/>
             <!--<field name="global" eval="1"/> -->
         </record>
+
+        <record id="tt_agent_registration_for_corpor_user" model="ir.rule">
+            <field name="name">Agent Registration for Corporate User</field>
+            <field ref="model_tt_agent_registration" name="model_id"/>
+            <field name="domain_force">[('reference_id','=',user.agent_id.id)]</field>
+            <field name="perm_write" eval="1"/>
+            <field name="perm_create" eval="1"/>
+            <field name="perm_read" eval="1"/>
+            <!-- You can attach this rule to a specific group, Or make it Global -->
+            <field name="groups" eval="[(4, ref('tt_base.group_tt_corpor_user'))]"/>
+            <!--<field name="global" eval="1"/> -->
+        </record>
     </data>
 </odoo>

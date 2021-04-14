@@ -13,6 +13,13 @@
         <field name="groups" eval="[(4,ref('tt_base.group_tt_agent_user'))]"/>  <!--,(4,ref('tt_base.group_tt_sub_agent_user_operator'))-->
     </record>
 
+    <record id="tt_customer_for_corpor_user" model="ir.rule">
+        <field name="name">Customer For Corporate User</field>
+        <field name="model_id" ref="model_tt_customer"/>
+        <field name="domain_force">[('agent_id','=',user.agent_id.id),('customer_parent_ids','=',user.customer_parent_id.id)]</field>  <!--['|',('agent_id','=',user.agent_id.id),('sub_agent_id','=',user.agent_id.id)]-->  <!--[('agent_id','=',user.agent_id.id)]-->
+        <field name="groups" eval="[(4,ref('tt_base.group_tt_corpor_user'))]"/>  <!--,(4,ref('tt_base.group_tt_sub_agent_user_operator'))-->
+    </record>
+
     <record id="tt_customer_parent_for_agent" model="ir.rule">
         <field name="name">Customer Parent For Agent</field>
         <field name="model_id" ref="model_tt_customer_parent"/>
@@ -25,6 +32,13 @@
         <field name="model_id" ref="model_tt_customer_parent"/>
         <field name="domain_force">[('parent_agent_id','=',user.agent_id.id)]</field>  <!--['|',('agent_id','=',user.agent_id.id),('sub_agent_id','=',user.agent_id.id)]-->  <!--[('agent_id','=',user.agent_id.id)]-->
         <field name="groups" eval="[(4,ref('tt_base.group_tt_agent_user'))]"/>  <!--,(4,ref('tt_base.group_tt_sub_agent_user_operator'))-->
+    </record>
+
+    <record id="tt_customer_parent_for_corpor_user" model="ir.rule">
+        <field name="name">Customer Parent For Corporate User</field>
+        <field name="model_id" ref="model_tt_customer_parent"/>
+        <field name="domain_force">[('id','=',user.customer_parent_id.id)]</field>  <!--['|',('agent_id','=',user.agent_id.id),('sub_agent_id','=',user.agent_id.id)]-->  <!--[('agent_id','=',user.agent_id.id)]-->
+        <field name="groups" eval="[(4,ref('tt_base.group_tt_corpor_user'))]"/>  <!--,(4,ref('tt_base.group_tt_sub_agent_user_operator'))-->
     </record>
 
     <record id="tt_agent_for_agent" model="ir.rule">
@@ -41,18 +55,32 @@
         <field name="groups" eval="[(4,ref('tt_base.group_tt_agent_user'))]"/>  <!--,(4,ref('tt_base.group_tt_sub_agent_user_operator'))-->
     </record>
 
+    <record id="tt_agent_for_corpor_user" model="ir.rule">
+        <field name="name">Agent For Corporate User</field>
+        <field name="model_id" ref="model_tt_agent"/>
+        <field name="domain_force">[('id','=',user.agent_id.id),('customer_parent_ids','=',user.customer_parent_id.id)]</field>  <!--['|',('agent_id','=',user.agent_id.id),('sub_agent_id','=',user.agent_id.id)]-->  <!--[('agent_id','=',user.agent_id.id)]-->
+        <field name="groups" eval="[(4,ref('tt_base.group_tt_corpor_user'))]"/>  <!--,(4,ref('tt_base.group_tt_sub_agent_user_operator'))-->
+    </record>
+
     <record id="tt_res_users_for_agent" model="ir.rule">
         <field name="name">Res Users For Agent</field>
         <field name="model_id" ref="model_res_users"/>
-        <field name="domain_force">['|',('agent_id','=',user.agent_id.id),('name', 'ilike', ' Agent Template')]</field>  <!--['|',('agent_id','=',user.agent_id.id),('sub_agent_id','=',user.agent_id.id)]-->  <!--[('agent_id','=',user.agent_id.id)]-->
+        <field name="domain_force">['|',('agent_id','=',user.agent_id.id),('is_user_template', '=', True)]</field>  <!--['|',('agent_id','=',user.agent_id.id),('sub_agent_id','=',user.agent_id.id)]-->  <!--[('agent_id','=',user.agent_id.id)]-->
         <field name="groups" eval="[(4,ref('tt_base.group_tt_agent_user_operator'))]"/>  <!--,(4,ref('tt_base.group_tt_sub_agent_user_operator'))-->
     </record>
 
     <record id="tt_res_users_for_agent_user" model="ir.rule">
         <field name="name">Res Users For Agent User</field>
         <field name="model_id" ref="model_res_users"/>
-        <field name="domain_force">['|',('agent_id','=',user.agent_id.id),('name', 'ilike', ' Agent Template')]</field>  <!--['|',('agent_id','=',user.agent_id.id),('sub_agent_id','=',user.agent_id.id)]-->  <!--[('agent_id','=',user.agent_id.id)]-->
+        <field name="domain_force">['|',('agent_id','=',user.agent_id.id),('is_user_template', '=', True)]</field>  <!--['|',('agent_id','=',user.agent_id.id),('sub_agent_id','=',user.agent_id.id)]-->  <!--[('agent_id','=',user.agent_id.id)]-->
         <field name="groups" eval="[(4,ref('tt_base.group_tt_agent_user'))]"/>  <!--,(4,ref('tt_base.group_tt_sub_agent_user_operator'))-->
+    </record>
+
+    <record id="tt_res_users_for_corpor_user" model="ir.rule">
+        <field name="name">Res Users For Corporate User</field>
+        <field name="model_id" ref="model_res_users"/>
+        <field name="domain_force">['|',('is_user_template', '=', True),('customer_parent_id','=',user.customer_parent_id.id)]</field>  <!--NO AGENT CHECK-->
+        <field name="groups" eval="[(4,ref('tt_base.group_tt_corpor_user'))]"/>  <!--,(4,ref('tt_base.group_tt_sub_agent_user_operator'))-->
     </record>
 
     <record id="tt_upload_center_for_agent" model="ir.rule">
@@ -69,6 +97,13 @@
         <field name="groups" eval="[(4,ref('tt_base.group_tt_agent_user'))]"/>  <!--,(4,ref('tt_base.group_tt_sub_agent_user_operator'))-->
     </record>
 
+    <record id="tt_upload_center_for_corpor_user" model="ir.rule">
+        <field name="name">Upload Center For Corporate User</field>
+        <field name="model_id" ref="model_tt_upload_center"/>
+        <field name="domain_force">[('agent_id','=',user.agent_id.id)]</field>  <!--['|',('agent_id','=',user.agent_id.id),('sub_agent_id','=',user.agent_id.id)]-->  <!--[('agent_id','=',user.agent_id.id)]-->
+        <field name="groups" eval="[(4,ref('tt_base.group_tt_corpor_user'))]"/>  <!--,(4,ref('tt_base.group_tt_sub_agent_user_operator'))-->
+    </record>
+
     <record id="payment_acquirer_for_agent" model="ir.rule">
         <field name="name">Payment Acquirer For Agent</field>
         <field name="model_id" ref="model_payment_acquirer"/>
@@ -83,6 +118,13 @@
         <field name="groups" eval="[(4,ref('tt_base.group_tt_agent_user'))]"/>  <!--,(4,ref('tt_base.group_tt_sub_agent_user_operator'))-->
     </record>
 
+    <record id="payment_acquirer_for_corpor_user" model="ir.rule">
+        <field name="name">Payment Acquirer For Corporate User</field>
+        <field name="model_id" ref="model_payment_acquirer"/>
+        <field name="domain_force" eval="'''['|', ('agent_id','=',user.agent_id.id),('agent_id','=', {})]'''.format(ref('tt_base.rodex_ho'))"/>  <!--['|',('agent_id','=',user.agent_id.id),('sub_agent_id','=',user.agent_id.id)]-->  <!--[('agent_id','=',user.agent_id.id)]-->
+        <field name="groups" eval="[(4,ref('tt_base.group_tt_corpor_user'))]"/>  <!--,(4,ref('tt_base.group_tt_sub_agent_user_operator'))-->
+    </record>
+
     <record id="third_party_key_for_agent" model="ir.rule">
         <field name="name">Third Party Key For Agent</field>
         <field name="model_id" ref="model_tt_agent_third_party_key"/>
@@ -95,6 +137,13 @@
         <field name="model_id" ref="model_tt_agent_third_party_key"/>
         <field name="domain_force">[('agent_id','=',user.agent_id.id)]</field>
         <field name="groups" eval="[(4,ref('tt_base.group_tt_agent_user'))]"/>  <!--,(4,ref('tt_base.group_tt_sub_agent_user_operator'))-->
+    </record>
+
+    <record id="third_party_key_for_corpor_user" model="ir.rule">
+        <field name="name">Third Party Key For Corporate User</field>
+        <field name="model_id" ref="model_tt_agent_third_party_key"/>
+        <field name="domain_force">[('agent_id','=',user.agent_id.id)]</field>
+        <field name="groups" eval="[(4,ref('tt_base.group_tt_corpor_user'))]"/>  <!--,(4,ref('tt_base.group_tt_sub_agent_user_operator'))-->
     </record>
 
 </odoo>

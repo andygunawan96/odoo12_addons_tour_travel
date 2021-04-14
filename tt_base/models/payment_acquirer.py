@@ -218,6 +218,8 @@ class PaymentAcquirer(models.Model):
     def get_payment_acquirer_api(self, req, context):
         try:
             _logger.info("payment acq req\n" + json.dumps(req))
+            res = {}
+            res['member'] = {}
 
             agent_obj = self.env['tt.agent'].sudo().browse(context['co_agent_id'])
             if not agent_obj:
@@ -232,84 +234,95 @@ class PaymentAcquirer(models.Model):
                 amount = req.get('amount', 0)
                 co_agent_id = context['co_agent_id']
 
-            dom = [
-                ('website_published', '=', True),
-                ('company_id', '=', self.env.user.company_id.id),
-                ('type', '!=', 'va'),  ## search yg bukan espay
-                ('type', '!=', 'payment_gateway')  ## search yg bukan mutasi bca
-            ]
-            unique = 0
-            if req['transaction_type'] == 'top_up':
-                # Kalau top up Ambil agent_id HO
-                dom.append(('agent_id', '=', self.env.ref('tt_base.rodex_ho').id))
-                unique = self.generate_unique_amount(amount).get_unique_amount()
-            elif req['transaction_type'] == 'billing':
-                dom.append(('agent_id', '=', co_agent_id))
-
-            values = {}
-            now_time = datetime.now(pytz.timezone('Asia/Jakarta'))
-            if self.env['tt.agent'].browse(co_agent_id).agent_type_id != self.env.ref('tt_base.agent_type_btc'):
-                for acq in self.sudo().search(dom):
-                    # self.test_validate(acq) utk testig saja
-                    if self.validate_time(acq, now_time):
-                        if not values.get(acq.type):
-                            values[acq.type] = []
-                        values[acq.type].append(acq.acquirer_format(amount, unique))
-
-            # # payment gateway
-            # penjualan
-            if util.get_without_empty(req, 'order_number'):
+            if not context.get('co_customer_parent_id'):  ## kalau bukan user corporate login sendiri
                 dom = [
                     ('website_published', '=', True),
                     ('company_id', '=', self.env.user.company_id.id),
-                    ('agent_id', '=', self.env.ref('tt_base.rodex_ho').id),
-                    '|',
-                    ('type', '=', 'va'),  ## search yg espay
-                    ('type', '=', 'payment_gateway')  ## search yg mutasi bca
+                    ('type', '!=', 'va'),  ## search yg bukan espay
+                    ('type', '!=', 'payment_gateway')  ## search yg bukan mutasi bca
                 ]
-                pay_acq_num = self.env['payment.acquirer.number'].search([('number', 'ilike', req['order_number'])])
-                if pay_acq_num:
-                    unique = pay_acq_num[0].unique_amount
-                else:
-                    unique = 0
-                    if book_obj.unique_amount_id:
-                        if book_obj.unique_amount_id.active:
-                            unique = book_obj.unique_amount_id.get_unique_amount()
-                    if not unique:
-                        if book_obj.agent_id.agent_type_id == self.env.ref('tt_base.agent_b2c_user').agent_id.agent_type_id:
-                            unique_obj = self.generate_unique_amount(amount, downsell=True)  #penjualan B2C
-                        else:
-                            unique_obj = self.generate_unique_amount(amount, downsell=False)  # penjualan B2B
-                        book_obj.unique_amount_id = unique_obj.id
-                        unique = unique_obj.get_unique_amount()
+                unique = 0
+                if req['transaction_type'] == 'top_up':
+                    # Kalau top up Ambil agent_id HO
+                    dom.append(('agent_id', '=', self.env.ref('tt_base.rodex_ho').id))
+                    unique = self.generate_unique_amount(amount).get_unique_amount()
+                elif req['transaction_type'] == 'billing':
+                    dom.append(('agent_id', '=', co_agent_id))
 
-                for acq in self.sudo().search(dom):
-                    # self.test_validate(acq) utk testing saja
-                    if self.validate_time(acq,now_time):
-                        if not values.get(acq.type):
-                            values[acq.type] = []
-                        if acq.account_number:
+                values = {}
+                now_time = datetime.now(pytz.timezone('Asia/Jakarta'))
+                if self.env['tt.agent'].browse(co_agent_id).agent_type_id != self.env.ref('tt_base.agent_type_btc'):
+                    for acq in self.sudo().search(dom):
+                        # self.test_validate(acq) utk testig saja
+                        if self.validate_time(acq, now_time):
+                            if not values.get(acq.type):
+                                values[acq.type] = []
                             values[acq.type].append(acq.acquirer_format(amount, unique))
-                        else:
-                            values[acq.type].append(acq.acquirer_format(amount, 0))
 
-            res = {}
-            res['non_member'] = values
-            res['member'] = {}
-            if req.get('booker_seq_id'):
-                res['member']['credit_limit'] = self.generate_credit_limit(req['booker_seq_id'], amount) if util.get_without_empty(req, 'booker_seq_id') else []
-            _logger.info("payment acq resp\n" + json.dumps(res))
+                # # payment gateway
+                # penjualan
+                if util.get_without_empty(req, 'order_number'):
+                    dom = [
+                        ('website_published', '=', True),
+                        ('company_id', '=', self.env.user.company_id.id),
+                        ('agent_id', '=', self.env.ref('tt_base.rodex_ho').id),
+                        '|',
+                        ('type', '=', 'va'),  ## search yg espay
+                        ('type', '=', 'payment_gateway')  ## search yg mutasi bca
+                    ]
+                    pay_acq_num = self.env['payment.acquirer.number'].search([('number', 'ilike', req['order_number'])])
+                    if pay_acq_num:
+                        unique = pay_acq_num[0].unique_amount
+                    else:
+                        unique = 0
+                        if book_obj.unique_amount_id:
+                            if book_obj.unique_amount_id.active:
+                                unique = book_obj.unique_amount_id.get_unique_amount()
+                        if not unique:
+                            if book_obj.agent_id.agent_type_id == self.env.ref('tt_base.agent_b2c_user').agent_id.agent_type_id:
+                                unique_obj = self.generate_unique_amount(amount, downsell=True)  #penjualan B2C
+                            else:
+                                unique_obj = self.generate_unique_amount(amount, downsell=False)  # penjualan B2B
+                            book_obj.unique_amount_id = unique_obj.id
+                            unique = unique_obj.get_unique_amount()
+
+                    for acq in self.sudo().search(dom):
+                        # self.test_validate(acq) utk testing saja
+                        if self.validate_time(acq,now_time):
+                            if not values.get(acq.type):
+                                values[acq.type] = []
+                            if acq.account_number:
+                                values[acq.type].append(acq.acquirer_format(amount, unique))
+                            else:
+                                values[acq.type].append(acq.acquirer_format(amount, 0))
+
+                res['non_member'] = values
+                if req.get('booker_seq_id'):
+                    res['member']['credit_limit'] = self.generate_credit_limit(amount,booker_seq_id=req['booker_seq_id']) if util.get_without_empty(req, 'booker_seq_id') else []
+            else:#user corporate login sendiri
+                if context.get('co_customer_parent_id'):
+                    res['member']['credit_limit'] = self.generate_credit_limit(amount,customer_parent_id=context.get('co_customer_parent_id')) if util.get_without_empty(context, 'co_customer_parent_id') else []
             return ERR.get_no_error(res)
         except Exception as e:
             _logger.error(str(e) + traceback.format_exc())
             return ERR.get_error()
 
-    def generate_credit_limit(self,booker_seq_id, amount):
-        booker_obj = self.env['tt.customer'].search([('seq_id','=',booker_seq_id)])
-        if not booker_obj:
-            raise Exception('Booker not found')
+    def generate_credit_limit(self,amount,booker_seq_id=False,customer_parent_id=False):## booker_seq_id,amount,customer_parent_id
+        if customer_parent_id: ## generate credit limit from specific customer parent
+            parent_obj = self.env['tt.customer.parent'].browse(customer_parent_id)
+            try:
+                parent_obj.create_date
+            except:
+                raise Exception('Customer Parent not Found')
+            parent_obj_list = [parent_obj]
+        else: ## generate all of the booker customer parent
+            booker_obj = self.env['tt.customer'].search([('seq_id','=',booker_seq_id)])
+            if not booker_obj:
+                raise Exception('Booker Not Found')
+            parent_obj_list = booker_obj.booker_parent_ids
+
         values = []
-        for rec in booker_obj.customer_parent_ids:
+        for rec in parent_obj_list:
             if rec.credit_limit != 0 and rec.state == 'done':
                 values.append({
                     'name': rec.name,
@@ -325,6 +338,7 @@ class PaymentAcquirer(models.Model):
                     'total_amount': amount
                 })
         return values
+
 
 class PaymentAcquirerNumber(models.Model):
     _name = 'payment.acquirer.number'

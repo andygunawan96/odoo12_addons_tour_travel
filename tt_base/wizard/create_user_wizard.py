@@ -31,3 +31,19 @@ class CreateUserWizard(models.TransientModel):
             'default_frontend_security_ids': [(6, 0, default_frontend_security_ids.ids)]
         })
         return vals
+    #
+    # def create_user_corp(self):
+    #     new_user = self.env.ref('template_corpor_user_manager').copy()
+    #     new_user.name = self.name,
+    #     new_user.login = self.login
+    #
+    #     return {
+    #
+    #     }
+    #     # return {
+    #     #     'type': 'ir.actions.act_url',
+    #     #     'name': cust_parent_obj.name,
+    #     #     'target': 'self',
+    #     #     'url': base_url + "/web#id=" + str(cust_parent_obj.id) + "&action=" + str(
+    #     #         action_num) + "&model=tt.refund&view_type=form&menu_id=" + str(menu_num),
+    #     # }

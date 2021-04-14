@@ -94,6 +94,15 @@
                                 </tree>
                             </field>
                         </page>
+                        <page string="Booker">
+                            <field name="booker_ids" domain="[('agent_id', '=', parent_agent_id)]" context="{'default_agent_id': parent_agent_id}">
+                                <tree limit="10">
+                                    <field name="first_name"/>
+                                    <field name="last_name"/>
+                                    <field name="birth_date"/>
+                                </tree>
+                            </field>
+                        </page>
                         <page string="Addresses">
                             <field name="address_ids"/>
                         </page>

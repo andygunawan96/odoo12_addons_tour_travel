@@ -28,23 +28,25 @@ class TtReservationCustomer(models.Model):
             res['channel_service_charges'] = self.get_channel_service_charges()
         return res
 
-    def create_ssr(self,ssr_param,pnr,provider_id):
+    def create_ssr(self,ssr_param,pnr,provider_id, is_create_service_charge=True):
         service_chg_obj = self.env['tt.service.charge']
         currency_obj = self.env['res.currency']
         ssr_list = []
         for ssr in ssr_param:
             amount = 0
             currency_id = False
-            for sc in ssr['service_charges']:
-                currency_id = currency_obj.search([('name', '=', sc.pop('currency'))], limit=1).id
-                sc['currency_id'] = currency_id
-                sc['foreign_currency_id'] = currency_obj.search([('name','=',sc.pop('foreign_currency'))],limit=1).id
-                sc['description'] = pnr
-                sc['passenger_airline_ids'] = [(4,self.id)]
-                sc['provider_airline_booking_id'] = provider_id
-                sc['is_extra_fees'] = True
-                amount += sc['amount']
-                service_chg_obj.create(sc)
+            if is_create_service_charge:
+                for sc in ssr['service_charges']:
+                    currency_id = currency_obj.search([('name', '=', sc.pop('currency'))], limit=1).id
+                    sc['currency_id'] = currency_id
+                    sc['foreign_currency_id'] = currency_obj.search([('name','=',sc.pop('foreign_currency'))],limit=1).id
+                    sc['description'] = pnr
+                    sc['passenger_airline_ids'] = [(4,self.id)]
+                    sc['provider_airline_booking_id'] = provider_id
+                    sc['is_extra_fees'] = True
+                    amount += sc['amount']
+                    service_chg_obj.create(sc)
+
             ssr_values = {
                 'name': ssr['fee_name'],
                 'type': ssr['fee_type'],

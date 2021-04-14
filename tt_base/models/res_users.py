@@ -59,17 +59,20 @@ class ResUsers(models.Model):
     _inherit = 'res.users'
 
     agent_id = fields.Many2one('tt.agent', 'Agent', readonly=True)
-    language = fields.Selection(LANGUAGE, 'Language')
     transaction_limit = fields.Monetary('Transaction Limit')
-    currency_id = fields.Many2one('res.currency', 'Currency')
-    customer_id = fields.Many2one('tt.customer', 'Customer')
-    date_format = fields.Selection(DATE_FORMAT, 'Date Format')
-    time_format = fields.Selection(TIME_FORMAT, 'Time Format')
-    user_type = fields.Selection(USER_TYPE, 'User Type')
-    device_type = fields.Selection(DEVICE_TYPE, 'Device Type')
-    is_user_template = fields.Boolean('Is User Template', default=False)
     agent_type_id = fields.Many2one('tt.agent.type', 'Agent Type')
+    is_user_template = fields.Boolean('Is User Template', default=False)
+
+    customer_id = fields.Many2one('tt.customer', 'Customer')
+    customer_parent_id = fields.Many2one('tt.customer.parent','Customer Parent')
+
     access_activity_ids = fields.One2many('tt.access.activity', 'user_id', 'Access Activities')
+    # language = fields.Selection(LANGUAGE, 'Language')
+    # currency_id = fields.Many2one('res.currency', 'Currency')
+    # date_format = fields.Selection(DATE_FORMAT, 'Date Format')
+    # time_format = fields.Selection(TIME_FORMAT, 'Time Format')
+    # user_type = fields.Selection(USER_TYPE, 'User Type')
+    # device_type = fields.Selection(DEVICE_TYPE, 'Device Type')
 
     ####security utk django
     frontend_security_ids = fields.Many2many('tt.frontend.security','res_users_frontend_rel','res_users_id','frontend_security_id','Frontend Securities')

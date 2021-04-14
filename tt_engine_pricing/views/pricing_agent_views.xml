@@ -187,7 +187,7 @@
         <!--<field name="search_view_id" ref="api_connector_view_search"/>-->
     </record>
 
-    <menuitem id="pricing_agent_menu" parent="tt_base.menu_tour_travel_pricing" groups="tt_base.group_tt_tour_travel_operator"
+    <menuitem id="pricing_agent_menu" parent="tt_base.menu_tour_travel_pricing" groups="tt_base.group_tt_tour_travel_operator,tt_base.group_pricing_agent_level_1"
               name="Pricing Agent" action="pricing_agent_action" sequence="21"/>
 
     <record id="pricing_agent_line_view_form" model="ir.ui.view">
@@ -264,6 +264,6 @@
         <!--<field name="search_view_id" ref="api_connector_view_search"/>-->
     </record>
 
-    <menuitem id="pricing_agent_line_menu" parent="tt_base.menu_tour_travel_pricing" groups="tt_base.group_tt_tour_travel_operator"
+    <menuitem id="pricing_agent_line_menu" parent="tt_base.menu_tour_travel_pricing" groups="tt_base.group_tt_tour_travel_operator,tt_base.group_pricing_agent_level_1"
               name="Pricing Agent Line" action="pricing_agent_line_action" sequence="22"/>
 </odoo>

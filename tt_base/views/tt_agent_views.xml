@@ -6,6 +6,7 @@
         <field name="arch" type="xml">
             <search string="Search Agent">
                 <field name="name"/>
+                <field name="legal_name"/>
                 <field name="agent_type_id"/>
                 <field name="parent_agent_id"/>
                 <field name="email"/>
@@ -75,6 +76,9 @@
                             <field name="name" placeholder="Agent's Name" required="True" readonly="1"/><br/>
                         </h1>
                         <h3>
+                            <field name="legal_name" placeholder="Agent's Legal Name"/><br/>
+                        </h3>
+                        <h3>
                             <field name="seq_id"/>
                         </h3>
                     </div>
@@ -102,7 +106,7 @@
                         <field name="parent_agent_id" readonly="1"/>
                         <field name="user_ids" readonly="1"/>
                         <field name="customer_parent_ids" context="{'form_view_ref' : 'tt_base.tt_customer_parent_form_view'}" readonly="1"/>
-<!--                        <field name="agent_bank_detail_ids" invisible="1"/>-->
+                        <!--                        <field name="agent_bank_detail_ids" invisible="1"/>-->
                     </group>
 
                     <group string="Information">

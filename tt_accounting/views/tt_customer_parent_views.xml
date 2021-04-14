@@ -13,7 +13,7 @@
             </xpath>
             <xpath expr="//header" position="inside">
                 <button string="Adjustment" name="%(tt_accounting.tt_adjustment_wizard_action_view)d" type="action"
-                        groups="tt_base.group_tt_accounting_operator"
+                        groups="tt_base.group_tt_accounting_operator,tt_base.group_adjustment_level_3"
                         context="{
                         'default_res_model': 'tt.customer.parent',
                         'default_res_id': id,

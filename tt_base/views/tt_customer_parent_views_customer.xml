@@ -55,6 +55,11 @@
                                    domain="[('agent_id', '=', parent_agent_id)]"
                                    context="{'tree_view_ref': 'tt_base.tt_customer_customer_tree_view', 'default_agent_id': parent_agent_id}"/>
                         </page>
+                        <page string="Booker">
+                            <field name="booker_ids"
+                                   domain="[('agent_id', '=', parent_agent_id)]"
+                                   context="{'tree_view_ref': 'tt_base.tt_customer_customer_tree_view', 'default_agent_id': parent_agent_id}"/>
+                        </page>
                         <page string="Addresses">
                             <field name="address_ids"/>
                         </page>
@@ -78,7 +83,7 @@
         <field name="name">tt.customer.parent.form.view.customer.finance</field>
         <field name="model">tt.customer.parent</field>
         <field name="inherit_id" ref="tt_base.tt_customer_parent_form_view_customer"/>
-        <field name="groups_id" eval="[(6, 0, [ref('tt_base.group_tt_agent_finance_operator') ])]" />
+        <field name="groups_id" eval="[(6, 0, [ref('tt_base.group_tt_agent_finance_operator'),ref('tt_base.group_tt_agent_finance')])]" />
         <field name="priority">40</field>
         <field name="arch" type="xml">
             <field name="parent_agent_id" position="replace">
@@ -196,34 +201,34 @@
 
     <menuitem id="menu_customers_customer_customer_parent"
               parent="tt_base.top_customers_customers"
-              groups="tt_base.group_tt_agent_user_operator,tt_base.group_tt_tour_travel_operator"
+              groups="tt_base.group_tt_agent_user_operator,tt_base.group_tt_tour_travel_operator,tt_base.group_customer_parent_level_1"
               name="Customer Parent"
               sequence="2"/>
 
     <menuitem id="submenu_customers_customer_customer_parent_all"
               parent="tt_base.menu_customers_customer_customer_parent"
-              groups="tt_base.group_tt_agent_user_operator,tt_base.group_tt_tour_travel_operator"
+              groups="tt_base.group_tt_agent_user_operator,tt_base.group_tt_tour_travel_operator,tt_base.group_customer_parent_level_1"
               name="All"
               sequence="1"
               action="tt_customer_parent_action_view_customer"/>
 
     <menuitem id="submenu_customers_customer_customer_parent_fpo"
               parent="tt_base.menu_customers_customer_customer_parent"
-              groups="tt_base.group_tt_agent_user_operator,tt_base.group_tt_tour_travel_operator"
+              groups="tt_base.group_tt_agent_user_operator,tt_base.group_tt_tour_travel_operator,tt_base.group_customer_parent_level_1"
               name="FPO"
               sequence="2"
               action="tt_customer_parent_action_view_customer_fpo"/>
 
     <menuitem id="submenu_customers_customer_customer_parent_cor"
               parent="tt_base.menu_customers_customer_customer_parent"
-              groups="tt_base.group_tt_agent_user_operator,tt_base.group_tt_tour_travel_operator"
+              groups="tt_base.group_tt_agent_user_operator,tt_base.group_tt_tour_travel_operator,tt_base.group_customer_parent_level_1"
               name="COR"
               sequence="3"
               action="tt_customer_parent_action_view_customer_cor"/>
 
     <menuitem id="submenu_customers_customer_customer_parent_por"
               parent="tt_base.menu_customers_customer_customer_parent"
-              groups="tt_base.group_tt_agent_user_operator,tt_base.group_tt_tour_travel_operator"
+              groups="tt_base.group_tt_agent_user_operator,tt_base.group_tt_tour_travel_operator,tt_base.group_customer_parent_level_1"
               name="POR"
               sequence="4"
               action="tt_customer_parent_action_view_customer_por"/>

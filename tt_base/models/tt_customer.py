@@ -31,11 +31,18 @@ class TtCustomer(models.Model):
     phone_ids = fields.One2many('phone.detail', 'customer_id', 'Phone Detail')
     social_media_ids = fields.One2many('social.media.detail', 'customer_id', 'Social Media Detail')
     email = fields.Char('Email')
+    position = fields.Selection([('staff','Staff'),
+                                 ('finance','Finance'),
+                                 ('manager','Manager'),
+                                 ('director','Director'),
+                                 ('owner','Owner')],'Job Position')
     user_ids = fields.One2many('res.users', 'customer_id', 'User')
     # customer_bank_detail_ids = fields.One2many('customer.bank.detail', 'customer_id', 'Customer Bank Detail')
     agent_id = fields.Many2one('tt.agent', 'Agent', default=lambda self: self.env.user.agent_id)  # , default=lambda self: self.env.user.agent_id
     # user_agent_id = fields.Many2one('tt.agent', 'Agent User', default=lambda self: self.env.user.agent_id)
     customer_parent_ids = fields.Many2many('tt.customer.parent','tt_customer_customer_parent_rel','customer_id','customer_parent_id','Customer Parent')
+    booker_parent_ids = fields.Many2many('tt.customer.parent', 'tt_customer_booker_customer_parent_rel', 'customer_id',
+                                         'customer_parent_id', 'Booker Parent')
 
     active = fields.Boolean('Active', default=True)
 
@@ -119,7 +126,7 @@ class TtCustomer(models.Model):
         }
         if get_customer_parent:
             customer_parent_list = []
-            for rec in self.customer_parent_ids:
+            for rec in self.booker_parent_ids:
                 if rec.credit_limit != 0 and rec.state == 'done':
                     customer_parent_list.append({
                         'name': rec.name,
@@ -205,9 +212,8 @@ class TtCustomer(models.Model):
             else:
                 util.pop_empty_key(psg)
                 psg['agent_id'] = context['co_agent_id']
-                agent_obj = self.env['tt.agent'].sudo().browse(context['co_agent_id'])
                 psg.update({
-                    'customer_parent_ids': [(4, agent_obj.customer_parent_walkin_id.id)],
+                    'customer_parent_ids': [(4, context.get('co_customer_parent_id'))] if context.get('co_customer_parent_id') else False,
                     'marital_status': 'married' if psg.get('title') == 'MRS' else '',
                 })
                 # if ada phone, kalau dari frontend cache passenger
@@ -246,6 +252,8 @@ class TtCustomer(models.Model):
                 dom.append(('email','=',req['email']))
             if req.get('cust_code'):
                 dom.append(('seq_id','=',req['cust_code']))
+            if util.get_without_empty(context,'co_customer_parent_id'):
+                dom.append(('customer_parent_ids','=',context['co_customer_parent_id']))
             customer_list_obj = self.search(dom,limit=100)
 
             customer_list = []
@@ -270,7 +278,6 @@ class TtCustomer(models.Model):
 
     def get_customer_customer_parent_list_api(self,req,context):
         try:
-            print("request customer parent\n"+json.dumps((req))+json.dumps(context))
             dom = [('agent_id','=',context['co_agent_id']),
                    ('is_get_booking_from_vendor','=',False),
                    ('seq_id','=',req.get('seq_id'))]
@@ -295,6 +302,7 @@ class TtCustomer(models.Model):
         except Exception as e:
             _logger.error(traceback.format_exc())
             return ERR.get_error()
+
     def add_identity_button(self):
         self.add_or_update_identity('sim',time.time(),157,'2024-09-01')
 
