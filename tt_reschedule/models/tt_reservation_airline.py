@@ -301,7 +301,7 @@ class ReservationAirline(models.Model):
                 if rec.get('status', 'FAILED') == 'FAILED':
                     continue
 
-                admin_fee_obj = self.env.ref('tt_accounting.admin_fee_reschedule')
+                admin_fee_obj = self.env['tt.reschedule'].get_reschedule_admin_fee_rule(reschedule_obj.agent_id.id)
                 for journey in rec['journeys']:
                     reschedule_type = 'reschedule'
                     for seg in journey['segments']:
