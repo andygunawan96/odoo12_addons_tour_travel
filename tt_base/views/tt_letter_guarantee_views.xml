@@ -156,9 +156,9 @@
     </record>
 
     <menuitem id="menu_transaction_letter_guarantee" parent="tt_base.top_menu_accounting"
-              name="Letter of Guarantee" sequence="30" groups="tt_base.group_tt_tour_travel_operator,tt_base.group_tt_accounting_operator"/>
+              name="Letter of Guarantee" sequence="30" groups="tt_base.group_tt_tour_travel_operator,tt_base.group_tt_accounting_operator,tt_base.group_lg_po_level_1"/>
 
     <menuitem id="sub_menu_transaction_letter_guarantee" parent="tt_base.menu_transaction_letter_guarantee"
-              name="Letter of Guarantee" action="tt_letter_guarantee_action" sequence="10" groups="tt_base.group_tt_tour_travel_operator,tt_base.group_tt_accounting_operator"/>
+              name="Letter of Guarantee" action="tt_letter_guarantee_action" sequence="10" groups="tt_base.group_tt_tour_travel_operator,tt_base.group_tt_accounting_operator,tt_base.group_lg_po_level_1"/>
 
 </odoo>

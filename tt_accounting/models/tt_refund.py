@@ -281,7 +281,7 @@ class TtRefund(models.Model):
         else:
             current_refund_env = refund_admin_fee_list[0]
         for admin_fee in refund_admin_fee_list:
-            if agent_id in admin_fee.agent_ids.ids:
+            if admin_fee.agent_access_type == 'allow' and agent_id in admin_fee.agent_ids.ids:
                 current_refund_env = admin_fee
                 break
         return current_refund_env

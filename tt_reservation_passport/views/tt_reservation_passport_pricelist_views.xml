@@ -127,5 +127,5 @@
 
     <menuitem id="submenu_passport_pricelist" parent="menu_tour_travel_passport_master"
               name="Passport" action="tt_reservation_passport.tt_reservation_passport_pricelist_view_action"
-              groups="tt_base.group_tt_tour_travel_operator" sequence="1"/>
+              groups="tt_base.group_tt_tour_travel_operator,tt_base.group_master_data_passport_level_1" sequence="1"/>
 </odoo>

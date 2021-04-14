@@ -105,13 +105,13 @@
 
     <menuitem id="menu_tour_travel_vendor"
               parent="tt_base.top_tour_travel_customers"
-              groups="group_tt_tour_travel_operator"
+              groups="group_tt_tour_travel_operator,tt_base.group_vendor_level_1"
               name="Vendor"
               sequence="30"/>
 
     <menuitem id="submenu_tour_travel_vendor"
               parent="tt_base.menu_tour_travel_vendor"
-              groups="group_tt_tour_travel_operator"
+              groups="group_tt_tour_travel_operator,tt_base.group_vendor_level_1"
               name="All"
               sequence="1"
               action="tt_vendor_all_action_view"/>

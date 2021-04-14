@@ -188,7 +188,7 @@
                   name="Agent" sequence="2"/>
 
                 <menuitem id="submenu_transaction_request" parent="menu_transaction_agent"
-                      name="Request" action="tt_agent_registration_action_view" sequence="1"/>
+                      name="Request" groups="tt_base.group_agent_registration_level_1" action="tt_agent_registration_action_view" sequence="1"/>
 
     </data>
 </odoo>

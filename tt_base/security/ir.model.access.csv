@@ -46,6 +46,7 @@ access_tt_agent_for_agent_level_3,tt.agent.for.agent.level.3,model_tt_agent,tt_b
 access_tt_agent_for_agent_level_4,tt.agent.for.agent.level.4,model_tt_agent,tt_base.group_agent_level_4,1,1,1,0
 access_tt_agent_for_agent_level_5,tt.agent.for.agent.level.5,model_tt_agent,tt_base.group_agent_level_5,1,1,1,1
 
+access_tt_agent_third_party_key_for_all,access.tt.agent.third.party.key.for.all,model_tt_agent_third_party_key,,1,0,0,0
 access_tt_agent_third_party_key_for_agent_user_operator,access.tt.agent.third.party.key.for.agent.user.operator,model_tt_agent_third_party_key,group_tt_agent_user_operator,1,1,0,0
 access_tt_agent_third_party_key_for_tour_travel_operator,access.tt.agent.third.party.key.for.tour.travel.operator,model_tt_agent_third_party_key,group_tt_tour_travel_operator,1,0,0,0
 access_tt_agent_third_party_key_for_admin,access.tt.agent.third.party.key.for.admin,model_tt_agent_third_party_key,base.group_system,1,1,1,0

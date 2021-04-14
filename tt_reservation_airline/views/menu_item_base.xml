@@ -18,13 +18,13 @@
         <menuitem id="menu_reservations_airline_get_booking"
                   parent="tt_reservation_airline.top_reservations_airline"
                   name="Get Booking"
-                  groups="tt_base.group_tt_ticketing_operator,tt_base.group_tt_accounting_operator"
+                  groups="tt_base.group_tt_ticketing_operator,tt_base.group_tt_accounting_operator,tt_base.group_reservation_level_3"
                   sequence="2"/>
 
         <menuitem id="menu_reservations_airline_provider"
                   parent="tt_reservation_airline.top_reservations_airline"
                   name="Provider"
-                  groups="tt_base.group_tt_tour_travel_manager"
+                  groups="tt_base.group_tt_tour_travel_manager,tt_base.group_reservation_provider_level_1"
                   sequence="3"/>
     </data>
 </odoo>

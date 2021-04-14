@@ -323,9 +323,9 @@ tt_request_tour_for_tour_travel_operator,tt.request.tour.for.tour.travel.operato
 ,,,,,,,
 tt_request_tour_for_tour_division_operator,tt.request.tour.for.tour.division.operator,model_tt_request_tour,tt_base.group_tt_tour_division_operator,1,1,1,1
 ,,,,,,,
-tt_request_tour_for_reservation_level_1,tt.request.tour.for.reservation.level.1,model_tt_request_tour,tt_base.group_reservation_level_1,1,0,0,0
-tt_request_tour_for_reservation_level_2,tt.request.tour.for.reservation.level.2,model_tt_request_tour,tt_base.group_reservation_level_2,1,0,1,0
-tt_request_tour_for_reservation_level_3,tt.request.tour.for.reservation.level.3,model_tt_request_tour,tt_base.group_reservation_level_3,1,1,1,0
-tt_request_tour_for_reservation_level_4,tt.request.tour.for.reservation.level.4,model_tt_request_tour,tt_base.group_reservation_level_4,1,1,1,0
-tt_request_tour_for_reservation_level_5,tt.request.tour.for.reservation.level.5,model_tt_request_tour,tt_base.group_reservation_level_5,1,1,1,1
+tt_request_tour_for_tour_request_level_1,tt.request.tour.for.tour.request.level.1,model_tt_request_tour,tt_base.group_tour_request_level_1,1,0,0,0
+tt_request_tour_for_tour_request_level_2,tt.request.tour.for.tour.request.level.2,model_tt_request_tour,tt_base.group_tour_request_level_2,1,0,1,0
+tt_request_tour_for_tour_request_level_3,tt.request.tour.for.tour.request.level.3,model_tt_request_tour,tt_base.group_tour_request_level_3,1,1,1,0
+tt_request_tour_for_tour_request_level_4,tt.request.tour.for.tour.request.level.4,model_tt_request_tour,tt_base.group_tour_request_level_4,1,1,1,0
+tt_request_tour_for_tour_request_level_5,tt.request.tour.for.tour.request.level.5,model_tt_request_tour,tt_base.group_tour_request_level_5,1,1,1,1
 

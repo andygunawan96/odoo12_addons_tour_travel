@@ -171,7 +171,7 @@
 
     <menuitem id="menu_customer_customer"
               parent="tt_base.top_tour_travel_customers"
-              groups="tt_base.group_tt_agent_user_operator,tt_base.group_tt_tour_travel_operator"
+              groups="tt_base.group_tt_agent_user_operator,tt_base.group_tt_tour_travel_operator,tt_base.group_customer_level_1"
               name="Customer List"
               sequence="1"
               action="tt_customer_action_view"/>
@@ -210,7 +210,7 @@
         <field name="name">tt.customer.form.view.agent</field>
         <field name="model">tt.customer</field>
         <field name="inherit_id" ref="tt_base.tt_customer_form_view"/>
-        <field name="groups_id" eval="[(6, 0, [ref('tt_base.group_tt_agent_user_operator') ])]" />
+        <field name="groups_id" eval="[(6, 0, [ref('tt_base.group_tt_agent_user_operator'),ref('tt_base.group_tt_agent_user')])]" />
         <field name="priority">40</field>
         <field name="arch" type="xml">
             <field name="agent_id" position="replace">
@@ -234,7 +234,7 @@
         <field name="name">tt.customer.identity.form.view.agent</field>
         <field name="model">tt.customer.identity</field>
         <field name="inherit_id" ref="tt_base.tt_customer_identity_form_view"/>
-        <field name="groups_id" eval="[(6, 0, [ref('tt_base.group_tt_agent_user_operator') ])]" />
+        <field name="groups_id" eval="[(6, 0, [ref('tt_base.group_tt_agent_user_operator'),ref('tt_base.group_tt_agent_user')])]" />
         <field name="priority">40</field>
         <field name="arch" type="xml">
             <field name="customer_id" position="replace">
