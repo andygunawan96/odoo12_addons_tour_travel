@@ -32,7 +32,7 @@
                     <group>
                         <group name="ctp_info">
                             <field name="customer_parent_type_id" readonly="1"/>
-                            <field name="parent_agent_id" attrs="{'readonly':[('state','!=','draft')]}"/>
+                            <field name="parent_agent_id"/>
                             <field name="tax_percentage" attrs="{'readonly':[('state','!=','draft')]}"/>
                             <field name="actual_balance"/>
                             <field name="balance"/>
@@ -88,6 +88,9 @@
         <field name="arch" type="xml">
             <field name="parent_agent_id" position="replace">
                 <field name="parent_agent_id" readonly="0"/>
+            </field>
+            <field name="tax_percentage" position="replace">
+                <field name="tax_percentage" readonly="0"/>
             </field>
             <field name="credit_limit" position="replace">
                 <field name="credit_limit" readonly="0"/>
