@@ -7,7 +7,7 @@
             <search string="Search Adjustment">
                 <field name="name"/>
                 <field name="referenced_document"/>
-                <field name="agent_id" groups="tt_base.group_tt_tour_travel_operator"/>
+                <field name="agent_id" groups="tt_base.group_tt_tour_travel_operator,tt_base.group_tt_tour_travel"/>
                 <separator/>
                 <filter string="All" name='all'/>
                 <filter string="Draft" name='draft' domain="[('state', '=', 'draft')]"/>
@@ -32,10 +32,10 @@
                 <filter string="This Year" name="thisyear" domain="[('create_date','&gt;=',time.strftime('%%Y-01-01'))]"/>
 
                 <group expand="0" string="Group By">
-                    <filter name="group_by_agent_id" string="Agent" domain="[]" context="{'group_by':'agent_id'}" groups="tt_base.group_tt_tour_travel_operator"/>
-                    <filter name="group_by_agent_type_id" string="Agent Type" domain="[]" context="{'group_by':'agent_type_id'}" groups="tt_base.group_tt_agent_user_operator,tt_base.group_tt_tour_travel_operator"/>
-                    <filter name="group_by_adj_type" string="Adjustment Type" domain="[]" context="{'group_by':'adj_type'}" groups="tt_base.group_tt_agent_user_operator,tt_base.group_tt_tour_travel_operator"/>
-                    <filter name="group_by_state" string="State" domain="[]" context="{'group_by':'state'}" groups="tt_base.group_tt_agent_user_operator,tt_base.group_tt_tour_travel_operator"/>
+                    <filter name="group_by_agent_id" string="Agent" domain="[]" context="{'group_by':'agent_id'}" groups="tt_base.group_tt_tour_travel_operator,tt_base.group_tt_tour_travel"/>
+                    <filter name="group_by_agent_type_id" string="Agent Type" domain="[]" context="{'group_by':'agent_type_id'}" groups="tt_base.group_tt_agent_user_operator,tt_base.group_tt_tour_travel_operator,tt_base.group_tt_agent_user,tt_base.group_tt_tour_travel"/>
+                    <filter name="group_by_adj_type" string="Adjustment Type" domain="[]" context="{'group_by':'adj_type'}" groups="tt_base.group_tt_agent_user_operator,tt_base.group_tt_tour_travel_operator,tt_base.group_tt_agent_user,tt_base.group_tt_tour_travel"/>
+                    <filter name="group_by_state" string="State" domain="[]" context="{'group_by':'state'}" groups="tt_base.group_tt_agent_user_operator,tt_base.group_tt_tour_travel_operator,tt_base.group_tt_agent_user,tt_base.group_tt_tour_travel"/>
                 </group>
             </search>
         </field>
@@ -47,11 +47,11 @@
         <field name="arch" type="xml">
             <form create="false">
                 <header>
-                    <button name="confirm_adj_from_button" string="Confirm" type="object" states="draft" groups="tt_base.group_tt_accounting_operator"/>
-                    <button name="validate_adj_from_button" string="Validate" type="object" states="confirm" groups="tt_base.group_tt_accounting_operator"/>
+                    <button name="confirm_adj_from_button" string="Confirm" type="object" states="draft" groups="tt_base.group_tt_accounting_operator,tt_base.group_adjustment_level_3"/>
+                    <button name="validate_adj_from_button" string="Validate" type="object" states="confirm" groups="tt_base.group_tt_accounting_operator,tt_base.group_adjustment_level_3"/>
 <!--                    <button name="approve_adj_from_button" string="Approve" type="object" states="validate" confirm="Are you sure you want to approve?" groups="tt_base.group_tt_accounting_operator"/>-->
-                    <button name="approve_adj_from_button" string="Approve" type="object" states="validate" groups="tt_base.group_tt_accounting_supervisor"/>
-                    <button name="cancel_adj_from_button" string="Cancel" type="object" states="confirm,validate,approve" groups="tt_base.group_tt_accounting_operator"/>
+                    <button name="approve_adj_from_button" string="Approve" type="object" states="validate" groups="tt_base.group_tt_accounting_supervisor,tt_base.group_adjustment_level_4"/>
+                    <button name="cancel_adj_from_button" string="Cancel" type="object" states="confirm,validate,approve" groups="tt_base.group_tt_accounting_operator,tt_base.group_adjustment_level_3"/>
                     <field name="state" widget="statusbar"/>
                 </header>
                 <sheet>
