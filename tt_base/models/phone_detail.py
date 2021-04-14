@@ -19,6 +19,7 @@ class PhoneDetail(models.Model):
     _order = 'last_updated_time desc'
 
     type = fields.Selection(TYPE, 'Phone Type', required=True, default='work')
+    description = fields.Char('Description')
     country_id = fields.Many2one('res.country', string='Country')
     calling_code = fields.Char('Calling Code', required=True)
     calling_number = fields.Char('Calling Number', required=True)

@@ -19,6 +19,7 @@
 
                     <group>
                         <group>
+                            <field name="description"/>
                             <field name="type"/>
                             <field name="country_id"/>
                             <field name="phone_number"/>
@@ -43,6 +44,7 @@
         <field name="model">phone.detail</field>
         <field name="arch" type="xml">
             <tree>
+                <field name="description"/>
                 <field name="type"/>
                 <field name="phone_number"/>
                 <field name="active"/>
