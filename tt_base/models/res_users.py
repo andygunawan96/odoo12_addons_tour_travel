@@ -67,12 +67,12 @@ class ResUsers(models.Model):
     customer_parent_id = fields.Many2one('tt.customer.parent','Customer Parent')
 
     access_activity_ids = fields.One2many('tt.access.activity', 'user_id', 'Access Activities')
-    # language = fields.Selection(LANGUAGE, 'Language')
-    # currency_id = fields.Many2one('res.currency', 'Currency')
-    # date_format = fields.Selection(DATE_FORMAT, 'Date Format')
-    # time_format = fields.Selection(TIME_FORMAT, 'Time Format')
-    # user_type = fields.Selection(USER_TYPE, 'User Type')
-    # device_type = fields.Selection(DEVICE_TYPE, 'Device Type')
+    language = fields.Selection(LANGUAGE, 'Language')
+    currency_id = fields.Many2one('res.currency', 'Currency')
+    date_format = fields.Selection(DATE_FORMAT, 'Date Format')
+    time_format = fields.Selection(TIME_FORMAT, 'Time Format')
+    user_type = fields.Selection(USER_TYPE, 'User Type')
+    device_type = fields.Selection(DEVICE_TYPE, 'Device Type')
 
     ####security utk django
     frontend_security_ids = fields.Many2many('tt.frontend.security','res_users_frontend_rel','res_users_id','frontend_security_id','Frontend Securities')
