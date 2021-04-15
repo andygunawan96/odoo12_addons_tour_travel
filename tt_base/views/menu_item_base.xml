@@ -30,21 +30,21 @@
                   name="Reservation Master Data"
                   groups="tt_base.group_tt_tour_travel_operator,tt_base.group_tt_tour_travel"
                   web_icon="hr,static/description/icon.png"
-                  sequence="2"/>
+                  sequence="3"/>
 
         <!--Customers-->
         <menuitem id="main_customers"
                   name="Customers"
                   groups="tt_base.group_tt_agent_user_operator,tt_base.group_tt_tour_travel_operator,tt_base.group_tt_agent_user,tt_base.group_tt_tour_travel,tt_base.group_tt_corpor_user"
                   web_icon="hr,static/description/icon.png"
-                  sequence="4"/>
+                  sequence="5"/>
 
 
         <!--Transactions-->
         <menuitem id="main_transaction"
                   name="Transactions"
                   web_icon="hr,static/description/icon.png"
-                  sequence="3"
+                  sequence="4"
                   groups="tt_base.group_tt_tour_travel_operator,tt_base.group_tt_agent_user_operator,tt_base.group_tt_tour_travel,tt_base.group_tt_agent_user"/>
 
         <!--External Vendor Login-->
