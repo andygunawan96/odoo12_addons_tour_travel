@@ -1714,62 +1714,63 @@ class TtVisa(models.Model):
                         },
                         'sequence': idx
                     })
-                state_visa = []
+                state_visa = {}
                 for rec in STATE_VISA:
-                    if 'draft' in rec[0] or 'confirm' in rec[0] or 'validate' in rec[0] and 'partial' not in rec[0] or 'vendor_process' in rec[0] or \
-                            'in_process' in rec[0] or 'payment' in rec[0] or \
-                            'process_by_consulate' in rec[0] or 'proceed' in rec[0] and 'partial' not in rec[0] or 'approve' in rec[0] and 'partial' not in rec[0] or 'reject' in rec[0] or \
-                            'delivered' in rec[0]:
-                        if 'draft' in rec[0]:
-                            state_visa.append({"state": rec[1], "check": True})
-                        elif 'confirm' in rec[0] and book_obj.confirmed_date != False:
-                            state_visa.append({"state": rec[1], "check": True})
-                        elif 'partial_validate' in rec[0] and book_obj.validate_date != False:
-                            state_visa.append({"state": rec[1], "check": True})
-                        elif 'to_vendor' in rec[0] and book_obj.to_vendor_date != False:
-                            state_visa.append({"state": rec[1], "check": True})
-                        elif 'vendor_process' in rec[0] and book_obj.vendor_process_date != False:
-                            state_visa.append({"state": rec[1], "check": True})
-                        elif 'in_process' in rec[0] and book_obj.in_process_date != False:
-                            state_visa.append({"state": rec[1], "check": True})
-                        elif 'payment' in rec[0] and book_obj.payment_date != False:
-                            state_visa.append({"state": rec[1], "check": True})
-                        elif 'process_by_consulate' in rec[0] and book_obj.process_by_consulate_date != False:
-                            state_visa.append({"state": rec[1], "check": True})
-                        elif 'partial_proceed' in rec[0] and book_obj.partial_proceed_date != False:
-                            state_visa.append({"state": rec[1], "check": True})
-                        elif 'proceed' in rec[0] and book_obj.proceed_date != False:
-                            state_visa.append({"state": rec[1], "check": True})
-                        elif 'partial_approve' in rec[0] and book_obj.partial_approve_date != False:
-                            state_visa.append({"state": rec[1], "check": True})
-                        elif 'approve' in rec[0] and book_obj.approve_date != False:
-                            state_visa.append({"state": rec[1], "check": True})
-                        elif 'reject' in rec[0] and book_obj.reject_date != False:
-                            state_visa.append({"state": rec[1], "check": True})
-                        else:
-                            state_visa.append({"state": rec[1], "check": False})
+                    if rec[0] == 'expired':
+                        break
+                    if rec[0] == 'draft':
+                        state_visa.update({
+                            rec[0]: {
+                                "name": rec[1],
+                                "value": True
+                            }
+                        })
+                    else:
+                        state_visa.update({
+                            rec[0]: {
+                                "name": rec[1],
+                                "value": False
+                            }
+                        })
+                if book_obj.confirmed_date != False:
+                    state_visa['confirm'].update({"value": True})
+                if book_obj.validate_date != False:
+                    state_visa['partial_validate'].update({"value": True})
+                if book_obj.to_vendor_date != False:
+                    state_visa['to_vendor'].update({"value": True})
+                if book_obj.vendor_process_date != False:
+                    state_visa['vendor_process'].update({"value": True})
+                if book_obj.in_process_date != False:
+                    state_visa['in_process'].update({"value": True})
+                if book_obj.payment_date != False:
+                    state_visa['payment'].update({"value": True})
+                if book_obj.process_by_consulate_date != False:
+                    state_visa['process_by_consulate'].update({"value": True})
+                if book_obj.partial_proceed_date != False:
+                    state_visa['partial_proceed'].update({"value": True})
+                if book_obj.proceed_date != False:
+                    state_visa['proceed'].update({"value": True})
+                if book_obj.partial_approve_date != False:
+                    state_visa['partial_approve'].update({"value": True})
+                if book_obj.approve_date != False:
+                    state_visa['approve'].update({"value": True})
+                if book_obj.reject_date != False:
+                    state_visa['reject'].update({"value": True})
 
-                    if res_dict['state'] == 'expired' and rec[0] == 'expired':
-                        state_visa.append({"state": rec[1], "check": True})
-                        break
-                    elif res_dict['state'] == 'fail_booked' and rec[0] == 'fail_booked':
-                        state_visa.append({"state": rec[1], "check": True})
-                        break
-                    elif res_dict['state'] == 'cancel2' and rec[0] == 'cancel2':
-                        state_visa.append({"state": rec[1], "check": True})
-                        break
-                    elif res_dict['state'] == 'cancel' and rec[0] == 'cancel':
-                        state_visa.append({"state": rec[1], "check": True})
-                        break
-                    elif res_dict['state'] == 'refund' and rec[0] == 'refund':
-                        state_visa.append({"state": rec[1], "check": True})
-                        break
-                    elif res_dict['state'] == 'done' and rec[0] == 'done':
-                        state_visa.append({"state": rec[1], "check": True})
-                        break
-                    elif rec[0] == 'done':
-                        state_visa.append({"state": rec[1], "check": False})
-                        break
+                if res_dict['state'] == 'expired':
+                    state_visa.update({STATE_VISA[15][0]: {"name": STATE_VISA[15][1], "value": True}})
+                elif res_dict['state'] == 'fail_booked':
+                    state_visa.update({STATE_VISA[16][0]: {"name": STATE_VISA[16][1], "value": True}})
+                elif res_dict['state'] == 'cancel':
+                    state_visa.update({STATE_VISA[17][0]: {"name": STATE_VISA[17][1], "value": True}})
+                elif res_dict['state'] == 'cancel2':
+                    state_visa.update({STATE_VISA[18][0]: {"name": STATE_VISA[18][1], "value": True}})
+                elif res_dict['state'] == 'refund':
+                    state_visa.update({STATE_VISA[19][0]: {"name": STATE_VISA[19][1], "value": True}})
+                elif res_dict['state'] == 'done':
+                    state_visa.update({STATE_VISA[20][0]: {"name": STATE_VISA[20][1], "value": True}})
+                else:
+                    state_visa.update({STATE_VISA[20][0]: {"name": STATE_VISA[20][1], "value": True}})
                 res = {
                     'contact': {
                         'title': res_dict['contact']['title'],
