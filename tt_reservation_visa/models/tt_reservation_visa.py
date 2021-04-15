@@ -18,7 +18,7 @@ _logger = logging.getLogger(__name__)
 STATE_VISA = [
     ('draft', 'Request'),
     ('confirm', 'Confirm to HO'),
-    ('expired', 'Expired'),
+
     ('partial_validate', 'Partial Validate'),
     ('validate', 'Validated by HO'),
     ('to_vendor', 'Send to Vendor'),
@@ -33,10 +33,12 @@ STATE_VISA = [
     ('reject', 'Rejected'),
     ('delivered', 'Delivered'),
     # ('ready', 'Sent'),
-    ('done', 'Done'),
+    ('expired', 'Expired'),
     ('fail_booked', 'Failed (Book)'),
     ('cancel', 'Canceled'),
-    ('refund', 'Refund')
+    ('cancel2', 'Canceled'),
+    ('refund', 'Refund'),
+    ('done', 'Done'),
 ]
 
 
@@ -95,6 +97,13 @@ class TtVisa(models.Model):
     to_vendor_date = fields.Datetime('Send To Vendor Date', readonly=1)
     vendor_process_date = fields.Datetime('Vendor Process Date', readonly=1)
     in_process_date = fields.Datetime('In Process Date', readonly=1)
+    payment_date = fields.Datetime('Process By Consulate Date', readonly=1)
+    process_by_consulate_date = fields.Datetime('Payement Date', readonly=1)
+    partial_proceed_date = fields.Datetime('Partial proceed Date', readonly=1)
+    proceed_date = fields.Datetime('Proceed Date', readonly=1)
+    partial_approve_date = fields.Datetime('Partial Approve Date', readonly=1)
+    approve_date = fields.Datetime('Approve Date', readonly=1)
+    reject_date = fields.Datetime('Reject Date', readonly=1)
     delivered_date = fields.Datetime('Delivered Date', readonly=1)
 
     booker_id = fields.Many2one('tt.customer', 'Booker', ondelete='restrict', readonly=True)
@@ -471,7 +480,8 @@ class TtVisa(models.Model):
 
     def action_payment_visa(self):
         self.write({
-            'state_visa': 'payment'
+            'state_visa': 'payment',
+            'payment_date': datetime.now()
         })
         self.sync_status_btbo2('payment')
         self.message_post(body='Order PAYMENT')
@@ -493,6 +503,7 @@ class TtVisa(models.Model):
 
         self.write({
             'state_visa': 'process_by_consulate',
+            'process_by_consulate_date': datetime.now(),
             'can_refund': False,
             'in_process_date': datetime.now(),
             'estimate_date': date.today() + timedelta(days=estimate_days)
@@ -504,31 +515,36 @@ class TtVisa(models.Model):
 
     def action_proceed_visa(self):
         self.write({
-            'state_visa': 'proceed'
+            'state_visa': 'proceed',
+            'proceed_date': datetime.now(),
         })
         self.message_post(body='Order PROCEED')
 
     def action_partial_proceed_visa(self):
         self.write({
-            'state_visa': 'partial_proceed'
+            'state_visa': 'partial_proceed',
+            'partial_proceed_date': datetime.now()
         })
         self.message_post(body='Order PARTIAL PROCEED')
 
     def action_approved_visa(self):
         self.write({
-            'state_visa': 'approve'
+            'state_visa': 'approve',
+            'approve_date': datetime.now()
         })
         self.message_post(body='Order APPROVED')
 
     def action_rejected_visa(self):
         self.write({
-            'state_visa': 'reject'
+            'state_visa': 'reject',
+            'reject_date': datetime.now()
         })
         self.message_post(body='Order REJECTED')
 
     def action_partial_approved_visa(self):
         self.write({
-            'state_visa': 'partial_approve'
+            'state_visa': 'partial_approve',
+            'partial_approve_date': datetime.now()
         })
         self.message_post(body='Order PARTIAL APPROVED')
 
@@ -1701,12 +1717,58 @@ class TtVisa(models.Model):
                 state_visa = []
                 for rec in STATE_VISA:
                     if 'draft' in rec[0] or 'confirm' in rec[0] or 'validate' in rec[0] and 'partial' not in rec[0] or 'vendor_process' in rec[0] or \
-                            'cancel' in rec[0] or 'in_process' in rec[0] or 'payment' in rec[0] or 'refund' in rec[0] or \
+                            'in_process' in rec[0] or 'payment' in rec[0] or \
                             'process_by_consulate' in rec[0] or 'proceed' in rec[0] and 'partial' not in rec[0] or 'approve' in rec[0] and 'partial' not in rec[0] or 'reject' in rec[0] or \
-                            'delivered' in rec[0] or 'done' in rec[0] or 'expired' in rec[0]:
-                        state_visa.append(rec[1])
+                            'delivered' in rec[0]:
+                        if 'draft' in rec[0]:
+                            state_visa.append({"state": rec[1], "check": True})
+                        elif 'confirm' in rec[0] and book_obj.confirmed_date != False:
+                            state_visa.append({"state": rec[1], "check": True})
+                        elif 'partial_validate' in rec[0] and book_obj.validate_date != False:
+                            state_visa.append({"state": rec[1], "check": True})
+                        elif 'to_vendor' in rec[0] and book_obj.to_vendor_date != False:
+                            state_visa.append({"state": rec[1], "check": True})
+                        elif 'vendor_process' in rec[0] and book_obj.vendor_process_date != False:
+                            state_visa.append({"state": rec[1], "check": True})
+                        elif 'in_process' in rec[0] and book_obj.in_process_date != False:
+                            state_visa.append({"state": rec[1], "check": True})
+                        elif 'payment' in rec[0] and book_obj.payment_date != False:
+                            state_visa.append({"state": rec[1], "check": True})
+                        elif 'process_by_consulate' in rec[0] and book_obj.process_by_consulate_date != False:
+                            state_visa.append({"state": rec[1], "check": True})
+                        elif 'partial_proceed' in rec[0] and book_obj.partial_proceed_date != False:
+                            state_visa.append({"state": rec[1], "check": True})
+                        elif 'proceed' in rec[0] and book_obj.proceed_date != False:
+                            state_visa.append({"state": rec[1], "check": True})
+                        elif 'partial_approve' in rec[0] and book_obj.partial_approve_date != False:
+                            state_visa.append({"state": rec[1], "check": True})
+                        elif 'approve' in rec[0] and book_obj.approve_date != False:
+                            state_visa.append({"state": rec[1], "check": True})
+                        elif 'reject' in rec[0] and book_obj.reject_date != False:
+                            state_visa.append({"state": rec[1], "check": True})
+                        else:
+                            state_visa.append({"state": rec[1], "check": False})
 
-                    if res_dict['state'] == rec[0]:
+                    if res_dict['state'] == 'expired' and rec[0] == 'expired':
+                        state_visa.append({"state": rec[1], "check": True})
+                        break
+                    elif res_dict['state'] == 'fail_booked' and rec[0] == 'fail_booked':
+                        state_visa.append({"state": rec[1], "check": True})
+                        break
+                    elif res_dict['state'] == 'cancel2' and rec[0] == 'cancel2':
+                        state_visa.append({"state": rec[1], "check": True})
+                        break
+                    elif res_dict['state'] == 'cancel' and rec[0] == 'cancel':
+                        state_visa.append({"state": rec[1], "check": True})
+                        break
+                    elif res_dict['state'] == 'refund' and rec[0] == 'refund':
+                        state_visa.append({"state": rec[1], "check": True})
+                        break
+                    elif res_dict['state'] == 'done' and rec[0] == 'done':
+                        state_visa.append({"state": rec[1], "check": True})
+                        break
+                    elif rec[0] == 'done':
+                        state_visa.append({"state": rec[1], "check": False})
                         break
                 res = {
                     'contact': {
