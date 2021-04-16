@@ -1796,21 +1796,21 @@ class TtVisa(models.Model):
                         'date': book_obj.reject_date.strftime("%Y-%m-%d %H:%M:%S")
                     })
 
-                if res_dict['state'] == 'expired':
+                if res_dict['state_visa'] == 'expired':
                     state_visa.update({
                         STATE_VISA[15][0]: {
                             "name": STATE_VISA[15][1],
                             "value": True, 'date': ''
                         }
                     })
-                elif res_dict['state'] == 'fail_booked':
+                elif res_dict['state_visa'] == 'fail_booked':
                     state_visa.update({
                         STATE_VISA[16][0]: {
                             "name": STATE_VISA[16][1],
                             "value": True, 'date': ''
                         }
                     })
-                elif res_dict['state'] == 'cancel':
+                elif res_dict['state_visa'] == 'cancel':
                     state_visa.update({
                         STATE_VISA[17][0]: {
                             "name": STATE_VISA[17][1],
@@ -1818,7 +1818,7 @@ class TtVisa(models.Model):
                             'date': ''
                         }
                     })
-                elif res_dict['state'] == 'cancel2':
+                elif res_dict['state_visa'] == 'cancel2':
                     state_visa.update({
                         STATE_VISA[18][0]: {
                             "name": STATE_VISA[18][1],
@@ -1826,7 +1826,7 @@ class TtVisa(models.Model):
                             'date': ''
                         }
                     })
-                elif res_dict['state'] == 'refund':
+                elif res_dict['state_visa'] == 'refund':
                     state_visa.update({
                         STATE_VISA[19][0]: {
                             "name": STATE_VISA[19][1],
@@ -1834,7 +1834,7 @@ class TtVisa(models.Model):
                             'date': ''
                         }
                     })
-                elif res_dict['state'] == 'done':
+                elif res_dict['state_visa'] == 'done':
                     state_visa.update({
                         STATE_VISA[20][0]: {
                             "name": STATE_VISA[20][1],
@@ -1846,7 +1846,7 @@ class TtVisa(models.Model):
                     state_visa.update({
                         STATE_VISA[20][0]: {
                             "name": STATE_VISA[20][1],
-                            "value": True,
+                            "value": False,
                             'date': ''
                         }
                     })
