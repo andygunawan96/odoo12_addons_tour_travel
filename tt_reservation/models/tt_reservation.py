@@ -908,7 +908,7 @@ class TtReservation(models.Model):
                                 "charge_type": "DISC",
                                 "currency": "IDR",
                                 "pax_type": "ADT",
-                                "pax_count": 1,
+                                "pax_count": len(book_obj.passenger_ids),
                                 "amount": rec['provider_total_discount'] / len(book_obj.passenger_ids) * -1,
                                 "foreign_currency": "IDR",
                                 "foreign_amount": rec['provider_total_discount'] / len(book_obj.passenger_ids) * -1,

@@ -1732,45 +1732,124 @@ class TtVisa(models.Model):
                                 "value": False
                             }
                         })
+
                 if book_obj.confirmed_date != False:
-                    state_visa['confirm'].update({"value": True})
+                    state_visa['confirm'].update({
+                        "value": True,
+                        'date': book_obj.confirmed_date.strftime("%Y-%m-%d %H:%M:%S"),
+                        'confirm': book_obj.confirmed_uid
+                    })
                 if book_obj.validate_date != False:
-                    state_visa['partial_validate'].update({"value": True})
+                    state_visa['partial_validate'].update({
+                        "value": True,
+                        'date': book_obj.validate_date.strftime("%Y-%m-%d %H:%M:%S"),
+                        'confirm': book_obj.validate_uid
+                    })
                 if book_obj.to_vendor_date != False:
-                    state_visa['to_vendor'].update({"value": True})
+                    state_visa['to_vendor'].update({
+                        "value": True,
+                        'date': book_obj.to_vendor_date.strftime("%Y-%m-%d %H:%M:%S")
+                    })
                 if book_obj.vendor_process_date != False:
-                    state_visa['vendor_process'].update({"value": True})
+                    state_visa['vendor_process'].update({
+                        "value": True,
+                        'date': book_obj.vendor_process_date.strftime("%Y-%m-%d %H:%M:%S")
+                    })
                 if book_obj.in_process_date != False:
-                    state_visa['in_process'].update({"value": True})
+                    state_visa['in_process'].update({
+                        "value": True,
+                        'date': book_obj.in_process_date.strftime("%Y-%m-%d %H:%M:%S")
+                    })
                 if book_obj.payment_date != False:
-                    state_visa['payment'].update({"value": True})
+                    state_visa['payment'].update({
+                        "value": True,
+                        'date': book_obj.payment_date.strftime("%Y-%m-%d %H:%M:%S")
+                    })
                 if book_obj.process_by_consulate_date != False:
-                    state_visa['process_by_consulate'].update({"value": True})
+                    state_visa['process_by_consulate'].update({
+                        "value": True,
+                        'date': book_obj.process_by_consulate_date.strftime("%Y-%m-%d %H:%M:%S")
+                    })
                 if book_obj.partial_proceed_date != False:
-                    state_visa['partial_proceed'].update({"value": True})
+                    state_visa['partial_proceed'].update({
+                        "value": True,
+                        'date': book_obj.partial_proceed_date.strftime("%Y-%m-%d %H:%M:%S")
+                    })
                 if book_obj.proceed_date != False:
-                    state_visa['proceed'].update({"value": True})
+                    state_visa['proceed'].update({
+                        "value": True,
+                        'date': book_obj.proceed_date.strftime("%Y-%m-%d %H:%M:%S")
+                    })
                 if book_obj.partial_approve_date != False:
-                    state_visa['partial_approve'].update({"value": True})
+                    state_visa['partial_approve'].update({
+                        "value": True,
+                        'date': book_obj.partial_approve_date.strftime("%Y-%m-%d %H:%M:%S")
+                    })
                 if book_obj.approve_date != False:
-                    state_visa['approve'].update({"value": True})
+                    state_visa['approve'].update({
+                        "value": True,
+                        'date': book_obj.approve_date.strftime("%Y-%m-%d %H:%M:%S")
+                    })
                 if book_obj.reject_date != False:
-                    state_visa['reject'].update({"value": True})
+                    state_visa['reject'].update({
+                        "value": True,
+                        'date': book_obj.reject_date.strftime("%Y-%m-%d %H:%M:%S")
+                    })
 
                 if res_dict['state'] == 'expired':
-                    state_visa.update({STATE_VISA[15][0]: {"name": STATE_VISA[15][1], "value": True}})
+                    state_visa.update({
+                        STATE_VISA[15][0]: {
+                            "name": STATE_VISA[15][1],
+                            "value": True, 'date': ''
+                        }
+                    })
                 elif res_dict['state'] == 'fail_booked':
-                    state_visa.update({STATE_VISA[16][0]: {"name": STATE_VISA[16][1], "value": True}})
+                    state_visa.update({
+                        STATE_VISA[16][0]: {
+                            "name": STATE_VISA[16][1],
+                            "value": True, 'date': ''
+                        }
+                    })
                 elif res_dict['state'] == 'cancel':
-                    state_visa.update({STATE_VISA[17][0]: {"name": STATE_VISA[17][1], "value": True}})
+                    state_visa.update({
+                        STATE_VISA[17][0]: {
+                            "name": STATE_VISA[17][1],
+                            "value": True,
+                            'date': ''
+                        }
+                    })
                 elif res_dict['state'] == 'cancel2':
-                    state_visa.update({STATE_VISA[18][0]: {"name": STATE_VISA[18][1], "value": True}})
+                    state_visa.update({
+                        STATE_VISA[18][0]: {
+                            "name": STATE_VISA[18][1],
+                            "value": True,
+                            'date': ''
+                        }
+                    })
                 elif res_dict['state'] == 'refund':
-                    state_visa.update({STATE_VISA[19][0]: {"name": STATE_VISA[19][1], "value": True}})
+                    state_visa.update({
+                        STATE_VISA[19][0]: {
+                            "name": STATE_VISA[19][1],
+                            "value": True,
+                            'date': ''
+                        }
+                    })
                 elif res_dict['state'] == 'done':
-                    state_visa.update({STATE_VISA[20][0]: {"name": STATE_VISA[20][1], "value": True}})
+                    state_visa.update({
+                        STATE_VISA[20][0]: {
+                            "name": STATE_VISA[20][1],
+                            "value": True,
+                            'date': book_obj.done_date.strftime("%Y-%m-%d %H:%M:%S")
+                        }
+                    })
                 else:
-                    state_visa.update({STATE_VISA[20][0]: {"name": STATE_VISA[20][1], "value": True}})
+                    state_visa.update({
+                        STATE_VISA[20][0]: {
+                            "name": STATE_VISA[20][1],
+                            "value": True,
+                            'date': ''
+                        }
+                    })
                 res = {
                     'contact': {
                         'title': res_dict['contact']['title'],
