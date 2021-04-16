@@ -213,7 +213,8 @@ class AgentInvoice(models.Model):
     @api.depends('total_after_tax','discount','admin_fee')
     def _compute_grand_total(self):
         for inv in self:
-            inv.grand_total = inv.total_after_tax + inv.admin_fee - inv.discount
+            inv.grand_total = inv.total_after_tax + inv.admin_fee
+
 
     @api.multi
     def _compute_paid_amount(self):

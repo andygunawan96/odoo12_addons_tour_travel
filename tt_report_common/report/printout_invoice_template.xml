@@ -926,7 +926,7 @@
                             <span style="padding: 10px 25px;" t-field="doc.discount" t-options="{&quot;widget&quot;: &quot;monetary&quot;, &quot;display_currency&quot;: doc.currency_id}"/>
                         </td>
                     </tr>
-                    <t t-set="tax" t-value="doc.total_after_tax - doc.total"/>
+                    <t t-set="tax" t-value="doc.total_after_tax + doc.discount - doc.total"/>
                     <tr>
                         <td><strong>Tax</strong></td>
                         <td class="text-right">
