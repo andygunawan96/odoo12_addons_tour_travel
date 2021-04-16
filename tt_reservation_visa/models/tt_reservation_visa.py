@@ -15,16 +15,46 @@ import hashlib
 _logger = logging.getLogger(__name__)
 
 
+# STATE_VISA = [
+#     ('draft', 'Request'),
+#     ('doc_check', 'Documents Check'),
+#     ('doc_complete', 'Complete Document '),
+#     ('confirm', 'Confirm to HO'),
+#
+#     ('partial_validate', 'Partial Validate'),
+#     ('validate', 'Validated by HO'),
+#     ('to_vendor', 'Send to Vendor'),
+#     ('vendor_process', 'Proceed by Vendor'),
+#     ('in_process', 'In Process'),
+#     ('payment', 'Payment'),
+#     ('process_by_consulate', 'Process by Consulate'),
+#     ('partial_proceed', 'Partial Proceed'),
+#     ('proceed', 'Proceed'),
+#     ('partial_approve', 'Partial Approve'),
+#     ('approve', 'Approve'),
+#     ('reject', 'Rejected'),
+#     ('delivered', 'Delivered'),
+#     # ('ready', 'Sent'),
+#     ('expired', 'Expired'),
+#     ('fail_booked', 'Failed (Book)'),
+#     ('cancel', 'Canceled'),
+#     ('cancel2', 'Canceled'),
+#     ('refund', 'Refund'),
+#     ('done', 'Done'),
+# ]
+
 STATE_VISA = [
     ('draft', 'Request'),
+    ('doc_check', 'Documents Check'),
+    ('doc_complete', 'Complete Document '),
     ('confirm', 'Confirm to HO'),
 
     ('partial_validate', 'Partial Validate'),
     ('validate', 'Validated by HO'),
+    ('in_process', 'Payment to HO'),
     ('to_vendor', 'Send to Vendor'),
     ('vendor_process', 'Proceed by Vendor'),
-    ('in_process', 'In Process'),
-    ('payment', 'Payment'),
+    ('payment', 'In Process'),
     ('process_by_consulate', 'Process by Consulate'),
     ('partial_proceed', 'Partial Proceed'),
     ('proceed', 'Proceed'),
@@ -1612,6 +1642,7 @@ class TtVisa(models.Model):
             if book_obj and book_obj.agent_id.id == context.get('co_agent_id', -1) or self.env.ref('tt_base.group_tt_process_channel_bookings').id in user_obj.groups_id.ids:
                 res_dict = book_obj.sudo().to_dict(user_obj.agent_id.id == self.env.ref('tt_base.rodex_ho').id)
                 passenger = []
+                requirement_check = True
                 for idx, pax in enumerate(book_obj.passenger_ids, 1):
                     requirement = []
                     interview = {
@@ -1662,6 +1693,8 @@ class TtVisa(models.Model):
                         sale['CSC'] = csc
                     """ Requirements """
                     for require in pax.to_requirement_ids:
+                        if require.is_copy == False and require.is_ori == False:
+                            requirement_check = False
                         requirement.append({
                             'name': require.requirement_id.name,
                             'is_copy': require.is_copy,
@@ -1718,11 +1751,12 @@ class TtVisa(models.Model):
                 for rec in STATE_VISA:
                     if rec[0] == 'expired':
                         break
-                    if rec[0] == 'draft':
+                    if rec[0] == 'draft' or rec[0] == 'doc_check':
                         state_visa.update({
                             rec[0]: {
                                 "name": rec[1],
-                                "value": True
+                                "value": True,
+                                'date': book_obj.create_date.strftime("%Y-%m-%d %H:%M:%S"),
                             }
                         })
                     else:
@@ -1733,17 +1767,22 @@ class TtVisa(models.Model):
                             }
                         })
 
+                if requirement_check:
+                    state_visa['doc_complete'].update({
+                        "value": True,
+                        'date': book_obj.create_date.strftime("%Y-%m-%d %H:%M:%S"),
+                    })
                 if book_obj.confirmed_date != False:
                     state_visa['confirm'].update({
                         "value": True,
                         'date': book_obj.confirmed_date.strftime("%Y-%m-%d %H:%M:%S"),
-                        'confirm': book_obj.confirmed_uid
+                        'confirm': book_obj.confirmed_uid.name
                     })
                 if book_obj.validate_date != False:
                     state_visa['partial_validate'].update({
                         "value": True,
                         'date': book_obj.validate_date.strftime("%Y-%m-%d %H:%M:%S"),
-                        'confirm': book_obj.validate_uid
+                        'confirm': book_obj.validate_uid.name
                     })
                 if book_obj.to_vendor_date != False:
                     state_visa['to_vendor'].update({
@@ -1796,47 +1835,47 @@ class TtVisa(models.Model):
                         'date': book_obj.reject_date.strftime("%Y-%m-%d %H:%M:%S")
                     })
 
-                if res_dict['state_visa'] == 'expired':
+                if book_obj.state_visa == 'expired':
                     state_visa.update({
-                        STATE_VISA[15][0]: {
+                        STATE_VISA[17][0]: {
                             "name": STATE_VISA[15][1],
                             "value": True, 'date': ''
                         }
                     })
-                elif res_dict['state_visa'] == 'fail_booked':
+                elif book_obj.state_visa == 'fail_booked':
                     state_visa.update({
-                        STATE_VISA[16][0]: {
+                        STATE_VISA[18][0]: {
                             "name": STATE_VISA[16][1],
                             "value": True, 'date': ''
                         }
                     })
-                elif res_dict['state_visa'] == 'cancel':
+                elif book_obj.state_visa == 'cancel':
                     state_visa.update({
-                        STATE_VISA[17][0]: {
+                        STATE_VISA[19][0]: {
                             "name": STATE_VISA[17][1],
                             "value": True,
                             'date': ''
                         }
                     })
-                elif res_dict['state_visa'] == 'cancel2':
+                elif book_obj.state_visa == 'cancel2':
                     state_visa.update({
-                        STATE_VISA[18][0]: {
+                        STATE_VISA[20][0]: {
                             "name": STATE_VISA[18][1],
                             "value": True,
                             'date': ''
                         }
                     })
-                elif res_dict['state_visa'] == 'refund':
+                elif book_obj.state_visa == 'refund':
                     state_visa.update({
-                        STATE_VISA[19][0]: {
+                        STATE_VISA[21][0]: {
                             "name": STATE_VISA[19][1],
                             "value": True,
                             'date': ''
                         }
                     })
-                elif res_dict['state_visa'] == 'done':
+                elif book_obj.state_visa == 'done':
                     state_visa.update({
-                        STATE_VISA[20][0]: {
+                        STATE_VISA[22][0]: {
                             "name": STATE_VISA[20][1],
                             "value": True,
                             'date': book_obj.done_date.strftime("%Y-%m-%d %H:%M:%S")
@@ -1844,7 +1883,7 @@ class TtVisa(models.Model):
                     })
                 else:
                     state_visa.update({
-                        STATE_VISA[20][0]: {
+                        STATE_VISA[22][0]: {
                             "name": STATE_VISA[20][1],
                             "value": False,
                             'date': ''
