@@ -39,6 +39,7 @@ class TtCustomer(models.Model):
     user_ids = fields.One2many('res.users', 'customer_id', 'User')
     # customer_bank_detail_ids = fields.One2many('customer.bank.detail', 'customer_id', 'Customer Bank Detail')
     agent_id = fields.Many2one('tt.agent', 'Agent', default=lambda self: self.env.user.agent_id)  # , default=lambda self: self.env.user.agent_id
+    agent_as_staff_id = fields.Many2one('tt.agent', 'Agent as Staff')  # , default=lambda self: self.env.user.agent_id
     # user_agent_id = fields.Many2one('tt.agent', 'Agent User', default=lambda self: self.env.user.agent_id)
     customer_parent_ids = fields.Many2many('tt.customer.parent','tt_customer_customer_parent_rel','customer_id','customer_parent_id','Customer Parent')
     booker_parent_ids = fields.Many2many('tt.customer.parent', 'tt_customer_booker_customer_parent_rel', 'customer_id',

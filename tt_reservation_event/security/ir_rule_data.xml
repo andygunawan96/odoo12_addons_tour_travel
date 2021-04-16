@@ -16,7 +16,7 @@
     <record id="rule_reservation_event_for_vendor" model="ir.rule">
         <field name="name">Reservation Event for vendor</field>
         <field name="model_id" ref="model_tt_event_reservation"/>
-        <field name="domain_force">[('event_fid.event_vendor_id', '=', user.vendor_id.id)]</field>
+        <field name="domain_force">[('event_id.event_vendor_id', '=', user.vendor_id.id)]</field>
         <field name="groups" eval="[(4,ref('tt_base.group_tt_external_vendor_operator'))]"/>
     </record>
 

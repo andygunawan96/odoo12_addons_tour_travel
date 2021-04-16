@@ -68,12 +68,16 @@ class ReservationAirline(models.Model):
         invoice_line_id = inv_line_obj.id
 
         #untuk harga fare per passenger
+        discount = 0
+
         for psg in self.passenger_ids:
             desc_text = '%s, %s' % (' '.join((psg.first_name or '', psg.last_name or '')), psg.title or '')
             price_unit = 0
             for cost_charge in psg.cost_service_charge_ids:
                 if cost_charge.charge_type not in ['RAC', 'DISC']:
                     price_unit += cost_charge.amount
+                elif cost_charge.charge_type == 'DISC':
+                    discount += cost_charge.amount
             for channel_charge in psg.channel_service_charge_ids:
                 price_unit += channel_charge.amount
 
@@ -85,6 +89,8 @@ class ReservationAirline(models.Model):
                     'invoice_line_id': invoice_line_id,
                 })]
             })
+
+        inv_line_obj.discount = abs(discount)
 
         ##membuat payment dalam draft
         payment_obj = self.env['tt.payment'].create({
