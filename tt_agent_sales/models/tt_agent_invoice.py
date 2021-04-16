@@ -20,6 +20,7 @@ class AgentInvoice(models.Model):
 
     name = fields.Char('Name', default='New', readonly=True)
     total = fields.Monetary('Subtotal', compute="_compute_total",store=True)
+    discount = fields.Monetary('Discount', compute="_compute_discount",store=True)
     total_after_tax = fields.Monetary('Total (After Tax)', compute="_compute_total_tax",store=True)
     admin_fee = fields.Monetary('Admin Fee',compute="_compute_admin_fee",store=True)
     grand_total = fields.Monetary('Grand Total',compute="_compute_grand_total",store=True)
@@ -182,6 +183,15 @@ class AgentInvoice(models.Model):
             inv.total = total
 
     @api.multi
+    @api.depends('invoice_line_ids.discount', 'invoice_line_ids')
+    def _compute_discount(self):
+        for inv in self:
+            total = 0
+            for rec in inv.invoice_line_ids:
+                total += rec.discount
+            inv.discount = total
+
+    @api.multi
     @api.depends('invoice_line_ids.total_after_tax', 'invoice_line_ids')
     def _compute_total_tax(self):
         for inv in self:
@@ -200,10 +210,10 @@ class AgentInvoice(models.Model):
             inv.admin_fee = total
 
     @api.multi
-    @api.depends('total_after_tax','admin_fee')
+    @api.depends('total_after_tax','discount','admin_fee')
     def _compute_grand_total(self):
         for inv in self:
-            inv.grand_total = inv.total_after_tax + inv.admin_fee
+            inv.grand_total = inv.total_after_tax + inv.admin_fee - inv.discount
 
     @api.multi
     def _compute_paid_amount(self):

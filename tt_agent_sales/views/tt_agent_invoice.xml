@@ -126,8 +126,8 @@
                                         <field name="desc"/>
                                         <field name="model_type_id"/>
                                         <field name="total"/>
+                                        <field name="discount"/>
                                         <field name="total_after_tax"/>
-                                        <field name="admin_fee"/>
                                         <field name="currency_id" invisible="1"/>
                                     </tree>
                                 </field>
@@ -152,6 +152,7 @@
                     <group class="oe_subtotal_footer oe_right" colspan="2" name="sale_total">
                         <field name="total" class="oe_subtotal_footer_separator" widget='monetary' options="{'currency_field': 'currency_id'}"/>
                         <field name="total_after_tax" class="oe_subtotal_footer_separator" widget='monetary' options="{'currency_field': 'currency_id'}"/>
+                        <field name="discount" class="oe_subtotal_footer_separator" widget='monetary' options="{'currency_field': 'currency_id'}"/>
                         <field name="admin_fee" class="oe_subtotal_footer_separator" widget='monetary' options="{'currency_field': 'currency_id'}"/>
                         <field name="grand_total" class="oe_subtotal_footer_separator" widget='monetary' options="{'currency_field': 'currency_id'}"/>
                         <field name="paid_amount" class="oe_subtotal_footer_separator" widget='monetary' options="{'currency_field': 'currency_id'}"/>

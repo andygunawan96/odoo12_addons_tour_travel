@@ -42,6 +42,7 @@
                     </group>
                     <group class="oe_subtotal_footer oe_right" colspan="2" name="sale_total">
                         <field name="total" class="oe_subtotal_footer_separator"/>
+                        <field name="discount" class="oe_subtotal_footer_separator"/>
                         <field name="total_after_tax" class="oe_subtotal_footer_separator"/>
                         <field name="admin_fee" class="oe_subtotal_footer_separator"/>
                     </group>

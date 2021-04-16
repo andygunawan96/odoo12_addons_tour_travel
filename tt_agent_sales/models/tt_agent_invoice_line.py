@@ -9,6 +9,7 @@ class AgentInvoice(models.Model):
 
     name = fields.Char('Name')
 
+    discount = fields.Monetary('Discount')
     total = fields.Monetary('Subtotal',compute='_compute_total', store=True)
     total_after_tax = fields.Monetary('Total (After Tax)', compute="_compute_total_tax", store=True)
     admin_fee = fields.Monetary('Admin Fee')
@@ -96,10 +97,10 @@ class AgentInvoice(models.Model):
             rec._compute_invoice_line_pnr()
 
     @api.multi
-    @api.depends('total')
+    @api.depends('total','discount')
     def _compute_total_tax(self):
         for rec in self:
-            rec.total_after_tax = rec.total + ((rec.invoice_id.customer_parent_id.tax_percentage / 100) * rec.total)
+            rec.total_after_tax = rec.total + ((rec.invoice_id.customer_parent_id.tax_percentage / 100) * rec.total) - rec.discount
 
     def get_reservation_obj(self):
         return self.env[self.res_model_resv].browse(self.res_id_resv)

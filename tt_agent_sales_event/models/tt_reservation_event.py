@@ -60,11 +60,15 @@ class ReservationEvent(models.Model):
             'customer_parent_id': customer_parent_id
         })
 
+        discount = 0
+
         for opt_obj in self.passenger_ids:
             price_unit = 0
             for cost_charge in opt_obj.cost_service_charge_ids:
                 if cost_charge.charge_type not in ['RAC', 'DISC']:
                     price_unit += cost_charge.amount
+                elif cost_charge.charge_type == 'DISC':
+                    discount += cost_charge.amount
             for channel_charge in opt_obj.channel_service_charge_ids:
                 price_unit += channel_charge.amount
 
@@ -84,6 +88,9 @@ class ReservationEvent(models.Model):
         else:
             # B2C
             acquirer_obj = self.payment_acquirer_number_id.payment_acquirer_id
+
+        inv_line_obj.discount = abs(discount)
+
         payment_obj = self.env['tt.payment'].create({
             'agent_id': self.agent_id.id,
             'acquirer_id': acquirer_obj.id,

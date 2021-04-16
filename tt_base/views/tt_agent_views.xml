@@ -128,6 +128,9 @@
                         <page string="Social Media">
                             <field name="social_media_ids" readonly="1"/>
                         </page>
+                        <page string="Staff Information">
+                            <field name="staff_information_ids" readonly="1"/>
+                        </page>
                         <page string="Payment Acquirer Number">
                             <field name="payment_acq_ids" readonly="1"/>
                         </page>
@@ -199,6 +202,9 @@
             </field>
             <field name="social_media_ids" position="replace">
                 <field name="social_media_ids" readonly="0"/>
+            </field>
+            <field name="staff_information_ids" position="replace">
+                <field name="staff_information_ids" readonly="0"/>
             </field>
             <field name="payment_acq_ids" position="replace">
                 <field name="payment_acq_ids" readonly="0"/>

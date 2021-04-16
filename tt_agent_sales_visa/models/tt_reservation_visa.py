@@ -73,6 +73,8 @@ class ReservationVisa(models.Model):
 
         invoice_line_id = inv_line_obj.id
 
+        discount = 0
+
         for psg in book_obj.passenger_ids:
             desc_text = (psg.first_name if psg.first_name else '') + ' ' + \
                         (psg.last_name if psg.last_name else '') + ', ' + \
@@ -86,6 +88,8 @@ class ReservationVisa(models.Model):
             for srvc in psg.cost_service_charge_ids:
                 if srvc.charge_type not in ['RAC', 'DISC']:
                     price += srvc.amount
+                elif srvc.charge_type == 'DISC':
+                    discount += srvc.amount
             for srvc in psg.channel_service_charge_ids:
                 price += srvc.amount
             inv_line_obj.write({
@@ -96,6 +100,8 @@ class ReservationVisa(models.Model):
                     'invoice_line_id': invoice_line_id,
                 })]
             })
+
+        inv_line_obj.discount = abs(discount)
 
         ##membuat payment dalam draft
         payment_obj = self.env['tt.payment'].create({

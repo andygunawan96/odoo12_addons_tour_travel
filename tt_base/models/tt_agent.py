@@ -37,6 +37,7 @@ class TtAgent(models.Model):
     address_ids = fields.One2many('address.detail', 'agent_id', string='Addresses')
     phone_ids = fields.One2many('phone.detail', 'agent_id', string='Phones')
     social_media_ids = fields.One2many('social.media.detail', 'agent_id', 'Social Media')
+    staff_information_ids = fields.One2many('tt.customer','agent_as_staff_id','Staff Information')
     customer_parent_ids = fields.One2many('tt.customer.parent', 'parent_agent_id', 'Customer Parent')
     customer_parent_walkin_id = fields.Many2one('tt.customer.parent','Walk In Parent')
     customer_ids = fields.One2many('tt.customer', 'agent_id', 'Customer')

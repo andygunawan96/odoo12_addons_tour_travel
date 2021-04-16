@@ -163,7 +163,7 @@
                                         </tr>
                                         <tr valign="top" style="padding-top: 5px; padding-bottom: 5px;">
                                             <td style="background: #F0F0F0; width: 25%; border-left: 1px solid #ccc; border-bottom: 1px solid #ccc; border-right: 1px solid #ccc; border-radius: 0px 0px 0px 20px; border-color: #CCC; padding: 7px 7px 7px 20px;">
-                                                <span t-esc="doc.voucher_reference_code"/>.<span t-esc="doc.voucher_period_reference"/>
+                                                <span t-esc="doc.voucher_period_reference"/>
                                             </td>
                                             <td style="width: 25%; border-left: 1px solid #ccc; border-bottom: 1px solid #ccc; border-right: 1px solid #ccc; border-radius: 0px 0px 0px 0px; border-color: #CCC; padding: 7px 7px 7px 20px;">
                                                 <t t-if="doc.voucher_id.voucher_type == 'percent'">
