@@ -484,6 +484,46 @@
             ]"/>
         </record>
 
+        <record id="tt_transport_carrier_search_lo_all" model="tt.transport.carrier.search">
+            <field name="name">Polish Airlines</field>
+            <field name="carrier_id" ref="tt_reservation_airline.tt_transport_carrier_airline_lo"/>
+            <field name="is_default" eval="True"/>
+            <field name="is_favorite" eval="False"/>
+            <field name="provider_ids" eval="[
+                (4, ref('tt_reservation_airline.tt_provider_airline_amadeus'))
+            ]"/>
+        </record>
+
+        <record id="tt_transport_carrier_search_dt_all" model="tt.transport.carrier.search">
+            <field name="name">TAAG Angola Airlines</field>
+            <field name="carrier_id" ref="tt_reservation_airline.tt_transport_carrier_airline_dt"/>
+            <field name="is_default" eval="True"/>
+            <field name="is_favorite" eval="False"/>
+            <field name="provider_ids" eval="[
+                (4, ref('tt_reservation_airline.tt_provider_airline_amadeus'))
+            ]"/>
+        </record>
+
+        <record id="tt_transport_carrier_search_gp_all" model="tt.transport.carrier.search">
+            <field name="name">APG Airlines</field>
+            <field name="carrier_id" ref="tt_reservation_airline.tt_transport_carrier_airline_gp"/>
+            <field name="is_default" eval="True"/>
+            <field name="is_favorite" eval="False"/>
+            <field name="provider_ids" eval="[
+                (4, ref('tt_reservation_airline.tt_provider_airline_amadeus'))
+            ]"/>
+        </record>
+
+        <record id="tt_transport_carrier_search_sc_all" model="tt.transport.carrier.search">
+            <field name="name">Shandong Airlines</field>
+            <field name="carrier_id" ref="tt_reservation_airline.tt_transport_carrier_airline_sc"/>
+            <field name="is_default" eval="True"/>
+            <field name="is_favorite" eval="False"/>
+            <field name="provider_ids" eval="[
+                (4, ref('tt_reservation_airline.tt_provider_airline_amadeus'))
+            ]"/>
+        </record>
+
         <record id="tt_transport_carrier_search_qg_all" model="tt.transport.carrier.search">
             <field name="name">Citilink</field>
             <field name="carrier_id" ref="tt_reservation_airline.tt_transport_carrier_airline_qg"/>

@@ -681,6 +681,42 @@
             <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
         </record>
 
+        <record id="tt_transport_carrier_airline_lo" model="tt.transport.carrier">
+            <field name="name">Polish Airlines</field>
+            <field name="code">LO</field>
+            <field name="icao">LOT</field>
+            <field name="call_sign">POLLOT</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_airline_dt" model="tt.transport.carrier">
+            <field name="name">TAAG Angola Airlines</field>
+            <field name="code">DT</field>
+            <field name="icao">DTA</field>
+            <field name="call_sign">DTA</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_airline_gp" model="tt.transport.carrier">
+            <field name="name">APG Airlines</field>
+            <field name="code">GP</field>
+            <field name="icao">RIV</field>
+            <field name="call_sign">RIVIERA</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_airline_sc" model="tt.transport.carrier">
+            <field name="name">Shandong Airlines</field>
+            <field name="code">SC</field>
+            <field name="icao">CDG</field>
+            <field name="call_sign">SHANDONG</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
     </data>
 </odoo>
     
