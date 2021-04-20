@@ -55,7 +55,8 @@ class ReservationHotel(models.Model):
             'invoice_id': invoice_id.id,
             'reference': self.name,
             'desc': self.get_segment_description(),
-            'admin_fee': self.payment_acquirer_number_id.fee_amount
+            'admin_fee': self.payment_acquirer_number_id.fee_amount,
+            'discount': 0,
         })
 
         for room_obj in self.room_detail_ids:
@@ -64,7 +65,6 @@ class ReservationHotel(models.Model):
                 'desc': room_obj.room_name + ' (' + meal + ') ',
                 'invoice_line_id': inv_line_obj.id,
                 'price_unit': room_obj.sale_price,
-                'discount': 0,
                 'quantity': 1,
             })
 

@@ -123,7 +123,7 @@ class HotelInformationCompare(models.Model):
     state = fields.Selection([('draft', 'Draft'), ('tobe_merge', 'To Be Merged'), ('merge', 'Merged'), ('cancel', 'Cancel')], string='State', default='draft')
 
     def get_compared_param(self):
-        return ['name','rating','address','address2','address3','lat','long','email','city_id','phone','state_id','country_id','provider']
+        return ['name','rating','address','address2','address3','lat','long','email','destination_id','city_id','phone','state_id','country_id','provider']
 
     def collect_hotel(self, params):
         for param in params:
@@ -173,14 +173,18 @@ class HotelInformationCompare(models.Model):
         if record.params in ['name']:
             rmv_param += ['-','"',"'",'!','@']
             rmv_str += ['hotel', 'motel', 'cottage', '&', 'and', '@', 'at']
-            if record.compare_id.hotel_id.city_id.name == record.compare_id.comp_hotel_id.city_id.name:
+            if record.compare_id.hotel_id.city_id.name == record.compare_id.comp_hotel_id.city_id.name and record.compare_id.comp_hotel_id.city_id.name != False:
                 rmv_str += [record.compare_id.hotel_id.city_id.name.lower()]
+            if record.compare_id.hotel_id.destination_id.name == record.compare_id.comp_hotel_id.destination_id.name and record.compare_id.comp_hotel_id.destination_id.name != False:
+                rmv_str += [record.compare_id.hotel_id.destination_id.name.lower()]
         elif record.params in ['address']:
             rmv_param += ['-', '+', '.', ',', '/', '(', ')'] # Pertimbangkan pengunaan '(' , ')'
             # Contoh: Jl. P. Mangkubumi 57/59 vs Jl. Margoutomo (P. Mangkubumi)
             rmv_str = ['jalan', 'jl', 'jln', 'no', 'street']
-            if record.compare_id.hotel_id.city_id.name == record.compare_id.comp_hotel_id.city_id.name:
+            if record.compare_id.hotel_id.city_id.name == record.compare_id.comp_hotel_id.city_id.name and record.compare_id.comp_hotel_id.city_id.name != False:
                 rmv_str += [record.compare_id.hotel_id.city_id.name.lower()]
+            if record.compare_id.hotel_id.destination_id.name == record.compare_id.comp_hotel_id.destination_id.name and record.compare_id.comp_hotel_id.destination_id.name != False:
+                rmv_str += [record.compare_id.hotel_id.destination_id.name.lower()]
         elif record.params in ['phone']:
             const = 3
             rmv_param += ['+',' ','-','.','(',')','/'] # '/' pertmbangkan nmbah char ini
@@ -311,6 +315,32 @@ class HotelInformationCompare(models.Model):
             self.hotel_id.state = 'draft'
             self.state = 'draft'
 
+    def merge_image(self):
+        # Note: Dulu kita copy ulang gmbare skrg cman tmbahin value sja
+        for img in self.hotel_id.image_ids:
+            img.master_hotel_id = self.similar_id.id
+
+    def merge_facility(self):
+        # Note: Dulu kita copy ulang gmbare skrg cman tmbahin value sja
+        for fac in self.hotel_id.facility_ids:
+            self.similar_id.facility_ids = [(4,fac.id)]
+
+    def unmerge_image(self):
+        # Note: Dulu kita copy ulang gmbare skrg cman tmbahin value sja
+        for img in self.hotel_id.image_ids:
+            img.master_hotel_id = False
+
+    def unmerge_facility(self):
+        # Ini resiko klo misal vendor A dan Vendor B pny facility yg sama (Swimming pool) nanti bakal kedelet
+        # for fac in self.hotel_id.facility_ids:
+        #     self.similar_id.facility_ids = [(3,fac.id)]
+        # TODO Mekanisme Paling Bagus:
+        # 1. Delete ulang
+        self.similar_id.facility_ids = [(5)]
+        # 2. Ambil Facility dari current Provider
+        for hotel_comp in self.similar_id.compare_ids:
+            hotel_comp.merge_facility()
+
     # Cancel klo dah ke merge
     def cancel_merge_hotel(self):
         if self.hotel_id.state == 'merged' and self.state == 'merge':
@@ -323,6 +353,8 @@ class HotelInformationCompare(models.Model):
             self.similar_id.info_ids = [(3, self.hotel_id.id)]
             self.hotel_id.state = 'draft'
             self.state = 'cancel'
+            self.unmerge_image()
+            self.unmerge_facility()
 
             if all(rec.state == 'cancel' for rec in self.comp_hotel_id.compare_ids):
                 self.similar_id.sudo().unlink()
@@ -330,11 +362,6 @@ class HotelInformationCompare(models.Model):
             raise UserError('Cannot UnMerge this comparing process')
 
     # ======= Part Rubah State blum merge trigger END  =======
-
-    def merge_image(self):
-        for img in self.comp_hotel_id.image_ids:
-            new_img_id = img.copy()
-            new_img_id.hotel_id = self.similar_id.id
 
     def merge_provider_code(self):
         for provider in self.comp_hotel_id.provider_hotel_ids:
@@ -362,9 +389,10 @@ class HotelInformationCompare(models.Model):
                 else:
                     vals[rec.params] = rec.is_value_1 and rec.value_1 or rec.value_2
             self.similar_id.update(vals)
-            self.merge_image()
             self.merge_provider_code()
 
+        self.merge_facility()
+        self.merge_image()
         self.similar_id.info_ids = [(4, self.hotel_id.id)]
         self.similar_id.get_provider_name()
 
@@ -406,6 +434,6 @@ class HotelInformation(models.Model):
         client_action = {
             'type': 'ir.actions.act_url',
             'target': 'self',
-            'url': base_url + "/web#id=" + str(compare_id.id) + "&view_type=form&model=tt.hotel.compare&action=4250",
+            'url': base_url + "/web#id=" + str(compare_id.id) + "&view_type=form&model=tt.hotel.compare",
         }
         return client_action

@@ -235,7 +235,7 @@ class HotelInformation(models.Model):
                 csvFile.close()
 
     # untuk update dari excel ke data di backend tt.hotel
-    def v2_collect_by_system_traveloka_tt_hotel(self):
+    def v2_get_hotel_image_traveloka(self):
         base_cache_directory = self.env['ir.config_parameter'].sudo().get_param('hotel.cache.directory')
         limit = 100
         api_context = {

@@ -2365,16 +2365,24 @@ class HotelInformation(models.Model):
                 return [rec,]
         return False
 
-    def advance_find_similar_name_from_database(self, hotel_name, city_name, city_ids, new_hotel_id, limit=10):
+    def advance_find_similar_name_from_database(self, hotel_name, city_name, city_ids, destination_id, new_hotel_id, limit=20):
         fmt_hotel_name = self.formatting_hotel_name(hotel_name, city_name)
         temp = []
-        # Todo Find City
-        # for rec in self.env['tt.hotel'].search([('id', '!=', new_hotel_id), ('city_id', 'in', city_ids), ('state', 'not in', ['merged',])]):
-        for rec in self.env['tt.hotel.master'].search([('city_id', 'in', city_ids)]):
-            if len(temp) > limit:
-                return temp
-            if all(elem in " ".join(self.formatting_hotel_name(rec.name)) for elem in fmt_hotel_name):
-                temp.append(rec)
+        if city_ids:
+            # Todo Find City
+            # for rec in self.env['tt.hotel'].search([('id', '!=', new_hotel_id), ('city_id', 'in', city_ids), ('state', 'not in', ['merged',])]):
+            for rec in self.env['tt.hotel.master'].search([('city_id', 'in', city_ids)]):
+                if len(temp) > limit:
+                    return temp
+                if all(elem in " ".join(self.formatting_hotel_name(rec.name)) for elem in fmt_hotel_name):
+                    temp.append(rec)
+        if destination_id:
+            for rec in self.env['tt.hotel.master'].search([('destination_id', '=', destination_id)]):
+                if len(temp) > limit:
+                    return temp
+                if all(elem in " ".join(self.formatting_hotel_name(rec.name)) for elem in fmt_hotel_name):
+                    if rec not in temp:
+                        temp.append(rec)
         return temp
 
     def exact_find_similar_name(self, hotel_name, city_name, cache_content):
@@ -3412,6 +3420,17 @@ class HotelInformation(models.Model):
                 _logger.error(msg='No function get Facility code for this provider %s' % rec)
         return False
 
+    # 1h. Get Hotel Image
+    def v2_get_hotel_image(self):
+        provider = self.env['ir.config_parameter'].sudo().get_param('hotel.cache.provider').split(',')  # 'knb',dida,webbeds
+        for rec in provider:
+            def_name = 'v2_get_hotel_image_%s' % rec
+            if hasattr(self, def_name):
+                return getattr(self, def_name)()
+            else:
+                _logger.error(msg='No function get Hotel Image for this provider %s' % rec)
+        return False
+
     # 2. Merge
     # Compiller: Master
     # Notes: Compare Hotel lalu simpan hasil Komparasi
@@ -3490,7 +3509,7 @@ class HotelInformation(models.Model):
 
                                         internal_hotel_obj = self.create_or_edit_hotel(hotel_fmt, -1)
                                         if len(json.loads(file)):
-                                            same_hotel_obj = self.advance_find_similar_name_from_database(hotel_fmt['name'], hotel_fmt['location']['city'], searched_city_ids, internal_hotel_obj.id)
+                                            same_hotel_obj = self.advance_find_similar_name_from_database(hotel_fmt['name'], hotel_fmt['location']['city'], searched_city_ids, destination_obj.id, internal_hotel_obj.id)
                                         else:
                                             same_hotel_obj = False
                                         if same_hotel_obj:
@@ -3680,7 +3699,7 @@ class HotelInformation(models.Model):
                 content = []
                 # Search all Mapped Data from hotel.master
 
-                for hotel in self.env['tt.hotel'].search(['|',('city_id','=',city['city_id']),('destination_id','=',city['destination_id'])]):
+                for hotel in self.env['tt.hotel.master'].search(['|',('city_id','=',city['city_id']),('destination_id','=',city['destination_id'])]):
                 # for hotel in self.env['tt.hotel'].search([('city_id','=',city['city_id'])]):  #Old Version
                     content.append(hotel.fmt_read(city_idx=city['index']))
                 try:
