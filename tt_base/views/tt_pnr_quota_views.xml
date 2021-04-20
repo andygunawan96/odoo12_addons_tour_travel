@@ -7,7 +7,7 @@
             <field name="arch" type="xml">
                 <form string="PNR Quota">
                     <header>
-                        <button name="recompute_wrong_value_amount" string="Recompute" type="object" groups="tt_base.group_tt_accounting_operator"/>
+                        <button name="recompute_wrong_value_amount" string="Recompute" type="object" groups="tt_base.group_tt_accounting_operator,tt_base.group_pnr_quota_level_3"/>
                         <field name="state" widget="statusbar" statusbar_visible="active,expired"/>
                     </header>
                     <sheet>

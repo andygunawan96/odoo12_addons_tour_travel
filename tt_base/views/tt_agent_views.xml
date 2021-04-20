@@ -30,9 +30,9 @@
                 <filter string="This Year" name="thisyear" domain="[('date','&gt;=',time.strftime('%%Y-01-01'))]"/>
 
                 <group expand="0" string="Group By">
-                    <filter string="Name" name="name" domain="[]" context="{'group_by':'name'}" groups="tt_base.group_tt_tour_travel_operator"/>
-                    <filter string="Parent Agent" name="parent_agent_id" domain="[]" context="{'group_by':'parent_agent_id'}" groups="tt_base.group_tt_tour_travel_operator"/>
-                    <filter string="Email" name="email" domain="[]" context="{'group_by':'email'}" groups="tt_base.group_tt_tour_travel_operator"/>
+                    <filter string="Name" name="name" domain="[]" context="{'group_by':'name'}" groups="tt_base.group_tt_tour_travel_operator,tt_base.group_tt_tour_travel"/>
+                    <filter string="Parent Agent" name="parent_agent_id" domain="[]" context="{'group_by':'parent_agent_id'}" groups="tt_base.group_tt_tour_travel_operator,tt_base.group_tt_tour_travel"/>
+                    <filter string="Email" name="email" domain="[]" context="{'group_by':'email'}" groups="tt_base.group_tt_tour_travel_operator,tt_base.group_tt_tour_travel"/>
                 </group>
             </search>
         </field>
@@ -49,16 +49,16 @@
                 </header>
                 <sheet>
                     <div class="oe_button_box" name="button_box">
-                        <button name="toggle_active" type="object" groups="tt_base.group_tt_agent_management_operator"
+                        <button name="toggle_active" type="object" groups="tt_base.group_tt_agent_management_operator,tt_base.group_agent_level_4"
                                 class="oe_stat_button" icon="fa-archive">
                             <field name="active" widget="boolean_button"
                                    options='{"terminology": "archive"}'/>
                         </button>
                         <button name="action_create_user" type="object" string="Create User" icon="fa-user"
-                                class="oe_stat_button" groups="tt_base.group_tt_agent_management_operator">
+                                class="oe_stat_button" groups="tt_base.group_tt_agent_management_operator,tt_base.group_user_data_level_3">
                         </button>
                         <button type="object" name="action_show_agent_target_history"
-                                groups="tt_base.group_tt_agent_management_operator"
+                                groups="tt_base.group_tt_agent_management_operator,tt_base.group_agent_level_4"
                                 class="oe_stat_button" icon="fa-dollar">
                             <div class="o_field_widget o_stat_info">
                                 <span class="o_stat_value" widget="statinfo">
@@ -85,9 +85,9 @@
                     <group>
                         <group>
                             <field name="currency_id" readonly="1"/>
-                            <field name="is_using_pnr_quota" groups="tt_base.group_tt_agent_management_operator"
+                            <field name="is_using_pnr_quota" groups="tt_base.group_tt_agent_management_operator,tt_base.group_agent_level_4"
                                    invisible="1"/>
-                            <field name="is_send_email_cust" groups="tt_base.group_tt_agent_management_operator"/>
+                            <field name="is_send_email_cust" groups="tt_base.group_tt_agent_management_operator,tt_base.group_agent_level_4"/>
                             <!--                            <field name="actual_balance"/>-->
                             <!--                            <field name="annual_revenue_target"/>-->
                             <!--                            <field name="annual_profit_target"/>-->
