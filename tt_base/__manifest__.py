@@ -67,7 +67,6 @@ Key Features
         'views/res_user_views.xml',
         'views/social_media_detail_views.xml',
         'views/res_social_media_type_views.xml',
-        'views/templates.xml',
         'views/tt_destination_views.xml',
         'views/tt_skipped_keys_views.xml',
         'views/tt_customer_parent_views.xml',

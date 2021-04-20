@@ -54,12 +54,12 @@
         <field name="arch" type="xml">
             <xpath expr="//div[@class='oe_title']" position="after">
                 <div class="oe_button_box" name="button_box">
-                    <button name="toggle_active" type="object" class="oe_stat_button" icon="fa-check" groups="tt_base.group_tt_agent_management_operator">
+                    <button name="toggle_active" type="object" class="oe_stat_button" icon="fa-check" groups="tt_base.group_tt_agent_management_operator,tt_base.group_user_data_level_3">
                         <field name="active" widget="boolean_button" options='{"terminology": "active"}'/>
                     </button>
                     <button string="Send Reset Password Link"
                             type="object" name="action_reset_password" icon="fa-chain"
-                            groups="tt_base.group_tt_agent_management_operator"
+                            groups="tt_base.group_tt_agent_management_operator,tt_base.group_user_data_level_3"
                     />
                 </div>
             </xpath>
