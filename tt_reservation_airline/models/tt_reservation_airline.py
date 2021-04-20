@@ -818,7 +818,7 @@ class ReservationAirline(models.Model):
                 # _logger.info("Get resp\n" + json.dumps(res))
                 return Response().get_no_error(res)
             else:
-                raise RequestException(1001)
+                raise RequestException(1035)
 
         except RequestException as e:
             _logger.error(traceback.format_exc())
