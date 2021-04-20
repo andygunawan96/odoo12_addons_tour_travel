@@ -118,8 +118,8 @@
 
         <record model="mail.template" id="template_mail_tour_request">
 			<field name="name">Template Mail Tour Request</field>
-			<field name="email_from">${object.get_email_reply_to()}</field>
-			<field name="reply_to">${object.get_email_reply_to()}</field>
+			<field name="email_from">${user.email}</field>
+			<field name="reply_to">${user.email}</field>
 			<field name="subject">[Sent By System] Tour Request: ${object.name}</field>
 			<field name="email_to">tour@rodextravel.tours</field>
             <field name="email_cc"/>
