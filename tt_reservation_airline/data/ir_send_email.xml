@@ -4,7 +4,8 @@
 
 		<record model="mail.template" id="template_mail_reservation_issued_airline">
 			<field name="name">Template Mail Reservation Issued</field>
-			<field name="email_from">info@rodextrip.com</field>
+			<field name="email_from">${object.get_email_reply_to()}</field>
+			<field name="reply_to">${object.get_email_reply_to()}</field>
 			<field name="subject">Reservation Issued: ${object.name}</field>
 			<field name="email_to">${object.agent_id.email}</field>
             <field name="email_cc"/>
@@ -32,7 +33,8 @@
 
 		<record model="mail.template" id="template_mail_reservation_booked_airline">
 			<field name="name">Template Mail Reservation Booked</field>
-			<field name="email_from">info@rodextrip.com</field>
+			<field name="email_from">${object.get_email_reply_to()}</field>
+			<field name="reply_to">${object.get_email_reply_to()}</field>
 			<field name="subject">Reservation Booked: ${object.name}</field>
 			<field name="email_to">${object.agent_id.email}</field>
             <field name="email_cc"/>
@@ -48,7 +50,7 @@
 <p>Order Number: ${object.name}</p>
 <p>Booked Date: ${object.get_btc_booked_date()}</p>
 <p>Booker Name: ${object.booker_id.name}</p>
-<p>Booking Url:</p> <a>${object.get_btc_url()}</a><br/>
+<p>Booking Url:</p> <a href='${object.get_btc_url()}'>${object.get_btc_url()}</a><br/>
 <p>Please complete your payment by ${object.get_btc_hold_date()}, otherwise your reservation will be expired. Thank you for your trust and support in using our service.</p>
 <br/>
 <p>Regards,</p>
@@ -59,7 +61,8 @@
 
         <record model="mail.template" id="template_mail_reservation_issued_airline_cust">
 			<field name="name">Template Mail Reservation Issued</field>
-			<field name="email_from">${object.agent_id.email}</field>
+			<field name="email_from">${object.get_email_reply_to()}</field>
+			<field name="reply_to">${object.get_email_reply_to()}</field>
 			<field name="subject">Reservation Issued: ${object.name}</field>
 			<field name="email_to">${object.contact_email}</field>
             <field name="email_cc"/>
@@ -87,7 +90,8 @@
 
 		<record model="mail.template" id="template_mail_reservation_booked_airline_cust">
 			<field name="name">Template Mail Reservation Booked</field>
-			<field name="email_from">${object.agent_id.email}</field>
+			<field name="email_from">${object.get_email_reply_to()}</field>
+			<field name="reply_to">${object.get_email_reply_to()}</field>
 			<field name="subject">Reservation Booked: ${object.name}</field>
 			<field name="email_to">${object.contact_email}</field>
             <field name="email_cc"/>
@@ -103,7 +107,7 @@
 <p>Order Number: ${object.name}</p>
 <p>Booked Date: ${object.get_btc_booked_date()}</p>
 <p>Booker Name: ${object.booker_id.name}</p>
-<p>Booking Url:</p> <a>${object.get_btc_url()}</a><br/>
+<p>Booking Url:</p> <a href='${object.get_btc_url()}'>${object.get_btc_url()}</a><br/>
 <p>Please complete your payment by ${object.get_btc_hold_date()}, otherwise your reservation will be expired. Thank you for your trust and support in using our service.</p>
 <br/>
 <p>Regards,</p>

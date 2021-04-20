@@ -4366,7 +4366,8 @@
                                 ref('tt_base.able_to_ticketing_ppob'),
                                 ref('tt_base.able_to_ticketing_tour'),
                                 ref('tt_base.able_to_ticketing_train'),
-                                ref('tt_base.able_to_ticketing_visa')])]"
+                                ref('tt_base.able_to_ticketing_visa'),
+                                ref('tt_base.corp_limitation')])]"
             />
         </record>
 
@@ -6867,11 +6868,7 @@
                          (4, ref('tt_base.group_voucher_level_3')),
                          (4, ref('tt_base.group_user_data_level_1'))]"/>
             <field name="frontend_security_ids"
-                   eval="[(6,0,[ref('tt_base.able_to_ticketing'),
-                                ref('tt_base.able_to_book'),
-                                ref('tt_base.able_to_issued'),
-                                ref('tt_base.able_to_login'),
-                                ref('tt_base.b2c_limitation'),
+                   eval="[(6,0,[ref('tt_base.able_to_login'),
                                 ref('tt_base.able_to_ticketing_activity'),
                                 ref('tt_base.able_to_ticketing_airline'),
                                 ref('tt_base.able_to_ticketing_event'),
@@ -6881,7 +6878,11 @@
                                 ref('tt_base.able_to_ticketing_tour'),
                                 ref('tt_base.able_to_ticketing_train'),
                                 ref('tt_base.able_to_ticketing_visa'),
-                                ref('tt_base.report')])]"
+                                ref('tt_base.report'),
+                                ref('tt_base.able_to_book'),
+                                ref('tt_base.able_to_issued'),
+                                ref('tt_base.able_to_login'),
+                                ref('tt_base.b2c_limitation')])]"
             />
         </record>
 
