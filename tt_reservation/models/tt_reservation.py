@@ -1023,6 +1023,14 @@ class TtReservation(models.Model):
             res = ERR.get_error(500)
         return res
 
+    def get_email_reply_to(self):
+        try:
+            final_email = self.env['ir.config_parameter'].sudo().get_param('tt_base.website_default_email_address', default='')
+        except Exception as e:
+            _logger.info(str(e))
+            final_email = ''
+        return final_email
+
     def get_btc_hold_date(self):
         if (self.booked_date + timedelta(hours=1)) >= self.hold_date:
             final_time = (self.hold_date + timedelta(hours=7)).strftime('%Y-%m-%d %H:%M:%S')

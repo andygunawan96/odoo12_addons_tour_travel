@@ -4,7 +4,8 @@
 
 		<record model="mail.template" id="template_mail_reservation_issued_ppob">
 			<field name="name">Template Mail Reservation Issued</field>
-			<field name="email_from">${object.agent_id.email}</field>
+			<field name="email_from">${object.get_email_reply_to()}</field>
+			<field name="reply_to">${object.get_email_reply_to()}</field>
 			<field name="subject">Bills Paid: ${object.name}</field>
 			<field name="email_to">${object.contact_email}</field>
             <field name="email_cc"/>
@@ -32,7 +33,8 @@
 
 		<record model="mail.template" id="template_mail_reservation_booked_ppob">
 			<field name="name">Template Mail Reservation Booked</field>
-			<field name="email_from">${object.agent_id.email}</field>
+			<field name="email_from">${object.get_email_reply_to()}</field>
+			<field name="reply_to">${object.get_email_reply_to()}</field>
 			<field name="subject">Bills Data Registered: ${object.name}</field>
 			<field name="email_to">${object.contact_email}</field>
             <field name="email_cc"/>
@@ -59,7 +61,8 @@
 
         <record model="mail.template" id="template_mail_reservation_issued_ppob_cust">
 			<field name="name">Template Mail Reservation Issued</field>
-			<field name="email_from">info@rodextrip.com</field>
+			<field name="email_from">${object.get_email_reply_to()}</field>
+			<field name="reply_to">${object.get_email_reply_to()}</field>
 			<field name="subject">Bills Paid: ${object.name}</field>
 			<field name="email_to">${object.agent_id.email}</field>
             <field name="email_cc"/>
@@ -87,7 +90,8 @@
 
 		<record model="mail.template" id="template_mail_reservation_booked_ppob_cust">
 			<field name="name">Template Mail Reservation Booked</field>
-			<field name="email_from">info@rodextrip.com</field>
+			<field name="email_from">${object.get_email_reply_to()}</field>
+			<field name="reply_to">${object.get_email_reply_to()}</field>
 			<field name="subject">Bills Data Registered: ${object.name}</field>
 			<field name="email_to">${object.agent_id.email}</field>
             <field name="email_cc"/>
