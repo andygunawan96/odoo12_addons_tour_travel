@@ -7,7 +7,7 @@
         </record>
         <record id="website_default_email_address" model="ir.config_parameter">
             <field name="key">tt_base.website_default_email_address</field>
-            <field name="value"></field>
+            <field name="value">cs@rodextrip.com</field>
         </record>
     </data>
 </odoo>
