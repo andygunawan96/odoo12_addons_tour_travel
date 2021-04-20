@@ -58,6 +58,7 @@ class PrintoutTicketForm(models.AbstractModel):
         ssr_list = []
         refund_fee = 0
         reschedule_fee = 0
+        agent_id = False
 
         for rec in self.env[data['context']['active_model']].browse(data['context']['active_ids']):
             values[rec.id] = []
@@ -124,7 +125,7 @@ class PrintoutTicketForm(models.AbstractModel):
             refund_fee = self.get_refund_fee_amount(agent_id)
             reschedule_fee = self.get_reschedule_fee_amount(agent_id)
 
-        airline_ticket_footer = self.env['tt.report.common.setting'].sudo().search([('code', '=', 'airline_ticket')], limit=1)
+        airline_ticket_footer = self.env['tt.report.common.setting'].get_footer('airline_ticket',agent_id)
         vals = {
             'doc_ids': data['context']['active_ids'],
             'doc_model': data['context']['active_model'],
@@ -167,6 +168,7 @@ class PrintoutTicketTrainForm(models.AbstractModel):
             data['context']['active_model'] = 'tt.reservation.train'
             data['context']['active_ids'] = docids
         values = {}
+        agent_id = False
         for rec in self.env[data['context']['active_model']].browse(data['context']['active_ids']):
             values[rec.id] = []
             a = {}
@@ -185,7 +187,8 @@ class PrintoutTicketTrainForm(models.AbstractModel):
                 elif rec2.charge_type.lower() in ['roc', 'tax']:
                     a[rec2.pax_type]['tax'] += rec2.amount
             values[rec.id] = [a[new_a] for new_a in a]
-        train_ticket_footer = self.env['tt.report.common.setting'].sudo().search([('code', '=', 'train_ticket')], limit=1)
+            agent_id = rec.agent_id
+        train_ticket_footer = self.env['tt.report.common.setting'].get_footer('train_ticket', agent_id)
         vals = {
             'doc_ids': data['context']['active_ids'],
             'doc_model': data['context']['active_model'],
@@ -335,6 +338,7 @@ class PrintoutVoucherHotelForm(models.AbstractModel):
         values = {}
         pnr_length = 0
         header_width = 90
+        agent_id = False
         for rec in self.env[data['context']['active_model']].browse(data['context']['active_ids']):
             values[rec.id] = []
             a = {}
@@ -358,8 +362,8 @@ class PrintoutVoucherHotelForm(models.AbstractModel):
                 header_width += 3 * (abs(27 - pnr_length))
                 if header_width > 105:
                     header_width = 105
-
-        hotel_ticket_footer = self.env['tt.report.common.setting'].sudo().search([('code', '=', 'hotel_ticket')], limit=1)
+            agent_id = rec.agent_id
+        hotel_ticket_footer = self.env['tt.report.common.setting'].get_footer('hotel_ticket',agent_id)
         vals = {
             'doc_ids': data['context']['active_ids'],
             'doc_model': data['context']['active_model'],
@@ -584,6 +588,7 @@ class PrintoutPPOBBillsForm(models.AbstractModel):
         values = {}
         header_width = 90
         va_length = 0
+        agent_id = False
         for rec in self.env[data['context']['active_model']].browse(data['context']['active_ids']):
             # Get PPOB Type & Values
             ppob_type = ''
@@ -617,8 +622,9 @@ class PrintoutPPOBBillsForm(models.AbstractModel):
             values.update({
                 'ppob_type': ppob_type
             })
+            agent_id = rec.agent_id
 
-        footer_ppob_bpjs = self.env['tt.report.common.setting'].sudo().search([('code', '=', 'ppob_bpjs')], limit=1)
+        footer_ppob_bpjs = self.env['tt.report.common.setting'].get_footer('ppob_bpjs', agent_id)
         vals = {
             'doc_ids': data['context']['active_ids'],
             'doc_model': data['context']['active_model'],
@@ -1435,14 +1441,15 @@ class PrintoutInvoice(models.AbstractModel):
         values = {}
         val = {}
         header_width = 90
+        agent_id = False
         for rec in self.env[data['context']['active_model']].browse(data['context']['active_ids']):
             values[rec.id] = []
             for rec2 in rec.invoice_line_ids:
                 resv_obj = self.env[rec2.res_model_resv].browse(rec2.res_id_resv)
                 values[rec.id].append(self.get_invoice_data(rec2, resv_obj, rec))
                 # values[rec.id].append(self.calc_segments(resv_obj, resv_obj.passenger_ids))
-
-        invoice_footer = self.env['tt.report.common.setting'].sudo().search([('code', '=', 'agent_invoice')], limit=1)
+            agent_id = rec.agent_id
+        invoice_footer = self.env['tt.report.common.setting'].get_footer('agent_invoice', agent_id)
         val = {
             'doc_ids': data['context']['active_ids'],
             'doc_model': data['context']['active_model'],
@@ -1556,6 +1563,7 @@ class PrintoutIteneraryForm(models.AbstractModel):
         values = {}
         pnr_length = 0
         header_width = 90
+        agent_id = False
         for rec in self.env[data['context']['active_model']].browse(data['context']['active_ids']):
             values[rec.id] = []
             a = {}
@@ -1579,8 +1587,8 @@ class PrintoutIteneraryForm(models.AbstractModel):
                 header_width += 3 * (abs(27 - pnr_length))
                 if header_width > 105:
                     header_width = 105
-
-        printout_itinerary_footer = self.env['tt.report.common.setting'].sudo().search([('code', '=', 'printout_itinerary')], limit=1)
+            agent_id = rec.agent_id
+        printout_itinerary_footer = self.env['tt.report.common.setting'].get_footer('printout_itinerary', agent_id)
         return {
             'doc_ids': data['context']['active_ids'],
             'doc_model': data['context']['active_model'],
@@ -2093,7 +2101,10 @@ class PrintoutBilling(models.AbstractModel):
                 'active_ids': docids
             }
         header_width = 90
-        billing_footer = self.env['tt.report.common.setting'].sudo().search([('code', '=', 'billing_statement')], limit=1)
+        agent_id = False
+        for rec in self.env[data['context']['active_model']].browse(data['context']['active_ids']):
+            agent_id = rec.agent_id
+        billing_footer = self.env['tt.report.common.setting'].get_footer('billing_statement', agent_id)
         return {
             'doc_ids': data['context']['active_ids'],
             'doc_model': data['context']['active_model'],
@@ -2128,6 +2139,7 @@ class PrintoutTopUp(models.AbstractModel):
                 'active_ids': docids
             }
         values = {}
+        agent_id = False
         for rec in self.env[data['context']['active_model']].browse(data['context']['active_ids']):
             values.update({
                 'amount': rec.amount,
@@ -2136,7 +2148,8 @@ class PrintoutTopUp(models.AbstractModel):
                 'fees': rec.fees,
                 'total_with_fees': rec.total_with_fees
             })
-        top_up_footer = self.env['tt.report.common.setting'].sudo().search([('code', '=', 'top_up')], limit=1)
+            agent_id = rec.agent_id
+        top_up_footer = self.env['tt.report.common.setting'].get_footer('top_up', agent_id)
         ho_obj = self.env.ref('tt_base.rodex_ho')
         header_width = 90
         return {
@@ -2271,12 +2284,13 @@ class PrintoutLetterOfGuarantee(models.AbstractModel):
                 'active_model': 'tt.letter.guarantee',
                 'active_ids': docids
             }
-
+        agent_id = False
         temp_docs = self.env[data['context']['active_model']].browse(data['context']['active_ids'])
         header_width = 90
-
-        lg_po_footer = self.env['tt.report.common.setting'].sudo().search([('code', '=', 'letter_guarantee_po')], limit=1)
-        lg_footer = self.env['tt.report.common.setting'].sudo().search([('code', '=', 'letter_guarantee')], limit=1)
+        for rec in self.env[data['context']['active_model']].browse(data['context']['active_ids']):
+            agent_id = rec.agent_id
+        lg_po_footer = self.env['tt.report.common.setting'].get_footer('letter_guarantee_po', agent_id)
+        lg_footer = self.env['tt.report.common.setting'].get_footer('letter_guarantee', agent_id)
         ho_obj = self.env.ref('tt_base.rodex_ho')
         return {
             'doc_ids': data['context']['active_ids'],

@@ -160,4 +160,9 @@
         <field name="code">agent_ho</field>
     </record>
 
+    <record id="is_agent_setting_printout" model="tt.frontend.security">
+        <field name="name">Agent Setting Printout</field>
+        <field name="code">agent_setting_printout</field>
+    </record>
+
 </odoo>

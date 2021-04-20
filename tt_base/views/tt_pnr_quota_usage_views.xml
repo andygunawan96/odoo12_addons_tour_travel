@@ -11,7 +11,7 @@
                     </header>
                     <sheet>
                         <div class="oe_button_box" name="button_box">
-                            <button name="toggle_active" type="object" groups="tt_base.group_tt_agent_management_operator"
+                            <button name="toggle_active" type="object" groups="tt_base.group_tt_agent_management_operator,tt_base.group_pnr_quota_level_3"
                                     class="oe_stat_button" icon="fa-archive" attrs="{'invisible': [('pnr_quota_state','!=','active')]}">
                                 <field name="active" widget="boolean_button"
                                        options='{"terminology": "archive"}'/>

@@ -8,6 +8,7 @@ from ...tools.api import Response
 from ...tools.ERR import RequestException
 import json,time
 import logging,traceback
+import random, string
 
 _logger = logging.getLogger(__name__)
 
@@ -414,19 +415,20 @@ class TtCustomer(models.Model):
             vals_list = {
                 'agent_type_id': self.env.ref('tt_base.agent_type_btc').id,
                 'parent_agent_id': self.env.ref('tt_base.rodex_ho').id,
-                'name': name
+                'name': name,
+                'email': data.get('email'),
+                'is_send_email_cust': True
             }
             agent_id = self.env['tt.agent'].create(vals_list)
 
             # Load Template User B2C
             user_dict = self.env.ref('tt_base.agent_b2c_user').read()
-
             # user id vals
             vals = {
                 'name': name,
                 'login': data.get('email'),
                 'email': data.get('email'),
-                'password': '2ebaebb25402547966930e235e93c004',
+                'password': ''.join(random.choice(string.ascii_uppercase + string.ascii_lowercase + string.digits) for _ in range(16)),
                 'agent_id': agent_id.id
             }
 
