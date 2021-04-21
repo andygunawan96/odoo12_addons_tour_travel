@@ -41,7 +41,7 @@ class AgentReportRecapTransacion(models.Model):
             rsv.id, rsv.name as order_number, rsv.pnr, rsv.total as grand_total, rsv.total_commission, rsv.total_nta, rsv.state,
             booking_ids.id as booking_id, booking_ids.pnr as booking_pnr, booking_ids.state as booking_state,
             booking_service_charge.total as booking_charge_total, booking_service_charge.charge_type as booking_charge_type,
-            booking_service_charge.is_ledger_created as ledger_created
+            booking_service_charge.charge_code as booking_charge_code, booking_service_charge.is_ledger_created as ledger_created
             """
 
     ################

@@ -3000,6 +3000,7 @@ class HotelInformation(models.Model):
 
     # GateWay bakal catet data search yg tidak terdaftar dan tidak lengkap (no address)
     def merge_record_for_with_search_result(self):
+        base_cache_directory = self.env['ir.config_parameter'].sudo().get_param('hotel.cache.directory')
         provider_list = ['from_cache',]
 
         render_city = {}
@@ -3014,9 +3015,9 @@ class HotelInformation(models.Model):
         f.close()
 
         for master_provider in provider_list:
-            vendor_city_ids = glob.glob("/var/log/cache_hotel/" + master_provider + "/*.json")
+            vendor_city_ids = glob.glob(base_cache_directory + master_provider + "/*.json")
             for vendor_city_url in vendor_city_ids:
-                vendor_city = vendor_city_url[22 + len(master_provider):-5]
+                vendor_city = vendor_city_url[len(base_cache_directory) + len(master_provider):-5]
                 with open(vendor_city_url, 'r') as f1:
                     vendor_hotel_objs = f1.read()
                 f1.close
@@ -3452,12 +3453,13 @@ class HotelInformation(models.Model):
 
         import glob
         for master_provider in provider_list:
-            base_url = "/var/log/cache_hotel/" + master_provider + "/"
+            base_cache_directory = self.env['ir.config_parameter'].sudo().get_param('hotel.cache.directory')
+            base_url = base_cache_directory + master_provider + "/"
             for country in os.walk(base_url):
                 country_str = country[0][len(base_url):]
-                city_ids = glob.glob("/var/log/cache_hotel/" + master_provider + "/" + country_str + "/*.json")
+                city_ids = glob.glob(base_url + country_str + "/*.json")
                 for target_city in city_ids:
-                    city_name = target_city[22 + len(master_provider) + len(country_str) + 1:-5]
+                    city_name = target_city[len(base_url) + len(country_str) + 1:-5]
                     if len(country_str.split('/')) == 2:
                         state_name = country_str.split('/')[-1]
                         country_name = country_str.split('/')[0]
@@ -3496,7 +3498,7 @@ class HotelInformation(models.Model):
                         for provider in provider_list:
                             a = 0
                             try:
-                                file_url = "/var/log/cache_hotel/" + provider + "/" + country_str + "/" + searched_city_name + ".json"
+                                file_url = base_cache_directory + provider + "/" + country_str + "/" + searched_city_name + ".json"
                                 # Loop untuk setiap city cari file yg nama nya sma dengan  city yg dimaksud
                                 with open(file_url, 'r') as f2:
                                     file = f2.read()

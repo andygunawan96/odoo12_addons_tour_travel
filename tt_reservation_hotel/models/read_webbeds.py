@@ -152,7 +152,8 @@ class HotelInformation(models.Model):
                 if last_name != rec[5]:
                     # Adriatic Coast / Rimini ==> Adriatic Coast - Rimini
                     last_name = last_name.replace('/', '-')
-                    filename = "/var/log/cache_hotel/webbeds_excel_pool/" + last_name + ".json"
+                    base_cache_directory = self.env['ir.config_parameter'].sudo().get_param('hotel.cache.directory')
+                    filename = base_cache_directory + "webbeds_excel_pool/" + last_name + ".json"
                     file = open(filename, 'w')
                     file.write(json.dumps(hotel_fmt_list))
                     file.close()
