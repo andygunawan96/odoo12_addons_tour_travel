@@ -151,7 +151,7 @@ class HotelInformation(models.Model):
 
                 _logger.info("Get " + str(length) + " Hotel(s) for City: " + city['name'] + ', ' + rec[32:-4])
                 need_to_add_list.append([i, city['name'].split(',')[0], city['code'], rec[32:-4], length])
-                filename = "/var/log/cache_hotel/tbo/" + city['name'].split(',')[0].replace('/', '-') + ".json"
+                filename = base_cache_directory + "tbo/" + city['name'].split(',')[0].replace('/', '-') + ".json"
 
                 i += 1
                 # Create Record Hotel per City

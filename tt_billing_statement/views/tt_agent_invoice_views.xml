@@ -21,7 +21,7 @@
             <!--            </field>-->
             <xpath expr="//button[@name='set_as_paid']" position="after">
                 <button name= "create_billing_statement" string='Create Billing Statement' type="object" states="confirm"
-                        class="oe_stat_button" icon="fa-bookmark-o" groups="tt_base.group_tt_billing_statement_supervisor"/>
+                        class="oe_stat_button" icon="fa-bookmark-o" groups="tt_base.group_tt_billing_statement_supervisor,tt_base.group_billing_statement_level_4"/>
             </xpath>
         </field>
     </record>

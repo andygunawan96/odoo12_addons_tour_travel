@@ -23,9 +23,9 @@
         <field name="arch" type="xml">
             <form>
                 <header>
-                    <button name="action_confirm" string="Confirm" type="object" states="draft" class="btn-primary" groups="tt_base.group_tt_tour_travel_operator"/>
-                    <button name="calc_mmf_line" string="Compute Line" type="object" states="draft" class="btn-secondary" groups="tt_base.group_tt_tour_travel_operator"/>
-                    <button name="get_mmf_rule" string="Get Rule" type="object" states="draft" class="btn-secondary" groups="tt_base.group_tt_tour_travel_operator"/>
+                    <button name="action_confirm" string="Confirm" type="object" states="draft" class="btn-primary" groups="tt_base.group_tt_tour_travel_operator,tt_base.group_monthly_fee_level_3"/>
+                    <button name="calc_mmf_line" string="Compute Line" type="object" states="draft" class="btn-secondary" groups="tt_base.group_tt_tour_travel_operator,tt_base.group_monthly_fee_level_3"/>
+                    <button name="get_mmf_rule" string="Get Rule" type="object" states="draft" class="btn-secondary" groups="tt_base.group_tt_tour_travel_operator,tt_base.group_monthly_fee_level_3"/>
                     <field name="state" widget="statusbar" statusbar_visible="draft,confirm,send,valid,done"/>
                 </header>
                 <sheet>
