@@ -50,7 +50,8 @@ class HotelInformation(models.Model):
         return hotel_per_city_dict
 
     def get_data_form_file(self):
-        master_loc = '/var/log/cache_hotel/traveloka/00_master/country/'
+        base_cache_directory = self.env['ir.config_parameter'].sudo().get_param('hotel.cache.directory')
+        master_loc = base_cache_directory + 'traveloka/00_master/country/'
         for country_file in glob.glob(master_loc + "*.json"):
             file = open(country_file, 'r')
             hotel_list = json.loads(file.read())
@@ -120,7 +121,6 @@ class HotelInformation(models.Model):
             'co_uid': self.env.user.id
         }
         API_CN_HOTEL.signin()
-        base_url = '/var/log/cache_hotel/traveloka_file/'
         for country in mapped_hotel:
             new_url = base_url + country
             if not os.path.exists(new_url):
