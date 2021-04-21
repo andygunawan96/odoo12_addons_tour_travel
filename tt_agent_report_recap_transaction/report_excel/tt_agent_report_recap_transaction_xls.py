@@ -67,10 +67,12 @@ class AgentReportRecapTransactionXls(models.TransientModel):
         sheet.write('P9', 'Ledger Reference', style.table_head_center)
         sheet.write('Q9', 'Booking State', style.table_head_center)
         sheet.write('R9', 'Currency', style.table_head_center)
-        sheet.write('S9', 'NTA Amount', style.table_head_center)
-        sheet.write('T9', 'Total Commission', style.table_head_center)
-        sheet.write('U9', 'Grand Total', style.table_head_center)
-        sheet.merge_range('V9:Y9', 'Keterangan', style.table_head_center)
+        sheet.write('S9', 'Agent NTA Amount', style.table_head_center)
+        sheet.write('T9', 'Agent Commission', style.table_head_center)
+        sheet.write('U9', 'HO NTA Amount', style.table_head_center)
+        sheet.write('V9', 'Total Commission', style.table_head_center)
+        sheet.write('W9', 'Grand Total', style.table_head_center)
+        sheet.merge_range('X9:AA9', 'Keterangan', style.table_head_center)
 
         # sheet.write('B9', 'Date', style.table_head_center)
         # sheet.write('C9', 'Order Number', style.table_head_center)
@@ -88,12 +90,12 @@ class AgentReportRecapTransactionXls(models.TransientModel):
         sheet.set_row(3, row_height)
         sheet.set_row(4, row_height)
         sheet.set_row(8, 30)
-        sheet.set_column('A:A', 30)
+        sheet.set_column('A:A', 8)
         sheet.set_column('B:B', 10)
         sheet.set_column('C:F', 15)
         sheet.set_column('G:G', 12)
         sheet.set_column('H:S', 15)
-        sheet.set_column('Y:Y', 30)
+        sheet.set_column('AA:AA', 30)
 
         # ============ void start() ======================
         # declare some constant dependencies
@@ -136,14 +138,21 @@ class AgentReportRecapTransactionXls(models.TransientModel):
                     # hence declaration of this variables
                     nta_total = 0
                     commission = 0
+                    this_pnr_agent_nta_total = 0
+                    this_pnr_agent_commission = 0
+
                     # lets count the service charge
                     for k in temp_charge:
                         if k['booking_charge_type'] == 'RAC':
                             commission -= k['booking_charge_total']
                             nta_total += k['booking_charge_total']
+                            if k['booking_charge_code'] == 'rac':
+                                this_pnr_agent_commission -= k['booking_charge_total']
+                                this_pnr_agent_nta_total += k['booking_charge_total']
                         else:
-                            if k['booking_charge_type'] != '' and k['booking_charge_total']:
+                            if k['booking_charge_type'] != 'DISC' and k['booking_charge_total']:
                                 nta_total += k['booking_charge_total']
+                                this_pnr_agent_nta_total += k['booking_charge_total']
                     grand_total = nta_total + commission
 
                     # declare view handler
@@ -178,13 +187,15 @@ class AgentReportRecapTransactionXls(models.TransientModel):
                     sheet.write(row_data, 15, i['ledger_name'], sty_table_data)
                     sheet.write(row_data, 16, '', sty_table_data)
                     sheet.write(row_data, 17, i['currency_name'], sty_table_data_center)
-                    sheet.write(row_data, 18, nta_total, sty_amount)
-                    sheet.write(row_data, 19, commission, sty_amount)
-                    sheet.write(row_data, 20, grand_total, sty_amount)
-                    sheet.write(row_data, 21, '', sty_table_data)
-                    sheet.write(row_data, 22, '', sty_amount)
-                    sheet.write(row_data, 23, '', sty_amount)
-                    sheet.write(row_data, 24, '', sty_table_data)
+                    sheet.write(row_data, 18, this_pnr_agent_nta_total, sty_amount)
+                    sheet.write(row_data, 19, this_pnr_agent_commission, sty_amount)
+                    sheet.write(row_data, 20, nta_total, sty_amount)
+                    sheet.write(row_data, 21, commission, sty_amount)
+                    sheet.write(row_data, 22, grand_total, sty_amount)
+                    sheet.write(row_data, 23, '', sty_table_data)
+                    sheet.write(row_data, 24, '', sty_amount)
+                    sheet.write(row_data, 25, '', sty_table_data)
+                    sheet.write(row_data, 26, '', sty_table_data)
 
                     # if current reservation so happened to be an airline type (provider type i mean)
                     # then we'll try to make summary if the reservation is considered as GDS book or not
@@ -265,14 +276,16 @@ class AgentReportRecapTransactionXls(models.TransientModel):
                 sheet.write(row_data, 18, '', sty_amount)
                 sheet.write(row_data, 19, '', sty_amount)
                 sheet.write(row_data, 20, '', sty_amount)
-                sheet.write(row_data, 21, i['ledger_agent_name'], sty_table_data)
+                sheet.write(row_data, 21, '', sty_amount)
+                sheet.write(row_data, 22, '', sty_amount)
+                sheet.write(row_data, 23, i['ledger_agent_name'], sty_table_data)
                 if i['ledger_transaction_type'] == 3:
-                    sheet.write(row_data, 22, i['debit'], sty_amount)
-                    sheet.write(row_data, 23, '', sty_amount)
+                    sheet.write(row_data, 24, i['debit'], sty_amount)
+                    sheet.write(row_data, 25, '', sty_amount)
                 else:
-                    sheet.write(row_data, 22, '', sty_amount)
-                    sheet.write(row_data, 23, i['debit'], sty_amount)
-                sheet.write(row_data, 24, i['ledger_description'], sty_table_data)
+                    sheet.write(row_data, 24, '', sty_amount)
+                    sheet.write(row_data, 25, i['debit'], sty_amount)
+                sheet.write(row_data, 26, i['ledger_description'], sty_table_data)
 
             else:
             # current_number != iterate order number
@@ -295,6 +308,40 @@ class AgentReportRecapTransactionXls(models.TransientModel):
                     sty_date = style.table_data_date_even_border
                     sty_amount = style.table_data_amount_even_border
 
+                # filter from service charge data
+                temp_charge_agent = list(filter(lambda x: x['order_number'] == i['order_number'], service_charge))
+                temp_charge = list(filter(lambda x: x['booking_pnr'] == current_pnr, temp_charge_agent))
+
+                # see line 134 for explenation of this next few lines of code
+                nta_total = 0
+                commission = 0
+                this_resv_agent_nta_total = 0
+                this_resv_agent_commission = 0
+                this_pnr_agent_nta_total = 0
+                this_pnr_agent_commission = 0
+
+                for k in temp_charge:
+                    if k['booking_charge_type'] == 'RAC':
+                        commission -= k['booking_charge_total']
+                        nta_total += k['booking_charge_total']
+                        if k['booking_charge_code'] == 'rac':
+                            this_pnr_agent_commission -= k['booking_charge_total']
+                            this_pnr_agent_nta_total += k['booking_charge_total']
+                    else:
+                        if k['booking_charge_type'] != 'DISC' and k['booking_charge_total']:
+                            nta_total += k['booking_charge_total']
+                            this_pnr_agent_nta_total += k['booking_charge_total']
+                grand_total = nta_total + commission
+
+                for k in temp_charge_agent:
+                    if k['booking_charge_type'] == 'RAC':
+                        if k['booking_charge_code'] == 'rac':
+                            this_resv_agent_commission -= k['booking_charge_total']
+                            this_resv_agent_nta_total += k['booking_charge_total']
+                    elif k['booking_charge_type'] != 'DISC' and k['booking_charge_total']:
+                        this_resv_agent_nta_total += k['booking_charge_total']
+
+
                 # print the whole data of reservation
                 sheet.write(row_data, 0, counter, sty_table_data_center)
                 sheet.write(row_data, 1, i['provider_type'], sty_table_data)
@@ -314,13 +361,15 @@ class AgentReportRecapTransactionXls(models.TransientModel):
                 sheet.write(row_data, 15, i['ledger_name'], sty_table_data)
                 sheet.write(row_data, 16, '', sty_table_data)
                 sheet.write(row_data, 17, i['currency_name'], sty_table_data_center)
-                sheet.write(row_data, 18, i['total_nta'], sty_amount)
-                sheet.write(row_data, 19, i['total_commission'], sty_amount)
-                sheet.write(row_data, 20, i['grand_total'], sty_amount)
-                sheet.write(row_data, 21, '', sty_table_data)
-                sheet.write(row_data, 22, '', sty_amount)
+                sheet.write(row_data, 18, this_resv_agent_nta_total, sty_amount)
+                sheet.write(row_data, 19, this_resv_agent_commission, sty_amount)
+                sheet.write(row_data, 20, i['total_nta'], sty_amount)
+                sheet.write(row_data, 21, i['total_commission'], sty_amount)
+                sheet.write(row_data, 22, i['grand_total'], sty_amount)
                 sheet.write(row_data, 23, '', sty_table_data)
-                sheet.write(row_data, 24, '', sty_table_data)
+                sheet.write(row_data, 24, '', sty_amount)
+                sheet.write(row_data, 25, '', sty_table_data)
+                sheet.write(row_data, 26, '', sty_table_data)
 
                 # print total by provider under the reservation data, before the "peripherals" data
                 row_data += 1
@@ -335,21 +384,6 @@ class AgentReportRecapTransactionXls(models.TransientModel):
                     sty_datetime = style.table_data_datetime_even_border
                     sty_date = style.table_data_date_even_border
                     sty_amount = style.table_data_amount_even_border
-
-                # filter from service charge data
-                temp_charge = list(filter(lambda x: x['booking_pnr'] == current_pnr and x['order_number'] == i['order_number'], service_charge))
-
-                # see line 134 for explenation of this next few lines of code
-                nta_total = 0
-                commission = 0
-                for k in temp_charge:
-                    if k['booking_charge_type'] == 'RAC':
-                        commission -= k['booking_charge_total']
-                        nta_total += k['booking_charge_total']
-                    else:
-                        if k['booking_charge_type'] != '' and k['booking_charge_total']:
-                            nta_total += k['booking_charge_total']
-                grand_total = nta_total + commission
 
                 sheet.write(row_data, 0, '', sty_table_data_center)
                 sheet.write(row_data, 1, '', sty_table_data)
@@ -369,13 +403,15 @@ class AgentReportRecapTransactionXls(models.TransientModel):
                 sheet.write(row_data, 15, i['ledger_name'], sty_table_data)
                 sheet.write(row_data, 16, '', sty_table_data)
                 sheet.write(row_data, 17, i['currency_name'], sty_table_data_center)
-                sheet.write(row_data, 18, nta_total, sty_amount)
-                sheet.write(row_data, 19, commission, sty_amount)
-                sheet.write(row_data, 20, grand_total, sty_amount)
-                sheet.write(row_data, 21, '', sty_table_data)
-                sheet.write(row_data, 22, '', sty_amount)
-                sheet.write(row_data, 23, '', sty_amount)
-                sheet.write(row_data, 24, '', sty_table_data)
+                sheet.write(row_data, 18, this_pnr_agent_nta_total, sty_amount)
+                sheet.write(row_data, 19, this_pnr_agent_commission, sty_amount)
+                sheet.write(row_data, 20, nta_total, sty_amount)
+                sheet.write(row_data, 21, commission, sty_amount)
+                sheet.write(row_data, 22, grand_total, sty_amount)
+                sheet.write(row_data, 23, '', sty_table_data)
+                sheet.write(row_data, 24, '', sty_amount)
+                sheet.write(row_data, 25, '', sty_amount)
+                sheet.write(row_data, 26, '', sty_table_data)
 
                 row_data += 1
                 sty_table_data_center = style.table_data_center
@@ -412,14 +448,16 @@ class AgentReportRecapTransactionXls(models.TransientModel):
                 sheet.write(row_data, 18, '', sty_amount)
                 sheet.write(row_data, 19, '', sty_amount)
                 sheet.write(row_data, 20, '', sty_amount)
-                sheet.write(row_data, 21, i['ledger_agent_name'], sty_table_data)
+                sheet.write(row_data, 21, '', sty_amount)
+                sheet.write(row_data, 22, '', sty_amount)
+                sheet.write(row_data, 23, i['ledger_agent_name'], sty_table_data)
                 if i['ledger_transaction_type'] == 3:
-                    sheet.write(row_data, 22, i['debit'], sty_amount)
-                    sheet.write(row_data, 23, '', sty_amount)
+                    sheet.write(row_data, 24, i['debit'], sty_amount)
+                    sheet.write(row_data, 25, '', sty_amount)
                 else:
-                    sheet.write(row_data, 22, '', sty_amount)
-                    sheet.write(row_data, 23, i['debit'], sty_amount)
-                sheet.write(row_data, 24, i['ledger_description'], sty_table_data)
+                    sheet.write(row_data, 24, '', sty_amount)
+                    sheet.write(row_data, 25, i['debit'], sty_amount)
+                sheet.write(row_data, 26, i['ledger_description'], sty_table_data)
 
             # lets recap
                 # see line 189 for code explanation of this if provider airline
@@ -525,6 +563,7 @@ class AgentReportRecapTransactionXls(models.TransientModel):
 
 
         row_data += 1
+        # this is writing empty string, to print the bottom border
         sty_table_data_center = style.table_data_center_border
         sty_table_data = style.table_data_border
         sty_datetime = style.table_data_datetime_border
@@ -550,11 +589,13 @@ class AgentReportRecapTransactionXls(models.TransientModel):
         sheet.write(row_data, 17, '', sty_amount)
         sheet.write(row_data, 18, '', sty_amount)
         sheet.write(row_data, 19, '', sty_amount)
-        sheet.write(row_data, 20, '', sty_table_data)
+        sheet.write(row_data, 20, '', sty_amount)
         sheet.write(row_data, 21, '', sty_amount)
         sheet.write(row_data, 22, '', sty_amount)
         sheet.write(row_data, 23, '', sty_table_data)
-        sheet.write(row_data, 24, '', sty_table_data)
+        sheet.write(row_data, 24, '', sty_amount)
+        sheet.write(row_data, 25, '', sty_amount)
+        sheet.write(row_data, 26, '', sty_table_data)
 
         # this section responsible to draw summary both airline recaps and hotel recaps
         # airline recaps
