@@ -3,7 +3,8 @@
     <data>
         <record model="mail.template" id="template_mail_vendor_notification">
             <field name="name">Template Email Vendor Notification</field>
-            <field name="email_form">${user.email}</field>
+            <field name="email_from">${object.get_email_reply_to()}</field>
+			<field name="reply_to">${object.get_email_reply_to()}</field>
             <field name="subject">[NO-REPLY]Vendor Notification</field>
             <field name="email_to">${object.vendor_id.email}</field>
             <field name="email_cc"/>

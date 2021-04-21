@@ -21,6 +21,7 @@
                     <group>
                         <group>
                             <field name="code"/>
+                            <field name="agent_id"/>
                             <field name="html"/>
 
                         </group>
@@ -37,6 +38,7 @@
             <tree string="Report Setting">
                 <field name="name"/>
                 <field name="code"/>
+                <field name="agent_id"/>
                 <field name="active"/>
             </tree>
         </field>

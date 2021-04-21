@@ -7,7 +7,7 @@
             <search string="Search Agent Invoice">
                 <field name="name"/>
                 <field name="pnr"/>
-                <field name="agent_id" groups="tt_base.group_tt_tour_travel_operator"/>
+                <field name="agent_id" groups="tt_base.group_tt_tour_travel_operator,tt_base.group_tt_tour_travel"/>
                 <field name="customer_parent_id"/>
                 <field name="customer_parent_type_id"/>
                 <field name="booker_id"/>
@@ -34,9 +34,9 @@
                 <filter string="This Year" name="thisyear" domain="[('date_invoice','&gt;=',time.strftime('%%Y-01-01'))]"/>
 
                 <group expand="0" string="Group By">
-                    <filter name="group_by_agent_id" string="Agent" domain="[]" context="{'group_by':'agent_id'}" groups="tt_base.group_tt_tour_travel_operator"/>
-                    <filter name="group_by_customer_parent_id" string="Customer Parent" domain="[]" context="{'group_by':'customer_parent_id'}" groups="tt_base.group_tt_agent_user_operator,tt_base.group_tt_tour_travel_operator"/>
-                    <filter name="group_by_state" string="State" domain="[]" context="{'group_by':'state'}" groups="tt_base.group_tt_agent_user_operator,tt_base.group_tt_tour_travel_operator"/>
+                    <filter name="group_by_agent_id" string="Agent" domain="[]" context="{'group_by':'agent_id'}" groups="tt_base.group_tt_tour_travel_operator,tt_base.group_tt_tour_travel"/>
+                    <filter name="group_by_customer_parent_id" string="Customer Parent" domain="[]" context="{'group_by':'customer_parent_id'}" groups="tt_base.group_tt_agent_user_operator,tt_base.group_tt_tour_travel_operator,tt_base.group_tt_agent_user,tt_base.group_tt_tour_travel"/>
+                    <filter name="group_by_state" string="State" domain="[]" context="{'group_by':'state'}" groups="tt_base.group_tt_agent_user_operator,tt_base.group_tt_tour_travel_operator,tt_base.group_tt_agent_user,tt_base.group_tt_tour_travel"/>
                 </group>
             </search>
         </field>
@@ -54,11 +54,11 @@
 
                     <button name="%(tt_agent_invoice_wizard_action_view)d" string="Move Line" type="action" states="confirm" context="{'default_invoice_id1': id}"/>
                     <button name="action_cancel_invoice" string="Cancel Invoice" type="object"
-                            groups="tt_base.group_tt_accounting_operator,tt_base.group_tt_agent_finance_manager,base.group_system"
+                            groups="tt_base.group_tt_accounting_operator,tt_base.group_tt_agent_finance_manager,base.group_system,tt_base.group_agent_invoice_level_4"
                             states="confirm,bill,bill2"
                             confirm="Are you sure you want to cancel?"/>
                     <button string="Adjustment" name="%(tt_accounting.tt_adjustment_wizard_action_view)d" type="action"
-                            groups="tt_base.group_tt_accounting_operator"
+                            groups="tt_base.group_tt_accounting_operator,tt_base.group_adjustment_level_3"
                             context="{
                         'default_res_model': 'tt.agent.invoice',
                         'default_res_id': id,
@@ -173,7 +173,7 @@
             <tree create="false" edit="false">
                 <field name="date_invoice"/>
                 <field name="name"/>
-                <field name="agent_id" groups="tt_base.group_tt_tour_travel_operator"/>
+                <field name="agent_id" groups="tt_base.group_tt_tour_travel_operator,tt_base.group_tt_tour_travel"/>
                 <field name="customer_parent_id"/>
                 <field name="customer_parent_type_id"/>
                 <field name="booker_id"/>
@@ -224,8 +224,8 @@
                 <field name="customer_parent_id"/>
                 <field name="invoice_line_detail_ids"/>
                 <group expand="0" string="Group By">
-                    <filter name="group_by_invoice_id" string="Invoice" domain="[]" context="{'group_by':'invoice_id'}" groups="tt_base.group_tt_tour_travel_operator"/>
-                    <filter name="group_by_reference" string="Reference" domain="[]" context="{'group_by':'reference'}" groups="tt_base.group_tt_agent_user_operator,tt_base.group_tt_tour_travel_operator"/>
+                    <filter name="group_by_invoice_id" string="Invoice" domain="[]" context="{'group_by':'invoice_id'}" groups="tt_base.group_tt_tour_travel_operator,tt_base.group_tt_tour_travel"/>
+                    <filter name="group_by_reference" string="Reference" domain="[]" context="{'group_by':'reference'}" groups="tt_base.group_tt_agent_user_operator,tt_base.group_tt_tour_travel_operator,tt_base.group_tt_agent_user,tt_base.group_tt_tour_travel"/>
                 </group>
             </search>
         </field>

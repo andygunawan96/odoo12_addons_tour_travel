@@ -419,7 +419,7 @@ class ReservationPpob(models.Model):
                 })
                 return ERR.get_no_error(res)
             else:
-                raise RequestException(1001)
+                raise RequestException(1035)
         except RequestException as e:
             _logger.error(traceback.format_exc())
             return e.error_dict()

@@ -71,9 +71,15 @@
                 <field name="comp_hotel_id"/>
                 <field name="similar_id"/>
                 <field name="score"/>
+                <filter string="Draft" name="draft" domain="[('state', '=', 'draft')]"/>
+                <filter string="To be merge" name="tobe_merge" domain="[('state', '=', 'tobe_merge')]"/>
+                <filter string="Merge" name="merge" domain="[('state', '=', 'merge')]"/>
+                <filter string="Cancel" name="cancel" domain="[('state', '=', 'cancel')]"/>
+                <separator/>
                 <filter string="Need to check" name="need_to_check" domain="[('state','in',['draft','tobe_merge'])]"/>
-                <filter string="Low Score" name="low_score" domain="[('score','&lt;',30)]"/>
-                <filter string="Medium Score" name="med_score" domain="[('score','&lt;',65)]"/>
+                <separator/>
+                <filter string="Low Score" name="low_score" domain="[('score','&lt;',31)]"/>
+                <filter string="Medium Score" name="med_score" domain="[('score','&gt;',30),('score','&lt;',65)]"/>
                 <filter string="High Score" name="high_score" domain="[('score','&gt;',64)]"/>
             </search>
         </field>

@@ -1039,7 +1039,7 @@ class ReservationActivity(models.Model):
                 result = ERR.get_no_error(response)
                 return result
             else:
-                raise RequestException(1001)
+                raise RequestException(1035)
         except RequestException as e:
             _logger.error(traceback.format_exc())
             return e.error_dict()
