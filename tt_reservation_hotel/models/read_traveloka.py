@@ -61,7 +61,9 @@ class HotelInformation(models.Model):
 
     # Dari dari cassie 20210325
     def v2_collect_by_human_traveloka(self):
-        workbook = xlrd.open_workbook('/var/log/cache_hotel/traveloka/00_master/Hotel List Inventory - Rodex.xlsx')
+        base_cache_directory = self.env['ir.config_parameter'].sudo().get_param('hotel.cache.directory')
+        base_url = base_cache_directory + 'traveloka/'
+        workbook = xlrd.open_workbook(base_cache_directory + 'traveloka/00_master/Hotel List Inventory - Rodex.xlsx')
         # worksheet = workbook.sheet_by_name('Name of the Sheet')
         worksheet = workbook.sheet_by_index(0)
         # worksheet.nrows
