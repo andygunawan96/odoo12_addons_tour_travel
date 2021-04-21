@@ -3459,7 +3459,7 @@ class HotelInformation(models.Model):
                 country_str = country[0][len(base_url):]
                 city_ids = glob.glob(base_url + country_str + "/*.json")
                 for target_city in city_ids:
-                    city_name = target_city[len(base_url) + len(master_provider) + len(country_str) + 1:-5]
+                    city_name = target_city[len(base_url) + len(country_str) + 1:-5]
                     if len(country_str.split('/')) == 2:
                         state_name = country_str.split('/')[-1]
                         country_name = country_str.split('/')[0]
