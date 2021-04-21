@@ -3017,7 +3017,7 @@ class HotelInformation(models.Model):
         for master_provider in provider_list:
             vendor_city_ids = glob.glob(base_cache_directory + master_provider + "/*.json")
             for vendor_city_url in vendor_city_ids:
-                vendor_city = vendor_city_url[22 + len(master_provider):-5]
+                vendor_city = vendor_city_url[len(base_cache_directory) + len(master_provider):-5]
                 with open(vendor_city_url, 'r') as f1:
                     vendor_hotel_objs = f1.read()
                 f1.close
@@ -3457,9 +3457,9 @@ class HotelInformation(models.Model):
             base_url = base_cache_directory + master_provider + "/"
             for country in os.walk(base_url):
                 country_str = country[0][len(base_url):]
-                city_ids = glob.glob(base_cache_directory + master_provider + "/" + country_str + "/*.json")
+                city_ids = glob.glob(base_url + country_str + "/*.json")
                 for target_city in city_ids:
-                    city_name = target_city[22 + len(master_provider) + len(country_str) + 1:-5]
+                    city_name = target_city[len(base_url) + len(master_provider) + len(country_str) + 1:-5]
                     if len(country_str.split('/')) == 2:
                         state_name = country_str.split('/')[-1]
                         country_name = country_str.split('/')[0]
