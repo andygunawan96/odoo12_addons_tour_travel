@@ -84,7 +84,7 @@ class TtReconcileTransactionWizard(models.TransientModel):
                 except:
                     pass
 
-                trans_lines = recon_data.reconcile_lines_ids.filtered(lambda x: x.pnr == transaction['pnr'] and x.type == transaction['type'])
+                trans_lines = recon_data.reconcile_lines_ids.filtered(lambda x: x.pnr == transaction['pnr'] and x.type == transaction['type'] and x.id not in found_trans_lines)
 
                 total_matching_found = False
                 for rec in trans_lines:

@@ -32,9 +32,9 @@
                 <page string="User Info" name="skytors">
                     <group>
                         <field name='email' groups="base.group_system"/>
-                        <separator string="Frontend Permissions"/>
-                        <field name="frontend_security_ids"/>
                     </group>
+                    <separator string="Frontend Permissions"/>
+                    <field name="frontend_security_ids"/>
                 </page>
             </xpath>
             <!--            gk jelas ini apa 22JAN2020-->
