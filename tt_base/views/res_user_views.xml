@@ -77,6 +77,21 @@
         </field>
     </record>
 
+    <record id="res_user_tree_view_create_false" model="ir.ui.view">
+        <field name="name">res.user.tree.view.create.false</field>
+        <field name="model">res.users</field>
+        <field name="priority">50</field>
+        <field name="arch" type="xml">
+            <tree create="false">
+                <field name="name"/>
+                <field name="login"/>
+                <field name="agent_id"/>
+                <field name="lang"/>
+                <field name="login_date"/>
+            </tree>
+        </field>
+    </record>
+
     <record id="social_media_detail_form_view" model="ir.ui.view">
         <field name="name">social.media.detail.form.view</field>
         <field name="model">social.media.detail</field>

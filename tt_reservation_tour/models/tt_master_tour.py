@@ -89,7 +89,7 @@ class MasterTour(models.Model):
     _inherit = ['tt.history']
     _name = 'tt.master.tour'
     _description = 'Master Tour'
-    _order = 'sequence'
+    _order = "sequence asc, id desc"
 
     def get_domain(self):
         domain_id = self.env.ref('tt_reservation_tour.tt_provider_type_tour').id
@@ -103,7 +103,7 @@ class MasterTour(models.Model):
                                   'Route', required=True, default='international')
     tour_category = fields.Selection([('group', 'For All Agents'), ('private', 'For Selected Agent')],
                                      'Tour Category', required=True, default='group')
-    tour_type = fields.Selection([('series', 'Series (With Tour Leader)'), ('sic', 'SIC (Without Tour Leader)'), ('land', 'Land Only'), ('city', 'City Tour'), ('open', 'Open Trip'), ('private', 'Private Tour')], 'Tour Type', default='series')
+    tour_type = fields.Selection([('series', 'Series (With Tour Leader)'), ('sic', 'SIC (Without Tour Leader)'), ('land', 'Land Only'), ('city', 'City Tour'), ('open', 'Open Trip'), ('private', 'Private Tour')], 'Tour Type', required=True, default='series')
 
     tour_line_ids = fields.One2many('tt.master.tour.lines', 'master_tour_id', 'Tour Lines')
     tour_line_amount = fields.Integer('Available Schedule(s)', readonly=True, compute='_compute_tour_line_amount')
@@ -173,7 +173,7 @@ class MasterTour(models.Model):
     # visa_pricelist_ids = fields.Many2many('tt.traveldoc.pricelist', 'tour_visa_rel', 'tour_id', 'visa_id',
     #                                       domain=[('transport_type', '=', 'visa')], string='Visa Pricelist')
     passengers_ids = fields.One2many('tt.reservation.passenger.tour', 'master_tour_id', string='Tour Participants', copy=False)
-    sequence = fields.Integer('Sequence', default=3, required=True)
+    sequence = fields.Integer('Sequence', default=50, required=True)
     adjustment_ids = fields.One2many('tt.master.tour.adjustment', 'tour_pricelist_id', required=True)
     survey_title_ids = fields.One2many('survey.survey', 'tour_id', string='Tour Surveys', copy=False)
     quotation_ids = fields.One2many('tt.master.tour.quotation', 'tour_id', 'Tour Quotation(s)')
