@@ -7,10 +7,10 @@
         <field name="arch" type="xml">
             <search string="Search Payment">
                 <field name="name"/>
-                <field name="agent_id" groups="tt_base.group_tt_tour_travel_operator"/>
-                <field name="customer_parent_id" groups="tt_base.group_tt_tour_travel_operator"/>
-                <field name="acquirer_id" groups="tt_base.group_tt_tour_travel_operator"/>
-                <field name="reference" groups="tt_base.group_tt_tour_travel_operator"/>
+                <field name="agent_id" groups="tt_base.group_tt_tour_travel_operator,tt_base.group_tt_tour_travel"/>
+                <field name="customer_parent_id" groups="tt_base.group_tt_tour_travel_operator,tt_base.group_tt_tour_travel"/>
+                <field name="acquirer_id" groups="tt_base.group_tt_tour_travel_operator,tt_base.group_tt_tour_travel"/>
+                <field name="reference" groups="tt_base.group_tt_tour_travel_operator,tt_base.group_tt_tour_travel"/>
                 <separator/>
                 <filter string="All" name='all'/>
                 <filter string="Draft" name='draft' domain="[('state', '=', 'draft')]"/>
@@ -35,10 +35,10 @@
                 <filter string="This Year" name="thisyear" domain="[('create_date','&gt;=',time.strftime('%%Y-01-01'))]"/>
 
                 <group expand="0" string="Group By">
-                    <filter name="group_by_agent_id" string="Agent" domain="[]" context="{'group_by':'agent_id'}" groups="tt_base.group_tt_tour_travel_operator"/>
-                    <filter name="group_by_customer_parent_id" string="Customer Parent" domain="[]" context="{'group_by':'customer_parent_id'}" groups="tt_base.group_tt_agent_user_operator,tt_base.group_tt_tour_travel_operator"/>
-                    <filter name="group_by_acquirer_id" string="Payment Acquirer" domain="[]" context="{'group_by':'acquirer_id'}" groups="tt_base.group_tt_agent_user_operator,tt_base.group_tt_tour_travel_operator"/>
-                    <filter name="group_by_state" string="State" domain="[]" context="{'group_by':'state'}" groups="tt_base.group_tt_agent_user_operator,tt_base.group_tt_tour_travel_operator"/>
+                    <filter name="group_by_agent_id" string="Agent" domain="[]" context="{'group_by':'agent_id'}" groups="tt_base.group_tt_tour_travel_operator,tt_base.group_tt_tour_travel"/>
+                    <filter name="group_by_customer_parent_id" string="Customer Parent" domain="[]" context="{'group_by':'customer_parent_id'}" groups="tt_base.group_tt_agent_user_operator,tt_base.group_tt_tour_travel_operator,tt_base.group_tt_agent_user,tt_base.group_tt_tour_travel"/>
+                    <filter name="group_by_acquirer_id" string="Payment Acquirer" domain="[]" context="{'group_by':'acquirer_id'}" groups="tt_base.group_tt_agent_user_operator,tt_base.group_tt_tour_travel_operator,tt_base.group_tt_agent_user,tt_base.group_tt_tour_travel"/>
+                    <filter name="group_by_state" string="State" domain="[]" context="{'group_by':'state'}" groups="tt_base.group_tt_agent_user_operator,tt_base.group_tt_tour_travel_operator,tt_base.group_tt_agent_user,tt_base.group_tt_tour_travel"/>
                 </group>
             </search>
         </field>
