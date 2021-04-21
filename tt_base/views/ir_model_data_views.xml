@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record model="ir.actions.server" id="action_multi_non_updatable_ir_model_data">
+        <field name="name">Set to Non Updatable</field>
+        <field name="model_id" ref="base.model_ir_model_data"/>
+        <field name="binding_model_id" ref="base.model_ir_model_data"/>
+        <field name="state">code</field>
+        <field name="code">
+            if records:
+                action = records.multi_set_to_updatable(1)
+        </field>
+    </record>
+    <record model="ir.actions.server" id="action_multi_updatable_ir_model_data">
+        <field name="name">Set to Updatable</field>
+        <field name="model_id" ref="base.model_ir_model_data"/>
+        <field name="binding_model_id" ref="base.model_ir_model_data"/>
+        <field name="state">code</field>
+        <field name="code">
+            if records:
+                action = records.multi_set_to_updatable(0)
+        </field>
+    </record>
+</odoo>

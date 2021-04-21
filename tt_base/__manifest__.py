@@ -92,6 +92,7 @@ Key Features
         'wizard/create_customer_parent_wizard_view.xml',
         'views/tt_upload_center_views.xml',
         'views/tt_vendor_views.xml',
+        'views/ir_model_data_views.xml',
 
         'views/change_default_odoo.xml',
         'views/tt_loyalty_program_views.xml',

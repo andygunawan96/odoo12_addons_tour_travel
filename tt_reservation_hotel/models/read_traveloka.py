@@ -216,7 +216,7 @@ class HotelInformation(models.Model):
 
                         for dict_key, dict_value in a['response'].items():
                             _logger.info("Write File " + rec)
-                            file_url = base_cache_directory + 'traveloka_api/' + rec
+                            file_url = base_cache_directory + 'traveloka/' + rec
                             self.split_per_city(dict_value, file_url)
             else:
                 for x in a['response'].keys():
@@ -229,7 +229,7 @@ class HotelInformation(models.Model):
                     for data in rec:
                         need_to_add_list.append([data[x] for x in header])
 
-                with open(base_cache_directory + 'traveloka_api/00_master/' + type + '.csv', 'w') as csvFile:
+                with open(base_cache_directory + 'traveloka/00_master/' + type + '.csv', 'w') as csvFile:
                     writer = csv.writer(csvFile)
                     writer.writerows(need_to_add_list)
                 csvFile.close()
@@ -346,7 +346,7 @@ class HotelInformation(models.Model):
 
     def v2_get_city_code_traveloka(self):
         base_cache_directory = self.env['ir.config_parameter'].sudo().get_param('hotel.cache.directory')
-        country_file = base_cache_directory + 'traveloka_api/00_master/geo_list.csv'
+        country_file = base_cache_directory + 'traveloka/00_master/geo_list.csv'
         provider_id = self.env.ref('tt_reservation_hotel.tt_hotel_provider_traveloka').id
         with open(country_file, 'r') as f:
             page = csv.reader(f, delimiter=',')
