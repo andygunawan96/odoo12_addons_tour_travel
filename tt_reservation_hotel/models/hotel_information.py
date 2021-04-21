@@ -251,6 +251,7 @@ class HotelImage(models.Model):
     _inherit = 'tt.hotel.image'
 
     hotel_id = fields.Many2one('tt.hotel', "Hotel")
+    master_hotel_id = fields.Many2one('tt.hotel.master', "Master Hotel")
 
 
 class TtTemporaryRecord(models.Model):
@@ -278,6 +279,7 @@ class HotelMaster(models.Model):
 
     info_ids = fields.Many2many('tt.hotel', 'hotel_compared_info_rel', 'compared_id', 'info_id', 'Hotel Info', help='Data Hotel setelah di merge dan akan di publish')
     compare_ids = fields.One2many('tt.hotel.compare', 'similar_id', 'Hotel Compare')
+    image_ids = fields.One2many('tt.hotel.image', 'master_hotel_id', string='Images')
 
     def get_provider_code_fmt(self):
         provider_fmt = {}
