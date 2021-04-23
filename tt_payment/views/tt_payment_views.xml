@@ -53,19 +53,19 @@
                     <button name="test_set_as_draft" string="set as draft" type="object" groups="base.group_system"/>
                     <button name="test_set_as_confirm" string="set as confirm" type="object" groups="base.group_system"/>
                     <button string="Validate" name="action_validate_from_button"
-                            type="object" groups="tt_base.group_tt_accounting_operator"
+                            type="object" groups="tt_base.group_tt_accounting_operator,tt_base.group_payment_level_4"
                             attrs="{'invisible':[('state','!=','confirm')]}"/>
                     <button string="Approve" name="action_approve_from_button"
-                            type="object" groups="tt_base.group_tt_accounting_operator"
+                            type="object" groups="tt_base.group_tt_accounting_operator,tt_base.group_payment_level_4"
                             attrs="{'invisible':[('state','!=','validated')]}"/>
                     <button string="Reject" name="action_reject_from_button"
-                            type="object" groups="tt_base.group_tt_accounting_operator"
+                            type="object" groups="tt_base.group_tt_accounting_operator,tt_base.group_payment_level_4"
                             attrs="{'invisible':[('state','not in',['confirm','validated'])]}"/>
                     <button string="Cancel Payment" name="action_cancel_from_button"
-                            type="object" groups="tt_base.group_tt_accounting_operator"
+                            type="object" groups="tt_base.group_tt_accounting_operator,tt_base.group_payment_level_4"
                             attrs="{'invisible':[('state','!=','approved')]}" confirm="Are you sure you want to cancel?"/>
                     <button string="Adjustment" name="%(tt_accounting.tt_adjustment_wizard_action_view)d" type="action"
-                            groups="tt_base.group_tt_accounting_operator"
+                            groups="tt_base.group_tt_accounting_operator,tt_base.group_payment_level_4"
                             context="{
                         'default_res_model': 'tt.payment',
                         'default_res_id': id,
@@ -83,7 +83,7 @@
                     </h1>
                     <div class="oe_button_box" name="button_box">
                         <button name="%(tt_base.tt_upload_center_wizard_action_view)d" string="Upload Document" type="action"
-                                class="oe_stat_button" icon="fa-upload" groups="tt_base.group_tt_tour_travel_operator"
+                                class="oe_stat_button" icon="fa-upload" groups="tt_base.group_tt_tour_travel_operator,tt_base.group_tt_tour_travel"
                                 context="{'default_target_field_name': 'payment_image_ids'}"/>
                     </div>
                     <group name="payment_info">
@@ -122,7 +122,10 @@
                             <field name="total_amount"/>
                             <field name="real_total_amount" groups="tt_base.group_tt_accounting_operator,
                                                                     tt_base.group_tt_tour_travel_operator,
-                                                                    tt_base.group_tt_agent_finance_operator"/>
+                                                                    tt_base.group_tt_agent_finance_operator,
+                                                                    tt_base.group_payment_level_4,
+                                                                    tt_base.group_tt_tour_travel,
+                                                                    tt_base.group_tt_agent_finance"/>
                             <field name="fee"/>
                             <field name="loss_or_profit"/>
                             <field name="used_amount"/>
@@ -214,12 +217,12 @@
             </button>
             <button name="action_validate_from_button" position="replace">
                 <button string="Validate" name="action_validate_from_button"
-                        type="object" groups="tt_base.group_tt_agent_finance_operator"
+                        type="object" groups="tt_base.group_tt_agent_finance_operator,tt_base.group_tt_agent_finance"
                         attrs="{'invisible':['|',('state','!=','confirm'),('top_up_id','!=', False)]}"/>
             </button>
             <button name="action_approve_from_button" position="replace">
                 <button string="Approve" name="action_approve_from_button"
-                        type="object" groups="tt_base.group_tt_agent_finance_operator"
+                        type="object" groups="tt_base.group_tt_agent_finance_operator,tt_base.group_tt_agent_finance"
                         attrs="{'invisible':['|',('state','!=','validated'),('top_up_id','!=', False)]}"/>
             </button>
         </field>
