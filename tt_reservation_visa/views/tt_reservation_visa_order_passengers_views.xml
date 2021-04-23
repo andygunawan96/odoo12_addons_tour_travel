@@ -7,25 +7,25 @@
                 <header>
                     <field name="state" widget="statusbar" statusbar_visible="validate,in_process,add_payment,in_process2,done"/>
                     <field name="can_refund" invisible="1"/>
-                    <button string="Draft" name="action_draft" type="object" attrs="{'invisible': ['|', ('state', 'not in', ['cancel']), '&amp;', ('can_refund', '=', True)]}" groups="tt_base.group_tt_tour_travel_manager"/>
-                    <button string="Confirm" name="action_confirm" type="object" attrs="{'invisible': [('state', '!=', 'draft')]}" groups="tt_base.group_tt_agent_user_operator"/>
-                    <button string="Reject" name="action_draft" type="object" attrs="{'invisible': [('state', '!=', 'confirm')]}" groups="tt_base.group_tt_tour_travel_operator"/>
-                    <button string="Validate" name="action_validate" type="object" attrs="{'invisible': [('state', '!=', 'confirm')]}" groups="tt_base.group_tt_tour_travel_operator"/>
-                    <button string="Re Validate Document" name="action_re_validate" type="object" attrs="{'invisible': [('state', 'not in', ['in_process','re_confirm','confirm_payment'])]}" groups="tt_base.group_tt_tour_travel_operator"/>
-                    <button string="Re Confirm Document" name="action_re_confirm" type="object" attrs="{'invisible': [('state', '!=', 're_validate')]}" groups="tt_base.group_tt_agent_user_operator"/>
-                    <button string="Payment" name="action_add_payment" type="object" attrs="{'invisible': [('state', 'not in', ['in_process','re_confirm','confirm_payment'])]}" groups="tt_base.group_tt_tour_travel_operator"/>
-                    <button string="Confirm Payment" name="action_confirm_payment" type="object" attrs="{'invisible': [('state', 'not in', ['add_payment',])]}" groups="account.group_account_invoice, tt_base.group_tt_accounting_operator, tt_base.group_tt_ticketing_operator"/>
-                    <button string="Proceed" name="action_proceed" type="object" attrs="{'invisible': [('state', '!=', 'waiting')]}" groups="tt_base.group_tt_tour_travel_operator"/>
-                    <button string="Accept" name="action_accept" type="object" attrs="{'invisible': [('state', '!=', 'proceed')]}" groups="tt_base.group_tt_tour_travel_operator"/>
-                    <button string="Waiting Call" name="action_waiting" type="object" attrs="{'invisible': [('state', 'not in', ['in_process2','proceed'])]}" groups="tt_base.group_tt_tour_travel_operator"/>
-                    <button string="Reject" name="action_reject" type="object" attrs="{'invisible': [('state', '!=', 'proceed')]}" groups="tt_base.group_tt_tour_travel_operator" confirm="Are you sure want to reject?"/>
-                    <button string="Send to HO" name="action_to_HO" type="object" attrs="{'invisible': ['|', ('state', 'not in', ['rejected','accepted']), '&amp;', ('state', 'in', ['rejected','accepted']), ('use_vendor', '=', False)]}" groups="tt_base.group_tt_tour_travel_operator"/>
-                    <button string="Send to Agent" name="action_to_agent" type="object" attrs="{'invisible': ['|',('state', 'not in', ['rejected','accepted']), ('use_vendor', '!=', False)]}" groups="tt_base.group_tt_tour_travel_operator"/>  <!---->
-                    <button string="Send to Agent" name="action_to_agent" type="object" attrs="{'invisible': ['|',('state', '!=', 'to_HO'), ('use_vendor', '!=', True)]}" groups="tt_base.group_tt_tour_travel_operator"/>  <!---->
-                    <button string="Done" name="action_done" type="object" attrs="{'invisible': [('state', 'not in', ['to_agent'])]}" groups="tt_base.group_tt_agent_user_operator,tt_base.group_tt_tour_travel_operator"/>
-                    <button string="Sync Requirements" name="action_sync_requirements" type="object" groups="tt_base.group_tt_tour_travel_operator"/>
-                    <button string="Sync Handling" name="action_sync_handling" type="object" groups="tt_base.group_tt_tour_travel_operator"/>
-                    <button string="Cancel" name="action_cancel_button" type="object" attrs="{'invisible': [('state', 'not in', ['draft','confirm','validate','re_validate','re_confirm','in_process','add_payment','confirm_payment'])]}" groups="tt_base.group_tt_tour_travel_operator"/>
+                    <button string="Draft" name="action_draft" type="object" attrs="{'invisible': ['|', ('state', 'not in', ['cancel']), '&amp;', ('can_refund', '=', True)]}" groups="tt_base.group_tt_tour_travel_manager,tt_base.group_tt_tour_travel"/>
+                    <button string="Confirm" name="action_confirm" type="object" attrs="{'invisible': [('state', '!=', 'draft')]}" groups="tt_base.group_tt_agent_user_operator,tt_base.group_tt_agent_user"/>
+                    <button string="Reject" name="action_draft" type="object" attrs="{'invisible': [('state', '!=', 'confirm')]}" groups="tt_base.group_tt_tour_travel_operator,tt_base.group_tt_tour_travel"/>
+                    <button string="Validate" name="action_validate" type="object" attrs="{'invisible': [('state', '!=', 'confirm')]}" groups="tt_base.group_tt_tour_travel_operator,tt_base.group_tt_tour_travel"/>
+                    <button string="Re Validate Document" name="action_re_validate" type="object" attrs="{'invisible': [('state', 'not in', ['in_process','re_confirm','confirm_payment'])]}" groups="tt_base.group_tt_tour_travel_operator,tt_base.group_tt_tour_travel"/>
+                    <button string="Re Confirm Document" name="action_re_confirm" type="object" attrs="{'invisible': [('state', '!=', 're_validate')]}" groups="tt_base.group_tt_agent_user_operator,tt_base.group_tt_agent_user"/>
+                    <button string="Payment" name="action_add_payment" type="object" attrs="{'invisible': [('state', 'not in', ['in_process','re_confirm','confirm_payment'])]}" groups="tt_base.group_tt_tour_travel_operator,tt_base.group_tt_tour_travel"/>
+                    <button string="Confirm Payment" name="action_confirm_payment" type="object" attrs="{'invisible': [('state', 'not in', ['add_payment',])]}" groups="account.group_account_invoice,tt_base.group_tt_accounting_operator,tt_base.group_tt_ticketing_operator,tt_base.group_reservation_level_4"/>
+                    <button string="Proceed" name="action_proceed" type="object" attrs="{'invisible': [('state', '!=', 'waiting')]}" groups="tt_base.group_tt_tour_travel_operator,tt_base.group_tt_tour_travel"/>
+                    <button string="Accept" name="action_accept" type="object" attrs="{'invisible': [('state', '!=', 'proceed')]}" groups="tt_base.group_tt_tour_travel_operator,tt_base.group_tt_tour_travel"/>
+                    <button string="Waiting Call" name="action_waiting" type="object" attrs="{'invisible': [('state', 'not in', ['in_process2','proceed'])]}" groups="tt_base.group_tt_tour_travel_operator,tt_base.group_tt_tour_travel"/>
+                    <button string="Reject" name="action_reject" type="object" attrs="{'invisible': [('state', '!=', 'proceed')]}" groups="tt_base.group_tt_tour_travel_operator,tt_base.group_tt_tour_travel" confirm="Are you sure want to reject?"/>
+                    <button string="Send to HO" name="action_to_HO" type="object" attrs="{'invisible': ['|', ('state', 'not in', ['rejected','accepted']), '&amp;', ('state', 'in', ['rejected','accepted']), ('use_vendor', '=', False)]}" groups="tt_base.group_tt_tour_travel_operator,tt_base.group_tt_tour_travel"/>
+                    <button string="Send to Agent" name="action_to_agent" type="object" attrs="{'invisible': ['|',('state', 'not in', ['rejected','accepted']), ('use_vendor', '!=', False)]}" groups="tt_base.group_tt_tour_travel_operator,tt_base.group_tt_tour_travel"/>  <!---->
+                    <button string="Send to Agent" name="action_to_agent" type="object" attrs="{'invisible': ['|',('state', '!=', 'to_HO'), ('use_vendor', '!=', True)]}" groups="tt_base.group_tt_tour_travel_operator,tt_base.group_tt_tour_travel"/>  <!---->
+                    <button string="Done" name="action_done" type="object" attrs="{'invisible': [('state', 'not in', ['to_agent'])]}" groups="tt_base.group_tt_agent_user_operator,tt_base.group_tt_tour_travel_operator,tt_base.group_tt_agent_user,tt_base.group_tt_tour_travel"/>
+                    <button string="Sync Requirements" name="action_sync_requirements" type="object" groups="tt_base.group_tt_tour_travel_operator,tt_base.group_tt_tour_travel"/>
+                    <button string="Sync Handling" name="action_sync_handling" type="object" groups="tt_base.group_tt_tour_travel_operator,tt_base.group_tt_tour_travel"/>
+                    <button string="Cancel" name="action_cancel_button" type="object" attrs="{'invisible': [('state', 'not in', ['draft','confirm','validate','re_validate','re_confirm','in_process','add_payment','confirm_payment'])]}" groups="tt_base.group_tt_tour_travel_operator,tt_base.group_tt_tour_travel"/>
                 </header>
                 <sheet>
                     <group string="Passenger Info">
@@ -50,19 +50,19 @@
                         <group>
                             <field name="booking_state"/>
                             <field name="passenger_type"/>
-                            <field name="pricelist_id" groups="tt_base.group_tt_tour_travel_operator"/>
-                            <field name="pricelist_id_str" groups="tt_base.group_tt_agent_user_operator"/>
+                            <field name="pricelist_id" groups="tt_base.group_tt_tour_travel_operator,tt_base.group_tt_tour_travel"/>
+                            <field name="pricelist_id_str" groups="tt_base.group_tt_agent_user_operator,tt_base.group_tt_agent_user"/>
                             <field name="sequence"/>
                         </group>
                         <group>
                             <field name="process_status"/>
-                            <field name="payment_uid" groups="tt_base.group_tt_tour_travel_operator"/>
-                            <field name="payment_date" groups="tt_base.group_tt_tour_travel_operator"/>
-                            <field name="in_process_date" groups="tt_base.group_tt_tour_travel_operator"/>
-                            <field name="out_process_date" groups="tt_base.group_tt_tour_travel_operator"/>
-                            <field name="to_HO_date" groups="tt_base.group_tt_tour_travel_operator" attrs="{'invisible': [('use_vendor', '=', False)]}"/>  <!-- attrs="{'invisible': [('use_vendor', '=', False)]}"-->
-                            <field name="to_agent_date" groups="tt_base.group_tt_tour_travel_operator"/>
-                            <field name="done_date" groups="tt_base.group_tt_tour_travel_operator"/>
+                            <field name="payment_uid" groups="tt_base.group_tt_tour_travel_operator,tt_base.group_tt_tour_travel"/>
+                            <field name="payment_date" groups="tt_base.group_tt_tour_travel_operator,tt_base.group_tt_tour_travel"/>
+                            <field name="in_process_date" groups="tt_base.group_tt_tour_travel_operator,tt_base.group_tt_tour_travel"/>
+                            <field name="out_process_date" groups="tt_base.group_tt_tour_travel_operator,tt_base.group_tt_tour_travel"/>
+                            <field name="to_HO_date" groups="tt_base.group_tt_tour_travel_operator,tt_base.group_tt_tour_travel" attrs="{'invisible': [('use_vendor', '=', False)]}"/>  <!-- attrs="{'invisible': [('use_vendor', '=', False)]}"-->
+                            <field name="to_agent_date" groups="tt_base.group_tt_tour_travel_operator,tt_base.group_tt_tour_travel"/>
+                            <field name="done_date" groups="tt_base.group_tt_tour_travel_operator,tt_base.group_tt_tour_travel"/>
                         </group>
                     </group>
                     <group string="Interview">
@@ -131,20 +131,20 @@
                             <tree editable="bottom" create="0">
                                 <field name="requirement_id"/>
                                 <field name="passenger_state" invisible="1"/>
-                                <field name="is_ori" readonly="1" groups="tt_base.group_tt_tour_travel_operator"/>
-                                <field name="is_ori" attrs="{'readonly': [('passenger_state', 'not in', ['draft','Draft'])]}" groups="tt_base.group_tt_agent_user_operator"/>
-                                <field name="is_copy" readonly="1" groups="tt_base.group_tt_tour_travel_operator"/>
-                                <field name="is_copy" attrs="{'readonly': [('passenger_state', 'not in', ['draft','Draft'])]}" groups="tt_base.group_tt_agent_user_operator"/>
+                                <field name="is_ori" readonly="1" groups="tt_base.group_tt_tour_travel_operator,tt_base.group_tt_tour_travel"/>
+                                <field name="is_ori" attrs="{'readonly': [('passenger_state', 'not in', ['draft','Draft'])]}" groups="tt_base.group_tt_agent_user_operator,tt_base.group_tt_agent_user"/>
+                                <field name="is_copy" readonly="1" groups="tt_base.group_tt_tour_travel_operator,tt_base.group_tt_tour_travel"/>
+                                <field name="is_copy" attrs="{'readonly': [('passenger_state', 'not in', ['draft','Draft'])]}" groups="tt_base.group_tt_agent_user_operator,tt_base.group_tt_agent_user"/>
                                 <field name="check_uid" attrs="{'readonly': [('check_uid', '!=', 'False')]}"/>
                                 <field name="check_uid" invisible="1"/>
                                 <field name="check_date" attrs="{'readonly': [('check_date', '!=', 'False')]}"/>
                                 <field name="check_date" invisible="1"/>
-                                <field name="validate_HO" readonly="1" groups="tt_base.group_tt_agent_user_operator"/>
-                                <field name="validate_HO" attrs="{'readonly': [('passenger_state', 'not in', ['confirm','Confirm'])]}" groups="tt_base.group_tt_tour_travel_operator"/>
-                                <field name="check_uid_HO" groups="tt_base.group_tt_tour_travel_operator, tt_base.group_tt_agent_user_operator" attrs="{'readonly': [('check_uid_HO', '!=', 'False')]}"/>
-                                <field name="check_uid_HO" groups="tt_base.group_tt_tour_travel_operator, tt_base.group_tt_agent_user_operator" invisible="1"/>
-                                <field name="check_date_HO" groups="tt_base.group_tt_tour_travel_operator, tt_base.group_tt_agent_user_operator" attrs="{'readonly': [('check_date_HO', '!=', 'False')]}"/>
-                                <field name="check_date_HO" groups="tt_base.group_tt_tour_travel_operator, tt_base.group_tt_agent_user_operator" invisible="1"/>
+                                <field name="validate_HO" readonly="1" groups="tt_base.group_tt_agent_user_operator,tt_base.group_tt_agent_user"/>
+                                <field name="validate_HO" attrs="{'readonly': [('passenger_state', 'not in', ['confirm','Confirm'])]}" groups="tt_base.group_tt_tour_travel_operator,tt_base.group_tt_tour_travel"/>
+                                <field name="check_uid_HO" groups="tt_base.group_tt_tour_travel_operator,tt_base.group_tt_agent_user_operator,tt_base.group_tt_tour_travel,tt_base.group_tt_agent_user" attrs="{'readonly': [('check_uid_HO', '!=', 'False')]}"/>
+                                <field name="check_uid_HO" groups="tt_base.group_tt_tour_travel_operator,tt_base.group_tt_agent_user_operator,tt_base.group_tt_tour_travel,tt_base.group_tt_agent_user" invisible="1"/>
+                                <field name="check_date_HO" groups="tt_base.group_tt_tour_travel_operator,tt_base.group_tt_agent_user_operator,tt_base.group_tt_tour_travel,tt_base.group_tt_agent_user" attrs="{'readonly': [('check_date_HO', '!=', 'False')]}"/>
+                                <field name="check_date_HO" groups="tt_base.group_tt_tour_travel_operator,tt_base.group_tt_agent_user_operator,tt_base.group_tt_tour_travel,tt_base.group_tt_agent_user" invisible="1"/>
                             </tree>
                         </field>
                     </group>
@@ -163,7 +163,7 @@
                     </group>
                     <group>
                         <field name="notes"/>
-                        <field name="notes_HO" groups="tt_base.group_tt_tour_travel_operator, tt_base.group_tt_agent_user_operator"/>
+                        <field name="notes_HO" groups="tt_base.group_tt_tour_travel_operator,tt_base.group_tt_agent_user_operator,tt_base.group_tt_tour_travel,tt_base.group_tt_agent_user"/>
                     </group>
                 </sheet>
             </form>

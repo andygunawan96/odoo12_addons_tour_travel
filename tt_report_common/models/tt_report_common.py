@@ -90,4 +90,4 @@ class TtReportCommonSetting(models.Model):
             html = self.env['tt.report.common.setting'].sudo().search([('code', '=', code), ('agent_id','=', agent_id.id)], limit=1)
             if html:
                 return html
-        return self.env['tt.report.common.setting'].sudo().search([('code', '=', 'airline_ticket')], limit=1)
+        return self.env['tt.report.common.setting'].sudo().search([('code', '=', code)], limit=1)
