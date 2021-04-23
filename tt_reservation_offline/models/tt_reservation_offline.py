@@ -1769,6 +1769,7 @@ class IssuedOffline(models.Model):
                 'state': 'draft',
                 'state_offline': 'confirm',
                 'agent_id': context['co_agent_id'],
+                'customer_parent_id': context.get('co_customer_parent_id', False),
                 'user_id': context['co_uid'],
             }
 

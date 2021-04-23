@@ -437,6 +437,7 @@ class ReservationTour(models.Model):
                 'contact_phone': contact_data.get('mobile') and str(contact_data['calling_code']) +" - "+ str(
                     contact_data['mobile']),
                 'agent_id': context['co_agent_id'],
+                'customer_parent_id': context.get('co_customer_parent_id',False),
                 'user_id': context['co_uid'],
                 'tour_id': pricelist_id,
                 'tour_lines_id': tour_line_data.id,

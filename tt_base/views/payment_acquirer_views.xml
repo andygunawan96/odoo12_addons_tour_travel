@@ -204,6 +204,9 @@
             <field name="arch" type="xml">
                 <tree>
                     <field name="create_date"/>
+                    <field name="amount"/>
+                    <field name="fee_amount"/>
+                    <field name="unique_amount"/>
                     <field name="number"/>
                     <field name="payment_acquirer_id"/>
                     <field name="state"/>

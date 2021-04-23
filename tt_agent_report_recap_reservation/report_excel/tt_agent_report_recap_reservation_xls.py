@@ -82,6 +82,7 @@ class AgentReportRecapReservationXls(models.TransientModel):
         datas = values['lines']
         service_charge = values['second_lines']
         #proceed the data
+
         filtered_data = []
         temp_order_number = ''
         counter = 0

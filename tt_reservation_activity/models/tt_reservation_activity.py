@@ -567,6 +567,7 @@ class ReservationActivity(models.Model):
                     contact_data['mobile']),
                 'date': datetime.now(),
                 'agent_id': context['co_agent_id'],
+                'customer_parent_id': context.get('co_customer_parent_id', False),
                 'user_id': context['co_uid'],
                 'senior': senior,
                 'adult': adult,

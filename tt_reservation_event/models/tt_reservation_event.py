@@ -272,6 +272,7 @@ class ReservationEvent(models.Model):
                 'contact_email': contact_obj.email,
                 'contact_phone': contact_obj.phone_ids and contact_obj.phone_ids[0].phone_number or False,
                 'agent_id': context['co_agent_id'],
+                'customer_parent_id': context.get('co_customer_parent_id', False),
                 'user_id': context['co_uid'],
                 'sid_booked': context['signature'],
                 # 'passenger_ids': [6,0,[x.id for x in pax_ids]],
