@@ -36,14 +36,14 @@
                     <div class="oe_button_box" name="button_box">
                         <button name="toggle_active" type="object"
                                 class="oe_stat_button" icon="fa-archive"
-                                groups="tt_base.group_tt_tour_travel_supervisor">
+                                groups="tt_base.group_tt_tour_travel_supervisor,tt_base.group_master_data_event_level_3">
                             <field name="active" widget="boolean_button"
                                    options='{"terminology": "archive"}'/>
                         </button>
                         <button name="%(tt_base.tt_upload_center_wizard_action_view)d"
                                 string="Upload Image" type="action"
                                 class="oe_stat_button" icon="fa-upload"
-                                groups="tt_base.group_tt_tour_division_operator,base.group_system"
+                                groups="tt_base.group_tt_tour_travel_operator,base.group_system,tt_base.group_master_data_event_level_3"
                                 context="{'default_target_field_name': 'option_image_ids'}"
                         />
                     </div>
@@ -208,14 +208,14 @@
                     <div class="oe_button_box" name="button_box">
                         <button name="toggle_active" type="object"
                                 class="oe_stat_button" icon="fa-archive"
-                                groups="tt_base.group_tt_tour_travel_supervisor">
+                                groups="tt_base.group_tt_tour_travel_supervisor,tt_base.group_master_data_event_level_3">
                             <field name="active" widget="boolean_button"
                                    options='{"terminology": "archive"}'/>
                         </button>
                         <button name="%(tt_base.tt_upload_center_wizard_action_view)d"
                                 string="Upload Image" type="action"
                                 class="oe_stat_button" icon="fa-upload"
-                                groups="tt_base.group_tt_external_vendor_operator,tt_base.group_tt_tour_travel_supervisor,base.group_system"
+                                groups="tt_base.group_tt_external_vendor_operator,tt_base.group_tt_tour_travel_supervisor,base.group_system,tt_base.group_tt_external_user,tt_base.group_master_data_event_level_3"
                                 context="{'default_target_field_name': 'image_ids'}"
                         />
 <!--                        <button name="%(tt_base.tt_upload_center_wizard_action_view)d"-->
@@ -256,8 +256,8 @@
                             <field name="eligible_age" attrs="{'invisible': [('kid_friendly', '=', False)], 'required': [('kid_friendly', '!=', False)]}"/>
                         </group>
                         <group>
-                            <field name="provider_id" groups="tt_base.group_tt_tour_travel_operator"/>
-                            <field name="event_vendor_id" groups="tt_base.group_tt_tour_travel_operator"/>
+                            <field name="provider_id" groups="tt_base.group_tt_tour_travel_operator,tt_base.group_tt_tour_travel"/>
+                            <field name="event_vendor_id" groups="tt_base.group_tt_tour_travel_operator,tt_base.group_tt_tour_travel"/>
                             <field name="provider_fare_code"/>
 <!--                            <field name="type_ids"/>-->
 <!--                            <field name="currency_id"/>-->

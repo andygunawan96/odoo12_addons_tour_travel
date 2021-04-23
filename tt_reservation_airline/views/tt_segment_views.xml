@@ -84,7 +84,7 @@
             <tree>
                 <field name="name"/>
                 <field name="pnr"/>
-                <field name="provider_id" groups="tt_base.group_tt_tour_travel_operator"/>
+                <field name="provider_id" groups="tt_base.group_tt_tour_travel_operator,tt_base.group_tt_tour_travel"/>
                 <field name="origin_id"/>
                 <field name="destination_id"/>
                 <field name="departure_date"/>

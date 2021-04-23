@@ -21,7 +21,7 @@
         <field name="arch" type="xml">
             <form create="false">
                 <header>
-                    <button string="Sync Balance" name="action_sync_balance" type="object" groups="tt_base.group_tt_accounting_operator"/>
+                    <button string="Sync Balance" name="action_sync_balance" type="object" groups="tt_base.group_tt_accounting_operator,tt_base.group_reconcile_level_3"/>
                     <field name="state" widget="statusbar" statusbar_visible="open"/>
                 </header>
                 <sheet>
@@ -32,11 +32,11 @@
                     <!--                        </h1>-->
                     <!--                    </div>-->
                     <div class="oe_button_box" name="button_box">
-                        <button name="compare_reconcile_data" type="object" groups="tt_base.group_tt_accounting_operator"
+                        <button name="compare_reconcile_data" type="object" groups="tt_base.group_tt_accounting_operator,tt_base.group_reconcile_level_3"
                                 string="Match Data" class="oe_stat_button" icon="fa-rocket"/>
-                        <button name="view_filter_tree" type="object" groups="tt_base.group_tt_accounting_operator"
+                        <button name="view_filter_tree" type="object" groups="tt_base.group_tt_accounting_operator,tt_base.group_reconcile_level_3"
                                 string="Filter View" class="oe_stat_button" icon="fa-list"/>
-                        <button name="print_report_excel" type="object" groups="tt_base.group_tt_accounting_operator"
+                        <button name="print_report_excel" type="object" groups="tt_base.group_tt_accounting_operator,tt_base.group_reconcile_level_3"
                                 string="Print Excel" class="oe_stat_button" icon="fa-file"/>
                     </div>
                     <group>
@@ -98,16 +98,16 @@
                 <header>
                     <button name="ignore_recon_line_from_button" type="object" string="Ignore"
                             attrs="{'invisible':[('state','!=', 'not_match')]}"
-                            groups="tt_base.group_tt_accounting_operator"/>
+                            groups="tt_base.group_tt_accounting_operator,tt_base.group_reconcile_level_3"/>
                     <button name="unignore_recon_line_from_button" type="object" string="Unignore"
                             attrs="{'invisible':[('state','!=', 'ignore')]}"
-                            groups="tt_base.group_tt_accounting_operator"/>
+                            groups="tt_base.group_tt_accounting_operator,tt_base.group_reconcile_level_3"/>
                     <button name="cancel_recon_line_from_button" type="object" string="Cancel"
                             attrs="{'invisible':[('state','=', 'cancel')]}"
-                            groups="tt_base.group_tt_accounting_supervisor"/>
+                            groups="tt_base.group_tt_accounting_supervisor,tt_base.group_reconcile_level_4"/>
                     <button name="uncancel_recon_line_from_button" type="object" string="Uncancel"
                             attrs="{'invisible':[('state','!=', 'cancel')]}"
-                            groups="tt_base.group_tt_accounting_supervisor"/>
+                            groups="tt_base.group_tt_accounting_supervisor,tt_base.group_reconcile_level_4"/>
                     <button name="%(tt_reservation.tt_reconcile_manual_match_wizard_action_view)d"
                             string="Manual Match" type="action" states="not_match"
                             context="{
