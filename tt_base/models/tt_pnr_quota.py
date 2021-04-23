@@ -134,6 +134,20 @@ class TtPnrQuota(models.Model):
                                                             credit=rec.total_amount,
                                                             description='Buying PNR Quota for %s' % (rec.agent_id.name)
                                                             )
+                self.env['tt.ledger'].create_ledger_vanilla(rec._name,
+                                                            rec.id,
+                                                            'Order: %s' % (rec.name),
+                                                            rec.name,
+                                                            datetime.now(pytz.timezone('Asia/Jakarta')).date(),
+                                                            2,
+                                                            rec.currency_id.id,
+                                                            self.env.user.id,
+                                                            self.env.ref('tt_base.rodex_ho').id,
+                                                            False,
+                                                            debit=rec.total_amount,
+                                                            credit=0,
+                                                            description='Buying PNR Quota for %s' % (rec.agent_id.name)
+                                                            )
                 rec.state = 'done'
 
 
