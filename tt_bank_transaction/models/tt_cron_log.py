@@ -101,6 +101,7 @@ class ttCronTopUpValidator(models.Model):
                                             res = self.env['tt.top.up'].action_va_top_up(request, context)
                                             self._cr.commit()
                                             result.top_up_validated(res['response']['top_up_id'])
+                                            top_up_obj.state = 'done'
                                     book_obj = self.env['tt.reservation.%s' % variables.PROVIDER_TYPE_PREFIX[top_up_obj['number'].split('.')[0]]].search([('name', '=', '%s.%s' % (top_up_obj['number'].split('.')[0], top_up_obj['number'].split('.')[1])), ('state', 'in', ['booked'])], limit=1)
 
                                     if book_obj:
