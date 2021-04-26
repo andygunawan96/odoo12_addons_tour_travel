@@ -75,7 +75,7 @@
 
                   name="Agent"
                   sequence="20"
-                  groups="base.group_user"/>
+                  groups="tt_base.group_tt_tour_travel,tt_base.group_tt_agent_user"/>
 
         <menuitem id="top_customers_vendor"
                   parent="tt_base.main_customers"
