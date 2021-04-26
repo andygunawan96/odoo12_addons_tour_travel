@@ -6,7 +6,7 @@
         <field name="inherit_id" ref="tt_reservation_airline.tt_reservation_airline_form_views"/>
         <field name="arch" type="xml">
             <xpath expr="//button[@name='action_cancel']" position="after">
-                <button string="After Sales Request" name="%(tt_reschedule.tt_reschedule_wizard_action_view)d" type="action" groups="tt_base.group_tt_agent_user_operator"
+                <button string="After Sales Request" name="%(tt_reschedule.tt_reschedule_wizard_action_view)d" type="action" groups="tt_base.group_tt_agent_user_operator,tt_base.group_tt_agent_user"
                         context="{
                 'default_res_model': res_model,
                 'default_res_id': id,

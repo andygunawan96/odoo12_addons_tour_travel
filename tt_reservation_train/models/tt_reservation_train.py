@@ -441,6 +441,7 @@ class TtReservationTrain(models.Model):
             'adult': searchRQ['adult'],
             'infant': searchRQ['infant'],
             'agent_id': context_gateway['co_agent_id'],
+            'customer_parent_id': context_gateway.get('co_customer_parent_id', False),
             'user_id': context_gateway['co_uid']
         }
 

@@ -17,7 +17,7 @@
                     <filter name="group_by_est_departure_time" string="Estimated Departure Time" domain="[]" context="{'group_by':'est_departure_time'}"/>
                     <filter name="group_by_est_return_time" string="Estimated Return Time" domain="[]" context="{'group_by':'est_return_time'}"/>
                     <filter name="group_by_state" string="State" domain="[]" context="{'group_by':'state'}"/>
-                    <filter name="group_by_agent_id" string="Agent" domain="[]" context="{'group_by':'agent_id'}" groups="tt_base.group_tt_tour_travel_operator"/>
+                    <filter name="group_by_agent_id" string="Agent" domain="[]" context="{'group_by':'agent_id'}" groups="tt_base.group_tt_tour_travel_operator,tt_base.group_tt_tour_travel"/>
                 </group>
             </search>
         </field>
@@ -31,12 +31,12 @@
                 <header>
                     <!--STATE BUTTON-->
                     <field name="state" widget="statusbar" statusbar_visible="draft,confirm,approved,done"/>
-                    <button string="Confirm" name="action_confirm" type="object" attrs="{'invisible': [('state', '!=', 'draft')]}" groups="tt_base.group_tt_agent_user_operator"/>
-                    <button string="Approve" name="action_approve" type="object" attrs="{'invisible': [('state', '!=', 'confirm')]}" groups="tt_base.group_tt_tour_division_operator"/>
-                    <button string="Done" name="action_done" type="object" attrs="{'invisible': [('state', '!=', 'approved')]}" groups="tt_base.group_tt_tour_division_operator"/>
-                    <button string="Reject" name="action_reject" type="object" attrs="{'invisible': [('state', 'in', ['draft','done','cancelled','rejected'])]}" groups="tt_base.group_tt_tour_division_operator"/>
-                    <button string="Cancel" name="action_cancel" type="object" attrs="{'invisible': [('state', 'in', ['done','cancelled','rejected'])]}" groups="tt_base.group_tt_agent_user_operator"/>
-                    <button string="Set to Draft" name="action_set_to_draft" type="object" attrs="{'invisible': [('state', 'not in', ['cancelled','rejected'])]}" groups="tt_base.group_tt_tour_division_operator"/>
+                    <button string="Confirm" name="action_confirm" type="object" attrs="{'invisible': [('state', '!=', 'draft')]}" groups="tt_base.group_tt_agent_user_operator,tt_base.group_tt_agent_user"/>
+                    <button string="Approve" name="action_approve" type="object" attrs="{'invisible': [('state', '!=', 'confirm')]}" groups="tt_base.group_tt_tour_division_operator,tt_base.group_master_data_tour_level_3"/>
+                    <button string="Done" name="action_done" type="object" attrs="{'invisible': [('state', '!=', 'approved')]}" groups="tt_base.group_tt_tour_division_operator,tt_base.group_master_data_tour_level_3"/>
+                    <button string="Reject" name="action_reject" type="object" attrs="{'invisible': [('state', 'in', ['draft','done','cancelled','rejected'])]}" groups="tt_base.group_tt_tour_division_operator,tt_base.group_master_data_tour_level_3"/>
+                    <button string="Cancel" name="action_cancel" type="object" attrs="{'invisible': [('state', 'in', ['done','cancelled','rejected'])]}" groups="tt_base.group_tt_agent_user_operator,tt_base.group_tt_agent_user"/>
+                    <button string="Set to Draft" name="action_set_to_draft" type="object" attrs="{'invisible': [('state', 'not in', ['cancelled','rejected'])]}" groups="tt_base.group_tt_tour_division_operator,tt_base.group_master_data_tour_level_3"/>
                 </header>
                 <sheet>
                     <div class="oe_button_box" name="button_box">
@@ -109,8 +109,8 @@
                     <separator string="Tour Information"/>
                     <group>
                         <group>
-                            <field name="tour_ref_id" groups="tt_base.group_tt_tour_travel_operator" attrs="{'invisible': [('state', 'not in', ['approved','done'])], 'required': [('state', 'in', ['approved','done'])]}"/>
-                            <field name="tour_ref_id_str" groups="tt_base.group_tt_agent_user_operator" attrs="{'invisible': [('state', 'not in', ['approved','done'])]}"/>
+                            <field name="tour_ref_id" groups="tt_base.group_tt_tour_travel_operator,tt_base.group_tt_tour_travel" attrs="{'invisible': [('state', 'not in', ['approved','done'])], 'required': [('state', 'in', ['approved','done'])]}"/>
+                            <field name="tour_ref_id_str" groups="tt_base.group_tt_agent_user_operator,tt_base.group_tt_agent_user" attrs="{'invisible': [('state', 'not in', ['approved','done'])]}"/>
                             <field name="tour_category"/>
                         </group>
                         <group>

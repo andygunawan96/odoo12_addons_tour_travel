@@ -29,9 +29,9 @@
                 <header>
                     <!--STATE BUTTON-->
                     <field name="state" widget="statusbar" statusbar_visible="draft,confirm,closed"/>
-                    <button name="action_confirm" string="Confirm" type="object" groups="tt_base.group_tt_tour_division_operator,tt_base.group_tt_tour_travel_manager" attrs="{'invisible':[('state','!=', 'draft')]}"/>
-                    <button name="set_to_draft" string="Set to Draft" type="object" groups="tt_base.group_tt_tour_division_operator,tt_base.group_tt_tour_travel_manager" attrs="{'invisible':[('state','=', 'draft')]}"/>
-                    <button name="action_closed" string="Close" type="object" groups="tt_base.group_tt_tour_division_operator,tt_base.group_tt_tour_travel_manager" attrs="{'invisible':[('state','=', 'closed')]}"/>
+                    <button name="action_confirm" string="Confirm" type="object" groups="tt_base.group_tt_tour_division_operator,tt_base.group_tt_tour_travel_manager,tt_base.group_master_data_tour_level_3" attrs="{'invisible':[('state','!=', 'draft')]}"/>
+                    <button name="set_to_draft" string="Set to Draft" type="object" groups="tt_base.group_tt_tour_division_operator,tt_base.group_tt_tour_travel_manager,tt_base.group_master_data_tour_level_3" attrs="{'invisible':[('state','=', 'draft')]}"/>
+                    <button name="action_closed" string="Close" type="object" groups="tt_base.group_tt_tour_division_operator,tt_base.group_tt_tour_travel_manager,tt_base.group_master_data_tour_level_3" attrs="{'invisible':[('state','=', 'closed')]}"/>
                     <!--                    <button string="Update Tour Code" name="update_tour_code_temp" type="object" groups="base.group_system"/>-->
                     <!--                    <button string="Generate Room Codes" name="generate_all_room_codes" type="object" groups="base.group_system"/>-->
 <!--                    <button string="Convert to New Pricing" name="convert_to_new_pricing" type="object" groups="base.group_system"/>-->
@@ -50,17 +50,17 @@
                         <button name="copy_tour"
                                 class="oe_stat_button"
                                 string="Copy Tour" type="object" icon="fa-copy"
-                                groups="tt_base.group_tt_tour_division_operator,base.group_system"/>
+                                groups="tt_base.group_tt_tour_division_operator,base.group_system,tt_base.group_master_data_tour_level_3"/>
                         <button name="%(tt_base.tt_upload_center_wizard_action_view)d" string="Upload Image" type="action"
-                                class="oe_stat_button" icon="fa-upload" groups="tt_base.group_tt_tour_division_operator,base.group_system"
+                                class="oe_stat_button" icon="fa-upload" groups="tt_base.group_tt_tour_division_operator,base.group_system,tt_base.group_master_data_tour_level_3"
                                 context="{'default_target_field_name': 'image_ids'}"
                                 attrs="{'invisible': [('provider_id', '!=', %(tt_reservation_tour.tt_provider_tour_internal)d)]}"/>
                         <button name="%(tt_base.tt_upload_center_wizard_action_view)d" string="Upload Itinerary" type="action"
-                                class="oe_stat_button" icon="fa-upload" groups="tt_base.group_tt_tour_division_operator,base.group_system"
+                                class="oe_stat_button" icon="fa-upload" groups="tt_base.group_tt_tour_division_operator,base.group_system,tt_base.group_master_data_tour_level_3"
                                 context="{'default_target_field_name': 'document_url'}"/>
                         <button name="toggle_active" type="object"
                                 class="oe_stat_button" icon="fa-archive"
-                                groups="tt_base.group_tt_tour_division_operator,base.group_system">
+                                groups="tt_base.group_tt_tour_division_operator,base.group_system,tt_base.group_master_data_tour_level_3">
                             <field name="active" widget="boolean_button"
                                    options='{"terminology": "archive"}'/>
                         </button>
@@ -86,8 +86,8 @@
                         </group>
                         <group>
                             <field name="tour_code" readonly="1"/>
-                            <field name="provider_id" groups="tt_base.group_tt_tour_travel_operator"/>
-                            <field name="carrier_id" groups="tt_base.group_tt_tour_travel_operator" attrs="{'readonly': ['|', ('state', '!=', 'draft'), ('provider_id', '!=', %(tt_reservation_tour.tt_provider_tour_internal)d)]}"/>
+                            <field name="provider_id" groups="tt_base.group_tt_tour_travel_operator,tt_base.group_tt_tour_travel"/>
+                            <field name="carrier_id" groups="tt_base.group_tt_tour_travel_operator,tt_base.group_tt_tour_travel" attrs="{'readonly': ['|', ('state', '!=', 'draft'), ('provider_id', '!=', %(tt_reservation_tour.tt_provider_tour_internal)d)]}"/>
                             <field name="currency_id" attrs="{'readonly': ['|', ('state', '!=', 'draft'), ('provider_id', '!=', %(tt_reservation_tour.tt_provider_tour_internal)d)]}"/>
                             <field name="description" attrs="{'readonly': ['|', ('state', '!=', 'draft'), ('provider_id', '!=', %(tt_reservation_tour.tt_provider_tour_internal)d)]}"/>
                             <field name="tour_category" attrs="{'readonly': ['|', ('state', '!=', 'draft'), ('provider_id', '!=', %(tt_reservation_tour.tt_provider_tour_internal)d)]}"/>
@@ -190,10 +190,10 @@
                             <separator string="Other Charges"/>
                             <field name="other_charges_ids"/>
                         </page>
-                        <page string="Related Vendor(s)" groups="tt_base.group_tt_tour_travel_operator">
+                        <page string="Related Vendor(s)" groups="tt_base.group_tt_tour_travel_operator,tt_base.group_tt_tour_travel">
                             <field name="related_provider_ids"/>
                         </page>
-                        <page string="Tour Quotation" groups="tt_base.group_tt_tour_travel_operator">
+                        <page string="Tour Quotation" groups="tt_base.group_tt_tour_travel_operator,tt_base.group_tt_tour_travel">
                             <field name="quotation_ids"/>
                         </page>
                     </notebook>
@@ -223,7 +223,7 @@
                                         <div class="oe_button_box" name="button_box">
                                             <button name="toggle_active" type="object"
                                                     class="oe_stat_button" icon="fa-archive"
-                                                    groups="tt_base.group_tt_tour_division_operator,base.group_system">
+                                                    groups="tt_base.group_tt_tour_division_operator,base.group_system,tt_base.group_master_data_tour_level_3">
                                                 <field name="active" widget="boolean_button"
                                                        options='{"terminology": "archive"}'/>
                                             </button>
@@ -399,7 +399,7 @@
                 <field name="country_str"/>
                 <field name="tour_line_amount"/>
                 <field name="create_uid"/>
-                <field name="provider_id" groups="tt_base.group_tt_tour_travel_operator"/>
+                <field name="provider_id" groups="tt_base.group_tt_tour_travel_operator,tt_base.group_tt_tour_travel"/>
                 <field name="state"/>
             </tree>
         </field>

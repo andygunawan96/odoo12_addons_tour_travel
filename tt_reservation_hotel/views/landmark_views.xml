@@ -11,7 +11,7 @@
                     <div class="oe_button_box" name="button_box">
                         <button name="toggle_active" type="object"
                                 class="oe_stat_button" icon="fa-archive"
-                                groups="tt_base.group_tt_tour_travel_operator">
+                                groups="tt_base.group_tt_tour_travel_operator,tt_base.group_master_data_hotel_level_3">
                             <field name="active" widget="boolean_button"
                                    options='{"terminology": "archive"}'/>
                         </button>
@@ -103,7 +103,7 @@
                     <div class="oe_button_box" name="button_box">
                         <button name="toggle_active" type="object"
                                 class="oe_stat_button" icon="fa-archive"
-                                groups="tt_base.group_tt_tour_travel_operator">
+                                groups="tt_base.group_tt_tour_travel_operator,tt_base.group_master_data_hotel_level_3">
                             <field name="active" widget="boolean_button"
                                    options='{"terminology": "archive"}'/>
                         </button>

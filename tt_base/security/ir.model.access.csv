@@ -152,6 +152,12 @@ access_res_users_for_user_data_level_3,res.users.for.user.data.level.3,model_res
 access_res_users_for_user_data_level_4,res.users.for.user.data.level.4,model_res_users,tt_base.group_user_data_level_4,1,1,1,0
 access_res_users_for_user_data_level_5,res.users.for.user.data.level.5,model_res_users,tt_base.group_user_data_level_5,1,1,1,1
 
+access_res_partner_for_user_data_level_1,res.partner.for.user.data.level.1,model_res_partner,tt_base.group_user_data_level_1,1,0,0,0
+access_res_partner_for_user_data_level_2,res.partner.for.user.data.level.2,model_res_partner,tt_base.group_user_data_level_2,1,0,1,0
+access_res_partner_for_user_data_level_3,res.partner.for.user.data.level.3,model_res_partner,tt_base.group_user_data_level_3,1,1,1,0
+access_res_partner_for_user_data_level_4,res.partner.for.user.data.level.4,model_res_partner,tt_base.group_user_data_level_4,1,1,1,0
+access_res_partner_for_user_data_level_5,res.partner.for.user.data.level.5,model_res_partner,tt_base.group_user_data_level_5,1,1,1,1
+
 tt_destinations_for_public,tt.destinations.for.public,model_tt_destinations,,1,0,0,0
 tt_destinations_for_tour_travel_operator,tt.destinations.for.tour.travel.operator,model_tt_destinations,group_tt_tour_travel_operator,1,0,0,0
 tt_destinations_for_tour_travel_supervisor,tt.destinations.for.tour.travel.supervisor,model_tt_destinations,group_tt_tour_travel_supervisor,1,0,1,0

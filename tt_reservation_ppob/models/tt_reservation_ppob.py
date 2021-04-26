@@ -632,6 +632,7 @@ class ReservationPpob(models.Model):
                 'contact_email': contact_obj.email,
                 'contact_phone': "%s - %s" % (contact_obj.phone_ids[0].calling_code, contact_obj.phone_ids[0].calling_number),
                 'passenger_ids': list_passenger_value,
+                'customer_parent_id': context.get('co_customer_parent_id', False),
             })
 
             resv_obj = self.env['tt.reservation.ppob'].create(values)

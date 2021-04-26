@@ -7,12 +7,12 @@
         <field name="arch" type="xml">
             <search string="Search Visa Booking">
                 <field name="name"/>
-                <field name="provider_name" groups="tt_base.group_tt_tour_travel_operator"/>
-                <field name="carrier_name" groups="tt_base.group_tt_tour_travel_operator"/>
-                <field name="agent_id" groups="tt_base.group_tt_tour_travel_operator"/>
-                <field name="agent_type_id" groups="tt_base.group_tt_tour_travel_operator"/>
-                <field name="customer_parent_id" groups="tt_base.group_tt_agent_user_operator,tt_base.group_tt_tour_travel_operator"/>
-                <field name="customer_parent_type_id" groups="tt_base.group_tt_agent_user_operator,tt_base.group_tt_tour_travel_operator"/>
+                <field name="provider_name" groups="tt_base.group_tt_tour_travel_operator,tt_base.group_tt_tour_travel"/>
+                <field name="carrier_name" groups="tt_base.group_tt_tour_travel_operator,tt_base.group_tt_tour_travel"/>
+                <field name="agent_id" groups="tt_base.group_tt_tour_travel_operator,tt_base.group_tt_tour_travel"/>
+                <field name="agent_type_id" groups="tt_base.group_tt_tour_travel_operator,tt_base.group_tt_tour_travel"/>
+                <field name="customer_parent_id" groups="tt_base.group_tt_agent_user_operator,tt_base.group_tt_tour_travel_operator,tt_base.group_tt_agent_user,tt_base.group_tt_tour_travel"/>
+                <field name="customer_parent_type_id" groups="tt_base.group_tt_agent_user_operator,tt_base.group_tt_tour_travel_operator,tt_base.group_tt_agent_user,tt_base.group_tt_tour_travel"/>
                 <field name="contact_id"/>
                 <field name="country_id"/>
                 <group>
@@ -50,8 +50,8 @@
                 <filter string="This Year" name="thisyear" domain="[('date','&gt;=',time.strftime('%%Y-01-01'))]"/>
 
                 <group expand="0" string="Group By">
-                    <filter string="Agent" name="agent" domain="[]" context="{'group_by':'agent_id'}" groups="tt_base.group_tt_tour_travel_operator"/>
-                    <filter string="Agent Type" name="agent_type" domain="[]" context="{'group_by':'agent_type_id'}" groups="tt_base.group_tt_tour_travel_operator"/>
+                    <filter string="Agent" name="agent" domain="[]" context="{'group_by':'agent_id'}" groups="tt_base.group_tt_tour_travel_operator,tt_base.group_tt_tour_travel"/>
+                    <filter string="Agent Type" name="agent_type" domain="[]" context="{'group_by':'agent_type_id'}" groups="tt_base.group_tt_tour_travel_operator,tt_base.group_tt_tour_travel"/>
                     <filter string="State" name="state" domain="[]" context="{'group_by':'state_visa'}"/>
                 </group>
             </search>
@@ -81,16 +81,16 @@
             </xpath>
             <button name="action_cancel" position="replace">
 <!--                <button type="object" string="Get Booking Visa" name="get_booking_visa_api"/>-->
-                <button string="Set to Draft" name="action_draft_visa" type="object" attrs="{'invisible': ['|',('state_visa', '!=', 'cancel'), ('commercial_state', '=', 'Paid')]}" groups="tt_base.group_tt_tour_travel_manager"/>
-                <button string="Confirm to HO" name="action_confirm_visa" type="object" attrs="{'invisible': [('state_visa', '!=', 'draft')]}" groups="tt_base.group_tt_agent_user_operator"/>
-                <button string="Validate" name="action_validate_visa" type="object" attrs="{'invisible': [('state_visa', 'not in', ['confirm','partial_validate'])]}" groups="tt_base.group_tt_tour_travel_operator"/>
-                <button string="To Vendor" name="action_to_vendor_visa" type="object" attrs="{'invisible': [('state_visa', '!=', 'validate')]}" groups="tt_base.group_tt_tour_travel_operator"/>
-                <button string="Vendor Process" name="action_vendor_process_visa" type="object" attrs="{'invisible': [('state_visa', '!=', 'to_vendor')]}" groups="tt_base.group_tt_tour_travel_operator"/>
-                <button string="In Process" name="action_in_process_visa" type="object" attrs="{'invisible': [('state_visa', 'not in', ['validate','vendor_process'])]}" groups="tt_base.group_tt_tour_travel_operator"/>
-                <button string="Process to Consulate" name="action_in_process_consulate_visa" type="object" attrs="{'invisible': [('state_visa', '!=', 'payment')]}" groups="tt_base.group_tt_tour_travel_operator"/>
-                <button string="Cancel" name="action_cancel_visa" type="object" attrs="{'invisible': [('state_visa', 'in', ['cancel','in_process','payment','process_by_consulate','partial_proceed','proceed','partial_approve','approve','reject','delivered','done','refund'])]}" groups="tt_base.group_tt_tour_travel_operator" confirm="Are you sure want to cancel?"/>
-                <button string="Cancel Process" name="action_cancel_visa" type="object" attrs="{'invisible': [('state_visa', 'not in', ['in_process', 'payment'])]}" groups="tt_base.group_tt_tour_travel_operator" confirm="Are you sure want to cancel?"/>
-                <button string="Calc. Expenses" name="action_calc_expenses_visa" type="object" groups="tt_base.group_tt_tour_travel_operator" state="issued" attrs="{'invisible': [('state_visa', 'in', ['draft','fail_booked','confirm','partial_validate','validate','to_vendor','vendor_process','delivered','done','cancel','refund','expired'])]}"/>
+                <button string="Set to Draft" name="action_draft_visa" type="object" attrs="{'invisible': ['|',('state_visa', '!=', 'cancel'), ('commercial_state', '=', 'Paid')]}" groups="tt_base.group_tt_tour_travel_manager,tt_base.group_tt_tour_travel"/>
+                <button string="Confirm to HO" name="action_confirm_visa" type="object" attrs="{'invisible': [('state_visa', '!=', 'draft')]}" groups="tt_base.group_tt_agent_user_operator,tt_base.group_tt_agent_user"/>
+                <button string="Validate" name="action_validate_visa" type="object" attrs="{'invisible': [('state_visa', 'not in', ['confirm','partial_validate'])]}" groups="tt_base.group_tt_tour_travel_operator,tt_base.group_tt_tour_travel"/>
+                <button string="To Vendor" name="action_to_vendor_visa" type="object" attrs="{'invisible': [('state_visa', '!=', 'validate')]}" groups="tt_base.group_tt_tour_travel_operator,tt_base.group_tt_tour_travel"/>
+                <button string="Vendor Process" name="action_vendor_process_visa" type="object" attrs="{'invisible': [('state_visa', '!=', 'to_vendor')]}" groups="tt_base.group_tt_tour_travel_operator,tt_base.group_tt_tour_travel"/>
+                <button string="In Process" name="action_in_process_visa" type="object" attrs="{'invisible': [('state_visa', 'not in', ['validate','vendor_process'])]}" groups="tt_base.group_tt_tour_travel_operator,tt_base.group_tt_tour_travel"/>
+                <button string="Process to Consulate" name="action_in_process_consulate_visa" type="object" attrs="{'invisible': [('state_visa', '!=', 'payment')]}" groups="tt_base.group_tt_tour_travel_operator,tt_base.group_tt_tour_travel"/>
+                <button string="Cancel" name="action_cancel_visa" type="object" attrs="{'invisible': [('state_visa', 'in', ['cancel','in_process','payment','process_by_consulate','partial_proceed','proceed','partial_approve','approve','reject','delivered','done','refund'])]}" groups="tt_base.group_tt_tour_travel_operator,tt_base.group_tt_tour_travel" confirm="Are you sure want to cancel?"/>
+                <button string="Cancel Process" name="action_cancel_visa" type="object" attrs="{'invisible': [('state_visa', 'not in', ['in_process', 'payment'])]}" groups="tt_base.group_tt_tour_travel_operator,tt_base.group_tt_tour_travel" confirm="Are you sure want to cancel?"/>
+                <button string="Calc. Expenses" name="action_calc_expenses_visa" type="object" groups="tt_base.group_tt_tour_travel_operator,tt_base.group_tt_tour_travel" state="issued" attrs="{'invisible': [('state_visa', 'in', ['draft','fail_booked','confirm','partial_validate','validate','to_vendor','vendor_process','delivered','done','cancel','refund','expired'])]}"/>
             </button>
             <xpath expr="//div[hasclass('oe_button_box')]" position="inside">
                 <div class="oe_button_box" name="button_box">
@@ -99,7 +99,7 @@
                             type="object"
                             class="oe_stat_button"
                             icon="fa-print"
-                            groups="tt_base.group_tt_agent_user_operator,tt_base.group_tt_tour_travel_operator"/>
+                            groups="tt_base.group_tt_agent_user_operator,tt_base.group_tt_tour_travel_operator,tt_base.group_tt_agent_user,tt_base.group_tt_tour_travel"/>
                     <button name="do_print_out_visa_cust"
                             string="Customer"
                             type="object"
@@ -108,7 +108,7 @@
                     <button name="print_ho_invoice"
                             class="oe_stat_button" states="issued,done"
                             string="Print Invoice (HO)" type="object" icon="fa-print"
-                            groups="tt_base.group_tt_tour_travel_operator"/>
+                            groups="tt_base.group_tt_tour_travel_operator,tt_base.group_tt_tour_travel"/>
                     <button name="print_itinerary"
                             class="oe_stat_button" states="booked,issued,done"
                             string="Print Itinerary" type="object" icon="fa-print"/>
@@ -182,7 +182,7 @@
                 </page>
             </xpath>
             <xpath expr="//page[@name='anchor']" position="before">
-                <page string="Vendor" name="vendor" groups="tt_base.group_tt_tour_travel_operator">
+                <page string="Vendor" name="vendor" groups="tt_base.group_tt_tour_travel_operator,tt_base.group_tt_tour_travel">
                     <field name="provider_booking_ids"/>
                 </page>
             </xpath>
@@ -200,8 +200,8 @@
             <tree create="false">
 <!--                <button type="object" string="Create Booking Visa" name="create_booking_visa_api"/>-->
                 <field name="name"/>
-                <field name="agent_id" groups="tt_base.group_tt_tour_travel_operator"/>
-                <field name="agent_type_id" groups="tt_base.group_tt_tour_travel_operator"/>
+                <field name="agent_id" groups="tt_base.group_tt_tour_travel_operator,tt_base.group_tt_tour_travel"/>
+                <field name="agent_type_id" groups="tt_base.group_tt_tour_travel_operator,tt_base.group_tt_tour_travel"/>
                 <field name="contact_id"/>
                 <field name="country_id"/>
                 <field name="immigration_consulate" string="Consulate"/>
@@ -210,7 +210,7 @@
                 <field name="issued_date"/>
                 <field name="state_visa"/>
                 <field name="state" invisible="1"/>
-                <field name="reconcile_state" groups="tt_base.group_tt_accounting_operator"/>
+                <field name="reconcile_state" groups="tt_base.group_tt_accounting_operator,tt_base.group_reconcile_level_3"/>
             </tree>
         </field>
     </record>

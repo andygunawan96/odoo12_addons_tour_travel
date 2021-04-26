@@ -497,23 +497,22 @@ class IssuedOffline(models.Model):
 
     @api.one
     def action_cancel(self):
-        if self.state_offline != 'done':
-            if self.state_offline == 'validate':
-                for rec in self.ledger_ids:
-                    if not rec.is_reversed:
-                        rec.reverse_ledger()
-                    # ledger_obj.update({
-                    #     'transaction_type': self.provider_type_id_name,
-                    #     'description': rec.description
-                    # })
-            for provider in self.provider_booking_ids:
-                for scs in provider.cost_service_charge_ids:
-                    scs.is_ledger_created = False
-            self.state = 'cancel'
-            self.state_offline = 'cancel'
-            self.cancel_date = fields.Datetime.now()
-            self.cancel_uid = self.env.user.id
-            return True
+        if self.state_offline == 'validate':
+            for rec in self.ledger_ids:
+                if not rec.is_reversed:
+                    rec.reverse_ledger()
+                # ledger_obj.update({
+                #     'transaction_type': self.provider_type_id_name,
+                #     'description': rec.description
+                # })
+        for provider in self.provider_booking_ids:
+            for scs in provider.cost_service_charge_ids:
+                scs.is_ledger_created = False
+        self.state = 'cancel'
+        self.state_offline = 'cancel'
+        self.cancel_date = fields.Datetime.now()
+        self.cancel_uid = self.env.user.id
+        return True
 
     @api.one
     def action_draft(self):
@@ -1769,6 +1768,7 @@ class IssuedOffline(models.Model):
                 'state': 'draft',
                 'state_offline': 'confirm',
                 'agent_id': context['co_agent_id'],
+                'customer_parent_id': context.get('co_customer_parent_id', False),
                 'user_id': context['co_uid'],
             }
 

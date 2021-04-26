@@ -484,6 +484,16 @@
             ]"/>
         </record>
 
+        <record id="tt_transport_carrier_search_ul_all" model="tt.transport.carrier.search">
+            <field name="name">Srilankan Airlines</field>
+            <field name="carrier_id" ref="tt_reservation_airline.tt_transport_carrier_airline_ul"/>
+            <field name="is_default" eval="True"/>
+            <field name="is_favorite" eval="False"/>
+            <field name="provider_ids" eval="[
+                (4, ref('tt_reservation_airline.tt_provider_airline_amadeus'))
+            ]"/>
+        </record>
+
         <record id="tt_transport_carrier_search_lo_all" model="tt.transport.carrier.search">
             <field name="name">Polish Airlines</field>
             <field name="carrier_id" ref="tt_reservation_airline.tt_transport_carrier_airline_lo"/>

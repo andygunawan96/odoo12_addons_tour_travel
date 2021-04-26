@@ -18,7 +18,7 @@
 <!--                            <span class="o_stat_text" attrs="{'invisible': [('auto_validation', '=', True)]}"> Manual</span>-->
 <!--                        </div>-->
 <!--                    </button>-->
-                    <button class="oe_stat_button" type="object" name="action_open_quants" icon="fa-pencil-square-o" groups="tt_base.group_tt_tour_travel_supervisor">
+                    <button class="oe_stat_button" type="object" name="action_open_quants" icon="fa-pencil-square-o" groups="tt_base.group_tt_tour_travel_supervisor,tt_base.group_master_data_hotel_level_4">
                         <div class="o_form_field o_stat_info">
                             <span class="o_stat_value">
                                 <field name="total_voucher"/>
