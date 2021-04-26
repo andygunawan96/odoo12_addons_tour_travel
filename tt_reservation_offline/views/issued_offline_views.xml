@@ -75,7 +75,7 @@
                         <button string="Quick Validate" class="oe_highlight" name="action_quick_issued" attrs="{'invisible':['|', ('state_offline','!=','confirm'),('quick_validate','=',False)]}" type="object" groups="tt_base.group_tt_tour_travel_operator,tt_base.group_tt_tour_travel"/>
                         <!--                        <button string="Post" name="action_done" states="draft,confirm,sent,paid,posted" type="object" groups="tt_base.group_tt_tour_travel_operator"/>-->
                         <button string="Done" class="oe_highlight" name="action_done" attrs="{'invisible':[('state_offline','!=','validate')]}" type="object" groups="tt_base.group_tt_ticketing_operator,account.group_account_invoice,tt_base.group_reservation_level_4"/>
-                        <button string="Cancel" name="action_cancel" type="object" attrs="{'invisible':[('state_offline','not in',['confirm','sent','validate'])]}" groups="tt_base.group_tt_ticketing_operator,account.group_account_invoice,tt_base.group_reservation_level_4" confirm="Are you sure want to cancel?"/>
+                        <button string="Cancel" name="action_cancel" type="object" attrs="{'invisible':[('state_offline','not in',['confirm','sent','validate','done'])]}" groups="tt_base.group_tt_ticketing_operator,tt_base.group_reservation_level_4" confirm="Are you sure want to cancel?"/>
                         <button string="Cancel" name="action_cancel" type="object"  attrs="{'invisible':[('state_offline','!=','draft')]}" confirm="Are you sure want to cancel?"/>
 
                         <!--                        hapus setelah fix-->
