@@ -4201,7 +4201,8 @@
                                 ref('tt_base.able_to_ticketing_ppob'),
                                 ref('tt_base.able_to_ticketing_tour'),
                                 ref('tt_base.able_to_ticketing_train'),
-                                ref('tt_base.able_to_ticketing_visa')])]"
+                                ref('tt_base.able_to_ticketing_visa'),
+                                ref('tt_base.corp_limitation')])]"
             />
         </record>
 
@@ -4277,7 +4278,8 @@
                                 ref('tt_base.able_to_ticketing_ppob'),
                                 ref('tt_base.able_to_ticketing_tour'),
                                 ref('tt_base.able_to_ticketing_train'),
-                                ref('tt_base.able_to_ticketing_visa')])]"
+                                ref('tt_base.able_to_ticketing_visa'),
+                                ref('tt_base.corp_limitation')])]"
             />
         </record>
 
