@@ -347,7 +347,7 @@ class PaymentAcquirerNumber(models.Model):
 
     res_id = fields.Integer('Res ID')
     res_model = fields.Char('Res Model')
-    agent_id = fields.Many2one('tt.agent', 'Agent', readonly=True)
+    agent_id = fields.Many2one('tt.agent', 'Agent', readonly=True) # buat VA open biar ngga kembar
     payment_acquirer_id = fields.Many2one('payment.acquirer','Payment Acquirer')
     number = fields.Char('Number')
     va_number = fields.Char('VA Number')
@@ -358,7 +358,7 @@ class PaymentAcquirerNumber(models.Model):
     time_limit = fields.Datetime('Time Limit', readonly=True)
     amount = fields.Float('Amount')
     state = fields.Selection([('open', 'Open'), ('close', 'Closed'), ('waiting', 'Waiting Next Cron'), ('done','Done'), ('cancel','Expired'), ('fail', 'Failed')], 'Payment Type')
-    email = fields.Char(string="Email")
+    email = fields.Char(string="Email") # buat VA open biar ngga kembar
     display_name_payment = fields.Char('Display Name',compute="_compute_display_name_payment")
 
     @api.depends('number','payment_acquirer_id')
