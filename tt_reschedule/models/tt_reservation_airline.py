@@ -439,8 +439,8 @@ class ReservationAirline(models.Model):
 
             if vals.get('seq_id'):
                 payment_acquirer_obj = self.env['payment.acquirer'].search([('seq_id', '=', vals['seq_id'])], limit=1)
-            if not payment_acquirer_obj:
-                return ERR.get_error(1017)
+            # if not payment_acquirer_obj: #BOOKED TIDAK KIRIM seq_id
+            #     return ERR.get_error(1017)
             # if not admin_fee_obj:
             #     raise Exception('Admin fee reschedule is not found, field required.')
 
@@ -763,7 +763,8 @@ class ReservationAirline(models.Model):
                     'reschedule_amount': total_amount,
                     'reschedule_amount_ho': total_amount,
                     'real_reschedule_amount': total_amount,
-                    'reschedule_id': rsch_obj.id
+                    'reschedule_id': rsch_obj.id,
+                    'provider_id': self.env['tt.provider.airline'].browse(commit_data['provider_id']).provider_id.id
                 }
                 if admin_fee_obj:
                     rsch_line_values.update({
