@@ -385,6 +385,10 @@ class TtReservation(models.Model):
             'is_get_booking_from_vendor': vals.get('is_get_booking_from_vendor', False),
             'register_uid': context['co_uid']
         })
+        if context.get('co_customer_parent_id'):
+            vals.update({
+                'customer_parent_ids': [(4, context['co_customer_parent_id'])]
+            })
 
         return contact_obj.create(vals)
 
@@ -653,6 +657,9 @@ class TtReservation(models.Model):
             'is_halt_process': self.is_halt_process,
             'agent_nta': self.agent_nta,
             'booked_date': self.booked_date and self.booked_date.strftime('%Y-%m-%d %H:%M:%S') or '',
+            'booked_by': self.user_id.name,
+            'issued_by': self.issued_uid.name,
+            'issued_date': self.issued_date and self.issued_date.strftime('%Y-%m-%d %H:%M:%S') or '',
             # END
         }
         if include_total_nta:
