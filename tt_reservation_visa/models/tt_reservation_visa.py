@@ -1889,7 +1889,9 @@ class TtVisa(models.Model):
                             'date': ''
                         }
                     })
-                res = {
+                res_dict.pop('book_id')
+                res_dict.pop('agent_id')
+                res_dict.update({
                     'contact': {
                         'title': res_dict['contact']['title'],
                         'name': res_dict['contact']['name'],

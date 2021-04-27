@@ -20,6 +20,8 @@
                                 <field name="seat"/>
                                 <field name="first_name"/>
                                 <field name="birth_date"/>
+                                <field name="identity_type"/>
+                                <field name="identity_number"/>
                             </group>
                             <group>
                                 <field name="passenger_id"/>
@@ -29,6 +31,8 @@
                                 <field name="name"/>
                                 <field name="last_name"/>
                                 <field name="title"/>
+                                <field name="identity_expdate"/>
+                                <field name="identity_country_of_issued_id"/>
                             </group>
                         </group>
                         <group>
