@@ -556,7 +556,7 @@ class ReservationAirline(models.Model):
                 #     raise Exception('Provider data not found')
                 #
 
-                total_amount = 0
+                # total_amount = 0
                 old_segment_list = []
                 new_segment_list = []
                 for journey in commit_data['journeys']:
@@ -614,8 +614,8 @@ class ReservationAirline(models.Model):
                                 'class_of_service': fare['class_of_service'],
                                 'cabin_class': fare['cabin_class'],
                             })
-                            for sc in fare['service_charge_summary']:
-                                total_amount += sc['total_price']
+                            # for sc in fare['service_charge_summary']:
+                            #     total_amount += sc['total_price']
 
                         n_seg_obj = self.env['tt.segment.reschedule'].sudo().create(n_seg_values)
                         new_segment_list.append(n_seg_obj.id)
@@ -696,11 +696,11 @@ class ReservationAirline(models.Model):
                         break
                 # # TODO END
 
-                total_amount = commit_data['total_price'] - rsv_prov_obj.total_price
-                _logger.info('Vendor Total Price %s, Resv Total Price %s' % (commit_data['total_price'], rsv_prov_obj.total_price))
+                # total_amount = commit_data['total_price'] - rsv_prov_obj.total_price
+                total_amount = commit_data['penalty_amount']
+                # _logger.info('Vendor Total Price %s, Resv Total Price %s' % (commit_data['total_price'], rsv_prov_obj.total_price))
                 if total_amount < 0:
                     total_amount = 0
-                # total_amount -=
 
                 # if commit_data['status'] != rsv_prov_obj.state.upper():
                 #     pass
@@ -728,7 +728,7 @@ class ReservationAirline(models.Model):
                     rsv_prov_obj.sudo().delete_passenger_fees()
                     for psg in commit_data['passengers']:
                         psg_obj = resv_passenger_number_dict[psg['passenger_number']]
-                        psg_obj.create_ssr(psg['fees'], rsv_prov_obj.pnr, rsv_prov_obj.id)
+                        psg_obj.create_ssr(psg['fees'], rsv_prov_obj.pnr, rsv_prov_obj.id, is_create_service_charge=False)
 
                 if not old_segment_list and not new_segment_list and not is_any_ssr_change:
                     continue
