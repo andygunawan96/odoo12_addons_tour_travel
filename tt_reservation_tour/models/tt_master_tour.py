@@ -1390,7 +1390,7 @@ class MasterTour(models.Model):
     def get_config_by_api(self):
         try:
             countries_list = []
-            country_objs = self.env['res.country'].sudo().search([('provider_city_ids', '!=', False)])
+            country_objs = self.env['res.country'].sudo().search([])
             for country in country_objs:
                 state = self.get_states_by_api(country.id)
                 if state.get('error_code'):
