@@ -483,7 +483,7 @@ class TtAgent(models.Model):
                     res_dict[type].append({
                         'order_number': rec.name,
                         'booked_date': rec.booked_date and rec.booked_date.strftime('%Y-%m-%d %H:%M:%S') or '',
-                        'booked_uid': rec.booked_uid and rec.booked_uid.name or '',
+                        'booked_uid': rec.user_id and rec.user_id.name or '',
                         # 'provider': {
                         'provider_type': rec.provider_type_id and rec.provider_type_id.code or '',
                         'carrier_names': rec.carrier_name and rec.carrier_name or '',
