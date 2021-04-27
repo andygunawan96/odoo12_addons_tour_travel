@@ -13,7 +13,7 @@ class AgentReportPerformance(models.TransientModel):
 
     state = fields.Selection([('a', 'a')], default='a')
     agent_type = fields.Selection(selection=lambda self: self._compute_provider_type_selection(),
-                                     string='Provider Type', default='all')
+                                     string='Agent Type', default='all')
     # agent_type = fields.Many2one('tt.agent.type', 'Agent Type')
 
     def _compute_provider_type_selection(self):

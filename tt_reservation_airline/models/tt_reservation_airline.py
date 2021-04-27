@@ -1657,25 +1657,25 @@ class ReservationAirline(models.Model):
         datas['is_with_price'] = True
         airline_ticket_id = book_obj.env.ref('tt_report_common.action_report_printout_reservation_airline')
 
+
         if not book_obj.printout_ticket_original_ids:
             # gateway get ticket
+            req = {"data": []}
             for provider_booking_obj in book_obj.provider_booking_ids:
-                req = {"data": []}
-                for idx, rec in enumerate(book_obj.provider_name.split(',')):
-                    req['data'].append({
-                        'pnr': provider_booking_obj.pnr.split(', ')[idx],
-                        'provider': rec,
-                        'last_name': book_obj.passenger_ids[0].last_name,
-                        'pnr2': provider_booking_obj.pnr2
-                    })
-                res = self.env['tt.airline.api.con'].send_get_original_ticket(req)
-                if res['error_code'] == 0:
-                    data.update({
-                        'response': res['response']
-                    })
-                    self.save_eticket_original_api(data, ctx)
-                else:
-                    return 0 # error
+                req['data'].append({
+                    'pnr': provider_booking_obj.pnr,
+                    'provider': provider_booking_obj.provider_id.code,
+                    'last_name': book_obj.passenger_ids[0].last_name,
+                    'pnr2': provider_booking_obj.pnr2
+                })
+            res = self.env['tt.airline.api.con'].send_get_original_ticket(req)
+            if res['error_code'] == 0:
+                data.update({
+                    'response': res['response']
+                })
+                self.save_eticket_original_api(data, ctx)
+            else:
+                return 0 # error
         if self.name != False:
             return 0
         else:

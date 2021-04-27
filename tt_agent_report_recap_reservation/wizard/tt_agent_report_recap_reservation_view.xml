@@ -28,8 +28,8 @@
             name="Recap Reservation Report"
             parent="tt_agent_report_recap_reservation.top_reservations_reports"
             action="action_agent_report_recap_reservation_wz"
-            sequence="1"
-            groups="tt_base.group_tt_agent_user_supervisor,tt_base.group_tt_tour_travel_operator"
+            sequence="15"
+            groups="tt_base.group_tt_tour_travel_operator"
         />
     </data>
 </odoo>

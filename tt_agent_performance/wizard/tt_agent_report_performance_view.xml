@@ -24,7 +24,7 @@
 
         <menuitem id="sub_menu_agent_report_performance"
                   name="Agent Performance Report"
-                  sequence="2"
+                  sequence="20"
                   parent="tt_base.top_tour_travel_report"
                   action="action_agent_report_performance_wz"
         />
