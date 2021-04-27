@@ -385,6 +385,10 @@ class TtReservation(models.Model):
             'is_get_booking_from_vendor': vals.get('is_get_booking_from_vendor', False),
             'register_uid': context['co_uid']
         })
+        if context.get('co_customer_parent_id'):
+            vals.update({
+                'customer_parent_ids': [(4, context['co_customer_parent_id'])]
+            })
 
         return contact_obj.create(vals)
 
