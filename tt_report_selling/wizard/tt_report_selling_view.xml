@@ -27,7 +27,7 @@
             name="Report Selling"
             parent="tt_base.top_tour_travel_report"
             action="action_report_selling_balance_wz"
-            sequence="2"
+            sequence="10"
         />
 
     </data>

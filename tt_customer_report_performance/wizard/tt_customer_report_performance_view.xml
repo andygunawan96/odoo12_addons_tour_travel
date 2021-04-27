@@ -24,7 +24,7 @@
 
         <menuitem id="sub_menu_customer_report_performance"
               name="Customer Performance Report"
-              sequence="1"
+              sequence="30"
               parent="tt_base.top_tour_travel_report"
               action="action_customer_report_performance_wz"
         />
