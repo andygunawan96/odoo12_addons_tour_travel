@@ -461,6 +461,8 @@ class ReservationEvent(models.Model):
                 # res = resv_obj.to_dict()
                 res.pop('departure_date')
                 res.pop('arrival_date')
+                res.pop('book_id')
+                res.pop('agent_id')
                 psg_list = []
                 for i in resv_obj.passenger_ids:
                     if list(filter(lambda x: x['name'] == i.option_id.event_option_name, psg_list)):

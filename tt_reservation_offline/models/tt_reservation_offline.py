@@ -1694,7 +1694,7 @@ class IssuedOffline(models.Model):
                         'owner': attachment.agent_id.name,
                     })
 
-                res = {
+                res_dict.update({
                     'order_number': book_obj.name,
                     'hold_date': book_obj.hold_date and book_obj.hold_date.strftime('%d-%m-%Y %H:%M') or '',
                     'pnr': book_obj.pnr,
@@ -1707,10 +1707,10 @@ class IssuedOffline(models.Model):
                     'commission': book_obj.agent_commission,
                     'currency': book_obj.currency_id.name,
                     'attachment': attachments
-                }
+                })
                 # print(res)
-                _logger.info("Get resp\n" + json.dumps(res))
-                return Response().get_no_error(res)
+                _logger.info("Get resp\n" + json.dumps(res_dict))
+                return Response().get_no_error(res_dict)
             else:
                 raise RequestException(1035)
         except RequestException as e:
