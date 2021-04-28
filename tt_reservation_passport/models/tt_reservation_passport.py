@@ -1059,7 +1059,9 @@ class TtPassport(models.Model):
                         },
                         'sequence': idx
                     })
-                res = {
+                res_dict.pop('book_id')
+                res_dict.pop('agent_id')
+                res_dict.update({
                     'contact': {
                         'title': res_dict['contact']['title'],
                         'name': res_dict['contact']['name'],
@@ -1072,13 +1074,15 @@ class TtPassport(models.Model):
                         'name': res_dict['order_number'],
                         'payment_status': book_obj.commercial_state,
                         'state': book_obj.state,
-                        'state_passport': dict(book_obj._fields['state_passport'].selection).get(book_obj.state_passport)
+                        'state_passport': dict(book_obj._fields['state_passport'].selection).get(
+                            book_obj.state_passport)
                     },
                     'passengers': passenger
-                }
-                _logger.info("Get resp\n" + json.dumps(res))
-                print(Response().get_no_error(res))
-                return Response().get_no_error(res)
+                })
+
+                _logger.info("Get resp\n" + json.dumps(res_dict))
+                print(Response().get_no_error(res_dict))
+                return Response().get_no_error(res_dict)
             else:
                 raise RequestException(1035)
         except RequestException as e:
