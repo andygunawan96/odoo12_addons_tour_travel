@@ -1669,11 +1669,14 @@ class IssuedOffline(models.Model):
             except:
                 raise RequestException(1008)
             if book_obj and book_obj.agent_id.id == context.get('co_agent_id', -1) or self.env.ref('tt_base.group_tt_process_channel_bookings').id in user_obj.groups_id.ids:
-                res_dict = book_obj.sudo().to_dict()
+                res_dict = book_obj.sudo().to_dict(context['co_agent_id'] == self.env.ref('tt_base.rodex_ho').id)
                 lines = []
                 passengers = []
                 attachments = []
-
+                res_dict.pop('departure_date')
+                res_dict.pop('arrival_date')
+                res_dict.pop('book_id')
+                res_dict.pop('agent_id')
                 # lines
                 for line in book_obj.line_ids:
                     lines.append(line.to_dict())
@@ -1706,7 +1709,13 @@ class IssuedOffline(models.Model):
                     'total': book_obj.total,
                     'commission': book_obj.agent_commission,
                     'currency': book_obj.currency_id.name,
-                    'attachment': attachments
+                    'attachment': attachments,
+
+                    'offline_provider_type_name': book_obj.offline_provider_type_name,
+                    'input_total': book_obj.input_total,
+                    # 'total_with_fees': self.total_with_fees,
+                    'description': book_obj.description,
+                    'social_media_type': book_obj.social_media_type.id
                 })
                 # print(res)
                 _logger.info("Get resp\n" + json.dumps(res_dict))
@@ -2086,18 +2095,18 @@ class IssuedOffline(models.Model):
                 desc_txt += 'Description : ' + (rec.description or '') + '<br/><br/>'
         return desc_txt
 
-    def to_dict(self):
-        return {
-            'agent_id': self.agent_id.id,
-            'booker_id': self.booker_id.id,
-            'contact_id': self.contact_id.id,
-            'offline_provider_type': self.offline_provider_type,
-            'offline_provider_type_name': self.offline_provider_type_name,
-            'total': self.total,
-            'input_total': self.input_total,
-            # 'total_with_fees': self.total_with_fees,
-            'description': self.description,
-            'state': self.state,
-            'state_offline': self.state_offline,
-            'social_media_type': self.social_media_type.id
-        }
+    # def to_dict(self):
+    #     return {
+    #         'agent_id': self.agent_id.id,
+    #         'booker_id': self.booker_id.id,
+    #         'contact_id': self.contact_id.id,
+    #         'offline_provider_type': self.offline_provider_type,
+    #         'offline_provider_type_name': self.offline_provider_type_name,
+    #         'total': self.total,
+    #         'input_total': self.input_total,
+    #         # 'total_with_fees': self.total_with_fees,
+    #         'description': self.description,
+    #         'state': self.state,
+    #         'state_offline': self.state_offline,
+    #         'social_media_type': self.social_media_type.id
+    #     }
