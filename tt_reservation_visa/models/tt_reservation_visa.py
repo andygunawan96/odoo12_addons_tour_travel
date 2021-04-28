@@ -1889,7 +1889,9 @@ class TtVisa(models.Model):
                             'date': ''
                         }
                     })
-                res = {
+                res_dict.pop('book_id')
+                res_dict.pop('agent_id')
+                res_dict.update({
                     'contact': {
                         'title': res_dict['contact']['title'],
                         'name': res_dict['contact']['name'],
@@ -1908,9 +1910,9 @@ class TtVisa(models.Model):
                     },
                     'passengers': passenger,
                     'state_visa_arr': state_visa
-                }
-                _logger.info("Get resp\n" + json.dumps(res))
-                return Response().get_no_error(res)
+                })
+                _logger.info("Get resp\n" + json.dumps(res_dict))
+                return Response().get_no_error(res_dict)
             else:
                 raise RequestException(1035)
         except RequestException as e:
