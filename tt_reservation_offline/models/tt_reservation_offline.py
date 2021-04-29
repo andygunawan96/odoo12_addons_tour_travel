@@ -55,7 +55,7 @@ SECTOR_TYPE = [
 class IssuedOffline(models.Model):
     _inherit = 'tt.reservation'
     _name = 'tt.reservation.offline'
-    _order = 'name desc'
+    _order = 'id desc'
     _description = 'Reservation Offline'
 
     state = fields.Selection(variables.BOOKING_STATE, 'State', default='draft')
