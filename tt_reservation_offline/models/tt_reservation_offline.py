@@ -1669,11 +1669,14 @@ class IssuedOffline(models.Model):
             except:
                 raise RequestException(1008)
             if book_obj and book_obj.agent_id.id == context.get('co_agent_id', -1) or self.env.ref('tt_base.group_tt_process_channel_bookings').id in user_obj.groups_id.ids:
-                res_dict = book_obj.sudo().to_dict()
+                res_dict = book_obj.sudo().to_dict(context['co_agent_id'] == self.env.ref('tt_base.rodex_ho').id)
                 lines = []
                 passengers = []
                 attachments = []
-
+                res_dict.pop('departure_date')
+                res_dict.pop('arrival_date')
+                res_dict.pop('book_id')
+                res_dict.pop('agent_id')
                 # lines
                 for line in book_obj.line_ids:
                     lines.append(line.to_dict())
@@ -1694,7 +1697,7 @@ class IssuedOffline(models.Model):
                         'owner': attachment.agent_id.name,
                     })
 
-                res = {
+                res_dict.update({
                     'order_number': book_obj.name,
                     'hold_date': book_obj.hold_date and book_obj.hold_date.strftime('%d-%m-%Y %H:%M') or '',
                     'pnr': book_obj.pnr,
@@ -1706,11 +1709,17 @@ class IssuedOffline(models.Model):
                     'total': book_obj.total,
                     'commission': book_obj.agent_commission,
                     'currency': book_obj.currency_id.name,
-                    'attachment': attachments
-                }
+                    'attachment': attachments,
+
+                    'offline_provider_type_name': book_obj.offline_provider_type_name,
+                    'input_total': book_obj.input_total,
+                    # 'total_with_fees': self.total_with_fees,
+                    'description': book_obj.description,
+                    'social_media_type': book_obj.social_media_type.id
+                })
                 # print(res)
-                _logger.info("Get resp\n" + json.dumps(res))
-                return Response().get_no_error(res)
+                _logger.info("Get resp\n" + json.dumps(res_dict))
+                return Response().get_no_error(res_dict)
             else:
                 raise RequestException(1035)
         except RequestException as e:
@@ -1730,9 +1739,9 @@ class IssuedOffline(models.Model):
         payment = data['payment']  # self.param_payment
 
         try:
-            booker_id = self.create_booker_api(booker, context)  # create booker
-            contact_id = self.create_contact_api(contact[0], booker_id, context)
-            passenger_ids = self.create_customer_api(passengers, context, booker_id, contact_id)  # create passenger
+            booker_obj = self.create_booker_api(booker, context)  # create booker
+            contact_obj = self.create_contact_api(contact[0], booker_obj, context)
+            # passenger_ids = self.create_customer_api(passengers, context, booker_obj, contact_obj)  # create passenger
             booking_line_ids = []
             iss_off_psg_ids = []
             if data_reservation_offline['total_sale_price'] <= 0:
@@ -1746,16 +1755,19 @@ class IssuedOffline(models.Model):
                 return create_line_res  # Return error code & msg
             if not passengers:
                 raise RequestException(1004, additional_message='Passengers can\'t be empty.')
-            create_psg_res = self._create_reservation_offline_order(passengers, passenger_ids, context)
-            if create_psg_res['error_code'] == 0:
-                iss_off_psg_ids = create_psg_res['response']
-            else:
-                return create_psg_res  # Return error code & msg
+            # create_psg_res = self._create_reservation_offline_order(passengers, passenger_ids, context)
+            list_passenger_value = self.create_passenger_value_api_test(passengers)
+            list_customer_id = self.create_customer_api(passengers, context, booker_obj.seq_id, contact_obj.seq_id)
+            # fixme diasumsikan idxny sama karena sama sama looping by rec['psg']
+            for idx, rec in enumerate(list_passenger_value):
+                rec[2].update({
+                    'customer_id': list_customer_id[idx].id
+                })
             header_val = {
-                'booker_id': booker_id.id,
-                'passenger_ids': [(6, 0, iss_off_psg_ids)],
+                'booker_id': booker_obj.id,
+                'passenger_ids': list_passenger_value,
                 # 'contact_ids': [(6, 0, contact_ids)],
-                'contact_id': contact_id.id,
+                'contact_id': contact_obj.id,
                 # 'customer_parent_id': customer_parent_id,
                 'line_ids': [(6, 0, booking_line_ids)],
                 'offline_provider_type': data_reservation_offline.get('type'),
@@ -1924,16 +1936,15 @@ class IssuedOffline(models.Model):
 
     def _create_reservation_offline_order(self, passengers, passenger_ids, context):
         try:
-            iss_off_psg_env = self.env['tt.reservation.offline.passenger'].sudo()
             iss_off_pas_list = []
             for idx, psg in enumerate(passengers):
-                psg_vals = {
-                    'passenger_id': passenger_ids[idx][0].id,
-                    'agent_id': context['co_agent_id'],
-                    'pax_type': psg['pax_type'],  # 'OAM'
-                    'title': psg['title']
-                }
-                iss_off_psg_obj = iss_off_psg_env.create(psg_vals)
+                iss_off_psg_obj = self.env['tt.reservation.offline.passenger'].create(psg)
+                iss_off_psg_obj.update({
+                    "customer_id": passenger_ids[idx].id
+                })
+                if psg.get('identity'):
+                    psg['identity'].pop('identity_country_of_issued_name')
+                    iss_off_psg_obj.update(psg['identity'])
                 iss_off_pas_list.append(iss_off_psg_obj.id)
         except Exception as e:
             print('Error line : ' + str(e))
@@ -2084,18 +2095,18 @@ class IssuedOffline(models.Model):
                 desc_txt += 'Description : ' + (rec.description or '') + '<br/><br/>'
         return desc_txt
 
-    def to_dict(self):
-        return {
-            'agent_id': self.agent_id.id,
-            'booker_id': self.booker_id.id,
-            'contact_id': self.contact_id.id,
-            'offline_provider_type': self.offline_provider_type,
-            'offline_provider_type_name': self.offline_provider_type_name,
-            'total': self.total,
-            'input_total': self.input_total,
-            # 'total_with_fees': self.total_with_fees,
-            'description': self.description,
-            'state': self.state,
-            'state_offline': self.state_offline,
-            'social_media_type': self.social_media_type.id
-        }
+    # def to_dict(self):
+    #     return {
+    #         'agent_id': self.agent_id.id,
+    #         'booker_id': self.booker_id.id,
+    #         'contact_id': self.contact_id.id,
+    #         'offline_provider_type': self.offline_provider_type,
+    #         'offline_provider_type_name': self.offline_provider_type_name,
+    #         'total': self.total,
+    #         'input_total': self.input_total,
+    #         # 'total_with_fees': self.total_with_fees,
+    #         'description': self.description,
+    #         'state': self.state,
+    #         'state_offline': self.state_offline,
+    #         'social_media_type': self.social_media_type.id
+    #     }

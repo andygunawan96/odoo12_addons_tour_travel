@@ -29,6 +29,9 @@ class IssuedOfflinePassenger(models.Model):
     passenger_id = fields.Many2one('tt.customer', 'Passengers', readonly=True,
                                    states={'draft': [('readonly', False)],
                                            'pending': [('readonly', False)]})
+    customer_id = fields.Many2one('tt.customer', 'Customer Reference', readonly=True,
+                                   states={'draft': [('readonly', False)],
+                                           'pending': [('readonly', False)]})
     agent_id = fields.Many2one('tt.agent', 'Agent', readonly=True, states={'draft': [('readonly', False)],
                                                                            'pending': [('readonly', False)]})  # , default=lambda self: self.booking_id.agent_id.id
     pax_type = fields.Selection(PAX_TYPE)  # , related='passenger_id.pax_type'
@@ -37,8 +40,8 @@ class IssuedOfflinePassenger(models.Model):
     seat = fields.Char('Seat')
     state = fields.Selection(variables.BOOKING_STATE, string='State', default='draft', related='booking_id.state')
     state_offline = fields.Selection(STATE, string='State', default='draft', related='booking_id.state_offline')
-    first_name = fields.Char('First Name', related='passenger_id.first_name')
-    last_name = fields.Char('Last Name', related='passenger_id.last_name')
+    first_name = fields.Char('First Name', related='customer_id.first_name')
+    last_name = fields.Char('Last Name', related='customer_id.last_name')
     name = fields.Char('Name', compute='compute_name', store=True)
     title = fields.Selection(variables.TITLE, 'Title')
     birth_date = fields.Date('Birth Date')

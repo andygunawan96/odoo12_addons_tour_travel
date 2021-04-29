@@ -421,33 +421,48 @@ class ReservationEvent(models.Model):
         else:
             return ERR.get_error(1004)
 
-    def to_dict(self):
-        return {
-            'order_number': self.name,
-            'providers': [{'provider': rec.provider_id.code, 'pnr': self.pnr} for rec in self.provider_booking_ids],
-            'event_name': self.event_name,
-            'event_location': self.event_id and [{
-                'name': rec.name,
-                'address': rec.address,
-                'city': rec.city_name,
-                'country': rec.country_name,
-                'lat': '',
-                'long': '',
-            } for rec in self.event_id.location_ids] or [],
-            'hold_date': self.hold_date,
-            'description': self.event_id and self.event_id.description or '',
-            'options': [rec.to_dict() for rec in self.passenger_ids],
-            'notes': '',
-            'booker': self.booker_id.to_dict(),
-            'contact': self.contact_id.to_dict(),
-            'status': self.state,
-        }
+    # def to_dict(self):
+    #     return {
+    #         'order_number': self.name,
+    #         'providers': [{'provider': rec.provider_id.code, 'pnr': self.pnr} for rec in self.provider_booking_ids],
+    #         'event_name': self.event_name,
+    #         'event_location': self.event_id and [{
+    #             'name': rec.name,
+    #             'address': rec.address,
+    #             'city': rec.city_name,
+    #             'country': rec.country_name,
+    #             'lat': '',
+    #             'long': '',
+    #         } for rec in self.event_id.location_ids] or [],
+    #         'hold_date': self.hold_date,
+    #         'description': self.event_id and self.event_id.description or '',
+    #         'options': [rec.to_dict() for rec in self.passenger_ids],
+    #         'notes': '',
+    #         'booker': self.booker_id.to_dict(),
+    #         'contact': self.contact_id.to_dict(),
+    #         'status': self.state,
+    #     }
 
     def get_booking_from_backend(self, data, context):
         try:
             resv_obj = self.get_book_obj(data.get('order_id'), data.get('order_number'))
-            if resv_obj:
-                res = resv_obj.to_dict()
+            try:
+                resv_obj.create_date
+            except:
+                raise RequestException(1001)
+
+            user_obj = self.env['res.users'].browse(context['co_uid'])
+            try:
+                user_obj.create_date
+            except:
+                raise RequestException(1008)
+            if resv_obj.agent_id.id == context.get('co_agent_id',-1) or self.env.ref('tt_base.group_tt_process_channel_bookings').id in user_obj.groups_id.ids or book_obj.agent_type_id.name == self.env.ref('tt_base.agent_b2c').agent_type_id.name or book_obj.user_id.login == self.env.ref('tt_base.agent_b2c_user').login:
+                res = resv_obj.to_dict(context['co_agent_id'] == self.env.ref('tt_base.rodex_ho').id)
+                # res = resv_obj.to_dict()
+                res.pop('departure_date')
+                res.pop('arrival_date')
+                res.pop('book_id')
+                res.pop('agent_id')
                 psg_list = []
                 for i in resv_obj.passenger_ids:
                     if list(filter(lambda x: x['name'] == i.option_id.event_option_name, psg_list)):
@@ -460,7 +475,20 @@ class ReservationEvent(models.Model):
                         })
                         psg_list.append(new_i)
                 res.update({
-                    'passenger': psg_list,
+                    'providers': [{'provider': rec.provider_id.code, 'pnr': rec.pnr} for rec in resv_obj.provider_booking_ids],
+                    'event_name': resv_obj.event_name,
+                    'event_location': resv_obj.event_id and [{
+                        'name': rec.name,
+                        'address': rec.address,
+                        'city': rec.city_name,
+                        'country': rec.country_name,
+                        'lat': '',
+                        'long': '',
+                    } for rec in resv_obj.event_id.location_ids] or [],
+                    'description': resv_obj.event_id and resv_obj.event_id.description or '',
+                    'options': [rec.to_dict() for rec in resv_obj.passenger_ids],
+                    'notes': '',
+                    'passengers': psg_list
                 })
                 return ERR.get_no_error(res)
             else:
