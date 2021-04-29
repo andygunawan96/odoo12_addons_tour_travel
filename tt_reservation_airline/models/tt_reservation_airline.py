@@ -2379,3 +2379,41 @@ class ReservationAirline(models.Model):
         except:
             _logger.error('Error Split Reservation Airline API, %s' % traceback.format_exc())
             return ERR.get_error(1034)
+
+    def get_booking_number_airline_api(self, data, context):
+        try:
+            '''
+                data = {
+                    "pnr": "ABCDEF",
+                    "provider": "sia",
+                }
+                '''
+
+            # Prepare Wizard Value
+            book_obj = None
+            provider_obj = None
+            provider_data_obj = None
+            if 'provider' in data:
+                provider_obj = self.env['tt.provider'].sudo().search([('code', '=', data['provider'])], limit=1)
+                if not provider_obj:
+                    raise Exception('Provider not found, %s' % data['provider'])
+
+            if provider_obj and 'pnr' in data:
+                provider_data_obj = self.env['tt.provider.airline'].sudo().search([('pnr', '=', data['pnr']), ('provider_id', '=', provider_obj.id), ('state', 'in', ['booked', 'issued'])], limit=1)
+                book_obj = provider_data_obj.booking_id
+
+            if not book_obj:
+                raise Exception('Booking Object not Found')
+
+            response = {
+                'book_id': book_obj.id,
+                'order_number': book_obj.name,
+                'provider_id': provider_data_obj.id
+            }
+            return ERR.get_no_error(response)
+        except RequestException as e:
+            _logger.error('Error Get Booking Number Airline API, %s' % traceback.format_exc())
+            return e.error_dict()
+        except:
+            _logger.error('Error Get Booking Number Airline API, %s' % traceback.format_exc())
+            return ERR.get_error(1013)
