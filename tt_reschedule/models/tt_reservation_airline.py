@@ -426,6 +426,10 @@ class ReservationAirline(models.Model):
                 key = prov.id
                 resv_provider_dict[key] = prov
 
+            is_admin_charge = True
+            if 'is_admin_charge' in vals:
+                is_admin_charge = vals['is_admin_charge']
+
             # July 9, 2020 - SAM
             # Mengambil data dari gateway
             # admin_fee_obj = None
@@ -724,7 +728,8 @@ class ReservationAirline(models.Model):
                             for fare in segment['fares']:
                                 rsv_prov_obj.create_service_charge(fare['service_charges'])
                 elif commit_data['status'] == 'ISSUED' and rsv_prov_obj.state == 'issued':
-                    admin_fee_obj = self.env.ref('tt_accounting.admin_fee_reschedule')
+                    if is_admin_charge:
+                        admin_fee_obj = self.env.ref('tt_accounting.admin_fee_reschedule')
                     rsv_prov_obj.sudo().delete_passenger_fees()
                     for psg in commit_data['passengers']:
                         psg_obj = resv_passenger_number_dict[psg['passenger_number']]
