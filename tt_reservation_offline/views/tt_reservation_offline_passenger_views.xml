@@ -54,7 +54,7 @@
                     <field name="seat" attrs="{'readonly': [('state_offline', 'not in', ['draft', 'confirm', 'sent', 'validate'])]}"/>  <!--attrs="{'invisible': [('transaction_name', 'not in', ['airline','train'])]}"-->
                     <field name="agent_id" readonly="1"/>
                     <field name="title"/>
-                    <field name="passenger_id" string="Name" context="{'default_agent_id': agent_id}"/>
+                    <field name="customer_id" string="Name" context="{'default_agent_id': agent_id}"/>
                     <field name="pax_type"/>
                     <field name="state" readonly="1" invisible="1"/>
                     <field name="state_offline" readonly="1"/>

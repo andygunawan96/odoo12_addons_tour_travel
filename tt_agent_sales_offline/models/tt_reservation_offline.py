@@ -91,7 +91,7 @@ class ReservationOffline(models.Model):
                 })
         else:
             for psg in self.passenger_ids:
-                desc_text = psg.passenger_id.name
+                desc_text = psg.customer_id.name
                 price_unit = 0
                 for srvc in self.sale_service_charge_ids:
                     if srvc.charge_type not in ['RAC', 'DISC']:
