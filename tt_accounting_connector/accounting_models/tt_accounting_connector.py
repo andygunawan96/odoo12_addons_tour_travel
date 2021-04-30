@@ -1,45 +1,27 @@
+from odoo import api, fields, models, _
 import logging
 import requests
+import json
+from ...tools.variables import ACC_TRANSPORT_TYPE, ACC_TRANSPORT_TYPE_REVERSE
 
 _logger = logging.getLogger(__name__)
+url = 'http://accounting.rodextrip.com'
 
 
-class SalesOrder(dict):
-    url = 'http://accounting.rodextrip.com'
+class AccountingConnector(models.Model):
+    _name = 'tt.accounting.connector'
+    _description = 'Accounting Connector'
 
-    def __init__(self, seq=None, **kwargs):
-        for k in kwargs.keys():
-            if k in self:
-                self[k] = kwargs[k]
-
-    def __getattr__(self, name):
-        if name in self:
-            return self[name]
-        else:
-            raise AttributeError("No such attribute: " + name)
-
-    def __setattr__(self, name, value):
-        if name in self:
-            self[name] = value
-        else:
-            raise AttributeError("No such attribute: " + name)
-
-    def __delattr__(self, name):
-        if name in self:
-            del self[name]
-        else:
-            raise AttributeError("No such attribute: " + name)
-
-    def AccLogin(self):
+    def acc_login(self):
         auth = {'usr': 'rodexapi', 'pwd': 'rodexapi'}
-        res = requests.post(self.url + '/api/method/login', data=auth)
+        res = requests.post(url + '/api/method/login', data=auth)
         _logger.info(res)
         return res
 
-    def GetSalesOrder(self):
+    def get_sales_order(self):
         # ses = requests.Session()
         cookies = False
-        login_res = self.AccLogin()
+        login_res = self.acc_login()
         if login_res:
             cookies = login_res.cookies
 
@@ -48,14 +30,14 @@ class SalesOrder(dict):
         }
 
         # res = util.send_request_json(self._get_web_hook('Sales%20Order'), post=vals, headers=headers)
-        response = requests.post(self.url + '/api/method/jasaweb.rodex', headers=headers, cookies=cookies)
+        response = requests.post(url + '/api/method/jasaweb.rodex', headers=headers, cookies=cookies)
         res = response.content
         return res
 
-    def AddSalesOrder(self, vals):
+    def add_sales_order(self, vals):
         # ses = requests.Session()
         cookies = False
-        login_res = self.AccLogin()
+        login_res = self.acc_login()
         if login_res:
             cookies = login_res.cookies
 
@@ -64,7 +46,7 @@ class SalesOrder(dict):
         }
 
         # res = util.send_request_json(self._get_web_hook('Sales%20Order'), post=vals, headers=headers)
-        response = requests.post(self.url + '/api/method/jasaweb.rodex.insert_journal_entry', data=vals, headers=headers, cookies=cookies)
+        response = requests.post(url + '/api/method/jasaweb.rodex.insert_journal_entry', data=json.dumps(vals), headers=headers, cookies=cookies)
         if response.status_code == 200:
             _logger.info('Insert Success')
         else:
@@ -75,7 +57,21 @@ class SalesOrder(dict):
             'content': response.content
         }
         _logger.info(res)
+
+        if response.status_code == 200:
+            self.env['tt.accounting.history'].sudo().create({
+                'request': vals,
+                'response': res,
+                'transport_type': vals.get('transport_type', ''),
+                'res_model': vals.get('transport_type') and ACC_TRANSPORT_TYPE_REVERSE.get(vals['transport_type'], '') or '',
+                'state': 'success'
+            })
+        else:
+            self.env['tt.accounting.history'].sudo().create({
+                'request': vals,
+                'response': res,
+                'transport_type': vals.get('transport_type', ''),
+                'res_model': vals.get('transport_type') and ACC_TRANSPORT_TYPE_REVERSE.get(vals['transport_type'], '') or '',
+                'state': 'failed'
+            })
         return res
-
-
-
