@@ -24,6 +24,7 @@
                                 <field name="identity_number"/>
                             </group>
                             <group>
+                                <field name="customer_id"/>
                                 <field name="pax_type"/>
                                 <field name="state"/>
                                 <field name="state_offline"/>

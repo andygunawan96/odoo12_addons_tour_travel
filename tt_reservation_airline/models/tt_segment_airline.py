@@ -84,6 +84,7 @@ class TtSegmentAirline(models.Model):
             'sequence': self.sequence,
             'seats': [],
             'legs': leg_list,
+            'fare_details': self.segment_addons_ids.to_dict(),
             # April 20, 2022 - SAM
             'fare_basis_code': self.fare_basis_code and self.fare_basis_code or '',
             'fare_class': self.fare_class and self.fare_class or '',
