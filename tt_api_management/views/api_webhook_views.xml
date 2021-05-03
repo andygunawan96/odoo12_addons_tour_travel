@@ -115,7 +115,7 @@
     </record>
 
     <record id="api_webhook_data_action_view" model="ir.actions.act_window">
-        <field name="name">API Webhook Dat</field>
+        <field name="name">API Webhook Data</field>
         <field name="res_model">tt.api.webhook.data</field>
         <field name="view_type">form</field>
         <field name="view_mode">tree,form</field>
