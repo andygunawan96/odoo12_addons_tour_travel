@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+	<data>
+		<record id="visa_sync_product_children_wizard" model="ir.ui.view">
+			<field name="name">Visa Sync Product to Children Wizard</field>
+			<field name="model">visa.sync.product.children.wizard</field>
+			<field name="arch" type="xml">
+				<form string="Message">
+					<group>
+
+					</group>
+					<footer>
+						<button string="Sync Data to Children" name="sync_data_to_children" type="object" class="btn-primary" confirm="Sync all Visa data to children?" />
+						<button string="Cancel" class="btn-default" special="cancel" />
+					</footer>
+				</form>
+			</field>
+		</record>
+
+		<record id="action_visa_sync_product_children_wizard" model="ir.actions.act_window">
+			<field name="name">Visa Sync Products to Children</field>
+			<field name="type">ir.actions.act_window</field>
+			<field name="res_model">visa.sync.product.children.wizard</field>
+			<field name="view_type">form</field>
+			<field name="view_mode">form</field>
+			<field name="view_id" ref="visa_sync_product_children_wizard"/>
+			<field name="target">new</field>
+		</record>
+
+		<menuitem
+				id="sub_menu_visa_sync_product_children"
+				name="Sync Products to Children"
+				parent="tt_reservation_visa.menu_tour_travel_visa_configuration"
+				action="action_visa_sync_product_children_wizard"
+				sequence="2"
+				groups="tt_base.group_tt_tour_division_operator,tt_base.group_master_data_visa_level_3"
+		/>
+
+	</data>
+</odoo>

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record model="tt.api.webhook.data" id="api_webhook_data_sync_status_visa">
+        <field name='name'>Sync Visa Status</field>
+        <field name='provider_type_id' ref='tt_reservation_visa.tt_provider_type_visa'/>
+        <field name='action'>sync</field>
+    </record>
+
+    <record model="tt.api.webhook.data" id="api_webhook_data_sync_master_visa">
+        <field name='name'>Sync Master Data Visa</field>
+        <field name='provider_type_id' ref='tt_reservation_visa.tt_provider_type_visa'/>
+        <field name='action'>sync</field>
+    </record>
+</odoo>

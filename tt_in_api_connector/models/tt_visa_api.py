@@ -21,6 +21,8 @@ class TtVisaApiCon(models.Model):
             res = self.env['tt.reservation.visa.pricelist'].availability_api(data)
         elif action == 'create_booking_visa_api':
             res = table_obj.create_booking_visa_api(data, context)
+        elif action == 'product_sync_webhook_nosend':
+            res = self.env['visa.sync.product.children.wizard'].product_sync_webhook_nosend(data, context)
         elif action == 'state_booking_visa_api':
             res = table_obj.state_booking_visa_api(data, context)
         elif action == 'change_pnr_api':
