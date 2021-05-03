@@ -101,23 +101,25 @@ class ttCronTopUpValidator(models.Model):
                                             res = self.env['tt.top.up'].action_va_top_up(request, context)
                                             self._cr.commit()
                                             result.top_up_validated(res['response']['top_up_id'])
-                                            top_up_obj.state = 'done'
                                     book_obj = self.env['tt.reservation.%s' % variables.PROVIDER_TYPE_PREFIX[top_up_obj['number'].split('.')[0]]].search([('name', '=', '%s.%s' % (top_up_obj['number'].split('.')[0], top_up_obj['number'].split('.')[1])), ('state', 'in', ['booked'])], limit=1)
 
                                     if book_obj:
+                                        if book_obj.state != 'issued':
                                         #login gateway, payment
-                                        req = {
-                                            'order_number': book_obj.name,
-                                            'user_id': book_obj.user_id.id,
-                                            'provider_type': variables.PROVIDER_TYPE_PREFIX[book_obj.name.split('.')[0]]
-                                        }
-                                        res = self.env['tt.payment.api.con'].send_payment(req)
-                                        if res['error_code'] == 0:
-                                            # tutup payment acq number
-                                            top_up_obj.state = 'done'
+                                            req = {
+                                                'order_number': book_obj.name,
+                                                'user_id': book_obj.user_id.id,
+                                                'provider_type': variables.PROVIDER_TYPE_PREFIX[book_obj.name.split('.')[0]]
+                                            }
+                                            res = self.env['tt.payment.api.con'].send_payment(req)
+                                            if res['error_code'] == 0:
+                                                # tutup payment acq number
+                                                top_up_obj.state = 'done'
+                                            else:
+                                                top_up_obj.state = 'waiting'
+                                            _logger.info(json.dumps(res))
                                         else:
-                                            top_up_obj.state = 'waiting'
-                                        _logger.info(json.dumps(res))
+                                            top_up_obj.state = 'done'
 
 
                     else:
