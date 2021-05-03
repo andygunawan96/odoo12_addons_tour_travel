@@ -154,6 +154,15 @@
                             <field name="created_by_api" invisible="1"/>
                         </group>
                     </group>
+                    <separator string="Fee Notes"/>
+                    <group>
+                        <group>
+                            <field name="old_fee_notes"/>
+                        </group>
+                        <group>
+                            <field name="new_fee_notes"/>
+                        </group>
+                    </group>
                     <notebook colspan="4" name="notebooks_segment">
                         <page string="Segments" name="segment_page">
                             <separator string="Old Segments"/>

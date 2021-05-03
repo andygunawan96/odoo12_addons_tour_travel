@@ -74,4 +74,69 @@
 
     <menuitem id="transport_carrier_menu" parent="tt_base.menu_tour_travel_carrier_master"
               name="Transport Carrier" action="transport_carrier_action" sequence="20"/>
+
+    <record id="transport_carrier_type_view_form" model="ir.ui.view">
+        <field name="name">transport.carrier.type.view.form</field>
+        <field name="model">tt.transport.carrier.type</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="toggle_active" type="object" class="oe_stat_button" icon="fa-archive">
+                                <field name="active" widget="boolean_button" options='{"terminology": "archive"}'/>
+                        </button>
+                    </div>
+                    <div class="oe_title">
+                        <label for="name" class="oe_edit_only"/>
+                        <h1><field name="name"/></h1>
+                    </div>
+                    <group>
+                        <group string="General">
+                            <field name="code"/>
+                            <field name="icao"/>
+                        </group>
+                        <group string="Additional Information">
+                            <field name="provider_type_id"/>
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="transport_carrier_type_view_tree" model="ir.ui.view">
+        <field name="name">transport.carrier.type.view.tree</field>
+        <field name="model">tt.transport.carrier.type</field>
+        <field name="arch" type="xml">
+            <tree decoration-muted="active == False">
+                <field name="name"/>
+                <field name="code"/>
+                <field name="provider_type_id"/>
+                <field name="active"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="transport_carrier_type_view_search" model="ir.ui.view">
+        <field name="name">transport.carrier.type.view.search</field>
+        <field name="model">tt.transport.carrier.type</field>
+        <field name="arch" type="xml">
+        <search>
+            <field name="name"/>
+            <field name="code"/>
+            <filter name="inactive" string="Archived" domain="[('active','=',False)]"/>
+        </search>
+        </field>
+    </record>
+
+    <record id="transport_carrier_type_action" model="ir.actions.act_window">
+        <field name="name">Transport Carrier Type</field>
+        <field name="res_model">tt.transport.carrier.type</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+        <field name="domain">['|',('active', '=', 1),('active', '=', 0)]</field>
+    </record>
+
+    <menuitem id="transport_carrier_type_menu" parent="tt_base.menu_tour_travel_carrier_master"
+              name="Transport Carrier Type" action="transport_carrier_type_action" sequence="20"/>
 </odoo>
