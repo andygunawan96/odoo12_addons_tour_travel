@@ -115,6 +115,9 @@ class VisaSyncProducts(models.TransientModel):
                 product_obj = product_obj and product_obj[0] or False
                 temp = []
                 if provider == 'rodextrip_visa':
+                    data_vendor = self.env['tt.reservation.visa.pricelist'].search([('provider_id.code', '=', 'rodextrip_visa')])
+                    for rec in data_vendor:
+                        rec.active = False
                     req = {
                         'provider': provider,
                         'code': rec
