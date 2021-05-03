@@ -82,6 +82,7 @@
                             <field name="tour_route" attrs="{'readonly': ['|', ('state', '!=', 'draft'), ('provider_id', '!=', %(tt_reservation_tour.tt_provider_tour_internal)d)]}"/>
                             <field name="sequence" attrs="{'readonly': ['|', ('state', '!=', 'draft'), ('provider_id', '!=', %(tt_reservation_tour.tt_provider_tour_internal)d)]}"/>
                             <field name="is_can_hold" attrs="{'readonly': ['|', ('state', '!=', 'draft'), ('provider_id', '!=', %(tt_reservation_tour.tt_provider_tour_internal)d)]}"/>
+                            <field name="hold_date_timer" attrs="{'readonly': ['|', ('state', '!=', 'draft'), ('provider_id', '!=', %(tt_reservation_tour.tt_provider_tour_internal)d)]}"/>
                             <field name="document_url" attrs="{'readonly': ['|', ('state', '!=', 'draft'), ('provider_id', '!=', %(tt_reservation_tour.tt_provider_tour_internal)d)]}"/>
                         </group>
                         <group>

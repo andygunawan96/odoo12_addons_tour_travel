@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <record id="master_tour_default_hold_date_timer" model="ir.config_parameter">
+            <field name="key">tt_master_tour.master_tour_default_hold_date_timer</field>
+            <field name="value">6</field>
+        </record>
+    </data>
+</odoo>
