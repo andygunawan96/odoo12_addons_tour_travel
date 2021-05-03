@@ -146,7 +146,13 @@ class TtAdjustment(models.Model):
         elif self.component_type == 'commission':
             ledger_type = 3
 
-        self.env['tt.ledger'].create_ledger_vanilla(
+        ## 3 May 2021 Joshua
+        ## pop context default dari wizard adjustment, karena otomatis ke isi waktu create_ledger yang tidak di val_list dan ada di context
+        this_context = self.env.context.copy()
+        if this_context.get('default_agent_id'):
+            this_context.pop('default_agent_id')
+
+        self.with_context(this_context).env['tt.ledger'].create_ledger_vanilla(
             self.res_model,
             self.res_id,
             'Adjustment : for %s' % (self.name),

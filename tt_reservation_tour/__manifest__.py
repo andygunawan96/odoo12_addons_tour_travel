@@ -27,6 +27,7 @@
         'data/tt_provider_type_data.xml',
         'data/tt_provider_tour.xml',
         'data/tt_transport_carrier_tour.xml',
+        'data/ir_config_parameter.xml',
         'data/ir_cron_data.xml',
         'data/ir_send_email.xml',
         'data/tt_pricing_agent_tour_data.xml',

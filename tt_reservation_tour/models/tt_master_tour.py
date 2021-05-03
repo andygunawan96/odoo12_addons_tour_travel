@@ -111,6 +111,7 @@ class MasterTour(models.Model):
     agent_id = fields.Many2one('tt.agent', 'Agent')
 
     is_can_hold = fields.Boolean('Can Be Hold', default=True, required=True)
+    hold_date_timer = fields.Integer('Hold Date Timer (Hours)', default=6)
 
     state = fields.Selection([('draft', 'Draft'), ('confirm', 'Confirmed'), ('closed', 'Closed')], 'State', copy=False, default='draft')
 
@@ -433,6 +434,7 @@ class MasterTour(models.Model):
                     'tour_type': rec['tour_type'],
                     'duration': rec['duration'],
                     'is_can_hold': rec['is_can_hold'],
+                    'hold_date_timer': rec['hold_date_timer'],
                     'est_starting_price': rec['est_starting_price'],
                     'adult_flight_fare': rec['adult_flight_fare'],
                     'child_flight_fare': rec['child_flight_fare'],
@@ -966,6 +968,7 @@ class MasterTour(models.Model):
                             'carrier_code': rec.carrier_id.code,
                             'duration': rec.duration,
                             'is_can_hold': rec.is_can_hold,
+                            'hold_date_timer': rec.hold_date_timer,
                             'locations': location_list,
                             'provider': rec.provider_id.code,
                             'images_obj': image_list,
@@ -1821,6 +1824,7 @@ class MasterTour(models.Model):
                     'tour_route': rec['tour_route'],
                     'sequence': rec['sequence'],
                     'is_can_hold': rec['is_can_hold'],
+                    'hold_date_timer': rec['hold_date_timer'],
                     'currency_id': currency_obj and currency_obj[0].id or False,
                     'description': rec['description'],
                     'tour_category': rec['tour_category'],
@@ -2120,6 +2124,7 @@ class TourSyncProductsChildren(models.TransientModel):
                     'carrier_code': rec.carrier_id.code,
                     'sequence': rec.sequence,
                     'is_can_hold': rec.is_can_hold,
+                    'hold_date_timer': rec.hold_date_timer,
                     'currency_code': rec.currency_id.name,
                     'description': rec.description,
                     'tour_category': rec.tour_category,
