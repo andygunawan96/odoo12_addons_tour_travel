@@ -231,6 +231,8 @@ class TtReschedule(models.Model):
     printout_reschedule_id = fields.Many2one('tt.upload.center', 'Printout Reschedule', readonly=True)
     created_by_api = fields.Boolean('Created By API', default=False, readonly=True)
     refund_type_id = fields.Many2one('tt.refund.type', 'Refund Type', required=False, readonly=True)
+    old_fee_notes = fields.Text('Old Fee Notes', readonly=True, default='')
+    new_fee_notes = fields.Text('New Fee Notes', readonly=True, default='')
 
     def get_reschedule_admin_fee_rule(self, agent_id):
         reschedule_admin_fee_list = self.env['tt.master.admin.fee'].search([('after_sales_type', '=', 'after_sales')], order='sequence, id desc')

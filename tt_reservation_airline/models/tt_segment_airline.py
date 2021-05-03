@@ -64,6 +64,9 @@ class TtSegmentAirline(models.Model):
         leg_list = []
         for rec in self.leg_ids:
             leg_list.append(rec.to_dict())
+        segment_addons_list = []
+        for rec in self.segment_addons_ids:
+            segment_addons_list.append(rec.to_dict())
         res = {
             'segment_code': self.segment_code,
             'fare_code': self.fare_code,
@@ -84,6 +87,7 @@ class TtSegmentAirline(models.Model):
             'sequence': self.sequence,
             'seats': [],
             'legs': leg_list,
+            'fare_details': segment_addons_list,
             # April 20, 2022 - SAM
             'fare_basis_code': self.fare_basis_code and self.fare_basis_code or '',
             'fare_class': self.fare_class and self.fare_class or '',

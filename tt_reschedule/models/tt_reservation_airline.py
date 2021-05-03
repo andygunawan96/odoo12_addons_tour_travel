@@ -426,6 +426,10 @@ class ReservationAirline(models.Model):
                 key = prov.id
                 resv_provider_dict[key] = prov
 
+            is_admin_charge = True
+            if 'is_admin_charge' in vals:
+                is_admin_charge = vals['is_admin_charge']
+
             # July 9, 2020 - SAM
             # Mengambil data dari gateway
             # admin_fee_obj = None
@@ -674,13 +678,25 @@ class ReservationAirline(models.Model):
 
                 # # TODO CEK DATA SSR DAN SEAT
                 is_any_ssr_change = False
+                old_ssr_notes = []
+                new_ssr_notes = []
                 for psg in commit_data['passengers']:
+                    old_ssr_info_list = []
+                    new_ssr_info_list = []
                     psg_obj = resv_passenger_number_dict[psg['passenger_number']]
-
                     fee_data_list = []
                     for fee in psg['fees']:
                         key = '%s%s%s%s' % (fee['journey_code'], fee['fee_type'], fee['fee_code'], fee['fee_value'])
                         fee_data_list.append(key)
+                        new_ssr_info = [
+                            'Journey Code : %s' % fee['journey_code'],
+                            'Fee Type : %s' % fee['fee_type'],
+                            'Fee Code : %s' % fee['fee_code'],
+                            'Fee Value : %s' % fee['fee_value'],
+                            'Base Price : %s' % fee['base_price'],
+                            ''
+                        ]
+                        new_ssr_info_list.append('\n'.join(new_ssr_info))
 
                     obj_fee_data_list = []
                     for fee_obj in psg_obj.fee_ids:
@@ -690,10 +706,34 @@ class ReservationAirline(models.Model):
                         fee_value = fee_obj.value and fee_obj.value or ''
                         key = '%s%s%s%s' % (fee_journey_code, fee_type, fee_code, fee_value)
                         obj_fee_data_list.append(key)
+                        old_ssr_info = [
+                            'Journey Code : %s' % fee_journey_code,
+                            'Fee Type : %s' % fee_type,
+                            'Fee Code : %s' % fee_code,
+                            'Fee Value : %s' % fee_value,
+                            ''
+                        ]
+                        old_ssr_info_list.append('\n'.join(old_ssr_info))
 
                     if set(fee_data_list).difference(set(obj_fee_data_list)):
                         is_any_ssr_change = True
-                        break
+
+                    old_ssr_value = [
+                        '# Pax Name : {title} {first_name} {last_name}'.format(**psg),
+                        'Fees :',
+                        '%s' % '\n'.join(old_ssr_info_list),
+                        '',
+                    ]
+                    old_ssr_notes.append('\n'.join(old_ssr_value))
+
+                    new_ssr_value = [
+                        '# Pax Name : {title} {first_name} {last_name}'.format(**psg),
+                        'Fees :',
+                        '%s' % '\n'.join(new_ssr_info_list),
+                        ''
+                    ]
+                    new_ssr_notes.append('\n'.join(new_ssr_value))
+
                 # # TODO END
 
                 # total_amount = commit_data['total_price'] - rsv_prov_obj.total_price
@@ -724,7 +764,8 @@ class ReservationAirline(models.Model):
                             for fare in segment['fares']:
                                 rsv_prov_obj.create_service_charge(fare['service_charges'])
                 elif commit_data['status'] == 'ISSUED' and rsv_prov_obj.state == 'issued':
-                    admin_fee_obj = self.env.ref('tt_accounting.admin_fee_reschedule')
+                    if is_admin_charge:
+                        admin_fee_obj = self.env.ref('tt_accounting.admin_fee_reschedule')
                     rsv_prov_obj.sudo().delete_passenger_fees()
                     for psg in commit_data['passengers']:
                         psg_obj = resv_passenger_number_dict[psg['passenger_number']]
@@ -753,6 +794,8 @@ class ReservationAirline(models.Model):
                     'res_model': airline_obj._name,
                     'res_id': airline_obj.id,
                     'notes': vals.get('notes') and vals['notes'] or '',
+                    'old_fee_notes': '\n'.join(old_ssr_notes) if old_ssr_notes else '',
+                    'new_fee_notes': '\n'.join(new_ssr_notes) if new_ssr_notes else '',
                     'payment_acquirer_id': payment_acquirer_obj.id,
                     'created_by_api': True,
                 }

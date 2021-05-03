@@ -16,7 +16,7 @@ class TtSegmentAddonsAirline(models.Model):
     description = fields.Text('Description')
 
     def to_dict(self):
-        return {
+        res = {
             'detail_code': self.detail_code,
             'detail_type': self.detail_type,
             'detail_name': self.detail_name,
@@ -25,3 +25,4 @@ class TtSegmentAddonsAirline(models.Model):
             'description': self.description and json.dumps(self.description) or [],
             'sequence': self.sequence
         }
+        return res

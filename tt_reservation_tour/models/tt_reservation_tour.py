@@ -75,11 +75,24 @@ class ReservationTour(models.Model):
             else:
                 rec.reconcile_state = 'not_reconciled'
 
+    def get_master_tour_hold_date(self):
+        temp_add_hours = 100
+        for rec in self.provider_booking_ids:
+            if rec.tour_id.hold_date_timer:
+                add_hours = rec.tour_id.hold_date_timer
+            else:
+                add_hours = int(self.env['ir.config_parameter'].get_param('tt_master_tour.master_tour_default_hold_date_timer'))
+            if add_hours <= temp_add_hours:
+                temp_add_hours = add_hours
+        final_add_hours = temp_add_hours >= 100 and 6 or temp_add_hours
+        return datetime.now() + relativedelta(hours=final_add_hours)
+
     def check_provider_state(self,context,pnr_list=[],hold_date=False,req={}):
         if all(rec.state == 'booked' for rec in self.provider_booking_ids):
             # booked
             self.calculate_service_charge()
-            hold_date = datetime.now() + relativedelta(hours=6)
+            if not hold_date:
+                hold_date = self.get_master_tour_hold_date()
             self.action_booked_tour(context, pnr_list, hold_date)
         elif all(rec.state == 'issued' for rec in self.provider_booking_ids):
             # issued
@@ -420,7 +433,7 @@ class ReservationTour(models.Model):
                 if not data.get('departure_date'):
                     raise RequestException(1004, additional_message='Departure Date parameter is required for Open Trip!')
                 temp_dept_date = data['departure_date']
-                temp_arr_date = (datetime.strptime(data['departure_date'], '%Y-%m-%d') + timedelta(days=int(tour_data.duration))).strftime('%Y-%m-%d')
+                temp_arr_date = (datetime.strptime(data['departure_date'], '%Y-%m-%d') + timedelta(days=int(tour_data.duration-1))).strftime('%Y-%m-%d')
                 if temp_dept_date < tour_line_data.departure_date.strftime('%Y-%m-%d') or temp_arr_date > tour_line_data.arrival_date.strftime('%Y-%m-%d'):
                     raise RequestException(1004, additional_message='Tour cannot start before or end after the designated period. Please check your Departure Date parameter!')
             else:

@@ -111,6 +111,7 @@ class MasterTour(models.Model):
     agent_id = fields.Many2one('tt.agent', 'Agent')
 
     is_can_hold = fields.Boolean('Can Be Hold', default=True, required=True)
+    hold_date_timer = fields.Integer('Hold Date Timer (Hours)', default=6)
 
     state = fields.Selection([('draft', 'Draft'), ('confirm', 'Confirmed'), ('closed', 'Closed')], 'State', copy=False, default='draft')
 
@@ -433,6 +434,7 @@ class MasterTour(models.Model):
                     'tour_type': rec['tour_type'],
                     'duration': rec['duration'],
                     'is_can_hold': rec['is_can_hold'],
+                    'hold_date_timer': rec['hold_date_timer'],
                     'est_starting_price': rec['est_starting_price'],
                     'adult_flight_fare': rec['adult_flight_fare'],
                     'child_flight_fare': rec['child_flight_fare'],
@@ -966,6 +968,7 @@ class MasterTour(models.Model):
                             'carrier_code': rec.carrier_id.code,
                             'duration': rec.duration,
                             'is_can_hold': rec.is_can_hold,
+                            'hold_date_timer': rec.hold_date_timer,
                             'locations': location_list,
                             'provider': rec.provider_id.code,
                             'images_obj': image_list,
@@ -1093,21 +1096,21 @@ class MasterTour(models.Model):
         utc_tz = pytz.timezone('UTC')
         for segment in self.flight_segment_ids:
             vals = {
-                'journey_type': segment.journey_type,
-                'class_of_service': segment.class_of_service,
-                'carrier_id': segment.carrier_id.name,
-                'carrier_code': segment.carrier_id.code,
-                'carrier_number': segment.carrier_number,
-                'origin_id': segment.origin_id.display_name,
-                'origin_code': segment.origin_id.code,
-                'origin_terminal': segment.origin_terminal,
-                'departure_date': utc_tz.localize(segment.departure_date).astimezone(user_tz),
-                'departure_date_fmt': utc_tz.localize(segment.departure_date).astimezone(user_tz).strftime('%d-%b-%Y %H:%M'),
-                'destination_id': segment.destination_id.display_name,
-                'destination_code': segment.destination_id.code,
-                'destination_terminal': segment.destination_terminal,
-                'arrival_date': utc_tz.localize(segment.arrival_date).astimezone(user_tz),
-                'arrival_date_fmt': utc_tz.localize(segment.arrival_date).astimezone(user_tz).strftime('%d-%b-%Y %H:%M'),
+                'journey_type': segment.journey_type and segment.journey_type or '',
+                'class_of_service': segment.class_of_service and segment.class_of_service or '',
+                'carrier_id': segment.carrier_id and segment.carrier_id.name or '',
+                'carrier_code': segment.carrier_id and segment.carrier_id.code or '',
+                'carrier_number': segment.carrier_number and segment.carrier_number or '',
+                'origin_id': segment.origin_id and segment.origin_id.display_name or '',
+                'origin_code': segment.origin_id and segment.origin_id.code or '',
+                'origin_terminal': segment.origin_terminal and segment.origin_terminal or '',
+                'departure_date': segment.departure_date and utc_tz.localize(segment.departure_date).astimezone(user_tz) or '',
+                'departure_date_fmt': segment.departure_date and utc_tz.localize(segment.departure_date).astimezone(user_tz).strftime('%d-%b-%Y %H:%M') or '',
+                'destination_id': segment.destination_id and segment.destination_id.display_name or '',
+                'destination_code': segment.destination_id and segment.destination_id.code or '',
+                'destination_terminal': segment.destination_terminal and segment.destination_terminal or '',
+                'arrival_date': segment.arrival_date and utc_tz.localize(segment.arrival_date).astimezone(user_tz) or '',
+                'arrival_date_fmt': segment.arrival_date and utc_tz.localize(segment.arrival_date).astimezone(user_tz).strftime('%d-%b-%Y %H:%M') or '',
                 'delay': 'None',
             }
             if old_vals and old_vals['journey_type'] == segment.journey_type:
@@ -1821,6 +1824,7 @@ class MasterTour(models.Model):
                     'tour_route': rec['tour_route'],
                     'sequence': rec['sequence'],
                     'is_can_hold': rec['is_can_hold'],
+                    'hold_date_timer': rec['hold_date_timer'],
                     'currency_id': currency_obj and currency_obj[0].id or False,
                     'description': rec['description'],
                     'tour_category': rec['tour_category'],
@@ -2120,6 +2124,7 @@ class TourSyncProductsChildren(models.TransientModel):
                     'carrier_code': rec.carrier_id.code,
                     'sequence': rec.sequence,
                     'is_can_hold': rec.is_can_hold,
+                    'hold_date_timer': rec.hold_date_timer,
                     'currency_code': rec.currency_id.name,
                     'description': rec.description,
                     'tour_category': rec.tour_category,

@@ -50,7 +50,6 @@
                             <field name="transport_type"/>
                             <field name="res_model"/>
                             <field name="state"/>
-                            <field name="parent_id" attrs="{'invisible':[('parent_id','=', False)]}"/>
                         </group>
                         <group>
                             <field name="response"/>
@@ -65,9 +64,6 @@
                                 <field name="resend_date" class="oe_inline" readonly="True"/>
                             </div>
                         </group>
-                    </group>
-                    <group>
-                        <field name="child_ids"/>
                     </group>
                 </sheet>
                 <div class="oe_chatter">
@@ -86,7 +82,6 @@
                 <field name="create_date"/>
                 <field name="transport_type"/>
                 <field name="res_model"/>
-                <field name="parent_id"/>
                 <field name="state"/>
             </tree>
         </field>

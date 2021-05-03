@@ -41,6 +41,8 @@ class TtAirlineApiCon(models.Model):
             res = self.env['tt.get.booking.from.vendor.review'].save_booking_api(data, context)
         elif action == 'process_update_booking':
             res = table_obj.process_update_booking_airline_api(data,context)
+        elif action == 'get_booking_number':
+            res = table_obj.get_booking_number_airline_api(data, context)
         else:
             raise RequestException(999)
 

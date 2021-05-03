@@ -1,0 +1,2765 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <record id="tt_transport_carrier_type_airline_A4F" model="tt.transport.carrier.type">
+            <field name="name">Antonov AN-124 Ruslan</field>
+            <field name="code">A4F</field>
+            <field name="icao">A124</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_type_airline_A40" model="tt.transport.carrier.type">
+            <field name="name">Antonov AN-140</field>
+            <field name="code">A40</field>
+            <field name="icao">A140</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_type_airline_A81" model="tt.transport.carrier.type">
+            <field name="name">Antonov An-148</field>
+            <field name="code">A81</field>
+            <field name="icao">A148</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_type_airline_A58" model="tt.transport.carrier.type">
+            <field name="name">Antonov An-158</field>
+            <field name="code">A58</field>
+            <field name="icao">A158</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_type_airline_31N" model="tt.transport.carrier.type">
+            <field name="name">Airbus A319neo</field>
+            <field name="code">31N</field>
+            <field name="icao">A19N</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_type_airline_32N" model="tt.transport.carrier.type">
+            <field name="name">Airbus A320neo</field>
+            <field name="code">32N</field>
+            <field name="icao">A20N</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_type_airline_N/A" model="tt.transport.carrier.type">
+            <field name="name">Aquila A 210</field>
+            <field name="code">N/A</field>
+            <field name="icao">A210</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_type_airline_32Q" model="tt.transport.carrier.type">
+            <field name="name">Airbus A321neo</field>
+            <field name="code">32Q</field>
+            <field name="icao">A21N</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_type_airline_A5F" model="tt.transport.carrier.type">
+            <field name="name">Antonov An-225 Mriya</field>
+            <field name="code">A5F</field>
+            <field name="icao">A225</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_type_airline_AB6" model="tt.transport.carrier.type">
+            <field name="name">Airbus A300-600</field>
+            <field name="code">AB6</field>
+            <field name="icao">A306</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_type_airline_AB4" model="tt.transport.carrier.type">
+            <field name="name">Airbus A300B2, A300B4, and A300C4</field>
+            <field name="code">AB4</field>
+            <field name="icao">A30B</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_type_airline_312" model="tt.transport.carrier.type">
+            <field name="name">Airbus A310-200</field>
+            <field name="code">312</field>
+            <field name="icao">A310</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_type_airline_313" model="tt.transport.carrier.type">
+            <field name="name">Airbus A310-300</field>
+            <field name="code">313</field>
+            <field name="icao">A310</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_type_airline_318" model="tt.transport.carrier.type">
+            <field name="name">Airbus A318</field>
+            <field name="code">318</field>
+            <field name="icao">A318</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_type_airline_32C" model="tt.transport.carrier.type">
+            <field name="name">Airbus A318 (sharklets)</field>
+            <field name="code">32C</field>
+            <field name="icao">A318</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_type_airline_319" model="tt.transport.carrier.type">
+            <field name="name">Airbus A319</field>
+            <field name="code">319</field>
+            <field name="icao">A319</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_type_airline_32D" model="tt.transport.carrier.type">
+            <field name="name">Airbus A319 (sharklets)</field>
+            <field name="code">32D</field>
+            <field name="icao">A319</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_type_airline_320" model="tt.transport.carrier.type">
+            <field name="name">Airbus A320</field>
+            <field name="code">320</field>
+            <field name="icao">A320</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_type_airline_32A" model="tt.transport.carrier.type">
+            <field name="name">Airbus A320 (sharklets)</field>
+            <field name="code">32A</field>
+            <field name="icao">A320</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_type_airline_321" model="tt.transport.carrier.type">
+            <field name="name">Airbus A321</field>
+            <field name="code">321</field>
+            <field name="icao">A321</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_type_airline_32B" model="tt.transport.carrier.type">
+            <field name="name">Airbus A321 (sharklets)</field>
+            <field name="code">32B</field>
+            <field name="icao">A321</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_type_airline_332" model="tt.transport.carrier.type">
+            <field name="name">Airbus A330-200</field>
+            <field name="code">332</field>
+            <field name="icao">A332</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_type_airline_333" model="tt.transport.carrier.type">
+            <field name="name">Airbus A330-300</field>
+            <field name="code">333</field>
+            <field name="icao">A333</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_type_airline_N/A" model="tt.transport.carrier.type">
+            <field name="name">Airbus A330-700 "Beluga XL"</field>
+            <field name="code">N/A</field>
+            <field name="icao">A337</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_type_airline_338" model="tt.transport.carrier.type">
+            <field name="name">Airbus A330-800</field>
+            <field name="code">338</field>
+            <field name="icao">A338</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_type_airline_339" model="tt.transport.carrier.type">
+            <field name="name">Airbus A330-900</field>
+            <field name="code">339</field>
+            <field name="icao">A339</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_type_airline_342" model="tt.transport.carrier.type">
+            <field name="name">Airbus A340-200</field>
+            <field name="code">342</field>
+            <field name="icao">A342</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_type_airline_343" model="tt.transport.carrier.type">
+            <field name="name">Airbus A340-300</field>
+            <field name="code">343</field>
+            <field name="icao">A343</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_type_airline_345" model="tt.transport.carrier.type">
+            <field name="name">Airbus A340-500</field>
+            <field name="code">345</field>
+            <field name="icao">A345</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_type_airline_346" model="tt.transport.carrier.type">
+            <field name="name">Airbus A340-600</field>
+            <field name="code">346</field>
+            <field name="icao">A346</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_type_airline_359" model="tt.transport.carrier.type">
+            <field name="name">Airbus A350-900</field>
+            <field name="code">359</field>
+            <field name="icao">A359</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_type_airline_351" model="tt.transport.carrier.type">
+            <field name="name">Airbus A350-1000</field>
+            <field name="code">351</field>
+            <field name="icao">A35K</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_type_airline_388" model="tt.transport.carrier.type">
+            <field name="name">Airbus A380-800</field>
+            <field name="code">388</field>
+            <field name="icao">A388</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_type_airline_ABB" model="tt.transport.carrier.type">
+            <field name="name">Airbus A300-600ST "Super Transporter" / "Beluga"</field>
+            <field name="code">ABB</field>
+            <field name="icao">A3ST</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_type_airline_" model="tt.transport.carrier.type">
+            <field name="name">Airbus A400M Atlas</field>
+            <field name="code"></field>
+            <field name="icao">A400</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_type_airline_N/A" model="tt.transport.carrier.type">
+            <field name="name">ICON A5</field>
+            <field name="code">N/A</field>
+            <field name="icao">A5</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_type_airline_HS7" model="tt.transport.carrier.type">
+            <field name="name">Hawker Siddeley HS 748</field>
+            <field name="code">HS7</field>
+            <field name="icao">A748</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_type_airline_ACP" model="tt.transport.carrier.type">
+            <field name="name">Gulfstream/Rockwell (Aero) Commander</field>
+            <field name="code">ACP</field>
+            <field name="icao">AC68</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_type_airline_ACT" model="tt.transport.carrier.type">
+            <field name="name">Gulfstream/Rockwell (Aero) Turbo Commander</field>
+            <field name="code">ACT</field>
+            <field name="icao">AC90</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_type_airline_C27" model="tt.transport.carrier.type">
+            <field name="name">COMAC ARJ21</field>
+            <field name="code">C27</field>
+            <field name="icao">AJ27</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_type_airline_ANF" model="tt.transport.carrier.type">
+            <field name="name">Antonov AN-12</field>
+            <field name="code">ANF</field>
+            <field name="icao">AN12</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_type_airline_N/A" model="tt.transport.carrier.type">
+            <field name="name">Antonov An-2</field>
+            <field name="code">N/A</field>
+            <field name="icao">AN2</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_type_airline_AN4" model="tt.transport.carrier.type">
+            <field name="name">Antonov AN-24</field>
+            <field name="code">AN4</field>
+            <field name="icao">AN24</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_type_airline_A26" model="tt.transport.carrier.type">
+            <field name="name">Antonov AN-26</field>
+            <field name="code">A26</field>
+            <field name="icao">AN26</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_type_airline_A28" model="tt.transport.carrier.type">
+            <field name="name">Antonov AN-28</field>
+            <field name="code">A28</field>
+            <field name="icao">AN28</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_type_airline_A30" model="tt.transport.carrier.type">
+            <field name="name">Antonov AN-30</field>
+            <field name="code">A30</field>
+            <field name="icao">AN30</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_type_airline_A32" model="tt.transport.carrier.type">
+            <field name="name">Antonov AN-32</field>
+            <field name="code">A32</field>
+            <field name="icao">AN32</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_type_airline_AN7" model="tt.transport.carrier.type">
+            <field name="name">Antonov AN-72 / AN-74</field>
+            <field name="code">AN7</field>
+            <field name="icao">AN72</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_type_airline_N/A" model="tt.transport.carrier.type">
+            <field name="name">Aeroprakt A-22 Foxbat / A-22 Valor / A-22 Vision</field>
+            <field name="code">N/A</field>
+            <field name="icao">AP22</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_type_airline_APH" model="tt.transport.carrier.type">
+            <field name="name">Eurocopter AS332 Super Puma</field>
+            <field name="code">APH</field>
+            <field name="icao">AS32</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_type_airline_NDE" model="tt.transport.carrier.type">
+            <field name="name">Eurocopter AS350 Écureuil</field>
+            <field name="code">NDE</field>
+            <field name="icao">AS50</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_type_airline_AT4" model="tt.transport.carrier.type">
+            <field name="name">Aerospatiale/Alenia ATR 42-300 / 320</field>
+            <field name="code">AT4</field>
+            <field name="icao">AT43</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_type_airline_AT5" model="tt.transport.carrier.type">
+            <field name="name">Aerospatiale/Alenia ATR 42-500</field>
+            <field name="code">AT5</field>
+            <field name="icao">AT45</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_type_airline_ATR" model="tt.transport.carrier.type">
+            <field name="name">Aerospatiale/Alenia ATR 42-600</field>
+            <field name="code">ATR</field>
+            <field name="icao">AT46</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_type_airline_AT7" model="tt.transport.carrier.type">
+            <field name="name">Aerospatiale/Alenia ATR 72</field>
+            <field name="code">AT7</field>
+            <field name="icao">AT72</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_type_airline_ATR" model="tt.transport.carrier.type">
+            <field name="name">Aerospatiale/Alenia ATR 72-200 series</field>
+            <field name="code">ATR</field>
+            <field name="icao">AT73</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_type_airline_ATR" model="tt.transport.carrier.type">
+            <field name="name">Aerospatiale/Alenia ATR 72-500</field>
+            <field name="code">ATR</field>
+            <field name="icao">AT75</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_type_airline_ATR" model="tt.transport.carrier.type">
+            <field name="name">Aerospatiale/Alenia ATR 72-600</field>
+            <field name="code">ATR</field>
+            <field name="icao">AT76</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_type_airline_ATL" model="tt.transport.carrier.type">
+            <field name="name">Robin ATL</field>
+            <field name="code">ATL</field>
+            <field name="icao">ATL</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_type_airline_ATP" model="tt.transport.carrier.type">
+            <field name="name">British Aerospace ATP</field>
+            <field name="code">ATP</field>
+            <field name="icao">ATP</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_type_airline_" model="tt.transport.carrier.type">
+            <field name="name">Bell 206</field>
+            <field name="code"></field>
+            <field name="icao">B06</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_type_airline_" model="tt.transport.carrier.type">
+            <field name="name">Bell 206</field>
+            <field name="code"></field>
+            <field name="icao">B06T</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_type_airline_MBH" model="tt.transport.carrier.type">
+            <field name="name">Eurocopter (MBB) Bo.105</field>
+            <field name="code">MBH</field>
+            <field name="icao">B105</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_type_airline_BEH" model="tt.transport.carrier.type">
+            <field name="name">Beechcraft 1900</field>
+            <field name="code">BEH</field>
+            <field name="icao">B190</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_type_airline_BH2" model="tt.transport.carrier.type">
+            <field name="name">Bell 212</field>
+            <field name="code">BH2</field>
+            <field name="icao">B212</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_type_airline_7M7" model="tt.transport.carrier.type">
+            <field name="name">Boeing 737 MAX 7</field>
+            <field name="code">7M7</field>
+            <field name="icao">B37M</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_type_airline_7M8" model="tt.transport.carrier.type">
+            <field name="name">Boeing 737 MAX 8</field>
+            <field name="code">7M8</field>
+            <field name="icao">B38M</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_type_airline_7M9" model="tt.transport.carrier.type">
+            <field name="name">Boeing 737 MAX 9</field>
+            <field name="code">7M9</field>
+            <field name="icao">B39M</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_type_airline_7MJ" model="tt.transport.carrier.type">
+            <field name="name">Boeing 737 MAX 10</field>
+            <field name="code">7MJ</field>
+            <field name="icao">B3XM</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_type_airline_BH2" model="tt.transport.carrier.type">
+            <field name="name">Bell 412</field>
+            <field name="code">BH2</field>
+            <field name="icao">B412</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_type_airline_BH2" model="tt.transport.carrier.type">
+            <field name="name">Bell 429</field>
+            <field name="code">BH2</field>
+            <field name="icao">B429</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_type_airline_141" model="tt.transport.carrier.type">
+            <field name="name">BAe 146-100</field>
+            <field name="code">141</field>
+            <field name="icao">B461</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_type_airline_142" model="tt.transport.carrier.type">
+            <field name="name">BAe 146-200</field>
+            <field name="code">142</field>
+            <field name="icao">B462</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_type_airline_143" model="tt.transport.carrier.type">
+            <field name="name">BAe 146-300</field>
+            <field name="code">143</field>
+            <field name="icao">B463</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_type_airline_703" model="tt.transport.carrier.type">
+            <field name="name">Boeing 707</field>
+            <field name="code">703</field>
+            <field name="icao">B703</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_type_airline_717" model="tt.transport.carrier.type">
+            <field name="name">Boeing 717</field>
+            <field name="code">717</field>
+            <field name="icao">B712</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_type_airline_B72" model="tt.transport.carrier.type">
+            <field name="name">Boeing 720B</field>
+            <field name="code">B72</field>
+            <field name="icao">B720</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_type_airline_721" model="tt.transport.carrier.type">
+            <field name="name">Boeing 727-100</field>
+            <field name="code">721</field>
+            <field name="icao">B721</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_type_airline_722" model="tt.transport.carrier.type">
+            <field name="name">Boeing 727-200</field>
+            <field name="code">722</field>
+            <field name="icao">B722</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_type_airline_732" model="tt.transport.carrier.type">
+            <field name="name">Boeing 737-200</field>
+            <field name="code">732</field>
+            <field name="icao">B732</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_type_airline_733" model="tt.transport.carrier.type">
+            <field name="name">Boeing 737-300</field>
+            <field name="code">733</field>
+            <field name="icao">B733</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_type_airline_734" model="tt.transport.carrier.type">
+            <field name="name">Boeing 737-400</field>
+            <field name="code">734</field>
+            <field name="icao">B734</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_type_airline_735" model="tt.transport.carrier.type">
+            <field name="name">Boeing 737-500</field>
+            <field name="code">735</field>
+            <field name="icao">B735</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_type_airline_736" model="tt.transport.carrier.type">
+            <field name="name">Boeing 737-600</field>
+            <field name="code">736</field>
+            <field name="icao">B736</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_type_airline_73G" model="tt.transport.carrier.type">
+            <field name="name">Boeing 737-700</field>
+            <field name="code">73G</field>
+            <field name="icao">B737</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_type_airline_738" model="tt.transport.carrier.type">
+            <field name="name">Boeing 737-800</field>
+            <field name="code">738</field>
+            <field name="icao">B738</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_type_airline_739" model="tt.transport.carrier.type">
+            <field name="name">Boeing 737-900</field>
+            <field name="code">739</field>
+            <field name="icao">B739</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_type_airline_741" model="tt.transport.carrier.type">
+            <field name="name">Boeing 747-100</field>
+            <field name="code">741</field>
+            <field name="icao">B741</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_type_airline_74T" model="tt.transport.carrier.type">
+            <field name="name">Boeing 747-100 Freighter</field>
+            <field name="code">74T</field>
+            <field name="icao">B741</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_type_airline_742" model="tt.transport.carrier.type">
+            <field name="name">Boeing 747-200</field>
+            <field name="code">742</field>
+            <field name="icao">B742</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_type_airline_74C" model="tt.transport.carrier.type">
+            <field name="name">Boeing 747-200M</field>
+            <field name="code">74C</field>
+            <field name="icao">B742</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_type_airline_74X" model="tt.transport.carrier.type">
+            <field name="name">Boeing 747-200F</field>
+            <field name="code">74X</field>
+            <field name="icao">B742</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_type_airline_743" model="tt.transport.carrier.type">
+            <field name="name">Boeing 747-300</field>
+            <field name="code">743</field>
+            <field name="icao">B743</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_type_airline_74D" model="tt.transport.carrier.type">
+            <field name="name">Boeing 747-300M</field>
+            <field name="code">74D</field>
+            <field name="icao">B743</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_type_airline_744" model="tt.transport.carrier.type">
+            <field name="name">Boeing 747-400</field>
+            <field name="code">744</field>
+            <field name="icao">B744</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_type_airline_74E" model="tt.transport.carrier.type">
+            <field name="name">Boeing 747-400M</field>
+            <field name="code">74E</field>
+            <field name="icao">B744</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_type_airline_74Y" model="tt.transport.carrier.type">
+            <field name="name">Boeing 747-400F</field>
+            <field name="code">74Y</field>
+            <field name="icao">B744</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_type_airline_74H" model="tt.transport.carrier.type">
+            <field name="name">Boeing 747-8I</field>
+            <field name="code">74H</field>
+            <field name="icao">B748</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_type_airline_74N" model="tt.transport.carrier.type">
+            <field name="name">Boeing 747-8F</field>
+            <field name="code">74N</field>
+            <field name="icao">B748</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_type_airline_" model="tt.transport.carrier.type">
+            <field name="name">B74D</field>
+            <field name="code"></field>
+            <field name="icao"></field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_type_airline_74R" model="tt.transport.carrier.type">
+            <field name="name">Boeing 747SR</field>
+            <field name="code">74R</field>
+            <field name="icao">B74R</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_type_airline_74V" model="tt.transport.carrier.type">
+            <field name="name">Boeing 747SR Freighter</field>
+            <field name="code">74V</field>
+            <field name="icao">B74R</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_type_airline_74L" model="tt.transport.carrier.type">
+            <field name="name">Boeing 747SP</field>
+            <field name="code">74L</field>
+            <field name="icao">B74S</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_type_airline_752" model="tt.transport.carrier.type">
+            <field name="name">Boeing 757-200</field>
+            <field name="code">752</field>
+            <field name="icao">B752</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_type_airline_75F" model="tt.transport.carrier.type">
+            <field name="name">Boeing 757F</field>
+            <field name="code">75F</field>
+            <field name="icao">B752</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_type_airline_753" model="tt.transport.carrier.type">
+            <field name="name">Boeing 757-300</field>
+            <field name="code">753</field>
+            <field name="icao">B753</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_type_airline_762" model="tt.transport.carrier.type">
+            <field name="name">Boeing 767-200</field>
+            <field name="code">762</field>
+            <field name="icao">B762</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_type_airline_763" model="tt.transport.carrier.type">
+            <field name="name">Boeing 767-300</field>
+            <field name="code">763</field>
+            <field name="icao">B763</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_type_airline_764" model="tt.transport.carrier.type">
+            <field name="name">Boeing 767-400ER</field>
+            <field name="code">764</field>
+            <field name="icao">B764</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_type_airline_772" model="tt.transport.carrier.type">
+            <field name="name">Boeing 777-200</field>
+            <field name="code">772</field>
+            <field name="icao">B772</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_type_airline_773" model="tt.transport.carrier.type">
+            <field name="name">Boeing 777-300</field>
+            <field name="code">773</field>
+            <field name="icao">B773</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_type_airline_778" model="tt.transport.carrier.type">
+            <field name="name">Boeing 777-8</field>
+            <field name="code">778</field>
+            <field name="icao">B778</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_type_airline_779" model="tt.transport.carrier.type">
+            <field name="name">Boeing 777-9</field>
+            <field name="code">779</field>
+            <field name="icao">B779</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_type_airline_77X" model="tt.transport.carrier.type">
+            <field name="name">Boeing 777-200 Freighter</field>
+            <field name="code">77X</field>
+            <field name="icao">B77L</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_type_airline_77L" model="tt.transport.carrier.type">
+            <field name="name">Boeing 777-200LR</field>
+            <field name="code">77L</field>
+            <field name="icao">B77L</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_type_airline_77W" model="tt.transport.carrier.type">
+            <field name="name">Boeing 777-300ER</field>
+            <field name="code">77W</field>
+            <field name="icao">B77W</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_type_airline_788" model="tt.transport.carrier.type">
+            <field name="name">Boeing 787-8</field>
+            <field name="code">788</field>
+            <field name="icao">B788</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_type_airline_789" model="tt.transport.carrier.type">
+            <field name="name">Boeing 787-9</field>
+            <field name="code">789</field>
+            <field name="icao">B789</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_type_airline_78B" model="tt.transport.carrier.type">
+            <field name="name">Boeing 787-B</field>
+            <field name="code">78B</field>
+            <field name="icao">N/A</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_type_airline_781" model="tt.transport.carrier.type">
+            <field name="name">Boeing 787-10</field>
+            <field name="code">781</field>
+            <field name="icao">B78X</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_type_airline_B11" model="tt.transport.carrier.type">
+            <field name="name">British Aerospace (BAC) One Eleven</field>
+            <field name="code">B11</field>
+            <field name="icao">BA11</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_type_airline_221" model="tt.transport.carrier.type">
+            <field name="name">Airbus A220-100</field>
+            <field name="code">221</field>
+            <field name="icao">BCS1</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_type_airline_223" model="tt.transport.carrier.type">
+            <field name="name">Airbus A220-300</field>
+            <field name="code">223</field>
+            <field name="icao">BCS3</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_type_airline_N/A" model="tt.transport.carrier.type">
+            <field name="name">Hawker 400</field>
+            <field name="code">N/A</field>
+            <field name="icao">BE40</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_type_airline_N/A" model="tt.transport.carrier.type">
+            <field name="name">Beechcraft Baron / 55 Baron</field>
+            <field name="code">N/A</field>
+            <field name="icao">BE55</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_type_airline_N/A" model="tt.transport.carrier.type">
+            <field name="name">Beechcraft Baron / 58 Baron</field>
+            <field name="code">N/A</field>
+            <field name="icao">BE58</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_type_airline_" model="tt.transport.carrier.type">
+            <field name="name">Beechcraft Model 99</field>
+            <field name="code"></field>
+            <field name="icao">BE99</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_type_airline_SHB" model="tt.transport.carrier.type">
+            <field name="name">Shorts SC-5 Belfast</field>
+            <field name="code">SHB</field>
+            <field name="icao">BELF</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_type_airline_N/A" model="tt.transport.carrier.type">
+            <field name="name">Beriev Be-200 Altair</field>
+            <field name="code">N/A</field>
+            <field name="icao">BER2</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_type_airline_N/A" model="tt.transport.carrier.type">
+            <field name="name">8KCAB Decathlon</field>
+            <field name="code">N/A</field>
+            <field name="icao">BL8</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_type_airline_74B" model="tt.transport.carrier.type">
+            <field name="name">Boeing 747 LCF Dreamlifter</field>
+            <field name="code">74B</field>
+            <field name="icao">BLCF</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_type_airline_BNI" model="tt.transport.carrier.type">
+            <field name="name">Pilatus Britten-Norman BN-2A/B Islander</field>
+            <field name="code">BNI</field>
+            <field name="icao">BN2P</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_type_airline_LOH" model="tt.transport.carrier.type">
+            <field name="name">Lockheed L-182 / 282 / 382 (L-100) Hercules</field>
+            <field name="code">LOH</field>
+            <field name="icao">C130</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_type_airline_N/A" model="tt.transport.carrier.type">
+            <field name="name">Cessna 152</field>
+            <field name="code">N/A</field>
+            <field name="icao">C152</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_type_airline_CN1" model="tt.transport.carrier.type">
+            <field name="name">Cessna 162</field>
+            <field name="code">CN1</field>
+            <field name="icao">C162</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_type_airline_CN1" model="tt.transport.carrier.type">
+            <field name="name">Cessna 172</field>
+            <field name="code">CN1</field>
+            <field name="icao">C172</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_type_airline_CN1" model="tt.transport.carrier.type">
+            <field name="name">Cessna 182 Skylane</field>
+            <field name="code">CN1</field>
+            <field name="icao">C182</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_type_airline_CN1" model="tt.transport.carrier.type">
+            <field name="name">Cessna 206 Stationair</field>
+            <field name="code">CN1</field>
+            <field name="icao">C206</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_type_airline_CN1" model="tt.transport.carrier.type">
+            <field name="name">Cessna 208 Caravan</field>
+            <field name="code">CN1</field>
+            <field name="icao">C208</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_type_airline_CN1" model="tt.transport.carrier.type">
+            <field name="name"> Cessna 210 Centurion</field>
+            <field name="code">CN1</field>
+            <field name="icao">C210</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_type_airline_CS2" model="tt.transport.carrier.type">
+            <field name="name">CASA / IPTN 212 Aviocar</field>
+            <field name="code">CS2</field>
+            <field name="icao">C212</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_type_airline_CNJ" model="tt.transport.carrier.type">
+            <field name="name">Cessna Citation CJ2</field>
+            <field name="code">CNJ</field>
+            <field name="icao">C25A</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_type_airline_CNJ" model="tt.transport.carrier.type">
+            <field name="name">Cessna Citation CJ3</field>
+            <field name="code">CNJ</field>
+            <field name="icao">C25B</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_type_airline_CNJ" model="tt.transport.carrier.type">
+            <field name="name">Cessna Citation CJ4</field>
+            <field name="code">CNJ</field>
+            <field name="icao">C25C</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_type_airline_LOH" model="tt.transport.carrier.type">
+            <field name="name">Lockheed Martin C-130J Hercules</field>
+            <field name="code">LOH</field>
+            <field name="icao">C30J</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_type_airline_N/A" model="tt.transport.carrier.type">
+            <field name="name">Cessna 310</field>
+            <field name="code">N/A</field>
+            <field name="icao">C310</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_type_airline_CWC" model="tt.transport.carrier.type">
+            <field name="name">Curtiss C-46 Commando</field>
+            <field name="code">CWC</field>
+            <field name="icao">C46</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_type_airline_CNJ" model="tt.transport.carrier.type">
+            <field name="name">Cessna Citation I</field>
+            <field name="code">CNJ</field>
+            <field name="icao">C500</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_type_airline_CNJ" model="tt.transport.carrier.type">
+            <field name="name">Cessna Citation Mustang</field>
+            <field name="code">CNJ</field>
+            <field name="icao">C510</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_type_airline_CNJ" model="tt.transport.carrier.type">
+            <field name="name">Cessna CitationJet</field>
+            <field name="code">CNJ</field>
+            <field name="icao">C525</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_type_airline_CNJ" model="tt.transport.carrier.type">
+            <field name="name">Cessna Citation II</field>
+            <field name="code">CNJ</field>
+            <field name="icao">C550</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_type_airline_CNJ" model="tt.transport.carrier.type">
+            <field name="name">Cessna Citation V</field>
+            <field name="code">CNJ</field>
+            <field name="icao">C560</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_type_airline_CNJ" model="tt.transport.carrier.type">
+            <field name="name">Cessna Citation Excel</field>
+            <field name="code">CNJ</field>
+            <field name="icao">C56X</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_type_airline_CNJ" model="tt.transport.carrier.type">
+            <field name="name">Cessna Citation III</field>
+            <field name="code">CNJ</field>
+            <field name="icao">C650</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_type_airline_CNJ" model="tt.transport.carrier.type">
+            <field name="name">Cessna Citation Sovereign</field>
+            <field name="code">CNJ</field>
+            <field name="icao">C680</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_type_airline_CN1" model="tt.transport.carrier.type">
+            <field name="name">Cessna 172 Cutlass RG</field>
+            <field name="code">CN1</field>
+            <field name="icao">C72R</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_type_airline_CNJ" model="tt.transport.carrier.type">
+            <field name="name">Cessna Citation X</field>
+            <field name="code">CNJ</field>
+            <field name="icao">C750</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_type_airline_CN1" model="tt.transport.carrier.type">
+            <field name="name">Cessna 177 Cardinal RG</field>
+            <field name="code">CN1</field>
+            <field name="icao">C77R</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_type_airline_N/A" model="tt.transport.carrier.type">
+            <field name="name">COMAC C919</field>
+            <field name="code">N/A</field>
+            <field name="icao">C919</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_type_airline_N/A" model="tt.transport.carrier.type">
+            <field name="name">7AC Champ</field>
+            <field name="code">N/A</field>
+            <field name="icao">CH7A</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_type_airline_N/A" model="tt.transport.carrier.type">
+            <field name="name">7GCAA, 7GCBC, 7KCAB Citabria</field>
+            <field name="code">N/A</field>
+            <field name="icao">CH7B</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_type_airline_N/A" model="tt.transport.carrier.type">
+            <field name="name">Bombardier 415</field>
+            <field name="code">N/A</field>
+            <field name="icao">CL2T</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_type_airline_N/A" model="tt.transport.carrier.type">
+            <field name="name">Bombardier BD-100 Challenger 300</field>
+            <field name="code">N/A</field>
+            <field name="icao">CL30</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_type_airline_CCJ" model="tt.transport.carrier.type">
+            <field name="name">Canadair Challenger</field>
+            <field name="code">CCJ</field>
+            <field name="icao">CL60</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_type_airline_CS5" model="tt.transport.carrier.type">
+            <field name="name">CASA/IPTN CN-235</field>
+            <field name="code">CS5</field>
+            <field name="icao">CN35</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_type_airline_" model="tt.transport.carrier.type">
+            <field name="name">CONC</field>
+            <field name="code"></field>
+            <field name="icao"></field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_type_airline_L49" model="tt.transport.carrier.type">
+            <field name="name">Lockheed L-1049 Super Constellation</field>
+            <field name="code">L49</field>
+            <field name="icao">CONI</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_type_airline_CR1" model="tt.transport.carrier.type">
+            <field name="name">Canadair Regional Jet 100</field>
+            <field name="code">CR1</field>
+            <field name="icao">CRJ1</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_type_airline_CR2" model="tt.transport.carrier.type">
+            <field name="name">Canadair Regional Jet 200</field>
+            <field name="code">CR2</field>
+            <field name="icao">CRJ2</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_type_airline_CR7" model="tt.transport.carrier.type">
+            <field name="name">Canadair Regional Jet 700 | Regional Jet 550</field>
+            <field name="code">CR7</field>
+            <field name="icao">CRJ7</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_type_airline_CR9" model="tt.transport.carrier.type">
+            <field name="name">Canadair Regional Jet 900</field>
+            <field name="code">CR9</field>
+            <field name="icao">CRJ9</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_type_airline_CRK" model="tt.transport.carrier.type">
+            <field name="name">Canadair Regional Jet 1000</field>
+            <field name="code">CRK</field>
+            <field name="icao">CRJX</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_type_airline_CV4" model="tt.transport.carrier.type">
+            <field name="name">Convair CV-240 &amp; -440</field>
+            <field name="code">CV4</field>
+            <field name="icao">CVLP</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_type_airline_CV5" model="tt.transport.carrier.type">
+            <field name="name">Convair CV-580, Convair CV-600, Convair CV-640</field>
+            <field name="code">CV5</field>
+            <field name="icao">CVLT</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_type_airline_D28" model="tt.transport.carrier.type">
+            <field name="name">Dornier 228</field>
+            <field name="code">D28</field>
+            <field name="icao">D228</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_type_airline_D38" model="tt.transport.carrier.type">
+            <field name="name">Fairchild Dornier Do.328</field>
+            <field name="code">D38</field>
+            <field name="icao">D328</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_type_airline_N/A" model="tt.transport.carrier.type">
+            <field name="name">Diamond DA40</field>
+            <field name="code">N/A</field>
+            <field name="icao">DA40</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_type_airline_N/A" model="tt.transport.carrier.type">
+            <field name="name">Diamond DA42</field>
+            <field name="code">N/A</field>
+            <field name="icao">DA42</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_type_airline_N/A" model="tt.transport.carrier.type">
+            <field name="name">Diamond DA62</field>
+            <field name="code">N/A</field>
+            <field name="icao">DA62</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_type_airline_D11" model="tt.transport.carrier.type">
+            <field name="name">Douglas DC-10-10 / -15 Passenger</field>
+            <field name="code">D11</field>
+            <field name="icao">DC10</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_type_airline_D1C" model="tt.transport.carrier.type">
+            <field name="name">Douglas DC-10-30 / -40 Passenger</field>
+            <field name="code">D1C</field>
+            <field name="icao">DC10</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_type_airline_D1M" model="tt.transport.carrier.type">
+            <field name="name">Douglas DC-10-30 Combi</field>
+            <field name="code">D1M</field>
+            <field name="icao">DC10</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_type_airline_D1X" model="tt.transport.carrier.type">
+            <field name="name">Douglas DC-10-10 Freighter</field>
+            <field name="code">D1X</field>
+            <field name="icao">DC10</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_type_airline_D1Y" model="tt.transport.carrier.type">
+            <field name="name">Douglas DC-10-30 / -40 Freighter</field>
+            <field name="code">D1Y</field>
+            <field name="icao">DC10</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_type_airline_D3F" model="tt.transport.carrier.type">
+            <field name="name">Douglas DC-3</field>
+            <field name="code">D3F</field>
+            <field name="icao">DC3</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_type_airline_D6F" model="tt.transport.carrier.type">
+            <field name="name">Douglas DC-6</field>
+            <field name="code">D6F</field>
+            <field name="icao">DC6</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_type_airline_D8T" model="tt.transport.carrier.type">
+            <field name="name"> Douglas DC-8-50</field>
+            <field name="code">D8T</field>
+            <field name="icao">DC85</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_type_airline_D8L" model="tt.transport.carrier.type">
+            <field name="name"> Douglas DC-8-62</field>
+            <field name="code">D8L</field>
+            <field name="icao">DC86</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_type_airline_D8Q" model="tt.transport.carrier.type">
+            <field name="name"> Douglas DC-8-72</field>
+            <field name="code">D8Q</field>
+            <field name="icao">DC87</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_type_airline_D91" model="tt.transport.carrier.type">
+            <field name="name"> Douglas DC-9-10</field>
+            <field name="code">D91</field>
+            <field name="icao">DC91</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_type_airline_D92" model="tt.transport.carrier.type">
+            <field name="name"> Douglas DC-9-20</field>
+            <field name="code">D92</field>
+            <field name="icao">DC92</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_type_airline_D93" model="tt.transport.carrier.type">
+            <field name="name"> Douglas DC-9-30</field>
+            <field name="code">D93</field>
+            <field name="icao">DC93</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_type_airline_D94" model="tt.transport.carrier.type">
+            <field name="name"> Douglas DC-9-40</field>
+            <field name="code">D94</field>
+            <field name="icao">DC94</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_type_airline_D95" model="tt.transport.carrier.type">
+            <field name="name"> Douglas DC-9-50</field>
+            <field name="code">D95</field>
+            <field name="icao">DC95</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_type_airline_DHR" model="tt.transport.carrier.type">
+            <field name="name">De Havilland Canada DHC-2 Turbo-Beaver</field>
+            <field name="code">DHR</field>
+            <field name="icao">DH2T</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_type_airline_" model="tt.transport.carrier.type">
+            <field name="name">DH62</field>
+            <field name="code"></field>
+            <field name="icao"></field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_type_airline_" model="tt.transport.carrier.type">
+            <field name="name">DH64</field>
+            <field name="code"></field>
+            <field name="icao"></field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_type_airline_DH1" model="tt.transport.carrier.type">
+            <field name="name">De Havilland Canada DHC-8-100 Dash 8 / 8Q</field>
+            <field name="code">DH1</field>
+            <field name="icao">DH8A</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_type_airline_DH2" model="tt.transport.carrier.type">
+            <field name="name">De Havilland Canada DHC-8-200 Dash 8 / 8Q</field>
+            <field name="code">DH2</field>
+            <field name="icao">DH8B</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_type_airline_DH3" model="tt.transport.carrier.type">
+            <field name="name">De Havilland Canada DHC-8-300 Dash 8 / 8Q</field>
+            <field name="code">DH3</field>
+            <field name="icao">DH8C</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_type_airline_DH4" model="tt.transport.carrier.type">
+            <field name="name">De Havilland Canada DHC-8-400 Dash 8Q</field>
+            <field name="code">DH4</field>
+            <field name="icao">DH8D</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_type_airline_DHP" model="tt.transport.carrier.type">
+            <field name="name">De Havilland Canada DHC-2 Beaver</field>
+            <field name="code">DHP</field>
+            <field name="icao">DHC2</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_type_airline_DHL" model="tt.transport.carrier.type">
+            <field name="name">De Havilland Canada DHC-3 Otter</field>
+            <field name="code">DHL</field>
+            <field name="icao">DHC3</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_type_airline_DHC" model="tt.transport.carrier.type">
+            <field name="name">De Havilland Canada DHC-4 Caribou</field>
+            <field name="code">DHC</field>
+            <field name="icao">DHC4</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_type_airline_DHC" model="tt.transport.carrier.type">
+            <field name="name">De Havilland Canada DHC-5 Buffalo</field>
+            <field name="code">DHC</field>
+            <field name="icao">DHC5</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_type_airline_DHT" model="tt.transport.carrier.type">
+            <field name="name">De Havilland Canada DHC-6 Twin Otter</field>
+            <field name="code">DHT</field>
+            <field name="icao">DHC6</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_type_airline_DH7" model="tt.transport.carrier.type">
+            <field name="name">De Havilland Canada DHC-7 Dash 7</field>
+            <field name="code">DH7</field>
+            <field name="icao">DHC7</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_type_airline_DHD" model="tt.transport.carrier.type">
+            <field name="name">De Havilland DH.104 Dove</field>
+            <field name="code">DHD</field>
+            <field name="icao">DOVE</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_type_airline_EMB" model="tt.transport.carrier.type">
+            <field name="name">Embraer EMB 110 Bandeirante</field>
+            <field name="code">EMB</field>
+            <field name="icao">E110</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_type_airline_EM2" model="tt.transport.carrier.type">
+            <field name="name">Embraer EMB 120 Brasilia</field>
+            <field name="code">EM2</field>
+            <field name="icao">E120</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_type_airline_ER3" model="tt.transport.carrier.type">
+            <field name="name">Embraer RJ135</field>
+            <field name="code">ER3</field>
+            <field name="icao">E135</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_type_airline_ERD" model="tt.transport.carrier.type">
+            <field name="name">Embraer RJ140</field>
+            <field name="code">ERD</field>
+            <field name="icao">E135</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_type_airline_ER4" model="tt.transport.carrier.type">
+            <field name="name">Embraer RJ145</field>
+            <field name="code">ER4</field>
+            <field name="icao">E145</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_type_airline_E70" model="tt.transport.carrier.type">
+            <field name="name">Embraer 170</field>
+            <field name="code">E70</field>
+            <field name="icao">E170</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_type_airline_E90" model="tt.transport.carrier.type">
+            <field name="name">Embraer 190 / Lineage 1000</field>
+            <field name="code">E90</field>
+            <field name="icao">E190</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_type_airline_E95" model="tt.transport.carrier.type">
+            <field name="name">Embraer 195</field>
+            <field name="code">E95</field>
+            <field name="icao">E195</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_type_airline_290" model="tt.transport.carrier.type">
+            <field name="name">Embraer E190-E2</field>
+            <field name="code">290</field>
+            <field name="icao">E290</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_type_airline_295" model="tt.transport.carrier.type">
+            <field name="name">Embraer E195-E2</field>
+            <field name="code">295</field>
+            <field name="icao">E295</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_type_airline_ER3" model="tt.transport.carrier.type">
+            <field name="name">Embraer Legacy 600 / Legacy 650</field>
+            <field name="code">ER3</field>
+            <field name="icao">E35L</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_type_airline_EP1" model="tt.transport.carrier.type">
+            <field name="name">Embraer Phenom 100</field>
+            <field name="code">EP1</field>
+            <field name="icao">E50P</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_type_airline_N/A" model="tt.transport.carrier.type">
+            <field name="name">Embraer Legacy 450 / Praetor 500</field>
+            <field name="code">N/A</field>
+            <field name="icao">E545</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_type_airline_N/A" model="tt.transport.carrier.type">
+            <field name="name">Embraer Legacy 500 / Praetor 600</field>
+            <field name="code">N/A</field>
+            <field name="icao">E550</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_type_airline_EP3" model="tt.transport.carrier.type">
+            <field name="name">Embraer Phenom 300</field>
+            <field name="code">EP3</field>
+            <field name="icao">E55P</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_type_airline_E7W" model="tt.transport.carrier.type">
+            <field name="name">Embraer 175 (long wing)</field>
+            <field name="code">E7W</field>
+            <field name="icao">E75L</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_type_airline_E75" model="tt.transport.carrier.type">
+            <field name="name">Embraer 175 (short wing)</field>
+            <field name="code">E75</field>
+            <field name="icao">E75S</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_type_airline_" model="tt.transport.carrier.type">
+            <field name="name">EA30</field>
+            <field name="code"></field>
+            <field name="icao"></field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_type_airline_" model="tt.transport.carrier.type">
+            <field name="name">EA31</field>
+            <field name="code"></field>
+            <field name="icao"></field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_type_airline_" model="tt.transport.carrier.type">
+            <field name="name">EA32</field>
+            <field name="code"></field>
+            <field name="icao"></field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_type_airline_" model="tt.transport.carrier.type">
+            <field name="name">EA33</field>
+            <field name="code"></field>
+            <field name="icao"></field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_type_airline_" model="tt.transport.carrier.type">
+            <field name="name">EA34</field>
+            <field name="code"></field>
+            <field name="icao"></field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_type_airline_" model="tt.transport.carrier.type">
+            <field name="name">Eclipse 500</field>
+            <field name="code"></field>
+            <field name="icao">EA50</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_type_airline_N/A" model="tt.transport.carrier.type">
+            <field name="name">Eurocopter EC120 Colibri / Harbin HC120</field>
+            <field name="code">N/A</field>
+            <field name="icao">EC20</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_type_airline_N/A" model="tt.transport.carrier.type">
+            <field name="name">Eurocopter EC225 Super Puma</field>
+            <field name="code">N/A</field>
+            <field name="icao">EC25</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_type_airline_N/A" model="tt.transport.carrier.type">
+            <field name="name">Eurocopter EC135</field>
+            <field name="code">N/A</field>
+            <field name="icao">EC35</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_type_airline_N/A" model="tt.transport.carrier.type">
+            <field name="name">Eurocopter EC145</field>
+            <field name="code">N/A</field>
+            <field name="icao">EC45</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_type_airline_N/A" model="tt.transport.carrier.type">
+            <field name="name">Tecnam P92 Echo / P92 Eaglet / P92 SeaSky</field>
+            <field name="code">N/A</field>
+            <field name="icao">ECHO</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_type_airline_N/A" model="tt.transport.carrier.type">
+            <field name="name">EV-97 EuroStar / EV-97 Harmony</field>
+            <field name="code">N/A</field>
+            <field name="icao">EV97</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_type_airline_N/A" model="tt.transport.carrier.type">
+            <field name="name">Evektor SportStar</field>
+            <field name="code">N/A</field>
+            <field name="icao">EVSS</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_type_airline_MD9" model="tt.transport.carrier.type">
+            <field name="name">MD Helicopters MD900 Explorer</field>
+            <field name="code">MD9</field>
+            <field name="icao">EXPL</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_type_airline_100" model="tt.transport.carrier.type">
+            <field name="name">Fokker 100</field>
+            <field name="code">100</field>
+            <field name="icao">F100</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_type_airline_F27" model="tt.transport.carrier.type">
+            <field name="name">Fokker F27 Friendship</field>
+            <field name="code">F27</field>
+            <field name="icao">F27</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_type_airline_F21" model="tt.transport.carrier.type">
+            <field name="name">Fokker F28 Fellowship</field>
+            <field name="code">F21</field>
+            <field name="icao">F28</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_type_airline_D20" model="tt.transport.carrier.type">
+            <field name="name">Dassault Falcon 2000</field>
+            <field name="code">D20</field>
+            <field name="icao">F2TH</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_type_airline_CNT" model="tt.transport.carrier.type">
+            <field name="name">Reims-Cessna F406 Caravan II</field>
+            <field name="code">CNT</field>
+            <field name="icao">F406</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_type_airline_F50" model="tt.transport.carrier.type">
+            <field name="name">Fokker 50</field>
+            <field name="code">F50</field>
+            <field name="icao">F50</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_type_airline_F70" model="tt.transport.carrier.type">
+            <field name="name">Fokker 70</field>
+            <field name="code">F70</field>
+            <field name="icao">F70</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_type_airline_DF9" model="tt.transport.carrier.type">
+            <field name="name">Dassault Falcon 900</field>
+            <field name="code">DF9</field>
+            <field name="icao">F900</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_type_airline_DF3" model="tt.transport.carrier.type">
+            <field name="name">Dassault Falcon 50</field>
+            <field name="code">DF3</field>
+            <field name="icao">FA50</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_type_airline_DF7" model="tt.transport.carrier.type">
+            <field name="name">Dassault Falcon 7X</field>
+            <field name="code">DF7</field>
+            <field name="icao">FA7X</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_type_airline_GRS" model="tt.transport.carrier.type">
+            <field name="name">Gulfstream Aerospace G-159 Gulfstream I</field>
+            <field name="code">GRS</field>
+            <field name="icao">G159</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_type_airline_GRG" model="tt.transport.carrier.type">
+            <field name="name">Grumman G-21 Goose</field>
+            <field name="code">GRG</field>
+            <field name="icao">G21</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_type_airline_GR3" model="tt.transport.carrier.type">
+            <field name="name">Gulfstream G280</field>
+            <field name="code">GR3</field>
+            <field name="icao">G280</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_type_airline_GRM" model="tt.transport.carrier.type">
+            <field name="name">Grumman G-73 Turbo Mallard</field>
+            <field name="code">GRM</field>
+            <field name="icao">G73T</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_type_airline_N/A" model="tt.transport.carrier.type">
+            <field name="name">GippsAero GA8 Airvan</field>
+            <field name="code">N/A</field>
+            <field name="icao">GA8</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_type_airline_CCX" model="tt.transport.carrier.type">
+            <field name="name">Bombardier BD-700 Global 5000</field>
+            <field name="code">CCX</field>
+            <field name="icao">GL5T</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_type_airline_CCX" model="tt.transport.carrier.type">
+            <field name="name">Bombardier Global Express</field>
+            <field name="code">CCX</field>
+            <field name="icao">GLEX</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_type_airline_GJ4" model="tt.transport.carrier.type">
+            <field name="name">Gulfstream IV</field>
+            <field name="code">GJ4</field>
+            <field name="icao">GLF4</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_type_airline_GJ5" model="tt.transport.carrier.type">
+            <field name="name">Gulfstream V</field>
+            <field name="code">GJ5</field>
+            <field name="icao">GLF5</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_type_airline_GJ6" model="tt.transport.carrier.type">
+            <field name="name">Gulfstream G650</field>
+            <field name="code">GJ6</field>
+            <field name="icao">GLF6</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_type_airline_N/A" model="tt.transport.carrier.type">
+            <field name="name">Tecnam P96</field>
+            <field name="code">N/A</field>
+            <field name="icao">GOLF</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_type_airline_H25" model="tt.transport.carrier.type">
+            <field name="name">British Aerospace 125 series / Hawker/Raytheon 700/800/800XP/850/900</field>
+            <field name="code">H25</field>
+            <field name="icao">H25B</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_type_airline_H25" model="tt.transport.carrier.type">
+            <field name="name">British Aerospace 125-1000 series / Hawker/Raytheon 1000</field>
+            <field name="code">H25</field>
+            <field name="icao">H25C</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_type_airline_HHJ" model="tt.transport.carrier.type">
+            <field name="name">Honda HA-420</field>
+            <field name="code">HHJ</field>
+            <field name="icao">HDJT</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_type_airline_DHH" model="tt.transport.carrier.type">
+            <field name="name">De Havilland DH.114 Heron</field>
+            <field name="code">DHH</field>
+            <field name="icao">HERN</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_type_airline_I14" model="tt.transport.carrier.type">
+            <field name="name">Ilyushin IL114</field>
+            <field name="code">I14</field>
+            <field name="icao">I114</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_type_airline_" model="tt.transport.carrier.type">
+            <field name="name">Ingenuity</field>
+            <field name="code"></field>
+            <field name="icao">IGY</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_type_airline_IL8" model="tt.transport.carrier.type">
+            <field name="name">Ilyushin IL18</field>
+            <field name="code">IL8</field>
+            <field name="icao">IL18</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_type_airline_IL6" model="tt.transport.carrier.type">
+            <field name="name">Ilyushin IL62</field>
+            <field name="code">IL6</field>
+            <field name="icao">IL62</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_type_airline_IL7" model="tt.transport.carrier.type">
+            <field name="name">Ilyushin IL76</field>
+            <field name="code">IL7</field>
+            <field name="icao">IL76</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_type_airline_ILW" model="tt.transport.carrier.type">
+            <field name="name">Ilyushin IL86</field>
+            <field name="code">ILW</field>
+            <field name="icao">IL86</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_type_airline_I93" model="tt.transport.carrier.type">
+            <field name="name">Ilyushin IL96</field>
+            <field name="code">I93</field>
+            <field name="icao">IL96</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_type_airline_FRJ" model="tt.transport.carrier.type">
+            <field name="name">Fairchild Dornier 328JET</field>
+            <field name="code">FRJ</field>
+            <field name="icao">J328</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_type_airline_J31" model="tt.transport.carrier.type">
+            <field name="name">British Aerospace Jetstream 31</field>
+            <field name="code">J31</field>
+            <field name="icao">JS31</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_type_airline_J32" model="tt.transport.carrier.type">
+            <field name="name">British Aerospace Jetstream 32</field>
+            <field name="code">J32</field>
+            <field name="icao">JS32</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_type_airline_J41" model="tt.transport.carrier.type">
+            <field name="name">British Aerospace Jetstream 41</field>
+            <field name="code">J41</field>
+            <field name="icao">JS41</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_type_airline_JU5" model="tt.transport.carrier.type">
+            <field name="name">Junkers Ju 52/3M</field>
+            <field name="code">JU5</field>
+            <field name="icao">JU52</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_type_airline_L10" model="tt.transport.carrier.type">
+            <field name="name">Lockheed L-1011 Tristar</field>
+            <field name="code">L10</field>
+            <field name="icao">L101</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_type_airline_LOE" model="tt.transport.carrier.type">
+            <field name="name">Lockheed L-188 Electra</field>
+            <field name="code">LOE</field>
+            <field name="icao">L188</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_type_airline_L4T" model="tt.transport.carrier.type">
+            <field name="name">LET 410</field>
+            <field name="code">L4T</field>
+            <field name="icao">L410</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_type_airline_LRJ" model="tt.transport.carrier.type">
+            <field name="name">Learjet 35 / 36 / C-21A</field>
+            <field name="code">LRJ</field>
+            <field name="icao">LJ35</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_type_airline_LRJ" model="tt.transport.carrier.type">
+            <field name="name">Learjet 60</field>
+            <field name="code">LRJ</field>
+            <field name="icao">LJ60</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_type_airline_M11" model="tt.transport.carrier.type">
+            <field name="name">McDonnell Douglas MD-11</field>
+            <field name="code">M11</field>
+            <field name="icao">MD11</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_type_airline_M1F" model="tt.transport.carrier.type">
+            <field name="name">McDonnell Douglas MD-11F</field>
+            <field name="code">M1F</field>
+            <field name="icao">MD11</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_type_airline_M1M" model="tt.transport.carrier.type">
+            <field name="name">McDonnell Douglas MD-11C</field>
+            <field name="code">M1M</field>
+            <field name="icao">MD11</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_type_airline_M81" model="tt.transport.carrier.type">
+            <field name="name">McDonnell Douglas MD-81</field>
+            <field name="code">M81</field>
+            <field name="icao">MD81</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_type_airline_M82" model="tt.transport.carrier.type">
+            <field name="name">McDonnell Douglas MD-82</field>
+            <field name="code">M82</field>
+            <field name="icao">MD82</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_type_airline_M83" model="tt.transport.carrier.type">
+            <field name="name">McDonnell Douglas MD-83</field>
+            <field name="code">M83</field>
+            <field name="icao">MD83</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_type_airline_M87" model="tt.transport.carrier.type">
+            <field name="name">McDonnell Douglas MD-87</field>
+            <field name="code">M87</field>
+            <field name="icao">MD87</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_type_airline_M88" model="tt.transport.carrier.type">
+            <field name="name">McDonnell Douglas MD-88</field>
+            <field name="code">M88</field>
+            <field name="icao">MD88</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_type_airline_M90" model="tt.transport.carrier.type">
+            <field name="name">McDonnell Douglas MD-90</field>
+            <field name="code">M90</field>
+            <field name="icao">MD90</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_type_airline_N/A" model="tt.transport.carrier.type">
+            <field name="name">Mil Mi-24 / Mi-25 / Mi-35</field>
+            <field name="code">N/A</field>
+            <field name="icao">MI24</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_type_airline_MIH" model="tt.transport.carrier.type">
+            <field name="name">MIL Mi-8</field>
+            <field name="code">MIH</field>
+            <field name="icao">MI8</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_type_airline_MU2" model="tt.transport.carrier.type">
+            <field name="name">Mitsubishi Mu-2</field>
+            <field name="code">MU2</field>
+            <field name="icao">MU2</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_type_airline_ND2" model="tt.transport.carrier.type">
+            <field name="name">Aerospatiale (Nord) 262</field>
+            <field name="code">ND2</field>
+            <field name="icao">N262</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_type_airline_CD2" model="tt.transport.carrier.type">
+            <field name="name">Government Aircraft Factories N22B / N24A Nomad</field>
+            <field name="code">CD2</field>
+            <field name="icao">NOMA</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_type_airline_N/A" model="tt.transport.carrier.type">
+            <field name="name">Tecnam P2006T</field>
+            <field name="code">N/A</field>
+            <field name="icao">P06T</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_type_airline_P18" model="tt.transport.carrier.type">
+            <field name="name">Piaggio P.180 Avanti</field>
+            <field name="code">P18</field>
+            <field name="icao">P180</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_type_airline_N/A" model="tt.transport.carrier.type">
+            <field name="name">Tecnam P2008</field>
+            <field name="code">N/A</field>
+            <field name="icao">P208</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_type_airline_T12" model="tt.transport.carrier.type">
+            <field name="name">Tecnam P2012 Traveller</field>
+            <field name="code">T12</field>
+            <field name="icao">P212</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_type_airline_" model="tt.transport.carrier.type">
+            <field name="name">Piper PA-28</field>
+            <field name="code"></field>
+            <field name="icao">P28A</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_type_airline_N/A" model="tt.transport.carrier.type">
+            <field name="name">Piper PA-28</field>
+            <field name="code">N/A</field>
+            <field name="icao">P28B</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_type_airline_PN6" model="tt.transport.carrier.type">
+            <field name="name">Partenavia P.68</field>
+            <field name="code">PN6</field>
+            <field name="icao">P68</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_type_airline_PA2" model="tt.transport.carrier.type">
+            <field name="name">Piper PA-31 Navajo</field>
+            <field name="code">PA2</field>
+            <field name="icao">PA31</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_type_airline_N/A" model="tt.transport.carrier.type">
+            <field name="name">Piper PA-44 Seminole</field>
+            <field name="code">N/A</field>
+            <field name="icao">PA44</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_type_airline_PAG" model="tt.transport.carrier.type">
+            <field name="name">Piper PA-46</field>
+            <field name="code">PAG</field>
+            <field name="icao">PA46</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_type_airline_PL2" model="tt.transport.carrier.type">
+            <field name="name">Pilatus PC-12</field>
+            <field name="code">PL2</field>
+            <field name="icao">PC12</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_type_airline_PL6" model="tt.transport.carrier.type">
+            <field name="name">Pilatus PC-6 Turbo Porter</field>
+            <field name="code">PL6</field>
+            <field name="icao">PC6T</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_type_airline_PL4" model="tt.transport.carrier.type">
+            <field name="name">Pilatus PC-24</field>
+            <field name="code">PL4</field>
+            <field name="icao">PC24</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_type_airline_N/A" model="tt.transport.carrier.type">
+            <field name="name">Pipistrel Sinus</field>
+            <field name="code">N/A</field>
+            <field name="icao">PISI</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_type_airline_N/A" model="tt.transport.carrier.type">
+            <field name="name">Pipistrel Taurus</field>
+            <field name="code">N/A</field>
+            <field name="icao">PITA</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_type_airline_N/A" model="tt.transport.carrier.type">
+            <field name="name">Pipistrel Virus</field>
+            <field name="code">N/A</field>
+            <field name="icao">PIVI</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_type_airline_N/A" model="tt.transport.carrier.type">
+            <field name="name">Robin HR200/R2000 series, Alpha160A</field>
+            <field name="code">N/A</field>
+            <field name="icao">R200</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_type_airline_AR1" model="tt.transport.carrier.type">
+            <field name="name">Avro RJ100</field>
+            <field name="code">AR1</field>
+            <field name="icao">RJ1H</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_type_airline_AR7" model="tt.transport.carrier.type">
+            <field name="name">Avro RJ70</field>
+            <field name="code">AR7</field>
+            <field name="icao">RJ70</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_type_airline_AR8" model="tt.transport.carrier.type">
+            <field name="name">Avro RJ85</field>
+            <field name="code">AR8</field>
+            <field name="icao">RJ85</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_type_airline_" model="tt.transport.carrier.type">
+            <field name="name">Van's Aircraft RV-4</field>
+            <field name="code"></field>
+            <field name="icao">RV4</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_type_airline_CRV" model="tt.transport.carrier.type">
+            <field name="name">Aerospatiale (Sud Aviation) Se.210 Caravelle</field>
+            <field name="code">CRV</field>
+            <field name="icao">S210</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_type_airline_S58" model="tt.transport.carrier.type">
+            <field name="name"> Sikorsky S-58T</field>
+            <field name="code">S58</field>
+            <field name="icao">S58T</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_type_airline_NDC" model="tt.transport.carrier.type">
+            <field name="name">Aerospatiale SN.601 Corvette</field>
+            <field name="code">NDC</field>
+            <field name="icao">S601</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_type_airline_S61" model="tt.transport.carrier.type">
+            <field name="name">Sikorsky S-61</field>
+            <field name="code">S61</field>
+            <field name="icao">S61</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_type_airline_NDH" model="tt.transport.carrier.type">
+            <field name="name">Eurocopter (Aerospatiale) SA365C / SA365N Dauphin 2</field>
+            <field name="code">NDH</field>
+            <field name="icao">S65C</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_type_airline_S76" model="tt.transport.carrier.type">
+            <field name="name">Sikorsky S-76</field>
+            <field name="code">S76</field>
+            <field name="icao">S76</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_type_airline_S92" model="tt.transport.carrier.type">
+            <field name="name">Sikorsky S-92</field>
+            <field name="code">S92</field>
+            <field name="icao">S92</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_type_airline_S20" model="tt.transport.carrier.type">
+            <field name="name">Saab 2000</field>
+            <field name="code">S20</field>
+            <field name="icao">SB20</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_type_airline_SHS" model="tt.transport.carrier.type">
+            <field name="name"> Shorts SC-7 Skyvan</field>
+            <field name="code">SHS</field>
+            <field name="icao">SC7</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_type_airline_SF3" model="tt.transport.carrier.type">
+            <field name="name"> Saab SF340A/B</field>
+            <field name="code">SF3</field>
+            <field name="icao">SF34</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_type_airline_N/A" model="tt.transport.carrier.type">
+            <field name="name">Cirrus SF50 Vision Jet</field>
+            <field name="code">N/A</field>
+            <field name="icao">SF50</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_type_airline_SH3" model="tt.transport.carrier.type">
+            <field name="name">Shorts SD.330</field>
+            <field name="code">SH3</field>
+            <field name="icao">SH33</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_type_airline_SH6" model="tt.transport.carrier.type">
+            <field name="name">Shorts SD.360</field>
+            <field name="code">SH6</field>
+            <field name="icao">SH36</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_type_airline_N/A" model="tt.transport.carrier.type">
+            <field name="name">Tecnam P2002 Sierra</field>
+            <field name="code">N/A</field>
+            <field name="icao">SIRA</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_type_airline_SU9" model="tt.transport.carrier.type">
+            <field name="name">Sukhoi Superjet 100-95</field>
+            <field name="code">SU9</field>
+            <field name="icao">SU95</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_type_airline_TU3" model="tt.transport.carrier.type">
+            <field name="name">Tupolev Tu-134</field>
+            <field name="code">TU3</field>
+            <field name="icao">T134</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_type_airline_N/A" model="tt.transport.carrier.type">
+            <field name="name">Tupolev Tu-144</field>
+            <field name="code">N/A</field>
+            <field name="icao">T144</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_type_airline_TU5" model="tt.transport.carrier.type">
+            <field name="name">Tupolev Tu-154</field>
+            <field name="code">TU5</field>
+            <field name="icao">T154</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_type_airline_T20" model="tt.transport.carrier.type">
+            <field name="name"> Tupolev Tu-204 / Tu-214</field>
+            <field name="code">T20</field>
+            <field name="icao">T204</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_type_airline_N/A" model="tt.transport.carrier.type">
+            <field name="name">Socata TB-20 Trinidad</field>
+            <field name="code">N/A</field>
+            <field name="icao">TB20</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_type_airline_N/A" model="tt.transport.carrier.type">
+            <field name="name">TL Ultralight TL-96 Star / TL-2000 Sting</field>
+            <field name="code">N/A</field>
+            <field name="icao">TL20</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_type_airline_N/A" model="tt.transport.carrier.type">
+            <field name="name">Team Rocket F1</field>
+            <field name="code">N/A</field>
+            <field name="icao">TRF1</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_type_airline_BNT" model="tt.transport.carrier.type">
+            <field name="name">Pilatus Britten-Norman BN-2A Mk III Trislander</field>
+            <field name="code">BNT</field>
+            <field name="icao">TRIS</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_type_airline_N/A" model="tt.transport.carrier.type">
+            <field name="name">Tecnam P2010</field>
+            <field name="code">N/A</field>
+            <field name="icao">TWEN</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_type_airline_WWP" model="tt.transport.carrier.type">
+            <field name="name">Israel Aircraft Industries 1124 Westwind</field>
+            <field name="code">WWP</field>
+            <field name="icao">WW24</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_type_airline_YN2" model="tt.transport.carrier.type">
+            <field name="name">Harbin Yunshuji Y12</field>
+            <field name="code">YN2</field>
+            <field name="icao">Y12</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_type_airline_YK4" model="tt.transport.carrier.type">
+            <field name="name">Yakovlev Yak-40</field>
+            <field name="code">YK4</field>
+            <field name="icao">YK40</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_type_airline_YK2" model="tt.transport.carrier.type">
+            <field name="name">Yakovlev Yak-42</field>
+            <field name="code">YK2</field>
+            <field name="icao">YK42</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_type_airline_YS1" model="tt.transport.carrier.type">
+            <field name="name">NAMC YS-11</field>
+            <field name="code">YS1</field>
+            <field name="icao">YS11</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+    </data>
+</odoo>
+    
