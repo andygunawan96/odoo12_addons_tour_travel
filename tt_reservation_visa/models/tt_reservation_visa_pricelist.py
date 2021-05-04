@@ -115,9 +115,8 @@ class VisaSyncProducts(models.TransientModel):
                 product_obj = product_obj and product_obj[0] or False
                 temp = []
                 if provider == 'rodextrip_visa':
-                    data_vendor = self.env['tt.reservation.visa.pricelist'].search([('provider_id.code', '=', 'rodextrip_visa')])
-                    for rec in data_vendor:
-                        rec.active = False
+                    if product_obj:
+                        product_obj.active = False #inactive
                     req = {
                         'provider': provider,
                         'code': rec
@@ -221,7 +220,7 @@ class VisaSyncProducts(models.TransientModel):
                                 'city': data['city']
                             })
                     else:
-                        print('error sync data' + rec)
+                        _logger.error('error sync data' + json.dumps(rec))
                     pass
 
     def url_to_base64(self, url):
@@ -334,7 +333,7 @@ class VisaPricelist(models.Model):
         for data in self.attachments_ids:
             attachement_ids.append({
                 'file_reference': data.file_reference,
-                'file_name': data.filename,
+                'filename': data.filename,
                 'name': data.name,
                 'url': data.url
             })

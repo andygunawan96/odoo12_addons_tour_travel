@@ -109,6 +109,8 @@ class PassportSyncProducts(models.TransientModel):
                 product_obj = product_obj and product_obj[0] or False
                 temp = []
                 if provider == 'rodextrip_passport':
+                    if product_obj:
+                        product_obj.active = False
                     req = {
                         'provider': provider,
                         'code': rec
@@ -392,7 +394,7 @@ class PassportPricelist(models.Model):
         for data in self.attachments_ids:
             attachement_ids.append({
                 'file_reference': data.file_reference,
-                'file_name': data.filename,
+                'filename': data.filename,
                 'name': data.name,
                 'url': data.url
             })
