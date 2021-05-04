@@ -150,9 +150,9 @@
         <field name="view_mode">tree,form</field>
     </record>
 
-    <menuitem id="api_monitor_rule_submenu" parent="tt_api_management.menu_tt_gateway"
+    <menuitem id="api_monitor_rule_submenu" parent="tt_api_management.menu_tt_gateway_top_monitor"
               name="API Monitor Rule" action="api_monitor_rule_action_view" sequence="19"/>
 
-    <menuitem id="api_monitor_submenu" parent="tt_api_management.menu_tt_gateway"
+    <menuitem id="api_monitor_submenu" parent="tt_api_management.menu_tt_gateway_top_monitor"
               name="API Monitor" action="api_monitor_action_view" sequence="18"/>
 </odoo>

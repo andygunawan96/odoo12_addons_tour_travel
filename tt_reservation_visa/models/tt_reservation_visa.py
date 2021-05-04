@@ -239,6 +239,7 @@ class TtVisa(models.Model):
                 vals = {
                     'provider_type': 'visa',
                     'action': 'sync_status_visa',
+                    'action_todo': 'sync_status_visa',
                     'data': data,
                     'child_id': self.user_id.id
                 }
@@ -2765,3 +2766,136 @@ class TtVisa(models.Model):
                         (psg.pricelist_id.process_type.capitalize() if psg.pricelist_id.process_type else '') + \
                         ' (' + str(psg.pricelist_id.duration if psg.pricelist_id.duration else '-') + ' days)' + '<br/>'
         return desc_txt
+
+
+class ActivitySyncProductsChildren(models.TransientModel):
+    _name = "visa.sync.product.children.wizard"
+    _description = 'Visa Sync Product Children Wizard'
+
+    def sync_data_to_children(self):
+        try:
+            visa_data_list = []
+            data = self.env['tt.reservation.visa.pricelist'].get_inventory_api()
+            if data['error_code'] == 0:
+                for rec in data['response']:
+                    detail_data = self.env['tt.reservation.visa.pricelist'].get_product_detail_api({'code': rec})
+                    if detail_data['error_code'] == 0:
+                        visa_data_list.append(detail_data['response'])
+            gw_timeout = 10
+            vals = {
+                'provider_type': 'visa',
+                'action': 'sync_products_to_children',
+                'actions_todo': 'sync_products_to_children_visa',
+                'data': visa_data_list,
+                'timeout': gw_timeout
+            }
+            self.env['tt.api.webhook.data'].notify_subscriber(vals)
+        except Exception as e:
+            raise UserError(_('Failed to sync activity data to children!'))
+
+    def product_sync_webhook_nosend(self, data, context):
+        try:
+            _logger.info("Receiving activity data from webhook...")
+            data_vendor = self.env['tt.reservation.visa.pricelist'].search([('provider_id.code', '=', 'rodextrip_visa')])
+            for rec in data_vendor:
+                rec.active = False
+            for rec in data['data']:
+                master_data = self.env['tt.reservation.visa.pricelist'].search([('reference_code', '=', rec['reference_code'] + '_rdx')], limit=1)
+                if master_data:
+                    master_data.update({
+                        'commercial_duration': rec['commercial_duration'],
+                        'commission_price': rec['commission_price'],
+                        'cost_price': rec['cost_price'],
+                        'country_id': self.env['res.country'].search([('name', '=', rec['country_id'])]).id,
+                        'currency_id': self.env['res.currency'].search([('name', '=', rec['currency_id'])]).id,
+                        'delivery_nta_price': rec['delivery_nta_price'],
+                        'description': rec['description'],
+                        'duration': rec['duration'],
+                        'entry_type': rec['entry_type'],
+                        'immigration_consulate': rec['immigration_consulate'],
+                        'name': rec['name'],
+                        'notes': rec['notes'],
+                        'nta_price': rec['nta_price'],
+                        'pax_type': rec['pax_type'],
+                        'process_type': rec['process_type'],
+                        'reference_code': rec['reference_code'] + '_rdx',
+                        'provider_id': self.env['tt.provider'].search([('code', '=', rec['provider_id'])]).id,
+                        'sale_price': rec['sale_price'],
+                        'visa_nta_price': rec['visa_nta_price'],
+                        'visa_type': rec['visa_type'],
+                        'active': True
+                    })
+                    master_data.requirement_ids.unlink()
+                    master_data.attachments_ids.unlink()
+                    master_data.visa_location_ids.unlink()
+                else:
+                    master_data = self.env['tt.reservation.visa.pricelist'].create({
+                        'commercial_duration': rec['commercial_duration'],
+                        'commission_price': rec['commission_price'],
+                        'cost_price': rec['cost_price'],
+                        'country_id': self.env['res.country'].search([('name', '=', rec['country_id'])]).id,
+                        'currency_id': self.env['res.currency'].search([('name', '=', rec['currency_id'])]).id,
+                        'delivery_nta_price': rec['delivery_nta_price'],
+                        'description': rec['description'],
+                        'duration': rec['duration'],
+                        'entry_type': rec['entry_type'],
+                        'immigration_consulate': rec['immigration_consulate'],
+                        'name': rec['name'],
+                        'notes': rec['notes'],
+                        'nta_price': rec['nta_price'],
+                        'pax_type': rec['pax_type'],
+                        'process_type': rec['process_type'],
+                        'reference_code': rec['reference_code'] + '_rdx',
+                        'provider_id': self.env['tt.provider'].search([('code', '=', rec['provider_id'])]).id,
+                        'sale_price': rec['sale_price'],
+                        'visa_nta_price': rec['visa_nta_price'],
+                        'visa_type': rec['visa_type'],
+                        'active': True
+                    })
+                for data in rec['requirement_ids']:
+                    self.env['tt.reservation.visa.requirements'].create({
+                        'pricelist_id': master_data.id,
+                        'name': data['name'],
+                        'reference_code': data['reference_code'] + '_rdx',
+                        'type_id': self.env['tt.traveldoc.type'].create(data['type_id']).id
+                    })
+                upload = self.env['tt.upload.center.wizard']
+                co_agent_id = self.env.user.agent_id.id
+                co_uid = self.env.user.id
+                context = {
+                    'co_agent_id': co_agent_id,
+                    'co_uid': co_uid
+                }
+                attachments = []
+                for data in rec['attachments_ids']:
+                    data['file'] = self.env['visa.sync.product.wizard'].url_to_base64(data['url'])
+                    # data['filename'], data['file_reference'], data['file']
+                    # KASIH TRY EXCEPT
+                    upload = upload.upload_file_api(data, context)
+                    attachments.append(
+                        self.env['tt.upload.center'].search([('seq_id', '=', upload['response']['seq_id'])], limit=1).id)
+                #     pass
+                #     #tt upload center
+                #     self.env['tt.upload.center'].create({
+                #         'pricelist_id': master_data.id,
+                #     })
+                if attachments:
+                    master_data.update({
+                        'attachments_ids': [(6, 0, attachments)]
+                    })
+                for data in rec['visa_location_ids']:
+                    self.env['tt.master.visa.locations'].create({
+                        'pricelist_id': master_data.id,
+                        'name': data['name'],
+                        'location_type': data['location_type'],
+                        'address': data['address'],
+                        'city': data['city']
+                    })
+            response = {
+                'success': True
+            }
+            return ERR.get_no_error(response)
+
+        except Exception as e:
+            _logger.error(traceback.format_exc())
+        return ERR.get_error()

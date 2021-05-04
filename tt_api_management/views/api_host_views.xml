@@ -67,5 +67,5 @@
     </record>
 
     <menuitem id="api_host_menu" parent="tt_api_management.menu_tt_gateway"
-              name="API Host" action="api_host_action" sequence="12"/>
+              name="API Host" action="api_host_action" sequence="300"/>
 </odoo>

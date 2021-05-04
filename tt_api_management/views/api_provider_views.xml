@@ -82,6 +82,6 @@
         <field name="domain">['|',('active', '=', 1),('active', '=', 0)]</field>
     </record>
 
-    <menuitem id="api_provider_menu" parent="tt_api_management.menu_tt_gateway"
+    <menuitem id="api_provider_menu" parent="tt_api_management.menu_tt_gateway_top_credential"
               name="API Provider" action="api_provider_action" sequence="12"/>
 </odoo>

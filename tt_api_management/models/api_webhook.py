@@ -21,7 +21,15 @@ class ApiWebhookData(models.Model):
     def notify_subscriber(self,req):
         try:
             _logger.info("Sending webhook data to children...")
-            webhook_data_obj = self.search([('provider_type_id.code','=',req['provider_type'])],limit=1)
+            dom_search = []
+            if req.get('provider_type'):
+                dom_search.append(('provider_type_id.code','=',req['provider_type']))
+            if req.get('actions_todo'):
+                if req['actions_todo'] == 'sync_products_to_children_visa':
+                    dom_search.append(('name', '=', 'Sync Master Data Visa'))
+                elif req['actions_todo'] == 'sync_status_visa':
+                    dom_search.append(('name', '=', 'Sync Visa Status'))
+            webhook_data_obj = self.search(dom_search,limit=1)
             if webhook_data_obj:
                 sent_data = []
                 error_list = []

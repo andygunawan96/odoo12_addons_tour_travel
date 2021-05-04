@@ -2,4 +2,16 @@
     <menuitem id="menu_tt_gateway" sequence="900" name="API Management"
               groups = "tt_base.group_tt_agent_management_operator,tt_base.group_api_management_level_1"
               web_icon="tt_api_management,static/description/icon.png"/>
+
+    <menuitem id="menu_tt_gateway_top_credential" sequence="200" name="API Credential"
+              parent="menu_tt_gateway"
+              groups = "tt_base.group_tt_agent_management_operator,tt_base.group_api_management_level_1"/>
+
+    <menuitem id="menu_tt_gateway_top_monitor" sequence="500" name="API Monitor"
+              parent="menu_tt_gateway"
+              groups = "tt_base.group_tt_agent_management_operator,tt_base.group_api_management_level_1"/>
+
+    <menuitem id="menu_tt_gateway_top_webhook" sequence="600" name="API Webhook"
+              parent="menu_tt_gateway"
+              groups = "tt_base.group_tt_agent_management_operator,tt_base.group_api_management_level_1"/>
 </odoo>

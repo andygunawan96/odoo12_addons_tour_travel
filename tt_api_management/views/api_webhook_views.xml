@@ -121,6 +121,6 @@
         <field name="view_mode">tree,form</field>
     </record>
 
-    <menuitem id="api_webhook_data_submenu" parent="tt_api_management.menu_tt_gateway"
+    <menuitem id="api_webhook_data_submenu" parent="tt_api_management.menu_tt_gateway_top_webhook"
               name="API Webhook Data" action="api_webhook_data_action_view" sequence="20"/>
 </odoo>
