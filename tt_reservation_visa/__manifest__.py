@@ -26,6 +26,7 @@
         'data/tt_reservation_visa_pricelist.xml',
         'data/tt_master_visa_locations.xml',
         'data/tt.master.visa.handling.csv',
+        'data/tt_api_webhook_data.xml',
         'data/tt_pricing_agent_visa_data.xml',
 
         'views/tt_reservation_visa_menuheader.xml',
@@ -38,6 +39,7 @@
         'views/tt_reservation_visa_service_charge_views.xml',
         'views/tt_reservation_visa_vendor_views.xml',
         'views/tt_visa_sync_product_wizard.xml',
+        'views/tt_visa_sync_to_children_wizard.xml',
         'report/printout_menu.xml',
         'report/printout_visa_ho_template.xml',
         'report/printout_visa_customer_template.xml',
