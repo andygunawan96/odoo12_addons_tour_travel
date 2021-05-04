@@ -83,5 +83,5 @@
     </record>
 
     <menuitem id="api_carrier_menu" parent="tt_api_management.menu_tt_gateway"
-              name="API Carrier" action="api_carrier_action" sequence="13"/>
+              name="API Carrier" action="api_carrier_action" sequence="400"/>
 </odoo>
