@@ -2868,7 +2868,7 @@ class ActivitySyncProductsChildren(models.TransientModel):
                 }
                 attachments = []
                 for data in rec['attachments_ids']:
-                    data['file'] = self.url_to_base64(data['url'])
+                    data['file'] = self.env['visa.sync.product.wizard'].url_to_base64(data['url'])
                     # data['filename'], data['file_reference'], data['file']
                     # KASIH TRY EXCEPT
                     upload = upload.upload_file_api(data, context)
