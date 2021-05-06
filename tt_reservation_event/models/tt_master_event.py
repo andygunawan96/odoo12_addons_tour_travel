@@ -307,7 +307,7 @@ class MasterEvent(models.Model):
             'is_non_refundable': timeslot.is_non_refundable,
             'advance_booking_days': timeslot.advance_booking_days,
             'qty_available': ticket_qty,
-            'min_qty': '1',
+            'min_qty': 1,
             'max_qty': timeslot.max_ticket == -1 and ticket_qty or timeslot.max_ticket,
             'cancellation_policy': timeslot.cancellation_policies,
             'description': timeslot.description,
@@ -355,7 +355,7 @@ class MasterEvent(models.Model):
                 'vendor_name': self.event_vendor_id.name,
                 'vendor_logo': self.event_vendor_id.logo or False,
             },
-            'provider': self.provider_id.name,
+            'provider': self.provider_id.code,
         }
 
     def get_form_api(self, req, context):
