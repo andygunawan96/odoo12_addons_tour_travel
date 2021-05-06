@@ -66,42 +66,64 @@ class PrintoutTicketForm(models.AbstractModel):
             for provider in rec.provider_booking_ids:
                 a[provider.pnr] = []
                 for rec2 in provider.cost_service_charge_ids:
-                    if not a[provider.pnr]:
-                        a[provider.pnr].append({
+                    price_target = False
+                    for price_detail in a[provider.pnr]:
+                        if rec2.pax_type == price_detail['pax_type']:
+                            price_target = price_detail
+                            break
+                    if not price_target:
+                        price_target = {
                             'pax_type': rec2.pax_type,
                             'fare': 0,
                             'tax': 0,
                             'qty': 0,
                             'pnr': provider.pnr
-                        })
-                        if rec2.charge_type.lower() == 'fare':
-                            a[provider.pnr][len(a[provider.pnr])-1]['fare'] += rec2.amount
-                            a[provider.pnr][len(a[provider.pnr])-1]['qty'] = rec2.pax_count
-                        elif rec2.charge_type.lower() in ['roc', 'tax']:
-                            a[provider.pnr][len(a[provider.pnr])-1]['tax'] += rec2.amount
-                    else:
-                        pax_type_found = False
-                        for idx, price_detail in enumerate(a[provider.pnr]):
-                            if rec2.pax_type == price_detail['pax_type']:
-                                pax_type_found = True
-                                if rec2.charge_type.lower() == 'fare':
-                                    a[provider.pnr][idx]['fare'] += rec2.amount
-                                    a[provider.pnr][idx]['qty'] = rec2.pax_count
-                                elif rec2.charge_type.lower() in ['roc', 'tax']:
-                                    a[provider.pnr][idx]['tax'] += rec2.amount
-                        if not pax_type_found:
-                            a[provider.pnr].append({
-                                'pax_type': rec2.pax_type,
-                                'fare': 0,
-                                'tax': 0,
-                                'qty': 0,
-                                'pnr': provider.pnr
-                            })
-                            if rec2.charge_type.lower() == 'fare':
-                                a[provider.pnr][len(a[provider.pnr])-1]['fare'] += rec2.amount
-                                a[provider.pnr][len(a[provider.pnr])-1]['qty'] = rec2.pax_count
-                            elif rec2.charge_type.lower() in ['roc', 'tax']:
-                                a[provider.pnr][len(a[provider.pnr])-1]['tax'] += rec2.amount
+                        }
+                        a[provider.pnr].append(price_target)
+
+                    if rec2.charge_type.lower() == 'fare':
+                        price_target['fare'] += rec2.total
+                        price_target['qty'] = rec2.pax_count
+                    elif rec2.charge_type.lower() in ['roc', 'tax']:
+                        price_target['tax'] += rec2.total
+
+                    # TODO VIN: Re cek all voucher/ticket with price apa ada kendala tak ganti gini
+                    # if not a[provider.pnr]:
+                    #     a[provider.pnr].append({
+                    #         'pax_type': rec2.pax_type,
+                    #         'fare': 0,
+                    #         'tax': 0,
+                    #         'qty': 0,
+                    #         'pnr': provider.pnr
+                    #     })
+                    #     if rec2.charge_type.lower() == 'fare':
+                    #         a[provider.pnr][len(a[provider.pnr])-1]['fare'] += rec2.total
+                    #         a[provider.pnr][len(a[provider.pnr])-1]['qty'] = rec2.pax_count
+                    #     elif rec2.charge_type.lower() in ['roc', 'tax']:
+                    #         a[provider.pnr][len(a[provider.pnr])-1]['tax'] += rec2.total
+                    # else:
+                    #     pax_type_found = False
+                    #     for idx, price_detail in enumerate(a[provider.pnr]):
+                    #         if rec2.pax_type == price_detail['pax_type']:
+                    #             pax_type_found = True
+                    #             if rec2.charge_type.lower() == 'fare':
+                    #                 a[provider.pnr][idx]['fare'] += rec2.total
+                    #                 a[provider.pnr][idx]['qty'] = rec2.pax_count
+                    #             elif rec2.charge_type.lower() in ['roc', 'tax']:
+                    #                 a[provider.pnr][idx]['tax'] += rec2.total
+                    #     if not pax_type_found:
+                    #         a[provider.pnr].append({
+                    #             'pax_type': rec2.pax_type,
+                    #             'fare': 0,
+                    #             'tax': 0,
+                    #             'qty': 0,
+                    #             'pnr': provider.pnr
+                    #         })
+                    #         if rec2.charge_type.lower() == 'fare':
+                    #             a[provider.pnr][len(a[provider.pnr])-1]['fare'] += rec2.total
+                    #             a[provider.pnr][len(a[provider.pnr])-1]['qty'] = rec2.pax_count
+                    #         elif rec2.charge_type.lower() in ['roc', 'tax']:
+                    #             a[provider.pnr][len(a[provider.pnr])-1]['tax'] += rec2.total
 
             for ssr_per_pax in rec.passenger_ids:
                 ssr_obj = {

@@ -49,6 +49,7 @@ class CustomerReportPerformanceXls(models.TransientModel):
         result = []
         for i in customer_names:
             temp_array = list(filter(lambda x: x['customer_name'] == i, values['lines']))
+            # TODO Set Report Dinamis
             temp_result = {
                 'customer_name': i,
                 'customer_id': temp_array[0]['customer_seq_id'],
