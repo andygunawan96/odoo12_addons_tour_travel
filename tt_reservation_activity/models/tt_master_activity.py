@@ -1428,7 +1428,7 @@ class MasterActivity(models.Model):
                 })
 
             countries_dict = {}
-            country_objs = self.env['res.country'].sudo().search([('provider_city_ids', '!=', False)])
+            country_objs = self.env['res.country'].sudo().search([])
             state_objs = self.env['res.country.state'].sudo().search([])
             city_objs = self.env['res.city'].sudo().search([])
 

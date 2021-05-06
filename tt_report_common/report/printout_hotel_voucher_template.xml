@@ -224,8 +224,8 @@
                                 <span> Room Only </span>,
                             </t>
 
-                            <t t-if="room.special_request">
-                                <span t-field="room.special_request"/>
+                            <t t-if="doc.special_req">
+                                <span t-field="doc.special_req"/>
                             </t>
                             <t t-else="">
                                 <span> No Special Request </span>
