@@ -405,3 +405,4 @@ class TtTopUp(models.Model):
             'url': book_obj.printout_top_up_id.url,
         }
         return url
+
