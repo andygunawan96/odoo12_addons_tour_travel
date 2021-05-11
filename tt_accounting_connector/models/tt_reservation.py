@@ -65,56 +65,56 @@ class TtReservation(models.Model):
 class TtReservationAirline(models.Model):
     _inherit = 'tt.reservation.airline'
 
-    def action_issued_airline(self):
-        super(TtReservationAirline, self).action_issued_airline()
+    def action_issued_airline(self,co_uid,customer_parent_id,acquirer_id = False):
+        super(TtReservationAirline, self).action_issued_airline(co_uid,customer_parent_id,acquirer_id)
         self.send_ledgers_to_accounting()
 
 
 class TtReservationTrain(models.Model):
     _inherit = 'tt.reservation.train'
 
-    def action_issued_train(self):
-        super(TtReservationTrain, self).action_issued_train()
+    def action_issued_train(self,co_uid,customer_parent_id,acquirer_id = False):
+        super(TtReservationTrain, self).action_issued_train(co_uid,customer_parent_id,acquirer_id)
         self.send_ledgers_to_accounting()
 
 
 class TtReservationActivity(models.Model):
     _inherit = 'tt.reservation.activity'
 
-    def action_issued_activity(self):
-        super(TtReservationActivity, self).action_issued_activity()
+    def action_issued_activity(self,co_uid,customer_parent_id,acquirer_id = False):
+        super(TtReservationActivity, self).action_issued_activity(co_uid,customer_parent_id,acquirer_id)
         self.send_ledgers_to_accounting()
 
 
 class TtReservationTour(models.Model):
     _inherit = 'tt.reservation.tour'
 
-    def action_issued_tour(self):
-        super(TtReservationTour, self).action_issued_tour()
+    def action_issued_tour(self,co_uid,customer_parent_id,acquirer_id = False):
+        super(TtReservationTour, self).action_issued_tour(co_uid,customer_parent_id,acquirer_id)
         self.send_ledgers_to_accounting()
 
 
 class TtReservationPPOB(models.Model):
     _inherit = 'tt.reservation.ppob'
 
-    def action_issued_ppob(self):
-        super(TtReservationPPOB, self).action_issued_ppob()
+    def action_issued_ppob(self,co_uid,customer_parent_id,acquirer_id = False):
+        super(TtReservationPPOB, self).action_issued_ppob(co_uid,customer_parent_id,acquirer_id)
         self.send_ledgers_to_accounting()
 
 
 class TtReservationEvent(models.Model):
     _inherit = 'tt.reservation.event'
 
-    def action_issued_event(self):
-        super(TtReservationEvent, self).action_issued_event()
+    def action_issued_event(self, context):
+        super(TtReservationEvent, self).action_issued_event(context)
         self.send_ledgers_to_accounting()
 
 
 class TtReservationHotel(models.Model):
     _inherit = 'tt.reservation.hotel'
 
-    def action_issued(self):
-        super(TtReservationHotel, self).action_issued()
+    def action_issued(self, acquirer_id, co_uid, kwargs=False):
+        super(TtReservationHotel, self).action_issued(acquirer_id, co_uid, kwargs)
         self.send_ledgers_to_accounting()
 
 
@@ -129,14 +129,14 @@ class TtReservationOffline(models.Model):
 class TtReservationPassport(models.Model):
     _inherit = 'tt.reservation.passport'
 
-    def action_issued_passport_api(self):
-        super(TtReservationPassport, self).action_issued_passport_api()
+    def action_issued_passport_api(self, data, context):
+        super(TtReservationPassport, self).action_issued_passport_api(data, context)
         self.send_ledgers_to_accounting()
 
 
 class TtReservationVisa(models.Model):
     _inherit = 'tt.reservation.visa'
 
-    def action_issued_visa_api(self):
-        super(TtReservationVisa, self).action_issued_visa_api()
+    def action_issued_visa_api(self, data, context):
+        super(TtReservationVisa, self).action_issued_visa_api(data, context)
         self.send_ledgers_to_accounting()
