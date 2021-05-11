@@ -12,7 +12,7 @@ class TtReservation(models.Model):
     def send_ledgers_to_accounting(self):
         try:
             base_url = self.env['ir.config_parameter'].sudo().get_param('web.base.url')
-            pay_acq = self.env['tt.payment.acquirer'].search([('seq_id', '=', self.payment_method)], limit=1)
+            pay_acq = self.env['payment.acquirer'].search([('seq_id', '=', self.payment_method)], limit=1)
             ledger_list = []
             for rec in self.ledger_ids:
                 if not rec.is_sent_to_acc:
