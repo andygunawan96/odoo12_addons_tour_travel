@@ -1081,7 +1081,7 @@
             <tr>
                 <td width="70%"/>
                 <td width="25%" style="text-align:center">
-                    Surabaya, <t t-esc="date_now"/><br/>
+                    <t t-esc="date_now"/><br/>
                     <p>Buyer</p>
                     <p style="color: white;">.</p>
                     <p style="color: white;">.</p>
