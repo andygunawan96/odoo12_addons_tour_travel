@@ -1,4 +1,12 @@
 from odoo import api,fields,models
+from ...tools import ERR
+from ...tools.ERR import RequestException
+import logging,traceback
+import json
+import base64,pytz
+
+_logger = logging.getLogger(__name__)
+
 
 class TtTopUpInh(models.Model):
     _inherit = 'tt.top.up'

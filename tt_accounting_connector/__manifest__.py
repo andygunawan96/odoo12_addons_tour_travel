@@ -11,7 +11,7 @@ TT_ACCOUNTING_CONNECTOR
     'category': 'booking',
     'website': '',
     'images' : [],
-    'depends' : ['tt_base', 'tt_accounting'],
+    'depends' : ['tt_base', 'tt_accounting', 'tt_payment', 'tt_reservation', 'tt_reschedule'],
     'data': [
         'views/accounting_history_views.xml',
         'security/ir.model.access.csv'
