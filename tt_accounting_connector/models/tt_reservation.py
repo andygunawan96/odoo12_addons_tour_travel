@@ -1,6 +1,7 @@
 from odoo import api,models,fields,_
 from ...tools import util,ERR
 import logging,traceback
+from datetime import datetime
 import json
 
 _logger = logging.getLogger(__name__)
@@ -33,8 +34,8 @@ class TtReservation(models.Model):
                         'debit': rec.debit and rec.debit or 0,
                         'credit': rec.credit and rec.credit or 0,
                         'currency_id': rec.currency_id and rec.currency_id.name or '',
-                        'create_date': rec.create_date,
-                        'date': rec.date and rec.date or '',
+                        'create_date': rec.create_date and datetime.strftime(rec.create_date, '%Y-%m-%d %H:%M:%S') or '',
+                        'date': rec.date and datetime.strftime(rec.date, '%Y-%m-%d') or '',
                         'create_uid': rec.create_uid and rec.create_uid.name or '',
                         'commission': 0.0,
                         'description': rec.description and rec.description or '',
