@@ -21,5 +21,18 @@
             <field name="key">seat</field>
             <field name="icon">fa fa-desktop</field>
         </record>
+        <record id="tt_ssr_category_for_free" model="tt.ssr.category">
+            <field name="name">For Free</field>
+            <field name="code">FF</field>
+            <field name="key">for_free</field>
+            <field name="icon">fa fa-desktop</field>
+        </record>
+
+        <record id="tt_ssr_category_equipment" model="tt.ssr.category">
+            <field name="name">Equipment</field>
+            <field name="code">EQ</field>
+            <field name="key">equipment</field>
+            <field name="icon">fa fa-desktop</field>
+        </record>
     </data>
 </odoo>
