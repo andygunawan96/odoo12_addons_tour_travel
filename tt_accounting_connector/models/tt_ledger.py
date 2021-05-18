@@ -15,3 +15,13 @@ class TtLedger(models.Model):
         self.sudo().write({
             'is_sent_to_acc': False
         })
+
+    def get_allowed_rule(self):
+        res = super(TtLedger, self).get_allowed_rule()
+        res.update({
+            'is_sent_to_acc': (
+                True,
+                ('is_sent_to_acc',)  ## koma jangan di hapus nanti error tidak loop tupple tetapi string
+            )
+        })
+        return res
