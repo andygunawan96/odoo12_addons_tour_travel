@@ -1,6 +1,7 @@
 from odoo import api,models,fields,_
 from ...tools import util,ERR
 import logging,traceback
+from datetime import datetime
 import json
 
 _logger = logging.getLogger(__name__)
@@ -20,7 +21,7 @@ class TtTopUp(models.Model):
             ledger_list = []
             if not ledger_obj.is_sent_to_acc:
                 ledger_list.append({
-                    "create_date": ledger_obj.create_date,
+                    "create_date": ledger_obj.create_date and datetime.strftime(ledger_obj.create_date, '%Y-%m-%d %H:%M:%S') or '',
                     "payment_method": pay_method,
                     "currency_id": ledger_obj.currency_id and ledger_obj.currency_id.name or '',
                     "create_uid": ledger_obj.create_uid and ledger_obj.create_uid.name or '',
@@ -35,7 +36,7 @@ class TtTopUp(models.Model):
                     "pnr": "",
                     "agent_id": ledger_obj.agent_id and ledger_obj.agent_id.name or '',
                     "company_receiver": self.env.ref('tt_base.rodex_ho').name,
-                    "date": ledger_obj.date and ledger_obj.date or '',
+                    'date': ledger_obj.date and datetime.strftime(ledger_obj.date, '%Y-%m-%d') or '',
                     "reference_number": ledger_obj.ref and ledger_obj.ref or '',
                     "NTA_amount_real": ledger_obj.debit and ledger_obj.debit or 0,
                     "name": ledger_obj.name and ledger_obj.name or '',

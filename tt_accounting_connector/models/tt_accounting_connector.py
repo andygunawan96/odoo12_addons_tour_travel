@@ -58,20 +58,27 @@ class AccountingConnector(models.Model):
         }
         _logger.info(res)
 
+        if len(vals) > 0:
+            temp_trans_type = vals[0].get('transport_type', '')
+            temp_res_model = vals[0].get('transport_type') and ACC_TRANSPORT_TYPE_REVERSE.get(vals[0]['transport_type'], '') or ''
+        else:
+            temp_trans_type = ''
+            temp_res_model = ''
+
         if response.status_code == 200:
             self.env['tt.accounting.history'].sudo().create({
                 'request': vals,
                 'response': res,
-                'transport_type': vals.get('transport_type', ''),
-                'res_model': vals.get('transport_type') and ACC_TRANSPORT_TYPE_REVERSE.get(vals['transport_type'], '') or '',
+                'transport_type': temp_trans_type,
+                'res_model': temp_res_model,
                 'state': 'success'
             })
         else:
             self.env['tt.accounting.history'].sudo().create({
                 'request': vals,
                 'response': res,
-                'transport_type': vals.get('transport_type', ''),
-                'res_model': vals.get('transport_type') and ACC_TRANSPORT_TYPE_REVERSE.get(vals['transport_type'], '') or '',
+                'transport_type': temp_trans_type,
+                'res_model': temp_res_model,
                 'state': 'failed'
             })
         return res
