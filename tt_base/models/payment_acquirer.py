@@ -357,7 +357,7 @@ class PaymentAcquirerNumber(models.Model):
     fee_amount = fields.Float('Fee Amount')
     time_limit = fields.Datetime('Time Limit', readonly=True)
     amount = fields.Float('Amount')
-    state = fields.Selection([('open', 'Open'), ('close', 'Closed'), ('waiting', 'Waiting Next Cron'), ('done','Done'), ('cancel','Expired'), ('fail', 'Failed')], 'Payment Type')
+    state = fields.Selection([('open', 'Open'), ('close', 'Closed'), ('waiting', 'Waiting Next Cron'), ('done','Done'), ('cancel','Expired'), ('cancel2', 'Cancelled'), ('fail', 'Failed')], 'Payment Type')
     email = fields.Char(string="Email") # buat VA open biar ngga kembar
     display_name_payment = fields.Char('Display Name',compute="_compute_display_name_payment")
 

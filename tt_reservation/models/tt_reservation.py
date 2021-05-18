@@ -20,7 +20,8 @@ PROVIDER_TYPE_SELECTION = {
     'TR': 'tour',
     'RESV': 'hotel',
     'RO': 'issued_offline',
-    'BT': 'ppob'
+    'BT': 'ppob',
+    'EV': 'event'
 }
 
 class TtReservation(models.Model):
@@ -599,6 +600,28 @@ class TtReservation(models.Model):
                 if sale.charge_code == 'rac':
                     agent_nta_total += sale.total
             rec.agent_nta = agent_nta_total + rec.total
+
+    def cancel_payment(self, req, context): # cancel di gabung karena sama semua kalau create payment beda" per reservasi karena di panggil waktu issued
+        book_obj = self.env['tt.reservation.%s' % PROVIDER_TYPE_SELECTION[req['order_number'].split('.')[0]]].search([('name', '=', req['order_number'])])
+        try:
+            book_obj.create_date
+        except:
+            raise RequestException(1001)
+
+        user_obj = self.env['res.users'].browse(context['co_uid'])
+        try:
+            user_obj.create_date
+        except:
+            raise RequestException(1008)
+
+        if book_obj.agent_id.id == context.get('co_agent_id', -1) or self.env.ref('tt_base.group_tt_process_channel_bookings').id in user_obj.groups_id.ids or book_obj.agent_type_id.name == self.env.ref('tt_base.agent_b2c').agent_type_id.name or book_obj.user_id.login == self.env.ref('tt_base.agent_b2c_user').login:
+            book_obj.payment_acquirer_number_id.state = 'cancel2'
+            book_obj.payment_acquirer_number_id = False
+            return ERR.get_no_error({
+                "order_number": book_obj.name
+            })
+        else:
+            return ERR.get_error(1001)
 
     def to_dict(self,include_total_nta=False):
         # invoice_list = []
