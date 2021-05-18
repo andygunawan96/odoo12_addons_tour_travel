@@ -9,7 +9,7 @@
                 <group>
                     <group>
                         <field name="pnr"/>
-                        <field name="is_bypass_pnr_validator" groups="base.group_system"/>
+                        <field name="is_bypass_pnr_validator"/>
                         <field name="provider"/>
                     </group>
                     <group attrs="{'invisible': ['|',('provider','=',False),('pnr', '=', False)]}">
