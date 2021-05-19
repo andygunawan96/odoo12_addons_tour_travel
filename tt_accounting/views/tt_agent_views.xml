@@ -31,7 +31,7 @@
                 </page>
             </xpath>
             <field name="currency_id" position="after">
-                <field name="balance" groups="tt_base.group_tt_tour_travel,tt_base.group_tt_agent_user"/>
+                <field name="balance" groups="tt_base.group_tt_tour_travel_operator,tt_base.group_tt_tour_travel,tt_base.group_tt_agent_user"/>
             </field>
         </field>
     </record>
@@ -67,7 +67,7 @@
                 </page>
             </xpath>
             <field name="currency_id" position="after">
-                <field name="balance" groups="tt_base.group_tt_tour_travel,tt_base.group_tt_agent_user"/>
+                <field name="balance" groups="tt_base.group_tt_tour_travel_operator,tt_base.group_tt_tour_travel,tt_base.group_tt_agent_user"/>
             </field>
         </field>
     </record>
@@ -78,7 +78,7 @@
         <field name="inherit_id" ref="tt_base.tt_agent_kanban_view"/>
         <field name="arch" type="xml">
             <field name="est_date" position="after">
-                <field name="balance" groups="tt_base.group_tt_tour_travel,tt_base.group_tt_agent_user"/>
+                <field name="balance" groups="tt_base.group_tt_tour_travel_operator,tt_base.group_tt_tour_travel,tt_base.group_tt_agent_user"/>
             </field>
             <xpath expr="//span[@name='email_for_inh']" position="after">
                 <span class="o_kanban_record_subtitle">Balance: <field name="balance" widget="float"/></span>
