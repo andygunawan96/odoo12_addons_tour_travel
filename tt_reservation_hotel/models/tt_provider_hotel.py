@@ -204,16 +204,16 @@ class TransportBookingProvider(models.Model):
 
         for scs in service_charge_vals:
             service_chg_obj.create({
-                'charge_code': scs.charge_code,
-                'charge_type': scs.charge_type,
-                'pax_type': scs.pax_type,
-                'pax_count': scs.pax_count,
-                'amount': scs.amount,
-                'foreign_amount': scs.foreign_amount,
-                'total': scs.total,
+                'charge_code': scs['charge_code'],
+                'charge_type': scs['charge_type'],
+                'pax_type': scs['pax_type'],
+                'pax_count': scs['pax_count'],
+                'amount': scs['amount'],
+                'foreign_amount': scs['foreign_amount'],
+                'total': scs['total'],
                 'provider_hotel_booking_id': self.id,
                 'description': self.pnr and self.pnr or '',
-                'commission_agent_id': scs.commission_agent_id.id,
+                'commission_agent_id': scs.get('commission_agent_id') and scs['commission_agent_id'].get('id') or False,
             })
             # scs_list.append(new_scs)
     # TODO END
