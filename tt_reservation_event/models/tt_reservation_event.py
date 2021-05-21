@@ -848,6 +848,82 @@ class ReservationEvent(models.Model):
         }
         return url
 
+    def calculate_service_charge(self):
+        for service_charge in self.sale_service_charge_ids:
+            service_charge.unlink()
+
+        # April 30, 2020 - SAM
+        this_service_charges = []
+        # END
+        for idx, provider in enumerate(self.provider_booking_ids):
+            sc_value = {}
+            for p_sc in provider.cost_service_charge_ids:
+                p_charge_code = p_sc.charge_code
+                p_charge_type = p_sc.charge_type
+                p_pax_type = p_sc.pax_type
+                if not sc_value.get(p_pax_type):
+                    sc_value[p_pax_type] = {}
+                c_code = ''
+                if p_charge_type != 'RAC':
+                    if not sc_value[p_pax_type].get(p_charge_type):
+                        sc_value[p_pax_type][p_charge_type] = {}
+                        sc_value[p_pax_type][p_charge_type].update({
+                            'amount': 0,
+                            'foreign_amount': 0,
+                            'total': 0
+                        })
+                    c_type = p_charge_type
+                    c_code = p_charge_type.lower()
+                elif p_charge_type == 'RAC':
+                    if not sc_value[p_pax_type].get(p_charge_code):
+                        sc_value[p_pax_type][p_charge_code] = {}
+                        sc_value[p_pax_type][p_charge_code].update({
+                            'amount': 0,
+                            'foreign_amount': 0,
+                            'total': 0
+                        })
+                    c_type = p_charge_code
+                    c_code = p_charge_code
+
+                sc_value[p_pax_type][c_type].update({
+                    'charge_type': p_charge_type,
+                    'charge_code': c_code,
+                    'pax_count': p_sc.pax_count,
+                    'currency_id': p_sc.currency_id.id,
+                    'foreign_currency_id': p_sc.foreign_currency_id.id,
+                    'amount': sc_value[p_pax_type][c_type]['amount'] + p_sc.amount,
+                    'total': sc_value[p_pax_type][c_type]['total'] + p_sc.total,
+                    'foreign_amount': sc_value[p_pax_type][c_type]['foreign_amount'] + p_sc.foreign_amount,
+                    'commission_agent_id': p_sc.commission_agent_id.id
+                })
+
+            # values = []
+            for p_type,p_val in sc_value.items():
+                for c_type,c_val in p_val.items():
+                    # April 27, 2020 - SAM
+                    curr_dict = {
+                        'pax_type': p_type,
+                        'booking_airline_id': self.id,
+                        'description': provider.pnr,
+                    }
+                    # curr_dict['pax_type'] = p_type
+                    # curr_dict['booking_airline_id'] = self.id
+                    # curr_dict['description'] = provider.pnr
+                    # END
+                    curr_dict.update(c_val)
+                    # values.append((0,0,curr_dict))
+                    # April 30, 2020 - SAM
+                    this_service_charges.append((0,0,curr_dict))
+                    # END
+        # April 2020 - SAM
+        #     self.write({
+        #         'sale_service_charge_ids': values
+        #     })
+        self.write({
+            'sale_service_charge_ids': this_service_charges
+        })
+        #END
+
 
 class TtReservationEventOption(models.Model):
     _name = 'tt.reservation.event.option'

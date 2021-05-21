@@ -213,7 +213,7 @@ class TransportBookingProvider(models.Model):
                 'total': scs['total'],
                 'provider_hotel_booking_id': self.id,
                 'description': self.pnr and self.pnr or '',
-                'commission_agent_id': scs.get('commission_agent_id') and scs['commission_agent_id'].get('id') or False,
+                'commission_agent_id': not isinstance(scs, dict) and scs.commission_agent_id.id or False,
             })
             # scs_list.append(new_scs)
     # TODO END
