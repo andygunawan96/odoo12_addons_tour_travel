@@ -58,3 +58,22 @@ class TtProviderEvent(models.Model):
 
     def action_create_ledger(self, issued_uid, pay_method=None):
         return self.env['tt.ledger'].action_create_ledger(self, issued_uid)
+
+    def create_service_charge(self, service_charge_vals):
+        service_chg_obj = self.env['tt.service.charge']
+
+        for scs in service_charge_vals:
+            service_chg_obj.create({
+                'charge_code': scs['charge_code'],
+                'charge_type': scs['charge_type'],
+                'pax_type': scs['pax_type'],
+                'pax_count': scs['pax_count'],
+                'amount': scs['amount'],
+                'foreign_amount': scs['foreign_amount'],
+                'total': scs['total'],
+                'provider_hotel_booking_id': self.id,
+                'description': self.pnr and self.pnr or '',
+                'commission_agent_id': not isinstance(scs, dict) and scs.commission_agent_id.id or False,
+            })
+            # scs_list.append(new_scs)
+    # TODO END
