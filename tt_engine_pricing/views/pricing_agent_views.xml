@@ -5,7 +5,8 @@
         <field name="arch" type="xml">
             <form>
                 <header>
-                    <button string="Do Compute Sequence" type="object" name="do_compute_sequence" class="btn-default" />
+<!--                    <button string="Do Compute Sequence" type="object" name="do_compute_sequence" class="btn-default" />-->
+<!--                    <button string="Do Compute All Names" type="object" name="do_compute_all_names" class="btn-default" />-->
                 </header>
                 <sheet>
                     <div class="oe_button_box" name="button_box">

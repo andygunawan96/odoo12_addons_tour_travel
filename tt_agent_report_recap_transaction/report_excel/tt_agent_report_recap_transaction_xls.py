@@ -69,6 +69,8 @@ class AgentReportRecapTransactionXls(models.TransientModel):
         sheet.write('R9', 'Currency', style.table_head_center)
         sheet.write('S9', 'Agent NTA Amount', style.table_head_center)
         sheet.write('T9', 'Agent Commission', style.table_head_center)
+        ##middle agent commission
+        ##ho commission
         sheet.write('U9', 'HO NTA Amount', style.table_head_center)
         sheet.write('V9', 'Total Commission', style.table_head_center)
         sheet.write('W9', 'Grand Total', style.table_head_center)

@@ -3,7 +3,7 @@ from datetime import datetime
 from ...tools import ERR
 from ...tools.ERR import RequestException
 import json,logging,traceback,pytz
-import calendar
+import calendar,pytz
 from dateutil.relativedelta import relativedelta
 from io import BytesIO
 import xlsxwriter, base64
@@ -39,7 +39,7 @@ class TtPnrQuota(models.Model):
         package_obj = self.env['tt.pnr.quota.price.package'].browse(vals_list['price_package_id'])
         if package_obj:
             exp_date = datetime.now() + relativedelta(months=package_obj.validity)
-            now = datetime.now()
+            now = datetime.now(pytz.timezone('Asia/Jakarta'))
             vals_list['name'] = self.env['ir.sequence'].next_by_code('tt.pnr.quota')
             vals_list['expired_date'] = "%s-%s-%s" % (exp_date.year, exp_date.month, calendar.monthrange(exp_date.year, exp_date.month)[1])
             vals_list['start_date'] = "%s-%s-%s" % (now.year, now.month, now.day)

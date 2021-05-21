@@ -27,7 +27,6 @@ Key Features
         'data/user_template.xml',
         'data/res.social.media.type.csv',
         'data/tt_pnr_quota_price_list.xml',
-        'data/tt_ssr_category_data.xml',
         'views/menu_item_base.xml',
         'views/tt_agent_views.xml',
         'data/agent_type_rodex_data.xml',
