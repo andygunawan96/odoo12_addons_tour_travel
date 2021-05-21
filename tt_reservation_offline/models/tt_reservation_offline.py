@@ -692,7 +692,7 @@ class IssuedOffline(models.Model):
 
     @api.one
     def action_done(self,  kwargs={}):
-        if self.state_offline != 'cancel':
+        if self.state_offline not in ['cancel','done']:
             if self.resv_code:
                 if self.provider_type_id_name in ['activity', 'hotel']:
                     if self.check_pnr_empty():
@@ -725,7 +725,7 @@ class IssuedOffline(models.Model):
             else:
                 raise UserError('Add Vendor Order Number')
         else:
-            raise UserError('Canceled offline cannot be done.')
+            raise UserError('Cancelled/Done offline cannot be done.')
 
     def offline_set_to_issued(self):
         if self.state_offline != 'cancel':

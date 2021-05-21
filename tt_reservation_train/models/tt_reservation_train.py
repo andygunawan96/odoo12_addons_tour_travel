@@ -209,6 +209,10 @@ class TtReservationTrain(models.Model):
             for psg in list_passenger_value:
                 util.pop_empty_key(psg[2])
 
+            voucher_code = False
+            if req.get('voucher'): #agar b2c bisa pakai voucher
+                voucher_code = req['voucher']['voucher_reference']
+
             values.update({
                 'user_id': context['co_uid'],
                 'sid_booked': context['signature'],
@@ -218,7 +222,8 @@ class TtReservationTrain(models.Model):
                 'contact_name': contact_obj.name,
                 'contact_email': contact_obj.email,
                 'contact_phone': "%s - %s" % (contact_obj.phone_ids[0].calling_code,contact_obj.phone_ids[0].calling_number),
-                'passenger_ids': list_passenger_value
+                'passenger_ids': list_passenger_value,
+                'voucher_code': voucher_code
             })
 
             book_obj = self.create(values)

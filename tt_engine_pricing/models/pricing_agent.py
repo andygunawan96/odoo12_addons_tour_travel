@@ -74,6 +74,23 @@ class PricingAgent(models.Model):
                 line.update({'sequence': line_count})
                 line_count += 10
 
+    def do_compute_all_names(self):
+        _objs = self.sudo().with_context(active_test=False).search([])
+        for rec in _objs:
+            rec._compute_display_origins()
+            rec._compute_display_destinations()
+            rec._compute_display_origin_cities()
+            rec._compute_display_destination_cities()
+            rec._compute_display_origin_countries()
+            rec._compute_display_destination_countries()
+            rec._compute_display_class_of_services()
+            rec._compute_display_charge_codes()
+            rec._compute_display_agents()
+            rec._compute_name_pricing()
+            rec._compute_display_providers()
+            rec._compute_display_carriers()
+
+
     @api.multi
     @api.depends('origin_ids')
     def _compute_display_origins(self):
