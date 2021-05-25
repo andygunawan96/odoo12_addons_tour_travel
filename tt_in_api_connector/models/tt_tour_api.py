@@ -40,7 +40,7 @@ class TtTourApiCon(models.Model):
             'message': 'Tour Payment Expired: {}\n\nOrder Number : {}\nTour : {}\nDue Date : {}'.format(data['url'], data['tour_name'],data['order_number'],data['due_date']),
             "title": 'TOUR PAYMENT EXPIRED'
         }
-        return self.send_request_to_gateway('%s/notification' % (self.url), request, 'notification_api')
+        return self.send_request_to_gateway('%s/notification' % (self.url), request, 'notification_code')
 
 
 class TtMasterTourApiCon(models.Model):
