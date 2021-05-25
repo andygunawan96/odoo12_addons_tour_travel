@@ -1442,6 +1442,7 @@ class TtVoucherDetail(models.Model):
                     'voucher_provider': provider.id,
                     'currency': voucher.currency_id.id,
                     'voucher_usage': discount_total,
+                    'order_number': data['order_number']
                 }
 
                 # create used voucher data
@@ -1543,6 +1544,7 @@ class TtVoucherusedDetail(models.Model):
     voucher_agent_id = fields.Many2one("tt.agent", "Agent ID")
     voucher_provider_type_id = fields.Many2one("tt.provider.type", "Provider Type")
     voucher_provider_id = fields.Many2one("tt.provider", "Provider ID")
+    order_number = fields.Char('Order Number')
 
     currency_id = fields.Many2one('res.currency', 'Currency')
     voucher_usage = fields.Monetary('Voucher Usage', readonly=True)
@@ -1558,6 +1560,7 @@ class TtVoucherusedDetail(models.Model):
             'voucher_provider_id': int(data['voucher_provider']),
             'currency_id': int(data['currency']),
             'voucher_usage': data['voucher_usage'],
+            'order_number': data['order_number']
         })
 
         return result
