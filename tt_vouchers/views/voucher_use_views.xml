@@ -29,6 +29,7 @@
                 <field name="voucher_detail_id"/>
                 <field name="voucher_date_use"/>
                 <field name="voucher_agent_id"/>
+                <field name="order_number"/>
             </tree>
         </field>
     </record>
@@ -46,6 +47,7 @@
                         <field name="voucher_agent_id"/>
                         <field name="voucher_provider_type_id"/>
                         <field name="voucher_provider_id"/>
+                        <field name="order_number"/>
                     </group>
                 </sheet>
             </form>
