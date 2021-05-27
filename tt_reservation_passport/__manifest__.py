@@ -1,18 +1,18 @@
 # -*- coding: utf-8 -*-
 {
-    'name': "tt_reservation_passport",
-    'version' : 'beta',
-    'summary': """Passport Document""",
-    'sequence': 2,
+    'name': 'Tour & Travel - Reservation Passport',
+    'version': '2.0',
+    'category': 'Reservation',
+    'sequence': 57,
+    'summary': 'Reservation Passport Module',
     'description': """
-        TT RESERVATION PASSPORT
+Tour & Travel - Reservation Passport
+====================================
+Key Features
+------------
     """,
-    'category': 'booking',
-    'author': "IT Rodex",
-    'website': "http://www.rodextrip.com",
-    'version': '0.1',
-
-    # any module necessary for this one to work correctly
+    'author': 'PT Roda Express Sukses Mandiri',
+    'website': 'rodextravel.tours',
     'depends': ['base', 'tt_base', 'tt_engine_pricing', 'tt_traveldoc', 'tt_reservation', 'tt_report_common'],
 
     # always loaded
@@ -37,9 +37,9 @@
         'report/printout_passport_customer_template.xml',
         'report/printout_passport_ho_template.xml'
     ],
-    # only loaded in demonstration mode
     'demo': [],
+    'qweb': [],
     'installable': True,
-    'application': True,
+    'application': False,
     'auto_install': False,
 }

@@ -1,24 +1,18 @@
 # -*- coding: utf-8 -*-
 {
-    'name': "All complete install",
-
-    'summary': """
-        Completely install all feature of TORS""",
-
-    'description': """
-        Long description of module's purpose
-    """,
-
-    'author': "PT. Roda Express Sukses Mandiri",
-    'website': "http://rodextrip.com",
-
-    # Categories can be used to filter modules in modules listing
-    # Check https://github.com/odoo/odoo/blob/12.0/odoo/addons/base/data/ir_module_category_data.xml
-    # for the full list
+    'name': 'Tour & Travel - All Complete Install',
+    'version': '2.0',
     'category': 'Tour & Travel',
-    'version': '0.1',
-
-    # any module necessary for this one to work correctly
+    'summary': 'Completely Install All Tour & Travel Features',
+    'sequence': 32,
+    'description': """
+Tour & Travel - All Complete Install
+====================================
+Key Features
+------------
+    """,
+    'author': "PT Roda Express Sukses Mandiri",
+    'website': "rodextravel.tours",
     'depends': ['base', 'base_setup','web_m2x_options',
                 'tt_api_management',
                 'tt_reschedule',
@@ -62,6 +56,9 @@
     'data': [
         # 'security/ir.model.access.csv',
     ],
-    # only loaded in demonstration mode
     'demo': [],
+    'qweb': [],
+    'installable': True,
+    'application': False,
+    'auto_install': False,
 }

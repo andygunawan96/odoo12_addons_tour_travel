@@ -1,16 +1,18 @@
 # -*- coding: utf-8 -*-
 {
-    'name': "tt_reservation_offline",
-    'version': 'beta',
-    'summary': 'Transport Reservation Offline',
-    'sequence': 2,
+    'name': 'Tour & Travel - Reservation Offline',
+    'version': '2.0',
+    'category': 'Reservation',
+    'sequence': 56,
+    'summary': 'Reservation Offline Module',
     'description': """
-        Module for Reservation Offline
+Tour & Travel - Reservation Offline
+===================================
+Key Features
+------------
     """,
-    'category': 'booking',
-    'author': "Rodextrip",
-    'website': 'www.rodextrip.com',
-    'images': [],
+    'author': 'PT Roda Express Sukses Mandiri',
+    'website': 'rodextravel.tours',
     'depends': ['base', 'tt_base', 'tt_accounting', 'tt_engine_pricing', 'tt_reservation', 'tt_report_common'],
 
     # always loaded
@@ -33,10 +35,9 @@
         'report/printout_invoice_template.xml',
         'report/printout_invoice_ticket_template.xml',
     ],
-    # only loaded in demonstration mode
     'demo': [],
     'qweb': [],
     'installable': True,
-    'application': True,
+    'application': False,
     'auto_install': False,
 }

@@ -1,28 +1,19 @@
 # -*- coding: utf-8 -*-
 {
-    'name': "tt_accounting",
-
-    'summary': """
-        Short (1 phrase/line) summary of the module's purpose, used as
-        subtitle on modules listing or apps.openerp.com""",
-
-    'description': """
-        Long description of module's purpose
-    """,
-
-    'author': "Skytors",
-    'website': "http://www.skytors.id",
-
-    # Categories can be used to filter modules in modules listing
-    # Check https://github.com/odoo/odoo/blob/12.0/odoo/addons/base/data/ir_module_category_data.xml
-    # for the full list
+    'name': 'Tour & Travel - Accounting',
+    'version': '2.0',
     'category': 'Transaction',
-    'version': '0.1',
-
-    # any module necessary for this one to work correctly
+    'sequence': 10,
+    'summary': 'Accounting Module',
+    'description': """
+Tour & Travel - Accounting
+==========================
+Key Features
+------------
+    """,
+    'author': "PT Roda Express Sukses Mandiri",
+    'website': "rodextravel.tours",
     'depends': ['base', 'base_setup', 'tt_base', 'tt_in_api_connector'],
-
-    # always loaded
     'data': [
         'security/ir.model.access.csv',
         'security/ir_rule_data.xml',
@@ -47,8 +38,9 @@
         'views/tt_pnr_quota_views.xml',
         'views/ir_ui_menu_views.xml',
     ],
-    # only loaded in demonstration mode
-    'demo': [
-        'demo/demo.xml',
-    ],
+    'demo': [],
+    'qweb': [],
+    'installable': True,
+    'application': False,
+    'auto_install': False,
 }

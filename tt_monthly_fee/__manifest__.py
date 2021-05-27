@@ -1,16 +1,19 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 {
-    'name': 'Agent Monthly Fee',
-    'version': 'beta',
-    'summary': 'Monthly Fee',
-    'sequence': 10,
+    'name': 'Tour & Travel - Agent Monthly Fee',
+    'version': '2.0',
+    'category': 'Tour & Travel',
+    'sequence': 62,
+    'summary': 'Agent Monthly Fee Module',
     'description': """
-TT_PAYMENT
-""",
-    'category': 'monthly fee',
-    'website': '',
-    'images': [],
+Tour & Travel - Agent Monthly Fee
+=================================
+Key Features
+------------
+    """,
+    'author': 'PT Roda Express Sukses Mandiri',
+    'website': 'rodextravel.tours',
     'depends': ['tt_base', 'tt_accounting'],
     'data': [
         # 'data/ir_sequence_data.xml',
@@ -21,6 +24,6 @@ TT_PAYMENT
     'demo': [],
     'qweb': [],
     'installable': True,
-    'application': True,
+    'application': False,
     'auto_install': False,
 }

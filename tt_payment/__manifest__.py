@@ -1,16 +1,19 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 {
-    'name' : 'Tour Travel Payment',
-    'version' : 'beta',
-    'summary': 'Payment',
-    'sequence': 2,
+    'name': 'Tour & Travel - Payment',
+    'version': '2.0',
+    'category': 'Transaction',
+    'sequence': 12,
+    'summary': 'Payment Module',
     'description': """
-TT_PAYMENT
-""",
-    'category': 'billing',
-    'website': '',
-    'images': [],
+Tour & Travel - Payment
+=======================
+Key Features
+------------
+    """,
+    'author': 'PT Roda Express Sukses Mandiri',
+    'website': 'rodextravel.tours',
     'depends': ['base_setup', 'tt_base', 'tt_accounting'],
     'data': [
         'data/ir_sequence_data.xml',
@@ -22,6 +25,6 @@ TT_PAYMENT
     'demo': [],
     'qweb': [],
     'installable': True,
-    'application': True,
+    'application': False,
     'auto_install': False,
 }
