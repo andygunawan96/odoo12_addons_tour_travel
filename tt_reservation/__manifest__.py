@@ -1,15 +1,15 @@
 # -*- coding: utf-8 -*-
 {
-    'name': 'tt_reservation',
-    'version': '1.1',
-    'category': 'Tour & Travel',
-    'sequence': 1,
-    'summary': 'Tour & Travel - Base',
+    'name': 'Tour & Travel - Reservation',
+    'version': '2.0',
+    'category': 'Reservation',
+    'sequence': 50,
+    'summary': 'Reservation Core Module',
     'description': """
-        Tour & Travel - Reservation
-        ====================
-        Key Features
-        ------------
+Tour & Travel - Reservation
+===========================
+Key Features
+------------
     """,
     'author': 'PT Roda Express Sukses Mandiri',
     'website': 'rodextravel.tours',
@@ -34,6 +34,6 @@
     'demo': [],
     'qweb': [],
     'installable': True,
-    'application': True,
-    'auto_install': False
+    'application': False,
+    'auto_install': False,
 }

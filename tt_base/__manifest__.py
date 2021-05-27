@@ -1,9 +1,9 @@
 {
     'name': 'Tour & Travel - Base',
-    'version': '1.1',
+    'version': '2.0',
     'category': 'Tour & Travel',
     'sequence': 1,
-    'summary': 'Tour & Travel - Base',
+    'summary': 'Core Module',
     'description': """
 Tour & Travel - Base
 ====================
@@ -102,6 +102,6 @@ Key Features
     'demo': [],
     'qweb': [],
     'installable': True,
-    'application': True,
+    'application': False,
     'auto_install': False,
 }

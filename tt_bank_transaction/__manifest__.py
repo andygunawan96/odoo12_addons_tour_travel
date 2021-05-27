@@ -1,17 +1,17 @@
 {
-    'name': 'Tt Bank Transaction ',
-    'version': '1.0',
+    'name': 'Tour & Travel - Bank Transaction',
+    'version': '2.0',
     'category': 'Tour & Travel',
-    'sequence': 19,
-    'summary': 'Tt Bank Transaction',
+    'summary': 'Bank Transaction Module',
+    'sequence': 97,
     'description': """
 Tour & Travel - Bank Transaction
-====================
+================================
 Key Features
 ------------
     """,
-    'author': 'PT Roda Express Sukses Mandiri',
-    'website': 'rodextravel.tours',
+    'author': "PT Roda Express Sukses Mandiri",
+    'website': "rodextravel.tours",
     'depends': ['tt_base', 'tt_accounting'],
     'data': [
         'security/ir.model.access.csv',
@@ -25,6 +25,6 @@ Key Features
     'demo': [],
     'qweb': [],
     'installable': True,
-    'application': True,
+    'application': False,
     'auto_install': False,
 }

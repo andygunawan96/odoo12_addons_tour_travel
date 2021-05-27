@@ -1,17 +1,17 @@
 {
     'name': 'Tour & Travel - API Management',
-    'version': '1.1',
+    'version': '2.0',
     'category': 'Tour & Travel',
-    'sequence': 19,
-    'summary': 'Tour & Travel - API Management',
+    'summary': 'API Management Module',
+    'sequence': 5,
     'description': """
 Tour & Travel - API Management
-====================
+==============================
 Key Features
 ------------
     """,
-    'author': 'PT Roda Express Sukses Mandiri',
-    'website': 'rodextravel.tours',
+    'author': "PT Roda Express Sukses Mandiri",
+    'website': "rodextravel.tours",
     'depends': ['tt_base','tt_engine_pricing'],
     'data': [
         'views/menu.xml',
@@ -29,6 +29,6 @@ Key Features
     'demo': [],
     'qweb': [],
     'installable': True,
-    'application': True,
+    'application': False,
     'auto_install': False,
 }
