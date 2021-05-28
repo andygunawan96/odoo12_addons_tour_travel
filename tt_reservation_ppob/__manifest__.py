@@ -1,16 +1,19 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 {
-    'name' : 'tt_reservation_ppob',
-    'version' : 'beta',
-    'summary': 'Reservation PPOB',
-    'sequence': 2,
+    'name': 'Tour & Travel - Reservation PPOB',
+    'version': '2.0',
+    'category': 'Reservation',
+    'sequence': 58,
+    'summary': 'Reservation PPOB Module',
     'description': """
-TT_TRANSPORT
-""",
-    'category': 'booking',
-    'website': '',
-    'images' : [],
+Tour & Travel - Reservation PPOB
+================================
+Key Features
+------------
+    """,
+    'author': 'PT Roda Express Sukses Mandiri',
+    'website': 'rodextravel.tours',
     'depends' : ['base_setup','tt_base','tt_reservation','base_address_city','tt_in_api_connector'],
     'data': [
         'security/ir.model.access.csv',
@@ -35,6 +38,6 @@ TT_TRANSPORT
     'demo': [],
     'qweb': [],
     'installable': True,
-    'application': True,
+    'application': False,
     'auto_install': False,
 }

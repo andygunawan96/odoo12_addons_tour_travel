@@ -1,16 +1,19 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 {
-    'name' : 'tt_reservation_train',
-    'version' : 'beta',
-    'summary': 'transport train',
-    'sequence': 2,
+    'name': 'Tour & Travel - Reservation Train',
+    'version': '2.0',
+    'category': 'Reservation',
+    'sequence': 60,
+    'summary': 'Reservation Train Module',
     'description': """
-TT_TRANSPORT
-""",
-    'category': 'booking',
-    'website': '',
-    'images' : [],
+Tour & Travel - Reservation Train
+=================================
+Key Features
+------------
+    """,
+    'author': 'PT Roda Express Sukses Mandiri',
+    'website': 'rodextravel.tours',
     'depends' : ['base_setup','tt_base','tt_reservation','base_address_city'],
     'data': [
         'data/ir_sequence_data.xml',
@@ -39,6 +42,6 @@ TT_TRANSPORT
     'demo': [],
     'qweb': [],
     'installable': True,
-    'application': True,
+    'application': False,
     'auto_install': False,
 }

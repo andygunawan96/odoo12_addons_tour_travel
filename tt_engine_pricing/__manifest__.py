@@ -1,12 +1,12 @@
 {
     'name': 'Tour & Travel Gateway - Engine Pricing',
-    'version': '1.1',
+    'version': '2.0',
     'category': 'Tour & Travel',
-    'sequence': 19,
-    'summary': 'Tour & Travel Gateway - Engine Pricing',
+    'sequence': 15,
+    'summary': 'Engine Pricing Module',
     'description': """
-Tour & Travel Gateway - []
-====================
+Tour & Travel Gateway - Engine Pricing
+======================================
 Key Features
 ------------
     """,
@@ -22,6 +22,6 @@ Key Features
     'demo': [],
     'qweb': [],
     'installable': True,
-    'application': True,
+    'application': False,
     'auto_install': False,
 }

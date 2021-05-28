@@ -1,25 +1,19 @@
 # -*- coding: utf-8 -*-
 {
-    'name': "tt_agent_registration",
-    'version': 'beta',
-    'summary': 'Agent Registration',
-    'sequence': 5,
+    'name': 'Tour & Travel - Agent Registration',
+    'version': '2.0',
+    'category': 'Tour & Travel',
+    'summary': 'Agent Registration Module',
+    'sequence': 3,
     'description': """
-        Module for Agent Registration
+Tour & Travel - Agent Registration
+==================================
+Key Features
+------------
     """,
-
-    'author': "My Company",
-    'website': "http://www.yourcompany.com",
-
-    # Categories can be used to filter modules in modules listing
-    # Check https://github.com/odoo/odoo/blob/12.0/odoo/addons/base/data/ir_module_category_data.xml
-    # for the full list
-    'category': 'Uncategorized',
-
-    # any module necessary for this one to work correctly
+    'author': "PT Roda Express Sukses Mandiri",
+    'website': "rodextravel.tours",
     'depends': ['base', 'tt_base', 'tt_accounting', 'tt_report_common', 'web'],
-
-    # always loaded
     'data': [
         'security/ir.model.access.csv',
         'security/ir_rule_data.xml',
@@ -42,8 +36,9 @@
         'report/printout_menu.xml',
         'report/printout_invoice_template.xml',
     ],
-    # only loaded in demonstration mode
-    'demo': [
-        'demo/demo.xml',
-    ],
+    'demo': [],
+    'qweb': [],
+    'installable': True,
+    'application': False,
+    'auto_install': False,
 }

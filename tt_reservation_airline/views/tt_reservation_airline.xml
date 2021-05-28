@@ -68,6 +68,7 @@
                         context="{
                         'default_res_id': id,
                         'default_referenced_document': name,
+                        'default_currency_id': currency_id,
                    }"/>
                 <button name="sync_booking_with_vendor" type="object" string="Sync Reservation"
                         groups="base.group_system"/>

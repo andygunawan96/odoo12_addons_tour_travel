@@ -1,29 +1,27 @@
 # -*- coding: utf-8 -*-
 {
-    'name': "tt_report_dashboard",
-
-    'summary': """
-        Short (1 phrase/line) summary of the module's purpose, used as
-        subtitle on modules listing or apps.openerp.com""",
-
+    'name': 'Tour & Travel - Report Dashboard',
+    'version': '2.0',
+    'category': 'Report',
+    'sequence': 81,
+    'summary': 'Frontend Report Module',
     'description': """
-        Long description of module's purpose
+Tour & Travel - Report Dashboard
+================================
+Key Features
+------------
     """,
-
-    'author': "My Company",
-    'website': "http://www.rodextrip.com",
-
-    # Categories can be used to filter modules in modules listing
-    # Check https://github.com/odoo/odoo/blob/12.0/odoo/addons/base/data/ir_module_category_data.xml
-    # for the full list
-    'category': 'Uncategorized',
-    'version': '0.1',
-
-    # any module necessary for this one to work correctly
+    'author': 'PT Roda Express Sukses Mandiri',
+    'website': 'rodextravel.tours',
     'depends': ['base', 'tt_base', 'tt_reservation', 'tt_report_selling'],
 
     # always loaded
     'data': [
 
-    ]
+    ],
+    'demo': [],
+    'qweb': [],
+    'installable': True,
+    'application': False,
+    'auto_install': False,
 }

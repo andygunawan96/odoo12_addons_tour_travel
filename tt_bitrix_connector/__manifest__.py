@@ -1,16 +1,19 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 {
-    'name' : 'tt_bitrix_connector',
-    'version' : 'beta',
-    'summary': 'Bitrix Connector',
-    'sequence': 2,
+    'name': 'Tour & Travel - Bitrix Connector',
+    'version': '2.0',
+    'category': 'Connector',
+    'sequence': 98,
+    'summary': 'Bitrix Connector Module',
     'description': """
-Bitrix Connector
-""",
-    'category': 'bitrix',
-    'website': '',
-    'images' : [],
+Tour & Travel - Bitrix Connector
+================================
+Key Features
+------------
+    """,
+    'author': 'PT Roda Express Sukses Mandiri',
+    'website': 'rodextravel.tours',
     'depends' : ['base_setup','tt_base'],
     'data': [
         'data/config_parameter_data.xml',
@@ -19,6 +22,6 @@ Bitrix Connector
     'demo': [],
     'qweb': [],
     'installable': True,
-    'application': True,
+    'application': False,
     'auto_install': False,
 }

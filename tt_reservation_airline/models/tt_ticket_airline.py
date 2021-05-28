@@ -8,7 +8,7 @@ class TtTicketAirline(models.Model):
     provider_id = fields.Many2one('tt.provider.airline', 'Provider')
     passenger_id = fields.Many2one('tt.reservation.passenger.airline', 'Passenger')
     loyalty_program_id = fields.Many2one('tt.loyalty.program', 'Loyalty Program', compute='_compute_loyalty_program', store=True)
-    pax_type  = fields.Selection(variables.PAX_TYPE,'Pax Type')
+    pax_type = fields.Selection(variables.PAX_TYPE,'Pax Type')
     ticket_number = fields.Char('Ticket Number', default='')
     ff_number = fields.Char('Frequent Flyer Number', default='')
     ff_code = fields.Char('Frequent Flyer Code', default='')

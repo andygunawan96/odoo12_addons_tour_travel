@@ -1,16 +1,19 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 {
-    'name': 'tt_reservation_hotel',
-    'version': 'beta',
-    'summary': 'reservation hotel',
-    'sequence': 2,
+    'name': 'Tour & Travel - Reservation Hotel',
+    'version': '2.0',
+    'category': 'Reservation',
+    'sequence': 55,
+    'summary': 'Reservation Hotel Module',
     'description': """
-TT_RESERVATION_HOTEL
-""",
-    'category': 'booking',
-    'website': '',
-    'images': [],
+Tour & Travel - Reservation Hotel
+=================================
+Key Features
+------------
+    """,
+    'author': 'PT Roda Express Sukses Mandiri',
+    'website': 'rodextravel.tours',
     'depends': ['base_setup','tt_base','tt_reservation','base_address_city', 'tt_merge_record'],
     'data': [
         'data/provider_type_data.xml',
@@ -54,6 +57,6 @@ TT_RESERVATION_HOTEL
     'demo': [],
     'qweb': [],
     'installable': True,
-    'application': True,
+    'application': False,
     'auto_install': False,
 }
