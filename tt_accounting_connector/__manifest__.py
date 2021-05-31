@@ -14,7 +14,7 @@ Key Features
 """,
     'author': "PT Roda Express Sukses Mandiri",
     'website': "rodextravel.tours",
-    'depends' : ['tt_base', 'tt_accounting', 'tt_payment', 'tt_reservation', 'tt_reschedule'],
+    'depends' : ['tt_base', 'tt_accounting'],
     'data': [
         'views/accounting_history_views.xml',
         'security/ir.model.access.csv'
