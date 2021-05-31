@@ -36,6 +36,7 @@ class TtCustomerParent(models.Model):
     tax_percentage = fields.Float('Tax (%)', default=0)
     tax_identity_number = fields.Char('NPWP')
     company_bank_data = fields.Char('Company Bank Data')
+    is_send_email_cc = fields.Boolean('Send Email CC', default=False)
     active = fields.Boolean('Active', default='True')
     state = fields.Selection([('draft', 'Draft'),('confirm', 'Confirmed'),('request', 'Requested'),('validate', 'Validated'),('done', 'Done'),('reject', 'Rejected')], 'State', default='draft', readonly=True)
     confirm_uid = fields.Many2one('res.users', 'Confirmed by', readonly=True)
@@ -117,6 +118,20 @@ class TtCustomerParent(models.Model):
         if not self.ensure_one():
             raise UserError('Can only check 1 agent each time got ' + str(len(self._ids)) + ' Records instead')
         return self.actual_balance >= (amount + (amount * self.tax_percentage / 100))
+
+    def check_send_email_cc(self):
+        if self.is_send_email_cc:
+            email_cc = self.parent_agent_id.email_cc
+        else:
+            email_cc = False
+        return email_cc
+
+    def set_all_cor_por_email_cc(self):
+        all_cor_por = self.env['tt.customer.parent'].search([('customer_parent_type_id', 'in', [self.env.ref('tt_base.customer_type_cor').id, self.env.ref('tt_base.customer_type_por').id])])
+        for rec in all_cor_por:
+            rec.write({
+                'is_send_email_cc': True
+            })
 
     def action_confirm(self):
         if self.state != 'draft':

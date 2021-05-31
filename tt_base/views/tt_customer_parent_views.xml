@@ -49,6 +49,7 @@
                     <button name="action_reject" string="Reject" type="object" groups="tt_base.group_tt_agent_user_operator,base.group_system,tt_base.group_tt_agent_user" attrs="{'invisible':[('state','=','done')]}"/>
                     <button name="set_to_done" string="Set to Done" type="object" groups="base.group_system" attrs="{'invisible':[('state','=','done')]}"/>
                     <button name="set_to_draft" string="Set to Draft" type="object" groups="tt_base.group_tt_agent_user_operator,base.group_system,tt_base.group_tt_agent_user" attrs="{'invisible':[('state','!=','reject')]}"/>
+                    <button name="set_all_cor_por_email_cc" string="Set All COR/POR Email CC" type="object" groups="base.group_system,base.user_admin"/>
                     <field name="state" widget="statusbar" statusbar_visible="draft,confirm,request,validate,done"/>
                 </header>
                 <sheet>
@@ -68,6 +69,7 @@
                             <field name="customer_parent_type_id" readonly="1"/>
                             <field name="parent_agent_id" readonly="1"/>
                             <field name="tax_percentage" readonly="1"/>
+                            <field name="is_send_email_cc"/>
                             <field name="actual_balance"/>
                             <field name="balance"/>
                             <field name="credit_limit" readonly="1"/>

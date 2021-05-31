@@ -33,6 +33,7 @@ class TtAgent(models.Model):
     # mou_ids = fields.One2many('tt.agent.mou', 'agent_id', string='MOU(s)')
     website = fields.Char(string="Website", required=False, )
     email = fields.Char(string="Email", required=False, )
+    email_cc = fields.Char(string="Email CC(s) (Split by comma for multiple CCs)", required=False, )
     currency_id = fields.Many2one('res.currency', string='Currency', default=lambda self: self.env.user.company_id.currency_id)
     address_ids = fields.One2many('address.detail', 'agent_id', string='Addresses')
     phone_ids = fields.One2many('phone.detail', 'agent_id', string='Phones')
