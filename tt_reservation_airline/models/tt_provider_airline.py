@@ -3,8 +3,12 @@ from odoo.exceptions import UserError
 from ...tools import variables
 from datetime import datetime, timedelta
 import json, logging
+from ...tools.db_connector import GatewayConnector
+import traceback
+
 
 _logger = logging.getLogger(__name__)
+
 
 class TtProviderAirline(models.Model):
     _name = 'tt.provider.airline'
@@ -750,3 +754,55 @@ class TtProviderAirline(models.Model):
     #             'foreign_amount': sc_value[p_pax_type][p_charge_type]['foreign_amount'] + p_sc.foreign_amount,
     #         })
     #     return sc_value
+
+    # June 2, 2021 - SAM
+    def action_reprice_provider(self):
+        if not self.provider_id:
+            raise Exception('Provider is not set')
+        req = {
+            "provider": self.provider_id.code,
+            "pnr": self.pnr,
+            "pnr2": self.pnr2,
+            "reference": self.reference
+        }
+        res = self.env['tt.airline.api.con'].send_reprice_booking_vendor(req)
+        _logger.info('Action Reprice Provider, %s-%s, %s' % (self.pnr, self.provider_id.code, json.dumps(res)))
+
+        try:
+            if res['error_code'] != 0:
+                order_number = self.booking_id.name if self.booking_id else ''
+                msg = [
+                    'Reprice Provider - ERROR',
+                    '',
+                    'Order Number: %s' % order_number,
+                    'PNR: %s' % self.pnr,
+                    'Error: %s' % res['error_msg'],
+                ]
+                data = {
+                    'code': 9903,
+                    'message': '\n'.join(msg),
+                    'provider': self.provider_id.code,
+                }
+                GatewayConnector().telegram_notif_api(data, {})
+                return False
+
+            order_number = self.booking_id.name if self.booking_id else ''
+            msg = [
+                'Reprice Provider - SUCCESS',
+                '',
+                'Order Number: %s' % order_number,
+                'PNR: %s' % self.pnr,
+                'Original Total Price: %s' % self.total_price,
+                'New Total Price: %s' % res['response']['total_price'],
+            ]
+            data = {
+                'code': 9901,
+                'message': '\n'.join(msg),
+                'provider': self.provider_id.code,
+            }
+            GatewayConnector().telegram_notif_api(data, {})
+        except:
+            _logger.error('Action reprice provider, error notif telegram, %s, %s' % (self.pnr, traceback.format_exc()))
+
+        return True
+    # END
