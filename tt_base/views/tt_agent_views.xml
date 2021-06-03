@@ -10,6 +10,7 @@
                 <field name="agent_type_id"/>
                 <field name="parent_agent_id"/>
                 <field name="email"/>
+                <field name="email_cc"/>
                 <group name="agent_type_filter">
                     <filter string="All" name="all"/>
                 </group>
@@ -111,6 +112,7 @@
 
                     <group string="Information">
                         <field name="email" placeholder="Agent's Email" readonly="1"/>
+                        <field name="email_cc" placeholder="CC to Email(s) (Split by comma for multiple CCs)" readonly="1"/>
                         <field name="website" readonly="1"/>
                         <field name="npwp" readonly="1"/>
                         <field name="payment_acquirer_ids" context="{'form_view_ref':'tt_base.payment_acquirer_form_view','tree_view_ref': 'tt_base.payment_acquirer_tree_view'}" readonly="0"/>
@@ -187,6 +189,9 @@
             </field>
             <field name="email" position="replace">
                 <field name="email" placeholder="Agent's Email" readonly="0"/>
+            </field>
+            <field name="email_cc" position="replace">
+                <field name="email_cc" placeholder="CC to Email(s) (Split by comma for multiple CCs)" readonly="0"/>
             </field>
             <field name="website" position="replace">
                 <field name="website" readonly="0"/>

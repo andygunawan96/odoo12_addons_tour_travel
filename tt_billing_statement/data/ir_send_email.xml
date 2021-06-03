@@ -7,7 +7,7 @@
 			<field name="email_from">${object.agent_id.email}</field>
 			<field name="subject">${object.agent_id.name} e-Billing Statement</field>
 			<field name="email_to">${object.customer_parent_id.email}</field>
-            <field name="email_cc"/>
+            <field name="email_cc">${object.customer_parent_id.check_send_email_cc()}</field>
 			<field name="model_id" ref="tt_billing_statement.model_tt_billing_statement"/>
 			<field name="auto_delete" eval="False"/>
 			<field name="lang"/>

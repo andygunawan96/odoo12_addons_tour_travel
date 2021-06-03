@@ -750,6 +750,7 @@ class ReservationAirline(models.Model):
                 #     pass
 
                 admin_fee_obj = None
+                is_refund = False
                 if commit_data['status'] == 'BOOKED' and rsv_prov_obj.state == 'booked':
                     ledger_created = rsv_prov_obj.sudo().delete_service_charge()
                     if ledger_created:
@@ -770,6 +771,64 @@ class ReservationAirline(models.Model):
                     for psg in commit_data['passengers']:
                         psg_obj = resv_passenger_number_dict[psg['passenger_number']]
                         psg_obj.create_ssr(psg['fees'], rsv_prov_obj.pnr, rsv_prov_obj.id, is_create_service_charge=False)
+                elif commit_data['status'] == 'VOID' and rsv_prov_obj.state == 'booked' and commit_data['pnr'] == rsv_prov_obj.pnr:
+                    rsv_prov_obj.action_void_api_airline(commit_data, context)
+                    continue
+                elif commit_data['status'] == 'REFUND' and rsv_prov_obj.state == 'issued' and commit_data['pnr'] == rsv_prov_obj.pnr:
+                    # VIN: 2021/03/02: admin fee tdak bisa di hardcode
+                    # TODO: refund type tdak boleh hardcode lagi, jika frontend sdah support pilih refund type regular / quick
+                    admin_fee_obj = self.env['tt.refund'].get_refund_admin_fee_rule(airline_obj.agent_id.id)
+                    refund_type = self.env.ref('tt_accounting.refund_type_regular_refund').id
+                    # refund_type = 'regular'
+
+                    refund_line_ids = []
+
+                    # July 21, 2020 - SAM
+                    penalty_amount = commit_data['penalty_amount']
+                    total_pax = len(commit_data['passengers'])
+                    charge_fee = penalty_amount / total_pax
+                    # END
+                    for psg in commit_data['passengers']:
+                        psg_obj = resv_passenger_number_dict[psg['passenger_number']]
+                        pax_price = 0
+                        for cost in psg_obj.cost_service_charge_ids:
+                            if cost.description != commit_data['pnr']:
+                                continue
+                            if cost.charge_type != 'RAC':
+                                pax_price += cost.amount
+                        line_obj = self.env['tt.refund.line'].create({
+                            'name': (psg_obj.title or '') + ' ' + (psg_obj.name or ''),
+                            'birth_date': psg_obj.birth_date,
+                            'pax_price': pax_price,
+                            'charge_fee': charge_fee,
+                        })
+                        refund_line_ids.append(line_obj.id)
+
+                    res_vals = {
+                        'agent_id': airline_obj.agent_id.id,
+                        'customer_parent_id': airline_obj.customer_parent_id.id,
+                        'booker_id': airline_obj.booker_id.id,
+                        'currency_id': airline_obj.currency_id.id,
+                        'service_type': airline_obj.provider_type_id.id,
+                        'refund_type_id': refund_type,
+                        'admin_fee_id': admin_fee_obj.id,
+                        'referenced_document': airline_obj.name,
+                        'referenced_pnr': airline_obj.pnr,
+                        'res_model': airline_obj._name,
+                        'res_id': airline_obj.id,
+                        'booking_desc': airline_obj.get_aftersales_desc(),
+                        'notes': commit_data.get('notes') and commit_data['notes'] or '',
+                        'created_by_api': True,
+                    }
+                    res_obj = self.env['tt.refund'].create(res_vals)
+                    res_obj.confirm_refund_from_button()
+                    res_obj.update({
+                        'refund_line_ids': [(6, 0, refund_line_ids)],
+                    })
+                    res_obj.send_refund_from_button()
+                    res_obj.validate_refund_from_button()
+                    res_obj.finalize_refund_from_button()
+                    continue
 
                 if not old_segment_list and not new_segment_list and not is_any_ssr_change:
                     continue
@@ -959,9 +1018,68 @@ class ReservationAirline(models.Model):
                     'provider_bookings': new_provider_bookings,
                 }
                 self.env['tt.reservation.airline'].update_pnr_provider_airline_api(new_payload, context)
+                new_resv_passenger_number_dict = {}
+                for psg in new_resv_obj.passenger_ids:
+                    key_number = psg.sequence
+                    new_resv_passenger_number_dict[key_number] = psg
                 for prov in new_resv_obj.provider_booking_ids:
-                    if prov.state == 'issued':
+                    if prov.state in ['issued', 'refund']:
                         prov.action_create_ledger(new_resv_obj.issued_uid.id)
+
+                    if prov.state == 'refund':
+                        # VIN: 2021/03/02: admin fee tdak bisa di hardcode
+                        # TODO: refund type tdak boleh hardcode lagi, jika frontend sdah support pilih refund type regular / quick
+                        admin_fee_obj = self.env['tt.refund'].get_refund_admin_fee_rule(new_resv_obj.agent_id.id)
+                        refund_type = self.env.ref('tt_accounting.refund_type_regular_refund').id
+                        # refund_type = 'regular'
+
+                        refund_line_ids = []
+
+                        # July 21, 2020 - SAM
+                        penalty_amount = commit_data['penalty_amount']
+                        total_pax = len(commit_data['passengers'])
+                        charge_fee = penalty_amount / total_pax
+                        # END
+                        for psg in commit_data['passengers']:
+                            psg_obj = new_resv_passenger_number_dict[psg['passenger_number']]
+                            pax_price = 0
+                            for cost in psg_obj.cost_service_charge_ids:
+                                if cost.description != commit_data['pnr']:
+                                    continue
+                                if cost.charge_type != 'RAC':
+                                    pax_price += cost.amount
+                            line_obj = self.env['tt.refund.line'].create({
+                                'name': (psg_obj.title or '') + ' ' + (psg_obj.name or ''),
+                                'birth_date': psg_obj.birth_date,
+                                'pax_price': pax_price,
+                                'charge_fee': charge_fee,
+                            })
+                            refund_line_ids.append(line_obj.id)
+
+                        res_vals = {
+                            'agent_id': new_resv_obj.agent_id.id,
+                            'customer_parent_id': new_resv_obj.customer_parent_id.id,
+                            'booker_id': new_resv_obj.booker_id.id,
+                            'currency_id': new_resv_obj.currency_id.id,
+                            'service_type': new_resv_obj.provider_type_id.id,
+                            'refund_type_id': refund_type,
+                            'admin_fee_id': admin_fee_obj.id,
+                            'referenced_document': new_resv_obj.name,
+                            'referenced_pnr': new_resv_obj.pnr,
+                            'res_model': new_resv_obj._name,
+                            'res_id': new_resv_obj.id,
+                            'booking_desc': new_resv_obj.get_aftersales_desc(),
+                            'notes': commit_data.get('notes') and commit_data['notes'] or '',
+                            'created_by_api': True,
+                        }
+                        res_obj = self.env['tt.refund'].create(res_vals)
+                        res_obj.confirm_refund_from_button()
+                        res_obj.update({
+                            'refund_line_ids': [(6, 0, refund_line_ids)],
+                        })
+                        res_obj.send_refund_from_button()
+                        res_obj.validate_refund_from_button()
+                        res_obj.finalize_refund_from_button()
 
                 # for rec in new_provider_bookings:
                 #     rsv_prov_obj = resv_provider_dict.get(rec['provider_id'], None)
