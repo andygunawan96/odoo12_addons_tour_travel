@@ -77,3 +77,29 @@ class TtProviderEvent(models.Model):
             })
             # scs_list.append(new_scs)
     # TODO END
+
+    def action_reverse_ledger_from_button(self):
+        if self.state == 'fail_refunded':
+            raise UserError("Cannot refund, this PNR has been refunded.")
+
+        # if not self.is_ledger_created:
+        #     raise UserError("This Provider Ledger is not Created.")
+
+        ##fixme salahhh, ini ke reverse semua provider bukan provider ini saja
+        for rec in self.booking_id.ledger_ids:
+            if rec.pnr == self.pnr and not rec.is_reversed:
+                rec.reverse_ledger()
+
+        self.write({
+            'state': 'fail_refunded',
+            # 'is_ledger_created': False,
+            'refund_uid': self.env.user.id,
+            'refund_date': datetime.now()
+        })
+
+        self.booking_id.check_provider_state({'co_uid':self.env.user.id})
+
+        return {
+            'type': 'ir.actions.client',
+            'tag': 'reload',
+        }

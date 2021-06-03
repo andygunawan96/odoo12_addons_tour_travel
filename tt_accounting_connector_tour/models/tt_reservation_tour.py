@@ -65,3 +65,7 @@ class TtReservationTour(models.Model):
     def action_issued_tour(self, co_uid, customer_parent_id, acquirer_id=False):
         super(TtReservationTour, self).action_issued_tour(co_uid, customer_parent_id, acquirer_id)
         self.send_ledgers_to_accounting()
+
+    def action_reverse_tour(self,context):
+        super(TtReservationTour, self).action_reverse_tour(context)
+        self.send_ledgers_to_accounting()

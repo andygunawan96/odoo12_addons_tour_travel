@@ -65,3 +65,7 @@ class TtReservationActivity(models.Model):
     def action_issued_activity(self, co_uid, customer_parent_id, acquirer_id=False):
         super(TtReservationActivity, self).action_issued_activity(co_uid, customer_parent_id, acquirer_id)
         self.send_ledgers_to_accounting()
+
+    def action_reverse_activity(self,context):
+        super(TtReservationActivity, self).action_reverse_activity(context)
+        self.send_ledgers_to_accounting()
