@@ -65,3 +65,7 @@ class TtReservationEvent(models.Model):
     def action_issued_event(self, context):
         super(TtReservationEvent, self).action_issued_event(context)
         self.send_ledgers_to_accounting()
+
+    def action_fail_refund(self,context):
+        super(TtReservationEvent, self).action_fail_refund(context)
+        self.send_ledgers_to_accounting()

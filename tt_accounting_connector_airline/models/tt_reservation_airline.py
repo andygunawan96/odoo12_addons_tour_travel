@@ -65,3 +65,15 @@ class TtReservationAirline(models.Model):
     def action_issued_airline(self,co_uid,customer_parent_id,acquirer_id = False):
         super(TtReservationAirline, self).action_issued_airline(co_uid,customer_parent_id,acquirer_id)
         self.send_ledgers_to_accounting()
+
+    def action_reverse_airline(self,context):
+        super(TtReservationAirline, self).action_reverse_airline(context)
+        self.send_ledgers_to_accounting()
+
+    def update_cost_service_charge_airline_api(self, req, context):
+        super(TtReservationAirline, self).update_cost_service_charge_airline_api(req, context)
+        self.send_ledgers_to_accounting()
+
+    def split_reservation_airline_api_1(self, data, context):
+        super(TtReservationAirline, self).split_reservation_airline_api_1(data, context)
+        self.send_ledgers_to_accounting()

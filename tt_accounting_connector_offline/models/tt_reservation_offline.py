@@ -65,3 +65,7 @@ class TtReservationOffline(models.Model):
     def action_issued_backend(self):
         super(TtReservationOffline, self).action_issued_backend()
         self.send_ledgers_to_accounting()
+
+    def action_cancel(self):
+        super(TtReservationOffline, self).action_cancel()
+        self.send_ledgers_to_accounting()

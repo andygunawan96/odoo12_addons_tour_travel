@@ -65,3 +65,7 @@ class TtReservationPPOB(models.Model):
     def action_issued_ppob(self, co_uid, customer_parent_id, acquirer_id=False):
         super(TtReservationPPOB, self).action_issued_ppob(co_uid, customer_parent_id, acquirer_id)
         self.send_ledgers_to_accounting()
+
+    def action_reverse_ppob(self,context):
+        super(TtReservationPPOB, self).action_reverse_ppob(context)
+        self.send_ledgers_to_accounting()

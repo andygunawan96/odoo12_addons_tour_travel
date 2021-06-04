@@ -1612,15 +1612,18 @@ class TtPassport(models.Model):
                 'refund_date': datetime.now()
             })
         elif all(rec.state == 'fail_refunded' for rec in self.provider_booking_ids):
-            self.write({
-                'state':  'fail_refunded',
-                'refund_uid': context['co_uid'],
-                'refund_date': datetime.now()
-            })
+            self.action_reverse_passport(context)
         else:
             # entah status apa
             _logger.error('Entah status apa')
             raise RequestException(1006)
+
+    def action_reverse_passport(self, context):
+        self.write({
+            'state': 'fail_refunded',
+            'refund_uid': context['co_uid'],
+            'refund_date': datetime.now()
+        })
 
     @api.multi
     @api.depends('passenger_ids')

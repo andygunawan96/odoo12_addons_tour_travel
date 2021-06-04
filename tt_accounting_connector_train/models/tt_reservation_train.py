@@ -65,3 +65,7 @@ class TtReservationTrain(models.Model):
     def action_issued_train(self,co_uid,customer_parent_id,acquirer_id = False):
         super(TtReservationTrain, self).action_issued_train(co_uid,customer_parent_id,acquirer_id)
         self.send_ledgers_to_accounting()
+
+    def action_reverse_train(self,context):
+        super(TtReservationTrain, self).action_reverse_train(context)
+        self.send_ledgers_to_accounting()
