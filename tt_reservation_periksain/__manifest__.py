@@ -19,6 +19,10 @@ TT_TRANSPORT
         'data/tt_provider_type_data.xml',
         'data/tt_destination_periksain.xml',
         'data/tt_transport_carrier_periksain.xml',
+        'data/ir_send_email.xml',
+
+        'security/ir.model.access.csv',
+        'security/ir_rule_data.xml',
 
         'views/tt_reservation_periksain_views.xml'
     ],
