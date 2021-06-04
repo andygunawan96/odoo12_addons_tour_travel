@@ -130,7 +130,6 @@ class PaymentTransaction(models.Model):
             rec.available_amount = available_amount
 
     @api.multi
-    # @api.depends('name','currency_id','total_amount','available_amount')
     def _compute_display_name_payment(self):
         for rec in self:
             rec.display_name = '%s - %s %s' % (rec.name, rec.currency_id.name , rec.available_amount)

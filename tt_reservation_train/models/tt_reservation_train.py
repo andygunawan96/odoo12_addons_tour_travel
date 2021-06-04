@@ -197,7 +197,7 @@ class TtReservationTrain(models.Model):
             booker_obj = self.create_booker_api(booker,context)
             contact_obj = self.create_contact_api(contacts,booker_obj,context)
 
-            list_passenger_value = self.create_passenger_value_api_test(passengers)
+            list_passenger_value = self.create_passenger_value_api(passengers)
             list_customer_id = self.create_customer_api(passengers,context,booker_obj.seq_id,contact_obj.seq_id)
 
             #fixme diasumsikan idxny sama karena sama sama looping by rec['psg']

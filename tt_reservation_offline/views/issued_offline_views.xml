@@ -18,6 +18,7 @@
                     <field name="customer_parent_type_id" groups="tt_base.group_tt_agent_user_operator,tt_base.group_tt_tour_travel_operator,tt_base.group_tt_agent_user,tt_base.group_tt_tour_travel"/>
                     <!--                    <field name="provider"/>-->
                     <field name="contact_id"/>
+                    <field name="passenger_ids"/>
                     <group>
                         <filter string="All" name="all"/>
                         <filter string="Draft" name="draft" domain="[('state_offline','=','draft')]"/>

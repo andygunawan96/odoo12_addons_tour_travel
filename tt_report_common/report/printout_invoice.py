@@ -2314,8 +2314,8 @@ class PrintoutLetterOfGuarantee(models.AbstractModel):
         agent_id = False
         temp_docs = self.env[data['context']['active_model']].browse(data['context']['active_ids'])
         header_width = 90
-        for rec in self.env[data['context']['active_model']].browse(data['context']['active_ids']):
-            agent_id = rec.agent_id
+        # for rec in self.env[data['context']['active_model']].browse(data['context']['active_ids']):
+        #     agent_id = rec.agent_id
         lg_po_footer = self.env['tt.report.common.setting'].get_footer('letter_guarantee_po', agent_id)
         lg_footer = self.env['tt.report.common.setting'].get_footer('letter_guarantee', agent_id)
         ho_obj = self.env.ref('tt_base.rodex_ho')

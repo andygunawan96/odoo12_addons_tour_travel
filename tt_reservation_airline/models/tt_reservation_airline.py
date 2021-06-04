@@ -368,7 +368,7 @@ class ReservationAirline(models.Model):
             #                                               # 'identity_country_of_issued_id','identity_expdate'])
             # list_passenger_id = self.create_passenger_api(list_customer_obj,self.env['tt.reservation.passenger.airline'])
 
-            list_passenger_value = self.create_passenger_value_api_test(passengers)
+            list_passenger_value = self.create_passenger_value_api(passengers)
             list_customer_id = self.create_customer_api(passengers,context,booker_obj.seq_id,contact_obj.seq_id)
 
             #fixme diasumsikan idxny sama karena sama sama looping by rec['psg']
@@ -1486,15 +1486,11 @@ class ReservationAirline(models.Model):
 
     #retrieve booking utk samakan info dengan vendor
     def sync_booking_with_vendor(self):
-        for rec in self.provider_booking_ids:
-            if rec.state  == 'booked':
-                rec.balance_due += 1
-        self.env.cr.commit()
         req = {
             'order_number': self.name,
             'user_id': self.booked_uid.id
         }
-        res = self.env['tt.airline.api.con'].send_get_booking_for_sync(req)
+        self.env['tt.airline.api.con'].send_get_booking_for_sync(req)
 
 
     @api.multi

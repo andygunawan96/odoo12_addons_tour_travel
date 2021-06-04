@@ -489,7 +489,7 @@ class ReservationActivity(models.Model):
                 raise RequestException(1004, additional_message='Activity type not found. Please check your product_type_uuid.')
             activity_type_id = activity_type_id[0]
 
-            list_passenger_value = self.create_passenger_value_api_test(passengers)
+            list_passenger_value = self.create_passenger_value_api(passengers)
             pax_ids = self.create_customer_api(passengers, context, booker_obj.seq_id, contact_obj.seq_id)
 
             sku_ids_dict = {}
