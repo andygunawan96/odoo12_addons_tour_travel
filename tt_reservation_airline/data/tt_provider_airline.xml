@@ -109,5 +109,11 @@
             <field name="active" eval="True"/>
             <field name="provider_type_id" ref="tt_provider_type_airline"/>
         </record>
+        <record id="tt_provider_airline_airasia_web" model="tt.provider">
+            <field name="name">AirAsia Web</field>
+            <field name="code">airasia_web</field>
+            <field name="active" eval="True"/>
+            <field name="provider_type_id" ref="tt_provider_type_airline"/>
+        </record>
     </data>
 </odoo>
