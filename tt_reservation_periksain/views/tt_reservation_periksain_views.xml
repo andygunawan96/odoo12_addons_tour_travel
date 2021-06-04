@@ -84,10 +84,10 @@
             </xpath>
 
             <xpath expr="//group[@name='paxgroup']" position="before">
-                <separator string="Trip Information"/>
+                <separator string="Test Information"/>
                 <group>
                     <group>
-                        <field name="test_datetime">
+                        <field name="test_datetime"/>
                     </group>
                 </group>
             </xpath>

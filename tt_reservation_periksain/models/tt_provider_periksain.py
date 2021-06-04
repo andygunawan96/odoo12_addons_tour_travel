@@ -37,6 +37,8 @@ class TtProviderPeriksain(models.Model):
     booked_date = fields.Datetime('Booking Date')
     issued_uid = fields.Many2one('res.users', 'Issued By')
     issued_date = fields.Datetime('Issued Date')
+    issued_pending_uid = fields.Many2one('res.users', 'Issued By')
+    issued_pending_date = fields.Datetime('Issued Date')
     hold_date = fields.Char('Hold Date')
     expired_date = fields.Datetime('Expired Date')
     cancel_uid = fields.Many2one('res.users', 'Cancel By')
@@ -159,8 +161,8 @@ class TtProviderPeriksain(models.Model):
         for rec in self:
             rec.write({
                 'state': 'issued',
-                'issued_date': datetime.now(),
-                'issued_uid': context['co_uid'],
+                'issued_pending_date': datetime.now(),
+                'issued_pending_uid': context['co_uid'],
                 'sid_issued': context['signature'],
                 'balance_due': 0
             })

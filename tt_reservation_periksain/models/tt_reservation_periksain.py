@@ -1,3 +1,5 @@
+import pytz
+
 from odoo import api,models,fields, _
 from ...tools import util,variables,ERR
 from ...tools.ERR import RequestException
@@ -26,6 +28,9 @@ class ReservationPeriksain(models.Model):
     
     passenger_ids = fields.One2many('tt.reservation.passenger.periksain', 'booking_id',
                                     readonly=True, states={'draft': [('readonly', False)]})
+
+    issued_pending_uid = fields.Many2one('res.users', 'Issued Pending by', readonly=True)
+    issued_pending_date = fields.Datetime('Issued Pending Date', readonly=True)
 
     test_address = fields.Char('Test Address', readonly=True, states={'draft': [('readonly', False)]})
 
@@ -97,6 +102,43 @@ class ReservationPeriksain(models.Model):
 
     def action_issued_api_periksain(self,acquirer_id,customer_parent_id,context):
         self.action_issued_periksain(context['co_uid'],customer_parent_id,acquirer_id)
+
+    def action_issued_pending_api_periksain(self,context):
+        current_wib_datetime = datetime.now(pytz.timezone('Asia/Jakarta'))
+        if '08:00' < str(current_wib_datetime) < '18:00':
+            pending_date = datetime.now() + timedelta(hours=1)
+        else:
+            pending_date = current_wib_datetime.replace(hour=10, minute=0)
+            if current_wib_datetime > current_wib_datetime.replace(hour=10,minute=0):
+                pending_date = pending_date+timedelta(days=1)
+
+        write_values = {
+            'state': 'booked',
+            'pending_date': pending_date,
+            'issued_pending_uid': context['co_uid'],
+            'issued_pending_date': datetime.now()
+        }
+
+        self.write(write_values)
+
+        # try:
+        #     if self.agent_type_id.is_send_email_booked:
+        #         mail_created = self.env['tt.email.queue'].sudo().with_context({'active_test':False}).search([('res_id', '=', self.id), ('res_model', '=', self._name), ('type', '=', 'booked_airline')], limit=1)
+        #         if not mail_created:
+        #             temp_data = {
+        #                 'provider_type': 'periksain',
+        #                 'order_number': self.name,
+        #                 'type': 'booked',
+        #             }
+        #             temp_context = {
+        #                 'co_agent_id': self.agent_id.id
+        #             }
+        #             self.env['tt.email.queue'].create_email_queue(temp_data, temp_context)
+        #         else:
+        #             _logger.info('Booking email for {} is already created!'.format(self.name))
+        #             raise Exception('Booking email for {} is already created!'.format(self.name))
+        # except Exception as e:
+        #     _logger.info('Error Create Email Queue')
 
     def action_reverse_periksain(self,context):
         self.write({
@@ -292,7 +334,7 @@ class ReservationPeriksain(models.Model):
                     raise RequestException(1002)
 
                 if provider['status'] == 'ISSUED_PENDING':
-                    provider_obj.action_cancel_api_periksain(context)
+                    provider_obj.action_issued_pending_api_periksain(context)
                     any_provider_changed = True
 
             if any_provider_changed:
@@ -468,13 +510,17 @@ class ReservationPeriksain(models.Model):
             'test_address': booking_data['test_address'],
             'test_address_map_link': booking_data['test_address_map_link'],
         }
+        #"timeslot_list"
 
         return booking_tmp
 
     # April 24, 2020 - SAM
     def check_provider_state(self,context,pnr_list=[],hold_date=False,req={}):
         if all(rec.state == 'issued' for rec in self.provider_booking_ids):
-            acquirer_id,customer_parent_id = self.get_acquirer_n_c_parent_id(req)
+            pass
+            # self.action_issued_api_airline(acquirer_id and acquirer_id.id or False, customer_parent_id, context)
+        elif all(rec.state == 'issued' for rec in self.provider_booking_ids):
+            acquirer_id, customer_parent_id = self.get_acquirer_n_c_parent_id(req)
             self.action_issued_api_airline(acquirer_id and acquirer_id.id or False, customer_parent_id, context)
         elif all(rec.state == 'booked' for rec in self.provider_booking_ids):
             self.action_booked_api_airline(context)

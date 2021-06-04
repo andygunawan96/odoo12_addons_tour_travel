@@ -62,7 +62,6 @@ class TtTimeslotPeriksain(models.Model):
     def get_available_timeslot_api(self):
         timeslots = self.search([('datetimeslot','>',datetime.now(pytz.utc))])
         max_date = date.today()
-        date()
         timeslot_dict = {}
         for rec in timeslots:
             if rec.dateslot > max_date:
