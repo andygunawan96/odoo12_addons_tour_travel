@@ -36,7 +36,7 @@ class TtEmailQueue(models.Model):
                 if data.get('type') == 'booked':
                     type_str = 'Booked'
                 elif data.get('type') == 'issued_final':
-                    type_str = ''
+                    type_str = 'Reservation Confirmed'
                 else:
                     type_str = 'Issued'
 
@@ -49,7 +49,7 @@ class TtEmailQueue(models.Model):
                     'res_id': resv.id,
                 })
 
-                if resv.agent_id.is_send_email_cust:
+                if resv.agent_id.is_send_email_cust or data.get('type') == 'issued_final':
                     template = self.env.ref('tt_reservation_{}.template_mail_reservation_{}_{}_cust'.format(data['provider_type'], data.get('type', 'issued'), data['provider_type'])).id
                     self.env['tt.email.queue'].sudo().create({
                         'name': type_str + ' ' + resv.name,
