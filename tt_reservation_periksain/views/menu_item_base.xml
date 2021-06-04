@@ -6,8 +6,8 @@
         <!-- Airline -->
         <menuitem id="top_reservations_periksain"
                   parent="tt_reservation.main_reservations"
-                  name="Airline"
-                  sequence="20"
+                  name="Periksain"
+                  sequence="45"
                   groups="base.group_user"/>
         
         <menuitem id="menu_reservations_periksain"
