@@ -113,7 +113,7 @@ class ReservationPeriksain(models.Model):
                 pending_date = pending_date+timedelta(days=1)
 
         write_values = {
-            'state': 'booked',
+            'state': 'issued_pending',
             'pending_date': pending_date,
             'issued_pending_uid': context['co_uid'],
             'issued_pending_date': datetime.now()
@@ -217,9 +217,9 @@ class ReservationPeriksain(models.Model):
         #timeslot_list
         #jumlah pax
         overtime_surcharge = False
-        for rec in req['timeslot_list']:
-            timeslot_obj = self.env['tt.timeslot.periksain'].search('seq_id','=',rec['seq_id'],limit=1)
-            if timeslot_obj.timeslot > time(11,0):
+        timeslot_objs = self.env['tt.timeslot.periksain'].search('seq_id', 'in', req['timeslot_list'])
+        for rec in timeslot_objs:
+            if rec.timeslot > time(11,0):
                 overtime_surcharge = True
                 break
 
@@ -252,9 +252,9 @@ class ReservationPeriksain(models.Model):
             for idx,rec in enumerate(list_passenger_value):
                 rec[2].update({
                     'customer_id': list_customer_id[idx].id,
-                    'email': passengers['email'],
-                    'phone_number': passengers['phone_number'],
-                    'sample_method': passengers['sample_method']
+                    'email': rec['email'],
+                    'phone_number': rec['phone_number'],
+                    'sample_method': rec['sample_method']
                 })
 
             for psg in list_passenger_value:
@@ -278,7 +278,7 @@ class ReservationPeriksain(models.Model):
             book_obj.check_provider_state(context)
 
             response_provider_ids = []
-            for provider in book_obj.provider_ids:
+            for provider in book_obj.provider_booking_ids:
                 response_provider_ids.append({
                     'id': provider.id,
                     'code': provider.provider_id.code,
@@ -481,7 +481,7 @@ class ReservationPeriksain(models.Model):
         dest_obj = self.env['tt.destinations']
         provider_type_id = self.env.ref('tt_reservation_periksain.tt_provider_type_periksain')
         provider_obj = self.env['tt.provider'].sudo().search([('code', '=', booking_data['provider']), ('provider_type_id', '=', provider_type_id.id)])
-        carrier_obj = self.env['tt.transport.carrier'].sudo().search([('code', '=', 'periksain'), ('provider_type_id', '=', provider_type_id.id)])
+        carrier_obj = self.env['tt.transport.carrier'].sudo().search([('code', '=', booking_data['carrier_code']), ('provider_type_id', '=', provider_type_id.id)])
         provider_vals = {
             'state': 'booked',
             'booked_uid': context_gateway['co_uid'],
@@ -496,6 +496,8 @@ class ReservationPeriksain(models.Model):
             'carrier_name': carrier_obj and carrier_obj.name or False,
         }
         self.env['tt.provider.periksain'].create(provider_vals)
+
+        timeslot_write_data = []
 
         booking_tmp = {
             'origin_id': dest_obj.get_id(booking_data['origin'], provider_type_id),

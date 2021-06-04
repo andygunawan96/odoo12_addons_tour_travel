@@ -616,6 +616,11 @@ class IssuedOffline(models.Model):
                         required = True
         return required
 
+    def fixing_adult_count(self):
+        for rec in self.search([]):
+            rec.adult = len(rec.passenger_ids)
+            _logger.info(rec.id)
+
     @api.one
     def action_sent(self):
         if self.provider_type_id_name == 'hotel':
@@ -664,6 +669,7 @@ class IssuedOffline(models.Model):
             provider.set_total_price()
         self.round_offline_pricing()
         self.calculate_service_charge()
+        self.adult = len(self.passenger_ids)
 
     @api.one
     def action_issued_backend(self):
