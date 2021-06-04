@@ -200,7 +200,7 @@ class ReservationEvent(models.Model):
             #refund
             self.action_refund()
         elif all(i.state == 'fail_refunded' for i in self.provider_booking_ids):
-            #fail_refunded
+            #fail_refunded, function ini setara dengan action_reverse_event
             self.action_fail_refund(context)
         elif any(i.state == 'issued' for i in self.provider_booking_ids):
             #partially issued

@@ -1,12 +1,12 @@
 {
-    'name': 'Tt Voucher ',
-    'version': '1.0',
+    'name': 'Tour & Travel - Voucher',
+    'version': '2.0',
     'category': 'Tour & Travel',
-    'sequence': 19,
-    'summary': 'Tt Voucher',
+    'sequence': 70,
+    'summary': 'Voucher Module',
     'description': """
 Tour & Travel - Voucher
-====================
+=======================
 Key Features
 ------------
     """,
@@ -26,6 +26,6 @@ Key Features
     'demo': [],
     'qweb': [],
     'installable': True,
-    'application': True,
+    'application': False,
     'auto_install': False,
 }

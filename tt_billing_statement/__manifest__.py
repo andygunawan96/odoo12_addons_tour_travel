@@ -1,16 +1,19 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 {
-    'name' : 'tt_billing_statement',
-    'version' : 'beta',
-    'summary': 'billing statement',
-    'sequence': 2,
+    'name': 'Tour & Travel - Billing Statement',
+    'version': '2.0',
+    'category': 'Billing',
+    'summary': 'Billing Statement Module',
+    'sequence': 40,
     'description': """
-Billing Statement
-""",
-    'category': 'billing',
-    'website': '',
-    'images' : [],
+Tour & Travel - Billing Statement
+=================================
+Key Features
+------------
+    """,
+    'author': "PT Roda Express Sukses Mandiri",
+    'website': "rodextravel.tours",
     'depends' : ['base_setup','tt_base','tt_accounting', 'tt_agent_sales', 'tt_payment'],
     'data': [
         'data/ir_sequence_data.xml',
@@ -29,6 +32,6 @@ Billing Statement
     'demo': [],
     'qweb': [],
     'installable': True,
-    'application': True,
+    'application': False,
     'auto_install': False,
 }

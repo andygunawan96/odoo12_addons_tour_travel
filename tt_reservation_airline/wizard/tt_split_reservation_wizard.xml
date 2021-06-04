@@ -6,13 +6,27 @@
         <field name="model">tt.split.reservation.wizard</field>
         <field name="arch" type="xml">
             <form string="Split Reservation Wizard">
+                <group col="3">
+                    <group>
+                        <field name="is_split_provider"/>
+                    </group>
+                    <group>
+                        <field name="is_split_passenger"/>
+                    </group>
+                    <group>
+                        <field name="is_split_journey"/>
+                    </group>
+                </group>
                 <group>
                     <field name="res_id"/>
                     <field name="referenced_document"/>
-                    <field name="new_pnr"/>
-                    <field name="new_pnr_text"/>
-                    <field name="provider_ids"/>
-                    <field name="passenger_ids"/>
+                    <field name="new_pnr" attrs="{'invisible': [('is_split_passenger', '!=', True),('is_split_journey', '!=', True)]}"/>
+                    <field name="new_pnr_text" attrs="{'invisible': [('is_split_passenger', '!=', True),('is_split_journey', '!=', True)]}"/>
+                    <field name="currency_id" attrs="{'invisible': [('is_split_journey', '!=', True)]}"/>
+                    <field name="splitted_journey_price" attrs="{'invisible': [('is_split_journey', '!=', True)]}"/>
+                    <field name="provider_ids" attrs="{'invisible': [('is_split_provider', '!=', True)]}"/>
+                    <field name="passenger_ids" attrs="{'invisible': [('is_split_passenger', '!=', True)]}"/>
+                    <field name="journey_ids" attrs="{'invisible': [('is_split_journey', '!=', True)]}"/>
                 </group>
                 <footer>
                     <button name="submit_split_reservation" string="Split" type="object" default_focus="1" class="oe_highlight"/>

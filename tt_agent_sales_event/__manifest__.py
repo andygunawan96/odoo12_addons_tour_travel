@@ -1,20 +1,18 @@
 # -*- coding: utf-8 -*-
 {
-    'name': "tt_agent_sales_event",
-
-    'summary': """
-        Agent Invoice for Event Reservation
-    """,
-
+    'name': 'Tour & Travel - Agent Sales Event',
+    'version': '2.0',
+    'category': 'Billing',
+    'summary': 'Agent Sales Event Module',
+    'sequence': 24,
     'description': """
-        Agent Invoice for Event Reservation
+Tour & Travel - Agent Sales Event
+=================================
+Key Features
+------------
     """,
-
-    'author': "Skytors",
-    'website': "http://www.skytors.id",
-    'category': 'Tour and Travel',
-    'version': '0.1',
-
+    'author': "PT Roda Express Sukses Mandiri",
+    'website': "rodextravel.tours",
     'depends': [
         'tt_agent_sales',
         'tt_reservation_event'
@@ -23,4 +21,9 @@
     'data': [
         'views/tt_reservation_event.xml'
     ],
+    'demo': [],
+    'qweb': [],
+    'installable': True,
+    'application': False,
+    'auto_install': False,
 }

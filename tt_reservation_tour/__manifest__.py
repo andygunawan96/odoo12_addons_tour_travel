@@ -1,24 +1,18 @@
 # -*- coding: utf-8 -*-
 {
-    'name' : 'tt_reservation_tour',
-    'version' : 'beta',
-    'summary': 'Transport Reservation Tour',
-    'sequence': 2,
-
+    'name': 'Tour & Travel - Reservation Tour',
+    'version': '2.0',
+    'category': 'Reservation',
+    'sequence': 59,
+    'summary': 'Reservation Tour Module',
     'description': """
-        Long description of module's purpose
+Tour & Travel - Reservation Tour
+================================
+Key Features
+------------
     """,
-
-    'author': "My Company",
-    'website': "http://www.yourcompany.com",
-
-    # Categories can be used to filter modules in modules listing
-    # Check https://github.com/odoo/odoo/blob/12.0/odoo/addons/base/data/ir_module_category_data.xml
-    # for the full list
-    'category': 'booking',
-    'version': '0.1',
-
-    # any module necessary for this one to work correctly
+    'author': 'PT Roda Express Sukses Mandiri',
+    'website': 'rodextravel.tours',
     'depends': ['base', 'mail', 'tt_reservation', 'survey', 'tt_base'],
 
     # always loaded
@@ -59,6 +53,6 @@
     'demo': [],
     'qweb': [],
     'installable': True,
-    'application': True,
+    'application': False,
     'auto_install': False,
 }

@@ -270,7 +270,7 @@ class PaymentAcquirer(models.Model):
                         ('type', '=', 'va'),  ## search yg espay
                         ('type', '=', 'payment_gateway')  ## search yg mutasi bca
                     ]
-                    pay_acq_num = self.env['payment.acquirer.number'].search([('number', 'ilike', req['order_number'])])
+                    pay_acq_num = self.env['payment.acquirer.number'].search([('number', 'ilike', req['order_number']), ('state', '=', 'closed')])
                     if pay_acq_num:
                         unique = pay_acq_num[0].unique_amount
                     else:

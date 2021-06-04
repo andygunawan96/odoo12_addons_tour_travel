@@ -1,12 +1,12 @@
 {
     'name': 'Tour & Travel - Merge Record',
-    'version': '1.1',
+    'version': '2.0',
     'category': 'Tour & Travel',
-    'sequence': 1,
-    'summary': 'Tour & Travel - Merge Record',
+    'sequence': 95,
+    'summary': 'Merge Record Module',
     'description': """
-Tour & Travel - Base
-====================
+Tour & Travel - Merge Record
+============================
 Key Features
 ------------
     """,
@@ -23,6 +23,6 @@ Key Features
     'demo': [],
     'qweb': [],
     'installable': True,
-    'application': True,
+    'application': False,
     'auto_install': False,
 }

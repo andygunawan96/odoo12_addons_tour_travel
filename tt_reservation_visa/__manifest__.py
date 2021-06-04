@@ -1,17 +1,18 @@
 # -*- coding: utf-8 -*-
 {
-    'name': "tt_reservation_visa",
-    'version' : 'beta',
-    'summary': """Visa Document""",
-    'sequence': 2,
+    'name': 'Tour & Travel - Reservation Visa',
+    'version': '2.0',
+    'category': 'Reservation',
+    'sequence': 61,
+    'summary': 'Reservation Visa Module',
     'description': """
-        TT RESERVATION VISA
+Tour & Travel - Reservation Visa
+================================
+Key Features
+------------
     """,
-    'category': 'booking',
-    'website': "http://www.rodextrip.com",
-    'version': '0.1',
-
-    # any module necessary for this one to work correctly
+    'author': 'PT Roda Express Sukses Mandiri',
+    'website': 'rodextravel.tours',
     'depends': ['base', 'tt_base', 'tt_engine_pricing', 'tt_traveldoc', 'tt_reservation', 'tt_report_common'],
 
     # always loaded
@@ -44,9 +45,9 @@
         'report/printout_visa_ho_template.xml',
         'report/printout_visa_customer_template.xml',
     ],
-    # only loaded in demonstration mode
     'demo': [],
+    'qweb': [],
     'installable': True,
-    'application': True,
+    'application': False,
     'auto_install': False,
 }

@@ -1,4 +1,5 @@
 from odoo import api, fields, models
+from odoo.exceptions import UserError
 from ...tools import variables
 from datetime import datetime
 
@@ -175,6 +176,33 @@ class TtProviderPassport(models.Model):
 
     def action_create_ledger(self, issued_uid, pay_method=None):
         return self.env['tt.ledger'].action_create_ledger(self, issued_uid)
+
+    def action_reverse_ledger_from_button(self):
+        if self.state == 'fail_refunded':
+            raise UserError("Cannot refund, this PNR has been refunded.")
+
+        ##fixme salahhh, ini ke reverse semua provider bukan provider ini saja
+        ## ^ harusnay sudah fix
+        for rec in self.booking_id.ledger_ids:
+            if rec.pnr in [self.pnr, str(self.sequence)] and not rec.is_reversed:
+                rec.reverse_ledger()
+
+        for rec in self.cost_service_charge_ids:
+            rec.is_ledger_created = False
+
+        self.write({
+            'state': 'fail_refunded',
+            # 'is_ledger_created': False,
+            'refund_uid': self.env.user.id,
+            'refund_date': datetime.now()
+        })
+
+        self.booking_id.check_provider_state({'co_uid':self.env.user.id})
+
+        return {
+            'type': 'ir.actions.client',
+            'tag': 'reload',
+        }
 
     def action_create_expenses_invoice(self):
         datas = {

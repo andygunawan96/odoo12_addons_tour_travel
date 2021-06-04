@@ -1813,10 +1813,22 @@ class ReservationAirline(models.Model):
         pnr_name = ''
         provider_name = ''
         carrier_name = ''
+        str_list_dict = {
+            'pnr': [],
+            'provider': [],
+            'carrier': []
+        }
         for seg in self.segment_ids:
-            pnr_name += str(seg.pnr) + ', '
-            provider_name += str(seg.provider_id.code) + ', '
-            carrier_name += str(seg.carrier_id.name) + ', '
+            if str(seg.pnr) not in str_list_dict['pnr']:
+                pnr_name += str(seg.pnr) + ', '
+                str_list_dict['pnr'].append(str(seg.pnr))
+            if str(seg.provider_id.code) not in str_list_dict['provider']:
+                provider_name += str(seg.provider_id.code) + ', '
+                str_list_dict['provider'].append(str(seg.provider_id.code))
+            if str(seg.carrier_id.name) not in str_list_dict['carrier']:
+                carrier_name += str(seg.carrier_id.name) + ', '
+                str_list_dict['carrier'].append(str(seg.carrier_id.name))
+
         self.sudo().write({
             'pnr': pnr_name[:-2] if pnr_name else '',
             'provider_name': provider_name[:-2] if provider_name else '',

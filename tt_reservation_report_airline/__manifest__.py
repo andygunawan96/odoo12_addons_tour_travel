@@ -1,25 +1,18 @@
 # -*- coding: utf-8 -*-
 {
-    'name': "tt_reservation_report_airline",
-
-    'summary': """
-        Short (1 phrase/line) summary of the module's purpose, used as
-        subtitle on modules listing or apps.openerp.com""",
-
+    'name': 'Tour & Travel - Reservation Report Airline',
+    'version': '2.0',
+    'category': 'Report',
+    'sequence': 84,
+    'summary': 'Airline Reservation Report Module',
     'description': """
-        Long description of module's purpose
+Tour & Travel - Reservation Report Airline
+==========================================
+Key Features
+------------
     """,
-
-    'author': "My Company",
-    'website': "http://www.rodextrip.com",
-
-    # Categories can be used to filter modules in modules listing
-    # Check https://github.com/odoo/odoo/blob/12.0/odoo/addons/base/data/ir_module_category_data.xml
-    # for the full list
-    'category': 'Uncategorized',
-    'version': '0.1',
-
-    # any module necessary for this one to work correctly
+    'author': 'PT Roda Express Sukses Mandiri',
+    'website': 'rodextravel.tours',
     'depends': ['base', 'tt_base', 'tt_agent_report', 'tt_reservation_airline'],
 
     # always loaded
@@ -28,6 +21,9 @@
         'wizard/tt_reservation_report_airline_view.xml',
         'report/tt_reservation_report_airline_menu.xml'
     ],
-    # only loaded in demonstration mode
     'demo': [],
+    'qweb': [],
+    'installable': True,
+    'application': False,
+    'auto_install': False,
 }
