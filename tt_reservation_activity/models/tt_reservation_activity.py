@@ -161,11 +161,7 @@ class ReservationActivity(models.Model):
             # refund
             self.action_refund()
         elif all(rec.state == 'fail_refunded' for rec in self.provider_booking_ids):
-            self.write({
-                'state':  'fail_refunded',
-                'refund_uid': context['co_uid'],
-                'refund_date': datetime.now()
-            })
+            self.action_reverse_activity(context)
         elif any(rec.state == 'issued' for rec in self.provider_booking_ids):
             # partial issued
             self.action_partial_issued_api_activity()
@@ -314,6 +310,13 @@ class ReservationActivity(models.Model):
 
     def action_issued_api_activity(self,acquirer_id,customer_parent_id,context):
         self.action_issued_activity(context['co_uid'],customer_parent_id,acquirer_id)
+
+    def action_reverse_activity(self,context):
+        self.write({
+            'state': 'fail_refunded',
+            'refund_uid': context['co_uid'],
+            'refund_date': datetime.now()
+        })
 
     def update_pnr_data(self, book_id, pnr):
         provider_objs = self.env['tt.provider.activity'].search([('booking_id', '=', book_id)])
@@ -489,7 +492,7 @@ class ReservationActivity(models.Model):
                 raise RequestException(1004, additional_message='Activity type not found. Please check your product_type_uuid.')
             activity_type_id = activity_type_id[0]
 
-            list_passenger_value = self.create_passenger_value_api_test(passengers)
+            list_passenger_value = self.create_passenger_value_api(passengers)
             pax_ids = self.create_customer_api(passengers, context, booker_obj.seq_id, contact_obj.seq_id)
 
             sku_ids_dict = {}

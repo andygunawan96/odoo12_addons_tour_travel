@@ -406,7 +406,7 @@ class ReservationTour(models.Model):
 
             contact_obj = contact_objs[0]
 
-            list_passenger_value = self.create_passenger_value_api_test(passengers)
+            list_passenger_value = self.create_passenger_value_api(passengers)
             pax_ids = self.create_customer_api(passengers, context, booker_obj.seq_id, contact_obj.seq_id)
 
             for idx, temp_pax in enumerate(passengers):

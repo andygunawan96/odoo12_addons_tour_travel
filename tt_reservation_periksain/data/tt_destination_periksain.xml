@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+
+        <record id="tt_destination_periksain_sub" model="tt.destinations">
+            <field name="name">Surabaya</field>
+            <field name="code">SUB</field>
+            <field name="city">Surabaya</field>
+            <field name="country_id" ref="base.id"/>
+            <field name="provider_type_id" ref="tt_reservation_periksain.tt_provider_type_periksain"/>
+            <field name="timezone_hour">7</field>
+            <field name="tz">Asia/Jakarta</field>
+            <field name="active">1</field>
+        </record>
+
+        <record id="tt_destination_periksain_sda" model="tt.destinations">
+            <field name="name">Sidoarjo</field>
+            <field name="code">SDA</field>
+            <field name="city">Sidoarjo</field>
+            <field name="country_id" ref="base.id"/>
+            <field name="provider_type_id" ref="tt_reservation_periksain.tt_provider_type_periksain"/>
+            <field name="timezone_hour">7</field>
+            <field name="tz">Asia/Jakarta</field>
+            <field name="active">1</field>
+        </record>
+
+        <record id="tt_destination_periksain_mlg" model="tt.destinations">
+            <field name="name">Malang</field>
+            <field name="code">MLG</field>
+            <field name="city">Malang</field>
+            <field name="country_id" ref="base.id"/>
+            <field name="provider_type_id" ref="tt_reservation_periksain.tt_provider_type_periksain"/>
+            <field name="timezone_hour">7</field>
+            <field name="tz">Asia/Jakarta</field>
+            <field name="active">1</field>
+        </record>
+    </data>
+</odoo>

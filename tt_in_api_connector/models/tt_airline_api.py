@@ -107,7 +107,7 @@ class TtAirlineApiCon(models.Model):
         request = {
             'order_number': req.get('order_number'),
             'proxy_co_uid': req.get('user_id', False),
-            'force_sync': True, #tanya ko sam
+            'force_sync': True,
         }
         return self.send_request_to_gateway('%s/booking/airline' % (self.url),
                                             request,

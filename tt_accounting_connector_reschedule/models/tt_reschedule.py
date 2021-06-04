@@ -60,3 +60,7 @@ class TtReschedule(models.Model):
     def validate_reschedule_from_button(self):
         super(TtReschedule, self).validate_reschedule_from_button()
         self.send_ledgers_to_accounting()
+
+    def cancel_reschedule_from_button(self):
+        super(TtReschedule, self).cancel_reschedule_from_button()
+        self.send_ledgers_to_accounting()

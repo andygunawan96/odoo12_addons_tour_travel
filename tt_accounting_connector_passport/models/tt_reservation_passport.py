@@ -65,3 +65,7 @@ class TtReservationPassport(models.Model):
     def action_issued_passport_api(self, data, context):
         super(TtReservationPassport, self).action_issued_passport_api(data, context)
         self.send_ledgers_to_accounting()
+
+    def action_reverse_passport(self,context):
+        super(TtReservationPassport, self).action_reverse_passport(context)
+        self.send_ledgers_to_accounting()

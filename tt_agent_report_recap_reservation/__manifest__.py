@@ -18,7 +18,6 @@ Key Features
     # always loaded
     'data': [
         'security/ir.model.access.csv',
-        'views/tt_agent_report_recap_reservation_menuheader.xml',
         'wizard/tt_agent_report_recap_reservation_view.xml',
         'report/tt_agent_report_recap_reservation_menu.xml',
         'report/tt_agent_report_recap_reservation_template.xml'

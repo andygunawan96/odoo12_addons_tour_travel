@@ -21,7 +21,8 @@ PROVIDER_TYPE_SELECTION = {
     'RESV': 'hotel',
     'RO': 'issued_offline',
     'BT': 'ppob',
-    'EV': 'event'
+    'EV': 'event',
+    'PK': 'periksain'
 }
 
 class TtReservation(models.Model):
@@ -75,7 +76,7 @@ class TtReservation(models.Model):
     child = fields.Integer('Child', default=0, readonly=True, states={'draft': [('readonly', False)]})
     infant = fields.Integer('Infant', default=0, readonly=True, states={'draft': [('readonly', False)]})
 
-    departure_date = fields.Char('Journey Date', readonly=True, states={'draft': [('readonly', False)]})  # , required=True
+    departure_date = fields.    Char('Journey Date', readonly=True, states={'draft': [('readonly', False)]})  # , required=True
     return_date = fields.Char('Return Date', readonly=True, states={'draft': [('readonly', False)]})
     arrival_date = fields.Char('Arrival Date', readonly=True, states={'draft': [('readonly', False)]})
 
@@ -482,7 +483,7 @@ class TtReservation(models.Model):
             list_passenger.append(passenger_obj.create(vals).id)
         return list_passenger
 
-    def create_passenger_value_api_test(self,passenger):
+    def create_passenger_value_api(self,passenger):
         list_passenger_value = []
         country_obj = self.env['res.country'].sudo()
         for rec in passenger:
