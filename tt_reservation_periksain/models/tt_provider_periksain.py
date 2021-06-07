@@ -9,13 +9,13 @@ _logger = logging.getLogger(__name__)
 
 class TtProviderPeriksain(models.Model):
     _name = 'tt.provider.periksain'
+    _inherit = 'tt.history'
     _rec_name = 'pnr'
     # _order = 'departure_date'
     _description = 'Provider periksain'
 
     pnr = fields.Char('PNR')
     pnr2 = fields.Char('PNR2')
-    original_pnr = fields.Char('Original PNR')
     provider_id = fields.Many2one('tt.provider','Provider')
     state = fields.Selection(variables.BOOKING_STATE, 'Status', default='draft')
     booking_id = fields.Many2one('tt.reservation.periksain', 'Order Number', ondelete='cascade')
@@ -27,6 +27,10 @@ class TtProviderPeriksain(models.Model):
     carrier_name = fields.Char('Product Name')
     ticket_ids = fields.One2many('tt.ticket.periksain', 'provider_id', 'Ticket Number')
 
+    sid_issued = fields.Char('SID Issued', readonly=True,
+                             states={'draft': [('readonly', False)]})  # signature generate sendiri
+    sid_cancel = fields.Char('SID Cancel', readonly=True,
+                             states={'draft': [('readonly', False)]})  # signature generate sendiri
     cost_service_charge_ids = fields.One2many('tt.service.charge', 'provider_periksain_booking_id', 'Cost Service Charges')
 
     currency_id = fields.Many2one('res.currency', 'Currency', readonly=True, states={'draft': [('readonly', False)]},
@@ -43,6 +47,9 @@ class TtProviderPeriksain(models.Model):
     expired_date = fields.Datetime('Expired Date')
     cancel_uid = fields.Many2one('res.users', 'Cancel By')
     cancel_date = fields.Datetime('Cancel Date')
+
+    refund_uid = fields.Many2one('res.users', 'Refund By', readonly=True, states={'draft': [('readonly', False)]})
+    refund_date = fields.Datetime('Refund Date', readonly=True, states={'draft': [('readonly', False)]})
 
     error_history_ids = fields.One2many('tt.reservation.err.history', 'res_id', 'Error History',
                                         domain=[('res_model', '=', 'tt.provider.periksain')])
@@ -149,7 +156,6 @@ class TtProviderPeriksain(models.Model):
             rec.write({
                 'pnr': provider_data['pnr'],
                 'pnr2': provider_data['pnr2'],
-                'original_pnr': provider_data['original_pnr'],
                 'state': 'booked',
                 'booked_uid': api_context['co_uid'],
                 'booked_date': fields.Datetime.now(),
@@ -173,7 +179,7 @@ class TtProviderPeriksain(models.Model):
                 'state': 'issued',
                 'issued_date': datetime.now(),
                 'issued_uid': context['co_uid'],
-                'sid_issued': context['signature'],
+                # 'sid_issued': context['signature'], #issuednya yg di issued pending
                 'balance_due': 0
             })
 
@@ -338,7 +344,6 @@ class TtProviderPeriksain(models.Model):
         res = {
             'pnr': self.pnr and self.pnr or '',
             'pnr2': self.pnr2 and self.pnr2 or '',
-            'original_pnr': self.original_pnr and self.original_pnr or '',
             'provider': self.provider_id and self.provider_id.code or '',
             'provider_id': self.id,
             'agent_id': self.booking_id.agent_id.id if self.booking_id and self.booking_id.agent_id else '',

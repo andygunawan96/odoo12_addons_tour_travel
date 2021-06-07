@@ -21,7 +21,7 @@ class ReservationPeriksain(models.Model):
     timeslot_type = fields.Selection([('fixed','Fixed'),
                                       ('flexible','Flexible')],'Time Slot Type',readonly=True, states={'draft': [('readonly', False)]})
 
-    sale_service_charge_ids = fields.One2many('tt.service.charge', 'booking_airline_id', 'Service Charge',
+    sale_service_charge_ids = fields.One2many('tt.service.charge', 'booking_periksain_id', 'Service Charge',
                                               readonly=True, states={'draft': [('readonly', False)]})
 
     pending_date = fields.Datetime('Pending Date', readonly=True, states={'draft': [('readonly', False)]})
@@ -276,6 +276,24 @@ class ReservationPeriksain(models.Model):
 
             book_obj = self.create(values)
 
+            for idx,provider_obj in enumerate(book_obj.provider_booking_ids):
+                provider_obj.create_ticket_api(passengers)
+
+                service_charges_val = []
+                for svc in booking_data[idx]['service_charges']:
+                    ## currency di skip default ke company
+                    service_charges_val.append((0, 0, {
+                        "pax_type": svc['pax_type'],
+                        "pax_count": svc['pax_count'],
+                        "amount": svc['amount'],
+                        "total_amount": svc['total_amount'],
+                        "foreign_amount": svc['foreign_amount'],
+                        "charge_code": svc['charge_code'],
+                        "charge_type": svc['charge_type']
+                    }))
+
+                provider_obj.create_service_charge(service_charges_val)
+
             book_obj.calculate_service_charge()
             book_obj.check_provider_state(context)
 
@@ -474,6 +492,17 @@ class ReservationPeriksain(models.Model):
         provider_type_id = self.env.ref('tt_reservation_periksain.tt_provider_type_periksain')
         provider_obj = self.env['tt.provider'].sudo().search([('code', '=', booking_data['provider']), ('provider_type_id', '=', provider_type_id.id)])
         carrier_obj = self.env['tt.transport.carrier'].sudo().search([('code', '=', booking_data['carrier_code']), ('provider_type_id', '=', provider_type_id.id)])
+
+        # "pax_type": "ADT",
+        # "pax_count": 1,
+        # "amount": 150000,
+        # "total_amount": 150000,
+        # "foreign_amount": 150000,
+        # "currency": "IDR",
+        # "foreign_currency": "IDR",
+        # "charge_code": "fare",
+        # "charge_type": "FARE"
+
         provider_vals = {
             'state': 'booked',
             'booked_uid': context_gateway['co_uid'],
@@ -485,7 +514,7 @@ class ReservationPeriksain(models.Model):
             'provider_id': provider_obj and provider_obj.id or False,
             'carrier_id': carrier_obj and carrier_obj.id or False,
             'carrier_code': carrier_obj and carrier_obj.code or False,
-            'carrier_name': carrier_obj and carrier_obj.name or False,
+            'carrier_name': carrier_obj and carrier_obj.name or False
         }
 
         timeslot_write_data = []

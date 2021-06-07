@@ -25,7 +25,7 @@ class TtTimeslotPeriksain(models.Model):
 
     datetimeslot = fields.Datetime('DateTime Slot')
 
-    destination_id = fields.Many2one('tt.destination','Area')
+    destination_id = fields.Many2one('tt.destinations','Area')
 
     used_count = fields.Integer('Used Counter',compute="_compute_used_counter",store=True)
 

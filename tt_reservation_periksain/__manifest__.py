@@ -24,7 +24,12 @@ TT_TRANSPORT
         'security/ir.model.access.csv',
         'security/ir_rule_data.xml',
 
-        'views/tt_reservation_periksain_views.xml'
+        'wizard/create_timeslot_wizard.xml',
+        'wizard/force_issued_wizard_views.xml',
+
+        'views/tt_reservation_periksain_views.xml',
+        'views/tt_provider_views.xml',
+        'views/tt_timeslot_periksain_views.xml'
     ],
     'demo': [],
     'qweb': [],

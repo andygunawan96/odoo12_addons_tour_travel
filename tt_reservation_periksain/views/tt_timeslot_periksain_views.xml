@@ -1,0 +1,59 @@
+<odoo>
+    <record id="tt_timeslot_periksain_form_view" model="ir.ui.view">
+        <field name="name">tt.timeslot.periksain.form.view</field>
+        <field name="model">tt.timeslot.periksain</field>
+        <field name="arch" type="xml">
+            <form edit="false" create="false">
+                <sheet>
+                    <h1>
+                        <field name="seq_id"/>
+                    </h1>
+                   <group>
+                       <field name="dateslot"/>
+                       <field name="datetimeslot"/>
+                       <field name="destination_id"/>
+                       <field name="used_count"/>
+                   </group>
+                    <separator string="Booking(s)"/>
+                    <field name="booking_ids"/>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="tt_timeslot_periksain_tree_view" model="ir.ui.view">
+        <field name="name">tt.timeslot.periksain.tree.view</field>
+        <field name="model">tt.timeslot.periksain</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="seq_id"/>
+                <field name="dateslot"/>
+                <field name="datetimeslot"/>
+                <field name="used_count"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="tt_timeslot_periksain_action_views" model="ir.actions.act_window" >
+        <field name="name">Timeslot periksain</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">tt.timeslot.periksain</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+        <field name="domain">[]</field>
+        <field name="context">
+            {
+            'form_view_ref': 'tt_reservation_periksain.tt_timeslot_periksain_form_view',
+            'tree_view_ref': 'tt_reservation_periksain.tt_timeslot_periksain_tree_view',
+            }
+        </field>
+    </record>
+
+    <menuitem id="submenu_reservations_periksain_timeslot"
+              parent="tt_reservation_periksain.menu_master_data_periksain"
+              name="Timeslot"
+              sequence="10"
+              groups="tt_base.group_tt_tour_travel_operator"
+              action="tt_reservation_periksain.tt_timeslot_periksain_action_views"/>
+
+</odoo>

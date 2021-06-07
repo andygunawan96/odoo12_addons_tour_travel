@@ -14,5 +14,10 @@
                   parent="tt_reservation_periksain.top_reservations_periksain"
                   name="Booking"
                   sequence="1"/>
+
+        <menuitem id="menu_master_data_periksain"
+                  parent="tt_reservation_periksain.top_reservations_periksain"
+                  name="Master Data"
+                  sequence="2"/>
     </data>
 </odoo>
