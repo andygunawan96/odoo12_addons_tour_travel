@@ -71,9 +71,11 @@ class TtReservationAirline(models.Model):
         self.send_ledgers_to_accounting()
 
     def update_cost_service_charge_airline_api(self, req, context):
-        super(TtReservationAirline, self).update_cost_service_charge_airline_api(req, context)
+        res = super(TtReservationAirline, self).update_cost_service_charge_airline_api(req, context)
         self.send_ledgers_to_accounting()
+        return res
 
     def split_reservation_airline_api_1(self, data, context):
-        super(TtReservationAirline, self).split_reservation_airline_api_1(data, context)
+        res = super(TtReservationAirline, self).split_reservation_airline_api_1(data, context)
         self.send_ledgers_to_accounting()
+        return res
