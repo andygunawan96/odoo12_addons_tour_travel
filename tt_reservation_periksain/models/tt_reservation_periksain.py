@@ -994,3 +994,9 @@ class ReservationPeriksain(models.Model):
             psg_count += 1
             passengers += str(psg_count) + '. ' + (rec.title + ' ' if rec.title else '') + (rec.first_name if rec.first_name else '') + ' ' + (rec.last_name if rec.last_name else '') + '<br/>'
         return passengers
+
+    def get_aftersales_desc(self):
+        desc_txt = 'PNR: ' + self.pnr + '<br/>'
+        desc_txt += 'Test Address: ' + self.test_address + '<br/>'
+        desc_txt += 'Test Date/Time: ' + self.used_timeslot_id.get_datetimeslot_str() + '<br/>'
+        return desc_txt
