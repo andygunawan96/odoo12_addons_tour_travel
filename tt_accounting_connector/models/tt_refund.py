@@ -58,8 +58,9 @@ class TtRefund(models.Model):
             return ERR.get_error(1000)
 
     def action_approve(self):
-        super(TtRefund, self).action_approve()
+        res = super(TtRefund, self).action_approve()
         self.send_ledgers_to_accounting()
+        return res
 
     def cancel_refund_reverse_ledger(self):
         super(TtRefund, self).cancel_refund_reverse_ledger()

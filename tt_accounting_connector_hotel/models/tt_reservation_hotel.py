@@ -63,9 +63,11 @@ class TtReservationHotel(models.Model):
             return ERR.get_error(1000)
 
     def action_issued(self, acquirer_id, co_uid, kwargs=False):
-        super(TtReservationHotel, self).action_issued(acquirer_id, co_uid, kwargs)
+        res = super(TtReservationHotel, self).action_issued(acquirer_id, co_uid, kwargs)
         self.send_ledgers_to_accounting()
+        return res
 
     def action_reverse_ledger_from_button(self):
-        super(TtReservationHotel, self).action_reverse_ledger_from_button()
+        res = super(TtReservationHotel, self).action_reverse_ledger_from_button()
         self.send_ledgers_to_accounting()
+        return res

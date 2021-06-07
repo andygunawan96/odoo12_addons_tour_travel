@@ -32,6 +32,8 @@ class ReservationPeriksain(models.Model):
     issued_pending_uid = fields.Many2one('res.users', 'Issued Pending by', readonly=True)
     issued_pending_date = fields.Datetime('Issued Pending Date', readonly=True)
 
+    origin_id = fields.Many2one('tt.destinations', 'Test Area', readonly=True, states={'draft': [('readonly', False)]})
+
     test_address = fields.Char('Test Address', readonly=True, states={'draft': [('readonly', False)]})
 
     test_address_map_link = fields.Char('Test Address Map Link', readonly=True, states={'draft': [('readonly', False)]})
@@ -83,7 +85,7 @@ class ReservationPeriksain(models.Model):
 
         try:
             if self.agent_type_id.is_send_email_booked:
-                mail_created = self.env['tt.email.queue'].sudo().with_context({'active_test':False}).search([('res_id', '=', self.id), ('res_model', '=', self._name), ('type', '=', 'booked_airline')], limit=1)
+                mail_created = self.env['tt.email.queue'].sudo().with_context({'active_test':False}).search([('res_id', '=', self.id), ('res_model', '=', self._name), ('type', '=', 'booked_periksain')], limit=1)
                 if not mail_created:
                     temp_data = {
                         'provider_type': 'periksain',
@@ -121,24 +123,24 @@ class ReservationPeriksain(models.Model):
 
         self.write(write_values)
 
-        # try:
-        #     if self.agent_type_id.is_send_email_booked:
-        #         mail_created = self.env['tt.email.queue'].sudo().with_context({'active_test':False}).search([('res_id', '=', self.id), ('res_model', '=', self._name), ('type', '=', 'booked_airline')], limit=1)
-        #         if not mail_created:
-        #             temp_data = {
-        #                 'provider_type': 'periksain',
-        #                 'order_number': self.name,
-        #                 'type': 'booked',
-        #             }
-        #             temp_context = {
-        #                 'co_agent_id': self.agent_id.id
-        #             }
-        #             self.env['tt.email.queue'].create_email_queue(temp_data, temp_context)
-        #         else:
-        #             _logger.info('Booking email for {} is already created!'.format(self.name))
-        #             raise Exception('Booking email for {} is already created!'.format(self.name))
-        # except Exception as e:
-        #     _logger.info('Error Create Email Queue')
+        try:
+            if self.agent_type_id.is_send_email_issued:
+                mail_created = self.env['tt.email.queue'].sudo().with_context({'active_test': False}).search([('res_id', '=', self.id), ('res_model', '=', self._name), ('type', '=', 'issued_periksain')], limit=1)
+                if not mail_created:
+                    temp_data = {
+                        'provider_type': 'periksain',
+                        'order_number': self.name,
+                        'type': 'issued',
+                    }
+                    temp_context = {
+                        'co_agent_id': self.agent_id.id
+                    }
+                    self.env['tt.email.queue'].create_email_queue(temp_data, temp_context)
+                else:
+                    _logger.info('Issued email for {} is already created!'.format(self.name))
+                    raise Exception('Issued email for {} is already created!'.format(self.name))
+        except Exception as e:
+            _logger.info('Error Create Email Queue')
 
     def action_reverse_periksain(self,context):
         self.write({
@@ -167,21 +169,20 @@ class ReservationPeriksain(models.Model):
         self.write(values)
 
         try:
-            if self.agent_type_id.is_send_email_issued:
-                mail_created = self.env['tt.email.queue'].sudo().with_context({'active_test':False}).search([('res_id', '=', self.id), ('res_model', '=', self._name), ('type', '=', 'issued_airline')], limit=1)
-                if not mail_created:
-                    temp_data = {
-                        'provider_type': 'periksain',
-                        'order_number': self.name,
-                        'type': 'issued',
-                    }
-                    temp_context = {
-                        'co_agent_id': self.agent_id.id
-                    }
-                    self.env['tt.email.queue'].create_email_queue(temp_data, temp_context)
-                else:
-                    _logger.info('Issued email for {} is already created!'.format(self.name))
-                    raise Exception('Issued email for {} is already created!'.format(self.name))
+            mail_created = self.env['tt.email.queue'].sudo().with_context({'active_test':False}).search([('res_id', '=', self.id), ('res_model', '=', self._name), ('type', '=', 'issued_final_periksain')], limit=1)
+            if not mail_created:
+                temp_data = {
+                    'provider_type': 'periksain',
+                    'order_number': self.name,
+                    'type': 'issued_final',
+                }
+                temp_context = {
+                    'co_agent_id': self.agent_id.id
+                }
+                self.env['tt.email.queue'].create_email_queue(temp_data, temp_context)
+            else:
+                _logger.info('Issued Final email for {} is already created!'.format(self.name))
+                raise Exception('Issued Final email for {} is already created!'.format(self.name))
         except Exception as e:
             _logger.info('Error Create Email Queue')
 
@@ -252,9 +253,9 @@ class ReservationPeriksain(models.Model):
             for idx,rec in enumerate(list_passenger_value):
                 rec[2].update({
                     'customer_id': list_customer_id[idx].id,
-                    'email': rec['email'],
-                    'phone_number': rec['phone_number'],
-                    'sample_method': rec['sample_method']
+                    'email': passengers[idx]['email'],
+                    'phone_number': passengers[idx]['phone_number'],
+                    'sample_method': passengers[idx]['sample_method']
                 })
 
             for psg in list_passenger_value:
@@ -374,10 +375,13 @@ class ReservationPeriksain(models.Model):
             except:
                 raise RequestException(1008)
 
-            if book_obj.agent_id.id == context.get('co_agent_id',-1) or self.env.ref('tt_base.group_tt_process_channel_bookings').id in user_obj.groups_id.ids or book_obj.agent_type_id.name == self.env.ref('tt_base.agent_b2c').agent_type_id.name or book_obj.user_id.login == self.env.ref('tt_base.agent_b2c_user').login:
+            if book_obj.agent_id.id == context.get('co_agent_id',-1) or \
+                    self.env.ref('tt_base.group_tt_process_channel_bookings').id in user_obj.groups_id.ids or \
+                    book_obj.agent_type_id.name == self.env.ref('tt_base.agent_b2c').agent_type_id.name or \
+                    book_obj.user_id.login == self.env.ref('tt_base.agent_b2c_user').login:
                 res = book_obj.to_dict(context['co_agent_id'] == self.env.ref('tt_base.rodex_ho').id)
                 psg_list = []
-                for rec_idx, rec in enumerate(book_obj.sudo().passenger_ids):
+                for rec_idx, rec in enumerate(book_obj.passenger_ids):
                     rec_data = rec.to_dict()
                     rec_data.update({
                         'passenger_number': rec.sequence
@@ -387,25 +391,11 @@ class ReservationPeriksain(models.Model):
                 for rec in book_obj.provider_booking_ids:
                     prov_list.append(rec.to_dict())
 
-                # # July 23, 2020 - SAM
-                # refund_list = []
-                # for ref in book_obj.refund_ids:
-                #     ref_values = ref.get_refund_data()
-                #     refund_list.append(ref_values)
-
-                # END
-
                 res.update({
-                    'direction': book_obj.direction,
                     'origin': book_obj.origin_id.code,
-                    'destination': book_obj.destination_id.code,
-                    'sector_type': book_obj.sector_type,
                     'passengers': psg_list,
                     'provider_bookings': prov_list,
-                    # 'refund_list': refund_list,
-                    # 'provider_type': book_obj.provider_type_id.code
                 })
-                # _logger.info("Get resp\n" + json.dumps(res))
                 return Response().get_no_error(res)
             else:
                 raise RequestException(1035)
@@ -495,7 +485,6 @@ class ReservationPeriksain(models.Model):
             'carrier_code': carrier_obj and carrier_obj.code or False,
             'carrier_name': carrier_obj and carrier_obj.name or False,
         }
-        self.env['tt.provider.periksain'].create(provider_vals)
 
         timeslot_write_data = []
 
@@ -511,6 +500,11 @@ class ReservationPeriksain(models.Model):
             'timeslot_type': booking_data['timeslot_type'],
             'test_address': booking_data['test_address'],
             'test_address_map_link': booking_data['test_address_map_link'],
+            'provider_booking_ids': [(0,0,provider_vals)],
+
+            'hold_date': fields.Datetime.now() + timedelta(hours=1),## ini gantiin action booked, gak ada action booked
+            'booked_uid': context_gateway['co_uid'],
+            'booked_date': fields.Datetime.now()
         }
         #"timeslot_list"
 
@@ -525,7 +519,7 @@ class ReservationPeriksain(models.Model):
             acquirer_id, customer_parent_id = self.get_acquirer_n_c_parent_id(req)
             self.action_issued_api_airline(acquirer_id and acquirer_id.id or False, customer_parent_id, context)
         elif all(rec.state == 'booked' for rec in self.provider_booking_ids):
-            self.action_booked_api_airline(context)
+            self.action_booked_api_periksain(context)
         elif all(rec.state == 'refund' for rec in self.provider_booking_ids):
             self.write({
                 'state': 'refund',
@@ -569,7 +563,7 @@ class ReservationPeriksain(models.Model):
         if all(rec.state == 'booked' for rec in self.provider_booking_ids):
             # booked
             self.calculate_service_charge()
-            self.action_booked_api_airline(context, pnr_list, hold_date)
+            self.action_booked_api_periksain(context, pnr_list, hold_date)
         elif all(rec.state == 'issued' for rec in self.provider_booking_ids):
             # issued
             ##credit limit
@@ -577,7 +571,7 @@ class ReservationPeriksain(models.Model):
 
             if req.get('force_issued'):
                 self.calculate_service_charge()
-                self.action_booked_api_airline(context, pnr_list, hold_date)
+                self.action_booked_api_periksain(context, pnr_list, hold_date)
                 payment_res = self.payment_airline_api({'book_id': req['book_id'],
                                                         'member': req.get('member', False),
                                                         'acquirer_seq_id': req.get('acquirer_seq_id', False)}, context)
@@ -992,3 +986,11 @@ class ReservationPeriksain(models.Model):
             'url': book_obj.printout_itinerary_id.url,
         }
         return url
+
+    def get_passenger_list_email(self):
+        passengers = '<br/>'
+        psg_count = 0
+        for rec in self.passenger_ids:
+            psg_count += 1
+            passengers += str(psg_count) + '. ' + (rec.title + ' ' if rec.title else '') + (rec.first_name if rec.first_name else '') + ' ' + (rec.last_name if rec.last_name else '') + '<br/>'
+        return passengers

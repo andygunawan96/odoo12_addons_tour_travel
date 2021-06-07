@@ -24,9 +24,6 @@ class TtReservationCustomer(models.Model):
 
     def to_dict(self):
         res = super(TtReservationCustomer, self).to_dict()
-        fee_list = []
-        for rec in self.fee_ids:
-            fee_list.append(rec.to_dict())
         res.update({
             'sale_service_charges': self.get_service_charges(),
         })

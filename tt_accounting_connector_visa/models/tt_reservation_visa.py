@@ -63,8 +63,9 @@ class TtReservationVisa(models.Model):
             return ERR.get_error(1000)
 
     def action_issued_visa_api(self, data, context):
-        super(TtReservationVisa, self).action_issued_visa_api(data, context)
+        res = super(TtReservationVisa, self).action_issued_visa_api(data, context)
         self.send_ledgers_to_accounting()
+        return res
 
     def action_reverse_visa(self,context):
         super(TtReservationVisa, self).action_reverse_visa(context)
