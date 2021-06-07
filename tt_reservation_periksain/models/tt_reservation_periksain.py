@@ -275,13 +275,13 @@ class ReservationPeriksain(models.Model):
 
             book_obj = self.create(values)
 
-            for idx,provider_obj in enumerate(book_obj.provider_booking_ids):
+            for provider_obj in book_obj.provider_booking_ids:
                 provider_obj.create_ticket_api(passengers)
 
                 service_charges_val = []
-                for svc in booking_data[idx]['service_charges']:
+                for svc in booking_data['service_charges']:
                     ## currency di skip default ke company
-                    service_charges_val.append((0, 0, {
+                    service_charges_val.append({
                         "pax_type": svc['pax_type'],
                         "pax_count": svc['pax_count'],
                         "amount": svc['amount'],
@@ -289,7 +289,7 @@ class ReservationPeriksain(models.Model):
                         "foreign_amount": svc['foreign_amount'],
                         "charge_code": svc['charge_code'],
                         "charge_type": svc['charge_type']
-                    }))
+                    })
 
                 provider_obj.create_service_charge(service_charges_val)
 
@@ -502,6 +502,8 @@ class ReservationPeriksain(models.Model):
         # "charge_type": "FARE"
 
         provider_vals = {
+            'pnr': 1,
+            'pnr2': 2,
             'state': 'booked',
             'booked_uid': context_gateway['co_uid'],
             'booked_date': fields.Datetime.now(),
