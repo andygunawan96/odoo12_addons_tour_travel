@@ -81,3 +81,9 @@ class TtTimeslotPeriksain(models.Model):
 
     def get_availability(self):
         return self.used_count < MAX_PER_SLOT
+
+    def get_datetimeslot_str(self):
+        if self.datetimeslot:
+            return self.datetimeslot.strftime('%d %B %Y %H:%M')
+        else:
+            return 'Date/Time is not specified.'

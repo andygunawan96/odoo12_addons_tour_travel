@@ -67,5 +67,6 @@ class TtReservationOffline(models.Model):
         self.send_ledgers_to_accounting()
 
     def action_cancel(self):
-        super(TtReservationOffline, self).action_cancel()
+        res = super(TtReservationOffline, self).action_cancel()
         self.send_ledgers_to_accounting()
+        return res
