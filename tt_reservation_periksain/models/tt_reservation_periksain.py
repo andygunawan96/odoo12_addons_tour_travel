@@ -254,9 +254,9 @@ class ReservationPeriksain(models.Model):
             for idx,rec in enumerate(list_passenger_value):
                 rec[2].update({
                     'customer_id': list_customer_id[idx].id,
-                    'email': rec['email'],
-                    'phone_number': rec['phone_number'],
-                    'sample_method': rec['sample_method']
+                    'email': passengers[idx]['email'],
+                    'phone_number': passengers[idx]['phone_number'],
+                    'sample_method': passengers[idx]['sample_method']
                 })
 
             for psg in list_passenger_value:
@@ -393,7 +393,6 @@ class ReservationPeriksain(models.Model):
                     prov_list.append(rec.to_dict())
 
                 res.update({
-                    'direction': book_obj.direction,
                     'origin': book_obj.origin_id.code,
                     'passengers': psg_list,
                     'provider_bookings': prov_list,
@@ -521,7 +520,7 @@ class ReservationPeriksain(models.Model):
             acquirer_id, customer_parent_id = self.get_acquirer_n_c_parent_id(req)
             self.action_issued_api_airline(acquirer_id and acquirer_id.id or False, customer_parent_id, context)
         elif all(rec.state == 'booked' for rec in self.provider_booking_ids):
-            self.action_booked_api_airline(context)
+            self.action_booked_api_periksain(context)
         elif all(rec.state == 'refund' for rec in self.provider_booking_ids):
             self.write({
                 'state': 'refund',
@@ -565,7 +564,7 @@ class ReservationPeriksain(models.Model):
         if all(rec.state == 'booked' for rec in self.provider_booking_ids):
             # booked
             self.calculate_service_charge()
-            self.action_booked_api_airline(context, pnr_list, hold_date)
+            self.action_booked_api_periksain(context, pnr_list, hold_date)
         elif all(rec.state == 'issued' for rec in self.provider_booking_ids):
             # issued
             ##credit limit
@@ -573,7 +572,7 @@ class ReservationPeriksain(models.Model):
 
             if req.get('force_issued'):
                 self.calculate_service_charge()
-                self.action_booked_api_airline(context, pnr_list, hold_date)
+                self.action_booked_api_periksain(context, pnr_list, hold_date)
                 payment_res = self.payment_airline_api({'book_id': req['book_id'],
                                                         'member': req.get('member', False),
                                                         'acquirer_seq_id': req.get('acquirer_seq_id', False)}, context)
