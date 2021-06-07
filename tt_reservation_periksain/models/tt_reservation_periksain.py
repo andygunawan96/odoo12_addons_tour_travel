@@ -214,7 +214,7 @@ class ReservationPeriksain(models.Model):
         #timeslot_list
         #jumlah pax
         overtime_surcharge = False
-        timeslot_objs = self.env['tt.timeslot.periksain'].search('seq_id', 'in', req['timeslot_list'])
+        timeslot_objs = self.env['tt.timeslot.periksain'].search([('seq_id', 'in', req['timeslot_list'])])
         for rec in timeslot_objs:
             if rec.datetimeslot.time() > time(11,0):
                 overtime_surcharge = True
@@ -300,7 +300,7 @@ class ReservationPeriksain(models.Model):
                         "foreign_amount": svc['foreign_amount'],
                         "charge_code": svc['charge_code'],
                         "charge_type": svc['charge_type'],
-                        "commission_agent_id": svc['commission_agent_id']
+                        "commission_agent_id": svc.get('commission_agent_id', False)
                     })
 
                 provider_obj.create_service_charge(service_charges_val)
@@ -357,7 +357,7 @@ class ReservationPeriksain(models.Model):
 
             any_provider_changed = False
 
-            for provider in req['provider_booking']:
+            for provider in req['provider_bookings']:
                 provider_obj = self.env['tt.provider.periksain'].browse(provider['provider_id'])
                 try:
                     provider_obj.create_date

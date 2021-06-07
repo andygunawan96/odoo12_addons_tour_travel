@@ -68,7 +68,9 @@ class TtTimeslotPeriksain(models.Model):
                 max_date = rec.dateslot
             if rec.destination_id.name not in timeslot_dict:
                 timeslot_dict[rec.destination_id.name] = {}
-            timeslot_dict[rec.rec.destination_id.name][str(rec.dateslot)].append({
+            if str(rec.dateslot) not in timeslot_dict[rec.destination_id.name]:
+                timeslot_dict[rec.destination_id.name][str(rec.dateslot)] = []
+            timeslot_dict[rec.destination_id.name][str(rec.dateslot)].append({
                 'time': str(rec.datetimeslot)[11:16],
                 'seq_id': rec.seq_id,
                 'availability': rec.get_availability()
