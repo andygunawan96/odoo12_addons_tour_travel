@@ -349,7 +349,6 @@ class TtProviderPeriksain(models.Model):
             'agent_id': self.booking_id.agent_id.id if self.booking_id and self.booking_id.agent_id else '',
             'state': self.state,
             'state_description': variables.BOOKING_STATE_STR[self.state],
-            'payment_message': self.payment_message and self.payment_message or '',
             'balance_due': self.balance_due and self.balance_due or 0,
             'total_price': self.total_price and self.total_price or 0,
             'carrier_name': self.carrier_id and self.carrier_id.name or '',

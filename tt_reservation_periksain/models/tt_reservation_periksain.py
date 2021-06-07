@@ -220,7 +220,7 @@ class ReservationPeriksain(models.Model):
         overtime_surcharge = False
         timeslot_objs = self.env['tt.timeslot.periksain'].search('seq_id', 'in', req['timeslot_list'])
         for rec in timeslot_objs:
-            if rec.timeslot > time(11,0):
+            if rec.datetimeslot.time() > time(11,0):
                 overtime_surcharge = True
                 break
 

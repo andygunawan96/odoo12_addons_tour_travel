@@ -1,3 +1,5 @@
+import pytz
+
 from odoo import api, fields, models, _
 import base64,hashlib,time,os,traceback,logging,re
 from odoo.exceptions import UserError
@@ -36,12 +38,20 @@ class CreateTimeslotPeriksainWizard(models.TransientModel):
         date_delta = date_delta.days+1
         create_values = []
         timelist = self.time_string.split(',')
+
+        ##convert to timezone 0
+        time_objs = []
+        for time_str in timelist:
+            time_objs.append((datetime.strptime(time_str,'%H:%M') - timedelta(hours=7)).time())
+
+
+
         for this_date_counter in range(date_delta):
-            for this_time in timelist:
+            for this_time in time_objs:
                 this_date = self.start_date + timedelta(days=this_date_counter)
                 create_values.append({
                     'dateslot': this_date,
-                    'datetimeslot': datetime.strptime('%s %s' % (str(this_date),this_time),'%Y-%m-%d %H:%M'),
+                    'datetimeslot': datetime.strptime('%s %s' % (str(this_date),this_time),'%Y-%m-%d %H:%M:%S'),
                     'destination_id': self.area_id.id
                 })
 
