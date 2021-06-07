@@ -17,7 +17,6 @@ class ReservationPeriksain(models.Model):
 
     @api.depends('invoice_line_ids')
     def set_agent_invoice_state(self):
-
         states = []
 
         for rec in self.invoice_line_ids:
@@ -32,10 +31,10 @@ class ReservationPeriksain(models.Model):
 
     def get_segment_description(self):
         tmp = ''
-        # vals = []
-        for rec in self.journey_ids:
-            tmp += '%s(%s) - %s(%s),' % (rec.origin_id.city, rec.origin_id.code, rec.destination_id.city, rec.destination_id.code)
-            tmp += '%s - %s\n ' % (rec.departure_date[:16], rec.arrival_date[:16])
+        tmp += 'Address : %s' % (self.test_address)
+        for time_obj in self.timeslot_ids:
+            if type(time_obj.datetimeslot) == datetime:
+                tmp += '\n%s' % (datetime.strftime(time_obj.datetimeslot, "%Y-%m-%d %H:%M:%S"))
         return tmp
 
     def action_create_invoice(self,acquirer_id,co_uid,customer_parent_id):

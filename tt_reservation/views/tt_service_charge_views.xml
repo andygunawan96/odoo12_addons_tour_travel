@@ -22,8 +22,10 @@
                             <field name="foreign_amount"/>
                             <field name="total"/>
                         </group>
-                        <field name="description"/>
-                        <field name="commission_agent_id"/>
+                        <group>
+                            <field name="description"/>
+                            <field name="commission_agent_id" groups="base.group_system"/>
+                        </group>
                     </group>
                 </sheet>
             </form>

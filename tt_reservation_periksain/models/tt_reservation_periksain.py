@@ -1,6 +1,7 @@
 import pytz
 
 from odoo import api,models,fields, _
+from odoo.exceptions import UserError
 from ...tools import util,variables,ERR
 from ...tools.ERR import RequestException
 from ...tools.api import Response
@@ -161,11 +162,6 @@ class ReservationPeriksain(models.Model):
             'issued_date': datetime.now(),
             'issued_uid': co_uid,
         }
-        if not self.booked_date:
-            values.update({
-                'booked_date': values['issued_date'],
-                'booked_uid': values['issued_uid'],
-            })
         self.write(values)
 
         try:
@@ -234,6 +230,21 @@ class ReservationPeriksain(models.Model):
             "commission_per_pax": 25000
         })
 
+    def action_confirm_order_periksain(self):
+        if not self.picked_timeslot_id or not self.analyst_ids:
+            raise UserError("Please Pick Timeslot and Input Analyst")
+        self.action_issued_periksain(self.env.user.id)
+        # try:
+        #     data = {
+        #         'code': 9909,
+        #         'message': 'Issued in Vendor not found/issued in system:\n%s\n%s' % (self.transaction_date, not_match_str),
+        #         'provider': self.provider_id.name,
+        #     }
+        #     self.env['tt.api.con'].send_request_to_gateway('%s/notification' % (self.env['tt.api.con'].url), data,
+        #                                                    'notification_code')
+        # except:
+        #     _logger.error("Telegram Notif Confirm Order Periksain Error")
+
     def create_booking_periksain_api(self, req, context):
         _logger.info("Create\n" + json.dumps(req))
         booker = req['booker']
@@ -288,7 +299,8 @@ class ReservationPeriksain(models.Model):
                         "total_amount": svc['total_amount'],
                         "foreign_amount": svc['foreign_amount'],
                         "charge_code": svc['charge_code'],
-                        "charge_type": svc['charge_type']
+                        "charge_type": svc['charge_type'],
+                        "commission_agent_id": svc['commission_agent_id']
                     })
 
                 provider_obj.create_service_charge(service_charges_val)
