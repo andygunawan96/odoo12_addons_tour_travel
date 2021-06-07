@@ -64,32 +64,34 @@
                 <attribute name="edit">false</attribute>
             </xpath>
             <xpath expr="//div[hasclass('oe_button_box')]" position="inside">
-                    <button name="print_eticket"
-                            class="oe_stat_button" states="issued,done"
-                            string="Print E-Ticket" type="object" icon="fa-print"/>
+                <button name="print_eticket"
+                        class="oe_stat_button" states="issued,done"
+                        string="Print E-Ticket" type="object" icon="fa-print"/>
 
-                    <button name="print_eticket_original"
-                            class="oe_stat_button" states="issued,done"
-                            string="Get Original Ticket" type="object" icon="fa-print"/>
-                    <button name="print_eticket_with_price"
-                            class="oe_stat_button" states="issued,done"
-                            string="Print E-Ticket (Price)" type="object" icon="fa-print"/>
-                    <button name="print_ho_invoice"
-                            class="oe_stat_button" states="issued,done"
-                            string="Print Invoice (HO)" type="object" icon="fa-print"
-                            groups="tt_base.group_tt_tour_travel_operator,tt_base.group_tt_tour_travel"/>
-                    <button name="print_itinerary"
-                            class="oe_stat_button" states="booked,issued,done"
-                            string="Print Itinerary" type="object" icon="fa-print"/>
+                <button name="print_eticket_original"
+                        class="oe_stat_button" states="issued,done"
+                        string="Get Original Ticket" type="object" icon="fa-print"/>
+                <button name="print_eticket_with_price"
+                        class="oe_stat_button" states="issued,done"
+                        string="Print E-Ticket (Price)" type="object" icon="fa-print"/>
+                <button name="print_ho_invoice"
+                        class="oe_stat_button" states="issued,done"
+                        string="Print Invoice (HO)" type="object" icon="fa-print"
+                        groups="tt_base.group_tt_tour_travel_operator,tt_base.group_tt_tour_travel"/>
+                <button name="print_itinerary"
+                        class="oe_stat_button" states="booked,issued,done"
+                        string="Print Itinerary" type="object" icon="fa-print"/>
             </xpath>
 
             <xpath expr="//group[@name='paxgroup']" position="before">
                 <separator string="Test Information"/>
+                <field name="timeslot_ids"/>
                 <group>
-                    <group>
-                        <field name="test_datetime"/>
-                    </group>
+                    <field name="picked_timeslot_id"/>
+                    <field name="test_datetime"/>
                 </group>
+                <separator string="Analyst(s)"/>
+                <field name="analyst_ids"/>
             </xpath>
 
             <xpath expr="//page[@name='anchor']" position="before">
@@ -173,65 +175,65 @@
         </field>
     </record>
 
-<!--    <record model="ir.actions.act_window" id="tt_reservation_airline_action_views_booked">-->
-<!--        <field name="name">Reservation Airline (Booked)</field>-->
-<!--        <field name="res_model">tt.reservation.airline</field>-->
-<!--        <field name="view_type">form</field>-->
-<!--        <field name="view_mode">tree,form</field>-->
-<!--        <field name="domain">[]</field>-->
-<!--        <field name="context">-->
-<!--            {-->
-<!--            'form_view_ref': 'tt_reservation_airline.tt_reservation_airline_form_view',-->
-<!--            'tree_view_ref': 'tt_reservation_airline.tt_reservation_airline_tree_view',-->
-<!--            'search_default_booked': 1-->
-<!--            }-->
-<!--        </field>-->
-<!--    </record>-->
+    <!--    <record model="ir.actions.act_window" id="tt_reservation_airline_action_views_booked">-->
+    <!--        <field name="name">Reservation Airline (Booked)</field>-->
+    <!--        <field name="res_model">tt.reservation.airline</field>-->
+    <!--        <field name="view_type">form</field>-->
+    <!--        <field name="view_mode">tree,form</field>-->
+    <!--        <field name="domain">[]</field>-->
+    <!--        <field name="context">-->
+    <!--            {-->
+    <!--            'form_view_ref': 'tt_reservation_airline.tt_reservation_airline_form_view',-->
+    <!--            'tree_view_ref': 'tt_reservation_airline.tt_reservation_airline_tree_view',-->
+    <!--            'search_default_booked': 1-->
+    <!--            }-->
+    <!--        </field>-->
+    <!--    </record>-->
 
-<!--    <record model="ir.actions.act_window" id="tt_reservation_airline_action_views_issued">-->
-<!--        <field name="name">Reservation Airline (Issued)</field>-->
-<!--        <field name="res_model">tt.reservation.airline</field>-->
-<!--        <field name="view_type">form</field>-->
-<!--        <field name="view_mode">tree,form</field>-->
-<!--        <field name="domain">[]</field>-->
-<!--        <field name="context">-->
-<!--            {-->
-<!--            'form_view_ref': 'tt_reservation_airline.tt_reservation_airline_form_view',-->
-<!--            'tree_view_ref': 'tt_reservation_airline.tt_reservation_airline_tree_view',-->
-<!--            'search_default_issued': 1-->
-<!--            }-->
-<!--        </field>-->
-<!--    </record>-->
+    <!--    <record model="ir.actions.act_window" id="tt_reservation_airline_action_views_issued">-->
+    <!--        <field name="name">Reservation Airline (Issued)</field>-->
+    <!--        <field name="res_model">tt.reservation.airline</field>-->
+    <!--        <field name="view_type">form</field>-->
+    <!--        <field name="view_mode">tree,form</field>-->
+    <!--        <field name="domain">[]</field>-->
+    <!--        <field name="context">-->
+    <!--            {-->
+    <!--            'form_view_ref': 'tt_reservation_airline.tt_reservation_airline_form_view',-->
+    <!--            'tree_view_ref': 'tt_reservation_airline.tt_reservation_airline_tree_view',-->
+    <!--            'search_default_issued': 1-->
+    <!--            }-->
+    <!--        </field>-->
+    <!--    </record>-->
 
-<!--    <record model="ir.actions.act_window" id="tt_reservation_airline_action_views_failed_expired">-->
-<!--        <field name="name">Reservation Airline (Failed/Expired)</field>-->
-<!--        <field name="res_model">tt.reservation.airline</field>-->
-<!--        <field name="view_type">form</field>-->
-<!--        <field name="view_mode">tree,form</field>-->
-<!--        <field name="domain">[]</field>-->
-<!--        <field name="context">-->
-<!--            {-->
-<!--            'form_view_ref': 'tt_reservation_airline.tt_reservation_airline_form_view',-->
-<!--            'tree_view_ref': 'tt_reservation_airline.tt_reservation_airline_tree_view',-->
-<!--            'search_default_failed_expired': 1-->
-<!--            }-->
-<!--        </field>-->
-<!--    </record>-->
+    <!--    <record model="ir.actions.act_window" id="tt_reservation_airline_action_views_failed_expired">-->
+    <!--        <field name="name">Reservation Airline (Failed/Expired)</field>-->
+    <!--        <field name="res_model">tt.reservation.airline</field>-->
+    <!--        <field name="view_type">form</field>-->
+    <!--        <field name="view_mode">tree,form</field>-->
+    <!--        <field name="domain">[]</field>-->
+    <!--        <field name="context">-->
+    <!--            {-->
+    <!--            'form_view_ref': 'tt_reservation_airline.tt_reservation_airline_form_view',-->
+    <!--            'tree_view_ref': 'tt_reservation_airline.tt_reservation_airline_tree_view',-->
+    <!--            'search_default_failed_expired': 1-->
+    <!--            }-->
+    <!--        </field>-->
+    <!--    </record>-->
 
-<!--    <record model="ir.actions.act_window" id="tt_reservation_airline_action_views_cancel">-->
-<!--        <field name="name">Reservation Airline (Cancelled/Refunded)</field>-->
-<!--        <field name="res_model">tt.reservation.airline</field>-->
-<!--        <field name="view_type">form</field>-->
-<!--        <field name="view_mode">tree,form</field>-->
-<!--        <field name="domain">[]</field>-->
-<!--        <field name="context">-->
-<!--            {-->
-<!--            'form_view_ref': 'tt_reservation_airline.tt_reservation_airline_form_view',-->
-<!--            'tree_view_ref': 'tt_reservation_airline.tt_reservation_airline_tree_view',-->
-<!--            'search_default_cancel': 1-->
-<!--            }-->
-<!--        </field>-->
-<!--    </record>-->
+    <!--    <record model="ir.actions.act_window" id="tt_reservation_airline_action_views_cancel">-->
+    <!--        <field name="name">Reservation Airline (Cancelled/Refunded)</field>-->
+    <!--        <field name="res_model">tt.reservation.airline</field>-->
+    <!--        <field name="view_type">form</field>-->
+    <!--        <field name="view_mode">tree,form</field>-->
+    <!--        <field name="domain">[]</field>-->
+    <!--        <field name="context">-->
+    <!--            {-->
+    <!--            'form_view_ref': 'tt_reservation_airline.tt_reservation_airline_form_view',-->
+    <!--            'tree_view_ref': 'tt_reservation_airline.tt_reservation_airline_tree_view',-->
+    <!--            'search_default_cancel': 1-->
+    <!--            }-->
+    <!--        </field>-->
+    <!--    </record>-->
 
     <menuitem id="sub_menu_reservations_periksain_all"
               parent="tt_reservation_periksain.menu_reservations_periksain"
@@ -240,15 +242,15 @@
               sequence="80"
               groups="base.group_user"/>
 
-<!--    <menuitem id="submenu_reservations_airline_booked" parent="tt_reservation_airline.menu_reservations_airline"-->
-<!--              name="Booked" action="tt_reservation_airline.tt_reservation_airline_action_views_booked" sequence="2"/>-->
+    <!--    <menuitem id="submenu_reservations_airline_booked" parent="tt_reservation_airline.menu_reservations_airline"-->
+    <!--              name="Booked" action="tt_reservation_airline.tt_reservation_airline_action_views_booked" sequence="2"/>-->
 
-<!--    <menuitem id="submenu_reservations_airline_issued" parent="tt_reservation_airline.menu_reservations_airline"-->
-<!--              name="Issued" action="tt_reservation_airline.tt_reservation_airline_action_views_issued" sequence="3"/>-->
+    <!--    <menuitem id="submenu_reservations_airline_issued" parent="tt_reservation_airline.menu_reservations_airline"-->
+    <!--              name="Issued" action="tt_reservation_airline.tt_reservation_airline_action_views_issued" sequence="3"/>-->
 
-<!--    <menuitem id="submenu_reservations_airline_failed_expired" parent="tt_reservation_airline.menu_reservations_airline"-->
-<!--              name="Failed/Expired" action="tt_reservation_airline.tt_reservation_airline_action_views_failed_expired" sequence="4"/>-->
+    <!--    <menuitem id="submenu_reservations_airline_failed_expired" parent="tt_reservation_airline.menu_reservations_airline"-->
+    <!--              name="Failed/Expired" action="tt_reservation_airline.tt_reservation_airline_action_views_failed_expired" sequence="4"/>-->
 
-<!--    <menuitem id="submenu_reservations_airline_cancel" parent="tt_reservation_airline.menu_reservations_airline"-->
-<!--              name="Cancelled/Refunded" action="tt_reservation_airline.tt_reservation_airline_action_views_cancel" sequence="5"/>-->
+    <!--    <menuitem id="submenu_reservations_airline_cancel" parent="tt_reservation_airline.menu_reservations_airline"-->
+    <!--              name="Cancelled/Refunded" action="tt_reservation_airline.tt_reservation_airline_action_views_cancel" sequence="5"/>-->
 </odoo>

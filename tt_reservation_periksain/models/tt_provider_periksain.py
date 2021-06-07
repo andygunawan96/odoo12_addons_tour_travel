@@ -166,7 +166,7 @@ class TtProviderPeriksain(models.Model):
     def action_issued_pending_api_periksain(self, context):
         for rec in self:
             rec.write({
-                'state': 'issued',
+                'state': 'issued_pending',
                 'issued_pending_date': datetime.now(),
                 'issued_pending_uid': context['co_uid'],
                 'sid_issued': context['signature'],
@@ -277,6 +277,7 @@ class TtProviderPeriksain(models.Model):
                     scs_pax_count += 1
                     scs['total'] += scs['amount']
             scs['passenger_periksain_ids'] = [(6, 0, scs['passenger_periksain_ids'])]
+            scs['description'] = self.pnr and self.pnr or str(self.sequence)
             service_chg_obj.create(scs)
 
         # "sequence": 1,
