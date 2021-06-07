@@ -36,8 +36,8 @@ Key Features
         'security/ir.model.access.csv',
         'security/ir_rule_data.xml',
 
+        'wizard/res_users_duplicate_permissions_wizard_view.xml',
         'wizard/tt_upload_center_wizard_view.xml',
-
 
         'views/res_country_views.xml',
         'views/res_country_state_views.xml',
