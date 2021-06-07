@@ -102,7 +102,7 @@ class ReservationPeriksain(models.Model):
         except Exception as e:
             _logger.info('Error Create Email Queue')
 
-    def action_issued_pending_api_periksain(self,acquirer_id,customer_parent_id,context):
+    def action_issued_pending_periksain(self,co_uid, customer_parent_id, acquirer_id = False):
         current_wib_datetime = datetime.now(pytz.timezone('Asia/Jakarta'))
         if '08:00' < str(current_wib_datetime) < '18:00':
             pending_date = datetime.now() + timedelta(hours=1)
@@ -114,8 +114,9 @@ class ReservationPeriksain(models.Model):
         write_values = {
             'state': 'issued_pending',
             'pending_date': pending_date,
-            'issued_pending_uid': context['co_uid'],
-            'issued_pending_date': datetime.now()
+            'issued_date': datetime.now(),
+            'issued_uid': co_uid,
+            'customer_parent_id': customer_parent_id
         }
 
         self.write(write_values)
@@ -151,19 +152,8 @@ class ReservationPeriksain(models.Model):
             'state':  'refund_failed',
         })
 
-    def action_issued_pending_periksain(self,co_uid,customer_parent_id,acquirer_id = False):
-        values = {
-            'state': 'issued',
-            'issued_date': datetime.now(),
-            'issued_uid': co_uid,
-            'customer_parent_id': customer_parent_id
-        }
-        if not self.booked_date:
-            values.update({
-                'booked_date': values['issued_date'],
-                'booked_uid': values['issued_uid'],
-            })
-        self.write(values)
+    def action_issued_pending_api_periksain(self,acquirer_id,customer_parent_id,context):
+        self.action_issued_pending_periksain(context['co_uid'],customer_parent_id,acquirer_id)
 
     def action_issued_periksain(self,co_uid):
         values = {
@@ -527,7 +517,7 @@ class ReservationPeriksain(models.Model):
             'carrier_name': carrier_obj and carrier_obj.name or False
         }
 
-        timeslot_write_data = []
+        timeslot_write_data = self.env['tt.timeslot.periksain'].search([('seq_id','in',booking_data['timeslot_list'])])
 
         booking_tmp = {
             'origin_id': dest_obj.get_id(booking_data['origin'], provider_type_id),
@@ -542,7 +532,7 @@ class ReservationPeriksain(models.Model):
             'test_address': booking_data['test_address'],
             'test_address_map_link': booking_data['test_address_map_link'],
             'provider_booking_ids': [(0,0,provider_vals)],
-
+            'timeslot_ids': [(6,0,timeslot_write_data.ids)],
             'hold_date': fields.Datetime.now() + timedelta(hours=1),## ini gantiin action booked, gak ada action booked
             'booked_uid': context_gateway['co_uid'],
             'booked_date': fields.Datetime.now()
