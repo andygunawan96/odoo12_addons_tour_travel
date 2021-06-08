@@ -554,8 +554,6 @@ class ReservationPeriksain(models.Model):
             'booked_uid': context_gateway['co_uid'],
             'booked_date': fields.Datetime.now()
         }
-        #"timeslot_list"
-
         return booking_tmp
 
     # April 24, 2020 - SAM

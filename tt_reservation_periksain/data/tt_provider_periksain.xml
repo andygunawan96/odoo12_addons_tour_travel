@@ -5,7 +5,7 @@
             <field name="name">Periksain.id</field>
             <field name="code">periksain</field>
             <field name="active" eval="True"/>
-            <field name="provider_type_id" ref="tt_provider_type_airline"/>
+            <field name="provider_type_id" ref="tt_provider_type_periksain"/>
         </record>
     </data>
 </odoo>

@@ -17,6 +17,7 @@ TT_TRANSPORT
 
         'data/ir_sequence_data.xml',
         'data/tt_provider_type_data.xml',
+        'data/tt_provider_periksain.xml',
         'data/tt_destination_periksain.xml',
         'data/tt_transport_carrier_periksain.xml',
         'data/ir_send_email.xml',
