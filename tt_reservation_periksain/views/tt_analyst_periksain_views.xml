@@ -69,7 +69,7 @@
     <menuitem id="submenu_reservations_periksain_analyst"
               parent="tt_reservation_periksain.menu_master_data_periksain"
               name="Analyst"
-              sequence="11"
+              sequence="10"
               groups="tt_base.group_tt_tour_travel_operator"
               action="tt_reservation_periksain.tt_analyst_periksain_action_views"/>
 

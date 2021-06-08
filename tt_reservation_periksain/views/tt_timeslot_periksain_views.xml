@@ -21,8 +21,11 @@
                         <field name="destination_id"/>
                         <field name="used_count"/>
                     </group>
-                    <separator string="Booking(s)"/>
+                    <separator string="Selected by Customer Booking(s)"/>
                     <field name="booking_ids"/>
+
+                    <separator string="Confirmed to Customer Booking(s)"/>
+                    <field name="booking_used_ids"/>
                 </sheet>
             </form>
         </field>
@@ -59,7 +62,7 @@
     <menuitem id="submenu_reservations_periksain_timeslot"
               parent="tt_reservation_periksain.menu_master_data_periksain"
               name="Timeslot"
-              sequence="10"
+              sequence="15"
               groups="tt_base.group_tt_tour_travel_operator"
               action="tt_reservation_periksain.tt_timeslot_periksain_action_views"/>
 

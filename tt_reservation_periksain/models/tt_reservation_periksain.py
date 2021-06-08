@@ -13,6 +13,11 @@ import json
 
 _logger = logging.getLogger(__name__)
 
+COMMISSION_PER_PAX = 25000
+BASE_PRICE_PER_PAX = 150000
+SINGLE_SUPPLEMENT = 25000
+OVERTIME_SURCHARGE = 25000
+
 class ReservationPeriksain(models.Model):
     _name = "tt.reservation.periksain"
     _inherit = "tt.reservation"
@@ -223,11 +228,11 @@ class ReservationPeriksain(models.Model):
         single_suplement = False
         if req['pax_count'] <= 1:
             single_suplement = True
-        total_price = 150000+ (overtime_surcharge and 25000 or 0) + (single_suplement and 25000 or 0)
+        total_price = BASE_PRICE_PER_PAX + (overtime_surcharge and OVERTIME_SURCHARGE or 0) + (single_suplement and SINGLE_SUPPLEMENT or 0)
         return ERR.get_no_error({
             "pax_count": req['pax_count'],
             "price_per_pax": total_price,
-            "commission_per_pax": 25000
+            "commission_per_pax": COMMISSION_PER_PAX
         })
 
     def action_confirm_order_periksain(self):

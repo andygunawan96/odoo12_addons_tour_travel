@@ -31,7 +31,9 @@ class TtTimeslotPeriksain(models.Model):
 
     used_count = fields.Integer('Used Counter',compute="_compute_used_counter",store=True)
 
-    booking_ids = fields.Many2many('tt.reservation.periksain','tt_reservation_periksain_timeslot_rel', 'timeslot_id', 'booking_id', 'Booking(s)')
+    booking_ids = fields.Many2many('tt.reservation.periksain','tt_reservation_periksain_timeslot_rel', 'timeslot_id', 'booking_id', 'Selected on By Customer Booking(s)')
+
+    booking_used_ids = fields.One2many('tt.reservation.periksain','picked_timeslot_id', 'Confirmed to Customer Booking(s)')
 
     active = fields.Boolean('Active', default='True')
 
@@ -48,7 +50,7 @@ class TtTimeslotPeriksain(models.Model):
     @api.depends('booking_ids')
     def _compute_used_counter(self):
         for rec in self:
-            rec.used_count = len(rec.booking_ids)
+            rec.used_count = len(rec.booking_used_ids)
 
     # {
     #     "max_date": "2021-06-20",

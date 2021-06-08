@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <record id="tt_provider_periksain_periksain" model="tt.provider">
+            <field name="name">Periksain.id</field>
+            <field name="code">periksain</field>
+            <field name="active" eval="True"/>
+            <field name="provider_type_id" ref="tt_provider_type_airline"/>
+        </record>
+    </data>
+</odoo>
