@@ -25,7 +25,7 @@
         </field>
     </record>
 
-    <record id="tt_analyst_periksain_form_inh_view" model="i.ui.view">
+    <record id="tt_analyst_periksain_form_inh_view" model="ir.ui.view">
         <field name="name">tt.analyst.periksain.form.view</field>
         <field name="model">tt.analyst.periksain</field>
         <field name="priority">30</field>
