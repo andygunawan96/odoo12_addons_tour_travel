@@ -72,25 +72,31 @@ class TtTimeslotPeriksain(models.Model):
 
     def get_available_timeslot_api(self):
         timeslots = self.search([('datetimeslot','>',datetime.now(pytz.utc))])
-        max_date = date.today()
+        # max_date = date.today()
         timeslot_dict = {}
         for rec in timeslots:
-            if rec.dateslot > max_date:
-                max_date = rec.dateslot
             if rec.destination_id.name not in timeslot_dict:
-                timeslot_dict[rec.destination_id.name] = {}
-            if str(rec.dateslot) not in timeslot_dict[rec.destination_id.name]:
-                timeslot_dict[rec.destination_id.name][str(rec.dateslot)] = []
-            timeslot_dict[rec.destination_id.name][str(rec.dateslot)].append({
+                timeslot_dict[rec.destination_id.name] = {
+                    'max_date': str(date.today()),
+                    'min_date': str(date.max),
+                    'timeslots': {}
+                }
+            str_dateslot = str(rec.dateslot)
+            if str_dateslot > timeslot_dict[rec.destination_id.name]['max_date']:
+                timeslot_dict[rec.destination_id.name]['max_date'] = str_dateslot
+            if str_dateslot < timeslot_dict[rec.destination_id.name]['min_date']:
+                timeslot_dict[rec.destination_id.name]['min_date'] = str_dateslot
+
+            if str_dateslot not in timeslot_dict[rec.destination_id.name]['timeslots']:
+                timeslot_dict[rec.destination_id.name]['timeslots'][str_dateslot] = []
+
+            timeslot_dict[rec.destination_id.name]['timeslots'][str_dateslot].append({
                 'time': str(rec.datetimeslot)[11:16],
                 'seq_id': rec.seq_id,
                 'availability': rec.get_availability()
             })
-        res = {
-            'max_date': max_date,
-            'timeslots': timeslot_dict,
-        }
-        return ERR.get_no_error(res)
+        print(json.dumps(timeslot_dict))
+        return ERR.get_no_error(timeslot_dict)
 
     def get_availability(self):
         return self.used_count < MAX_PER_SLOT

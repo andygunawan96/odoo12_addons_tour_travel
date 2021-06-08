@@ -4,7 +4,11 @@
         <field name="model">tt.timeslot.periksain</field>
         <field name="arch" type="xml">
             <form edit="false" create="false">
+                <header>
+                    <button name="get_available_timeslot_api" type="object" string="Print Timeslots"/>
+                </header>
                 <sheet>
+
                     <div class="oe_button_box" name="button_box">
                         <button name="toggle_active" type="object" groups="tt_base.group_tt_tour_travel_operator,tt_base.group_tt_tour_travel"
                                 class="oe_stat_button" icon="fa-archive">

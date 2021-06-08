@@ -61,10 +61,10 @@ class TtProviderPeriksain(models.Model):
 
     ##button function
     def action_set_to_issued_from_button(self, payment_data={}):
-        if self.state == 'issued':
+        if self.state == 'issued_pending':
             raise UserError("Has been Issued.")
         self.write({
-            'state': 'issued',
+            'state': 'issued_pending',
             'issued_uid': self.env.user.id,
             'issued_date': datetime.now()
         })
@@ -113,7 +113,6 @@ class TtProviderPeriksain(models.Model):
 
         self.write({
             'state': 'fail_refunded',
-            # 'is_ledger_created': False,
             'refund_uid': self.env.user.id,
             'refund_date': datetime.now()
         })
