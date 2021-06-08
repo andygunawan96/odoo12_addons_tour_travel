@@ -411,10 +411,27 @@ class ReservationPeriksain(models.Model):
                 for rec in book_obj.provider_booking_ids:
                     prov_list.append(rec.to_dict())
 
+                timeslot_list = []
+                for timeslot_obj in book_obj.timeslot_ids:
+                    timeslot_list.append({
+                        "datetimeslot": timeslot_obj.datetimeslot.strftime('%Y-%m-%d %H:%M'),
+                        "area": timeslot_obj.destination_id.city
+                    })
+
+                picked_timeslot = {}
+                if book_obj.picked_timeslot_id:
+                    picked_timeslot = {
+                        "datetimeslot": book_obj.picked_timeslot_id.datetimeslot.strftime('%Y-%m-%d %H:%M'),
+                        "area": book_obj.picked_timeslot_id.destination_id.city
+                    }
+
                 res.update({
                     'origin': book_obj.origin_id.code,
                     'passengers': psg_list,
                     'provider_bookings': prov_list,
+                    'test_address': book_obj.test_address,
+                    'picked_timeslot': picked_timeslot,
+                    'timeslot_list': timeslot_list
                 })
                 return Response().get_no_error(res)
             else:
