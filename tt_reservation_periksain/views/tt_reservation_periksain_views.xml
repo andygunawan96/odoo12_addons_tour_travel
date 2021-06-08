@@ -142,6 +142,140 @@
         </field>
     </record>
 
+    <record id="tt_reservation_periksain_form_external_views" model="ir.ui.view">
+        <field name="name">tt.reservation.periksain.form.external.view</field>
+        <field name="model">tt.reservation.periksain</field>
+        <field name="mode">primary</field>
+        <field name="priority">5</field>
+        <field name="inherit_id"/>
+        <field name="arch" type="xml">
+            <form create="false" edit="false">
+                <header>
+                    <button name="action_confirm_order_periksain" type="object" string="Confirm Order" states="issued_pending" groups="tt_base.group_external_vendor_periksain_level_2"/>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,booked,issued_pending,issued"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <label for="name" class="oe_edit_only"/>
+                        <h1>
+                            <field name="name"/>
+                        </h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="id" invisible="1"/>
+                            <field name="pnr"/>
+                            <field name="agent_id"/>
+                            <field name="agent_type_id"/>
+                            <field name="customer_parent_id"/>
+                            <field name="customer_parent_type_id"/>
+                            <field name="provider_type_id"/>
+                            <field name="provider_name"/>
+                            <field name="carrier_name"/>
+                            <field name="currency_id" invisible="1"/>
+                            <field name="res_model" invisible="1"/>
+                        </group>
+                        <group>
+                            <field name="date"/>
+                            <field name="hold_date"/>
+                            <!--CANDY: delete expired date & is_manual-->
+                            <!--<field name="expired_date"/>-->
+                            <!--<field name="is_manual"/>-->
+                            <label for="user_id" string="Created by"/>
+                            <div>
+                                <field name="user_id" readonly="1" class="oe_inline"/> /
+                                <field name="create_date" readonly="1" class="oe_inline"/>
+                            </div>
+                            <label for="booked_uid" string="Booked By"/>
+                            <div>
+                                <field name="booked_uid" readonly="1" class="oe_inline"/> /
+                                <field name="booked_date" readonly="1" class="oe_inline"/>
+                            </div>
+                            <label for="issued_uid" string="Issued By"/>
+                            <div>
+                                <field name="issued_uid" readonly="1" class="oe_inline"/> /
+                                <field name="issued_date" readonly="1" class="oe_inline"/>
+                            </div>
+                            <label for="cancel_uid" string="Cancel By"/>
+                            <div>
+                                <field name="cancel_uid" readonly="1" class="oe_inline"/> /
+                                <field name="cancel_date" readonly="1" class="oe_inline"/>
+                            </div>
+                            <label for="refund_uid" string="Refund By"/>
+                            <div>
+                                <field name="refund_uid" readonly="1" class="oe_inline"/> /
+                                <field name="refund_date" readonly="1" class="oe_inline"/>
+                            </div>
+                            <label for="reschedule_uid" string="Rescheduled By"/>
+                            <div>
+                                <field name="reschedule_uid" readonly="1" class="oe_inline"/>
+                                <field name="reschedule_date" readonly="1" class="oe_inline"/>
+                            </div>
+                            <field name="penalty_amount" readonly="1"/>
+                            <field name="voucher_code" readonly="1"/>
+                        </group>
+                    </group>
+                    <separator string="Test Information"/>
+                    <field name="timeslot_ids"/>
+                    <group>
+                        <field name="picked_timeslot_id"/>
+                        <field name="test_datetime"/>
+                    </group>
+                    <separator string="Analyst(s)"/>
+                    <field name="analyst_ids"/>
+                    <group name="paxgroup">
+                        <group string="Booker Information">
+                            <field name="booker_id"/>
+                        </group>
+                        <group string="Contact Information">
+                            <field name="contact_id"/>
+                            <label for="contact_title" string="Contact Name"/>
+                            <div>
+                                <field name="contact_title" class="oe_inline"/>.
+                                <field name="contact_name" class="oe_inline"/>
+                            </div>
+                            <field name="contact_email"/>
+                            <field name="contact_phone"/>
+                        </group>
+                    </group>
+                    <group string="Paxs">
+                        <field name="adult"/>
+                        <field name="child"/>
+                        <field name="infant"/>
+                    </group>
+                    <notebook colspan="4" name="notebooks">
+                        <page string="Passengers">
+                            <field name="passenger_ids">
+                                <tree>
+                                    <field name="title"/>
+                                    <field name="first_name"/>
+                                    <field name="last_name"/>
+                                    <field name="gender"/>
+                                    <field name="birth_date"/>
+                                    <field name="nationality_id"/>
+                                    <field name="identity_type"/>
+                                    <field name="identity_number"/>
+                                </tree>
+                            </field>
+                        </page>
+                        <page string="anchor" name="anchor" invisible="1"/>
+                        <page string="Refund" name="refund_page" attrs="{'invisible':[('refund_ids','=', [])]}">
+                            <field name="refund_ids"/>
+                        </page>
+                    </notebook>
+                    <footer>
+                        <group string="Total Information" class="oe_subtotal_footer oe_right">
+                            <field name="total_fare" class="oe_subtotal_footer_separator"/>
+                            <field name="total_tax" class="oe_subtotal_footer_separator"/>
+                            <field name="total" class="oe_subtotal_footer_separator"/>
+                            <field name="total_discount" class="oe_subtotal_footer_separator"/>
+                        </group>
+                    </footer>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
     <record id="tt_reservation_periksain_tree_views" model="ir.ui.view">
         <field name="name">tt.reservation.periksain.tree.view</field>
         <field name="model">tt.reservation.periksain</field>
@@ -175,6 +309,22 @@
         <field name="context">
             {
             'form_view_ref': 'tt_reservation_periksain.tt_reservation_periksain_form_views',
+            'tree_view_ref': 'tt_reservation_periksain.tt_reservation_periksain_tree_views',
+            'search_default_all': 1
+            }
+        </field>
+    </record>
+
+    <record id="tt_reservation_periksain_action_external_views" model="ir.actions.act_window" >
+        <field name="name">Reservation periksain</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">tt.reservation.periksain</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+        <field name="domain">[]</field>
+        <field name="context">
+            {
+            'form_view_ref': 'tt_reservation_periksain.tt_reservation_periksain_form_external_views',
             'tree_view_ref': 'tt_reservation_periksain.tt_reservation_periksain_tree_views',
             'search_default_all': 1
             }
@@ -247,6 +397,13 @@
               name="All"
               sequence="80"
               groups="base.group_user"/>
+
+    <menuitem id="top_external_vendor_periksain_reservation"
+              parent="tt_base.top_external_vendor_transaction"
+              name="Periksain Reservation"
+              groups="tt_base.group_tt_external_vendor_operator,tt_base.group_external_vendor_periksain_level_1"
+              action="tt_reservation_periksain.tt_reservation_periksain_action_external_views"
+    />
 
     <!--    <menuitem id="submenu_reservations_airline_booked" parent="tt_reservation_airline.menu_reservations_airline"-->
     <!--              name="Booked" action="tt_reservation_airline.tt_reservation_airline_action_views_booked" sequence="2"/>-->

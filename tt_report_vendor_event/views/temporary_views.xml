@@ -47,6 +47,7 @@
         parent="tt_base.top_external_vendor_transaction"
         action="action_event_temporary_view"
         sequence="20"
+        groups="tt_base.group_external_vendor_event_level_1"
         />
 
     <menuitem
@@ -55,5 +56,6 @@
         parent="tt_base.top_tour_travel_report"
         action="action_event_temporary_view"
         sequence="20"
+        groups="tt_base.group_tt_tour_travel_operator,tt_base.group_tt_tour_travel"
         />
 </odoo>
