@@ -5,7 +5,7 @@
                   parent="tt_base.top_external_vendor_master_product"
                   name="Event"
                   sequence="20"
-                  groups="tt_base.group_tt_external_vendor_operator,tt_base.group_tt_external_user"
+                  groups="tt_base.group_tt_external_vendor_operator,tt_base.group_master_data_event_level_1"
                   action="tt_master_event_view_action"
         />
     </data>

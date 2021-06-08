@@ -173,14 +173,13 @@ class TtProviderPeriksain(models.Model):
                 'balance_due': 0
             })
 
-    def action_issued_api_periksain(self, context):
+    def action_issued_periksain(self, co_uid):
         for rec in self:
             rec.write({
                 'state': 'issued',
                 'issued_date': datetime.now(),
-                'issued_uid': context['co_uid'],
+                'issued_uid': co_uid,
                 # 'sid_issued': context['signature'], #issuednya yg di issued pending
-                'balance_due': 0
             })
 
     def action_cancel_api_periksain(self, context):
