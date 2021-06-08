@@ -61,7 +61,7 @@
         <field name="context">
             {
             'form_view_ref': 'tt_reservation_periksain.tt_analyst_periksain_form_inh_view',
-            'tree_view_ref': 'tt_reservation_periksain.tt_analyst_periksain_tree_view',
+            'tree_view_ref': 'tt_reservation_periksain.tt_analyst_periksain_tree_view'
             }
         </field>
     </record>

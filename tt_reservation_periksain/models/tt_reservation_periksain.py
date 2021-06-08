@@ -43,7 +43,7 @@ class ReservationPeriksain(models.Model):
 
     timeslot_ids = fields.Many2many('tt.timeslot.periksain','tt_reservation_periksain_timeslot_rel', 'booking_id', 'timeslot_id', 'Timeslot(s)')
 
-    picked_timeslot_id = fields.Many2one('tt.timeslot.periksain', 'Timeslot(s)', readonly=True, states={'issued_pending': [('readonly', False)]})
+    picked_timeslot_id = fields.Many2one('tt.timeslot.periksain', 'Picked Timeslot', readonly=True, states={'issued_pending': [('readonly', False)]})
 
     test_datetime = fields.Datetime('Test Datetime',related='picked_timeslot_id.datetimeslot', store=True)
 
