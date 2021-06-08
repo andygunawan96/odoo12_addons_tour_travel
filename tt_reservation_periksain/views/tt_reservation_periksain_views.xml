@@ -151,7 +151,10 @@
         <field name="arch" type="xml">
             <form create="false" edit="false">
                 <header>
-                    <button name="action_confirm_order_periksain" type="object" string="Confirm Order" states="issued_pending" groups="tt_base.group_external_vendor_periksain_level_2"/>
+                    <button string="Confirm Order" name="%(tt_reservation_periksain.confirm_order_periksain_wizard_action_view)d" type="action" groups="tt_base.group_external_vendor_periksain_level_2"
+                        context="{
+                        'default_booking_id': id,
+                   }"/>
                     <field name="state" widget="statusbar" statusbar_visible="draft,booked,issued_pending,issued"/>
                 </header>
                 <sheet>
