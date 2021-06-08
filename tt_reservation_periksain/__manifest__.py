@@ -25,6 +25,7 @@ TT_TRANSPORT
         'security/ir_rule_data.xml',
 
         'wizard/create_timeslot_wizard.xml',
+        'wizard/confirm_order_wizard.xml',
         'wizard/force_issued_wizard_views.xml',
 
         'views/tt_reservation_periksain_views.xml',

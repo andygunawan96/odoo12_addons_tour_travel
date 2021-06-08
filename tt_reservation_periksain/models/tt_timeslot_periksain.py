@@ -31,6 +31,8 @@ class TtTimeslotPeriksain(models.Model):
 
     booking_ids = fields.Many2many('tt.reservation.periksain','tt_reservation_periksain_timeslot_rel', 'timeslot_id', 'booking_id', 'Booking(s)')
 
+    active = fields.Boolean('Active', default='True')
+
     @api.model
     def create(self, vals_list):
         vals_list['seq_id'] = self.env['ir.sequence'].next_by_code('tt.timeslot.periksain')

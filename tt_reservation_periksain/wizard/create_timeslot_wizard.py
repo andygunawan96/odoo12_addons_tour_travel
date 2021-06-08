@@ -33,7 +33,7 @@ class CreateTimeslotPeriksainWizard(models.TransientModel):
 
     area_id = fields.Many2one('tt.destinations', 'Area', domain=_get_area_id_domain, required=True)
 
-    def generate_timeslot(self):
+    def _generate_timeslot(self):
         date_delta = self.end_date - self.start_date
         date_delta = date_delta.days+1
         create_values = []

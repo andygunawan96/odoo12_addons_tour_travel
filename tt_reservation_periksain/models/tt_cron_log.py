@@ -19,6 +19,8 @@ class TtCronLogInhPeriksain(models.Model):
                     if datetime.now() >= (booking.pending_date or datetime.min):
                         for provider_obj in booking.provider_ids:
                             provider_obj.action_reverse_ledger_from_button()
+                            ## notif ke tele kalau ke cancel
+
                 except Exception as e:
                     _logger.error(
                         '%s something failed during expired cron.\n' % (booking.name) + traceback.format_exc())
