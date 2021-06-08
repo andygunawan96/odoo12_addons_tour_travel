@@ -14,7 +14,7 @@ class ConfirmOrderPeriksainWizard(models.TransientModel):
     _description = 'Confirm Order Periksain Wizard'
 
     booking_id = fields.Many2one('tt.reservation.periksain','Booking',readonly=True)
-    picked_timeslot_id = fields.Many2one('tt.timeslot.periksain', 'Picked Timeslot', domain="[('id','in',booking_id.ids)]")
+    picked_timeslot_id = fields.Many2one('tt.timeslot.periksain', 'Picked Timeslot', domain="[('id','in',booking_id.timeslot_ids.ids)]")
     analyst_ids = fields.Many2many('tt.analyst.periksain', 'tt_reservation_periksain_analyst_confirm_order_wizard_rel', 'wizard_id',
                                    'analyst_id', 'Analyst(s)')
 
