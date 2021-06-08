@@ -161,11 +161,11 @@ class ReservationPeriksain(models.Model):
     def action_issued_pending_api_periksain(self,acquirer_id,customer_parent_id,context):
         self.action_issued_pending_periksain(context['co_uid'],customer_parent_id,acquirer_id)
 
-    def action_issued_periksain(self,co_uid):
+    def action_issued_periksain(self,context):
         values = {
             'state': 'issued',
             'issued_date': datetime.now(),
-            'issued_uid': co_uid,
+            'issued_uid': context.get('co_uid', False)
         }
         self.write(values)
 
@@ -234,21 +234,6 @@ class ReservationPeriksain(models.Model):
             "price_per_pax": total_price,
             "commission_per_pax": COMMISSION_PER_PAX
         })
-
-    def action_confirm_order_periksain(self):
-        if not self.picked_timeslot_id or not self.analyst_ids:
-            raise UserError("Please Pick Timeslot and Input Analyst")
-        self.action_issued_periksain(self.env.user.id)
-        # try:
-        #     data = {
-        #         'code': 9909,
-        #         'message': 'Issued in Vendor not found/issued in system:\n%s\n%s' % (self.transaction_date, not_match_str),
-        #         'provider': self.provider_id.name,
-        #     }
-        #     self.env['tt.api.con'].send_request_to_gateway('%s/notification' % (self.env['tt.api.con'].url), data,
-        #                                                    'notification_code')
-        # except:
-        #     _logger.error("Telegram Notif Confirm Order Periksain Error")
 
     def create_booking_periksain_api(self, req, context):
         _logger.info("Create\n" + json.dumps(req))
