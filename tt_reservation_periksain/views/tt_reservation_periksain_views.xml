@@ -64,7 +64,7 @@
                 <attribute name="edit">false</attribute>
             </xpath>
             <xpath expr="//button[@name='action_cancel']" position="after">
-                <button string="Confirm Order" name="%(tt_reservation_periksain.confirm_order_periksain_wizard_action_view)d" type="action"
+                <button string="Confirm Order" name="%(tt_reservation_periksain.confirm_order_periksain_wizard_action_view)d" type="action" states="issued_pending"
                         context="{
                         'default_booking_id': id,
                    }"/>
@@ -151,7 +151,7 @@
         <field name="arch" type="xml">
             <form create="false" edit="false">
                 <header>
-                    <button string="Confirm Order" name="%(tt_reservation_periksain.confirm_order_periksain_wizard_action_view)d" type="action" groups="tt_base.group_external_vendor_periksain_level_2"
+                    <button string="Confirm Order" name="%(tt_reservation_periksain.confirm_order_periksain_wizard_action_view)d" type="action" states="issued_pending" groups="tt_base.group_external_vendor_periksain_level_2"
                         context="{
                         'default_booking_id': id,
                    }"/>
