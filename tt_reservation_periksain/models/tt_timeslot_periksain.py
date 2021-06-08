@@ -18,12 +18,14 @@ class TtTimeslotPeriksain(models.Model):
     _name = 'tt.timeslot.periksain'
     _description = 'Rodex Model Timeslot Periksain'
     _order = 'datetimeslot'
+    _rec_name = 'timeslot_display_name'
 
     seq_id = fields.Char('Sequence ID')
 
     dateslot = fields.Date('dateslot')
 
     datetimeslot = fields.Datetime('DateTime Slot')
+    timeslot_display_name = fields.Char('Display Name', compute="_compute_timeslot_display_name")
 
     destination_id = fields.Many2one('tt.destinations','Area')
 
@@ -32,6 +34,11 @@ class TtTimeslotPeriksain(models.Model):
     booking_ids = fields.Many2many('tt.reservation.periksain','tt_reservation_periksain_timeslot_rel', 'timeslot_id', 'booking_id', 'Booking(s)')
 
     active = fields.Boolean('Active', default='True')
+
+    @api.depends('datetimeslot')
+    def _compute_timeslot_display_name(self):
+        for rec in self:
+            rec.timeslot_display_name = str(rec.datetimeslot.astimezone(pytz.timezone('Asia/Jakarta')))[:19]
 
     @api.model
     def create(self, vals_list):

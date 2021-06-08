@@ -44,15 +44,17 @@ class CreateTimeslotPeriksainWizard(models.TransientModel):
         for time_str in timelist:
             time_objs.append((datetime.strptime(time_str,'%H:%M') - timedelta(hours=7)).time())
 
-
-
+        db = self.env['tt.timeslot.periksain'].search([('destination_id','=',self.area_id.id), ('dateslot','>=',self.start_date), ('dateslot','<=',self.end_date)])
+        db_list = [str(data.datetimeslot) for data in db]
         for this_date_counter in range(date_delta):
             for this_time in time_objs:
                 this_date = self.start_date + timedelta(days=this_date_counter)
-                create_values.append({
-                    'dateslot': this_date,
-                    'datetimeslot': datetime.strptime('%s %s' % (str(this_date),this_time),'%Y-%m-%d %H:%M:%S'),
-                    'destination_id': self.area_id.id
-                })
+                datetimeslot = datetime.strptime('%s %s' % (str(this_date),this_time),'%Y-%m-%d %H:%M:%S')
+                if str(datetimeslot) not in db_list:
+                    create_values.append({
+                        'dateslot': this_date,
+                        'datetimeslot': datetimeslot,
+                        'destination_id': self.area_id.id
+                    })
 
         self.env['tt.timeslot.periksain'].create(create_values)
