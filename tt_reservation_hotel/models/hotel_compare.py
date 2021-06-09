@@ -132,7 +132,7 @@ class HotelInformationCompare(models.Model):
                 'params': param,
                 'value_1': getfield(self.hotel_id, param),
                 'value_2': getfield(self.comp_hotel_id, param),
-                'is_value_1': len(str(getfield(self.hotel_id, param))) >= len(str(getfield(self.comp_hotel_id, param))),
+                'is_value_1': len(str(getfield(self.hotel_id, param))) > len(str(getfield(self.comp_hotel_id, param))),
             })
 
     def empty_compare_line(self):
@@ -304,7 +304,7 @@ class HotelInformationCompare(models.Model):
     def set_to_draft(self):
         if self.state == 'cancel':
             self.state = 'draft'
-        elif self.hotel_id.state != 'tobe_merge':
+        elif self.hotel_id.state not in ['tobe_merge', 'draft']:
             raise UserError('Hotel #1 state Must be To be Merge')
         elif self.state != 'tobe_merge':
             if self.state == 'merge':
@@ -317,13 +317,20 @@ class HotelInformationCompare(models.Model):
 
     def merge_image(self):
         # Note: Dulu kita copy ulang gmbare skrg cman tmbahin value sja
-        for img in self.hotel_id.image_ids:
-            img.master_hotel_id = self.similar_id.id
+        if hasattr(self.hotel_id, 'image_ids'):
+            for img in self.hotel_id.image_ids:
+                img.master_hotel_id = self.similar_id.id
 
     def merge_facility(self):
         # Note: Dulu kita copy ulang gmbare skrg cman tmbahin value sja
-        for fac in self.hotel_id.facility_ids:
-            self.similar_id.facility_ids = [(4,fac.id)]
+        if hasattr(self.hotel_id, 'facility_ids'):
+            for fac in self.hotel_id.facility_ids:
+                self.similar_id.facility_ids = [(4, fac.id)]
+
+    # Temporary function karena ada rbah strukture DB
+    def re_calc_facility(self):
+        for hotel_comp in self.similar_id.compare_ids:
+            hotel_comp.merge_facility()
 
     def unmerge_image(self):
         # Note: Dulu kita copy ulang gmbare skrg cman tmbahin value sja

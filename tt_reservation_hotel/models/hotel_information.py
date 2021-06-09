@@ -93,13 +93,35 @@ class HotelInformation(models.Model):
         return data
 
     def get_provider_name(self):
-        self.provider = ''
-        self.provider_ext_code = ''
-        for provider in self.provider_hotel_ids:
-            self.provider += provider.provider_id.name
-            self.provider += '; '
-            self.provider_ext_code += provider.code
-            self.provider_ext_code += '; '
+        x = 0
+        for rec in self.env['tt.hotel.master'].search([('id', '>=', self.id),('provider', '=', '')]):
+            old_state = rec.state
+            master_fac = []
+            rec.state = 'draft'
+            rec_provider = ''
+            # rec_provider_ext_code = ''
+            for provider in rec.info_ids:
+                prov_obj = provider.provider_hotel_ids[0]
+                rec_provider += prov_obj.provider_id.name + '; '
+                # rec_provider_ext_code += prov_obj.code + '; '
+
+                for img in provider.image_ids:
+                    if not img.master_hotel_id:
+                        img.master_hotel_id = rec.id
+                master_fac += [fac.id for fac in provider.facility_ids]
+
+            rec.update({
+                'facility_ids': [(6, 0, master_fac)],
+                'state': old_state,
+                'provider': rec_provider,
+                # 'provider_ext_code': rec_provider_ext_code,
+            })
+
+            x += 1
+            if x % 20 == 0:
+                self.env.cr.commit()
+            if x % 2000 == 0:
+                return True
 
     def calc_get_provider_name(self):
         for rec in self.search([('city_id', '=', self.city_id.id)]):
@@ -280,6 +302,7 @@ class HotelMaster(models.Model):
     info_ids = fields.Many2many('tt.hotel', 'hotel_compared_info_rel', 'compared_id', 'info_id', 'Hotel Info', help='Data Hotel setelah di merge dan akan di publish')
     compare_ids = fields.One2many('tt.hotel.compare', 'similar_id', 'Hotel Compare')
     image_ids = fields.One2many('tt.hotel.image', 'master_hotel_id', string='Images')
+    facility_ids = fields.Many2many('tt.hotel.facility', 'master_hotel_facility_rel', 'master_hotel_id', 'facility_id')
 
     def get_provider_code_fmt(self):
         provider_fmt = {}

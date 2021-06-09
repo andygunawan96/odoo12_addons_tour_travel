@@ -51,6 +51,8 @@ class PrintoutTicketForm(models.AbstractModel):
                 data['context']['active_model'] = 'tt.reservation.tour'
             elif internal_model_id == 6:
                 data['context']['active_model'] = 'tt.reservation.event'
+            elif internal_model_id == 7:
+                data['context']['active_model'] = 'tt.reservation.periksain'
             data['context']['active_ids'] = docids
         values = {}
         pnr_length = 0
@@ -130,15 +132,16 @@ class PrintoutTicketForm(models.AbstractModel):
                     'name': ssr_per_pax.title + '. ' + ssr_per_pax.name,
                     'ssr': [],
                 }
-                for rec2 in ssr_per_pax.fee_ids:
-                    ssr_obj['ssr'].append({
-                        'name': rec2.name,
-                        'amount': rec2.amount,
-                        'category_icon': rec2.category_icon,
-                        'currency': rec2.currency_id.name,
-                        'description': isinstance(rec2.description, list) and ', '.join(rec2.description) or rec2.description,
-                        'pnr': rec2.provider_id.pnr
-                    })
+                if hasattr(ssr_per_pax, 'fee_ids'):
+                    for rec2 in ssr_per_pax.fee_ids:
+                        ssr_obj['ssr'].append({
+                            'name': rec2.name,
+                            'amount': rec2.amount,
+                            'category_icon': rec2.category_icon,
+                            'currency': rec2.currency_id.name,
+                            'description': isinstance(rec2.description, list) and ', '.join(rec2.description) or rec2.description,
+                            'pnr': rec2.provider_id.pnr
+                        })
                 ssr_list.append(ssr_obj)
             values[rec.id] = [a[new_a] for new_a in a]
             pnr_length = len(rec.pnr)
@@ -826,6 +829,17 @@ class PrintoutInvoiceHO(models.AbstractModel):
                         'name': psg.passenger_id.name,
                         'total': rec.total / len(rec.passenger_ids),
                     })
+        elif rec._name == 'tt.reservation.periksain':
+            a[rec.name] = {
+                'model': rec._name,
+                'pax_data': [{
+                    'name': rec2.title + ' ' + rec2.name,
+                    'total': sum([rec3.total for rec3 in rec2.cost_service_charge_ids if rec3.charge_type != 'RAC'])
+                } for rec2 in rec.passenger_ids],
+                'descs': [''],
+                'provider_type': rec.provider_type_id.name
+            }
+            # a[issued_name]['descs'].append(self.get_description(rec, data))
         else:
             if rec.provider_booking_ids:
                 for provider in rec.provider_booking_ids:
@@ -1970,6 +1984,67 @@ class PrintoutVisaItineraryForm(models.AbstractModel):
                 data['context']['active_model'] = 'tt.reservation.activity'
             elif internal_model_id == 5:
                 data['context']['active_model'] = 'tt.reservation.tour'
+            else:
+                data['context']['active_model'] = 'tt.agent.invoice'
+
+            data['context']['active_ids'] = docids
+        values = {}
+        pnr_length = 0
+        header_width = 90
+        for rec in self.env[data['context']['active_model']].browse(data['context']['active_ids']):
+            values[rec.id] = []
+            a = {}
+            for rec2 in rec.sale_service_charge_ids:
+                if rec2.pax_type not in a.keys():
+                    a[rec2.pax_type] = {
+                        'pax_type': rec2.pax_type,
+                        'fare': 0,
+                        'tax': 0,
+                        'qty': 0,
+                    }
+
+                if rec2.charge_type.lower() == 'total':
+                    a[rec2.pax_type]['fare'] += rec2.amount
+                    a[rec2.pax_type]['qty'] += rec2.pax_count
+                elif rec2.charge_type.lower() in ['roc', 'tax']:
+                    a[rec2.pax_type]['tax'] += rec2.amount
+            values[rec.id] = [a[new_a] for new_a in a]
+            pnr_length = len(rec.pnr)
+        return {
+            'doc_ids': data['context']['active_ids'],
+            'doc_model': data['context']['active_model'],
+            'doc_type': 'itin',
+            'docs': self.env[data['context']['active_model']].browse(data['context']['active_ids']),
+            'pnr_length': pnr_length,
+            'header_width': str(header_width),
+            'price_lines': values,
+            'date_now': fields.Date.today().strftime('%d %b %Y'),
+            'base_color': self.sudo().env['ir.config_parameter'].get_param('tt_base.website_default_color', default='#FFFFFF'),
+            'img_url': "url('/tt_report_common/static/images/background footer airline.jpg');"
+        }
+
+
+class PrintoutPeriksainItineraryForm(models.AbstractModel):
+    _name = 'report.tt_report_common.printout_periksain_itinerary'
+    _description = 'Report Common Printout Periksain Itinerary'
+
+    @api.model
+    def _get_report_values(self, docids, data=None):
+        if not data.get('context'):
+            internal_model_id = docids.pop(0)
+            data['context'] = {}
+            if internal_model_id == 1:
+                data['context']['active_model'] = 'tt.reservation.airline'
+            elif internal_model_id == 2:
+                data['context']['active_model'] = 'tt.reservation.train'
+            elif internal_model_id == 3:
+                data['context']['active_model'] = 'tt.reservation.hotel'
+            elif internal_model_id == 4:
+                data['context']['active_model'] = 'tt.reservation.activity'
+            elif internal_model_id == 5:
+                data['context']['active_model'] = 'tt.reservation.tour'
+            elif internal_model_id == 7:
+                data['context']['active_model'] = 'tt.reservation.periksain'
             else:
                 data['context']['active_model'] = 'tt.agent.invoice'
 
