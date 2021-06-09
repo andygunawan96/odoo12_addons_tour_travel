@@ -111,9 +111,9 @@ class ReservationPeriksain(models.Model):
 
         write_values = {
             'state': 'issued_pending',
-            'pending_date': issued_pending_hold_date,
-            'issued_date': datetime.now(),
-            'issued_uid': co_uid,
+            'issued_pending_hold_date': issued_pending_hold_date,
+            'issued_pending_date': datetime.now(),
+            'issued_pending_uid': co_uid,
             'customer_parent_id': customer_parent_id
         }
 

@@ -34,6 +34,7 @@
                             <field name="expired_date"/>
                             <field name="booked_uid"/>
                             <field name="booked_date"/>
+                            <field name="issued_pending_hold_date"/>
                             <field name="issued_pending_uid"/>
                             <field name="issued_pending_date"/>
                             <field name="issued_uid"/>

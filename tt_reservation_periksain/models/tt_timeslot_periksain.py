@@ -73,18 +73,24 @@ class TtTimeslotPeriksain(models.Model):
     def get_available_timeslot_api(self):
         current_wib_datetime = datetime.now(pytz.timezone('Asia/Jakarta'))
         current_datetime = current_wib_datetime.astimezone(pytz.utc)
+        malang_id = self.env.ref('tt_reservation_periksain.tt_destination_periksain_mlg').id
         if '08:00' < str(current_wib_datetime.time())[:5] < '18:00':
             dom = [('datetimeslot', '>', datetime.now(pytz.utc) + timedelta(hours=6))]
         else:
             min_datetime = current_datetime.replace(hour=7,minute=0)
             if current_datetime > min_datetime:
                 min_datetime = min_datetime + timedelta(days=1)
-            dom = [('datetimeslot', '>', min_datetime)]
+            dom = [('datetimeslot', '>', min_datetime),
+                   ('destination_id', '!=', malang_id)]
 
         timeslots = self.search(dom)
         # max_date = date.today()
         timeslot_dict = {}
         for rec in timeslots:
+            #skip malang utk hari H
+            if current_datetime.date() == rec.dateslot and rec.destination_id == malang_id:
+                continue
+
             if rec.destination_id.name not in timeslot_dict:
                 timeslot_dict[rec.destination_id.name] = {
                     'max_date': str(date.today()),

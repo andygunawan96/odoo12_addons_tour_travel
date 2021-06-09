@@ -104,6 +104,7 @@
             </xpath>
 
             <xpath expr="//div[@name='booked_div']" position="after">
+                <field name="issued_pending_hold_date"/>
                 <label for="issued_pending_uid" string="Issued Pending By"/>
                 <div>
                     <field name="issued_pending_uid" readonly="1" class="oe_inline"/> /
