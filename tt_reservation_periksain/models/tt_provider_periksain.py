@@ -167,7 +167,7 @@ class TtProviderPeriksain(models.Model):
         current_wib_datetime = datetime.now(pytz.timezone('Asia/Jakarta'))
         current_datetime = current_wib_datetime.astimezone(pytz.utc)
         if '08:00' < str(current_wib_datetime.time())[:5] < '18:00':
-            pending_date = current_datetime + timedelta(hour=1)
+            pending_date = current_datetime + timedelta(hours=1)
         else:
             pending_date = current_datetime.replace(hour=3, minute=0) # UTC0, jam 10 pagi surabaya
             if current_datetime > pending_date:
