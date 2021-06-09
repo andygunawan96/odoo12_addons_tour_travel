@@ -23,7 +23,7 @@
 <p>Issued Date: ${object.get_btc_issued_date()}</p>
 <p>Booker Name: ${object.booker_id.name}</p>
 <p>Test Address: ${object.test_address}</p>
-<p>Test Date/Time: ${object.used_timeslot_id.get_datetimeslot_str()}</p>
+<p>Test Date/Time: ${object.picked_timeslot_id.get_datetimeslot_str()}</p>
 <p>Customer(s): ${object.get_passenger_list_email()}</p>
 <br/>
 <p>Please confirm with your customer(s) if the information provided above are true, and inform us immediately if you find one or more of the information is not true. Thank you for your trust and support in using our service.</p>
@@ -112,7 +112,7 @@
 <p>Issued Date: ${object.get_btc_issued_date()}</p>
 <p>Booker Name: ${object.booker_id.name}</p>
 <p>Test Address: ${object.test_address}</p>
-<p>Test Date/Time: ${object.used_timeslot_id.get_datetimeslot_str()}</p>
+<p>Test Date/Time: ${object.picked_timeslot_id.get_datetimeslot_str()}</p>
 <p>Customer(s): ${object.get_passenger_list_email()}</p>
 <br/>
 <p>Please make sure the information provided above are true, and inform ${object.agent_id.name} immediately if you find one or more of the information is not true. Thank you for your trust and support in using our service.</p>

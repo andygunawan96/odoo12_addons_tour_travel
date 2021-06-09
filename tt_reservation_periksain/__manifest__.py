@@ -17,6 +17,7 @@ TT_TRANSPORT
 
         'data/ir_sequence_data.xml',
         'data/tt_provider_type_data.xml',
+        'data/tt_provider_periksain.xml',
         'data/tt_destination_periksain.xml',
         'data/tt_transport_carrier_periksain.xml',
         'data/ir_send_email.xml',
@@ -24,7 +25,14 @@ TT_TRANSPORT
         'security/ir.model.access.csv',
         'security/ir_rule_data.xml',
 
-        'views/tt_reservation_periksain_views.xml'
+        'wizard/create_timeslot_wizard.xml',
+        'wizard/confirm_order_wizard.xml',
+        'wizard/force_issued_wizard_views.xml',
+
+        'views/tt_reservation_periksain_views.xml',
+        'views/tt_provider_views.xml',
+        'views/tt_timeslot_periksain_views.xml',
+        'views/tt_analyst_periksain_views.xml'
     ],
     'demo': [],
     'qweb': [],

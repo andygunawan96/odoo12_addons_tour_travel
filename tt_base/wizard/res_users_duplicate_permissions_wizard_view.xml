@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="res_users_duplicate_permissions_wizard_form_view" model="ir.ui.view">
+        <field name="name">res.users.duplicate.permissions.wizard.form.view</field>
+        <field name="model">res.users.duplicate.permissions.wizard</field>
+        <field name="arch" type="xml">
+            <form string="User Duplicate Permissions Wizard">
+                <group>
+                    <field name="base_user_id"/>
+                    <field name="to_user_ids"/>
+                </group>
+                <footer>
+                    <button name="duplicate_permissions" string="Duplicate Permissions" type="object" default_focus="1" class="oe_highlight"/>
+                    or
+                    <button string="Cancel" class="oe_link" special="cancel" />
+                </footer>
+            </form>
+        </field>
+    </record>
+    <record id="res_users_duplicate_permissions_wizard_action_view" model="ir.actions.act_window">
+        <field name="name">res.users.duplicate.permissions.wizard.action.view</field>
+        <field name="res_model">res.users.duplicate.permissions.wizard</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+</odoo>

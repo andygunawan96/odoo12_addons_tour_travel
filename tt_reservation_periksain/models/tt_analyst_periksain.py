@@ -22,3 +22,4 @@ class TtAnalystPeriksain(models.Model):
     analyst_phone_number = fields.Char('Analyst Phone Number')
     booking_ids = fields.Many2many('tt.reservation.periksain', 'tt_reservation_periksain_analyst_rel', 'analyst_id',
                                    'booking_id', 'Booking(s)')
+    active = fields.Boolean('Active',default=True)

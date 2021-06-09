@@ -16,6 +16,12 @@
         <field name="model">res.users</field>
         <field name="inherit_id" ref="base.view_users_form"/>
         <field name="arch" type="xml">
+            <xpath expr="//header" position="inside">
+                <button string="Duplicate Permissions" name="%(tt_base.res_users_duplicate_permissions_wizard_action_view)d" type="action" groups="base.group_system"
+                        context="{
+                        'default_base_user_id': id,
+                   }"/>
+            </xpath>
             <xpath expr="//button[@name='toggle_active']" position="before">
                 <field name="is_banned" invisible="1"/>
                 <label for ="toggle_active" string="Banned" attrs="{'invisible': [('is_banned','=',False)]}"/>

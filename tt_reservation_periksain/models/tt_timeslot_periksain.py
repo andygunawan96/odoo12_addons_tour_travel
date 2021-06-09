@@ -18,18 +18,29 @@ class TtTimeslotPeriksain(models.Model):
     _name = 'tt.timeslot.periksain'
     _description = 'Rodex Model Timeslot Periksain'
     _order = 'datetimeslot'
+    _rec_name = 'timeslot_display_name'
 
     seq_id = fields.Char('Sequence ID')
 
     dateslot = fields.Date('dateslot')
 
     datetimeslot = fields.Datetime('DateTime Slot')
+    timeslot_display_name = fields.Char('Display Name', compute="_compute_timeslot_display_name")
 
-    destination_id = fields.Many2one('tt.destination','Area')
+    destination_id = fields.Many2one('tt.destinations','Area')
 
     used_count = fields.Integer('Used Counter',compute="_compute_used_counter",store=True)
 
-    booking_ids = fields.Many2many('tt.reservation.periksain','tt_reservation_periksain_timeslot_rel', 'timeslot_id', 'booking_id', 'Booking(s)')
+    booking_ids = fields.Many2many('tt.reservation.periksain','tt_reservation_periksain_timeslot_rel', 'timeslot_id', 'booking_id', 'Selected on By Customer Booking(s)')
+
+    booking_used_ids = fields.One2many('tt.reservation.periksain','picked_timeslot_id', 'Confirmed to Customer Booking(s)')
+
+    active = fields.Boolean('Active', default='True')
+
+    @api.depends('datetimeslot')
+    def _compute_timeslot_display_name(self):
+        for rec in self:
+            rec.timeslot_display_name = str(rec.datetimeslot.astimezone(pytz.timezone('Asia/Jakarta')))[:19]
 
     @api.model
     def create(self, vals_list):
@@ -39,7 +50,7 @@ class TtTimeslotPeriksain(models.Model):
     @api.depends('booking_ids')
     def _compute_used_counter(self):
         for rec in self:
-            rec.used_count = len(rec.booking_ids)
+            rec.used_count = len(rec.booking_used_ids)
 
     # {
     #     "max_date": "2021-06-20",
@@ -61,23 +72,31 @@ class TtTimeslotPeriksain(models.Model):
 
     def get_available_timeslot_api(self):
         timeslots = self.search([('datetimeslot','>',datetime.now(pytz.utc))])
-        max_date = date.today()
+        # max_date = date.today()
         timeslot_dict = {}
         for rec in timeslots:
-            if rec.dateslot > max_date:
-                max_date = rec.dateslot
             if rec.destination_id.name not in timeslot_dict:
-                timeslot_dict[rec.destination_id.name] = {}
-            timeslot_dict[rec.rec.destination_id.name][str(rec.dateslot)].append({
+                timeslot_dict[rec.destination_id.name] = {
+                    'max_date': str(date.today()),
+                    'min_date': str(date.max),
+                    'timeslots': {}
+                }
+            str_dateslot = str(rec.dateslot)
+            if str_dateslot > timeslot_dict[rec.destination_id.name]['max_date']:
+                timeslot_dict[rec.destination_id.name]['max_date'] = str_dateslot
+            if str_dateslot < timeslot_dict[rec.destination_id.name]['min_date']:
+                timeslot_dict[rec.destination_id.name]['min_date'] = str_dateslot
+
+            if str_dateslot not in timeslot_dict[rec.destination_id.name]['timeslots']:
+                timeslot_dict[rec.destination_id.name]['timeslots'][str_dateslot] = []
+
+            timeslot_dict[rec.destination_id.name]['timeslots'][str_dateslot].append({
                 'time': str(rec.datetimeslot)[11:16],
                 'seq_id': rec.seq_id,
                 'availability': rec.get_availability()
             })
-        res = {
-            'max_date': max_date,
-            'timeslots': timeslot_dict,
-        }
-        return ERR.get_no_error(res)
+        print(json.dumps(timeslot_dict))
+        return ERR.get_no_error(timeslot_dict)
 
     def get_availability(self):
         return self.used_count < MAX_PER_SLOT

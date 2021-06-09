@@ -1,6 +1,7 @@
 import pytz
 
 from odoo import api,models,fields, _
+from odoo.exceptions import UserError
 from ...tools import util,variables,ERR
 from ...tools.ERR import RequestException
 from ...tools.api import Response
@@ -12,6 +13,11 @@ import json
 
 _logger = logging.getLogger(__name__)
 
+COMMISSION_PER_PAX = 25000
+BASE_PRICE_PER_PAX = 150000
+SINGLE_SUPPLEMENT = 25000
+OVERTIME_SURCHARGE = 25000
+
 class ReservationPeriksain(models.Model):
     _name = "tt.reservation.periksain"
     _inherit = "tt.reservation"
@@ -21,7 +27,7 @@ class ReservationPeriksain(models.Model):
     timeslot_type = fields.Selection([('fixed','Fixed'),
                                       ('flexible','Flexible')],'Time Slot Type',readonly=True, states={'draft': [('readonly', False)]})
 
-    sale_service_charge_ids = fields.One2many('tt.service.charge', 'booking_airline_id', 'Service Charge',
+    sale_service_charge_ids = fields.One2many('tt.service.charge', 'booking_periksain_id', 'Service Charge',
                                               readonly=True, states={'draft': [('readonly', False)]})
 
     pending_date = fields.Datetime('Pending Date', readonly=True, states={'draft': [('readonly', False)]})
@@ -42,12 +48,12 @@ class ReservationPeriksain(models.Model):
 
     timeslot_ids = fields.Many2many('tt.timeslot.periksain','tt_reservation_periksain_timeslot_rel', 'booking_id', 'timeslot_id', 'Timeslot(s)')
 
-    used_timeslot_id = fields.Many2one('tt.timeslot.periksain', 'Timeslot(s)')
+    picked_timeslot_id = fields.Many2one('tt.timeslot.periksain', 'Picked Timeslot', readonly=True, states={'issued_pending': [('readonly', False)]})
 
-    test_datetime = fields.Datetime('Test Datetime',related='used_timeslot_id.datetimeslot', store=True)
+    test_datetime = fields.Datetime('Test Datetime',related='picked_timeslot_id.datetimeslot', store=True)
 
     analyst_ids = fields.Many2many('tt.analyst.periksain', 'tt_reservation_periksain_analyst_rel', 'booking_id',
-                                   'analyst_id', 'Analyst(s)')
+                                   'analyst_id', 'Analyst(s)', readonly=True, states={'issued_pending': [('readonly', False)]})
 
     provider_type_id = fields.Many2one('tt.provider.type','Provider Type',
                                        default=lambda self: self.env.ref('tt_reservation_periksain.tt_provider_type_periksain'))
@@ -102,10 +108,7 @@ class ReservationPeriksain(models.Model):
         except Exception as e:
             _logger.info('Error Create Email Queue')
 
-    def action_issued_api_periksain(self,acquirer_id,customer_parent_id,context):
-        self.action_issued_periksain(context['co_uid'],customer_parent_id,acquirer_id)
-
-    def action_issued_pending_api_periksain(self,context):
+    def action_issued_pending_periksain(self,co_uid, customer_parent_id, acquirer_id = False):
         current_wib_datetime = datetime.now(pytz.timezone('Asia/Jakarta'))
         if '08:00' < str(current_wib_datetime) < '18:00':
             pending_date = datetime.now() + timedelta(hours=1)
@@ -117,8 +120,9 @@ class ReservationPeriksain(models.Model):
         write_values = {
             'state': 'issued_pending',
             'pending_date': pending_date,
-            'issued_pending_uid': context['co_uid'],
-            'issued_pending_date': datetime.now()
+            'issued_date': datetime.now(),
+            'issued_uid': co_uid,
+            'customer_parent_id': customer_parent_id
         }
 
         self.write(write_values)
@@ -154,18 +158,15 @@ class ReservationPeriksain(models.Model):
             'state':  'refund_failed',
         })
 
-    def action_issued_periksain(self,co_uid,customer_parent_id,acquirer_id = False):
+    def action_issued_pending_api_periksain(self,acquirer_id,customer_parent_id,context):
+        self.action_issued_pending_periksain(context['co_uid'],customer_parent_id,acquirer_id)
+
+    def action_issued_periksain(self,context):
         values = {
             'state': 'issued',
             'issued_date': datetime.now(),
-            'issued_uid': co_uid,
-            'customer_parent_id': customer_parent_id
+            'issued_uid': context.get('co_uid', False)
         }
-        if not self.booked_date:
-            values.update({
-                'booked_date': values['issued_date'],
-                'booked_uid': values['issued_uid'],
-            })
         self.write(values)
 
         try:
@@ -218,20 +219,20 @@ class ReservationPeriksain(models.Model):
         #timeslot_list
         #jumlah pax
         overtime_surcharge = False
-        timeslot_objs = self.env['tt.timeslot.periksain'].search('seq_id', 'in', req['timeslot_list'])
+        timeslot_objs = self.env['tt.timeslot.periksain'].search([('seq_id', 'in', req['timeslot_list'])])
         for rec in timeslot_objs:
-            if rec.timeslot > time(11,0):
+            if rec.datetimeslot.time() > time(11,0):
                 overtime_surcharge = True
                 break
 
         single_suplement = False
         if req['pax_count'] <= 1:
             single_suplement = True
-        total_price = 150000+ (overtime_surcharge and 25000 or 0) + (single_suplement and 25000 or 0)
+        total_price = BASE_PRICE_PER_PAX + (overtime_surcharge and OVERTIME_SURCHARGE or 0) + (single_suplement and SINGLE_SUPPLEMENT or 0)
         return ERR.get_no_error({
             "pax_count": req['pax_count'],
             "price_per_pax": total_price,
-            "commission_per_pax": 25000
+            "commission_per_pax": COMMISSION_PER_PAX
         })
 
     def create_booking_periksain_api(self, req, context):
@@ -274,6 +275,25 @@ class ReservationPeriksain(models.Model):
             })
 
             book_obj = self.create(values)
+
+            for provider_obj in book_obj.provider_booking_ids:
+                provider_obj.create_ticket_api(passengers)
+
+                service_charges_val = []
+                for svc in booking_data['service_charges']:
+                    ## currency di skip default ke company
+                    service_charges_val.append({
+                        "pax_type": svc['pax_type'],
+                        "pax_count": svc['pax_count'],
+                        "amount": svc['amount'],
+                        "total_amount": svc['total_amount'],
+                        "foreign_amount": svc['foreign_amount'],
+                        "charge_code": svc['charge_code'],
+                        "charge_type": svc['charge_type'],
+                        "commission_agent_id": svc.get('commission_agent_id', False)
+                    })
+
+                provider_obj.create_service_charge(service_charges_val)
 
             book_obj.calculate_service_charge()
             book_obj.check_provider_state(context)
@@ -327,7 +347,7 @@ class ReservationPeriksain(models.Model):
 
             any_provider_changed = False
 
-            for provider in req['provider_booking']:
+            for provider in req['provider_bookings']:
                 provider_obj = self.env['tt.provider.periksain'].browse(provider['provider_id'])
                 try:
                     provider_obj.create_date
@@ -391,10 +411,27 @@ class ReservationPeriksain(models.Model):
                 for rec in book_obj.provider_booking_ids:
                     prov_list.append(rec.to_dict())
 
+                timeslot_list = []
+                for timeslot_obj in book_obj.timeslot_ids:
+                    timeslot_list.append({
+                        "datetimeslot": timeslot_obj.datetimeslot.strftime('%Y-%m-%d %H:%M'),
+                        "area": timeslot_obj.destination_id.city
+                    })
+
+                picked_timeslot = {}
+                if book_obj.picked_timeslot_id:
+                    picked_timeslot = {
+                        "datetimeslot": book_obj.picked_timeslot_id.datetimeslot.strftime('%Y-%m-%d %H:%M'),
+                        "area": book_obj.picked_timeslot_id.destination_id.city
+                    }
+
                 res.update({
                     'origin': book_obj.origin_id.code,
                     'passengers': psg_list,
                     'provider_bookings': prov_list,
+                    'test_address': book_obj.test_address,
+                    'picked_timeslot': picked_timeslot,
+                    'timeslot_list': timeslot_list
                 })
                 return Response().get_no_error(res)
             else:
@@ -472,7 +509,20 @@ class ReservationPeriksain(models.Model):
         provider_type_id = self.env.ref('tt_reservation_periksain.tt_provider_type_periksain')
         provider_obj = self.env['tt.provider'].sudo().search([('code', '=', booking_data['provider']), ('provider_type_id', '=', provider_type_id.id)])
         carrier_obj = self.env['tt.transport.carrier'].sudo().search([('code', '=', booking_data['carrier_code']), ('provider_type_id', '=', provider_type_id.id)])
+
+        # "pax_type": "ADT",
+        # "pax_count": 1,
+        # "amount": 150000,
+        # "total_amount": 150000,
+        # "foreign_amount": 150000,
+        # "currency": "IDR",
+        # "foreign_currency": "IDR",
+        # "charge_code": "fare",
+        # "charge_type": "FARE"
+
         provider_vals = {
+            'pnr': 1,
+            'pnr2': 2,
             'state': 'booked',
             'booked_uid': context_gateway['co_uid'],
             'booked_date': fields.Datetime.now(),
@@ -483,10 +533,10 @@ class ReservationPeriksain(models.Model):
             'provider_id': provider_obj and provider_obj.id or False,
             'carrier_id': carrier_obj and carrier_obj.id or False,
             'carrier_code': carrier_obj and carrier_obj.code or False,
-            'carrier_name': carrier_obj and carrier_obj.name or False,
+            'carrier_name': carrier_obj and carrier_obj.name or False
         }
 
-        timeslot_write_data = []
+        timeslot_write_data = self.env['tt.timeslot.periksain'].search([('seq_id','in',booking_data['timeslot_list'])])
 
         booking_tmp = {
             'origin_id': dest_obj.get_id(booking_data['origin'], provider_type_id),
@@ -501,23 +551,20 @@ class ReservationPeriksain(models.Model):
             'test_address': booking_data['test_address'],
             'test_address_map_link': booking_data['test_address_map_link'],
             'provider_booking_ids': [(0,0,provider_vals)],
-
+            'timeslot_ids': [(6,0,timeslot_write_data.ids)],
             'hold_date': fields.Datetime.now() + timedelta(hours=1),## ini gantiin action booked, gak ada action booked
             'booked_uid': context_gateway['co_uid'],
             'booked_date': fields.Datetime.now()
         }
-        #"timeslot_list"
-
         return booking_tmp
 
     # April 24, 2020 - SAM
     def check_provider_state(self,context,pnr_list=[],hold_date=False,req={}):
         if all(rec.state == 'issued' for rec in self.provider_booking_ids):
-            pass
-            # self.action_issued_api_airline(acquirer_id and acquirer_id.id or False, customer_parent_id, context)
-        elif all(rec.state == 'issued' for rec in self.provider_booking_ids):
+            self.action_issued_periksain(context)
+        elif all(rec.state == 'issued_pending' for rec in self.provider_booking_ids):
             acquirer_id, customer_parent_id = self.get_acquirer_n_c_parent_id(req)
-            self.action_issued_api_airline(acquirer_id and acquirer_id.id or False, customer_parent_id, context)
+            self.action_issued_pending_api_periksain(acquirer_id and acquirer_id.id or False, customer_parent_id, context)
         elif all(rec.state == 'booked' for rec in self.provider_booking_ids):
             self.action_booked_api_periksain(context)
         elif all(rec.state == 'refund' for rec in self.provider_booking_ids):
@@ -994,3 +1041,9 @@ class ReservationPeriksain(models.Model):
             psg_count += 1
             passengers += str(psg_count) + '. ' + (rec.title + ' ' if rec.title else '') + (rec.first_name if rec.first_name else '') + ' ' + (rec.last_name if rec.last_name else '') + '<br/>'
         return passengers
+
+    def get_aftersales_desc(self):
+        desc_txt = 'PNR: ' + self.pnr + '<br/>'
+        desc_txt += 'Test Address: ' + self.test_address + '<br/>'
+        desc_txt += 'Test Date/Time: ' + self.used_timeslot_id.get_datetimeslot_str() + '<br/>'
+        return desc_txt

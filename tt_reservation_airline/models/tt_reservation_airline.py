@@ -2413,10 +2413,26 @@ class ReservationAirline(models.Model):
             if not book_obj:
                 raise Exception('Booking Object not Found')
 
+            user_id = book_obj.user_id
+
+            co_user_info = self.env['tt.agent'].sudo().get_agent_level(user_id.agent_id.id)
+            context = {
+                "co_uid": user_id.id,
+                "co_user_name": user_id.name,
+                "co_user_login": user_id.login,
+                "co_agent_id": user_id.agent_id.id,
+                "co_agent_name": user_id.agent_id.name,
+                "co_agent_type_id": user_id.agent_id.agent_type_id.id,
+                "co_agent_type_name": user_id.agent_id.agent_type_id.name,
+                "co_agent_type_code": user_id.agent_id.agent_type_id.code,
+                "co_user_info": co_user_info,
+            }
+
             response = {
                 'book_id': book_obj.id,
                 'order_number': book_obj.name,
-                'provider_id': provider_data_obj.id
+                'provider_id': provider_data_obj.id,
+                'context': context
             }
             return ERR.get_no_error(response)
         except RequestException as e:

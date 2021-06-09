@@ -215,7 +215,7 @@
                         <button name="%(tt_base.tt_upload_center_wizard_action_view)d"
                                 string="Upload Image" type="action"
                                 class="oe_stat_button" icon="fa-upload"
-                                groups="tt_base.group_tt_external_vendor_operator,tt_base.group_tt_tour_travel_supervisor,base.group_system,tt_base.group_tt_external_user,tt_base.group_master_data_event_level_3"
+                                groups="tt_base.group_tt_external_vendor_operator,tt_base.group_tt_tour_travel_supervisor,base.group_system,tt_base.group_external_vendor_event_level_2,tt_base.group_master_data_event_level_3"
                                 context="{'default_target_field_name': 'image_ids'}"
                         />
 <!--                        <button name="%(tt_base.tt_upload_center_wizard_action_view)d"-->
