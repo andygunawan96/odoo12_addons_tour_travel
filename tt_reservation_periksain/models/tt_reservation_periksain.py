@@ -30,13 +30,12 @@ class ReservationPeriksain(models.Model):
     sale_service_charge_ids = fields.One2many('tt.service.charge', 'booking_periksain_id', 'Service Charge',
                                               readonly=True, states={'draft': [('readonly', False)]})
 
-    pending_date = fields.Datetime('Pending Date', readonly=True, states={'draft': [('readonly', False)]})
-    
     passenger_ids = fields.One2many('tt.reservation.passenger.periksain', 'booking_id',
                                     readonly=True, states={'draft': [('readonly', False)]})
 
     issued_pending_uid = fields.Many2one('res.users', 'Issued Pending by', readonly=True)
     issued_pending_date = fields.Datetime('Issued Pending Date', readonly=True)
+    issued_pending_hold_date = fields.Datetime('Pending Date', readonly=True)
 
     origin_id = fields.Many2one('tt.destinations', 'Test Area', readonly=True, states={'draft': [('readonly', False)]})
 
@@ -76,13 +75,9 @@ class ReservationPeriksain(models.Model):
         for rec in self:
             rec.state = 'issued'
 
-    def action_booked_api_periksain(self,context,hold_date=False):
-        if type(hold_date) != datetime:
-            hold_date = False
-
+    def action_booked_api_periksain(self,context):
         write_values = {
             'state': 'booked',
-            'hold_date': hold_date,
             'booked_uid': context['co_uid'],
             'booked_date': datetime.now()
         }
@@ -526,7 +521,7 @@ class ReservationPeriksain(models.Model):
             'state': 'booked',
             'booked_uid': context_gateway['co_uid'],
             'booked_date': fields.Datetime.now(),
-            'hold_date': fields.Datetime.now() + timedelta(hours=1),
+            'hold_date': fields.Datetime.now() + timedelta(minutes=30),
             'balance_due': booking_data['total'],
             'total_price': booking_data['total'],
             'sequence': 1,
@@ -552,7 +547,7 @@ class ReservationPeriksain(models.Model):
             'test_address_map_link': booking_data['test_address_map_link'],
             'provider_booking_ids': [(0,0,provider_vals)],
             'timeslot_ids': [(6,0,timeslot_write_data.ids)],
-            'hold_date': fields.Datetime.now() + timedelta(hours=1),## ini gantiin action booked, gak ada action booked
+            'hold_date': fields.Datetime.now() + timedelta(minutes=30),## ini gantiin action booked, gak ada action booked
             'booked_uid': context_gateway['co_uid'],
             'booked_date': fields.Datetime.now()
         }
@@ -605,68 +600,6 @@ class ReservationPeriksain(models.Model):
         #                 'pnr': self.provider_booking_ids[rec.provider_sequence].pnr
         #             })
     # END
-
-    def check_provider_state_backup(self,context,pnr_list=[],hold_date=False,req={}):
-        if all(rec.state == 'booked' for rec in self.provider_booking_ids):
-            # booked
-            self.calculate_service_charge()
-            self.action_booked_api_periksain(context, pnr_list, hold_date)
-        elif all(rec.state == 'issued' for rec in self.provider_booking_ids):
-            # issued
-            ##credit limit
-            acquirer_id,customer_parent_id = self.get_acquirer_n_c_parent_id(req)
-
-            if req.get('force_issued'):
-                self.calculate_service_charge()
-                self.action_booked_api_periksain(context, pnr_list, hold_date)
-                payment_res = self.payment_airline_api({'book_id': req['book_id'],
-                                                        'member': req.get('member', False),
-                                                        'acquirer_seq_id': req.get('acquirer_seq_id', False)}, context)
-                if payment_res['error_code'] != 0:
-                    try:
-                        self.env['tt.airline.api.con'].send_force_issued_not_enough_balance_notification(self.name, context)
-                    except Exception as e:
-                        _logger.error("Send TOP UP Approve Notification Telegram Error\n" + traceback.format_exc())
-                    raise RequestException(payment_res['error_code'],additional_message=payment_res['error_msg'])
-
-            self.action_issued_api_airline(acquirer_id and acquirer_id.id or False, customer_parent_id, context)
-        elif all(rec.state == 'refund' for rec in self.provider_booking_ids):
-            self.write({
-                'state': 'refund',
-                'refund_uid': context['co_uid'],
-                'refund_date': datetime.now()
-            })
-        elif all(rec.state == 'fail_refunded' for rec in self.provider_booking_ids):
-            self.action_reverse_airline(context)
-        elif all(rec.state == 'refund_failed' for rec in self.provider_booking_ids):
-            self.action_refund_failed_airline(context)
-        elif any(rec.state == 'issued' for rec in self.provider_booking_ids):
-            # partial issued
-            acquirer_id,customer_parent_id = self.get_acquirer_n_c_parent_id(req)
-            self.action_partial_issued_api_airline(context['co_uid'],customer_parent_id)
-        elif any(rec.state == 'booked' for rec in self.provider_booking_ids):
-            # partial booked
-            self.calculate_service_charge()
-            self.action_partial_booked_api_airline(context, pnr_list, hold_date)
-        elif all(rec.state == 'fail_issued' for rec in self.provider_booking_ids):
-            # failed issue
-            self.action_failed_issue()
-        elif all(rec.state == 'fail_booked' for rec in self.provider_booking_ids):
-            # failed book
-            self.action_failed_book()
-        elif all(rec.state == 'cancel' for rec in self.provider_booking_ids):
-            # failed book
-            self.action_set_as_cancel()
-        elif all(rec.state == 'refund_pending' for rec in self.provider_booking_ids):
-            # refund pending
-            self.action_set_as_refund_pending()
-        elif all(rec.state == 'cancel_pending' for rec in self.provider_booking_ids):
-            # cancel pending
-            self.action_set_as_cancel_pending()
-        else:
-            # entah status apa
-            _logger.error('Entah status apa')
-            raise RequestException(1006)
 
     def update_pnr_booked(self,provider_obj,provider,context):
         provider_obj.action_booked_api_airline(provider, context)
@@ -747,32 +680,6 @@ class ReservationPeriksain(models.Model):
             'sale_service_charge_ids': this_service_charges
         })
         #END
-
-    # May 11, 2020 - SAM
-    def set_provider_detail_info(self):
-        hold_date = None
-        pnr_list = []
-        values = {}
-        for rec in self.provider_booking_ids:
-            if rec.hold_date:
-                rec_hold_date = datetime.strptime(rec.hold_date[:19], '%Y-%m-%d %H:%M:%S')
-                if not hold_date or rec_hold_date < hold_date:
-                    hold_date = rec_hold_date
-            if rec.pnr:
-                pnr_list.append(rec.pnr)
-
-        if hold_date:
-            hold_date_str = hold_date.strftime('%Y-%m-%d %H:%M:%S')
-            if self.hold_date != hold_date_str:
-                values['hold_date'] = hold_date_str
-        if pnr_list:
-            pnr = ', '.join(pnr_list)
-            if self.pnr != pnr:
-                values['pnr'] = pnr
-
-        if values:
-            self.write(values)
-    # END
 
     @api.multi
     def print_eticket(self, data, ctx=None):

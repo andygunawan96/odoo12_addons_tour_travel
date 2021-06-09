@@ -103,7 +103,7 @@
                 <field name="analyst_ids"/>
             </xpath>
 
-            <xpath expr="//field[@name='booked_date']" position="after">
+            <xpath expr="//div[@name='booked_div']" position="after">
                 <label for="issued_pending_uid" string="Issued Pending By"/>
                 <div>
                     <field name="issued_pending_uid" readonly="1" class="oe_inline"/> /

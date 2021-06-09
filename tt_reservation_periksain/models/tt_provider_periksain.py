@@ -3,7 +3,7 @@ from odoo.exceptions import UserError
 from ...tools import variables
 from datetime import datetime
 from datetime import datetime, timedelta
-import json, logging
+import json, logging,pytz
 
 _logger = logging.getLogger(__name__)
 
@@ -43,6 +43,7 @@ class TtProviderPeriksain(models.Model):
     issued_date = fields.Datetime('Issued Date')
     issued_pending_uid = fields.Many2one('res.users', 'Issued By')
     issued_pending_date = fields.Datetime('Issued Date')
+    issued_pending_hold_date = fields.Char('Issued Pending Hold Date')
     hold_date = fields.Char('Hold Date')
     expired_date = fields.Datetime('Expired Date')
     cancel_uid = fields.Many2one('res.users', 'Cancel By')
@@ -150,17 +151,17 @@ class TtProviderPeriksain(models.Model):
         for rec in self.cost_service_charge_ids:
             rec.is_ledger_created = False
 
-    def action_booked_api_periksain(self, provider_data, api_context):
-        for rec in self:
-            rec.write({
-                'pnr': provider_data['pnr'],
-                'pnr2': provider_data['pnr2'],
-                'state': 'booked',
-                'booked_uid': api_context['co_uid'],
-                'booked_date': fields.Datetime.now(),
-                'hold_date': datetime.today() + timedelta(days=1),
-                'balance_due': provider_data['balance_due']
-            })
+    # def action_booked_api_periksain(self, provider_data, api_context):
+    #     for rec in self:
+    #         rec.write({
+    #             'pnr': provider_data['pnr'],
+    #             'pnr2': provider_data['pnr2'],
+    #             'state': 'booked',
+    #             'booked_uid': api_context['co_uid'],
+    #             'booked_date': fields.Datetime.now(),
+    #             'hold_date': datetime.today() + timedelta(days=1),
+    #             'balance_due': provider_data['balance_due']
+    #         })
 
     def action_issued_pending_api_periksain(self, context):
         for rec in self:
@@ -168,6 +169,7 @@ class TtProviderPeriksain(models.Model):
                 'state': 'issued_pending',
                 'issued_pending_date': datetime.now(),
                 'issued_pending_uid': context['co_uid'],
+                'issued_pending_hold_date': issued_pending_hold_date,
                 'sid_issued': context['signature'],
                 'balance_due': 0
             })

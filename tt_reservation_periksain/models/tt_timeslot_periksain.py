@@ -76,7 +76,7 @@ class TtTimeslotPeriksain(models.Model):
             dom = [('datetimeslot', '>', datetime.now(pytz.utc) + timedelta(hours=6))]
         else:
             min_datetime = current_wib_datetime.replace(hour=14, minute=0)
-            if current_wib_datetime > min_datetime:
+            if current_wib_datetime.astimezone(pytz.utc) > min_datetime:
                 min_datetime = min_datetime + timedelta(days=1)
             dom = [('datetimeslot', '>', min_datetime)]
 

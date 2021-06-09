@@ -98,7 +98,7 @@
                                 <field name="create_date" readonly="1" class="oe_inline"/>
                             </div>
                             <label for="booked_uid" string="Booked By"/>
-                            <div>
+                            <div name="booked_div">
                                 <field name="booked_uid" readonly="1" class="oe_inline"/> /
                                 <field name="booked_date" readonly="1" class="oe_inline"/>
                             </div>
