@@ -20,10 +20,14 @@
                             <field name="pnr"/>
                             <field name="pnr2"/>
                             <field name="provider_id"/>
+                            <field name="carrier_id"/>
                             <field name="balance_due"/>
                             <field name="total_price"/>
                             <field name="reconcile_line_id"/>
                             <field name="reconcile_time"/>
+                            <field name="currency_id"/>
+                            <field name="sid_issued"/>
+                            <field name="sid_cancel"/>
                         </group>
                         <group>
                             <field name="hold_date"/>
@@ -38,13 +42,6 @@
                             <field name="cancel_date"/>
                             <field name="refund_uid"/>
                             <field name="refund_date"/>
-                        </group>
-                    </group>
-                    <group string="Itinerary Info">
-                        <group>
-                            <field name="currency_id"/>
-                            <field name="sid_issued"/>
-                            <field name="sid_cancel"/>
                         </group>
                     </group>
                     <separator string="Passengers"/>

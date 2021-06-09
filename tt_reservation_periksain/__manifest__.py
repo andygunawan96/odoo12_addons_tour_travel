@@ -4,7 +4,7 @@
     'name' : 'tt_reservation_periksain',
     'version' : 'beta',
     'summary': 'Transport Reservation Periksain',
-    'sequence': 10,
+    'sequence': 60,
     'description': """
 TT_TRANSPORT
 """,

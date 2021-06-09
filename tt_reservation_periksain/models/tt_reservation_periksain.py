@@ -544,7 +544,6 @@ class ReservationPeriksain(models.Model):
             'test_address_map_link': booking_data['test_address_map_link'],
             'provider_booking_ids': [(0,0,provider_vals)],
             'timeslot_ids': [(6,0,timeslot_write_data.ids)],
-            'hold_date': fields.Datetime.now() + timedelta(minutes=30),## ini gantiin action booked, gak ada action booked
             'booked_uid': context_gateway['co_uid'],
             'booked_date': fields.Datetime.now()
         }
@@ -677,6 +676,32 @@ class ReservationPeriksain(models.Model):
             'sale_service_charge_ids': this_service_charges
         })
         #END
+
+    # May 11, 2020 - SAM
+    def set_provider_detail_info(self):
+        hold_date = None
+        pnr_list = []
+        values = {}
+        for rec in self.provider_booking_ids:
+            if rec.hold_date:
+                rec_hold_date = datetime.strptime(rec.hold_date[:19], '%Y-%m-%d %H:%M:%S')
+                if not hold_date or rec_hold_date < hold_date:
+                    hold_date = rec_hold_date
+            if rec.pnr:
+                pnr_list.append(rec.pnr)
+
+        if hold_date:
+            hold_date_str = hold_date.strftime('%Y-%m-%d %H:%M:%S')
+            if self.hold_date != hold_date_str:
+                values['hold_date'] = hold_date_str
+        if pnr_list:
+            pnr = ', '.join(pnr_list)
+            if self.pnr != pnr:
+                values['pnr'] = pnr
+
+        if values:
+            self.write(values)
+    # END
 
     @api.multi
     def print_eticket(self, data, ctx=None):
