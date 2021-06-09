@@ -23,6 +23,7 @@ Key Features
         'report/printout_ticket_airline_template.xml',
         'report/printout_ticket_train_template.xml',
         'report/printout_ticket_event_template.xml',
+        'report/printout_ticket_periksain_template.xml',
         'report/printout_invoice_template.xml',
         'report/printout_ho_invoice_template.xml',
         'report/printout_vendor_invoice_template.xml',

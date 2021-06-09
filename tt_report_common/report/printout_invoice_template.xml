@@ -310,6 +310,9 @@
             </t><t t-elif="doc_model == 'tt.reservation.ppob'">
                 <span t-att-style="'margin-top: 10px; margin-left: 10px; color: '+ base_color +'; font-size: 20px;'">Bills</span><br/>
                 <t t-set="printout_icon" t-value="'/tt_report_common/static/images/bill-white.png'"/>
+            </t><t t-elif="doc_model == 'tt.reservation.periksain'">
+                <span t-att-style="'margin-top: 10px; margin-left: 10px; color: '+ base_color +'; font-size: 20px;'">Periksain</span><br/>
+                <t t-set="printout_icon" t-value="'/tt_report_common/static/images/swab-white.png'"/>
             </t><t t-else="">
                 <span t-att-style="'margin-top: 10px; margin-left: 10px; color: '+ base_color +'; font-size: 20px;'">Other</span><br/>
             </t>
