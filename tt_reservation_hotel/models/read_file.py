@@ -3563,7 +3563,7 @@ class HotelInformation(models.Model):
         # Cari hotel_id yg draft
         err_list = []
         x = 0
-        for rec in self.env['tt.hotel'].search([('state','=','draft'),('state','!=',False)]): #Test pakai sandton('city_id','=',396925)
+        for rec in self.env['tt.hotel'].search([('state','=','draft'),('state','!=',False),('id','>',22774)]): #Test pakai sandton('city_id','=',396925)
             x += 1
             try:
                 # Create Comparer ulang sebagai record sja
@@ -3585,17 +3585,28 @@ class HotelInformation(models.Model):
     # 2c. Proses Hotel dari comparer
     def v2_proceeding_hotel_comparer(self):
         # Baca Smua comparer jika ada status draft kasih notif g bisa di proses
-        if self.env['tt.hotel.compare'].search([('state','=','draft')]):
-            raise UserError('Some Record still in Draft State:')
+        # if self.env['tt.hotel.compare'].search([('state','=','draft')]):
+        #     raise UserError('Some Record still in Draft State:')
         # Merge smua yg tobe_merge
         x = 0
         for rec in self.env['tt.hotel.compare'].search([('state', '=', 'tobe_merge')]):
+            if rec.comp_hotel_id:
+                _logger.info(msg=str(x+1) + '. ' + rec.hotel_id.name + ' => ' + rec.comp_hotel_id.name + ' Score:' + str(rec.score))
+            else:
+                _logger.info(msg=str(x + 1) + '. ' + rec.hotel_id.name + ' (New)')
             rec.merge_hotel()
             x += 1
 
-            if x % 100 == 0:
-                _logger.info(msg='Writing to ' + str(x))
+            if x % 15 == 0:
+                _logger.info(msg='=======================================')
+                _logger.info(msg='     Writing Comparer to ' + str(x))
+                _logger.info(msg='=======================================')
                 self.env.cr.commit()
+        _logger.info(msg='======================================')
+        _logger.info(msg='======================================')
+        _logger.info(msg='==     END (2C) Writing Compare     ==')
+        _logger.info(msg='======================================')
+        _logger.info(msg='======================================')
         return True
 
     # 3. Send Hotel to GW
@@ -3659,7 +3670,7 @@ class HotelInformation(models.Model):
                 continue
             content = []
             # Search all Mapped Data from hotel.master
-            for hotel in self.env['tt.hotel'].search([('destination_id','=',city['destination_id'])]):
+            for hotel in self.env['tt.hotel.master'].search([('destination_id','=',city['destination_id'])]):
                 content.append(hotel.fmt_read())
 
             # Rubah ke format JSON

@@ -150,16 +150,28 @@
     </template>
 
     <template id="airline_pax_ssr">
+        <t t-set="any_ssr" t-value="0"/>
         <t t-set="data_pax" t-value="psg.passenger_id"/>
         <t t-if="data_pax.fee_ids">
+            <t t-set="any_ssr" t-value="1"/>
             <t t-foreach="data_pax.fee_ids" t-as="fee_id">
-<!--                <i style="margin-right:3px;" class="fa fa-suitcase"> <span t-field="fee_id.name"/></i><br/>-->
+                <!--<i style="margin-right:3px;" class="fa fa-suitcase"> <span t-field="fee_id.name"/></i><br/>-->
                 <i style="margin-right:3px;" t-att-class="fee_id.category_icon"> <span t-field="fee_id.name"/></i><br/>
                 <!--<i style="margin-right:3px;" class="fa fa-cutlery"/>-->
                 <!--<i style="margin-right:3px;" class="fa fa-wheelchair"/>-->
             </t>
         </t>
-        <t t-else="">
+        <t t-foreach="length.journey_ids" t-as="line">
+            <t t-foreach="line.segment_ids" t-as="segment_obj">
+                <t t-if="segment_obj.segment_addons_ids">
+                    <t t-set="any_ssr" t-value="1"/>
+                    <t t-foreach="segment_obj.segment_addons_ids" t-as="addons_obj">
+                        <i style="margin-right:3px;" class="fa fa-suitcase"> <span t-field="addons_obj.amount"/> <span t-field="addons_obj.unit"/></i><br/>
+                    </t>
+                </t>
+            </t>
+        </t>
+        <t t-if="any_ssr == 0 ">
             -
         </t>
     </template>
@@ -193,7 +205,7 @@
                             <div class="col-2" style="background: #F0F0F0; border-radius: 0 0 0px 20px; border-color: #CCC; padding-right: 10px; padding-top: 10px; padding-bottom: 10px; padding-left: 20px; margin-right: 10px; border: 1px solid #BBB;">
                                 <!--<span style="font-size: 15px; color: #DC5413">STATUS : CONFIRMED</span><br/>-->
                                 <b><span style="font-size: 16px;">PNR: <span t-field="segment_obj.pnr"/></span></b><br/>
-                                <img t-att-src="'http://static.skytors.id/'+ segment_obj.carrier_code +'.png'" style="height: 70px; width: 70px; max-height: 20px; width:auto; max_width:20px;"/>
+                                <img t-att-src="'https://static.rodextrip.com/public/airline_logo/'+ segment_obj.carrier_code +'.png'" style="height: 70px; width: 70px; max-height: 20px; width:auto; max_width:20px;"/>
                                 <span style="font-size: 13px;"><span t-field="segment_obj.carrier_id.name"/></span><br/>
                                 <span style="font-size: 13px; font-weight:450;"><span t-field="segment_obj.carrier_code"/> - <span t-field="segment_obj.carrier_number"/></span><br/>
                                 <span style="font-size: 13px;"><span t-field="segment_obj.class_of_service"/> - <span t-field="segment_obj.cabin_class"/></span><br/>
@@ -242,7 +254,7 @@
                             <div class="col-2" style="background: #F0F0F0; border-radius: 0 0 0 0; border-color: #CCC; padding-right: 10px; padding-top: 10px; padding-bottom: 10px; padding-left: 20px; margin-right: 10px; border: 1px solid #BBB;">
                                 <!--<span style="font-size: 15px; color: #DC5413">STATUS : CONFIRMED</span><br/>-->
                                 <b><span style="font-size: 16px;">PNR: <span t-field="segment_obj.pnr"/></span></b><br/>
-                                <img t-att-src="'http://static.skytors.id/'+ segment_obj.carrier_code +'.png'" style="height: 70px; width: 70px; max-height: 20px; width:auto; max_width:20px;"/>
+                                <img t-att-src="'https://static.rodextrip.com/public/airline_logo/'+ segment_obj.carrier_code +'.png'" style="height: 70px; width: 70px; max-height: 20px; width:auto; max_width:20px;"/>
                                 <span style="font-size: 13px;"><span t-field="segment_obj.carrier_id.name"/></span><br/>
                                 <span style="font-size: 13px; font-weight:450;"><span t-field="segment_obj.carrier_code"/> - <span t-field="segment_obj.carrier_number"/></span><br/>
                                 <span style="font-size: 13px;"><span t-field="segment_obj.class_of_service"/> - <span t-field="segment_obj.cabin_class"/></span><br/>
@@ -375,6 +387,13 @@
                         <t t-set="data_report_margin_top" t-value="10"/>
                         <t t-set="data_report_margin_bottom" t-value="0"/>
                         <t t-call="tt_report_common.printout_ticket_train_template"/>
+                    </t>
+                    <t t-elif="doc_model == 'tt.reservation.periksain'">
+                        <t t-call="tt_report_common.external_layout">
+                            <div class="box" style="margin: 0px 20px; font-family: 'LiberationSans'">
+                                <t t-call="tt_report_common.printout_ticket_periksain_template"/>
+                            </div>
+                        </t>
                     </t>
                     <t t-else="">
                         <t t-call="tt_report_common.external_layout">

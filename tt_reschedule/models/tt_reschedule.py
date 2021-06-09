@@ -244,6 +244,22 @@ class TtReschedule(models.Model):
             if admin_fee.agent_access_type == 'allow' and agent_id in admin_fee.agent_ids.ids:
                 current_reschedule_env = admin_fee
                 break
+
+        if not current_reschedule_env:
+            # Notes: harus 2x loop
+            # CTH: Rule1: for agent RDX PTC, Rule2: for agent type: Citra, Rule 3: for Agent: Darmo
+            # Klo 1x loop kluare Rule2: for agent type: Citra
+            agent_obj = self.env['tt.agent'].browse(agent_id)
+            for admin_fee in reschedule_admin_fee_list:
+                if admin_fee.agent_type_access_type == 'allow' and agent_obj.agent_type_id.id in admin_fee.agent_type_ids.ids:
+                    current_reschedule_env = admin_fee
+                    break
+
+        if not current_reschedule_env:
+            if not reschedule_admin_fee_list:
+                current_reschedule_env = self.env.ref('tt_accounting.admin_fee_reschedule')
+            else:
+                current_reschedule_env = reschedule_admin_fee_list[0]
         return current_reschedule_env
 
     def get_reschedule_fee_amount(self, agent_id, order_number='', order_type='', refund_amount=0, passenger_count=0):
