@@ -43,7 +43,7 @@ class TtProviderPeriksain(models.Model):
     issued_date = fields.Datetime('Issued Date')
     issued_pending_uid = fields.Many2one('res.users', 'Issued By')
     issued_pending_date = fields.Datetime('Issued Date')
-    issued_pending_hold_date = fields.Char('Issued Pending Hold Date')
+    issued_pending_hold_date = fields.Datetime('Issued Pending Hold Date')
     hold_date = fields.Char('Hold Date')
     expired_date = fields.Datetime('Expired Date')
     cancel_uid = fields.Many2one('res.users', 'Cancel By')
@@ -164,12 +164,21 @@ class TtProviderPeriksain(models.Model):
     #         })
 
     def action_issued_pending_api_periksain(self, context):
+        current_wib_datetime = datetime.now(pytz.timezone('Asia/Jakarta'))
+        current_datetime = current_wib_datetime.astimezone(pytz.utc)
+        if '08:00' < str(current_wib_datetime.time())[:5] < '18:00':
+            pending_date = current_datetime + timedelta(hour=1)
+        else:
+            pending_date = current_datetime.replace(hour=3, minute=0) # UTC0, jam 10 pagi surabaya
+            if current_datetime > pending_date:
+                pending_date = pending_date+timedelta(days=1)
+
         for rec in self:
             rec.write({
                 'state': 'issued_pending',
                 'issued_pending_date': datetime.now(),
                 'issued_pending_uid': context['co_uid'],
-                'issued_pending_hold_date': issued_pending_hold_date,
+                'issued_pending_hold_date': pending_date,
                 'sid_issued': context['signature'],
                 'balance_due': 0
             })

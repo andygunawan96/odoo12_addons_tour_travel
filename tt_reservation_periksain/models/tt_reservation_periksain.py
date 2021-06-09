@@ -104,18 +104,14 @@ class ReservationPeriksain(models.Model):
             _logger.info('Error Create Email Queue')
 
     def action_issued_pending_periksain(self,co_uid, customer_parent_id, acquirer_id = False):
-        current_wib_datetime = datetime.now(pytz.timezone('Asia/Jakarta'))
-        current_datetime = current_wib_datetime.astimezone(pytz.utc)
-        if '08:00' < str(current_wib_datetime.time())[:5] < '18:00':
-            pending_date = current_datetime + timedelta(hour=1)
-        else:
-            pending_date = current_datetime.replace(hour=3, minute=0) # UTC0, jam 10 pagi surabaya
-            if current_datetime > pending_date:
-                pending_date = pending_date+timedelta(days=1)
+        issued_pending_hold_date = datetime.max
+        for provider_obj in self.provider_booking_ids:
+            if issued_pending_hold_date > provider_obj.issued_pending_hold_date:
+                issued_pending_hold_date = provider_obj.issued_pending_hold_date
 
         write_values = {
             'state': 'issued_pending',
-            'pending_date': pending_date,
+            'pending_date': issued_pending_hold_date,
             'issued_date': datetime.now(),
             'issued_uid': co_uid,
             'customer_parent_id': customer_parent_id
