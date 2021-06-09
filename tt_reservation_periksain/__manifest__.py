@@ -32,7 +32,9 @@ TT_TRANSPORT
         'views/tt_reservation_periksain_views.xml',
         'views/tt_provider_views.xml',
         'views/tt_timeslot_periksain_views.xml',
-        'views/tt_analyst_periksain_views.xml'
+        'views/tt_analyst_periksain_views.xml',
+        'views/tt_service_charge_views.xml',
+        'views/tt_reservation_passenger_periksain_form_views.xml'
     ],
     'demo': [],
     'qweb': [],
