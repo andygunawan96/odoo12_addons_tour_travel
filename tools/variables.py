@@ -253,7 +253,9 @@ PROVIDER_TYPE_PREFIX = {
     'TR': 'tour',
     'RESV': 'hotel',
     'BT': 'ppob',
-    'VT': 'event'
+    'VT': 'event',
+    'PK': 'periksain',
+    'PH': 'phc'
 }
 
 PRODUCT_STATE = [

@@ -13,10 +13,10 @@ import json
 
 _logger = logging.getLogger(__name__)
 
-COMMISSION_PER_PAX = 25000
-BASE_PRICE_PER_PAX = 150000
-SINGLE_SUPPLEMENT = 25000
-OVERTIME_SURCHARGE = 25000
+COMMISSION_PER_PAX = 25000 ## komisi agent /pax
+BASE_PRICE_PER_PAX = 150000 ## harga 1 /pax
+SINGLE_SUPPLEMENT = 25000 ## 1 orang
+OVERTIME_SURCHARGE = 50000 ## lebih dari 18.00 /pax
 
 class ReservationPeriksain(models.Model):
     _name = "tt.reservation.periksain"
@@ -114,7 +114,7 @@ class ReservationPeriksain(models.Model):
             pending_date = datetime.now() + timedelta(hours=1)
         else:
             pending_date = current_wib_datetime.replace(hour=10, minute=0)
-            if current_wib_datetime > current_wib_datetime.replace(hour=10,minute=0):
+            if current_wib_datetime > pending_date:
                 pending_date = pending_date+timedelta(days=1)
 
         write_values = {

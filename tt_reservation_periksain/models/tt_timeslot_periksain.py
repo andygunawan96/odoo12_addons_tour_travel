@@ -71,7 +71,16 @@ class TtTimeslotPeriksain(models.Model):
     # }
 
     def get_available_timeslot_api(self):
-        timeslots = self.search([('datetimeslot','>',datetime.now(pytz.utc))])
+        current_wib_datetime = datetime.now(pytz.timezone('Asia/Jakarta'))
+        if '08:00' < str(current_wib_datetime) < '18:00':
+            dom = [('datetimeslot', '>', datetime.now(pytz.utc) + timedelta(hours=6))]
+        else:
+            min_datetime = current_wib_datetime.replace(hour=14, minute=0)
+            if current_wib_datetime > min_datetime:
+                min_datetime = min_datetime + timedelta(days=1)
+            dom = [('datetimeslot', '>', min_datetime)]
+
+        timeslots = self.search(dom)
         # max_date = date.today()
         timeslot_dict = {}
         for rec in timeslots:
