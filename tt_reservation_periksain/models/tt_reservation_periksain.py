@@ -110,11 +110,12 @@ class ReservationPeriksain(models.Model):
 
     def action_issued_pending_periksain(self,co_uid, customer_parent_id, acquirer_id = False):
         current_wib_datetime = datetime.now(pytz.timezone('Asia/Jakarta'))
-        if '08:00' < str(current_wib_datetime) < '18:00':
-            pending_date = datetime.now() + timedelta(hours=1)
+        current_datetime = current_wib_datetime.astimezone(pytz.utc)
+        if '08:00' < str(current_wib_datetime.time())[:5] < '18:00':
+            pending_date = current_datetime + timedelta(hour=1)
         else:
-            pending_date = current_wib_datetime.replace(hour=10, minute=0)
-            if current_wib_datetime > pending_date:
+            pending_date = current_datetime.replace(hour=3, minute=0) # UTC0, jam 10 pagi surabaya
+            if current_datetime > pending_date:
                 pending_date = pending_date+timedelta(days=1)
 
         write_values = {
