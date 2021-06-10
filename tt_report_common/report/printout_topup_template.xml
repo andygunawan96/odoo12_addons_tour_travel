@@ -145,7 +145,7 @@
                 <div class="page">
                     <t t-call="tt_report_common.external_layout">
                         <br/>
-                        <div class="box" style="margin: 0px 20px 20px 20px; font-family: 'LiberationSans'">
+                        <div class="box" style="margin: 0px 20px 20px 20px; font-family: 'Liberation Sans'">
                             <t t-call="tt_report_common.printout_topup_content"/>
                         </div>
                     </t>

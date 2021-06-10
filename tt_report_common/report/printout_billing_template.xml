@@ -187,7 +187,7 @@
             <t t-foreach="docs" t-as="doc">
                 <div class="page">
                     <t t-call="tt_report_common.external_layout">
-                        <div style="margin: 0 20px; font-family: 'LiberationSans'">
+                        <div style="margin: 0 20px; font-family: 'Liberation Sans'">
                             <t t-call="tt_report_common.printout_billing_content"/>
                         </div>
                     </t>

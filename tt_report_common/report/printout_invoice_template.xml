@@ -239,7 +239,7 @@
     </template>
 
     <template id="external_layout_header">
-        <div class="row" style="height:100px; font-family: 'LiberationSans'">
+        <div class="row" style="height:100px; font-family: 'Liberation Sans'">
             <t t-if="doc_type in ['ho_invoice', 'top_up']">
                 <div class="col-4" style="margin-left: 30px">
                     <img t-att-src="'data:image/png;base64,%s' % to_text(ho_obj.logo)" border="1" style="max-height:100px; max-width:165px; margin-bottom: 20px"/>
