@@ -253,7 +253,7 @@
                 <div class="page">
                     <t t-call="tt_report_common.external_layout">
 <!--                        <br/>-->
-                        <div style="margin: 0 20px; font-family: 'LiberationSans'">
+                        <div style="margin: 0 20px; font-family: 'Liberation Sans'">
                             <t t-call="tt_report_common.ho_invoice_content_view"/>
                         </div>
                     </t>

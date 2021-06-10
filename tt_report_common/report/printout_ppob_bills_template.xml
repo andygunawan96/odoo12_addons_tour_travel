@@ -415,27 +415,27 @@
                         <t t-set="data_report_margin_top" t-value="10"/>
                         <t t-set="data_report_margin_bottom" t-value="0"/>
                         <t t-if="values['ppob_type'] == 'bpjs'">
-                            <div class="box" style="margin: 0px 20px 20px 20px; font-family: 'LiberationSans'">
+                            <div class="box" style="margin: 0px 20px 20px 20px; font-family: 'Liberation Sans'">
                                 <t t-call="tt_report_common.reservation_ppob_bpjs_kesehatan_content_view"/>
                             </div>
                         </t>
                         <t t-elif="values['ppob_type'] == 'postpln'">
-                            <div class="box" style="margin: 0px 20px 20px 20px; font-family: 'LiberationSans'">
+                            <div class="box" style="margin: 0px 20px 20px 20px; font-family: 'Liberation Sans'">
                                 <t t-call="tt_report_common.reservation_ppob_pln_postpaid_content_view"/>
                             </div>
                         </t>
                         <t t-elif="values['ppob_type'] == 'prepln'">
-                            <div class="box" style="margin: 0px 20px 20px 20px; font-family: 'LiberationSans'">
+                            <div class="box" style="margin: 0px 20px 20px 20px; font-family: 'Liberation Sans'">
                                 <t t-call="tt_report_common.reservation_ppob_pln_prepaid_content_view"/>
                             </div>
                         </t>
                         <t t-elif="values['ppob_type'] == 'notaglispln'">
-                            <div class="box" style="margin: 0px 20px 20px 20px; font-family: 'LiberationSans'">
+                            <div class="box" style="margin: 0px 20px 20px 20px; font-family: 'Liberation Sans'">
                                 <t t-call="tt_report_common.reservation_ppob_non_pln_content_view"/>
                             </div>
                         </t>
                         <t t-elif="values['ppob_type'] == 'prepaidmobile'">
-                            <div class="box" style="margin: 0px 20px 20px 20px; font-family: 'LiberationSans'">
+                            <div class="box" style="margin: 0px 20px 20px 20px; font-family: 'Liberation Sans'">
                                 <t t-call="tt_report_common.reservation_ppob_mobile_prepaid_content_view"/>
                             </div>
                         </t>
