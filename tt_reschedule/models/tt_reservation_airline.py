@@ -398,6 +398,13 @@ class ReservationAirline(models.Model):
     def process_update_booking_airline_api(self, vals, context):
         try:
             # print('Create Reschedule Request, %s' % json.dumps(vals))
+            # June 9, 2021 - SAM
+            # Mengubah co uid context menjadi co uid sistem
+            if 'use_system_user' in vals and vals['use_system_user']:
+                context.update({
+                    'co_uid': self.env.uid
+                })
+            # END
             order_id = ''
             airline_obj = None
             if 'book_id' in vals and vals['book_id']:

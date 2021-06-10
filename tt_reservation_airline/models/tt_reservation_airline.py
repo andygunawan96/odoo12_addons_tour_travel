@@ -6,6 +6,7 @@ import logging,traceback
 from datetime import datetime, timedelta
 import base64
 import json
+import copy
 
 _logger = logging.getLogger(__name__)
 
@@ -850,31 +851,78 @@ class ReservationAirline(models.Model):
                     # 'total_price': provider['total_price'],
                 # })
                 # END
-                ledger_created = provider_obj.delete_service_charge()
-                # May 13, 2020 - SAM
-                if ledger_created:
-                    # September 3, 2020 - SAM
-                    # Apabila terissued di backend dan error di vendor dengan status book dan perubahan harga akan di reverse
-                    # if not req.get('force_issued'):
-                    #     raise RequestException(1027)
-                    provider_obj.action_reverse_ledger()
-                    provider_obj.delete_service_charge()
 
-                provider_obj.delete_passenger_fees()
-                provider_obj.delete_passenger_tickets()
-                # END
-
-                # May 14, 2020 - SAM
-                # Rencana awal mau melakukan compare passenger sequence
-                # Dilapangan sequence passenger pada tiap provider bisa berbeda beda, tidak bisa digunakan sebagai acuan
-                provider_obj.create_ticket_api(provider['passengers'], provider['pnr'])
+                # June 10, 2021 - SAM
+                total_service_charge = 0
+                provider_service_charges = []
                 for journey in provider['journeys']:
                     for segment in journey['segments']:
                         for fare in segment['fares']:
-                            provider_obj.create_service_charge(fare['service_charges'])
+                            total_service_charge += len(fare['service_charges'])
+                            provider_service_charges += copy.deepcopy(fare['service_charges'])
+
+                for psg in provider['passengers']:
+                    total_service_charge += len(psg['fees'])
+                    provider_service_charges += copy.deepcopy(psg['fees'])
+
+                is_same_service_charge_data = False
+                if len(provider_obj.cost_service_charge_ids) == total_service_charge:
+                    for sc in provider_obj.cost_service_charge_ids:
+                        is_found = False
+                        del_idx = -1
+                        for psc_id, psc in enumerate(provider_service_charges):
+                            if 'fee_type' in psc:
+                                amount = sum(sca['amount'] for sca in psc['service_charges'])
+                                # NOTE Terkadang untuk fee code bisa berbeda, bisa di ignore
+                                # if sc.charge_type == psc['fee_type'] and sc.charge_code == psc['fee_code'] and sc.amount == amount:
+                                if sc.charge_type == psc['fee_type'] and sc.amount == amount:
+                                    is_found = True
+                                    del_idx = psc_id
+                                    break
+                            else:
+                                if sc.charge_type == psc['charge_type'] and sc.charge_code == psc['charge_code'] and sc.amount == psc['amount'] and sc.pax_count == psc['pax_count']:
+                                    is_found = True
+                                    del_idx = psc_id
+                                    break
+
+                        if is_found:
+                            provider_service_charges.pop(del_idx)
+                        else:
+                            break
+                    is_same_service_charge_data = False if provider_service_charges else True
+
+                ledger_created = False
+                if not is_same_service_charge_data:
+                    ledger_created = provider_obj.delete_service_charge()
+                    # May 13, 2020 - SAM
+                    if ledger_created:
+                        # September 3, 2020 - SAM
+                        # Apabila terissued di backend dan error di vendor dengan status book dan perubahan harga akan di reverse
+                        # if not req.get('force_issued'):
+                        #     raise RequestException(1027)
+                        provider_obj.action_reverse_ledger()
+                        provider_obj.delete_service_charge()
+
+                    provider_obj.delete_passenger_fees()
+                    provider_obj.delete_passenger_tickets()
+                    # END
+
+                    # May 14, 2020 - SAM
+                    # Rencana awal mau melakukan compare passenger sequence
+                    # Dilapangan sequence passenger pada tiap provider bisa berbeda beda, tidak bisa digunakan sebagai acuan
+                    provider_obj.create_ticket_api(provider['passengers'], provider['pnr'])
+                    for journey in provider['journeys']:
+                        for segment in journey['segments']:
+                            for fare in segment['fares']:
+                                provider_obj.create_service_charge(fare['service_charges'])
+                # END
+
                 # May 13, 2020 - SAM
-                if ledger_created and req.get('force_issued'):
+                # June 10, 2021 - SAM
+                # if ledger_created and req.get('force_issued'):
+                if ledger_created:
                     provider_obj.action_create_ledger(context['co_uid'])
+                # END
                 # END
 
             book_obj = self.get_book_obj(req.get('book_id'),req.get('order_number'))
@@ -1488,7 +1536,13 @@ class ReservationAirline(models.Model):
     def sync_booking_with_vendor(self):
         req = {
             'order_number': self.name,
-            'user_id': self.booked_uid.id
+            # June 10, 2021 - SAM
+            # Booked UID bisa berubah bukan mengikuti pemilik reservasi
+            # Contoh ketika auto update sia, booked uid menjadi punya sistem
+            # Pengaruh saat deteksi agent untuk pricing
+            # 'user_id': self.booked_uid.id
+            'user_id': self.user_id.id
+            # END
         }
         self.env['tt.airline.api.con'].send_get_booking_for_sync(req)
 
