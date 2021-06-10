@@ -13,10 +13,10 @@ import json
 
 _logger = logging.getLogger(__name__)
 
-COMMISSION_PER_PAX = 25000
-BASE_PRICE_PER_PAX = 150000
-SINGLE_SUPPLEMENT = 25000
-OVERTIME_SURCHARGE = 25000
+COMMISSION_PER_PAX = 25000 ## komisi agent /pax
+BASE_PRICE_PER_PAX = 150000 ## harga 1 /pax
+SINGLE_SUPPLEMENT = 25000 ## 1 orang
+OVERTIME_SURCHARGE = 50000 ## lebih dari 18.00 /pax
 
 class ReservationPeriksain(models.Model):
     _name = "tt.reservation.periksain"
@@ -30,13 +30,12 @@ class ReservationPeriksain(models.Model):
     sale_service_charge_ids = fields.One2many('tt.service.charge', 'booking_periksain_id', 'Service Charge',
                                               readonly=True, states={'draft': [('readonly', False)]})
 
-    pending_date = fields.Datetime('Pending Date', readonly=True, states={'draft': [('readonly', False)]})
-    
     passenger_ids = fields.One2many('tt.reservation.passenger.periksain', 'booking_id',
                                     readonly=True, states={'draft': [('readonly', False)]})
 
     issued_pending_uid = fields.Many2one('res.users', 'Issued Pending by', readonly=True)
     issued_pending_date = fields.Datetime('Issued Pending Date', readonly=True)
+    issued_pending_hold_date = fields.Datetime('Pending Date', readonly=True)
 
     origin_id = fields.Many2one('tt.destinations', 'Test Area', readonly=True, states={'draft': [('readonly', False)]})
 
@@ -76,13 +75,9 @@ class ReservationPeriksain(models.Model):
         for rec in self:
             rec.state = 'issued'
 
-    def action_booked_api_periksain(self,context,hold_date=False):
-        if type(hold_date) != datetime:
-            hold_date = False
-
+    def action_booked_api_periksain(self,context):
         write_values = {
             'state': 'booked',
-            'hold_date': hold_date,
             'booked_uid': context['co_uid'],
             'booked_date': datetime.now()
         }
@@ -109,19 +104,16 @@ class ReservationPeriksain(models.Model):
             _logger.info('Error Create Email Queue')
 
     def action_issued_pending_periksain(self,co_uid, customer_parent_id, acquirer_id = False):
-        current_wib_datetime = datetime.now(pytz.timezone('Asia/Jakarta'))
-        if '08:00' < str(current_wib_datetime) < '18:00':
-            pending_date = datetime.now() + timedelta(hours=1)
-        else:
-            pending_date = current_wib_datetime.replace(hour=10, minute=0)
-            if current_wib_datetime > current_wib_datetime.replace(hour=10,minute=0):
-                pending_date = pending_date+timedelta(days=1)
+        issued_pending_hold_date = datetime.max
+        for provider_obj in self.provider_booking_ids:
+            if issued_pending_hold_date > provider_obj.issued_pending_hold_date:
+                issued_pending_hold_date = provider_obj.issued_pending_hold_date
 
         write_values = {
             'state': 'issued_pending',
-            'pending_date': pending_date,
-            'issued_date': datetime.now(),
-            'issued_uid': co_uid,
+            'issued_pending_hold_date': issued_pending_hold_date,
+            'issued_pending_date': datetime.now(),
+            'issued_pending_uid': co_uid,
             'customer_parent_id': customer_parent_id
         }
 
@@ -526,7 +518,7 @@ class ReservationPeriksain(models.Model):
             'state': 'booked',
             'booked_uid': context_gateway['co_uid'],
             'booked_date': fields.Datetime.now(),
-            'hold_date': fields.Datetime.now() + timedelta(hours=1),
+            'hold_date': fields.Datetime.now() + timedelta(minutes=30),
             'balance_due': booking_data['total'],
             'total_price': booking_data['total'],
             'sequence': 1,
@@ -552,7 +544,6 @@ class ReservationPeriksain(models.Model):
             'test_address_map_link': booking_data['test_address_map_link'],
             'provider_booking_ids': [(0,0,provider_vals)],
             'timeslot_ids': [(6,0,timeslot_write_data.ids)],
-            'hold_date': fields.Datetime.now() + timedelta(hours=1),## ini gantiin action booked, gak ada action booked
             'booked_uid': context_gateway['co_uid'],
             'booked_date': fields.Datetime.now()
         }
@@ -605,68 +596,6 @@ class ReservationPeriksain(models.Model):
         #                 'pnr': self.provider_booking_ids[rec.provider_sequence].pnr
         #             })
     # END
-
-    def check_provider_state_backup(self,context,pnr_list=[],hold_date=False,req={}):
-        if all(rec.state == 'booked' for rec in self.provider_booking_ids):
-            # booked
-            self.calculate_service_charge()
-            self.action_booked_api_periksain(context, pnr_list, hold_date)
-        elif all(rec.state == 'issued' for rec in self.provider_booking_ids):
-            # issued
-            ##credit limit
-            acquirer_id,customer_parent_id = self.get_acquirer_n_c_parent_id(req)
-
-            if req.get('force_issued'):
-                self.calculate_service_charge()
-                self.action_booked_api_periksain(context, pnr_list, hold_date)
-                payment_res = self.payment_airline_api({'book_id': req['book_id'],
-                                                        'member': req.get('member', False),
-                                                        'acquirer_seq_id': req.get('acquirer_seq_id', False)}, context)
-                if payment_res['error_code'] != 0:
-                    try:
-                        self.env['tt.airline.api.con'].send_force_issued_not_enough_balance_notification(self.name, context)
-                    except Exception as e:
-                        _logger.error("Send TOP UP Approve Notification Telegram Error\n" + traceback.format_exc())
-                    raise RequestException(payment_res['error_code'],additional_message=payment_res['error_msg'])
-
-            self.action_issued_api_airline(acquirer_id and acquirer_id.id or False, customer_parent_id, context)
-        elif all(rec.state == 'refund' for rec in self.provider_booking_ids):
-            self.write({
-                'state': 'refund',
-                'refund_uid': context['co_uid'],
-                'refund_date': datetime.now()
-            })
-        elif all(rec.state == 'fail_refunded' for rec in self.provider_booking_ids):
-            self.action_reverse_airline(context)
-        elif all(rec.state == 'refund_failed' for rec in self.provider_booking_ids):
-            self.action_refund_failed_airline(context)
-        elif any(rec.state == 'issued' for rec in self.provider_booking_ids):
-            # partial issued
-            acquirer_id,customer_parent_id = self.get_acquirer_n_c_parent_id(req)
-            self.action_partial_issued_api_airline(context['co_uid'],customer_parent_id)
-        elif any(rec.state == 'booked' for rec in self.provider_booking_ids):
-            # partial booked
-            self.calculate_service_charge()
-            self.action_partial_booked_api_airline(context, pnr_list, hold_date)
-        elif all(rec.state == 'fail_issued' for rec in self.provider_booking_ids):
-            # failed issue
-            self.action_failed_issue()
-        elif all(rec.state == 'fail_booked' for rec in self.provider_booking_ids):
-            # failed book
-            self.action_failed_book()
-        elif all(rec.state == 'cancel' for rec in self.provider_booking_ids):
-            # failed book
-            self.action_set_as_cancel()
-        elif all(rec.state == 'refund_pending' for rec in self.provider_booking_ids):
-            # refund pending
-            self.action_set_as_refund_pending()
-        elif all(rec.state == 'cancel_pending' for rec in self.provider_booking_ids):
-            # cancel pending
-            self.action_set_as_cancel_pending()
-        else:
-            # entah status apa
-            _logger.error('Entah status apa')
-            raise RequestException(1006)
 
     def update_pnr_booked(self,provider_obj,provider,context):
         provider_obj.action_booked_api_airline(provider, context)
@@ -782,13 +711,14 @@ class ReservationPeriksain(models.Model):
         if 'provider_type' not in data:
             data['provider_type'] = self.provider_type_id.name
 
-        book_obj = self.env['tt.reservation.airline'].search([('name', '=', data['order_number'])], limit=1)
+        # book_obj = self.env['tt.reservation.airline'].search([('name', '=', data['order_number'])], limit=1)
+        book_obj = self.search([('name', '=', data['order_number'])], limit=1)
         datas = {'ids': book_obj.env.context.get('active_ids', [])}
         # res = self.read(['price_list', 'qty1', 'qty2', 'qty3', 'qty4', 'qty5'])
         res = book_obj.read()
         res = res and res[0] or {}
         datas['form'] = res
-        airline_ticket_id = book_obj.env.ref('tt_report_common.action_report_printout_reservation_airline')
+        medical_ticket_id = self.env.ref('tt_report_common.action_report_printout_reservation_periksain')
 
         if not book_obj.printout_ticket_id:
             if book_obj.agent_id:
@@ -801,16 +731,16 @@ class ReservationPeriksain(models.Model):
             else:
                 co_uid = self.env.user.id
 
-            pdf_report = airline_ticket_id.report_action(book_obj, data=datas)
+            pdf_report = medical_ticket_id.report_action(book_obj, data=datas)
             pdf_report['context'].update({
                 'active_model': book_obj._name,
                 'active_id': book_obj.id
             })
-            pdf_report_bytes = airline_ticket_id.render_qweb_pdf(data=pdf_report)
+            pdf_report_bytes = medical_ticket_id.render_qweb_pdf(data=pdf_report)
             res = book_obj.env['tt.upload.center.wizard'].upload_file_api(
                 {
-                    'filename': 'Airline Ticket %s.pdf' % book_obj.name,
-                    'file_reference': 'Airline Ticket',
+                    'filename': 'Periksain Ticket %s.pdf' % book_obj.name,
+                    'file_reference': 'Periksain Ticket',
                     'file': base64.b64encode(pdf_report_bytes[0]),
                     'delete_date': datetime.today() + timedelta(minutes=10)
                 },
@@ -837,16 +767,17 @@ class ReservationPeriksain(models.Model):
         if 'provider_type' not in data:
             data['provider_type'] = self.provider_type_id.name
 
-        book_obj = self.env['tt.reservation.airline'].search([('name', '=', data['order_number'])], limit=1)
+        # book_obj = self.env['tt.reservation.airline'].search([('name', '=', data['order_number'])], limit=1)
+        book_obj = self.search([('name', '=', data['order_number'])], limit=1)
         datas = {'ids': book_obj.env.context.get('active_ids', [])}
         # res = self.read(['price_list', 'qty1', 'qty2', 'qty3', 'qty4', 'qty5'])
         res = book_obj.read()
         res = res and res[0] or {}
         datas['form'] = res
         datas['is_with_price'] = True
-        airline_ticket_id = book_obj.env.ref('tt_report_common.action_report_printout_reservation_airline')
+        medical_ticket_id = self.env.ref('tt_report_common.action_report_printout_reservation_periksain')
 
-        if not book_obj.printout_ticket_price_id:
+        if not book_obj.printout_ticket_id:
             if book_obj.agent_id:
                 co_agent_id = book_obj.agent_id.id
             else:
@@ -857,16 +788,16 @@ class ReservationPeriksain(models.Model):
             else:
                 co_uid = self.env.user.id
 
-            pdf_report = airline_ticket_id.report_action(book_obj, data=datas)
+            pdf_report = medical_ticket_id.report_action(book_obj, data=datas)
             pdf_report['context'].update({
                 'active_model': book_obj._name,
                 'active_id': book_obj.id
             })
-            pdf_report_bytes = airline_ticket_id.render_qweb_pdf(data=pdf_report)
+            pdf_report_bytes = medical_ticket_id.render_qweb_pdf(data=pdf_report)
             res = book_obj.env['tt.upload.center.wizard'].upload_file_api(
                 {
-                    'filename': 'Airline Ticket (Price) %s.pdf' % book_obj.name,
-                    'file_reference': 'Airline Ticket with Price',
+                    'filename': 'Periksain Ticket %s.pdf' % book_obj.name,
+                    'file_reference': 'Periksain Ticket',
                     'file': base64.b64encode(pdf_report_bytes[0]),
                     'delete_date': datetime.today() + timedelta(minutes=10)
                 },
@@ -876,12 +807,12 @@ class ReservationPeriksain(models.Model):
                 }
             )
             upc_id = book_obj.env['tt.upload.center'].search([('seq_id', '=', res['response']['seq_id'])], limit=1)
-            book_obj.printout_ticket_price_id = upc_id.id
+            book_obj.printout_ticket_id = upc_id.id
         url = {
             'type': 'ir.actions.act_url',
             'name': "Printout",
             'target': 'new',
-            'url': book_obj.printout_ticket_price_id.url,
+            'url': book_obj.printout_ticket_id.url,
         }
         return url
 
@@ -989,13 +920,17 @@ class ReservationPeriksain(models.Model):
         if 'provider_type' not in data:
             data['provider_type'] = self.provider_type_id.name
 
-        book_obj = self.env['tt.reservation.airline'].search([('name', '=', data['order_number'])], limit=1)
+        # book_obj = self.env['tt.reservation.airline'].search([('name', '=', data['order_number'])], limit=1)
+        book_obj = self.search([('name', '=', data['order_number'])], limit=1)
         datas = {'ids': book_obj.env.context.get('active_ids', [])}
+        # res = self.read(['price_list', 'qty1', 'qty2', 'qty3', 'qty4', 'qty5'])
         res = book_obj.read()
         res = res and res[0] or {}
         datas['form'] = res
-        airline_itinerary_id = book_obj.env.ref('tt_report_common.action_printout_itinerary_airline')
-        if not book_obj.printout_itinerary_id:
+        datas['is_with_price'] = True
+        medical_ticket_id = book_obj.env.ref('tt_report_common.action_printout_itinerary_periksain')
+
+        if not book_obj.printout_ticket_id:
             if book_obj.agent_id:
                 co_agent_id = book_obj.agent_id.id
             else:
@@ -1006,16 +941,16 @@ class ReservationPeriksain(models.Model):
             else:
                 co_uid = self.env.user.id
 
-            pdf_report = airline_itinerary_id.report_action(book_obj, data=datas)
+            pdf_report = medical_ticket_id.report_action(book_obj, data=datas)
             pdf_report['context'].update({
                 'active_model': book_obj._name,
                 'active_id': book_obj.id
             })
-            pdf_report_bytes = airline_itinerary_id.render_qweb_pdf(data=pdf_report)
+            pdf_report_bytes = medical_ticket_id.render_qweb_pdf(data=pdf_report)
             res = book_obj.env['tt.upload.center.wizard'].upload_file_api(
                 {
-                    'filename': 'Airline Itinerary %s.pdf' % book_obj.name,
-                    'file_reference': 'Airline Itinerary',
+                    'filename': 'Ittinerary %s.pdf' % book_obj.name,
+                    'file_reference': 'Ittinerary',
                     'file': base64.b64encode(pdf_report_bytes[0]),
                     'delete_date': datetime.today() + timedelta(minutes=10)
                 },
@@ -1025,12 +960,12 @@ class ReservationPeriksain(models.Model):
                 }
             )
             upc_id = book_obj.env['tt.upload.center'].search([('seq_id', '=', res['response']['seq_id'])], limit=1)
-            book_obj.printout_itinerary_id = upc_id.id
+            book_obj.printout_ticket_id = upc_id.id
         url = {
             'type': 'ir.actions.act_url',
             'name': "Printout",
             'target': 'new',
-            'url': book_obj.printout_itinerary_id.url,
+            'url': book_obj.printout_ticket_id.url,
         }
         return url
 

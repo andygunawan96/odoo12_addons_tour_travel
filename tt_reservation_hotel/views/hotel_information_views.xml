@@ -605,11 +605,53 @@
             </tree>
         </field>
     </record>
+    <record id="tt_hotel_master_view_search" model="ir.ui.view">
+        <field name="name">tt.hotel.master.view.search.rodex</field>
+        <field name="model">tt.hotel.master</field>
+        <field name="arch" type="xml">
+            <search string="member Type">
+                <field name="name" string="Name"/>
+                <field name="city_id" string="City"/>
+                <field name="country_id" string="Country"/>
+                <field name="destination_id" string="Destination"/>
+                <field name="provider" string="Vendor"/>
+                <filter string="Draft" name="draft" domain="[('state', '=', 'draft')]"/>
+                <filter string="Confirm" name="confirm" domain="[('state', '=', 'confirm')]"/>
+                <separator/>
+                <filter string="One Star or Lower" name='1star' domain="[('rating', '&lt;', 2)]"/>
+                <filter string="Two Star" name='2star' domain="[('rating', '=', 2)]"/>
+                <filter string="Three Star" name='3star' domain="[('rating','=', 3)]"/>
+                <filter string="Four Star" name='4star' domain="[('rating','=', 4)]"/>
+                <filter string="Five Star" name='5star' domain="[('rating','&gt;', 4)]"/>
+                <separator/>
+                <filter string="C-Trip" name='ven_ctrip' domain="[('provider', 'ilike', 'ctrip')]"/>
+                <filter string="Hanatour" name='ven_hanatour' domain="[('provider', 'ilike', 'hanatour')]"/>
+                <filter string="HotelBeds" name='ven_hotelbeds' domain="[('provider', 'ilike', 'hotelbed')]"/>
+                <filter string="HotelsPro" name='ven_hotelspro' domain="[('provider', 'ilike', 'hotelspro')]"/>
+                <filter string="MG Hotel" name='ven_mg' domain="[('provider', 'ilike', 'mg')]"/>
+                <filter string="Miki Travel" name='ven_miki' domain="[('provider', 'ilike', 'miki')]"/>
+                <filter string="Quantum" name='ven_quantum' domain="[('provider', 'ilike', 'quantum')]"/>
+                <filter string="RTS" name='ven_rts' domain="[('provider', 'ilike', 'rts')]"/>
+                <filter string="Webbeds (Fitruums)" name='ven_webbeds' domain="[('provider', 'ilike', 'webbed')]"/>
+                <filter string="WelcomeBeds" name='ven_welcombeds' domain="[('provider', 'ilike', 'welcomebed')]"/>
+                <group expand="0" string="Group By...">
+                    <filter name="group_by_hotel_type" string="Hotel Type" domain="[]" context="{'group_by':'hotel_type_id'}"/>
+                    <filter name="group_by_country" string="Country" domain="[]" context="{'group_by':'country_id'}"/>
+                    <filter name="group_by_city" string="City" domain="[]" context="{'group_by':'city_id'}"/>
+                    <filter name="group_by_province" string="State/Province" domain="[]" context="{'group_by':'state_id'}"/>
+                    <filter name="group_by_state" string="State" domain="[]" context="{'group_by':'state'}"/>
+                    <!--<filter name="group_by_provider" string="Provider" domain="[]" context="{'group_by':'provider'}"/>-->
+                    <!--<filter name="group_by_ext_code" string="Prov. Ext Code" domain="[]" context="{'group_by':'provider_ext_code'}"/>-->
+                </group>
+            </search>
+        </field>
+    </record>
     <record id="tt_hotel_master_view_action_rodex" model="ir.actions.act_window">
         <field name="name">Hotel Master</field>
         <field name="res_model">tt.hotel.master</field>
         <field name="view_type">form</field>
         <field name="view_mode">tree,form</field>
+        <field name="search_view_id" ref="tt_hotel_master_view_search"/>
         <field name="context">{}</field>
     </record>
 

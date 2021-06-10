@@ -93,11 +93,23 @@
                 <separator string="Test Information"/>
                 <field name="timeslot_ids"/>
                 <group>
+                    <field name="timeslot_type"/>
                     <field name="picked_timeslot_id"/>
                     <field name="test_datetime"/>
+                    <field name="test_address"/>
+                    <field name="test_address_map_link"/>
                 </group>
                 <separator string="Analyst(s)"/>
                 <field name="analyst_ids"/>
+            </xpath>
+
+            <xpath expr="//div[@name='booked_div']" position="after">
+                <field name="issued_pending_hold_date"/>
+                <label for="issued_pending_uid" string="Issued Pending By"/>
+                <div>
+                    <field name="issued_pending_uid" readonly="1" class="oe_inline"/> /
+                    <field name="issued_pending_date" readonly="1" class="oe_inline"/>
+                </div>
             </xpath>
 
             <xpath expr="//page[@name='anchor']" position="before">
@@ -152,7 +164,7 @@
             <form create="false" edit="false">
                 <header>
                     <button string="Confirm Order" name="%(tt_reservation_periksain.confirm_order_periksain_wizard_action_view)d" type="action" states="issued_pending" groups="tt_base.group_external_vendor_periksain_level_2"
-                        context="{
+                            context="{
                         'default_booking_id': id,
                    }"/>
                     <field name="state" widget="statusbar" statusbar_visible="draft,booked,issued_pending,issued"/>

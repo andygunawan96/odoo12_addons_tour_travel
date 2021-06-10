@@ -22,7 +22,8 @@ PROVIDER_TYPE_SELECTION = {
     'RO': 'issued_offline',
     'BT': 'ppob',
     'EV': 'event',
-    'PK': 'periksain'
+    'PK': 'periksain',
+    'PH': 'phc'
 }
 
 class TtReservation(models.Model):
