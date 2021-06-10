@@ -29,6 +29,8 @@ class TtTimeslotPeriksain(models.Model):
 
     destination_id = fields.Many2one('tt.destinations','Area')
 
+    selected_count = fields.Integer('Used Counter',compute="_compute_selected_counter",store=True)
+
     used_count = fields.Integer('Used Counter',compute="_compute_used_counter",store=True)
 
     booking_ids = fields.Many2many('tt.reservation.periksain','tt_reservation_periksain_timeslot_rel', 'timeslot_id', 'booking_id', 'Selected on By Customer Booking(s)')
@@ -48,6 +50,11 @@ class TtTimeslotPeriksain(models.Model):
         return super(TtTimeslotPeriksain, self).create(vals_list)
 
     @api.depends('booking_ids')
+    def _compute_selected_counter(self):
+        for rec in self:
+            rec.used_count = len(rec.booking_ids)
+
+    @api.depends('booking_used_ids')
     def _compute_used_counter(self):
         for rec in self:
             rec.used_count = len(rec.booking_used_ids)

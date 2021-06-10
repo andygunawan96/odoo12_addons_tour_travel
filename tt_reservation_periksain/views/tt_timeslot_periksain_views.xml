@@ -23,6 +23,7 @@
                         <field name="dateslot"/>
                         <field name="datetimeslot"/>
                         <field name="destination_id"/>
+                        <field name="selected_count"/>
                         <field name="used_count"/>
                     </group>
                     <separator string="Selected by Customer Booking(s)"/>
@@ -43,6 +44,7 @@
                 <field name="seq_id"/>
                 <field name="dateslot"/>
                 <field name="datetimeslot"/>
+                <field name="selected_count"/>
                 <field name="used_count"/>
             </tree>
         </field>
