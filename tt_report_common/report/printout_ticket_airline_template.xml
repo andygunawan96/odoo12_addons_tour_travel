@@ -365,7 +365,7 @@
                         <t t-set="pnr_index" t-value="0"/>
                         <t t-foreach="doc.provider_booking_ids" t-as="length">
                             <t t-call="tt_report_common.external_layout">
-                                <div class="box" style="margin: 0px 20px; font-family: 'LiberationSans'">
+                                <div class="box" style="margin: 0px 20px; font-family: 'Liberation Sans'">
                                     <t t-call="tt_report_common.printout_ticket_airline_template"/>
                                 </div>
                             </t>

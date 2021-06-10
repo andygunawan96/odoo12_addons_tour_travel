@@ -8,11 +8,11 @@
                 <header>
                     <button name="action_approve" string="Approve Usage" type="object"
                             attrs="{'invisible':['|',('state','!=','confirm'),('payment_state','!=','approved')]}"
-                            groups="tt_base.group_tt_accounting_operator,tt_base.group_tt_agent_finance_operator,tt_base.group_payment_level_4,tt_base.group_tt_agent_finance"/>
+                            groups="tt_base.group_payment_level_4,tt_base.group_tt_agent_finance"/>
 
                     <button name="action_cancel" string="Cancel Usage" type="object"
                             attrs="{'invisible':[('state','not in',['approved','confirm'])]}"
-                            groups="tt_base.group_tt_accounting_operator,tt_base.group_tt_agent_finance_operator,tt_base.group_payment_level_4,tt_base.group_tt_agent_finance"/>
+                            groups="tt_base.group_payment_level_4,tt_base.group_tt_agent_finance"/>
 
                     <field name="state" widget="statusbar" statusbar_visible="confirm,approved"/>
                 </header>

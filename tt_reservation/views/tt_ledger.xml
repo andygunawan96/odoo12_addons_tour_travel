@@ -18,7 +18,7 @@
                 <field name="provider_type_id"/>
             </field>
             <xpath expr="//filter[@name='group_by_transaction_type']" position="after">
-                <filter name="group_by_provider_type_id" string="Provider Type" domain="[]" context="{'group_by':'provider_type_id'}" groups="tt_base.group_tt_agent_user_operator,tt_base.group_tt_tour_travel_operator,tt_base.group_tt_agent_user,tt_base.group_tt_tour_travel"/>
+                <filter name="group_by_provider_type_id" string="Provider Type" domain="[]" context="{'group_by':'provider_type_id'}" groups="tt_base.group_tt_agent_user,tt_base.group_tt_tour_travel"/>
             </xpath>
         </field>
     </record>

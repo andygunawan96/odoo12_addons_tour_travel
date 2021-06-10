@@ -12,9 +12,9 @@
                     <button string="Set to Issued" name="action_set_as_issued" groups="base.group_system" type="object"/>
                     <!--                    <button string="Fixing Prices" name="fixing_commission_agent_id_prices" groups="base.group_system" type="object"/>-->
                     <button string="Set Booking State" name="action_check_provider_state" groups="base.group_system" type="object" confirm="Are you sure you want to set booking state?"/>
-                    <button string="Cancel" name="action_cancel" states="booked,issued" groups="tt_base.group_tt_tour_travel_operator,tt_base.group_reservation_level_4" type="object" confirm="Are you sure you want to cancel?"/>
+                    <button string="Cancel" name="action_cancel" states="booked,issued" groups="tt_base.group_reservation_level_4" type="object" confirm="Are you sure you want to cancel?"/>
                     <button string="Adjustment" name="%(tt_accounting.tt_adjustment_wizard_action_view)d" type="action"
-                            groups="tt_base.group_tt_accounting_operator,tt_base.group_adjustment_level_3"
+                            groups="tt_base.group_adjustment_level_3"
                             context="{
                         'default_res_model': res_model,
                         'default_res_id': id,
@@ -23,7 +23,7 @@
                         'default_currency_id': currency_id,
                         'default_adj_type': provider_type_id
                    }"/>
-                    <button string="Refund Request" name="%(tt_accounting.tt_refund_wizard_action_view)d" type="action" groups="tt_base.group_tt_agent_user_operator,tt_base.group_tt_agent_user"
+                    <button string="Refund Request" name="%(tt_accounting.tt_refund_wizard_action_view)d" type="action" groups="tt_base.group_tt_agent_user"
                             context="{
                         'default_res_model': res_model,
                         'default_res_id': id,
@@ -63,7 +63,7 @@
                                    decoration-danger="reconcile_state == 'not_reconciled'"
                                    decoration-info="reconcile_state == 'partial'"
                                    decoration-success="reconcile_state == 'reconciled'"
-                                   groups="tt_base.group_tt_accounting_operator,tt_base.group_reconcile_level_3"/>
+                                   groups="tt_base.group_reconcile_level_3"/>
                         </h6>
                     </div>
                     <group>
@@ -124,9 +124,9 @@
                             </div>
                             <field name="penalty_amount" readonly="1"/>
                             <field name="voucher_code" readonly="1"/>
-                            <field name="is_member" readonly="1" groups="tt_base.group_tt_tour_travel_operator,tt_base.group_tt_tour_travel"/>
-                            <field name="payment_method" readonly="1" groups="tt_base.group_tt_tour_travel_operator,tt_base.group_tt_tour_travel"/>
-                            <field name="sid_booked" groups="tt_base.group_tt_tour_travel_operator,tt_base.group_tt_tour_travel"/>
+                            <field name="is_member" readonly="1" groups="tt_base.group_tt_tour_travel"/>
+                            <field name="payment_method" readonly="1" groups="tt_base.group_tt_tour_travel"/>
+                            <field name="sid_booked" groups="tt_base.group_tt_tour_travel"/>
                         </group>
                     </group>
 
@@ -172,12 +172,12 @@
                             <field name="total_tax" class="oe_subtotal_footer_separator"/>
                             <field name="total" class="oe_subtotal_footer_separator"/>
                             <field name="total_discount" class="oe_subtotal_footer_separator"/>
-                            <field name="total_commission" class="oe_subtotal_footer_separator" groups="tt_base.group_tt_tour_travel_operator,tt_base.group_tt_tour_travel"/>
-                            <field name="total_nta" class="oe_subtotal_footer_separator" groups="tt_base.group_tt_tour_travel_operator,tt_base.group_tt_tour_travel"/>
-                            <field name="agent_nta" class="oe_subtotal_footer_separator" groups="tt_base.group_tt_agent_user_operator,base.group_system,tt_base.group_tt_agent_user"/>
+                            <field name="total_commission" class="oe_subtotal_footer_separator" groups="tt_base.group_tt_tour_travel"/>
+                            <field name="total_nta" class="oe_subtotal_footer_separator" groups="tt_base.group_tt_tour_travel"/>
+                            <field name="agent_nta" class="oe_subtotal_footer_separator" groups="base.group_system,tt_base.group_tt_agent_user"/>
                         </group>
                         <group>
-                            <field name="notes" groups="tt_base.group_tt_tour_travel_operator,tt_base.group_tt_tour_travel"/>
+                            <field name="notes" groups="tt_base.group_tt_tour_travel"/>
                         </group>
                     </footer>
                 </sheet>
@@ -195,5 +195,5 @@
               name="Reservations"
               web_icon="hr,static/description/icon.png"
               sequence="2"
-              groups="tt_base.group_tt_tour_travel_operator,tt_base.group_tt_agent_user_operator,tt_base.group_reservation_level_1"/>
+              groups="tt_base.group_reservation_level_1"/>
 </odoo>

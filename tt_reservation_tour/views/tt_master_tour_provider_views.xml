@@ -5,7 +5,7 @@
         <field name="arch" type="xml">
             <form edit="false" create="false">
                 <header>
-                    <button string="Generate Letter of Guarantee" class="oe_highlight" name="generate_lg" type="object" attrs="{'invisible': ['|', ('is_lg_required', '!=', True), ('letter_of_guarantee_ids', '!=', [])]}" groups="tt_base.group_tt_accounting_manager,tt_base.group_tt_tour_travel_manager,tt_base.group_tt_tour_division_manager,base.group_system,tt_base.group_lg_po_level_4"/>
+                    <button string="Generate Letter of Guarantee" class="oe_highlight" name="generate_lg" type="object" attrs="{'invisible': ['|', ('is_lg_required', '!=', True), ('letter_of_guarantee_ids', '!=', [])]}" groups="base.group_system,tt_base.group_lg_po_level_4"/>
                 </header>
                 <sheet>
                     <group>

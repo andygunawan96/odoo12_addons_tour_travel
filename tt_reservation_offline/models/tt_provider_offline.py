@@ -84,7 +84,7 @@ class ProviderOffline(models.Model):
 
     def generate_lg_or_po(self, lg_type):
         if self.booking_id.state_offline == 'validate':
-            if not self.env.user.has_group('tt_base.group_tt_accounting_manager'):
+            if not self.env.user.has_group('tt_base.group_lg_po_level_5'):
                 hour_passed = (datetime.now() - self.booking_id.validate_date).seconds / 3600
                 if hour_passed > 1:
                     raise UserError('Failed to generate Letter of Guarantee. It has been more than 1 hour after this reservation was validated, please contact Accounting Manager to generate Letter of Guarantee.')

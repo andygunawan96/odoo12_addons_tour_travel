@@ -631,7 +631,8 @@
                              ref('tt_base.group_pricing_provider_level_3'),
                              ref('tt_base.group_pricing_agent_level_3'),
                              ref('tt_base.group_search_configuration_level_3'),
-                             ref('tt_base.group_voucher_level_3')])]"/>
+                             ref('tt_base.group_voucher_level_3'),
+                             ref('tt_base.group_user_data_level_1')])]"/>
             <field name="frontend_security_ids"
                    eval="[(6,0,[ref('tt_base.able_to_login'),
                                 ref('tt_base.able_to_ticketing_activity'),

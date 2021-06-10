@@ -134,7 +134,7 @@ class TtRescheduleLine(models.Model):
 
     def generate_po(self):
         if self.reschedule_id.state == 'final':
-            if not self.env.user.has_group('tt_base.group_tt_accounting_manager'):
+            if not self.env.user.has_group('tt_base.group_lg_po_level_5'):
                 hour_passed = (datetime.now() - self.reschedule_id.final_date).seconds / 3600
                 if hour_passed > 1:
                     raise UserError('Failed to generate Purchase Order. It has been more than 1 hour after this after sales was finalized, please contact Accounting Manager to generate Purchase Order.')

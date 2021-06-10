@@ -210,7 +210,7 @@ class TtEmailQueue(models.Model):
     def prepare_attachment_reservation_issued(self):
         attachment_id_list = []
         ref_obj = self.env[self.res_model].sudo().browse(int(self.res_id))
-        if ref_obj.state == 'issued':
+        if ref_obj.state == 'issued' or (self.type == 'issued_periksain' and ref_obj.state == 'issued_pending'):
             if self.type in ['issued_airline', 'issued_train', 'issued_activity', 'issued_hotel', 'issued_ppob']:
                 if self.type in ['issued_airline', 'issued_train', 'issued_ppob']:
                     ticket_data = ref_obj.print_eticket({})

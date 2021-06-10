@@ -53,11 +53,11 @@
         <field name="arch" type="xml">
             <form create="false">
                 <header>
-                    <button name="action_confirm" string="Confirm" type="object" groups="tt_base.group_tt_tour_travel_manager,tt_base.group_tt_accounting_manager,tt_base.group_lg_po_level_4" attrs="{'invisible':[('state','!=', 'draft')]}"/>
-                    <button name="action_sent" string="Set to Sent" type="object" groups="tt_base.group_tt_tour_travel_manager,tt_base.group_tt_accounting_manager,tt_base.group_lg_po_level_4" attrs="{'invisible':[('state','!=', 'confirm')]}"/>
-                    <button name="action_paid" string="Set to Paid" type="object" groups="tt_base.group_tt_accounting_manager,tt_base.group_lg_po_level_5" attrs="{'invisible':[('state','!=', 'sent')]}"/>
-                    <button name="set_to_draft" string="Set to Draft" type="object" groups="tt_base.group_tt_tour_travel_manager,tt_base.group_tt_accounting_manager,tt_base.group_lg_po_level_4" attrs="{'invisible':[('state','!=', 'cancel')]}"/>
-                    <button name="action_cancel" string="Cancel" groups="tt_base.group_tt_accounting_manager,tt_base.group_lg_po_level_5" type="object" attrs="{'invisible':[('state','=','cancel')]}" confirm="Are you sure you want to cancel?"/>
+                    <button name="action_confirm" string="Confirm" type="object" groups="tt_base.group_lg_po_level_4" attrs="{'invisible':[('state','!=', 'draft')]}"/>
+                    <button name="action_sent" string="Set to Sent" type="object" groups="tt_base.group_lg_po_level_4" attrs="{'invisible':[('state','!=', 'confirm')]}"/>
+                    <button name="action_paid" string="Set to Paid" type="object" groups="tt_base.group_lg_po_level_5" attrs="{'invisible':[('state','!=', 'sent')]}"/>
+                    <button name="set_to_draft" string="Set to Draft" type="object" groups="tt_base.group_lg_po_level_4" attrs="{'invisible':[('state','!=', 'cancel')]}"/>
+                    <button name="action_cancel" string="Cancel" groups="tt_base.group_lg_po_level_5" type="object" attrs="{'invisible':[('state','=','cancel')]}" confirm="Are you sure you want to cancel?"/>
 
                     <field name="state" widget="statusbar" statusbar_visible="draft,confirm,sent,paid"/>
                 </header>
@@ -156,9 +156,9 @@
     </record>
 
     <menuitem id="menu_transaction_letter_guarantee" parent="tt_base.top_menu_accounting"
-              name="Letter of Guarantee" sequence="30" groups="tt_base.group_tt_tour_travel_operator,tt_base.group_tt_accounting_operator,tt_base.group_lg_po_level_1"/>
+              name="Letter of Guarantee" sequence="30" groups="tt_base.group_lg_po_level_1"/>
 
     <menuitem id="sub_menu_transaction_letter_guarantee" parent="tt_base.menu_transaction_letter_guarantee"
-              name="Letter of Guarantee" action="tt_letter_guarantee_action" sequence="10" groups="tt_base.group_tt_tour_travel_operator,tt_base.group_tt_accounting_operator,tt_base.group_lg_po_level_1"/>
+              name="Letter of Guarantee" action="tt_letter_guarantee_action" sequence="10" groups="tt_base.group_lg_po_level_1"/>
 
 </odoo>

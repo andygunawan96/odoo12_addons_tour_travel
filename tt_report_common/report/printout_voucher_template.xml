@@ -11,7 +11,7 @@
     </template>
 
     <template id="voucher_layout_header">
-        <div class="row" style="height:100px; font-family: 'LiberationSans'">
+        <div class="row" style="height:100px; font-family: 'Liberation Sans'">
             <t t-if="doc_type == 'ho_invoice'">
                 <div class="col-4" style="margin-left: 30px">
                     <img t-att-src="'data:image/png;base64,%s' % to_text(ho_obj.logo)" height="200" border="1" width="300" style="max-height:100px; max-width:165px; margin-bottom: 20px"/>
@@ -127,7 +127,7 @@
             <t t-foreach="docs" t-as="doc">
                 <div class="page">
                     <t t-call="tt_report_common.voucher_layout">
-                        <div style="margin: 0 20px; font-family: 'LiberationSans'">
+                        <div style="margin: 0 20px; font-family: 'Liberation Sans'">
                             <table style="margin-bottom: 20px; margin-top: 20px;">
                                 <tr>
                                     <td style="width:50px;">To</td>

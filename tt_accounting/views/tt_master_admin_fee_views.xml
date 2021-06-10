@@ -11,7 +11,7 @@
                 <field name="min_amount_agent"/>
 
                 <group expand="0" string="Group By">
-                    <filter name="group_by_after_sales_type" string="After Sales Type" domain="[]" context="{'group_by':'after_sales_type'}" groups="tt_base.group_tt_tour_travel_operator,tt_base.group_after_sales_master_level_1"/>
+                    <filter name="group_by_after_sales_type" string="After Sales Type" domain="[]" context="{'group_by':'after_sales_type'}" groups="tt_base.group_after_sales_master_level_1"/>
                 </group>
             </search>
         </field>
@@ -131,6 +131,6 @@
               action="tt_accounting.tt_master_admin_fee_action_views"
               name="Admin Fee"
               sequence="1"
-              groups="tt_base.group_tt_tour_travel_operator,tt_base.group_after_sales_master_level_1"/>
+              groups="tt_base.group_after_sales_master_level_1"/>
 
 </odoo>

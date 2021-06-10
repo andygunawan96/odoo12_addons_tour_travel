@@ -9,28 +9,28 @@
                 <div class="page">
                     <t t-if="is_ho == true">
                         <t t-call="tt_report_common.external_layout">
-                            <div style="margin: 0 20px; font-family: 'LiberationSans'">
+                            <div style="margin: 0 20px; font-family: 'Liberation Sans'">
                                 <t t-call="tt_report_common.refund_ho_content_view"/>
                             </div>
                         </t>
                     </t>
                     <t t-if="is_agent == true">
                         <t t-call="tt_report_common.external_layout">
-                            <div style="margin: 0 20px; font-family: 'LiberationSans'">
+                            <div style="margin: 0 20px; font-family: 'Liberation Sans'">
                                 <t t-call="tt_report_common.refund_ho_agent_content_view"/>
                             </div>
                         </t>
                     </t>
                     <t t-if="is_est == true">
                         <t t-call="tt_report_common.external_layout">
-                            <div style="margin: 0 20px; font-family: 'LiberationSans'">
+                            <div style="margin: 0 20px; font-family: 'Liberation Sans'">
                                 <t t-call="tt_report_common.refund_est_content_view"/>
                             </div>
                         </t>
                     </t>
                     <t t-if="not is_est == true and not is_ho == true and not is_agent == true">
                         <t t-call="tt_report_common.external_layout">
-                            <div style="margin: 0 20px; font-family: 'LiberationSans'">
+                            <div style="margin: 0 20px; font-family: 'Liberation Sans'">
                                 <t t-call="tt_report_common.refund_content_view"/>
                             </div>
                         </t>

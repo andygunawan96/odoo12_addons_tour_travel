@@ -1100,7 +1100,7 @@
             <t t-foreach="docs" t-as="doc">
                 <div class="page">
                     <t t-call="tt_report_common.external_layout">
-                        <div style="margin: 0px 10px 20px 10px; font-family: 'LiberationSans'">
+                        <div style="margin: 0px 10px 20px 10px; font-family: 'Liberation Sans'">
                             <div style="margin-bottom: 10px; margin-top: 10px;">
                                 <span style="font-size: 18px; font-weight: 730">No. Booking : </span>
                                 <span t-field="doc.name" style="font-size: 18px; font-weight: 730"/><br/>
@@ -1132,7 +1132,7 @@
             <t t-foreach="docs" t-as="doc">
                 <div class="page">
                     <t t-call="tt_report_common.external_layout">
-                        <div style="margin: 0px 10px 20px 10px; font-family: 'LiberationSans'">
+                        <div style="margin: 0px 10px 20px 10px; font-family: 'Liberation Sans'">
                             <div style="margin-bottom: 10px; margin-top: 10px;">
                                 <span style="font-size: 18px; font-weight: 730">No. Booking : </span>
                                 <span t-field="doc.name" style="font-size: 18px; font-weight: 730"/><br/>
@@ -1156,7 +1156,7 @@
             <t t-foreach="docs" t-as="doc">
                 <div class="page">
                     <t t-call="tt_report_common.external_layout">
-                        <div style="margin: 0px 10px 20px 10px; font-family: 'LiberationSans'">
+                        <div style="margin: 0px 10px 20px 10px; font-family: 'Liberation Sans'">
                             <div style="margin-bottom: 10px; margin-top: 10px;">
                                 <span style="font-size: 18px; font-weight: 730">No. Booking : </span>
                                 <span t-field="doc.name" style="font-size: 18px; font-weight: 730"/><br/>
@@ -1180,7 +1180,7 @@
             <t t-foreach="docs" t-as="doc">
                 <div class="page">
                     <t t-call="tt_report_common.external_layout">
-                        <div style="margin: 0px 10px 20px 10px; font-family: 'LiberationSans'">
+                        <div style="margin: 0px 10px 20px 10px; font-family: 'Liberation Sans'">
                             <div style="margin-bottom: 10px; margin-top: 10px;">
                                 <span style="font-size: 18px; font-weight: 730">No. Booking : </span>
                                 <span t-field="doc.name" style="font-size: 18px; font-weight: 730"/><br/>
@@ -1204,7 +1204,7 @@
             <t t-foreach="docs" t-as="doc">
                 <div class="page">
                     <t t-call="tt_report_common.external_layout">
-                        <div style="margin: 0px 10px 20px 10px; font-family: 'LiberationSans'">
+                        <div style="margin: 0px 10px 20px 10px; font-family: 'Liberation Sans'">
                             <div style="margin-bottom: 10px; margin-top: 10px;">
                                 <span style="font-size: 18px; font-weight: 730">No. Booking : </span>
                                 <span t-field="doc.name" style="font-size: 18px; font-weight: 730"/><br/>
@@ -1228,7 +1228,7 @@
             <t t-foreach="docs" t-as="doc">
                 <div class="page">
                     <t t-call="tt_report_common.external_layout">
-                        <div style="margin: 0px 10px 20px 10px; font-family: 'LiberationSans'">
+                        <div style="margin: 0px 10px 20px 10px; font-family: 'Liberation Sans'">
                             <div style="margin-bottom: 10px; margin-top: 10px;">
                                 <span style="font-size: 18px; font-weight: 730">No. Booking : </span>
                                 <span t-field="doc.name" style="font-size: 18px; font-weight: 730"/><br/>
@@ -1252,7 +1252,7 @@
             <t t-foreach="docs" t-as="doc">
                 <div class="page">
                     <t t-call="tt_report_common.external_layout">
-                        <div style="margin: 0px 10px 20px 10px; font-family: 'LiberationSans'">
+                        <div style="margin: 0px 10px 20px 10px; font-family: 'Liberation Sans'">
                             <div style="margin-bottom: 10px; margin-top: 10px;">
                                 <span style="font-size: 18px; font-weight: 730">No. Booking : </span>
                                 <span t-field="doc.name" style="font-size: 18px; font-weight: 730"/><br/>
@@ -1276,7 +1276,7 @@
             <t t-foreach="docs" t-as="doc">
                 <div class="page">
                     <t t-call="tt_report_common.external_layout">
-                        <div style="margin: 0px 10px 20px 10px; font-family: 'LiberationSans'">
+                        <div style="margin: 0px 10px 20px 10px; font-family: 'Liberation Sans'">
                             <div style="margin-bottom: 10px; margin-top: 10px;">
                                 <span style="font-size: 18px; font-weight: 730">No. Booking : </span>
                                 <span t-field="doc.name" style="font-size: 18px; font-weight: 730"/><br/>

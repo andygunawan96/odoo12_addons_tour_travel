@@ -49,6 +49,6 @@
               parent="tt_reservation_visa.menu_tour_travel_visa_master"
               name="Locations"
               action="tt_reservation_visa.tt_master_visa_locations_view_action"
-              groups="tt_base.group_tt_tour_travel_operator,tt_base.group_master_data_visa_level_1"
+              groups="tt_base.group_master_data_visa_level_1"
               sequence="2"/>
 </odoo>
