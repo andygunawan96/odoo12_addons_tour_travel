@@ -103,7 +103,7 @@ class ReservationPeriksain(models.Model):
         except Exception as e:
             _logger.info('Error Create Email Queue')
 
-    def action_issued_pending_periksain(self,co_uid, customer_parent_id, acquirer_id = False):
+    def action_issued_pending_periksain(self, co_uid, customer_parent_id, acquirer_id = False):
         issued_pending_hold_date = datetime.max
         for provider_obj in self.provider_booking_ids:
             if issued_pending_hold_date > provider_obj.issued_pending_hold_date:
@@ -797,7 +797,7 @@ class ReservationPeriksain(models.Model):
             res = book_obj.env['tt.upload.center.wizard'].upload_file_api(
                 {
                     'filename': 'Periksain Ticket %s.pdf' % book_obj.name,
-                    'file_reference': 'Periksain Ticket',
+                    'file_reference': 'Periksain Ticket with Price',
                     'file': base64.b64encode(pdf_report_bytes[0]),
                     'delete_date': datetime.today() + timedelta(minutes=10)
                 },
@@ -832,7 +832,6 @@ class ReservationPeriksain(models.Model):
         datas['form'] = res
         datas['is_with_price'] = True
         airline_ticket_id = book_obj.env.ref('tt_report_common.action_report_printout_reservation_airline')
-
 
         if not book_obj.printout_ticket_original_ids:
             # gateway get ticket
@@ -891,8 +890,8 @@ class ReservationPeriksain(models.Model):
             pdf_report_bytes = airline_ho_invoice_id.render_qweb_pdf(data=pdf_report)
             res = self.env['tt.upload.center.wizard'].upload_file_api(
                 {
-                    'filename': 'Airline HO Invoice %s.pdf' % self.name,
-                    'file_reference': 'Airline HO Invoice',
+                    'filename': 'Periksain HO Invoice %s.pdf' % self.name,
+                    'file_reference': 'Periksain HO Invoice',
                     'file': base64.b64encode(pdf_report_bytes[0]),
                     'delete_date': datetime.today() + timedelta(minutes=10)
                 },

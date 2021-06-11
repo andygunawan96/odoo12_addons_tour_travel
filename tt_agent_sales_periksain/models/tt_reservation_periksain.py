@@ -1,6 +1,7 @@
 from odoo import models,api,fields
 from datetime import datetime
 
+
 class ReservationPeriksain(models.Model):
 
     _inherit = 'tt.reservation.periksain'
@@ -30,7 +31,11 @@ class ReservationPeriksain(models.Model):
             self.state_invoice = 'partial'
 
     def get_segment_description(self):
+        # TODO: soale mnurut ku biar ada nomor pendaftarane walo g kepake nomer e
+        # Opsi 1: Jika Nama reservation dan PNR e sdah sama pakai yg ini
         tmp = ''
+        # Opsi 2: Jika PNR dan resv ne beda pakek yg ini
+        # tmp = self.name + '\n'
         tmp += 'Address : %s' % (self.test_address)
         for time_obj in self.timeslot_ids:
             if type(time_obj.datetimeslot) == datetime:
