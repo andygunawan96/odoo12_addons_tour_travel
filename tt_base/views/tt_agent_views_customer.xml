@@ -7,8 +7,8 @@
             <form>
                 <header>
                     <button name="get_current_agent_target" type="object" string="Calc Target" groups="base.group_system"/>
-                    <button name="generate_va_number" type="object" string="Generate VA" groups="tt_base.group_tt_agent_finance"/>
-                    <button name="generate_rodexshop_key" type="object" string="Generate Rodexshop Key" groups="tt_base.group_tt_agent_finance"/>
+                    <button name="generate_va_number" type="object" string="Generate VA" groups="tt_base.group_tt_agent_finance,tt_base.group_payment_acquirer_level_3"/>
+                    <button name="generate_rodexshop_key" type="object" string="Generate Rodexshop Key" groups="tt_base.group_tt_agent_finance,tt_base.group_payment_acquirer_level_3"/>
                 </header>
                 <sheet>
                     <div class="oe_button_box" name="button_box">
