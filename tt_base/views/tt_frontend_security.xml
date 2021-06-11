@@ -1,27 +1,29 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-<!--    <record id="tt_skipped_keys_form_view" model="ir.ui.view">-->
-<!--        <field name="name">tt.skipped.keys.form.view</field>-->
-<!--        <field name="model">tt.skipped.keys</field>-->
-<!--        <field name="arch" type="xml">-->
-<!--            <form>-->
-<!--                <sheet>-->
-<!--                    <div class="oe_button_box" name="button_box">-->
-<!--                        <button name="toggle_active" type="object" groups="base.group_user"-->
-<!--                                class="oe_stat_button" icon="fa-archive">-->
-<!--                            <field name="active" widget="boolean_button"-->
-<!--                                   options='{"terminology": "archive"}'/>-->
-<!--                        </button>-->
-<!--                    </div>-->
-
-<!--                    <group>-->
-<!--                        <field name="model_name"/>-->
-<!--                        <field name="field_name"/>-->
-<!--                    </group>-->
-<!--                </sheet>-->
-<!--            </form>-->
-<!--        </field>-->
-<!--    </record>-->
+    <record id="tt_frontend_security_form_view" model="ir.ui.view">
+        <field name="name">tt.frontend.security.form.view</field>
+        <field name="model">tt.frontend.security</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <button string="Assign to Users" name="%(tt_base.frontend_security_assign_wizard_action_view)d" type="action" groups="base.group_system"
+                        context="{
+                        'default_frontend_security_id': id,
+                   }"/>
+                </header>
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="name"/>
+                        </group>
+                        <group>
+                            <field name="code"/>
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
 
     <record id="tt_frontend_security_tree_view" model="ir.ui.view">
         <field name="name">tt.frontend.security.tree.view</field>
@@ -43,6 +45,7 @@
         <field name="domain">[]</field>
         <field name="context">
             {
+            'form_view_ref': 'tt_base.tt_frontend_security_form_view',
             'tree_view_ref': 'tt_base.tt_frontend_security_tree_view',
             }
         </field>

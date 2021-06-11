@@ -218,7 +218,7 @@ class Reservationphc(models.Model):
                 overtime_surcharge = True
                 break
 
-        carrier_obj = self.env['tt.transport.carrier'].search([('carrier_code','=',req['carrier_code'])])
+        carrier_obj = self.env['tt.transport.carrier'].search([('code','=',req['carrier_code'])])
         single_suplement = False
         if req['pax_count'] <= 1 and \
                 carrier_obj.id != self.env.ref('tt_reservation_phc.tt_transport_carrier_phc_drive_thru_antigen').id:
@@ -251,6 +251,7 @@ class Reservationphc(models.Model):
                     'customer_id': list_customer_id[idx].id,
                     'email': passengers[idx]['email'],
                     'phone_number': passengers[idx]['phone_number'],
+                    'tempat_lahir': passengers[idx]['tempat_lahir'],
                     'profession': passengers[idx]['profession'],
                     'work_place': passengers[idx]['work_place'],
                     'address': passengers[idx]['address'],
@@ -364,6 +365,8 @@ class Reservationphc(models.Model):
 
                 if provider['status'] == 'ISSUED_PENDING':
                     provider_obj.action_issued_pending_api_phc(context)
+                    for idx, ticket_obj in enumerate(provider['tickets']):
+                        provider_obj.update_ticket_per_pax_api(idx, ticket_obj['ticket_number'])
                     any_provider_changed = True
 
             if any_provider_changed:
