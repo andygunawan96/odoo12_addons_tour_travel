@@ -279,6 +279,37 @@
             <field name="implied_ids" eval="[(4, ref('group_master_data_periksain_level_4'))]"/>
         </record>
 
+        <!--    master data phc-->
+        <record id="group_master_data_phc_level_1" model="res.groups">
+            <field name="name">Level 1</field>
+            <field name="category_id" ref="tt_base.module_category_master_data_phc"/>
+            <field name="implied_ids" eval="[(4, ref('base.group_user'))]"/>
+        </record>
+
+        <record id="group_master_data_phc_level_2" model="res.groups">
+            <field name="name">Level 2</field>
+            <field name="category_id" ref="tt_base.module_category_master_data_phc"/>
+            <field name="implied_ids" eval="[(4, ref('group_master_data_phc_level_1'))]"/>
+        </record>
+
+        <record id="group_master_data_phc_level_3" model="res.groups">
+            <field name="name">Level 3</field>
+            <field name="category_id" ref="tt_base.module_category_master_data_phc"/>
+            <field name="implied_ids" eval="[(4, ref('group_master_data_phc_level_2'))]"/>
+        </record>
+
+        <record id="group_master_data_phc_level_4" model="res.groups">
+            <field name="name">Level 4</field>
+            <field name="category_id" ref="tt_base.module_category_master_data_phc"/>
+            <field name="implied_ids" eval="[(4, ref('group_master_data_phc_level_3'))]"/>
+        </record>
+
+        <record id="group_master_data_phc_level_5" model="res.groups">
+            <field name="name">Level 5</field>
+            <field name="category_id" ref="tt_base.module_category_master_data_phc"/>
+            <field name="implied_ids" eval="[(4, ref('group_master_data_phc_level_4'))]"/>
+        </record>
+
         <!--    external vendor event-->
         <record id="group_external_vendor_event_level_1" model="res.groups">
             <field name="name">Level 1</field>
@@ -303,6 +334,19 @@
             <field name="name">Level 2</field>
             <field name="category_id" ref="tt_base.module_category_external_vendor_periksain"/>
             <field name="implied_ids" eval="[(4, ref('tt_base.group_external_vendor_periksain_level_1'))]"/>
+        </record>
+
+        <!--    external vendor phc-->
+        <record id="group_external_vendor_phc_level_1" model="res.groups">
+            <field name="name">Level 1</field>
+            <field name="category_id" ref="tt_base.module_category_external_vendor_phc"/>
+            <field name="implied_ids" eval="[(4, ref('base.group_user'))]"/>
+        </record>
+
+        <record id="group_external_vendor_phc_level_2" model="res.groups">
+            <field name="name">Level 2</field>
+            <field name="category_id" ref="tt_base.module_category_external_vendor_phc"/>
+            <field name="implied_ids" eval="[(4, ref('tt_base.group_external_vendor_phc_level_1'))]"/>
         </record>
 
         <!--    tour request-->

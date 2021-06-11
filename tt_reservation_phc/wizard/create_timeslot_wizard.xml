@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="create_timeslot_phc_wizard_form_view" model="ir.ui.view">
+        <field name="name">Create Timeslot Wizard</field>
+        <field name="model">create.timeslot.phc.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Create Timeslot Wizard">
+                <group>
+                    <field name="area_id"/>
+                    <field name="start_date"/>
+                    <field name="end_date"/>
+                    <field name="time_string"/>
+                </group>
+                <footer>
+                    <button name="generate_timeslot" string="Generate Timeslot" type="object" default_focus="1" class="oe_highlight"/>
+                    or
+                    <button string="Cancel" class="oe_link" special="cancel" />
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="create_timeslot_wizard_phc_action_view" model="ir.actions.act_window">
+        <field name="name">Create Timeslot phc Wizard</field>
+        <field name="res_model">create.timeslot.phc.wizard</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+
+    <menuitem id="submenu_reservations_phc_create_timeslot"
+              parent="tt_reservation_phc.menu_master_data_phc"
+              name="Create Timeslot"
+              action="tt_reservation_phc.create_timeslot_wizard_phc_action_view"
+              groups="tt_base.group_master_data_phc_level_3"
+              sequence="20"/>
+
+</odoo>
