@@ -352,7 +352,9 @@ class TtProviderphc(models.Model):
             if rec.charge_type == 'RAC' and not rec.charge_code == 'rac':
                 continue
             service_charges.append(rec.to_dict())
-
+        ticket_list = []
+        for rec in self.ticket_ids:
+            ticket_list.append(rec.to_dict())
         res = {
             'pnr': self.pnr and self.pnr or '',
             'pnr2': self.pnr2 and self.pnr2 or '',
@@ -360,6 +362,7 @@ class TtProviderphc(models.Model):
             'provider_id': self.id,
             'agent_id': self.booking_id.agent_id.id if self.booking_id and self.booking_id.agent_id else '',
             'state': self.state,
+            'tickets': ticket_list,
             'state_description': variables.BOOKING_STATE_STR[self.state],
             'balance_due': self.balance_due and self.balance_due or 0,
             'total_price': self.total_price and self.total_price or 0,
@@ -378,3 +381,52 @@ class TtProviderphc(models.Model):
                 "code": rec['code']
             })
         return ERR.get_no_error(res)
+
+    def update_ticket_per_pax_api(self, idx, passenger_ticket):
+        self.ticket_ids[idx].ticket_number = passenger_ticket
+
+    def update_ticket_api(self,passengers):##isi ticket number
+        ticket_not_found = []
+        for psg in passengers:
+            ticket_found = False
+            for ticket in self.ticket_ids:
+                ticket_passenger_name = ticket.passenger_id and ticket.passenger_id.name or ''
+                psg_name = ticket_passenger_name.replace(' ','').lower()
+                if ('%s%s' % (psg['first_name'], psg['last_name'])).replace(' ','').lower() in [psg_name, psg_name*2] and not ticket.ticket_number or (psg.get('ticket_number') and ticket.ticket_number == psg.get('ticket_number')):
+                    ticket_values = {
+                        'ticket_number': psg.get('ticket_number', ''),
+                    }
+                    # if ticket_values['ff_code']:
+                    #     loyalty_id = self.env['tt.loyalty.program'].sudo().get_id(ticket_values['ff_code'])
+                    #     if loyalty_id:
+                    #         ticket_values['loyalty_program_id'] = loyalty_id
+                    ticket.write(ticket_values)
+                    ticket_found = True
+                    ticket.passenger_id.is_ticketed = True
+                    break
+            if not ticket_found:
+                ticket_not_found.append(psg)
+
+        for psg in ticket_not_found:
+            # April 21, 2020 - SAM
+            # self.write({
+            #     'ticket_ids': [(0,0,{
+            #         'ticket_number': psg.get('ticket_number'),
+            #         'pax_type': psg.get('pax_type'),
+            #     })]
+            # })
+            ticket_values = {
+                'ticket_number': psg.get('ticket_number'),
+                'ff_number': psg.get('ff_number', ''),
+                'pax_type': psg.get('pax_type'),
+            }
+            if psg.get('passenger_id'):
+                ticket_values['passenger_id'] = psg['passenger_id']
+            # if ticket_values['ff_code']:
+            #     loyalty_id = self.env['tt.loyalty.program'].sudo().get_id(ticket_values['ff_code'])
+            #     if loyalty_id:
+            #         ticket_values['loyalty_program_id'] = loyalty_id
+            self.write({
+                'ticket_ids': [(0, 0, ticket_values)]
+            })
+            # END

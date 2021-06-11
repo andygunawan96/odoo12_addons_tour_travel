@@ -21,6 +21,7 @@ class TtReservationCustomer(models.Model):
 
     phone_number = fields.Char('Phone Number')
 
+    tempat_lahir = fields.Char('Tempat Lahir')
     profession = fields.Char('Profession')
     work_place = fields.Char('Work Place')
     address = fields.Char('Address')
@@ -40,6 +41,7 @@ class TtReservationCustomer(models.Model):
         res = super(TtReservationCustomer, self).to_dict()
         res.update({
             'sale_service_charges': self.get_service_charges(),
+            'tempat_lahir': self.tempat_lahir,
             'profession': self.profession,
             'work_place': self.work_place,
             'address': self.address,
