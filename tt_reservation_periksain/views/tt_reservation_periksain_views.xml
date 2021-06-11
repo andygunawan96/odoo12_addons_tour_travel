@@ -128,6 +128,9 @@
                             <field name="nationality_id"/>
                             <field name="identity_type"/>
                             <field name="identity_number"/>
+                            <field name="email"/>
+                            <field name="phone_number"/>
+                            <field name="sample_method"/>
                         </tree>
                     </field>
                 </page>
@@ -270,9 +273,11 @@
                                     <field name="last_name"/>
                                     <field name="gender"/>
                                     <field name="birth_date"/>
-                                    <field name="nationality_id"/>
                                     <field name="identity_type"/>
                                     <field name="identity_number"/>
+                                    <field name="email"/>
+                                    <field name="phone_number"/>
+                                    <field name="sample_method"/>
                                 </tree>
                             </field>
                         </page>
