@@ -836,7 +836,7 @@ class PrintoutInvoiceHO(models.AbstractModel):
                     'name': rec2.title + ' ' + rec2.name,
                     'total': sum([rec3.total for rec3 in rec2.cost_service_charge_ids if rec3.charge_type != 'RAC'])
                 } for rec2 in rec.passenger_ids],
-                'descs': ['Est Date:' + rec.timeslot_ids[0].datetimeslot, 'Address:' + rec.test_address,],
+                'descs': ['Est Date:' + str(rec.timeslot_ids[0].datetimeslot), 'Address:' + rec.test_address,],
                 'provider_type': rec.provider_type_id.name
             }
             # a[issued_name]['descs'].append(self.get_description(rec, data))
@@ -2081,7 +2081,8 @@ class PrintoutPeriksainItineraryForm(models.AbstractModel):
             'price_lines': values,
             'date_now': fields.Date.today().strftime('%d %b %Y'),
             'base_color': self.sudo().env['ir.config_parameter'].get_param('tt_base.website_default_color', default='#FFFFFF'),
-            'img_url': "url('/tt_report_common/static/images/background footer airline.jpg');"
+            'img_url': "url('/tt_report_common/static/images/background footer airline.jpg');",
+            'printout_tz': pytz.timezone('Asia/Jakarta')
         }
 
 

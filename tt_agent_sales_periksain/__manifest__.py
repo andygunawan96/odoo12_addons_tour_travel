@@ -7,7 +7,7 @@
     'sequence': 30,
     'description': """
 Tour & Travel - Agent Sales Periksain
-=================================
+=====================================
 Key Features
 ------------
     """,
