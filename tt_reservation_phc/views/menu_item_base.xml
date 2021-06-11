@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <!-- Top Menu -->
+        <!-- Airline -->
+        <menuitem id="top_reservations_phc"
+                  parent="tt_reservation.main_reservations"
+                  name="phc"
+                  sequence="45"
+                  groups="base.group_user"/>
+        
+        <menuitem id="menu_reservations_phc"
+                  parent="tt_reservation_phc.top_reservations_phc"
+                  name="Booking"
+                  sequence="1"/>
+
+        <menuitem id="menu_master_data_phc"
+                  parent="tt_reservation_phc.top_reservations_phc"
+                  name="Master Data"
+                  sequence="2"/>
+    </data>
+</odoo>

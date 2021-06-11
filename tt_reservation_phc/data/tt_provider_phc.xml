@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <record id="tt_provider_phc_phc" model="tt.provider">
+            <field name="name">phc.id</field>
+            <field name="code">phc</field>
+            <field name="active" eval="True"/>
+            <field name="provider_type_id" ref="tt_provider_type_phc"/>
+        </record>
+    </data>
+</odoo>
