@@ -88,7 +88,7 @@
         <field name="name">tt.master.event.reservation.view.tree</field>
         <field name="model">tt.event.reservation</field>
         <field name="arch" type="xml">
-            <tree>
+            <tree create="false">
                 <field name="pnr"/>
                 <field name="validator_sequence"/>
                 <field name="ticket_number"/>
