@@ -22,7 +22,7 @@
         <field name="name">tt.master.event.reservation.view.form</field>
         <field name="model">tt.event.reservation</field>
         <field name="arch" type="xml">
-            <form string="">
+            <form string="" create="false">
                 <header>
                     <button name="action_request" type="object" string="Request" states="draft"/>
                     <button name="action_confirm" type="object" string="Confirm" states="request"/>
