@@ -218,7 +218,7 @@ class Reservationphc(models.Model):
                 overtime_surcharge = True
                 break
 
-        carrier_obj = self.env['tt.transport.carrier'].search([('carrier_code','=',req['carrier_code'])])
+        carrier_obj = self.env['tt.transport.carrier'].search([('code','=',req['carrier_code'])])
         single_suplement = False
         if req['pax_count'] <= 1 and \
                 carrier_obj.id != self.env.ref('tt_reservation_phc.tt_transport_carrier_phc_drive_thru_antigen').id:
