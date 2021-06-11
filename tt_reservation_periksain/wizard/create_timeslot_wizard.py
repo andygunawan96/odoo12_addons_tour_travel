@@ -15,7 +15,7 @@ class CreateTimeslotPeriksainWizard(models.TransientModel):
 
     start_date = fields.Date('Start Date',required=True, default=fields.Date.today())
     end_date = fields.Date('End Date',required=True, default=fields.Date.today())
-    time_string = fields.Text('Time',default='08:00,08:50,09:40,10:30,11:20,12:10,13:00,13:50,14:40,15:30,16:20,17:10,18:00,18:50,19:40,20:30')
+    time_string = fields.Text('Time',default='08:00,09:00,10:00,11:00,12:00,13:00,14:00,15:00,16:00,17:00,18:00,19:00,20:00.21:00')
 
     @api.onchange('start_date')
     def _onchange_start_date(self):
