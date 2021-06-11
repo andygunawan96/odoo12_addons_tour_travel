@@ -18,9 +18,9 @@
                 <!--<field name="state" widget="statusbar" statusbar_visible="draft,booked,issued"/>-->
                 <!--</header>-->
                 <header>
-                    <button string="Set To Booked" name="action_set_to_book_from_button" groups="tt_base.group_tt_ticketing_operator,tt_base.group_reservation_provider_level_4" states="cancel2,issued,fail_issued" type="object"/>
+                    <button string="Set To Booked" name="action_set_to_book_from_button" groups="tt_base.group_reservation_provider_level_4" states="cancel2,issued,fail_issued" type="object"/>
                     <button string="Issued Locally" name="%(tt_reservation_train.force_issued_wizard_train_action_view)d" states="booked" type="action"
-                            groups="tt_base.group_tt_ticketing_operator,tt_base.group_reservation_provider_level_4"
+                            groups="tt_base.group_reservation_provider_level_4"
                             context="{
                         'default_provider_id': id,
                    }"/>
@@ -111,7 +111,7 @@
             <tree>
                 <field name="pnr"/>
                 <field name="pnr2"/>
-                <field name="provider_id" groups="tt_base.group_tt_tour_travel_operator,tt_base.group_tt_tour_travel"/>
+                <field name="provider_id" groups="tt_base.group_tt_tour_travel"/>
                 <field name="origin_id"/>
                 <field name="destination_id"/>
                 <field name="departure_date"/>

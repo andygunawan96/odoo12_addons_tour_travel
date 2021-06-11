@@ -9,8 +9,8 @@
                 <form edit="false" create="false">
                     <header>
                         <field name="state_offline" invisible="1"/>
-                        <button string="Generate Letter of Guarantee" class="oe_highlight" name="generate_lg" type="object" attrs="{'invisible': ['|', ('is_lg_required', '!=', True), ('state_offline', 'not in', ['validate', 'done'])]}" groups="tt_base.group_tt_accounting_manager,tt_base.group_tt_tour_travel_manager,base.group_system,tt_base.group_lg_po_level_4"/>
-                        <button string="Generate Purchase Order" class="oe_highlight" name="generate_po" type="object" attrs="{'invisible': ['|', ('is_po_required', '!=', True), ('state_offline', 'not in', ['validate', 'done'])]}" groups="tt_base.group_tt_accounting_manager,tt_base.group_tt_tour_travel_manager,base.group_system,tt_base.group_lg_po_level_4"/>
+                        <button string="Generate Letter of Guarantee" class="oe_highlight" name="generate_lg" type="object" attrs="{'invisible': ['|', ('is_lg_required', '!=', True), ('state_offline', 'not in', ['validate', 'done'])]}" groups="base.group_system,tt_base.group_lg_po_level_4"/>
+                        <button string="Generate Purchase Order" class="oe_highlight" name="generate_po" type="object" attrs="{'invisible': ['|', ('is_po_required', '!=', True), ('state_offline', 'not in', ['validate', 'done'])]}" groups="base.group_system,tt_base.group_lg_po_level_4"/>
                         <field name="state" readonly="1" widget="statusbar" statusbar_visible="draft,booked,issued"/>
                     </header>
                     <sheet>
@@ -63,7 +63,7 @@
             <field name="model">tt.provider.offline</field>
             <field name="arch" type="xml">
                 <tree string="">
-                    <field name="provider_id" groups="tt_base.group_tt_tour_travel_operator,tt_base.group_tt_tour_travel"/>
+                    <field name="provider_id" groups="tt_base.group_tt_tour_travel"/>
                     <field name="pnr"/>
                     <field name="state" string="Status"/>
                 </tree>

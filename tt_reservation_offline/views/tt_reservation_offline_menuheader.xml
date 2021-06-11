@@ -2,7 +2,7 @@
 <odoo>
     <menuitem id="top_reservations_offline" parent="tt_reservation.main_reservations"
                   name="Issued Offline" sequence='80'
-                  groups="tt_base.group_tt_agent_user_operator,tt_base.group_tt_tour_travel_operator,tt_base.group_reservation_level_1"/>
+                  groups="tt_base.group_reservation_level_1"/>
 
         <menuitem id="menu_offline_order"
                   parent="top_reservations_offline"

@@ -5,14 +5,14 @@
         <field name="arch" type="xml">
             <form edit="false" create="false">
                 <header>
-                    <button string="Set To Booked" name="action_set_to_book_from_button" groups="tt_base.group_tt_ticketing_operator,tt_base.group_reservation_provider_level_4" states="cancel2,issued,fail_issued" type="object"/>
+                    <button string="Set To Booked" name="action_set_to_book_from_button" groups="tt_base.group_reservation_provider_level_4" states="cancel2,issued,fail_issued" type="object"/>
                     <button string="Issued Locally" name="%(tt_reservation_airline.force_issued_wizard_airline_action_view)d" states="booked" type="action"
-                            groups="tt_base.group_tt_ticketing_operator,tt_base.group_reservation_provider_level_4"
+                            groups="tt_base.group_reservation_provider_level_4"
                             context="{'default_provider_id': id,}"/>
                     <button string="Reverse Ledger" name="action_reverse_ledger_from_button" states="issued,cancel2,fail_issued" type="object"/>
                     <button string="Sync Refund Status" name="action_sync_refund_status" states="refund_pending" type="object"/>
                     <button string="Reprice" name='action_reprice_provider' states="booked" type="object"
-                            groups="tt_base.group_tt_ticketing_operator,tt_base.group_reservation_provider_level_4" style="margin-left: 200px !important;"/>
+                            groups="tt_base.group_reservation_provider_level_4" style="margin-left: 200px !important;"/>
                     <field name="state" widget="statusbar" statusbar_visible="draft,booked,issued"/>
                 </header>
                 <sheet>
@@ -112,7 +112,7 @@
         <field name="arch" type="xml">
             <tree>
                 <field name="pnr"/>
-                <field name="provider_id" groups="tt_base.group_tt_tour_travel_operator,tt_base.group_tt_tour_travel"/>
+                <field name="provider_id" groups="tt_base.group_tt_tour_travel"/>
                 <field name="origin_id"/>
                 <field name="destination_id"/>
                 <field name="departure_date"/>
@@ -143,7 +143,7 @@
               parent="tt_reservation_airline.menu_reservations_airline_provider"
               name="Provider Form"
               sequence="10"
-              groups="tt_base.group_tt_tour_travel_manager,tt_base.group_reservation_provider_level_1"
+              groups="tt_base.group_reservation_provider_level_1"
               action="tt_reservation_airline.tt_reservation_airline_provider_action_views"/>
 
 </odoo>

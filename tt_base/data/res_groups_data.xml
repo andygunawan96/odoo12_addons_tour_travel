@@ -2134,6 +2134,12 @@
             <field name="implied_ids" eval="[(4, ref('group_api_management_level_4'))]"/>
         </record>
 
+        <record id="group_tt_process_channel_bookings" model="res.groups">
+            <field name="name">Can Process Channel Bookings</field>
+            <field name="category_id" ref="tt_base.module_category_proceess_channel_booking"/>
+            <field name="implied_ids" eval="[(4, ref('base.group_user'))]"/>
+        </record>
+
         <!--OLD GROUPS STARTING FROM HERE-->
 
         <!--BILLING STATEMENT USER GROUP-->
@@ -2346,12 +2352,6 @@
             <field name="implied_ids" eval="[(4, ref('group_tt_external_vendor_supervisor'))]"/>
         </record>
 
-
-        <record id="group_tt_process_channel_bookings" model="res.groups">
-            <field name="name">Operator</field>
-            <field name="category_id" ref="tt_base.module_category_proceess_channel_booking"/>
-            <field name="implied_ids" eval="[(4, ref('base.group_user'))]"/>
-        </record>
 
         <!--     LINK kan group yg baru dibuat dengan ADMIN-->
 

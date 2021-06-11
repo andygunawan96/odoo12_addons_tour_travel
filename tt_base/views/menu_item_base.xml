@@ -6,8 +6,8 @@
                   id="base.menu_administration"
                   web_icon="base,static/description/settings.png"
                   sequence="500"
-                  groups="base.group_erp_manager,tt_base.group_tt_agent_management_operator,tt_base.group_user_data_level_3"/>
-        <menuitem id="base.menu_users" name="Users &amp; Companies" parent="base.menu_administration" sequence="0" groups="tt_base.group_tt_agent_management_operator,tt_base.group_user_data_level_3"/>
+                  groups="base.group_erp_manager,tt_base.group_user_data_level_3"/>
+        <menuitem id="base.menu_users" name="Users &amp; Companies" parent="base.menu_administration" sequence="0" groups="tt_base.group_user_data_level_3"/>
 
         <act_window id="base.change_password_wizard_action"
                     name="Change Password"
@@ -15,27 +15,27 @@
                     res_model="change.password.wizard"
                     view_type="form" view_mode="form"
                     key2="client_action_multi" target="new"
-                    groups="base.group_erp_manager,tt_base.group_tt_agent_management_operator,tt_base.group_user_data_level_3"/>
+                    groups="base.group_erp_manager,tt_base.group_user_data_level_3"/>
 
         <!-- Main Menu -->
         <!--Tours and Travel-->
         <menuitem id="main_tour_travel"
                   name="Tours and Travel"
-                  groups="tt_base.group_tt_tour_travel_operator,tt_base.group_tt_tour_travel"
+                  groups="tt_base.group_tt_tour_travel"
                   web_icon="hr,static/description/icon.png"
                   sequence="1"/>
 
         <!--Reservation Master Data-->
         <menuitem id="main_reservation_master_data"
                   name="Reservation Master Data"
-                  groups="tt_base.group_tt_tour_travel_operator,tt_base.group_tt_tour_travel"
+                  groups="tt_base.group_tt_tour_travel"
                   web_icon="hr,static/description/icon.png"
                   sequence="3"/>
 
         <!--Customers-->
         <menuitem id="main_customers"
                   name="Customers"
-                  groups="tt_base.group_tt_agent_user_operator,tt_base.group_tt_tour_travel_operator,tt_base.group_tt_agent_user,tt_base.group_tt_tour_travel,tt_base.group_tt_corpor_user"
+                  groups="tt_base.group_tt_agent_user,tt_base.group_tt_tour_travel,tt_base.group_tt_corpor_user"
                   web_icon="hr,static/description/icon.png"
                   sequence="5"/>
 
@@ -47,14 +47,14 @@
                   name="Transactions"
                   web_icon="hr,static/description/icon.png"
                   sequence="4"
-                  groups="tt_base.group_tt_tour_travel_operator,tt_base.group_tt_agent_user_operator,tt_base.group_tt_tour_travel,tt_base.group_tt_agent_user"/>
+                  groups="tt_base.group_tt_tour_travel,tt_base.group_tt_agent_user"/>
 
         <!--External Vendor Login-->
         <menuitem id="main_external_vendor"
                   name="Vendor"
                   web_icon="hr,static/description/icon.png"
                   sequence="30"
-                  groups="tt_base.group_tt_external_vendor_operator,tt_base.group_tt_external_user"/>
+                  groups="tt_base.group_tt_external_user"/>
 
         <!--Top Menu-->
         <!--Customers (Menu Customers)-->
@@ -102,7 +102,7 @@
         <!-- Accounting -->
         <menuitem id="top_menu_accounting"
                   parent="tt_base.main_transaction"
-                  groups="tt_base.group_tt_tour_travel_operator,tt_base.group_tt_agent_user_operator,tt_base.group_tt_tour_travel,tt_base.group_tt_agent_user"
+                  groups="tt_base.group_tt_tour_travel,tt_base.group_tt_agent_user"
                   name="Accounting"
                   sequence="10"/>
         <!-- Users -->
@@ -130,7 +130,7 @@
         <!-- Administration -->
         <menuitem id="top_tour_travel_administration"
                   name="Administration"
-                  groups="base.group_system,tt_base.group_tt_agent_management_operator,tt_base.group_new_city_records_level_1,tt_base.group_history_skip_level_1,tt_base.group_banned_users_level_1,tt_base.group_frontend_security_level_1,tt_base.group_email_queue_level_1,tt_base.group_error_api_list_level_1"
+                  groups="base.group_system,tt_base.group_new_city_records_level_1,tt_base.group_history_skip_level_1,tt_base.group_banned_users_level_1,tt_base.group_frontend_security_level_1,tt_base.group_email_queue_level_1,tt_base.group_error_api_list_level_1"
                   parent="tt_base.main_tour_travel"
                   sequence = "220"/>
 
@@ -146,141 +146,141 @@
                   parent="tt_base.main_external_vendor"
                   name="Transaction"
                   sequence="10"
-                  groups="tt_base.group_tt_external_vendor_operator,tt_base.group_tt_external_user"/>
+                  groups="tt_base.group_tt_external_user"/>
 
         <menuitem id="top_external_vendor_master_product"
                   parent="tt_base.main_external_vendor"
                   name="Master Product"
                   sequence="50"
-                  groups="tt_base.group_tt_external_vendor_operator,tt_base.group_tt_external_user"/>
+                  groups="tt_base.group_tt_external_user"/>
 
         <menuitem id="top_external_vendor_configuration"
                   parent="tt_base.main_external_vendor"
                   name="Configuration"
                   sequence="90"
-                  groups="tt_base.group_tt_external_vendor_operator,tt_base.group_tt_external_user"/>
+                  groups="tt_base.group_tt_external_user"/>
 
         <!--Menu (tag) Inside Top Menu-->
         <!--Admin Fee-->
         <menuitem id="menu_tour_travel_configuration_admin_fee"
                   name="Refund and After Sales"
-                  groups="tt_base.group_tt_tour_travel_operator,tt_base.group_after_sales_master_level_1"
+                  groups="tt_base.group_after_sales_master_level_1"
                   parent="tt_base.top_tour_travel_configuration"
                   sequence="1"/>
 
         <!--Country-->
         <menuitem id="menu_tour_travel_configuration_res_country"
                   name="Country"
-                  groups="tt_base.group_tt_tour_travel_operator,tt_base.group_location_level_1"
+                  groups="tt_base.group_location_level_1"
                   parent="tt_base.top_tour_travel_master_data"
                   sequence="10"/>
 
         <!--Agent-->
         <menuitem id="menu_tour_travel_configuration_tt_agent"
                   name="Agent"
-                  groups="tt_base.group_tt_tour_travel_operator,tt_base.group_agent_level_1"
+                  groups="tt_base.group_agent_level_1"
                   parent="tt_base.top_tour_travel_configuration"
                   sequence="20"/>
 
         <!--Social Media-->
         <menuitem id="menu_tour_travel_configuration_social_media"
                   name="Social Media"
-                  groups="tt_base.group_tt_tour_travel_operator,tt_base.group_social_info_level_1"
+                  groups="tt_base.group_social_info_level_1"
                   parent="tt_base.top_tour_travel_configuration"
                   sequence="30"/>
 
         <!--Limiter-->
         <menuitem id="menu_tour_travel_configuration_reservation_limiter"
                   name="Limiter"
-                  groups="tt_base.group_tt_tour_travel_operator,tt_base.group_rule_whitelist_level_1"
+                  groups="tt_base.group_rule_whitelist_level_1"
                   parent="tt_base.top_tour_travel_configuration"
                   sequence="35"/>
 
         <!--Currency-->
         <menuitem id="menu_tour_travel_configuration_currency"
                   name="Currency"
-                  groups="tt_base.group_tt_tour_travel_operator,account.group_account_user,tt_base.group_currency_rate_level_1"
+                  groups="account.group_account_user,tt_base.group_currency_rate_level_1"
                   parent="tt_base.top_tour_travel_configuration"
                   sequence="40"/>
 
         <menuitem id="menu_tour_travel_master_currency"
                   name="Currency"
-                  groups="tt_base.group_tt_tour_travel_operator,account.group_account_user,tt_base.group_currency_rate_level_1"
+                  groups="account.group_account_user,tt_base.group_currency_rate_level_1"
                   parent="tt_base.top_tour_travel_master_data"
                   sequence="40"/>
 
         <menuitem id="menu_tour_travel_configuration_calendar"
                   name="Calendar"
-                  groups="tt_base.group_tt_tour_travel_operator,tt_base.group_public_holiday_level_1"
+                  groups="tt_base.group_public_holiday_level_1"
                   parent="tt_base.top_tour_travel_configuration"
                   sequence="45"/>
 
         <!--Bank-->
         <menuitem id="menu_tour_travel_configuration_bank"
                   name="Bank"
-                  groups="tt_base.group_tt_tour_travel_operator,tt_base.group_bank_level_1"
+                  groups="tt_base.group_bank_level_1"
                   parent="tt_base.top_tour_travel_configuration"
                   sequence="50"/>
 
         <!--Provider-->
         <menuitem id="menu_tour_travel_provider"
                   name="Provider"
-                  groups="tt_base.group_tt_tour_travel_operator,tt_base.group_provider_level_1"
+                  groups="tt_base.group_provider_level_1"
                   parent="tt_base.top_tour_travel_master_data"
                   sequence="60"/>
 
         <!--Bank (Master Data)-->
         <menuitem id="menu_tour_travel_bank"
                   name="Bank"
-                  groups="tt_base.group_tt_tour_travel_operator,tt_base.group_bank_level_1"
+                  groups="tt_base.group_bank_level_1"
                   parent="tt_base.top_tour_travel_master_data"
                   sequence="65"/>
 
         <!--Destination-->
         <menuitem id="menu_tour_travel_destination"
                   name="Destination"
-                  groups="tt_base.group_tt_tour_travel_operator,tt_base.group_destination_level_1"
+                  groups="tt_base.group_destination_level_1"
                   parent="tt_base.top_tour_travel_master_data"
                   sequence="70"/>
 
         <!--Pricing-->
         <menuitem id="menu_tour_travel_pricing"
                   name="Pricing"
-                  groups="tt_base.group_tt_tour_travel_operator,tt_base.group_pricing_provider_level_1,tt_base.group_pricing_agent_level_1"
+                  groups="tt_base.group_pricing_provider_level_1,tt_base.group_pricing_agent_level_1"
                   parent="tt_base.top_tour_travel_configuration"
                   sequence="90"/>
 
         <!--Carrier-->
         <menuitem id="menu_tour_travel_carrier"
                   name="Carrier"
-                  groups="tt_base.group_tt_tour_travel_operator,tt_base.group_transport_carrier_level_1"
+                  groups="tt_base.group_transport_carrier_level_1"
                   parent="tt_base.top_tour_travel_configuration"
                   sequence="100"/>
 
         <menuitem id="menu_tour_travel_carrier_master"
                   name="Transport Carrier"
-                  groups="tt_base.group_tt_tour_travel_operator,tt_base.group_transport_carrier_level_1"
+                  groups="tt_base.group_transport_carrier_level_1"
                   parent="tt_base.top_tour_travel_master_data"
                   sequence="100"/>
 
         <!-- Voucher -->
         <menuitem id="menu_tour_travel_configuration_voucher"
                   name="Voucher"
-                  groups="tt_base.group_tt_accounting_operator,tt_base.group_voucher_level_1"
+                  groups="tt_base.group_voucher_level_1"
                   parent="tt_base.top_tour_travel_configuration"
                   sequence = "110"/>
 
         <!--External Vendor Login-->
         <menuitem id="menu_external_vendor_user"
                   name="User"
-                  groups="tt_base.group_tt_external_vendor_operator,tt_base.group_tt_external_user"
+                  groups="tt_base.group_tt_external_user"
                   parent="tt_base.top_customers_vendor"
                   sequence = "110"/>
 
         <!--Loyalty Program-->
         <menuitem id="menu_tour_travel_loyalty_program"
                   name="Loyalty Program"
-                  groups="tt_base.group_tt_tour_travel_operator,tt_base.group_loyalty_program_level_1"
+                  groups="tt_base.group_loyalty_program_level_1"
                   parent="tt_base.top_tour_travel_master_data"
                   sequence="300"/>
     </data>

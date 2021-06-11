@@ -8,8 +8,8 @@
                 <header>
                     <button name="test_set_as_draft" string="set as draft" type="object" groups="base.group_system"/>
                     <button name="test_set_as_request" string="set as request" type="object" groups="base.group_system"/>
-                    <button name="action_set_back_to_request" string="Set back to request" type="object" state="expired" groups="tt_base.group_tt_accounting_supervisor,tt_base.group_top_up_level_4"/>
-                    <button name="action_reject_from_button" string="Reject" attrs="{'invisible':[('state','!=','request')]}" type="object" groups="tt_base.group_tt_tour_travel_operator,tt_base.group_tt_tour_travel"/>
+                    <button name="action_set_back_to_request" string="Set back to request" type="object" state="expired" groups="tt_base.group_top_up_level_4"/>
+                    <button name="action_reject_from_button" string="Reject" attrs="{'invisible':[('state','!=','request')]}" type="object" groups="tt_base.group_tt_tour_travel"/>
                     <field name="state" widget="statusbar" statusbar_visible="draft,request,validated,approved"/>
                 </header>
                 <sheet>
@@ -104,7 +104,7 @@
         <field name="arch" type="xml">
             <search string="Search Top Up">
                 <field name="name"/>
-                <field name="agent_id" groups="tt_base.group_tt_tour_travel_operator,tt_base.group_tt_tour_travel"/>
+                <field name="agent_id" groups="tt_base.group_tt_tour_travel"/>
                 <separator/>
                 <filter string="All" name='all'/>
                 <filter string="Request" name='request' domain="[('state', '=', 'request')]"/>
@@ -127,7 +127,7 @@
                 <filter string="This Year" name="thisyear" domain="[('create_date','&gt;=',time.strftime('%%Y-01-01'))]"/>
 
                 <group expand="0" string="Group By">
-                    <filter name="group_by_agent_id" string="Agent" domain="[]" context="{'group_by':'agent_id'}" groups="tt_base.group_tt_tour_travel_operator,tt_base.group_tt_tour_travel"/>
+                    <filter name="group_by_agent_id" string="Agent" domain="[]" context="{'group_by':'agent_id'}" groups="tt_base.group_tt_tour_travel"/>
                 </group>
             </search>
         </field>
@@ -182,18 +182,18 @@
     <menuitem id="top_top_up"
               parent="tt_base.main_transaction"
               name="Top Up"
-              sequence="5" groups="tt_base.group_tt_tour_travel_operator,tt_base.group_tt_agent_user_operator,tt_base.group_top_up_level_1"/>
+              sequence="5" groups="tt_base.group_top_up_level_1"/>
 
     <menuitem id="menu_top_up_all" parent="tt_accounting.top_top_up"
-              name="All" action="tt_top_up_action" sequence="1" groups="tt_base.group_tt_tour_travel_operator,tt_base.group_tt_agent_user_operator,tt_base.group_top_up_level_1"/>
+              name="All" action="tt_top_up_action" sequence="1" groups="tt_base.group_top_up_level_1"/>
 
     <menuitem id="menu_top_up_request" parent="tt_accounting.top_top_up"
-              name="Request" action="tt_top_up_action_request" sequence="2" groups="tt_base.group_tt_tour_travel_operator,tt_base.group_tt_agent_user_operator,tt_base.group_top_up_level_1"/>
+              name="Request" action="tt_top_up_action_request" sequence="2" groups="tt_base.group_top_up_level_1"/>
 
     <menuitem id="menu_top_up_validated" parent="tt_accounting.top_top_up"
-              name="On Progress" action="tt_top_up_action_validated" sequence="3" groups="tt_base.group_tt_tour_travel_operator,tt_base.group_tt_agent_user_operator,tt_base.group_top_up_level_1"/>
+              name="On Progress" action="tt_top_up_action_validated" sequence="3" groups="tt_base.group_top_up_level_1"/>
 
     <menuitem id="menu_top_up_approved" parent="tt_accounting.top_top_up"
-              name="Done" action="tt_top_up_action_approved" sequence="4" groups="tt_base.group_tt_tour_travel_operator,tt_base.group_tt_agent_user_operator,tt_base.group_top_up_level_1"/>
+              name="Done" action="tt_top_up_action_approved" sequence="4" groups="tt_base.group_top_up_level_1"/>
 
 </odoo>

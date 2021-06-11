@@ -40,5 +40,5 @@
 
             <menuitem id="submenu_visa_requirements" parent="menu_tour_travel_visa_configuration"
                       name="Requirements" action="tt_traveldoc.tt_traveldoc_type_view_action"
-                      groups="tt_base.group_tt_tour_travel_operator,tt_base.group_master_data_visa_level_1"/>
+                      groups="tt_base.group_master_data_visa_level_1"/>
 </odoo>

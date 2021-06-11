@@ -28,7 +28,7 @@
                     <div class="oe_button_box" name="button_box">
                         <button name="toggle_active" type="object"
                                 class="oe_stat_button" icon="fa-archive"
-                                groups="tt_base.group_tt_tour_travel_supervisor,tt_base.group_master_data_activity_level_3">
+                                groups="tt_base.group_master_data_activity_level_3">
                             <field name="active" widget="boolean_button"
                                    options='{"terminology": "archive"}'/>
                         </button>
@@ -68,7 +68,7 @@
                             <field name="hotelPickup"/>
                         </group>
                         <group>
-                            <field name="provider_id" groups="tt_base.group_tt_tour_travel_operator,tt_base.group_tt_tour_travel"/>
+                            <field name="provider_id" groups="tt_base.group_tt_tour_travel"/>
                             <field name="uuid"/>
                             <field name="type_ids"/>
                             <field name="category_ids">
@@ -108,7 +108,7 @@
                             <div class="oe_button_box" name="button_box">
                                 <button name="toggle_active" type="object"
                                         class="oe_stat_button" icon="fa-archive"
-                                        groups="tt_base.group_tt_tour_travel_supervisor,tt_base.group_master_data_activity_level_3">
+                                        groups="tt_base.group_master_data_activity_level_3">
                                     <field name="active" widget="boolean_button"
                                            options='{"terminology": "archive"}'/>
                                 </button>
@@ -196,7 +196,7 @@
                                     <div class="oe_button_box" name="button_box">
                                         <button name="toggle_active" type="object"
                                                 class="oe_stat_button" icon="fa-archive"
-                                                groups="tt_base.group_tt_tour_travel_supervisor,tt_base.group_master_data_activity_level_3">
+                                                groups="tt_base.group_master_data_activity_level_3">
                                             <field name="active" widget="boolean_button"
                                                    options='{"terminology": "archive"}'/>
                                         </button>
@@ -258,7 +258,7 @@
                 <field name="type_ids"/>
                 <field name="currency_id"/>
                 <field name="basePrice"/>
-                <field name="provider_id" groups="tt_base.group_tt_tour_travel_operator,tt_base.group_tt_tour_travel"/>
+                <field name="provider_id" groups="tt_base.group_tt_tour_travel"/>
                 <field name="active"/>
             </tree>
         </field>

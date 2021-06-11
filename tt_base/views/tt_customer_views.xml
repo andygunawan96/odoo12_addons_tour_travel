@@ -10,11 +10,11 @@
                 <field name="email"/>
                 <field name="agent_id"/>
                 <group expand="0" string="Group By">
-                    <filter string="Agent" name="agent_id" domain="[]" context="{'group_by':'agent_id'}" groups="tt_base.group_tt_tour_travel_operator,tt_base.group_tt_tour_travel"/>
-                    <filter string="Gender" name="gender" domain="[]" context="{'group_by':'gender'}" groups="tt_base.group_tt_tour_travel_operator,tt_base.group_tt_tour_travel"/>
-                    <filter string="Marital Status" name="marital_status" domain="[]" context="{'group_by':'marital_status'}" groups="tt_base.group_tt_tour_travel_operator,tt_base.group_tt_tour_travel"/>
-                    <filter string="Nationality" name="nationality_id" domain="[]" context="{'group_by':'nationality_id'}" groups="tt_base.group_tt_tour_travel_operator,tt_base.group_tt_tour_travel"/>
-                    <filter string="Religion" name="religion" domain="[]" context="{'group_by':'religion'}" groups="tt_base.group_tt_tour_travel_operator,tt_base.group_tt_tour_travel"/>
+                    <filter string="Agent" name="agent_id" domain="[]" context="{'group_by':'agent_id'}" groups="tt_base.group_tt_tour_travel"/>
+                    <filter string="Gender" name="gender" domain="[]" context="{'group_by':'gender'}" groups="tt_base.group_tt_tour_travel"/>
+                    <filter string="Marital Status" name="marital_status" domain="[]" context="{'group_by':'marital_status'}" groups="tt_base.group_tt_tour_travel"/>
+                    <filter string="Nationality" name="nationality_id" domain="[]" context="{'group_by':'nationality_id'}" groups="tt_base.group_tt_tour_travel"/>
+                    <filter string="Religion" name="religion" domain="[]" context="{'group_by':'religion'}" groups="tt_base.group_tt_tour_travel"/>
                 </group>
             </search>
         </field>
@@ -74,7 +74,7 @@
                                     <field name="position"/>
                                     <field name="religion"/>
                                     <field name="face_image_id"/>
-                                    <field name="register_uid" groups="tt_base.group_tt_tour_travel_operator,tt_base.group_tt_tour_travel"/>
+                                    <field name="register_uid" groups="tt_base.group_tt_tour_travel"/>
                                 </group>
                             </group>
 
@@ -172,7 +172,7 @@
 
     <menuitem id="menu_customer_customer"
               parent="tt_base.top_tour_travel_customers"
-              groups="tt_base.group_tt_agent_user_operator,tt_base.group_tt_tour_travel_operator,tt_base.group_customer_level_1"
+              groups="tt_base.group_customer_level_1"
               name="Customer List"
               sequence="1"
               action="tt_customer_action_view"/>

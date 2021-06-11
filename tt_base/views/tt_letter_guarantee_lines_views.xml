@@ -76,6 +76,6 @@
     </record>
 
     <menuitem id="sub_menu_transaction_letter_guarantee_lines" parent="tt_base.menu_transaction_letter_guarantee"
-              name="Letter of Guarantee Lines" action="tt_letter_guarantee_lines_action" sequence="11" groups="tt_base.group_tt_tour_travel_operator,tt_base.group_tt_accounting_operator,tt_base.group_lg_po_level_1"/>
+              name="Letter of Guarantee Lines" action="tt_letter_guarantee_lines_action" sequence="11" groups="tt_base.group_lg_po_level_1"/>
 
 </odoo>

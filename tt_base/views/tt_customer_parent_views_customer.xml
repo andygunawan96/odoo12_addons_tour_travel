@@ -7,14 +7,14 @@
         <field name="arch" type="xml">
             <form create="false">
                 <header>
-                    <button name="action_confirm" string="Confirm" type="object" groups="tt_base.group_tt_agent_finance_operator,tt_base.group_tt_agent_user_operator,base.group_system,tt_base.group_tt_agent_finance,tt_base.group_tt_agent_user" attrs="{'invisible':[('state','!=', 'draft')]}"/>
-                    <button name="action_request" string="Submit Request" type="object" groups="tt_base.group_tt_agent_finance_operator,tt_base.group_tt_agent_user_supervisor,base.group_system,tt_base.group_tt_agent_finance" attrs="{'invisible':[('state','!=', 'confirm')]}"/>
-                    <button name="action_validate" string="Validate" type="object" groups="tt_base.group_tt_agent_finance_operator,base.group_system,tt_base.group_tt_agent_finance" attrs="{'invisible':[('state','!=', 'request')]}"/>
-                    <button name="set_to_validate" string="Set to Validate" type="object" groups="tt_base.group_tt_agent_finance_manager,base.group_system,tt_base.group_tt_agent_finance" attrs="{'invisible':[('state','!=', 'done')]}"/>
-                    <button name="action_done" string="Approve" type="object" groups="tt_base.group_tt_agent_finance_manager,base.group_system,tt_base.group_tt_agent_finance" attrs="{'invisible':[('state','!=', 'validate')]}"/>
-                    <button name="action_reject" string="Reject" type="object" groups="tt_base.group_tt_agent_user_operator,base.group_system,tt_base.group_tt_agent_user" attrs="{'invisible':[('state','=','done')]}"/>
+                    <button name="action_confirm" string="Confirm" type="object" groups="base.group_system,tt_base.group_tt_agent_finance,tt_base.group_tt_agent_user" attrs="{'invisible':[('state','!=', 'draft')]}"/>
+                    <button name="action_request" string="Submit Request" type="object" groups="base.group_system,tt_base.group_tt_agent_finance" attrs="{'invisible':[('state','!=', 'confirm')]}"/>
+                    <button name="action_validate" string="Validate" type="object" groups="base.group_system,tt_base.group_tt_agent_finance" attrs="{'invisible':[('state','!=', 'request')]}"/>
+                    <button name="set_to_validate" string="Set to Validate" type="object" groups="base.group_system,tt_base.group_tt_agent_finance" attrs="{'invisible':[('state','!=', 'done')]}"/>
+                    <button name="action_done" string="Approve" type="object" groups="base.group_system,tt_base.group_tt_agent_finance" attrs="{'invisible':[('state','!=', 'validate')]}"/>
+                    <button name="action_reject" string="Reject" type="object" groups="base.group_system,tt_base.group_tt_agent_user" attrs="{'invisible':[('state','=','done')]}"/>
                     <button name="set_to_done" string="Set to Done" type="object" groups="base.group_system" attrs="{'invisible':[('state','=','done')]}"/>
-                    <button name="set_to_draft" string="Set to Draft" type="object" groups="tt_base.group_tt_agent_user_operator,base.group_system,tt_base.group_tt_agent_user" attrs="{'invisible':[('state','!=','reject')]}"/>
+                    <button name="set_to_draft" string="Set to Draft" type="object" groups="base.group_system,tt_base.group_tt_agent_user" attrs="{'invisible':[('state','!=','reject')]}"/>
                     <field name="state" widget="statusbar" statusbar_visible="draft,confirm,request,validate,done"/>
                 </header>
                 <sheet>
@@ -204,34 +204,34 @@
 
     <menuitem id="menu_customers_customer_customer_parent"
               parent="tt_base.top_customers_customers"
-              groups="tt_base.group_tt_agent_user_operator,tt_base.group_tt_tour_travel_operator,tt_base.group_customer_parent_level_1"
+              groups="tt_base.group_customer_parent_level_1"
               name="Customer Parent"
               sequence="2"/>
 
     <menuitem id="submenu_customers_customer_customer_parent_all"
               parent="tt_base.menu_customers_customer_customer_parent"
-              groups="tt_base.group_tt_agent_user_operator,tt_base.group_tt_tour_travel_operator,tt_base.group_customer_parent_level_1"
+              groups="tt_base.group_customer_parent_level_1"
               name="All"
               sequence="1"
               action="tt_customer_parent_action_view_customer"/>
 
     <menuitem id="submenu_customers_customer_customer_parent_fpo"
               parent="tt_base.menu_customers_customer_customer_parent"
-              groups="tt_base.group_tt_agent_user_operator,tt_base.group_tt_tour_travel_operator,tt_base.group_customer_parent_level_1"
+              groups="tt_base.group_customer_parent_level_1"
               name="FPO"
               sequence="2"
               action="tt_customer_parent_action_view_customer_fpo"/>
 
     <menuitem id="submenu_customers_customer_customer_parent_cor"
               parent="tt_base.menu_customers_customer_customer_parent"
-              groups="tt_base.group_tt_agent_user_operator,tt_base.group_tt_tour_travel_operator,tt_base.group_customer_parent_level_1"
+              groups="tt_base.group_customer_parent_level_1"
               name="COR"
               sequence="3"
               action="tt_customer_parent_action_view_customer_cor"/>
 
     <menuitem id="submenu_customers_customer_customer_parent_por"
               parent="tt_base.menu_customers_customer_customer_parent"
-              groups="tt_base.group_tt_agent_user_operator,tt_base.group_tt_tour_travel_operator,tt_base.group_customer_parent_level_1"
+              groups="tt_base.group_customer_parent_level_1"
               name="POR"
               sequence="4"
               action="tt_customer_parent_action_view_customer_por"/>

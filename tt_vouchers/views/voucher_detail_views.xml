@@ -40,10 +40,10 @@
         <field name="arch" type="xml">
             <form>
                 <header>
-                    <button name="create_voucher_created_email_queue" string="Send Voucher Created Email" states="active" groups="tt_base.group_tt_accounting_supervisor,tt_base.group_voucher_level_4" type="object"/>
-                    <button string="Deactivate" name="action_set_not_active" states="active,expire" groups="tt_base.group_tt_accounting_operator,tt_base.group_voucher_level_4" type="object"/>
-                    <button string="Activate" name="action_set_active" states="not-active,expire" groups="tt_base.group_tt_accounting_operator,tt_base.group_voucher_level_4" type="object"/>
-                    <button string="Expire" name="action_set_expire" states="active,not-active" groups="tt_base.group_tt_accounting_operator,tt_base.group_voucher_level_4" type="object"/>
+                    <button name="create_voucher_created_email_queue" string="Send Voucher Created Email" states="active" groups="tt_base.group_voucher_level_4" type="object"/>
+                    <button string="Deactivate" name="action_set_not_active" states="active,expire" groups="tt_base.group_voucher_level_4" type="object"/>
+                    <button string="Activate" name="action_set_active" states="not-active,expire" groups="tt_base.group_voucher_level_4" type="object"/>
+                    <button string="Expire" name="action_set_expire" states="active,not-active" groups="tt_base.group_voucher_level_4" type="object"/>
                     <field name="state" widget="statusbar" statusbar_visible="not_active,active,expire"/>
                 </header>
                 <sheet>

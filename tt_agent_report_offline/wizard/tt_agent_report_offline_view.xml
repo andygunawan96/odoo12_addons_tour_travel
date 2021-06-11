@@ -50,7 +50,7 @@
         parent="tt_reservation_offline.menu_offline_report"
         action="action_agent_report_offline_wz"
         sequence="1"
-        groups="tt_base.group_tt_agent_user_supervisor,tt_base.group_tt_tour_travel_operator"
+        groups="tt_base.group_tt_agent_user,tt_base.group_tt_tour_travel"
        />
 
     <menuitem
@@ -59,6 +59,6 @@
         parent="tt_reservation_offline.menu_offline_report"
         action="action_agent_report_offline_ho_wz"
         sequence="2"
-        groups="tt_base.group_tt_tour_travel_operator"
+        groups="tt_base.group_tt_tour_travel"
        />
 </odoo>
