@@ -836,7 +836,7 @@ class PrintoutInvoiceHO(models.AbstractModel):
                     'name': rec2.title + ' ' + rec2.name,
                     'total': sum([rec3.total for rec3 in rec2.cost_service_charge_ids if rec3.charge_type != 'RAC'])
                 } for rec2 in rec.passenger_ids],
-                'descs': ['Est Date:' + rec.test_datetime, 'Address:' + rec.test_address,],
+                'descs': ['Est Date:' + rec.timeslot_ids[0].datetimeslot, 'Address:' + rec.test_address,],
                 'provider_type': rec.provider_type_id.name
             }
             # a[issued_name]['descs'].append(self.get_description(rec, data))
