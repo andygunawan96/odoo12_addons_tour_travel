@@ -103,7 +103,7 @@ class ReservationPeriksain(models.Model):
         except Exception as e:
             _logger.info('Error Create Email Queue')
 
-    def action_issued_pending_periksain(self,co_uid, customer_parent_id, acquirer_id = False):
+    def action_issued_pending_periksain(self, co_uid, customer_parent_id, acquirer_id = False):
         issued_pending_hold_date = datetime.max
         for provider_obj in self.provider_booking_ids:
             if issued_pending_hold_date > provider_obj.issued_pending_hold_date:

@@ -121,8 +121,10 @@
 
         <!-- Price & Addons Detail (if with price) -->
         <t t-if="with_price">
-            <!--<t t-call="tt_report_common.price_ticket"/>-->
-            <t t-call="tt_report_common.price_detail"/>
+            <t t-foreach="doc.provider_booking_ids" t-as="length">
+                <!--<t t-call="tt_report_common.price_ticket"/>-->
+                <t t-call="tt_report_common.price_detail"/>
+            </t>
         </t>
 
         <!-- Important Notes -->
