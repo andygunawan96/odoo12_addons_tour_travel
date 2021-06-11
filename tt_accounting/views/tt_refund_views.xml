@@ -10,7 +10,7 @@
                 <field name="referenced_pnr"/>
                 <field name="notes"/>
                 <field name="booking_desc"/>
-                <field name="agent_id" groups="tt_base.group_tt_tour_travel_operator,tt_base.group_tt_tour_travel"/>
+                <field name="agent_id" groups="tt_base.group_tt_tour_travel"/>
                 <separator/>
                 <filter string="All" name='all'/>
                 <filter string="Draft" name='draft' domain="[('state', '=', 'draft')]"/>
@@ -41,10 +41,10 @@
                 <filter string="This Year" name="thisyear" domain="[('create_date','&gt;=',time.strftime('%%Y-01-01'))]"/>
 
                 <group expand="0" string="Group By">
-                    <filter name="group_by_agent_id" string="Agent" domain="[]" context="{'group_by':'agent_id'}" groups="tt_base.group_tt_tour_travel_operator,tt_base.group_tt_tour_travel"/>
-                    <filter name="group_by_agent_type_id" string="Agent Type" domain="[]" context="{'group_by':'agent_type_id'}" groups="tt_base.group_tt_tour_travel_operator,tt_base.group_tt_tour_travel"/>
-                    <filter name="group_by_service_type" string="Service Type" domain="[]" context="{'group_by':'service_type'}" groups="tt_base.group_tt_agent_user_operator,tt_base.group_tt_tour_travel_operator,tt_base.group_tt_agent_user,tt_base.group_tt_tour_travel"/>
-                    <filter name="group_by_state" string="State" domain="[]" context="{'group_by':'state'}" groups="tt_base.group_tt_agent_user_operator,tt_base.group_tt_tour_travel_operator,tt_base.group_tt_agent_user,tt_base.group_tt_tour_travel"/>
+                    <filter name="group_by_agent_id" string="Agent" domain="[]" context="{'group_by':'agent_id'}" groups="tt_base.group_tt_tour_travel"/>
+                    <filter name="group_by_agent_type_id" string="Agent Type" domain="[]" context="{'group_by':'agent_type_id'}" groups="tt_base.group_tt_tour_travel"/>
+                    <filter name="group_by_service_type" string="Service Type" domain="[]" context="{'group_by':'service_type'}" groups="tt_base.group_tt_agent_user,tt_base.group_tt_tour_travel"/>
+                    <filter name="group_by_state" string="State" domain="[]" context="{'group_by':'state'}" groups="tt_base.group_tt_agent_user,tt_base.group_tt_tour_travel"/>
                 </group>
             </search>
         </field>
@@ -56,20 +56,20 @@
         <field name="arch" type="xml">
             <form create="false">
                 <header>
-                    <button name="confirm_refund_from_button" string="Confirm" type="object" groups="tt_base.group_tt_agent_user_operator,tt_base.group_tt_agent_user" attrs="{'invisible':[('state','!=', 'draft')]}"/>
-                    <button name="send_refund_from_button_backend" string="Send to Agent" type="object" groups="tt_base.group_tt_tour_travel_operator,tt_base.group_tt_tour_travel" attrs="{'invisible':[('state','!=', 'confirm')]}"/>
-                    <button name="validate_refund_from_button" string="Validate" type="object" groups="tt_base.group_tt_agent_user_operator,tt_base.group_tt_tour_travel_operator,tt_base.group_tt_agent_user,tt_base.group_after_sales_master_level_4" attrs="{'invisible':[('state','!=', 'sent')]}"/>
-                    <button name="finalize_refund_from_button_backend" string="Finalize" type="object" groups="tt_base.group_tt_accounting_operator" attrs="{'invisible':[('state','!=', 'validate')]}"/>
-                    <button name="action_approve_backend" string="Force Approve" type="object" groups="tt_base.group_tt_accounting_manager,tt_base.group_after_sales_master_level_5" attrs="{'invisible':[('state','!=', 'final')]}"/>
-                    <button name="action_payment" string="Customer Payment" type="object" groups="tt_base.group_tt_agent_user_operator,tt_base.group_tt_accounting_operator,tt_base.group_tt_agent_user,tt_base.group_after_sales_master_level_4" attrs="{'invisible':[('state','!=', 'approve')]}"/>
-                    <button name="action_approve_cust" string="Approve Cust Payment" type="object" groups="tt_base.group_tt_agent_user_manager,tt_base.group_tt_agent_finance_operator,base.group_system,tt_base.group_tt_agent_finance" attrs="{'invisible':[('state','!=', 'payment')]}"/>
-                    <button name="action_done" string="Done" type="object" groups="tt_base.group_tt_agent_user_supervisor,tt_base.group_tt_tour_travel_operator,tt_base.group_tt_agent_user,tt_base.group_after_sales_master_level_4" attrs="{'invisible':[('state','not in', ['approve', 'approve_cust'])]}"/>
-                    <button name="set_to_confirm" string="Set to Confirm" type="object" groups="tt_base.group_tt_accounting_manager,tt_base.group_after_sales_level_4" attrs="{'invisible':[('state','not in', ['sent', 'validate', 'final', 'cancel'])]}"/>
-                    <button name="set_to_approve" string="Set to Approved" type="object" groups="tt_base.group_tt_accounting_manager,tt_base.group_after_sales_level_4" attrs="{'invisible':[('state','!=', 'payment')]}"/>
+                    <button name="confirm_refund_from_button" string="Confirm" type="object" groups="tt_base.group_tt_agent_user" attrs="{'invisible':[('state','!=', 'draft')]}"/>
+                    <button name="send_refund_from_button_backend" string="Send to Agent" type="object" groups="tt_base.group_tt_tour_travel" attrs="{'invisible':[('state','!=', 'confirm')]}"/>
+                    <button name="validate_refund_from_button" string="Validate" type="object" groups="tt_base.group_tt_agent_user,tt_base.group_after_sales_master_level_4" attrs="{'invisible':[('state','!=', 'sent')]}"/>
+                    <button name="finalize_refund_from_button_backend" string="Finalize" type="object" groups="tt_base.group_after_sales_master_level_4" attrs="{'invisible':[('state','!=', 'validate')]}"/>
+                    <button name="action_approve_backend" string="Force Approve" type="object" groups="tt_base.group_after_sales_master_level_5" attrs="{'invisible':[('state','!=', 'final')]}"/>
+                    <button name="action_payment" string="Customer Payment" type="object" groups="tt_base.group_tt_agent_user,tt_base.group_after_sales_master_level_4" attrs="{'invisible':[('state','!=', 'approve')]}"/>
+                    <button name="action_approve_cust" string="Approve Cust Payment" type="object" groups="base.group_system,tt_base.group_tt_agent_finance" attrs="{'invisible':[('state','!=', 'payment')]}"/>
+                    <button name="action_done" string="Done" type="object" groups="tt_base.group_tt_agent_user,tt_base.group_after_sales_master_level_4" attrs="{'invisible':[('state','not in', ['approve', 'approve_cust'])]}"/>
+                    <button name="set_to_confirm" string="Set to Confirm" type="object" groups="tt_base.group_after_sales_level_4" attrs="{'invisible':[('state','not in', ['sent', 'validate', 'final', 'cancel'])]}"/>
+                    <button name="set_to_approve" string="Set to Approved" type="object" groups="tt_base.group_after_sales_level_4" attrs="{'invisible':[('state','!=', 'payment')]}"/>
                     <button name="cancel_refund_from_button" string="Cancel" type="object" attrs="{'invisible':[('state','in', ['approve', 'done', 'cancel', 'payment', 'approve_cust'])]}"/>
-                    <button name="cancel_refund_reverse_ledger" string="Cancel (Reverse Ledger)" type="object" groups="tt_base.group_tt_accounting_manager,tt_base.group_after_sales_level_4" attrs="{'invisible':[('state','not in', ['approve', 'done', 'payment', 'approve_cust'])]}"/>
-                    <button name="create_profit_loss_ledger" string="Create Profit Loss" type="object" groups="tt_base.group_tt_accounting_operator,tt_base.group_after_sales_master_level_4" attrs="{'invisible':[('state','not in', ['approve', 'done', 'payment', 'approve_cust'])]}"/>
-                    <button name="toggle_is_vendor_received" string="Toggle Received Refund from Vendor" type="object" groups="tt_base.group_tt_accounting_supervisor,tt_base.group_after_sales_master_level_5" attrs="{'invisible':[('state','!=','final')]}"/>
+                    <button name="cancel_refund_reverse_ledger" string="Cancel (Reverse Ledger)" type="object" groups="tt_base.group_after_sales_level_4" attrs="{'invisible':[('state','not in', ['approve', 'done', 'payment', 'approve_cust'])]}"/>
+                    <button name="create_profit_loss_ledger" string="Create Profit Loss" type="object" groups="tt_base.group_after_sales_master_level_4" attrs="{'invisible':[('state','not in', ['approve', 'done', 'payment', 'approve_cust'])]}"/>
+                    <button name="toggle_is_vendor_received" string="Toggle Received Refund from Vendor" type="object" groups="tt_base.group_after_sales_master_level_5" attrs="{'invisible':[('state','!=','final')]}"/>
                     <button string="Change Admin Fee" name="%(tt_accounting.tt_change_admin_fee_wizard_action_view)d" type="action"
                             context="{
                         'default_res_model': 'tt.refund',
@@ -77,14 +77,14 @@
                         'default_agent_id': agent_id,
                         'default_agent_type_id': agent_type_id,
                         'default_admin_fee_id': admin_fee_id
-                   }" groups="tt_base.group_tt_tour_travel_operator,tt_base.group_after_sales_master_level_4" attrs="{'invisible':[('state','!=','confirm')]}"/>
-                    <button string="Extend Refund" name="%(tt_accounting.tt_refund_extend_wizard_action_view)d" type="action" groups="tt_base.group_tt_accounting_supervisor,tt_base.group_after_sales_master_level_5"
+                   }" groups="tt_base.group_after_sales_master_level_4" attrs="{'invisible':[('state','!=','confirm')]}"/>
+                    <button string="Extend Refund" name="%(tt_accounting.tt_refund_extend_wizard_action_view)d" type="action" groups="tt_base.group_after_sales_master_level_5"
                             context="{
                         'default_refund_id': id,
                         'default_new_refund_date': refund_date_ho
                    }" attrs="{'invisible':[('state','not in', ['validate', 'final'])]}"/>
                     <button string="Adjustment" name="%(tt_accounting.tt_adjustment_wizard_action_view)d" type="action"
-                            groups="tt_base.group_tt_accounting_operator,tt_base.group_after_sales_master_level_4"
+                            groups="tt_base.group_after_sales_master_level_4"
                             context="{
                         'default_res_model': 'tt.refund',
                         'default_res_id': id,
@@ -102,20 +102,20 @@
                         <button name="print_refund_to_agent"
                                 class="oe_stat_button" states="final,approve,payment,approve_cust,done"
                                 string="Refund to Agent" type="object" icon="fa-print"
-                                groups="tt_base.group_tt_tour_travel_operator,tt_base.group_tt_tour_travel"/>
+                                groups="tt_base.group_tt_tour_travel"/>
                         <button name="print_refund_to_agent_cust"
                                 class="oe_stat_button" states="final,approve,payment,approve_cust,done"
                                 string="To Customer Est." type="object" icon="fa-print"
-                                groups="tt_base.group_tt_tour_travel_operator,tt_base.group_tt_agent_user_operator,tt_base.group_tt_tour_travel,tt_base.group_tt_agent_user"/>
+                                groups="tt_base.group_tt_tour_travel,tt_base.group_tt_agent_user"/>
                         <button name="print_refund_to_cust"
                                 class="oe_stat_button" states="approve_cust,done"
                                 string="Refund to Customer" type="object" icon="fa-print"
-                                groups="tt_base.group_tt_agent_user_operator,tt_base.group_tt_agent_user"
+                                groups="tt_base.group_tt_agent_user"
                                 attrs="{'invisible':[('refund_line_cust_ids','=', [])]}"/>
                         <button name="print_refund_to_cust_est"
                                 class="oe_stat_button"
                                 string="Refund Placeholder" type="object" icon="fa-print"
-                                groups="tt_base.group_tt_agent_user_operator,tt_base.group_tt_agent_user"/>
+                                groups="tt_base.group_tt_agent_user"/>
                     </div>
                     <div class="oe_title">
                         <label for="Name" class="oe_edit_only" string="Name"/>
@@ -195,8 +195,8 @@
                     <group>
                         <group>
                             <field name="refund_amount"/>
-                            <field name="real_refund_amount" groups="tt_base.group_tt_tour_travel_operator,tt_base.group_tt_tour_travel"/>
-                            <field name="admin_fee_id" groups="tt_base.group_tt_tour_travel_operator,tt_base.group_tt_tour_travel" required="1"/>
+                            <field name="real_refund_amount" groups="tt_base.group_tt_tour_travel"/>
+                            <field name="admin_fee_id" groups="tt_base.group_tt_tour_travel" required="1"/>
                             <field name="admin_fee"/>
                             <field name="admin_fee_ho"/>
                             <field name="admin_fee_agent"/>
@@ -204,10 +204,10 @@
                             <field name="notes"/>
                         </group>
                         <group>
-                            <field name="refund_date" groups="tt_base.group_tt_agent_user_operator,tt_base.group_tt_agent_user" attrs="{'invisible':[('state','=', 'draft')]}"/>
-                            <field name="refund_date_ho" groups="tt_base.group_tt_tour_travel_operator,tt_base.group_tt_tour_travel"/>
+                            <field name="refund_date" groups="tt_base.group_tt_agent_user" attrs="{'invisible':[('state','=', 'draft')]}"/>
+                            <field name="refund_date_ho" groups="tt_base.group_tt_tour_travel"/>
                             <field name="cust_refund_date"/>
-                            <field name="real_refund_date" groups="tt_base.group_tt_tour_travel_operator,tt_base.group_tt_tour_travel"/>
+                            <field name="real_refund_date" groups="tt_base.group_tt_tour_travel"/>
                         </group>
                     </group>
                     <group>
@@ -226,7 +226,7 @@
                                     <field name="refund_amount"/>
                                     <field name="extra_charge_amount"/>
                                     <field name="total_vendor"/>
-                                    <field name="real_refund_amount" groups="tt_base.group_tt_tour_travel_operator,tt_base.group_tt_tour_travel" attrs="{'invisible':[('state','not in', ['finalize','done'])]}"/>
+                                    <field name="real_refund_amount" groups="tt_base.group_tt_tour_travel" attrs="{'invisible':[('state','not in', ['finalize','done'])]}"/>
                                     <field name="state" invisible="1"/>
                                 </tree>
                                 <form>
@@ -251,7 +251,7 @@
                                                 <field name="commission_fee"/>
                                                 <field name="refund_amount"/>
                                                 <field name="extra_charge_amount"/>
-                                                <field name="real_refund_amount" groups="tt_base.group_tt_tour_travel_operator,tt_base.group_tt_tour_travel" attrs="{'invisible':[('state','not in', ['finalize','done'])]}"/>
+                                                <field name="real_refund_amount" groups="tt_base.group_tt_tour_travel" attrs="{'invisible':[('state','not in', ['finalize','done'])]}"/>
                                             </group>
                                         </group>
                                     </sheet>
@@ -356,6 +356,6 @@
     </record>
 
     <menuitem id="menu_transaction_refund" parent="tt_base.top_transaction_aftersales"
-              name="Refund" action="tt_refund_action" sequence="10" groups="tt_base.group_tt_tour_travel_operator,tt_base.group_tt_agent_user_operator,tt_base.group_refund_level_1"/>
+              name="Refund" action="tt_refund_action" sequence="10" groups="tt_base.group_refund_level_1"/>
 
 </odoo>

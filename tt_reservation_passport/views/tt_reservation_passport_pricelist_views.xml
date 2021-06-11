@@ -16,7 +16,7 @@
                                    options='{"terminology": "archive"}'/>
                         </button>
                         <button name="%(tt_base.tt_upload_center_wizard_action_view)d" string="Upload Document" type="action"
-                                class="oe_stat_button" icon="fa-upload" groups="tt_base.group_tt_tour_travel_operator,tt_base.group_master_data_passport_level_3"
+                                class="oe_stat_button" icon="fa-upload" groups="tt_base.group_master_data_passport_level_3"
                                 context="{'default_target_field_name': 'attachments_ids'}"/>
                     </div>
                     <div class="oe_title">
@@ -41,17 +41,17 @@
                     </group>
                     <group>
                         <group string="NTA Calculation">
-                            <field name="passport_nta_price" groups="tt_base.group_tt_tour_travel_operator,tt_base.group_tt_tour_travel"/>
-                            <field name="delivery_nta_price" groups="tt_base.group_tt_tour_travel_operator,tt_base.group_tt_tour_travel"/>
+                            <field name="passport_nta_price" groups="tt_base.group_tt_tour_travel"/>
+                            <field name="delivery_nta_price" groups="tt_base.group_tt_tour_travel"/>
                         </group>
                     </group>
                     <group>
                         <group string="Pricing">
                             <field name="currency_id" invisible="1"/>
-                            <field name="nta_price"/>  <!--groups="tt_base.group_tt_tour_travel_operator"-->
-                            <field name="cost_price"/>  <!--groups="tt_base.group_tt_tour_travel_operator"-->
+                            <field name="nta_price"/>
+                            <field name="cost_price"/>
                             <field name="sale_price"/>
-                            <field name="commission_price"/>  <!--groups="tt_base.group_tt_tour_travel_operator"-->
+                            <field name="commission_price"/>
                         </group>
                     </group>
                     <separator string="Requirements"/>
@@ -127,5 +127,5 @@
 
     <menuitem id="submenu_passport_pricelist" parent="menu_tour_travel_passport_master"
               name="Passport" action="tt_reservation_passport.tt_reservation_passport_pricelist_view_action"
-              groups="tt_base.group_tt_tour_travel_operator,tt_base.group_master_data_passport_level_1" sequence="1"/>
+              groups="tt_base.group_master_data_passport_level_1" sequence="1"/>
 </odoo>

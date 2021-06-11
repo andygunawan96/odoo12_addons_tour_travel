@@ -10,16 +10,16 @@
                 <form string="Agent Registration">
                     <header>
                         <field name="state" widget="statusbar" statusbar_visible="draft,confirm,progress,payment,validate,done"/>
-                        <button string="Confirm" name="action_confirm" attrs="{'invisible': [('state', '!=', 'draft')]}" type="object" groups="tt_base.group_tt_agent_user_operator,tt_base.group_tt_agent_management_operator,tt_base.group_agent_registration_level_3"/>
-                        <button string="Surveying" name="action_progress" attrs="{'invisible': [('state', '!=', 'confirm')]}" type="object" groups="tt_base.group_tt_agent_management_operator,tt_base.group_agent_registration_master_level_4"/>
-                        <button string="Payment" name="action_payment" attrs="{'invisible': [('state', '!=', 'progress')]}" type="object" groups="tt_base.group_tt_agent_management_operator,tt_base.group_agent_registration_master_level_4"/>
-                        <button string="Validate" name="action_validate" attrs="{'invisible': [('state', '!=', 'payment')]}" type="object" groups="tt_base.group_tt_agent_management_operator,tt_base.group_agent_registration_master_level_4"/>
-                        <button string="Done" name="action_done" attrs="{'invisible': [('state', '!=', 'validate')]}" type="object" groups="tt_base.group_tt_agent_management_operator,tt_base.group_agent_registration_master_level_4"/>
+                        <button string="Confirm" name="action_confirm" attrs="{'invisible': [('state', '!=', 'draft')]}" type="object" groups="tt_base.group_agent_registration_level_3"/>
+                        <button string="Surveying" name="action_progress" attrs="{'invisible': [('state', '!=', 'confirm')]}" type="object" groups="tt_base.group_agent_registration_master_level_4"/>
+                        <button string="Payment" name="action_payment" attrs="{'invisible': [('state', '!=', 'progress')]}" type="object" groups="tt_base.group_agent_registration_master_level_4"/>
+                        <button string="Validate" name="action_validate" attrs="{'invisible': [('state', '!=', 'payment')]}" type="object" groups="tt_base.group_agent_registration_master_level_4"/>
+                        <button string="Done" name="action_done" attrs="{'invisible': [('state', '!=', 'validate')]}" type="object" groups="tt_base.group_agent_registration_master_level_4"/>
 <!--                        <button string="Cancel" name="action_cancel" attrs="{'invisible': [('state', '!=', ['confirm','progress','payment','validate'])]}" type="object"/>-->
-                         <button string="Cancel" name="action_cancel" type="object" states="confirm,progress,payment,validate" groups="tt_base.group_tt_agent_user_operator,tt_base.group_tt_agent_management_operator,tt_base.group_tt_agent_user,tt_base.group_agent_registration_master_level_4"/>
-                         <button string="Send Email" name="action_send_email" type="object" states="progress" groups="tt_base.group_tt_agent_management_operator,tt_base.group_agent_registration_master_level_4"/>
+                         <button string="Cancel" name="action_cancel" type="object" states="confirm,progress,payment,validate" groups="tt_base.group_tt_agent_user,tt_base.group_agent_registration_master_level_4"/>
+                         <button string="Send Email" name="action_send_email" type="object" states="progress" groups="tt_base.group_agent_registration_master_level_4"/>
 <!--                         <button string="Get Promotions" name="get_promotions_api" type="object"/>-->
-                        <button string="Set to Draft" name="action_draft" attrs="{'invisible': [('state', '!=', 'cancel')]}" type="object" confirm="All data will be deleted. Proceed?" groups="tt_base.group_tt_agent_management_operator,tt_base.group_agent_registration_master_level_4"/>
+                        <button string="Set to Draft" name="action_draft" attrs="{'invisible': [('state', '!=', 'cancel')]}" type="object" confirm="All data will be deleted. Proceed?" groups="tt_base.group_agent_registration_master_level_4"/>
                     </header>
                     <sheet>
 <!--                        <button name="print_agent_registration_invoice"-->

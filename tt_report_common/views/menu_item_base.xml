@@ -3,12 +3,12 @@
     <data>
         <menuitem id="menu_tour_travel_configuration_report_setting"
                   name="Report Setting"
-                  groups="tt_base.group_tt_tour_travel_operator,tt_base.group_tt_tour_travel"
+                  groups="tt_base.group_tt_tour_travel"
                   parent="tt_base.top_tour_travel_configuration"
                   sequence="45"/>
                 <!--    web_icon="tt_accounting,static/description/account_management.png"-->
         <menuitem id="submenu_report_setting" parent="tt_report_common.menu_tour_travel_configuration_report_setting"
-                  name="Report Setting" groups="tt_base.group_tt_tour_travel_operator,tt_base.group_tt_tour_travel"
+                  name="Report Setting" groups="tt_base.group_tt_tour_travel"
                   action="tt_report_common_setting_action"/>
     </data>
 </odoo>

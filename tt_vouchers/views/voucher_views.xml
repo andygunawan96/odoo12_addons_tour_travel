@@ -46,9 +46,9 @@
         <field name="arch" type="xml">
             <form>
                 <header>
-                    <button string="Set to draft" name="action_set_to_draft" states="confirm,not-active" groups="tt_base.group_tt_accounting_operator,tt_base.group_voucher_level_4" type="object"/>
-                    <button string="Confirm" name="action_set_to_confirm" states="draft" groups="tt_base.group_tt_accounting_operator,tt_base.group_voucher_level_4" type="object"/>
-                    <button string="Deactivate" name="set_to_not_active" states="draft,confirm" groups="tt_base.group_tt_accounting_operator,tt_base.group_voucher_level_4" type="object"/>
+                    <button string="Set to draft" name="action_set_to_draft" states="confirm,not-active" groups="tt_base.group_voucher_level_4" type="object"/>
+                    <button string="Confirm" name="action_set_to_confirm" states="draft" groups="tt_base.group_voucher_level_4" type="object"/>
+                    <button string="Deactivate" name="set_to_not_active" states="draft,confirm" groups="tt_base.group_voucher_level_4" type="object"/>
                     <field name="state" widget="statusbar" statusbar_visible="draft,confirm,not-active"/>
                 </header>
                 <sheet>

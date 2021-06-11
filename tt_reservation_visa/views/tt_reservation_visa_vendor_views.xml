@@ -50,7 +50,7 @@
               parent="tt_reservation_visa.menu_tour_travel_visa_master"
               name="Vendor"
               action="tt_reservation_visa.tt_reservation_visa_vendor_action_views"
-              groups="tt_base.group_tt_tour_travel_operator,tt_base.group_master_data_visa_level_1"
+              groups="tt_base.group_master_data_visa_level_1"
               sequence="4"/>
     </data>
 </odoo>

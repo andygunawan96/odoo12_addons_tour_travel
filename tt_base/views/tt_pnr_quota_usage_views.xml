@@ -11,7 +11,7 @@
                     </header>
                     <sheet>
                         <div class="oe_button_box" name="button_box">
-                            <button name="toggle_active" type="object" groups="tt_base.group_tt_agent_management_operator,tt_base.group_pnr_quota_level_3"
+                            <button name="toggle_active" type="object" groups="tt_base.group_pnr_quota_level_3"
                                     class="oe_stat_button" icon="fa-archive" attrs="{'invisible': [('pnr_quota_state','!=','active')]}">
                                 <field name="active" widget="boolean_button"
                                        options='{"terminology": "archive"}'/>
@@ -70,7 +70,7 @@
 
         <menuitem id="menu_customer_pnr_quota_pnr_quota_usage"
                   parent="tt_base.menu_customer_pnr_quota"
-                  groups="tt_base.group_tt_accounting_operator,tt_base.group_tt_agent_management_operator,tt_base.group_pnr_quota_level_1"
+                  groups="tt_base.group_pnr_quota_level_1"
                   action="tt_pnr_quota_usage_action_view"
                   name="PNR Quota Usage"
                   sequence="20"/>

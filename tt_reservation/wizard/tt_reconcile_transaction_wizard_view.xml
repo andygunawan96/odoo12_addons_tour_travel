@@ -32,7 +32,7 @@
 
     <menuitem id="tt_reconcile_transaction_wizard"
               parent="tt_reservation.menu_transaction_accounting_reconcile"
-              groups="tt_base.group_tt_accounting_operator"
+              groups="tt_base.group_reconcile_level_3"
               name="Get Reconcile Data"
               sequence="40"
               action="tt_reconcile_transaction_wizard_action_view"/>

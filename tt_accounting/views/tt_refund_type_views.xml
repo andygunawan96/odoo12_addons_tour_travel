@@ -79,6 +79,6 @@
               action="tt_accounting.tt_refund_type_action"
               name="Refund Type"
               sequence="2"
-              groups="tt_base.group_tt_tour_travel_operator,tt_base.group_after_sales_master_level_1"/>
+              groups="tt_base.group_after_sales_master_level_1"/>
 
 </odoo>

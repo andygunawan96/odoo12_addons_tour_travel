@@ -5,12 +5,13 @@
         <field name="arch" type="xml">
             <form edit="false" create="false">
                 <header>
-                    <button string="Set To Booked" name="action_set_to_book_from_button" groups="tt_base.group_tt_ticketing_operator,tt_base.group_reservation_provider_level_4" states="cancel2,issued,fail_issued,issued_pending" type="object"/>
+                    <button string="Set To Booked" name="action_set_to_book_from_button" groups="tt_base.group_reservation_provider_level_4" states="cancel2,issued,fail_issued,issued_pending" type="object"/>
                     <button string="Issued Locally" name="%(tt_reservation_periksain.force_issued_wizard_periksain_action_view)d" states="booked" type="action"
-                            groups="tt_base.group_tt_ticketing_operator,tt_base.group_reservation_provider_level_4"
+                            groups="tt_base.group_reservation_provider_level_4"
                             context="{'default_provider_id': id,}"/>
-                    <button string="Reverse Ledger" name="action_reverse_ledger_from_button" states="issued,cancel2,fail_issued,issued_pending" type="object"/>
-                    <field name="state" widget="statusbar" statusbar_visible="draft,booked,issued"/>
+                    <button string="Reverse Ledger" name="action_reverse_ledger_from_button" states="issued,cancel2,fail_issued,issued_pending"
+                            type="object" groups="tt_base.group_reservation_provider_level_4"/>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,booked,issued_pending,issued,done"/>
                 </header>
                 <sheet>
                     <group>
@@ -91,7 +92,7 @@
         <field name="arch" type="xml">
             <tree>
                 <field name="pnr"/>
-                <field name="provider_id" groups="tt_base.group_tt_tour_travel_operator,tt_base.group_tt_tour_travel"/>
+                <field name="provider_id" groups="tt_base.group_tt_tour_travel"/>
                 <!--<field name="total"/>-->
                 <field name="state"/>
             </tree>

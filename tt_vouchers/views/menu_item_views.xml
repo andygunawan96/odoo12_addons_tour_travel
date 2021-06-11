@@ -5,7 +5,7 @@
               sequence="1"
               parent="tt_base.menu_tour_travel_configuration_voucher"
               action="voucher_action_view"
-              groups="tt_base.group_tt_accounting_operator,tt_base.group_voucher_level_4"
+              groups="tt_base.group_voucher_level_4"
         />
 
     <menuitem id="tt_voucher_detail_sub_menu"
@@ -13,7 +13,7 @@
               sequence="2"
               parent="tt_base.menu_tour_travel_configuration_voucher"
               action="voucher_detail_action_view"
-              groups="tt_base.group_tt_accounting_operator,tt_base.group_voucher_level_4"
+              groups="tt_base.group_voucher_level_4"
         />
 
     <menuitem id="tt_voucher_detail_blackout_sub_menu"
@@ -21,7 +21,7 @@
               sequence="3"
               parent="tt_base.menu_tour_travel_configuration_voucher"
               action="voucher_detail_blackout_action_view"
-              groups="tt_base.group_tt_accounting_operator,tt_base.group_voucher_level_4"
+              groups="tt_base.group_voucher_level_4"
         />
 
     <menuitem id="tt_voucher_detail_used_sub_menu"
@@ -29,7 +29,7 @@
               sequence="4"
               parent="tt_base.menu_tour_travel_configuration_voucher"
               action="voucher_detail_used_action_view"
-              groups="tt_base.group_tt_accounting_operator,tt_base.group_voucher_level_4"
+              groups="tt_base.group_voucher_level_4"
         />
 
 </odoo>

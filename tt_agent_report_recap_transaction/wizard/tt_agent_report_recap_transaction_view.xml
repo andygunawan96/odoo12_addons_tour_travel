@@ -29,7 +29,7 @@
             parent="tt_agent_report_recap_reservation.top_reservations_reports"
             action="action_agent_report_recap_transaction_wz"
             sequence="20"
-            groups="tt_base.group_tt_agent_user_supervisor,tt_base.group_tt_tour_travel_operator"
+            groups="tt_base.group_tt_agent_user,tt_base.group_tt_tour_travel"
         />
     </data>
 </odoo>

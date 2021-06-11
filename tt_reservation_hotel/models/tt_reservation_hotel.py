@@ -419,32 +419,32 @@ class HotelReservation(models.Model):
         self.booked_uid = context.get('co_uid') or self.env.user.id,
         return True
 
-    # @api.one
-    # def action_refund(self):
-    def action_reverse_ledger_from_button(self):
-        if self.state != 'fail_issued':
-            raise UserError("Cannot refund, non Fail Issued state")
-        if self.state == 'fail_refunded':
-            raise UserError("Cannot refund, this PNR has been refunded.")
-
-        # if not self.is_ledger_created:
-        #     raise UserError("This Provider Ledger is not Created.")
-
-        for ledger_id in self.ledger_ids:
-            ledger_id.reverse_ledger()
-            # self._refund_ledger()
-
-        self.write({
-            'state': 'fail_refunded',
-            # 'is_ledger_created': False,
-            'refund_uid': self.env.user.id,
-            'refund_date': datetime.now()
-        })
-
-        return {
-            'type': 'ir.actions.client',
-            'tag': 'reload',
-        }
+    # # @api.one
+    # # def action_refund(self):
+    # def action_reverse_ledger_from_button(self):
+    #     if self.state != 'fail_issued':
+    #         raise UserError("Cannot refund, non Fail Issued state")
+    #     if self.state == 'fail_refunded':
+    #         raise UserError("Cannot refund, this PNR has been refunded.")
+    #
+    #     # if not self.is_ledger_created:
+    #     #     raise UserError("This Provider Ledger is not Created.")
+    #
+    #     for ledger_id in self.ledger_ids:
+    #         ledger_id.reverse_ledger()
+    #         # self._refund_ledger()
+    #
+    #     self.write({
+    #         'state': 'fail_refunded',
+    #         # 'is_ledger_created': False,
+    #         'refund_uid': self.env.user.id,
+    #         'refund_date': datetime.now()
+    #     })
+    #
+    #     return {
+    #         'type': 'ir.actions.client',
+    #         'tag': 'reload',
+    #     }
 
     @api.multi
     def action_set_as_draft(self):

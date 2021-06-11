@@ -15,7 +15,7 @@
                     <div class="oe_button_box" name="button_box">
                         <button name="action_duplicate"
                                 class="oe_stat_button"
-                                groups="tt_base.group_tt_tour_travel_operator,tt_base.group_master_data_tour_level_3"
+                                groups="tt_base.group_master_data_tour_level_3"
                                 string="Copy" type="object" icon="fa-clone"/>
                     </div>
                     <div class="oe_title">

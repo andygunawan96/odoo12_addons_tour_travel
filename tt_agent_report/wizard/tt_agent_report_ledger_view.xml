@@ -27,6 +27,6 @@
         parent="tt_accounting.top_transaction_ledger"
         action="action_agent_report_ledger_wz"
         sequence="20"
-        groups="tt_base.group_tt_agent_user_operator,tt_base.group_tt_tour_travel_operator"
+        groups="tt_base.group_tt_agent_user,tt_base.group_tt_tour_travel"
        />
 </odoo>

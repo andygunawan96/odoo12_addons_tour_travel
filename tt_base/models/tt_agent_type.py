@@ -106,7 +106,7 @@ class TtAgentType(models.Model):
         ## create custom menu item here
         menuitem_obj = self.env['ir.ui.menu'].sudo().create({
             'parent_id': self.env.ref('tt_base.menu_tour_travel_agent').id,
-            'groups_id': [(4,self.env.ref('tt_base.group_tt_tour_travel_operator').id)],
+            'groups_id': [(4,self.env.ref('tt_base.group_tt_tour_travel').id)],
             'name': self.name,
             'sequence': 35,
             'action': 'ir.actions.act_window,%s' % (action_obj.id)
