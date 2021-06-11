@@ -102,7 +102,7 @@ class ResUsers(models.Model):
         return new_user
 
     def write(self, vals):
-        admin_obj_id = self.env.ref('base.group_system').id
+        admin_obj_id = self.env.ref('base.user_admin').id
         if vals.get('sel_groups_2_3') == 3 and self.env.user.id != admin_obj_id:
             vals.pop('sel_groups_2_3')
         if 'password' in vals and self.id == admin_obj_id and self.env.user.id != admin_obj_id:
@@ -111,7 +111,7 @@ class ResUsers(models.Model):
     
     def unlink(self):
         for rec in self:
-            if rec.id == self.env.ref('base.group_system').id:
+            if rec.id == self.env.ref('base.user_admin').id:
                 raise UserError('Cannot delete superadmin.')
         super(ResUsers, self).unlink()
 
