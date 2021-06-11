@@ -72,4 +72,12 @@
               groups="tt_base.group_master_data_periksain_level_1"
               action="tt_reservation_periksain.tt_timeslot_periksain_action_views"/>
 
+    <menuitem id="menu_vendor_master_data_periksain_timeslot"
+              parent="tt_base.top_external_vendor_master_product"
+              name="Periksain Timeslot"
+              sequence="35"
+              groups="tt_base.group_master_data_periksain_level_1"
+              action="tt_reservation_periksain.tt_timeslot_periksain_action_views"
+    />
+
 </odoo>
