@@ -973,7 +973,7 @@
                         <t t-foreach="doc.timeslot_ids" t-as="line">
                             <tr>
                                 <td><span t-field="doc.name"/></td>
-                                <td><span t-field="line.datetimeslot"/></td>
+                                <td><span t-esc="line.datetimeslot.astimezone(printout_tz)"/></td>
                                 <td><span t-field="doc.test_address"/></td>
                                 <td>-</td>
                             </tr>
