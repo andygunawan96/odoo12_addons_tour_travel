@@ -440,62 +440,6 @@ class ReservationPeriksain(models.Model):
         payment_res = self.payment_reservation_api('periksain',req,context)
         return payment_res
 
-    def update_cost_service_charge_airline_api(self,req,context):
-        try:
-            _logger.info('Update cost\n' + json.dumps(req))
-            for provider in req['provider_bookings']:
-                provider_obj = self.env['tt.provider.airline'].browse(provider['provider_id'])
-                try:
-                    provider_obj.create_date
-                except:
-                    raise RequestException(1002)
-
-                # May 12, 2020 - SAM
-                if not provider.get('force_update_service_charge') and (not provider.get('total_price') or provider_obj.total_price == provider['total_price']):
-                    continue
-                # provider_obj.write({
-                    # 'pnr': provider['pnr'],
-                    # 'balance_due': provider['balance_due'],
-                    # 'total_price': provider['total_price'],
-                # })
-                # END
-                ledger_created = provider_obj.delete_service_charge()
-                # May 13, 2020 - SAM
-                if ledger_created:
-                    # September 3, 2020 - SAM
-                    # Apabila terissued di backend dan error di vendor dengan status book dan perubahan harga akan di reverse
-                    # if not req.get('force_issued'):
-                    #     raise RequestException(1027)
-                    provider_obj.action_reverse_ledger()
-                    provider_obj.delete_service_charge()
-
-                provider_obj.delete_passenger_fees()
-                provider_obj.delete_passenger_tickets()
-                # END
-
-                # May 14, 2020 - SAM
-                # Rencana awal mau melakukan compare passenger sequence
-                # Dilapangan sequence passenger pada tiap provider bisa berbeda beda, tidak bisa digunakan sebagai acuan
-                provider_obj.create_ticket_api(provider['passengers'], provider['pnr'])
-                for journey in provider['journeys']:
-                    for segment in journey['segments']:
-                        for fare in segment['fares']:
-                            provider_obj.create_service_charge(fare['service_charges'])
-                # May 13, 2020 - SAM
-                if ledger_created and req.get('force_issued'):
-                    provider_obj.action_create_ledger(context['co_uid'])
-                # END
-
-            book_obj = self.get_book_obj(req.get('book_id'),req.get('order_number'))
-            book_obj.calculate_service_charge()
-            return ERR.get_no_error()
-        except RequestException as e:
-            _logger.error(traceback.format_exc())
-            return e.error_dict()
-        except Exception as e:
-            _logger.error(traceback.format_exc())
-            return ERR.get_error("Update Cost Service Charge Error")
-
     def _prepare_booking_api(self, booking_data, context_gateway):
         dest_obj = self.env['tt.destinations']
         provider_type_id = self.env.ref('tt_reservation_periksain.tt_provider_type_periksain')
@@ -596,9 +540,6 @@ class ReservationPeriksain(models.Model):
         #                 'pnr': self.provider_booking_ids[rec.provider_sequence].pnr
         #             })
     # END
-
-    def update_pnr_booked(self,provider_obj,provider,context):
-        provider_obj.action_booked_api_airline(provider, context)
 
     #to generate sale service charge
     def calculate_service_charge(self):
@@ -718,7 +659,7 @@ class ReservationPeriksain(models.Model):
         res = book_obj.read()
         res = res and res[0] or {}
         datas['form'] = res
-        medical_ticket_id = self.env.ref('tt_report_common.action_report_printout_reservation_periksain')
+        periksain_ticket_id = self.env.ref('tt_report_common.action_report_printout_reservation_periksain')
 
         if not book_obj.printout_ticket_id:
             if book_obj.agent_id:
@@ -731,12 +672,12 @@ class ReservationPeriksain(models.Model):
             else:
                 co_uid = self.env.user.id
 
-            pdf_report = medical_ticket_id.report_action(book_obj, data=datas)
+            pdf_report = periksain_ticket_id.report_action(book_obj, data=datas)
             pdf_report['context'].update({
                 'active_model': book_obj._name,
                 'active_id': book_obj.id
             })
-            pdf_report_bytes = medical_ticket_id.render_qweb_pdf(data=pdf_report)
+            pdf_report_bytes = periksain_ticket_id.render_qweb_pdf(data=pdf_report)
             res = book_obj.env['tt.upload.center.wizard'].upload_file_api(
                 {
                     'filename': 'Periksain Ticket %s.pdf' % book_obj.name,
@@ -775,9 +716,9 @@ class ReservationPeriksain(models.Model):
         res = res and res[0] or {}
         datas['form'] = res
         datas['is_with_price'] = True
-        medical_ticket_id = self.env.ref('tt_report_common.action_report_printout_reservation_periksain')
+        periksain_ticket_id = self.env.ref('tt_report_common.action_report_printout_reservation_periksain')
 
-        if not book_obj.printout_ticket_id:
+        if not book_obj.printout_ticket_price_id:
             if book_obj.agent_id:
                 co_agent_id = book_obj.agent_id.id
             else:
@@ -788,12 +729,12 @@ class ReservationPeriksain(models.Model):
             else:
                 co_uid = self.env.user.id
 
-            pdf_report = medical_ticket_id.report_action(book_obj, data=datas)
+            pdf_report = periksain_ticket_id.report_action(book_obj, data=datas)
             pdf_report['context'].update({
                 'active_model': book_obj._name,
                 'active_id': book_obj.id
             })
-            pdf_report_bytes = medical_ticket_id.render_qweb_pdf(data=pdf_report)
+            pdf_report_bytes = periksain_ticket_id.render_qweb_pdf(data=pdf_report)
             res = book_obj.env['tt.upload.center.wizard'].upload_file_api(
                 {
                     'filename': 'Periksain Ticket %s.pdf' % book_obj.name,
@@ -807,60 +748,60 @@ class ReservationPeriksain(models.Model):
                 }
             )
             upc_id = book_obj.env['tt.upload.center'].search([('seq_id', '=', res['response']['seq_id'])], limit=1)
-            book_obj.printout_ticket_id = upc_id.id
+            book_obj.printout_ticket_price_id = upc_id.id
         url = {
             'type': 'ir.actions.act_url',
             'name': "Printout",
             'target': 'new',
-            'url': book_obj.printout_ticket_id.url,
+            'url': book_obj.printout_ticket_price_id.url,
         }
         return url
 
-    @api.multi
-    def print_eticket_original(self, data, ctx=None):
-        # jika panggil dari backend
-        if 'order_number' not in data:
-            data['order_number'] = self.name
-        if 'provider_type' not in data:
-            data['provider_type'] = self.provider_type_id.name
-
-        book_obj = self.env['tt.reservation.airline'].search([('name', '=', data['order_number'])], limit=1)
-        datas = {'ids': book_obj.env.context.get('active_ids', [])}
-        # res = self.read(['price_list', 'qty1', 'qty2', 'qty3', 'qty4', 'qty5'])
-        res = book_obj.read()
-        res = res and res[0] or {}
-        datas['form'] = res
-        datas['is_with_price'] = True
-        airline_ticket_id = book_obj.env.ref('tt_report_common.action_report_printout_reservation_airline')
-
-
-        if not book_obj.printout_ticket_original_ids:
-            # gateway get ticket
-            req = {"data": []}
-            for provider_booking_obj in book_obj.provider_booking_ids:
-                req['data'].append({
-                    'pnr': provider_booking_obj.pnr,
-                    'provider': provider_booking_obj.provider_id.code,
-                    'last_name': book_obj.passenger_ids[0].last_name,
-                    'pnr2': provider_booking_obj.pnr2
-                })
-            res = self.env['tt.airline.api.con'].send_get_original_ticket(req)
-            if res['error_code'] == 0:
-                data.update({
-                    'response': res['response']
-                })
-                self.save_eticket_original_api(data, ctx)
-            else:
-                return 0 # error
-        if self.name != False:
-            return 0
-        else:
-            url = []
-            for ticket in book_obj.printout_ticket_original_ids:
-                url.append({
-                    'url': ticket.url
-                })
-            return url
+    # @api.multi
+    # def print_eticket_original(self, data, ctx=None):
+    #     # jika panggil dari backend
+    #     if 'order_number' not in data:
+    #         data['order_number'] = self.name
+    #     if 'provider_type' not in data:
+    #         data['provider_type'] = self.provider_type_id.name
+    #
+    #     book_obj = self.env['tt.reservation.airline'].search([('name', '=', data['order_number'])], limit=1)
+    #     datas = {'ids': book_obj.env.context.get('active_ids', [])}
+    #     # res = self.read(['price_list', 'qty1', 'qty2', 'qty3', 'qty4', 'qty5'])
+    #     res = book_obj.read()
+    #     res = res and res[0] or {}
+    #     datas['form'] = res
+    #     datas['is_with_price'] = True
+    #     airline_ticket_id = book_obj.env.ref('tt_report_common.action_report_printout_reservation_airline')
+    #
+    #
+    #     if not book_obj.printout_ticket_original_ids:
+    #         # gateway get ticket
+    #         req = {"data": []}
+    #         for provider_booking_obj in book_obj.provider_booking_ids:
+    #             req['data'].append({
+    #                 'pnr': provider_booking_obj.pnr,
+    #                 'provider': provider_booking_obj.provider_id.code,
+    #                 'last_name': book_obj.passenger_ids[0].last_name,
+    #                 'pnr2': provider_booking_obj.pnr2
+    #             })
+    #         res = self.env['tt.airline.api.con'].send_get_original_ticket(req)
+    #         if res['error_code'] == 0:
+    #             data.update({
+    #                 'response': res['response']
+    #             })
+    #             self.save_eticket_original_api(data, ctx)
+    #         else:
+    #             return 0 # error
+    #     if self.name != False:
+    #         return 0
+    #     else:
+    #         url = []
+    #         for ticket in book_obj.printout_ticket_original_ids:
+    #             url.append({
+    #                 'url': ticket.url
+    #             })
+    #         return url
 
     @api.multi
     def print_ho_invoice(self):
@@ -871,7 +812,7 @@ class ReservationPeriksain(models.Model):
         res = self.read()
         res = res and res[0] or {}
         datas['form'] = res
-        airline_ho_invoice_id = self.env.ref('tt_report_common.action_report_printout_invoice_ho_airline')
+        periksain_ho_invoice_id = self.env.ref('tt_report_common.action_report_printout_invoice_ho_airline')
         if not self.printout_ho_invoice_id:
             if self.agent_id:
                 co_agent_id = self.agent_id.id
@@ -883,12 +824,12 @@ class ReservationPeriksain(models.Model):
             else:
                 co_uid = self.env.user.id
 
-            pdf_report = airline_ho_invoice_id.report_action(self, data=datas)
+            pdf_report = periksain_ho_invoice_id.report_action(self, data=datas)
             pdf_report['context'].update({
                 'active_model': self._name,
                 'active_id': self.id
             })
-            pdf_report_bytes = airline_ho_invoice_id.render_qweb_pdf(data=pdf_report)
+            pdf_report_bytes = periksain_ho_invoice_id.render_qweb_pdf(data=pdf_report)
             res = self.env['tt.upload.center.wizard'].upload_file_api(
                 {
                     'filename': 'Airline HO Invoice %s.pdf' % self.name,
@@ -928,9 +869,9 @@ class ReservationPeriksain(models.Model):
         res = res and res[0] or {}
         datas['form'] = res
         datas['is_with_price'] = True
-        medical_ticket_id = book_obj.env.ref('tt_report_common.action_printout_itinerary_periksain')
+        periksain_itinerary_id = book_obj.env.ref('tt_report_common.action_printout_itinerary_periksain')
 
-        if not book_obj.printout_ticket_id:
+        if not book_obj.printout_ho_invoice_id:
             if book_obj.agent_id:
                 co_agent_id = book_obj.agent_id.id
             else:
@@ -941,12 +882,12 @@ class ReservationPeriksain(models.Model):
             else:
                 co_uid = self.env.user.id
 
-            pdf_report = medical_ticket_id.report_action(book_obj, data=datas)
+            pdf_report = periksain_itinerary_id.report_action(book_obj, data=datas)
             pdf_report['context'].update({
                 'active_model': book_obj._name,
                 'active_id': book_obj.id
             })
-            pdf_report_bytes = medical_ticket_id.render_qweb_pdf(data=pdf_report)
+            pdf_report_bytes = periksain_itinerary_id.render_qweb_pdf(data=pdf_report)
             res = book_obj.env['tt.upload.center.wizard'].upload_file_api(
                 {
                     'filename': 'Ittinerary %s.pdf' % book_obj.name,
@@ -960,12 +901,12 @@ class ReservationPeriksain(models.Model):
                 }
             )
             upc_id = book_obj.env['tt.upload.center'].search([('seq_id', '=', res['response']['seq_id'])], limit=1)
-            book_obj.printout_ticket_id = upc_id.id
+            book_obj.printout_ho_invoice_id = upc_id.id
         url = {
             'type': 'ir.actions.act_url',
             'name': "Printout",
             'target': 'new',
-            'url': book_obj.printout_ticket_id.url,
+            'url': book_obj.printout_ho_invoice_id.url,
         }
         return url
 
