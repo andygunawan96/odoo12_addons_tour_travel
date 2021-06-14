@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="tt_reservation_periksain_form_views_reschedule" model="ir.ui.view">
+        <field name="name">tt.reservation.periksain.form.view.reschedule</field>
+        <field name="model">tt.reservation.periksain</field>
+        <field name="inherit_id" ref="tt_reservation_periksain.tt_reservation_periksain_form_views"/>
+        <field name="arch" type="xml">
+            <xpath expr="//button[@name='action_cancel']" position="after">
+                <button string="After Sales Request" name="%(tt_reschedule_periksain.tt_reschedule_periksain_wizard_action_view)d" type="action" groups="tt_base.group_tt_agent_user"
+                        context="{
+                'default_res_model': res_model,
+                'default_res_id': id,
+                'default_agent_id': agent_id,
+                'default_customer_parent_id': customer_parent_id,
+                'default_booker_id': booker_id,
+                'default_referenced_pnr': pnr,
+                'default_referenced_document': name,
+                'default_currency_id': currency_id,
+                'default_service_type': provider_type_id,
+                'default_old_picked_timeslot_id': picked_timeslot_id,
+                'default_new_picked_timeslot_id': picked_timeslot_id
+                }" attrs="{'invisible':['|', ('refundable','=',False), ('provider_type_id','!=', %(tt_reservation_periksain.tt_provider_type_periksain)d)]}"/>
+            </xpath>
+            <xpath expr="//page[@name='refund_page']" position="after">
+                <page string="After Sales" name="after_sales_page" attrs="{'invisible':[('reschedule_ids','=', [])]}">
+                    <field name="reschedule_ids"/>
+                </page>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>

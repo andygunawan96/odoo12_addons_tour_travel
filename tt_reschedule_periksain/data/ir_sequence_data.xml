@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="seq_reschedule_periksain" model="ir.sequence">
+        <field name="name">Reschedule Periksain</field>
+        <field name="code">tt.reschedule.periksain</field>
+        <field name="prefix">RSK.%(range_year)s%(range_month)s%(range_day)s%(range_sec)s</field>
+        <field name="padding">3</field>
+    </record>
+</odoo>
