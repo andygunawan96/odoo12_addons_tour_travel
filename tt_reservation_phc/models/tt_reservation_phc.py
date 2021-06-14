@@ -249,13 +249,13 @@ class Reservationphc(models.Model):
                     'rw': passengers[idx]['rw'],
                     'kabupaten': passengers[idx]['kabupaten'],
                     'kecamatan': passengers[idx]['kecamatan'],
-                    'desa': passengers[idx]['desa'],
+                    'kelurahan': passengers[idx]['kelurahan'],
                     'address_ktp': passengers[idx]['address_ktp'],
                     'rt_ktp': passengers[idx]['rt_ktp'],
                     'rw_ktp': passengers[idx]['rw_ktp'],
                     'kabupaten_ktp': passengers[idx]['kabupaten_ktp'],
                     'kecamatan_ktp': passengers[idx]['kecamatan_ktp'],
-                    'desa_ktp': passengers[idx]['desa_ktp'],
+                    'kelurahan_ktp': passengers[idx]['kelurahan_ktp'],
                 })
 
             for psg in list_passenger_value:

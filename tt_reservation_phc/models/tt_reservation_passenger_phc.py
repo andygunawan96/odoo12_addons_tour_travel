@@ -29,13 +29,13 @@ class TtReservationCustomer(models.Model):
     rw = fields.Char('RW')
     kabupaten = fields.Char('Kabupaten')
     kecamatan = fields.Char('Kecamatan')
-    kelurahan = fields.Char('Desa')
+    kelurahan = fields.Char('Kelurahan')
     address_ktp = fields.Char('Address KTP')
     rt_ktp = fields.Char('RT KTP')
     rw_ktp = fields.Char('RW KTP')
     kabupaten_ktp = fields.Char('Kabupaten KTP')
     kecamatan_ktp = fields.Char('Kecamatan KTP')
-    kelurahan_ktp = fields.Char('Desa KTP')
+    kelurahan_ktp = fields.Char('Kelurahan KTP')
 
     def to_dict(self):
         res = super(TtReservationCustomer, self).to_dict()
@@ -49,13 +49,13 @@ class TtReservationCustomer(models.Model):
             'rw': self.rw,
             'kabupaten': self.kabupaten,
             'kecamatan': self.kecamatan,
-            'desa': self.desa,
+            'kelurahan': self.kelurahan,
             'address_ktp': self.address_ktp,
             'rt_ktp': self.rt_ktp,
             'rw_ktp': self.rw_ktp,
             'kabupaten_ktp': self.kabupaten_ktp,
             'kecamatan_ktp': self.kecamatan_ktp,
-            'desa_ktp': self.desa_ktp,
+            'kelurahan_ktp': self.kelurahan_ktp,
             'email': self.email,
             'phone_number': self.phone_number
         })
