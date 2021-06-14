@@ -853,6 +853,7 @@ class ReservationAirline(models.Model):
                 # END
 
                 # June 10, 2021 - SAM
+                _logger.info('Update cost PNR %s' % provider_obj.pnr)
                 total_service_charge = 0
                 provider_service_charges = []
                 for journey in provider['journeys']:
@@ -891,11 +892,14 @@ class ReservationAirline(models.Model):
                             break
                     is_same_service_charge_data = False if provider_service_charges else True
 
+                _logger.info('Is Same Service Charge Data %s' % is_same_service_charge_data)
                 ledger_created = False
                 if not is_same_service_charge_data:
                     ledger_created = provider_obj.delete_service_charge()
+                    _logger.info('Ledger Created : %s' % ledger_created)
                     # May 13, 2020 - SAM
                     if ledger_created:
+                        _logger.info('Reverse Ledger %s' % provider_obj.pnr)
                         # September 3, 2020 - SAM
                         # Apabila terissued di backend dan error di vendor dengan status book dan perubahan harga akan di reverse
                         # if not req.get('force_issued'):
@@ -921,6 +925,7 @@ class ReservationAirline(models.Model):
                 # June 10, 2021 - SAM
                 # if ledger_created and req.get('force_issued'):
                 if ledger_created:
+                    _logger.info('Create New Ledger %s' % provider_obj.pnr)
                     provider_obj.action_create_ledger(context['co_uid'])
                 # END
                 # END
