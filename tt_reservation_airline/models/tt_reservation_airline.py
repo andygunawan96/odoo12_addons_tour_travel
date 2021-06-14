@@ -924,6 +924,7 @@ class ReservationAirline(models.Model):
                 # May 13, 2020 - SAM
                 # June 10, 2021 - SAM
                 # if ledger_created and req.get('force_issued'):
+                _logger.info('Ledger Created : %s' % ledger_created)
                 if ledger_created:
                     _logger.info('Create New Ledger %s' % provider_obj.pnr)
                     provider_obj.action_create_ledger(context['co_uid'])
