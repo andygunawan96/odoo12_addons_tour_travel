@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="periksain_set_real_amount_wizard_form_view" model="ir.ui.view">
+        <field name="name">Reschedule Set Real Amount Wizard</field>
+        <field name="model">periksain.reschedule.set.real.amount.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Reschedule Set Real Amount Wizard">
+                <group>
+                    <field name="reschedule_line_id" invisible="1"/>
+                    <field name="real_reschedule_amount"/>
+                </group>
+                <footer>
+                    <button name="submit_real_amount" string="Submit" type="object" default_focus="1" class="oe_highlight"/>
+                    or
+                    <button string="Cancel" class="oe_link" special="cancel" />
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="periksain_set_real_amount_wizard_action_view" model="ir.actions.act_window">
+        <field name="name">periksain.set.real.amount.wizard.action.view</field>
+        <field name="res_model">periksain.reschedule.set.real.amount.wizard</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+
+</odoo>
