@@ -131,7 +131,7 @@ class ReservationPhc(models.Model):
             except Exception as e:
                 print(str(e))
 
-    def action_issued_pending_phc(self,co_uid,customer_parent_id,acquirer_id):
-        super(ReservationPhc, self).action_issued_pending_phc(co_uid,customer_parent_id)
+    def action_issued_phc(self,co_uid,customer_parent_id,acquirer_id):
+        super(ReservationPhc, self).action_issued_phc(co_uid,customer_parent_id)
         self.action_create_invoice(acquirer_id,co_uid,customer_parent_id)
 

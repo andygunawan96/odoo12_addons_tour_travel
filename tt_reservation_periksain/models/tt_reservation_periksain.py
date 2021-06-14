@@ -33,9 +33,9 @@ class ReservationPeriksain(models.Model):
     passenger_ids = fields.One2many('tt.reservation.passenger.periksain', 'booking_id',
                                     readonly=True, states={'draft': [('readonly', False)]})
 
-    issued_pending_uid = fields.Many2one('res.users', 'Issued Pending by', readonly=True)
-    issued_pending_date = fields.Datetime('Issued Pending Date', readonly=True)
-    issued_pending_hold_date = fields.Datetime('Pending Date', readonly=True)
+    # issued_pending_uid = fields.Many2one('res.users', 'Issued Pending by', readonly=True)
+    # issued_pending_date = fields.Datetime('Issued Pending Date', readonly=True)
+    # issued_pending_hold_date = fields.Datetime('Pending Date', readonly=True)
 
     origin_id = fields.Many2one('tt.destinations', 'Test Area', readonly=True, states={'draft': [('readonly', False)]})
 
@@ -47,12 +47,12 @@ class ReservationPeriksain(models.Model):
 
     timeslot_ids = fields.Many2many('tt.timeslot.periksain','tt_reservation_periksain_timeslot_rel', 'booking_id', 'timeslot_id', 'Timeslot(s)')
 
-    picked_timeslot_id = fields.Many2one('tt.timeslot.periksain', 'Picked Timeslot', readonly=True, states={'issued_pending': [('readonly', False)]})
+    picked_timeslot_id = fields.Many2one('tt.timeslot.periksain', 'Picked Timeslot', readonly=True, states={'draft': [('readonly', False)]})
 
     test_datetime = fields.Datetime('Test Datetime',related='picked_timeslot_id.datetimeslot', store=True)
 
     analyst_ids = fields.Many2many('tt.analyst.periksain', 'tt_reservation_periksain_analyst_rel', 'booking_id',
-                                   'analyst_id', 'Analyst(s)', readonly=True, states={'issued_pending': [('readonly', False)]})
+                                   'analyst_id', 'Analyst(s)', readonly=True, states={'draft': [('readonly', False)]})
 
     provider_type_id = fields.Many2one('tt.provider.type','Provider Type',
                                        default=lambda self: self.env.ref('tt_reservation_periksain.tt_provider_type_periksain'))
@@ -103,18 +103,20 @@ class ReservationPeriksain(models.Model):
         except Exception as e:
             _logger.info('Error Create Email Queue')
 
-    def action_issued_pending_periksain(self, co_uid, customer_parent_id, acquirer_id = False):
-        issued_pending_hold_date = datetime.max
-        for provider_obj in self.provider_booking_ids:
-            if issued_pending_hold_date > provider_obj.issued_pending_hold_date:
-                issued_pending_hold_date = provider_obj.issued_pending_hold_date
+    def action_issued_periksain(self, co_uid, customer_parent_id, acquirer_id = False):
+        # issued_pending_hold_date = datetime.max
+        # for provider_obj in self.provider_booking_ids:
+        #     if issued_pending_hold_date > provider_obj.issued_pending_hold_date:
+        #         issued_pending_hold_date = provider_obj.issued_pending_hold_date
 
         write_values = {
-            'state': 'issued_pending',
-            'issued_pending_hold_date': issued_pending_hold_date,
-            'issued_pending_date': datetime.now(),
-            'issued_pending_uid': co_uid,
-            'customer_parent_id': customer_parent_id
+            'state': 'issued',
+            'issued_date': datetime.now(),
+            'issued_uid': co_uid,
+            # 'issued_pending_hold_date': issued_pending_hold_date,
+            # 'issued_pending_date': datetime.now(),
+            # 'issued_pending_uid': co_uid,
+            'customer_parent_id': customer_parent_id,
         }
 
         self.write(write_values)
@@ -150,34 +152,34 @@ class ReservationPeriksain(models.Model):
             'state':  'refund_failed',
         })
 
-    def action_issued_pending_api_periksain(self,acquirer_id,customer_parent_id,context):
-        self.action_issued_pending_periksain(context['co_uid'],customer_parent_id,acquirer_id)
+    def action_issued_api_periksain(self,acquirer_id,customer_parent_id,context):
+        self.action_issued_periksain(context['co_uid'],customer_parent_id,acquirer_id)
 
-    def action_issued_periksain(self,context):
-        values = {
-            'state': 'issued',
-            'issued_date': datetime.now(),
-            'issued_uid': context.get('co_uid', False)
-        }
-        self.write(values)
-
-        try:
-            mail_created = self.env['tt.email.queue'].sudo().with_context({'active_test':False}).search([('res_id', '=', self.id), ('res_model', '=', self._name), ('type', '=', 'issued_final_periksain')], limit=1)
-            if not mail_created:
-                temp_data = {
-                    'provider_type': 'periksain',
-                    'order_number': self.name,
-                    'type': 'issued_final',
-                }
-                temp_context = {
-                    'co_agent_id': self.agent_id.id
-                }
-                self.env['tt.email.queue'].create_email_queue(temp_data, temp_context)
-            else:
-                _logger.info('Issued Final email for {} is already created!'.format(self.name))
-                raise Exception('Issued Final email for {} is already created!'.format(self.name))
-        except Exception as e:
-            _logger.info('Error Create Email Queue')
+    # def action_issued_periksain(self,context):
+    #     values = {
+    #         'state': 'issued',
+    #         'issued_date': datetime.now(),
+    #         'issued_uid': context.get('co_uid', False)
+    #     }
+    #     self.write(values)
+    #
+    #     try:
+    #         mail_created = self.env['tt.email.queue'].sudo().with_context({'active_test':False}).search([('res_id', '=', self.id), ('res_model', '=', self._name), ('type', '=', 'issued_final_periksain')], limit=1)
+    #         if not mail_created:
+    #             temp_data = {
+    #                 'provider_type': 'periksain',
+    #                 'order_number': self.name,
+    #                 'type': 'issued_final',
+    #             }
+    #             temp_context = {
+    #                 'co_agent_id': self.agent_id.id
+    #             }
+    #             self.env['tt.email.queue'].create_email_queue(temp_data, temp_context)
+    #         else:
+    #             _logger.info('Issued Final email for {} is already created!'.format(self.name))
+    #             raise Exception('Issued Final email for {} is already created!'.format(self.name))
+    #     except Exception as e:
+    #         _logger.info('Error Create Email Queue')
 
     @api.multi
     def action_set_as_cancel(self):
@@ -346,8 +348,8 @@ class ReservationPeriksain(models.Model):
                 except:
                     raise RequestException(1002)
 
-                if provider['status'] == 'ISSUED_PENDING':
-                    provider_obj.action_issued_pending_api_periksain(context)
+                if provider['status'] == 'ISSUED':
+                    provider_obj.action_issued_api_periksain(context)
                     any_provider_changed = True
 
             if any_provider_changed:
@@ -495,11 +497,11 @@ class ReservationPeriksain(models.Model):
 
     # April 24, 2020 - SAM
     def check_provider_state(self,context,pnr_list=[],hold_date=False,req={}):
+        # if all(rec.state == 'issued' for rec in self.provider_booking_ids):
+        #     self.action_issued_periksain(context)
         if all(rec.state == 'issued' for rec in self.provider_booking_ids):
-            self.action_issued_periksain(context)
-        elif all(rec.state == 'issued_pending' for rec in self.provider_booking_ids):
             acquirer_id, customer_parent_id = self.get_acquirer_n_c_parent_id(req)
-            self.action_issued_pending_api_periksain(acquirer_id and acquirer_id.id or False, customer_parent_id, context)
+            self.action_issued_api_periksain(acquirer_id and acquirer_id.id or False, customer_parent_id, context)
         elif all(rec.state == 'booked' for rec in self.provider_booking_ids):
             self.action_booked_api_periksain(context)
         elif all(rec.state == 'refund' for rec in self.provider_booking_ids):

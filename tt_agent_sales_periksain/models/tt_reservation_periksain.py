@@ -131,7 +131,7 @@ class ReservationPeriksain(models.Model):
             except Exception as e:
                 print(str(e))
 
-    def action_issued_pending_periksain(self,co_uid,customer_parent_id,acquirer_id):
-        super(ReservationPeriksain, self).action_issued_pending_periksain(co_uid,customer_parent_id)
+    def action_issued_periksain(self,co_uid,customer_parent_id,acquirer_id):
+        super(ReservationPeriksain, self).action_issued_periksain(co_uid,customer_parent_id)
         self.action_create_invoice(acquirer_id,co_uid,customer_parent_id)
 

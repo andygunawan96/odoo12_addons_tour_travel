@@ -33,10 +33,6 @@ class Reservationphc(models.Model):
     passenger_ids = fields.One2many('tt.reservation.passenger.phc', 'booking_id',
                                     readonly=True, states={'draft': [('readonly', False)]})
 
-    issued_pending_uid = fields.Many2one('res.users', 'Issued Pending by', readonly=True)
-    issued_pending_date = fields.Datetime('Issued Pending Date', readonly=True)
-    issued_pending_hold_date = fields.Datetime('Pending Date', readonly=True)
-
     origin_id = fields.Many2one('tt.destinations', 'Test Area', readonly=True, states={'draft': [('readonly', False)]})
 
     test_address = fields.Char('Test Address', readonly=True, states={'draft': [('readonly', False)]})
@@ -47,12 +43,12 @@ class Reservationphc(models.Model):
 
     timeslot_ids = fields.Many2many('tt.timeslot.phc','tt_reservation_phc_timeslot_rel', 'booking_id', 'timeslot_id', 'Timeslot(s)')
 
-    picked_timeslot_id = fields.Many2one('tt.timeslot.phc', 'Picked Timeslot', readonly=True, states={'issued_pending': [('readonly', False)]})
+    picked_timeslot_id = fields.Many2one('tt.timeslot.phc', 'Picked Timeslot', readonly=True, states={'draft': [('readonly', False)]})
 
     test_datetime = fields.Datetime('Test Datetime',related='picked_timeslot_id.datetimeslot', store=True)
 
     analyst_ids = fields.Many2many('tt.analyst.phc', 'tt_reservation_phc_analyst_rel', 'booking_id',
-                                   'analyst_id', 'Analyst(s)', readonly=True, states={'issued_pending': [('readonly', False)]})
+                                   'analyst_id', 'Analyst(s)', readonly=True, states={'draft': [('readonly', False)]})
 
     provider_type_id = fields.Many2one('tt.provider.type','Provider Type',
                                        default=lambda self: self.env.ref('tt_reservation_phc.tt_provider_type_phc'))
@@ -103,17 +99,11 @@ class Reservationphc(models.Model):
         except Exception as e:
             _logger.info('Error Create Email Queue')
 
-    def action_issued_pending_phc(self,co_uid, customer_parent_id, acquirer_id = False):
-        issued_pending_hold_date = datetime.max
-        for provider_obj in self.provider_booking_ids:
-            if issued_pending_hold_date > provider_obj.issued_pending_hold_date:
-                issued_pending_hold_date = provider_obj.issued_pending_hold_date
-
+    def action_issued_phc(self,co_uid, customer_parent_id, acquirer_id = False):
         write_values = {
-            'state': 'issued_pending',
-            'issued_pending_hold_date': issued_pending_hold_date,
-            'issued_pending_date': datetime.now(),
-            'issued_pending_uid': co_uid,
+            'state': 'issued',
+            'issued_date': datetime.now(),
+            'issed_uid': co_uid,
             'customer_parent_id': customer_parent_id
         }
 
@@ -150,8 +140,8 @@ class Reservationphc(models.Model):
             'state':  'refund_failed',
         })
 
-    def action_issued_pending_api_phc(self,acquirer_id,customer_parent_id,context):
-        self.action_issued_pending_phc(context['co_uid'],customer_parent_id,acquirer_id)
+    def action_issued_api_phc(self,acquirer_id,customer_parent_id,context):
+        self.action_issued_phc(context['co_uid'],customer_parent_id,acquirer_id)
 
     def action_issued_phc(self,context):
         values = {
@@ -363,8 +353,8 @@ class Reservationphc(models.Model):
                 except:
                     raise RequestException(1002)
 
-                if provider['status'] == 'ISSUED_PENDING':
-                    provider_obj.action_issued_pending_api_phc(context)
+                if provider['status'] == 'ISSUED':
+                    provider_obj.action_issued_api_phc(context)
                     for idx, ticket_obj in enumerate(provider['tickets']):
                         provider_obj.update_ticket_per_pax_api(idx, ticket_obj['ticket_number'])
                     any_provider_changed = True
@@ -514,11 +504,11 @@ class Reservationphc(models.Model):
 
     # April 24, 2020 - SAM
     def check_provider_state(self,context,pnr_list=[],hold_date=False,req={}):
+        # if all(rec.state == 'issued' for rec in self.provider_booking_ids):
+        #     self.action_issued_phc(context)
         if all(rec.state == 'issued' for rec in self.provider_booking_ids):
-            self.action_issued_phc(context)
-        elif all(rec.state == 'issued_pending' for rec in self.provider_booking_ids):
             acquirer_id, customer_parent_id = self.get_acquirer_n_c_parent_id(req)
-            self.action_issued_pending_api_phc(acquirer_id and acquirer_id.id or False, customer_parent_id, context)
+            self.action_issued_api_phc(acquirer_id and acquirer_id.id or False, customer_parent_id, context)
         elif all(rec.state == 'booked' for rec in self.provider_booking_ids):
             self.action_booked_api_phc(context)
         elif all(rec.state == 'refund' for rec in self.provider_booking_ids):
@@ -585,7 +575,7 @@ class Reservationphc(models.Model):
                             'foreign_amount': 0,
                             'total': 0
                         })
-                    c_type = p_charge_type
+                    c_type = p_charge_typesued
                     c_code = p_charge_type.lower()
                 elif p_charge_type == 'RAC':
                     if not sc_value[p_pax_type].get(p_charge_code):

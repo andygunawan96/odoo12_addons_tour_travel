@@ -43,9 +43,6 @@ class TtProviderphc(models.Model):
     booked_date = fields.Datetime('Booking Date')
     issued_uid = fields.Many2one('res.users', 'Issued By')
     issued_date = fields.Datetime('Issued Date')
-    issued_pending_uid = fields.Many2one('res.users', 'Issued Pending By')
-    issued_pending_date = fields.Datetime('Issued Pending Date')
-    issued_pending_hold_date = fields.Datetime('Issued Pending Hold Date')
     hold_date = fields.Char('Hold Date')
     expired_date = fields.Datetime('Expired Date')
     cancel_uid = fields.Many2one('res.users', 'Cancel By')
@@ -64,10 +61,10 @@ class TtProviderphc(models.Model):
 
     ##button function
     def action_set_to_issued_from_button(self, payment_data={}):
-        if self.state == 'issued_pending':
+        if self.state == 'issued':
             raise UserError("Has been Issued.")
         self.write({
-            'state': 'issued_pending',
+            'state': 'issued',
             'issued_uid': self.env.user.id,
             'issued_date': datetime.now()
         })
@@ -165,22 +162,10 @@ class TtProviderphc(models.Model):
     #             'balance_due': provider_data['balance_due']
     #         })
 
-    def action_issued_pending_api_phc(self, context):
-        current_wib_datetime = datetime.now(pytz.timezone('Asia/Jakarta'))
-        current_datetime = current_wib_datetime.astimezone(pytz.utc)
-        if '08:00' < str(current_wib_datetime.time())[:5] < '18:00':
-            pending_date = current_datetime + timedelta(hours=1)
-        else:
-            pending_date = current_datetime.replace(hour=3, minute=0) # UTC0, jam 10 pagi surabaya
-            if current_datetime > pending_date:
-                pending_date = pending_date+timedelta(days=1)
-
+    def action_issued_api_phc(self, context):
         for rec in self:
             rec.write({
-                'state': 'issued_pending',
-                'issued_pending_date': datetime.now(),
-                'issued_pending_uid': context['co_uid'],
-                'issued_pending_hold_date': pending_date,
+                'state': 'issued',
                 'sid_issued': context['signature'],
                 'balance_due': 0
             })
