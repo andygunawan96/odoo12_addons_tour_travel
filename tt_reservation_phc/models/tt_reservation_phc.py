@@ -14,7 +14,8 @@ import json
 _logger = logging.getLogger(__name__)
 
 COMMISSION_PER_PAX = 25000 ## komisi agent /pax
-BASE_PRICE_PER_PAX = 150000 ## harga 1 /pax
+BASE_PRICE_PER_PAX_ANTIGEN = 150000 ## harga 1 /pax
+BASE_PRICE_PER_PAX_PCR = 750000 ## harga 1 /pax
 SINGLE_SUPPLEMENT = 25000 ## 1 orang
 OVERTIME_SURCHARGE = 50000 ## lebih dari 18.00 /pax
 
@@ -187,7 +188,14 @@ class Reservationphc(models.Model):
         if req['pax_count'] <= 1 and \
                 carrier_obj.id != self.env.ref('tt_reservation_phc.tt_transport_carrier_phc_drive_thru_antigen').id:
             single_suplement = True
-        total_price = BASE_PRICE_PER_PAX + (overtime_surcharge and OVERTIME_SURCHARGE or 0) + (single_suplement and SINGLE_SUPPLEMENT or 0)
+
+        if carrier_obj.id in [self.env.ref('tt_reservation_phc.tt_transport_carrier_phc_drive_thru_antigen').id,
+                              self.env.ref('tt_reservation_phc.tt_transport_carrier_phc_home_care_antigen').id]
+            base_price = BASE_PRICE_PER_PAX_ANTIGEN
+        else:
+            base_price = BASE_PRICE_PER_PAX_PCR
+
+        total_price = base_price + (overtime_surcharge and OVERTIME_SURCHARGE or 0) + (single_suplement and SINGLE_SUPPLEMENT or 0)
         return ERR.get_no_error({
             "pax_count": req['pax_count'],
             "price_per_pax": total_price,
