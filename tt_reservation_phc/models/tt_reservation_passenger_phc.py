@@ -37,6 +37,8 @@ class TtReservationCustomer(models.Model):
     kecamatan_ktp = fields.Char('Kecamatan KTP')
     kelurahan_ktp = fields.Char('Kelurahan KTP')
 
+    pcr_data = fields.Text('PCR Data')
+
     def to_dict(self):
         res = super(TtReservationCustomer, self).to_dict()
         res.update({

@@ -37,6 +37,7 @@
                 }"/>
                 <separator string="Channel Repricing"/>
                 <field name="channel_service_charge_ids"/>
+                <field name="pcr_data" groups="tt_base.group_reservation_level_4"/>
             </xpath>
         </field>
     </record>
