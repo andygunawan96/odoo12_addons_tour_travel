@@ -70,25 +70,27 @@ class ReservationPhc(models.Model):
         discount = 0
 
         #untuk harga fare per passenger
-        for psg in self.passenger_ids:
-            desc_text = '%s, %s' % (' '.join((psg.first_name or '', psg.last_name or '')), psg.title or '')
-            price_unit = 0
-            for cost_charge in psg.cost_service_charge_ids:
-                if cost_charge.charge_type not in ['RAC', 'DISC']:
-                    price_unit += cost_charge.amount
-                elif cost_charge.charge_type == 'DISC':
-                    discount += cost_charge.amount
-            for channel_charge in psg.channel_service_charge_ids:
-                price_unit += channel_charge.amount
+        for provider in self.provider_booking_ids:
+            for ticket in provider.ticket_ids:
+                psg = ticket.passenger_id
+                desc_text = '%s, %s (%s)' % (' '.join((psg.first_name or '', psg.last_name or '')), psg.title or '', ticket.ticket_number)
+                price_unit = 0
+                for cost_charge in psg.cost_service_charge_ids:
+                    if cost_charge.charge_type not in ['RAC', 'DISC']:
+                        price_unit += cost_charge.amount
+                    elif cost_charge.charge_type == 'DISC':
+                        discount += cost_charge.amount
+                for channel_charge in psg.channel_service_charge_ids:
+                    price_unit += channel_charge.amount
 
-            inv_line_obj.write({
-                'invoice_line_detail_ids': [(0,0,{
-                    'desc': desc_text,
-                    'price_unit': price_unit,
-                    'quantity': 1,
-                    'invoice_line_id': invoice_line_id,
-                })]
-            })
+                inv_line_obj.write({
+                    'invoice_line_detail_ids': [(0,0,{
+                        'desc': desc_text,
+                        'price_unit': price_unit,
+                        'quantity': 1,
+                        'invoice_line_id': invoice_line_id,
+                    })]
+                })
 
         inv_line_obj.discount = abs(discount)
 

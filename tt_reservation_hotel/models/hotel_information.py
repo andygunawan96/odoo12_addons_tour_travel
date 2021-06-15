@@ -244,6 +244,15 @@ class HotelInformation(models.Model):
             self.city_id = self.destination_id.city_id.id
         if not self.country_id:
             self.country_id = self.city_id and self.city_id.country_id.id or self.destination_id.country_id.id
+        if self.city_id and self.country_id and not self.destination_id.city_id:
+            is_exact, destination_obj = self.env['tt.hotel.destination'].find_similar_obj({
+                'id': False,
+                'name': False,
+                'city_str': self.city_id.name,
+                'state_str': False,
+                'country_str': self.country_id.name,
+            })
+            self.destination_id = destination_obj
 
     def mass_fill_country_city(self):
         for rec in self:

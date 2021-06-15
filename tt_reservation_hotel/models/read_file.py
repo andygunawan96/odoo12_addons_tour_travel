@@ -2464,7 +2464,10 @@ class HotelInformation(models.Model):
                 fac_link_ids.append(int(fac['facility_id']))
             else:
                 fac_link_ids.append(self.env['tt.hotel.facility'].sudo().find_by_name(fac['facility_name']))
-        create_hotel_id.update({'facility_ids': [(6, 0, fac_link_ids)]})
+        create_hotel_id.update({
+            'facility_ids': [(6, 0, fac_link_ids)],
+            'address': hotel_obj['location']['address'],
+        })
         return create_hotel_id
 
 
@@ -3765,6 +3768,31 @@ class HotelInformation(models.Model):
     # Todo: Pertimbangkan saat new hotel pnya meal type code & facility code yg tidak terdaftar
     # Notes: Control datane disini biar next search dia tidak kosongan / gagal di tampilin
     def v2_receive_data_from_gateway(self):
+        base_cache_directory = self.env['ir.config_parameter'].sudo().get_param('hotel.cache.directory')
+        city_file_url = base_cache_directory + '/from_cache/Surabaya.json'
+        f2 = open(city_file_url, 'r')
+        f2 = f2.read()
+        catalog = json.loads(f2)
+
+        for rec in catalog:
+            city_name = rec['location']['city']
+
+            is_exact, destination_obj = self.env['tt.hotel.destination'].find_similar_obj({
+                'id': False,
+                'name': False,
+                'city_str': city_name,
+                'state_str': rec['location']['state'],
+                'country_str': rec['location']['country'],
+            })
+            city_obj = destination_obj.city_id
+            city_id = city_obj and city_obj.id or self.env['res.city'].find_city_by_name(city_name, 1)
+
+            provider = list(rec['external_code'].keys())[0]
+            hotel_id = rec['external_code'][provider]
+
+            hotel_fmt = self.formating_homas(rec, hotel_id, provider, city_id, city_name, destination_obj.id)
+            hotel_fmt['location']['address'] = rec['location']['address']
+            self.create_or_edit_hotel(hotel_fmt, -1)
         return True
 
     # Tgl 22 Desember 2020:
