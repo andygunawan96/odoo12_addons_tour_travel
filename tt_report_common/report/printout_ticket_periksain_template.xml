@@ -131,7 +131,11 @@
         </t>
 
         <!-- Important Notes -->
-        <h4 style="margin-top: 30px; margin-bottom: 10px;">Important Note(s):</h4>
+        <t t-if="airline_ticket_footer">
+            <h4 style="margin-top: 30px; margin-bottom: 10px;">Important Note(s):</h4>
+            <span t-raw="airline_ticket_footer"/>
+        </t>
+
         <span t-raw="periksain_footer"/>
     </template>
 </odoo>
