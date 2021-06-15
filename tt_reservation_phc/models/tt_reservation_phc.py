@@ -230,6 +230,7 @@ class Reservationphc(models.Model):
                     'kabupaten_ktp': passengers[idx]['kabupaten_ktp'],
                     'kecamatan_ktp': passengers[idx]['kecamatan_ktp'],
                     'kelurahan_ktp': passengers[idx]['kelurahan_ktp'],
+                    'pcr_data': passengers[idx]['pcr_data'] and json.dumps(passengers[idx]['pcr_data']) or passengers[idx]['pcr_data']
                 })
 
             for psg in list_passenger_value:
@@ -642,7 +643,7 @@ class Reservationphc(models.Model):
         res = book_obj.read()
         res = res and res[0] or {}
         datas['form'] = res
-        phc_ticket_id = self.env.ref('tt_report_common.action_report_printout_reservation_periksain') # Vin 2021-06-15 Report sementara sama
+        phc_ticket_id = self.env.ref('tt_report_common.action_report_printout_reservation_phc') # Vin 2021-06-15 Report sementara sama
 
         if not book_obj.printout_ticket_id:
             if book_obj.agent_id:
@@ -699,7 +700,7 @@ class Reservationphc(models.Model):
         res = res and res[0] or {}
         datas['form'] = res
         datas['is_with_price'] = True
-        phc_ticket_id = self.env.ref('tt_report_common.action_report_printout_reservation_periksain') # Vin 2021-06-15 Report sementara sama
+        phc_ticket_id = self.env.ref('tt_report_common.action_report_printout_reservation_phc') # Vin 2021-06-15 Report sementara sama
 
         if not book_obj.printout_ticket_id:
             if book_obj.agent_id:

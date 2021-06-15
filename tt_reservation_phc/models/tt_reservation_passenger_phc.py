@@ -37,6 +37,8 @@ class TtReservationCustomer(models.Model):
     kecamatan_ktp = fields.Char('Kecamatan KTP')
     kelurahan_ktp = fields.Char('Kelurahan KTP')
 
+    pcr_data = fields.Text('PCR Data')
+
     def to_dict(self):
         res = super(TtReservationCustomer, self).to_dict()
         res.update({
@@ -57,7 +59,8 @@ class TtReservationCustomer(models.Model):
             'kecamatan_ktp': self.kecamatan_ktp,
             'kelurahan_ktp': self.kelurahan_ktp,
             'email': self.email,
-            'phone_number': self.phone_number
+            'phone_number': self.phone_number,
+            'pcr_data': self.pcr_data and json.loads(self.pcr_data) or self.pcr_data
         })
         if len(self.channel_service_charge_ids.ids)>0:
             res['channel_service_charges'] = self.get_channel_service_charges()
