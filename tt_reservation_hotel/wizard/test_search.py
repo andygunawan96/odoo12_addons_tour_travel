@@ -1177,7 +1177,7 @@ class TestSearch(models.Model):
         # BTBO2: jika data city / alias antara BTBO2 dengan master berbeda
         # mekanisme ini perlu supaya bisa search all autocomplete dari master tnpa perlu sync data city
         prov_rdx_hotel_obj = self.env.ref('tt_reservation_hotel.tt_hotel_provider_rodextrip_hotel')
-        if prov_rdx_hotel_obj.active:
+        if prov_rdx_hotel_obj.active and city_id:
             new_provider = []
             for x in providers:
                 if x['provider_id'] != prov_rdx_hotel_obj.id:
@@ -1194,7 +1194,7 @@ class TestSearch(models.Model):
         # Temporary only
         prov_traveloka_obj = self.env.ref('tt_reservation_hotel.tt_hotel_provider_traveloka')
         prov_city_obj = self.env['tt.provider.code'].search([('provider_id','=',prov_traveloka_obj.id),('name','=ilike',dest_name)],limit=1)
-        if prov_traveloka_obj.active:
+        if prov_traveloka_obj.active and city_id:
             new_provider = []
             for x in providers:
                 if x['provider_id'] != prov_traveloka_obj.id:
