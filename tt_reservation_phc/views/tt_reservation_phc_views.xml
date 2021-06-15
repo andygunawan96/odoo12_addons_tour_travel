@@ -414,7 +414,7 @@
 
     <menuitem id="top_external_vendor_phc_reservation"
               parent="tt_base.top_external_vendor_transaction"
-              name="phc Reservation"
+              name="PHC Reservation"
               groups="tt_base.group_external_vendor_phc_level_1"
               action="tt_reservation_phc.tt_reservation_phc_action_external_views"
     />
