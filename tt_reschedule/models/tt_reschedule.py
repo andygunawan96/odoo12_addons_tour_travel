@@ -10,11 +10,21 @@ import logging,traceback,pytz
 _logger = logging.getLogger(__name__)
 
 
-class Ledger(models.Model):
+class TtLedger(models.Model):
     _inherit = 'tt.ledger'
 
     reschedule_id = fields.Integer('After Sales ID')
     reschedule_model = fields.Char('After Sales Model')
+
+    def get_allowed_rule(self):
+        res = super(TtLedger, self).get_allowed_rule()
+        res.update({
+            'reschedule_model': (
+                False,
+                ('reschedule_model',)  ## koma jangan di hapus nanti error tidak loop tupple tetapi string
+            )
+        })
+        return res
 
 
 class TtRescheduleChanges(models.Model):
@@ -878,5 +888,10 @@ class TtReschedule(models.Model):
 
         return new_vals
 
-
-
+    # admin only function, use only 1 time!
+    def convert_old_to_new_ledger_res_model(self):
+        all_old_ledger = self.env['tt.ledger'].search([('res_model', '=', 'tt.reschedule'), ('reschedule_model', '=', False)])
+        for rec in all_old_ledger:
+            rec.write({
+                'reschedule_model': rec.res_model
+            })
