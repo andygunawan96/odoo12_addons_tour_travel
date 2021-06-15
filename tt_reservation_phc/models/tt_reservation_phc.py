@@ -230,7 +230,7 @@ class Reservationphc(models.Model):
                     'kabupaten_ktp': passengers[idx]['kabupaten_ktp'],
                     'kecamatan_ktp': passengers[idx]['kecamatan_ktp'],
                     'kelurahan_ktp': passengers[idx]['kelurahan_ktp'],
-                    'pcr_data': passengers[idx]['pcr_data'] and json.dumps(passengers[idx]['pcr_data']) or passengers[idx]['pcr_data']
+                    'pcr_data': passengers[idx].get('pcr_data') and json.dumps(passengers[idx].get('pcr_data')) or passengers[idx].get('pcr_data','')
                 })
 
             for psg in list_passenger_value:
