@@ -65,7 +65,3 @@ class TtReservationCustomer(models.Model):
         if len(self.channel_service_charge_ids.ids)>0:
             res['channel_service_charges'] = self.get_channel_service_charges()
         return res
-
-
-
-

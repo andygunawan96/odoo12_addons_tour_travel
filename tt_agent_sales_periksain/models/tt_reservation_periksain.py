@@ -126,7 +126,7 @@ class ReservationPeriksain(models.Model):
     #     return res
 
     def action_reverse_periksain(self,context):
-        super(ReservationPeriksain, self).action_reverse_train(context)
+        super(ReservationPeriksain, self).action_reverse_periksain(context)
         for rec in self.invoice_line_ids:
             try:
                 rec.invoice_id.action_cancel_invoice()
