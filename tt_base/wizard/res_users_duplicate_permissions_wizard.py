@@ -22,11 +22,12 @@ class UserDuplicatePermissions(models.TransientModel):
             for rec in self.base_user_id.frontend_security_ids:
                 frontend_id_list.append(rec.id)
             for rec in self.to_user_ids:
-                _logger.info('Updating Permissions: %s' % (rec.name))
-                rec.write({
-                    'groups_id': [(6, 0, group_id_list)],
-                    'frontend_security_ids': [(6, 0, frontend_id_list)]
-                })
+                if not rec.is_user_template:
+                    _logger.info('Updating Permissions: %s' % (rec.name))
+                    rec.write({
+                        'groups_id': [(6, 0, group_id_list)],
+                        'frontend_security_ids': [(6, 0, frontend_id_list)]
+                    })
         except Exception as e:
             _logger.info('Error Duplicate Permission')
             _logger.error(traceback.format_exc())
