@@ -14,14 +14,20 @@ class UserDuplicatePermissions(models.TransientModel):
     to_user_ids = fields.Many2many('res.users', 'res_users_duplicate_permissions_wizard_res_users_rel', 'from_user_id', 'to_user_id')
 
     def duplicate_permissions(self):
-        group_id_list = []
-        frontend_id_list = []
-        for rec in self.base_user_id.groups_id:
-            group_id_list.append(rec.id)
-        for rec in self.base_user_id.frontend_security_ids:
-            frontend_id_list.append(rec.id)
-        for rec in self.to_user_ids:
-            rec.write({
-                'groups_id': [(6, 0, group_id_list)],
-                'frontend_security_ids': [(6, 0, frontend_id_list)]
-            })
+        try:
+            group_id_list = []
+            frontend_id_list = []
+            for rec in self.base_user_id.groups_id:
+                group_id_list.append(rec.id)
+            for rec in self.base_user_id.frontend_security_ids:
+                frontend_id_list.append(rec.id)
+            for rec in self.to_user_ids:
+                if not rec.is_user_template:
+                    _logger.info('Updating Permissions: %s' % (rec.name))
+                    rec.write({
+                        'groups_id': [(6, 0, group_id_list)],
+                        'frontend_security_ids': [(6, 0, frontend_id_list)]
+                    })
+        except Exception as e:
+            _logger.info('Error Duplicate Permission')
+            _logger.error(traceback.format_exc())
