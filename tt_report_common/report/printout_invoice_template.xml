@@ -280,7 +280,7 @@
             </t><t t-elif="doc_model == 'tt.refund'">
                 <span t-att-style="'margin-top: 10px; margin-left: 10px; color: '+ base_color +'; font-size: 20px;'">Refund</span><br/>
                 <t t-set="printout_icon" t-value="'/tt_report_common/static/images/refund-white.png'"/>
-            </t><t t-elif="doc_model in ['tt.reschedule','tt.reschedule.periksain']">
+            </t><t t-elif="doc_model in ['tt.reschedule','tt.reschedule.periksain','tt.reschedule.phc']">
                 <span t-att-style="'margin-top: 10px; margin-left: 10px; color: '+ base_color +'; font-size: 20px;'">After Sales</span><br/>
                 <t t-set="printout_icon" t-value="'/tt_report_common/static/images/refund-white.png'"/>
                 <!--</t><t t-elif="doc_model == 'tt.reservation.activity'">-->

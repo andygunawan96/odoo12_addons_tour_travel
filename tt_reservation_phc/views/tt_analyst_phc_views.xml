@@ -70,13 +70,13 @@
               parent="tt_reservation_phc.menu_master_data_phc"
               name="Analyst"
               sequence="10"
-              groups="tt_base.group_tt_tour_travel_operator"
+              groups="tt_base.group_master_data_phc_level_1"
               action="tt_reservation_phc.tt_analyst_phc_action_views"/>
 
     <menuitem id="menu_vendor_master_data_phc_analyst"
               parent="tt_base.top_external_vendor_master_product"
               name="phc Analyst"
-              sequence="30"
+              sequence="40"
               groups="tt_base.group_master_data_phc_level_1"
               action="tt_reservation_phc.tt_analyst_phc_action_views"
     />
