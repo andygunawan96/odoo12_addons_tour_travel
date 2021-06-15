@@ -103,7 +103,7 @@ class Reservationphc(models.Model):
         write_values = {
             'state': 'issued',
             'issued_date': datetime.now(),
-            'issed_uid': co_uid,
+            'issued_uid': co_uid,
             'customer_parent_id': customer_parent_id
         }
 
