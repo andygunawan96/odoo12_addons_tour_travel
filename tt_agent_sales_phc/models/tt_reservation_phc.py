@@ -126,7 +126,7 @@ class ReservationPhc(models.Model):
     #     return res
 
     def action_reverse_phc(self,context):
-        super(ReservationPhc, self).action_reverse_train(context)
+        super(ReservationPhc, self).action_reverse_phc(context)
         for rec in self.invoice_line_ids:
             try:
                 rec.invoice_id.action_cancel_invoice()
