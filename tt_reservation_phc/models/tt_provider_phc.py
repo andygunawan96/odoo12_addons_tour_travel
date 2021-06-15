@@ -166,6 +166,8 @@ class TtProviderphc(models.Model):
         for rec in self:
             rec.write({
                 'state': 'issued',
+                'issued_date': datetime.now(),
+                'issued_uid': context['co_uid'],
                 'sid_issued': context['signature'],
                 'balance_due': 0
             })
