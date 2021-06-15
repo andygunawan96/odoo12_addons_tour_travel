@@ -11,7 +11,7 @@ class ReservationPeriksain(models.Model):
 
     _inherit = "tt.reservation.periksain"
 
-    reschedule_ids = fields.One2many('tt.reschedule', 'res_id', 'After Sales', readonly=True)
+    reschedule_ids = fields.One2many('tt.reschedule.periksain', 'res_id', 'After Sales', readonly=True)
 
     def to_dict_reschedule(self):
         reschedule_list = []
