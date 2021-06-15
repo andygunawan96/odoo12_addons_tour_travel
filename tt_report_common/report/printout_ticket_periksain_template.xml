@@ -43,7 +43,7 @@
             <div class="box" style="margin-bottom: 20px;">
                 <div class="title" t-att-style="'background-color: '+ base_color+'; border-radius: 20px 20px 0 0; border-color: #CCC; padding-top: 5px; padding-bottom: 5px'">
                     <span style="padding-left: 20px; color: white; font-weight: 600; font-size: 18px">Schedule <span t-esc="line_index+1"/>:</span>
-                    <span style="color: white; font-weight: 600; font-size: 18px"><span t-field="line.datetimeslot"/></span>
+                    <span style="color: white; font-weight: 600; font-size: 18px"><span t-esc="line.datetimeslot.astimezone(printout_tz).strftime('%Y-%m-%d %H:%M')"/></span>
                 </div>
                 <div class="row" style="margin: 0px 0px 15px;">
                     <div class="col-3" style="background: #F0F0F0; border: 1px solid #BBB; padding: 10px 10px 10px 20px;">
@@ -57,7 +57,7 @@
                                 <span style="font-size: 16px; font-weight:200">Address:</span>
                             </div>
                             <div class="col-9" style="margin-right: 0px">
-                                <span style="font-size: 16px; font-weight:200"><span t-field="line.datetimeslot"/></span><br/>
+                                <span style="font-size: 16px; font-weight:200"><span t-esc="line.datetimeslot.astimezone(printout_tz).strftime('%Y-%m-%d %H:%M')"/></span><br/>
                                 <span style="font-size: 16px; font-weight:200"><span t-field="doc.test_address"/></span>
                             </div>
                         </div>
@@ -96,33 +96,38 @@
             </div>
             <div style="border: 1px solid #BBB; margin-bottom: 5px; margin-left: 15px; margin-right: 15px"/>
             <t t-set="psg_index" t-value="0"/>
-            <t t-foreach="doc.passenger_ids" t-as="psg">
-                <div class="row" style="margin-left: 0px; margin-right: 0px">
-                    <div class="col-1" style="text-align: center">
-                        <label style="font-weight:450; font-size:17px; margin-bottom: 0px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"><span t-esc="psg_index+1"/>.</label>
+            <t t-foreach="doc.provider_ids" t-as="prov">
+                <t t-foreach="prov.ticket_ids" t-as="ticket">
+                    <t t-set="psg" t-value="ticket.passenger_id"/>
+                    <div class="row" style="margin-left: 0px; margin-right: 0px">
+                        <div class="col-1" style="text-align: center">
+                            <label style="font-weight:450; font-size:17px; margin-bottom: 0px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"><span t-esc="psg_index+1"/>.</label>
+                        </div>
+                        <div class="col-4" style="text-align: left">
+                            <label style="font-weight:450; font-size:17px; margin-bottom: 0px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"><span t-field="psg.title"/> <span t-field="psg.name"/></label>
+                        </div>
+                        <div class="col-2" style="text-align: center">
+                            <label style="font-weight:450; font-size:17px; margin-bottom: 0px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"><span t-field="psg.phone_number"/></label>
+                        </div>
+                        <div class="col-2" style="text-align: center">
+                            <label style="font-weight:450; font-size:17px; margin-bottom: 0px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"><span t-field="psg.email"/></label>
+                        </div>
+                        <div class="col-3" style="text-align: center">
+                            <label style="font-weight:450; font-size:17px; margin-bottom: 0px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"><t t-if="ticket.ticket_number"><span t-field="ticket.ticket_number"/></t><t t-else="">-</t></label>
+<!--                            <label style="font-weight:450; font-size:17px; margin-bottom: 0px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">-</label>-->
+                        </div>
                     </div>
-                    <div class="col-4" style="text-align: left">
-                        <label style="font-weight:450; font-size:17px; margin-bottom: 0px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"><span t-field="psg.title"/> <span t-field="psg.name"/></label>
-                    </div>
-                    <div class="col-2" style="text-align: center">
-                        <label style="font-weight:450; font-size:17px; margin-bottom: 0px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"><span t-field="psg.phone_number"/></label>
-                    </div>
-                    <div class="col-2" style="text-align: center">
-                        <label style="font-weight:450; font-size:17px; margin-bottom: 0px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"><span t-field="psg.email"/></label>
-                    </div>
-                    <div class="col-3" style="text-align: center">
-<!--                        <label style="font-weight:450; font-size:17px; margin-bottom: 0px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"><t t-if="psg.ticket_number"><span t-field="psg.ticket_number"/></t><t t-else="">-</t></label>-->
-                        <label style="font-weight:450; font-size:17px; margin-bottom: 0px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">-</label>
-                    </div>
-                </div>
+                </t>
             </t>
             <div style="margin-bottom: 5px"/>
         </div>
 
         <!-- Price & Addons Detail (if with price) -->
         <t t-if="with_price">
-            <!--<t t-call="tt_report_common.price_ticket"/>-->
-            <t t-call="tt_report_common.price_detail"/>
+            <t t-foreach="doc.provider_booking_ids" t-as="length">
+                <!--<t t-call="tt_report_common.price_ticket"/>-->
+                <t t-call="tt_report_common.price_detail"/>
+            </t>
         </t>
 
         <!-- Important Notes -->

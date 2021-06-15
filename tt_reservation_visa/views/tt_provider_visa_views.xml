@@ -6,8 +6,8 @@
         <field name="arch" type="xml">
             <form edit="false" create="false">
                 <header>
-                    <button string="Set to Booked" name="action_set_to_booked" type="object" attrs="{'invisible': [('state', '!=', 'issued')]}" groups="tt_base.group_tt_ticketing_operator,tt_base.group_reservation_provider_level_4"/>
-                    <button string="Sync Price" name="action_sync_price" type="object" attrs="{'invisible': [('state', '=', 'issued')]}" groups="tt_base.group_tt_ticketing_operator,tt_base.group_reservation_provider_level_4"/>
+                    <button string="Set to Booked" name="action_set_to_booked" type="object" attrs="{'invisible': [('state', '!=', 'issued')]}" groups="tt_base.group_reservation_provider_level_4"/>
+                    <button string="Sync Price" name="action_sync_price" type="object" attrs="{'invisible': [('state', '=', 'issued')]}" groups="tt_base.group_reservation_provider_level_4"/>
                     <field name="state_visa" readonly="1" invisible="1"/>
                     <field name="state" widget="statusbar" statusbar_visible="booked,issued"/>
                 </header>
@@ -46,7 +46,7 @@
                     </group>
                     <group string="Expenses">
                         <field name="use_vendor"/>
-                        <field name="vendor_ids" attrs="{'required': [('use_vendor', '=', True)], 'readonly': [('state_visa', 'in', ['delivered','done'])]}" groups="tt_base.group_tt_tour_travel_operator,account.group_account_user,tt_base.group_tt_tour_travel">
+                        <field name="vendor_ids" attrs="{'required': [('use_vendor', '=', True)], 'readonly': [('state_visa', 'in', ['delivered','done'])]}" groups="account.group_account_user,tt_base.group_tt_tour_travel">
                             <tree editable="bottom">
                                 <field name="visa_id" invisible="1"/>
                                 <field name="provider_id" invisible="1"/>
@@ -91,7 +91,7 @@
         <field name="model">tt.provider.visa</field>
         <field name="arch" type="xml">
             <tree create="false">
-                <field name="provider_id" groups="tt_base.group_tt_tour_travel_operator,tt_base.group_tt_tour_travel"/>
+                <field name="provider_id" groups="tt_base.group_tt_tour_travel"/>
                 <field name="pnr"/>
                 <field name="pnr2"/>
                 <field name="departure_date"/>

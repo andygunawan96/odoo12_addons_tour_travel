@@ -79,16 +79,28 @@
             <field name="sequence">113</field>
         </record>
 
+        <record model="ir.module.category" id="module_category_master_data_phc">
+            <field name="name">Master Data PHC</field>
+            <field name="description">To manage Periksain Master Data</field>
+            <field name="sequence">114</field>
+        </record>
+
         <record model="ir.module.category" id="module_category_external_vendor_event">
             <field name="name">External Vendor Event</field>
             <field name="description">To manage Event as External Vendor</field>
-            <field name="sequence">114</field>
+            <field name="sequence">115</field>
         </record>
 
         <record model="ir.module.category" id="module_category_external_vendor_periksain">
             <field name="name">External Vendor Periksain</field>
             <field name="description">To manage Periksain as External Vendor</field>
-            <field name="sequence">115</field>
+            <field name="sequence">116</field>
+        </record>
+
+        <record model="ir.module.category" id="module_category_external_vendor_phc">
+            <field name="name">External Vendor PHC</field>
+            <field name="description">To manage PHC as External Vendor</field>
+            <field name="sequence">116</field>
         </record>
 
         <record model="ir.module.category" id="module_category_tour_request">
@@ -445,6 +457,12 @@
             <field name="sequence">178</field>
         </record>
 
+        <record model="ir.module.category" id="module_category_proceess_channel_booking">
+            <field name="name">Process Channel Booking</field>
+            <field name="description">To manage channel bookings</field>
+            <field name="sequence">179</field>
+        </record>
+
     <!--    old categories start from here-->
 
         <record model="ir.module.category" id="module_category_sub_agent_user">
@@ -495,10 +513,5 @@
             <field name="sequence">2</field>
         </record>
 
-        <record model="ir.module.category" id="module_category_proceess_channel_booking">
-            <field name="name">Process Channel Booking</field>
-            <field name="description">To manage channel bookings</field>
-            <field name="sequence">5</field>
-        </record>
     </data>
 </odoo>

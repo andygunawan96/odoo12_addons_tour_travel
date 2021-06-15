@@ -7,11 +7,11 @@
             <search string="Search periksain Booking">
                 <field name="name"/>
                 <field name="pnr"/>
-                <field name="carrier_name" groups="tt_base.group_tt_tour_travel_operator,tt_base.group_tt_tour_travel"/>
-                <field name="agent_id" groups="tt_base.group_tt_tour_travel_operator,tt_base.group_tt_tour_travel"/>
-                <field name="agent_type_id" groups="tt_base.group_tt_tour_travel_operator,tt_base.group_tt_tour_travel"/>
-                <field name="customer_parent_id" groups="tt_base.group_tt_agent_user_operator,tt_base.group_tt_tour_travel_operator,tt_base.group_tt_agent_user,tt_base.group_tt_tour_travel"/>
-                <field name="customer_parent_type_id" groups="tt_base.group_tt_agent_user_operator,tt_base.group_tt_tour_travel_operator,tt_base.group_tt_agent_user,tt_base.group_tt_tour_travel"/>
+                <field name="carrier_name" groups="tt_base.group_tt_tour_travel"/>
+                <field name="agent_id" groups="tt_base.group_tt_tour_travel"/>
+                <field name="agent_type_id" groups="tt_base.group_tt_tour_travel"/>
+                <field name="customer_parent_id" groups="tt_base.group_tt_agent_user,tt_base.group_tt_tour_travel"/>
+                <field name="customer_parent_type_id" groups="tt_base.group_tt_agent_user,tt_base.group_tt_tour_travel"/>
                 <field name="contact_id"/>
                 <group>
                     <filter string="All" name="all"/>
@@ -44,10 +44,10 @@
                 <filter string="This Year" name="thisyear" domain="[('date','&gt;=',time.strftime('%%Y-01-01'))]"/>
 
                 <group expand="0" string="Group By">
-                    <filter name="group_by_agent_id" string="Agent" domain="[]" context="{'group_by':'agent_id'}" groups="tt_base.group_tt_tour_travel_operator,tt_base.group_tt_tour_travel"/>
-                    <filter name="group_by_agent_type_id" string="Agent Type" domain="[]" context="{'group_by':'agent_type_id'}" groups="tt_base.group_tt_tour_travel_operator,tt_base.group_tt_tour_travel"/>
-                    <filter name="group_by_customer_parent_id" string="Customer Parent" domain="[]" context="{'group_by':'customer_parent_id'}" groups="tt_base.group_tt_agent_user_operator,tt_base.group_tt_tour_travel_operator,tt_base.group_tt_agent_user,tt_base.group_tt_tour_travel"/>
-                    <filter name="group_by_customer_parent_type_id" string="Customer Parent Type" domain="[]" context="{'group_by':'customer_parent_type_id'}" groups="tt_base.group_tt_agent_user_operator,tt_base.group_tt_tour_travel_operator,tt_base.group_tt_agent_user,tt_base.group_tt_tour_travel"/>
+                    <filter name="group_by_agent_id" string="Agent" domain="[]" context="{'group_by':'agent_id'}" groups="tt_base.group_tt_tour_travel"/>
+                    <filter name="group_by_agent_type_id" string="Agent Type" domain="[]" context="{'group_by':'agent_type_id'}" groups="tt_base.group_tt_tour_travel"/>
+                    <filter name="group_by_customer_parent_id" string="Customer Parent" domain="[]" context="{'group_by':'customer_parent_id'}" groups="tt_base.group_tt_agent_user,tt_base.group_tt_tour_travel"/>
+                    <filter name="group_by_customer_parent_type_id" string="Customer Parent Type" domain="[]" context="{'group_by':'customer_parent_type_id'}" groups="tt_base.group_tt_agent_user,tt_base.group_tt_tour_travel"/>
                     <filter name="group_by_state" string="State" domain="[]" context="{'group_by':'state'}"/>
                 </group>
             </search>
@@ -64,10 +64,14 @@
                 <attribute name="edit">false</attribute>
             </xpath>
             <xpath expr="//button[@name='action_cancel']" position="after">
-                <button string="Confirm Order" name="%(tt_reservation_periksain.confirm_order_periksain_wizard_action_view)d" type="action" states="issued_pending"
+                <button string="Confirm Order" name="%(tt_reservation_periksain.confirm_order_periksain_wizard_action_view)d" type="action" states="issued"
+                        groups="tt_base.group_external_vendor_periksain_level_2,tt_base.group_reservation_level_4"
                         context="{
                         'default_booking_id': id,
                    }"/>
+            </xpath>
+            <xpath expr="//field[@name='state']" position="replace">
+                <field name="state" widget="statusbar" statusbar_visible="draft,booked,issued,issued,done"/>
             </xpath>
             <xpath expr="//div[hasclass('oe_button_box')]" position="inside">
                 <button name="print_eticket"
@@ -83,7 +87,7 @@
                 <button name="print_ho_invoice"
                         class="oe_stat_button" states="issued,done"
                         string="Print Invoice (HO)" type="object" icon="fa-print"
-                        groups="tt_base.group_tt_tour_travel_operator,tt_base.group_tt_tour_travel"/>
+                        groups="tt_base.group_tt_tour_travel,tt_base.group_tt_agent_user"/>
                 <button name="print_itinerary"
                         class="oe_stat_button" states="booked,issued,done"
                         string="Print Itinerary" type="object" icon="fa-print"/>
@@ -103,14 +107,6 @@
                 <field name="analyst_ids"/>
             </xpath>
 
-            <xpath expr="//div[@name='booked_div']" position="after">
-                <field name="issued_pending_hold_date"/>
-                <label for="issued_pending_uid" string="Issued Pending By"/>
-                <div>
-                    <field name="issued_pending_uid" readonly="1" class="oe_inline"/> /
-                    <field name="issued_pending_date" readonly="1" class="oe_inline"/>
-                </div>
-            </xpath>
 
             <xpath expr="//page[@name='anchor']" position="before">
                 <page string="Passengers">
@@ -124,6 +120,9 @@
                             <field name="nationality_id"/>
                             <field name="identity_type"/>
                             <field name="identity_number"/>
+                            <field name="email"/>
+                            <field name="phone_number"/>
+                            <field name="sample_method"/>
                         </tree>
                     </field>
                 </page>
@@ -147,7 +146,7 @@
             </xpath>
 
             <xpath expr="//page[@name='anchor']" position="before">
-                <page string="Vendor" name="vendor" groups="tt_base.group_tt_tour_travel_operator,tt_base.group_tt_tour_travel">
+                <page string="Vendor" name="vendor" groups="tt_base.group_tt_tour_travel">
                     <field name="provider_booking_ids"/>
                 </page>
             </xpath>
@@ -157,17 +156,16 @@
     <record id="tt_reservation_periksain_form_external_views" model="ir.ui.view">
         <field name="name">tt.reservation.periksain.form.external.view</field>
         <field name="model">tt.reservation.periksain</field>
-        <field name="mode">primary</field>
         <field name="priority">5</field>
-        <field name="inherit_id"/>
         <field name="arch" type="xml">
             <form create="false" edit="false">
                 <header>
-                    <button string="Confirm Order" name="%(tt_reservation_periksain.confirm_order_periksain_wizard_action_view)d" type="action" states="issued_pending" groups="tt_base.group_external_vendor_periksain_level_2"
+                    <button string="Confirm Order" name="%(tt_reservation_periksain.confirm_order_periksain_wizard_action_view)d" type="action" states="issued"
+                            groups="tt_base.group_external_vendor_periksain_level_2"
                             context="{
                         'default_booking_id': id,
                    }"/>
-                    <field name="state" widget="statusbar" statusbar_visible="draft,booked,issued_pending,issued"/>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,booked,issued,done"/>
                 </header>
                 <sheet>
                     <div class="oe_title">
@@ -267,9 +265,11 @@
                                     <field name="last_name"/>
                                     <field name="gender"/>
                                     <field name="birth_date"/>
-                                    <field name="nationality_id"/>
                                     <field name="identity_type"/>
                                     <field name="identity_number"/>
+                                    <field name="email"/>
+                                    <field name="phone_number"/>
+                                    <field name="sample_method"/>
                                 </tree>
                             </field>
                         </page>
@@ -301,7 +301,7 @@
                 <field name="agent_type_id"/>
                 <field name="customer_parent_id"/>
                 <field name="booker_id"/>
-                <field name="provider_name" groups="tt_base.group_tt_tour_travel_operator,tt_base.group_tt_tour_travel"/>
+                <field name="provider_name" groups="tt_base.group_tt_tour_travel"/>
                 <field name="carrier_name"/>
                 <field name="booked_uid"/>
                 <field name="date"/>
@@ -309,7 +309,7 @@
                 <field name="issued_uid"/>
                 <field name="issued_date"/>
                 <field name="state"/>
-                <field name="reconcile_state" groups="tt_base.group_tt_accounting_operator,tt_base.group_reconcile_level_3"/>
+                <field name="reconcile_state" groups="tt_base.group_reconcile_level_3"/>
             </tree>
         </field>
     </record>
@@ -416,7 +416,7 @@
     <menuitem id="top_external_vendor_periksain_reservation"
               parent="tt_base.top_external_vendor_transaction"
               name="Periksain Reservation"
-              groups="tt_base.group_tt_external_vendor_operator,tt_base.group_external_vendor_periksain_level_1"
+              groups="tt_base.group_external_vendor_periksain_level_1"
               action="tt_reservation_periksain.tt_reservation_periksain_action_external_views"
     />
 

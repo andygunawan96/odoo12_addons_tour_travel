@@ -33,7 +33,7 @@
 
     <menuitem id="sub_menu_tour_travel_upload_center_wizard"
               name="Upload Wizard"
-              groups="tt_base.group_tt_tour_travel_operator"
+              groups="tt_base.group_tt_tour_travel"
               parent="tt_base.top_tour_travel_upload"
               sequence = "50"
               action="tt_upload_center_wizard_action_view"

@@ -7,7 +7,7 @@
         <field name="inherit_id" ref="tt_accounting.tt_ledger_form_view"/>
         <field name="arch" type="xml">
             <button name="reverse_ledger" position="after">
-                <button name="set_sent_to_acc_false" string="Set Sent to Accounting to False" type="object" groups="tt_base.group_tt_accounting_supervisor,tt_base.group_ledger_level_3" attrs="{'invisible':[('is_sent_to_acc','!=',True)]}"/>
+                <button name="set_sent_to_acc_false" string="Set Sent to Accounting to False" type="object" groups="tt_base.group_ledger_level_3" attrs="{'invisible':[('is_sent_to_acc','!=',True)]}"/>
             </button>
         </field>
     </record>

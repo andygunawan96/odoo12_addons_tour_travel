@@ -10,12 +10,12 @@
                     <!--                   <field name="name" string="string" domain="[()]"/>-->
                     <field name="name"/>
                     <field name="pnr"/>
-                    <field name="provider_name" groups="tt_base.group_tt_tour_travel_operator,tt_base.group_tt_tour_travel"/>
-                    <field name="carrier_name" groups="tt_base.group_tt_tour_travel_operator,tt_base.group_tt_tour_travel"/>
-                    <field name="agent_id" groups="tt_base.group_tt_tour_travel_operator,tt_base.group_tt_tour_travel"/>
-                    <field name="agent_type_id" groups="tt_base.group_tt_tour_travel_operator,tt_base.group_tt_tour_travel"/>
-                    <field name="customer_parent_id" groups="tt_base.group_tt_agent_user_operator,tt_base.group_tt_tour_travel_operator,tt_base.group_tt_agent_user,tt_base.group_tt_tour_travel"/>
-                    <field name="customer_parent_type_id" groups="tt_base.group_tt_agent_user_operator,tt_base.group_tt_tour_travel_operator,tt_base.group_tt_agent_user,tt_base.group_tt_tour_travel"/>
+                    <field name="provider_name" groups="tt_base.group_tt_tour_travel"/>
+                    <field name="carrier_name" groups="tt_base.group_tt_tour_travel"/>
+                    <field name="agent_id" groups="tt_base.group_tt_tour_travel"/>
+                    <field name="agent_type_id" groups="tt_base.group_tt_tour_travel"/>
+                    <field name="customer_parent_id" groups="tt_base.group_tt_agent_user,tt_base.group_tt_tour_travel"/>
+                    <field name="customer_parent_type_id" groups="tt_base.group_tt_agent_user,tt_base.group_tt_tour_travel"/>
                     <!--                    <field name="provider"/>-->
                     <field name="contact_id"/>
                     <field name="passenger_ids"/>
@@ -51,10 +51,10 @@
                     <filter string="This Year" name="thisyear" domain="[('date','&gt;=',time.strftime('%%Y-01-01'))]"/>
 
                     <group expand="0" string="Group By">
-                        <filter string="Agent" name="agent" domain="[]" context="{'group_by':'agent_id'}" groups="tt_base.group_tt_tour_travel_operator,tt_base.group_tt_tour_travel"/>
-                        <filter string="Agent Type" name="agent_type_id" domain="[]" context="{'group_by':'agent_type_id'}" groups="tt_base.group_tt_tour_travel_operator,tt_base.group_tt_tour_travel"/>
-                        <filter string="Customer Parent" name="customer_parent_id" domain="[]" context="{'group_by':'customer_parent_id'}" groups="tt_base.group_tt_agent_user_operator,tt_base.group_tt_tour_travel_operator,tt_base.group_tt_agent_user,tt_base.group_tt_tour_travel"/>
-                        <filter string="Customer Parent Type" name="customer_parent_type_id" domain="[]" context="{'group_by':'customer_parent_type_id'}" groups="tt_base.group_tt_agent_user_operator,tt_base.group_tt_tour_travel_operator,tt_base.group_tt_agent_user,tt_base.group_tt_tour_travel"/>
+                        <filter string="Agent" name="agent" domain="[]" context="{'group_by':'agent_id'}" groups="tt_base.group_tt_tour_travel"/>
+                        <filter string="Agent Type" name="agent_type_id" domain="[]" context="{'group_by':'agent_type_id'}" groups="tt_base.group_tt_tour_travel"/>
+                        <filter string="Customer Parent" name="customer_parent_id" domain="[]" context="{'group_by':'customer_parent_id'}" groups="tt_base.group_tt_agent_user,tt_base.group_tt_tour_travel"/>
+                        <filter string="Customer Parent Type" name="customer_parent_type_id" domain="[]" context="{'group_by':'customer_parent_type_id'}" groups="tt_base.group_tt_agent_user,tt_base.group_tt_tour_travel"/>
                         <filter string="Sector" name="sector" domain="[]" context="{'group_by':'sector_type'}"/>
                         <filter string="State Offline" name="state_offline" domain="[]" context="{'group_by':'state_offline'}"/>
                     </group>
@@ -69,18 +69,18 @@
                 <form>
                     <header>
                         <field name="refundable" invisible="1"/>
-                        <button string="Set to Draft" name="action_draft" type="object" states="cancel" groups="tt_base.group_tt_agent_user_operator,tt_base.group_tt_tour_travel_operator,tt_base.group_tt_agent_user,tt_base.group_tt_tour_travel"/>
-                        <button string="Confirm" class="oe_highlight" name="action_confirm" type="object" attrs="{'invisible':[('state_offline','!=','draft')]}" groups="tt_base.group_tt_agent_user_operator,tt_base.group_tt_tour_travel_operator,tt_base.group_tt_agent_user,tt_base.group_tt_tour_travel"/>
-                        <button string="Sent" name="action_sent" type="object" attrs="{'invisible':[('state_offline','!=','confirm')]}" groups="tt_base.group_tt_tour_travel_operator,tt_base.group_tt_tour_travel"/>  <!--states="confirm"-->
-                        <button string="Validate" class="oe_highlight" name="action_validate" attrs="{'invisible':[('state_offline','!=','sent')]}" type="object" groups="tt_base.group_tt_agent_user_operator,tt_base.group_tt_ticketing_operator,tt_base.group_tt_agent_user,tt_base.group_reservation_level_4"/>  <!-- ,tt_base.group_tt_tour_travel_operator groups="tt_base.group_tt_ticketing_operator,account.group_account_user"-->
-                        <button string="Quick Validate" class="oe_highlight" name="action_quick_issued" attrs="{'invisible':['|', ('state_offline','!=','confirm'),('quick_validate','=',False)]}" type="object" groups="tt_base.group_tt_tour_travel_operator,tt_base.group_tt_tour_travel"/>
+                        <button string="Set to Draft" name="action_draft" type="object" states="cancel" groups="tt_base.group_tt_agent_user,tt_base.group_tt_tour_travel"/>
+                        <button string="Confirm" class="oe_highlight" name="action_confirm" type="object" attrs="{'invisible':[('state_offline','!=','draft')]}" groups="tt_base.group_tt_agent_user,tt_base.group_tt_tour_travel"/>
+                        <button string="Sent" name="action_sent" type="object" attrs="{'invisible':[('state_offline','!=','confirm')]}" groups="tt_base.group_tt_tour_travel"/>  <!--states="confirm"-->
+                        <button string="Validate" class="oe_highlight" name="action_validate" attrs="{'invisible':[('state_offline','!=','sent')]}" type="object" groups="tt_base.group_tt_agent_user,tt_base.group_reservation_level_4"/>
+                        <button string="Quick Validate" class="oe_highlight" name="action_quick_issued" attrs="{'invisible':['|', ('state_offline','!=','confirm'),('quick_validate','=',False)]}" type="object" groups="tt_base.group_tt_tour_travel"/>
                         <!--                        <button string="Post" name="action_done" states="draft,confirm,sent,paid,posted" type="object" groups="tt_base.group_tt_tour_travel_operator"/>-->
-                        <button string="Done" class="oe_highlight" name="action_done" attrs="{'invisible':[('state_offline','!=','validate')]}" type="object" groups="tt_base.group_tt_ticketing_operator,account.group_account_invoice,tt_base.group_reservation_level_4"/>
-                        <button string="Cancel" name="action_cancel" type="object" attrs="{'invisible':[('state_offline','not in',['confirm','sent','validate','done'])]}" groups="tt_base.group_tt_ticketing_operator,tt_base.group_reservation_level_4" confirm="Are you sure want to cancel?"/>
+                        <button string="Done" class="oe_highlight" name="action_done" attrs="{'invisible':[('state_offline','!=','validate')]}" type="object" groups="account.group_account_invoice,tt_base.group_reservation_level_4"/>
+                        <button string="Cancel" name="action_cancel" type="object" attrs="{'invisible':[('state_offline','not in',['confirm','sent','validate','done'])]}" groups="tt_base.group_reservation_level_4" confirm="Are you sure want to cancel?"/>
                         <button string="Cancel" name="action_cancel" type="object"  attrs="{'invisible':[('state_offline','!=','draft')]}" confirm="Are you sure want to cancel?"/>
 
                         <!--                        hapus setelah fix-->
-                        <button string="ACCOUNTING SET TO ISSUED" name="offline_set_to_issued" type="object" attrs="{'invisible':[('state_offline','in',['draft', 'confirm', 'expired'])]}" groups="tt_base.group_tt_accounting_supervisor,tt_base.group_after_sales_master_level_5"/>
+                        <button string="ACCOUNTING SET TO ISSUED" name="offline_set_to_issued" type="object" attrs="{'invisible':[('state_offline','in',['draft', 'confirm', 'expired'])]}" groups="tt_base.group_after_sales_master_level_5"/>
                         <!--                        end of hapus-->
 
                         <button string="Change Admin Fee" name="%(tt_accounting.tt_change_admin_fee_wizard_action_view)d" type="action"
@@ -90,9 +90,9 @@
                         'default_agent_id': agent_id,
                         'default_agent_type_id': agent_type_id,
                         'default_admin_fee_id': admin_fee_id
-                    }" groups="tt_base.group_tt_tour_travel_operator,tt_base.group_tt_tour_travel" attrs="{'invisible':[('state_offline','!=','confirm')]}"/>
+                    }" groups="tt_base.group_tt_tour_travel" attrs="{'invisible':[('state_offline','!=','confirm')]}"/>
 
-                        <button string="Adjustment" name="%(tt_accounting.tt_adjustment_wizard_action_view)d" type="action" groups="tt_base.group_tt_accounting_operator,tt_base.group_adjustment_level_3"
+                        <button string="Adjustment" name="%(tt_accounting.tt_adjustment_wizard_action_view)d" type="action" groups="tt_base.group_adjustment_level_3"
                                 context="{
                         'default_res_model': res_model,
                         'default_res_id': id,
@@ -101,7 +101,7 @@
                         'default_currency_id': currency_id,
                         'default_adj_type': provider_type_id
                     }"/>
-                        <button string="Refund Request" name="%(tt_accounting.tt_refund_wizard_action_view)d" type="action" groups="tt_base.group_tt_agent_user_operator,base.group_system,tt_base.group_tt_agent_user"
+                        <button string="Refund Request" name="%(tt_accounting.tt_refund_wizard_action_view)d" type="action" groups="base.group_system,tt_base.group_tt_agent_user"
                                 context="{
                         'default_res_model': res_model,
                         'default_res_id': id,
@@ -128,7 +128,7 @@
                     <sheet>
                         <div class="oe_button_box" name="button_box">
                             <button name="%(tt_base.tt_upload_center_wizard_action_view)d" string="Upload Document" type="action"
-                                    class="oe_stat_button" icon="fa-upload" groups="tt_base.group_tt_tour_travel_operator,tt_base.group_tt_tour_travel"
+                                    class="oe_stat_button" icon="fa-upload" groups="tt_base.group_tt_tour_travel"
                                     attrs="{'invisible': [('state_offline', '=', 'done')]}"
                                     context="{'default_agent_id': agent_id,
                                               'default_owner_id': confirm_uid,
@@ -136,7 +136,7 @@
                             <button name="print_ho_invoice"
                                     class="oe_stat_button" states="issued,done"
                                     string="Print Invoice (HO)" type="object" icon="fa-print"
-                                    groups="tt_base.group_tt_tour_travel_operator,tt_base.group_tt_tour_travel"/>
+                                    groups="tt_base.group_tt_tour_travel,tt_base.group_tt_agent_user"/>
                         </div>
                         <div class="oe_title">
                             <h1>
@@ -147,23 +147,23 @@
                                        decoration-danger="reconcile_state == 'not_reconciled'"
                                        decoration-info="reconcile_state == 'partial'"
                                        decoration-success="reconcile_state == 'reconciled'"
-                                       groups="tt_base.group_tt_accounting_operator,tt_base.group_reconcile_level_3"/>
+                                       groups="tt_base.group_reconcile_level_3"/>
                             </h6>
                         </div>
                         <group>
                             <group>
                                 <!--                                ### untuk default value adjustment &ndash;&gt;-->
                                 <field name="res_model" invisible="1"/>
-                                <field name="agent_id" readonly="1" groups="tt_base.group_tt_agent_user_operator,tt_base.group_tt_tour_travel_operator,tt_base.group_tt_agent_user,tt_base.group_tt_tour_travel"/>
+                                <field name="agent_id" readonly="1" groups="tt_base.group_tt_agent_user,tt_base.group_tt_tour_travel"/>
                                 <field name="agent_type_id" readonly="1"/>
                                 <field name="booker_id" required="1"/>
                                 <field name="contact_id" required="1" context="{'default_agent_id': agent_id}" options="{'no_quick_create': True}"/>
-                                <field name="customer_parent_id" readonly="0" required="1" groups="tt_base.group_tt_agent_user_operator,tt_base.group_tt_tour_travel_operator,tt_base.group_tt_agent_user,tt_base.group_tt_tour_travel"/>
+                                <field name="customer_parent_id" readonly="0" required="1" groups="tt_base.group_tt_agent_user,tt_base.group_tt_tour_travel"/>
                                 <field name="offline_provider_type" required="1" domain="[('code', 'not in', ['tour','visa','passport','offline','cruise'])]" attrs="{'readonly': [('state_offline', 'not in', ['draft'])]}"/>
                                 <field name="offline_provider_type_name" attrs="{'invisible': [('offline_provider_type', 'not in', ['other'])]}"/>
                                 <field name="provider_type_id_name" invisible="1"/>
                                 <field name="provider_type_id" invisible="1"/>
-                                <field name="provider_name" groups="tt_base.group_tt_tour_travel_operator,tt_base.group_tt_tour_travel"/>
+                                <field name="provider_name" groups="tt_base.group_tt_tour_travel"/>
                                 <field name="carrier_name" attrs="{'invisible': [('offline_provider_type', 'not in', ['airline','train'])]}"/>
                                 <field name="pnr" string="List of PNR" readonly="1"/>
                                 <field name="sector_type" attrs="{'invisible': [('provider_type_id_name', 'not in', 'airline')]}"/>
@@ -172,17 +172,17 @@
                                 <field name="cancel_can_edit" invisible="1"/>
                                 <field name="input_total" attrs="{'readonly': [('state_offline', 'not in', ['draft', 'confirm'])]}" required="1"/>
                                 <field name="total_commission_amount" invisible="0" attrs="{'invisible': [('state_offline', '=', 'draft')], 'readonly': [('state_offline', 'not in', ['draft', 'confirm'])]}"
-                                       groups="tt_base.group_tt_tour_travel_operator,tt_base.group_tt_tour_travel"/>
-                                <field name="agent_commission" groups="tt_base.group_tt_agent_user_operator,tt_base.group_tt_tour_travel_operator,tt_base.group_tt_agent_user,tt_base.group_tt_tour_travel" readonly="1"/>
-                                <field name="parent_agent_commission" groups="tt_base.group_tt_tour_travel_operator,tt_base.group_tt_tour_travel" invisible="0"/>
-                                <field name="ho_commission" groups="tt_base.group_tt_tour_travel_operator,tt_base.group_tt_tour_travel" invisible="0"/>
-                                <field name="incentive_amount" groups="tt_base.group_tt_tour_travel_operator,tt_base.group_tt_tour_travel" attrs="{'invisible': [('state_offline', '=', 'draft')]}"/>
-                                <field name="nta_price" groups="tt_base.group_tt_tour_travel_operator,tt_base.group_tt_tour_travel"/>
+                                       groups="tt_base.group_tt_tour_travel"/>
+                                <field name="agent_commission" groups="tt_base.group_tt_agent_user,tt_base.group_tt_tour_travel" readonly="1"/>
+                                <field name="parent_agent_commission" groups="tt_base.group_tt_tour_travel" invisible="0"/>
+                                <field name="ho_commission" groups="tt_base.group_tt_tour_travel" invisible="0"/>
+                                <field name="incentive_amount" groups="tt_base.group_tt_tour_travel" attrs="{'invisible': [('state_offline', '=', 'draft')]}"/>
+                                <field name="nta_price" groups="tt_base.group_tt_tour_travel"/>
                                 <field name="agent_nta_price"/>
-                                <field name="admin_fee_id" groups="tt_base.group_tt_tour_travel_operator,tt_base.group_tt_tour_travel"/>
-                                <field name="admin_fee" groups="tt_base.group_tt_tour_travel_operator,tt_base.group_tt_tour_travel"/>
-                                <field name="admin_fee_ho" groups="tt_base.group_tt_tour_travel_operator,tt_base.group_tt_tour_travel"/>
-                                <field name="admin_fee_agent" groups="tt_base.group_tt_tour_travel_operator,tt_base.group_tt_tour_travel"/>
+                                <field name="admin_fee_id" groups="tt_base.group_tt_tour_travel"/>
+                                <field name="admin_fee" groups="tt_base.group_tt_tour_travel"/>
+                                <field name="admin_fee_ho" groups="tt_base.group_tt_tour_travel"/>
+                                <field name="admin_fee_agent" groups="tt_base.group_tt_tour_travel"/>
                                 <!--                                <field name="total_with_fees"/>-->
                                 <field name="total" readonly="1"/>
                             </group>
@@ -232,7 +232,7 @@
                                     <field name="cancel_date" class="oe_inline"/> -
                                     <field name="cancel_uid" class="oe_inline"/>
                                 </div>
-                                <field name="quick_validate" groups="tt_base.group_tt_tour_travel_operator,tt_base.group_tt_tour_travel" attrs="{'readonly': [('state_offline', 'not in', ['draft'])]}"/>
+                                <field name="quick_validate" groups="tt_base.group_tt_tour_travel" attrs="{'readonly': [('state_offline', 'not in', ['draft'])]}"/>
                                 <field name="split_from_resv_id" attrs="{'invisible': [('split_from_resv_id', '=', False)]}"/>
                             </group>
                         </group>
@@ -240,10 +240,10 @@
                             <group>
                                 <field name="description" attrs="{'invisible': [('provider_type_id_name', 'in', ['airline', 'train']), ('state_offline','=','draft')]}"/>
                             </group>
-                            <group string="Booking Value" groups="tt_base.group_tt_tour_travel_operator,tt_base.group_tt_tour_travel" attrs="{'invisible': [('state_offline', 'not in', ['validate','done'])]}">
+                            <group string="Booking Value" groups="tt_base.group_tt_tour_travel" attrs="{'invisible': [('state_offline', 'not in', ['validate','done'])]}">
                                 <field name="resv_code" attrs="{'readonly': [('state_offline', 'not in', ['validate'])]}"/>
-                                <field name="vendor_amount" attrs="{'readonly': [('state_offline', 'not in', ['validate'])], 'required': [('state_offline', 'in', ['validate'])]}" groups="tt_base.group_tt_tour_travel_operator"/>
-                                <field name="ho_final_amount" groups="tt_base.group_tt_tour_travel_operator,tt_base.group_tt_tour_travel"/>
+                                <field name="vendor_amount" attrs="{'readonly': [('state_offline', 'not in', ['validate'])], 'required': [('state_offline', 'in', ['validate'])]}" groups="tt_base.group_tt_tour_travel"/>
+                                <field name="ho_final_amount" groups="tt_base.group_tt_tour_travel"/>
                                 <label for="booked_date" string="Booked"/>
                                 <div>
                                     <field name="booked_date" class="oe_inline"/> -
@@ -280,7 +280,7 @@
                             <page string="Passenger(s)">
                                 <field name="passenger_ids" attrs="{'readonly': [('state_offline', 'not in', ['draft', 'confirm', 'sent', 'validate'])]}"/>  <!--context="{'default_agent_id': sub_agent_id}"-->
                             </page>
-                            <page string="Prices" name="prices" groups="tt_base.group_tt_tour_travel_operator,tt_base.group_tt_tour_travel">  <!--attrs="{'invisible': [('state', '=', 'draft')]}"-->
+                            <page string="Prices" name="prices" groups="tt_base.group_tt_tour_travel">  <!--attrs="{'invisible': [('state', '=', 'draft')]}"-->
                                 <field name="sale_service_charge_ids" readonly="1">
                                     <tree>
                                         <field name="charge_code"/>
@@ -293,7 +293,7 @@
                                     </tree>
                                 </field>
                             </page>
-                            <page string="Vendor" name="vendor" groups="tt_base.group_tt_tour_travel_operator,tt_base.group_tt_tour_travel">
+                            <page string="Vendor" name="vendor" groups="tt_base.group_tt_tour_travel">
                                 <field name="provider_booking_ids" readonly="1"/>
                             </page>
                             <page string="Ledger" attrs="{'invisible': [('state', '=', 'draft')]}">  <!--groups="tt_base.group_tt_agent_user_operator,tt_base.group_tt_tour_travel_operator"-->
@@ -305,7 +305,7 @@
                             <page string="Adjustment">
                                 <field name="adjustment_ids"/>
                             </page>
-                            <page string="Splits" name="reservation_splits" groups="tt_base.group_tt_agent_user_operator,tt_base.group_tt_tour_travel_operator,tt_base.group_tt_agent_user,tt_base.group_tt_tour_travel" attrs="{'invisible': [('split_to_resv_ids', '=', [])]}">
+                            <page string="Splits" name="reservation_splits" groups="tt_base.group_tt_agent_user,tt_base.group_tt_tour_travel" attrs="{'invisible': [('split_to_resv_ids', '=', [])]}">
                                 <field name="split_to_resv_ids"/>
                             </page>
                             <page string="Refund" name="refund_page" attrs="{'invisible':[('refund_ids','=', [])]}">

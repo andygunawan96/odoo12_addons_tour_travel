@@ -105,7 +105,7 @@
               parent="tt_reservation_airline.menu_reservations_airline_get_booking"
               name="Get Booking From Vendor"
               action="tt_reservation_airline.tt_reservation_airline_get_booking_from_vendor_wizard_action_view"
-              groups="tt_base.group_tt_ticketing_operator,tt_base.group_tt_accounting_operator"
+              groups="tt_base.group_reservation_level_4"
               sequence="10"/>
 
 </odoo>

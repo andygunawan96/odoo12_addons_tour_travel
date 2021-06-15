@@ -9,9 +9,9 @@
                 <field name="pnr"/>
                 <field name="ref"/>
                 <field name="description"/>
-                <field name="transaction_type" groups="tt_base.group_tt_tour_travel_operator,tt_base.group_tt_tour_travel"/>
-                <field name="agent_id" groups="tt_base.group_tt_tour_travel_operator,tt_base.group_tt_tour_travel"/>
-                <field name="customer_parent_id" groups="tt_base.group_tt_agent_user_operator,tt_base.group_tt_tour_travel_operator,tt_base.group_tt_agent_user,tt_base.group_tt_tour_travel"/>
+                <field name="transaction_type" groups="tt_base.group_tt_tour_travel"/>
+                <field name="agent_id" groups="tt_base.group_tt_tour_travel"/>
+                <field name="customer_parent_id" groups="tt_base.group_tt_agent_user,tt_base.group_tt_tour_travel"/>
                 <separator/>
                 <filter name="today" string="Today" domain="[('date','&gt;=',time.strftime('%%Y-%%m-%%d'))]"/>
                 <filter name="yesterday" string="Yesterday"
@@ -29,11 +29,11 @@
                 <filter string="This Year" name="thisyear" domain="[('date','&gt;=',time.strftime('%%Y-01-01'))]"/>
 
                 <group expand="0" string="Group By">
-                    <filter name="group_by_agent_id" string="Agent" domain="[]" context="{'group_by':'agent_id'}" groups="tt_base.group_tt_tour_travel_operator,tt_base.group_tt_tour_travel"/>
-                    <filter name="group_by_agent_type_id" string="Agent Type" domain="[]" context="{'group_by':'agent_type_id'}" groups="tt_base.group_tt_tour_travel_operator,tt_base.group_tt_tour_travel"/>
-                    <filter name="group_by_customer_parent_id" string="Customer Parent" domain="[]" context="{'group_by':'customer_parent_id'}" groups="tt_base.group_tt_agent_user_operator,tt_base.group_tt_tour_travel_operator,tt_base.group_tt_agent_user,tt_base.group_tt_tour_travel"/>
-                    <filter name="group_by_customer_parent_type_id" string="Customer Parent Type" domain="[]" context="{'group_by':'customer_parent_type_id'}" groups="tt_base.group_tt_agent_user_operator,tt_base.group_tt_tour_travel_operator,tt_base.group_tt_agent_user,tt_base.group_tt_tour_travel"/>
-                    <filter name="group_by_transaction_type" string="Transaction Type" domain="[]" context="{'group_by':'transaction_type'}" groups="tt_base.group_tt_agent_user_operator,tt_base.group_tt_tour_travel_operator,tt_base.group_tt_agent_user,tt_base.group_tt_tour_travel"/>
+                    <filter name="group_by_agent_id" string="Agent" domain="[]" context="{'group_by':'agent_id'}" groups="tt_base.group_tt_tour_travel"/>
+                    <filter name="group_by_agent_type_id" string="Agent Type" domain="[]" context="{'group_by':'agent_type_id'}" groups="tt_base.group_tt_tour_travel"/>
+                    <filter name="group_by_customer_parent_id" string="Customer Parent" domain="[]" context="{'group_by':'customer_parent_id'}" groups="tt_base.group_tt_agent_user,tt_base.group_tt_tour_travel"/>
+                    <filter name="group_by_customer_parent_type_id" string="Customer Parent Type" domain="[]" context="{'group_by':'customer_parent_type_id'}" groups="tt_base.group_tt_agent_user,tt_base.group_tt_tour_travel"/>
+                    <filter name="group_by_transaction_type" string="Transaction Type" domain="[]" context="{'group_by':'transaction_type'}" groups="tt_base.group_tt_agent_user,tt_base.group_tt_tour_travel"/>
                 </group>
             </search>
         </field>
@@ -47,7 +47,7 @@
                 <header>
                     <!-- JNGAN di SYNC -->
                     <!-- Trial Reverse -->
-                    <button string="Reverse Ledger" name="reverse_ledger" type="object" groups="tt_base.group_tt_accounting_supervisor,tt_base.group_ledger_level_3" attrs="{'invisible':[('is_reversed','=',True)]}" confirm="Are you sure you want to reverse this ledger?"/>
+                    <button string="Reverse Ledger" name="reverse_ledger" type="object" groups="tt_base.group_ledger_level_3" attrs="{'invisible':[('is_reversed','=',True)]}" confirm="Are you sure you want to reverse this ledger?"/>
 <!--                    <button string="Fixing Description Adjustment Ledger" name="fixing_description_ledger_adjustment" type="object" groups="base.group_system"/>-->
                 </header>
                 <sheet>
@@ -244,12 +244,12 @@
 
     <menuitem id="top_transaction_ledger" parent="tt_base.main_transaction"
               name="Ledger" sequence="20"
-              groups="tt_base.group_tt_tour_travel_operator,tt_base.group_tt_agent_user_operator,tt_base.group_ledger_level_1"
+              groups="tt_base.group_ledger_level_1"
     />
 
     <menuitem id="menu_transaction_ledger" parent="tt_accounting.top_transaction_ledger"
               name="Ledger" action="tt_ledger_action" sequence="10"
-              groups="tt_base.group_tt_tour_travel_operator,tt_base.group_tt_agent_user_operator,tt_base.group_ledger_level_1"
+              groups="tt_base.group_ledger_level_1"
     />
 
     <menuitem id="menu_transaction_ledger_waiting_list" parent="tt_accounting.top_transaction_ledger"

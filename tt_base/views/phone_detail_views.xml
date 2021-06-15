@@ -27,9 +27,9 @@
                             <field name="calling_number"/>
                             <field name="va_create" invisible="1"/>
                             <button name="generate_va_number" attrs="{'invisible': [('va_create', '!=', False)]}"
-                                    type="object" string="Generate VA" groups="tt_base.group_tt_agent_management_operator,tt_base.group_tt_accounting_operator,tt_base.group_user_data_level_3,tt_base.group_payment_level_4"/>
+                                    type="object" string="Generate VA" groups="tt_base.group_user_data_level_3,tt_base.group_payment_level_4,tt_base.group_payment_acquirer_level_3"/>
                             <button name="delete_va_number"  attrs="{'invisible': [('va_create', '!=', True)]}"
-                                    type="object" string="Delete VA" groups="tt_base.group_tt_accounting_supervisor,tt_base.group_payment_acquirer_level_4"/>
+                                    type="object" string="Delete VA" groups="tt_base.group_payment_acquirer_level_4"/>
                             <!--<field name="agent_id"/>-->
                             <!--<field name="customer_id"/>-->
                         </group>

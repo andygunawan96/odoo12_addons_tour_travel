@@ -24,7 +24,7 @@
                 </group>
                 <footer>
                     <button name="submit_adjustment" string="Create" type="object" default_focus="1" class="oe_highlight"/>
-                    <button name="submit_and_force_approve_adjustment" string="Create And Approve" groups="tt_base.group_tt_accounting_supervisor" type="object" class="oe_highlight"/>
+                    <button name="submit_and_force_approve_adjustment" string="Create And Approve" groups="tt_base.group_adjustment_level_4" type="object" class="oe_highlight"/>
                     or
                     <button string="Cancel" class="oe_link" special="cancel" />
                 </footer>

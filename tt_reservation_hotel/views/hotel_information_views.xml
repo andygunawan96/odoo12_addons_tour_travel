@@ -7,7 +7,7 @@
         <field name="arch" type="xml">
             <form>
                 <header>
-                    <button string="Confirm" type="object" name="action_confirm" states="draft" class="oe_highlight" groups="tt_base.group_tt_tour_travel_operator,tt_base.group_master_data_hotel_level_3"/>
+                    <button string="Confirm" type="object" name="action_confirm" states="draft" class="oe_highlight" groups="tt_base.group_master_data_hotel_level_3"/>
                     <button string="Set to Draft" type="object" name="action_draft" states="confirm" class="oe_link"/>
                     <button string="Calc Country City" type="object" name="fill_country_city"/>
                     <!--<button string="Calc Vendor Name" type="object" name="get_provider_name"/>-->
@@ -98,7 +98,7 @@
                                             <field name="active" widget="boolean_button"
                                                    options='{"terminology": "archive"}'/>
                                         </button>
-                                        <button class="oe_stat_button" type="object" name="action_open_quants" icon="fa-pencil-square-o" groups="tt_base.group_tt_tour_travel_supervisor,tt_base.group_master_data_hotel_level_4">
+                                        <button class="oe_stat_button" type="object" name="action_open_quants" icon="fa-pencil-square-o" groups="tt_base.group_master_data_hotel_level_4">
                                             <div class="o_form_field o_stat_info">
                                                 <span class="o_stat_value">
                                                     <field name="total_voucher"/>
@@ -153,8 +153,8 @@
                                                         <group>
                                                             <field name="nationality"/>
                                                             <!--                                                                <field name="nta_price" groups="tt_base.group_hotel_user,tt_base.group_tt_tour_travel_operator"/>-->
-                                                            <field name="nta_price" groups="tt_base.group_tt_tour_travel_operator,tt_base.group_tt_tour_travel"/>
-                                                            <field name="cost_price" groups="tt_base.group_tt_agent_user_manager,tt_base.group_tt_tour_travel_operator,tt_base.group_tt_agent_user,tt_base.group_tt_tour_travel"/>
+                                                            <field name="nta_price" groups="tt_base.group_tt_tour_travel"/>
+                                                            <field name="cost_price" groups="tt_base.group_tt_agent_user,tt_base.group_tt_tour_travel"/>
                                                             <field name="sale_price"/>
                                                             <field name="currency_id"/>
                                                             <field name="cancel_policy"/>
@@ -347,7 +347,7 @@
         <field name="arch" type="xml">
             <form>
                 <header>
-                    <button string="Confirm" type="object" name="action_confirm" states="draft" class="oe_highlight" groups="tt_base.group_tt_tour_travel_operator,tt_base.group_master_data_hotel_level_3"/>
+                    <button string="Confirm" type="object" name="action_confirm" states="draft" class="oe_highlight" groups="tt_base.group_master_data_hotel_level_3"/>
                     <button string="Set to Draft" type="object" name="action_draft" states="confirm" class="oe_link"/>
                     <button string="Calc Vendor Name" type="object" name="get_provider_name" class="oe_highlight"/>
 
@@ -420,7 +420,7 @@
                                             <field name="active" widget="boolean_button"
                                                    options='{"terminology": "archive"}'/>
                                         </button>
-                                        <button class="oe_stat_button" type="object" name="action_open_quants" icon="fa-pencil-square-o" groups="tt_base.group_tt_tour_travel_supervisor,tt_base.group_master_data_hotel_level_4">
+                                        <button class="oe_stat_button" type="object" name="action_open_quants" icon="fa-pencil-square-o" groups="tt_base.group_master_data_hotel_level_4">
                                             <div class="o_form_field o_stat_info">
                                                 <span class="o_stat_value">
                                                     <field name="total_voucher"/>
@@ -475,8 +475,8 @@
                                                         <group>
                                                             <field name="nationality"/>
                                                             <!--                                                                <field name="nta_price" groups="tt_base.group_hotel_user,tt_base.group_tt_tour_travel_operator"/>-->
-                                                            <field name="nta_price" groups="tt_base.group_tt_tour_travel_operator,tt_base.group_tt_tour_travel"/>
-                                                            <field name="cost_price" groups="tt_base.group_tt_agent_user_manager,tt_base.group_tt_tour_travel_operator,tt_base.group_tt_agent_user,tt_base.group_tt_tour_travel"/>
+                                                            <field name="nta_price" groups="tt_base.group_tt_tour_travel"/>
+                                                            <field name="cost_price" groups="tt_base.group_tt_agent_user,tt_base.group_tt_tour_travel"/>
                                                             <field name="sale_price"/>
                                                             <field name="currency_id"/>
                                                             <field name="cancel_policy"/>

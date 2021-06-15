@@ -103,8 +103,8 @@
                 <field name="value_1"/>
                 <field name="value_2"/>
                 <field name="is_value_1"/>
-                <field name="similarity_value" groups="tt_base.group_tt_tour_travel_operator,tt_base.group_master_data_hotel_level_3"/>
-                <field name="max_value" groups="tt_base.group_tt_tour_travel_operator,tt_base.group_master_data_hotel_level_3"/>
+                <field name="similarity_value" groups="tt_base.group_master_data_hotel_level_3"/>
+                <field name="max_value" groups="tt_base.group_master_data_hotel_level_3"/>
             </tree>
         </field>
     </record>

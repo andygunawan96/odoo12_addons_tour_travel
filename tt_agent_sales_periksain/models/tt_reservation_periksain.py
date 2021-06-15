@@ -1,6 +1,7 @@
 from odoo import models,api,fields
 from datetime import datetime
 
+
 class ReservationPeriksain(models.Model):
 
     _inherit = 'tt.reservation.periksain'
@@ -30,7 +31,11 @@ class ReservationPeriksain(models.Model):
             self.state_invoice = 'partial'
 
     def get_segment_description(self):
+        # TODO: soale mnurut ku biar ada nomor pendaftarane walo g kepake nomer e
+        # Opsi 1: Jika Nama reservation dan PNR e sdah sama pakai yg ini
         tmp = ''
+        # Opsi 2: Jika PNR dan resv ne beda pakek yg ini
+        # tmp = self.name + '\n'
         tmp += 'Address : %s' % (self.test_address)
         for time_obj in self.timeslot_ids:
             if type(time_obj.datetimeslot) == datetime:
@@ -65,25 +70,27 @@ class ReservationPeriksain(models.Model):
         discount = 0
 
         #untuk harga fare per passenger
-        for psg in self.passenger_ids:
-            desc_text = '%s, %s' % (' '.join((psg.first_name or '', psg.last_name or '')), psg.title or '')
-            price_unit = 0
-            for cost_charge in psg.cost_service_charge_ids:
-                if cost_charge.charge_type not in ['RAC', 'DISC']:
-                    price_unit += cost_charge.amount
-                elif cost_charge.charge_type == 'DISC':
-                    discount += cost_charge.amount
-            for channel_charge in psg.channel_service_charge_ids:
-                price_unit += channel_charge.amount
+        for provider in self.provider_booking_ids:
+            for ticket in provider.ticket_ids:
+                psg = ticket.passenger_id
+                desc_text = '%s, %s %s' % (' '.join((psg.first_name or '', psg.last_name or '')), psg.title or '', ticket.ticket_number and '(' + str(ticket.ticket_number) + ')' or '')
+                price_unit = 0
+                for cost_charge in psg.cost_service_charge_ids:
+                    if cost_charge.charge_type not in ['RAC', 'DISC']:
+                        price_unit += cost_charge.amount
+                    elif cost_charge.charge_type == 'DISC':
+                        discount += cost_charge.amount
+                for channel_charge in psg.channel_service_charge_ids:
+                    price_unit += channel_charge.amount
 
-            inv_line_obj.write({
-                'invoice_line_detail_ids': [(0,0,{
-                    'desc': desc_text,
-                    'price_unit': price_unit,
-                    'quantity': 1,
-                    'invoice_line_id': invoice_line_id,
-                })]
-            })
+                inv_line_obj.write({
+                    'invoice_line_detail_ids': [(0, 0, {
+                        'desc': desc_text,
+                        'price_unit': price_unit,
+                        'quantity': 1,
+                        'invoice_line_id': invoice_line_id,
+                    })]
+                })
 
         inv_line_obj.discount = abs(discount)
 
@@ -126,7 +133,7 @@ class ReservationPeriksain(models.Model):
             except Exception as e:
                 print(str(e))
 
-    def action_issued_pending_periksain(self,co_uid,customer_parent_id,acquirer_id):
-        super(ReservationPeriksain, self).action_issued_pending_periksain(co_uid,customer_parent_id)
+    def action_issued_periksain(self,co_uid,customer_parent_id,acquirer_id):
+        super(ReservationPeriksain, self).action_issued_periksain(co_uid,customer_parent_id)
         self.action_create_invoice(acquirer_id,co_uid,customer_parent_id)
 

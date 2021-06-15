@@ -973,7 +973,7 @@
                         <t t-foreach="doc.timeslot_ids" t-as="line">
                             <tr>
                                 <td><span t-field="doc.name"/></td>
-                                <td><span t-field="line.datetimeslot"/></td>
+                                <td><span t-esc="line.datetimeslot.astimezone(printout_tz).strftime('%Y-%m-%d %H:%M')"/></td>
                                 <td><span t-field="doc.test_address"/></td>
                                 <td>-</td>
                             </tr>
@@ -1014,7 +1014,7 @@
                                 <label style="font-weight:450; font-size:17px; margin-bottom: 0px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"><span t-field="psg.birth_date" t-options ='{"format": "dd MMM yyyy"}'/></label>
                             </div>
                             <div class="col-2" style="text-align: center">
-                                <label style="font-weight:450; font-size:17px; margin-bottom: 0px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"><span t-field="psg.email"/></label>
+                                <label style="font-weight:450; font-size:17px; margin-bottom: 0px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"><span t-field="psg.email"/></label><br/>
                             </div>
                             <div class="col-2" style="text-align: center">
                                 <label style="font-weight:450; font-size:17px; margin-bottom: 0px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"><span t-field="psg.phone_number"/></label>

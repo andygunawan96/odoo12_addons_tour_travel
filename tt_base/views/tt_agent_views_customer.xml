@@ -7,8 +7,8 @@
             <form>
                 <header>
                     <button name="get_current_agent_target" type="object" string="Calc Target" groups="base.group_system"/>
-                    <button name="generate_va_number" type="object" string="Generate VA" groups="tt_base.group_tt_agent_finance_supervisor,tt_base.group_tt_agent_finance"/>
-                    <button name="generate_rodexshop_key" type="object" string="Generate Rodexshop Key" groups="tt_base.group_tt_agent_finance_supervisor,tt_base.group_tt_agent_finance"/>
+                    <button name="generate_va_number" type="object" string="Generate VA" groups="tt_base.group_tt_agent_finance,tt_base.group_payment_acquirer_level_3"/>
+                    <button name="generate_rodexshop_key" type="object" string="Generate Rodexshop Key" groups="tt_base.group_tt_agent_finance,tt_base.group_payment_acquirer_level_3"/>
                 </header>
                 <sheet>
                     <div class="oe_button_box" name="button_box">
@@ -21,7 +21,7 @@
                                 <!--class="oe_stat_button" groups="tt_base.group_tt_agent_management_operator">-->
                         <!--</button>-->
                         <button type="object" name="action_show_agent_target_history"
-                                groups="tt_base.group_tt_agent_management_operator,tt_base.group_agent_level_4"
+                                groups="tt_base.group_agent_level_4"
                                 class="oe_stat_button" icon="fa-dollar">
                             <div class="o_field_widget o_stat_info">
                                 <span class="o_stat_value" widget="statinfo">
@@ -49,9 +49,9 @@
                             <!--                            <field name="annual_revenue_target"/>-->
                             <!--                            <field name="annual_profit_target"/>-->
                             <!--                            <field name="credit_limit"/>-->
-                            <field name="is_using_pnr_quota" groups="tt_base.group_tt_agent_management_operator,tt_base.group_agent_level_4"
+                            <field name="is_using_pnr_quota" groups="tt_base.group_agent_level_4"
                                    invisible="1"/>
-                            <field name="is_send_email_cust" groups="tt_base.group_tt_agent_management_operator,tt_base.group_agent_level_4"/>
+                            <field name="is_send_email_cust" groups="tt_base.group_agent_level_4"/>
                             <!--                            <field name="actual_balance"/>-->
                             <!--                            <field name="annual_revenue_target"/>-->
                             <!--                            <field name="annual_profit_target"/>-->
@@ -261,13 +261,13 @@
 
     <menuitem id="menu_customers_agent"
               parent="tt_base.top_customers_agent"
-              groups="group_tt_agent_user_operator,tt_base.group_agent_level_1"
+              groups="tt_base.group_agent_level_1"
               name="Agent"
               sequence="2"/>
 
     <menuitem id="submenu_customers_all_agent"
               parent="tt_base.menu_customers_agent"
-              groups="group_tt_agent_user_operator,tt_base.group_agent_level_1"
+              groups="tt_base.group_agent_level_1"
               name="My Agent"
               sequence="2"
               action="tt_agent_customer_action_view"/>

@@ -7,7 +7,7 @@
         <field name="arch" type="xml">
             <search string="Search Passport Booking">
                 <field name="name"/>
-                <field name="agent_id" groups="tt_base.group_tt_tour_travel_operator,tt_base.group_tt_tour_travel"/>
+                <field name="agent_id" groups="tt_base.group_tt_tour_travel"/>
                 <field name="contact_id"/>
                 <field name="country_id"/>
                 <group>
@@ -44,8 +44,8 @@
                 <filter string="This Year" name="thisyear" domain="[('date','&gt;=',time.strftime('%%Y-01-01'))]"/>
 
                 <group expand="0" string="Group By">
-                    <filter string="Agent" name="agent" domain="[]" context="{'group_by':'agent_id'}" groups="tt_base.group_tt_tour_travel_operator,tt_base.group_tt_tour_travel"/>
-                    <filter string="Agent Type" name="agent_type" domain="[]" context="{'group_by':'agent_type_id'}" groups="tt_base.group_tt_tour_travel_operator,tt_base.group_tt_tour_travel"/>
+                    <filter string="Agent" name="agent" domain="[]" context="{'group_by':'agent_id'}" groups="tt_base.group_tt_tour_travel"/>
+                    <filter string="Agent Type" name="agent_type" domain="[]" context="{'group_by':'agent_type_id'}" groups="tt_base.group_tt_tour_travel"/>
                     <filter string="State" name="state" domain="[]" context="{'group_by':'state_passport'}"/>
                 </group>
             </search>
@@ -73,14 +73,14 @@
                 <attribute name="attrs">{'invisible': [('can_refund', '!=', True)]}</attribute>
             </xpath>
             <button name="action_cancel" position="replace">
-                <button string="Set to Draft" name="action_draft_passport" type="object" attrs="{'invisible': ['|',('state_passport', '!=', 'cancel'), ('commercial_state', '=', 'Paid')]}" groups="tt_base.group_tt_tour_travel_manager,tt_base.group_tt_tour_travel"/>
-                <button string="Confirm to HO" name="action_confirm_passport" type="object" attrs="{'invisible': [('state_passport', '!=', 'draft')]}" groups="tt_base.group_tt_agent_user_operator,tt_base.group_tt_agent_user"/>
-                <button string="Validate" name="action_validate_passport" type="object" attrs="{'invisible': [('state_passport', 'not in', ['confirm','partial_validate'])]}" groups="tt_base.group_tt_tour_travel_operator,tt_base.group_tt_tour_travel"/>
-                <button string="In Process" name="action_in_process_passport" type="object" attrs="{'invisible': [('state_passport', 'not in', ['validate'])]}" groups="tt_base.group_tt_tour_travel_operator,tt_base.group_tt_tour_travel"/>
-                <button string="Process to Immigration" name="action_in_process_immigration_passport" type="object" attrs="{'invisible': [('state_passport', '!=', 'payment')]}" groups="tt_base.group_tt_tour_travel_operator,tt_base.group_tt_tour_travel"/>
-                <button string="Cancel" name="action_cancel_passport" type="object" attrs="{'invisible': [('state_passport', 'in', ['cancel','in_process','payment','process_by_immigration','partial_proceed','proceed','delivered','done','refund'])]}" groups="tt_base.group_tt_tour_travel_operator,tt_base.group_tt_tour_travel"/>
-                <button string="Cancel Process" name="action_cancel_passport" type="object" attrs="{'invisible': [('state_passport', 'not in', ['in_process', 'payment'])]}" groups="tt_base.group_tt_tour_travel_operator,tt_base.group_tt_tour_travel" confirm="Are you sure want to cancel?"/>
-                <button string="Calc. Expenses" name="action_calc_expenses_passport" type="object" groups="tt_base.group_tt_tour_travel_operator,tt_base.group_tt_tour_travel" state="issued" attrs="{'invisible': [('state_passport', 'in', ['draft','confirm','partial_validate','validate','delivered','done','cancel','refund','expired'])]}"/>
+                <button string="Set to Draft" name="action_draft_passport" type="object" attrs="{'invisible': ['|',('state_passport', '!=', 'cancel'), ('commercial_state', '=', 'Paid')]}" groups="tt_base.group_tt_tour_travel"/>
+                <button string="Confirm to HO" name="action_confirm_passport" type="object" attrs="{'invisible': [('state_passport', '!=', 'draft')]}" groups="tt_base.group_tt_agent_user"/>
+                <button string="Validate" name="action_validate_passport" type="object" attrs="{'invisible': [('state_passport', 'not in', ['confirm','partial_validate'])]}" groups="tt_base.group_tt_tour_travel"/>
+                <button string="In Process" name="action_in_process_passport" type="object" attrs="{'invisible': [('state_passport', 'not in', ['validate'])]}" groups="tt_base.group_tt_tour_travel"/>
+                <button string="Process to Immigration" name="action_in_process_immigration_passport" type="object" attrs="{'invisible': [('state_passport', '!=', 'payment')]}" groups="tt_base.group_tt_tour_travel"/>
+                <button string="Cancel" name="action_cancel_passport" type="object" attrs="{'invisible': [('state_passport', 'in', ['cancel','in_process','payment','process_by_immigration','partial_proceed','proceed','delivered','done','refund'])]}" groups="tt_base.group_tt_tour_travel"/>
+                <button string="Cancel Process" name="action_cancel_passport" type="object" attrs="{'invisible': [('state_passport', 'not in', ['in_process', 'payment'])]}" groups="tt_base.group_tt_tour_travel" confirm="Are you sure want to cancel?"/>
+                <button string="Calc. Expenses" name="action_calc_expenses_passport" type="object" groups="tt_base.group_tt_tour_travel" state="issued" attrs="{'invisible': [('state_passport', 'in', ['draft','confirm','partial_validate','validate','delivered','done','cancel','refund','expired'])]}"/>
             </button>
             <xpath expr="//div[hasclass('oe_button_box')]" position="inside">
                 <div class="oe_button_box" name="button_box">
@@ -89,7 +89,7 @@
                             type="object"
                             class="oe_stat_button"
                             icon="fa-print"
-                            groups="tt_base.group_tt_agent_user_operator,tt_base.group_tt_tour_travel_operator,tt_base.group_tt_agent_user,tt_base.group_tt_tour_travel"/>
+                            groups="tt_base.group_tt_agent_user,tt_base.group_tt_tour_travel"/>
                     <button name="do_print_out_passport_cust"
                             string="Customer"
                             type="object"
@@ -98,7 +98,7 @@
                     <button name="print_ho_invoice"
                             class="oe_stat_button" states="issued,done"
                             string="Print Invoice (HO)" type="object" icon="fa-print"
-                            groups="tt_base.group_tt_tour_travel_operator,tt_base.group_tt_tour_travel"/>
+                            groups="tt_base.group_tt_tour_travel,tt_base.group_tt_agent_user"/>
                     <button name="print_itinerary"
                             class="oe_stat_button" states="booked,issued,done"
                             string="Print Itinerary" type="object" icon="fa-print"/>
@@ -164,7 +164,7 @@
                 </page>
             </xpath>
             <xpath expr="//page[@name='anchor']" position="before">
-                <page string="Vendor" name="vendor" groups="tt_base.group_tt_tour_travel_operator,tt_base.group_tt_tour_travel">
+                <page string="Vendor" name="vendor" groups="tt_base.group_tt_tour_travel">
                     <field name="provider_booking_ids"/>
                 </page>
             </xpath>
@@ -181,14 +181,14 @@
             <tree create="false">
                 <button type="object" string="Create Booking Passport" name="create_booking_passport_api"/>
                 <field name="name"/>
-                <field name="agent_id" groups="tt_base.group_tt_tour_travel_operator,tt_base.group_tt_tour_travel"/>
-                <field name="agent_type_id" groups="tt_base.group_tt_tour_travel_operator,tt_base.group_tt_tour_travel"/>
+                <field name="agent_id" groups="tt_base.group_tt_tour_travel"/>
+                <field name="agent_type_id" groups="tt_base.group_tt_tour_travel"/>
                 <field name="contact_id"/>
                 <field name="issued_uid"/>
                 <field name="issued_date"/>
                 <field name="state_passport"/>
                 <field name="state" invisible="1"/>
-                <field name="reconcile_state" groups="tt_base.group_tt_accounting_operator,tt_base.group_reconcile_level_3"/>
+                <field name="reconcile_state" groups="tt_base.group_reconcile_level_3"/>
             </tree>
         </field>
     </record>

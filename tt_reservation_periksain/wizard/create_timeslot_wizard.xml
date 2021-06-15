@@ -33,7 +33,7 @@
               parent="tt_reservation_periksain.menu_master_data_periksain"
               name="Create Timeslot"
               action="tt_reservation_periksain.create_timeslot_wizard_periksain_action_view"
-              groups="tt_base.group_tt_ticketing_operator,tt_base.group_tt_accounting_operator"
+              groups="tt_base.group_master_data_periksain_level_3"
               sequence="20"/>
 
 </odoo>

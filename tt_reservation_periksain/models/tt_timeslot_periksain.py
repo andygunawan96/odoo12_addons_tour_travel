@@ -95,7 +95,7 @@ class TtTimeslotPeriksain(models.Model):
         timeslot_dict = {}
         for rec in timeslots:
             #skip malang utk hari H
-            if current_datetime.date() == rec.dateslot and rec.destination_id == malang_id:
+            if current_datetime.date() == rec.dateslot and rec.destination_id.id == malang_id:
                 continue
 
             if rec.destination_id.name not in timeslot_dict:

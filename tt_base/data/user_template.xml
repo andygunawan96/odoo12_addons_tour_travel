@@ -18,6 +18,7 @@
                                 ref('tt_base.group_master_data_ppob_level_1'),
                                 ref('tt_base.group_master_data_event_level_1'),
                                 ref('tt_base.group_master_data_periksain_level_1'),
+                                ref('tt_base.group_master_data_phc_level_1'),
                                 ref('tt_base.group_tour_request_level_3'),
                                 ref('tt_base.group_reservation_level_3'),
                                 ref('tt_base.group_reservation_provider_level_3'),
@@ -76,6 +77,8 @@
                                 ref('tt_base.able_to_ticketing_tour'),
                                 ref('tt_base.able_to_ticketing_train'),
                                 ref('tt_base.able_to_ticketing_visa'),
+                                ref('tt_base.able_to_ticketing_periksain'),
+                                ref('tt_base.able_to_ticketing_phc'),
                                 ref('tt_base.report')])]"
             />
         </record>
@@ -97,6 +100,7 @@
                                  ref('tt_base.group_master_data_ppob_level_1'),
                                  ref('tt_base.group_master_data_event_level_1'),
                                  ref('tt_base.group_master_data_periksain_level_1'),
+                                 ref('tt_base.group_master_data_phc_level_1'),
                                  ref('tt_base.group_tour_request_level_3'),
                                  ref('tt_base.group_reservation_level_3'),
                                  ref('tt_base.group_reservation_provider_level_3'),
@@ -155,6 +159,8 @@
                                 ref('tt_base.able_to_ticketing_tour'),
                                 ref('tt_base.able_to_ticketing_train'),
                                 ref('tt_base.able_to_ticketing_visa'),
+                                ref('tt_base.able_to_ticketing_periksain'),
+                                ref('tt_base.able_to_ticketing_phc'),
                                 ref('tt_base.report')])]"
             />
         </record>
@@ -176,6 +182,7 @@
                                  ref('tt_base.group_master_data_ppob_level_1'),
                                  ref('tt_base.group_master_data_event_level_1'),
                                  ref('tt_base.group_master_data_periksain_level_1'),
+                                 ref('tt_base.group_master_data_phc_level_1'),
                                  ref('tt_base.group_tour_request_level_3'),
                                  ref('tt_base.group_reservation_level_3'),
                                  ref('tt_base.group_reservation_provider_level_3'),
@@ -234,6 +241,8 @@
                                 ref('tt_base.able_to_ticketing_tour'),
                                 ref('tt_base.able_to_ticketing_train'),
                                 ref('tt_base.able_to_ticketing_visa'),
+                                ref('tt_base.able_to_ticketing_periksain'),
+                                ref('tt_base.able_to_ticketing_phc'),
                                 ref('tt_base.report')])]"
             />
         </record>
@@ -256,6 +265,7 @@
                              ref('tt_base.group_master_data_ppob_level_1'),
                              ref('tt_base.group_master_data_event_level_1'),
                              ref('tt_base.group_master_data_periksain_level_1'),
+                             ref('tt_base.group_master_data_phc_level_1'),
                              ref('tt_base.group_tour_request_level_3'),
                              ref('tt_base.group_reservation_level_3'),
                              ref('tt_base.group_reservation_provider_level_3'),
@@ -314,6 +324,8 @@
                                 ref('tt_base.able_to_ticketing_tour'),
                                 ref('tt_base.able_to_ticketing_train'),
                                 ref('tt_base.able_to_ticketing_visa'),
+                                ref('tt_base.able_to_ticketing_periksain'),
+                                ref('tt_base.able_to_ticketing_phc'),
                                 ref('tt_base.report')])]"
             />
         </record>
@@ -336,6 +348,7 @@
                              ref('tt_base.group_master_data_ppob_level_1'),
                              ref('tt_base.group_master_data_event_level_1'),
                              ref('tt_base.group_master_data_periksain_level_1'),
+                             ref('tt_base.group_master_data_phc_level_1'),
                              ref('tt_base.group_tour_request_level_3'),
                              ref('tt_base.group_reservation_level_3'),
                              ref('tt_base.group_reservation_provider_level_3'),
@@ -394,6 +407,8 @@
                                 ref('tt_base.able_to_ticketing_tour'),
                                 ref('tt_base.able_to_ticketing_train'),
                                 ref('tt_base.able_to_ticketing_visa'),
+                                ref('tt_base.able_to_ticketing_periksain'),
+                                ref('tt_base.able_to_ticketing_phc'),
                                 ref('tt_base.report')])]"
             />
         </record>
@@ -416,6 +431,7 @@
                              ref('tt_base.group_master_data_ppob_level_1'),
                              ref('tt_base.group_master_data_event_level_1'),
                              ref('tt_base.group_master_data_periksain_level_1'),
+                             ref('tt_base.group_master_data_phc_level_1'),
                              ref('tt_base.group_tour_request_level_3'),
                              ref('tt_base.group_reservation_level_3'),
                              ref('tt_base.group_reservation_provider_level_3'),
@@ -474,6 +490,8 @@
                                 ref('tt_base.able_to_ticketing_tour'),
                                 ref('tt_base.able_to_ticketing_train'),
                                 ref('tt_base.able_to_ticketing_visa'),
+                                ref('tt_base.able_to_ticketing_periksain'),
+                                ref('tt_base.able_to_ticketing_phc'),
                                 ref('tt_base.report')])]"
             />
         </record>
@@ -496,9 +514,10 @@
                              ref('tt_base.group_master_data_ppob_level_3'),
                              ref('tt_base.group_master_data_event_level_3'),
                              ref('tt_base.group_master_data_periksain_level_3'),
+                             ref('tt_base.group_master_data_phc_level_3'),
                              ref('tt_base.group_tour_request_level_4'),
-                             ref('tt_base.group_reservation_level_3'),
-                             ref('tt_base.group_reservation_provider_level_3'),
+                             ref('tt_base.group_reservation_level_4'),
+                             ref('tt_base.group_reservation_provider_level_4'),
                              ref('tt_base.group_service_charge_level_4'),
                              ref('tt_base.group_agent_invoice_level_3'),
                              ref('tt_base.group_billing_statement_level_3'),
@@ -559,6 +578,8 @@
                                 ref('tt_base.able_to_ticketing_tour'),
                                 ref('tt_base.able_to_ticketing_train'),
                                 ref('tt_base.able_to_ticketing_visa'),
+                                ref('tt_base.able_to_ticketing_periksain'),
+                                ref('tt_base.able_to_ticketing_phc'),
                                 ref('tt_base.report')])]"
             />
         </record>
@@ -581,9 +602,10 @@
                              ref('tt_base.group_master_data_ppob_level_3'),
                              ref('tt_base.group_master_data_event_level_3'),
                              ref('tt_base.group_master_data_periksain_level_3'),
+                             ref('tt_base.group_master_data_phc_level_3'),
                              ref('tt_base.group_tour_request_level_4'),
-                             ref('tt_base.group_reservation_level_3'),
-                             ref('tt_base.group_reservation_provider_level_3'),
+                             ref('tt_base.group_reservation_level_4'),
+                             ref('tt_base.group_reservation_provider_level_4'),
                              ref('tt_base.group_service_charge_level_4'),
                              ref('tt_base.group_agent_invoice_level_3'),
                              ref('tt_base.group_billing_statement_level_3'),
@@ -631,7 +653,8 @@
                              ref('tt_base.group_pricing_provider_level_3'),
                              ref('tt_base.group_pricing_agent_level_3'),
                              ref('tt_base.group_search_configuration_level_3'),
-                             ref('tt_base.group_voucher_level_3')])]"/>
+                             ref('tt_base.group_voucher_level_3'),
+                             ref('tt_base.group_user_data_level_1')])]"/>
             <field name="frontend_security_ids"
                    eval="[(6,0,[ref('tt_base.able_to_login'),
                                 ref('tt_base.able_to_ticketing_activity'),
@@ -643,6 +666,8 @@
                                 ref('tt_base.able_to_ticketing_tour'),
                                 ref('tt_base.able_to_ticketing_train'),
                                 ref('tt_base.able_to_ticketing_visa'),
+                                ref('tt_base.able_to_ticketing_periksain'),
+                                ref('tt_base.able_to_ticketing_phc'),
                                 ref('tt_base.report')])]"
             />
         </record>
@@ -665,9 +690,10 @@
                              ref('tt_base.group_master_data_ppob_level_4'),
                              ref('tt_base.group_master_data_event_level_4'),
                              ref('tt_base.group_master_data_periksain_level_4'),
+                             ref('tt_base.group_master_data_phc_level_4'),
                              ref('tt_base.group_tour_request_level_4'),
-                             ref('tt_base.group_reservation_level_3'),
-                             ref('tt_base.group_reservation_provider_level_3'),
+                             ref('tt_base.group_reservation_level_4'),
+                             ref('tt_base.group_reservation_provider_level_4'),
                              ref('tt_base.group_service_charge_level_4'),
                              ref('tt_base.group_agent_invoice_level_4'),
                              ref('tt_base.group_billing_statement_level_4'),
@@ -728,6 +754,8 @@
                                 ref('tt_base.able_to_ticketing_tour'),
                                 ref('tt_base.able_to_ticketing_train'),
                                 ref('tt_base.able_to_ticketing_visa'),
+                                ref('tt_base.able_to_ticketing_periksain'),
+                                ref('tt_base.able_to_ticketing_phc'),
                                 ref('tt_base.report')])]"
             />
         </record>
@@ -754,6 +782,8 @@
                                 ref('tt_base.able_to_ticketing_tour'),
                                 ref('tt_base.able_to_ticketing_train'),
                                 ref('tt_base.able_to_ticketing_visa'),
+                                ref('tt_base.able_to_ticketing_periksain'),
+                                ref('tt_base.able_to_ticketing_phc'),
                                 ref('tt_base.report')])]"
             />
         </record>
@@ -775,6 +805,7 @@
                              ref('tt_base.group_master_data_ppob_level_1'),
                              ref('tt_base.group_master_data_event_level_1'),
                              ref('tt_base.group_master_data_periksain_level_1'),
+                             ref('tt_base.group_master_data_phc_level_1'),
                              ref('tt_base.group_tour_request_level_1'),
                              ref('tt_base.group_reservation_level_4'),
                              ref('tt_base.group_reservation_provider_level_4'),
@@ -838,6 +869,8 @@
                                 ref('tt_base.able_to_ticketing_tour'),
                                 ref('tt_base.able_to_ticketing_train'),
                                 ref('tt_base.able_to_ticketing_visa'),
+                                ref('tt_base.able_to_ticketing_periksain'),
+                                ref('tt_base.able_to_ticketing_phc'),
                                 ref('tt_base.report')])]"
             />
         </record>
@@ -864,6 +897,8 @@
                                 ref('tt_base.able_to_ticketing_tour'),
                                 ref('tt_base.able_to_ticketing_train'),
                                 ref('tt_base.able_to_ticketing_visa'),
+                                ref('tt_base.able_to_ticketing_periksain'),
+                                ref('tt_base.able_to_ticketing_phc'),
                                 ref('tt_base.report')])]"
             />
         </record>
@@ -885,6 +920,7 @@
                              ref('tt_base.group_master_data_ppob_level_1'),
                              ref('tt_base.group_master_data_event_level_1'),
                              ref('tt_base.group_master_data_periksain_level_1'),
+                             ref('tt_base.group_master_data_phc_level_1'),
                              ref('tt_base.group_tour_request_level_1'),
                              ref('tt_base.group_reservation_level_4'),
                              ref('tt_base.group_reservation_provider_level_4'),
@@ -948,6 +984,8 @@
                                 ref('tt_base.able_to_ticketing_tour'),
                                 ref('tt_base.able_to_ticketing_train'),
                                 ref('tt_base.able_to_ticketing_visa'),
+                                ref('tt_base.able_to_ticketing_periksain'),
+                                ref('tt_base.able_to_ticketing_phc'),
                                 ref('tt_base.report')])]"
             />
         </record>
@@ -974,6 +1012,8 @@
                                 ref('tt_base.able_to_ticketing_tour'),
                                 ref('tt_base.able_to_ticketing_train'),
                                 ref('tt_base.able_to_ticketing_visa'),
+                                ref('tt_base.able_to_ticketing_periksain'),
+                                ref('tt_base.able_to_ticketing_phc'),
                                 ref('tt_base.report')])]"
             />
         </record>
@@ -995,6 +1035,7 @@
                              ref('tt_base.group_master_data_ppob_level_1'),
                              ref('tt_base.group_master_data_event_level_1'),
                              ref('tt_base.group_master_data_periksain_level_1'),
+                             ref('tt_base.group_master_data_phc_level_1'),
                              ref('tt_base.group_tour_request_level_1'),
                              ref('tt_base.group_reservation_level_4'),
                              ref('tt_base.group_reservation_provider_level_4'),
@@ -1058,6 +1099,8 @@
                                 ref('tt_base.able_to_ticketing_tour'),
                                 ref('tt_base.able_to_ticketing_train'),
                                 ref('tt_base.able_to_ticketing_visa'),
+                                ref('tt_base.able_to_ticketing_periksain'),
+                                ref('tt_base.able_to_ticketing_phc'),
                                 ref('tt_base.report')])]"
             />
         </record>
@@ -1079,6 +1122,7 @@
                              ref('tt_base.group_master_data_ppob_level_1'),
                              ref('tt_base.group_master_data_event_level_1'),
                              ref('tt_base.group_master_data_periksain_level_1'),
+                             ref('tt_base.group_master_data_phc_level_1'),
                              ref('tt_base.group_tour_request_level_1'),
                              ref('tt_base.group_reservation_level_3'),
                              ref('tt_base.group_reservation_provider_level_3'),
@@ -1142,6 +1186,8 @@
                                 ref('tt_base.able_to_ticketing_tour'),
                                 ref('tt_base.able_to_ticketing_train'),
                                 ref('tt_base.able_to_ticketing_visa'),
+                                ref('tt_base.able_to_ticketing_periksain'),
+                                ref('tt_base.able_to_ticketing_phc'),
                                 ref('tt_base.report')])]"
             />
         </record>
@@ -1163,6 +1209,7 @@
                              ref('tt_base.group_master_data_ppob_level_1'),
                              ref('tt_base.group_master_data_event_level_1'),
                              ref('tt_base.group_master_data_periksain_level_1'),
+                             ref('tt_base.group_master_data_phc_level_1'),
                              ref('tt_base.group_tour_request_level_1'),
                              ref('tt_base.group_reservation_level_3'),
                              ref('tt_base.group_reservation_provider_level_3'),
@@ -1226,6 +1273,8 @@
                                 ref('tt_base.able_to_ticketing_tour'),
                                 ref('tt_base.able_to_ticketing_train'),
                                 ref('tt_base.able_to_ticketing_visa'),
+                                ref('tt_base.able_to_ticketing_periksain'),
+                                ref('tt_base.able_to_ticketing_phc'),
                                 ref('tt_base.report')])]"
             />
         </record>
@@ -1247,6 +1296,7 @@
                              ref('tt_base.group_master_data_ppob_level_1'),
                              ref('tt_base.group_master_data_event_level_1'),
                              ref('tt_base.group_master_data_periksain_level_1'),
+                             ref('tt_base.group_master_data_phc_level_1'),
                              ref('tt_base.group_tour_request_level_1'),
                              ref('tt_base.group_reservation_level_3'),
                              ref('tt_base.group_reservation_provider_level_3'),
@@ -1310,6 +1360,8 @@
                                 ref('tt_base.able_to_ticketing_tour'),
                                 ref('tt_base.able_to_ticketing_train'),
                                 ref('tt_base.able_to_ticketing_visa'),
+                                ref('tt_base.able_to_ticketing_periksain'),
+                                ref('tt_base.able_to_ticketing_phc'),
                                 ref('tt_base.report')])]"
             />
         </record>
@@ -1337,6 +1389,8 @@
                                 ref('tt_base.able_to_ticketing_tour'),
                                 ref('tt_base.able_to_ticketing_train'),
                                 ref('tt_base.able_to_ticketing_visa'),
+                                ref('tt_base.able_to_ticketing_periksain'),
+                                ref('tt_base.able_to_ticketing_phc'),
                                 ref('tt_base.report')])]"
             />
         </record>
@@ -1358,6 +1412,7 @@
                              ref('tt_base.group_master_data_ppob_level_1'),
                              ref('tt_base.group_master_data_event_level_1'),
                              ref('tt_base.group_master_data_periksain_level_1'),
+                             ref('tt_base.group_master_data_phc_level_1'),
                              ref('tt_base.group_tour_request_level_1'),
                              ref('tt_base.group_reservation_level_4'),
                              ref('tt_base.group_reservation_provider_level_4'),
@@ -1421,6 +1476,8 @@
                                 ref('tt_base.able_to_ticketing_tour'),
                                 ref('tt_base.able_to_ticketing_train'),
                                 ref('tt_base.able_to_ticketing_visa'),
+                                ref('tt_base.able_to_ticketing_periksain'),
+                                ref('tt_base.able_to_ticketing_phc'),
                                 ref('tt_base.report')])]"
             />
         </record>
@@ -1448,6 +1505,8 @@
                                 ref('tt_base.able_to_ticketing_tour'),
                                 ref('tt_base.able_to_ticketing_train'),
                                 ref('tt_base.able_to_ticketing_visa'),
+                                ref('tt_base.able_to_ticketing_periksain'),
+                                ref('tt_base.able_to_ticketing_phc'),
                                 ref('tt_base.report')])]"
             />
         </record>
@@ -1469,6 +1528,7 @@
                              ref('tt_base.group_master_data_ppob_level_1'),
                              ref('tt_base.group_master_data_event_level_1'),
                              ref('tt_base.group_master_data_periksain_level_1'),
+                             ref('tt_base.group_master_data_phc_level_1'),
                              ref('tt_base.group_tour_request_level_1'),
                              ref('tt_base.group_reservation_level_4'),
                              ref('tt_base.group_reservation_provider_level_4'),
@@ -1532,6 +1592,8 @@
                                 ref('tt_base.able_to_ticketing_tour'),
                                 ref('tt_base.able_to_ticketing_train'),
                                 ref('tt_base.able_to_ticketing_visa'),
+                                ref('tt_base.able_to_ticketing_periksain'),
+                                ref('tt_base.able_to_ticketing_phc'),
                                 ref('tt_base.report')])]"
             />
         </record>
@@ -1559,6 +1621,8 @@
                                 ref('tt_base.able_to_ticketing_tour'),
                                 ref('tt_base.able_to_ticketing_train'),
                                 ref('tt_base.able_to_ticketing_visa'),
+                                ref('tt_base.able_to_ticketing_periksain'),
+                                ref('tt_base.able_to_ticketing_phc'),
                                 ref('tt_base.report')])]"
             />
         </record>
@@ -1580,6 +1644,7 @@
                              ref('tt_base.group_master_data_ppob_level_1'),
                              ref('tt_base.group_master_data_event_level_1'),
                              ref('tt_base.group_master_data_periksain_level_1'),
+                             ref('tt_base.group_master_data_phc_level_1'),
                              ref('tt_base.group_tour_request_level_1'),
                              ref('tt_base.group_reservation_level_4'),
                              ref('tt_base.group_reservation_provider_level_4'),
@@ -1643,6 +1708,8 @@
                                 ref('tt_base.able_to_ticketing_tour'),
                                 ref('tt_base.able_to_ticketing_train'),
                                 ref('tt_base.able_to_ticketing_visa'),
+                                ref('tt_base.able_to_ticketing_periksain'),
+                                ref('tt_base.able_to_ticketing_phc'),
                                 ref('tt_base.report')])]"
             />
         </record>
@@ -1669,6 +1736,8 @@
                                 ref('tt_base.able_to_ticketing_tour'),
                                 ref('tt_base.able_to_ticketing_train'),
                                 ref('tt_base.able_to_ticketing_visa'),
+                                ref('tt_base.able_to_ticketing_periksain'),
+                                ref('tt_base.able_to_ticketing_phc'),
                                 ref('tt_base.report')])]"
             />
         </record>
@@ -1691,6 +1760,7 @@
                              ref('tt_base.group_master_data_ppob_level_1'),
                              ref('tt_base.group_master_data_event_level_1'),
                              ref('tt_base.group_master_data_periksain_level_1'),
+                             ref('tt_base.group_master_data_phc_level_1'),
                              ref('tt_base.group_tour_request_level_1'),
                              ref('tt_base.group_reservation_level_3'),
                              ref('tt_base.group_reservation_provider_level_3'),
@@ -1755,6 +1825,8 @@
                                 ref('tt_base.able_to_ticketing_tour'),
                                 ref('tt_base.able_to_ticketing_train'),
                                 ref('tt_base.able_to_ticketing_visa'),
+                                ref('tt_base.able_to_ticketing_periksain'),
+                                ref('tt_base.able_to_ticketing_phc'),
                                 ref('tt_base.report')])]"
             />
         </record>
@@ -1781,6 +1853,8 @@
                                 ref('tt_base.able_to_ticketing_tour'),
                                 ref('tt_base.able_to_ticketing_train'),
                                 ref('tt_base.able_to_ticketing_visa'),
+                                ref('tt_base.able_to_ticketing_periksain'),
+                                ref('tt_base.able_to_ticketing_phc'),
                                 ref('tt_base.report')])]"
             />
         </record>
@@ -1803,6 +1877,7 @@
                              ref('tt_base.group_master_data_ppob_level_1'),
                              ref('tt_base.group_master_data_event_level_1'),
                              ref('tt_base.group_master_data_periksain_level_1'),
+                             ref('tt_base.group_master_data_phc_level_1'),
                              ref('tt_base.group_tour_request_level_1'),
                              ref('tt_base.group_reservation_level_3'),
                              ref('tt_base.group_reservation_provider_level_3'),
@@ -1867,6 +1942,8 @@
                                 ref('tt_base.able_to_ticketing_tour'),
                                 ref('tt_base.able_to_ticketing_train'),
                                 ref('tt_base.able_to_ticketing_visa'),
+                                ref('tt_base.able_to_ticketing_periksain'),
+                                ref('tt_base.able_to_ticketing_phc'),
                                 ref('tt_base.report')])]"
             />
         </record>
@@ -1893,6 +1970,8 @@
                                 ref('tt_base.able_to_ticketing_tour'),
                                 ref('tt_base.able_to_ticketing_train'),
                                 ref('tt_base.able_to_ticketing_visa'),
+                                ref('tt_base.able_to_ticketing_periksain'),
+                                ref('tt_base.able_to_ticketing_phc'),
                                 ref('tt_base.report')])]"
             />
         </record>
@@ -1915,6 +1994,7 @@
                              ref('tt_base.group_master_data_ppob_level_1'),
                              ref('tt_base.group_master_data_event_level_1'),
                              ref('tt_base.group_master_data_periksain_level_1'),
+                             ref('tt_base.group_master_data_phc_level_1'),
                              ref('tt_base.group_tour_request_level_1'),
                              ref('tt_base.group_reservation_level_3'),
                              ref('tt_base.group_reservation_provider_level_3'),
@@ -1979,6 +2059,8 @@
                                 ref('tt_base.able_to_ticketing_tour'),
                                 ref('tt_base.able_to_ticketing_train'),
                                 ref('tt_base.able_to_ticketing_visa'),
+                                ref('tt_base.able_to_ticketing_periksain'),
+                                ref('tt_base.able_to_ticketing_phc'),
                                 ref('tt_base.report')])]"
             />
         </record>
@@ -2000,6 +2082,7 @@
                              ref('tt_base.group_master_data_ppob_level_1'),
                              ref('tt_base.group_master_data_event_level_1'),
                              ref('tt_base.group_master_data_periksain_level_1'),
+                             ref('tt_base.group_master_data_phc_level_1'),
                              ref('tt_base.group_tour_request_level_1'),
                              ref('tt_base.group_reservation_level_3'),
                              ref('tt_base.group_reservation_provider_level_3'),
@@ -2063,6 +2146,8 @@
                                 ref('tt_base.able_to_ticketing_tour'),
                                 ref('tt_base.able_to_ticketing_train'),
                                 ref('tt_base.able_to_ticketing_visa'),
+                                ref('tt_base.able_to_ticketing_periksain'),
+                                ref('tt_base.able_to_ticketing_phc'),
                                 ref('tt_base.report')])]"
             />
         </record>
@@ -2084,6 +2169,7 @@
                              ref('tt_base.group_master_data_ppob_level_1'),
                              ref('tt_base.group_master_data_event_level_1'),
                              ref('tt_base.group_master_data_periksain_level_1'),
+                             ref('tt_base.group_master_data_phc_level_1'),
                              ref('tt_base.group_tour_request_level_1'),
                              ref('tt_base.group_reservation_level_3'),
                              ref('tt_base.group_reservation_provider_level_3'),
@@ -2147,6 +2233,8 @@
                                 ref('tt_base.able_to_ticketing_tour'),
                                 ref('tt_base.able_to_ticketing_train'),
                                 ref('tt_base.able_to_ticketing_visa'),
+                                ref('tt_base.able_to_ticketing_periksain'),
+                                ref('tt_base.able_to_ticketing_phc'),
                                 ref('tt_base.report')])]"
             />
         </record>
@@ -2168,6 +2256,7 @@
                              ref('tt_base.group_master_data_ppob_level_1'),
                              ref('tt_base.group_master_data_event_level_1'),
                              ref('tt_base.group_master_data_periksain_level_1'),
+                             ref('tt_base.group_master_data_phc_level_1'),
                              ref('tt_base.group_tour_request_level_1'),
                              ref('tt_base.group_reservation_level_3'),
                              ref('tt_base.group_reservation_provider_level_3'),
@@ -2230,6 +2319,8 @@
                                 ref('tt_base.able_to_ticketing_tour'),
                                 ref('tt_base.able_to_ticketing_train'),
                                 ref('tt_base.able_to_ticketing_visa'),
+                                ref('tt_base.able_to_ticketing_periksain'),
+                                ref('tt_base.able_to_ticketing_phc'),
                                 ref('tt_base.report')])]"
             />
         </record>
@@ -2251,6 +2342,7 @@
                              ref('tt_base.group_master_data_ppob_level_1'),
                              ref('tt_base.group_master_data_event_level_1'),
                              ref('tt_base.group_master_data_periksain_level_1'),
+                             ref('tt_base.group_master_data_phc_level_1'),
                              ref('tt_base.group_tour_request_level_1'),
                              ref('tt_base.group_reservation_level_3'),
                              ref('tt_base.group_reservation_provider_level_3'),
@@ -2314,6 +2406,8 @@
                                 ref('tt_base.able_to_ticketing_tour'),
                                 ref('tt_base.able_to_ticketing_train'),
                                 ref('tt_base.able_to_ticketing_visa'),
+                                ref('tt_base.able_to_ticketing_periksain'),
+                                ref('tt_base.able_to_ticketing_phc'),
                                 ref('tt_base.report')])]"
             />
         </record>
@@ -2335,6 +2429,7 @@
                              ref('tt_base.group_master_data_ppob_level_1'),
                              ref('tt_base.group_master_data_event_level_1'),
                              ref('tt_base.group_master_data_periksain_level_1'),
+                             ref('tt_base.group_master_data_phc_level_1'),
                              ref('tt_base.group_tour_request_level_1'),
                              ref('tt_base.group_reservation_level_3'),
                              ref('tt_base.group_reservation_provider_level_3'),
@@ -2398,6 +2493,8 @@
                                 ref('tt_base.able_to_ticketing_tour'),
                                 ref('tt_base.able_to_ticketing_train'),
                                 ref('tt_base.able_to_ticketing_visa'),
+                                ref('tt_base.able_to_ticketing_periksain'),
+                                ref('tt_base.able_to_ticketing_phc'),
                                 ref('tt_base.report')])]"
             />
         </record>
@@ -2419,6 +2516,7 @@
                              ref('tt_base.group_master_data_ppob_level_1'),
                              ref('tt_base.group_master_data_event_level_1'),
                              ref('tt_base.group_master_data_periksain_level_1'),
+                             ref('tt_base.group_master_data_phc_level_1'),
                              ref('tt_base.group_tour_request_level_1'),
                              ref('tt_base.group_reservation_level_3'),
                              ref('tt_base.group_reservation_provider_level_3'),
@@ -2481,6 +2579,8 @@
                                 ref('tt_base.able_to_ticketing_tour'),
                                 ref('tt_base.able_to_ticketing_train'),
                                 ref('tt_base.able_to_ticketing_visa'),
+                                ref('tt_base.able_to_ticketing_periksain'),
+                                ref('tt_base.able_to_ticketing_phc'),
                                 ref('tt_base.report')])]"
             />
         </record>
@@ -2502,6 +2602,7 @@
                              ref('tt_base.group_master_data_ppob_level_1'),
                              ref('tt_base.group_master_data_event_level_1'),
                              ref('tt_base.group_master_data_periksain_level_1'),
+                             ref('tt_base.group_master_data_phc_level_1'),
                              ref('tt_base.group_tour_request_level_1'),
                              ref('tt_base.group_reservation_level_3'),
                              ref('tt_base.group_reservation_provider_level_3'),
@@ -2565,6 +2666,8 @@
                                 ref('tt_base.able_to_ticketing_tour'),
                                 ref('tt_base.able_to_ticketing_train'),
                                 ref('tt_base.able_to_ticketing_visa'),
+                                ref('tt_base.able_to_ticketing_periksain'),
+                                ref('tt_base.able_to_ticketing_phc'),
                                 ref('tt_base.report')])]"
             />
         </record>
@@ -2586,6 +2689,7 @@
                              ref('tt_base.group_master_data_ppob_level_1'),
                              ref('tt_base.group_master_data_event_level_1'),
                              ref('tt_base.group_master_data_periksain_level_1'),
+                             ref('tt_base.group_master_data_phc_level_1'),
                              ref('tt_base.group_tour_request_level_1'),
                              ref('tt_base.group_reservation_level_3'),
                              ref('tt_base.group_reservation_provider_level_3'),
@@ -2649,6 +2753,8 @@
                                 ref('tt_base.able_to_ticketing_tour'),
                                 ref('tt_base.able_to_ticketing_train'),
                                 ref('tt_base.able_to_ticketing_visa'),
+                                ref('tt_base.able_to_ticketing_periksain'),
+                                ref('tt_base.able_to_ticketing_phc'),
                                 ref('tt_base.report')])]"
             />
         </record>
@@ -2670,6 +2776,7 @@
                              ref('tt_base.group_master_data_ppob_level_1'),
                              ref('tt_base.group_master_data_event_level_1'),
                              ref('tt_base.group_master_data_periksain_level_1'),
+                             ref('tt_base.group_master_data_phc_level_1'),
                              ref('tt_base.group_tour_request_level_1'),
                              ref('tt_base.group_reservation_level_3'),
                              ref('tt_base.group_reservation_provider_level_3'),
@@ -2732,6 +2839,8 @@
                                 ref('tt_base.able_to_ticketing_tour'),
                                 ref('tt_base.able_to_ticketing_train'),
                                 ref('tt_base.able_to_ticketing_visa'),
+                                ref('tt_base.able_to_ticketing_periksain'),
+                                ref('tt_base.able_to_ticketing_phc'),
                                 ref('tt_base.report')])]"
             />
         </record>
@@ -2753,6 +2862,7 @@
                              ref('tt_base.group_master_data_ppob_level_1'),
                              ref('tt_base.group_master_data_event_level_1'),
                              ref('tt_base.group_master_data_periksain_level_1'),
+                             ref('tt_base.group_master_data_phc_level_1'),
                              ref('tt_base.group_tour_request_level_1'),
                              ref('tt_base.group_reservation_level_3'),
                              ref('tt_base.group_reservation_provider_level_3'),
@@ -2816,6 +2926,8 @@
                                 ref('tt_base.able_to_ticketing_tour'),
                                 ref('tt_base.able_to_ticketing_train'),
                                 ref('tt_base.able_to_ticketing_visa'),
+                                ref('tt_base.able_to_ticketing_periksain'),
+                                ref('tt_base.able_to_ticketing_phc'),
                                 ref('tt_base.report')])]"
             />
         </record>
@@ -2837,6 +2949,7 @@
                              ref('tt_base.group_master_data_ppob_level_1'),
                              ref('tt_base.group_master_data_event_level_1'),
                              ref('tt_base.group_master_data_periksain_level_1'),
+                             ref('tt_base.group_master_data_phc_level_1'),
                              ref('tt_base.group_tour_request_level_1'),
                              ref('tt_base.group_reservation_level_3'),
                              ref('tt_base.group_reservation_provider_level_3'),
@@ -2900,6 +3013,8 @@
                                 ref('tt_base.able_to_ticketing_tour'),
                                 ref('tt_base.able_to_ticketing_train'),
                                 ref('tt_base.able_to_ticketing_visa'),
+                                ref('tt_base.able_to_ticketing_periksain'),
+                                ref('tt_base.able_to_ticketing_phc'),
                                 ref('tt_base.report')])]"
             />
         </record>
@@ -2921,6 +3036,7 @@
                              ref('tt_base.group_master_data_ppob_level_1'),
                              ref('tt_base.group_master_data_event_level_1'),
                              ref('tt_base.group_master_data_periksain_level_1'),
+                             ref('tt_base.group_master_data_phc_level_1'),
                              ref('tt_base.group_tour_request_level_1'),
                              ref('tt_base.group_reservation_level_3'),
                              ref('tt_base.group_reservation_provider_level_3'),
@@ -2983,6 +3099,8 @@
                                 ref('tt_base.able_to_ticketing_tour'),
                                 ref('tt_base.able_to_ticketing_train'),
                                 ref('tt_base.able_to_ticketing_visa'),
+                                ref('tt_base.able_to_ticketing_periksain'),
+                                ref('tt_base.able_to_ticketing_phc'),
                                 ref('tt_base.report')])]"
             />
         </record>
@@ -3009,6 +3127,8 @@
                                 ref('tt_base.able_to_ticketing_tour'),
                                 ref('tt_base.able_to_ticketing_train'),
                                 ref('tt_base.able_to_ticketing_visa'),
+                                ref('tt_base.able_to_ticketing_periksain'),
+                                ref('tt_base.able_to_ticketing_phc'),
                                 ref('tt_base.report')])]"
             />
         </record>
@@ -3030,6 +3150,7 @@
                              ref('tt_base.group_master_data_ppob_level_1'),
                              ref('tt_base.group_master_data_event_level_1'),
                              ref('tt_base.group_master_data_periksain_level_1'),
+                             ref('tt_base.group_master_data_phc_level_1'),
                              ref('tt_base.group_tour_request_level_4'),
                              ref('tt_base.group_reservation_level_3'),
                              ref('tt_base.group_reservation_provider_level_3'),
@@ -3093,6 +3214,8 @@
                                 ref('tt_base.able_to_ticketing_tour'),
                                 ref('tt_base.able_to_ticketing_train'),
                                 ref('tt_base.able_to_ticketing_visa'),
+                                ref('tt_base.able_to_ticketing_periksain'),
+                                ref('tt_base.able_to_ticketing_phc'),
                                 ref('tt_base.report')])]"
             />
         </record>
@@ -3119,6 +3242,8 @@
                                 ref('tt_base.able_to_ticketing_tour'),
                                 ref('tt_base.able_to_ticketing_train'),
                                 ref('tt_base.able_to_ticketing_visa'),
+                                ref('tt_base.able_to_ticketing_periksain'),
+                                ref('tt_base.able_to_ticketing_phc'),
                                 ref('tt_base.report')])]"
             />
         </record>
@@ -3140,6 +3265,7 @@
                              ref('tt_base.group_master_data_ppob_level_1'),
                              ref('tt_base.group_master_data_event_level_1'),
                              ref('tt_base.group_master_data_periksain_level_1'),
+                             ref('tt_base.group_master_data_phc_level_1'),
                              ref('tt_base.group_tour_request_level_4'),
                              ref('tt_base.group_reservation_level_3'),
                              ref('tt_base.group_reservation_provider_level_3'),
@@ -3203,6 +3329,8 @@
                                 ref('tt_base.able_to_ticketing_tour'),
                                 ref('tt_base.able_to_ticketing_train'),
                                 ref('tt_base.able_to_ticketing_visa'),
+                                ref('tt_base.able_to_ticketing_periksain'),
+                                ref('tt_base.able_to_ticketing_phc'),
                                 ref('tt_base.report')])]"
             />
         </record>
@@ -3229,6 +3357,8 @@
                                 ref('tt_base.able_to_ticketing_tour'),
                                 ref('tt_base.able_to_ticketing_train'),
                                 ref('tt_base.able_to_ticketing_visa'),
+                                ref('tt_base.able_to_ticketing_periksain'),
+                                ref('tt_base.able_to_ticketing_phc'),
                                 ref('tt_base.report')])]"
             />
         </record>
@@ -3250,6 +3380,7 @@
                              ref('tt_base.group_master_data_ppob_level_1'),
                              ref('tt_base.group_master_data_event_level_1'),
                              ref('tt_base.group_master_data_periksain_level_1'),
+                             ref('tt_base.group_master_data_phc_level_1'),
                              ref('tt_base.group_tour_request_level_4'),
                              ref('tt_base.group_reservation_level_3'),
                              ref('tt_base.group_reservation_provider_level_3'),
@@ -3312,6 +3443,8 @@
                                 ref('tt_base.able_to_ticketing_tour'),
                                 ref('tt_base.able_to_ticketing_train'),
                                 ref('tt_base.able_to_ticketing_visa'),
+                                ref('tt_base.able_to_ticketing_periksain'),
+                                ref('tt_base.able_to_ticketing_phc'),
                                 ref('tt_base.report')])]"
             />
         </record>
@@ -3333,6 +3466,7 @@
                              ref('tt_base.group_master_data_ppob_level_3'),
                              ref('tt_base.group_master_data_event_level_1'),
                              ref('tt_base.group_master_data_periksain_level_1'),
+                             ref('tt_base.group_master_data_phc_level_1'),
                              ref('tt_base.group_tour_request_level_1'),
                              ref('tt_base.group_reservation_level_3'),
                              ref('tt_base.group_reservation_provider_level_3'),
@@ -3396,6 +3530,8 @@
                                 ref('tt_base.able_to_ticketing_tour'),
                                 ref('tt_base.able_to_ticketing_train'),
                                 ref('tt_base.able_to_ticketing_visa'),
+                                ref('tt_base.able_to_ticketing_periksain'),
+                                ref('tt_base.able_to_ticketing_phc'),
                                 ref('tt_base.report')])]"
             />
         </record>
@@ -3417,6 +3553,7 @@
                              ref('tt_base.group_master_data_ppob_level_4'),
                              ref('tt_base.group_master_data_event_level_1'),
                              ref('tt_base.group_master_data_periksain_level_1'),
+                             ref('tt_base.group_master_data_phc_level_1'),
                              ref('tt_base.group_tour_request_level_1'),
                              ref('tt_base.group_reservation_level_3'),
                              ref('tt_base.group_reservation_provider_level_3'),
@@ -3480,6 +3617,8 @@
                                 ref('tt_base.able_to_ticketing_tour'),
                                 ref('tt_base.able_to_ticketing_train'),
                                 ref('tt_base.able_to_ticketing_visa'),
+                                ref('tt_base.able_to_ticketing_periksain'),
+                                ref('tt_base.able_to_ticketing_phc'),
                                 ref('tt_base.report')])]"
             />
         </record>
@@ -3501,6 +3640,7 @@
                              ref('tt_base.group_master_data_ppob_level_5'),
                              ref('tt_base.group_master_data_event_level_1'),
                              ref('tt_base.group_master_data_periksain_level_1'),
+                             ref('tt_base.group_master_data_phc_level_1'),
                              ref('tt_base.group_tour_request_level_1'),
                              ref('tt_base.group_reservation_level_3'),
                              ref('tt_base.group_reservation_provider_level_3'),
@@ -3563,6 +3703,8 @@
                                 ref('tt_base.able_to_ticketing_tour'),
                                 ref('tt_base.able_to_ticketing_train'),
                                 ref('tt_base.able_to_ticketing_visa'),
+                                ref('tt_base.able_to_ticketing_periksain'),
+                                ref('tt_base.able_to_ticketing_phc'),
                                 ref('tt_base.report')])]"
             />
         </record>
@@ -3584,6 +3726,7 @@
                              ref('tt_base.group_master_data_ppob_level_1'),
                              ref('tt_base.group_master_data_event_level_3'),
                              ref('tt_base.group_master_data_periksain_level_1'),
+                             ref('tt_base.group_master_data_phc_level_1'),
                              ref('tt_base.group_tour_request_level_1'),
                              ref('tt_base.group_reservation_level_3'),
                              ref('tt_base.group_reservation_provider_level_3'),
@@ -3647,6 +3790,8 @@
                                 ref('tt_base.able_to_ticketing_tour'),
                                 ref('tt_base.able_to_ticketing_train'),
                                 ref('tt_base.able_to_ticketing_visa'),
+                                ref('tt_base.able_to_ticketing_periksain'),
+                                ref('tt_base.able_to_ticketing_phc'),
                                 ref('tt_base.report')])]"
             />
         </record>
@@ -3668,6 +3813,7 @@
                              ref('tt_base.group_master_data_ppob_level_1'),
                              ref('tt_base.group_master_data_event_level_4'),
                              ref('tt_base.group_master_data_periksain_level_1'),
+                             ref('tt_base.group_master_data_phc_level_1'),
                              ref('tt_base.group_tour_request_level_1'),
                              ref('tt_base.group_reservation_level_3'),
                              ref('tt_base.group_reservation_provider_level_3'),
@@ -3731,6 +3877,8 @@
                                 ref('tt_base.able_to_ticketing_tour'),
                                 ref('tt_base.able_to_ticketing_train'),
                                 ref('tt_base.able_to_ticketing_visa'),
+                                ref('tt_base.able_to_ticketing_periksain'),
+                                ref('tt_base.able_to_ticketing_phc'),
                                 ref('tt_base.report')])]"
             />
         </record>
@@ -3752,6 +3900,7 @@
                              ref('tt_base.group_master_data_ppob_level_1'),
                              ref('tt_base.group_master_data_event_level_5'),
                              ref('tt_base.group_master_data_periksain_level_1'),
+                             ref('tt_base.group_master_data_phc_level_1'),
                              ref('tt_base.group_tour_request_level_1'),
                              ref('tt_base.group_reservation_level_3'),
                              ref('tt_base.group_reservation_provider_level_3'),
@@ -3814,6 +3963,8 @@
                                 ref('tt_base.able_to_ticketing_tour'),
                                 ref('tt_base.able_to_ticketing_train'),
                                 ref('tt_base.able_to_ticketing_visa'),
+                                ref('tt_base.able_to_ticketing_periksain'),
+                                ref('tt_base.able_to_ticketing_phc'),
                                 ref('tt_base.report')])]"
             />
         </record>
@@ -3835,6 +3986,7 @@
                              ref('tt_base.group_master_data_ppob_level_1'),
                              ref('tt_base.group_master_data_event_level_1'),
                              ref('tt_base.group_master_data_periksain_level_3'),
+                             ref('tt_base.group_master_data_phc_level_3'),
                              ref('tt_base.group_tour_request_level_1'),
                              ref('tt_base.group_reservation_level_3'),
                              ref('tt_base.group_reservation_provider_level_3'),
@@ -3898,6 +4050,8 @@
                                 ref('tt_base.able_to_ticketing_tour'),
                                 ref('tt_base.able_to_ticketing_train'),
                                 ref('tt_base.able_to_ticketing_visa'),
+                                ref('tt_base.able_to_ticketing_periksain'),
+                                ref('tt_base.able_to_ticketing_phc'),
                                 ref('tt_base.report')])]"
             />
         </record>
@@ -3919,6 +4073,7 @@
                              ref('tt_base.group_master_data_ppob_level_1'),
                              ref('tt_base.group_master_data_event_level_1'),
                              ref('tt_base.group_master_data_periksain_level_4'),
+                             ref('tt_base.group_master_data_phc_level_4'),
                              ref('tt_base.group_tour_request_level_1'),
                              ref('tt_base.group_reservation_level_3'),
                              ref('tt_base.group_reservation_provider_level_3'),
@@ -3982,6 +4137,8 @@
                                 ref('tt_base.able_to_ticketing_tour'),
                                 ref('tt_base.able_to_ticketing_train'),
                                 ref('tt_base.able_to_ticketing_visa'),
+                                ref('tt_base.able_to_ticketing_periksain'),
+                                ref('tt_base.able_to_ticketing_phc'),
                                 ref('tt_base.report')])]"
             />
         </record>
@@ -4003,6 +4160,7 @@
                              ref('tt_base.group_master_data_ppob_level_1'),
                              ref('tt_base.group_master_data_event_level_1'),
                              ref('tt_base.group_master_data_periksain_level_5'),
+                             ref('tt_base.group_master_data_phc_level_5'),
                              ref('tt_base.group_tour_request_level_1'),
                              ref('tt_base.group_reservation_level_3'),
                              ref('tt_base.group_reservation_provider_level_3'),
@@ -4065,6 +4223,8 @@
                                 ref('tt_base.able_to_ticketing_tour'),
                                 ref('tt_base.able_to_ticketing_train'),
                                 ref('tt_base.able_to_ticketing_visa'),
+                                ref('tt_base.able_to_ticketing_periksain'),
+                                ref('tt_base.able_to_ticketing_phc'),
                                 ref('tt_base.report')])]"
             />
         </record>
@@ -4086,6 +4246,7 @@
                              ref('tt_base.group_master_data_ppob_level_3'),
                              ref('tt_base.group_master_data_event_level_3'),
                              ref('tt_base.group_master_data_periksain_level_3'),
+                             ref('tt_base.group_master_data_phc_level_3'),
                              ref('tt_base.group_tour_request_level_4'),
                              ref('tt_base.group_reservation_level_3'),
                              ref('tt_base.group_reservation_provider_level_3'),
@@ -4149,6 +4310,8 @@
                                 ref('tt_base.able_to_ticketing_tour'),
                                 ref('tt_base.able_to_ticketing_train'),
                                 ref('tt_base.able_to_ticketing_visa'),
+                                ref('tt_base.able_to_ticketing_periksain'),
+                                ref('tt_base.able_to_ticketing_phc'),
                                 ref('tt_base.report')])]"
             />
         </record>
@@ -4170,6 +4333,7 @@
                              ref('tt_base.group_master_data_ppob_level_4'),
                              ref('tt_base.group_master_data_event_level_4'),
                              ref('tt_base.group_master_data_periksain_level_4'),
+                             ref('tt_base.group_master_data_phc_level_4'),
                              ref('tt_base.group_tour_request_level_4'),
                              ref('tt_base.group_reservation_level_3'),
                              ref('tt_base.group_reservation_provider_level_3'),
@@ -4233,6 +4397,8 @@
                                 ref('tt_base.able_to_ticketing_tour'),
                                 ref('tt_base.able_to_ticketing_train'),
                                 ref('tt_base.able_to_ticketing_visa'),
+                                ref('tt_base.able_to_ticketing_periksain'),
+                                ref('tt_base.able_to_ticketing_phc'),
                                 ref('tt_base.report')])]"
             />
         </record>
@@ -4254,6 +4420,7 @@
                              ref('tt_base.group_master_data_ppob_level_5'),
                              ref('tt_base.group_master_data_event_level_5'),
                              ref('tt_base.group_master_data_periksain_level_5'),
+                             ref('tt_base.group_master_data_phc_level_5'),
                              ref('tt_base.group_tour_request_level_4'),
                              ref('tt_base.group_reservation_level_3'),
                              ref('tt_base.group_reservation_provider_level_3'),
@@ -4316,6 +4483,8 @@
                                 ref('tt_base.able_to_ticketing_tour'),
                                 ref('tt_base.able_to_ticketing_train'),
                                 ref('tt_base.able_to_ticketing_visa'),
+                                ref('tt_base.able_to_ticketing_periksain'),
+                                ref('tt_base.able_to_ticketing_phc'),
                                 ref('tt_base.report')])]"
             />
         </record>
@@ -4408,6 +4577,64 @@
         </record>
 
         <!--        new template-->
+        <record id="template_external_user_phc_operator" model="res.users">
+            <field name="name">Template External User PHC Operator</field>
+            <field name="login">template_external_user_phc_operator</field>
+            <field name="password">WxwTCWH5Rgud4hMs5hqc</field>
+            <field name="is_user_template" eval="True"/>
+            <field name="groups_id"
+                   eval="[(6,0,[ref('tt_base.group_tt_external_user'),
+                             ref('tt_base.group_master_data_phc_level_1'),
+                             ref('tt_base.group_external_vendor_phc_level_1'),
+                             ref('tt_base.group_agent_level_1'),
+                             ref('tt_base.group_agent_type_level_1'),
+                             ref('tt_base.group_customer_level_1'),
+                             ref('tt_base.group_customer_parent_level_1'),
+                             ref('tt_base.group_customer_parent_type_level_1'),
+                             ref('tt_base.group_vendor_level_1'),
+                             ref('tt_base.group_upload_center_level_3'),
+                             ref('tt_base.group_location_level_1'),
+                             ref('tt_base.group_currency_rate_level_1'),
+                             ref('tt_base.group_provider_level_1'),
+                             ref('tt_base.group_provider_type_level_1'),
+                             ref('tt_base.group_bank_level_1'),
+                             ref('tt_base.group_bank_transactions_level_1'),
+                             ref('tt_base.group_destination_level_1'),
+                             ref('tt_base.group_social_info_level_3'),
+                             ref('tt_base.group_public_holiday_level_1'),
+                             ref('tt_base.group_user_data_level_1')])]"/>
+        </record>
+
+        <!--        new template-->
+        <record id="template_external_user_phc_manager" model="res.users">
+            <field name="name">Template External User PHC Manager</field>
+            <field name="login">template_external_user_phc_manager</field>
+            <field name="password">ppsyxZ5kJTsXtKrecwKq</field>
+            <field name="is_user_template" eval="True"/>
+            <field name="groups_id"
+                   eval="[(6,0,[ref('tt_base.group_tt_external_user'),
+                             ref('tt_base.group_master_data_phc_level_3'),
+                             ref('tt_base.group_external_vendor_phc_level_2'),
+                             ref('tt_base.group_agent_level_1'),
+                             ref('tt_base.group_agent_type_level_1'),
+                             ref('tt_base.group_customer_level_1'),
+                             ref('tt_base.group_customer_parent_level_1'),
+                             ref('tt_base.group_customer_parent_type_level_1'),
+                             ref('tt_base.group_vendor_level_1'),
+                             ref('tt_base.group_upload_center_level_3'),
+                             ref('tt_base.group_location_level_1'),
+                             ref('tt_base.group_currency_rate_level_1'),
+                             ref('tt_base.group_provider_level_1'),
+                             ref('tt_base.group_provider_type_level_1'),
+                             ref('tt_base.group_bank_level_1'),
+                             ref('tt_base.group_bank_transactions_level_1'),
+                             ref('tt_base.group_destination_level_1'),
+                             ref('tt_base.group_social_info_level_3'),
+                             ref('tt_base.group_public_holiday_level_1'),
+                             ref('tt_base.group_user_data_level_1')])]"/>
+        </record>
+
+        <!--        new template-->
         <record id="template_corpor_user_operator" model="res.users">
             <field name="name">Template Corporate User Operator</field>
             <field name="login">template_corpor_user_operator</field>
@@ -4423,6 +4650,7 @@
                              ref('tt_base.group_master_data_ppob_level_1'),
                              ref('tt_base.group_master_data_event_level_1'),
                              ref('tt_base.group_master_data_periksain_level_1'),
+                             ref('tt_base.group_master_data_phc_level_1'),
                              ref('tt_base.group_reservation_level_3'),
                              ref('tt_base.group_reservation_provider_level_3'),
                              ref('tt_base.group_service_charge_level_3'),
@@ -4481,6 +4709,8 @@
                                 ref('tt_base.able_to_ticketing_tour'),
                                 ref('tt_base.able_to_ticketing_train'),
                                 ref('tt_base.able_to_ticketing_visa'),
+                                ref('tt_base.able_to_ticketing_periksain'),
+                                ref('tt_base.able_to_ticketing_phc'),
                                 ref('tt_base.corp_limitation')])]"
             />
         </record>
@@ -4501,6 +4731,7 @@
                              ref('tt_base.group_master_data_ppob_level_1'),
                              ref('tt_base.group_master_data_event_level_1'),
                              ref('tt_base.group_master_data_periksain_level_1'),
+                             ref('tt_base.group_master_data_phc_level_1'),
                              ref('tt_base.group_reservation_level_3'),
                              ref('tt_base.group_reservation_provider_level_3'),
                              ref('tt_base.group_service_charge_level_3'),
@@ -4559,6 +4790,8 @@
                                 ref('tt_base.able_to_ticketing_tour'),
                                 ref('tt_base.able_to_ticketing_train'),
                                 ref('tt_base.able_to_ticketing_visa'),
+                                ref('tt_base.able_to_ticketing_periksain'),
+                                ref('tt_base.able_to_ticketing_phc'),
                                 ref('tt_base.corp_limitation')])]"
             />
         </record>
@@ -4579,6 +4812,7 @@
                              ref('tt_base.group_master_data_ppob_level_1'),
                              ref('tt_base.group_master_data_event_level_1'),
                              ref('tt_base.group_master_data_periksain_level_1'),
+                             ref('tt_base.group_master_data_phc_level_1'),
                              ref('tt_base.group_reservation_level_3'),
                              ref('tt_base.group_reservation_provider_level_3'),
                              ref('tt_base.group_service_charge_level_3'),
@@ -4637,6 +4871,8 @@
                                 ref('tt_base.able_to_ticketing_tour'),
                                 ref('tt_base.able_to_ticketing_train'),
                                 ref('tt_base.able_to_ticketing_visa'),
+                                ref('tt_base.able_to_ticketing_periksain'),
+                                ref('tt_base.able_to_ticketing_phc'),
                                 ref('tt_base.corp_limitation')])]"
             />
         </record>
@@ -4666,6 +4902,8 @@
                                 ref('tt_base.able_to_ticketing_tour'),
                                 ref('tt_base.able_to_ticketing_train'),
                                 ref('tt_base.able_to_ticketing_visa'),
+                                ref('tt_base.able_to_ticketing_periksain'),
+                                ref('tt_base.able_to_ticketing_phc'),
                                 ref('tt_base.report')])]"
             />
         </record>
@@ -4687,6 +4925,7 @@
                              ref('tt_base.group_master_data_ppob_level_1'),
                              ref('tt_base.group_master_data_event_level_1'),
                              ref('tt_base.group_master_data_periksain_level_1'),
+                             ref('tt_base.group_master_data_phc_level_1'),
                              ref('tt_base.group_tour_request_level_3'),
                              ref('tt_base.group_reservation_level_3'),
                              ref('tt_base.group_reservation_provider_level_3'),
@@ -4751,6 +4990,8 @@
                                 ref('tt_base.able_to_ticketing_tour'),
                                 ref('tt_base.able_to_ticketing_train'),
                                 ref('tt_base.able_to_ticketing_visa'),
+                                ref('tt_base.able_to_ticketing_periksain'),
+                                ref('tt_base.able_to_ticketing_phc'),
                                 ref('tt_base.report')])]"
             />
         </record>
@@ -4779,6 +5020,8 @@
                                 ref('tt_base.able_to_ticketing_tour'),
                                 ref('tt_base.able_to_ticketing_train'),
                                 ref('tt_base.able_to_ticketing_visa'),
+                                ref('tt_base.able_to_ticketing_periksain'),
+                                ref('tt_base.able_to_ticketing_phc'),
                                 ref('tt_base.report')])]"
             />
         </record>
@@ -4800,6 +5043,7 @@
                              ref('tt_base.group_master_data_ppob_level_1'),
                              ref('tt_base.group_master_data_event_level_1'),
                              ref('tt_base.group_master_data_periksain_level_1'),
+                             ref('tt_base.group_master_data_phc_level_1'),
                              ref('tt_base.group_tour_request_level_3'),
                              ref('tt_base.group_reservation_level_3'),
                              ref('tt_base.group_reservation_provider_level_3'),
@@ -4864,6 +5108,8 @@
                                 ref('tt_base.able_to_ticketing_tour'),
                                 ref('tt_base.able_to_ticketing_train'),
                                 ref('tt_base.able_to_ticketing_visa'),
+                                ref('tt_base.able_to_ticketing_periksain'),
+                                ref('tt_base.able_to_ticketing_phc'),
                                 ref('tt_base.report')])]"
             />
         </record>
@@ -4893,6 +5139,8 @@
                                 ref('tt_base.able_to_ticketing_tour'),
                                 ref('tt_base.able_to_ticketing_train'),
                                 ref('tt_base.able_to_ticketing_visa'),
+                                ref('tt_base.able_to_ticketing_periksain'),
+                                ref('tt_base.able_to_ticketing_phc'),
                                 ref('tt_base.report')])]"
             />
         </record>
@@ -4914,6 +5162,7 @@
                              ref('tt_base.group_master_data_ppob_level_1'),
                              ref('tt_base.group_master_data_event_level_1'),
                              ref('tt_base.group_master_data_periksain_level_1'),
+                             ref('tt_base.group_master_data_phc_level_1'),
                              ref('tt_base.group_tour_request_level_3'),
                              ref('tt_base.group_reservation_level_3'),
                              ref('tt_base.group_reservation_provider_level_3'),
@@ -4978,6 +5227,8 @@
                                 ref('tt_base.able_to_ticketing_tour'),
                                 ref('tt_base.able_to_ticketing_train'),
                                 ref('tt_base.able_to_ticketing_visa'),
+                                ref('tt_base.able_to_ticketing_periksain'),
+                                ref('tt_base.able_to_ticketing_phc'),
                                 ref('tt_base.is_agent_setting_printout'),
                                 ref('tt_base.report')])]"
             />
@@ -5009,6 +5260,8 @@
                                 ref('tt_base.able_to_ticketing_tour'),
                                 ref('tt_base.able_to_ticketing_train'),
                                 ref('tt_base.able_to_ticketing_visa'),
+                                ref('tt_base.able_to_ticketing_periksain'),
+                                ref('tt_base.able_to_ticketing_phc'),
                                 ref('tt_base.report')])]"
             />
         </record>
@@ -5031,6 +5284,7 @@
                              ref('tt_base.group_master_data_ppob_level_1'),
                              ref('tt_base.group_master_data_event_level_1'),
                              ref('tt_base.group_master_data_periksain_level_1'),
+                             ref('tt_base.group_master_data_phc_level_1'),
                              ref('tt_base.group_tour_request_level_3'),
                              ref('tt_base.group_reservation_level_3'),
                              ref('tt_base.group_reservation_provider_level_3'),
@@ -5095,6 +5349,8 @@
                                 ref('tt_base.able_to_ticketing_tour'),
                                 ref('tt_base.able_to_ticketing_train'),
                                 ref('tt_base.able_to_ticketing_visa'),
+                                ref('tt_base.able_to_ticketing_periksain'),
+                                ref('tt_base.able_to_ticketing_phc'),
                                 ref('tt_base.report')])]"
             />
         </record>
@@ -5125,6 +5381,8 @@
                                 ref('tt_base.able_to_ticketing_tour'),
                                 ref('tt_base.able_to_ticketing_train'),
                                 ref('tt_base.able_to_ticketing_visa'),
+                                ref('tt_base.able_to_ticketing_periksain'),
+                                ref('tt_base.able_to_ticketing_phc'),
                                 ref('tt_base.report')])]"
             />
         </record>
@@ -5147,6 +5405,7 @@
                              ref('tt_base.group_master_data_ppob_level_1'),
                              ref('tt_base.group_master_data_event_level_1'),
                              ref('tt_base.group_master_data_periksain_level_1'),
+                             ref('tt_base.group_master_data_phc_level_1'),
                              ref('tt_base.group_tour_request_level_3'),
                              ref('tt_base.group_reservation_level_3'),
                              ref('tt_base.group_reservation_provider_level_3'),
@@ -5211,6 +5470,8 @@
                                 ref('tt_base.able_to_ticketing_tour'),
                                 ref('tt_base.able_to_ticketing_train'),
                                 ref('tt_base.able_to_ticketing_visa'),
+                                ref('tt_base.able_to_ticketing_periksain'),
+                                ref('tt_base.able_to_ticketing_phc'),
                                 ref('tt_base.report')])]"
             />
         </record>
@@ -5241,6 +5502,8 @@
                                 ref('tt_base.able_to_ticketing_tour'),
                                 ref('tt_base.able_to_ticketing_train'),
                                 ref('tt_base.able_to_ticketing_visa'),
+                                ref('tt_base.able_to_ticketing_periksain'),
+                                ref('tt_base.able_to_ticketing_phc'),
                                 ref('tt_base.report')])]"
             />
         </record>
@@ -5263,6 +5526,7 @@
                              ref('tt_base.group_master_data_ppob_level_1'),
                              ref('tt_base.group_master_data_event_level_1'),
                              ref('tt_base.group_master_data_periksain_level_1'),
+                             ref('tt_base.group_master_data_phc_level_1'),
                              ref('tt_base.group_tour_request_level_3'),
                              ref('tt_base.group_reservation_level_3'),
                              ref('tt_base.group_reservation_provider_level_3'),
@@ -5327,6 +5591,8 @@
                                 ref('tt_base.able_to_ticketing_tour'),
                                 ref('tt_base.able_to_ticketing_train'),
                                 ref('tt_base.able_to_ticketing_visa'),
+                                ref('tt_base.able_to_ticketing_periksain'),
+                                ref('tt_base.able_to_ticketing_phc'),
                                 ref('tt_base.report')])]"
             />
         </record>
@@ -5355,6 +5621,8 @@
                                 ref('tt_base.able_to_ticketing_tour'),
                                 ref('tt_base.able_to_ticketing_train'),
                                 ref('tt_base.able_to_ticketing_visa'),
+                                ref('tt_base.able_to_ticketing_periksain'),
+                                ref('tt_base.able_to_ticketing_phc'),
                                 ref('tt_base.report')])]"
             />
         </record>
@@ -5376,6 +5644,7 @@
                              ref('tt_base.group_master_data_ppob_level_1'),
                              ref('tt_base.group_master_data_event_level_1'),
                              ref('tt_base.group_master_data_periksain_level_1'),
+                             ref('tt_base.group_master_data_phc_level_1'),
                              ref('tt_base.group_tour_request_level_3'),
                              ref('tt_base.group_reservation_level_3'),
                              ref('tt_base.group_reservation_provider_level_3'),
@@ -5440,6 +5709,8 @@
                                 ref('tt_base.able_to_ticketing_tour'),
                                 ref('tt_base.able_to_ticketing_train'),
                                 ref('tt_base.able_to_ticketing_visa'),
+                                ref('tt_base.able_to_ticketing_periksain'),
+                                ref('tt_base.able_to_ticketing_phc'),
                                 ref('tt_base.report')])]"
             />
         </record>
@@ -5468,6 +5739,8 @@
                                 ref('tt_base.able_to_ticketing_tour'),
                                 ref('tt_base.able_to_ticketing_train'),
                                 ref('tt_base.able_to_ticketing_visa'),
+                                ref('tt_base.able_to_ticketing_periksain'),
+                                ref('tt_base.able_to_ticketing_phc'),
                                 ref('tt_base.report')])]"
             />
         </record>
@@ -5489,6 +5762,7 @@
                              ref('tt_base.group_master_data_ppob_level_1'),
                              ref('tt_base.group_master_data_event_level_1'),
                              ref('tt_base.group_master_data_periksain_level_1'),
+                             ref('tt_base.group_master_data_phc_level_1'),
                              ref('tt_base.group_tour_request_level_3'),
                              ref('tt_base.group_reservation_level_3'),
                              ref('tt_base.group_reservation_provider_level_3'),
@@ -5553,6 +5827,8 @@
                                 ref('tt_base.able_to_ticketing_tour'),
                                 ref('tt_base.able_to_ticketing_train'),
                                 ref('tt_base.able_to_ticketing_visa'),
+                                ref('tt_base.able_to_ticketing_periksain'),
+                                ref('tt_base.able_to_ticketing_phc'),
                                 ref('tt_base.report')])]"
             />
         </record>
@@ -5582,6 +5858,8 @@
                                 ref('tt_base.able_to_ticketing_tour'),
                                 ref('tt_base.able_to_ticketing_train'),
                                 ref('tt_base.able_to_ticketing_visa'),
+                                ref('tt_base.able_to_ticketing_periksain'),
+                                ref('tt_base.able_to_ticketing_phc'),
                                 ref('tt_base.report')])]"
             />
         </record>
@@ -5603,6 +5881,7 @@
                              ref('tt_base.group_master_data_ppob_level_1'),
                              ref('tt_base.group_master_data_event_level_1'),
                              ref('tt_base.group_master_data_periksain_level_1'),
+                             ref('tt_base.group_master_data_phc_level_1'),
                              ref('tt_base.group_tour_request_level_3'),
                              ref('tt_base.group_reservation_level_3'),
                              ref('tt_base.group_reservation_provider_level_3'),
@@ -5667,6 +5946,8 @@
                                 ref('tt_base.able_to_ticketing_tour'),
                                 ref('tt_base.able_to_ticketing_train'),
                                 ref('tt_base.able_to_ticketing_visa'),
+                                ref('tt_base.able_to_ticketing_periksain'),
+                                ref('tt_base.able_to_ticketing_phc'),
                                 ref('tt_base.is_agent_setting_printout'),
                                 ref('tt_base.report')])]"
             />
@@ -5698,6 +5979,8 @@
                                 ref('tt_base.able_to_ticketing_tour'),
                                 ref('tt_base.able_to_ticketing_train'),
                                 ref('tt_base.able_to_ticketing_visa'),
+                                ref('tt_base.able_to_ticketing_periksain'),
+                                ref('tt_base.able_to_ticketing_phc'),
                                 ref('tt_base.report')])]"
             />
         </record>
@@ -5720,6 +6003,7 @@
                              ref('tt_base.group_master_data_ppob_level_1'),
                              ref('tt_base.group_master_data_event_level_1'),
                              ref('tt_base.group_master_data_periksain_level_1'),
+                             ref('tt_base.group_master_data_phc_level_1'),
                              ref('tt_base.group_tour_request_level_3'),
                              ref('tt_base.group_reservation_level_3'),
                              ref('tt_base.group_reservation_provider_level_3'),
@@ -5784,6 +6068,8 @@
                                 ref('tt_base.able_to_ticketing_tour'),
                                 ref('tt_base.able_to_ticketing_train'),
                                 ref('tt_base.able_to_ticketing_visa'),
+                                ref('tt_base.able_to_ticketing_periksain'),
+                                ref('tt_base.able_to_ticketing_phc'),
                                 ref('tt_base.report')])]"
             />
         </record>
@@ -5814,6 +6100,8 @@
                                 ref('tt_base.able_to_ticketing_tour'),
                                 ref('tt_base.able_to_ticketing_train'),
                                 ref('tt_base.able_to_ticketing_visa'),
+                                ref('tt_base.able_to_ticketing_periksain'),
+                                ref('tt_base.able_to_ticketing_phc'),
                                 ref('tt_base.report')])]"
             />
         </record>
@@ -5836,6 +6124,7 @@
                              ref('tt_base.group_master_data_ppob_level_1'),
                              ref('tt_base.group_master_data_event_level_1'),
                              ref('tt_base.group_master_data_periksain_level_1'),
+                             ref('tt_base.group_master_data_phc_level_1'),
                              ref('tt_base.group_tour_request_level_3'),
                              ref('tt_base.group_reservation_level_3'),
                              ref('tt_base.group_reservation_provider_level_3'),
@@ -5900,6 +6189,8 @@
                                 ref('tt_base.able_to_ticketing_tour'),
                                 ref('tt_base.able_to_ticketing_train'),
                                 ref('tt_base.able_to_ticketing_visa'),
+                                ref('tt_base.able_to_ticketing_periksain'),
+                                ref('tt_base.able_to_ticketing_phc'),
                                 ref('tt_base.report')])]"
             />
         </record>
@@ -5930,6 +6221,8 @@
                                 ref('tt_base.able_to_ticketing_tour'),
                                 ref('tt_base.able_to_ticketing_train'),
                                 ref('tt_base.able_to_ticketing_visa'),
+                                ref('tt_base.able_to_ticketing_periksain'),
+                                ref('tt_base.able_to_ticketing_phc'),
                                 ref('tt_base.report')])]"
             />
         </record>
@@ -5952,6 +6245,7 @@
                              ref('tt_base.group_master_data_ppob_level_1'),
                              ref('tt_base.group_master_data_event_level_1'),
                              ref('tt_base.group_master_data_periksain_level_1'),
+                             ref('tt_base.group_master_data_phc_level_1'),
                              ref('tt_base.group_tour_request_level_3'),
                              ref('tt_base.group_reservation_level_3'),
                              ref('tt_base.group_reservation_provider_level_3'),
@@ -6016,6 +6310,8 @@
                                 ref('tt_base.able_to_ticketing_tour'),
                                 ref('tt_base.able_to_ticketing_train'),
                                 ref('tt_base.able_to_ticketing_visa'),
+                                ref('tt_base.able_to_ticketing_periksain'),
+                                ref('tt_base.able_to_ticketing_phc'),
                                 ref('tt_base.report')])]"
             />
         </record>
@@ -6051,6 +6347,7 @@
                              ref('tt_base.group_master_data_ppob_level_1'),
                              ref('tt_base.group_master_data_event_level_1'),
                              ref('tt_base.group_master_data_periksain_level_1'),
+                             ref('tt_base.group_master_data_phc_level_1'),
                              ref('tt_base.group_tour_request_level_3'),
                              ref('tt_base.group_reservation_level_3'),
                              ref('tt_base.group_reservation_provider_level_3'),
@@ -6136,6 +6433,7 @@
                              ref('tt_base.group_master_data_ppob_level_1'),
                              ref('tt_base.group_master_data_event_level_1'),
                              ref('tt_base.group_master_data_periksain_level_1'),
+                             ref('tt_base.group_master_data_phc_level_1'),
                              ref('tt_base.group_tour_request_level_3'),
                              ref('tt_base.group_reservation_level_3'),
                              ref('tt_base.group_reservation_provider_level_3'),
@@ -6222,6 +6520,7 @@
                              ref('tt_base.group_master_data_ppob_level_1'),
                              ref('tt_base.group_master_data_event_level_1'),
                              ref('tt_base.group_master_data_periksain_level_1'),
+                             ref('tt_base.group_master_data_phc_level_1'),
                              ref('tt_base.group_tour_request_level_3'),
                              ref('tt_base.group_reservation_level_3'),
                              ref('tt_base.group_reservation_provider_level_3'),
@@ -6330,6 +6629,7 @@
                              ref('tt_base.group_master_data_ppob_level_1'),
                              ref('tt_base.group_master_data_event_level_1'),
                              ref('tt_base.group_master_data_periksain_level_1'),
+                             ref('tt_base.group_master_data_phc_level_1'),
                              ref('tt_base.group_tour_request_level_3'),
                              ref('tt_base.group_reservation_level_3'),
                              ref('tt_base.group_reservation_provider_level_3'),
@@ -6417,6 +6717,7 @@
                              ref('tt_base.group_master_data_ppob_level_1'),
                              ref('tt_base.group_master_data_event_level_1'),
                              ref('tt_base.group_master_data_periksain_level_1'),
+                             ref('tt_base.group_master_data_phc_level_1'),
                              ref('tt_base.group_tour_request_level_3'),
                              ref('tt_base.group_reservation_level_3'),
                              ref('tt_base.group_reservation_provider_level_3'),
@@ -6505,6 +6806,7 @@
                              ref('tt_base.group_master_data_ppob_level_1'),
                              ref('tt_base.group_master_data_event_level_1'),
                              ref('tt_base.group_master_data_periksain_level_1'),
+                             ref('tt_base.group_master_data_phc_level_1'),
                              ref('tt_base.group_tour_request_level_3'),
                              ref('tt_base.group_reservation_level_3'),
                              ref('tt_base.group_reservation_provider_level_3'),
@@ -6606,6 +6908,8 @@
                                 ref('tt_base.able_to_ticketing_tour'),
                                 ref('tt_base.able_to_ticketing_train'),
                                 ref('tt_base.able_to_ticketing_visa'),
+                                ref('tt_base.able_to_ticketing_periksain'),
+                                ref('tt_base.able_to_ticketing_phc'),
                                 ref('tt_base.report')])]"
             />
         </record>
@@ -6627,6 +6931,7 @@
                              ref('tt_base.group_master_data_ppob_level_1'),
                              ref('tt_base.group_master_data_event_level_1'),
                              ref('tt_base.group_master_data_periksain_level_1'),
+                             ref('tt_base.group_master_data_phc_level_1'),
                              ref('tt_base.group_tour_request_level_3'),
                              ref('tt_base.group_reservation_level_3'),
                              ref('tt_base.group_reservation_provider_level_3'),
@@ -6691,6 +6996,8 @@
                                 ref('tt_base.able_to_ticketing_tour'),
                                 ref('tt_base.able_to_ticketing_train'),
                                 ref('tt_base.able_to_ticketing_visa'),
+                                ref('tt_base.able_to_ticketing_periksain'),
+                                ref('tt_base.able_to_ticketing_phc'),
                                 ref('tt_base.report')])]"
             />
         </record>
@@ -6719,6 +7026,8 @@
                                 ref('tt_base.able_to_ticketing_tour'),
                                 ref('tt_base.able_to_ticketing_train'),
                                 ref('tt_base.able_to_ticketing_visa'),
+                                ref('tt_base.able_to_ticketing_periksain'),
+                                ref('tt_base.able_to_ticketing_phc'),
                                 ref('tt_base.report')])]"
             />
         </record>
@@ -6740,6 +7049,7 @@
                              ref('tt_base.group_master_data_ppob_level_1'),
                              ref('tt_base.group_master_data_event_level_1'),
                              ref('tt_base.group_master_data_periksain_level_1'),
+                             ref('tt_base.group_master_data_phc_level_1'),
                              ref('tt_base.group_tour_request_level_3'),
                              ref('tt_base.group_reservation_level_3'),
                              ref('tt_base.group_reservation_provider_level_3'),
@@ -6804,6 +7114,8 @@
                                 ref('tt_base.able_to_ticketing_tour'),
                                 ref('tt_base.able_to_ticketing_train'),
                                 ref('tt_base.able_to_ticketing_visa'),
+                                ref('tt_base.able_to_ticketing_periksain'),
+                                ref('tt_base.able_to_ticketing_phc'),
                                 ref('tt_base.report')])]"
             />
         </record>
@@ -6833,6 +7145,8 @@
                                 ref('tt_base.able_to_ticketing_tour'),
                                 ref('tt_base.able_to_ticketing_train'),
                                 ref('tt_base.able_to_ticketing_visa'),
+                                ref('tt_base.able_to_ticketing_periksain'),
+                                ref('tt_base.able_to_ticketing_phc'),
                                 ref('tt_base.report')])]"
             />
         </record>
@@ -6854,6 +7168,7 @@
                              ref('tt_base.group_master_data_ppob_level_1'),
                              ref('tt_base.group_master_data_event_level_1'),
                              ref('tt_base.group_master_data_periksain_level_1'),
+                             ref('tt_base.group_master_data_phc_level_1'),
                              ref('tt_base.group_tour_request_level_3'),
                              ref('tt_base.group_reservation_level_3'),
                              ref('tt_base.group_reservation_provider_level_3'),
@@ -6918,6 +7233,8 @@
                                 ref('tt_base.able_to_ticketing_tour'),
                                 ref('tt_base.able_to_ticketing_train'),
                                 ref('tt_base.able_to_ticketing_visa'),
+                                ref('tt_base.able_to_ticketing_periksain'),
+                                ref('tt_base.able_to_ticketing_phc'),
                                 ref('tt_base.is_agent_setting_printout'),
                                 ref('tt_base.report')])]"
             />
@@ -6944,6 +7261,8 @@
                                 ref('tt_base.able_to_ticketing_tour'),
                                 ref('tt_base.able_to_ticketing_train'),
                                 ref('tt_base.able_to_ticketing_visa'),
+                                ref('tt_base.able_to_ticketing_periksain'),
+                                ref('tt_base.able_to_ticketing_phc'),
                                 ref('tt_base.report')])]"
             />
         </record>
@@ -6965,6 +7284,7 @@
                              ref('tt_base.group_master_data_ppob_level_1'),
                              ref('tt_base.group_master_data_event_level_1'),
                              ref('tt_base.group_master_data_periksain_level_1'),
+                             ref('tt_base.group_master_data_phc_level_1'),
                              ref('tt_base.group_tour_request_level_3'),
                              ref('tt_base.group_reservation_level_3'),
                              ref('tt_base.group_reservation_provider_level_3'),
@@ -7023,6 +7343,8 @@
                                 ref('tt_base.able_to_ticketing_tour'),
                                 ref('tt_base.able_to_ticketing_train'),
                                 ref('tt_base.able_to_ticketing_visa'),
+                                ref('tt_base.able_to_ticketing_periksain'),
+                                ref('tt_base.able_to_ticketing_phc'),
                                 ref('tt_base.report'),
                                 ref('tt_base.able_to_book'),
                                 ref('tt_base.able_to_issued'),

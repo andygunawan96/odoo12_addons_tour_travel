@@ -220,7 +220,7 @@ class PaymentAcquirer(models.Model):
             _logger.info("payment acq req\n" + json.dumps(req))
             res = {}
             res['member'] = {}
-
+            user_obj = self.env['res.users'].browse(context['co_uid']) # untuk process channel booking 
             agent_obj = self.env['tt.agent'].sudo().browse(context['co_agent_id'])
             if not agent_obj:
                 # Return Error jika agent_id tidak ditemukan
@@ -251,7 +251,7 @@ class PaymentAcquirer(models.Model):
 
                 values = {}
                 now_time = datetime.now(pytz.timezone('Asia/Jakarta'))
-                if self.env['tt.agent'].browse(co_agent_id).agent_type_id != self.env.ref('tt_base.agent_type_btc'):
+                if self.env['tt.agent'].browse(co_agent_id).agent_type_id != self.env.ref('tt_base.agent_type_btc') or req['order_number'].split('.')[0] == 'PH' and self.env.ref('tt_base.group_tt_process_channel_bookings_medical_only').id in user_obj.groups_id.ids: #PHC pakai process channel operator
                     for acq in self.sudo().search(dom):
                         # self.test_validate(acq) utk testig saja
                         if self.validate_time(acq, now_time):
@@ -400,6 +400,8 @@ class PaymentAcquirerNumber(models.Model):
         else:
             if booking_obj.hold_date < datetime.now() + timedelta(minutes=45):
                 hold_date = booking_obj.hold_date
+            elif data['order_number'].split('.')[0] == 'PH' or data['order_number'].split('.')[0] == 'PK': #PHC 30 menit
+                hold_date = datetime.now() + timedelta(minutes=30)
             else:
                 hold_date = datetime.now() + timedelta(minutes=45)
             payment = self.env['payment.acquirer.number'].create({

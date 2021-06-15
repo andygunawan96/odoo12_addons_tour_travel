@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="tt_reservation_passenger_phc_inherit_form_view" model="ir.ui.view">
+        <field name="name">tt.reservation.passenger.phc.inherit.form.view</field>
+        <field name="model">tt.reservation.passenger.phc</field>
+        <field name="mode">primary</field>
+        <field name="inherit_id" ref="tt_reservation.tt_reservation_passenger_form_view"/>
+        <field name="arch" type="xml">
+            <xpath expr="//group[@name='basic_info']" position="after">
+                <group>
+                    <group>
+                        <field name="email"/>
+                        <field name="phone_number"/>
+                        <field name="profession"/>
+                        <field name="work_place"/>
+                        <field name="address"/>
+                        <field name="kabupaten"/>
+                        <field name="kecamatan"/>
+                        <field name="kelurahan"/>
+                        <field name="rt"/>
+                        <field name="rw"/>
+                    </group>
+                    <group>
+                        <field name="tempat_lahir"/>
+                        <field name="address_ktp"/>
+                        <field name="kabupaten_ktp"/>
+                        <field name="kecamatan_ktp"/>
+                        <field name="kelurahan_ktp"/>
+                        <field name="rt_ktp"/>
+                        <field name="rw_ktp"/>
+                    </group>
+                </group>
+                <separator string="Service Charges"/>
+                <field name="cost_service_charge_ids"
+                context="{
+                    'form_view_ref': 'tt_reservation_phc.tt_service_charge_phc_inherit_form_view'
+                }"/>
+                <separator string="Channel Repricing"/>
+                <field name="channel_service_charge_ids"/>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>
