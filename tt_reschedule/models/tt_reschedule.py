@@ -13,7 +13,8 @@ _logger = logging.getLogger(__name__)
 class Ledger(models.Model):
     _inherit = 'tt.ledger'
 
-    reschedule_id = fields.Many2one('tt.reschedule', 'After Sales')
+    reschedule_id = fields.Integer('After Sales ID')
+    reschedule_model = fields.Char('After Sales Model')
 
 
 class TtRescheduleChanges(models.Model):
@@ -207,7 +208,10 @@ class TtReschedule(models.Model):
     def _get_res_model_domain(self):
         return [('res_model', '=', self._name)]
 
-    ledger_ids = fields.One2many('tt.ledger', 'reschedule_id', 'Ledger(s)')
+    def _get_reschedule_model_domain(self):
+        return [('reschedule_model', '=', self._name)]
+
+    ledger_ids = fields.One2many('tt.ledger', 'reschedule_id', 'Ledger(s)', domain=_get_reschedule_model_domain)
     adjustment_ids = fields.One2many('tt.adjustment', 'res_id', 'Adjustment', readonly=True, domain=_get_res_model_domain)
     pnr = fields.Char('New PNR', readonly=True, compute="_compute_new_pnr")
     invoice_line_ids = fields.One2many('tt.agent.invoice.line', 'res_id_resv', 'Invoice', domain=[('res_model_resv','=','tt.reschedule')], readonly=True)
@@ -396,8 +400,8 @@ class TtReschedule(models.Model):
             ledger_type = rec.reschedule_type == 'addons' and 8 or 7
             temp_desc = str(dict(rec._fields['reschedule_type'].selection).get(rec.reschedule_type)) + '\n'
             self.env['tt.ledger'].create_ledger_vanilla(
-                self._name,
-                self.id,
+                self.res_model,
+                self.res_id,
                 'After Sales : %s' % (self.name),
                 self.name,
                 datetime.now(pytz.timezone('Asia/Jakarta')).date(),
@@ -409,7 +413,10 @@ class TtReschedule(models.Model):
                 debit,
                 credit,
                 temp_desc + ' for %s (PNR: from %s to %s)' % (self.referenced_document, self.referenced_pnr, self.pnr),
-                **{'reschedule_id': self.id}
+                **{
+                    'reschedule_id': self.id,
+                    'reschedule_model': self._name
+                }
             )
 
             if rec.admin_fee_ho:
@@ -418,8 +425,8 @@ class TtReschedule(models.Model):
                 debit = rec.admin_fee_ho
                 ledger_type = 6
                 self.env['tt.ledger'].sudo().create_ledger_vanilla(
-                    self._name,
-                    self.id,
+                    self.res_model,
+                    self.res_id,
                     'After Sales Admin Fee: %s' % (self.name),
                     self.name,
                     datetime.now(pytz.timezone('Asia/Jakarta')).date(),
@@ -431,7 +438,10 @@ class TtReschedule(models.Model):
                     debit,
                     credit,
                     temp_desc + ' Admin Fee for %s (PNR: from %s to %s)' % (self.referenced_document, self.referenced_pnr, self.pnr),
-                    **{'reschedule_id': self.id}
+                    **{
+                        'reschedule_id': self.id,
+                        'reschedule_model': self._name
+                    }
                 )
 
             if rec.admin_fee_agent:
@@ -439,8 +449,8 @@ class TtReschedule(models.Model):
                 debit = rec.admin_fee_agent
                 ledger_type = 3
                 self.env['tt.ledger'].sudo().create_ledger_vanilla(
-                    self._name,
-                    self.id,
+                    self.res_model,
+                    self.res_id,
                     'After Sales Agent Admin Fee: %s' % (self.name),
                     self.name,
                     datetime.now(pytz.timezone('Asia/Jakarta')).date(),
@@ -452,7 +462,10 @@ class TtReschedule(models.Model):
                     debit,
                     credit,
                     temp_desc + ' Agent Admin Fee for %s (PNR: from %s to %s)' % (self.referenced_document, self.referenced_pnr, self.pnr),
-                    **{'reschedule_id': self.id}
+                    **{
+                        'reschedule_id': self.id,
+                        'reschedule_model': self._name
+                    }
                 )
 
         self.write({
