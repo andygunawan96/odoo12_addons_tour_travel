@@ -53,6 +53,8 @@ class PrintoutTicketForm(models.AbstractModel):
                 data['context']['active_model'] = 'tt.reservation.event'
             elif internal_model_id == 7:
                 data['context']['active_model'] = 'tt.reservation.periksain'
+            elif internal_model_id == 8:
+                data['context']['active_model'] = 'tt.reservation.phc'
             data['context']['active_ids'] = docids
         values = {}
         pnr_length = 0
@@ -151,6 +153,10 @@ class PrintoutTicketForm(models.AbstractModel):
             reschedule_fee = self.get_reschedule_fee_amount(agent_id)
 
         airline_ticket_footer = self.env['tt.report.common.setting'].get_footer('airline_ticket',agent_id)
+        if data['context']['active_model'] == 'tt.reservation.periksain':
+            airline_ticket_footer = self.env['tt.report.common.setting'].get_footer('periksain_ticket', agent_id)
+        elif data['context']['active_model'] == 'tt.reservation.phc':
+            airline_ticket_footer = self.env['tt.report.common.setting'].get_footer('phc_ticket', agent_id)
         vals = {
             'doc_ids': data['context']['active_ids'],
             'doc_model': data['context']['active_model'],
@@ -830,7 +836,7 @@ class PrintoutInvoiceHO(models.AbstractModel):
                         'name': psg.passenger_id.name,
                         'total': rec.total / len(rec.passenger_ids),
                     })
-        elif rec._name == 'tt.reservation.periksain':
+        elif rec._name in ['tt.reservation.periksain','tt.reservation.phc']:
             a[rec.name] = {
                 'model': rec._name,
                 'pax_data': [{
