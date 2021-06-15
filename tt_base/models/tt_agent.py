@@ -439,13 +439,18 @@ class TtAgent(models.Model):
                 types = variables.PROVIDER_TYPE
 
 
-            if self.env.ref('tt_base.group_tt_process_channel_bookings').id in user_obj.groups_id.ids:
+            if self.env.ref('tt_base.group_tt_process_channel_bookings').id in user_obj.groups_id.ids:##klau bisa all provider
                 dom = []
+            elif self.env.ref('tt_base.group_tt_process_channel_bookings_medical_only').id in user_obj.groups_id.ids:## kalau medical only
+                dom = []
+                types = [rec for rec in types if rec in ['phc','periksain']]
             else:
                 dom = [('agent_id', '=', agent_obj.id)]
 
             if req.get('pnr'):
                 dom.append(('pnr','=ilike',req['pnr']))
+            if req.get('order_number'):
+                dom.append(('name','=ilike',req['order_number']))
             if req.get('booker_name'):
                 dom.append(('booker_id.name','ilike',req['booker_name']))
             if req.get('passenger_name'):
