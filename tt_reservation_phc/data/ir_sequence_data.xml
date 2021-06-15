@@ -3,7 +3,7 @@
     <data noupdate="1">
         <!-- Sequences for transport.booking -->
         <record id="seq_reservation_phc" model="ir.sequence">
-            <field name="name">Reservation phc</field>
+            <field name="name">Reservation PHC</field>
             <field name="code">tt.reservation.phc</field>
             <field name="prefix">PH.%(y)s%(month)s%(day)s%(sec)s</field>
             <field name="padding">3</field>

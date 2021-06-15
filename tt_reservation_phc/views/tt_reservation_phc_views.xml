@@ -314,7 +314,7 @@
     </record>
 
     <record id="tt_reservation_phc_action_views" model="ir.actions.act_window" >
-        <field name="name">Reservation phc</field>
+        <field name="name">Reservation PHC</field>
         <field name="type">ir.actions.act_window</field>
         <field name="res_model">tt.reservation.phc</field>
         <field name="view_type">form</field>
@@ -330,7 +330,7 @@
     </record>
 
     <record id="tt_reservation_phc_action_external_views" model="ir.actions.act_window" >
-        <field name="name">Reservation phc</field>
+        <field name="name">Reservation PHC</field>
         <field name="type">ir.actions.act_window</field>
         <field name="res_model">tt.reservation.phc</field>
         <field name="view_type">form</field>
