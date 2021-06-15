@@ -1,0 +1,285 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="tt_reschedule_phc_filter_view" model="ir.ui.view">
+        <field name="name">tt.reschedule.phc.filter.view</field>
+        <field name="model">tt.reschedule.phc</field>
+        <field name="arch" type="xml">
+            <search string="Search After Sales">
+                <field name="name"/>
+                <field name="reschedule_type_str"/>
+                <field name="referenced_pnr"/>
+                <field name="referenced_document"/>
+                <field name="notes"/>
+                <field name="agent_id" groups="tt_base.group_tt_tour_travel"/>
+                <separator/>
+                <filter string="All" name='all'/>
+                <filter string="Draft" name='draft' domain="[('state', '=', 'draft')]"/>
+                <filter string="Confirmed" name='confirm' domain="[('state', '=', 'confirm')]"/>
+                <filter string="Sent to Agent" name='sent' domain="[('state', '=', 'sent')]"/>
+                <filter string="Validated" name='validate' domain="[('state', '=', 'validate')]"/>
+                <filter string="Finalized" name='final' domain="[('state', '=', 'final')]"/>
+                <filter string="Done" name='done' domain="[('state', '=', 'done')]"/>
+                <filter string="Cancelled" name='cancel' domain="[('state', '=', 'cancel')]"/>
+                <filter string="Expired" name='expired' domain="[('state', '=', 'expired')]"/>
+                <separator/>
+                <filter name="today" string="Today" domain="[('create_date','&gt;=',time.strftime('%%Y-%%m-%%d'))]"/>
+                <filter name="yesterday" string="Yesterday"
+                        domain="[
+                                ('create_date', '&lt;', (context_today()).strftime('%Y-%m-%d')),
+                                ('create_date', '&gt;=', (context_today() - datetime.timedelta(days=1)).strftime('%Y-%m-%d'))
+                        ]"/>
+                <filter name="week" string="This Week"
+                        domain="[
+                                '&amp;',
+                                ('create_date', '>=', (context_today() + relativedelta(weeks=-1,days=1,weekday=0)).strftime('%Y-%m-%d')),
+                                ('create_date', '&lt;=', (context_today() + relativedelta(weekday=6)).strftime('%Y-%m-%d')),
+                            ]"/>
+                <filter string="This Month" name="thismonth" domain="[('create_date','&gt;=',time.strftime('%%Y-%%m-01'))]"/>
+                <filter string="This Year" name="thisyear" domain="[('create_date','&gt;=',time.strftime('%%Y-01-01'))]"/>
+
+                <group expand="0" string="Group By">
+                    <filter name="group_by_agent_id" string="Agent" domain="[]" context="{'group_by':'agent_id'}" groups="tt_base.group_tt_tour_travel"/>
+                    <filter name="group_by_agent_type_id" string="Agent Type" domain="[]" context="{'group_by':'agent_type_id'}" groups="tt_base.group_tt_agent_user,tt_base.group_tt_tour_travel"/>
+                    <filter name="group_by_service_type" string="Service Type" domain="[]" context="{'group_by':'service_type'}" groups="tt_base.group_tt_agent_user,tt_base.group_tt_tour_travel"/>
+                    <filter name="group_by_reschedule_type" string="After Sales Type" domain="[]" context="{'group_by':'reschedule_type_str'}" groups="tt_base.group_tt_agent_user,tt_base.group_tt_tour_travel"/>
+                    <filter name="group_by_state" string="State" domain="[]" context="{'group_by':'state'}" groups="tt_base.group_tt_agent_user,tt_base.group_tt_tour_travel"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="tt_reschedule_phc_form_view" model="ir.ui.view">
+        <field name="name">tt.reschedule.phc.form.view</field>
+        <field name="model">tt.reschedule.phc</field>
+        <field name="arch" type="xml">
+            <form create="false">
+                <header>
+                    <button name="confirm_reschedule_from_button" string="Confirm" type="object" groups="tt_base.group_tt_agent_user" attrs="{'invisible':[('state','!=', 'draft')]}"/>
+                    <button name="send_reschedule_from_button" string="Send to Agent" type="object" groups="tt_base.group_tt_tour_travel" attrs="{'invisible':[('state','!=', 'confirm')]}"/>
+                    <button name="validate_reschedule_from_button" string="Validate" type="object" groups="tt_base.group_tt_agent_user,tt_base.group_tt_tour_travel" attrs="{'invisible':[('state','!=', 'sent')]}"/>
+                    <button name="finalize_reschedule_from_button" string="Finalize" type="object" groups="tt_base.group_after_sales_master_level_3" attrs="{'invisible':[('state','!=', 'validate')]}"/>
+                    <button name="action_done" string="Approve (Done)" type="object" groups="tt_base.group_after_sales_master_level_3" attrs="{'invisible':[('state','!=', 'final')]}"/>
+                    <button name="set_to_confirm" string="Set to Confirm" type="object" groups="tt_base.group_after_sales_master_level_5" attrs="{'invisible':[('state','not in', ['sent', 'validate'])]}"/>
+                    <button name="cancel_reschedule_from_button" string="Cancel" type="object" attrs="{'invisible':[('state','in', ['done', 'cancel'])]}" confirm="Are you sure you want to cancel?"/>
+                    <button string="Adjustment" name="%(tt_accounting.tt_adjustment_wizard_action_view)d" type="action"
+                            groups="tt_base.group_adjustment_level_3"
+                            context="{
+                        'default_res_model': 'tt.reschedule.phc',
+                        'default_res_id': id,
+                        'default_agent_id': agent_id,
+                        'default_referenced_document': name,
+                        'default_currency_id': currency_id,
+                        'default_adj_type': -4,
+                        'hide_component_type': True
+                   }"/>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,confirm,sent,validate,final,done"/>
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="print_reschedule_changes"
+                                class="oe_stat_button" states="final,done"
+                                string="After Sales Changes" type="object" icon="fa-print"/>
+                    </div>
+                    <div class="oe_title">
+                        <label for="Name" class="oe_edit_only" string="Name"/>
+                        <h1>
+                            <field name="name"/>
+                        </h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="agent_id" attrs="{'invisible':[('agent_id','=', False)]}"/>
+                            <field name="agent_type_id" attrs="{'invisible':[('agent_id','=', False)]}"/>
+                            <field name="customer_parent_id" attrs="{'invisible':[('customer_parent_id','=', False)]}"/>
+                            <field name="customer_parent_type_id" attrs="{'invisible':[('customer_parent_id','=', False)]}"/>
+                            <field name="booker_id"/>
+                            <field name="currency_id"/>
+                            <field name="service_type"/>
+                            <field name="pnr"/>
+                            <field name="referenced_pnr"/>
+                            <field name="referenced_document"/>
+                            <field name="res_model" groups="base.group_system"/>
+                            <field name="res_id" groups="base.group_system"/>
+                            <button name="open_reference" string="Go to reference" type="object"
+                                    attrs="{'invisible':['|',('res_model','=',False),('res_id','=',0)]}"/>
+                        </group>
+                        <group>
+                            <field name="hold_date" readonly="1" class="oe_inline"/>
+                            <label for="confirm_uid" string="Confirmed by"/>
+                            <div>
+                                <field name="confirm_uid" readonly="1" class="oe_inline"/> /
+                                <field name="confirm_date" readonly="1" class="oe_inline"/>
+                            </div>
+                            <label for="sent_uid" string="Sent by"/>
+                            <div>
+                                <field name="sent_uid" readonly="1" class="oe_inline"/> /
+                                <field name="sent_date" readonly="1" class="oe_inline"/>
+                            </div>
+                            <label for="validate_uid" string="Validated by"/>
+                            <div>
+                                <field name="validate_uid" readonly="1" class="oe_inline"/> /
+                                <field name="validate_date" readonly="1" class="oe_inline"/>
+                            </div>
+                            <label for="final_uid" string="Finalized by"/>
+                            <div>
+                                <field name="final_uid" readonly="1" class="oe_inline"/> /
+                                <field name="final_date" readonly="1" class="oe_inline"/>
+                            </div>
+                            <label for="done_uid" string="Done by"/>
+                            <div>
+                                <field name="done_uid" readonly="1" class="oe_inline"/> /
+                                <field name="done_date" readonly="1" class="oe_inline"/>
+                            </div>
+                            <label for="cancel_uid" string="Cancelled by"/>
+                            <div>
+                                <field name="cancel_uid" readonly="1" class="oe_inline"/> /
+                                <field name="cancel_date" readonly="1" class="oe_inline"/>
+                            </div>
+                            <field name="cancel_message"/>
+                        </group>
+                    </group>
+                    <separator string="After Sales"/>
+                    <group>
+                        <group>
+                            <field name="reschedule_amount"/>
+                            <field name="real_reschedule_amount"/>
+                            <field name="admin_fee"/>
+                            <field name="total_amount"/>
+                            <field name="reschedule_type_str"/>
+                        </group>
+                        <group>
+                            <field name="payment_acquirer_id" attrs="{'invisible':['|', ('state','not in', ['sent', 'validate', 'final', 'done', 'cancel', 'expired']), ('customer_parent_type_id', 'in', [%(tt_base.customer_type_cor)d, %(tt_base.customer_type_por)d])], 'required':[('state','in', ['sent', 'validate', 'final', 'done']), ('customer_parent_type_id', 'not in', [%(tt_base.customer_type_cor)d, %(tt_base.customer_type_por)d])]}"/>
+                            <field name="notes"/>
+                            <field name="created_by_api" invisible="1"/>
+                        </group>
+                    </group>
+                    <separator string="Fee Notes"/>
+                    <group>
+                        <group>
+                            <field name="old_fee_notes"/>
+                        </group>
+                        <group>
+                            <field name="new_fee_notes"/>
+                        </group>
+                    </group>
+                    <group string="Picked Timeslot">
+                        <group>
+                            <field name="old_picked_timeslot_id"/>
+                        </group>
+                        <group>
+                            <field name="new_picked_timeslot_id"/>
+                        </group>
+                    </group>
+                    <notebook colspan="4" name="notebooks_segment">
+                        <page string="Segments" name="segment_page">
+                            <button name="generate_changes" string="Generate Changes" type="object" attrs="{'invisible':['|', ('state','not in', ['draft', 'confirm']), ('created_by_api','=', True)]}"/>
+                            <separator string="Changes" attrs="{'invisible':[('created_by_api','=', True)]}"/>
+                            <field name="change_ids" attrs="{'invisible':[('created_by_api','=', True)]}">
+                                <tree>
+                                    <field name="seg_sequence" style="width:5%"/>
+                                    <field name="name"/>
+                                    <field name="old_value"/>
+                                    <field name="new_value"/>
+                                </tree>
+                                <form>
+                                    <div class="oe_title">
+                                        <label for="Name" class="oe_edit_only" string="Name"/>
+                                        <h1>
+                                            <field name="name"/>
+                                        </h1>
+                                    </div>
+                                    <group>
+                                        <group>
+                                            <field name="old_value"/>
+                                        </group>
+                                        <group>
+                                            <field name="new_value"/>
+                                        </group>
+                                    </group>
+                                </form>
+                            </field>
+                        </page>
+                        <page string="Passenger(s)" name="passenger_page">
+                            <field name="passenger_ids">
+                                <tree>
+                                    <field name="title"/>
+                                    <field name="name"/>
+                                    <field name="birth_date"/>
+                                </tree>
+                            </field>
+                        </page>
+                    </notebook>
+                    <notebook colspan="4" name="notebooks">
+                        <page string="After Sales Line(s)" name="reschedule_line_page">
+                            <field name="reschedule_line_ids"/>
+                            <footer>
+                                <group string="Total Information" class="oe_subtotal_footer oe_right">
+                                    <field name="reschedule_amount" class="oe_subtotal_footer_separator"/>
+                                    <field name="admin_fee" class="oe_subtotal_footer_separator"/>
+                                    <field name="total_amount" class="oe_subtotal_footer_separator"/>
+                                </group>
+                                <group>
+
+                                </group>
+                            </footer>
+                        </page>
+                        <page string="Ledger" name="ledger_page">
+                            <field name="ledger_ids"
+                                   context="{'tree_view_ref': 'tt_accounting.tt_ledger_adj_tree_view'}"/>
+                        </page>
+                        <page string="Invoice" name="invoice_page">
+                            <field name="invoice_line_ids"/>
+                        </page>
+                        <page string="Adjustment">
+                            <field name="adjustment_ids"/>
+                        </page>
+                    </notebook>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids" widget="mail_followers"/>
+                    <field name="message_ids" widget="mail_thread"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <record id="tt_reschedule_phc_tree_view_page" model="ir.ui.view">
+        <field name="name">tt.reschedule.phc.tree.view.page</field>
+        <field name="model">tt.reschedule.phc</field>
+        <field name="arch" type="xml">
+            <tree create="false">
+                <field name="create_date"/>
+                <field name="name"/>
+                <field name="agent_id"/>
+                <field name="customer_parent_id"/>
+                <field name="referenced_pnr"/>
+                <field name="reschedule_amount"/>
+                <field name="admin_fee"/>
+                <field name="total_amount"/>
+                <field name="service_type"/>
+                <field name="reschedule_type_str"/>
+                <field name="hold_date"/>
+                <field name="done_uid"/>
+                <field name="done_date"/>
+                <field name="state"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="tt_reschedule_phc_action" model="ir.actions.act_window">
+        <field name="name">After Sales</field>
+        <field name="res_model">tt.reschedule.phc</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+        <field name="context">
+            {
+            'form_view_ref': 'tt_reschedule_phc.tt_reschedule_phc_form_view',
+            'tree_view_ref': 'tt_reschedule_phc.tt_reschedule_phc_tree_view_page'
+            }
+        </field>
+    </record>
+
+    <menuitem id="menu_transaction_reschedule_phc" parent="tt_base.top_transaction_aftersales"
+              name="After Sales PHC" action="tt_reschedule_phc_action" sequence="13"/>
+
+</odoo>
