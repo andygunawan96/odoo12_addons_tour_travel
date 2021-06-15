@@ -64,14 +64,14 @@
                 <attribute name="edit">false</attribute>
             </xpath>
             <xpath expr="//button[@name='action_cancel']" position="after">
-                <button string="Confirm Order" name="%(tt_reservation_periksain.confirm_order_periksain_wizard_action_view)d" type="action" states="issued_pending"
+                <button string="Confirm Order" name="%(tt_reservation_periksain.confirm_order_periksain_wizard_action_view)d" type="action" states="issued"
                         groups="tt_base.group_external_vendor_periksain_level_2,tt_base.group_reservation_level_4"
                         context="{
                         'default_booking_id': id,
                    }"/>
             </xpath>
             <xpath expr="//field[@name='state']" position="replace">
-                <field name="state" widget="statusbar" statusbar_visible="draft,booked,issued_pending,issued,done"/>
+                <field name="state" widget="statusbar" statusbar_visible="draft,booked,issued,issued,done"/>
             </xpath>
             <xpath expr="//div[hasclass('oe_button_box')]" position="inside">
                 <button name="print_eticket"
@@ -107,14 +107,6 @@
                 <field name="analyst_ids"/>
             </xpath>
 
-            <xpath expr="//div[@name='booked_div']" position="after">
-                <field name="issued_pending_hold_date"/>
-                <label for="issued_pending_uid" string="Issued Pending By"/>
-                <div>
-                    <field name="issued_pending_uid" readonly="1" class="oe_inline"/> /
-                    <field name="issued_pending_date" readonly="1" class="oe_inline"/>
-                </div>
-            </xpath>
 
             <xpath expr="//page[@name='anchor']" position="before">
                 <page string="Passengers">
@@ -168,12 +160,12 @@
         <field name="arch" type="xml">
             <form create="false" edit="false">
                 <header>
-                    <button string="Confirm Order" name="%(tt_reservation_periksain.confirm_order_periksain_wizard_action_view)d" type="action" states="issued_pending"
+                    <button string="Confirm Order" name="%(tt_reservation_periksain.confirm_order_periksain_wizard_action_view)d" type="action" states="issued"
                             groups="tt_base.group_external_vendor_periksain_level_2"
                             context="{
                         'default_booking_id': id,
                    }"/>
-                    <field name="state" widget="statusbar" statusbar_visible="draft,booked,issued_pending,issued,done"/>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,booked,issued,done"/>
                 </header>
                 <sheet>
                     <div class="oe_title">
