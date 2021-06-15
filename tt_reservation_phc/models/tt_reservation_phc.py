@@ -190,7 +190,7 @@ class Reservationphc(models.Model):
             single_suplement = True
 
         if carrier_obj.id in [self.env.ref('tt_reservation_phc.tt_transport_carrier_phc_drive_thru_antigen').id,
-                              self.env.ref('tt_reservation_phc.tt_transport_carrier_phc_home_care_antigen').id]
+                              self.env.ref('tt_reservation_phc.tt_transport_carrier_phc_home_care_antigen').id]:
             base_price = BASE_PRICE_PER_PAX_ANTIGEN
         else:
             base_price = BASE_PRICE_PER_PAX_PCR
