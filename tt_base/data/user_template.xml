@@ -4580,7 +4580,7 @@
         <record id="template_external_user_phc_operator" model="res.users">
             <field name="name">Template External User PHC Operator</field>
             <field name="login">template_external_user_phc_operator</field>
-            <field name="password">wgz9W7ejsKMGZRsn8vMe</field>
+            <field name="password">WxwTCWH5Rgud4hMs5hqc</field>
             <field name="is_user_template" eval="True"/>
             <field name="groups_id"
                    eval="[(6,0,[ref('tt_base.group_tt_external_user'),
@@ -4609,7 +4609,7 @@
         <record id="template_external_user_phc_manager" model="res.users">
             <field name="name">Template External User PHC Manager</field>
             <field name="login">template_external_user_phc_manager</field>
-            <field name="password">YgKXnQ5Zy39sK6k53agP</field>
+            <field name="password">ppsyxZ5kJTsXtKrecwKq</field>
             <field name="is_user_template" eval="True"/>
             <field name="groups_id"
                    eval="[(6,0,[ref('tt_base.group_tt_external_user'),
