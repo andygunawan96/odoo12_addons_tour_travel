@@ -62,147 +62,150 @@
             </tr>
         </table>
 
-        <!-- Issued Code + Line Info -->
-        <div style="margin-bottom: 10px; margin-top: 20px;">
-            <span style="font-size: 28px; font-weight: 730">Old Segments</span><br/>
-        </div>
-        <table style="width: 100%; line-height: normal; border-collapse: separate; border-spacing: 0;">  <!--border-radius: 20px; border: 1px solid #CCC; border-spacing: 0; margin-bottom: 30px; padding: 5px 0px 5px 0px;-->
-            <tr t-att-style="'background-color: '+base_color+'; padding-top: 5px; padding-bottom: 5px'">
-                <th style="width: 3%; padding: 7px 7px 7px 20px; border-left: 1px solid #CCC; border-top-left-radius: 20px; color: white; font-weight: 800; font-size: 18px">
-                    <span>Sequence</span>
-                </th>
-                <th style="width: 10%; padding: 7px 7px 7px 20px; color: white; font-weight: 800; font-size: 18px">
-                    <span>Name</span>
-                </th>
-                <th style="width: 10%; padding: 7px 7px 7px 20px; color: white; font-weight: 800; font-size: 18px">
-                    <span>PNR</span>
-                </th>
-                <th style="width: 19.25%; padding: 7px 7px 7px 20px; color: white; font-weight: 800; font-size: 18px">
-                    <span>Origin</span>
-                </th>
-                <th style="width: 19.25%; padding: 7px 7px 7px 20px; color: white; font-weight: 800; font-size: 18px">
-                    <span>Destination</span>
-                </th>
-                <th style="width: 19.25%; padding: 7px 7px 7px 20px; color: white; font-weight: 800; font-size: 18px">
-                    <span>Departure Date</span>
-                </th>
-                <th style="width: 19.25%; padding: 7px 7px 7px 20px; border-right: 1px solid #CCC; border-top-right-radius: 20px; color: white; font-weight: 800; font-size: 18px">
-                    <span>Arrival Date</span>
-                </th>
-            </tr>
-            <t t-set="row_idx" t-value="0"/>
-            <t t-foreach="doc.old_segment_ids" t-as="seg">
-                <tr valign="top" style="padding-top: 5px; padding-bottom: 5px;">
-                    <t t-if="row_idx == len(doc.old_segment_ids)-1">
-                        <td style="background: #F0F0F0; width: 3%; border-left: 1px solid #ccc; border-bottom: 1px solid #ccc; border-right: 1px solid #ccc; border-radius: 0px 0px 0px 20px; border-color: #CCC; padding: 7px 7px 7px 20px;">
-                            <span t-esc="seg.id"/>
-                        </td>
-                    </t>
-                    <t t-else="">
-                        <td style="background: #F0F0F0; width: 3%; border-left: 1px solid #ccc; border-bottom: 1px solid #ccc; border-right: 1px solid #ccc; border-radius: 0px 0px 0px 0px; border-color: #CCC; padding: 7px 7px 7px 20px;">
-                            <span t-esc="seg.id"/>
-                        </td>
-                    </t>
-                    <td style="width: 10%; border-left: 1px solid #ccc; border-bottom: 1px solid #ccc; border-right: 1px solid #ccc; border-radius: 0px 0px 0px 0px; border-color: #CCC; padding: 7px 7px 7px 20px;">
-                        <span t-esc="seg.name"/>
-                    </td>
-                    <td style="width: 10%; border-left: 1px solid #ccc; border-bottom: 1px solid #ccc; border-right: 1px solid #ccc; border-radius: 0px 0px 0px 0px; border-color: #CCC; padding: 7px 7px 7px 20px;">
-                        <span t-esc="seg.pnr"/>
-                    </td>
-                    <td style="width: 19.25%; border-left: 1px solid #ccc; border-bottom: 1px solid #ccc; border-right: 1px solid #ccc; border-radius: 0px 0px 0px 0px; border-color: #CCC; padding: 7px 7px 7px 20px;">
-                        <span t-esc="seg.origin_id.display_name"/>
-                    </td>
-                    <td style="width: 19.25%; border-left: 1px solid #ccc; border-bottom: 1px solid #ccc; border-right: 1px solid #ccc; border-radius: 0px 0px 0px 0px; border-color: #CCC; padding: 7px 7px 7px 20px;">
-                        <span t-esc="seg.destination_id.display_name"/>
-                    </td>
-                    <td style="width: 19.25%; border-left: 1px solid #ccc; border-bottom: 1px solid #ccc; border-right: 1px solid #ccc; border-radius: 0px 0px 0px 0px; border-color: #CCC; padding: 7px 7px 7px 20px;">
-                        <span t-esc="seg.departure_date"/>
-                    </td>
-                    <t t-if="row_idx == len(doc.old_segment_ids)-1">
-                        <td style="width: 19.25%; border-left: 1px solid #ccc; border-bottom: 1px solid #ccc; border-right: 1px solid #ccc; border-radius: 0px 0px 20px 0px; border-color: #CCC; padding: 7px 7px 7px 20px;">
-                            <span t-esc="seg.arrival_date"/>
-                        </td>
-                    </t>
-                    <t t-else="">
-                        <td style="width: 19.25%; border-left: 1px solid #ccc; border-bottom: 1px solid #ccc; border-right: 1px solid #ccc; border-radius: 0px 0px 0px 0px; border-color: #CCC; padding: 7px 7px 7px 20px;">
-                            <span t-esc="seg.arrival_date"/>
-                        </td>
-                    </t>
+        <t t-if="doc._name == 'tt.reschedule'">
+            <!-- Issued Code + Line Info -->
+            <div style="margin-bottom: 10px; margin-top: 20px;">
+                <span style="font-size: 28px; font-weight: 730">Old Segments</span><br/>
+            </div>
+            <table style="width: 100%; line-height: normal; border-collapse: separate; border-spacing: 0;">  <!--border-radius: 20px; border: 1px solid #CCC; border-spacing: 0; margin-bottom: 30px; padding: 5px 0px 5px 0px;-->
+                <tr t-att-style="'background-color: '+base_color+'; padding-top: 5px; padding-bottom: 5px'">
+                    <th style="width: 3%; padding: 7px 7px 7px 20px; border-left: 1px solid #CCC; border-top-left-radius: 20px; color: white; font-weight: 800; font-size: 18px">
+                        <span>Sequence</span>
+                    </th>
+                    <th style="width: 10%; padding: 7px 7px 7px 20px; color: white; font-weight: 800; font-size: 18px">
+                        <span>Name</span>
+                    </th>
+                    <th style="width: 10%; padding: 7px 7px 7px 20px; color: white; font-weight: 800; font-size: 18px">
+                        <span>PNR</span>
+                    </th>
+                    <th style="width: 19.25%; padding: 7px 7px 7px 20px; color: white; font-weight: 800; font-size: 18px">
+                        <span>Origin</span>
+                    </th>
+                    <th style="width: 19.25%; padding: 7px 7px 7px 20px; color: white; font-weight: 800; font-size: 18px">
+                        <span>Destination</span>
+                    </th>
+                    <th style="width: 19.25%; padding: 7px 7px 7px 20px; color: white; font-weight: 800; font-size: 18px">
+                        <span>Departure Date</span>
+                    </th>
+                    <th style="width: 19.25%; padding: 7px 7px 7px 20px; border-right: 1px solid #CCC; border-top-right-radius: 20px; color: white; font-weight: 800; font-size: 18px">
+                        <span>Arrival Date</span>
+                    </th>
                 </tr>
-                <t t-set="row_idx" t-value="row_idx+1"/>
-            </t>
-        </table>
-        <br/>
-        <div style="margin-bottom: 10px; margin-top: 20px;">
-            <span style="font-size: 28px; font-weight: 730">New Segments</span><br/>
-        </div>
-        <table style="width: 100%; line-height: normal; border-collapse: separate; border-spacing: 0;">  <!--border-radius: 20px; border: 1px solid #CCC; border-spacing: 0; margin-bottom: 30px; padding: 5px 0px 5px 0px;-->
-            <tr t-att-style="'background-color: '+base_color+'; padding-top: 5px; padding-bottom: 5px'">
-                <th style="width: 3%; padding: 7px 7px 7px 20px; border-left: 1px solid #CCC; border-top-left-radius: 20px; color: white; font-weight: 800; font-size: 18px">
-                    <span>Sequence</span>
-                </th>
-                <th style="width: 10%; padding: 7px 7px 7px 20px; color: white; font-weight: 800; font-size: 18px">
-                    <span>Name</span>
-                </th>
-                <th style="width: 10%; padding: 7px 7px 7px 20px; color: white; font-weight: 800; font-size: 18px">
-                    <span>PNR</span>
-                </th>
-                <th style="width: 19.25%; padding: 7px 7px 7px 20px; color: white; font-weight: 800; font-size: 18px">
-                    <span>Origin</span>
-                </th>
-                <th style="width: 19.25%; padding: 7px 7px 7px 20px; color: white; font-weight: 800; font-size: 18px">
-                    <span>Destination</span>
-                </th>
-                <th style="width: 19.25%; padding: 7px 7px 7px 20px; color: white; font-weight: 800; font-size: 18px">
-                    <span>Departure Date</span>
-                </th>
-                <th style="width: 19.25%; padding: 7px 7px 7px 20px; border-right: 1px solid #CCC; border-top-right-radius: 20px; color: white; font-weight: 800; font-size: 18px">
-                    <span>Arrival Date</span>
-                </th>
-            </tr>
-            <t t-set="row_idx" t-value="0"/>
-            <t t-foreach="doc.new_segment_ids" t-as="seg">
-                <tr valign="top" style="padding-top: 5px; padding-bottom: 5px;">
-                    <t t-if="row_idx == len(doc.new_segment_ids)-1">
-                        <td style="background: #F0F0F0; width: 3%; border-left: 1px solid #ccc; border-bottom: 1px solid #ccc; border-right: 1px solid #ccc; border-radius: 0px 0px 0px 20px; border-color: #CCC; padding: 7px 7px 7px 20px;">
-                            <span t-esc="seg.old_id"/>
+                <t t-set="row_idx" t-value="0"/>
+                <t t-foreach="doc.old_segment_ids" t-as="seg">
+                    <tr valign="top" style="padding-top: 5px; padding-bottom: 5px;">
+                        <t t-if="row_idx == len(doc.old_segment_ids)-1">
+                            <td style="background: #F0F0F0; width: 3%; border-left: 1px solid #ccc; border-bottom: 1px solid #ccc; border-right: 1px solid #ccc; border-radius: 0px 0px 0px 20px; border-color: #CCC; padding: 7px 7px 7px 20px;">
+                                <span t-esc="seg.id"/>
+                            </td>
+                        </t>
+                        <t t-else="">
+                            <td style="background: #F0F0F0; width: 3%; border-left: 1px solid #ccc; border-bottom: 1px solid #ccc; border-right: 1px solid #ccc; border-radius: 0px 0px 0px 0px; border-color: #CCC; padding: 7px 7px 7px 20px;">
+                                <span t-esc="seg.id"/>
+                            </td>
+                        </t>
+                        <td style="width: 10%; border-left: 1px solid #ccc; border-bottom: 1px solid #ccc; border-right: 1px solid #ccc; border-radius: 0px 0px 0px 0px; border-color: #CCC; padding: 7px 7px 7px 20px;">
+                            <span t-esc="seg.name"/>
                         </td>
-                    </t>
-                    <t t-else="">
-                        <td style="background: #F0F0F0; width: 3%; border-left: 1px solid #ccc; border-bottom: 1px solid #ccc; border-right: 1px solid #ccc; border-radius: 0px 0px 0px 0px; border-color: #CCC; padding: 7px 7px 7px 20px;">
-                            <span t-esc="seg.old_id"/>
+                        <td style="width: 10%; border-left: 1px solid #ccc; border-bottom: 1px solid #ccc; border-right: 1px solid #ccc; border-radius: 0px 0px 0px 0px; border-color: #CCC; padding: 7px 7px 7px 20px;">
+                            <span t-esc="seg.pnr"/>
                         </td>
-                    </t>
-                    <td style="width: 10%; border-left: 1px solid #ccc; border-bottom: 1px solid #ccc; border-right: 1px solid #ccc; border-radius: 0px 0px 0px 0px; border-color: #CCC; padding: 7px 7px 7px 20px;">
-                        <span t-esc="seg.name"/>
-                    </td>
-                    <td style="width: 10%; border-left: 1px solid #ccc; border-bottom: 1px solid #ccc; border-right: 1px solid #ccc; border-radius: 0px 0px 0px 0px; border-color: #CCC; padding: 7px 7px 7px 20px;">
-                        <span t-esc="seg.pnr"/>
-                    </td>
-                    <td style="width: 19.25%; border-left: 1px solid #ccc; border-bottom: 1px solid #ccc; border-right: 1px solid #ccc; border-radius: 0px 0px 0px 0px; border-color: #CCC; padding: 7px 7px 7px 20px;">
-                        <span t-esc="seg.origin_id.display_name"/>
-                    </td>
-                    <td style="width: 19.25%; border-left: 1px solid #ccc; border-bottom: 1px solid #ccc; border-right: 1px solid #ccc; border-radius: 0px 0px 0px 0px; border-color: #CCC; padding: 7px 7px 7px 20px;">
-                        <span t-esc="seg.destination_id.display_name"/>
-                    </td>
-                    <td style="width: 19.25%; border-left: 1px solid #ccc; border-bottom: 1px solid #ccc; border-right: 1px solid #ccc; border-radius: 0px 0px 0px 0px; border-color: #CCC; padding: 7px 7px 7px 20px;">
-                        <span t-esc="seg.departure_date"/>
-                    </td>
-                    <t t-if="row_idx == len(doc.new_segment_ids)-1">
-                        <td style="width: 19.25%; border-left: 1px solid #ccc; border-bottom: 1px solid #ccc; border-right: 1px solid #ccc; border-radius: 0px 0px 20px 0px; border-color: #CCC; padding: 7px 7px 7px 20px;">
-                            <span t-esc="seg.arrival_date"/>
-                        </td>
-                    </t>
-                    <t t-else="">
                         <td style="width: 19.25%; border-left: 1px solid #ccc; border-bottom: 1px solid #ccc; border-right: 1px solid #ccc; border-radius: 0px 0px 0px 0px; border-color: #CCC; padding: 7px 7px 7px 20px;">
-                            <span t-esc="seg.arrival_date"/>
+                            <span t-esc="seg.origin_id.display_name"/>
                         </td>
-                    </t>
+                        <td style="width: 19.25%; border-left: 1px solid #ccc; border-bottom: 1px solid #ccc; border-right: 1px solid #ccc; border-radius: 0px 0px 0px 0px; border-color: #CCC; padding: 7px 7px 7px 20px;">
+                            <span t-esc="seg.destination_id.display_name"/>
+                        </td>
+                        <td style="width: 19.25%; border-left: 1px solid #ccc; border-bottom: 1px solid #ccc; border-right: 1px solid #ccc; border-radius: 0px 0px 0px 0px; border-color: #CCC; padding: 7px 7px 7px 20px;">
+                            <span t-esc="seg.departure_date"/>
+                        </td>
+                        <t t-if="row_idx == len(doc.old_segment_ids)-1">
+                            <td style="width: 19.25%; border-left: 1px solid #ccc; border-bottom: 1px solid #ccc; border-right: 1px solid #ccc; border-radius: 0px 0px 20px 0px; border-color: #CCC; padding: 7px 7px 7px 20px;">
+                                <span t-esc="seg.arrival_date"/>
+                            </td>
+                        </t>
+                        <t t-else="">
+                            <td style="width: 19.25%; border-left: 1px solid #ccc; border-bottom: 1px solid #ccc; border-right: 1px solid #ccc; border-radius: 0px 0px 0px 0px; border-color: #CCC; padding: 7px 7px 7px 20px;">
+                                <span t-esc="seg.arrival_date"/>
+                            </td>
+                        </t>
+                    </tr>
+                    <t t-set="row_idx" t-value="row_idx+1"/>
+                </t>
+            </table>
+            <br/>
+            <div style="margin-bottom: 10px; margin-top: 20px;">
+                <span style="font-size: 28px; font-weight: 730">New Segments</span><br/>
+            </div>
+            <table style="width: 100%; line-height: normal; border-collapse: separate; border-spacing: 0;">  <!--border-radius: 20px; border: 1px solid #CCC; border-spacing: 0; margin-bottom: 30px; padding: 5px 0px 5px 0px;-->
+                <tr t-att-style="'background-color: '+base_color+'; padding-top: 5px; padding-bottom: 5px'">
+                    <th style="width: 3%; padding: 7px 7px 7px 20px; border-left: 1px solid #CCC; border-top-left-radius: 20px; color: white; font-weight: 800; font-size: 18px">
+                        <span>Sequence</span>
+                    </th>
+                    <th style="width: 10%; padding: 7px 7px 7px 20px; color: white; font-weight: 800; font-size: 18px">
+                        <span>Name</span>
+                    </th>
+                    <th style="width: 10%; padding: 7px 7px 7px 20px; color: white; font-weight: 800; font-size: 18px">
+                        <span>PNR</span>
+                    </th>
+                    <th style="width: 19.25%; padding: 7px 7px 7px 20px; color: white; font-weight: 800; font-size: 18px">
+                        <span>Origin</span>
+                    </th>
+                    <th style="width: 19.25%; padding: 7px 7px 7px 20px; color: white; font-weight: 800; font-size: 18px">
+                        <span>Destination</span>
+                    </th>
+                    <th style="width: 19.25%; padding: 7px 7px 7px 20px; color: white; font-weight: 800; font-size: 18px">
+                        <span>Departure Date</span>
+                    </th>
+                    <th style="width: 19.25%; padding: 7px 7px 7px 20px; border-right: 1px solid #CCC; border-top-right-radius: 20px; color: white; font-weight: 800; font-size: 18px">
+                        <span>Arrival Date</span>
+                    </th>
                 </tr>
-                <t t-set="row_idx" t-value="row_idx+1"/>
-            </t>
-        </table>
-        <br/>
+                <t t-set="row_idx" t-value="0"/>
+                <t t-foreach="doc.new_segment_ids" t-as="seg">
+                    <tr valign="top" style="padding-top: 5px; padding-bottom: 5px;">
+                        <t t-if="row_idx == len(doc.new_segment_ids)-1">
+                            <td style="background: #F0F0F0; width: 3%; border-left: 1px solid #ccc; border-bottom: 1px solid #ccc; border-right: 1px solid #ccc; border-radius: 0px 0px 0px 20px; border-color: #CCC; padding: 7px 7px 7px 20px;">
+                                <span t-esc="seg.old_id"/>
+                            </td>
+                        </t>
+                        <t t-else="">
+                            <td style="background: #F0F0F0; width: 3%; border-left: 1px solid #ccc; border-bottom: 1px solid #ccc; border-right: 1px solid #ccc; border-radius: 0px 0px 0px 0px; border-color: #CCC; padding: 7px 7px 7px 20px;">
+                                <span t-esc="seg.old_id"/>
+                            </td>
+                        </t>
+                        <td style="width: 10%; border-left: 1px solid #ccc; border-bottom: 1px solid #ccc; border-right: 1px solid #ccc; border-radius: 0px 0px 0px 0px; border-color: #CCC; padding: 7px 7px 7px 20px;">
+                            <span t-esc="seg.name"/>
+                        </td>
+                        <td style="width: 10%; border-left: 1px solid #ccc; border-bottom: 1px solid #ccc; border-right: 1px solid #ccc; border-radius: 0px 0px 0px 0px; border-color: #CCC; padding: 7px 7px 7px 20px;">
+                            <span t-esc="seg.pnr"/>
+                        </td>
+                        <td style="width: 19.25%; border-left: 1px solid #ccc; border-bottom: 1px solid #ccc; border-right: 1px solid #ccc; border-radius: 0px 0px 0px 0px; border-color: #CCC; padding: 7px 7px 7px 20px;">
+                            <span t-esc="seg.origin_id.display_name"/>
+                        </td>
+                        <td style="width: 19.25%; border-left: 1px solid #ccc; border-bottom: 1px solid #ccc; border-right: 1px solid #ccc; border-radius: 0px 0px 0px 0px; border-color: #CCC; padding: 7px 7px 7px 20px;">
+                            <span t-esc="seg.destination_id.display_name"/>
+                        </td>
+                        <td style="width: 19.25%; border-left: 1px solid #ccc; border-bottom: 1px solid #ccc; border-right: 1px solid #ccc; border-radius: 0px 0px 0px 0px; border-color: #CCC; padding: 7px 7px 7px 20px;">
+                            <span t-esc="seg.departure_date"/>
+                        </td>
+                        <t t-if="row_idx == len(doc.new_segment_ids)-1">
+                            <td style="width: 19.25%; border-left: 1px solid #ccc; border-bottom: 1px solid #ccc; border-right: 1px solid #ccc; border-radius: 0px 0px 20px 0px; border-color: #CCC; padding: 7px 7px 7px 20px;">
+                                <span t-esc="seg.arrival_date"/>
+                            </td>
+                        </t>
+                        <t t-else="">
+                            <td style="width: 19.25%; border-left: 1px solid #ccc; border-bottom: 1px solid #ccc; border-right: 1px solid #ccc; border-radius: 0px 0px 0px 0px; border-color: #CCC; padding: 7px 7px 7px 20px;">
+                                <span t-esc="seg.arrival_date"/>
+                            </td>
+                        </t>
+                    </tr>
+                    <t t-set="row_idx" t-value="row_idx+1"/>
+                </t>
+            </table>
+            <br/>
+        </t>
+
         <div style="margin-bottom: 10px; margin-top: 20px;">
             <span style="font-size: 28px; font-weight: 730">Applied Changes</span><br/>
         </div>

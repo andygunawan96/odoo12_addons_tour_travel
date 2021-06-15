@@ -1,9 +1,8 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <odoo>
-
-    <record id="tt_reschedule_filter_view" model="ir.ui.view">
-        <field name="name">tt.reschedule.filter.view</field>
-        <field name="model">tt.reschedule</field>
+    <record id="tt_reschedule_periksain_filter_view" model="ir.ui.view">
+        <field name="name">tt.reschedule.periksain.filter.view</field>
+        <field name="model">tt.reschedule.periksain</field>
         <field name="arch" type="xml">
             <search string="Search After Sales">
                 <field name="name"/>
@@ -49,9 +48,9 @@
         </field>
     </record>
 
-    <record id="tt_reschedule_form_view" model="ir.ui.view">
-        <field name="name">tt.reschedule.form.view</field>
-        <field name="model">tt.reschedule</field>
+    <record id="tt_reschedule_periksain_form_view" model="ir.ui.view">
+        <field name="name">tt.reschedule.periksain.form.view</field>
+        <field name="model">tt.reschedule.periksain</field>
         <field name="arch" type="xml">
             <form create="false">
                 <header>
@@ -65,7 +64,7 @@
                     <button string="Adjustment" name="%(tt_accounting.tt_adjustment_wizard_action_view)d" type="action"
                             groups="tt_base.group_adjustment_level_3"
                             context="{
-                        'default_res_model': 'tt.reschedule',
+                        'default_res_model': 'tt.reschedule.periksain',
                         'default_res_id': id,
                         'default_agent_id': agent_id,
                         'default_referenced_document': name,
@@ -163,94 +162,16 @@
                             <field name="new_fee_notes"/>
                         </group>
                     </group>
+                    <group string="Picked Timeslot">
+                        <group>
+                            <field name="old_picked_timeslot_id"/>
+                        </group>
+                        <group>
+                            <field name="new_picked_timeslot_id"/>
+                        </group>
+                    </group>
                     <notebook colspan="4" name="notebooks_segment">
                         <page string="Segments" name="segment_page">
-                            <separator string="Old Segments"/>
-                            <field name="old_segment_ids">
-                                <tree create="false" delete="false">
-                                    <field name="id" string="Sequence" style="width:5%"/>
-                                    <field name="name"/>
-                                    <field name="pnr"/>
-                                    <field name="provider_id" groups="tt_base.group_tt_tour_travel"/>
-                                    <field name="origin_id"/>
-                                    <field name="destination_id"/>
-                                    <field name="departure_date"/>
-                                    <field name="arrival_date"/>
-                                </tree>
-                                <form>
-                                    <sheet>
-                                        <group>
-                                            <group>
-                                                <field name="pnr"/>
-                                                <!--<field name="booking_id" invisible="1"/>-->
-                                                <field name="booking_id"/>
-                                                <field name="journey_id"/>
-                                                <field name="segment_code"/>
-                                                <field name="fare_code"/>
-                                                <field name="sequence"/>
-                                            </group>
-                                            <group>
-                                                <field name="carrier_id"/>
-                                                <field name="carrier_code"/>
-                                                <field name="carrier_number"/>
-                                            </group>
-                                        </group>
-                                        <group>
-                                            <group>
-                                                <!--<field name="agent_id"/>-->
-                                                <field name="name"/>
-                                                <field name="provider_id"/>
-                                            </group>
-                                            <group>
-
-                                            </group>
-                                        </group>
-                                        <group>
-                                            <separator colspan="6" string="Booking"/>
-                                            <group>
-                                                <field name="origin_id"/>
-                                                <field name="departure_date"/>
-                                            </group>
-                                            <group>
-                                                <field name="destination_id"/>
-                                                <field name="arrival_date"/>
-                                            </group>
-                                        </group>
-                                        <group>
-                                            <group>
-                                            </group>
-                                            <group>
-                                                <field name="cabin_class"/>
-                                                <field name="class_of_service"/>
-                                            </group>
-                                        </group>
-                                        <separator colspan="6" string="Seats"/>
-                                        <field name="seat_ids">
-                                            <tree>
-                                                <field name="passenger_id"/>
-                                                <field name="seat"/>
-                                            </tree>
-                                        </field>
-                                        <separator colspan="6" string="Legs"/>
-                                        <field name="leg_ids"/>
-                                        <separator string="Addons"/>
-                                        <field name="segment_addons_ids"/>
-                                    </sheet>
-                                </form>
-                            </field>
-                            <separator string="New Segments"/>
-                            <field name="new_segment_ids">
-                                <tree create="false" delete="false">
-                                    <field name="old_id" style="width:5%"/>
-                                    <field name="name"/>
-                                    <field name="pnr"/>
-                                    <field name="provider_id" groups="tt_base.group_tt_tour_travel"/>
-                                    <field name="origin_id"/>
-                                    <field name="destination_id"/>
-                                    <field name="departure_date"/>
-                                    <field name="arrival_date"/>
-                                </tree>
-                            </field>
                             <button name="generate_changes" string="Generate Changes" type="object" attrs="{'invisible':['|', ('state','not in', ['draft', 'confirm']), ('created_by_api','=', True)]}"/>
                             <separator string="Changes" attrs="{'invisible':[('created_by_api','=', True)]}"/>
                             <field name="change_ids" attrs="{'invisible':[('created_by_api','=', True)]}">
@@ -322,9 +243,9 @@
         </field>
     </record>
 
-    <record id="tt_reschedule_tree_view_page" model="ir.ui.view">
-        <field name="name">tt.reschedule.tree.view.page</field>
-        <field name="model">tt.reschedule</field>
+    <record id="tt_reschedule_periksain_tree_view_page" model="ir.ui.view">
+        <field name="name">tt.reschedule.periksain.tree.view.page</field>
+        <field name="model">tt.reschedule.periksain</field>
         <field name="arch" type="xml">
             <tree create="false">
                 <field name="create_date"/>
@@ -345,20 +266,20 @@
         </field>
     </record>
 
-    <record id="tt_reschedule_action" model="ir.actions.act_window">
+    <record id="tt_reschedule_periksain_action" model="ir.actions.act_window">
         <field name="name">After Sales</field>
-        <field name="res_model">tt.reschedule</field>
+        <field name="res_model">tt.reschedule.periksain</field>
         <field name="view_type">form</field>
         <field name="view_mode">tree,form</field>
         <field name="context">
             {
-            'form_view_ref': 'tt_reschedule.tt_reschedule_form_view',
-            'tree_view_ref': 'tt_reschedule.tt_reschedule_tree_view_page'
+            'form_view_ref': 'tt_reschedule_periksain.tt_reschedule_periksain_form_view',
+            'tree_view_ref': 'tt_reschedule_periksain.tt_reschedule_periksain_tree_view_page'
             }
         </field>
     </record>
 
-    <menuitem id="menu_transaction_reschedule" parent="tt_base.top_transaction_aftersales"
-              name="After Sales Airline" action="tt_reschedule_action" sequence="11"/>
+    <menuitem id="menu_transaction_reschedule_periksain" parent="tt_base.top_transaction_aftersales"
+              name="After Sales Periksain" action="tt_reschedule_periksain_action" sequence="12"/>
 
 </odoo>
