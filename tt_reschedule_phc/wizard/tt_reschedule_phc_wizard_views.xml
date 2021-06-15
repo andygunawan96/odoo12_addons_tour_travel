@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="tt_reschedule_phc_wizard_form_view" model="ir.ui.view">
+        <field name="name">Reschedule Wizard</field>
+        <field name="model">tt.reschedule.phc.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Reschedule Wizard">
+                <group>
+                    <field name="agent_id"/>
+                    <field name="agent_type_id"/>
+                    <field name="customer_parent_id"/>
+                    <field name="customer_parent_type_id"/>
+                    <field name="currency_id"/>
+                    <field name="service_type"/>
+                    <field name="referenced_document"/>
+                    <field name="res_model" groups="base.group_system"/>
+                    <field name="res_id" groups="base.group_system"/>
+                    <field name="notes"/>
+                </group>
+                <separator string="Timeslot"/>
+                <group>
+                    <group>
+                        <field name="old_picked_timeslot_id"/>
+                    </group>
+                    <group>
+                        <field name="new_picked_timeslot_id"/>
+                    </group>
+                </group>
+                <separator string="Passengers"/>
+                <field name="passenger_ids"/>
+                <footer>
+                    <button name="submit_reschedule" string="Create" type="object" default_focus="1" class="oe_highlight"/>
+                    or
+                    <button string="Cancel" class="oe_link" special="cancel" />
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="tt_reschedule_phc_wizard_action_view" model="ir.actions.act_window">
+        <field name="name">Reschedule Preview Wizard</field>
+        <field name="res_model">tt.reschedule.phc.wizard</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+
+</odoo>
