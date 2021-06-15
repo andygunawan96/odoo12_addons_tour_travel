@@ -223,7 +223,7 @@ class HotelInformation(models.Model):
                 })
                 _logger.info('Create External ID {} with id {}'.format(data[1], str(new_obj.id)))
             else:
-                _logger.info('External ID {} already Exist in {} with id {}'.format(code, old_obj.res_model, str(old_obj.res_id)))
+                _logger.info('External ID {} already Exist in {} with id {}'.format(data[1], old_obj.res_model, str(old_obj.res_id)))
         _logger.info('Render Done')
         return True
 
