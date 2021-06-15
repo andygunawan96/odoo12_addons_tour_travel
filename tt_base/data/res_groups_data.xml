@@ -2405,9 +2405,11 @@
 
         <!--     LINK kan group yg baru dibuat dengan ADMIN-->
 
-        <record id="base.group_system" model="res.users">
+        <record id="base.user_admin" model="res.users">
             <field name="groups_id"
-                   eval="[(6,0,[ref('tt_base.group_tt_tour_travel'),
+                   eval="[(6,0,[
+                               ref('base.group_system'),
+                               ref('tt_base.group_tt_tour_travel'),
                                ref('tt_base.group_master_data_hotel_level_5'),
                                ref('tt_base.group_master_data_passport_level_5'),
                                ref('tt_base.group_master_data_visa_level_5'),
@@ -2480,7 +2482,9 @@
 
         <record id="base.user_root" model="res.users">
             <field name="groups_id"
-                   eval="[(6,0,[ref('tt_base.group_tt_tour_travel'),
+                   eval="[(6,0,[
+                               ref('base.group_system'),
+                               ref('tt_base.group_tt_tour_travel'),
                                ref('tt_base.group_master_data_hotel_level_5'),
                                ref('tt_base.group_master_data_passport_level_5'),
                                ref('tt_base.group_master_data_visa_level_5'),
