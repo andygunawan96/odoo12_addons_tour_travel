@@ -143,32 +143,6 @@ class Reservationphc(models.Model):
     def action_issued_api_phc(self,acquirer_id,customer_parent_id,context):
         self.action_issued_phc(context['co_uid'],customer_parent_id,acquirer_id)
 
-    def action_issued_phc(self,context):
-        values = {
-            'state': 'issued',
-            'issued_date': datetime.now(),
-            'issued_uid': context.get('co_uid', False)
-        }
-        self.write(values)
-
-        try:
-            mail_created = self.env['tt.email.queue'].sudo().with_context({'active_test':False}).search([('res_id', '=', self.id), ('res_model', '=', self._name), ('type', '=', 'issued_final_phc')], limit=1)
-            if not mail_created:
-                temp_data = {
-                    'provider_type': 'phc',
-                    'order_number': self.name,
-                    'type': 'issued_final',
-                }
-                temp_context = {
-                    'co_agent_id': self.agent_id.id
-                }
-                self.env['tt.email.queue'].create_email_queue(temp_data, temp_context)
-            else:
-                _logger.info('Issued Final email for {} is already created!'.format(self.name))
-                raise Exception('Issued Final email for {} is already created!'.format(self.name))
-        except Exception as e:
-            _logger.info('Error Create Email Queue')
-
     @api.multi
     def action_set_as_cancel(self):
         for rec in self:
