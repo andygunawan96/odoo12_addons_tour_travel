@@ -7,6 +7,9 @@
             <field name="code">PHCHCKATG</field>
             <field name="icao">PHCHCKATG</field>
             <field name="call_sign">phc Home Care ANTIGEN</field>
+            <field name="adult_length_name">80</field>
+            <field name="child_length_name">80</field>
+            <field name="infant_length_name">80</field>
             <field name="active">1</field>
             <field name="provider_type_id" ref="tt_reservation_phc.tt_provider_type_phc"/>
         </record>
@@ -16,6 +19,9 @@
             <field name="code">PHCDTKATG</field>
             <field name="icao">PHCDTKATG</field>
             <field name="call_sign">phc Drive Thru ANTIGEN</field>
+            <field name="adult_length_name">80</field>
+            <field name="child_length_name">80</field>
+            <field name="infant_length_name">80</field>
             <field name="active">1</field>
             <field name="provider_type_id" ref="tt_reservation_phc.tt_provider_type_phc"/>
         </record>

@@ -6,7 +6,7 @@
         <!-- Airline -->
         <menuitem id="top_reservations_phc"
                   parent="tt_reservation.main_reservations"
-                  name="phc"
+                  name="PHC"
                   sequence="45"
                   groups="base.group_user"/>
         

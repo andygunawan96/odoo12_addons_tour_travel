@@ -575,7 +575,7 @@ class Reservationphc(models.Model):
                             'foreign_amount': 0,
                             'total': 0
                         })
-                    c_type = p_charge_typesued
+                    c_type = p_charge_type
                     c_code = p_charge_type.lower()
                 elif p_charge_type == 'RAC':
                     if not sc_value[p_pax_type].get(p_charge_code):
