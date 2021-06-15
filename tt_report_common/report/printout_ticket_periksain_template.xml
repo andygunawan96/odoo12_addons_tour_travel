@@ -96,25 +96,28 @@
             </div>
             <div style="border: 1px solid #BBB; margin-bottom: 5px; margin-left: 15px; margin-right: 15px"/>
             <t t-set="psg_index" t-value="0"/>
-            <t t-foreach="doc.passenger_ids" t-as="psg">
-                <div class="row" style="margin-left: 0px; margin-right: 0px">
-                    <div class="col-1" style="text-align: center">
-                        <label style="font-weight:450; font-size:17px; margin-bottom: 0px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"><span t-esc="psg_index+1"/>.</label>
+            <t t-foreach="doc.provider_ids" t-as="prov">
+                <t t-foreach="prov.ticket_ids" t-as="ticket">
+                    <t t-set="psg" t-value="ticket.passenger_id"/>
+                    <div class="row" style="margin-left: 0px; margin-right: 0px">
+                        <div class="col-1" style="text-align: center">
+                            <label style="font-weight:450; font-size:17px; margin-bottom: 0px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"><span t-esc="psg_index+1"/>.</label>
+                        </div>
+                        <div class="col-4" style="text-align: left">
+                            <label style="font-weight:450; font-size:17px; margin-bottom: 0px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"><span t-field="psg.title"/> <span t-field="psg.name"/></label>
+                        </div>
+                        <div class="col-2" style="text-align: center">
+                            <label style="font-weight:450; font-size:17px; margin-bottom: 0px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"><span t-field="psg.phone_number"/></label>
+                        </div>
+                        <div class="col-2" style="text-align: center">
+                            <label style="font-weight:450; font-size:17px; margin-bottom: 0px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"><span t-field="psg.email"/></label>
+                        </div>
+                        <div class="col-3" style="text-align: center">
+                            <label style="font-weight:450; font-size:17px; margin-bottom: 0px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"><t t-if="ticket.ticket_number"><span t-field="ticket.ticket_number"/></t><t t-else="">-</t></label>
+<!--                            <label style="font-weight:450; font-size:17px; margin-bottom: 0px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">-</label>-->
+                        </div>
                     </div>
-                    <div class="col-4" style="text-align: left">
-                        <label style="font-weight:450; font-size:17px; margin-bottom: 0px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"><span t-field="psg.title"/> <span t-field="psg.name"/></label>
-                    </div>
-                    <div class="col-2" style="text-align: center">
-                        <label style="font-weight:450; font-size:17px; margin-bottom: 0px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"><span t-field="psg.phone_number"/></label>
-                    </div>
-                    <div class="col-2" style="text-align: center">
-                        <label style="font-weight:450; font-size:17px; margin-bottom: 0px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"><span t-field="psg.email"/></label>
-                    </div>
-                    <div class="col-3" style="text-align: center">
-<!--                        <label style="font-weight:450; font-size:17px; margin-bottom: 0px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"><t t-if="psg.ticket_number"><span t-field="psg.ticket_number"/></t><t t-else="">-</t></label>-->
-                        <label style="font-weight:450; font-size:17px; margin-bottom: 0px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">-</label>
-                    </div>
-                </div>
+                </t>
             </t>
             <div style="margin-bottom: 5px"/>
         </div>
