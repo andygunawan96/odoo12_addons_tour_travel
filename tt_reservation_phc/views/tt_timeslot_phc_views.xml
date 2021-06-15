@@ -74,8 +74,8 @@
 
     <menuitem id="menu_vendor_master_data_phc_timeslot"
               parent="tt_base.top_external_vendor_master_product"
-              name="phc Timeslot"
-              sequence="35"
+              name="PHC Timeslot"
+              sequence="45"
               groups="tt_base.group_master_data_phc_level_1"
               action="tt_reservation_phc.tt_timeslot_phc_action_views"
     />
