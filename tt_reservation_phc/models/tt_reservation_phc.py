@@ -186,7 +186,8 @@ class Reservationphc(models.Model):
         carrier_obj = self.env['tt.transport.carrier'].search([('code','=',req['carrier_code'])])
         single_suplement = False
         if req['pax_count'] <= 1 and \
-                carrier_obj.id != self.env.ref('tt_reservation_phc.tt_transport_carrier_phc_drive_thru_antigen').id:
+                carrier_obj.id not in [self.env.ref('tt_reservation_phc.tt_transport_carrier_phc_drive_thru_antigen').id,
+                                    self.env.ref('tt_reservation_phc.tt_transport_carrier_phc_drive_thru_pcr').id]:
             single_suplement = True
 
         if carrier_obj.id in [self.env.ref('tt_reservation_phc.tt_transport_carrier_phc_drive_thru_antigen').id,
