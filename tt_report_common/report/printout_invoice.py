@@ -130,11 +130,11 @@ class PrintoutTicketForm(models.AbstractModel):
                     #             a[provider.pnr][len(a[provider.pnr])-1]['tax'] += rec2.total
 
             for ssr_per_pax in rec.passenger_ids:
-                ssr_obj = {
-                    'name': ssr_per_pax.title + '. ' + ssr_per_pax.name,
-                    'ssr': [],
-                }
                 if hasattr(ssr_per_pax, 'fee_ids'):
+                    ssr_obj = {
+                        'name': ssr_per_pax.title + '. ' + ssr_per_pax.name,
+                        'ssr': [],
+                    }
                     for rec2 in ssr_per_pax.fee_ids:
                         ssr_obj['ssr'].append({
                             'name': rec2.name,
@@ -144,7 +144,7 @@ class PrintoutTicketForm(models.AbstractModel):
                             'description': isinstance(rec2.description, list) and ', '.join(rec2.description) or rec2.description,
                             'pnr': rec2.provider_id.pnr
                         })
-                ssr_list.append(ssr_obj)
+                    ssr_list.append(ssr_obj)
             values[rec.id] = [a[new_a] for new_a in a]
             pnr_length = len(rec.pnr)
             agent_id = rec.agent_id
@@ -837,13 +837,16 @@ class PrintoutInvoiceHO(models.AbstractModel):
                         'total': rec.total / len(rec.passenger_ids),
                     })
         elif rec._name in ['tt.reservation.periksain','tt.reservation.phc']:
+            descs = ['Address:' + rec.test_address,]
+            if rec.timeslot_ids:
+                descs.append('Est Date:' + str(rec.timeslot_ids[0].datetimeslot.astimezone(pytz.timezone('Asia/Jakarta')).strftime('%Y-%m-%d %H:%M')))
             a[rec.name] = {
                 'model': rec._name,
                 'pax_data': [{
                     'name': rec2.title + ' ' + rec2.name,
                     'total': sum([rec3.total for rec3 in rec2.cost_service_charge_ids if rec3.charge_type != 'RAC'])
                 } for rec2 in rec.passenger_ids],
-                'descs': ['Est Date:' + str(rec.timeslot_ids[0].datetimeslot.astimezone(pytz.timezone('Asia/Jakarta')).strftime('%Y-%m-%d %H:%M')), 'Address:' + rec.test_address,],
+                'descs': descs,
                 'provider_type': rec.provider_type_id.name
             }
             # a[issued_name]['descs'].append(self.get_description(rec, data))

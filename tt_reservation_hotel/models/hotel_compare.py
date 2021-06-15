@@ -440,7 +440,7 @@ class HotelInformation(models.Model):
         base_url = self.sudo().env['ir.config_parameter'].get_param('web.base.url')
         client_action = {
             'type': 'ir.actions.act_url',
-            'target': 'self',
+            'target': 'current',
             'url': base_url + "/web#id=" + str(compare_id.id) + "&view_type=form&model=tt.hotel.compare",
         }
         return client_action
