@@ -4,6 +4,7 @@ import logging, traceback,pytz
 from datetime import datetime, timedelta, date
 from odoo.exceptions import UserError
 from calendar import monthrange
+import os,json
 
 _logger = logging.getLogger(__name__)
 
@@ -380,6 +381,13 @@ class TtReportDashboard(models.Model):
                 'provider': self.env['report.tt_report_dashboard.overall'].get_provider_all(),
                 'form_data': data
             }
+        ## save file for log purpose
+        folder_path = '/var/log/tour_travel/report_dashboard'
+        if not os.path.exists(folder_path):
+            os.mkdir(folder_path)
+        file = open('%s/report_response_%s.json' % (folder_path,datetime.now().strftime('%Y-%m-%d_%H:%M:%S')),'w')
+        file.write(json.dumps(res))
+        file.close()
         return ERR.get_no_error(res)
 
     def get_report_xls_api(self, data,  context):
