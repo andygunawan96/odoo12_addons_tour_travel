@@ -49,7 +49,7 @@ class TtReschedulePeriksain(models.Model):
                 'reschedule_id': self.id,
                 'seg_sequence': 1,
                 'name': 'Picked Timeslot',
-                'old_value': str(self.old_picked_timeslot_id.datetimeslot.astimezone(pytz.timezone('Asia/Jakarta')))[:19],
-                'new_value': str(self.new_picked_timeslot_id.datetimeslot.astimezone(pytz.timezone('Asia/Jakarta')))[:19]
+                'old_value': self.old_picked_timeslot_id and str(self.old_picked_timeslot_id.datetimeslot.astimezone(pytz.timezone('Asia/Jakarta')))[:19] or '',
+                'new_value': self.new_picked_timeslot_id and str(self.new_picked_timeslot_id.datetimeslot.astimezone(pytz.timezone('Asia/Jakarta')))[:19] or ''
             }
             self.env['tt.reschedule.periksain.changes'].sudo().create(change_vals)
