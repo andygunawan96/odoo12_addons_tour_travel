@@ -329,6 +329,8 @@ class TtReportDashboard(models.Model):
             res = self.get_report_overall_offline(data, is_ho)
         elif type == 'overall_ppob':
             res = self.get_report_overall_ppob(data, is_ho)
+        # elif type == 'overall_phc':
+        #     res = self.get_report_overall_ppob(data, is_ho)
         elif type == 'overall_passport':
             res = self.get_report_overall_passport(data, is_ho)
 
@@ -5065,7 +5067,7 @@ class TtReportDashboard(models.Model):
     # is_ho = ho checker from main function
     def get_report_overall_ppob(self, data, is_ho):
         try:
-            # process datetime to GMT 0
+            # process datetime to GMT
             # convert string to datetime
             start_date = self.convert_to_datetime(data['start_date'])
             end_date = self.convert_to_datetime(data['end_date'])
