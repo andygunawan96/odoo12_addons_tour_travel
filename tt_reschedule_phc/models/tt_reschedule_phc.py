@@ -37,6 +37,9 @@ class TtReschedulePHC(models.Model):
     old_picked_timeslot_id = fields.Many2one('tt.timeslot.phc', 'Old Picked Timeslot', readonly=True)
     new_picked_timeslot_id = fields.Many2one('tt.timeslot.phc', 'New Picked Timeslot', readonly=True, states={'draft': [('readonly', False)]})
     change_ids = fields.One2many('tt.reschedule.phc.changes', 'reschedule_id', 'Changes', readonly=True)
+    passenger_ids = fields.Many2many('tt.reservation.passenger.phc', 'tt_reschedule_phc_passenger_rel', 'reschedule_id',
+                                     'passenger_id',
+                                     readonly=True)
 
     def generate_changes(self):
         for rec in self.change_ids:
