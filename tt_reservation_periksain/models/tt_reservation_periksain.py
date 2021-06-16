@@ -477,6 +477,7 @@ class ReservationPeriksain(models.Model):
         timeslot_write_data = self.env['tt.timeslot.periksain'].search([('seq_id','in',booking_data['timeslot_list'])])
 
         booking_tmp = {
+            'state': 'booked',
             'origin_id': dest_obj.get_id(booking_data['origin'], provider_type_id),
             'provider_type_id': provider_type_id.id,
             'adult': booking_data['adult'],
@@ -493,6 +494,10 @@ class ReservationPeriksain(models.Model):
             'booked_uid': context_gateway['co_uid'],
             'booked_date': fields.Datetime.now()
         }
+        if booking_data['timeslot_type'] == 'fixed':
+            booking_tmp.update({
+                'picked_timeslot_id': timeslot_write_data and timeslot_write_data[0].id
+            })
         return booking_tmp
 
     # April 24, 2020 - SAM
