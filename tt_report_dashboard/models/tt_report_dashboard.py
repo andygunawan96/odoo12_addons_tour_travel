@@ -384,12 +384,12 @@ class TtReportDashboard(models.Model):
                 'form_data': data
             }
         ## save file for log purpose
-        folder_path = '/var/log/tour_travel/report_dashboard'
-        if not os.path.exists(folder_path):
-            os.mkdir(folder_path)
-        file = open('%s/report_response_%s.json' % (folder_path,datetime.now().strftime('%Y-%m-%d_%H:%M:%S')),'w')
-        file.write(json.dumps(res))
-        file.close()
+        # folder_path = '/var/log/tour_travel/report_dashboard'
+        # if not os.path.exists(folder_path):
+        #     os.mkdir(folder_path)
+        # file = open('%s/report_response_%s.json' % (folder_path,datetime.now().strftime('%Y-%m-%d_%H:%M:%S')),'w')
+        # file.write(json.dumps(res))
+        # file.close()
         return ERR.get_no_error(res)
 
     def get_report_xls_api(self, data,  context):
