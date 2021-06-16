@@ -37,6 +37,9 @@ class TtReschedulePHC(models.Model):
     old_picked_timeslot_id = fields.Many2one('tt.timeslot.phc', 'Old Picked Timeslot', readonly=True)
     new_picked_timeslot_id = fields.Many2one('tt.timeslot.phc', 'New Picked Timeslot', readonly=True, states={'draft': [('readonly', False)]})
     change_ids = fields.One2many('tt.reschedule.phc.changes', 'reschedule_id', 'Changes', readonly=True)
+    passenger_ids = fields.Many2many('tt.reservation.passenger.phc', 'tt_reschedule_phc_passenger_rel', 'reschedule_id',
+                                     'passenger_id',
+                                     readonly=True)
 
     def generate_changes(self):
         for rec in self.change_ids:
@@ -46,7 +49,7 @@ class TtReschedulePHC(models.Model):
                 'reschedule_id': self.id,
                 'seg_sequence': 1,
                 'name': 'Picked Timeslot',
-                'old_value': str(self.old_picked_timeslot_id.datetimeslot.astimezone(pytz.timezone('Asia/Jakarta')))[:19],
-                'new_value': str(self.new_picked_timeslot_id.datetimeslot.astimezone(pytz.timezone('Asia/Jakarta')))[:19]
+                'old_value': self.old_picked_timeslot_id and str(self.old_picked_timeslot_id.datetimeslot.astimezone(pytz.timezone('Asia/Jakarta')))[:19] or '',
+                'new_value': self.new_picked_timeslot_id and str(self.new_picked_timeslot_id.datetimeslot.astimezone(pytz.timezone('Asia/Jakarta')))[:19] or ''
             }
             self.env['tt.reschedule.phc.changes'].sudo().create(change_vals)

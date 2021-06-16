@@ -73,6 +73,7 @@
                         'default_adj_type': -4,
                         'hide_component_type': True
                    }"/>
+                    <button name="convert_old_to_new_ledger_res_model" string="Convert Ledger Res Model" type="object" groups="base.group_system"/>
                     <field name="state" widget="statusbar" statusbar_visible="draft,confirm,sent,validate,final,done"/>
                 </header>
                 <sheet>
