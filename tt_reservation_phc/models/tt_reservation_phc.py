@@ -13,9 +13,12 @@ import json
 
 _logger = logging.getLogger(__name__)
 
-COMMISSION_PER_PAX = 25000 ## komisi agent /pax
+COMMISSION_PER_PAX_ANTIGEN = 25000 ## komisi agent /pax
+COMMISSION_PER_PAX_PCR_HC = 120000 ## komisi agent /pax
+COMMISSION_PER_PAX_PCR_DT = 80000 ## komisi agent /pax
 BASE_PRICE_PER_PAX_ANTIGEN = 150000 ## harga 1 /pax
-BASE_PRICE_PER_PAX_PCR = 750000 ## harga 1 /pax
+BASE_PRICE_PER_PAX_PCR_HC = 750000 ## harga 1 /pax
+BASE_PRICE_PER_PAX_PCR_DT = 750000 ## harga 1 /pax
 SINGLE_SUPPLEMENT = 25000 ## 1 orang
 OVERTIME_SURCHARGE = 50000 ## lebih dari 18.00 /pax
 
@@ -199,7 +202,7 @@ class Reservationphc(models.Model):
         total_price = base_price + (overtime_surcharge and OVERTIME_SURCHARGE or 0) + (single_suplement and SINGLE_SUPPLEMENT or 0)
         return ERR.get_no_error({
             "pax_count": req['pax_count'],
-            "price_per_pax": total_price,
+            "base_price_per_pax": total_price,
             "commission_per_pax": COMMISSION_PER_PAX
         })
 
