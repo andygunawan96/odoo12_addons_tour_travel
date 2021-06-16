@@ -340,6 +340,30 @@ class ReportSelling(models.Model):
         ledger.transaction_type as ledger_transaction_type, ledger.display_provider_name as ledger_provider
         """
 
+    # select phc is a spesific function to build query for phc search only
+    # it will not work for other provider type
+    @staticmethod
+    def _select_phc():
+        return """
+        reservation.id as reservation_id, reservation.state as reservation_state, reservation.name as reservation_order_number, 
+        reservation.create_date as reservation_create_date_og, 
+        reservation.carrier_name as carrier_name,
+        reservation.booked_date as reservation_booked_date_og,
+        reservation.issued_date as reservation_issued_date_og,
+        reservation.total as amount, provider_type.name as provider_type_name, 
+        reservation.payment_method as reservation_payment_method,
+        reservation.agent_id as agent_id, reservation.agent_type_id as agent_type_id,
+        customer.id as customer_id, customer.name as customer_name,
+        customer_parent.id as customer_parent_id, customer_parent.name as customer_parent_name,
+        pro_phc.carrier_name as carrier_name,
+        provider_type.name as provider_type_name,
+        provider.name as provider_name,
+        agent.name as agent_name, agent_type.name as agent_type_name,
+        ledger.id as ledger_id, ledger.ref as ledger_name,
+        ledger.debit, ledger_agent.name as ledger_agent_name, ledger.pnr as ledger_pnr, ledger_agent_type.name as ledger_agent_type_name,
+        ledger.transaction_type as ledger_transaction_type, ledger.display_provider_name as ledger_provider
+        """
+
     ################
     #   All of FROM function to build FROM function in SQL
     #   name of the function correspond to respected SELECT functions for easy development
@@ -511,6 +535,22 @@ class ReportSelling(models.Model):
         """
 
     @staticmethod
+    def _from_phc():
+        return """tt_reservation_phc reservation
+        LEFT JOIN tt_customer customer ON customer.id = reservation.booker_id
+        LEFT JOIN tt_customer_parent customer_parent ON customer_parent.id = reservation.customer_parent_id
+        LEFT JOIN tt_provider_type provider_type ON reservation.provider_type_id = provider_type.id
+        LEFT JOIN tt_reservation_passenger_activity reservation_passenger ON reservation_passenger.booking_id = reservation.id
+        LEFT JOIN tt_agent agent ON agent.id = reservation.agent_id
+        LEFT JOIN tt_agent_type agent_type ON agent_type.id = reservation.agent_type_id
+        LEFT JOIN tt_provider_phc pro_phc ON pro_phc.booking_id = reservation.id
+        LEFT JOIN tt_provider provider ON provider.id = pro_phc.provider_id
+        LEFT JOIN tt_ledger ledger ON ledger.res_model = reservation.res_model AND ledger.res_id = reservation.id
+        LEFT JOIN tt_agent ledger_agent ON ledger_agent.id = ledger.agent_id
+        LEFT JOIN tt_agent_Type ledger_agent_type ON ledger_agent_type.id = ledger.agent_type_id
+        """
+
+    @staticmethod
     def _from_offline():
         return """tt_reservation_offline reservation
         LEFT JOIN tt_customer customer ON customer.id = reservation.booker_id
@@ -567,6 +607,10 @@ class ReportSelling(models.Model):
     @staticmethod
     def _group_by_ppob():
         return """reservation.id, provider_type.name, agent.name, agent_type.name, provider.name, pro_ppob.carrier_name, ledger.id, ledger_agent.name, ledger_agent_type.name, customer.id, customer_parent.id"""
+
+    @staticmethod
+    def _group_by_phc():
+        return """reservation.id, provider_type.name, agent.name, agent_type.name, provider.name, pro_phc.carrier_name, ledger.id, ledger_agent.name, ledger_agent_type.name, customer.id, customer_parent.id"""
 
     @staticmethod
     def _group_by_invoice():
@@ -752,6 +796,15 @@ class ReportSelling(models.Model):
                 i['reservation_issued_date'] = self._datetime_user_context(i['reservation_issued_date_og'])
         return lines
 
+    def _convert_data_phc(self, lines):
+        for i in lines:
+            i['reservation_create_date'] = self._datetime_user_context(i['reservation_create_date_og'])
+            if i['reservation_booked_date_og']:
+                i['reservation_booked_date'] = self._datetime_user_context(i['reservation_booked_date_og'])
+            if i['reservation_issued_date_og']:
+                i['reservation_issued_date'] = self._datetime_user_context(i['reservation_issued_date_og'])
+        return lines
+
     def _convert_data_invoice(self, lines):
         for i in lines:
             i['create_date'] = self._datetime_user_context(i['create_date_og'])
@@ -802,6 +855,10 @@ class ReportSelling(models.Model):
             query = 'SELECT {} '.format(self._select_event())
         elif provider_checker == 'ppob' or provider_checker == 'overall_ppob':
             query = 'SELECT {} '.format(self._select_ppob())
+        # elif provider_checker == 'periksain' or provider_checker == 'overall_periksain':
+        #     query = 'SELECT {} '.format(self._select_periksain())
+        elif provider_checker == 'phc' or provider_checker == 'overall_phc':
+            query = 'SELECT {} '.format(self._select_phc())
         elif provider_checker == 'invoice':
             query = 'SELECT {} '.format(self._select_invoice())
         else:
@@ -904,6 +961,17 @@ class ReportSelling(models.Model):
             if agent_seq_id:
                 query += 'AND {} '.format(self._where_agent(agent_seq_id))
             query += 'GROUP BY {} '.format(self._group_by_ppob())
+            query += 'ORDER BY {} '.format(self._order_by())
+        elif provider_checker == 'phc':
+            query += 'FROM {} '.format(self._from_phc())
+            query += 'WHERE {} '.format(self._where(date_from, date_to))
+            if context['provider']:
+                query += 'AND {} '.format(self._where_provider(context['provider']))
+            if context['agent_type_code']:
+                query += 'AND {} '.format(self._where_agent_type(context['agent_type_code']))
+            if agent_seq_id:
+                query += 'AND {} '.format(self._where_agent(agent_seq_id))
+            query += 'GROUP BY {} '.format(self._group_by_phc())
             query += 'ORDER BY {} '.format(self._order_by())
         elif provider_checker == 'overall_airline':
             query += 'FROM {} '.format(self._from_airline())
@@ -1010,6 +1078,17 @@ class ReportSelling(models.Model):
                 query += 'AND {} '.format(self._where_agent(agent_seq_id))
             query += 'AND {} '.format(self._where_issued(date_from, date_to))
             query += 'ORDER BY {} '.format(self._order_by_issued())
+        elif provider_checker == 'overall_phc':
+            query += 'FROM {} '.format(self._from_phc())
+            query += 'WHERE {} '.format(self._where_profit())
+            if context['provider']:
+                query += 'AND {} '.format(self._where_provider(context['provider']))
+            if context['agent_type_code']:
+                query += 'AND {} '.format(self._where_agent_type(context['agent_type_code']))
+            if agent_seq_id:
+                query += 'AND {} '.format(self._where_agent(agent_seq_id))
+            query += 'AND {} '.format(self._where_issued(date_from, date_to))
+            query += 'ORDER BY {} '.format(self._order_by_issued())
         elif provider_checker == 'overall_passport':
             query += 'FROM {} '.format(self._from('passport'))
             query += 'WHERE {} '.format(self._where_profit())
@@ -1063,6 +1142,10 @@ class ReportSelling(models.Model):
             query += 'FROM {} '.format(self._from_ppob())
             query += 'WHERE {} AND {} '.format(self._where_chanel(date_from, date_to), self._where_profit())
             query += 'ORDER BY {} '.format(self._order_by_issued())
+        elif provider_checker == 'chanel_overall_phc':
+            query += 'FROM {} '.format(self._from_phc())
+            query += 'WHERE {} AND {} '.format(self._where_chanel(date_from, date_to), self._where_profit())
+            query += 'ORDER BY {} '.format(self._order_by_issued())
         elif provider_checker == 'invoice':
             query += 'FROM {} '.format(self._from_invoice())
             first_data = True
@@ -1108,6 +1191,8 @@ class ReportSelling(models.Model):
                 lines = self._convert_data_event(lines)
             elif provider_type == 'ppob':
                 lines = self._convert_data_ppob(lines)
+            elif provider_type == 'phc':
+                lines = self._convert_data_phc(lines)
             elif provider_type == 'invoice':
                 lines = self._convert_data_invoice(lines)
             else:
