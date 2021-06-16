@@ -17,6 +17,7 @@ COMMISSION_PER_PAX = 25000 ## komisi agent /pax
 BASE_PRICE_PER_PAX = 150000 ## harga 1 /pax
 SINGLE_SUPPLEMENT = 25000 ## 1 orang
 OVERTIME_SURCHARGE = 50000 ## lebih dari 18.00 /pax
+CITO_SURCHARGE = 25000## Urgent cito surcharge range 2-5jam stlh jam book
 
 class ReservationPeriksain(models.Model):
     _name = "tt.reservation.periksain"
@@ -212,6 +213,7 @@ class ReservationPeriksain(models.Model):
         #parameter
         #timeslot_list
         #jumlah pax
+        extra_charge_per_pax = 0
         overtime_surcharge = False
         timeslot_objs = self.env['tt.timeslot.periksain'].search([('seq_id', 'in', req['timeslot_list'])])
         for rec in timeslot_objs:
@@ -222,10 +224,16 @@ class ReservationPeriksain(models.Model):
         single_suplement = False
         if req['pax_count'] <= 1:
             single_suplement = True
-        total_price = BASE_PRICE_PER_PAX + (overtime_surcharge and OVERTIME_SURCHARGE or 0) + (single_suplement and SINGLE_SUPPLEMENT or 0)
+
+        cito_surcharge = False
+        if timeslot_objs.datetimeslot <= datetime.now() + timedelta(hours=5):
+            cito_surcharge = False
+
+        extra_charge_per_pax = (overtime_surcharge and OVERTIME_SURCHARGE or 0) + (single_suplement and SINGLE_SUPPLEMENT or 0) + (cito_surcharge and CITO_SURCHARGE or 0)
         return ERR.get_no_error({
             "pax_count": req['pax_count'],
-            "price_per_pax": total_price,
+            "base_price_per_pax": BASE_PRICE_PER_PAX,#150000
+            "extra_price_per_pax": extra_charge_per_pax,#50000
             "commission_per_pax": COMMISSION_PER_PAX
         })
 
@@ -477,6 +485,7 @@ class ReservationPeriksain(models.Model):
         timeslot_write_data = self.env['tt.timeslot.periksain'].search([('seq_id','in',booking_data['timeslot_list'])])
 
         booking_tmp = {
+            'state': 'booked',
             'origin_id': dest_obj.get_id(booking_data['origin'], provider_type_id),
             'provider_type_id': provider_type_id.id,
             'adult': booking_data['adult'],
@@ -493,6 +502,10 @@ class ReservationPeriksain(models.Model):
             'booked_uid': context_gateway['co_uid'],
             'booked_date': fields.Datetime.now()
         }
+        if booking_data['timeslot_type'] == 'fixed':
+            booking_tmp.update({
+                'picked_timeslot_id': timeslot_write_data and timeslot_write_data[0].id
+            })
         return booking_tmp
 
     # April 24, 2020 - SAM

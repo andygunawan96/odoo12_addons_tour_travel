@@ -13,9 +13,12 @@ import json
 
 _logger = logging.getLogger(__name__)
 
-COMMISSION_PER_PAX = 25000 ## komisi agent /pax
+COMMISSION_PER_PAX_ANTIGEN = 25000 ## komisi agent /pax
+COMMISSION_PER_PAX_PCR_HC = 120000 ## komisi agent /pax
+COMMISSION_PER_PAX_PCR_DT = 80000 ## komisi agent /pax
 BASE_PRICE_PER_PAX_ANTIGEN = 150000 ## harga 1 /pax
-BASE_PRICE_PER_PAX_PCR = 750000 ## harga 1 /pax
+BASE_PRICE_PER_PAX_PCR_HC = 750000 ## harga 1 /pax
+BASE_PRICE_PER_PAX_PCR_DT = 750000 ## harga 1 /pax
 SINGLE_SUPPLEMENT = 25000 ## 1 orang
 OVERTIME_SURCHARGE = 50000 ## lebih dari 18.00 /pax
 
@@ -171,6 +174,14 @@ class Reservationphc(models.Model):
     def create_refund(self):
         self.state = 'refund'
 
+    # COMMISSION_PER_PAX_ANTIGEN = 25000  ## komisi agent /pax
+    # COMMISSION_PER_PAX_PCR_HC = 120000  ## komisi agent /pax
+    # COMMISSION_PER_PAX_PCR_DT = 80000  ## komisi agent /pax
+    # BASE_PRICE_PER_PAX_ANTIGEN = 150000  ## harga 1 /pax
+    # BASE_PRICE_PER_PAX_PCR_HC = 750000  ## harga 1 /pax
+    # BASE_PRICE_PER_PAX_PCR_DT = 750000  ## harga 1 /pax
+    # SINGLE_SUPPLEMENT = 25000  ## 1 orang
+    # OVERTIME_SURCHARGE = 50000  ## lebih dari 18.00 /pax
     def get_price_phc_api(self, req, context):
         #parameter
         #timeslot_list
@@ -183,24 +194,30 @@ class Reservationphc(models.Model):
                 overtime_surcharge = True
                 break
 
-        carrier_obj = self.env['tt.transport.carrier'].search([('code','=',req['carrier_code'])])
+        carrier_id = self.env['tt.transport.carrier'].search([('code','=',req['carrier_code'])]).id
         single_suplement = False
         if req['pax_count'] <= 1 and \
-                carrier_obj.id not in [self.env.ref('tt_reservation_phc.tt_transport_carrier_phc_drive_thru_antigen').id,
+                carrier_id not in [self.env.ref('tt_reservation_phc.tt_transport_carrier_phc_drive_thru_antigen').id,
                                     self.env.ref('tt_reservation_phc.tt_transport_carrier_phc_drive_thru_pcr').id]:
             single_suplement = True
 
-        if carrier_obj.id in [self.env.ref('tt_reservation_phc.tt_transport_carrier_phc_drive_thru_antigen').id,
+        if carrier_id in [self.env.ref('tt_reservation_phc.tt_transport_carrier_phc_drive_thru_antigen').id,
                               self.env.ref('tt_reservation_phc.tt_transport_carrier_phc_home_care_antigen').id]:
             base_price = BASE_PRICE_PER_PAX_ANTIGEN
+            commission_price = COMMISSION_PER_PAX_ANTIGEN
+        elif carrier_id in [self.env.ref('tt_reservation_phc.tt_transport_carrier_phc_drive_thru_pcr')]:
+            base_price = BASE_PRICE_PER_PAX_PCR_DT
+            commission_price = COMMISSION_PER_PAX_PCR_DT
         else:
-            base_price = BASE_PRICE_PER_PAX_PCR
+            base_price = BASE_PRICE_PER_PAX_PCR_HC
+            commission_price = COMMISSION_PER_PAX_PCR_HC
 
-        total_price = base_price + (overtime_surcharge and OVERTIME_SURCHARGE or 0) + (single_suplement and SINGLE_SUPPLEMENT or 0)
+        extra_charge_per_pax = (overtime_surcharge and OVERTIME_SURCHARGE or 0) + (single_suplement and SINGLE_SUPPLEMENT or 0)
         return ERR.get_no_error({
             "pax_count": req['pax_count'],
-            "price_per_pax": total_price,
-            "commission_per_pax": COMMISSION_PER_PAX
+            "base_price_per_pax": base_price,
+            "extra_price_per_pax": extra_charge_per_pax,
+            "commission_per_pax": commission_price
         })
 
     def create_booking_phc_api(self, req, context):
@@ -468,6 +485,7 @@ class Reservationphc(models.Model):
         timeslot_write_data = self.env['tt.timeslot.phc'].search([('seq_id','in',booking_data['timeslot_list'])])
 
         booking_tmp = {
+            'state': 'booked',
             'origin_id': dest_obj.get_id(booking_data['origin'], provider_type_id),
             'provider_type_id': provider_type_id.id,
             'adult': booking_data['adult'],
@@ -484,6 +502,10 @@ class Reservationphc(models.Model):
             'booked_uid': context_gateway['co_uid'],
             'booked_date': fields.Datetime.now()
         }
+        if booking_data['timeslot_type'] == 'fixed':
+            booking_tmp.update({
+                'picked_timeslot_id': timeslot_write_data and timeslot_write_data[0].id
+            })
         return booking_tmp
 
     # April 24, 2020 - SAM

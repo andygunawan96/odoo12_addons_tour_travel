@@ -29,7 +29,7 @@ class TtTimeslotphc(models.Model):
 
     destination_id = fields.Many2one('tt.destinations','Area')
 
-    selected_count = fields.Integer('Used Counter',compute="_compute_selected_counter",store=True)
+    selected_count = fields.Integer('Selected Counter',compute="_compute_selected_counter",store=True)
 
     used_count = fields.Integer('Used Counter',compute="_compute_used_counter",store=True)
 
@@ -49,15 +49,21 @@ class TtTimeslotphc(models.Model):
         vals_list['seq_id'] = self.env['ir.sequence'].next_by_code('tt.timeslot.phc')
         return super(TtTimeslotphc, self).create(vals_list)
 
+    @api.onchange('booking_ids')
     @api.depends('booking_ids')
     def _compute_selected_counter(self):
         for rec in self:
-            rec.used_count = len(rec.booking_ids)
+            rec.selected_count = len(rec.booking_ids.ids)
 
+    @api.onchange('booking_used_ids')
     @api.depends('booking_used_ids')
     def _compute_used_counter(self):
         for rec in self:
-            rec.used_count = len(rec.booking_used_ids)
+            used_count = 0
+            for rec2 in rec.booking_used_ids:
+                if rec2.state in ['booked', 'issued']:
+                    used_count += 1
+            rec.used_count = used_count
 
     # {
     #     "max_date": "2021-06-20",
@@ -81,10 +87,10 @@ class TtTimeslotphc(models.Model):
         current_wib_datetime = datetime.now(pytz.timezone('Asia/Jakarta'))
         current_datetime = current_wib_datetime.astimezone(pytz.utc)
         malang_id = self.env.ref('tt_reservation_phc.tt_destination_phc_mlg').id
-        if '08:00' < str(current_wib_datetime.time())[:5] < '18:00':
-            dom = [('datetimeslot', '>', datetime.now(pytz.utc) + timedelta(hours=6))]
+        if '08:00' < str(current_wib_datetime.time())[:5] < '14:00':
+            dom = [('datetimeslot', '>', datetime.now(pytz.utc) + timedelta(hours=2))]
         else:
-            min_datetime = current_datetime.replace(hour=7,minute=0)
+            min_datetime = current_datetime.replace(hour=1,minute=0)
             if current_datetime > min_datetime:
                 min_datetime = min_datetime + timedelta(days=1)
             dom = [('datetimeslot', '>', min_datetime),
