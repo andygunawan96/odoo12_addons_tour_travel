@@ -16,7 +16,8 @@ Key Features
     'website': "rodextravel.tours",
     'depends' : ['tt_base', 'tt_accounting'],
     'data': [
-        'views/accounting_history_views.xml',
+        'data/ir_cron_data.xml',
+        'views/accounting_queue_views.xml',
         'security/ir.model.access.csv'
     ],
     'demo': [],

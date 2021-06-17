@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <odoo>
-    <record id="tt_accounting_history_filter" model="ir.ui.view">
-        <field name="name">tt.accounting.history.filter</field>
-        <field name="model">tt.accounting.history</field>
+    <record id="tt_accounting_queue_filter" model="ir.ui.view">
+        <field name="name">tt.accounting.queue.filter</field>
+        <field name="model">tt.accounting.queue</field>
         <field name="arch" type="xml">
-            <search string="Search Accounting History">
+            <search string="Search Accounting Queue">
                 <field name="request"/>
                 <field name="response"/>
                 <separator/>
@@ -33,9 +33,9 @@
         </field>
     </record>
 
-    <record id="tt_accounting_history_form_view" model="ir.ui.view">
-        <field name="name">tt.accounting.history.form.view</field>
-        <field name="model">tt.accounting.history</field>
+    <record id="tt_accounting_queue_form_view" model="ir.ui.view">
+        <field name="name">tt.accounting.queue.form.view</field>
+        <field name="model">tt.accounting.queue</field>
         <field name="arch" type="xml">
             <form create="false">
                 <header>
@@ -58,10 +58,10 @@
                                 <field name="create_uid" class="oe_inline" readonly="True"/> /
                                 <field name="create_date" class="oe_inline" readonly="True"/>
                             </div>
-                            <label for="resend_uid" string="Last Retried By"/>
+                            <label for="send_uid" string="Last Retried By"/>
                             <div>
-                                <field name="resend_uid" class="oe_inline" readonly="True"/> /
-                                <field name="resend_date" class="oe_inline" readonly="True"/>
+                                <field name="send_uid" class="oe_inline" readonly="True"/> /
+                                <field name="send_date" class="oe_inline" readonly="True"/>
                             </div>
                         </group>
                     </group>
@@ -74,9 +74,9 @@
         </field>
     </record>
 
-    <record id="tt_accounting_history_tree_view" model="ir.ui.view">
-        <field name="name">tt.accounting.history.tree.view</field>
-        <field name="model">tt.accounting.history</field>
+    <record id="tt_accounting_queue_tree_view" model="ir.ui.view">
+        <field name="name">tt.accounting.queue.tree.view</field>
+        <field name="model">tt.accounting.queue</field>
         <field name="arch" type="xml">
             <tree create="false">
                 <field name="create_date"/>
@@ -87,16 +87,16 @@
         </field>
     </record>
 
-    <record id="tt_accounting_history_action" model="ir.actions.act_window">
+    <record id="tt_accounting_queue_action" model="ir.actions.act_window">
         <field name="name">Accounting (JasaWeb Sync Log)</field>
-        <field name="res_model">tt.accounting.history</field>
+        <field name="res_model">tt.accounting.queue</field>
         <field name="view_type">form</field>
         <field name="view_mode">tree,form</field>
-        <field name="search_view_id" ref="tt_accounting_history_filter"/>
+        <field name="search_view_id" ref="tt_accounting_queue_filter"/>
         <field name="context">
             {
-            'form_view_ref': 'tt_accounting_connector.tt_accounting_history_form_view',
-            'tree_view_ref': 'tt_accounting_connector.tt_accounting_history_tree_view'
+            'form_view_ref': 'tt_accounting_connector.tt_accounting_queue_form_view',
+            'tree_view_ref': 'tt_accounting_connector.tt_accounting_queue_tree_view'
             }
         </field>
     </record>
@@ -106,7 +106,7 @@
               groups="tt_base.group_after_sales_master_level_4"/>
 
     <menuitem id="submenu_tour_travel_accounting_log" name="JasaWeb Sync Log" sequence="1"
-              parent="tt_accounting_connector.menu_tour_travel_accounting" action="tt_accounting_history_action"
+              parent="tt_accounting_connector.menu_tour_travel_accounting" action="tt_accounting_queue_action"
               groups="tt_base.group_after_sales_master_level_4"/>
 
 </odoo>

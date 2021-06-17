@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <data noupdate="1">
+        <record model="ir.cron" id="cron_send_accounting_to_jasaweb">
+            <field name='name'>Auto-Send Accounting Data to Jasaweb</field>
+            <field name="user_id" ref="base.user_root"/>
+            <field name='interval_number'>30</field>
+            <field name='interval_type'>minutes</field>
+            <field name="numbercall">-1</field>
+            <field name="nextcall" eval="(datetime.now().replace(hour=0,minute=10,second=0).isoformat())"/>
+            <field name="active">True</field>
+            <field name="state">code</field>
+            <field name="model_id" ref="tt_base.model_tt_cron_log"/>
+            <field name="code">model.cron_send_accounting_to_jasaweb()</field>
+        </record>
+    </data>
+</odoo>

@@ -46,7 +46,7 @@ class AccountingConnector(models.Model):
         }
 
         # res = util.send_request_json(self._get_web_hook('Sales%20Order'), post=vals, headers=headers)
-        response = requests.post(url + '/api/method/jasaweb.rodex.insert_journal_entry', data=json.dumps(vals), headers=headers, cookies=cookies)
+        response = requests.post(url + '/api/method/jasaweb.rodex.insert_journal_entry', data=vals, headers=headers, cookies=cookies)
         if response.status_code == 200:
             _logger.info('Insert Success')
         else:
@@ -58,27 +58,4 @@ class AccountingConnector(models.Model):
         }
         _logger.info(res)
 
-        if len(vals) > 0:
-            temp_trans_type = vals[0].get('transport_type', '')
-            temp_res_model = vals[0].get('transport_type') and ACC_TRANSPORT_TYPE_REVERSE.get(vals[0]['transport_type'], '') or ''
-        else:
-            temp_trans_type = ''
-            temp_res_model = ''
-
-        if response.status_code == 200:
-            self.env['tt.accounting.history'].sudo().create({
-                'request': vals,
-                'response': res,
-                'transport_type': temp_trans_type,
-                'res_model': temp_res_model,
-                'state': 'success'
-            })
-        else:
-            self.env['tt.accounting.history'].sudo().create({
-                'request': vals,
-                'response': res,
-                'transport_type': temp_trans_type,
-                'res_model': temp_res_model,
-                'state': 'failed'
-            })
         return res
