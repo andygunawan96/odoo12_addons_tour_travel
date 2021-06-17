@@ -8,7 +8,6 @@
             <form string="Confirm Order Wizard">
                 <group>
                     <field name="booking_id"/>
-                    <field name="picked_timeslot_id"/>
                     <field name="analyst_ids"/>
                 </group>
                 <footer>

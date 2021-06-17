@@ -23,3 +23,5 @@ class TtAnalystphc(models.Model):
     booking_ids = fields.Many2many('tt.reservation.phc', 'tt_reservation_phc_analyst_rel', 'analyst_id',
                                    'booking_id', 'Booking(s)')
     active = fields.Boolean('Active',default=True)
+
+    user_id = fields.Many2one('res.users','User')

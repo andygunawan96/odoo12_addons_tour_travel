@@ -19,6 +19,7 @@
                     <group name="analyst_info">
                         <field name="analyst_id"/>
                         <field name="analyst_phone_number"/>
+                        <field name="user_id"/>
                     </group>
                 </sheet>
             </form>
