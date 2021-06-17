@@ -149,7 +149,8 @@ class Ledger(models.Model):
             'description': 'Reverse for %s' % (self.name),
             'adjustment_id': self.adjustment_id and self.adjustment_id.id or False,
             'refund_id': self.refund_id and self.refund_id.id or False,
-            'reschedule_id': hasattr(self,'reschedule_id') and self.reschedule_id.id or False,
+            'reschedule_id': hasattr(self,'reschedule_id') and self.reschedule_id or False,
+            'reschedule_model': hasattr(self,'reschedule_model') and self.reschedule_model or False,
             'provider_type_id': self.provider_type_id and self.provider_type_id.id or False
         })
 
