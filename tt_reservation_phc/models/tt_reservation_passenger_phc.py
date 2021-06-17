@@ -17,6 +17,8 @@ class TtReservationCustomer(models.Model):
 
     booking_id = fields.Many2one('tt.reservation.phc', 'Booking')
 
+    result_url = fields.Char('Result URL')
+
     email = fields.Char('Email')
 
     phone_number = fields.Char('Phone Number')
@@ -42,6 +44,7 @@ class TtReservationCustomer(models.Model):
     def to_dict(self):
         res = super(TtReservationCustomer, self).to_dict()
         res.update({
+            'result_url': self.result_url,
             'sale_service_charges': self.get_service_charges(),
             'tempat_lahir': self.tempat_lahir,
             'profession': self.profession,

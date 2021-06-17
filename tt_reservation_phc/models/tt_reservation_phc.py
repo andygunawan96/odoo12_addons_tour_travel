@@ -198,11 +198,11 @@ class Reservationphc(models.Model):
         single_suplement = False
         if req['pax_count'] <= 1 and \
                 carrier_id not in [self.env.ref('tt_reservation_phc.tt_transport_carrier_phc_drive_thru_antigen').id,
-                                    self.env.ref('tt_reservation_phc.tt_transport_carrier_phc_drive_thru_pcr').id]:
+                                   self.env.ref('tt_reservation_phc.tt_transport_carrier_phc_drive_thru_pcr').id]:
             single_suplement = True
 
         if carrier_id in [self.env.ref('tt_reservation_phc.tt_transport_carrier_phc_drive_thru_antigen').id,
-                              self.env.ref('tt_reservation_phc.tt_transport_carrier_phc_home_care_antigen').id]:
+                          self.env.ref('tt_reservation_phc.tt_transport_carrier_phc_home_care_antigen').id]:
             base_price = BASE_PRICE_PER_PAX_ANTIGEN
             commission_price = COMMISSION_PER_PAX_ANTIGEN
         elif carrier_id in [self.env.ref('tt_reservation_phc.tt_transport_carrier_phc_drive_thru_pcr')]:
@@ -346,22 +346,27 @@ class Reservationphc(models.Model):
                 raise RequestException(1001)
 
             any_provider_changed = False
+            ## kalau tanpa extra action save result url, menjadi update booking issued normal.
+            ## Else menjadi update result url customer
+            if not req.get('extra_action') == 'save_result_url':
+                for provider in req['provider_bookings']:
+                    provider_obj = self.env['tt.provider.phc'].browse(provider['provider_id'])
+                    try:
+                        provider_obj.create_date
+                    except:
+                        raise RequestException(1002)
 
-            for provider in req['provider_bookings']:
-                provider_obj = self.env['tt.provider.phc'].browse(provider['provider_id'])
-                try:
-                    provider_obj.create_date
-                except:
-                    raise RequestException(1002)
+                    if provider['status'] == 'ISSUED':
+                        provider_obj.action_issued_api_phc(context)
+                        for idx, ticket_obj in enumerate(provider['tickets']):
+                            provider_obj.update_ticket_per_pax_api(idx, ticket_obj['ticket_number'])
+                        any_provider_changed = True
 
-                if provider['status'] == 'ISSUED':
-                    provider_obj.action_issued_api_phc(context)
-                    for idx, ticket_obj in enumerate(provider['tickets']):
-                        provider_obj.update_ticket_per_pax_api(idx, ticket_obj['ticket_number'])
-                    any_provider_changed = True
-
-            if any_provider_changed:
-                book_obj.check_provider_state(context, req=req)
+                if any_provider_changed:
+                    book_obj.check_provider_state(context, req=req)
+            else:
+                for idx, psg in enumerate(req['passengers']):
+                    book_obj.passenger_ids[idx].result_url = psg['result_url']
 
             return ERR.get_no_error({
                 'order_number': book_obj.name,
@@ -445,6 +450,45 @@ class Reservationphc(models.Model):
         except Exception as e:
             _logger.error(traceback.format_exc())
             return ERR.get_error(1013)
+
+    #req
+    # date from
+    # date to
+    def get_transaction_by_analyst_api(self,req,context):
+        try:
+            dom = [('test_datetime', '>=',req['date_from']),
+                   ('test_datetime', '<=',req['date_to']),
+                   ('provider_bookings.carrier_id','in',[
+                       self.env.ref('tt_reservation_phc.tt_transport_carrier_phc_home_care_antigen'),
+                       self.env.ref('tt_reservation_phc.tt_transport_carrier_phc_home_care_pcr'),
+                   ]),
+                   ('state','in',['issued','done']),
+                   ('analyst_ids.user_id','=',context['co_user_id']),
+                   ('picked_timeslot_id','!=',False)]
+            res = {}
+            for rec in self.search(dom):
+                picked_timeslot = rec.picked_timeslot_id.datetimeslot.strftime('%Y-%m-%d %H:%M')
+
+                if picked_timeslot not in res:
+                    res[picked_timeslot] = []
+
+                res[picked_timeslot].append({
+                    'order_number': rec.name,
+                    'agent_id': self.agent_id.id if self.agent_id else '',
+                    'pnr': self.pnr and self.pnr or '',
+                    'adult': self.adult,
+                    'state': self.state,
+                    'origin': rec.origin_id.name,
+                    'state_description': variables.BOOKING_STATE_STR[self.state],
+                    'test_address': rec.test_address
+                })
+                return ERR.get_no_error(res)
+        except RequestException as e:
+            _logger.error(traceback.format_exc())
+            return e.error_dict()
+        except Exception as e:
+            _logger.error(traceback.format_exc())
+            return ERR.get_error(1012)
 
     def payment_phc_api(self,req,context):
         payment_res = self.payment_reservation_api('phc',req,context)
