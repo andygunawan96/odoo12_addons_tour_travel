@@ -257,6 +257,7 @@ class ReservationPeriksain(models.Model):
                 rec[2].update({
                     'customer_id': list_customer_id[idx].id,
                     'email': passengers[idx]['email'],
+                    'address_ktp': passengers[idx]['address_ktp'],
                     'phone_number': passengers[idx]['phone_number'],
                     'sample_method': passengers[idx]['sample_method']
                 })

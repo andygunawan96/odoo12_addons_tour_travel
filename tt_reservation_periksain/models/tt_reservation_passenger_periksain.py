@@ -18,7 +18,7 @@ class TtReservationCustomer(models.Model):
     booking_id = fields.Many2one('tt.reservation.periksain', 'Booking')
 
     email = fields.Char('Email')
-
+    address_ktp = fields.Char('Address KTP')
     phone_number = fields.Char('Phone Number')
 
     sample_method = fields.Selection(VARIABLE_SAMPLE_METHOD,'Sample Method')
@@ -30,6 +30,7 @@ class TtReservationCustomer(models.Model):
                 sample_method = rec[1]
         res.update({
             'sale_service_charges': self.get_service_charges(),
+            'address_ktp': self.address_ktp,
             'sample_method': sample_method,
             'email': self.email,
             'phone_number': self.phone_number
