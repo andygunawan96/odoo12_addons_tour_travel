@@ -1883,7 +1883,7 @@ class PrintoutPassportItineraryForm(models.AbstractModel):
                         'qty': 0,
                     }
 
-                if rec2.charge_type.lower() == 'total':
+                if rec2.charge_type.lower() == 'fare':
                     a[rec2.pax_type]['fare'] += rec2.total
                     a[rec2.pax_type]['qty'] += rec2.pax_count
                 elif rec2.charge_type.lower() in ['roc', 'tax']:
@@ -2013,7 +2013,7 @@ class PrintoutVisaItineraryForm(models.AbstractModel):
                         'qty': 0,
                     }
 
-                if rec2.charge_type.lower() == 'total':
+                if rec2.charge_type.lower() == 'fare':
                     a[rec2.pax_type]['fare'] += rec2.total
                     a[rec2.pax_type]['qty'] += rec2.pax_count
                 elif rec2.charge_type.lower() in ['roc', 'tax']:
@@ -2074,7 +2074,7 @@ class PrintoutPeriksainItineraryForm(models.AbstractModel):
                         'qty': 0,
                     }
 
-                if rec2.charge_type.lower() == 'total':
+                if rec2.charge_type.lower() == 'fare':
                     a[rec2.pax_type]['fare'] += rec2.total
                     a[rec2.pax_type]['qty'] += rec2.pax_count
                 elif rec2.charge_type.lower() in ['roc', 'tax']:
