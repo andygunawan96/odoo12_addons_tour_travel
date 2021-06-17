@@ -55,6 +55,7 @@ class TtReservationActivity(models.Model):
                     rec.sudo().write({
                         'is_sent_to_acc': True
                     })
+            # json.dumps(ledger_list)
             res = self.env['tt.accounting.connector'].add_sales_order(ledger_list)
             return ERR.get_no_error(res)
         except Exception as e:

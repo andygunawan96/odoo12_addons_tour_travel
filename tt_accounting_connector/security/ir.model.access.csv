@@ -1,5 +1,5 @@
 id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
-tt_accounting_history_for_all,tt.accounting.history.for.all,model_tt_accounting_history,,1,0,1,0
-tt_accounting_history_for_after_sales_master_level_4,tt.accounting.history.for.after.sales.master.level.4,model_tt_accounting_history,tt_base.group_after_sales_master_level_4,1,0,1,0
-tt_accounting_history_for_admin,tt.accounting.history.for.admin,model_tt_accounting_history,base.user_root,1,1,1,1
+tt_accounting_queue_for_all,tt.accounting.queue.for.all,model_tt_accounting_queue,,1,0,1,0
+tt_accounting_queue_for_after_sales_master_level_4,tt.accounting.queue.for.after.sales.master.level.4,model_tt_accounting_queue,tt_base.group_after_sales_master_level_4,1,0,1,0
+tt_accounting_queue_for_admin,tt.accounting.queue.for.admin,model_tt_accounting_queue,base.user_root,1,1,1,1
 
