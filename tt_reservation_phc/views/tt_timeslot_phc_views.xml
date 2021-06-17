@@ -1,4 +1,58 @@
 <odoo>
+<!--    <record id="tt_reservation_airline_filter_views" model="ir.ui.view">-->
+<!--        <field name="name">tt.reservation.airline.filter.view</field>-->
+<!--        <field name="model">tt.reservation.airline</field>-->
+<!--        <field name="arch" type="xml">-->
+<!--            <search string="Search Airline Booking">-->
+<!--                <field name="name"/>-->
+<!--                <field name="pnr"/>-->
+<!--                <field name="provider_name" groups="tt_base.group_tt_tour_travel"/>-->
+<!--                <field name="carrier_name" groups="tt_base.group_tt_tour_travel"/>-->
+<!--                <field name="agent_id" groups="tt_base.group_tt_tour_travel"/>-->
+<!--                <field name="agent_type_id" groups="tt_base.group_tt_tour_travel"/>-->
+<!--                <field name="customer_parent_id" groups="tt_base.group_tt_agent_user,tt_base.group_tt_tour_travel"/>-->
+<!--                <field name="customer_parent_type_id" groups="tt_base.group_tt_agent_user,tt_base.group_tt_tour_travel"/>-->
+<!--                <field name="contact_id"/>-->
+<!--                <group>-->
+<!--                    <filter string="All" name="all"/>-->
+<!--                    <filter string="Booked" name="booked" domain="[('state','=','booked')]"/>-->
+<!--                    <filter string="Issued" name="issued" domain="[('state','=','issued')]"/>-->
+<!--                    <filter string="Failed/Expired" name="failed_expired" domain="['|', '|', '|', ('state','=','fail_booked'),('state','=','fail_issued'),('state','=','fail_refunded'),('state','=','cancel2')]"/>-->
+<!--                    <filter string="Cancelled/Refunded" name="cancel" domain="['|', ('state','=','cancel'),('state','=','refund')]"/>-->
+<!--                </group>-->
+<!--                <separator/>-->
+<!--                <group>-->
+<!--                    <filter string="Not Reconciled" name="reconciled" domain="[('reconcile_state','=','not_reconciled')]"/>-->
+<!--                    <filter string="Partial Reconciled" name="reconciled" domain="[('reconcile_state','=','partial')]"/>-->
+<!--                    <filter string="Reconciled" name="reconciled" domain="[('reconcile_state','=','reconciled')]"/>-->
+<!--                </group>-->
+<!--                <separator/>-->
+<!--                <filter name="today" string="Today" domain="[('date','&gt;=',time.strftime('%%Y-%%m-%%d'))]"/>-->
+<!--                <filter name="yesterday" string="Yesterday"-->
+<!--                        domain="[-->
+<!--                                ('date', '&lt;', (context_today()).strftime('%Y-%m-%d')),-->
+<!--                                ('date', '&gt;=', (context_today() - datetime.timedelta(days=1)).strftime('%Y-%m-%d'))-->
+<!--                        ]"/>-->
+<!--                <filter name="week" string="This Week"-->
+<!--                        domain="[-->
+<!--                                '&amp;',-->
+<!--                                ('date', '>=', (context_today() + relativedelta(weeks=-1,days=1,weekday=0)).strftime('%Y-%m-%d')),-->
+<!--                                ('date', '&lt;=', (context_today() + relativedelta(weekday=6)).strftime('%Y-%m-%d')),-->
+<!--                            ]"/>-->
+<!--                <filter string="This Month" name="thismonth" domain="[('date','&gt;=',time.strftime('%%Y-%%m-01'))]"/>-->
+<!--                <filter string="This Year" name="thisyear" domain="[('date','&gt;=',time.strftime('%%Y-01-01'))]"/>-->
+
+<!--                <group expand="0" string="Group By">-->
+<!--                    <filter name="group_by_agent_id" string="Agent" domain="[]" context="{'group_by':'agent_id'}" groups="tt_base.group_tt_tour_travel"/>-->
+<!--                    <filter name="group_by_agent_type_id" string="Agent Type" domain="[]" context="{'group_by':'agent_type_id'}" groups="tt_base.group_tt_tour_travel"/>-->
+<!--                    <filter name="group_by_customer_parent_id" string="Customer Parent" domain="[]" context="{'group_by':'customer_parent_id'}" groups="tt_base.group_tt_agent_user,tt_base.group_tt_tour_travel"/>-->
+<!--                    <filter name="group_by_customer_parent_type_id" string="Customer Parent Type" domain="[]" context="{'group_by':'customer_parent_type_id'}" groups="tt_base.group_tt_agent_user,tt_base.group_tt_tour_travel"/>-->
+<!--                    <filter name="group_by_state" string="State" domain="[]" context="{'group_by':'state'}"/>-->
+<!--                </group>-->
+<!--            </search>-->
+<!--        </field>-->
+<!--    </record>-->
+
     <record id="tt_timeslot_phc_form_view" model="ir.ui.view">
         <field name="name">tt.timeslot.phc.form.view</field>
         <field name="model">tt.timeslot.phc</field>

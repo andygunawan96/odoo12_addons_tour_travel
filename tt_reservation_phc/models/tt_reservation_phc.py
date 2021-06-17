@@ -480,7 +480,8 @@ class Reservationphc(models.Model):
                     'state': self.state,
                     'origin': rec.origin_id.name,
                     'state_description': variables.BOOKING_STATE_STR[self.state],
-                    'test_address': rec.test_address
+                    'test_address': rec.test_address,
+                    'test_address_map_link': rec.test_address_map_link
                 })
                 return ERR.get_no_error(res)
         except RequestException as e:
