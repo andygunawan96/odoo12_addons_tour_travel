@@ -372,6 +372,9 @@ class TtProviderphc(models.Model):
     def update_ticket_per_pax_api(self, idx, passenger_ticket):
         self.ticket_ids[idx].ticket_number = passenger_ticket
 
+    def update_result_url_per_pax_api(self, idx, result_url):
+        self.ticket_ids[idx].passenger_id.result_url = result_url
+
     def update_ticket_api(self,passengers):##isi ticket number
         ticket_not_found = []
         for psg in passengers:
