@@ -348,25 +348,26 @@ class Reservationphc(models.Model):
             any_provider_changed = False
             ## kalau tanpa extra action save result url, menjadi update booking issued normal.
             ## Else menjadi update result url customer
-            if not req.get('extra_action') == 'save_result_url':
-                for provider in req['provider_bookings']:
-                    provider_obj = self.env['tt.provider.phc'].browse(provider['provider_id'])
-                    try:
-                        provider_obj.create_date
-                    except:
-                        raise RequestException(1002)
 
-                    if provider['status'] == 'ISSUED':
-                        provider_obj.action_issued_api_phc(context)
-                        for idx, ticket_obj in enumerate(provider['tickets']):
-                            provider_obj.update_ticket_per_pax_api(idx, ticket_obj['ticket_number'])
-                        any_provider_changed = True
+            for provider in req['provider_bookings']:
+                provider_obj = self.env['tt.provider.phc'].browse(provider['provider_id'])
+                try:
+                    provider_obj.create_date
+                except:
+                    raise RequestException(1002)
+                if provider.get('extra_action') == 'save_result_url':
+                    for idx, ticket_obj in enumerate(provider['tickets']):
+                        provider_obj.update_result_url_per_pax_api(idx, ticket_obj['result_url'])
+                    continue
+                if provider['status'] == 'ISSUED':
+                    provider_obj.action_issued_api_phc(context)
+                    for idx, ticket_obj in enumerate(provider['tickets']):
+                        provider_obj.update_ticket_per_pax_api(idx, ticket_obj['ticket_number'])
+                    any_provider_changed = True
 
-                if any_provider_changed:
-                    book_obj.check_provider_state(context, req=req)
-            else:
-                for idx, psg in enumerate(req['passengers']):
-                    book_obj.passenger_ids[idx].result_url = psg['result_url']
+            if any_provider_changed:
+                book_obj.check_provider_state(context, req=req)
+
 
             return ERR.get_no_error({
                 'order_number': book_obj.name,
