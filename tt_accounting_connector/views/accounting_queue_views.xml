@@ -39,9 +39,10 @@
         <field name="arch" type="xml">
             <form create="false">
                 <header>
-                    <button name="action_retry" states="failed"
-                            groups="account.group_account_user,tt_base.group_after_sales_master_level_4"
-                            string="Retry" type="object" icon="fa-exchange" class="oe_highlight"/>
+                    <button name="action_send_to_jasaweb" states="new,failed"
+                            groups="tt_base.group_after_sales_master_level_4"
+                            string="Send Manually to Jasaweb" type="object" class="oe_highlight"/>
+                    <field name="state" widget="statusbar" statusbar_visible="new,success"/>
                 </header>
                 <sheet>
                     <group>
@@ -49,7 +50,6 @@
                             <field name="request"/>
                             <field name="transport_type"/>
                             <field name="res_model"/>
-                            <field name="state"/>
                         </group>
                         <group>
                             <field name="response"/>
@@ -58,7 +58,7 @@
                                 <field name="create_uid" class="oe_inline" readonly="True"/> /
                                 <field name="create_date" class="oe_inline" readonly="True"/>
                             </div>
-                            <label for="send_uid" string="Last Retried By"/>
+                            <label for="send_uid" string="Last Sent By"/>
                             <div>
                                 <field name="send_uid" class="oe_inline" readonly="True"/> /
                                 <field name="send_date" class="oe_inline" readonly="True"/>

@@ -38,6 +38,13 @@ class ReservationPeriksain(models.Model):
     # issued_pending_date = fields.Datetime('Issued Pending Date', readonly=True)
     # issued_pending_hold_date = fields.Datetime('Pending Date', readonly=True)
 
+    state_vendor = fields.Selection([('draft','Draft'),## order bookd by customer
+                                     ('new_order','New Order'),## order issued by customer
+                                     ('confirmed_order','Confirmed Order'),## order confirmmed by periksain
+                                     ('no_show','No Show'),## customer cancel H-1 after 16:00 or H
+                                     ('refund','Refund'),## customer cancel before H-1 16:00
+                                     ('done','Done'),],'Vendor State',default='draft')## normal way of completing order
+
     origin_id = fields.Many2one('tt.destinations', 'Test Area', readonly=True, states={'draft': [('readonly', False)]})
 
     test_address = fields.Char('Test Address', readonly=True, states={'draft': [('readonly', False)]})
@@ -75,6 +82,12 @@ class ReservationPeriksain(models.Model):
     def action_set_as_issued(self):
         for rec in self:
             rec.state = 'issued'
+
+    def action_set_state_vendor_as_no_show(self):
+        self.state_vendor = 'no_show'
+
+    def action_set_state_vendor_as_refund(self):
+        self.state_vendor = 'refund'
 
     def action_booked_api_periksain(self,context):
         write_values = {
@@ -118,6 +131,7 @@ class ReservationPeriksain(models.Model):
             # 'issued_pending_date': datetime.now(),
             # 'issued_pending_uid': co_uid,
             'customer_parent_id': customer_parent_id,
+            'state_vendor': 'new_order',
         }
 
         self.write(write_values)
@@ -257,6 +271,7 @@ class ReservationPeriksain(models.Model):
                 rec[2].update({
                     'customer_id': list_customer_id[idx].id,
                     'email': passengers[idx]['email'],
+                    'address_ktp': passengers[idx]['address_ktp'],
                     'phone_number': passengers[idx]['phone_number'],
                     'sample_method': passengers[idx]['sample_method']
                 })
@@ -432,6 +447,7 @@ class ReservationPeriksain(models.Model):
                     'passengers': psg_list,
                     'provider_bookings': prov_list,
                     'test_address': book_obj.test_address,
+                    'test_address_map_link': book_obj.test_address_map_link,
                     'picked_timeslot': picked_timeslot,
                     'timeslot_list': timeslot_list
                 })
@@ -932,6 +948,12 @@ class ReservationPeriksain(models.Model):
             psg_count += 1
             passengers += str(psg_count) + '. ' + (rec.title + ' ' if rec.title else '') + (rec.first_name if rec.first_name else '') + ' ' + (rec.last_name if rec.last_name else '') + '<br/>'
         return passengers
+
+    def get_closing_notes_email(self):
+        if self.carrier_name in ['PRKPCR']:
+            return 'Under normal circumstances, test results will be released by RSJ Menur (Menur Mental Hospital) Surabaya around 24-72 hours after the test.'
+        else:
+            return 'Under normal circumstances, test results will be sent via Email by Periksain.id around 2-4 hours after the test.'
 
     def get_aftersales_desc(self):
         desc_txt = 'PNR: ' + self.pnr + '<br/>'

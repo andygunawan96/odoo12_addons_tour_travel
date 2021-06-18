@@ -22,7 +22,7 @@ class TtTimeslotphc(models.Model):
 
     seq_id = fields.Char('Sequence ID')
 
-    dateslot = fields.Date('dateslot')
+    dateslot = fields.Date('Dateslot')
 
     datetimeslot = fields.Datetime('DateTime Slot')
     timeslot_display_name = fields.Char('Display Name', compute="_compute_timeslot_display_name")

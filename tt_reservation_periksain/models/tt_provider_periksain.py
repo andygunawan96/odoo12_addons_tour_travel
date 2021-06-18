@@ -57,6 +57,11 @@ class TtProviderPeriksain(models.Model):
     reconcile_time = fields.Datetime('Reconcile Time')
     ##
 
+    # @api.model
+    # def create(self, vals_list):
+    #     super(TtProviderPeriksain, self).create(vals_list)
+
+
     ##button function
     def action_set_to_issued_from_button(self, payment_data={}):
         if self.state == 'issued':
@@ -313,6 +318,10 @@ class TtProviderPeriksain(models.Model):
         ticket_list = []
         ticket_found = []
         ticket_not_found = []
+        #################
+        for passenger in self.booking_id.passenger_ids:
+            passenger.is_ticketed = False
+        #################
         for psg in passengers:
             psg_obj = self.booking_id.passenger_ids.filtered(lambda x: x.name.replace(' ', '').lower() ==
                                                                        ('%s%s' % (psg.get('first_name', ''),
@@ -327,11 +336,18 @@ class TtProviderPeriksain(models.Model):
                                                                                               ''))).lower().replace(' ',
                                                                                                                     ''))
             if psg_obj:
+                _logger.info(json.dumps(psg_obj.ids))
+                if len(psg_obj.ids) > 1:
+                    for psg_o in psg_obj:
+                        if not psg_o.is_ticketed:
+                            psg_obj = psg_o
+                            break
                 ticket_list.append((0, 0, {
                     'pax_type': psg.get('pax_type'),
                     'ticket_number': '',
                     'passenger_id': psg_obj.id
                 }))
+                psg_obj.is_ticketed = True
                 ticket_found.append(psg_obj.id)
             else:
                 ticket_not_found.append(psg)

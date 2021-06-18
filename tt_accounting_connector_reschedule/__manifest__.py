@@ -7,7 +7,7 @@
     'sequence': 100,
     'description': """
 Tour & Travel - Accounting Connector Reschedule
-===================================
+===============================================
 Key Features
 ------------
     """,

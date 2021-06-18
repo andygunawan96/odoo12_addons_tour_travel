@@ -7,8 +7,8 @@
             <search string="Search Airline Booking">
                 <field name="name"/>
                 <field name="pnr"/>
+                <field name="carrier_name" groups=""/>
                 <field name="provider_name" groups="tt_base.group_tt_tour_travel"/>
-                <field name="carrier_name" groups="tt_base.group_tt_tour_travel"/>
                 <field name="agent_id" groups="tt_base.group_tt_tour_travel"/>
                 <field name="agent_type_id" groups="tt_base.group_tt_tour_travel"/>
                 <field name="customer_parent_id" groups="tt_base.group_tt_agent_user,tt_base.group_tt_tour_travel"/>
