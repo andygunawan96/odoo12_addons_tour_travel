@@ -478,13 +478,13 @@ class Reservationphc(models.Model):
 
                 res[picked_timeslot[:10]].append({
                     'order_number': rec.name,
-                    'booked_by': self.user_id.name if self.user_id else '',
-                    'agent': self.agent_id.name if self.agent_id else '',
-                    'adult': self.adult,
-                    'state': self.state,
+                    'agent': rec.agent_id.name if rec.agent_id else '',
+                    'adult': rec.adult,
+                    'state': rec.state,
                     'origin': rec.origin_id.name,
-                    'state_description': variables.BOOKING_STATE_STR[self.state],
+                    'state_description': variables.BOOKING_STATE_STR[rec.state],
                     'test_address': rec.test_address,
+                    'time_test': picked_timeslot
                 })
             return ERR.get_no_error(res)
         except RequestException as e:

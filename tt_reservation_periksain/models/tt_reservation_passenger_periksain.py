@@ -22,6 +22,7 @@ class TtReservationCustomer(models.Model):
     phone_number = fields.Char('Phone Number')
 
     sample_method = fields.Selection(VARIABLE_SAMPLE_METHOD,'Sample Method')
+    is_ticketed = fields.Boolean('Ticketed')
 
     def to_dict(self):
         res = super(TtReservationCustomer, self).to_dict()
