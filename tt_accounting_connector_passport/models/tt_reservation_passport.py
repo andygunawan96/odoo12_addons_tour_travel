@@ -3,6 +3,7 @@ from ...tools import util,ERR
 import logging,traceback
 from datetime import datetime
 import json
+from ...tools.variables import ACC_TRANSPORT_TYPE, ACC_TRANSPORT_TYPE_REVERSE
 
 _logger = logging.getLogger(__name__)
 
@@ -55,7 +56,12 @@ class TtReservationPassport(models.Model):
                     rec.sudo().write({
                         'is_sent_to_acc': True
                     })
-            res = self.env['tt.accounting.connector'].add_sales_order(ledger_list)
+            new_obj = self.env['tt.accounting.queue'].create({
+                'request': json.dumps(ledger_list),
+                'transport_type': ACC_TRANSPORT_TYPE.get(self._name, ''),
+                'res_model': self._name
+            })
+            res = new_obj.to_dict()
             return ERR.get_no_error(res)
         except Exception as e:
             _logger.info("Failed to send ledgers to accounting software. Ignore this message if tt_accounting_connector is currently not installed.")

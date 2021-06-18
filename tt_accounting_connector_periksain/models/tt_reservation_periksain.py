@@ -8,8 +8,8 @@ from ...tools.variables import ACC_TRANSPORT_TYPE, ACC_TRANSPORT_TYPE_REVERSE
 _logger = logging.getLogger(__name__)
 
 
-class TtReservationEvent(models.Model):
-    _inherit = 'tt.reservation.event'
+class TtReservationPeriksain(models.Model):
+    _inherit = 'tt.reservation.periksain'
 
     def send_ledgers_to_accounting(self):
         try:
@@ -68,10 +68,10 @@ class TtReservationEvent(models.Model):
             _logger.error(traceback.format_exc())
             return ERR.get_error(1000)
 
-    def action_issued_event(self, context):
-        super(TtReservationEvent, self).action_issued_event(context)
+    def action_issued_periksain(self,co_uid,customer_parent_id,acquirer_id = False):
+        super(TtReservationPeriksain, self).action_issued_periksain(co_uid,customer_parent_id,acquirer_id)
         self.send_ledgers_to_accounting()
 
-    def action_fail_refund(self,context):
-        super(TtReservationEvent, self).action_fail_refund(context)
+    def action_reverse_periksain(self,context):
+        super(TtReservationPeriksain, self).action_reverse_periksain(context)
         self.send_ledgers_to_accounting()

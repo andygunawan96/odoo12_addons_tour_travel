@@ -2,7 +2,6 @@ from odoo import api, fields, models, _
 import logging
 import requests
 import json
-from ...tools.variables import ACC_TRANSPORT_TYPE, ACC_TRANSPORT_TYPE_REVERSE
 
 _logger = logging.getLogger(__name__)
 url = 'http://accounting.rodextrip.com'

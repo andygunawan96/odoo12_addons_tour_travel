@@ -8,24 +8,19 @@ from ...tools.variables import ACC_TRANSPORT_TYPE, ACC_TRANSPORT_TYPE_REVERSE
 _logger = logging.getLogger(__name__)
 
 
-class TtReservationEvent(models.Model):
-    _inherit = 'tt.reservation.event'
+class TtReschedulePHC(models.Model):
+    _inherit = 'tt.reschedule.phc'
 
     def send_ledgers_to_accounting(self):
         try:
             base_url = self.env['ir.config_parameter'].sudo().get_param('web.base.url')
-            pay_acq = self.env['payment.acquirer'].search([('seq_id', '=', self.payment_method)], limit=1)
             ledger_list = []
             for rec in self.ledger_ids:
                 if not rec.is_sent_to_acc:
-                    if rec.transaction_type == 2:
-                        trans_type = 'Transport Booking'
-                    elif rec.transaction_type == 3:
-                        trans_type = 'Commission'
-                        if rec.agent_type_id.id == self.env.ref('tt_base.agent_type_ho').id:
-                            trans_type += ' HO'
-                        else:
-                            trans_type += ' Channel'
+                    if rec.transaction_type == 7:
+                        trans_type = 'Reschedule'
+                    elif rec.transaction_type == 6:
+                        trans_type = 'Admin Fee'
                     else:
                         trans_type = ''
 
@@ -44,14 +39,14 @@ class TtReservationEvent(models.Model):
                         'company_sender': rec.agent_id and rec.agent_id.name,
                         'company_receiver': self.env.ref('tt_base.rodex_ho').name,
                         'state': 'Done',
-                        'display_provider_name': rec.display_provider_name and rec.display_provider_name or '',
-                        'pnr': rec.pnr and rec.pnr or '',
+                        'display_provider_name': '',
+                        'pnr': '',
                         'url_legacy': base_url + '/web#id=' + str(rec.id) + '&model=tt.ledger&view_type=form',
                         'transaction_type': trans_type,
-                        'transport_type': self.provider_type_id and self.provider_type_id.name or '',
+                        'transport_type': 'Reschedule',
                         'payment_method': '',
                         'NTA_amount_real': self.total_nta and self.total_nta or 0,
-                        'payment_acquirer': pay_acq and pay_acq.name or ''
+                        'payment_acquirer': self.payment_acquirer_id and self.payment_acquirer_id.name or '',
                     })
                     rec.sudo().write({
                         'is_sent_to_acc': True
@@ -68,10 +63,10 @@ class TtReservationEvent(models.Model):
             _logger.error(traceback.format_exc())
             return ERR.get_error(1000)
 
-    def action_issued_event(self, context):
-        super(TtReservationEvent, self).action_issued_event(context)
+    def validate_reschedule_from_button(self):
+        super(TtReschedulePHC, self).validate_reschedule_from_button()
         self.send_ledgers_to_accounting()
 
-    def action_fail_refund(self,context):
-        super(TtReservationEvent, self).action_fail_refund(context)
+    def cancel_reschedule_from_button(self):
+        super(TtReschedulePHC, self).cancel_reschedule_from_button()
         self.send_ledgers_to_accounting()
