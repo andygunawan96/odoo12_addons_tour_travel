@@ -448,44 +448,6 @@ class ReservationPeriksain(models.Model):
             _logger.error(traceback.format_exc())
             return ERR.get_error(1013)
 
-    # req
-    # date from
-    # date to
-    def get_transaction_by_analyst_api(self, req, context):
-        try:
-            dom = [('test_datetime', '>=', req['date_from']),
-                   ('test_datetime', '<=', req['date_to']),
-                   ('provider_booking_ids.carrier_id', 'in', [
-                       self.env.ref('tt_reservation_periksain.tt_transport_carrier_periksain_antigen').id,
-                   ]),
-                   ('state', 'in', ['issued', 'done']),
-                   ('analyst_ids.user_id', '=', context['co_uid']),
-                   ('picked_timeslot_id', '!=', False)]
-            res = {}
-            for rec in self.search(dom, order="test_datetime asc"):
-                picked_timeslot = rec.picked_timeslot_id.datetimeslot.strftime('%Y-%m-%d %H:%M')
-
-                if picked_timeslot[:10] not in res:
-                    res[picked_timeslot[:10]] = []
-
-                res[picked_timeslot[:10]].append({
-                    'order_number': rec.name,
-                    'agent': rec.agent_id.name if rec.agent_id else '',
-                    'adult': rec.adult,
-                    'state': rec.state,
-                    'origin': rec.origin_id.name,
-                    'state_description': variables.BOOKING_STATE_STR[rec.state],
-                    'test_address': rec.test_address,
-                    'time_test': picked_timeslot
-                })
-            return ERR.get_no_error(res)
-        except RequestException as e:
-            _logger.error(traceback.format_exc())
-            return e.error_dict()
-        except Exception as e:
-            _logger.error(traceback.format_exc())
-            return ERR.get_error(1012)
-
     def payment_periksain_api(self,req,context):
         payment_res = self.payment_reservation_api('periksain',req,context)
         return payment_res
