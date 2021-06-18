@@ -35,7 +35,7 @@ class TtReschedulePeriksain(models.Model):
 
     reschedule_line_ids = fields.One2many('tt.reschedule.periksain.line', 'reschedule_id', 'After Sales Line(s)', readonly=True, states={'confirm': [('readonly', False)]})
     old_picked_timeslot_id = fields.Many2one('tt.timeslot.periksain', 'Old Picked Timeslot', readonly=True)
-    new_picked_timeslot_id = fields.Many2one('tt.timeslot.periksain', 'New Picked Timeslot', readonly=True, states={'draft': [('readonly', False)]})
+    new_picked_timeslot_id = fields.Many2one('tt.timeslot.periksain', 'New Picked Timeslot', readonly=True, states={'draft': [('readonly', False)]}, domain=[('datetimeslot', '>=', datetime.now())])
     change_ids = fields.One2many('tt.reschedule.periksain.changes', 'reschedule_id', 'Changes', readonly=True)
     passenger_ids = fields.Many2many('tt.reservation.passenger.periksain', 'tt_reschedule_periksain_passenger_rel', 'reschedule_id',
                                      'passenger_id',

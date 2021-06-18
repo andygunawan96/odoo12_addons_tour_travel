@@ -40,6 +40,7 @@ class TtReservationCustomer(models.Model):
     kelurahan_ktp = fields.Char('Kelurahan KTP')
 
     pcr_data = fields.Text('PCR Data')
+    is_ticketed = fields.Boolean('Ticketed')
 
     def to_dict(self):
         res = super(TtReservationCustomer, self).to_dict()

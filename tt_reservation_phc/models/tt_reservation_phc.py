@@ -361,7 +361,9 @@ class Reservationphc(models.Model):
                     continue
                 if provider['status'] == 'ISSUED':
                     provider_obj.action_issued_api_phc(context)
-                    for idx, ticket_obj in enumerate(provider['tickets']):
+                #jaga jaga kalau gagal issued
+                for idx, ticket_obj in enumerate(provider['tickets']):
+                    if ticket_obj['ticket_number']:
                         provider_obj.update_ticket_per_pax_api(idx, ticket_obj['ticket_number'])
                     any_provider_changed = True
 
@@ -460,31 +462,31 @@ class Reservationphc(models.Model):
         try:
             dom = [('test_datetime', '>=',req['date_from']),
                    ('test_datetime', '<=',req['date_to']),
-                   ('provider_bookings.carrier_id','in',[
-                       self.env.ref('tt_reservation_phc.tt_transport_carrier_phc_home_care_antigen'),
-                       self.env.ref('tt_reservation_phc.tt_transport_carrier_phc_home_care_pcr'),
+                   ('provider_booking_ids.carrier_id','in',[
+                       self.env.ref('tt_reservation_phc.tt_transport_carrier_phc_home_care_antigen').id,
+                       self.env.ref('tt_reservation_phc.tt_transport_carrier_phc_home_care_pcr').id,
                    ]),
                    ('state','in',['issued','done']),
-                   ('analyst_ids.user_id','=',context['co_user_id']),
+                   ('analyst_ids.user_id','=',context['co_uid']),
                    ('picked_timeslot_id','!=',False)]
             res = {}
-            for rec in self.search(dom):
-                picked_timeslot = rec.picked_timeslot_id.datetimeslot.strftime('%Y-%m-%d %H:%M')
+            for rec in self.search(dom, order="test_datetime asc"):
+                picked_timeslot = rec.test_datetime.strftime('%Y-%m-%d %H:%M')
 
-                if picked_timeslot not in res:
-                    res[picked_timeslot] = []
+                if picked_timeslot[:10] not in res:
+                    res[picked_timeslot[:10]] = []
 
-                res[picked_timeslot].append({
+                res[picked_timeslot[:10]].append({
                     'order_number': rec.name,
-                    'booked_by': self.user_id.name if self.user_id else '',
-                    'agent': self.agent_id.name if self.agent_id else '',
-                    'adult': self.adult,
-                    'state': self.state,
+                    'agent': rec.agent_id.name if rec.agent_id else '',
+                    'adult': rec.adult,
+                    'state': rec.state,
                     'origin': rec.origin_id.name,
-                    'state_description': variables.BOOKING_STATE_STR[self.state],
+                    'state_description': variables.BOOKING_STATE_STR[rec.state],
                     'test_address': rec.test_address,
+                    'time_test': picked_timeslot
                 })
-                return ERR.get_no_error(res)
+            return ERR.get_no_error(res)
         except RequestException as e:
             _logger.error(traceback.format_exc())
             return e.error_dict()
@@ -978,6 +980,12 @@ class Reservationphc(models.Model):
             psg_count += 1
             passengers += str(psg_count) + '. ' + (rec.title + ' ' if rec.title else '') + (rec.first_name if rec.first_name else '') + ' ' + (rec.last_name if rec.last_name else '') + '<br/>'
         return passengers
+
+    def get_closing_notes_email(self):
+        if self.carrier_name in ['PHCHCKPCR', 'PHCDTKPCR']:
+            return 'Under normal circumstances, test results will be released by PHC Hospital around 12-24 hours after the test.'
+        else:
+            return 'Under normal circumstances, test results will be sent via Whatsapp by PHC Hospital around 30 minutes after the test.'
 
     def get_aftersales_desc(self):
         desc_txt = 'PNR: ' + self.pnr + '<br/>'

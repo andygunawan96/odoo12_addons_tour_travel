@@ -1,5 +1,6 @@
 from odoo import api, fields, models, _
 import base64,hashlib,time,os,traceback,logging,re
+from datetime import datetime, date, timedelta
 from odoo.exceptions import UserError
 from ...tools import ERR
 
@@ -23,7 +24,7 @@ class TtReschedulePHCWizard(models.TransientModel):
     currency_id = fields.Many2one('res.currency', readonly=True)
     service_type = fields.Char('Service Type', required=True, readonly=True)
     old_picked_timeslot_id = fields.Many2one('tt.timeslot.phc', 'Old Picked Timeslot', readonly=True)
-    new_picked_timeslot_id = fields.Many2one('tt.timeslot.phc', 'New Picked Timeslot')
+    new_picked_timeslot_id = fields.Many2one('tt.timeslot.phc', 'New Picked Timeslot', domain=[('datetimeslot', '>=', datetime.now())])
     passenger_ids = fields.Many2many('tt.reservation.passenger.phc', 'tt_reschedule_phc_wizard_passenger_rel', 'reschedule_id',
                                      'passenger_id', compute='_compute_passengers', readonly=True)
 

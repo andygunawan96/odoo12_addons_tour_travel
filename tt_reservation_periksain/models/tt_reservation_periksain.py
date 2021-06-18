@@ -949,6 +949,12 @@ class ReservationPeriksain(models.Model):
             passengers += str(psg_count) + '. ' + (rec.title + ' ' if rec.title else '') + (rec.first_name if rec.first_name else '') + ' ' + (rec.last_name if rec.last_name else '') + '<br/>'
         return passengers
 
+    def get_closing_notes_email(self):
+        if self.carrier_name in ['PRKPCR']:
+            return 'Under normal circumstances, test results will be released by RSJ Menur (Menur Mental Hospital) Surabaya around 24-72 hours after the test.'
+        else:
+            return 'Under normal circumstances, test results will be sent via Email by Periksain.id around 2-4 hours after the test.'
+
     def get_aftersales_desc(self):
         desc_txt = 'PNR: ' + self.pnr + '<br/>'
         desc_txt += 'Test Address: ' + self.test_address + '<br/>'
