@@ -484,6 +484,7 @@ class Reservationphc(models.Model):
                     'origin': rec.origin_id.name,
                     'state_description': variables.BOOKING_STATE_STR[rec.state],
                     'test_address': rec.test_address,
+                    'test_address_map_link': rec.test_address_map_link,
                     'time_test': picked_timeslot
                 })
             return ERR.get_no_error(res)
