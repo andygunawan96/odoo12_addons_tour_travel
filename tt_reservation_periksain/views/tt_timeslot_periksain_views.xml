@@ -26,11 +26,11 @@
                         <field name="selected_count"/>
                         <field name="used_count"/>
                     </group>
-                    <separator string="Selected by Customer Booking(s)"/>
-                    <field name="booking_ids"/>
-
                     <separator string="Confirmed to Customer Booking(s)"/>
                     <field name="booking_used_ids"/>
+
+<!--                    <separator string="Selected by Customer Booking(s)"/>-->
+<!--                    <field name="booking_ids"/>-->
                 </sheet>
             </form>
         </field>

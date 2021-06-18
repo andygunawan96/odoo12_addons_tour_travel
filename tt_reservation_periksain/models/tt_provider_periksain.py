@@ -57,6 +57,11 @@ class TtProviderPeriksain(models.Model):
     reconcile_time = fields.Datetime('Reconcile Time')
     ##
 
+    # @api.model
+    # def create(self, vals_list):
+    #     super(TtProviderPeriksain, self).create(vals_list)
+
+
     ##button function
     def action_set_to_issued_from_button(self, payment_data={}):
         if self.state == 'issued':

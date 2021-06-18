@@ -20,9 +20,9 @@ class TtTimeslotPeriksain(models.Model):
     _order = 'datetimeslot'
     _rec_name = 'timeslot_display_name'
 
-    seq_id = fields.Char('Sequence ID')
+    seq_id = fields.Char('Sequence ID',readonly=True)
 
-    dateslot = fields.Date('dateslot')
+    dateslot = fields.Date('Dateslot',readonly=True)
 
     datetimeslot = fields.Datetime('DateTime Slot')
     timeslot_display_name = fields.Char('Display Name', compute="_compute_timeslot_display_name")
