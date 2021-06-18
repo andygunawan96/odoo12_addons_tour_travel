@@ -981,6 +981,12 @@ class Reservationphc(models.Model):
             passengers += str(psg_count) + '. ' + (rec.title + ' ' if rec.title else '') + (rec.first_name if rec.first_name else '') + ' ' + (rec.last_name if rec.last_name else '') + '<br/>'
         return passengers
 
+    def get_closing_notes_email(self):
+        if self.carrier_name in ['PHCHCKPCR', 'PHCDTKPCR']:
+            return 'Under normal circumstances, test results will be released by PHC Hospital around 12-24 hours after the test.'
+        else:
+            return 'Under normal circumstances, test results will be sent via Whatsapp by PHC Hospital around 30 minutes after the test.'
+
     def get_aftersales_desc(self):
         desc_txt = 'PNR: ' + self.pnr + '<br/>'
         desc_txt += 'Test Address: ' + self.test_address + '<br/>'
