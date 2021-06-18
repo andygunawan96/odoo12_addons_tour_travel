@@ -372,7 +372,7 @@ class TtCustomer(models.Model):
                 update_vals.update({
                     'identity_number': number
                 })
-            if c_issued_id != exixting_identity.identity_country_of_issued_id:
+            if c_issued_id != exixting_identity.identity_country_of_issued_id.id:
                 update_vals.update({
                     'identity_country_of_issued_id': c_issued_id
                 })

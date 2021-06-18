@@ -42,7 +42,7 @@ class TtTimeslotPeriksain(models.Model):
     @api.depends('datetimeslot')
     def _compute_timeslot_display_name(self):
         for rec in self:
-            rec.timeslot_display_name = str(rec.datetimeslot.astimezone(pytz.timezone('Asia/Jakarta')))[:19]
+            rec.timeslot_display_name = "%s %s" % (str(rec.datetimeslot.astimezone(pytz.timezone('Asia/Jakarta')))[:19], rec.destination_id.name)
 
     @api.model
     def create(self, vals_list):
@@ -88,7 +88,7 @@ class TtTimeslotPeriksain(models.Model):
         current_datetime = current_wib_datetime.astimezone(pytz.utc)
         malang_id = self.env.ref('tt_reservation_periksain.tt_destination_periksain_mlg').id
         if '08:00' < str(current_wib_datetime.time())[:5] < '18:00':
-            dom = [('datetimeslot', '>', datetime.now(pytz.utc) + timedelta(hours=2))]
+            dom = [('datetimeslot', '>', datetime.now(pytz.utc) + timedelta(hours=3))]
         else:
             min_datetime = current_datetime.replace(hour=3,minute=0)
             if current_datetime > min_datetime:

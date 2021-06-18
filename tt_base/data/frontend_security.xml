@@ -175,4 +175,9 @@
         <field name="code">agent_setting_printout</field>
     </record>
 
+    <record id="is_able_to_view_medical_address_map" model="tt.frontend.security">
+        <field name="name">View Medical Address Map</field>
+        <field name="code">view_medical_address_map</field>
+    </record>
+
 </odoo>
