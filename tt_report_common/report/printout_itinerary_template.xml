@@ -990,14 +990,11 @@
                         <div class="col-4" style="text-align: center; font-size:17px;">
                             Name
                         </div>
-                        <div class="col-3" style="text-align: right; font-size:17px; padding-right: 30px;">
+                        <div class="col-3" style="text-align: center; font-size:17px; padding-right: 30px;">
                             Birth Date
                         </div>
-                        <div class="col-2" style="text-align: center; font-size:17px;">
-                            Email
-                        </div>
-                        <div class="col-2" style="text-align: center; font-size:17px;">
-                            Phone
+                        <div class="col-4" style="text-align: center; font-size:17px;">
+                            Contact
                         </div>
                     </div>
                     <div style="border: 1px solid #BBB; margin-bottom: 5px; margin-left: 15px; margin-right: 15px"/>
@@ -1010,14 +1007,12 @@
                             <div class="col-4" style="text-align: left">
                                 <label style="font-weight:450; font-size:17px; margin-bottom: 0px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"><span t-field="psg.name"/></label>
                             </div>
-                            <div class="col-3" style="text-align: right">
+                            <div class="col-3" style="text-align: center">
                                 <label style="font-weight:450; font-size:17px; margin-bottom: 0px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"><span t-field="psg.birth_date" t-options ='{"format": "dd MMM yyyy"}'/></label>
                             </div>
-                            <div class="col-2" style="text-align: center">
-                                <label style="font-weight:450; font-size:17px; margin-bottom: 0px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"><span t-field="psg.email"/></label><br/>
-                            </div>
-                            <div class="col-2" style="text-align: center">
-                                <label style="font-weight:450; font-size:17px; margin-bottom: 0px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"><span t-field="psg.phone_number"/></label>
+                            <div class="col-4" style="text-align: left">
+                                <label style="font-weight:450; font-size:17px; margin-bottom: 0px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Email: <span t-field="psg.email"/></label><br/>
+                                <label style="font-weight:450; font-size:17px; margin-bottom: 0px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Phone: <span t-field="psg.phone_number"/></label>
                             </div>
                         </div>
                     </t>

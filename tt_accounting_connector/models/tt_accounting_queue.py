@@ -2,12 +2,12 @@ from odoo import api, fields, models, _
 import logging, traceback
 import requests
 import json
-from ...tools.variables import ACC_TRANSPORT_TYPE, ACC_TRANSPORT_TYPE_REVERSE
 
 _logger = logging.getLogger(__name__)
 
 class TtAccountingQueue(models.Model):
     _name = 'tt.accounting.queue'
+    _inherit = 'tt.history'
     _description = 'Accounting Queue'
     _order = 'id DESC'
 
@@ -18,6 +18,14 @@ class TtAccountingQueue(models.Model):
     state = fields.Selection([('new', 'New'), ('success', 'Success'), ('failed', 'Failed')], 'State', default='new', readonly=True)
     send_uid = fields.Many2one('res.users', 'Last Sent By', readonly=True)
     send_date = fields.Datetime('Last Sent Date', readonly=True)
+
+    def to_dict(self):
+        return {
+            'request': self.request,
+            'transport_type': self.transport_type,
+            'res_model': self.res_model,
+            'state': self.state
+        }
 
     def action_send_to_jasaweb(self):
         try:

@@ -94,7 +94,8 @@ class HotelInformation(models.Model):
 
     def get_provider_name(self):
         x = 0
-        for rec in self.env['tt.hotel.master'].search([('id', '>=', self.id),('provider', '=', '')]):
+        # for rec in self.env['tt.hotel.master'].search([('id', '>=', self.id),('provider', '=', '')]):
+        for rec in self:
             old_state = rec.state
             master_fac = []
             rec.state = 'draft'

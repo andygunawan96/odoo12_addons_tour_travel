@@ -26,6 +26,7 @@
                     <!--<button string="Send to GW" type="object" name="send_to_cache"/>-->
                     <!--Tester ONLY-->
                     <button string="Compare This Hotel" type="object" name="compare_hotel"/>
+                    <button string="Adv Similar Name" type="object" name="advance_find_similar_name_from_database_2"/>
                     <field name="state" widget="statusbar" statusbar_visible="draft,confirm" />
                 </header>
 

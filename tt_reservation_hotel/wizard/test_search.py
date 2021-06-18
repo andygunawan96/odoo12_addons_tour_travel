@@ -45,7 +45,7 @@ class TestSearch(models.Model):
             for provider in providers:
                 if not provider:
                     continue
-                provider = provider.split('_')[0]
+                # provider = provider.split('_')[0]
                 provider_obj = self.env['tt.provider'].search(['|', ('alias', '=', provider), ('code', '=', provider)], limit=1)
                 provider_id = provider_obj.id
                 provider_destination_ids += [rec.res_id for rec in self.env['tt.provider.code'].sudo().search([('res_model', '=', 'tt.hotel.destination'), ('provider_id', '=', provider_id)])]
@@ -1131,7 +1131,7 @@ class TestSearch(models.Model):
 
         return providers
 
-    def get_provider_for_destination_dest_name(self, dest_name):
+    def get_provider_for_destination_dest_name_2(self, dest_name):
         def provider_to_dic(vendor, city_id):
             def vendor_rate_to_dic(recs):
                 # vals = {
@@ -1208,6 +1208,55 @@ class TestSearch(models.Model):
                 'provider_country_id': False,
                 'currency_rule': {},
             })
+        return providers
+
+    def get_provider_for_destination_dest_name(self, dest_name):
+        def provider_to_dic(provider_id, city_id):
+            def vendor_rate_to_dic(recs):
+                # vals = {
+                #     'currency_id': price_rule.currency_id.code,
+                #     'orig_currency_id': price_rule.orig_currency_id.code,
+                #     'date': price_rule.date,
+                #     'sell_rate': price_rule.sell_rate,
+                # }
+                vals = {}
+                for rec in recs:
+                    vals[rec.currency_id.name] = rec.sell_rate
+                return vals
+
+            resp = city_id and city_id.get_city_country_provider_code(city_id.id, provider_id.code) or {'city_id': False, 'country_id': False}
+            if provider_id.active:
+                vals = {
+                    'provider_id': provider_id.id,
+                    'name': provider_id.name,
+                    'provider': provider_id.code or provider_id.name.lower(),
+                    'provider_city_id': resp['city_id'],
+                    'provider_country_id': resp['country_id'],
+                    'currency_rule': vendor_rate_to_dic(provider_id.rate_ids),
+                }
+                return vals
+            return False
+
+        # Cari di destination
+
+        # Jika tidak ada baru cari di city dan country
+        # Flow lama
+        providers = []
+
+        city_id = self.env['res.city'].find_city_by_name(dest_name, 1)
+        if city_id:
+            country_id = city_id.state_id and city_id.state_id.country_id or city_id.country_id
+
+            vendor_ids = self.env['tt.provider.destination'].sudo().search([('country_id', '=', country_id.id), ('is_apply', '=', True)])
+            vendor_ids = [x.provider_id for x in vendor_ids]
+        else:
+            hotel_type_obj = self.env.ref('tt_reservation_hotel.tt_provider_type_hotel')
+            vendor_ids = self.env['tt.provider'].search([('provider_type_id', '=', hotel_type_obj.id), ('alias', '!=', False)])
+
+        for rec in vendor_ids:
+            a = provider_to_dic(rec, city_id)
+            if a:
+                providers.append(a)
         return providers
 
     def get_hotel_by_city(self, provider_code, dest_id):
