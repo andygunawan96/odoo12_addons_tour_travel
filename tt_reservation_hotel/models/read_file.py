@@ -2192,6 +2192,18 @@ class HotelInformation(models.Model):
         else:
             return provider
 
+    def compute_related_city(self, city_obj, city_name=''):
+        city_name = city_name or city_obj.name
+
+        searched_city_ids = [city_obj.id]
+        searched_city_ids += [rec.id for rec in city_obj.other_name_ids.filtered(lambda x: x.name not in city_name)]
+
+        state_obj = self.env['res.country.state'].search([('name', '=ilike', city_name)], limit=1)
+        if state_obj:
+            searched_city_ids += state_obj.city_ids.ids
+
+        return searched_city_ids
+
     def comp_fac(self):
         # for fac in new_hotel.get('facilities') or []:
         #     if isinstance(fac, dict):
@@ -2233,6 +2245,8 @@ class HotelInformation(models.Model):
                         'destination_id': destination_id,
                         'city_id': isinstance(city_id, int) and city_id or city_id.id,
                         'address': hotel.get('address') or hotel.get('street'),
+                        'address2': hotel.get('address2') or hotel.get('street2'),
+                        'address3': hotel.get('address3') or hotel.get('street3'),
                         'city': hotel.get('city', city_name),
                         'state': hotel.get('state_id.name'),
                         'district': hotel.get('district_id'),
@@ -2385,6 +2399,17 @@ class HotelInformation(models.Model):
                         temp.append(rec)
         return temp
 
+    def advance_find_similar_name_from_database_2(self):
+        city_ids = self.compute_related_city(self.city_id)
+        same_hotel_obj = self.advance_find_similar_name_from_database(self.name, self.city_id.name, city_ids, self.destination_id.id, False)
+
+        for same_hotel_obj_id in same_hotel_obj:
+            comparing_id = self.env['tt.hotel.compare'].create({
+                'hotel_id': self.id,
+                'comp_hotel_id': same_hotel_obj_id.id,
+            })
+            comparing_id.compare_hotel()
+
     def exact_find_similar_name(self, hotel_name, city_name, cache_content):
         for rec in cache_content:
             if self.formatting_hotel_name(rec['name'], city_name) == self.formatting_hotel_name(hotel_name, city_name):
@@ -2467,14 +2492,17 @@ class HotelInformation(models.Model):
         create_hotel_id.update({
             'facility_ids': [(6, 0, fac_link_ids)],
             'address': hotel_obj['location']['address'],
+            'address2': hotel_obj['location']['address2'],
+            'address3': hotel_obj['location']['address3'],
+            'rating': hotel_obj['rating'],
         })
         return create_hotel_id
-
 
     def create_or_edit_hotel(self, hotel_obj, file_number=-1):
         ext_code = list(hotel_obj['external_code'].keys())[0]
         provider_id = self.env['tt.provider'].search([('alias','=', ext_code)]).id
         old_objs = self.env['tt.provider.code'].search([('provider_id', '=', provider_id), ('code', '=', hotel_obj['external_code'][ext_code])])
+
         if old_objs:
             self.file_log_write('Update for Hotel ' + str(old_objs[0].name) + ' with code ' + str(old_objs[0].code) )
             # TODO: update hotel here
@@ -3493,8 +3521,7 @@ class HotelInformation(models.Model):
                     searched_city_names = [city_name, ]
                     searched_city_names += [rec.name for rec in city_obj.other_name_ids.filtered(lambda x: x.name not in city_name)]
 
-                    searched_city_ids = [city_obj.id]
-                    searched_city_ids += [rec.id for rec in city_obj.other_name_ids.filtered(lambda x: x.name not in city_name)]
+                    searched_city_ids = self.compute_related_city(city_obj, city_name)
 
                     # Loop All provider untuk setiap city di alias name
                     for searched_city_name in searched_city_names:
@@ -3513,17 +3540,21 @@ class HotelInformation(models.Model):
                                         hotel_fmt = self.formating_homas(hotel, hotel_id, provider, city_id, city_name, destination_obj.id)
 
                                         internal_hotel_obj = self.create_or_edit_hotel(hotel_fmt, -1)
-                                        if len(json.loads(file)):
-                                            same_hotel_obj = self.advance_find_similar_name_from_database(hotel_fmt['name'], hotel_fmt['location']['city'], searched_city_ids, destination_obj.id, internal_hotel_obj.id)
-                                        else:
-                                            same_hotel_obj = False
-                                        if same_hotel_obj:
-                                            for same_hotel_obj_id in same_hotel_obj:
-                                                comparing_id = self.env['tt.hotel.compare'].create({
-                                                    'hotel_id': internal_hotel_obj.id,
-                                                    'comp_hotel_id': same_hotel_obj_id.id,
-                                                })
-                                                comparing_id.compare_hotel()
+                                        if internal_hotel_obj:
+                                            if len(json.loads(file)):
+                                                same_hotel_obj = self.advance_find_similar_name_from_database(hotel_fmt['name'], hotel_fmt['location']['city'], searched_city_ids, destination_obj.id, internal_hotel_obj.id)
+                                            else:
+                                                same_hotel_obj = False
+                                            if same_hotel_obj:
+                                                for same_hotel_obj_id in same_hotel_obj:
+                                                    comparing_id = self.env['tt.hotel.compare'].create({
+                                                        'hotel_id': internal_hotel_obj.id,
+                                                        'comp_hotel_id': same_hotel_obj_id.id,
+                                                    })
+                                                    comparing_id.compare_hotel()
+                                        if hotel_id % 300 == 0:
+                                            _logger.info('====== Saving Poin Hotel Raw Data ======')
+                                            self.env.cr.commit()
                                 f2.close()
                             except Exception as e:
                                 self.file_log_write('Error:' + provider + ' in id ' + str(hotel_id) + '; MSG:' + str(e))
