@@ -5,16 +5,6 @@
         <field name="code">ticketing</field>
     </record>
 
-    <record id="analyst_periksain_permission" model="tt.frontend.security">
-        <field name="name">Analyst Periksain</field>
-        <field name="code">analyst_periksain</field>
-    </record>
-
-    <record id="able_to_assign_analyst_periksain_permission" model="tt.frontend.security">
-        <field name="name">Assign Analyst Periksain</field>
-        <field name="code">assign_analyst_periksain</field>
-    </record>
-
     <record id="analyst_phc_permission" model="tt.frontend.security">
         <field name="name">Analyst Phc</field>
         <field name="code">analyst_phc</field>
