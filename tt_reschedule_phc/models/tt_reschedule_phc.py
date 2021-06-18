@@ -35,7 +35,7 @@ class TtReschedulePHC(models.Model):
 
     reschedule_line_ids = fields.One2many('tt.reschedule.phc.line', 'reschedule_id', 'After Sales Line(s)', readonly=True, states={'confirm': [('readonly', False)]})
     old_picked_timeslot_id = fields.Many2one('tt.timeslot.phc', 'Old Picked Timeslot', readonly=True)
-    new_picked_timeslot_id = fields.Many2one('tt.timeslot.phc', 'New Picked Timeslot', readonly=True, states={'draft': [('readonly', False)]})
+    new_picked_timeslot_id = fields.Many2one('tt.timeslot.phc', 'New Picked Timeslot', readonly=True, states={'draft': [('readonly', False)]}, domain=[('datetimeslot', '>=', datetime.now())])
     change_ids = fields.One2many('tt.reschedule.phc.changes', 'reschedule_id', 'Changes', readonly=True)
     passenger_ids = fields.Many2many('tt.reservation.passenger.phc', 'tt_reschedule_phc_passenger_rel', 'reschedule_id',
                                      'passenger_id',
