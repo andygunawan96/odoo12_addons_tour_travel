@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record model="ir.ui.view" id="detail_recap_transaction_form">
+            <field name="name">Detail Recap Transaction Form</field>
+            <field name="model">tt.medical.vendor.report.recap.transaction.wizard</field>
+            <field name="inherit_id" ref="tt_agent_report.agent_common_report_view"/>
+            <field name="arch" type="xml">
+                <field name="all_agent" position="before">
+                    <field name="provider_type"/>
+                    <!--                    <field name="state" required="1"/>-->
+                </field>
+            </field>
+        </record>
+
+        <record id="action_medical_vendor_report_recap_transaction_wz_periksain" model="ir.actions.act_window">
+            <field name="name">Recap Transaction Report Periksain</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">tt.medical.vendor.report.recap.transaction.wizard</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">form</field>
+            <field name="view_id" ref="detail_recap_transaction_form"/>
+            <field name="context">
+                {
+                'default_provider_type_id': '%(tt_reservation_periksain.tt_provider_type_periksain)d',
+                }
+            </field>
+            <field name="target">new</field>
+        </record>
+
+        <record id="action_medical_vendor_report_recap_transaction_wz_phc" model="ir.actions.act_window">
+            <field name="name">Recap Transaction Report PHC</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">tt.medical.vendor.report.recap.transaction.wizard</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">form</field>
+            <field name="view_id" ref="detail_recap_transaction_form"/>
+            <field name="context">
+                {
+                'default_provider_type_id': '%(tt_reservation_phc.tt_provider_type_phc)d',
+                }
+            </field>
+            <field name="target">new</field>
+        </record>
+
+        <menuitem
+                id="menu_medical_vendor_report_recap_transaction"
+                name="Recap Transaction Report Periksain"
+                parent="tt_medical_vendor_report_recap_reservation.top_reservations_reports"
+                action="action_medical_vendor_report_recap_transaction_wz_periksain"
+                sequence="55"
+                groups="tt_base.group_tt_agent_user,tt_base.group_tt_tour_travel"
+        />
+
+        <menuitem
+                id="menu_medical_vendor_report_recap_transaction"
+                name="Recap Transaction Report PHC"
+                parent="tt_medical_vendor_report_recap_reservation.top_reservations_reports"
+                action="action_medical_vendor_report_recap_transaction_wz_phc"
+                sequence="65"
+                groups="tt_base.group_tt_agent_user,tt_base.group_tt_tour_travel"
+        />
+    </data>
+</odoo>
