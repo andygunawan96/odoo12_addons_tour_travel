@@ -5,6 +5,26 @@
         <field name="code">ticketing</field>
     </record>
 
+    <record id="analyst_periksain_permission" model="tt.frontend.security">
+        <field name="name">Analyst Periksain</field>
+        <field name="code">analyst_periksain</field>
+    </record>
+
+    <record id="able_to_assign_analyst_periksain_permission" model="tt.frontend.security">
+        <field name="name">Assign Analyst Periksain</field>
+        <field name="code">assign_analyst_periksain</field>
+    </record>
+
+    <record id="analyst_phc_permission" model="tt.frontend.security">
+        <field name="name">Analyst Phc</field>
+        <field name="code">analyst_phc</field>
+    </record>
+
+    <record id="able_to_assign_analyst_phc_permission" model="tt.frontend.security">
+        <field name="name">Assign Analyst Phc</field>
+        <field name="code">assign_analyst_phc</field>
+    </record>
+
     <record id="able_to_ticketing_periksain" model="tt.frontend.security">
         <field name="name">Ticketing Periksain</field>
         <field name="code">ticketing_periksain</field>
@@ -173,11 +193,6 @@
     <record id="is_agent_setting_printout" model="tt.frontend.security">
         <field name="name">Agent Setting Printout</field>
         <field name="code">agent_setting_printout</field>
-    </record>
-
-    <record id="is_able_to_view_medical_address_map" model="tt.frontend.security">
-        <field name="name">View Medical Address Map</field>
-        <field name="code">view_medical_address_map</field>
     </record>
 
 </odoo>

@@ -21,6 +21,8 @@ class TtTrainApiCon(models.Model):
             res = table_obj.get_booking_periksain_api(data,context)
         elif action == 'payment':
             res = table_obj.payment_periksain_api(data,context)
+        elif action == 'get_transaction_by_analyst':
+            res = table_obj.get_transaction_by_analyst_api(data,context)
         else:
             raise RequestException(999)
         return res
