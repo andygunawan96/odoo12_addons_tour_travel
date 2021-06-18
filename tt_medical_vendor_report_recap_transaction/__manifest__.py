@@ -1,0 +1,30 @@
+# -*- coding: utf-8 -*-
+{
+    'name': 'Tour & Travel - Medical Vendor Report Recap Transaction',
+    'version': '2.0',
+    'category': 'Report',
+    'summary': 'Medical Vendor Report Recap Transaction Module',
+    'sequence': 22,
+    'description': """
+Tour & Travel - Medical Vendor Report Recap Transaction
+=======================================================
+Key Features
+------------
+    """,
+    'author': "PT Roda Express Sukses Mandiri",
+    'website': "rodextravel.tours",
+    'depends': ['base', 'tt_base', 'tt_agent_report', 'tt_reservation_periksain', 'tt_reservation_phc'],
+
+    # always loaded
+    'data': [
+        'security/ir.model.access.csv',
+        'wizard/tt_medical_vendor_report_recap_transaction_view.xml',
+        'report/tt_medical_vendor_report_recap_transaction_menu.xml',
+        'report/tt_medical_vendor_report_recap_transaction_template.xml'
+    ],
+    'demo': [],
+    'qweb': [],
+    'installable': True,
+    'application': False,
+    'auto_install': False,
+}

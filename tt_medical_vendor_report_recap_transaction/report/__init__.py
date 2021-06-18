@@ -1,0 +1,1 @@
+from . import tt_medical_vendor_recap_transaction
