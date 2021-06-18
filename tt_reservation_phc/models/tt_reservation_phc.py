@@ -438,6 +438,7 @@ class Reservationphc(models.Model):
                     'passengers': psg_list,
                     'provider_bookings': prov_list,
                     'test_address': book_obj.test_address,
+                    'test_address_map_link': book_obj.test_address_map_link,
                     'picked_timeslot': picked_timeslot,
                     'timeslot_list': timeslot_list
                 })
@@ -475,14 +476,13 @@ class Reservationphc(models.Model):
 
                 res[picked_timeslot].append({
                     'order_number': rec.name,
-                    'agent_id': self.agent_id.id if self.agent_id else '',
-                    'pnr': self.pnr and self.pnr or '',
+                    'booked_by': self.user_id.name if self.user_id else '',
+                    'agent': self.agent_id.name if self.agent_id else '',
                     'adult': self.adult,
                     'state': self.state,
                     'origin': rec.origin_id.name,
                     'state_description': variables.BOOKING_STATE_STR[self.state],
                     'test_address': rec.test_address,
-                    'test_address_map_link': rec.test_address_map_link
                 })
                 return ERR.get_no_error(res)
         except RequestException as e:
