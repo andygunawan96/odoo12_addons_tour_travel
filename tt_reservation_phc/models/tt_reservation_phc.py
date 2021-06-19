@@ -13,7 +13,7 @@ import json
 
 _logger = logging.getLogger(__name__)
 
-COMMISSION_PER_PAX_ANTIGEN = 25000 ## komisi agent /pax
+COMMISSION_PER_PAX_ANTIGEN = 28000 ## komisi agent /pax
 COMMISSION_PER_PAX_PCR_HC = 120000 ## komisi agent /pax
 COMMISSION_PER_PAX_PCR_DT = 80000 ## komisi agent /pax
 BASE_PRICE_PER_PAX_ANTIGEN = 150000 ## harga 1 /pax
