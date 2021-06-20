@@ -205,7 +205,7 @@ class Reservationphc(models.Model):
                           self.env.ref('tt_reservation_phc.tt_transport_carrier_phc_home_care_antigen').id]:
             base_price = BASE_PRICE_PER_PAX_ANTIGEN
             commission_price = COMMISSION_PER_PAX_ANTIGEN
-        elif carrier_id in [self.env.ref('tt_reservation_phc.tt_transport_carrier_phc_drive_thru_pcr')]:
+        elif carrier_id in [self.env.ref('tt_reservation_phc.tt_transport_carrier_phc_drive_thru_pcr').id]:
             base_price = BASE_PRICE_PER_PAX_PCR_DT
             commission_price = COMMISSION_PER_PAX_PCR_DT
         else:
