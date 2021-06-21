@@ -25,7 +25,7 @@ class ConfirmOrderPeriksainWizard(models.TransientModel):
 
 
     def confirm_order(self):
-        if not self.picked_timeslot_id or not self.analyst_ids:
+        if not self.analyst_ids:
             raise UserError("Please Pick Timeslot and Input Analyst")
         self.booking_id.write({
             'analyst_ids': [(6,0,self.analyst_ids.ids)],
