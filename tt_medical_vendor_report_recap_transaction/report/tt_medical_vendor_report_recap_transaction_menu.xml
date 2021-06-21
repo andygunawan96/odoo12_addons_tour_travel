@@ -7,8 +7,8 @@
             model="tt.medical.vendor.report.recap.transaction.wizard"
             string="Recap Reservation Report"
             report_type="qweb-html"
-            name="tt_medical_vendor_report_recap_transaction.medical_vendor_report_recap"
-            file="tt_medical_vendor_report_recap_transaction.medical_vendor_report_recap"
+            name="tt_report_recap_transaction.medical_vendor"
+            file="tt_report_recap_transaction.medical_vendor"
             paperformat="tt_report_common.paperformat_A4"
         />
     </data>
