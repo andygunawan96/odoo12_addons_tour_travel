@@ -39,7 +39,7 @@
                             <field name="provider_name" attrs="{'invisible': [('provider_type', '!=', 'offline')], 'readonly': [('state_offline', 'not in', ['draft', 'confirm'])]}" groups="tt_base.group_tt_tour_travel"/>
                         </group>
                         <group>
-                            <field name="pnr" attrs="{'invisible': [('transaction_name', 'not in', ['airline','train'])], 'readonly': [('state_offline', 'not in', ['draft', 'confirm'])]}"/>
+                            <field name="pnr" attrs="{'readonly': [('state_offline', 'not in', ['draft', 'confirm'])]}"/>
                             <field name="obj_qty" attrs="{'readonly': [('state_offline', 'not in', ['draft', 'confirm'])]}"/>
                         </group>
                         <group>

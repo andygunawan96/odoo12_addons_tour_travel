@@ -21,7 +21,8 @@ class AgentReportRecapTransacion(models.Model):
             rsv.id, rsv.name as order_number, rsv.state, creates.id as creator_id, creates_partner.name as create_by, issued_partner.name as issued_by, rsv.issued_date as issued_date, rsv.adult, rsv.child, rsv.infant, rsv.pnr,
             rsv.total as grand_total, rsv.total_commission, rsv.total_nta, rsv.provider_name, rsv.create_date,
             provider_type.name as provider_type, agent.name as agent_name, agent.email as agent_email,
-            currency.name as currency_name,
+            currency.name as currency_name, rsv.carrier_name as carrier_name, customer_parent.name as customer_parent_name, 
+            customer_parent_type.name as customer_parent_type_name,
             agent_type.name as agent_type_name, ledger.id as ledger_id, ledger.ref as ledger_name,
             ledger.debit, ledger_agent.name as ledger_agent_name, ledger.pnr as ledger_pnr,
             ledger.transaction_type as ledger_transaction_type, ledger.display_provider_name as ledger_provider,
@@ -53,7 +54,9 @@ class AgentReportRecapTransacion(models.Model):
         # query = """tt_ledger """
         query = """tt_reservation_""" + provider_type + """ rsv """
         query += """LEFT JOIN tt_agent agent ON rsv.agent_id = agent.id
+        LEFT JOIN tt_customer_parent customer_parent ON rsv.customer_parent_id = customer_parent.id
         LEFT JOIN tt_provider_type provider_type ON provider_type.id = rsv.provider_type_id
+        LEFT JOIN tt_customer_parent_type customer_parent_type ON customer_parent_type.id = rsv.customer_parent_type_id
         LEFT JOIN tt_agent_type agent_type ON agent_type.id = rsv.agent_type_id
         LEFT JOIN res_currency currency ON currency.id = rsv.currency_id
         LEFT JOIN tt_ledger ledger ON ledger.res_model = rsv.res_model AND ledger.res_id = rsv.id

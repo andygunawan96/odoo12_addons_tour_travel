@@ -25,7 +25,7 @@ class ConfirmOrderPeriksainWizard(models.TransientModel):
 
 
     def confirm_order(self):
-        if not self.picked_timeslot_id or not self.analyst_ids:
+        if not self.analyst_ids:
             raise UserError("Please Pick Timeslot and Input Analyst")
         self.booking_id.write({
             'analyst_ids': [(6,0,self.analyst_ids.ids)],
@@ -36,6 +36,6 @@ class ConfirmOrderPeriksainWizard(models.TransientModel):
             self.env['tt.periksain.api.con'].send_confirm_order_notification(self.booking_id.name,
                                                                              self.env.user.id,
                                                                              self.booking_id.test_datetime.strftime("%d-%m-%Y %H:%M"),
-                                                                             self.test_address)
+                                                                             self.booking_id.test_address)
         except Exception as e:
             _logger.error("Send TOP UP Approve Notification Telegram Error.\n%s" % (traceback.format_exc()))

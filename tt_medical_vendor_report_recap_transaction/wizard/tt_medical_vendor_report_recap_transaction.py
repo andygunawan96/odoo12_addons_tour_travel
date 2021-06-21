@@ -12,8 +12,9 @@ class AgentReportRecapReservation(models.TransientModel):
     # statenya pasti issued
 
     provider_type = fields.Selection(selection=lambda self: self._compute_provider_type_selection(),
-                                     string='Provider Type', default='all')
+                                     string='Provider Type', default='all', readonly=True)
     is_ho = fields.Boolean('Ho User', default=True)
+    all_agent = fields.Boolean('All Agent', default=True, readonly=True)
 
     def _compute_provider_type_selection(self):
         value = [('all', 'All')]

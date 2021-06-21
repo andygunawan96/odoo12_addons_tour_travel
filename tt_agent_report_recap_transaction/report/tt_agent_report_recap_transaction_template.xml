@@ -35,8 +35,11 @@
 <!--                                    <th style="padding: 2px; font-size: 18px; text-align: center">PNR</th>-->
 <!--                                    -->
                                     <th style="padding: 2px; font-size: 18px; text-align: center">Type</th>
+                                    <th style="padding: 2px; font-size: 18px; text-align: center">Carrier</th>
                                     <th style="padding: 2px; font-size: 18px; text-align: center">Agent Type</th>
                                     <th style="padding: 2px; font-size: 18px; text-align: center">Agent Name</th>
+                                    <th style="padding: 2px; font-size: 18px; text-align: center">Customer Parent Type</th>
+                                    <th style="padding: 2px; font-size: 18px; text-align: center">Customer Parent Name</th>
                                     <th style="padding: 2px; font-size: 18px; text-align: center">Date</th>
                                     <th style="padding: 2px; font-size: 18px; text-align: center">Agent Email</th>
                                     <th style="padding: 2px; font-size: 18px; text-align: center">Provider</th>
@@ -66,8 +69,11 @@
 <!--                                    <td style="padding: 6px 6px 6px 6px;"><span t-esc="line['pnr']"/></td>-->
 
                                     <td style="padding: 6px 6px 6px 6px;"><span t-esc="line['provider_type']"/></td>
+                                    <td style="padding: 6px 6px 6px 6px;"><span t-esc="line['carrier_name']"/></td>
                                     <td style="padding: 6px 6px 6px 6px;"><span t-esc="line['agent_type_name']"/></td>
                                     <td style="padding: 6px 6px 6px 6px;"><span t-esc="line['agent_name']"/></td>
+                                    <td style="padding: 6px 6px 6px 6px;"><span t-esc="line['customer_parent_type_name']"/></td>
+                                    <td style="padding: 6px 6px 6px 6px;"><span t-esc="line['customer_parent_name']"/></td>
                                     <td style="padding: 6px 6px 6px 6px;"><span t-esc="line['issued_date']"/></td>
                                     <td style="padding: 6px 6px 6px 6px;"><span t-esc="line['agent_email']"/></td>
                                     <td style="padding: 6px 6px 6px 6px;"><span t-esc="line['provider_name']"/></td>

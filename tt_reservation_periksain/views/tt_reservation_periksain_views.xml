@@ -170,7 +170,7 @@
                         'default_booking_id': id,
                    }"/>
                     <button string="No Show Order" name="action_set_state_vendor_as_no_show" type="object" groups="tt_base.group_external_vendor_periksain_level_2,tt_base.group_reservation_level_4"/>
-                <button string="Refund Order" name="action_set_state_vendor_as_refund" type="object" groups="tt_base.group_external_vendor_periksain_level_2,tt_base.group_reservation_level_4"/>
+                    <button string="Refund Order" name="action_set_state_vendor_as_refund" type="object" groups="tt_base.group_external_vendor_periksain_level_2,tt_base.group_reservation_level_4"/>
                 </header>
                 <sheet>
                     <div class="oe_title">
@@ -308,6 +308,7 @@
                 <field name="booker_id"/>
                 <field name="provider_name" groups="tt_base.group_tt_tour_travel"/>
                 <field name="carrier_name"/>
+                <field name="test_datetime"/>
                 <field name="booked_uid"/>
                 <field name="date"/>
                 <field name="hold_date"/>

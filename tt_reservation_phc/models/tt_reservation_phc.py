@@ -9,6 +9,7 @@ import logging,traceback
 from datetime import datetime, timedelta, time
 import base64
 import json
+import copy
 
 
 _logger = logging.getLogger(__name__)
@@ -36,6 +37,14 @@ class Reservationphc(models.Model):
 
     passenger_ids = fields.One2many('tt.reservation.passenger.phc', 'booking_id',
                                     readonly=True, states={'draft': [('readonly', False)]})
+
+    state_vendor = fields.Selection([('draft', 'Draft'),  ## order bookd by customer
+                                     ('new_order', 'New Order'),  ## order issued by customer
+                                     ('confirmed_order', 'Confirmed Order'),  ## order confirmmed by periksain
+                                     ('no_show', 'No Show'),  ## customer cancel H-1 after 16:00 or H
+                                     ('refund', 'Refund'),  ## customer cancel before H-1 16:00
+                                     ('done', 'Done'), ], 'Vendor State',
+                                    default='draft')  ## normal way of completing order
 
     origin_id = fields.Many2one('tt.destinations', 'Test Area', readonly=True, states={'draft': [('readonly', False)]})
 
@@ -224,6 +233,7 @@ class Reservationphc(models.Model):
         _logger.info("Create\n" + json.dumps(req))
         booker = req['booker']
         contacts = req['contacts']
+        passengers_data = copy.deepcopy(req['passengers']) # waktu create passenger fungsi odoo field kosong di hapus cth: work_place
         passengers = req['passengers']
         booking_data = req['provider_bookings']
 
@@ -239,24 +249,24 @@ class Reservationphc(models.Model):
             for idx,rec in enumerate(list_passenger_value):
                 rec[2].update({
                     'customer_id': list_customer_id[idx].id,
-                    'email': passengers[idx]['email'],
-                    'phone_number': passengers[idx]['phone_number'],
-                    'tempat_lahir': passengers[idx]['tempat_lahir'],
-                    'profession': passengers[idx]['profession'],
-                    'work_place': passengers[idx]['work_place'],
-                    'address': passengers[idx]['address'],
-                    'rt': passengers[idx]['rt'],
-                    'rw': passengers[idx]['rw'],
-                    'kabupaten': passengers[idx]['kabupaten'],
-                    'kecamatan': passengers[idx]['kecamatan'],
-                    'kelurahan': passengers[idx]['kelurahan'],
-                    'address_ktp': passengers[idx]['address_ktp'],
-                    'rt_ktp': passengers[idx]['rt_ktp'],
-                    'rw_ktp': passengers[idx]['rw_ktp'],
-                    'kabupaten_ktp': passengers[idx]['kabupaten_ktp'],
-                    'kecamatan_ktp': passengers[idx]['kecamatan_ktp'],
-                    'kelurahan_ktp': passengers[idx]['kelurahan_ktp'],
-                    'pcr_data': passengers[idx].get('pcr_data') and json.dumps(passengers[idx].get('pcr_data')) or passengers[idx].get('pcr_data','')
+                    'email': passengers_data[idx]['email'],
+                    'phone_number': passengers_data[idx]['phone_number'],
+                    'tempat_lahir': passengers_data[idx]['tempat_lahir'],
+                    'profession': passengers_data[idx]['profession'],
+                    'work_place': passengers_data[idx]['work_place'],
+                    'address': passengers_data[idx]['address'],
+                    'rt': passengers_data[idx]['rt'],
+                    'rw': passengers_data[idx]['rw'],
+                    'kabupaten': passengers_data[idx]['kabupaten'],
+                    'kecamatan': passengers_data[idx]['kecamatan'],
+                    'kelurahan': passengers_data[idx]['kelurahan'],
+                    'address_ktp': passengers_data[idx]['address_ktp'],
+                    'rt_ktp': passengers_data[idx]['rt_ktp'],
+                    'rw_ktp': passengers_data[idx]['rw_ktp'],
+                    'kabupaten_ktp': passengers_data[idx]['kabupaten_ktp'],
+                    'kecamatan_ktp': passengers_data[idx]['kecamatan_ktp'],
+                    'kelurahan_ktp': passengers_data[idx]['kelurahan_ktp'],
+                    'pcr_data': passengers_data[idx].get('pcr_data') and json.dumps(passengers_data[idx].get('pcr_data')) or passengers_data[idx].get('pcr_data','')
                 })
 
             for psg in list_passenger_value:
