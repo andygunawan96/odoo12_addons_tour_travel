@@ -22,7 +22,7 @@
             <field name="view_id" ref="detail_recap_transaction_form"/>
             <field name="context">
                 {
-                'default_provider_type_id': '%(tt_reservation_periksain.tt_provider_type_periksain)d',
+                'default_provider_type': 'periksain',
                 }
             </field>
             <field name="target">new</field>
@@ -37,28 +37,28 @@
             <field name="view_id" ref="detail_recap_transaction_form"/>
             <field name="context">
                 {
-                'default_provider_type_id': '%(tt_reservation_phc.tt_provider_type_phc)d',
+                'default_provider_type': 'phc',
                 }
             </field>
             <field name="target">new</field>
         </record>
 
         <menuitem
-                id="menu_medical_vendor_report_recap_transaction"
+                id="menu_medical_vendor_report_recap_transaction_periksain"
                 name="Recap Transaction Report Periksain"
-                parent="tt_medical_vendor_report_recap_reservation.top_reservations_reports"
+                parent="tt_base.top_external_vendor_transaction"
                 action="action_medical_vendor_report_recap_transaction_wz_periksain"
                 sequence="55"
-                groups="tt_base.group_tt_agent_user,tt_base.group_tt_tour_travel"
+                groups="tt_base.group_external_vendor_periksain_level_1"
         />
 
         <menuitem
-                id="menu_medical_vendor_report_recap_transaction"
+                id="menu_medical_vendor_report_recap_transaction_phc"
                 name="Recap Transaction Report PHC"
-                parent="tt_medical_vendor_report_recap_reservation.top_reservations_reports"
+                parent="tt_base.top_external_vendor_transaction"
                 action="action_medical_vendor_report_recap_transaction_wz_phc"
                 sequence="65"
-                groups="tt_base.group_tt_agent_user,tt_base.group_tt_tour_travel"
+                groups="tt_base.group_external_vendor_phc_level_1"
         />
     </data>
 </odoo>

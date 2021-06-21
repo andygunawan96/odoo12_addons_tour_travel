@@ -6,8 +6,8 @@ from ...tt_reservation_offline.models.tt_reservation_offline import STATE_OFFLIN
 import logging
 _logger = logging.getLogger(__name__)
 
-class AgentReportRecapTransacion(models.Model):
-    _name = 'report.tt_medical_vendor_report_recap_transaction.medical_vendor_report_recap'
+class MedicalVendorReportRecapTransacion(models.Model):
+    _name = 'report.tt_report_recap_transaction.medical_vendor'
     _description = 'Recap Transaction'
 
     ################
@@ -18,9 +18,16 @@ class AgentReportRecapTransacion(models.Model):
     @staticmethod
     def _select():
         return """
-            rsv.id, rsv.name as order_number, rsv.state as state, rsv.adult as adult, rsv.state_vendor as state_vendor, 
+            rsv.id as rsv_id, rsv.name as order_number, rsv.state as state, rsv.adult as adult, rsv.state_vendor as state_vendor, 
             rsv.provider_name as provider_name, provider_type.name as provider_type, carrier.name as carrier_name, 
             timeslot.datetimeslot as test_datetime
+            """
+
+    # this select function responsible build query for passengers
+    @staticmethod
+    def _select_join_passengers():
+        return """
+            psg.booking_id as booking_id, psg.title as title, psg.first_name as first_name, psg.last_name as last_name, psg.birth_date as birth_date
             """
 
     ################
@@ -35,7 +42,18 @@ class AgentReportRecapTransacion(models.Model):
         LEFT JOIN tt_provider_type provider_type ON provider_type.id = rsv.provider_type_id
         LEFT JOIN tt_transport_carrier carrier ON carrier.code = rsv.carrier_name
         """
-        query += """LEFT JOIN tt_timeslot_""" + provider_type + """ timeslot """
+        query += """LEFT JOIN tt_timeslot_""" + provider_type + """ timeslot ON timeslot.id = rsv.picked_timeslot_id """
+        return query
+
+    @staticmethod
+    def _from_join_passengers(provider_type):
+        query = """tt_reservation_passenger_""" + provider_type + """ psg """
+        query += """LEFT JOIN tt_reservation_""" + provider_type + """ rsv ON rsv.id = psg.booking_id """
+        query += """LEFT JOIN tt_agent agent ON rsv.agent_id = agent.id
+                LEFT JOIN tt_provider_type provider_type ON provider_type.id = rsv.provider_type_id
+                LEFT JOIN tt_transport_carrier carrier ON carrier.code = rsv.carrier_name
+                """
+        query += """LEFT JOIN tt_timeslot_""" + provider_type + """ timeslot ON timeslot.id = rsv.picked_timeslot_id """
         return query
 
     ################
@@ -52,7 +70,20 @@ class AgentReportRecapTransacion(models.Model):
             where += """ AND rsv.agent_id = %s""" % agent_id
         if provider_type and provider_type != 'all':
             where += """ AND provider_type.code = '%s' """ % provider_type
-        where += """ AND ledger.is_reversed = 'FALSE' """
+        if state:
+            where += """ AND (rsv.state = '%s' OR rsv.state = 'reissue') """ % state
+        return where
+
+    @staticmethod
+    def _where_join_passengers(date_from, date_to, agent_id, provider_type, state):
+        where = """test_datetime >= '%s' and test_datetime <= '%s'""" % (date_from, date_to)
+        # if state == 'failed':
+        #     where += """ AND rsv.state IN ('fail_booking', 'fail_issue')"""
+        # where += """ AND rsv.state IN ('partial_issued', 'issued')"""
+        if agent_id:
+            where += """ AND rsv.agent_id = %s""" % agent_id
+        if provider_type and provider_type != 'all':
+            where += """ AND provider_type.code = '%s' """ % provider_type
         if state:
             where += """ AND (rsv.state = '%s' OR rsv.state = 'reissue') """ % state
         return where
@@ -66,6 +97,12 @@ class AgentReportRecapTransacion(models.Model):
         return """
         test_datetime, rsv.name
         """
+
+    @staticmethod
+    def _order_by_join_passengers():
+        return """
+            psg.name
+            """
 
     ################
     #   Function to build the full query
@@ -92,6 +129,23 @@ class AgentReportRecapTransacion(models.Model):
         _logger.info(query)
         return self.env.cr.dictfetchall()
 
+    def _lines_join_passengers(self, date_from, date_to, agent_id, provider_type, state):
+        # SELECT
+        query = 'SELECT ' + self._select_join_passengers()
+
+        # FROM
+        query += 'FROM ' + self._from_join_passengers(provider_type)
+
+        # WHERE
+        query += 'WHERE ' + self._where_join_passengers(date_from, date_to, agent_id, provider_type, state)
+
+        # ORDER BY
+        query += 'ORDER BY ' + self._order_by_join_passengers()
+
+        self.env.cr.execute(query)
+        _logger.info(query)
+        return self.env.cr.dictfetchall()
+
     # this function handle preparation to call query builder for service charge
     def _get_lines_data(self, date_from, date_to, agent_id, provider_type, state):
         lines = []
@@ -107,6 +161,19 @@ class AgentReportRecapTransacion(models.Model):
                     lines.append(line)
         return lines
 
+    # this function handle preparation to call query builder for service charge
+    def _get_lines_data_join_passengers(self, date_from, date_to, agent_id, provider_type, state):
+        lines = []
+        if provider_type != 'all':
+            lines = self._lines_join_passengers(date_from, date_to, agent_id, provider_type, state)
+        else:
+            provider_types = variables.PROVIDER_TYPE
+            for provider_type in provider_types:
+                report_lines = self._lines_join_passengers(date_from, date_to, agent_id, provider_type, state)
+                for j in report_lines:
+                    lines.append(j)
+        return lines
+
     def _datetime_user_context(self, utc_datetime_string):
         value = fields.Datetime.from_string(utc_datetime_string)
         return fields.Datetime.context_timestamp(self, value).strftime('%Y-%m-%d %H:%M:%S')
@@ -119,7 +186,6 @@ class AgentReportRecapTransacion(models.Model):
                 pass
             # rec['state'] = variables.BOOKING_STATE_STR[rec['state']] if rec['state'] else ''  # STATE_OFFLINE_STR[rec['state']]
         return lines
-
 
     @staticmethod
     def _report_title(data_form):
@@ -136,8 +202,7 @@ class AgentReportRecapTransacion(models.Model):
         provider_type = data_form['provider_type']
         # lines = self._get_lines_data_search(date_from, date_to, agent_id, provider_type, state)
         lines = self._get_lines_data(date_from, date_to, agent_id, provider_type, state)
-        second_lines = self._get_lines_data_join_service_charge(date_from, date_to, agent_id, provider_type, state)
-        # second_lines = []
+        second_lines = self._get_lines_data_join_passengers(date_from, date_to, agent_id, provider_type, state)
         self._report_title(data_form)
 
         return {

@@ -8,6 +8,7 @@
                 <field name="name"/>
                 <field name="pnr"/>
                 <field name="carrier_name" groups="tt_base.group_tt_tour_travel"/>
+                <field name="state_vendor" groups="tt_base.group_tt_tour_travel,tt_base.group_tt_external_user"/>
                 <field name="agent_id" groups="tt_base.group_tt_tour_travel"/>
                 <field name="agent_type_id" groups="tt_base.group_tt_tour_travel"/>
                 <field name="customer_parent_id" groups="tt_base.group_tt_agent_user,tt_base.group_tt_tour_travel"/>
@@ -69,6 +70,8 @@
                         context="{
                         'default_booking_id': id,
                    }"/>
+                <button string="No Show Order" name="action_set_state_vendor_as_no_show" type="object" groups="tt_base.group_external_vendor_phc_level_2,tt_base.group_reservation_level_4"/>
+                <button string="Refund Order" name="action_set_state_vendor_as_refund" type="object" groups="tt_base.group_external_vendor_phc_level_2,tt_base.group_reservation_level_4"/>
             </xpath>
             <xpath expr="//field[@name='state']" position="replace">
                 <field name="state" widget="statusbar" statusbar_visible="draft,booked,issued,done"/>
@@ -164,6 +167,8 @@
                             context="{
                         'default_booking_id': id,
                    }"/>
+                    <button string="No Show Order" name="action_set_state_vendor_as_no_show" type="object" groups="tt_base.group_external_vendor_phc_level_2,tt_base.group_reservation_level_4"/>
+                    <button string="Refund Order" name="action_set_state_vendor_as_refund" type="object" groups="tt_base.group_external_vendor_phc_level_2,tt_base.group_reservation_level_4"/>
                     <field name="state" widget="statusbar" statusbar_visible="draft,booked,issued,done"/>
                 </header>
                 <sheet>
