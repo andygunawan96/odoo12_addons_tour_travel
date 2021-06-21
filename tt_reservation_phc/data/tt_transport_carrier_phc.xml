@@ -30,7 +30,7 @@
             <field name="name">Home Care PCR</field>
             <field name="code">PHCHCKPCR</field>
             <field name="icao">PHCHCKPCR</field>
-            <field name="call_sign">phc Home Care PCR</field>
+            <field name="call_sign">PHC Home Care PCR</field>
             <field name="adult_length_name">80</field>
             <field name="child_length_name">80</field>
             <field name="infant_length_name">80</field>
@@ -42,7 +42,7 @@
             <field name="name">Drive Thru PCR</field>
             <field name="code">PHCDTKPCR</field>
             <field name="icao">PHCDTKPCR</field>
-            <field name="call_sign">phc Drive Thru PCR</field>
+            <field name="call_sign">PHC Drive Thru PCR</field>
             <field name="adult_length_name">80</field>
             <field name="child_length_name">80</field>
             <field name="infant_length_name">80</field>

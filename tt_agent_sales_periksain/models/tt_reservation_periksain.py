@@ -33,7 +33,7 @@ class ReservationPeriksain(models.Model):
     def get_segment_description(self):
         # TODO: soale mnurut ku biar ada nomor pendaftarane walo g kepake nomer e
         # Opsi 1: Jika Nama reservation dan PNR e sdah sama pakai yg ini
-        tmp = ''
+        tmp = '%s\n' % (self.provider_booking_ids[0].carrier_id.name)
         # Opsi 2: Jika PNR dan resv ne beda pakek yg ini
         # tmp = self.name + '\n'
         tmp += 'Address : %s' % (self.test_address)
