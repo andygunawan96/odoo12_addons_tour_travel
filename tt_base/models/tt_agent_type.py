@@ -34,7 +34,7 @@ class TtAgentType(models.Model):
     @api.model
     def create(self, vals_list):
         new_agent_type = super(TtAgentType, self).create(vals_list)
-        sequence_obj = self.env['ir.sequence'].create({
+        sequence_obj = self.env['ir.sequence'].sudo().create({
             'name': new_agent_type.name,
             'code': 'tt.agent.type.%s' % (new_agent_type.code),
             'prefix': '{}.%(day)s%(sec)s'.format(new_agent_type.seq_prefix),
@@ -65,10 +65,10 @@ class TtAgentType(models.Model):
             arch = menuitem_obj.action.search_view_id.arch
             menuitem_obj.action.search_view_id.arch = arch[:arch.find("string=")]+'string="%s" ' % (vals['name'])+arch[arch.find(" name="):]
         if 'code' in vals:
-            self.sequence_prefix_id.code = 'tt.agent.type.%s' % (vals['code'])
-            self.sequence_prefix_id.name = 'Agent %s' % (vals['code'].title())
+            self.sequence_prefix_id.sudo().code = 'tt.agent.type.%s' % (vals['code'])
+            self.sequence_prefix_id.sudo().name = 'Agent %s' % (vals['code'].title())
         if 'seq_prefix' in vals:
-            self.sequence_prefix_id.prefix = '%s.%s' % (vals['seq_prefix'],self.sequence_prefix_id.prefix.split('.')[1])
+            self.sequence_prefix_id.sudo().prefix = '%s.%s' % (vals['seq_prefix'],self.sequence_prefix_id.prefix.split('.')[1])
 
 
     def create_menuitem(self):

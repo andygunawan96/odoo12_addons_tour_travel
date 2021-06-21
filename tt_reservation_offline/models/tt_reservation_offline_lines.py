@@ -52,7 +52,7 @@ class IssuedOfflineLines(models.Model):
     _name = 'tt.reservation.offline.lines'
     _description = 'Issued Offline Lines'
 
-    pnr = fields.Char('PNR')
+    pnr = fields.Char('PNR',required=True)
 
     booking_id = fields.Many2one('tt.reservation.offline', 'Reservation Offline')
     obj_qty = fields.Integer('Qty', readonly=False, default=1)
