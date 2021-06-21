@@ -38,7 +38,7 @@
         name="Printout Report"
         parent="tt_base.top_external_vendor_transaction"
         action="action_report_vendor_event_menu"
-        sequence="10"
+        sequence="40"
         groups="tt_base.group_external_vendor_event_level_1"
         />
 

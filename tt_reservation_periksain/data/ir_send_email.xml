@@ -26,10 +26,12 @@
 <p>Test Date/Time: ${object.picked_timeslot_id.get_datetimeslot_str()}</p>
 <p>Customer(s):</p> ${object.get_passenger_list_email() | safe}
 <br/>
-<p>Please confirm with your customer(s) if the information provided above are true, and inform us immediately if you find one or more of the information is not true. ${object.get_closing_notes_email() | safe} Thank you for your trust and support in using our service.</p>
+<p>Please confirm with your customer(s) if the information provided above are true, and inform us immediately if you find one or more of the information is not true. Thank you for your trust and support in using our service.</p>
 <br/>
 <p>Regards,</p>
 <p>Rodex Tours and Travel</p>
+<br/><br/>
+${object.get_terms_conditions_email() | safe}
 ]]>
 			</field>
 		</record>
@@ -115,10 +117,12 @@
 <p>Test Date/Time: ${object.picked_timeslot_id.get_datetimeslot_str()}</p>
 <p>Customer(s):</p> ${object.get_passenger_list_email() | safe}
 <br/>
-<p>Please make sure the information provided above are true, and inform us immediately if you find one or more of the information is not true. ${object.get_closing_notes_email() | safe} Thank you for your trust and support in using our service.</p>
+<p>Please make sure the information provided above are true, and inform us immediately if you find one or more of the information is not true. Thank you for your trust and support in using our service.</p>
 <br/>
 <p>Regards,</p>
 <p>${object.agent_id.name}</p>
+<br/><br/>
+${object.get_terms_conditions_email() | safe}
 ]]>
 			</field>
 		</record>

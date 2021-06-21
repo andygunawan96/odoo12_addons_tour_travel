@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="0">
+        <!--======== Reports : Payment ==========-->
+        <report
+            id="action_medical_vendor_report_recap_transaction"
+            model="tt.medical.vendor.report.recap.transaction.wizard"
+            string="Recap Reservation Report"
+            report_type="qweb-html"
+            name="tt_medical_vendor_report_recap_transaction.medical_vendor_report_recap"
+            file="tt_medical_vendor_report_recap_transaction.medical_vendor_report_recap"
+            paperformat="tt_report_common.paperformat_A4"
+        />
+    </data>
+</odoo>

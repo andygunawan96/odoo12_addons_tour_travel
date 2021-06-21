@@ -25,7 +25,7 @@ class TtEmailQueue(models.Model):
 
     def create_email_queue(self, data, context=None):
         # Data {'provider_type':'', 'url_booking':'', 'order_number':'', 'type':''}
-        if data.get('provider_type') in ['airline', 'train', 'hotel', 'visa', 'passport', 'activity', 'tour', 'ppob', 'periksain']:
+        if data.get('provider_type') in ['airline', 'train', 'hotel', 'visa', 'passport', 'activity', 'tour', 'ppob', 'periksain', 'phc']:
             try:
                 self.env.get('tt.reservation.{}'.format(data['provider_type']))._name
             except:
@@ -211,7 +211,7 @@ class TtEmailQueue(models.Model):
     def prepare_attachment_reservation_issued(self):
         attachment_id_list = []
         ref_obj = self.env[self.res_model].sudo().browse(int(self.res_id))
-        if ref_obj.state == 'issued' or (self.type == 'issued_periksain' and ref_obj.state == 'issued_pending'):
+        if ref_obj.state == 'issued':
             if self.type in ['issued_airline', 'issued_train', 'issued_activity', 'issued_hotel', 'issued_ppob']:
                 if self.type in ['issued_airline', 'issued_train', 'issued_ppob']:
                     ticket_data = ref_obj.print_eticket({})
@@ -355,7 +355,7 @@ class TtEmailQueue(models.Model):
 
     def action_send_email(self):
         try:
-            if self.type in ['issued_airline', 'issued_train', 'issued_activity', 'issued_tour', 'issued_visa', 'issued_passport', 'issued_hotel', 'issued_offline', 'issued_ppob', 'issued_periksain']:
+            if self.type in ['issued_airline', 'issued_train', 'issued_activity', 'issued_tour', 'issued_visa', 'issued_passport', 'issued_hotel', 'issued_offline', 'issued_ppob', 'issued_periksain', 'issued_phc']:
                 self.prepare_attachment_reservation_issued()
             elif self.type == 'billing_statement':
                 self.prepare_attachment_billing_statement()

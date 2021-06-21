@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <template id="medical_vendor_report_recap">
+            <t t-call="web.html_container">
+                <t t-call="web.internal_layout">
+                    <t t-set="line_index" t-value="0"/>
+                    <t t-set="total" t-value="0"/>
+                    <div class="page">
+                        <!--========= TITLE & SUBTITLE ===========-->
+                        <div style="text-align:center;">
+                            <h4>
+                                <span t-esc="data_form['title']"/>
+                            </h4>
+                        </div>
+                        <div style="text-align:center;">
+                            <strong>
+                                <span t-esc="data_form['subtitle']"/>
+                            </strong>
+                        </div>
+
+                        <table class="table table-condensed">
+                            <col width="100"/>
+                            <col width="150"/>
+                            <thead>
+                                <tr>
+<!--                                    <th rowspan="2" style="padding: 2px; font-size: 18px; text-align: center">Date</th>-->
+<!--                                    <th style="padding: 2px; font-size: 18px; text-align: center">Order Number</th>-->
+<!--                                    <th style="padding: 2px; font-size: 18px; text-align: center">Agent's Name</th>-->
+<!--                                    <th style="padding: 2px; font-size: 18px; text-align: center">Agent's Type</th>-->
+<!--                                    <th style="padding: 2px; font-size: 18px; text-align: center">Provider</th>-->
+<!--                                    <th class="text-right" style="padding: 2px; font-size: 18px; text-align: center">Total</th>-->
+<!--                                    <th style="padding: 2px; font-size: 18px; text-align: center">State</th>-->
+<!--                                    <th style="padding: 2px; font-size: 18px; text-align: center">Type</th>-->
+<!--                                    <th style="padding: 2px; font-size: 18px; text-align: center">PNR</th>-->
+<!--                                    -->
+                                    <th style="padding: 2px; font-size: 18px; text-align: center">Provider</th>
+                                    <th style="padding: 2px; font-size: 18px; text-align: center">Carrier</th>
+                                    <th style="padding: 2px; font-size: 18px; text-align: center">Order Number</th>
+                                    <th style="padding: 2px; font-size: 18px; text-align: center">Test Datetime</th>
+                                    <th style="padding: 2px; font-size: 18px; text-align: center">Adult</th>
+                                    <th style="padding: 2px; font-size: 18px; text-align: center">State</th>
+                                    <th style="padding: 2px; font-size: 18px; text-align: center">State Vendor</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <t t-set="index" t-value="0"/>
+<!--                                <t t-set="total" t-value="0"/>-->
+                                <tr t-foreach="docs['lines']" t-as="line">
+<!--                                    <td style="padding: 6px 6px 6px 6px;"><span t-esc="line['create_date']"/></td>-->
+<!--                                    <td style="padding: 6px 6px 6px 6px;"><span t-esc="line['order_number']"/></td>-->
+<!--                                    <td style="padding: 6px 6px 6px 6px;"><span t-esc="line['agent_name']"/></td>-->
+<!--                                    <td style="padding: 6px 6px 6px 6px;"><span t-esc="line['agent_type']"/></td>-->
+<!--                                    <td style="padding: 6px 6px 6px 6px;"><span t-esc="line['provider']"/></td>-->
+<!--                                    <td class="text-right" style="white-space: nowrap; padding: 6px 6px 6px 6px;"><span t-esc="line['total']"/></td>-->
+<!--                                    <td style="padding: 6px 6px 6px 6px;"><span t-esc="line['state']"/></td>-->
+<!--                                    <td style="padding: 6px 6px 6px 6px;"><span t-esc="line['provider_type']"/></td>-->
+<!--                                    <td style="padding: 6px 6px 6px 6px;"><span t-esc="line['pnr']"/></td>-->
+
+                                    <td style="padding: 6px 6px 6px 6px;"><span t-esc="line['provider_name']"/></td>
+                                    <td style="padding: 6px 6px 6px 6px;"><span t-esc="line['carrier_name']"/></td>
+                                    <td style="padding: 6px 6px 6px 6px;"><span t-esc="line['order_number']"/></td>
+                                    <td style="padding: 6px 6px 6px 6px;"><span t-esc="line['test_datetime']"/></td>
+                                    <td style="padding: 6px 6px 6px 6px;"><span t-esc="line['adult']"/></td>
+                                    <td style="padding: 6px 6px 6px 6px;"><span t-esc="line['state']"/></td>
+                                    <td style="padding: 6px 6px 6px 6px;"><span t-esc="line['state_vendor']"/></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="footer">
+                        <div class="row">
+                            <div class="col-8">
+
+                            </div>
+                            <div class="col-3 text-right">
+
+                            </div>
+                            <div class="col-1 text-right">
+                                <span class="page"/> / <span class="topage"/>
+                            </div>
+                        </div>
+                    </div>
+                </t>
+            </t>
+        </template>
+    </data>
+</odoo>

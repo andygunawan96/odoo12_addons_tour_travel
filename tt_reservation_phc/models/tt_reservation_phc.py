@@ -13,11 +13,11 @@ import json
 
 _logger = logging.getLogger(__name__)
 
-COMMISSION_PER_PAX_ANTIGEN = 25000 ## komisi agent /pax
+COMMISSION_PER_PAX_ANTIGEN = 28000 ## komisi agent /pax
 COMMISSION_PER_PAX_PCR_HC = 120000 ## komisi agent /pax
 COMMISSION_PER_PAX_PCR_DT = 80000 ## komisi agent /pax
 BASE_PRICE_PER_PAX_ANTIGEN = 150000 ## harga 1 /pax
-BASE_PRICE_PER_PAX_PCR_HC = 750000 ## harga 1 /pax
+BASE_PRICE_PER_PAX_PCR_HC = 850000 ## harga 1 /pax
 BASE_PRICE_PER_PAX_PCR_DT = 750000 ## harga 1 /pax
 SINGLE_SUPPLEMENT = 25000 ## 1 orang
 OVERTIME_SURCHARGE = 50000 ## lebih dari 18.00 /pax
@@ -205,7 +205,7 @@ class Reservationphc(models.Model):
                           self.env.ref('tt_reservation_phc.tt_transport_carrier_phc_home_care_antigen').id]:
             base_price = BASE_PRICE_PER_PAX_ANTIGEN
             commission_price = COMMISSION_PER_PAX_ANTIGEN
-        elif carrier_id in [self.env.ref('tt_reservation_phc.tt_transport_carrier_phc_drive_thru_pcr')]:
+        elif carrier_id in [self.env.ref('tt_reservation_phc.tt_transport_carrier_phc_drive_thru_pcr').id]:
             base_price = BASE_PRICE_PER_PAX_PCR_DT
             commission_price = COMMISSION_PER_PAX_PCR_DT
         else:
@@ -982,11 +982,34 @@ class Reservationphc(models.Model):
             passengers += str(psg_count) + '. ' + (rec.title + ' ' if rec.title else '') + (rec.first_name if rec.first_name else '') + ' ' + (rec.last_name if rec.last_name else '') + '<br/>'
         return passengers
 
-    def get_closing_notes_email(self):
+    def get_terms_conditions_email(self):
+        terms_txt = "<u><b>Terms and Conditions</b></u><br/>"
+        terms_txt += "1. Payment must be made in advance.<br/>"
+        terms_txt += "2. Cancellation Policy:<br/>"
+        terms_txt += "<ul>"
+        terms_txt += "<li>Before D-1: Free</li>"
+        terms_txt += "<li>D-1: Rp.50,000,- per participants, can only be processed before 16:00 WIB</li>"
+        terms_txt += "<li>On the day of the test: Forfeited with no refund</li>"
+        terms_txt += "</ul>"
+        terms_txt += "3. Reschedule Policy:<br/>"
+        terms_txt += "<ul>"
+        terms_txt += "<li>Before D-1: Free</li>"
+        terms_txt += "<li>D-1: Rp.50,000,- per participants, can only be processed before 16:00 WIB</li>"
+        terms_txt += "<li>You cannot reschedule on the day of the test</li>"
+        terms_txt += "<li>Reschedule can only be done 1 time, and it depends on the availability of our nurses/officers and our schedules.</li>"
+        terms_txt += "</ul>"
+        terms_txt += "4. Participant names cannot be changed.<br/>"
+        terms_txt += "5. Addition of participants:<br/>"
+        terms_txt += "<ul>"
+        terms_txt += "<li>You can add any participants as long as the test fee for that participant is paid in advance</li>"
+        terms_txt += "</ul>"
+        terms_txt += "6. Reduction of participants refers to the Cancellation Policy.<br/>"
         if self.carrier_name in ['PHCHCKPCR', 'PHCDTKPCR']:
-            return 'Under normal circumstances, test results will be released by PHC Hospital around 12-24 hours after the test.'
+            terms_txt += "7. Under normal circumstances, test results will be released by PHC Hospital around 12-24 hours after the test.<br/>"
         else:
-            return 'Under normal circumstances, test results will be sent via Whatsapp by PHC Hospital around 30 minutes after the test.'
+            terms_txt += "7. Under normal circumstances, test results will be sent via Whatsapp by PHC Hospital around 30 minutes after the test.<br/>"
+        terms_txt += "8. In case our nurses/officers do not come for the scheduled test, you can file a complaint at most 24 hours after the supposedly test schedule."
+        return terms_txt
 
     def get_aftersales_desc(self):
         desc_txt = 'PNR: ' + self.pnr + '<br/>'
