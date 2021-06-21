@@ -26,3 +26,13 @@ class TtTrainApiCon(models.Model):
         else:
             raise RequestException(999)
         return res
+
+    def send_confirm_order_notification(self,document_number,approve_uid,timeslot,address):
+        request = {
+            'code': 9913,
+            'message': '{} has been Approved by {}\n {}\n{}'.format(document_number,approve_uid,timeslot,address),
+            "title": 'APPROVED <b>%s</b>' % (document_number)
+        }
+        return self.send_request_to_gateway('%s/notification' % (self.url),
+                                            request
+                                            ,'notification_code')
