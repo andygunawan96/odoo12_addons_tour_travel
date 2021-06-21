@@ -27,7 +27,7 @@ class AgentReportRecapTransactionXls(models.TransientModel):
         # values['lines'] --> reservation data
         # valued['second_lines'] --> service charge data, within the same date range, this is needed to make sure revenue count and all is very accurate
         # values['data_form'] --> form that being past from GUI that user interact within odoo
-        values = self.env['report.tt_medical_vendor_report_recap_transaction.medical_vendor_report_recap']._prepare_values(
+        values = self.env['report.tt_report_recap_transaction.medical_vendor']._prepare_values(
             data['form'])  # get values
 
         # next 4 lines of code handles excel dependencies
@@ -38,11 +38,11 @@ class AgentReportRecapTransactionXls(models.TransientModel):
 
         # ======= TITLE & SUBTITLE ============
         # write to file in cols and row
-        sheet.merge_range('A1:G2', values['data_form']['title'], style.title2)  # set merge cells for title
-        sheet.write('G3', 'Printing Date :' + values['data_form']['date_now'].strftime('%d-%b-%Y %H:%M'),
+        sheet.merge_range('A1:I2', values['data_form']['title'], style.title2)  # set merge cells for title
+        sheet.write('I3', 'Printing Date :' + values['data_form']['date_now'].strftime('%d-%b-%Y %H:%M'),
                     style.print_date)  # print date print
         sheet.write('A3', 'State : ' + values['data_form']['state'], style.table_data)  # print state
-        sheet.freeze_panes(9, 0)  # freeze panes mulai dari row 1-10
+        sheet.freeze_panes(7, 0)  # freeze panes mulai dari row 1-7
 
         # ======= TABLE HEAD ==========
         sheet.write('A7', 'No.', style.table_head_center)
@@ -53,6 +53,7 @@ class AgentReportRecapTransactionXls(models.TransientModel):
         sheet.write('F7', 'Adult', style.table_head_center)
         sheet.write('G7', 'State', style.table_head_center)
         sheet.write('H7', 'State Vendor', style.table_head_center)
+        sheet.write('I7', 'Participants', style.table_head_center)
 
         # sheet.write('B9', 'Date', style.table_head_center)
         # sheet.write('C9', 'Order Number', style.table_head_center)
@@ -72,22 +73,33 @@ class AgentReportRecapTransactionXls(models.TransientModel):
         sheet.set_row(6, 30)
         sheet.set_column('A:A', 8)
         sheet.set_column('B:B', 10)
-        sheet.set_column('C:F', 15)
-        sheet.set_column('G:G', 12)
-        sheet.set_column('H:S', 15)
-        sheet.set_column('AA:AA', 30)
+        sheet.set_column('C:C', 10)
+        sheet.set_column('D:E', 15)
+        sheet.set_column('F:F', 10)
+        sheet.set_column('G:H', 12)
+        sheet.set_column('I:I', 25)
 
         # ============ void start() ======================
         # declare some constant dependencies
-        row_data = 8
+        row_data = 6
         counter = 0
         temp_order_number = ''
 
         # it's just to make things easier, rather than write values['lines'] over and over
         datas = values['lines']
+        pax_datas = values['second_lines']
 
         # let's iterate the data YEY!
         for i in datas:
+            pax_str = ''
+            pax_len = len(pax_datas)
+            pax_counter = 0
+            for j in pax_datas:
+                if j['booking_id'] == i['rsv_id']:
+                    pax_str += '%s %s %s - %s' % (j['title'], j['first_name'], j['last_name'], j['birth_date'])
+                    if pax_counter < pax_len-1:
+                        pax_str += '\n'
+                pax_counter += 1
             # declare view handler
             row_data += 1
             counter += 1
@@ -108,25 +120,10 @@ class AgentReportRecapTransactionXls(models.TransientModel):
             sheet.write(row_data, 2, i['carrier_name'], sty_table_data)
             sheet.write(row_data, 3, i['order_number'], sty_table_data)
             sheet.write(row_data, 4, i['test_datetime'], sty_date)
-            sheet.write(row_data, 5, i['adult'], sty_table_data)
+            sheet.write(row_data, 5, i['adult'], sty_amount)
             sheet.write(row_data, 6, i['state'], sty_table_data)
             sheet.write(row_data, 7, i['state_vendor'], sty_table_data)
-
-        row_data += 1
-        # this is writing empty string, to print the bottom border
-        sty_table_data_center = style.table_data_center_border
-        sty_table_data = style.table_data_border
-        sty_datetime = style.table_data_datetime_border
-        sty_date = style.table_data_date_border
-        sty_amount = style.table_data_amount_border
-        sheet.write(row_data, 0, '', sty_table_data_center)
-        sheet.write(row_data, 1, '', sty_table_data)
-        sheet.write(row_data, 2, '', sty_table_data)
-        sheet.write(row_data, 3, '', sty_table_data)
-        sheet.write(row_data, 4, '', sty_date)
-        sheet.write(row_data, 5, '', sty_table_data)
-        sheet.write(row_data, 6, '', sty_table_data)
-        sheet.write(row_data, 7, '', sty_table_data)
+            sheet.write(row_data, 8, pax_str, sty_table_data)
 
         # close the file
         workbook.close()
