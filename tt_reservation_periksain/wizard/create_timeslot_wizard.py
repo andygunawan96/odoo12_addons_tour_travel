@@ -23,7 +23,7 @@ class CreateTimeslotPeriksainWizard(models.TransientModel):
     end_date = fields.Date('End Date',required=True, default=fields.Date.today())
     time_string = fields.Text('Time',default='08:00,09:00,10:00,11:00,12:00,13:00,14:00,15:00,16:00,17:00,18:00,19:00,20:00,21:00')
 
-    timeslot_type = fields.Selection([('home_care', 'Home Care'), ('group_booking', 'Group Booking')], 'Timeslot Type',
+    timeslot_type = fields.Selection([('home_care', 'Home Care'), ('group_booking', 'Group Booking')], 'Timeslot Type', default='home_care',
                                      required=True)
     total_timeslot = fields.Integer('Total Timeslot', default=5, required=True)
     currency_id = fields.Many2one('res.currency', 'Currency', readonly=True,
