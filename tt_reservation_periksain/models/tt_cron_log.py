@@ -42,4 +42,14 @@ class TtCronLogInhPeriksain(models.Model):
                         '%s something failed during expired cron.\n' % (booking.name) + traceback.format_exc())
         except Exception as e:
             self.create_cron_log_folder()
-            self.write_cron_log('auto expired booking')
+            self.write_cron_log('auto done state vendor periksain')
+
+    def cron_auto_create_timeslot_periksain(self):
+        try:
+            wiz_obj = self.env['create.timeslot.periksain.wizard'].create({
+                'end_date': datetime.today() + timedelta(days=7)
+            })
+            wiz_obj.generate_timeslot()
+        except Exception as e:
+            self.create_cron_log_folder()
+            self.write_cron_log('auto create timeslot periksain')
