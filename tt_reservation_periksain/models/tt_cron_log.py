@@ -47,7 +47,7 @@ class TtCronLogInhPeriksain(models.Model):
     def cron_auto_create_timeslot_periksain(self):
         try:
             for rec in self.env['tt.destinations'].search(
-                    [('provider_type_id','=',self.env.ref('tt_reservation_periksain.tt_provider_type_periksain'))]):
+                    [('provider_type_id','=',self.env.ref('tt_reservation_periksain.tt_provider_type_periksain').id)]):
                 wiz_obj = self.env['create.timeslot.periksain.wizard'].create({
                     'end_date': datetime.today() + timedelta(days=7),
                     'area_id': rec.id
