@@ -66,6 +66,7 @@ class TtProviderphc(models.Model):
             'pnr': rec.booking_id.name,
             'pnr2': rec.booking_id.name
         })
+        return rec
 
     ##button function
     def action_set_to_issued_from_button(self, payment_data={}):
