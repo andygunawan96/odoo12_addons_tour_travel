@@ -13,12 +13,6 @@ import json
 
 _logger = logging.getLogger(__name__)
 
-COMMISSION_PER_PAX = 22000 ## komisi agent /pax
-BASE_PRICE_PER_PAX = 150000 ## harga 1 /pax
-BASE_PRICE_PER_PAX_PCR = 750000 ## harga 1 /pax
-SINGLE_SUPPLEMENT = 25000 ## 1 orang
-OVERTIME_SURCHARGE = 50000 ## lebih dari 18.00 /pax
-CITO_SURCHARGE = 25000## Urgent cito surcharge range 2-5jam stlh jam book
 
 class ReservationPeriksain(models.Model):
     _name = "tt.reservation.periksain"
@@ -244,17 +238,36 @@ class ReservationPeriksain(models.Model):
             cito_surcharge = False
 
         carrier_id = self.env['tt.transport.carrier'].search([('code', '=', req['carrier_code'])]).id
-        if carrier_id == self.env.ref('tt_reservation_periksain.tt_transport_carrier_periksain_antigen').id:
-            base_price = BASE_PRICE_PER_PAX
-        else:
-            base_price = BASE_PRICE_PER_PAX_PCR
 
-        extra_charge_per_pax = (overtime_surcharge and OVERTIME_SURCHARGE or 0) + (single_suplement and SINGLE_SUPPLEMENT or 0) + (cito_surcharge and CITO_SURCHARGE or 0)
+        base_price = 0
+        commission_price = 0
+        overtime_price = 0
+        single_suplement_price = 0
+        cito_suplement_price = 0
+
+        if carrier_id == self.env.ref('tt_reservation_periksain.tt_transport_carrier_periksain_antigen').id:
+            for rec in timeslot_objs:
+                if rec.base_price_antigen > base_price:
+                    base_price = rec.base_price_antigen
+                    commission_price = rec.commission_antigen
+                    overtime_price = rec.overtime_surcharge
+                    single_suplement_price = rec.single_supplement
+                    cito_suplement_price = rec.cito_surcharge
+        else:
+            for rec in timeslot_objs:
+                if rec.base_price_antigen > base_price:
+                    base_price = rec.base_price_antigen
+                    commission_price = rec.commission_antigen
+                    overtime_price = rec.overtime_surcharge
+                    single_suplement_price = rec.single_supplement
+                    cito_suplement_price = rec.cito_surcharge
+
+        extra_charge_per_pax = (overtime_surcharge and overtime_price or 0) + (single_suplement and single_suplement_price or 0) + (cito_surcharge and cito_suplement_price or 0)
         return ERR.get_no_error({
             "pax_count": req['pax_count'],
             "base_price_per_pax": base_price,
             "extra_price_per_pax": extra_charge_per_pax,#50000
-            "commission_per_pax": COMMISSION_PER_PAX
+            "commission_per_pax": commission_price
         })
 
     def create_booking_periksain_api(self, req, context):

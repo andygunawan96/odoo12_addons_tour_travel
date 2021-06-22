@@ -26,6 +26,7 @@ class TtTimeslotphc(models.Model):
 
     datetimeslot = fields.Datetime('DateTime Slot')
     timeslot_display_name = fields.Char('Display Name', compute="_compute_timeslot_display_name")
+    timeslot_type = fields.Selection([('home_care', 'Home Care'), ('drive_thru', 'Drive Thru'), ('group_booking', 'Group Booking')], 'Timeslot Type')
 
     destination_id = fields.Many2one('tt.destinations','Area')
 
@@ -37,7 +38,23 @@ class TtTimeslotphc(models.Model):
 
     booking_used_ids = fields.One2many('tt.reservation.phc','picked_timeslot_id', 'Confirmed to Customer Booking(s)')
 
+    currency_id = fields.Many2one('res.currency', 'Currency', readonly=True,
+                                  default=lambda self: self.env.user.company_id.currency_id)
+
+    commission_antigen = fields.Monetary('Commission per PAX Antigen')
+    commission_pcr = fields.Monetary('Commission per PAX PCR')
+
+    base_price_antigen = fields.Monetary('Base Price per PAX Antigen')
+    base_price_pcr = fields.Monetary('Base Price per PAX PCR')
+
+    single_supplement = fields.Monetary('Single Supplement')
+    overtime_surcharge = fields.Monetary('Overtime Surcharge')
+
+    total_timeslot = fields.Integer('Max Timeslot', required=True, default=5)
+
     active = fields.Boolean('Active', default='True')
+
+    agent_id = fields.Many2one('tt.agent', 'Agent')
 
     @api.depends('datetimeslot')
     def _compute_timeslot_display_name(self):
@@ -83,18 +100,18 @@ class TtTimeslotphc(models.Model):
     #     }
     # }
 
-    def get_available_timeslot_api(self):
+    def get_available_timeslot_api(self, context):
         current_wib_datetime = datetime.now(pytz.timezone('Asia/Jakarta'))
         current_datetime = current_wib_datetime.astimezone(pytz.utc)
         malang_id = self.env.ref('tt_reservation_phc.tt_destination_phc_mlg').id
         if '08:00' < str(current_wib_datetime.time())[:5] < '14:00':
-            dom = [('datetimeslot', '>', datetime.now(pytz.utc) + timedelta(hours=2))]
+            dom = ['|',('agent_id','=',False),('agent_id', '=', context['co_agent_id']),('datetimeslot', '>', datetime.now(pytz.utc) + timedelta(hours=2))]
         else:
             min_datetime = current_datetime.replace(hour=1,minute=0)
             if current_datetime > min_datetime:
                 min_datetime = min_datetime + timedelta(days=1)
-            dom = [('datetimeslot', '>', min_datetime),
-                   ('destination_id', '!=', malang_id)]
+            dom = ['|',('agent_id','=',False),('agent_id', '=', context['co_agent_id']),('datetimeslot', '>', min_datetime),
+                   ('destination_id', '!=', malang_id), ('timeslot_type', '!=', 'drive_thru')]
 
         timeslots = self.search(dom)
         # max_date = date.today()
@@ -122,7 +139,8 @@ class TtTimeslotphc(models.Model):
             timeslot_dict[rec.destination_id.name]['timeslots'][str_dateslot].append({
                 'time': str(rec.datetimeslot)[11:16],
                 'seq_id': rec.seq_id,
-                'availability': rec.get_availability()
+                'availability': rec.get_availability(),
+                'group_booking': True if rec.agent_id else False
             })
         print(json.dumps(timeslot_dict))
         return ERR.get_no_error(timeslot_dict)

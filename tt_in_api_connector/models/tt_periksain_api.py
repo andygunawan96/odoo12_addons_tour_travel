@@ -10,7 +10,7 @@ class TtTrainApiCon(models.Model):
     def action_call(self,table_obj,action,data,context):
 
         if action == 'get_availability':
-            res = self.env['tt.timeslot.periksain'].get_available_timeslot_api()
+            res = self.env['tt.timeslot.periksain'].get_available_timeslot_api(context)
         elif action == 'get_price':
             res = table_obj.get_price_periksain_api(data,context)
         elif action == 'create_booking':
