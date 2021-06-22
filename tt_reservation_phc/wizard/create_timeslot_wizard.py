@@ -8,6 +8,14 @@ from datetime import timedelta,datetime
 
 _logger = logging.getLogger(__name__)
 
+COMMISSION_PER_PAX_ANTIGEN = 25000  ## komisi agent /pax
+COMMISSION_PER_PAX_PCR_HC = 120000  ## komisi agent /pax
+COMMISSION_PER_PAX_PCR_DT = 80000  ## komisi agent /pax
+BASE_PRICE_PER_PAX_ANTIGEN = 150000  ## harga 1 /pax
+BASE_PRICE_PER_PAX_PCR_HC = 750000  ## harga 1 /pax
+BASE_PRICE_PER_PAX_PCR_DT = 750000  ## harga 1 /pax
+SINGLE_SUPPLEMENT = 25000  ## 1 orang
+OVERTIME_SURCHARGE = 50000  ## lebih dari 18.00 /pax
 
 class CreateTimeslotphcWizard(models.TransientModel):
     _name = "create.timeslot.phc.wizard"
@@ -15,7 +23,22 @@ class CreateTimeslotphcWizard(models.TransientModel):
 
     start_date = fields.Date('Start Date',required=True, default=fields.Date.today())
     end_date = fields.Date('End Date',required=True, default=fields.Date.today())
-    time_string = fields.Text('Time',default='08:00,09:00,10:00,11:00,12:00,13:00,14:00,15:00,16:00')
+    time_string = fields.Text('Time',default='08:00,09:00,10:00,11:00,13:00,14:00,15:00,16:00')
+
+    timeslot_type = fields.Selection([('home_care', 'Home Care'), ('group_booking', 'Group Booking')], 'Timeslot Type', required=True)
+    total_timeslot = fields.Integer('Total Timeslot',default=5, required=True)
+    currency_id = fields.Many2one('res.currency', 'Currency', readonly=True,
+                                  default=lambda self: self.env.user.company_id.currency_id)
+    commission_antigen = fields.Monetary('Commission per PAX Antigen', default=COMMISSION_PER_PAX_ANTIGEN, required=True)
+    commission_pcr = fields.Monetary('Commission per PAX PCR', default=COMMISSION_PER_PAX_PCR_HC, required=True)
+
+    base_price_antigen = fields.Monetary('Base Price per PAX Antigen', default=BASE_PRICE_PER_PAX_ANTIGEN, required=True)
+    base_price_pcr = fields.Monetary('Base Price per PAX PCR', default=BASE_PRICE_PER_PAX_PCR_HC, required=True)
+
+    single_supplement = fields.Monetary('Single Supplement', default=SINGLE_SUPPLEMENT, required=True)
+    overtime_surcharge = fields.Monetary('Overtime Surcharge', default=OVERTIME_SURCHARGE, required=True)
+
+    agent_id = fields.Many2one('tt.agent', 'Agent')
 
     @api.onchange('start_date')
     def _onchange_start_date(self):
@@ -44,9 +67,10 @@ class CreateTimeslotphcWizard(models.TransientModel):
         for time_str in timelist:
             time_objs.append((datetime.strptime(time_str,'%H:%M') - timedelta(hours=7)).time())
 
-        db = self.env['tt.timeslot.phc'].search([('destination_id','=',self.area_id.id), ('dateslot','>=',self.start_date), ('dateslot','<=',self.end_date)])
+        db = self.env['tt.timeslot.phc'].search([('destination_id','=',self.area_id.id), ('dateslot','>=',self.start_date), ('dateslot','<=',self.end_date), ('timeslot_type','=',self.timeslot_type), ('agent_id','=',self.agent_id.id if self.agent_id else False)])
         db_list = [str(data.datetimeslot) for data in db]
         for this_date_counter in range(date_delta):
+            this_date = self.start_date + timedelta(days=this_date_counter)
             for this_time in time_objs:
                 this_date = self.start_date + timedelta(days=this_date_counter)
                 datetimeslot = datetime.strptime('%s %s' % (str(this_date),this_time),'%Y-%m-%d %H:%M:%S')
@@ -54,7 +78,37 @@ class CreateTimeslotphcWizard(models.TransientModel):
                     create_values.append({
                         'dateslot': this_date,
                         'datetimeslot': datetimeslot,
-                        'destination_id': self.area_id.id
+                        'destination_id': self.area_id.id,
+                        'time_slot': self.total_timeslot,
+                        'currency_id': self.currency_id.id,
+                        'timeslot_type': self.timeslot_type,
+                        'commission_antigen': self.commission_antigen,
+                        'commission_pcr': self.commission_pcr,
+                        'base_price_antigen': self.base_price_antigen,
+                        'base_price_pcr': self.base_price_pcr,
+                        'single_supplement': self.single_supplement,
+                        'overtime_surcharge': self.overtime_surcharge,
+                        'agent_id': self.agent_id.id if self.agent_id else False
                     })
 
         self.env['tt.timeslot.phc'].create(create_values)
+
+    def generate_drivethru_timeslot(self, date):
+        destination = self.env['tt.destinations'].search([('provider_type_id','=',self.env.ref('tt_reservation_phc.tt_provider_type_phc').id),('code','=','SUB')])
+        datetimeslot = datetime.strptime('%s %s' % (str(date), '12:00:00'), '%Y-%m-%d %H:%M:%S')
+        data = self.env['tt.timeslot.phc'].create({
+            'dateslot': date,
+            'datetimeslot': datetimeslot,
+            'destination_id': destination.id,
+            'total_timeslot': 0,
+            'currency_id': self.env.user.company_id.currency_id.id,
+            'timeslot_type': 'drive_thru',
+            'commission_antigen': COMMISSION_PER_PAX_ANTIGEN,
+            'commission_pcr': COMMISSION_PER_PAX_PCR_DT,
+            'base_price_antigen': BASE_PRICE_PER_PAX_ANTIGEN,
+            'base_price_pcr': BASE_PRICE_PER_PAX_PCR_DT,
+            'single_supplement': SINGLE_SUPPLEMENT,
+            'overtime_surcharge': OVERTIME_SURCHARGE,
+            'agent_id': False
+        })
+        return data

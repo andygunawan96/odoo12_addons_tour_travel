@@ -54,6 +54,24 @@
                         <field name="destination_id"/>
                         <field name="selected_count"/>
                         <field name="used_count"/>
+                        <field name="agent_id"/>
+                        <field name="timeslot_type"/>
+                        <field name="total_timeslot"/>
+                        <field name="currency_id"/>
+                    </group>
+                    <group string="Antigen">
+                        <field name="base_price_antigen"/>
+                        <field name="commission_antigen"/>
+                    </group>
+
+                    <group string="PCR">
+                        <field name="base_price_pcr"/>
+                        <field name="commission_pcr"/>
+                    </group>
+
+                    <group string="Additional Price">
+                        <field name="single_supplement"/>
+                        <field name="overtime_surcharge"/>
                     </group>
 
                     <separator string="Confirmed to Customer Booking(s)"/>
@@ -73,6 +91,7 @@
             <tree>
                 <field name="seq_id"/>
                 <field name="dateslot"/>
+                <field name="timeslot_type"/>
                 <field name="datetimeslot"/>
                 <field name="selected_count"/>
                 <field name="used_count"/>

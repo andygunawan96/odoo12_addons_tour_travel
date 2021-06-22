@@ -21,6 +21,7 @@ TT_TRANSPORT
         'data/tt_destination_phc.xml',
         'data/tt_transport_carrier_phc.xml',
         'data/ir_send_email.xml',
+        'data/ir_cron_data.xml',
 
         'security/ir.model.access.csv',
         'security/ir_rule_data.xml',

@@ -57,10 +57,14 @@ class TtProviderPeriksain(models.Model):
     reconcile_time = fields.Datetime('Reconcile Time')
     ##
 
-    # @api.model
-    # def create(self, vals_list):
-    #     super(TtProviderPeriksain, self).create(vals_list)
-
+    @api.model
+    def create(self, vals_list):
+        rec = super(TtProviderPeriksain, self).create(vals_list)
+        rec.write({
+            'pnr': rec.booking_id.name,
+            'pnr2': rec.booking_id.name
+        })
+        return rec
 
     ##button function
     def action_set_to_issued_from_button(self, payment_data={}):

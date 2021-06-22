@@ -7,10 +7,29 @@
         <field name="arch" type="xml">
             <form string="Create Timeslot Wizard">
                 <group>
-                    <field name="area_id"/>
-                    <field name="start_date"/>
-                    <field name="end_date"/>
-                    <field name="time_string"/>
+                    <group>
+                        <field name="area_id"/>
+                        <field name="start_date"/>
+                        <field name="end_date"/>
+                        <field name="total_timeslot"/>
+                        <field name="timeslot_type"/>
+                        <field name="agent_id"/>
+                        <field name="time_string"/>
+                    </group>
+                    <group string="Antigen">
+                        <field name="base_price_antigen"/>
+                        <field name="commission_antigen"/>
+                    </group>
+
+                    <group string="PCR Home Care">
+                        <field name="base_price_pcr"/>
+                        <field name="commission_pcr"/>
+                    </group>
+
+                    <group string="Additional Price">
+                        <field name="single_supplement"/>
+                        <field name="overtime_surcharge"/>
+                    </group>
                 </group>
                 <footer>
                     <button name="generate_timeslot" string="Generate Timeslot" type="object" default_focus="1" class="oe_highlight"/>
