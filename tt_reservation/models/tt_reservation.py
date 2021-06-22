@@ -327,6 +327,29 @@ class TtReservation(models.Model):
                 res = self.env['tt.reservation.%s' % req['product']].get_booking_passport_api(req, context)
             elif req['product'] == 'event':
                 res = self.env['tt.reservation.%s' % req['product']].get_booking_from_backend(req, context)
+            elif req['product'] == 'phc':
+                if req['forget_booking']:
+                    book_objs = self.env['tt.reservation.%s' % req['product']].search([('hotel_city', '=', req['city']), ('checkin_date', '=', req['date']),('contact_phone', '=', req['phone_number'])])
+                    # book_objs = self.env['tt.reservation.%s' % req['product']].search([('hotel_city', 'ilike', ''), ('checkin_date', '=', req['date']),('contact_phone', '=', False)]) # testing
+                    res = []
+                    for rec in book_objs:
+                        res.append(self.env['test.search'].get_booking_result(rec.name, context))
+                    if len(res) == 0:
+                        return ERR.get_error(1013)
+                    res = ERR.get_no_error(res)
+                else:
+                    book_obj = self.env['tt.reservation.%s' % req['product']].get_booking_phc_api(req, context)
+                    if book_obj:
+                        if self.env.ref('tt_base.agent_b2c_user').name == book_obj['response']['booked_by']:
+                            res = book_obj
+                        # if True: #testing
+                        #     res = book_obj #testing
+                        else:
+                            return ERR.get_error(1013)
+                        res = ERR.get_no_error(res)
+                    else:
+                        return ERR.get_error(1013)
+                # kalau lupa booking nama hotel, checkin, phone number
             return res
         except Exception as e:
             _logger.error(traceback.format_exc())

@@ -11,7 +11,7 @@ class TtTrainApiCon(models.Model):
         if action == 'get_config':
             res = self.env['tt.provider.phc'].get_carriers_api()
         elif action == 'get_availability':
-            res = self.env['tt.timeslot.phc'].get_available_timeslot_api()
+            res = self.env['tt.timeslot.phc'].get_available_timeslot_api(context)
         elif action == 'get_price':
             res = table_obj.get_price_phc_api(data,context)
         elif action == 'create_booking':
