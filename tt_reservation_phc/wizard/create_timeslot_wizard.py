@@ -8,14 +8,14 @@ from datetime import timedelta,datetime
 
 _logger = logging.getLogger(__name__)
 
-COMMISSION_PER_PAX_ANTIGEN = 25000  ## komisi agent /pax
-COMMISSION_PER_PAX_PCR_HC = 120000  ## komisi agent /pax
-COMMISSION_PER_PAX_PCR_DT = 80000  ## komisi agent /pax
-BASE_PRICE_PER_PAX_ANTIGEN = 150000  ## harga 1 /pax
-BASE_PRICE_PER_PAX_PCR_HC = 750000  ## harga 1 /pax
-BASE_PRICE_PER_PAX_PCR_DT = 750000  ## harga 1 /pax
-SINGLE_SUPPLEMENT = 25000  ## 1 orang
-OVERTIME_SURCHARGE = 50000  ## lebih dari 18.00 /pax
+COMMISSION_PER_PAX_ANTIGEN = 28000 ## komisi agent /pax
+COMMISSION_PER_PAX_PCR_HC = 120000 ## komisi agent /pax
+COMMISSION_PER_PAX_PCR_DT = 80000 ## komisi agent /pax
+BASE_PRICE_PER_PAX_ANTIGEN = 150000 ## harga 1 /pax
+BASE_PRICE_PER_PAX_PCR_HC = 850000 ## harga 1 /pax
+BASE_PRICE_PER_PAX_PCR_DT = 750000 ## harga 1 /pax
+SINGLE_SUPPLEMENT = 25000 ## 1 orang
+OVERTIME_SURCHARGE = 50000 ## lebih dari 18.00 /pax
 
 class CreateTimeslotphcWizard(models.TransientModel):
     _name = "create.timeslot.phc.wizard"
