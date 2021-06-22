@@ -200,7 +200,7 @@ class Reservationphc(models.Model):
         if req['timeslot_list'][0] == 'drive_thru':
             timeslot_objs = self.env['tt.timeslot.phc'].search([('timeslot_type', '=', 'drive_thru'), ('datetimeslot', '=', '%s 12:00:00' % datetime.now().strftime('%Y-%m-%d'))])
             if not timeslot_objs:
-                self.env['create.timeslot.phc.wizard'].generate_drivethru_timeslot(datetime.now().strftime('%Y-%m-%d'))
+                timeslot_objs = self.env['create.timeslot.phc.wizard'].generate_drivethru_timeslot(datetime.now().strftime('%Y-%m-%d'))
         else:
             timeslot_objs = self.env['tt.timeslot.phc'].search([('seq_id', 'in', req['timeslot_list'])])
             for rec in timeslot_objs:

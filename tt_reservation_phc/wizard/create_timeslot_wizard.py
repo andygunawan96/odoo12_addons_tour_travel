@@ -111,4 +111,4 @@ class CreateTimeslotphcWizard(models.TransientModel):
             'overtime_surcharge': OVERTIME_SURCHARGE,
             'agent_id': False
         })
-        return data.id
+        return data
