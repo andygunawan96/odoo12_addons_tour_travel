@@ -46,10 +46,13 @@ class TtCronLogInhPeriksain(models.Model):
 
     def cron_auto_create_timeslot_periksain(self):
         try:
-            wiz_obj = self.env['create.timeslot.periksain.wizard'].create({
-                'end_date': datetime.today() + timedelta(days=7)
-            })
-            wiz_obj.generate_timeslot()
+            for rec in self.env['tt.destinations'].search(
+                    [('provider_type_id','=',self.env.ref('tt_reservation_periksain.tt_provider_type_periksain'))]):
+                wiz_obj = self.env['create.timeslot.periksain.wizard'].create({
+                    'end_date': datetime.today() + timedelta(days=7),
+                    'area_id': rec.id
+                })
+                wiz_obj.generate_timeslot()
         except Exception as e:
             self.create_cron_log_folder()
             self.write_cron_log('auto create timeslot periksain')
