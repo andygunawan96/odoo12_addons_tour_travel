@@ -33,9 +33,6 @@
         <field name="model">tt.timeslot.phc</field>
         <field name="arch" type="xml">
             <form edit="false" create="false">
-                <header>
-                    <button name="get_available_timeslot_api" type="object" string="Print Timeslots"/>
-                </header>
                 <sheet>
 
                     <div class="oe_button_box" name="button_box">

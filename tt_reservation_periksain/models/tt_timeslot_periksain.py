@@ -148,7 +148,7 @@ class TtTimeslotPeriksain(models.Model):
         return ERR.get_no_error(timeslot_dict)
 
     def get_availability(self):
-        return self.used_count < MAX_PER_SLOT
+        return self.used_count < self.total_timeslot
 
     def get_datetimeslot_str(self):
         if self.datetimeslot:

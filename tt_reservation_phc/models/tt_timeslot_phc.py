@@ -142,11 +142,10 @@ class TtTimeslotphc(models.Model):
                 'availability': rec.get_availability(),
                 'group_booking': True if rec.agent_id else False
             })
-        print(json.dumps(timeslot_dict))
         return ERR.get_no_error(timeslot_dict)
 
     def get_availability(self):
-        return self.used_count < MAX_PER_SLOT
+        return self.used_count < self.total_timeslot
 
     def get_datetimeslot_str(self):
         if self.datetimeslot:
