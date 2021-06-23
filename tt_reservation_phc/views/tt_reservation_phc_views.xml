@@ -317,7 +317,7 @@
                 <field name="issued_uid"/>
                 <field name="issued_date"/>
                 <field name="state"/>
-                <field name="vendor_state"/>
+                <field name="state_vendor"/>
                 <field name="reconcile_state" groups="tt_base.group_reconcile_level_3"/>
             </tree>
         </field>
