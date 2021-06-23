@@ -561,7 +561,7 @@ class Reservationphc(models.Model):
             if not timeslot_objs:
                 self.env['create.timeslot.phc.wizard'].generate_drivethru_timeslot(datetime.now().strftime('%Y-%m-%d'))
         else:
-            timeslot_write_data = self.env['tt.timeslot.phc'].search([('datetimeslot', '=', '%s 12:00:00' % datetime.now().strftime('%Y-%m-%d'))])
+            timeslot_write_data = self.env['tt.timeslot.phc'].search([('seq_id', 'in', booking_data['timeslot_list'])])
 
 
         booking_tmp = {
