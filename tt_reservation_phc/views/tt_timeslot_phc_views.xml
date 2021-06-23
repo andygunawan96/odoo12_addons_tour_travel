@@ -88,7 +88,7 @@
         <field name="name">tt.timeslot.phc.tree.view</field>
         <field name="model">tt.timeslot.phc</field>
         <field name="arch" type="xml">
-            <tree>
+            <tree create="false">
                 <field name="seq_id"/>
                 <field name="dateslot"/>
                 <field name="timeslot_type"/>
