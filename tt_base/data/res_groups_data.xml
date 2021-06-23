@@ -1,18 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <data noupdate="1">
-        <!--    is user HO-->
-        <record id="group_tt_tour_travel" model="res.groups">
-            <field name="name">Is Tour Travel HO</field>
-            <field name="category_id" ref="tt_base.module_category_tour_travel_system"/>
-            <field name="implied_ids" eval="[(4, ref('group_tt_tour_travel_operator'))]"/>
-        </record>
-        <!--    is user agent-->
-        <record id="group_tt_agent_user" model="res.groups">
-            <field name="name">Is Agent User</field>
-            <field name="category_id" ref="tt_base.module_category_agent_user"/>
-            <field name="implied_ids" eval="[(4, ref('group_tt_agent_user_operator'))]"/>
-        </record>
         <!--    is finance agent-->
         <record id="group_tt_agent_finance" model="res.groups">
             <field name="name">Is Agent Finance</field>
@@ -2342,6 +2330,19 @@
             <field name="name">Manager</field>
             <field name="category_id" ref="tt_base.module_category_tour_travel_system"/>
             <field name="implied_ids" eval="[(4, ref('group_tt_tour_travel_supervisor'))]"/>
+        </record>
+
+        <!--    is user HO-->
+        <record id="group_tt_tour_travel" model="res.groups">
+            <field name="name">Is Tour Travel HO</field>
+            <field name="category_id" ref="tt_base.module_category_tour_travel_system"/>
+            <field name="implied_ids" eval="[(4, ref('group_tt_tour_travel_operator'))]"/>
+        </record>
+        <!--    is user agent-->
+        <record id="group_tt_agent_user" model="res.groups">
+            <field name="name">Is Agent User</field>
+            <field name="category_id" ref="tt_base.module_category_agent_user"/>
+            <field name="implied_ids" eval="[(4, ref('group_tt_agent_user_operator'))]"/>
         </record>
 
         <!-- ACCOUNTING & TOP UP SYSTEM GROUP -->
