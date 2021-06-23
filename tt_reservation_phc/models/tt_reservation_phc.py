@@ -198,7 +198,7 @@ class Reservationphc(models.Model):
         #carrier_code
         overtime_surcharge = False
         if req['timeslot_list'][0] == 'drive_thru':
-            timeslot_objs = self.env['tt.timeslot.phc'].search([('timeslot_type', '=', 'drive_thru'), ('datetimeslot', '=', '%s 12:00:00' % datetime.now().strftime('%Y-%m-%d'))])
+            timeslot_objs = self.env['tt.timeslot.phc'].search([('timeslot_type', '=', 'drive_thru'), ('datetimeslot', '=', '%s 08:09:09' % datetime.now().strftime('%Y-%m-%d'))])
             if not timeslot_objs:
                 timeslot_objs = self.env['create.timeslot.phc.wizard'].generate_drivethru_timeslot(datetime.now().strftime('%Y-%m-%d'))
         else:
@@ -557,7 +557,7 @@ class Reservationphc(models.Model):
             'carrier_name': carrier_obj and carrier_obj.name or False
         }
         if booking_data['timeslot_list'][0] == 'drive_thru':
-            timeslot_write_data = self.env['tt.timeslot.phc'].search([('timeslot_type', '=', 'drive_thru'), ('datetimeslot', '=', '%s 12:00:00' % datetime.now().strftime('%Y-%m-%d'))])
+            timeslot_write_data = self.env['tt.timeslot.phc'].search([('timeslot_type', '=', 'drive_thru'), ('datetimeslot', '=', '%s 08:09:09' % datetime.now().strftime('%Y-%m-%d'))])
             if not timeslot_write_data:
                 timeslot_write_data = self.env['create.timeslot.phc.wizard'].generate_drivethru_timeslot(datetime.now().strftime('%Y-%m-%d'))
         else:

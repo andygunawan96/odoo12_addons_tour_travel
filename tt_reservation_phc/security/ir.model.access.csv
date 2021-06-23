@@ -10,7 +10,7 @@ tt_analyst_phc_for_master_data_phc_level_5,tt.analyst.phc.for.master.data.phc.le
 tt_timeslot_phc_for_admin,tt.timeslot.phc.for.admin,model_tt_timeslot_phc,base.group_system,1,1,1,1
 tt_timeslot_phc_for_master_data_phc_level_1,tt.timeslot.phc.for.master.data.phc.level.1,model_tt_timeslot_phc,tt_base.group_master_data_phc_level_1,1,0,0,0
 tt_timeslot_phc_for_master_data_phc_level_2,tt.timeslot.phc.for.master.data.phc.level.2,model_tt_timeslot_phc,tt_base.group_master_data_phc_level_2,1,0,1,0
-tt_timeslot_phc_for_master_data_phc_level_3,tt.timeslot.phc.for.master.data.phc.level.3,model_tt_timeslot_phc,tt_base.group_master_data_phc_level_3,1,1,1,0
+tt_timeslot_phc_for_master_data_phc_level_3,tt.timeslot.phc.for.master.data.phc.level.3,model_tt_timeslot_phc,tt_base.group_master_data_phc_level_3,1,0,1,0
 tt_timeslot_phc_for_master_data_phc_level_4,tt.timeslot.phc.for.master.data.phc.level.4,model_tt_timeslot_phc,tt_base.group_master_data_phc_level_4,1,1,1,0
 tt_timeslot_phc_for_master_data_phc_level_5,tt.timeslot.phc.for.master.data.phc.level.5,model_tt_timeslot_phc,tt_base.group_master_data_phc_level_5,1,1,1,1
 
