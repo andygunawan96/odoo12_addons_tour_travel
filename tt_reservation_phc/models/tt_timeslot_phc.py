@@ -100,18 +100,27 @@ class TtTimeslotphc(models.Model):
     #     }
     # }
 
-    def get_available_timeslot_api(self, context):
+    def get_available_timeslot_api(self, req, context):
         current_wib_datetime = datetime.now(pytz.timezone('Asia/Jakarta'))
         current_datetime = current_wib_datetime.astimezone(pytz.utc)
         malang_id = self.env.ref('tt_reservation_phc.tt_destination_phc_mlg').id
+        carrier_id = self.env['tt.transport.carrier'].search([('code','=',req['carrier_code'])],limit=1).id
+
+        if carrier_id in [self.env.ref('tt_reservation_phc.tt_transport_carrier_phc_home_care_antigen').id,
+                          self.env.ref('tt_reservation_phc.tt_transport_carrier_phc_home_care_pcr')]:
+            timeslot_type_list = ['home_care','group_booking']
+        else:
+            timeslot_type_list = ['drive_thru']
+
+        dom = ['|',('agent_id','=',False),('agent_id', '=', context['co_agent_id']), timeslot_type_list]
         if '06:00' < str(current_wib_datetime.time())[:5] < '14:00':
-            dom = ['|',('agent_id','=',False),('agent_id', '=', context['co_agent_id']),('datetimeslot', '>=', datetime.now(pytz.utc) + timedelta(hours=2)), ('timeslot_type', '!=', 'drive_thru')]
+            dom.append(('datetimeslot', '>=', datetime.now(pytz.utc) + timedelta(hours=2)))
         else:
             min_datetime = current_datetime.replace(hour=1,minute=0)
             if current_datetime > min_datetime:
                 min_datetime = min_datetime + timedelta(days=1)
-            dom = ['|',('agent_id','=',False),('agent_id', '=', context['co_agent_id']),('datetimeslot', '>=', min_datetime),
-                   ('destination_id', '!=', malang_id), ('timeslot_type', '!=', 'drive_thru')]
+            dom.append(('datetimeslot', '>=', min_datetime))
+            dom.append(('destination_id', '!=', malang_id))
 
         timeslots = self.search(dom)
         # max_date = date.today()
