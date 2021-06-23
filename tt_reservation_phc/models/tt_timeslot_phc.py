@@ -111,7 +111,7 @@ class TtTimeslotphc(models.Model):
         dom = ['|', ('agent_id', '=', False), ('agent_id', '=', context['co_agent_id'])]
 
         if carrier_id in [self.env.ref('tt_reservation_phc.tt_transport_carrier_phc_home_care_antigen').id,
-                          self.env.ref('tt_reservation_phc.tt_transport_carrier_phc_home_care_pcr')]:
+                          self.env.ref('tt_reservation_phc.tt_transport_carrier_phc_home_care_pcr').id]:
             dom.append(('timeslot_type', 'in', ['home_care', 'group_booking']))
             if '06:00' < str(current_wib_datetime.time())[:5] < '14:00':
                 dom.append(('datetimeslot', '>=', datetime.now(pytz.utc) + timedelta(hours=2)))
