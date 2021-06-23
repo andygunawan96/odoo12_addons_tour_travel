@@ -10,7 +10,7 @@ tt_analyst_periksain_for_master_data_periksain_level_5,tt.analyst.periksain.for.
 tt_timeslot_periksain_for_admin,tt.timeslot.periksain.for.admin,model_tt_timeslot_periksain,base.group_system,1,1,1,1
 tt_timeslot_periksain_for_master_data_periksain_level_1,tt.timeslot.periksain.for.master.data.periksain.level.1,model_tt_timeslot_periksain,tt_base.group_master_data_periksain_level_1,1,0,0,0
 tt_timeslot_periksain_for_master_data_periksain_level_2,tt.timeslot.periksain.for.master.data.periksain.level.2,model_tt_timeslot_periksain,tt_base.group_master_data_periksain_level_2,1,0,1,0
-tt_timeslot_periksain_for_master_data_periksain_level_3,tt.timeslot.periksain.for.master.data.periksain.level.3,model_tt_timeslot_periksain,tt_base.group_master_data_periksain_level_3,1,1,1,0
+tt_timeslot_periksain_for_master_data_periksain_level_3,tt.timeslot.periksain.for.master.data.periksain.level.3,model_tt_timeslot_periksain,tt_base.group_master_data_periksain_level_3,1,0,1,0
 tt_timeslot_periksain_for_master_data_periksain_level_4,tt.timeslot.periksain.for.master.data.periksain.level.4,model_tt_timeslot_periksain,tt_base.group_master_data_periksain_level_4,1,1,1,0
 tt_timeslot_periksain_for_master_data_periksain_level_5,tt.timeslot.periksain.for.master.data.periksain.level.5,model_tt_timeslot_periksain,tt_base.group_master_data_periksain_level_5,1,1,1,1
 

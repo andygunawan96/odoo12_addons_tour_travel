@@ -150,6 +150,9 @@ class TtTimeslotphc(models.Model):
 
     def get_datetimeslot_str(self):
         if self.datetimeslot:
-            return self.datetimeslot.strftime('%d %B %Y %H:%M')
+            if self.timeslot_type != 'drive_thru':
+                return self.datetimeslot.strftime('%d %B %Y %H:%M')
+            else:
+                return '%s (08:00 - 17:00 WIB)' % (self.datetimeslot.strftime('%d %B %Y'))
         else:
             return 'Date/Time is not specified.'
