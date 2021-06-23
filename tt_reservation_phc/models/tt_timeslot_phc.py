@@ -104,13 +104,13 @@ class TtTimeslotphc(models.Model):
         current_wib_datetime = datetime.now(pytz.timezone('Asia/Jakarta'))
         current_datetime = current_wib_datetime.astimezone(pytz.utc)
         malang_id = self.env.ref('tt_reservation_phc.tt_destination_phc_mlg').id
-        if '08:00' < str(current_wib_datetime.time())[:5] < '14:00':
-            dom = ['|',('agent_id','=',False),('agent_id', '=', context['co_agent_id']),('datetimeslot', '>', datetime.now(pytz.utc) + timedelta(hours=2)), ('timeslot_type', '!=', 'drive_thru')]
+        if '06:00' < str(current_wib_datetime.time())[:5] < '14:00':
+            dom = ['|',('agent_id','=',False),('agent_id', '=', context['co_agent_id']),('datetimeslot', '>=', datetime.now(pytz.utc) + timedelta(hours=2)), ('timeslot_type', '!=', 'drive_thru')]
         else:
             min_datetime = current_datetime.replace(hour=1,minute=0)
             if current_datetime > min_datetime:
                 min_datetime = min_datetime + timedelta(days=1)
-            dom = ['|',('agent_id','=',False),('agent_id', '=', context['co_agent_id']),('datetimeslot', '>', min_datetime),
+            dom = ['|',('agent_id','=',False),('agent_id', '=', context['co_agent_id']),('datetimeslot', '>=', min_datetime),
                    ('destination_id', '!=', malang_id), ('timeslot_type', '!=', 'drive_thru')]
 
         timeslots = self.search(dom)
