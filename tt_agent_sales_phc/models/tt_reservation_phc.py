@@ -61,7 +61,7 @@ class ReservationPhc(models.Model):
             'res_model_resv': self._name,
             'res_id_resv': self.id,
             'invoice_id': invoice_id.id,
-            'reference': self.name,
+            'reference': 'Order Number:\n%s' % (self.name),
             'desc': self.get_segment_description(),
             'admin_fee': self.payment_acquirer_number_id.fee_amount
         })
