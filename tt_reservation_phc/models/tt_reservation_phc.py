@@ -557,9 +557,9 @@ class Reservationphc(models.Model):
             'carrier_name': carrier_obj and carrier_obj.name or False
         }
         if booking_data['timeslot_list'][0] == 'drive_thru':
-            timeslot_objs = self.env['tt.timeslot.phc'].search([('timeslot_type', '=', 'drive_thru'), ('datetimeslot', '=', '%s 12:00:00' % datetime.now().strftime('%Y-%m-%d'))])
-            if not timeslot_objs:
-                self.env['create.timeslot.phc.wizard'].generate_drivethru_timeslot(datetime.now().strftime('%Y-%m-%d'))
+            timeslot_write_data = self.env['tt.timeslot.phc'].search([('timeslot_type', '=', 'drive_thru'), ('datetimeslot', '=', '%s 12:00:00' % datetime.now().strftime('%Y-%m-%d'))])
+            if not timeslot_write_data:
+                timeslot_write_data = self.env['create.timeslot.phc.wizard'].generate_drivethru_timeslot(datetime.now().strftime('%Y-%m-%d'))
         else:
             timeslot_write_data = self.env['tt.timeslot.phc'].search([('seq_id', 'in', booking_data['timeslot_list'])])
 
