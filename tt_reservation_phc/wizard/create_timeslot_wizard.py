@@ -96,7 +96,7 @@ class CreateTimeslotphcWizard(models.TransientModel):
 
     def generate_drivethru_timeslot(self, date):
         destination = self.env['tt.destinations'].search([('provider_type_id','=',self.env.ref('tt_reservation_phc.tt_provider_type_phc').id),('code','=','SUB')])
-        datetimeslot = datetime.strptime('%s %s' % (str(date), '12:00:00'), '%Y-%m-%d %H:%M:%S')
+        datetimeslot = datetime.strptime('%s %s' % (str(date), '08:09:09'), '%Y-%m-%d %H:%M:%S')
         data = self.env['tt.timeslot.phc'].create({
             'dateslot': date,
             'datetimeslot': datetimeslot,

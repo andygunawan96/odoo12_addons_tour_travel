@@ -70,8 +70,8 @@
                         context="{
                         'default_booking_id': id,
                    }"/>
-                <button string="No Show Order" name="action_set_state_vendor_as_no_show" type="object" groups="tt_base.group_external_vendor_phc_level_2,tt_base.group_reservation_level_4"/>
-                <button string="Refund Order" name="action_set_state_vendor_as_refund" type="object" groups="tt_base.group_external_vendor_phc_level_2,tt_base.group_reservation_level_4"/>
+                <button string="No Show Order" name="action_set_state_vendor_as_no_show" type="object" attrs="{'invisible': [('state_vendor','!=', 'confirmed_order')]}" groups="tt_base.group_external_vendor_phc_level_2,tt_base.group_reservation_level_4"/>
+                <button string="Refund Order" name="action_set_state_vendor_as_refund" type="object" attrs="{'invisible': [('state_vendor','!=', 'confirmed_order')]}" groups="tt_base.group_external_vendor_phc_level_2,tt_base.group_reservation_level_4"/>
             </xpath>
             <xpath expr="//field[@name='state']" position="replace">
                 <field name="state" widget="statusbar" statusbar_visible="draft,booked,issued,done"/>
@@ -95,7 +95,9 @@
                         class="oe_stat_button" states="booked,issued,done"
                         string="Print Itinerary" type="object" icon="fa-print"/>
             </xpath>
-
+            <xpath expr="//field[@name='date']" position="before">
+                <field name="state_vendor"/>
+            </xpath>
             <xpath expr="//group[@name='paxgroup']" position="before">
                 <separator string="Test Information"/>
                 <field name="timeslot_ids"/>
@@ -167,8 +169,8 @@
                             context="{
                         'default_booking_id': id,
                    }"/>
-                    <button string="No Show Order" name="action_set_state_vendor_as_no_show" type="object" groups="tt_base.group_external_vendor_phc_level_2,tt_base.group_reservation_level_4"/>
-                    <button string="Refund Order" name="action_set_state_vendor_as_refund" type="object" groups="tt_base.group_external_vendor_phc_level_2,tt_base.group_reservation_level_4"/>
+                    <button string="No Show Order" name="action_set_state_vendor_as_no_show" type="object" attrs="{'invisible': [('state_vendor','!=', 'confirmed_order')]}" groups="tt_base.group_external_vendor_phc_level_2,tt_base.group_reservation_level_4"/>
+                    <button string="Refund Order" name="action_set_state_vendor_as_refund" type="object" attrs="{'invisible': [('state_vendor','!=', 'confirmed_order')]}" groups="tt_base.group_external_vendor_phc_level_2,tt_base.group_reservation_level_4"/>
                     <field name="state" widget="statusbar" statusbar_visible="draft,booked,issued,done"/>
                 </header>
                 <sheet>
@@ -193,6 +195,7 @@
                             <field name="res_model" invisible="1"/>
                         </group>
                         <group>
+                            <field name="state_vendor"/>
                             <field name="date"/>
                             <field name="hold_date"/>
                             <!--CANDY: delete expired date & is_manual-->
@@ -314,6 +317,7 @@
                 <field name="issued_uid"/>
                 <field name="issued_date"/>
                 <field name="state"/>
+                <field name="vendor_state"/>
                 <field name="reconcile_state" groups="tt_base.group_reconcile_level_3"/>
             </tree>
         </field>

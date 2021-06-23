@@ -151,14 +151,16 @@ class TtTimeslotphc(models.Model):
                 'availability': rec.get_availability(),
                 'group_booking': True if rec.agent_id else False
             })
-        print(json.dumps(timeslot_dict))
         return ERR.get_no_error(timeslot_dict)
 
     def get_availability(self):
-        return self.used_count < MAX_PER_SLOT
+        return self.used_count < self.total_timeslot
 
     def get_datetimeslot_str(self):
         if self.datetimeslot:
-            return self.datetimeslot.strftime('%d %B %Y %H:%M')
+            if self.timeslot_type != 'drive_thru':
+                return self.datetimeslot.strftime('%d %B %Y %H:%M')
+            else:
+                return '%s (08:00 - 17:00 WIB)' % (self.datetimeslot.strftime('%d %B %Y'))
         else:
             return 'Date/Time is not specified.'

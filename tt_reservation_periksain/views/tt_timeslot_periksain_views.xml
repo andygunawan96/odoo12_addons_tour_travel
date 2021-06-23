@@ -33,9 +33,6 @@
         <field name="model">tt.timeslot.periksain</field>
         <field name="arch" type="xml">
             <form edit="false" create="false">
-                <header>
-                    <button name="get_available_timeslot_api" type="object" string="Print Timeslots"/>
-                </header>
                 <sheet>
 
                     <div class="oe_button_box" name="button_box">
@@ -88,7 +85,7 @@
         <field name="name">tt.timeslot.periksain.tree.view</field>
         <field name="model">tt.timeslot.periksain</field>
         <field name="arch" type="xml">
-            <tree>
+            <tree create="false">
                 <field name="seq_id"/>
                 <field name="dateslot"/>
                 <field name="datetimeslot"/>
