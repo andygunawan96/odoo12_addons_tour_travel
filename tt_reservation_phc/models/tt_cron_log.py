@@ -35,12 +35,8 @@ class TtCronLogInhphc(models.Model):
             wiz_obj.generate_timeslot()
 
             #drive thru
-            wiz_obj = self.env['create.timeslot.phc.wizard'].create({
-                'end_date': datetime.today() + timedelta(days=2),
-                'area_id': self.env.ref('tt_reservation_phc.tt_destination_phc_sub').id,
-                'timeslot_type': 'drive_thru'
-            })
-            wiz_obj.generate_timeslot()
+            for idx in range(3):
+                self.env['create.timeslot.phc.wizard'].generate_drivethru_timeslot((datetime.now() + timedelta(days=idx)).strftime('%Y-%m-%d'))
         except Exception as e:
             self.create_cron_log_folder()
             self.write_cron_log('auto create timeslot phc')
