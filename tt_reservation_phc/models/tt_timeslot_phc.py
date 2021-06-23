@@ -59,7 +59,10 @@ class TtTimeslotphc(models.Model):
     @api.depends('datetimeslot')
     def _compute_timeslot_display_name(self):
         for rec in self:
-            rec.timeslot_display_name = str(rec.datetimeslot.astimezone(pytz.timezone('Asia/Jakarta')))[:19]
+            if rec.timeslot_type != 'drive_thru':
+                rec.timeslot_display_name = str(rec.datetimeslot.astimezone(pytz.timezone('Asia/Jakarta')))[:19]
+            else:
+                rec.timeslot_display_name = str(rec.datetimeslot.astimezone(pytz.timezone('Asia/Jakarta')))[:19]
 
     @api.model
     def create(self, vals_list):

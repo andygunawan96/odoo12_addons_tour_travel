@@ -224,20 +224,22 @@ class ReservationPeriksain(models.Model):
         #jumlah pax
         overtime_surcharge = False
         timeslot_objs = self.env['tt.timeslot.periksain'].search([('seq_id', 'in', req['timeslot_list'])])
+        carrier_id = self.env['tt.transport.carrier'].search([('code', '=', req['carrier_code'])]).id
+
         for rec in timeslot_objs:
             if rec.datetimeslot.time() > time(11,0):
                 overtime_surcharge = True
                 break
 
         single_suplement = False
-        if req['pax_count'] <= 1:
+        if req['pax_count'] <= 1 and \
+                carrier_id == self.env.ref('tt_reservation_periksain.tt_transport_carrier_periksain_antigen').id:
             single_suplement = True
 
         cito_surcharge = False
         if timeslot_objs.datetimeslot <= datetime.now() + timedelta(hours=5):
             cito_surcharge = False
 
-        carrier_id = self.env['tt.transport.carrier'].search([('code', '=', req['carrier_code'])]).id
 
         base_price = 0
         commission_price = 0

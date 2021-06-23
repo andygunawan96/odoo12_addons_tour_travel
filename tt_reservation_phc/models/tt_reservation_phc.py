@@ -215,11 +215,10 @@ class Reservationphc(models.Model):
         overtime_price = 0
         single_suplement_price = 0
         if req['pax_count'] <= 1 and \
-                carrier_id not in [self.env.ref('tt_reservation_phc.tt_transport_carrier_phc_drive_thru_antigen').id,
-                                   self.env.ref('tt_reservation_phc.tt_transport_carrier_phc_drive_thru_pcr').id]:
+                carrier_id == self.env.ref('tt_reservation_phc.tt_transport_carrier_phc_home_care_antigen').id:
             single_suplement = True
 
-        if carrier_id in [self.env.ref('tt_reservation_phc.tt_transport_carrier_phc_drive_thru_antigen').id,
+        if carrier_id in [self.env.ref('tt_reservation_phc.tt_transport_carrier_phc_home_care_antigen').id,
                           self.env.ref('tt_reservation_phc.tt_transport_carrier_phc_home_care_antigen').id]:
             for rec in timeslot_objs:
                 if rec.base_price_antigen > base_price:
