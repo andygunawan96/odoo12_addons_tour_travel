@@ -24,7 +24,7 @@ Key Features
         'data/tt.bank.csv',
         'data/tt.error.api.csv',
         'data/ir_cron_data.xml',
-        'data/user_template.xml',
+
         'data/res.social.media.type.csv',
         'data/tt_pnr_quota_price_list.xml',
         'views/menu_item_base.xml',
@@ -33,6 +33,8 @@ Key Features
         'data/agent_b2c_data.xml',
         'data/tt_agent_ho_data.xml',
         'data/payment_acquirer_ho_data.xml',
+        'data/user_template.xml',
+
         'security/ir.model.access.csv',
         'security/ir_rule_data.xml',
 
