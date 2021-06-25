@@ -584,7 +584,8 @@ class Reservationphc(models.Model):
             'provider_booking_ids': [(0,0,provider_vals)],
             'timeslot_ids': [(6,0,timeslot_write_data.ids)],
             'booked_uid': context_gateway['co_uid'],
-            'booked_date': fields.Datetime.now()
+            'booked_date': fields.Datetime.now(),
+            'hold_date': hold_date,
         }
         if booking_data['timeslot_type'] == 'fixed':
             booking_tmp.update({
