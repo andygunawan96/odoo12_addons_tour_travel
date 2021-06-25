@@ -1226,6 +1226,8 @@ class TestSearch(models.Model):
 
             resp = city_id and city_id.get_city_country_provider_code(city_id.id, provider_id.code) or {'city_id': False, 'country_id': False}
             if provider_id.active:
+                if provider_id.id == self.env.ref('tt_reservation_hotel.tt_hotel_provider_rodextrip_hotel').id:
+                    resp['city_id'] = dest_name.upper()
                 vals = {
                     'provider_id': provider_id.id,
                     'name': provider_id.name,
