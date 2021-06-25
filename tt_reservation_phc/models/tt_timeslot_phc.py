@@ -116,7 +116,7 @@ class TtTimeslotphc(models.Model):
             if '06:00' < str(current_wib_datetime.time())[:5] < '14:00':
                 dom.append(('datetimeslot', '>=', datetime.now(pytz.utc) + timedelta(hours=2)))
             else:
-                min_datetime = current_datetime.replace(hour=1, minute=0)
+                min_datetime = current_datetime.replace(hour=1, minute=0, second=0, microsecond=0)
                 if current_datetime > min_datetime:
                     min_datetime = min_datetime + timedelta(days=1)
                 dom.append(('datetimeslot', '>=', min_datetime))
