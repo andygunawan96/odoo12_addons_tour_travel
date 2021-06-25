@@ -17,7 +17,7 @@ MAX_PER_SLOT = 5
 class TtTimeslotphc(models.Model):
     _name = 'tt.timeslot.phc'
     _description = 'Rodex Model Timeslot phc'
-    _order = 'datetimeslot'
+    _order = 'datetimeslot,id'
     _rec_name = 'timeslot_display_name'
 
     seq_id = fields.Char('Sequence ID')
