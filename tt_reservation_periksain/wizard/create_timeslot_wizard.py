@@ -19,8 +19,8 @@ class CreateTimeslotPeriksainWizard(models.TransientModel):
     _name = "create.timeslot.periksain.wizard"
     _description = 'Periksain Create Timeslot Wizard'
 
-    start_date = fields.Date('Start Date',required=True, default=fields.Date.today())
-    end_date = fields.Date('End Date',required=True, default=fields.Date.today())
+    start_date = fields.Date('Start Date',required=True, default=fields.Date.context_today)
+    end_date = fields.Date('End Date',required=True, default=fields.Date.context_today)
     time_string = fields.Text('Time',default='08:00,09:00,10:00,11:00,12:00,13:00,14:00,15:00,16:00,17:00,18:00,19:00,20:00,21:00')
 
     timeslot_type = fields.Selection([('home_care', 'Home Care'), ('group_booking', 'Group Booking')], 'Timeslot Type', default='home_care',

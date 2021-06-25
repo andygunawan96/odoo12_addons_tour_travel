@@ -33,6 +33,7 @@ class TtReservationCustomer(models.Model):
             'sale_service_charges': self.get_service_charges(),
             'address_ktp': self.address_ktp,
             'sample_method': sample_method,
+            'sample_method_code': self.sample_method,
             'email': self.email,
             'phone_number': self.phone_number
         })

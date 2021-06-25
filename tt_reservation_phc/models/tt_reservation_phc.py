@@ -539,13 +539,19 @@ class Reservationphc(models.Model):
         # "charge_code": "fare",
         # "charge_type": "FARE"
 
+
+        if carrier_obj and carrier_obj.id in [self.env.ref('tt_reservation_phc.tt_transport_carrier_phc_drive_thru_antigen').id,
+                                              self.env.ref('tt_reservation_phc.tt_transport_carrier_phc_drive_thru_pcr').id]:
+            hold_date = fields.Datetime.now().replace(hour=16,minute=30)
+        else:
+            hold_date = fields.Datetime.now() + timedelta(minutes=30)
         provider_vals = {
             'pnr': 1,
             'pnr2': 2,
             'state': 'booked',
             'booked_uid': context_gateway['co_uid'],
             'booked_date': fields.Datetime.now(),
-            'hold_date': fields.Datetime.now() + timedelta(minutes=30),
+            'hold_date': hold_date,
             'balance_due': booking_data['total'],
             'total_price': booking_data['total'],
             'sequence': 1,
@@ -578,7 +584,8 @@ class Reservationphc(models.Model):
             'provider_booking_ids': [(0,0,provider_vals)],
             'timeslot_ids': [(6,0,timeslot_write_data.ids)],
             'booked_uid': context_gateway['co_uid'],
-            'booked_date': fields.Datetime.now()
+            'booked_date': fields.Datetime.now(),
+            'hold_date': hold_date,
         }
         if booking_data['timeslot_type'] == 'fixed':
             booking_tmp.update({
