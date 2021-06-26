@@ -198,7 +198,7 @@ class Reservationphc(models.Model):
         #carrier_code
         overtime_surcharge = False
         if req['timeslot_list'][0] == 'drive_thru':
-            timeslot_objs = self.env['tt.timeslot.phc'].search([('timeslot_type', '=', 'drive_thru'), ('datetimeslot', '=', '%s 12:00:00' % datetime.now().strftime('%Y-%m-%d'))])
+            timeslot_objs = self.env['tt.timeslot.phc'].search([('timeslot_type', '=', 'drive_thru'), ('datetimeslot', '=', '%s 08:09:09' % datetime.now().strftime('%Y-%m-%d'))])
             if not timeslot_objs:
                 timeslot_objs = self.env['create.timeslot.phc.wizard'].generate_drivethru_timeslot(datetime.now().strftime('%Y-%m-%d'))
         else:
@@ -215,20 +215,18 @@ class Reservationphc(models.Model):
         overtime_price = 0
         single_suplement_price = 0
         if req['pax_count'] <= 1 and \
-                carrier_id not in [self.env.ref('tt_reservation_phc.tt_transport_carrier_phc_drive_thru_antigen').id,
-                                   self.env.ref('tt_reservation_phc.tt_transport_carrier_phc_drive_thru_pcr').id]:
+                carrier_id == self.env.ref('tt_reservation_phc.tt_transport_carrier_phc_home_care_antigen').id:
             single_suplement = True
 
-        if carrier_id in [self.env.ref('tt_reservation_phc.tt_transport_carrier_phc_drive_thru_antigen').id,
-                          self.env.ref('tt_reservation_phc.tt_transport_carrier_phc_home_care_antigen').id]:
+        if carrier_id in [self.env.ref('tt_reservation_phc.tt_transport_carrier_phc_home_care_antigen').id,
+                          self.env.ref('tt_reservation_phc.tt_transport_carrier_phc_drive_thru_antigen').id]:
             for rec in timeslot_objs:
                 if rec.base_price_antigen > base_price:
                     base_price = rec.base_price_antigen
                     commission_price = rec.commission_antigen
                     overtime_price = rec.overtime_surcharge
                     single_suplement_price = rec.single_supplement
-        elif carrier_id in [self.env.ref('tt_reservation_phc.tt_transport_carrier_phc_drive_thru_pcr').id,
-                            self.env.ref('tt_reservation_phc.tt_transport_carrier_phc_home_care_pcr').id]:
+        else:
             for rec in timeslot_objs:
                 if rec.base_price_antigen > base_price:
                     base_price = rec.base_price_pcr
@@ -541,13 +539,19 @@ class Reservationphc(models.Model):
         # "charge_code": "fare",
         # "charge_type": "FARE"
 
+
+        if carrier_obj and carrier_obj.id in [self.env.ref('tt_reservation_phc.tt_transport_carrier_phc_drive_thru_antigen').id,
+                                              self.env.ref('tt_reservation_phc.tt_transport_carrier_phc_drive_thru_pcr').id]:
+            hold_date = fields.Datetime.now().replace(hour=16,minute=30)
+        else:
+            hold_date = fields.Datetime.now() + timedelta(minutes=30)
         provider_vals = {
             'pnr': 1,
             'pnr2': 2,
             'state': 'booked',
             'booked_uid': context_gateway['co_uid'],
             'booked_date': fields.Datetime.now(),
-            'hold_date': fields.Datetime.now() + timedelta(minutes=30),
+            'hold_date': hold_date,
             'balance_due': booking_data['total'],
             'total_price': booking_data['total'],
             'sequence': 1,
@@ -557,11 +561,11 @@ class Reservationphc(models.Model):
             'carrier_name': carrier_obj and carrier_obj.name or False
         }
         if booking_data['timeslot_list'][0] == 'drive_thru':
-            timeslot_objs = self.env['tt.timeslot.phc'].search([('timeslot_type', '=', 'drive_thru'), ('datetimeslot', '=', '%s 12:00:00' % datetime.now().strftime('%Y-%m-%d'))])
-            if not timeslot_objs:
-                self.env['create.timeslot.phc.wizard'].generate_drivethru_timeslot(datetime.now().strftime('%Y-%m-%d'))
+            timeslot_write_data = self.env['tt.timeslot.phc'].search([('timeslot_type', '=', 'drive_thru'), ('datetimeslot', '=', '%s 08:09:09' % datetime.now().strftime('%Y-%m-%d'))])
+            if not timeslot_write_data:
+                timeslot_write_data = self.env['create.timeslot.phc.wizard'].generate_drivethru_timeslot(datetime.now().strftime('%Y-%m-%d'))
         else:
-            timeslot_write_data = self.env['tt.timeslot.phc'].search([('datetimeslot', '=', '%s 12:00:00' % datetime.now().strftime('%Y-%m-%d'))])
+            timeslot_write_data = self.env['tt.timeslot.phc'].search([('seq_id', 'in', booking_data['timeslot_list'])])
 
 
         booking_tmp = {
@@ -580,7 +584,8 @@ class Reservationphc(models.Model):
             'provider_booking_ids': [(0,0,provider_vals)],
             'timeslot_ids': [(6,0,timeslot_write_data.ids)],
             'booked_uid': context_gateway['co_uid'],
-            'booked_date': fields.Datetime.now()
+            'booked_date': fields.Datetime.now(),
+            'hold_date': hold_date,
         }
         if booking_data['timeslot_type'] == 'fixed':
             booking_tmp.update({

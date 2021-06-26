@@ -109,7 +109,7 @@ class TtTimeslotPeriksain(models.Model):
         if '08:00' < str(current_wib_datetime.time())[:5] < '18:00':
             dom = ['|',('agent_id','=',False),('agent_id', '=', context['co_agent_id']),('datetimeslot', '>', datetime.now(pytz.utc) + timedelta(hours=3))]
         else:
-            min_datetime = current_datetime.replace(hour=3,minute=0)
+            min_datetime = current_datetime.replace(hour=3,minute=0, second=0, microsecond=0)
             if current_datetime > min_datetime:
                 min_datetime = min_datetime + timedelta(days=1)
             dom = ['|',('agent_id','=',False),('agent_id', '=', context['co_agent_id']),('datetimeslot', '>', min_datetime),
@@ -148,7 +148,7 @@ class TtTimeslotPeriksain(models.Model):
         return ERR.get_no_error(timeslot_dict)
 
     def get_availability(self):
-        return self.used_count < MAX_PER_SLOT
+        return self.used_count < self.total_timeslot
 
     def get_datetimeslot_str(self):
         if self.datetimeslot:

@@ -98,25 +98,30 @@ class ttCronTopUpValidator(models.Model):
                                                 'payment_ref': reference_code,
                                                 'fee': 0
                                             }
-                                            res = self.env['tt.top.up'].action_va_top_up(request, context)
+                                            res = self.env['tt.top.up'].action_va_top_up(request, context, payment_acq_obj.id)
                                             self._cr.commit()
                                             result.top_up_validated(res['response']['top_up_id'])
-                                    book_obj = self.env['tt.reservation.%s' % variables.PROVIDER_TYPE_PREFIX[payment_acq_obj['number'].split('.')[0]]].search([('name', '=', '%s.%s' % (payment_acq_obj['number'].split('.')[0], payment_acq_obj['number'].split('.')[1])), ('state', 'in', ['booked'])], limit=1)
+                                    book_obj = self.env['tt.reservation.%s' % variables.PROVIDER_TYPE_PREFIX[payment_acq_obj['number'].split('.')[0]]].search([('name', '=', '%s.%s' % (payment_acq_obj['number'].split('.')[0], payment_acq_obj['number'].split('.')[1])), ('state', 'in', ['booked','issued'])], limit=1)
 
                                     if book_obj:
                                         #login gateway, payment
-                                        req = {
-                                            'order_number': book_obj.name,
-                                            'user_id': book_obj.user_id.id,
-                                            'provider_type': variables.PROVIDER_TYPE_PREFIX[book_obj.name.split('.')[0]]
-                                        }
-                                        res = self.env['tt.payment.api.con'].send_payment(req)
-                                        if res['error_code'] == 0:
-                                            # tutup payment acq number
+                                        if book_obj.state == 'booked':
+                                            req = {
+                                                'order_number': book_obj.name,
+                                                'user_id': book_obj.user_id.id,
+                                                'provider_type': variables.PROVIDER_TYPE_PREFIX[book_obj.name.split('.')[0]]
+                                            }
+                                            res = self.env['tt.payment.api.con'].send_payment(req)
+                                            _logger.info('Cron Top Up Validator Send Payment REQ %s.%s \n%s' % (payment_acq_obj['number'].split('.')[0], payment_acq_obj['number'].split('.')[1], json.dumps(res)))
+                                            if res['error_code'] == 0:
+                                                # tutup payment acq number
+                                                payment_acq_obj.state = 'done'
+                                            else:
+                                                payment_acq_obj.state = 'waiting'
+                                        elif book_obj.state == 'issued':
                                             payment_acq_obj.state = 'done'
-                                        else:
-                                            payment_acq_obj.state = 'waiting'
-                                        _logger.info(json.dumps(res))
+                                            _logger.info('Cron Top Up Validator Already issued for order number %s.%s change payment acquirer number status' % (payment_acq_obj['number'].split('.')[0], payment_acq_obj['number'].split('.')[1]))
+
 
 
 

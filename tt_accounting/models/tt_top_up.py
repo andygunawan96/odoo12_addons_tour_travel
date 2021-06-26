@@ -173,7 +173,7 @@ class TtTopUp(models.Model):
         except Exception as e:
             _logger.error("Send TOP UP Approve Notification Telegram Error")
 
-    def action_va_top_up(self, data, context, payment_acq_number_id=None):
+    def action_va_top_up(self, data, context, payment_acq_number_id=False):
         #update pay
         top_up = self.search([('name', '=', data['name'])])
         top_up.state = 'request'
@@ -181,7 +181,7 @@ class TtTopUp(models.Model):
         # top_up.fees = 6666
         top_up.payment_id.reference = data['payment_ref']
         if payment_acq_number_id:
-            top_up.payment_id.payment_acq_number_id = self.env['payment.acquirer.number'].browse(payment_acq_number_id)
+            top_up.payment_id.payment_acq_number_id = payment_acq_number_id
         top_up.payment_id.action_validate_from_button()
         top_up.payment_id.action_approve_from_button()
 

@@ -21,8 +21,8 @@ class CreateTimeslotphcWizard(models.TransientModel):
     _name = "create.timeslot.phc.wizard"
     _description = 'phc Create Timeslot Wizard'
 
-    start_date = fields.Date('Start Date',required=True, default=fields.Date.today())
-    end_date = fields.Date('End Date',required=True, default=fields.Date.today())
+    start_date = fields.Date('Start Date',required=True, default=fields.Date.context_today)
+    end_date = fields.Date('End Date',required=True, default=fields.Date.context_today)
     time_string = fields.Text('Time',default='08:00,09:00,10:00,11:00,13:00,14:00,15:00,16:00')
 
     timeslot_type = fields.Selection([('home_care', 'Home Care'), ('group_booking', 'Group Booking')], 'Timeslot Type',
@@ -96,20 +96,23 @@ class CreateTimeslotphcWizard(models.TransientModel):
 
     def generate_drivethru_timeslot(self, date):
         destination = self.env['tt.destinations'].search([('provider_type_id','=',self.env.ref('tt_reservation_phc.tt_provider_type_phc').id),('code','=','SUB')])
-        datetimeslot = datetime.strptime('%s %s' % (str(date), '12:00:00'), '%Y-%m-%d %H:%M:%S')
-        data = self.env['tt.timeslot.phc'].create({
-            'dateslot': date,
-            'datetimeslot': datetimeslot,
-            'destination_id': destination.id,
-            'total_timeslot': 0,
-            'currency_id': self.env.user.company_id.currency_id.id,
-            'timeslot_type': 'drive_thru',
-            'commission_antigen': COMMISSION_PER_PAX_ANTIGEN,
-            'commission_pcr': COMMISSION_PER_PAX_PCR_DT,
-            'base_price_antigen': BASE_PRICE_PER_PAX_ANTIGEN,
-            'base_price_pcr': BASE_PRICE_PER_PAX_PCR_DT,
-            'single_supplement': SINGLE_SUPPLEMENT,
-            'overtime_surcharge': OVERTIME_SURCHARGE,
-            'agent_id': False
-        })
-        return data
+        datetimeslot = datetime.strptime('%s %s' % (str(date), '08:09:09'), '%Y-%m-%d %H:%M:%S')
+        db = self.env['tt.timeslot.phc'].search(
+            [('destination_id', '=', destination.id), ('dateslot', '=', date),
+             ('timeslot_type', '=', 'drive_thru')])
+        if not db:
+            self.env['tt.timeslot.phc'].create({
+                'dateslot': date,
+                'datetimeslot': datetimeslot,
+                'destination_id': destination.id,
+                'total_timeslot': 0,
+                'currency_id': self.env.user.company_id.currency_id.id,
+                'timeslot_type': 'drive_thru',
+                'commission_antigen': COMMISSION_PER_PAX_ANTIGEN,
+                'commission_pcr': COMMISSION_PER_PAX_PCR_DT,
+                'base_price_antigen': BASE_PRICE_PER_PAX_ANTIGEN,
+                'base_price_pcr': BASE_PRICE_PER_PAX_PCR_DT,
+                'single_supplement': SINGLE_SUPPLEMENT,
+                'overtime_surcharge': OVERTIME_SURCHARGE,
+                'agent_id': False
+            })

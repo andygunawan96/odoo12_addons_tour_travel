@@ -1,5 +1,6 @@
 from odoo import models,api,fields
 from datetime import datetime
+import pytz
 
 
 class ReservationPhc(models.Model):
@@ -39,7 +40,7 @@ class ReservationPhc(models.Model):
         tmp += 'Address : %s' % (self.test_address)
         for time_obj in self.timeslot_ids:
             if type(time_obj.datetimeslot) == datetime:
-                tmp += '\n%s' % (datetime.strftime(time_obj.datetimeslot, "%Y-%m-%d %H:%M:%S"))
+                tmp += '\n%s' % time_obj.datetimeslot.astimezone(pytz.timezone('Asia/Jakarta')).strftime('%Y-%m-%d %H:%M')
         return tmp
 
     def action_create_invoice(self,acquirer_id,co_uid,customer_parent_id):
@@ -60,7 +61,7 @@ class ReservationPhc(models.Model):
             'res_model_resv': self._name,
             'res_id_resv': self.id,
             'invoice_id': invoice_id.id,
-            'reference': self.name,
+            'reference': 'Order Number:\n%s' % (self.name),
             'desc': self.get_segment_description(),
             'admin_fee': self.payment_acquirer_number_id.fee_amount
         })

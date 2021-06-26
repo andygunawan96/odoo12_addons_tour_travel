@@ -506,6 +506,38 @@ class RepricingTools(object):
         return result_amount
 
     # TODO Note : This is Primary function
+    # TODO USAGE Example
+    '''
+        1. pricing_tools = RepricingTools('airline')
+        2. additional_list = pricing_tool.get_service_charge_pricing(
+                fare_amount=150000,
+                tax_amount=50000,
+                roc_amount=50000,
+                rac_amount=-50000, -> nilai minus
+                currency='IDR',
+                provider='amadeus',
+                origin='',
+                origin_country='',
+                destination='',
+                destination_country='',
+                carrier_code='',
+                class_of_service='',
+                charge_code_list=[],
+                route_count=1,
+                segment_count=1,
+                pax_count=2,
+                pax_type='ADT',
+                agent_type_code='japro',
+                agent_id=2,
+                is_pricing=False, --> True (Pricing dari rule Pricing Provider) / False (Pricing dari input roc_amount, rac_amount)
+                is_commission=True,
+                is_retrieved=False,
+                pricing_date='',
+                show_upline_commission=True,
+                user_info=[]
+            )
+        3. additional_list -> list of service charges
+    '''
     def get_service_charge_pricing(
             self,
             fare_amount=0,
@@ -532,6 +564,7 @@ class RepricingTools(object):
             is_retrieved=False,
             pricing_date='',
             user_info=None,
+            show_upline_commission=True,
             **kwargs):
 
         service_charge_result = []
@@ -574,9 +607,12 @@ class RepricingTools(object):
                             'charge_type': 'ROC',
                             'charge_code': code,
                             'amount': round_charge_amount,
+                            'currency': currency,
                             'pax_type': pax_type,
                             'pax_count': pax_count,
-                            'currency': currency,
+                            'total': round_charge_amount * pax_count,
+                            'foreign_amount': round_charge_amount,
+                            'foreign_currency': currency,
                         }
                         service_charge_result.append(charge_values)
                         grand_total += (round_charge_amount * pax_count)
@@ -592,6 +628,9 @@ class RepricingTools(object):
                             'pax_type': pax_type,
                             'pax_count': pax_count,
                             'currency': currency,
+                            'total': round_charge_amount * pax_count,
+                            'foreign_amount': round_charge_amount,
+                            'foreign_currency': currency,
                         }
                         service_charge_result.append(charge_values)
                         grand_total += (round_charge_amount * pax_count)
@@ -601,10 +640,13 @@ class RepricingTools(object):
                         charge_values = {
                             'charge_type': 'ROC',
                             'charge_code': code,
-                            'amount': self.round(charge_amount),
+                            'amount': round_charge_amount,
                             'pax_type': pax_type,
                             'pax_count': 1,
                             'currency': currency,
+                            'total': round_charge_amount,
+                            'foreign_amount': round_charge_amount,
+                            'foreign_currency': currency,
                         }
                         service_charge_result.append(charge_values)
                         grand_total += round_charge_amount
@@ -627,6 +669,9 @@ class RepricingTools(object):
                 'pax_type': pax_type,
                 'pax_count': pax_count,
                 'currency': currency,
+                'total': round_roc_amount * pax_count,
+                'foreign_amount': round_roc_amount,
+                'foreign_currency': currency,
             }
             service_charge_result.append(charge_values)
             grand_total += (round_roc_amount * pax_count)
@@ -642,6 +687,9 @@ class RepricingTools(object):
                     'pax_type': pax_type,
                     'pax_count': 1,
                     'currency': currency,
+                    'total': diff_grand_total,
+                    'foreign_amount': diff_grand_total,
+                    'foreign_currency': currency,
                 }
                 service_charge_result.append(charge_values)
 
@@ -688,37 +736,49 @@ class RepricingTools(object):
                 fee_amount = self.calculate_provider_pricing_by_criteria(pricing_obj, pax_type, route_count, segment_count, pax_count, is_reverse_amount)
                 if fee_amount == 0:
                     if charge_amount != 0:
+                        round_charge_amount = self.round(charge_amount)
                         charge_values = {
                             'charge_type': 'RAC',
                             'charge_code': code,
-                            'amount': self.round(charge_amount),
+                            'amount': round_charge_amount,
                             'pax_type': pax_type,
                             'pax_count': pax_count,
                             'currency': currency,
+                            'total': round_charge_amount * pax_count,
+                            'foreign_amount': round_charge_amount,
+                            'foreign_currency': currency,
                         }
                         # service_charge_result.append(charge_values)
                 else:
                     if pricing_obj['is_per_pax']:
                         fee_amount /= pax_count
                         charge_amount += fee_amount
+                        round_charge_amount = self.round(charge_amount)
                         charge_values = {
                             'charge_type': 'RAC',
                             'charge_code': code,
-                            'amount': self.round(charge_amount),
+                            'amount': round_charge_amount,
                             'pax_type': pax_type,
                             'pax_count': pax_count,
                             'currency': currency,
+                            'total': round_charge_amount * pax_count,
+                            'foreign_amount': round_charge_amount,
+                            'foreign_currency': currency,
                         }
                         # service_charge_result.append(charge_values)
                     else:
                         charge_amount = (charge_amount * pax_count) + fee_amount
+                        round_charge_amount = self.round(charge_amount)
                         charge_values = {
                             'charge_type': 'RAC',
                             'charge_code': code,
-                            'amount': self.round(charge_amount),
+                            'amount': round_charge_amount,
                             'pax_type': pax_type,
                             'pax_count': 1,
                             'currency': currency,
+                            'total': round_charge_amount,
+                            'foreign_amount': round_charge_amount,
+                            'foreign_currency': currency,
                         }
                         # service_charge_result.append(charge_values)
 
@@ -733,13 +793,17 @@ class RepricingTools(object):
                 #     service_charge_result.append(charge_values)
             elif rac_amount != 0:
                 # Asumsi rac amount dari connector bernilai negatif
+                round_charge_amount = self.round(rac_amount)
                 charge_values = {
                     'charge_type': 'RAC',
                     'charge_code': 'rac',
-                    'amount': self.round(rac_amount),
+                    'amount': round_charge_amount,
                     'pax_type': pax_type,
                     'pax_count': pax_count,
                     'currency': currency,
+                    'total': round_charge_amount * pax_count,
+                    'foreign_amount': round_charge_amount,
+                    'foreign_currency': currency,
                 }
                 code = 'rac'
                 rac_amount = 0
@@ -760,7 +824,7 @@ class RepricingTools(object):
             if total_commission < agent_fee_amount:
                 agent_fee_amount = total_commission
 
-            if agent_fee_amount != 0:
+            if agent_fee_amount != 0 and user_info and show_upline_commission:
                 fee_agent_id = user_info[-1]['id']
                 if agent_pricing_obj['fee_charge_type'] == 'parent' and len(user_info) >= 2:
                     fee_agent_id = user_info[1]['id']
@@ -768,24 +832,32 @@ class RepricingTools(object):
                     fee_agent_id = user_info[-1]['id']
 
                 if agent_pricing_obj['is_per_pax']:
+                    round_charge_amount = -self.round(agent_fee_amount / pax_total)
                     agent_fee_values = {
                         'charge_type': 'RAC',
                         'charge_code': 'racfee',
-                        'amount': -self.round(agent_fee_amount / pax_total),
+                        'amount': round_charge_amount,
                         'pax_type': pax_type,
                         'pax_count': pax_total,
                         'commission_agent_id': fee_agent_id,
                         'currency': currency,
+                        'total': round_charge_amount * pax_total,
+                        'foreign_amount': round_charge_amount,
+                        'foreign_currency': currency,
                     }
                 else:
+                    round_charge_amount = -self.round(agent_fee_amount)
                     agent_fee_values = {
                         'charge_type': 'RAC',
                         'charge_code': 'racfee',
-                        'amount': -self.round(agent_fee_amount),
+                        'amount': round_charge_amount,
                         'pax_type': pax_type,
                         'pax_count': 1,
                         'commission_agent_id': fee_agent_id,
                         'currency': currency,
+                        'total': round_charge_amount,
+                        'foreign_amount': round_charge_amount,
+                        'foreign_currency': currency,
                     }
                 service_charge_result.append(agent_fee_values)
 
@@ -801,17 +873,21 @@ class RepricingTools(object):
                 agent_rac /= pax_count
 
             temp_commission -= (agent_rac * pax_count)
+            round_charge_amount = -self.round(agent_rac)
             rac_values = {
                 'charge_type': 'RAC',
                 'charge_code': 'rac',
-                'amount': -self.round(agent_rac),
+                'amount': round_charge_amount,
                 'pax_type': pax_type,
                 'pax_count': pax_count,
                 'currency': currency,
+                'total': round_charge_amount * pax_count,
+                'foreign_amount': round_charge_amount,
+                'foreign_currency': currency,
             }
             service_charge_result.append(rac_values)
 
-            if not user_info:
+            if not user_info or not show_upline_commission:
                 continue
 
             # Menghitung terlebih dahulu jumlah komisi yang didapat oleh agent upline
@@ -855,14 +931,18 @@ class RepricingTools(object):
                             continue
 
                         upline_total_commission -= (agent_lvl_com_amount * pax_count)
+                        round_charge_amount = -self.round(agent_lvl_com_amount)
                         com_values = {
                             'charge_type': 'RAC',
                             'charge_code': 'rac%s' % idx,
-                            'amount': -self.round(agent_lvl_com_amount),
+                            'amount': round_charge_amount,
                             'pax_type': pax_type,
                             'pax_count': pax_count,
                             'commission_agent_id': rec['id'],
                             'currency': currency,
+                            'total': round_charge_amount * pax_count,
+                            'foreign_amount': round_charge_amount,
+                            'foreign_currency': currency,
                         }
                         service_charge_result.append(com_values)
                 else:
@@ -874,26 +954,34 @@ class RepricingTools(object):
                         continue
 
                     upline_total_commission -= (agent_com_amount * pax_count)
+                    round_charge_amount = -self.round(agent_com_amount)
                     com_values = {
                         'charge_type': 'RAC',
                         'charge_code': 'rac%s' % idx,
-                        'amount': -self.round(agent_com_amount),
+                        'amount': round_charge_amount,
                         'pax_type': pax_type,
                         'pax_count': pax_count,
                         'commission_agent_id': rec['id'],
                         'currency': currency,
+                        'total': round_charge_amount * pax_count,
+                        'foreign_amount': round_charge_amount,
+                        'foreign_currency': currency,
                     }
                     service_charge_result.append(com_values)
 
             if upline_total_commission > 0:
+                round_charge_amount = -self.round(upline_total_commission / pax_count)
                 com_values = {
                     'charge_type': 'RAC',
                     'charge_code': 'racdiff',
-                    'amount': -self.round(upline_total_commission / pax_count),
+                    'amount': round_charge_amount,
                     'pax_type': pax_type,
                     'pax_count': pax_count,
                     'commission_agent_id': user_info[-1]['id'],
                     'currency': currency,
+                    'total': round_charge_amount * pax_count,
+                    'foreign_amount': round_charge_amount,
+                    'foreign_currency': currency,
                 }
                 service_charge_result.append(com_values)
 

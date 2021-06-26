@@ -3,7 +3,7 @@
     <data noupdate="1">
 
         <record id="tt_transport_carrier_phc_home_care_antigen" model="tt.transport.carrier">
-            <field name="name">Home Care Antigen</field>
+            <field name="name">Home Care Antigen Surabaya</field>
             <field name="code">PHCHCKATG</field>
             <field name="icao">PHCHCKATG</field>
             <field name="call_sign">phc Home Care ANTIGEN</field>
@@ -15,7 +15,7 @@
         </record>
 
         <record id="tt_transport_carrier_phc_drive_thru_antigen" model="tt.transport.carrier">
-            <field name="name">Drive Thru Antigen</field>
+            <field name="name">Drive Thru Antigen SS Radio</field>
             <field name="code">PHCDTKATG</field>
             <field name="icao">PHCDTKATG</field>
             <field name="call_sign">phc Drive Thru ANTIGEN</field>
@@ -27,7 +27,7 @@
         </record>
 
         <record id="tt_transport_carrier_phc_home_care_pcr" model="tt.transport.carrier">
-            <field name="name">Home Care PCR</field>
+            <field name="name">Home Care PCR Surabaya</field>
             <field name="code">PHCHCKPCR</field>
             <field name="icao">PHCHCKPCR</field>
             <field name="call_sign">PHC Home Care PCR</field>
@@ -39,7 +39,7 @@
         </record>
 
         <record id="tt_transport_carrier_phc_drive_thru_pcr" model="tt.transport.carrier">
-            <field name="name">Drive Thru PCR</field>
+            <field name="name">Drive Thru PCR SS Radio</field>
             <field name="code">PHCDTKPCR</field>
             <field name="icao">PHCDTKPCR</field>
             <field name="call_sign">PHC Drive Thru PCR</field>
