@@ -206,12 +206,17 @@ class Reservationphc(models.Model):
         carrier_id = self.env['tt.transport.carrier'].search([('code', '=', req['carrier_code'])]).id
         overtime_surcharge = False
         timeslot_objs = self.env['tt.timeslot.phc'].search([('seq_id', 'in', req['timeslot_list'])])
+
+        if not timeslot_objs:
+            raise RequestException(1022,"No Timeslot")
+        else:
+            if not timeslot_objs.get_availability():
+                raise RequestException(1022,"Timeslot is Full")
         for rec in timeslot_objs:
             if rec.datetimeslot.time() > time(11,0):
                 overtime_surcharge = True
                 break
-        if not timeslot_objs:
-            raise RequestException(1022,"No Timeslot")
+
 
         single_suplement = False
         base_price = 0
@@ -571,7 +576,9 @@ class Reservationphc(models.Model):
                 timeslot_write_data = self.env['create.timeslot.phc.wizard'].generate_drivethru_timeslot(datetime.now().strftime('%Y-%m-%d'))
         else:
             timeslot_write_data = self.env['tt.timeslot.phc'].search([('seq_id', 'in', booking_data['timeslot_list'])])
-
+            for rec in timeslot_write_data:
+                if not rec.get_availability():
+                    raise RequestException(1022, "Timeslot is Full")
 
         booking_tmp = {
             'state': 'booked',
