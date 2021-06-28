@@ -1043,7 +1043,9 @@ class Reservationphc(models.Model):
             terms_txt += "7. Under normal circumstances, test results will be released by PHC Hospital around 12-24 hours after the test.<br/>"
         else:
             terms_txt += "7. Under normal circumstances, test results will be sent via Whatsapp by PHC Hospital around 30 minutes after the test.<br/>"
-        terms_txt += "8. In case our nurses/officers do not come for the scheduled test, you can file a complaint at most 24 hours after the supposedly test schedule."
+        terms_txt += "8. In case our nurses/officers do not come for the scheduled test, you can file a complaint at most 24 hours after the supposedly test schedule.<br/>"
+        if self.carrier_name in ['PHCDTKATG', 'PHCDTKPCR']:
+            terms_txt += "9. If you have registered online for Drive Thru Test, you must arrive at the test site at most 16:00 WIB during the scheduled test date, otherwise the test will be done the next day."
         return terms_txt
 
     def get_aftersales_desc(self):
