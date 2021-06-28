@@ -205,7 +205,8 @@ class Reservationphc(models.Model):
             if rec.datetimeslot.time() > time(11,0):
                 overtime_surcharge = True
                 break
-
+        if not timeslot_objs:
+            raise RequestException(1022,"No Timeslot")
 
         single_suplement = False
         base_price = 0
