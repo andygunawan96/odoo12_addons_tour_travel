@@ -1004,5 +1004,5 @@ class ReservationPeriksain(models.Model):
     def get_aftersales_desc(self):
         desc_txt = 'PNR: ' + self.pnr + '<br/>'
         desc_txt += 'Test Address: ' + self.test_address + '<br/>'
-        desc_txt += 'Test Date/Time: ' + self.used_timeslot_id.get_datetimeslot_str() + '<br/>'
+        desc_txt += 'Test Date/Time: ' + self.picked_timeslot_id.get_datetimeslot_str() + '<br/>'
         return desc_txt

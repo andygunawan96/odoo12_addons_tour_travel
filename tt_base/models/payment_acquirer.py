@@ -344,6 +344,7 @@ class PaymentAcquirerNumber(models.Model):
     _name = 'payment.acquirer.number'
     _rec_name = 'display_name_payment'
     _description = 'Payment Acquirer Number'
+    _order = 'id desc'
 
     res_id = fields.Integer('Res ID')
     res_model = fields.Char('Res Model')

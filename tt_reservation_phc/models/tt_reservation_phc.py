@@ -66,6 +66,11 @@ class Reservationphc(models.Model):
     provider_type_id = fields.Many2one('tt.provider.type','Provider Type',
                                        default=lambda self: self.env.ref('tt_reservation_phc.tt_provider_type_phc'))
 
+    split_from_resv_id = fields.Many2one('tt.reservation.phc', 'Splitted From', readonly=1)
+    split_to_resv_ids = fields.One2many('tt.reservation.phc', 'split_from_resv_id', 'Splitted To', readonly=1)
+    split_uid = fields.Many2one('res.users', 'Splitted by', readonly=True)
+    split_date = fields.Datetime('Splitted Date', readonly=True)
+
     def get_form_id(self):
         return self.env.ref("tt_reservation_phc.tt_reservation_phc_form_views")
 
@@ -117,7 +122,8 @@ class Reservationphc(models.Model):
             'state': 'issued',
             'issued_date': datetime.now(),
             'issued_uid': co_uid,
-            'customer_parent_id': customer_parent_id
+            'customer_parent_id': customer_parent_id,
+            'state_vendor': 'new_order',
         }
 
         self.write(write_values)
@@ -196,19 +202,22 @@ class Reservationphc(models.Model):
         #timeslot_list
         #jumlah pax
         #carrier_code
-        overtime_surcharge = False
-        if req['timeslot_list'][0] == 'drive_thru':
-            timeslot_objs = self.env['tt.timeslot.phc'].search([('timeslot_type', '=', 'drive_thru'), ('datetimeslot', '=', '%s 08:09:09' % datetime.now().strftime('%Y-%m-%d'))])
-            if not timeslot_objs:
-                timeslot_objs = self.env['create.timeslot.phc.wizard'].generate_drivethru_timeslot(datetime.now().strftime('%Y-%m-%d'))
-        else:
-            timeslot_objs = self.env['tt.timeslot.phc'].search([('seq_id', 'in', req['timeslot_list'])])
-            for rec in timeslot_objs:
-                if rec.datetimeslot.time() > time(11,0):
-                    overtime_surcharge = True
-                    break
 
-        carrier_id = self.env['tt.transport.carrier'].search([('code','=',req['carrier_code'])]).id
+        carrier_id = self.env['tt.transport.carrier'].search([('code', '=', req['carrier_code'])]).id
+        overtime_surcharge = False
+        timeslot_objs = self.env['tt.timeslot.phc'].search([('seq_id', 'in', req['timeslot_list'])])
+
+        if not timeslot_objs:
+            raise RequestException(1022,"No Timeslot")
+        else:
+            if not timeslot_objs.get_availability():
+                raise RequestException(1022,"Timeslot is Full")
+        for rec in timeslot_objs:
+            if rec.datetimeslot.time() > time(11,0):
+                overtime_surcharge = True
+                break
+
+
         single_suplement = False
         base_price = 0
         commission_price = 0
@@ -539,10 +548,11 @@ class Reservationphc(models.Model):
         # "charge_code": "fare",
         # "charge_type": "FARE"
 
-
+        drive_thru = False
         if carrier_obj and carrier_obj.id in [self.env.ref('tt_reservation_phc.tt_transport_carrier_phc_drive_thru_antigen').id,
                                               self.env.ref('tt_reservation_phc.tt_transport_carrier_phc_drive_thru_pcr').id]:
             hold_date = fields.Datetime.now().replace(hour=16,minute=30)
+            drive_thru = True
         else:
             hold_date = fields.Datetime.now() + timedelta(minutes=30)
         provider_vals = {
@@ -560,13 +570,15 @@ class Reservationphc(models.Model):
             'carrier_code': carrier_obj and carrier_obj.code or False,
             'carrier_name': carrier_obj and carrier_obj.name or False
         }
-        if booking_data['timeslot_list'][0] == 'drive_thru':
+        if not booking_data['timeslot_list'] and drive_thru:
             timeslot_write_data = self.env['tt.timeslot.phc'].search([('timeslot_type', '=', 'drive_thru'), ('datetimeslot', '=', '%s 08:09:09' % datetime.now().strftime('%Y-%m-%d'))])
             if not timeslot_write_data:
                 timeslot_write_data = self.env['create.timeslot.phc.wizard'].generate_drivethru_timeslot(datetime.now().strftime('%Y-%m-%d'))
         else:
             timeslot_write_data = self.env['tt.timeslot.phc'].search([('seq_id', 'in', booking_data['timeslot_list'])])
-
+            for rec in timeslot_write_data:
+                if not rec.get_availability():
+                    raise RequestException(1022, "Timeslot is Full")
 
         booking_tmp = {
             'state': 'booked',
@@ -1044,11 +1056,13 @@ class Reservationphc(models.Model):
             terms_txt += "7. Under normal circumstances, test results will be released by PHC Hospital around 12-24 hours after the test.<br/>"
         else:
             terms_txt += "7. Under normal circumstances, test results will be sent via Whatsapp by PHC Hospital around 30 minutes after the test.<br/>"
-        terms_txt += "8. In case our nurses/officers do not come for the scheduled test, you can file a complaint at most 24 hours after the supposedly test schedule."
+        terms_txt += "8. In case our nurses/officers do not come for the scheduled test, you can file a complaint at most 24 hours after the supposedly test schedule.<br/>"
+        if self.carrier_name in ['PHCDTKATG', 'PHCDTKPCR']:
+            terms_txt += "9. If you have registered online for Drive Thru Test, you must arrive at the test site at most 16:00 WIB during the scheduled test date, otherwise the test will be done the next day."
         return terms_txt
 
     def get_aftersales_desc(self):
         desc_txt = 'PNR: ' + self.pnr + '<br/>'
         desc_txt += 'Test Address: ' + self.test_address + '<br/>'
-        desc_txt += 'Test Date/Time: ' + self.used_timeslot_id.get_datetimeslot_str() + '<br/>'
+        desc_txt += 'Test Date/Time: ' + self.picked_timeslot_id.get_datetimeslot_str() + '<br/>'
         return desc_txt

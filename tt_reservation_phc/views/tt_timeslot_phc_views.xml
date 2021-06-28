@@ -87,9 +87,11 @@
         <field name="arch" type="xml">
             <tree create="false">
                 <field name="seq_id"/>
-                <field name="dateslot"/>
                 <field name="timeslot_type"/>
+                <field name="dateslot"/>
                 <field name="datetimeslot"/>
+                <field name="destination_id"/>
+                <field name="total_timeslot"/>
                 <field name="selected_count"/>
                 <field name="used_count"/>
             </tree>

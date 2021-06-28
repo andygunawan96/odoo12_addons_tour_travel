@@ -52,6 +52,20 @@
                 groups="tt_base.group_external_vendor_periksain_level_1"
         />
 
+        <menuitem id="menu_reservation_report_periksain"
+                  parent="tt_reservation_periksain.top_reservations_periksain"
+                  name="Report"
+                  sequence="3"/>
+
+        <menuitem
+                id="menu_medical_vendor_report_recap_transaction_periksain_ho"
+                name="Recap Transaction Report Periksain"
+                parent="tt_medical_vendor_report_recap_transaction.menu_reservation_report_periksain"
+                action="action_medical_vendor_report_recap_transaction_wz_periksain"
+                sequence="30"
+                groups="tt_base.group_tt_tour_travel"
+        />
+
         <menuitem
                 id="menu_medical_vendor_report_recap_transaction_phc"
                 name="Recap Transaction Report PHC"
@@ -59,6 +73,20 @@
                 action="action_medical_vendor_report_recap_transaction_wz_phc"
                 sequence="65"
                 groups="tt_base.group_external_vendor_phc_level_1"
+        />
+
+        <menuitem id="menu_reservation_report_phc"
+                  parent="tt_reservation_phc.top_reservations_phc"
+                  name="Report"
+                  sequence="3"/>
+
+        <menuitem
+                id="menu_medical_vendor_report_recap_transaction_phc_ho"
+                name="Recap Transaction Report PHC"
+                parent="tt_medical_vendor_report_recap_transaction.menu_reservation_report_phc"
+                action="action_medical_vendor_report_recap_transaction_wz_phc"
+                sequence="40"
+                groups="tt_base.group_tt_tour_travel"
         />
     </data>
 </odoo>
