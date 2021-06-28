@@ -156,7 +156,7 @@ class TtTopUp(models.Model):
                                        1,
                                        self.currency_id.id,
                                        self.env.user.id,
-                                       self.validated_amount + self.subsidy, ## Buat Ledger Amount sejumlah payment yg di validated + subsidy unique amount jika ada
+                                       self.validated_amount + abs(self.subsidy), ## Buat Ledger Amount sejumlah payment yg di validated + subsidy unique amount jika ada, ABS supaya selalu +
                                        description='Top Up Ledger for %s' % self.name)
         vals['agent_id'] = self.agent_id.id
         new_aml = ledger_obj.create(vals)
