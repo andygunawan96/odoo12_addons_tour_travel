@@ -58,7 +58,7 @@
                   sequence="3"/>
 
         <menuitem
-                id="menu_medical_vendor_report_recap_transaction_periksain"
+                id="menu_medical_vendor_report_recap_transaction_periksain_ho"
                 name="Recap Transaction Report Periksain"
                 parent="tt_medical_vendor_report_recap_transaction.menu_reservation_report_periksain"
                 action="action_medical_vendor_report_recap_transaction_wz_periksain"
@@ -81,7 +81,7 @@
                   sequence="3"/>
 
         <menuitem
-                id="menu_medical_vendor_report_recap_transaction_phc"
+                id="menu_medical_vendor_report_recap_transaction_phc_ho"
                 name="Recap Transaction Report PHC"
                 parent="tt_medical_vendor_report_recap_transaction.menu_reservation_report_phc"
                 action="action_medical_vendor_report_recap_transaction_wz_phc"

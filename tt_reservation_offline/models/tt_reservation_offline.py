@@ -10,6 +10,7 @@ import pytz
 from ...tools.api import Response
 from ...tools.ERR import RequestException
 from ...tools import variables, ERR
+from ...tools.repricing_tools import RepricingTools
 
 _logger = logging.getLogger(__name__)
 
@@ -938,6 +939,11 @@ class IssuedOffline(models.Model):
                 self.env['tt.provider.offline'].create(vals)
                 pnr_found.append(line.pnr)
 
+    def calculate_offline_pricing(self, pricing_values):
+        repr_obj = RepricingTools('offline')
+        res = repr_obj.get_service_charge_pricing(**pricing_values)
+        return res
+
     def round_offline_pricing(self):
         """ Fungsi ini untuk melakukan pembulatan harga di pricing """
         total_price = 0
@@ -1196,6 +1202,164 @@ class IssuedOffline(models.Model):
                                 if comm.get('code') == 'rac':
                                     rec.agent_commission += comm.get('amount')
                                 elif comm.get('agent_type_id') == rec.env.ref('tt_base.rodex_ho').sudo().agent_type_id.id:
+                                    rec.ho_commission += comm.get('amount')
+                                else:
+                                    rec.parent_agent_commission += comm.get('amount')
+                else:
+                    commission_list = []
+                    """ Jika belum di split, compute commission dari pricing di provider """
+                    for provider in rec.provider_booking_ids:
+                        for scs in provider.cost_service_charge_ids:
+                            scs_val = scs.to_dict()
+                            if scs.charge_type != 'FARE':
+                                scs_val['agent_type_id'] = scs.commission_agent_id.agent_type_id.id
+                                commission_list.append(scs_val)
+
+                    rec.agent_commission = 0
+                    rec.parent_agent_commission = 0
+                    rec.ho_commission = 0
+
+                    for comm in commission_list:
+                        if comm['charge_code'] == 'hoc':
+                            rec.ho_commission += comm['amount']
+
+                    total_amount -= rec.ho_commission
+                    percentage_rem = 100
+
+                    price_obj = pricing_obj.sudo().search([('agent_type_id', '=', rec.agent_id.agent_type_id.id),
+                                                           ('provider_type_id', '=', provider_type_id.id)], limit=1)
+                    if price_obj.basic_amount_type == 'percentage':
+                        rec.agent_commission = total_amount / 100 * price_obj.basic_amount
+                        percentage_rem -= price_obj.basic_amount
+                    elif price_obj.basic_amount_type == 'amount':
+                        rec.agent_commission = price_obj.basic_amount
+                    for line in price_obj.line_ids:
+                        if line.agent_type_id.id == self.env.ref('tt_base.rodex_ho').agent_type_id.id:
+                            if line.basic_amount_type == 'percentage':
+                                rec.ho_commission += total_amount / 100 * line.basic_amount
+                                percentage_rem -= line.basic_amount
+                            else:
+                                rec.ho_commission += line.basic_amount
+                        else:
+                            if line.basic_amount_type == 'percentage':
+                                rec.parent_agent_commission += total_amount / 100 * line.basic_amount
+                                percentage_rem -= line.basic_amount
+                            else:
+                                rec.parent_agent_commission += line.basic_amount
+                    if percentage_rem > 0 and price_obj.basic_amount_type == 'percentage':
+                        rec.ho_commission += total_amount / 100 * percentage_rem
+
+    @api.onchange('total_commission_amount')
+    @api.depends('total_commission_amount')
+    def _get_agent_commission_v2(self):
+        #is commission, send total_amount to v2
+        for rec in self:
+            if rec.offline_provider_type:
+                pnr_list = []
+                fee_amount_list = []
+                total_fee_amount = 0
+                total_amount = rec.total_commission_amount
+
+                pricing_obj = rec.env['tt.pricing.agent'].sudo()
+                adt_count = 0
+                chd_count = 0
+                inf_count = 0
+                segment_count = 0
+
+                for psg in rec.passenger_ids:
+                    if psg.pax_type == 'ADT':
+                        adt_count += 1
+                    elif psg.pax_type == 'CHD':
+                        chd_count += 1
+                    else:
+                        inf_count += 1
+
+                """ Get provider type id """
+                if rec.offline_provider_type != 'other':
+                    provider_type_id = self.env['tt.provider.type'].sudo().search(
+                        [('code', '=', rec.offline_provider_type)], limit=1)
+                else:
+                    provider_type_id = self.env['tt.provider.type'].sudo().search([('code', '=', 'offline')], limit=1)
+
+                if not rec.split_to_resv_ids:
+                    """ hitung fee amount di sini """
+                    for line in rec.line_ids:
+                        if rec.offline_provider_type in ['airline', 'train']:
+                            """ Jika offline type = airline, rule fee amount : per PNR per pax """
+                            if line.pnr not in pnr_list:
+                                pnr_list.append(line.pnr)
+
+                        elif rec.offline_provider_type == 'hotel':
+                            """ Jika offline type = hotel, rule fee amount : per night per room * qty """
+                            if line.check_in is not False and line.check_out is not False:
+                                check_in = datetime.strptime(line.check_in, '%Y-%m-%d')
+                                check_out = datetime.strptime(line.check_out, '%Y-%m-%d')
+                                days = check_out - check_in
+                                days_int = int(days.days)
+                                for day in range(0, days_int):
+                                    fee_amount_vals = rec.get_fee_amount(rec.agent_id, provider_type_id,
+                                                                         rec.total_commission_amount)
+                                    fee_amount_vals['amount'] = fee_amount_vals.get('amount') * line.obj_qty
+                                    fee_amount_vals['total'] = fee_amount_vals.get('total') * line.obj_qty
+                                    fee_amount_list.append(fee_amount_vals)
+                                    total_amount -= fee_amount_vals.get('total')
+                                    total_fee_amount += fee_amount_vals.get('total')
+                        else:
+                            """ else, rule fee amount : per line/provider per pax """
+                            for psg in rec.passenger_ids:
+                                fee_amount_vals = rec.get_fee_amount(rec.agent_id, provider_type_id,
+                                                                     rec.total_commission_amount, psg)
+                                fee_amount_list.append(fee_amount_vals)
+                                total_amount -= fee_amount_vals.get('amount')
+                                total_fee_amount += fee_amount_vals.get('amount')
+
+                    user_info = self.env['tt.agent'].sudo().get_agent_level(3)
+                    adt_scs_list = self.calculate_offline_pricing({
+                        'fare_amount': 0,
+                        'tax_amount': 0,
+                        'roc_amount': 0,
+                        'rac_amount': total_amount,
+                        'currency': 'IDR',
+                        'provider': 'amadeus',
+                        'origin': '',
+                        'destination': '',
+                        'carrier_code': '',
+                        'class_of_service': '',
+                        'route_count': 0,
+                        'segment_count': 0,
+                        'pax_count': adt_count,
+                        'pax_type': 'ADT',
+                        'agent_type_code': 'japro',
+                        'agent_id': 3,
+                        'user_info': user_info,
+                        'is_pricing': False,
+                        'is_commission': True,
+                        'is_retrieved': False,
+                        'pricing_date': '',
+                        'show_upline_commission': False
+                    })
+
+                    rec.agent_commission = 0
+                    rec.parent_agent_commission = 0
+                    rec.ho_commission = 0
+
+                    """ masukkan semua fee amount ke HO Commission """
+                    if total_amount > 0:
+                        rec.ho_commission += total_fee_amount
+                    else:
+                        rec.ho_commission += rec.total_commission_amount
+
+                    if total_amount > 0:
+                        """ Get commission list """
+                        commission_list = pricing_obj.sudo().get_commission(total_amount, rec.agent_id,
+                                                                            provider_type_id)
+
+                        if rec.total_commission_amount != 0:
+                            for comm in commission_list:
+                                if comm.get('code') == 'rac':
+                                    rec.agent_commission += comm.get('amount')
+                                elif comm.get('agent_type_id') == rec.env.ref(
+                                        'tt_base.rodex_ho').sudo().agent_type_id.id:
                                     rec.ho_commission += comm.get('amount')
                                 else:
                                     rec.parent_agent_commission += comm.get('amount')
