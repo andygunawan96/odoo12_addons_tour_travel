@@ -67,6 +67,12 @@
                 <attribute name="edit">false</attribute>
             </xpath>
             <xpath expr="//button[@name='action_cancel']" position="after">
+                <button string="Split Reservation" name="%(tt_reservation_phc.tt_split_reservation_phc_wizard_action_view)d" type="action" groups="tt_base.group_reservation_level_4"
+                        context="{
+                        'default_res_id': id,
+                        'default_referenced_document': name,
+                        'default_currency_id': currency_id,
+                   }"/>
                 <button string="Confirm Order" name="%(tt_reservation_phc.confirm_order_phc_wizard_action_view)d" type="action" states="issued"
                         groups="tt_base.group_external_vendor_phc_level_2,tt_base.group_reservation_level_4"
                         context="{
@@ -101,6 +107,18 @@
                 <field name="state_vendor"/>
             </xpath>
             <xpath expr="//group[@name='paxgroup']" position="before">
+                <group>
+                    <group attrs="{'invisible': [('split_from_resv_id', '=', False)]}">
+                        <field name="split_from_resv_id"/>
+                    </group>
+                    <group attrs="{'invisible': [('split_from_resv_id', '=', False),('split_to_resv_ids', '=', [])]}">
+                        <label for="split_uid" string="Splitted By"/>
+                        <div>
+                            <field name="split_uid" readonly="1" class="oe_inline"/> /
+                            <field name="split_date" readonly="1" class="oe_inline"/>
+                        </div>
+                    </group>
+                </group>
                 <separator string="Test Information"/>
                 <field name="timeslot_ids"/>
                 <group>
@@ -154,6 +172,9 @@
             <xpath expr="//page[@name='anchor']" position="before">
                 <page string="Vendor" name="vendor" groups="tt_base.group_tt_tour_travel">
                     <field name="provider_booking_ids"/>
+                </page>
+                <page string="Splits" name="reservation_splits" groups="tt_base.group_tt_agent_user,tt_base.group_tt_tour_travel" attrs="{'invisible': [('split_to_resv_ids', '=', [])]}">
+                    <field name="split_to_resv_ids"/>
                 </page>
             </xpath>
         </field>
