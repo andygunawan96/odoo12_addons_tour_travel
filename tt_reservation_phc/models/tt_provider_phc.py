@@ -385,7 +385,12 @@ class TtProviderphc(models.Model):
         for rec in data:
             res.append({
                 "name": rec['name'],
-                "code": rec['code']
+                "code": rec['code'],
+                "adult_length_name": rec['adult_length_name'],
+                "is_adult_birth_date_required": rec['is_adult_birth_date_required'],
+                "is_duplicate_single_name": rec['is_duplicate_single_name'],
+                "active": rec['active'],
+                "call_sign": rec['call_sign']
             })
         return ERR.get_no_error(res)
 
