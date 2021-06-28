@@ -74,11 +74,11 @@ class ttCronTopUpValidator(models.Model):
                                         reference_code = result.transaction_code
                                     else:
                                         reference_code = result.transaction_message
-                                    agent_id = self.env['tt.reservation.%s' % variables.PROVIDER_TYPE_PREFIX[payment_acq_obj['number'].split('.')[0]]].search([('name', '=', '%s.%s' %(payment_acq_obj['number'].split('.')[0], payment_acq_obj['number'].split('.')[1]))]).agent_id
+                                    resv_obj = self.env['tt.reservation.%s' % variables.PROVIDER_TYPE_PREFIX[payment_acq_obj['number'].split('.')[0]]].search([('name', '=', '%s.%s' %(payment_acq_obj['number'].split('.')[0], payment_acq_obj['number'].split('.')[1]))])
                                     if not self.env['tt.payment'].search([('reference', '=', reference_code),('total_amount','=', payment_acq_obj.amount + payment_acq_obj.unique_amount)]): #update
                                         # topup
                                         context = {
-                                            'co_agent_id': agent_id.id,
+                                            'co_agent_id': resv_obj.agent_id.id,
                                             'co_uid': self.env.ref('tt_base.base_top_up_admin').id
                                         }
                                         request = {
@@ -95,7 +95,7 @@ class ttCronTopUpValidator(models.Model):
                                             request = {
                                                 'virtual_account': '',
                                                 'name': res['response']['name'],
-                                                'payment_ref': reference_code,
+                                                'payment_ref': '%s\n%s' % (resv_obj.name, reference_code),
                                                 'fee': 0
                                             }
                                             res = self.env['tt.top.up'].action_va_top_up(request, context, payment_acq_obj.id)

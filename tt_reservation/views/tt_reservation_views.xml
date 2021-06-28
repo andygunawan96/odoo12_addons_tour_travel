@@ -81,7 +81,7 @@
 
                             <!--                        ### untuk default value adjustment -->
                             <field name="res_model" invisible="1"/>
-                            <field name="payment_acquirer_number_id" groups="base.group_system"/>
+                            <field name="payment_acquirer_number_id" groups="tt_base.group_tt_tour_travel"/>
                             <field name="unique_amount_id" groups="base.group_system"/>
                             <field name="is_force_issued" groups="base.group_system"/>
                             <field name="is_halt_process" groups="base.group_system"/>

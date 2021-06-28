@@ -171,6 +171,22 @@
             </field>
         </record>
 
+        <record id="payment_acquirer_number_custom_search_views" model="ir.ui.view">
+            <field name="name">payment.acquirer.number.custom.search.views</field>
+            <field name="model">payment.acquirer.number</field>
+            <field name="priority">3</field>
+            <field name="arch" type="xml">
+                <search string="Search Payment Acquirer">
+                    <field name="payment_acquirer_id"/>
+                    <field name="number"/>
+                    <field name="amount"/>
+                    <field name="unique_amount"/>
+                    <field name="fee_amount"/>
+                    <field name="agent_id"/>
+                </search>
+            </field>
+        </record>
+
         <record id="payment_acquirer_number_form_views" model="ir.ui.view">
             <field name="name">payment.acquirer.number.form.views</field>
             <field name="model">payment.acquirer.number</field>
