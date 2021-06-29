@@ -3,7 +3,7 @@ from ...tools import ERR
 from ...tools.ERR import RequestException
 import logging
 from datetime import datetime
-import json
+import traceback
 _logger = logging.getLogger(__name__)
 
 class TtPaymentApiCon(models.Model):
@@ -49,56 +49,65 @@ class TtPaymentApiCon(models.Model):
                 else:
                     res = ERR.get_error(500, additional_message="VA Not Found")
             elif data['va_type'] == 'close':
-                res = ''
-                #ganti ke done
-                pay_acq_num = self.env['payment.acquirer.number'].search([('number', 'ilike', data['order_number'])])
-                if pay_acq_num:
-                    pay_acq_num[len(pay_acq_num)-1].state = 'done'
-                    pay_acq_num[len(pay_acq_num)-1].fee_amount = float(data['fee'])
-                agent_id = self.env['tt.reservation.%s' % data['provider_type']].search([('name', '=', data['order_number'])]).agent_id
-                if not self.env['tt.payment'].search([('reference', '=', data['payment_ref'])]):
-                    # topup
-                    context = {
-                        'co_agent_id': agent_id.id,
-                        'co_uid': self.env.ref('tt_base.base_top_up_admin').id
-                    }
-                    request = {
-                        'amount': data['amount'],
-                        'currency_code': data['ccy'],
-                        'payment_ref': data['payment_ref'],
-                        'payment_seq_id': pay_acq_num[len(pay_acq_num)-1].payment_acquirer_id.seq_id,
-                        'fee': data['fee']
-                    }
-
-                    res = self.env['tt.top.up'].create_top_up_api(request,context, True)
-                    if res['error_code'] == 0:
+                try:
+                    res = ''
+                    #ganti ke done
+                    _logger.info("##############STARTING ESPAY CLOSED PAYMENT##############")
+                    pay_acq_num = self.env['payment.acquirer.number'].search([('number', 'ilike', data['order_number']), ('state','=','close')])
+                    _logger.info("### FOUND PAY ACQ NUM %s ###" % (','.join(pay_acq_num.ids)))
+                    if pay_acq_num:
+                        _logger.info("USED PAY ACQ %s, State %s, Fee Amount %s" % (pay_acq_num[len(pay_acq_num)-1].id,pay_acq_num[len(pay_acq_num)-1].state, pay_acq_num[len(pay_acq_num)-1].fee_amount))
+                        pay_acq_num[len(pay_acq_num)-1].state = 'done'
+                        pay_acq_num[len(pay_acq_num)-1].fee_amount = float(data['fee'])
+                        _logger.info("UPDATING PAY ACQ NUM TO state %s and fee %s" % (pay_acq_num[len(pay_acq_num)-1].state,pay_acq_num[len(pay_acq_num)-1].fee_amount))
+                    agent_id = self.env['tt.reservation.%s' % data['provider_type']].search([('name', '=', data['order_number'])]).agent_id
+                    if not self.env['tt.payment'].search([('reference', '=', data['payment_ref'])]):
+                        # topup
+                        context = {
+                            'co_agent_id': agent_id.id,
+                            'co_uid': self.env.ref('tt_base.base_top_up_admin').id
+                        }
                         request = {
-                            'virtual_account': data['virtual_account'],
-                            'name': res['response']['name'],
+                            'amount': data['amount'],
+                            'currency_code': data['ccy'],
                             'payment_ref': data['payment_ref'],
+                            'payment_seq_id': pay_acq_num[len(pay_acq_num)-1].payment_acquirer_id.seq_id,
                             'fee': data['fee']
                         }
-                        res = self.env['tt.top.up'].action_va_top_up(request, context, pay_acq_num[len(pay_acq_num)-1].id)
 
-                book_obj = self.env['tt.reservation.%s' % data['provider_type']].search([('name', '=', data['order_number']), ('state', 'in', ['booked'])], limit=1)
-                _logger.info(data['order_number'])
-                if book_obj:
-                    if book_obj.total == float(data['transaction_amount']):
-                        values = {
-                            "amount": book_obj.total,
-                            "currency": book_obj.currency_id.name,
-                            "co_uid": book_obj.user_id.id
-                        }
-                        res = ERR.get_no_error(values)
+                        res = self.env['tt.top.up'].create_top_up_api(request,context, True)
+                        if res['error_code'] == 0:
+                            request = {
+                                'virtual_account': data['virtual_account'],
+                                'name': res['response']['name'],
+                                'payment_ref': data['payment_ref'],
+                                'fee': data['fee']
+                            }
+                            res = self.env['tt.top.up'].action_va_top_up(request, context, pay_acq_num[len(pay_acq_num)-1].id)
+
+                    book_obj = self.env['tt.reservation.%s' % data['provider_type']].search([('name', '=', data['order_number']), ('state', 'in', ['booked'])], limit=1)
+                    _logger.info(data['order_number'])
+                    if book_obj:
+                        if book_obj.total == float(data['transaction_amount']):
+                            values = {
+                                "amount": book_obj.total,
+                                "currency": book_obj.currency_id.name,
+                                "co_uid": book_obj.user_id.id
+                            }
+                            res = ERR.get_no_error(values)
+                        else:
+                            res = ERR.get_error(additional_message='Price not same')
                     else:
-                        res = ERR.get_error(additional_message='Price not same')
-                else:
-                    res = ERR.get_error(additional_message='Reservation Already Paid or Expired')
-                try:
-                    if res == '':
-                        res = ERR.get_error(500, additional_message="double payment")
-                except:
-                    pass
+                        res = ERR.get_error(additional_message='Reservation Already Paid or Expired')
+                    try:
+                        if res == '':
+                            res = ERR.get_error(500, additional_message="double payment")
+                    except:
+                        pass
+                except Exception as e:
+                    _logger.error(traceback.format_exc())
+                    raise e
+                _logger.info("##############ENDING ESPAY CLOSED PAYMENT##############")
             elif self.env['payment.acquirer.number'].search([('number', '=', data['virtual_account'])])[0].state == 'done':
                 #close already done
                 pass
