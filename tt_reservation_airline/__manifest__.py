@@ -55,6 +55,7 @@ Key Features
         'views/tt_promo_code_airline_views.xml',
         'views/tt_frequent_flyer_airline_views.xml',
         'views/tt_ff_passenger_airline_views.xml',
+        'views/tt_provider_airline_rule_views.xml',
     ],
     'demo': [],
     'qweb': [],

@@ -77,6 +77,8 @@ class TtProviderAirline(models.Model):
     ##
     is_hold_date_sync = fields.Boolean('Hold Date Sync', readonly=True, default=True)
 
+    rule_ids = fields.One2many('tt.provider.airline.rule', 'provider_booking_id', string='Rules')
+
     ##button function
     def action_set_to_issued_from_button(self, payment_data={}):
         if self.state == 'issued':
@@ -690,6 +692,10 @@ class TtProviderAirline(models.Model):
                 continue
             service_charges.append(rec.to_dict())
 
+        rules = []
+        for rec in self.rule_ids:
+            rules.append(rec.to_dict())
+
         res = {
             'pnr': self.pnr and self.pnr or '',
             'pnr2': self.pnr2 and self.pnr2 or '',
@@ -717,6 +723,9 @@ class TtProviderAirline(models.Model):
             'penalty_currency': self.penalty_currency and self.penalty_currency or '',
             'is_force_issued': self.booking_id.is_force_issued,
             'is_halt_process': self.booking_id.is_halt_process,
+            # END
+            # June 28, 2021 - SAM
+            'rules': rules,
             # END
         }
         return res
@@ -806,3 +815,19 @@ class TtProviderAirline(models.Model):
 
         return True
     # END
+
+
+class TtProviderAirlineRule(models.Model):
+    _name = 'tt.provider.airline.rule'
+    _description = 'Provider Airline Rule'
+
+    name = fields.Char('Name', default='')
+    description = fields.Text('Description', default='')
+    provider_booking_id = fields.Many2one('tt.provider.airline', string='Provider Booking', ondelete='cascade')
+
+    def to_dict(self):
+        res = {
+            'name': self.name if self.name else '',
+            'description': [self.description] if self.description else [],
+        }
+        return res
