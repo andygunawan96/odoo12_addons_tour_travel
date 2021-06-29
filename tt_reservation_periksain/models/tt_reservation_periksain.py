@@ -60,6 +60,11 @@ class ReservationPeriksain(models.Model):
     provider_type_id = fields.Many2one('tt.provider.type','Provider Type',
                                        default=lambda self: self.env.ref('tt_reservation_periksain.tt_provider_type_periksain'))
 
+    split_from_resv_id = fields.Many2one('tt.reservation.periksain', 'Splitted From', readonly=1)
+    split_to_resv_ids = fields.One2many('tt.reservation.periksain', 'split_from_resv_id', 'Splitted To', readonly=1)
+    split_uid = fields.Many2one('res.users', 'Splitted by', readonly=True)
+    split_date = fields.Datetime('Splitted Date', readonly=True)
+
     def get_form_id(self):
         return self.env.ref("tt_reservation_periksain.tt_reservation_periksain_form_views")
 
