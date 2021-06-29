@@ -7,9 +7,9 @@ from datetime import datetime
 _logger = logging.getLogger(__name__)
 
 
-class TtSplitReservationPHCWizard(models.TransientModel):
-    _name = "tt.split.reservation.phc.wizard"
-    _description = 'PHC Split Reservation Wizard'
+class TtSplitReservationPeriksainWizard(models.TransientModel):
+    _name = "tt.split.reservation.periksain.wizard"
+    _description = 'Periksain Split Reservation Wizard'
 
     is_split_passenger = fields.Boolean('Split Passenger', default=True, readonly=True)
     res_id = fields.Integer('Related Reservation ID', index=True, help='Id of the followed resource', readonly=True)
@@ -19,7 +19,7 @@ class TtSplitReservationPHCWizard(models.TransientModel):
     def get_split_passenger_domain(self):
         return [('booking_id', '=', self.res_id)]
 
-    passenger_ids = fields.Many2many('tt.reservation.passenger.phc', 'phc_passenger_split_rel', 'split_wizard_id', 'passenger_id', 'Passenger',
+    passenger_ids = fields.Many2many('tt.reservation.passenger.periksain', 'periksain_passenger_split_rel', 'split_wizard_id', 'passenger_id', 'Passenger',
                            domain=get_split_passenger_domain)
 
     @api.onchange('res_id')
@@ -29,7 +29,7 @@ class TtSplitReservationPHCWizard(models.TransientModel):
         }}
 
     def submit_split_reservation(self):
-        book_obj = self.env['tt.reservation.phc'].sudo().browse(int(self.res_id))
+        book_obj = self.env['tt.reservation.periksain'].sudo().browse(int(self.res_id))
         pax_list = []
         is_pax_full = True
 
@@ -85,7 +85,7 @@ class TtSplitReservationPHCWizard(models.TransientModel):
             'state_vendor': book_obj.state_vendor
         }
 
-        new_book_obj = self.env['tt.reservation.phc'].create(new_vals)
+        new_book_obj = self.env['tt.reservation.periksain'].create(new_vals)
         new_book_obj.write({
             'pnr': new_book_obj.name and new_book_obj.name or '1'
         })
@@ -101,7 +101,7 @@ class TtSplitReservationPHCWizard(models.TransientModel):
             old_cost_dict = {}
             for rec2 in rec.cost_service_charge_ids:
                 rec2.is_ledger_created = False
-                for prov_pax in rec2.passenger_phc_ids:
+                for prov_pax in rec2.passenger_periksain_ids:
                     if prov_pax.id in self.passenger_ids.ids:
                         prov_pax.booking_id = new_book_obj.id
                         if rec2.id not in old_cost_list:
@@ -117,7 +117,7 @@ class TtSplitReservationPHCWizard(models.TransientModel):
                                 'pax_count': 1,
                                 'total': rec2.amount * 1,
                                 'commission_agent_id': rec2.commission_agent_id and rec2.commission_agent_id.id or False,
-                                'passenger_phc_ids': [(4, prov_pax.id)]
+                                'passenger_periksain_ids': [(4, prov_pax.id)]
                             }
                             new_cost_obj = self.env['tt.service.charge'].sudo().create(cost_val)
                             old_cost_list.append(rec2.id)
@@ -127,20 +127,20 @@ class TtSplitReservationPHCWizard(models.TransientModel):
                         else:
                             new_cost_obj = self.env['tt.service.charge'].sudo().browse(int(old_cost_dict[str(rec2.id)]))
                             new_cost_obj.sudo().write({
-                                'passenger_phc_ids': [(4, prov_pax.id)],
+                                'passenger_periksain_ids': [(4, prov_pax.id)],
                                 'pax_count': new_cost_obj.pax_count + 1,
                                 'total': new_cost_obj.amount * (new_cost_obj.pax_count + 1),
                             })
 
                         cost_write_vals = {
-                            'passenger_phc_ids': [(3, prov_pax.id)],
+                            'passenger_periksain_ids': [(3, prov_pax.id)],
                             'pax_count': rec2.pax_count - 1,
                             'total': rec2.amount * (rec2.pax_count - 1),
                         }
 
                         if (rec2.pax_count - 1) <= 0:
                             cost_write_vals.update({
-                                'provider_phc_booking_id': False
+                                'provider_periksain_booking_id': False
                             })
 
                         rec2.sudo().write(cost_write_vals)
@@ -165,7 +165,7 @@ class TtSplitReservationPHCWizard(models.TransientModel):
                     'sid_issued': rec.sid_issued,
                     'currency_id': rec.currency_id and rec.currency_id.id or False,
                 }
-                new_prov_obj = self.env['tt.provider.phc'].sudo().create(prov_val)
+                new_prov_obj = self.env['tt.provider.periksain'].sudo().create(prov_val)
                 provider_dict.update({
                     str(rec.id): new_prov_obj.id
                 })
@@ -173,15 +173,15 @@ class TtSplitReservationPHCWizard(models.TransientModel):
                 for val in old_cost_dict.values():
                     dict_cost_obj = self.env['tt.service.charge'].sudo().browse(int(val))
                     dict_cost_obj.sudo().write({
-                        'provider_phc_booking_id': new_prov_obj.id,
+                        'provider_periksain_booking_id': new_prov_obj.id,
                         'description': new_prov_obj.pnr
                     })
             else:
-                new_prov_obj = self.env['tt.provider.phc'].sudo().browse(int(provider_dict[str(rec.id)]))
+                new_prov_obj = self.env['tt.provider.periksain'].sudo().browse(int(provider_dict[str(rec.id)]))
                 for val in old_cost_dict.values():
                     dict_cost_obj = self.env['tt.service.charge'].sudo().browse(int(val))
                     dict_cost_obj.sudo().write({
-                        'provider_phc_booking_id': new_prov_obj.id,
+                        'provider_periksain_booking_id': new_prov_obj.id,
                         'description': new_prov_obj.pnr
                     })
 

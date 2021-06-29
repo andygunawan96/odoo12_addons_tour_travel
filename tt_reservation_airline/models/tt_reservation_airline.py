@@ -353,6 +353,7 @@ class ReservationAirline(models.Model):
         booker = req['booker']
         contacts = req['contacts']
         passengers = req['passengers']
+        fare_rule_provider = req.get('fare_rule_provider', [])
         # April 20, 2020 - SAM
         # schedules = req['schedules']
         booking_states = req['booking_state_provider']
@@ -398,7 +399,7 @@ class ReservationAirline(models.Model):
             })
 
             book_obj = self.create(values)
-            provider_ids, name_ids = book_obj._create_provider_api(booking_states, context)
+            provider_ids, name_ids = book_obj._create_provider_api(booking_states, context, fare_rule_provider)
 
             # June 4, 2020 - SAM
             # Create passenger frequent flyer pada reservasi (di create setelah object passenger dan provider tercreate
@@ -1148,7 +1149,7 @@ class ReservationAirline(models.Model):
             _logger.error('Entah status apa')
             raise RequestException(1006)
 
-    def _create_provider_api(self, schedules, api_context):
+    def _create_provider_api(self, schedules, api_context, fare_rule_provider=[]):
         dest_obj = self.env['tt.destinations']
         provider_airline_obj = self.env['tt.provider.airline']
         carrier_obj = self.env['tt.transport.carrier']
@@ -1322,6 +1323,25 @@ class ReservationAirline(models.Model):
             provider_arrival_date = this_pnr_journey[-1][2]['arrival_date']
 
             sequence+=1
+
+            # June 28, 2021 - SAM
+            rule_ids = []
+            if fare_rule_provider:
+                try:
+                    if idx < len(fare_rule_provider) and 'rules' in fare_rule_provider[idx]:
+                        rules = fare_rule_provider[idx].get('rules', [])
+                        for rule in rules:
+                            description = '\n'.join(rule['description'])
+                            val = {
+                                'name': rule['name'],
+                                'description': description,
+                            }
+                            rule_ids.append((0, 0, val))
+                except:
+                    _logger.error('Error Create Fare Rules, %s' % traceback.format_exc())
+
+            # END
+
             values = {
                 'pnr': schedule.get('pnr', ''),
                 'pnr2': schedule.get('pnr2', ''),
@@ -1338,6 +1358,7 @@ class ReservationAirline(models.Model):
                 'booked_date': datetime.now(),
                 'journey_ids': this_pnr_journey,
                 'total_price': total_price,
+                'rule_ids': rule_ids,
                 # April 20, 2020 - SAM
                 # 'cost_service_charge_ids': this_service_charges,
                 # END
