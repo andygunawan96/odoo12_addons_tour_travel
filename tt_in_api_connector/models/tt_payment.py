@@ -54,8 +54,8 @@ class TtPaymentApiCon(models.Model):
                     #ganti ke done
                     _logger.info("##############STARTING ESPAY CLOSED PAYMENT##############")
                     pay_acq_num = self.env['payment.acquirer.number'].search([('number', 'ilike', data['order_number']), ('state','=','close')])
-                    _logger.info("### FOUND PAY ACQ NUM %s ###" % (','.join(pay_acq_num.ids)))
                     if pay_acq_num:
+                        _logger.info("### FOUND PAY ACQ NUM %s ###" % (str(pay_acq_num.ids)))
                         _logger.info("USED PAY ACQ %s, State %s, Fee Amount %s" % (pay_acq_num[len(pay_acq_num)-1].id,pay_acq_num[len(pay_acq_num)-1].state, pay_acq_num[len(pay_acq_num)-1].fee_amount))
                         pay_acq_num[len(pay_acq_num)-1].state = 'done'
                         pay_acq_num[len(pay_acq_num)-1].fee_amount = float(data['fee'])
