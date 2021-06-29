@@ -1326,18 +1326,19 @@ class ReservationAirline(models.Model):
 
             # June 28, 2021 - SAM
             rule_ids = []
-            try:
-                if idx < len(fare_rule_provider) and 'rules' in fare_rule_provider[idx]:
-                    rules = fare_rule_provider[idx].get('rules', [])
-                    for rule in rules:
-                        description = '\n'.join(rule['description'])
-                        val = {
-                            'name': rule['name'],
-                            'description': description,
-                        }
-                        rule_ids.append((0, 0, val))
-            except:
-                _logger.error('Error Create Fare Rules, %s' % traceback.format_exc())
+            if fare_rule_provider:
+                try:
+                    if idx < len(fare_rule_provider) and 'rules' in fare_rule_provider[idx]:
+                        rules = fare_rule_provider[idx].get('rules', [])
+                        for rule in rules:
+                            description = '\n'.join(rule['description'])
+                            val = {
+                                'name': rule['name'],
+                                'description': description,
+                            }
+                            rule_ids.append((0, 0, val))
+                except:
+                    _logger.error('Error Create Fare Rules, %s' % traceback.format_exc())
 
             # END
 
