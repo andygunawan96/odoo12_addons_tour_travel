@@ -66,6 +66,11 @@ class Reservationphc(models.Model):
     provider_type_id = fields.Many2one('tt.provider.type','Provider Type',
                                        default=lambda self: self.env.ref('tt_reservation_phc.tt_provider_type_phc'))
 
+    split_from_resv_id = fields.Many2one('tt.reservation.phc', 'Splitted From', readonly=1)
+    split_to_resv_ids = fields.One2many('tt.reservation.phc', 'split_from_resv_id', 'Splitted To', readonly=1)
+    split_uid = fields.Many2one('res.users', 'Splitted by', readonly=True)
+    split_date = fields.Datetime('Splitted Date', readonly=True)
+
     def get_form_id(self):
         return self.env.ref("tt_reservation_phc.tt_reservation_phc_form_views")
 
@@ -201,12 +206,17 @@ class Reservationphc(models.Model):
         carrier_id = self.env['tt.transport.carrier'].search([('code', '=', req['carrier_code'])]).id
         overtime_surcharge = False
         timeslot_objs = self.env['tt.timeslot.phc'].search([('seq_id', 'in', req['timeslot_list'])])
+
+        if not timeslot_objs:
+            raise RequestException(1022,"No Timeslot")
+        else:
+            if not timeslot_objs.get_availability():
+                raise RequestException(1022,"Timeslot is Full")
         for rec in timeslot_objs:
             if rec.datetimeslot.time() > time(11,0):
                 overtime_surcharge = True
                 break
-        if not timeslot_objs:
-            raise RequestException(1022,"No Timeslot")
+
 
         single_suplement = False
         base_price = 0
@@ -566,7 +576,9 @@ class Reservationphc(models.Model):
                 timeslot_write_data = self.env['create.timeslot.phc.wizard'].generate_drivethru_timeslot(datetime.now().strftime('%Y-%m-%d'))
         else:
             timeslot_write_data = self.env['tt.timeslot.phc'].search([('seq_id', 'in', booking_data['timeslot_list'])])
-
+            for rec in timeslot_write_data:
+                if not rec.get_availability():
+                    raise RequestException(1022, "Timeslot is Full")
 
         booking_tmp = {
             'state': 'booked',
@@ -1052,5 +1064,5 @@ class Reservationphc(models.Model):
     def get_aftersales_desc(self):
         desc_txt = 'PNR: ' + self.pnr + '<br/>'
         desc_txt += 'Test Address: ' + self.test_address + '<br/>'
-        desc_txt += 'Test Date/Time: ' + self.used_timeslot_id.get_datetimeslot_str() + '<br/>'
+        desc_txt += 'Test Date/Time: ' + self.picked_timeslot_id.get_datetimeslot_str() + '<br/>'
         return desc_txt

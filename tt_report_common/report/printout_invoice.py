@@ -839,10 +839,7 @@ class PrintoutInvoiceHO(models.AbstractModel):
         elif rec._name in ['tt.reservation.periksain','tt.reservation.phc']:
             descs = ['Address:' + rec.test_address,]
             if rec.timeslot_ids:
-                if descs:
-                    descs.append('Est Date:' + str(rec.timeslot_ids[0].datetimeslot.astimezone(pytz.timezone('Asia/Jakarta')).strftime('%Y-%m-%d %H:%M')))
-                else:
-                    descs.append('Est Date:' + str(rec.timeslot_ids[0].datetimeslot.astimezone(pytz.timezone('Asia/Jakarta')).strftime('%Y-%m-%d')) + ' (Drive Thru)')
+                descs.append('Est Date:' + str(rec.timeslot_ids[0].datetimeslot.astimezone(pytz.timezone('Asia/Jakarta')).strftime('%Y-%m-%d %H:%M')))
             a[rec.name] = {
                 'model': rec._name,
                 'pax_data': [{
