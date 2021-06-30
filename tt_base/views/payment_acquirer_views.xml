@@ -183,6 +183,14 @@
                     <field name="unique_amount"/>
                     <field name="fee_amount"/>
                     <field name="agent_id"/>
+                    <group>
+                        <filter string="All" name="all"/>
+                        <filter string="Open" name="filter_open" domain="[('state','=','open')]"/>
+                        <filter string="Closed" name="filter_closed" domain="[('state','=','close')]"/>
+                        <filter string="Done" name="filter_done" domain="[('state','=','done')]"/>
+                        <filter string="Expired" name="filter_expired" domain="[('state','=','cancel')]"/>
+                        <filter string="Waiting" name="filter_waiting" domain="[('state','=','waiting')]"/>
+                    </group>
                 </search>
             </field>
         </record>
@@ -208,6 +216,7 @@
                             <field name="url"/>
                             <field name="va_number"/>
                             <field name="bank_name"/>
+                            <field name="create_date"/>
                             <field name="time_limit"/>
                         </group>
                     </sheet>

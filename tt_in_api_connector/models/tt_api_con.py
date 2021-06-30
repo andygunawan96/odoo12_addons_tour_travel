@@ -85,7 +85,7 @@ class TtApiCon(models.Model):
             self.password = credential.get('password','')
             self.api_key = self.env['tt.api.credential'].search([('user_id','=',self.uid),('api_role','=','admin')],limit=1).api_key
         except Exception as e:
-            _logger.error('Backend Connector Config Error, %s' % str(e))
+            _logger.error('Backend Connector Config Error, ###%s###' % traceback.format_exc())
         signature = self._gateway_sign_in(data.get('proxy_co_uid',''))
         res = self._send_request(url,data,self._get_header(service_name, signature),content_type=content_type,request_type=request_type,timeout=timeout)
         res['signature'] = signature
