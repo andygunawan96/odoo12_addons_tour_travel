@@ -40,6 +40,15 @@ class PaymentAcquirer(models.Model):
         return super(PaymentAcquirer, self).create(vals_list)
 
     # FUNGSI
+    def generate_unique_amount_api(self,amount,downsell=False):
+        res = self.env['unique.amount'].create({'amount': amount, 'is_downsell': downsell})
+        return {
+            "is_downsell": res.is_downsell,
+            "amount": res.amount,
+            "unique_number": res.unique_number,
+            "active": res.active
+        }  
+    
     def generate_unique_amount(self,amount,downsell=False):
         # return int(self.env['ir.sequence'].next_by_code('tt.payment.unique.amount'))
         return self.env['unique.amount'].create({'amount':amount,'is_downsell':downsell})
