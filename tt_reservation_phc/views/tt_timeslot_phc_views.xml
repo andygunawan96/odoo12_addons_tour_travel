@@ -23,6 +23,7 @@
 
                 <group expand="0" string="Group By">
                     <filter name="group_by_destination_id" string="Area" domain="[]" context="{'group_by':'destination_id'}"/>
+                    <filter name="group_by_dateslot_day" string="Date" domain="[]" context="{'group_by':'dateslot'}"/>
                 </group>
             </search>
         </field>
@@ -109,6 +110,7 @@
             {
             'form_view_ref': 'tt_reservation_phc.tt_timeslot_phc_form_view',
             'tree_view_ref': 'tt_reservation_phc.tt_timeslot_phc_tree_view',
+            'search_default_filter_group_by_dateslot_day': 1
             }
         </field>
     </record>

@@ -95,11 +95,10 @@ class ttCronTopUpValidator(models.Model):
                                             request = {
                                                 'virtual_account': '',
                                                 'name': res['response']['name'],
-                                                'payment_ref': '%s\n%s' % (resv_obj.name, reference_code),
+                                                'payment_ref': reference_code,##jangan di ubah nanti ngebug top up approved dobule dengan case, 2 payment acq number status closed dari agent yg sama kemudian di trf 2 2nya, confurrent update
                                                 'fee': 0
                                             }
                                             res = self.env['tt.top.up'].action_va_top_up(request, context, payment_acq_obj.id)
-                                            self._cr.commit()
                                             result.top_up_validated(res['response']['top_up_id'])
                                     book_obj = self.env['tt.reservation.%s' % variables.PROVIDER_TYPE_PREFIX[payment_acq_obj['number'].split('.')[0]]].search([('name', '=', '%s.%s' % (payment_acq_obj['number'].split('.')[0], payment_acq_obj['number'].split('.')[1])), ('state', 'in', ['booked','issued'])], limit=1)
 
@@ -121,13 +120,10 @@ class ttCronTopUpValidator(models.Model):
                                         elif book_obj.state == 'issued':
                                             payment_acq_obj.state = 'done'
                                             _logger.info('Cron Top Up Validator Already issued for order number %s.%s change payment acquirer number status' % (payment_acq_obj['number'].split('.')[0], payment_acq_obj['number'].split('.')[1]))
-
-
-
-
-                    else:
-                        _logger.error("%s ID, is not found within transaction" % payment_acq_obj.id)
-                        continue
+                                    self._cr.commit()
+                                else:
+                                    _logger.error("%s ID, is not found within transaction" % payment_acq_obj.id)
+                                    continue
 
             except Exception as e:
                 self.create_cron_log_folder()

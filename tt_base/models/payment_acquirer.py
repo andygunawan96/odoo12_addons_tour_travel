@@ -40,6 +40,15 @@ class PaymentAcquirer(models.Model):
         return super(PaymentAcquirer, self).create(vals_list)
 
     # FUNGSI
+    def generate_unique_amount_api(self,amount,downsell=False):
+        res = self.env['unique.amount'].create({'amount': amount, 'is_downsell': downsell})
+        return {
+            "is_downsell": res.is_downsell,
+            "amount": res.amount,
+            "unique_number": res.unique_number,
+            "active": res.active
+        }  
+    
     def generate_unique_amount(self,amount,downsell=False):
         # return int(self.env['ir.sequence'].next_by_code('tt.payment.unique.amount'))
         return self.env['unique.amount'].create({'amount':amount,'is_downsell':downsell})
@@ -503,15 +512,32 @@ class PaymentUniqueAmount(models.Model):
     amount_total = fields.Float('Amount Total',compute="_compute_amount_total",store=True)
     active = fields.Boolean('Active', default=True)
 
+    # @api.model
+    # def create(self, vals_list):
+    #     unique_amount = None
+    #     while (not unique_amount):
+    #         number = random.randint(1,999)
+    #         already_exist = self.search([('amount_total','=',number+int(vals_list['amount']))])
+    #         if not already_exist:
+    #             unique_amount = number
+    #     vals_list['unique_number'] = unique_amount
+    #     new_unique = super(PaymentUniqueAmount, self).create(vals_list)
+    #     return new_unique
+
     @api.model
     def create(self, vals_list):
-        unique_amount = None
-        while (not unique_amount):
-            number = random.randint(1,999)
-            already_exist = self.search([('amount_total','=',number+int(vals_list['amount']))])
-            if not already_exist:
-                unique_amount = number
-        vals_list['unique_number'] = unique_amount
+        query = "SELECT unique_number FROM unique_amount WHERE unique_number != 0 and active IS TRUE;"
+        self.env.cr.execute(query)
+        unique_amount_dict_list = self.env.cr.dictfetchall()
+        used_unique_number = []
+        for rec in unique_amount_dict_list:
+            used_unique_number.append(rec['unique_number'])
+        used_unique_number = set(used_unique_number)
+        try:
+            unique_number = random.sample(variables.UNIQUE_AMOUNT_POOL - used_unique_number,1).pop()
+        except:
+            unique_number =  0
+        vals_list['unique_number'] = unique_number
         new_unique = super(PaymentUniqueAmount, self).create(vals_list)
         return new_unique
 

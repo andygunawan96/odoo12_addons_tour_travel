@@ -4,10 +4,10 @@
         <record model="ir.cron" id="cron_auto_top_up_validator">
             <field name="name">Auto-top-up validator</field>
             <field name="user_id" ref="tt_base.base_top_up_admin"/>
-            <field name="interval_number">15</field>
+            <field name="interval_number">4</field>
             <field name="interval_type">minutes</field>
             <field name="numbercall">-1</field>
-            <field name="nextcall" eval="(datetime.now() + timedelta(minutes = 5)).strftime('%Y-%m-%d %H:%M:%S')"/>
+            <field name="nextcall" eval="(datetime.now() + timedelta(minutes = 2,seconds=0)).strftime('%Y-%m-%d %H:%M:%S')"/>
             <field name="active">False</field>
             <field name="state">code</field>
             <field name="model_id" ref="tt_base.model_tt_cron_log"/>
@@ -17,10 +17,10 @@
         <record model="ir.cron" id="cron_auto_get_bank_transaction">
             <field name="name">Auto-get bank transaction</field>
             <field name="user_id" ref="base.user_root"/>
-            <field name="interval_number">15</field>
+            <field name="interval_number">20</field>
             <field name="interval_type">minutes</field>
             <field name="numbercall">-1</field>
-            <field name="nextcall" eval="(datetime.now().isoformat())"/>
+            <field name="nextcall" eval="(datetime.now() + timedelta(minutes = 0,seconds=0)).strftime('%Y-%m-%d %H:%M:%S')"/>
             <field name="active">False</field>
             <field name="state">code</field>
             <field name="model_id" ref="tt_base.model_tt_cron_log"/>
