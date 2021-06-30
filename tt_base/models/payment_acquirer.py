@@ -524,7 +524,10 @@ class PaymentUniqueAmount(models.Model):
         for rec in unique_amount_dict_list:
             used_unique_number.append(rec['unique_number'])
         used_unique_number = set(used_unique_number)
-        unique_number = random.sample(variables.UNIQUE_AMOUNT_POOL - used_unique_number,1)
+        try:
+            unique_number = random.sample(variables.UNIQUE_AMOUNT_POOL - used_unique_number,1).pop()
+        except:
+            unique_number =  0
         vals_list['unique_number'] = unique_number
         new_unique = super(PaymentUniqueAmount, self).create(vals_list)
         return new_unique
