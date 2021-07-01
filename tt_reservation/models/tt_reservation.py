@@ -669,7 +669,7 @@ class TtReservation(models.Model):
                     'account_name': self.payment_acquirer_number_id.payment_acquirer_id.account_name,
                     'va_number': self.payment_acquirer_number_id.va_number,
                     'url': self.payment_acquirer_number_id.url,
-                    'amount': self.unique_amount_id.amount_total,
+                    'amount': self.payment_acquirer_number_id.get_total_amount(),
                     'order_number': self.payment_acquirer_number_id.number
                 }
             else:

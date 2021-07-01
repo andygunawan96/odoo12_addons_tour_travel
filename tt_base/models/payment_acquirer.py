@@ -364,12 +364,23 @@ class PaymentAcquirerNumber(models.Model):
     url = fields.Char('URL')
     bank_name = fields.Char('Bank Name')
     unique_amount = fields.Float('Unique Amount')
+    unique_amount_id = fields.Many2one('unique.amount','Unique Amount Obj',readonly=True)
     fee_amount = fields.Float('Fee Amount')
     time_limit = fields.Datetime('Time Limit', readonly=True)
     amount = fields.Float('Amount')
     state = fields.Selection([('open', 'Open'), ('close', 'Closed'), ('waiting', 'Waiting Next Cron'), ('done','Done'), ('cancel','Expired'), ('cancel2', 'Cancelled'), ('fail', 'Failed')], 'Payment Type')
     email = fields.Char(string="Email") # buat VA open biar ngga kembar
     display_name_payment = fields.Char('Display Name',compute="_compute_display_name_payment")
+
+
+    def write(self, vals):
+        try:
+            if vals.get('state') not in ['close','waiting']:
+                self.unique_amount_id.active = False
+            return super(PaymentAcquirerNumber, self).write()
+        except Exception as e:
+            _logger.error("################################### Payment Acquirer Error###################################\n%s" % (traceback.format_exc()))
+            return super(PaymentAcquirerNumber, self).write(vals)
 
     @api.depends('number','payment_acquirer_id')
     def _compute_display_name_payment(self):
@@ -398,6 +409,7 @@ class PaymentAcquirerNumber(models.Model):
                     'number': data['order_number'] + '.' + str(datetime.now().strftime('%Y%m%d%H:%M:%S')),
                     'unique_amount': data['unique_amount'],
                     'amount': data['amount'],
+                    'unique_amount_id': booking_obj.unique_amount_id.id,
                     'payment_acquirer_id': HO_acq.env['payment.acquirer'].search([('seq_id', '=', data['seq_id'])]).id,
                     'res_model': provider_type,
                     'res_id': booking_obj.id,
@@ -441,7 +453,7 @@ class PaymentAcquirerNumber(models.Model):
                     'create_date': book_obj.create_date and book_obj.create_date.strftime("%Y-%m-%d %H:%M:%S") or '',
                     'time_limit': payment_acq_number.time_limit and payment_acq_number.time_limit.strftime("%Y-%m-%d %H:%M:%S") or (payment_acq_number.create_date + timedelta(hours=1)).strftime("%Y-%m-%d %H:%M:%S"),
                     'nomor_rekening': payment_acq_number.payment_acquirer_id.account_number,
-                    'amount': payment_acq_number.amount + payment_acq_number.fee_amount + payment_acq_number.unique_amount,
+                    'amount': payment_acq_number.get_total_amount(),
                     'va_number': payment_acq_number.va_number,
                     'url': payment_acq_number.url,
                     'bank_name': payment_acq_number.bank_name,
@@ -478,6 +490,8 @@ class PaymentAcquirerNumber(models.Model):
         else:
             return ERR.get_error(additional_message='Payment Acquirer not found')
 
+    def get_total_amount(self):
+        return self.amount + self.fee_amount + self.unique_amount
 
 class PaymentUniqueAmount(models.Model):
     _name = 'unique.amount'
