@@ -648,14 +648,27 @@ class TtProviderAirline(models.Model):
     def delete_passenger_fees(self):
         pnr_text = self.pnr if self.pnr else str(self.sequence)
         for psg in self.booking_id.passenger_ids:
+            # June 30, 2021 - SAM
+            # unlink dengan metode update One2many
+            fee_id_list = []
             for fee in psg.fee_ids:
                 if fee.pnr != pnr_text:
+                    fee_id_list.append((4, fee.id))
                     continue
-                fee.unlink()
+                # fee.unlink()
+                fee_id_list.append((2, fee.id))
+            psg.write({
+                'fee_ids': fee_id_list
+            })
 
     def delete_passenger_tickets(self):
-        for ticket in self.ticket_ids:
-            ticket.unlink()
+        # June 30, 2021 - SAM
+        # unlink dengan metode update One2many
+        # for ticket in self.ticket_ids:
+        #     ticket.unlink()
+        self.write({
+            'ticket_ids': [(5, 0, 0)]
+        })
     # END
 
     # @api.depends('cost_service_charge_ids')
