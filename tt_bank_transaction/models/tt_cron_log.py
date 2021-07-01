@@ -100,6 +100,7 @@ class ttCronTopUpValidator(models.Model):
                                             }
                                             res = self.env['tt.top.up'].action_va_top_up(request, context, payment_acq_obj.id)
                                             result.top_up_validated(res['response']['top_up_id'])
+                                            self._cr.commit()
                                     book_obj = self.env['tt.reservation.%s' % variables.PROVIDER_TYPE_PREFIX[payment_acq_obj['number'].split('.')[0]]].search([('name', '=', '%s.%s' % (payment_acq_obj['number'].split('.')[0], payment_acq_obj['number'].split('.')[1])), ('state', 'in', ['booked','issued'])], limit=1)
 
                                     if book_obj:
@@ -120,7 +121,7 @@ class ttCronTopUpValidator(models.Model):
                                         elif book_obj.state == 'issued':
                                             payment_acq_obj.state = 'done'
                                             _logger.info('Cron Top Up Validator Already issued for order number %s.%s change payment acquirer number status' % (payment_acq_obj['number'].split('.')[0], payment_acq_obj['number'].split('.')[1]))
-                                    self._cr.commit()
+                                        self._cr.commit()
                                 else:
                                     _logger.error("%s ID, is not found within transaction" % payment_acq_obj.id)
                                     continue
