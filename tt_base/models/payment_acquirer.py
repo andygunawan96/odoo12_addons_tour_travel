@@ -372,16 +372,6 @@ class PaymentAcquirerNumber(models.Model):
     email = fields.Char(string="Email") # buat VA open biar ngga kembar
     display_name_payment = fields.Char('Display Name',compute="_compute_display_name_payment")
 
-
-    def write(self, vals):
-        try:
-            if vals.get('state') not in ['close','waiting']:
-                self.unique_amount_id.active = False
-            return super(PaymentAcquirerNumber, self).write()
-        except Exception as e:
-            _logger.error("################################### Payment Acquirer Error###################################\n%s" % (traceback.format_exc()))
-            return super(PaymentAcquirerNumber, self).write(vals)
-
     @api.depends('number','payment_acquirer_id')
     def _compute_display_name_payment(self):
         for rec in self:
