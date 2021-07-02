@@ -33,7 +33,7 @@
         <field name="name">tt.timeslot.phc.form.view</field>
         <field name="model">tt.timeslot.phc</field>
         <field name="arch" type="xml">
-            <form edit="false" create="false">
+            <form create="false">
                 <sheet>
 
                     <div class="oe_button_box" name="button_box">
