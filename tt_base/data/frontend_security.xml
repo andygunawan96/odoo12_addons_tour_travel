@@ -5,6 +5,11 @@
         <field name="code">ticketing</field>
     </record>
 
+    <record id="able_to_verify_phc" model="tt.frontend.security">
+        <field name="name">Verify PHC</field>
+        <field name="code">verify_phc</field>
+    </record>
+
     <record id="analyst_phc_permission" model="tt.frontend.security">
         <field name="name">Analyst Phc</field>
         <field name="code">analyst_phc</field>
