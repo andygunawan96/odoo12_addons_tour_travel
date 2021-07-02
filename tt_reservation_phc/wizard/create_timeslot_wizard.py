@@ -105,7 +105,7 @@ class CreateTimeslotphcWizard(models.TransientModel):
                 'dateslot': date,
                 'datetimeslot': datetimeslot,
                 'destination_id': destination.id,
-                'total_timeslot': 0,
+                'total_timeslot': 1,
                 'currency_id': self.env.user.company_id.currency_id.id,
                 'timeslot_type': 'drive_thru',
                 'commission_antigen': COMMISSION_PER_PAX_ANTIGEN,

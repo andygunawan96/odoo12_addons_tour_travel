@@ -384,6 +384,9 @@ class PaymentAcquirerNumber(models.Model):
             if rec.state not in ['open','close']:
                 if rec.unique_amount_id:
                     rec.unique_amount_id.active = False
+                    rec.unique_amount_state = False
+            else:
+                rec.unique_amount_state = True
 
     def create_payment_acq_api(self, data):
         provider_type = 'tt.reservation.%s' % variables.PROVIDER_TYPE_PREFIX[data['order_number'].split('.')[0]]

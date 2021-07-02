@@ -110,7 +110,7 @@
             {
             'form_view_ref': 'tt_reservation_phc.tt_timeslot_phc_form_view',
             'tree_view_ref': 'tt_reservation_phc.tt_timeslot_phc_tree_view',
-            'search_default_filter_group_by_dateslot_day': 1
+            'search_default_group_by_dateslot_day': 1
             }
         </field>
     </record>
