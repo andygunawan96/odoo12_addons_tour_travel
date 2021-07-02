@@ -726,30 +726,112 @@ class ReservationAirline(models.Model):
     def to_dict_reschedule(self):
         return []
 
+    # July 2, 2021 - SAM
+    # Ubah fungsi update journey
+    # def update_journey(self, provider):
+    #     if 'sell_reschedule' in provider:
+    #         departure_date = ''
+    #         arrival_date = ''
+    #         for idx, provider_obj in enumerate(self.provider_booking_ids):
+    #             if provider_obj.pnr == provider['pnr']:
+    #                 for idy, journey_obj in enumerate(provider_obj.journey_ids):
+    #                     for idz, segment_obj in enumerate(journey_obj.segment_ids):
+    #                         segment_obj.segment_code = provider['journeys'][idy]['segments'][idz]['segment_code']
+    #                         segment_obj.carrier_code = provider['journeys'][idy]['segments'][idz]['carrier_code']
+    #                         segment_obj.carrier_number = provider['journeys'][idy]['segments'][idz]['carrier_number']
+    #                         segment_obj.arrival_date = provider['journeys'][idy]['segments'][idz]['arrival_date']
+    #                         segment_obj.departure_date = provider['journeys'][idy]['segments'][idz]['departure_date']
+    #                         segment_obj.class_of_service = provider['journeys'][idy]['segments'][idz]['class_of_service']
+    #                         for count, leg_obj in enumerate(segment_obj.leg_ids):
+    #                             if provider['journeys'][idy]['segments'][idz].get('legs'):
+    #                                 leg_obj.leg_code = provider['journeys'][idy]['segments'][idz]['legs'][count]['leg_code']
+    #                                 leg_obj.arrival_date = provider['journeys'][idy]['segments'][idz]['legs'][count]['arrival_date']
+    #                                 leg_obj.departure_date = provider['journeys'][idy]['segments'][idz]['legs'][count]['departure_date']
+    #                     journey_obj.journey_code = "%s,%s,%s,%s,%s,%s,%s" % (journey_obj.segment_ids[0].carrier_code, journey_obj.segment_ids[0].carrier_number, journey_obj.segment_ids[0].origin_id.code, journey_obj.segment_ids[len(journey_obj.segment_ids)-1]['departure_date'], journey_obj.segment_ids[0].destination_id.code, journey_obj.segment_ids[0]['arrival_date'], journey_obj.segment_ids[0].provider_id.code)
+    #                     journey_obj.arrival_date = journey_obj.segment_ids[0]['arrival_date']
+    #                     journey_obj.departure_date = journey_obj.segment_ids[len(journey_obj.segment_ids)-1]['departure_date']
+    #                 provider_obj.arrival_date = provider_obj.journey_ids[len(provider_obj.journey_ids)-1]['arrival_date']
+    #                 provider_obj.departure_date = provider_obj.journey_ids[0]['departure_date']
+    #             if idx == 0:
+    #                 departure_date = provider_obj.departure_date[:10]
+    #                 arrival_date = provider_obj.arrival_date[:10]
+    #             else:
+    #                 arrival_date = provider_obj.departure_date[:10]
+    #         self.departure_date = departure_date
+    #         if self.direction != 'OW':
+    #             self.arrival_date = arrival_date
+    #
+    #         #add seat here
+    #
+    #         # if self.direction != 'OW':
+    #         #     if len(self.provider_booking_ids) == 0:
+    #         #         self.arrival_date = self.provider_booking_ids[len(self.provider_booking_ids)-1].arrival_date[:10]
+    #         #     else:
+    #         #         self.provider_booking_ids[len(self.provider_booking_ids) - 1].departure_date[:10]
+
     def update_journey(self, provider):
         if 'sell_reschedule' in provider:
             departure_date = ''
             arrival_date = ''
+            prov_segment_dict = {}
+            for journey in provider['sell_reschedule']['journeys']:
+                for seg in journey['segments']:
+                    key = '{origin}{destination}'.format(**seg)
+                    prov_segment_dict[key] = seg
+
+            segment_key_list = [key for key in prov_segment_dict.keys()]
+            segment_key_str = ';'.join(segment_key_list)
             for idx, provider_obj in enumerate(self.provider_booking_ids):
                 if provider_obj.pnr == provider['pnr']:
-                    for idy, journey_obj in enumerate(provider_obj.journey_ids):
-                        for idz, segment_obj in enumerate(journey_obj.segment_ids):
-                            segment_obj.segment_code = provider['journeys'][idy]['segments'][idz]['segment_code']
-                            segment_obj.carrier_code = provider['journeys'][idy]['segments'][idz]['carrier_code']
-                            segment_obj.carrier_number = provider['journeys'][idy]['segments'][idz]['carrier_number']
-                            segment_obj.arrival_date = provider['journeys'][idy]['segments'][idz]['arrival_date']
-                            segment_obj.departure_date = provider['journeys'][idy]['segments'][idz]['departure_date']
-                            segment_obj.class_of_service = provider['journeys'][idy]['segments'][idz]['class_of_service']
-                            for count, leg_obj in enumerate(segment_obj.leg_ids):
-                                if provider['journeys'][idy]['segments'][idz].get('legs'):
-                                    leg_obj.leg_code = provider['journeys'][idy]['segments'][idz]['legs'][count]['leg_code']
-                                    leg_obj.arrival_date = provider['journeys'][idy]['segments'][idz]['legs'][count]['arrival_date']
-                                    leg_obj.departure_date = provider['journeys'][idy]['segments'][idz]['legs'][count]['departure_date']
-                        journey_obj.journey_code = "%s,%s,%s,%s,%s,%s,%s" % (journey_obj.segment_ids[0].carrier_code, journey_obj.segment_ids[0].carrier_number, journey_obj.segment_ids[0].origin_id.code, journey_obj.segment_ids[len(journey_obj.segment_ids)-1]['departure_date'], journey_obj.segment_ids[0].destination_id.code, journey_obj.segment_ids[0]['arrival_date'], journey_obj.segment_ids[0].provider_id.code)
-                        journey_obj.arrival_date = journey_obj.segment_ids[0]['arrival_date']
-                        journey_obj.departure_date = journey_obj.segment_ids[len(journey_obj.segment_ids)-1]['departure_date']
-                    provider_obj.arrival_date = provider_obj.journey_ids[len(provider_obj.journey_ids)-1]['arrival_date']
-                    provider_obj.departure_date = provider_obj.journey_ids[0]['departure_date']
+                    for journey_obj in provider_obj.journey_ids:
+                        for segment_obj in journey_obj.segment_ids:
+                            origin = segment_obj.origin_id.code if segment_obj.origin_id else '-'
+                            destination = segment_obj.destination_id.code if segment_obj.destination_id else '-'
+                            key = '%s%s' % (origin, destination)
+                            if key not in prov_segment_dict:
+                                _logger.error('Update journeys failed, key not found %s, segment key list %s' % (key, segment_key_str))
+                                continue
+
+                            segment_data = prov_segment_dict[key]
+                            leg_key_dict = {}
+                            for leg in segment_data['legs']:
+                                leg_key = '{origin}{destination}'.format(**leg)
+                                leg_key_dict[leg_key] = leg
+                            leg_key_list = [key for key in leg_key_dict.keys()]
+                            leg_key_str = ';'.join(leg_key_list)
+
+                            leg_ids = []
+                            for leg_obj in segment_obj.leg_ids:
+                                origin = leg_obj.origin_id.code if leg_obj.origin_id else '-'
+                                destination = leg_obj.destination_id.code if leg_obj.destination_id else '-'
+                                leg_key = '%s%s' % (origin, destination)
+                                if not leg_key in leg_key_dict:
+                                    _logger.error('Update journeys failed, key not found %s, leg key list %s' % (leg_key, leg_key_str))
+                                    leg_ids.append((4, leg_obj.id))
+                                    continue
+
+                                leg_data = leg_key_dict[leg_key]
+                                val = {
+                                    'leg_code': leg_data['leg_code'],
+                                    'departure_date': leg_data['departure_date'],
+                                    'arrival_date': leg_data['arrival_date'],
+                                }
+                                leg_ids.append((1, leg_obj.id, val))
+
+                            segment_obj.write({
+                                'segment_code': segment_data['segment_code'],
+                                'carrier_code': segment_data['carrier_code'],
+                                'carrier_number': segment_data['carrier_number'],
+                                'arrival_date': segment_data['arrival_date'],
+                                'departure_date': segment_data['departure_date'],
+                                'class_of_service': segment_data['fares'][0]['class_of_service'],
+                                'leg_ids': leg_ids
+                            })
+                        journey_obj.compute_detail_info()
+                    provider_obj.write({
+                        'departure_date': provider_obj.journey_ids[0]['departure_date'],
+                        'arrival_date': provider_obj.journey_ids[-1]['arrival_date'],
+                    })
                 if idx == 0:
                     departure_date = provider_obj.departure_date[:10]
                     arrival_date = provider_obj.arrival_date[:10]
@@ -758,14 +840,6 @@ class ReservationAirline(models.Model):
             self.departure_date = departure_date
             if self.direction != 'OW':
                 self.arrival_date = arrival_date
-
-            #add seat here
-
-            # if self.direction != 'OW':
-            #     if len(self.provider_booking_ids) == 0:
-            #         self.arrival_date = self.provider_booking_ids[len(self.provider_booking_ids)-1].arrival_date[:10]
-            #     else:
-            #         self.provider_booking_ids[len(self.provider_booking_ids) - 1].departure_date[:10]
 
     def get_booking_airline_api(self,req, context):
         try:

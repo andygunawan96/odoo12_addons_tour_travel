@@ -9,6 +9,8 @@
                     <button string="Issued Locally" name="%(tt_reservation_airline.force_issued_wizard_airline_action_view)d" states="booked" type="action"
                             groups="tt_base.group_reservation_provider_level_4"
                             context="{'default_provider_id': id,}"/>
+                    <button string="Change Hold Date Sync" name="action_change_is_hold_date_sync" states="booked" type="object"
+                            groups="tt_base.group_reservation_provider_level_4"/>
                     <button string="Reverse Ledger" name="action_reverse_ledger_from_button" states="issued,cancel2,fail_issued"
                             type="object" groups="tt_base.group_reservation_provider_level_4"/>
                     <button string="Sync Refund Status" name="action_sync_refund_status" states="refund_pending" type="object"/>
