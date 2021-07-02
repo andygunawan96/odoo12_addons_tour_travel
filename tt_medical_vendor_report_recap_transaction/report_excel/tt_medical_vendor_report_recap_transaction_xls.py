@@ -38,8 +38,8 @@ class AgentReportRecapTransactionXls(models.TransientModel):
 
         # ======= TITLE & SUBTITLE ============
         # write to file in cols and row
-        sheet.merge_range('A1:I2', values['data_form']['title'], style.title2)  # set merge cells for title
-        sheet.write('I3', 'Printing Date :' + values['data_form']['date_now'].strftime('%d-%b-%Y %H:%M'),
+        sheet.merge_range('A1:L2', values['data_form']['title'], style.title2)  # set merge cells for title
+        sheet.write('L3', 'Printing Date :' + values['data_form']['date_now'].strftime('%d-%b-%Y %H:%M'),
                     style.print_date)  # print date print
         sheet.write('A3', 'State : ' + values['data_form']['state'], style.table_data)  # print state
         sheet.freeze_panes(7, 0)  # freeze panes mulai dari row 1-7
@@ -53,7 +53,10 @@ class AgentReportRecapTransactionXls(models.TransientModel):
         sheet.write('F7', 'Adult', style.table_head_center)
         sheet.write('G7', 'State', style.table_head_center)
         sheet.write('H7', 'State Vendor', style.table_head_center)
-        sheet.write('I7', 'Participants', style.table_head_center)
+        sheet.write('I7', 'Participant Name', style.table_head_center)
+        sheet.write('J7', 'Participant Birth Date', style.table_head_center)
+        sheet.write('K7', 'Nomor Karcis', style.table_head_center)
+        sheet.write('L7', 'Nomor Peserta', style.table_head_center)
 
         # sheet.write('B9', 'Date', style.table_head_center)
         # sheet.write('C9', 'Order Number', style.table_head_center)
@@ -77,7 +80,10 @@ class AgentReportRecapTransactionXls(models.TransientModel):
         sheet.set_column('D:E', 15)
         sheet.set_column('F:F', 10)
         sheet.set_column('G:H', 12)
-        sheet.set_column('I:I', 25)
+        sheet.set_column('I:I', 20)
+        sheet.set_column('J:J', 25)
+        sheet.set_column('K:K', 20)
+        sheet.set_column('L:L', 20)
 
         # ============ void start() ======================
         # declare some constant dependencies
@@ -91,15 +97,6 @@ class AgentReportRecapTransactionXls(models.TransientModel):
 
         # let's iterate the data YEY!
         for i in datas:
-            pax_str = ''
-            pax_len = len(pax_datas)
-            pax_counter = 0
-            for j in pax_datas:
-                if j['booking_id'] == i['rsv_id']:
-                    pax_str += '%s %s %s - %s' % (j['title'], j['first_name'], j['last_name'], j['birth_date'])
-                    if pax_counter < pax_len-1:
-                        pax_str += '\n'
-                pax_counter += 1
             # declare view handler
             row_data += 1
             counter += 1
@@ -116,14 +113,41 @@ class AgentReportRecapTransactionXls(models.TransientModel):
                 sty_amount = style.table_data_amount_even
 
             sheet.write(row_data, 0, counter, sty_table_data_center)
-            sheet.write(row_data, 1, i['provider_name'], sty_table_data)
-            sheet.write(row_data, 2, i['carrier_name'], sty_table_data)
             sheet.write(row_data, 3, i['order_number'], sty_table_data)
             sheet.write(row_data, 4, i['test_datetime'], sty_date)
             sheet.write(row_data, 5, i['adult'], sty_amount)
-            sheet.write(row_data, 6, i['state'], sty_table_data)
-            sheet.write(row_data, 7, i['state_vendor'], sty_table_data)
-            sheet.write(row_data, 8, pax_str, sty_table_data)
+            pax_len = len(pax_datas)
+            pax_counter = 0
+            parent_row_data = row_data
+            for j in pax_datas:
+                sty_table_data_center = style.table_data_center
+                sty_table_data = style.table_data
+                sty_datetime = style.table_data_datetime
+                sty_date = style.table_data_date
+                sty_amount = style.table_data_amount
+                if row_data % 2 == 0:
+                    sty_table_data_center = style.table_data_center_even
+                    sty_table_data = style.table_data_even
+                    sty_datetime = style.table_data_datetime_even
+                    sty_date = style.table_data_date_even
+                    sty_amount = style.table_data_amount_even
+                if j['booking_id'] == i['rsv_id']:
+                    sheet.write(row_data, 1, i['provider_name'], sty_table_data)
+                    sheet.write(row_data, 2, i['carrier_name'], sty_table_data)
+                    sheet.write(row_data, 6, i['state'], sty_table_data)
+                    sheet.write(row_data, 7, i['state_vendor'], sty_table_data)
+                    sheet.write(row_data, 8, '%s %s %s' % (j['title'], j['first_name'], j['last_name']), sty_table_data)
+                    sheet.write(row_data, 9, datetime.strftime(j['birth_date'], '%d %B %y'), sty_table_data)
+                    sheet.write(row_data, 10, j['nomor_karcis'], sty_table_data)
+                    sheet.write(row_data, 11, j['nomor_peserta'], sty_table_data)
+                    if row_data > parent_row_data:
+                        sheet.write(row_data, 0, '', sty_table_data_center)
+                        sheet.write(row_data, 3, '', sty_table_data)
+                        sheet.write(row_data, 4, '', sty_date)
+                        sheet.write(row_data, 5, '', sty_amount)
+                    if pax_counter < pax_len - 1:
+                        row_data += 1
+                pax_counter += 1
 
         # close the file
         workbook.close()
