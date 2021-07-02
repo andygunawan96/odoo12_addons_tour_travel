@@ -415,7 +415,7 @@ class PaymentAcquirerNumber(models.Model):
                     'number': data['order_number'] + '.' + str(datetime.now().strftime('%Y%m%d%H:%M:%S')),
                     'unique_amount': unique_obj.get_unique_amount(),
                     'amount': unique_obj.amount_total,
-                    'unique_amount_id': booking_obj.unique_amount_id.id,
+                    'unique_amount_id': unique_obj.id,
                     'payment_acquirer_id': payment_acq_obj.id,
                     'res_model': provider_type,
                     'res_id': booking_obj.id,
