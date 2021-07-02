@@ -138,8 +138,8 @@ class AgentReportRecapTransactionXls(models.TransientModel):
                     sheet.write(row_data, 7, i['state_vendor'], sty_table_data)
                     sheet.write(row_data, 8, '%s %s %s' % (j['title'], j['first_name'], j['last_name']), sty_table_data)
                     sheet.write(row_data, 9, datetime.strftime(j['birth_date'], '%d %B %y'), sty_table_data)
-                    sheet.write(row_data, 10, '4736420', sty_table_data)
-                    sheet.write(row_data, 11, '001.00591354', sty_table_data)
+                    sheet.write(row_data, 10, '473642' + str(row_data), sty_table_data)
+                    sheet.write(row_data, 11, '001.0059135' + str(row_data), sty_table_data)
                     if row_data > parent_row_data:
                         sheet.write(row_data, 0, '', sty_table_data_center)
                         sheet.write(row_data, 3, '', sty_table_data)
