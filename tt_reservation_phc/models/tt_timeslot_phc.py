@@ -123,6 +123,7 @@ class TtTimeslotphc(models.Model):
         else:
             dom.append(('timeslot_type', '=', 'drive_thru'))
             dom.append(('dateslot', '>=', datetime.today()))
+            dom.append(('total_timeslot','>',0))
 
         timeslots = self.search(dom)
         # max_date = date.today()
