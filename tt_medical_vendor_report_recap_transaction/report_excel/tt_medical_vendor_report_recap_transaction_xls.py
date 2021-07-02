@@ -88,7 +88,6 @@ class AgentReportRecapTransactionXls(models.TransientModel):
         # ============ void start() ======================
         # declare some constant dependencies
         row_data = 6
-        data_count = 0
         counter = 0
         temp_order_number = ''
 
@@ -99,7 +98,6 @@ class AgentReportRecapTransactionXls(models.TransientModel):
         # let's iterate the data YEY!
         for i in datas:
             # declare view handler
-            data_count += 1
             row_data += 1
             counter += 1
             sty_table_data_center = style.table_data_center
@@ -107,7 +105,7 @@ class AgentReportRecapTransactionXls(models.TransientModel):
             sty_datetime = style.table_data_datetime
             sty_date = style.table_data_date
             sty_amount = style.table_data_amount
-            if data_count % 2 == 0:
+            if row_data % 2 == 0:
                 sty_table_data_center = style.table_data_center_even
                 sty_table_data = style.table_data_even
                 sty_datetime = style.table_data_datetime_even
@@ -122,6 +120,17 @@ class AgentReportRecapTransactionXls(models.TransientModel):
             pax_counter = 0
             parent_row_data = row_data
             for j in pax_datas:
+                sty_table_data_center = style.table_data_center
+                sty_table_data = style.table_data
+                sty_datetime = style.table_data_datetime
+                sty_date = style.table_data_date
+                sty_amount = style.table_data_amount
+                if row_data % 2 == 0:
+                    sty_table_data_center = style.table_data_center_even
+                    sty_table_data = style.table_data_even
+                    sty_datetime = style.table_data_datetime_even
+                    sty_date = style.table_data_date_even
+                    sty_amount = style.table_data_amount_even
                 if j['booking_id'] == i['rsv_id']:
                     sheet.write(row_data, 1, i['provider_name'], sty_table_data)
                     sheet.write(row_data, 2, i['carrier_name'], sty_table_data)
