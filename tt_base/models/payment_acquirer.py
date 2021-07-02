@@ -381,11 +381,15 @@ class PaymentAcquirerNumber(models.Model):
     @api.depends('state')
     def _compute_unique_amount_state(self):
         for rec in self:
+            _logger.info("QQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQ %s %s" % (rec.id, rec.state))
             if rec.state not in ['open','close']:
+                _logger.info("HMM BEFORE UNIQUE AMOUNT ID")
                 if rec.unique_amount_id:
-                    rec.unique_amount_id.active = False
+                    _logger.info("UBAH STATE FALSE")
                     rec.unique_amount_state = False
+                    rec.unique_amount_id.active = False
             else:
+                _logger.info("UBAH STATE TRUE")
                 rec.unique_amount_state = True
 
     def create_payment_acq_api(self, data):
