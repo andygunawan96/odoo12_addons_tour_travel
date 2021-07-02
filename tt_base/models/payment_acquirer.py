@@ -279,31 +279,31 @@ class PaymentAcquirer(models.Model):
                         ('type', '=', 'va'),  ## search yg espay
                         ('type', '=', 'payment_gateway')  ## search yg mutasi bca
                     ]
-                    pay_acq_num = self.env['payment.acquirer.number'].search([('number', 'ilike', req['order_number']), ('state', '=', 'closed')])
-                    if pay_acq_num:
-                        unique = pay_acq_num[0].unique_amount
-                    else:
-                        unique = 0
-                        if book_obj.unique_amount_id:
-                            if book_obj.unique_amount_id.active:
-                                unique = book_obj.unique_amount_id.get_unique_amount()
-                        if not unique:
-                            if book_obj.agent_id.agent_type_id == self.env.ref('tt_base.agent_b2c_user').agent_id.agent_type_id:
-                                unique_obj = self.generate_unique_amount(amount, downsell=True)  #penjualan B2C
-                            else:
-                                unique_obj = self.generate_unique_amount(amount, downsell=False)  # penjualan B2B
-                            book_obj.unique_amount_id = unique_obj.id
-                            unique = unique_obj.get_unique_amount()
+                    # pay_acq_num = self.env['payment.acquirer.number'].search([('number', 'ilike', req['order_number']), ('state', '=', 'closed')])
+                    # if pay_acq_num:
+                    #     unique = pay_acq_num[0].unique_amount
+                    # else:
+                    #     unique = 0
+                    #     if book_obj.unique_amount_id:
+                    #         if book_obj.unique_amount_id.active:
+                    #             unique = book_obj.unique_amount_id.get_unique_amount()
+                    #     if not unique:
+                    #         if book_obj.agent_id.agent_type_id == self.env.ref('tt_base.agent_b2c_user').agent_id.agent_type_id:
+                    #             unique_obj = self.generate_unique_amount(amount, downsell=True)  #penjualan B2C
+                    #         else:
+                    #             unique_obj = self.generate_unique_amount(amount, downsell=False)  # penjualan B2B
+                    #         book_obj.unique_amount_id = unique_obj.id
+                    #         unique = unique_obj.get_unique_amount()
 
                     for acq in self.sudo().search(dom):
                         # self.test_validate(acq) utk testing saja
                         if self.validate_time(acq,now_time):
                             if not values.get(acq.type):
                                 values[acq.type] = []
-                            if acq.account_number:
-                                values[acq.type].append(acq.acquirer_format(amount, unique))
-                            else:
-                                values[acq.type].append(acq.acquirer_format(amount, 0))
+                            # if acq.account_number:
+                            #     values[acq.type].append(acq.acquirer_format(amount, unique))
+                            # else:
+                            values[acq.type].append(acq.acquirer_format(amount, 0))
 
                 res['non_member'] = values
                 if req.get('booker_seq_id'):
@@ -364,6 +364,8 @@ class PaymentAcquirerNumber(models.Model):
     url = fields.Char('URL')
     bank_name = fields.Char('Bank Name')
     unique_amount = fields.Float('Unique Amount')
+    unique_amount_id = fields.Many2one('unique.amount','Unique Amount Obj',readonly=True)
+    unique_amount_state = fields.Boolean('Unique Amount State',compute="_compute_unique_amount_state",store=True)
     fee_amount = fields.Float('Fee Amount')
     time_limit = fields.Datetime('Time Limit', readonly=True)
     amount = fields.Float('Amount')
@@ -376,6 +378,20 @@ class PaymentAcquirerNumber(models.Model):
         for rec in self:
             rec.display_name_payment = "{} - {}".format(rec.payment_acquirer_id.name if rec.payment_acquirer_id.name != False else '',rec.number)
 
+    @api.depends('state')
+    def _compute_unique_amount_state(self):
+        for rec in self:
+            _logger.info("QQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQ %s %s" % (rec.id, rec.state))
+            if rec.state not in ['open','close']:
+                _logger.info("HMM BEFORE UNIQUE AMOUNT ID")
+                if rec.unique_amount_id:
+                    _logger.info("UBAH STATE FALSE")
+                    rec.unique_amount_state = False
+                    rec.unique_amount_id.active = False
+            else:
+                _logger.info("UBAH STATE TRUE")
+                rec.unique_amount_state = True
+
     def create_payment_acq_api(self, data):
         provider_type = 'tt.reservation.%s' % variables.PROVIDER_TYPE_PREFIX[data['order_number'].split('.')[0]]
         booking_obj = self.env[provider_type].search([('name','=',data['order_number'])])
@@ -384,7 +400,6 @@ class PaymentAcquirerNumber(models.Model):
             raise RequestException(1001)
 
         payment_acq_number = self.search([('number', 'ilike', data['order_number'])])
-        HO_acq = self.env['tt.agent'].browse(self.env.ref('tt_base.rodex_ho').id)
         if payment_acq_number:
             #check datetime
             date_now = datetime.now()
@@ -393,40 +408,53 @@ class PaymentAcquirerNumber(models.Model):
                 for rec in payment_acq_number:
                     if rec.state == 'close':
                         rec.state = 'cancel'
-                payment = self.env['payment.acquirer.number'].create({
-                    'state': 'close',
-                    'number': data['order_number'] + '.' + str(datetime.now().strftime('%Y%m%d%H:%M:%S')),
-                    'unique_amount': data['unique_amount'],
-                    'amount': data['amount'],
-                    'payment_acquirer_id': HO_acq.env['payment.acquirer'].search([('seq_id', '=', data['seq_id'])]).id,
-                    'res_model': provider_type,
-                    'res_id': booking_obj.id,
-                })
+                payment = self.create_payment_acq(data,booking_obj,provider_type)
                 booking_obj.payment_acquirer_number_id = payment.id
                 payment = {'order_number': payment.number}
             else:
                 payment = {'order_number': payment_acq_number[len(payment_acq_number)-1].number}
                 booking_obj.payment_acquirer_number_id = payment_acq_number[len(payment_acq_number)-1].id
         else:
-            if booking_obj.hold_date < datetime.now() + timedelta(minutes=45):
-                hold_date = booking_obj.hold_date
-            elif data['order_number'].split('.')[0] == 'PH' or data['order_number'].split('.')[0] == 'PK': #PHC 30 menit
-                hold_date = datetime.now() + timedelta(minutes=30)
-            else:
-                hold_date = datetime.now() + timedelta(minutes=45)
-            payment = self.env['payment.acquirer.number'].create({
-                'state': 'close',
-                'number': data['order_number'],
-                'unique_amount': data['unique_amount'],
-                'payment_acquirer_id': HO_acq.env['payment.acquirer'].search([('seq_id', '=', data['seq_id'])]).id,
-                'amount': data['amount'],
-                'res_model': provider_type,
-                'res_id': booking_obj.id,
-                'time_limit': hold_date
-            })
+            payment = self.create_payment_acq(data,booking_obj,provider_type)
             booking_obj.payment_acquirer_number_id = payment.id
             payment = {'order_number': payment.number}
         return ERR.get_no_error(payment)
+
+    def create_payment_acq(self,data,booking_obj,provider_type):
+        if booking_obj.hold_date < datetime.now() + timedelta(minutes=45):
+            hold_date = booking_obj.hold_date
+        elif data['order_number'].split('.')[0] == 'PH' or data['order_number'].split('.')[0] == 'PK':  # PHC 30 menit
+            hold_date = datetime.now() + timedelta(minutes=30)
+        else:
+            hold_date = datetime.now() + timedelta(minutes=45)
+
+
+
+        payment_acq_obj = self.env['payment.acquirer'].search([('seq_id', '=', data['seq_id'])])
+        if payment_acq_obj.account_number: ## Transfer mutasi
+            unique_obj = self.env['payment.acquirer'].generate_unique_amount(data['amount'],
+                                                                             booking_obj.agent_id.agent_type_id.id == self.env.ref(
+                                                                                 'tt_base.agent_type_btc').id)
+            unique_amount_id = unique_obj.id
+            unique_amount = unique_obj.get_unique_amount()
+            amount = unique_obj.amount_total
+        else:## VA Espay
+            unique_amount_id = False
+            unique_amount = 0
+            amount = data['amount']
+
+        payment = self.env['payment.acquirer.number'].create({
+            'state': 'close',
+            'number': data['order_number'],
+            'unique_amount': unique_amount,
+            'unique_amount_id': unique_amount_id,
+            'payment_acquirer_id': payment_acq_obj.id,
+            'amount': amount,
+            'res_model': provider_type,
+            'res_id': booking_obj.id,
+            'time_limit': hold_date
+        })
+        return payment
 
     def get_payment_acq_api(self, data):
         payment_acq_number = self.search([('number', 'ilike', data['order_number'])], order='create_date desc', limit=1)
@@ -441,7 +469,7 @@ class PaymentAcquirerNumber(models.Model):
                     'create_date': book_obj.create_date and book_obj.create_date.strftime("%Y-%m-%d %H:%M:%S") or '',
                     'time_limit': payment_acq_number.time_limit and payment_acq_number.time_limit.strftime("%Y-%m-%d %H:%M:%S") or (payment_acq_number.create_date + timedelta(hours=1)).strftime("%Y-%m-%d %H:%M:%S"),
                     'nomor_rekening': payment_acq_number.payment_acquirer_id.account_number,
-                    'amount': payment_acq_number.amount + payment_acq_number.fee_amount + payment_acq_number.unique_amount,
+                    'amount': payment_acq_number.get_total_amount(),
                     'va_number': payment_acq_number.va_number,
                     'url': payment_acq_number.url,
                     'bank_name': payment_acq_number.bank_name,
@@ -478,6 +506,8 @@ class PaymentAcquirerNumber(models.Model):
         else:
             return ERR.get_error(additional_message='Payment Acquirer not found')
 
+    def get_total_amount(self):
+        return self.amount + self.fee_amount + self.unique_amount
 
 class PaymentUniqueAmount(models.Model):
     _name = 'unique.amount'
@@ -490,7 +520,7 @@ class PaymentUniqueAmount(models.Model):
     #     active = fields.Boolean('Active',default=True)
     #
     #     @api.model
-    #     def create(self, vals_list):
+    #     self, vals_list):
     #         already_exist_on_same_amount = [rec.upper_number for rec in self.search([('amount', '=', vals_list['amount'])])]
     #         already_exist_on_lower_higher_amount = [abs(rec.lower_number) for rec in self.search([('amount', 'in', [int(vals_list['amount'])-1000,
     #                                                                                                                 int(vals_list['amount'])+1000])])]

@@ -80,6 +80,11 @@ class TtProviderAirline(models.Model):
     rule_ids = fields.One2many('tt.provider.airline.rule', 'provider_booking_id', string='Rules')
 
     ##button function
+    def action_change_is_hold_date_sync(self):
+        self.write({
+            'is_hold_date_sync': not self.is_hold_date_sync
+        })
+
     def action_set_to_issued_from_button(self, payment_data={}):
         if self.state == 'issued':
             raise UserError("Has been Issued.")

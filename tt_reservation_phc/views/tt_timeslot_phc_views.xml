@@ -33,7 +33,7 @@
         <field name="name">tt.timeslot.phc.form.view</field>
         <field name="model">tt.timeslot.phc</field>
         <field name="arch" type="xml">
-            <form edit="false" create="false">
+            <form create="false">
                 <sheet>
 
                     <div class="oe_button_box" name="button_box">
@@ -110,7 +110,7 @@
             {
             'form_view_ref': 'tt_reservation_phc.tt_timeslot_phc_form_view',
             'tree_view_ref': 'tt_reservation_phc.tt_timeslot_phc_tree_view',
-            'search_default_filter_group_by_dateslot_day': 1
+            'search_default_group_by_dateslot_day': 1
             }
         </field>
     </record>

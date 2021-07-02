@@ -418,9 +418,15 @@ class ReservationAirline(models.Model):
                 raise RequestException(1001, additional_message="Airline reservation %s is not found in our system." % order_id)
 
             resv_journey_dict = {}
+            resv_segment_dict = {}
             for journey in airline_obj.journey_ids:
                 key = '%s%s' % (journey.origin_id.code if journey.origin_id else '', journey.destination_id.code if journey.destination_id else '')
                 resv_journey_dict[key] = journey
+                for seg in journey.segment_ids:
+                    origin = seg.origin_id.code if seg.origin_id else '-'
+                    destination = seg.destination_id.code if seg.destination_id else '-'
+                    seg_key = '%s%s' % (origin, destination)
+                    resv_segment_dict[seg_key] = seg
 
             resv_passenger_number_dict = {}
             for psg in airline_obj.passenger_ids:
@@ -570,29 +576,142 @@ class ReservationAirline(models.Model):
                 # total_amount = 0
                 old_segment_list = []
                 new_segment_list = []
-                for journey in commit_data['journeys']:
-                    journey_key = util.generate_journey_key_name(journey)
-                    prov_journey_data = resv_journey_dict[journey_key]
-                    if prov_journey_data.departure_date == journey['departure_date'] and prov_journey_data.arrival_date == journey['arrival_date']:
-                        continue
+                # July 1, 2021 - SAM
+                # Update mekanisme pengecekkan by segment (karena vendor tidak standard memberikan info journey)
 
-                    provider_obj = rsv_prov_obj.provider_id if rsv_prov_obj else None
-                    origin_obj = self.env['tt.destinations'].sudo().search([('code', '=', journey['origin'])], limit=1)
-                    destination_obj = self.env['tt.destinations'].sudo().search([('code', '=', journey['destination'])], limit=1)
-                    # Membuat data baru untuk reservasi
-                    journey_values = {
-                        'provider_booking_id': rsv_prov_obj.id if rsv_prov_obj else None,
-                        'provider_id': provider_obj.id if provider_obj else None,
-                        'pnr': commit_data['pnr'],
-                        'booking_id': airline_obj.id,
-                        'origin_id': origin_obj.id if origin_obj else None,
-                        'destination_id': destination_obj.id if destination_obj else None,
-                        'departure_date': journey['departure_date'],
-                        'arrival_date': journey['arrival_date'],
-                        'journey_code': journey['journey_code'],
-                    }
-                    n_rsv_journey_obj = self.env['tt.journey.airline'].sudo().create(journey_values)
+                # # journey_key_list = [key for key in resv_journey_dict.keys()]
+                # # journey_key_list_str = ';'.join(journey_key_list)
+                # for journey in commit_data['journeys']:
+                #     journey_key = util.generate_journey_key_name(journey)
+                #     # if journey_key not in resv_journey_dict:
+                #     #     _logger.error('Journey key %s not found, key in list %s' % (journey_key, journey_key_list_str))
+                #     #     continue
+                #
+                #     prov_journey_data = resv_journey_dict[journey_key]
+                #     if prov_journey_data.departure_date == journey['departure_date'] and prov_journey_data.arrival_date == journey['arrival_date']:
+                #         continue
+                #
+                #     provider_obj = rsv_prov_obj.provider_id if rsv_prov_obj else None
+                #     origin_obj = self.env['tt.destinations'].sudo().search([('code', '=', journey['origin'])], limit=1)
+                #     destination_obj = self.env['tt.destinations'].sudo().search([('code', '=', journey['destination'])], limit=1)
+                #     # Membuat data baru untuk reservasi
+                #     journey_values = {
+                #         'provider_booking_id': rsv_prov_obj.id if rsv_prov_obj else None,
+                #         'provider_id': provider_obj.id if provider_obj else None,
+                #         'pnr': commit_data['pnr'],
+                #         'booking_id': airline_obj.id,
+                #         'origin_id': origin_obj.id if origin_obj else None,
+                #         'destination_id': destination_obj.id if destination_obj else None,
+                #         'departure_date': journey['departure_date'],
+                #         'arrival_date': journey['arrival_date'],
+                #         'journey_code': journey['journey_code'],
+                #     }
+                #     n_rsv_journey_obj = self.env['tt.journey.airline'].sudo().create(journey_values)
+                #     for seg in journey['segments']:
+                #         carrier_obj = self.env['tt.transport.carrier'].sudo().search([('code', '=', seg['carrier_code'])], limit=1)
+                #         origin_obj = self.env['tt.destinations'].sudo().search([('code', '=', seg['origin'])], limit=1)
+                #         destination_obj = self.env['tt.destinations'].sudo().search([('code', '=', seg['destination'])], limit=1)
+                #         n_seg_values = {
+                #             'segment_code': seg['segment_code'],
+                #             'pnr': commit_data['pnr'],
+                #             'fare_code': '',
+                #             'carrier_code': seg['carrier_code'],
+                #             'carrier_number': seg['carrier_number'],
+                #             'origin_terminal': seg['origin_terminal'],
+                #             'destination_terminal': seg['destination_terminal'],
+                #             'departure_date': seg['departure_date'],
+                #             'arrival_date': seg['arrival_date'],
+                #             'class_of_service': '',
+                #             'cabin_class': '',
+                #             'sequence': seg.get('sequence', 0),
+                #         }
+                #         if carrier_obj:
+                #             n_seg_values['carrier_id'] = carrier_obj.id
+                #         if provider_obj:
+                #             n_seg_values['provider_id'] = provider_obj.id
+                #         if origin_obj:
+                #             n_seg_values['origin_id'] = origin_obj.id
+                #         if destination_obj:
+                #             n_seg_values['destination_id'] = destination_obj.id
+                #
+                #         for fare in seg['fares']:
+                #             n_seg_values.update({
+                #                 'fare_code': fare['fare_code'],
+                #                 'class_of_service': fare['class_of_service'],
+                #                 'cabin_class': fare['cabin_class'],
+                #             })
+                #             # for sc in fare['service_charge_summary']:
+                #             #     total_amount += sc['total_price']
+                #
+                #         n_seg_obj = self.env['tt.segment.reschedule'].sudo().create(n_seg_values)
+                #         new_segment_list.append(n_seg_obj.id)
+                #
+                #         leg_values = {
+                #             'segment_id': n_seg_obj.id,
+                #             'origin_terminal': n_seg_values['origin_terminal'],
+                #             'destination_terminal': n_seg_values['destination_terminal'],
+                #             'departure_date': n_seg_values['departure_date'],
+                #             'arrival_date': n_seg_values['arrival_date'],
+                #         }
+                #         if n_seg_values.get('carrier_id'):
+                #             leg_values.update({
+                #                 'carrier_id': n_seg_values['carrier_id']
+                #             })
+                #
+                #         if n_seg_values.get('provider_id'):
+                #             leg_values.update({
+                #                 'provider_id': n_seg_values['provider_id']
+                #             })
+                #
+                #         if n_seg_values.get('origin_id'):
+                #             leg_values.update({
+                #                 'origin_id': n_seg_values['origin_id']
+                #             })
+                #
+                #         if n_seg_values.get('destination_id'):
+                #             leg_values.update({
+                #                 'destination_id': n_seg_values['destination_id']
+                #             })
+                #         self.env['tt.leg.reschedule'].sudo().create(leg_values)
+                #
+                #         # Membuat data baru untuk reservasi
+                #         n_seg_values.update({
+                #             'journey_id': n_rsv_journey_obj.id,
+                #             'provider_id': provider_obj.id if provider_obj else None,
+                #         })
+                #         n_resv_seg_obj = self.env['tt.segment.airline'].sudo().create(n_seg_values)
+                #         leg_values.update({
+                #             'segment_id': n_resv_seg_obj.id,
+                #             'provider_id': provider_obj.id if provider_obj else None,
+                #         })
+                #         self.env['tt.leg.airline'].sudo().create(leg_values)
+                #
+                #     # Menghilangkan data lama pada tt reservation airline
+                #     key = '{origin}{destination}'.format(**journey)
+                #     if key not in resv_journey_dict:
+                #         continue
+                #     resv_journey_obj = resv_journey_dict[key]
+                #     for seg in resv_journey_obj.segment_ids:
+                #         old_segment_list.append(seg.id)
+                #     resv_journey_obj.write({
+                #         'booking_id': None,
+                #         'provider_booking_id': None,
+                #     })
+
+                # New
+                resv_segment_str = ';'.join([key for key in resv_segment_dict.keys()])
+                for journey in commit_data['journeys']:
                     for seg in journey['segments']:
+                        seg_key = '{origin}{destination}'.format(**seg)
+                        if seg_key not in resv_segment_dict:
+                            _logger.error('Segment not found %s, segment list in data %s' % (seg_key, resv_segment_str))
+                            continue
+
+                        prov_segment_data = resv_segment_dict[seg_key]
+                        if prov_segment_data.departure_date == seg['departure_date'] and prov_segment_data.arrival_date == seg['arrival_date']:
+                            continue
+
+                        provider_obj = rsv_prov_obj.provider_id if rsv_prov_obj else None
                         carrier_obj = self.env['tt.transport.carrier'].sudo().search([('code', '=', seg['carrier_code'])], limit=1)
                         origin_obj = self.env['tt.destinations'].sudo().search([('code', '=', seg['origin'])], limit=1)
                         destination_obj = self.env['tt.destinations'].sudo().search([('code', '=', seg['destination'])], limit=1)
@@ -661,8 +780,8 @@ class ReservationAirline(models.Model):
 
                         # Membuat data baru untuk reservasi
                         n_seg_values.update({
-                            'journey_id': n_rsv_journey_obj.id,
                             'provider_id': provider_obj.id if provider_obj else None,
+                            'journey_id': prov_segment_data.journey_id.id if prov_segment_data.journey_id else None
                         })
                         n_resv_seg_obj = self.env['tt.segment.airline'].sudo().create(n_seg_values)
                         leg_values.update({
@@ -671,17 +790,12 @@ class ReservationAirline(models.Model):
                         })
                         self.env['tt.leg.airline'].sudo().create(leg_values)
 
-                    # Menghilangkan data lama pada tt reservation airline
-                    key = '{origin}{destination}'.format(**journey)
-                    if key not in resv_journey_dict:
-                        continue
-                    resv_journey_obj = resv_journey_dict[key]
-                    for seg in resv_journey_obj.segment_ids:
-                        old_segment_list.append(seg.id)
-                    resv_journey_obj.write({
-                        'booking_id': None,
-                        'provider_booking_id': None,
-                    })
+                        # Menghilangkan data lama pada tt reservation airline
+                        prov_segment_data.write({
+                            'journey_id': None
+                        })
+                        old_segment_list.append(prov_segment_data.id)
+                # New End
 
                 # # TODO CEK DATA SSR DAN SEAT
                 is_any_ssr_change = False
@@ -1108,6 +1222,14 @@ class ReservationAirline(models.Model):
                         infant -= 1
                     psg_obj.sudo().unlink()
 
+            for prov_obj in airline_obj.provider_booking_ids:
+                for journey_obj in prov_obj.journey_ids:
+                    journey_obj.compute_detail_info()
+                prov_obj.write({
+                    'departure_date': prov_obj.journey_ids[0].departure_date,
+                    'arrival_date': prov_obj.journey_ids[-1].arrival_date,
+                })
+
             airline_obj.write({
                 'adult': adult,
                 'child': child,
@@ -1116,11 +1238,7 @@ class ReservationAirline(models.Model):
             })
             airline_obj.calculate_service_charge()
             airline_obj.check_provider_state(context)
-            for prov_obj in airline_obj.provider_booking_ids:
-                prov_obj.write({
-                    'departure_date': prov_obj.journey_ids[0].departure_date,
-                    'arrival_date': prov_obj.journey_ids[-1].arrival_date,
-                })
+
             payload = {
                 'order_number': airline_obj.name if not new_resv_obj else new_resv_obj.name
             }

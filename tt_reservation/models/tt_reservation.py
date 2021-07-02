@@ -640,8 +640,9 @@ class TtReservation(models.Model):
             raise RequestException(1008)
 
         if book_obj.agent_id.id == context.get('co_agent_id', -1) or self.env.ref('tt_base.group_tt_process_channel_bookings_medical_only').id in user_obj.groups_id.ids or book_obj.agent_type_id.name == self.env.ref('tt_base.agent_b2c').agent_type_id.name or book_obj.user_id.login == self.env.ref('tt_base.agent_b2c_user').login:
-            book_obj.payment_acquirer_number_id.state = 'cancel2'
-            book_obj.payment_acquirer_number_id = False
+            if book_obj.payment_acquirer_number_id:
+                book_obj.payment_acquirer_number_id.state = 'cancel2'
+                book_obj.payment_acquirer_number_id = False
             return ERR.get_no_error({
                 "order_number": book_obj.name
             })
@@ -669,7 +670,7 @@ class TtReservation(models.Model):
                     'account_name': self.payment_acquirer_number_id.payment_acquirer_id.account_name,
                     'va_number': self.payment_acquirer_number_id.va_number,
                     'url': self.payment_acquirer_number_id.url,
-                    'amount': self.unique_amount_id.amount_total,
+                    'amount': self.payment_acquirer_number_id.get_total_amount(),
                     'order_number': self.payment_acquirer_number_id.number
                 }
             else:

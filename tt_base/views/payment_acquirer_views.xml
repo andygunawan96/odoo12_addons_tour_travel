@@ -210,6 +210,8 @@
                             <field name="state"/>
                             <field name="amount"/>
                             <field name="unique_amount"/>
+                            <field name="unique_amount_id"/>
+                            <field name="unique_amount_state"/>
                             <field name="fee_amount"/>
                             <field name="agent_id"/>
                             <field name="email"/>
