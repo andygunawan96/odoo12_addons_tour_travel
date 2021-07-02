@@ -38,9 +38,11 @@ class ReservationPhc(models.Model):
         # Opsi 2: Jika PNR dan resv ne beda pakek yg ini
         # tmp = self.name + '\n'
         tmp += 'Address : %s' % (self.test_address)
-        for time_obj in self.timeslot_ids:
-            if type(time_obj.datetimeslot) == datetime:
-                tmp += '\n%s' % time_obj.datetimeslot.astimezone(pytz.timezone('Asia/Jakarta')).strftime('%Y-%m-%d %H:%M')
+        for timeslot_obj in self.timeslot_ids:
+            if timeslot_obj.timeslot_type == 'drive_thru':
+                tmp+= '\n%s' % (str(timeslot_obj.datetimeslot.astimezone(pytz.timezone('Asia/Jakarta')).strftime('%Y-%m-%d')) + ' (DRIVE THRU 08.00 - 15.30/16.00wib (tergantung banyaknya antrian)')
+            else:
+                tmp+= '\n%s' % (str(timeslot_obj.datetimeslot.astimezone(pytz.timezone('Asia/Jakarta')).strftime('%Y-%m-%d %H:%M')))
         return tmp
 
     def action_create_invoice(self,acquirer_id,co_uid,customer_parent_id):
