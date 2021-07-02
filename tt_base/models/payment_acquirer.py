@@ -408,47 +408,53 @@ class PaymentAcquirerNumber(models.Model):
                 for rec in payment_acq_number:
                     if rec.state == 'close':
                         rec.state = 'cancel'
-                payment_acq_obj = self.env['payment.acquirer'].search([('seq_id', '=', data['seq_id'])])
-                unique_obj = self.env['payment.acquirer'].generate_unique_amount(data['amount'],payment_acq_obj.account_number and True or False)
-                payment = self.env['payment.acquirer.number'].create({
-                    'state': 'close',
-                    'number': data['order_number'] + '.' + str(datetime.now().strftime('%Y%m%d%H:%M:%S')),
-                    'unique_amount': unique_obj.get_unique_amount(),
-                    'amount': unique_obj.amount_total,
-                    'unique_amount_id': unique_obj.id,
-                    'payment_acquirer_id': payment_acq_obj.id,
-                    'res_model': provider_type,
-                    'res_id': booking_obj.id,
-                })
+                payment = self.create_payment_acq(data,booking_obj,provider_type)
                 booking_obj.payment_acquirer_number_id = payment.id
                 payment = {'order_number': payment.number}
             else:
                 payment = {'order_number': payment_acq_number[len(payment_acq_number)-1].number}
                 booking_obj.payment_acquirer_number_id = payment_acq_number[len(payment_acq_number)-1].id
         else:
-            if booking_obj.hold_date < datetime.now() + timedelta(minutes=45):
-                hold_date = booking_obj.hold_date
-            elif data['order_number'].split('.')[0] == 'PH' or data['order_number'].split('.')[0] == 'PK': #PHC 30 menit
-                hold_date = datetime.now() + timedelta(minutes=30)
-            else:
-                hold_date = datetime.now() + timedelta(minutes=45)
-            payment_acq_obj = self.env['payment.acquirer'].search([('seq_id', '=', data['seq_id'])])
-            unique_obj = self.env['payment.acquirer'].generate_unique_amount(data['amount'], payment_acq_obj.account_number and True or False)
-
-            payment = self.env['payment.acquirer.number'].create({
-                'state': 'close',
-                'number': data['order_number'],
-                'unique_amount': unique_obj.get_unique_amount(),
-                'unique_amount_id': unique_obj.id,
-                'payment_acquirer_id': payment_acq_obj.id,
-                'amount': unique_obj.amount_total,
-                'res_model': provider_type,
-                'res_id': booking_obj.id,
-                'time_limit': hold_date
-            })
+            payment = self.create_payment_acq(data,booking_obj,provider_type)
             booking_obj.payment_acquirer_number_id = payment.id
             payment = {'order_number': payment.number}
         return ERR.get_no_error(payment)
+
+    def create_payment_acq(self,data,booking_obj,provider_type):
+        if booking_obj.hold_date < datetime.now() + timedelta(minutes=45):
+            hold_date = booking_obj.hold_date
+        elif data['order_number'].split('.')[0] == 'PH' or data['order_number'].split('.')[0] == 'PK':  # PHC 30 menit
+            hold_date = datetime.now() + timedelta(minutes=30)
+        else:
+            hold_date = datetime.now() + timedelta(minutes=45)
+
+
+
+        payment_acq_obj = self.env['payment.acquirer'].search([('seq_id', '=', data['seq_id'])])
+        if payment_acq_obj.account_number: ## Transfer mutasi
+            unique_obj = self.env['payment.acquirer'].generate_unique_amount(data['amount'],
+                                                                             booking_obj.agent_id.agent_type_id.id == self.env.ref(
+                                                                                 'tt_base.agent_type_btc').id)
+            unique_amount_id = unique_obj.id
+            unique_amount = unique_obj.get_unique_amount()
+            amount = unique_obj.amount_total
+        else:## VA Espay
+            unique_amount_id = False
+            unique_amount = 0
+            amount = data['amount']
+
+        payment = self.env['payment.acquirer.number'].create({
+            'state': 'close',
+            'number': data['order_number'],
+            'unique_amount': unique_amount,
+            'unique_amount_id': unique_amount_id,
+            'payment_acquirer_id': payment_acq_obj.id,
+            'amount': amount,
+            'res_model': provider_type,
+            'res_id': booking_obj.id,
+            'time_limit': hold_date
+        })
+        return payment
 
     def get_payment_acq_api(self, data):
         payment_acq_number = self.search([('number', 'ilike', data['order_number'])], order='create_date desc', limit=1)
