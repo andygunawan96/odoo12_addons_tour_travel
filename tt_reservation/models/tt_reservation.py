@@ -338,18 +338,7 @@ class TtReservation(models.Model):
                         return ERR.get_error(1013)
                     res = ERR.get_no_error(res)
                 else:
-                    book_obj = self.env['tt.reservation.%s' % req['product']].get_booking_phc_api(req, context)
-                    if book_obj:
-                        if self.env.ref('tt_base.agent_b2c_user').name == book_obj['response']['booked_by']:
-                            res = book_obj
-                        # if True: #testing
-                        #     res = book_obj #testing
-                        else:
-                            return ERR.get_error(1013)
-                        res = ERR.get_no_error(res)
-                    else:
-                        return ERR.get_error(1013)
-                # kalau lupa booking nama hotel, checkin, phone number
+                    res = self.env['tt.reservation.%s' % req['product']].get_booking_phc_api(req, context)
             return res
         except Exception as e:
             _logger.error(traceback.format_exc())

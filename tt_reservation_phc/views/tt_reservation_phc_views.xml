@@ -26,6 +26,13 @@
                 </group>
                 <separator/>
                 <group>
+                    <filter string="Draft" name="reconciled" domain="[('state_vendor','=','draft')]"/>
+                    <filter string="New Order" name="reconciled" domain="[('state_vendor','=','new_order')]"/>
+                    <filter string="Confirmed Order" name="reconciled" domain="[('state_vendor','=','confirmed_order')]"/>
+                    <filter string="Verified" name="reconciled" domain="[('state_vendor','=','verified')]"/>
+                </group>
+                <separator/>
+                <group>
                     <filter string="Not Reconciled" name="reconciled" domain="[('reconcile_state','=','not_reconciled')]"/>
                     <filter string="Partial Reconciled" name="reconciled" domain="[('reconcile_state','=','partial')]"/>
                     <filter string="Reconciled" name="reconciled" domain="[('reconcile_state','=','reconciled')]"/>
@@ -137,6 +144,7 @@
                 <page string="Passengers">
                     <field name="passenger_ids">
                         <tree>
+                            <field name="verify"/>
                             <field name="title"/>
                             <field name="first_name"/>
                             <field name="last_name"/>
@@ -334,6 +342,7 @@
                 <field name="provider_name" groups="tt_base.group_tt_tour_travel"/>
                 <field name="carrier_name"/>
                 <field name="test_datetime"/>
+                <field name="adult"/>
                 <field name="booked_uid"/>
                 <field name="date"/>
                 <field name="hold_date"/>
