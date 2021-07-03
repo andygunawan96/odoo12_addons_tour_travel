@@ -122,7 +122,8 @@ class TtTimeslotphc(models.Model):
                 dom.append(('datetimeslot', '>=', min_datetime))
         else:
             dom.append(('timeslot_type', '=', 'drive_thru'))
-            dom.append(('dateslot', '>=', datetime.today()))
+            ## kalau kurang dari jam 16.00 di tambah timedelta 0 else di tambah 1 hari
+            dom.append(('dateslot', '>=', datetime.today() if current_wib_datetime <= current_wib_datetime.replace(hour=16,minute=0,second=0,microsecond=0) else datetime.today() + timedelta(days=1)))
             dom.append(('total_timeslot','>',0))
 
         timeslots = self.search(dom)
