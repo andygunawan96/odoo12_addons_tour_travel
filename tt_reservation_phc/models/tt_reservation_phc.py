@@ -43,7 +43,7 @@ class Reservationphc(models.Model):
                                      ('confirmed_order', 'Confirmed Order'),  ## order confirmmed by periksain
                                      ('no_show', 'No Show'),  ## customer cancel H-1 after 16:00 or H
                                      ('refund', 'Refund'),  ## customer cancel before H-1 16:00
-                                     ('verified', 'Verified'), ], 'Vendor State',
+                                     ('verified', 'Verified'), ], 'State Vendor',
                                     default='draft')  ## normal way of completing order
 
     origin_id = fields.Many2one('tt.destinations', 'Test Area', readonly=True, states={'draft': [('readonly', False)]})
