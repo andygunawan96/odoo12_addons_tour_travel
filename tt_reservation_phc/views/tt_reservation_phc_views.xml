@@ -137,6 +137,7 @@
                 <page string="Passengers">
                     <field name="passenger_ids">
                         <tree>
+                            <field name="verify"/>
                             <field name="title"/>
                             <field name="first_name"/>
                             <field name="last_name"/>
