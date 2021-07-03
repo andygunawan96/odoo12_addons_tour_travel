@@ -1121,7 +1121,7 @@ class Reservationphc(models.Model):
         terms_txt += "</ul>"
         terms_txt += "6. Reduction of participants refers to the Cancellation Policy.<br/>"
         if self.carrier_name in ['PHCHCKPCR', 'PHCDTKPCR']:
-            terms_txt += "7. Under normal circumstances, test results will be released by PHC Hospital around 12-24 hours after the test.<br/>"
+            terms_txt += "7. Under normal circumstances, test results will be released by PHC Hospital around 12-24 hours after the test. Test result could be delayed up to 48 hours during high volume condition.<br/>"
         else:
             terms_txt += "7. Under normal circumstances, test results will be sent via Whatsapp by PHC Hospital around 30 minutes after the test.<br/>"
         terms_txt += "8. In case our nurses/officers do not come for the scheduled test, you can file a complaint at most 24 hours after the supposedly test schedule.<br/>"

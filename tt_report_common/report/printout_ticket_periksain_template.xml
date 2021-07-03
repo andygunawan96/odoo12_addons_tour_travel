@@ -48,7 +48,7 @@
                     </div>
                     <div class="row" style="margin: 0px 0px 15px;">
                         <div class="col-3" style="background: #F0F0F0; border: 1px solid #BBB; padding: 10px 10px 10px 20px;">
-                            <b><span style="font-size: 16px;">Booking Code: <span t-field="doc.name"/></span></b><br/>
+                            <b><span style="font-size: 16px;">Order Number: <span t-field="doc.name"/></span></b><br/>
                             <span style="font-size: 13px;"><span t-field="doc.origin_id.name"/></span><br/>
                         </div>
                         <div class="col-9" style="background-color: #FFF; border: 1px solid #BBB; padding: 10px 25px; margin: 0px;">
@@ -58,7 +58,7 @@
                                     <span style="font-size: 16px; font-weight:200">Address:</span>
                                 </div>
                                 <div class="col-9" style="margin-right: 0px">
-                                    <span style="font-size: 16px; font-weight:200"><span t-esc="line.datetimeslot.astimezone(printout_tz).strftime('%Y-%m-%d %H:%M')"/></span><br/>
+                                    <span style="font-size: 16px; font-weight:200"><span t-esc="line.datetimeslot.astimezone(printout_tz).strftime('%Y-%m-%d')"/></span><br/>
                                     <span style="font-size: 16px; font-weight:200"><span t-field="doc.test_address"/></span>
                                 </div>
                             </div>
@@ -78,7 +78,7 @@
                 </div>
                 <div class="row" style="margin: 0px 0px 15px;">
                     <div class="col-3" style="background: #F0F0F0; border: 1px solid #BBB; padding: 10px 10px 10px 20px;">
-                        <b><span style="font-size: 16px;">Booking Code: <span t-field="doc.name"/></span></b><br/>
+                        <b><span style="font-size: 16px;">Order Number : <span t-field="doc.name"/></span></b><br/>
                         <span style="font-size: 13px;"><span t-field="doc.origin_id.name"/></span><br/>
                     </div>
                     <div class="col-9" style="background-color: #FFF; border: 1px solid #BBB; padding: 10px 25px; margin: 0px;">
