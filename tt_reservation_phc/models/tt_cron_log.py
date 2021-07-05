@@ -38,7 +38,7 @@ class TtCronLogInhphc(models.Model):
 
             #drive thru
             for idx in range(8):
-                self.env['create.timeslot.phc.wizard'].generate_drivethru_timeslot((datetime.now() + timedelta(days=idx)).strftime('%Y-%m-%d'))
+                self.env['create.timeslot.phc.wizard'].generate_drivethru_timeslot((datetime.now() + timedelta(days=idx)).strftime('%Y-%m-%d'), max_timeslot, adult_timeslot)
         except Exception as e:
             self.create_cron_log_folder()
             self.write_cron_log('auto create timeslot phc')

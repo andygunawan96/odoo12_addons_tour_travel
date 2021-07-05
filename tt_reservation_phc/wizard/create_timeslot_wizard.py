@@ -96,7 +96,7 @@ class CreateTimeslotphcWizard(models.TransientModel):
                     })
         self.env['tt.timeslot.phc'].create(create_values)
 
-    def generate_drivethru_timeslot(self, date):
+    def generate_drivethru_timeslot(self, date, max_timeslot=5, adult_timeslot=420):
         destination = self.env['tt.destinations'].search([('provider_type_id','=',self.env.ref('tt_reservation_phc.tt_provider_type_phc').id),('code','=','SUB')])
         datetimeslot = datetime.strptime('%s %s' % (str(date), '08:09:09'), '%Y-%m-%d %H:%M:%S')
         db = self.env['tt.timeslot.phc'].search(
@@ -107,7 +107,8 @@ class CreateTimeslotphcWizard(models.TransientModel):
                 'dateslot': date,
                 'datetimeslot': datetimeslot,
                 'destination_id': destination.id,
-                'total_timeslot': 1,
+                'total_timeslot': max_timeslot,
+                'total_adult_timeslot': adult_timeslot,
                 'currency_id': self.env.user.company_id.currency_id.id,
                 'timeslot_type': 'drive_thru',
                 'commission_antigen': COMMISSION_PER_PAX_ANTIGEN,
