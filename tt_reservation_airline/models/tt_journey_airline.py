@@ -52,3 +52,12 @@ class TtJourneyAirline(models.Model):
         }
 
         return res
+
+    def compute_detail_info(self):
+        segment_code_list = [seg.segment_code for seg in self.segment_ids]
+        journey_code = ';'.join(segment_code_list)
+        self.write({
+            'departure_date': self.segment_ids[0]['departure_date'],
+            'arrival_date': self.segment_ids[-1]['arrival_date'],
+            'journey_code': journey_code
+        })

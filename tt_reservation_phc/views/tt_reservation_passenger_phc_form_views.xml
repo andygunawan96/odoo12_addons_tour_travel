@@ -9,6 +9,8 @@
             <xpath expr="//group[@name='basic_info']" position="after">
                 <separator string="Result URL"/>
                 <field name="result_url"/>
+                <separator string="Label URL"/>
+                <field name="label_url"/>
                 <group>
                     <group>
                         <field name="email"/>
@@ -23,6 +25,9 @@
                         <field name="rw"/>
                     </group>
                     <group>
+                        <field name="verify"/>
+                        <field name="nomor_karcis"/>
+                        <field name="nomor_perserta"/>
                         <field name="tempat_lahir"/>
                         <field name="address_ktp"/>
                         <field name="kabupaten_ktp"/>

@@ -437,7 +437,7 @@ class PaymentAcquirerNumber(models.Model):
                                                                                  'tt_base.agent_type_btc').id)
             unique_amount_id = unique_obj.id
             unique_amount = unique_obj.get_unique_amount()
-            amount = unique_obj.amount_total
+            amount = data['amount']
         else:## VA Espay
             unique_amount_id = False
             unique_amount = 0

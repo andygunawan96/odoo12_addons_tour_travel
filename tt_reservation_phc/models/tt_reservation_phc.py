@@ -43,7 +43,7 @@ class Reservationphc(models.Model):
                                      ('confirmed_order', 'Confirmed Order'),  ## order confirmmed by periksain
                                      ('no_show', 'No Show'),  ## customer cancel H-1 after 16:00 or H
                                      ('refund', 'Refund'),  ## customer cancel before H-1 16:00
-                                     ('done', 'Done'), ], 'Vendor State',
+                                     ('verified', 'Verified'), ], 'State Vendor',
                                     default='draft')  ## normal way of completing order
 
     origin_id = fields.Many2one('tt.destinations', 'Test Area', readonly=True, states={'draft': [('readonly', False)]})
@@ -208,10 +208,10 @@ class Reservationphc(models.Model):
         timeslot_objs = self.env['tt.timeslot.phc'].search([('seq_id', 'in', req['timeslot_list'])])
 
         if not timeslot_objs:
-            raise RequestException(1022,"No Timeslot")
+            raise RequestException(1022,"No Timeslot, Please Try Other Date/Time")
         else:
             if not timeslot_objs.get_availability():
-                raise RequestException(1022,"Timeslot is Full")
+                raise RequestException(1022,"Timeslot is Full, Please Try Other Date/Time")
         for rec in timeslot_objs:
             if rec.datetimeslot.time() > time(11,0):
                 overtime_surcharge = True
@@ -363,6 +363,74 @@ class Reservationphc(models.Model):
             except:
                 _logger.error('Creating Notes Error')
             return ERR.get_error(1004)
+
+    def edit_passenger_verify_api(self,req, context):
+        book_obj = self.get_book_obj(req.get('book_id'), req.get('order_number'))
+        try:
+            book_obj.create_date
+        except:
+            raise RequestException(1001)
+
+        user_obj = self.env['res.users'].browse(context['co_uid'])
+        country_obj = self.env['res.country'].sudo()
+        passengers_data = copy.deepcopy(req['passengers'])
+        verify = True
+        for idx, rec in enumerate(book_obj.passenger_ids):
+            nationality_id = country_obj.search([('code', '=ilike', passengers_data[idx]['nationality_code'])], limit=1).id
+            identity = passengers_data[idx].get('identity')
+            if rec.pcr_data:
+                if rec.pcr_data != '':
+                    pcr_data = json.loads(rec.pcr_data)
+                else:
+                    pcr_data = {}
+            else:
+                pcr_data = {}
+            if passengers_data[idx].get('pcr_data'):
+                pcr_data.update({
+                    'married_status': passengers_data[idx]['pcr_data']['married_status'],
+                    'religion': passengers_data[idx]['pcr_data']['religion'],
+                    'pendidikan': passengers_data[idx]['pcr_data']['pendidikan'],
+                    'zip_code_ktp': passengers_data[idx]['pcr_data']['zip_code_ktp'],
+                    'zip_code': passengers_data[idx]['pcr_data']['zip_code'],
+                })
+            if not passengers_data[idx].get('verify'):
+                verify = False
+            rec.update({
+                'name': "%s %s" % (passengers_data[idx]['first_name'],passengers_data[idx]['last_name']),
+                'first_name': passengers_data[idx]['first_name'],
+                'last_name': passengers_data[idx]['last_name'],
+                'gender': passengers_data[idx]['gender'],
+                'title': passengers_data[idx]['title'],
+                'birth_date': passengers_data[idx].get('birth_date',False),
+                'nationality_id': nationality_id,
+                'identity_type': identity and identity['identity_type'] or '',
+                'identity_number': identity and identity['identity_number'] or '',
+                'identity_expdate': identity and identity['identity_expdate'] or False,
+                'identity_country_of_issued_id': identity and country_obj.search([('code','=ilike',identity['identity_country_of_issued_code'])],limit=1).id or False,
+                'email': passengers_data[idx]['email'],
+                'phone_number': passengers_data[idx]['phone_number'],
+                'tempat_lahir': passengers_data[idx]['tempat_lahir'],
+                'address': passengers_data[idx]['address'],
+                'rt': passengers_data[idx]['rt'],
+                'rw': passengers_data[idx]['rw'],
+                'kabupaten': passengers_data[idx]['kabupaten'],
+                'kecamatan': passengers_data[idx]['kecamatan'],
+                'kelurahan': passengers_data[idx]['kelurahan'],
+                'address_ktp': passengers_data[idx]['address_ktp'],
+                'rt_ktp': passengers_data[idx]['rt_ktp'],
+                'rw_ktp': passengers_data[idx]['rw_ktp'],
+                'kabupaten_ktp': passengers_data[idx]['kabupaten_ktp'],
+                'kecamatan_ktp': passengers_data[idx]['kecamatan_ktp'],
+                'kelurahan_ktp': passengers_data[idx]['kelurahan_ktp'],
+                'pcr_data': json.dumps(pcr_data),
+                'verify': passengers_data[idx].get('verify') or False,
+                'label_url': passengers_data[idx].get('label_url') or '',
+                'nomor_karcis': passengers_data[idx].get('nomor_karcis'),
+                'nomor_perserta': passengers_data[idx].get('no_peserta')
+            })
+        if verify:
+            book_obj.state_vendor = 'verified'
+        return ERR.get_no_error()
 
     def update_pnr_provider_phc_api(self, req, context):
         _logger.info("Update\n" + json.dumps(req))
@@ -1053,12 +1121,12 @@ class Reservationphc(models.Model):
         terms_txt += "</ul>"
         terms_txt += "6. Reduction of participants refers to the Cancellation Policy.<br/>"
         if self.carrier_name in ['PHCHCKPCR', 'PHCDTKPCR']:
-            terms_txt += "7. Under normal circumstances, test results will be released by PHC Hospital around 12-24 hours after the test.<br/>"
+            terms_txt += "7. Under normal circumstances, test results will be released by PHC Hospital around 12-24 hours after the test. Test result could be delayed up to 48 hours during high volume condition.<br/>"
         else:
-            terms_txt += "7. Under normal circumstances, test results will be sent via Whatsapp by PHC Hospital around 30 minutes after the test.<br/>"
+            terms_txt += "7. Under normal circumstances, test results will be sent via Whatsapp by PHC Hospital around 30-120 minutes after the test.<br/>"
         terms_txt += "8. In case our nurses/officers do not come for the scheduled test, you can file a complaint at most 24 hours after the supposedly test schedule.<br/>"
         if self.carrier_name in ['PHCDTKATG', 'PHCDTKPCR']:
-            terms_txt += "9. If you have registered online for Drive Thru Test, you must arrive at the test site at most 16:00 WIB during the scheduled test date, otherwise the test will be done the next day."
+            terms_txt += "9. If you have registered online for Drive Thru Test, you must arrive at the test site at most 15:30/16:00 WIB during the scheduled test date (depends on the queue length), otherwise the test will have to be done the next day."
         return terms_txt
 
     def get_aftersales_desc(self):
