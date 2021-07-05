@@ -27,7 +27,10 @@ class CreateTimeslotphcWizard(models.TransientModel):
 
     timeslot_type = fields.Selection([('home_care', 'Home Care'), ('group_booking', 'Group Booking')], 'Timeslot Type',
                                      default='home_care', required=True)
+
     total_timeslot = fields.Integer('Total Timeslot',default=5, required=True)
+    total_adult_timeslot = fields.Integer('Total Timeslot',default=420, required=True)
+
     currency_id = fields.Many2one('res.currency', 'Currency', readonly=True,
                                   default=lambda self: self.env.user.company_id.currency_id)
     commission_antigen = fields.Monetary('Commission per PAX Antigen', default=COMMISSION_PER_PAX_ANTIGEN, required=True)
@@ -71,7 +74,6 @@ class CreateTimeslotphcWizard(models.TransientModel):
         db = self.env['tt.timeslot.phc'].search([('destination_id','=',self.area_id.id), ('dateslot','>=',self.start_date), ('dateslot','<=',self.end_date), ('timeslot_type','=',self.timeslot_type), ('agent_id','=',self.agent_id.id if self.agent_id else False)])
         db_list = [str(data.datetimeslot) for data in db]
         for this_date_counter in range(date_delta):
-            this_date = self.start_date + timedelta(days=this_date_counter)
             for this_time in time_objs:
                 this_date = self.start_date + timedelta(days=this_date_counter)
                 datetimeslot = datetime.strptime('%s %s' % (str(this_date),this_time),'%Y-%m-%d %H:%M:%S')
@@ -80,7 +82,8 @@ class CreateTimeslotphcWizard(models.TransientModel):
                         'dateslot': this_date,
                         'datetimeslot': datetimeslot,
                         'destination_id': self.area_id.id,
-                        'time_slot': self.total_timeslot,
+                        'total_timeslot': self.total_timeslot,
+                        'total_adult_timeslot': self.total_adult_timeslot,
                         'currency_id': self.currency_id.id,
                         'timeslot_type': self.timeslot_type,
                         'commission_antigen': self.commission_antigen,
@@ -91,7 +94,6 @@ class CreateTimeslotphcWizard(models.TransientModel):
                         'overtime_surcharge': self.overtime_surcharge,
                         'agent_id': self.agent_id.id if self.agent_id else False
                     })
-
         self.env['tt.timeslot.phc'].create(create_values)
 
     def generate_drivethru_timeslot(self, date):
