@@ -32,7 +32,8 @@ class TtTimeslotphc(models.Model):
 
     selected_count = fields.Integer('Selected Counter',compute="_compute_selected_counter",store=True)
 
-    used_count = fields.Integer('Used Counter',compute="_compute_used_counter",store=True)
+    used_count = fields.Integer('Used Counter',compute="_compute_used_counter",store=True)#used reservation count
+    used_adult_count = fields.Integer('Used Adult Counter', compute="_compute_used_counter", store=True)#used adult count
 
     booking_ids = fields.Many2many('tt.reservation.phc','tt_reservation_phc_timeslot_rel', 'timeslot_id', 'booking_id', 'Selected on By Customer Booking(s)')
 
@@ -50,7 +51,8 @@ class TtTimeslotphc(models.Model):
     single_supplement = fields.Monetary('Single Supplement')
     overtime_surcharge = fields.Monetary('Overtime Surcharge')
 
-    total_timeslot = fields.Integer('Max Timeslot', required=True, default=5)
+    total_timeslot = fields.Integer('Max Timeslot', required=True, default=5)##reservation count
+    total_adult_timeslot = fields.Integer('Max Adult Timeslot', required=True, default=420)##adult count
 
     active = fields.Boolean('Active', default='True')
 
@@ -75,16 +77,20 @@ class TtTimeslotphc(models.Model):
         for rec in self:
             rec.selected_count = len(rec.booking_ids.ids)
 
-    @api.onchange('booking_used_ids')
+    @api.onchange('booking_used_ids','booking_used_ids.state')
     @api.depends('booking_used_ids')
     def _compute_used_counter(self):
         for rec in self:
             used_count = 0
-            for rec2 in rec.booking_used_ids:
-                if rec2.state in ['booked', 'issued']:
-                    used_count += 1
+            for rec2 in rec.booking_used_ids.filtered(lambda x: x.state in ['booked', 'issued']):
+                used_count += 1
+                adult_count = rec2.adult
             rec.used_count = used_count
+            rec.used_adult_count = adult_count
 
+    def mass_close_timeslot(self):
+        for rec in self:
+            rec.max
     # {
     #     "max_date": "2021-06-20",
     #     "timeslots": {
@@ -154,8 +160,8 @@ class TtTimeslotphc(models.Model):
 
     def get_availability(self):
         if self.timeslot_type == 'drive_thru':
-            return True
-        return self.used_count < self.total_timeslot
+            return self.used_adult_count < self.total_adult_timeslot
+        return self.used_count < self.total_timeslot and self.used_adult_count < self.total_adult_timeslot
 
     def get_datetimeslot_str(self):
         if self.datetimeslot:
