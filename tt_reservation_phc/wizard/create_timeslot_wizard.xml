@@ -11,11 +11,16 @@
                         <field name="area_id"/>
                         <field name="start_date"/>
                         <field name="end_date"/>
-                        <field name="total_timeslot"/>
                         <field name="timeslot_type"/>
+                        <field name="total_timeslot"/>
+                        <field name="total_adult_timeslot"/>
+                    </group>
+                    <group>
                         <field name="agent_id"/>
                         <field name="time_string"/>
                     </group>
+                </group>
+                <group>
                     <group string="Antigen">
                         <field name="base_price_antigen"/>
                         <field name="commission_antigen"/>
@@ -25,7 +30,8 @@
                         <field name="base_price_pcr"/>
                         <field name="commission_pcr"/>
                     </group>
-
+                </group>
+                <group>
                     <group string="Additional Price">
                         <field name="single_supplement"/>
                         <field name="overtime_surcharge"/>

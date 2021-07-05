@@ -25,18 +25,20 @@ class TtCronLogInhphc(models.Model):
             self.create_cron_log_folder()
             self.write_cron_log('auto done state vendor phc')
 
-    def cron_auto_create_timeslot_phc(self):
+    def cron_auto_create_timeslot_phc(self,max_timeslot=5,adult_timeslot=420):
         try:
             #home care
             wiz_obj = self.env['create.timeslot.phc.wizard'].create({
                 'end_date': datetime.today() + timedelta(days=7),
-                'area_id': self.env.ref('tt_reservation_phc.tt_destination_phc_sub').id
+                'area_id': self.env.ref('tt_reservation_phc.tt_destination_phc_sub').id,
+                'total_timeslot': max_timeslot,
+                'total_adult_timeslot': adult_timeslot
             })
             wiz_obj.generate_timeslot()
 
             #drive thru
             for idx in range(8):
-                self.env['create.timeslot.phc.wizard'].generate_drivethru_timeslot((datetime.now() + timedelta(days=idx)).strftime('%Y-%m-%d'))
+                self.env['create.timeslot.phc.wizard'].generate_drivethru_timeslot((datetime.now() + timedelta(days=idx)).strftime('%Y-%m-%d'), max_timeslot, adult_timeslot)
         except Exception as e:
             self.create_cron_log_folder()
             self.write_cron_log('auto create timeslot phc')

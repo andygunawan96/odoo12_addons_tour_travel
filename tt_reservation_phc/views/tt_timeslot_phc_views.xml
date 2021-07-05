@@ -47,36 +47,44 @@
                         <field name="seq_id"/>
                     </h1>
                     <group>
-                        <field name="dateslot"/>
-                        <field name="datetimeslot"/>
-                        <field name="destination_id"/>
-                        <field name="selected_count"/>
-                        <field name="used_count"/>
-                        <field name="agent_id"/>
-                        <field name="timeslot_type"/>
-                        <field name="total_timeslot"/>
-                        <field name="currency_id"/>
+                        <group>
+                            <field name="dateslot"/>
+                            <field name="datetimeslot"/>
+                            <field name="destination_id"/>
+                            <field name="agent_id"/>
+                            <field name="currency_id" invisible="1"/>
+                        </group>
+                        <group>
+                            <field name="selected_count"/>
+                            <field name="used_count"/>
+                            <field name="timeslot_type"/>
+                            <field name="total_timeslot"/>
+                            <field name="total_adult_timeslot"/>
+                            <field name="used_adult_count"/>
+                        </group>
                     </group>
-                    <group string="Antigen">
-                        <field name="base_price_antigen"/>
-                        <field name="commission_antigen"/>
-                    </group>
+                    <group>
+                        <group string="Antigen">
+                            <field name="base_price_antigen"/>
+                            <field name="commission_antigen"/>
+                        </group>
 
-                    <group string="PCR">
-                        <field name="base_price_pcr"/>
-                        <field name="commission_pcr"/>
+                        <group string="PCR">
+                            <field name="base_price_pcr"/>
+                            <field name="commission_pcr"/>
+                        </group>
                     </group>
-
-                    <group string="Additional Price">
-                        <field name="single_supplement"/>
-                        <field name="overtime_surcharge"/>
+                    <group>
+                        <group string="Additional Price">
+                            <field name="single_supplement"/>
+                            <field name="overtime_surcharge"/>
+                        </group>
                     </group>
-
                     <separator string="Confirmed to Customer Booking(s)"/>
                     <field name="booking_used_ids"/>
 
-<!--                    <separator string="Selected by Customer Booking(s)"/>-->
-<!--                    <field name="booking_ids"/>-->
+                    <!--                    <separator string="Selected by Customer Booking(s)"/>-->
+                    <!--                    <field name="booking_ids"/>-->
                 </sheet>
             </form>
         </field>
@@ -93,8 +101,9 @@
                 <field name="datetimeslot"/>
                 <field name="destination_id"/>
                 <field name="total_timeslot"/>
-                <field name="selected_count"/>
                 <field name="used_count"/>
+                <field name="total_adult_timeslot"/>
+                <field name="used_adult_count"/>
             </tree>
         </field>
     </record>
