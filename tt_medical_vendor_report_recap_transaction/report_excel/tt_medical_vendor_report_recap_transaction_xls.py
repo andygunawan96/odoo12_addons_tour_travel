@@ -116,9 +116,8 @@ class AgentReportRecapTransactionXls(models.TransientModel):
             sheet.write(row_data, 3, i['order_number'], sty_table_data)
             sheet.write(row_data, 4, i['test_datetime'], sty_date)
             sheet.write(row_data, 5, i['adult'], sty_amount)
-            pax_len = len(pax_datas)
-            pax_counter = 0
             parent_row_data = row_data
+            iter_count = 0
             for j in pax_datas:
                 sty_table_data_center = style.table_data_center
                 sty_table_data = style.table_data
@@ -132,6 +131,8 @@ class AgentReportRecapTransactionXls(models.TransientModel):
                     sty_date = style.table_data_date_even
                     sty_amount = style.table_data_amount_even
                 if j['booking_id'] == i['rsv_id']:
+                    if iter_count > 0:
+                        row_data += 1
                     sheet.write(row_data, 1, i['provider_name'], sty_table_data)
                     sheet.write(row_data, 2, i['carrier_name'], sty_table_data)
                     sheet.write(row_data, 6, i['state'], sty_table_data)
@@ -145,9 +146,7 @@ class AgentReportRecapTransactionXls(models.TransientModel):
                         sheet.write(row_data, 3, '', sty_table_data)
                         sheet.write(row_data, 4, '', sty_date)
                         sheet.write(row_data, 5, '', sty_amount)
-                    if pax_counter < pax_len - 1:
-                        row_data += 1
-                pax_counter += 1
+                    iter_count += 1
 
         # close the file
         workbook.close()
