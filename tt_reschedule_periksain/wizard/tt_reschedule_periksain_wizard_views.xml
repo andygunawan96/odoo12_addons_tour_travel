@@ -46,4 +46,12 @@
         <field name="target">new</field>
     </record>
 
+    <record id="tt_reschedule_periksain_wizard_action_view_ho" model="ir.actions.act_window">
+        <field name="name">Reschedule Preview Wizard</field>
+        <field name="res_model">tt.reschedule.periksain.wizard</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+
 </odoo>

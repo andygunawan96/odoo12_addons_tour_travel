@@ -57,9 +57,10 @@
             <form create="false">
                 <header>
                     <button name="confirm_refund_from_button" string="Confirm" type="object" groups="tt_base.group_tt_agent_user" attrs="{'invisible':[('state','!=', 'draft')]}"/>
-                    <button name="send_refund_from_button_backend" string="Send to Agent" type="object" groups="tt_base.group_tt_tour_travel" attrs="{'invisible':[('state','!=', 'confirm')]}"/>
-                    <button name="validate_refund_from_button" string="Validate" type="object" groups="tt_base.group_tt_agent_user,tt_base.group_after_sales_master_level_4" attrs="{'invisible':[('state','!=', 'sent')]}"/>
-                    <button name="finalize_refund_from_button_backend" string="Finalize" type="object" groups="tt_base.group_after_sales_master_level_4" attrs="{'invisible':[('state','!=', 'validate')]}"/>
+                    <button name="confirm_refund_from_button_ho" string="Confirm" type="object" groups="tt_base.group_after_sales_master_level_3" attrs="{'invisible':['|', ('state','!=', 'draft'), ('agent_type_id','!=', %(tt_base.agent_type_btc)d)]}"/>
+                    <button name="send_refund_from_button_backend" string="Send to Agent" type="object" groups="tt_base.group_after_sales_master_level_3" attrs="{'invisible':[('state','!=', 'confirm')]}"/>
+                    <button name="validate_refund_from_button" string="Validate" type="object" groups="tt_base.group_tt_agent_user,tt_base.group_after_sales_master_level_3" attrs="{'invisible':[('state','!=', 'sent')]}"/>
+                    <button name="finalize_refund_from_button_backend" string="Finalize" type="object" groups="tt_base.group_after_sales_master_level_3" attrs="{'invisible':[('state','!=', 'validate')]}"/>
                     <button name="action_approve_backend" string="Force Approve" type="object" groups="tt_base.group_after_sales_master_level_5" attrs="{'invisible':[('state','!=', 'final')]}"/>
                     <button name="action_payment" string="Customer Payment" type="object" groups="tt_base.group_tt_agent_user,tt_base.group_after_sales_master_level_4" attrs="{'invisible':[('state','!=', 'approve')]}"/>
                     <button name="action_approve_cust" string="Approve Cust Payment" type="object" groups="base.group_system,tt_base.group_tt_agent_finance" attrs="{'invisible':[('state','!=', 'payment')]}"/>
@@ -68,7 +69,7 @@
                     <button name="set_to_approve" string="Set to Approved" type="object" groups="tt_base.group_after_sales_level_4" attrs="{'invisible':[('state','!=', 'payment')]}"/>
                     <button name="cancel_refund_from_button" string="Cancel" type="object" attrs="{'invisible':[('state','in', ['approve', 'done', 'cancel', 'payment', 'approve_cust'])]}"/>
                     <button name="cancel_refund_reverse_ledger" string="Cancel (Reverse Ledger)" type="object" groups="tt_base.group_after_sales_level_4" attrs="{'invisible':[('state','not in', ['approve', 'done', 'payment', 'approve_cust'])]}"/>
-                    <button name="create_profit_loss_ledger" string="Create Profit Loss" type="object" groups="tt_base.group_after_sales_master_level_4" attrs="{'invisible':[('state','not in', ['approve', 'done', 'payment', 'approve_cust'])]}"/>
+                    <button name="create_profit_loss_ledger" string="Create Profit Loss" type="object" groups="tt_base.group_after_sales_master_level_3" attrs="{'invisible':[('state','not in', ['approve', 'done', 'payment', 'approve_cust'])]}"/>
                     <button name="toggle_is_vendor_received" string="Toggle Received Refund from Vendor" type="object" groups="tt_base.group_after_sales_master_level_5" attrs="{'invisible':[('state','!=','final')]}"/>
                     <button string="Change Admin Fee" name="%(tt_accounting.tt_change_admin_fee_wizard_action_view)d" type="action"
                             context="{
@@ -77,7 +78,7 @@
                         'default_agent_id': agent_id,
                         'default_agent_type_id': agent_type_id,
                         'default_admin_fee_id': admin_fee_id
-                   }" groups="tt_base.group_after_sales_master_level_4" attrs="{'invisible':[('state','!=','confirm')]}"/>
+                   }" groups="tt_base.group_after_sales_master_level_3" attrs="{'invisible':[('state','!=','confirm')]}"/>
                     <button string="Extend Refund" name="%(tt_accounting.tt_refund_extend_wizard_action_view)d" type="action" groups="tt_base.group_after_sales_master_level_5"
                             context="{
                         'default_refund_id': id,
@@ -110,12 +111,12 @@
                         <button name="print_refund_to_cust"
                                 class="oe_stat_button" states="approve_cust,done"
                                 string="Refund to Customer" type="object" icon="fa-print"
-                                groups="tt_base.group_tt_agent_user"
+                                groups="tt_base.group_tt_agent_user,tt_base.group_after_sales_master_level_3"
                                 attrs="{'invisible':[('refund_line_cust_ids','=', [])]}"/>
                         <button name="print_refund_to_cust_est"
                                 class="oe_stat_button"
                                 string="Refund Placeholder" type="object" icon="fa-print"
-                                groups="tt_base.group_tt_agent_user"/>
+                                groups="tt_base.group_tt_agent_user,tt_base.group_after_sales_master_level_3"/>
                     </div>
                     <div class="oe_title">
                         <label for="Name" class="oe_edit_only" string="Name"/>
