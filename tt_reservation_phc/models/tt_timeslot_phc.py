@@ -85,7 +85,7 @@ class TtTimeslotphc(models.Model):
             adult_count = 0
             for rec2 in rec.booking_used_ids.filtered(lambda x: x.state in ['booked', 'issued']):
                 used_count += 1
-                adult_count = rec2.adult
+                adult_count += rec2.adult
             rec.used_count = used_count
             rec.used_adult_count = adult_count
 

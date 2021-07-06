@@ -117,7 +117,7 @@
                                 <field name="refund_uid" readonly="1" class="oe_inline"/> /
                                 <field name="refund_date" readonly="1" class="oe_inline"/>
                             </div>
-                            <label for="reschedule_uid" string="Rescheduled By"/>
+                            <label for="reschedule_uid" string="Rescheduled By"/> /
                             <div>
                                 <field name="reschedule_uid" readonly="1" class="oe_inline"/>
                                 <field name="reschedule_date" readonly="1" class="oe_inline"/>

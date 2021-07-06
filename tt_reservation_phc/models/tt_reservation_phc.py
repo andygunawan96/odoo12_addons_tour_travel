@@ -71,6 +71,9 @@ class Reservationphc(models.Model):
     split_uid = fields.Many2one('res.users', 'Splitted by', readonly=True)
     split_date = fields.Datetime('Splitted Date', readonly=True)
 
+    verified_uid = fields.Many2one('res.users', 'Verified by', readonly=True)
+    verified_date = fields.Datetime('Verified Date', readonly=True)
+
     def get_form_id(self):
         return self.env.ref("tt_reservation_phc.tt_reservation_phc_form_views")
 
@@ -429,7 +432,11 @@ class Reservationphc(models.Model):
                 'nomor_perserta': passengers_data[idx].get('no_peserta')
             })
         if verify:
-            book_obj.state_vendor = 'verified'
+            book_obj.write({
+                'state_vendor': 'verified',
+                'verified_uid': context['co_uid'],
+                'verified_date': datetime.now()
+            })
         return ERR.get_no_error()
 
     def update_pnr_provider_phc_api(self, req, context):

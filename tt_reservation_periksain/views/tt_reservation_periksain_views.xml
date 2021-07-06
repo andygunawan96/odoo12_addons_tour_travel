@@ -80,9 +80,6 @@
                 <button string="No Show Order" name="action_set_state_vendor_as_no_show" type="object" attrs="{'invisible': [('state_vendor','!=', 'confirmed_order')]}" groups="tt_base.group_external_vendor_periksain_level_2,tt_base.group_reservation_level_4"/>
                 <button string="Refund Order" name="action_set_state_vendor_as_refund" type="object" attrs="{'invisible': [('state_vendor','!=', 'confirmed_order')]}" groups="tt_base.group_external_vendor_periksain_level_2,tt_base.group_reservation_level_4"/>
             </xpath>
-            <xpath expr="//field[@name='state']" position="replace">
-                <field name="state" widget="statusbar" statusbar_visible="draft,booked,issued,done"/>
-            </xpath>
             <xpath expr="//div[hasclass('oe_button_box')]" position="inside">
                 <button name="print_eticket"
                         class="oe_stat_button" states="issued,done"
