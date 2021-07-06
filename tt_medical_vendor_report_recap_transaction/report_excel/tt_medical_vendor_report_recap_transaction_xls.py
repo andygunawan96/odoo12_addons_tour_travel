@@ -119,26 +119,26 @@ class AgentReportRecapTransactionXls(models.TransientModel):
             parent_row_data = row_data
             iter_count = 0
             for j in pax_datas:
-                sty_table_data_center = style.table_data_center
-                sty_table_data = style.table_data
-                sty_datetime = style.table_data_datetime
-                sty_date = style.table_data_date
-                sty_amount = style.table_data_amount
-                if row_data % 2 == 0:
-                    sty_table_data_center = style.table_data_center_even
-                    sty_table_data = style.table_data_even
-                    sty_datetime = style.table_data_datetime_even
-                    sty_date = style.table_data_date_even
-                    sty_amount = style.table_data_amount_even
                 if j['booking_id'] == i['rsv_id']:
                     if iter_count > 0:
                         row_data += 1
+                    sty_table_data_center = style.table_data_center
+                    sty_table_data = style.table_data
+                    sty_datetime = style.table_data_datetime
+                    sty_date = style.table_data_date
+                    sty_amount = style.table_data_amount
+                    if row_data % 2 == 0:
+                        sty_table_data_center = style.table_data_center_even
+                        sty_table_data = style.table_data_even
+                        sty_datetime = style.table_data_datetime_even
+                        sty_date = style.table_data_date_even
+                        sty_amount = style.table_data_amount_even
                     sheet.write(row_data, 1, i['provider_name'], sty_table_data)
                     sheet.write(row_data, 2, i['carrier_name'], sty_table_data)
                     sheet.write(row_data, 6, i['state'], sty_table_data)
                     sheet.write(row_data, 7, i['state_vendor'], sty_table_data)
                     sheet.write(row_data, 8, '%s %s %s' % (j['title'], j['first_name'], j['last_name']), sty_table_data)
-                    sheet.write(row_data, 9, datetime.strftime(j['birth_date'], '%d %B %y'), sty_table_data)
+                    sheet.write(row_data, 9, datetime.strftime(j['birth_date'], '%d %B %Y'), sty_table_data)
                     sheet.write(row_data, 10, j['nomor_karcis'], sty_table_data)
                     sheet.write(row_data, 11, j['nomor_perserta'], sty_table_data)
                     if row_data > parent_row_data:
