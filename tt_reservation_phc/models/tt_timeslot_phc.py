@@ -169,7 +169,7 @@ class TtTimeslotphc(models.Model):
 
     def get_availability(self):
         ## availability adult & pcr
-        availability = self.used_adult_count < self.total_adult_timeslot and self.total_pcr_timeslot < self.used_pcr_count
+        availability = self.used_adult_count < self.total_adult_timeslot and self.used_pcr_count < self.total_pcr_timeslot
 
         if self.timeslot_type == 'drive_thru':
             return availability
