@@ -8,7 +8,7 @@
     'summary': 'After Sales PHC Module',
     'description': """
 Tour & Travel - After Sales PHC
-====================================
+===============================
 Key Features
 ------------
     """,

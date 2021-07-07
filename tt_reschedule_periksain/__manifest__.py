@@ -8,7 +8,7 @@
     'summary': 'After Sales Periksain Module',
     'description': """
 Tour & Travel - After Sales Periksain
-====================================
+=====================================
 Key Features
 ------------
     """,
