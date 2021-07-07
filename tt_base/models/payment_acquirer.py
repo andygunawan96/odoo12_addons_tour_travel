@@ -432,9 +432,11 @@ class PaymentAcquirerNumber(models.Model):
 
         payment_acq_obj = self.env['payment.acquirer'].search([('seq_id', '=', data['seq_id'])])
         if payment_acq_obj.account_number: ## Transfer mutasi
-            unique_obj = self.env['payment.acquirer'].generate_unique_amount(data['amount'],
-                                                                             booking_obj.agent_id.agent_type_id.id == self.env.ref(
-                                                                                 'tt_base.agent_type_btc').id)
+            unique_obj = self.env['payment.acquirer'].generate_unique_amount(data['amount'], False)
+                                                                             # booking_obj.agent_id.agent_type_id.id == self.env.ref(
+                                                                             #     'tt_base.agent_type_btc').id)
+                                                                             ## 7 July Request Kuamala ubah jadi fee bukan subsidy lagi
+
             unique_amount_id = unique_obj.id
             unique_amount = unique_obj.get_unique_amount()
             amount = data['amount']

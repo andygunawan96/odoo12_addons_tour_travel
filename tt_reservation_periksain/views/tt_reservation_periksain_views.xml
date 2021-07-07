@@ -20,12 +20,18 @@
                     <filter string="Issued" name="issued" domain="[('state','=','issued')]"/>
                     <filter string="Done" name="done" domain="[('state','=','done')]"/>
                     <filter string="Failed/Expired" name="failed_expired" domain="['|', '|', '|', ('state','=','fail_booked'),('state','=','fail_issued'),('state','=','fail_refunded'),('state','=','cancel2')]"/>
-                    <filter string="Cancelled/Refunded" name="cancel" domain="['|', ('state','=','cancel'),('state','=','refund')]"/>
                 </group>
                 <separator/>
                 <group>
-                    <filter string="Not Reconciled" name="reconciled" domain="[('reconcile_state','=','not_reconciled')]"/>
-                    <filter string="Partial Reconciled" name="reconciled" domain="[('reconcile_state','=','partial')]"/>
+                    <filter string="Draft" name="state_vendor_draft" domain="[('state_vendor','=','draft')]"/>
+                    <filter string="New Order" name="state_vendor_new_order" domain="[('state_vendor','=','new_order')]"/>
+                    <filter string="Confirmed Order" name="state_vendor_confirmed_order" domain="[('state_vendor','=','confirmed_order')]"/>
+                    <filter string="Done" name="state_vendor_done" domain="[('state_vendor','=','done')]"/>
+                </group>
+                <separator/>
+                <group>
+                    <filter string="Not Reconciled" name="not_reconciled" domain="[('reconcile_state','=','not_reconciled')]"/>
+                    <filter string="Partial Reconciled" name="partial_reconciled" domain="[('reconcile_state','=','partial')]"/>
                     <filter string="Reconciled" name="reconciled" domain="[('reconcile_state','=','reconciled')]"/>
                 </group>
                 <separator/>
@@ -50,6 +56,7 @@
                     <filter name="group_by_customer_parent_id" string="Customer Parent" domain="[]" context="{'group_by':'customer_parent_id'}" groups="tt_base.group_tt_agent_user,tt_base.group_tt_tour_travel"/>
                     <filter name="group_by_customer_parent_type_id" string="Customer Parent Type" domain="[]" context="{'group_by':'customer_parent_type_id'}" groups="tt_base.group_tt_agent_user,tt_base.group_tt_tour_travel"/>
                     <filter name="group_by_state" string="State" domain="[]" context="{'group_by':'state'}"/>
+                    <filter name="group_by_picked_timeslot" string="Timeslot" domain="[]" context="{'group_by':'picked_timeslot_id'}"/>
                 </group>
             </search>
         </field>
@@ -79,9 +86,6 @@
 
                 <button string="No Show Order" name="action_set_state_vendor_as_no_show" type="object" attrs="{'invisible': [('state_vendor','!=', 'confirmed_order')]}" groups="tt_base.group_external_vendor_periksain_level_2,tt_base.group_reservation_level_4"/>
                 <button string="Refund Order" name="action_set_state_vendor_as_refund" type="object" attrs="{'invisible': [('state_vendor','!=', 'confirmed_order')]}" groups="tt_base.group_external_vendor_periksain_level_2,tt_base.group_reservation_level_4"/>
-            </xpath>
-            <xpath expr="//field[@name='state']" position="replace">
-                <field name="state" widget="statusbar" statusbar_visible="draft,booked,issued,done"/>
             </xpath>
             <xpath expr="//div[hasclass('oe_button_box')]" position="inside">
                 <button name="print_eticket"
@@ -154,7 +158,7 @@
 
             <xpath expr="//page[@name='anchor']" position="before">
                 <page string="Prices" name="prices">
-                    <field name="sale_service_charge_ids" context="{'form_view_ref':'tt_reservation_airline.tt_service_charge_airline_inherit_form_view'}">
+                    <field name="sale_service_charge_ids" context="{'form_view_ref':'tt_reservation_periksain.tt_service_charge_periksain_inherit_form_view'}">
                         <tree>
                             <field name="charge_code"/>
                             <field name="charge_type"/>
@@ -378,71 +382,56 @@
         </field>
     </record>
 
-    <!--    <record model="ir.actions.act_window" id="tt_reservation_airline_action_views_booked">-->
-    <!--        <field name="name">Reservation Airline (Booked)</field>-->
-    <!--        <field name="res_model">tt.reservation.airline</field>-->
-    <!--        <field name="view_type">form</field>-->
-    <!--        <field name="view_mode">tree,form</field>-->
-    <!--        <field name="domain">[]</field>-->
-    <!--        <field name="context">-->
-    <!--            {-->
-    <!--            'form_view_ref': 'tt_reservation_airline.tt_reservation_airline_form_view',-->
-    <!--            'tree_view_ref': 'tt_reservation_airline.tt_reservation_airline_tree_view',-->
-    <!--            'search_default_booked': 1-->
-    <!--            }-->
-    <!--        </field>-->
-    <!--    </record>-->
+    <record model="ir.actions.act_window" id="tt_reservation_periksain_action_views_booked">
+        <field name="name">Reservation Periksain (Booked)</field>
+        <field name="res_model">tt.reservation.periksain</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+        <field name="domain">[]</field>
+        <field name="context">
+            {
+            'form_view_ref': 'tt_reservation_periksain.tt_reservation_periksain_form_view',
+            'tree_view_ref': 'tt_reservation_periksain.tt_reservation_periksain_tree_view',
+            'search_default_booked': 1
+            }
+        </field>
+    </record>
 
-    <!--    <record model="ir.actions.act_window" id="tt_reservation_airline_action_views_issued">-->
-    <!--        <field name="name">Reservation Airline (Issued)</field>-->
-    <!--        <field name="res_model">tt.reservation.airline</field>-->
-    <!--        <field name="view_type">form</field>-->
-    <!--        <field name="view_mode">tree,form</field>-->
-    <!--        <field name="domain">[]</field>-->
-    <!--        <field name="context">-->
-    <!--            {-->
-    <!--            'form_view_ref': 'tt_reservation_airline.tt_reservation_airline_form_view',-->
-    <!--            'tree_view_ref': 'tt_reservation_airline.tt_reservation_airline_tree_view',-->
-    <!--            'search_default_issued': 1-->
-    <!--            }-->
-    <!--        </field>-->
-    <!--    </record>-->
+    <record model="ir.actions.act_window" id="tt_reservation_periksain_action_views_issued">
+        <field name="name">Reservation periksain (Issued)</field>
+        <field name="res_model">tt.reservation.periksain</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+        <field name="domain">[]</field>
+        <field name="context">
+            {
+            'form_view_ref': 'tt_reservation_periksain.tt_reservation_periksain_form_view',
+            'tree_view_ref': 'tt_reservation_periksain.tt_reservation_periksain_tree_view',
+            'search_default_issued': 1
+            }
+        </field>
+    </record>
 
-    <!--    <record model="ir.actions.act_window" id="tt_reservation_airline_action_views_failed_expired">-->
-    <!--        <field name="name">Reservation Airline (Failed/Expired)</field>-->
-    <!--        <field name="res_model">tt.reservation.airline</field>-->
-    <!--        <field name="view_type">form</field>-->
-    <!--        <field name="view_mode">tree,form</field>-->
-    <!--        <field name="domain">[]</field>-->
-    <!--        <field name="context">-->
-    <!--            {-->
-    <!--            'form_view_ref': 'tt_reservation_airline.tt_reservation_airline_form_view',-->
-    <!--            'tree_view_ref': 'tt_reservation_airline.tt_reservation_airline_tree_view',-->
-    <!--            'search_default_failed_expired': 1-->
-    <!--            }-->
-    <!--        </field>-->
-    <!--    </record>-->
-
-    <!--    <record model="ir.actions.act_window" id="tt_reservation_airline_action_views_cancel">-->
-    <!--        <field name="name">Reservation Airline (Cancelled/Refunded)</field>-->
-    <!--        <field name="res_model">tt.reservation.airline</field>-->
-    <!--        <field name="view_type">form</field>-->
-    <!--        <field name="view_mode">tree,form</field>-->
-    <!--        <field name="domain">[]</field>-->
-    <!--        <field name="context">-->
-    <!--            {-->
-    <!--            'form_view_ref': 'tt_reservation_airline.tt_reservation_airline_form_view',-->
-    <!--            'tree_view_ref': 'tt_reservation_airline.tt_reservation_airline_tree_view',-->
-    <!--            'search_default_cancel': 1-->
-    <!--            }-->
-    <!--        </field>-->
-    <!--    </record>-->
+    <record model="ir.actions.act_window" id="tt_reservation_periksain_action_views_failed_expired">
+        <field name="name">Reservation periksain (Failed/Expired)</field>
+        <field name="res_model">tt.reservation.periksain</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+        <field name="domain">[]</field>
+        <field name="context">
+            {
+            'form_view_ref': 'tt_reservation_periksain.tt_reservation_periksain_form_view',
+            'tree_view_ref': 'tt_reservation_periksain.tt_reservation_periksain_tree_view',
+            'search_default_failed_expired': 1
+            }
+        </field>
+    </record>
 
     <menuitem id="sub_menu_reservations_periksain_all"
               parent="tt_reservation_periksain.menu_reservations_periksain"
               action="tt_reservation_periksain.tt_reservation_periksain_action_views"
               name="All"
-              sequence="80"
+              sequence="1"
               groups="base.group_user"/>
 
     <menuitem id="top_external_vendor_periksain_reservation"
@@ -453,15 +442,13 @@
               action="tt_reservation_periksain.tt_reservation_periksain_action_external_views"
     />
 
-    <!--    <menuitem id="submenu_reservations_airline_booked" parent="tt_reservation_airline.menu_reservations_airline"-->
-    <!--              name="Booked" action="tt_reservation_airline.tt_reservation_airline_action_views_booked" sequence="2"/>-->
+    <menuitem id="submenu_reservations_periksain_booked" parent="tt_reservation_periksain.menu_reservations_periksain"
+              name="Booked" action="tt_reservation_periksain.tt_reservation_periksain_action_views_booked" sequence="2"/>
 
-    <!--    <menuitem id="submenu_reservations_airline_issued" parent="tt_reservation_airline.menu_reservations_airline"-->
-    <!--              name="Issued" action="tt_reservation_airline.tt_reservation_airline_action_views_issued" sequence="3"/>-->
+    <menuitem id="submenu_reservations_periksain_issued" parent="tt_reservation_periksain.menu_reservations_periksain"
+              name="Issued" action="tt_reservation_periksain.tt_reservation_periksain_action_views_issued" sequence="3"/>
 
-    <!--    <menuitem id="submenu_reservations_airline_failed_expired" parent="tt_reservation_airline.menu_reservations_airline"-->
-    <!--              name="Failed/Expired" action="tt_reservation_airline.tt_reservation_airline_action_views_failed_expired" sequence="4"/>-->
+    <menuitem id="submenu_reservations_periksain_failed_expired" parent="tt_reservation_periksain.menu_reservations_periksain"
+              name="Failed/Expired" action="tt_reservation_periksain.tt_reservation_periksain_action_views_failed_expired" sequence="4"/>
 
-    <!--    <menuitem id="submenu_reservations_airline_cancel" parent="tt_reservation_airline.menu_reservations_airline"-->
-    <!--              name="Cancelled/Refunded" action="tt_reservation_airline.tt_reservation_airline_action_views_cancel" sequence="5"/>-->
 </odoo>

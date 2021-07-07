@@ -83,11 +83,11 @@ class ttCronTopUpValidator(models.Model):
                                         }
                                         request = {
                                             'amount': payment_acq_obj.amount + payment_acq_obj.unique_amount,
-                                            'seq_id': payment_acq_obj.payment_acquirer_id.seq_id,
                                             'currency_code': result.currency_id.name,
                                             'payment_ref': reference_code,
                                             'payment_seq_id': payment_acq_obj.payment_acquirer_id.seq_id,
-                                            'subsidy': payment_acq_obj.unique_amount if payment_acq_obj.unique_amount <= 0 else 0
+                                            'subsidy': payment_acq_obj.unique_amount if payment_acq_obj.unique_amount < 0 else 0,
+                                            'fee': payment_acq_obj.unique_amount if payment_acq_obj.unique_amount > 0 else 0
                                         }
 
                                         res = self.env['tt.top.up'].create_top_up_api(request, context, True)
@@ -98,6 +98,7 @@ class ttCronTopUpValidator(models.Model):
                                                 'payment_ref': reference_code,##jangan di ubah nanti ngebug top up approved dobule dengan case, 2 payment acq number status closed dari agent yg sama kemudian di trf 2 2nya, confurrent update
                                                 'fee': 0
                                             }
+                                            _logger.info("###5")
                                             res = self.env['tt.top.up'].action_va_top_up(request, context, payment_acq_obj.id)
                                             result.top_up_validated(res['response']['top_up_id'])
                                             self._cr.commit()
