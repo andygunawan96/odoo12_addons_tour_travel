@@ -264,6 +264,11 @@ class TtProviderphc(models.Model):
         self.cancel_uid = self.env.user.id
         self.state = 'cancel'
 
+    def action_refund(self, check_provider_state=False):
+        self.state = 'refund'
+        if check_provider_state:
+            self.booking_id.check_provider_state({'co_uid': self.env.user.id})
+
     def create_service_charge(self, service_charge_vals):
         service_chg_obj = self.env['tt.service.charge']
         currency_obj = self.env['res.currency']
@@ -374,7 +379,8 @@ class TtProviderphc(models.Model):
             'balance_due': self.balance_due and self.balance_due or 0,
             'total_price': self.total_price and self.total_price or 0,
             'carrier_name': self.carrier_id and self.carrier_id.name or '',
-            'carrier_code': self.carrier_id and self.carrier_id.code or ''
+            'carrier_code': self.carrier_id and self.carrier_id.code or '',
+            'error_msg': self.error_history_ids and self.error_history_ids[-1].error_msg or '',
         }
 
         return res

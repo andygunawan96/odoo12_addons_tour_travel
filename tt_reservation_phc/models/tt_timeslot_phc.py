@@ -34,6 +34,7 @@ class TtTimeslotphc(models.Model):
 
     used_count = fields.Integer('Used Counter',compute="_compute_used_counter",store=True)#used reservation count
     used_adult_count = fields.Integer('Used Adult Counter', compute="_compute_used_counter", store=True)#used adult count
+    used_pcr_count = fields.Integer('Used PCR Counter', compute="_compute_used_counter", store=True)#used PCR count
 
     booking_ids = fields.Many2many('tt.reservation.phc','tt_reservation_phc_timeslot_rel', 'timeslot_id', 'booking_id', 'Selected on By Customer Booking(s)')
 
@@ -53,6 +54,7 @@ class TtTimeslotphc(models.Model):
 
     total_timeslot = fields.Integer('Max Timeslot', required=True, default=5)##reservation count
     total_adult_timeslot = fields.Integer('Max Adult Timeslot', required=True, default=420)##adult count
+    total_pcr_timeslot = fields.Integer('Max PCR Timeslot', required=True, default=150)##pcr count
 
     active = fields.Boolean('Active', default='True')
 
@@ -83,15 +85,20 @@ class TtTimeslotphc(models.Model):
         for rec in self:
             used_count = 0
             adult_count = 0
+            pcr_count = 0
             for rec2 in rec.booking_used_ids.filtered(lambda x: x.state in ['booked', 'issued']):
                 used_count += 1
                 adult_count += rec2.adult
+                if rec2.state == 'issued' and 'PCR' in rec2.carrier_name:
+                    pcr_count += rec2.adult
             rec.used_count = used_count
             rec.used_adult_count = adult_count
+            rec.used_pcr_count = pcr_count
 
     def mass_close_timeslot(self):
         for rec in self:
-            rec.max
+            rec.total_timeslot = 0
+            rec.total_adult_timeslot = 0
     # {
     #     "max_date": "2021-06-20",
     #     "timeslots": {
@@ -130,7 +137,7 @@ class TtTimeslotphc(models.Model):
         else:
             dom.append(('timeslot_type', '=', 'drive_thru'))
             ## kalau kurang dari jam 16.00 di tambah timedelta 0 else di tambah 1 hari
-            dom.append(('dateslot', '>=', datetime.today() if current_wib_datetime <= current_wib_datetime.replace(hour=16,minute=0,second=0,microsecond=0) else datetime.today() + timedelta(days=1)))
+            dom.append(('dateslot', '>=', datetime.today() if current_wib_datetime <= current_wib_datetime.replace(hour=13,minute=30,second=0,microsecond=0) else datetime.today() + timedelta(days=1)))
             dom.append(('total_timeslot','>',0))
 
         timeslots = self.search(dom)
@@ -161,9 +168,13 @@ class TtTimeslotphc(models.Model):
         return ERR.get_no_error(timeslot_dict)
 
     def get_availability(self):
+        ## availability adult & pcr
+        availability = self.used_adult_count < self.total_adult_timeslot and self.total_pcr_timeslot < self.used_pcr_count
+
         if self.timeslot_type == 'drive_thru':
-            return self.used_adult_count < self.total_adult_timeslot
-        return self.used_count < self.total_timeslot and self.used_adult_count < self.total_adult_timeslot
+            return availability
+        else:
+            return (self.used_count < self.total_timeslot) and availability
 
     def get_datetimeslot_str(self):
         if self.datetimeslot:
