@@ -264,6 +264,11 @@ class TtProviderphc(models.Model):
         self.cancel_uid = self.env.user.id
         self.state = 'cancel'
 
+    def action_refund(self, check_provider_state=False):
+        self.state = 'refund'
+        if check_provider_state:
+            self.booking_id.check_provider_state({'co_uid': self.env.user.id})
+
     def create_service_charge(self, service_charge_vals):
         service_chg_obj = self.env['tt.service.charge']
         currency_obj = self.env['res.currency']
