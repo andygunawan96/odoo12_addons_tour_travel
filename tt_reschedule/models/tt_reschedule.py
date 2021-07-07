@@ -393,6 +393,16 @@ class TtReschedule(models.Model):
             'confirm_date': datetime.now(),
         })
 
+    def confirm_reschedule_from_button_ho(self):
+        if self.state != 'draft':
+            raise UserError("Cannot Confirm because state is not 'draft'.")
+
+        self.write({
+            'state': 'confirm',
+            'confirm_uid': self.env.user.id,
+            'confirm_date': datetime.now(),
+        })
+
     def send_reschedule_from_button(self):
         if self.state != 'confirm':
             raise UserError("Cannot Send because state is not 'confirm'.")

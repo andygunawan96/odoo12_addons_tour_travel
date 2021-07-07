@@ -35,6 +35,18 @@
                         'default_currency_id': currency_id,
                         'default_service_type': provider_type_id
                    }" attrs="{'invisible':[('refundable','=',False)]}"/>
+                    <button string="Refund Request" name="%(tt_accounting.tt_refund_wizard_action_view_ho)d" type="action" groups="tt_base.group_after_sales_master_level_3"
+                            context="{
+                        'default_res_model': res_model,
+                        'default_res_id': id,
+                        'default_agent_id': agent_id,
+                        'default_customer_parent_id': customer_parent_id,
+                        'default_referenced_document': name,
+                        'default_referenced_pnr': pnr,
+                        'default_booker_id': booker_id,
+                        'default_currency_id': currency_id,
+                        'default_service_type': provider_type_id
+                   }" attrs="{'invisible':['|', ('refundable','=',False), ('agent_type_id','!=', %(tt_base.agent_type_btc)d)]}"/>
 
 
                     <!--                    <button string="Issued" name="action_issued_from_button" type="object"-->
@@ -117,9 +129,9 @@
                                 <field name="refund_uid" readonly="1" class="oe_inline"/> /
                                 <field name="refund_date" readonly="1" class="oe_inline"/>
                             </div>
-                            <label for="reschedule_uid" string="Rescheduled By"/> /
+                            <label for="reschedule_uid" string="Rescheduled By"/>
                             <div>
-                                <field name="reschedule_uid" readonly="1" class="oe_inline"/>
+                                <field name="reschedule_uid" readonly="1" class="oe_inline"/> /
                                 <field name="reschedule_date" readonly="1" class="oe_inline"/>
                             </div>
                             <field name="penalty_amount" readonly="1"/>
