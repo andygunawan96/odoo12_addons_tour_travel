@@ -83,11 +83,11 @@ class ttCronTopUpValidator(models.Model):
                                         }
                                         request = {
                                             'amount': payment_acq_obj.amount + payment_acq_obj.unique_amount,
-                                            'seq_id': payment_acq_obj.payment_acquirer_id.seq_id,
                                             'currency_code': result.currency_id.name,
                                             'payment_ref': reference_code,
                                             'payment_seq_id': payment_acq_obj.payment_acquirer_id.seq_id,
-                                            'subsidy': payment_acq_obj.unique_amount if payment_acq_obj.unique_amount <= 0 else 0
+                                            'subsidy': payment_acq_obj.unique_amount if payment_acq_obj.unique_amount < 0 else 0,
+                                            'fee': payment_acq_obj.unique_amount if payment_acq_obj.unique_amount > 0 else 0
                                         }
 
                                         res = self.env['tt.top.up'].create_top_up_api(request, context, True)

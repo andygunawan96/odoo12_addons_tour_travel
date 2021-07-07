@@ -23,6 +23,7 @@
 
                 <group expand="0" string="Group By">
                     <filter name="group_by_destination_id" string="Area" domain="[]" context="{'group_by':'destination_id'}"/>
+                    <filter name="group_by_dateslot_day" string="Date" domain="[]" context="{'group_by':'dateslot:day'}"/>
                 </group>
             </search>
         </field>
