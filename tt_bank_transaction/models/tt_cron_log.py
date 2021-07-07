@@ -62,20 +62,26 @@ class ttCronTopUpValidator(models.Model):
             #payment reservation
             try:
                 payment_acq_objs = self.env['payment.acquirer.number'].search(['|',('state','=','close'), ('state', '=', 'waiting'), ('unique_amount','!=',0)])
+                _logger.info("###-1")
                 for payment_acq_obj in payment_acq_objs:
+                    _logger.info("###0")
                     transaction = self.env['tt.bank.accounts'].search([])
                     if transaction:
                         for transaction_data in transaction:
+                            _logger.info("###1")
                             date_exist = transaction_data.bank_transaction_date_ids.filtered(lambda x: x.date == datetime.today().strftime("%Y-%m-%d"))
                             if date_exist:
+                                _logger.info("###2")
                                 result = date_exist.transaction_ids.filtered(lambda x: x.transaction_amount == payment_acq_obj.amount + payment_acq_obj.unique_amount and x.transaction_type == 'C')
                                 if result:
+                                    _logger.info("###3")
                                     if result.transaction_message == '':
                                         reference_code = result.transaction_code
                                     else:
                                         reference_code = result.transaction_message
                                     resv_obj = self.env['tt.reservation.%s' % variables.PROVIDER_TYPE_PREFIX[payment_acq_obj['number'].split('.')[0]]].search([('name', '=', '%s.%s' %(payment_acq_obj['number'].split('.')[0], payment_acq_obj['number'].split('.')[1]))])
                                     if not self.env['tt.payment'].search([('reference', '=', reference_code),('total_amount','=', payment_acq_obj.amount + payment_acq_obj.unique_amount)]): #update
+                                        _logger.info("###4")
                                         # topup
                                         context = {
                                             'co_agent_id': resv_obj.agent_id.id,
@@ -98,6 +104,7 @@ class ttCronTopUpValidator(models.Model):
                                                 'payment_ref': reference_code,##jangan di ubah nanti ngebug top up approved dobule dengan case, 2 payment acq number status closed dari agent yg sama kemudian di trf 2 2nya, confurrent update
                                                 'fee': 0
                                             }
+                                            _logger.info("###5")
                                             res = self.env['tt.top.up'].action_va_top_up(request, context, payment_acq_obj.id)
                                             result.top_up_validated(res['response']['top_up_id'])
                                             self._cr.commit()
