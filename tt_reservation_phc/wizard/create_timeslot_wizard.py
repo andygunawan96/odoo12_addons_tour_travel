@@ -29,7 +29,8 @@ class CreateTimeslotphcWizard(models.TransientModel):
                                      default='home_care', required=True)
 
     total_timeslot = fields.Integer('Total Timeslot',default=5, required=True)
-    total_adult_timeslot = fields.Integer('Total Timeslot',default=420, required=True)
+    total_adult_timeslot = fields.Integer('Total Adult Timeslot',default=420, required=True)
+    total_pcr_timeslot = fields.Integer('Total PCR Timeslot',default=150, required=True)
 
     currency_id = fields.Many2one('res.currency', 'Currency', readonly=True,
                                   default=lambda self: self.env.user.company_id.currency_id)
@@ -84,6 +85,7 @@ class CreateTimeslotphcWizard(models.TransientModel):
                         'destination_id': self.area_id.id,
                         'total_timeslot': self.total_timeslot,
                         'total_adult_timeslot': self.total_adult_timeslot,
+                        'total_pcr_timeslot': self.total_pcr_timeslot,
                         'currency_id': self.currency_id.id,
                         'timeslot_type': self.timeslot_type,
                         'commission_antigen': self.commission_antigen,
@@ -96,7 +98,7 @@ class CreateTimeslotphcWizard(models.TransientModel):
                     })
         self.env['tt.timeslot.phc'].create(create_values)
 
-    def generate_drivethru_timeslot(self, date, max_timeslot=5, adult_timeslot=420):
+    def generate_drivethru_timeslot(self, date, max_timeslot=5, adult_timeslot=420, pcr_timeslot=150):
         destination = self.env['tt.destinations'].search([('provider_type_id','=',self.env.ref('tt_reservation_phc.tt_provider_type_phc').id),('code','=','SUB')])
         datetimeslot = datetime.strptime('%s %s' % (str(date), '08:09:09'), '%Y-%m-%d %H:%M:%S')
         db = self.env['tt.timeslot.phc'].search(
@@ -109,6 +111,7 @@ class CreateTimeslotphcWizard(models.TransientModel):
                 'destination_id': destination.id,
                 'total_timeslot': max_timeslot,
                 'total_adult_timeslot': adult_timeslot,
+                'total_pcr_timeslot': pcr_timeslot,
                 'currency_id': self.env.user.company_id.currency_id.id,
                 'timeslot_type': 'drive_thru',
                 'commission_antigen': COMMISSION_PER_PAX_ANTIGEN,

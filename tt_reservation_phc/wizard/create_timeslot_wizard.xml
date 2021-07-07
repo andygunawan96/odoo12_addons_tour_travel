@@ -14,6 +14,7 @@
                         <field name="timeslot_type"/>
                         <field name="total_timeslot"/>
                         <field name="total_adult_timeslot"/>
+                        <field name="total_pcr_timeslot"/>
                     </group>
                     <group>
                         <field name="agent_id"/>

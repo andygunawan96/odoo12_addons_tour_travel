@@ -109,6 +109,7 @@
             {
             'form_view_ref': 'tt_reservation_periksain.tt_timeslot_periksain_form_view',
             'tree_view_ref': 'tt_reservation_periksain.tt_timeslot_periksain_tree_view',
+            'search_default_group_by_dateslot_day': 1
             }
         </field>
     </record>

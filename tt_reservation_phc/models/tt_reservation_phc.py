@@ -211,15 +211,14 @@ class Reservationphc(models.Model):
         timeslot_objs = self.env['tt.timeslot.phc'].search([('seq_id', 'in', req['timeslot_list'])])
 
         if not timeslot_objs:
-            raise RequestException(1022,"No Timeslot, Please Try Other Date/Time")
+            raise RequestException(1022,"No Timeslot. Please Try Other Date/Time")
         else:
             if not timeslot_objs.get_availability():
-                raise RequestException(1022,"Timeslot is Full, Please Try Other Date/Time")
+                raise RequestException(1022,"Timeslot is Full. Please Try Other Date/Time")
         for rec in timeslot_objs:
             if rec.datetimeslot.time() > time(11,0):
                 overtime_surcharge = True
                 break
-
 
         single_suplement = False
         base_price = 0
@@ -467,6 +466,18 @@ class Reservationphc(models.Model):
                     for idx, ticket_obj in enumerate(provider['tickets']):
                         provider_obj.update_result_url_per_pax_api(idx, ticket_obj['result_url'])
                     continue
+                if provider.get('messages'):
+                    messages = provider['messages']
+                    if not type(messages) != list:
+                        messages = [str(messages)]
+                    error_msg = ', '.join(messages)
+                    error_history_ids = [(0, 0, {
+                        'res_model': self._name,
+                        'res_id': self.id,
+                        'error_code': 0,
+                        'error_msg': error_msg
+                    })]
+                    provider_obj.write(error_history_ids)
                 if provider['status'] == 'ISSUED':
                     provider_obj.action_issued_api_phc(context)
                 #jaga jaga kalau gagal issued
@@ -614,7 +625,7 @@ class Reservationphc(models.Model):
         carrier_obj = self.env['tt.transport.carrier'].sudo().search([('code', '=', booking_data['carrier_code']), ('provider_type_id', '=', provider_type_id.id)])
 
         # "pax_type": "ADT",
-        # "pax_count": 1,
+        # "pax_count": 1
         # "amount": 150000,
         # "total_amount": 150000,
         # "foreign_amount": 150000,
@@ -623,6 +634,13 @@ class Reservationphc(models.Model):
         # "charge_code": "fare",
         # "charge_type": "FARE"
 
+        #check apakah timeslot tersedia
+        timeslot_write_data = self.env['tt.timeslot.phc'].search([('seq_id', 'in', booking_data['timeslot_list'])])
+        for rec in timeslot_write_data:
+            if not rec.get_availability():
+                raise RequestException(1022,"Timeslot is Full. Please Try Other Date/Time")
+
+        #check drive thru atau tidak, menentukan hold date
         drive_thru = False
         if carrier_obj and carrier_obj.id in [self.env.ref('tt_reservation_phc.tt_transport_carrier_phc_drive_thru_antigen').id,
                                               self.env.ref('tt_reservation_phc.tt_transport_carrier_phc_drive_thru_pcr').id]:
@@ -630,6 +648,13 @@ class Reservationphc(models.Model):
             drive_thru = True
         else:
             hold_date = fields.Datetime.now() + timedelta(minutes=30)
+
+        #kalau tidak ada timeslot dan dia drive thru maka di pilihkan jadwal drive thru hari itu, jika tidak ada maka di buatkan jadwal baru
+        if not timeslot_write_data and drive_thru:
+            timeslot_write_data = self.env['tt.timeslot.phc'].search([('timeslot_type', '=', 'drive_thru'), ('datetimeslot', '=', '%s 08:09:09' % datetime.now().strftime('%Y-%m-%d'))])
+            if not timeslot_write_data:
+                timeslot_write_data = self.env['create.timeslot.phc.wizard'].generate_drivethru_timeslot(datetime.now().strftime('%Y-%m-%d'))
+
         provider_vals = {
             'pnr': 1,
             'pnr2': 2,
@@ -645,15 +670,6 @@ class Reservationphc(models.Model):
             'carrier_code': carrier_obj and carrier_obj.code or False,
             'carrier_name': carrier_obj and carrier_obj.name or False
         }
-        if not booking_data['timeslot_list'] and drive_thru:
-            timeslot_write_data = self.env['tt.timeslot.phc'].search([('timeslot_type', '=', 'drive_thru'), ('datetimeslot', '=', '%s 08:09:09' % datetime.now().strftime('%Y-%m-%d'))])
-            if not timeslot_write_data:
-                timeslot_write_data = self.env['create.timeslot.phc.wizard'].generate_drivethru_timeslot(datetime.now().strftime('%Y-%m-%d'))
-        else:
-            timeslot_write_data = self.env['tt.timeslot.phc'].search([('seq_id', 'in', booking_data['timeslot_list'])])
-            for rec in timeslot_write_data:
-                if not rec.get_availability():
-                    raise RequestException(1022, "Timeslot is Full")
 
         booking_tmp = {
             'state': 'booked',

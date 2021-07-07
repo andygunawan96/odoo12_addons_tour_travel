@@ -112,9 +112,9 @@
                 <field name="state_vendor"/>
             </xpath>
             <xpath expr="//field[@name='penalty_amount']" position="before">
-                <label for="verified_uid" string="Verified By"/> /
+                <label for="verified_uid" string="Verified By"/>
                 <div>
-                    <field name="verified_uid" readonly="1" class="oe_inline"/>
+                    <field name="verified_uid" readonly="1" class="oe_inline"/> /
                     <field name="verified_date" readonly="1" class="oe_inline"/>
                 </div>
             </xpath>
@@ -442,7 +442,7 @@
               parent="tt_reservation_phc.menu_reservations_phc"
               action="tt_reservation_phc.tt_reservation_phc_action_views"
               name="All"
-              sequence="80"
+              sequence="1"
               groups="base.group_user"/>
 
     <menuitem id="top_external_vendor_phc_reservation"
@@ -453,13 +453,13 @@
               action="tt_reservation_phc.tt_reservation_phc_action_external_views"
     />
 
-        <menuitem id="submenu_reservations_phc_booked" parent="tt_reservation_phc.menu_reservations_phc"
-                  name="Booked" action="tt_reservation_phc.tt_reservation_phc_action_views_booked" sequence="2"/>
+    <menuitem id="submenu_reservations_phc_booked" parent="tt_reservation_phc.menu_reservations_phc"
+              name="Booked" action="tt_reservation_phc.tt_reservation_phc_action_views_booked" sequence="2"/>
 
-        <menuitem id="submenu_reservations_phc_issued" parent="tt_reservation_phc.menu_reservations_phc"
-                  name="Issued" action="tt_reservation_phc.tt_reservation_phc_action_views_issued" sequence="3"/>
+    <menuitem id="submenu_reservations_phc_issued" parent="tt_reservation_phc.menu_reservations_phc"
+              name="Issued" action="tt_reservation_phc.tt_reservation_phc_action_views_issued" sequence="3"/>
 
-        <menuitem id="submenu_reservations_phc_failed_expired" parent="tt_reservation_phc.menu_reservations_phc"
-                  name="Failed/Expired" action="tt_reservation_phc.tt_reservation_phc_action_views_failed_expired" sequence="4"/>
+    <menuitem id="submenu_reservations_phc_failed_expired" parent="tt_reservation_phc.menu_reservations_phc"
+              name="Failed/Expired" action="tt_reservation_phc.tt_reservation_phc_action_views_failed_expired" sequence="4"/>
 
 </odoo>
