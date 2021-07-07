@@ -393,7 +393,7 @@ class ReservationAirline(models.Model):
         for rsch in self.reschedule_ids:
             rsch_values = rsch.get_reschedule_data()
             reschedule_list.append(rsch_values)
-        return  reschedule_list
+        return reschedule_list
 
     def process_update_booking_airline_api(self, vals, context):
         try:
@@ -926,6 +926,37 @@ class ReservationAirline(models.Model):
                         })
                         refund_line_ids.append(line_obj.id)
 
+                    # July 6, 2021 - SAM
+                    # Menyimpan keterangan update cancel booking (v2)
+                    # Cancel Reason + Perubahan Detail Service Charges apabila di edit (Amadeus)
+                    psg_note_list = []
+                    try:
+                        if commit_data.get('update_cancel_data') and commit_data['update_cancel_data'].get('passengers'):
+                            psg_note_list.append('PNR : %s' % commit_data['pnr'])
+                            psg_note_list.append('')
+                            for psg in commit_data['update_cancel_data']['passengers']:
+                                psg_obj = resv_passenger_number_dict[psg['passenger_number']]
+                                psg_note_list.append('Name : %s' % psg_obj.name)
+                                reason_code = psg.get('reason_code', '')
+                                psg_note_list.append('')
+                                if reason_code:
+                                    psg_note_list.append('Reason code : %s' % reason_code)
+                                for fee in psg.get('fees', []):
+                                    for sc_idx, sc in enumerate(fee.get('service_charges', []), 1):
+                                        psg_note_list.append('Service Charge sequence %s' % sc_idx)
+                                        psg_note_list.append('Charge Type : %s' % sc['charge_type'])
+                                        psg_note_list.append('Charge Code : %s' % sc['charge_code'])
+                                        psg_note_list.append('Amount : %s' % sc['amount'])
+                                        psg_note_list.append('')
+                                psg_note_list.append('')
+                            psg_note_list.append('')
+                    except:
+                        _logger.error('Error get passenger notes in Process Update Booking Refund, %s' % traceback.format_exc())
+
+                    if commit_data.get('notes') and commit_data['notes']:
+                        psg_note_list.append(commit_data['notes'])
+
+                    notes = '\n'.join(psg_note_list)
                     res_vals = {
                         'agent_id': airline_obj.agent_id.id,
                         'customer_parent_id': airline_obj.customer_parent_id.id,
@@ -939,7 +970,7 @@ class ReservationAirline(models.Model):
                         'res_model': airline_obj._name,
                         'res_id': airline_obj.id,
                         'booking_desc': airline_obj.get_aftersales_desc(),
-                        'notes': commit_data.get('notes') and commit_data['notes'] or '',
+                        'notes': notes,
                         'created_by_api': True,
                     }
                     res_obj = self.env['tt.refund'].create(res_vals)

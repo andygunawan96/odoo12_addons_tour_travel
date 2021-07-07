@@ -206,20 +206,25 @@ class TtProviderAirline(models.Model):
     # May 11, 2020 - SAM
     def set_provider_detail_info(self, provider_data):
         values = {}
+        # todo ini buat ngambil semua key data dari response yang dikirim
         provider_data_keys = [key for key in provider_data.keys()]
         for key in ['pnr', 'pnr2', 'reference', 'balance_due', 'balance_due_str', 'total_price', 'penalty_amount', 'penalty_currency', 'is_hold_date_sync']:
             # if not provider_data.get(key):
+            # todo ini buat ngecek klo key nya ada baru di update value nya
             if key not in provider_data_keys:
                 continue
             values[key] = provider_data[key]
+            # todo ini buat update data info pnr di ledger sama service charges (sblm booking itu sequence isi nya)
             if key == 'pnr':
                 pnr = provider_data[key]
                 provider_sequence = str(self.sequence)
                 for sc in self.cost_service_charge_ids:
+                    # todo ini kalau misal ternyata infonya uda pnr di skip, kalau belum di update
                     if sc.description != provider_data[key]:
                         sc.write({'description': pnr})
 
                 for ledger in self.booking_id.ledger_ids:
+                    # todo ini kalau misal ternyata infonya uda pnr di skip, kalau belum di update
                     if ledger.pnr == provider_sequence:
                         ledger.write({'pnr': pnr})
 
