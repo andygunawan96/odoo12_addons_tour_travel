@@ -126,8 +126,8 @@
 
     <record model="ir.actions.server" id="action_multi_mass_close_timeslot_phc">
         <field name="name">Close Timeslot</field>
-        <field name="model_id" ref="base.model_tt_timeslot_phc"/>
-        <field name="binding_model_id" ref="base.model_tt_timeslot_phc"/>
+        <field name="model_id" ref="tt_reservation_phc.model_tt_timeslot_phc"/>
+        <field name="binding_model_id" ref="tt_reservation_phc.model_tt_timeslot_phc"/>
         <field name="state">code</field>
         <field name="code">
             if records:
