@@ -48,6 +48,7 @@
                     </h1>
                     <group>
                         <group>
+                            <field name="timeslot_type"/>
                             <field name="dateslot"/>
                             <field name="datetimeslot"/>
                             <field name="destination_id"/>
@@ -56,11 +57,12 @@
                         </group>
                         <group>
                             <field name="selected_count"/>
-                            <field name="used_count"/>
-                            <field name="timeslot_type"/>
                             <field name="total_timeslot"/>
+                            <field name="used_count"/>
                             <field name="total_adult_timeslot"/>
                             <field name="used_adult_count"/>
+                            <field name="total_pcr_timeslot"/>
+                            <field name="used_pcr_count"/>
                         </group>
                     </group>
                     <group>
@@ -104,6 +106,8 @@
                 <field name="used_count"/>
                 <field name="total_adult_timeslot"/>
                 <field name="used_adult_count"/>
+                <field name="total_pcr_timeslot"/>
+                <field name="used_pcr_count"/>
             </tree>
         </field>
     </record>
