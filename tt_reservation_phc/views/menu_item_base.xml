@@ -18,6 +18,7 @@
         <menuitem id="menu_master_data_phc"
                   parent="tt_reservation_phc.top_reservations_phc"
                   name="Master Data"
+                  groups="tt_base.group_master_data_phc_level_2"
                   sequence="2"/>
     </data>
 </odoo>

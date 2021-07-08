@@ -223,8 +223,8 @@ class TtProviderphc(models.Model):
     def action_failed_issued_api_phc(self, err_code, err_msg):
         for rec in self:
             rec.write({
-                'state': 'fail_issued',
-                'error_history_ids': [(0, 0, {
+                'state': 'booked',
+                'error_history_ids': [(0,0,{
                     'res_model': self._name,
                     'res_id': self.id,
                     'error_code': err_code,
@@ -402,6 +402,7 @@ class TtProviderphc(models.Model):
 
     def update_ticket_per_pax_api(self, idx, passenger_ticket):
         self.ticket_ids[idx].ticket_number = passenger_ticket
+        self.ticket_ids[idx].passenger_id.ticket_number = passenger_ticket
 
     def update_result_url_per_pax_api(self, idx, result_url):
         self.ticket_ids[idx].passenger_id.result_url = result_url
@@ -451,3 +452,9 @@ class TtProviderphc(models.Model):
                 'ticket_ids': [(0, 0, ticket_values)]
             })
             # END
+
+    def update_ticket_number_pax(self):
+        for rec in self.ticket_ids:
+            rec.passenger_id.write({
+                'ticket_number': rec.ticket_number
+            })

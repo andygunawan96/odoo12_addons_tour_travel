@@ -426,9 +426,7 @@ class Reservationphc(models.Model):
                 'kelurahan_ktp': passengers_data[idx]['kelurahan_ktp'],
                 'pcr_data': json.dumps(pcr_data),
                 'verify': passengers_data[idx].get('verify') or False,
-                'label_url': passengers_data[idx].get('label_url') or '',
-                'nomor_karcis': passengers_data[idx].get('nomor_karcis'),
-                'nomor_perserta': passengers_data[idx].get('no_peserta')
+                'label_url': passengers_data[idx].get('label_url') or ''
             })
         if verify:
             book_obj.write({
@@ -466,18 +464,8 @@ class Reservationphc(models.Model):
                     for idx, ticket_obj in enumerate(provider['tickets']):
                         provider_obj.update_result_url_per_pax_api(idx, ticket_obj['result_url'])
                     continue
-                if provider.get('messages'):
-                    messages = provider['messages']
-                    if not type(messages) != list:
-                        messages = [str(messages)]
-                    error_msg = ', '.join(messages)
-                    error_history_ids = [(0, 0, {
-                        'res_model': self._name,
-                        'res_id': self.id,
-                        'error_code': 0,
-                        'error_msg': error_msg
-                    })]
-                    provider_obj.write(error_history_ids)
+                if provider.get('messages') and provider['status'] == 'FAIL_ISSUED':
+                    provider_obj.action_failed_issued_api_phc(provider.get('error_code', -1),provider.get('error_msg', ''))
                 if provider['status'] == 'ISSUED':
                     provider_obj.action_issued_api_phc(context)
                 #jaga jaga kalau gagal issued
