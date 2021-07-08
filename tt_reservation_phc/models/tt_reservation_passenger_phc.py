@@ -20,9 +20,6 @@ class TtReservationCustomer(models.Model):
     result_url = fields.Char('Result URL')
     verify = fields.Boolean('Verify Data', default=False)
     label_url = fields.Char('Label URL')
-    nomor_karcis = fields.Char('Nomor Karcis')
-    nomor_perserta = fields.Char('Nomor Perserta')
-
 
     email = fields.Char('Email')
 
@@ -46,6 +43,7 @@ class TtReservationCustomer(models.Model):
 
     pcr_data = fields.Text('PCR Data')
     is_ticketed = fields.Boolean('Ticketed')
+    ticket_number = fields.Char('Ticket Number')
 
     def to_dict(self):
         res = super(TtReservationCustomer, self).to_dict()
@@ -53,8 +51,6 @@ class TtReservationCustomer(models.Model):
             'result_url': self.result_url,
             'label_url': self.label_url,
             'verify': self.verify,
-            'nomor_perserta': self.nomor_perserta,
-            'nomor_karcis': self.nomor_karcis,
             'sale_service_charges': self.get_service_charges(),
             'tempat_lahir': self.tempat_lahir,
             'profession': self.profession,
@@ -74,7 +70,8 @@ class TtReservationCustomer(models.Model):
             'email': self.email,
             'phone_number': self.phone_number,
             'pcr_data': self.pcr_data and json.loads(self.pcr_data) or self.pcr_data,
-            'nationality_name': self.nationality_id.name
+            'nationality_name': self.nationality_id.name,
+            'ticket_number': self.ticket_number
         })
         if len(self.channel_service_charge_ids.ids)>0:
             res['channel_service_charges'] = self.get_channel_service_charges()

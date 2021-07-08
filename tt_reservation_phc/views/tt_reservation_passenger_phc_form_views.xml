@@ -26,8 +26,7 @@
                     </group>
                     <group>
                         <field name="verify"/>
-                        <field name="nomor_karcis"/>
-                        <field name="nomor_perserta"/>
+                        <field name="ticket_number"/>
                         <field name="tempat_lahir"/>
                         <field name="address_ktp"/>
                         <field name="kabupaten_ktp"/>

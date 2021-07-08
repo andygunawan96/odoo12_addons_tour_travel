@@ -426,9 +426,7 @@ class Reservationphc(models.Model):
                 'kelurahan_ktp': passengers_data[idx]['kelurahan_ktp'],
                 'pcr_data': json.dumps(pcr_data),
                 'verify': passengers_data[idx].get('verify') or False,
-                'label_url': passengers_data[idx].get('label_url') or '',
-                'nomor_karcis': passengers_data[idx].get('nomor_karcis'),
-                'nomor_perserta': passengers_data[idx].get('no_peserta')
+                'label_url': passengers_data[idx].get('label_url') or ''
             })
         if verify:
             book_obj.write({
