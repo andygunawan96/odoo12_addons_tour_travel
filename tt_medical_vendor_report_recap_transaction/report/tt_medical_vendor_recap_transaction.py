@@ -28,7 +28,8 @@ class MedicalVendorReportRecapTransacion(models.Model):
     def _select_join_passengers():
         return """
             psg.booking_id as booking_id, psg.title as title, psg.first_name as first_name, psg.last_name as last_name, 
-            psg.birth_date as birth_date, psg.nomor_karcis as nomor_karcis, psg.nomor_perserta as nomor_perserta
+            psg.birth_date as birth_date, psg.ticket_number as ticket_number, psg.identity_number as identity_number, 
+            psg.address_ktp as address_ktp
             """
 
     ################
