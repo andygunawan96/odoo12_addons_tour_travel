@@ -54,7 +54,7 @@ class TtTimeslotphc(models.Model):
 
     total_timeslot = fields.Integer('Max Timeslot', required=True, default=5)##reservation count
     total_adult_timeslot = fields.Integer('Max Adult Timeslot', required=True, default=420)##adult count
-    total_pcr_timeslot = fields.Integer('Max PCR Timeslot', required=True, default=150)##pcr count
+    total_pcr_timeslot = fields.Integer('Max PCR Timeslot', required=True, default=195)##pcr count
 
     active = fields.Boolean('Active', default='True')
 
@@ -89,7 +89,7 @@ class TtTimeslotphc(models.Model):
             for rec2 in rec.booking_used_ids.filtered(lambda x: x.state in ['booked', 'issued']):
                 used_count += 1
                 adult_count += rec2.adult
-                if rec2.state == 'issued' and 'PCR' in rec2.carrier_name:
+                if 'PCR' in rec2.carrier_name:
                     pcr_count += rec2.adult
             rec.used_count = used_count
             rec.used_adult_count = adult_count
