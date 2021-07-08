@@ -26,6 +26,8 @@ class TtTrainApiCon(models.Model):
             res = table_obj.payment_phc_api(data,context)
         elif action == 'get_transaction_by_analyst':
             res = table_obj.get_transaction_by_analyst_api(data,context)
+        elif action == 'update_data_verif':
+            res = table_obj.update_data_verif(data, context)
         else:
             raise RequestException(999)
         return res
