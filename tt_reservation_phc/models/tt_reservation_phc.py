@@ -464,18 +464,8 @@ class Reservationphc(models.Model):
                     for idx, ticket_obj in enumerate(provider['tickets']):
                         provider_obj.update_result_url_per_pax_api(idx, ticket_obj['result_url'])
                     continue
-                if provider.get('messages'):
-                    messages = provider['messages']
-                    if not type(messages) != list:
-                        messages = [str(messages)]
-                    error_msg = ', '.join(messages)
-                    error_history_ids = [(0, 0, {
-                        'res_model': self._name,
-                        'res_id': self.id,
-                        'error_code': 0,
-                        'error_msg': error_msg
-                    })]
-                    provider_obj.write(error_history_ids)
+                if provider.get('messages') and provider['status'] == 'FAIL_ISSUED':
+                    provider_obj.action_failed_issued_api_phc(provider.get('error_code', -1),provider.get('error_msg', ''))
                 if provider['status'] == 'ISSUED':
                     provider_obj.action_issued_api_phc(context)
                 #jaga jaga kalau gagal issued
