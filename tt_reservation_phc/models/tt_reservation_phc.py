@@ -562,6 +562,82 @@ class Reservationphc(models.Model):
             _logger.error(traceback.format_exc())
             return ERR.get_error(1013)
 
+    def update_result_api(self, req, context):
+        try:
+            book_obj = self.get_book_obj(req.get('book_id'), req.get('order_number'))
+            try:
+                book_obj.create_date
+            except:
+                raise RequestException(1001)
+
+            user_obj = self.env['res.users'].browse(context['co_uid'])
+            try:
+                user_obj.create_date
+            except:
+                raise RequestException(1008)
+            #tanya jos perlu check context ngga
+            if book_obj.agent_id.id == context.get('co_agent_id', -1) or \
+                    self.env.ref('tt_base.group_tt_process_channel_bookings_medical_only').id in user_obj.groups_id.ids or \
+                    book_obj.agent_type_id.name == self.env.ref('tt_base.agent_b2c').agent_type_id.name or \
+                    book_obj.user_id.login == self.env.ref('tt_base.agent_b2c_user').login:
+                for rec in book_obj.provider_booking_ids:
+                    for idx, pax in enumerate(rec.ticket_ids):
+                        pax.ticket_number = req['passenger'][idx]['ticket_number']
+            return ERR.get_no_error({
+                'order_number': book_obj.name,
+                'book_id': book_obj.id
+            })
+        except RequestException as e:
+            _logger.error(traceback.format_exc())
+            return e.error_dict()
+        except Exception as e:
+            _logger.error(traceback.format_exc())
+            return ERR.get_error(1013)
+
+    def update_data_verif(self, req, context):
+        try:
+            passenger_obj = self.env['tt.reservation.passenger.phc'].search([('ticket_number','=',req['ticket_number'])])
+            if passenger_obj:
+                passenger_obj.update({
+                    'name': "%s %s" % (req['first_name'], req['last_name']),
+                    'first_name': req['first_name'],
+                    'last_name': req['last_name'],
+                    'gender': req['gender'],
+                    'title': req['title'],
+                    'birth_date': req['birth_date'],
+                    'identity_number': req['identity_number'],
+                    'phone_number': req['phone_number'],
+                    'tempat_lahir': req['tempat_lahir'],
+                    'address': req['address'],
+                    'rt': req['rt'],
+                    'rw': req['rw'],
+                    'kabupaten': req['kabupaten'],
+                    'kecamatan': req['kecamatan'],
+                    'kelurahan': req['kelurahan'],
+                    'ticket_number': req['ticket_number'],
+                    'verify': True,
+                })
+                verify = True
+                book_obj = self.browse(passenger_obj.booking_id.id)
+                for rec in book_obj.passenger_ids:
+                    if rec.verify == False:
+                        verify = False
+                        break
+                if verify:
+                    book_obj.write({
+                        'state_vendor': 'verified',
+                        'verified_uid': context['co_uid'],
+                        'verified_date': datetime.now()
+                    })
+                return ERR.get_no_error()
+            else:
+                return ERR.get_error(500, 'not found')
+        except RequestException as e:
+            _logger.error(traceback.format_exc())
+            return e.error_dict()
+        except Exception as e:
+            _logger.error(traceback.format_exc())
+            return ERR.get_error(1013)
     #req
     # date from
     # date to
