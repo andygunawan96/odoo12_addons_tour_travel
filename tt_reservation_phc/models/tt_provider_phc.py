@@ -452,3 +452,9 @@ class TtProviderphc(models.Model):
                 'ticket_ids': [(0, 0, ticket_values)]
             })
             # END
+
+    def update_ticket_number_pax(self):
+        for rec in self.ticket_ids:
+            rec.passenger_id.write({
+                'ticket_number': rec.ticket_number
+            })
