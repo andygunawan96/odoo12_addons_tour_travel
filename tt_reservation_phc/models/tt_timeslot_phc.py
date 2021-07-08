@@ -20,7 +20,7 @@ class TtTimeslotphc(models.Model):
     _order = 'datetimeslot,id'
     _rec_name = 'timeslot_display_name'
 
-    seq_id = fields.Char('Sequence ID')
+    seq_id = fields.Char('Sequence ID', readonly=True)
 
     dateslot = fields.Date('Dateslot')
 
@@ -137,7 +137,7 @@ class TtTimeslotphc(models.Model):
         else:
             dom.append(('timeslot_type', '=', 'drive_thru'))
             ## kalau kurang dari jam 16.00 di tambah timedelta 0 else di tambah 1 hari
-            dom.append(('dateslot', '>=', datetime.today() if current_wib_datetime <= current_wib_datetime.replace(hour=13,minute=30,second=0,microsecond=0) else datetime.today() + timedelta(days=1)))
+            dom.append(('dateslot', '>=', datetime.today() if current_wib_datetime <= current_wib_datetime.replace(hour=14,minute=30,second=0,microsecond=0) else datetime.today() + timedelta(days=1)))
             dom.append(('total_timeslot','>',0))
 
         timeslots = self.search(dom)
