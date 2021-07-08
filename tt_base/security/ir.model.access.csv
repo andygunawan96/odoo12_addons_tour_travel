@@ -117,7 +117,7 @@ access_res_country_for_location_level_3,res.country.for.location.level.3,model_r
 access_res_country_for_location_level_4,res.country.for.location.level.4,model_res_country,tt_base.group_location_level_4,1,1,1,0
 access_res_country_for_location_level_5,res.country.for.location.level.5,model_res_country,tt_base.group_location_level_5,1,1,1,1
 
-access_res_country_state_for_public,res.country.for.public,model_res_country_state,,1,0,0,0
+access_res_country_state_for_public,res.country.state.for.public,model_res_country_state,,1,0,0,0
 access_res_country_state_for_location_level_1,res.country.state.for.location.level.1,model_res_country_state,tt_base.group_location_level_1,1,0,0,0
 access_res_country_state_for_location_level_2,res.country.state.for.location.level.2,model_res_country_state,tt_base.group_location_level_2,1,0,1,0
 access_res_country_state_for_location_level_3,res.country.state.for.location.level.3,model_res_country_state,tt_base.group_location_level_3,1,1,1,0
