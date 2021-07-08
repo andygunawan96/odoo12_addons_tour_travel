@@ -223,8 +223,8 @@ class TtProviderphc(models.Model):
     def action_failed_issued_api_phc(self, err_code, err_msg):
         for rec in self:
             rec.write({
-                'state': 'fail_issued',
-                'error_history_ids': [(0, 0, {
+                'state': 'booked',
+                'error_history_ids': [(0,0,{
                     'res_model': self._name,
                     'res_id': self.id,
                     'error_code': err_code,
