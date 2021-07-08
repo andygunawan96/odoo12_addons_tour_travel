@@ -25,7 +25,7 @@ class TtCronLogInhphc(models.Model):
             self.create_cron_log_folder()
             self.write_cron_log('auto done state vendor phc')
 
-    def cron_auto_create_timeslot_phc(self,max_timeslot=5,adult_timeslot=420,dt_max_timeslot=1,dt_adult_timeslot=420,pcr_timeslot=150):
+    def cron_auto_create_timeslot_phc(self,max_timeslot=5,adult_timeslot=420,dt_max_timeslot=1,dt_adult_timeslot=420,pcr_timeslot=195):
         try:
             #home care
             wiz_obj = self.env['create.timeslot.phc.wizard'].create({
