@@ -537,10 +537,7 @@ class Reservationphc(models.Model):
 
                 picked_timeslot = {}
                 if book_obj.picked_timeslot_id:
-                    picked_timeslot = {
-                        "datetimeslot": book_obj.picked_timeslot_id.datetimeslot.strftime('%Y-%m-%d %H:%M'),
-                        "area": book_obj.picked_timeslot_id.destination_id.city
-                    }
+                    picked_timeslot = book_obj.picked_timeslot_id.to_dict()
 
                 res.update({
                     'origin': book_obj.origin_id.code,

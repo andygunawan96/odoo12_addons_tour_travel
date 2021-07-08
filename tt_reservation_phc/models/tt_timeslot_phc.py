@@ -184,3 +184,11 @@ class TtTimeslotphc(models.Model):
                 return '%s (08:00 - 17:00 WIB)' % (self.datetimeslot.strftime('%d %B %Y'))
         else:
             return 'Date/Time is not specified.'
+
+    def to_dict(self):
+        return {
+            "datetimeslot": self.datetimeslot.strftime('%Y-%m-%d %H:%M'),
+            "area": self.destination_id.city,
+            "total_pcr_timeslot": self.total_pcr_timeslot,
+            "used_pcr_count": self.used_pcr_count
+        }
