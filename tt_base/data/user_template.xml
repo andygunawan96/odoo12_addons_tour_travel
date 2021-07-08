@@ -4844,7 +4844,7 @@
             <field name="is_user_template" eval="True"/>
             <field name="groups_id"
                    eval="[(6,0,[ref('tt_base.group_tt_external_user'),
-                             ref('tt_base.group_master_data_phc_level_2'),
+                             ref('tt_base.group_master_data_phc_level_1'),
                              ref('tt_base.group_external_vendor_phc_level_1'),
                              ref('tt_base.group_agent_level_1'),
                              ref('tt_base.group_agent_type_level_1'),

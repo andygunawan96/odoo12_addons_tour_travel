@@ -18,6 +18,7 @@
         <menuitem id="menu_master_data_periksain"
                   parent="tt_reservation_periksain.top_reservations_periksain"
                   name="Master Data"
+                  groups="tt_base.group_master_data_periksain_level_2"
                   sequence="2"/>
     </data>
 </odoo>
