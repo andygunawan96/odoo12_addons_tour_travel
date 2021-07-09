@@ -1186,6 +1186,11 @@ class Reservationphc(models.Model):
     def get_terms_conditions_email(self):
         terms_txt = "<u><b>Terms and Conditions</b></u><br/>"
         terms_txt += "1. Payment must be made in advance.<br/>"
+        if self.carrier_name in ['PHCHCKPCR', 'PHCDTKPCR']:
+            terms_txt += "<ul>"
+            terms_txt += "<li>For PCR Test participants, it is recommended to immediately complete online payment via BCA VA or MANDIRI BANK VA so your quota can be secured.</li>"
+            terms_txt += "<li>If a participant's payment has not been complete and we ran out of quota, the participant can issue a Re-Order for the next day or any other available test schedules.</li>"
+            terms_txt += "</ul>"
         terms_txt += "2. Cancellation Policy:<br/>"
         terms_txt += "<ul>"
         terms_txt += "<li>Before D-1: Free</li>"
@@ -1211,7 +1216,8 @@ class Reservationphc(models.Model):
             terms_txt += "7. Under normal circumstances, test results will be sent via Whatsapp by PHC Hospital around 30-120 minutes after the test.<br/>"
         terms_txt += "8. In case our nurses/officers do not come for the scheduled test, you can file a complaint at most 24 hours after the supposedly test schedule.<br/>"
         if self.carrier_name in ['PHCDTKATG', 'PHCDTKPCR']:
-            terms_txt += "9. If you have registered online for Drive Thru Test, you must arrive at the test site at most 15:30/16:00 WIB during the scheduled test date (depends on the queue length), otherwise the test will have to be done the next day."
+            terms_txt += "9. If you have registered online for Drive Thru Test, you must arrive at the test location at most 15:30/16:00 WIB during the scheduled test date (depends on the queue length), otherwise the test will have to be done the next day.<br/>"
+            terms_txt += "10. Our operational hours: Monday - Saturday (08:00 - 16:00 WIB). The gate will be closed at 15:00 WIB. However, any participants that have arrived at the test location will still be served according to our terms and conditions."
         return terms_txt
 
     def get_aftersales_desc(self):
