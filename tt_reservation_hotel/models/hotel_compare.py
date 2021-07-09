@@ -284,22 +284,26 @@ class HotelInformationCompare(models.Model):
 
     # ======= Part Rubah State blum merge trigger Start=======
     def to_merge_hotel(self):
+        self.hotel_id.state = 'tobe_merge'
+        self.state = 'tobe_merge'
+
+    def to_merge_hotel_checker(self):
         # TODO: Cek tiap mau merge apa hotel yg yg mau di bandingkan masih ready?
         # TODO: Jika Hotel status tobe_Merge kita kluarkan Notif user untuk pilih hotel raw tersebut
         # ingin di merge Hotel Master yg mana
         if self.hotel_id.state == 'tobe_merge':
             # Find Comparer ambil(Nama Comparer, Nama Master, Total Score)
             similar_str = []
-            for rec in self.search([('state', '=', 'tobe_merge'), ('hotel_id', '=', self.hotel_id.id)]):
-                similar_str.append('{}: {}({})'.format(rec.name, rec.comp_hotel_id and rec.comp_hotel_id.name or 'New Record', rec.score))
+            for rec in self.search([('state', 'in', ['tobe_merge','merge']), ('hotel_id', '=', self.hotel_id.id)]):
+                similar_str.append('{}: {} score:{} ({})'.format(rec.id, (rec.comp_hotel_id and rec.comp_hotel_id.name or 'New Record'), rec.score, rec.state))
             raise UserError('Hotel #1 Already Merged in other Comparer with ID: ' + ', '.join(similar_str))
-        self.hotel_id.state = 'tobe_merge'
-        self.state = 'tobe_merge'
+        self.to_merge_hotel()
 
     def decline_merge_hotel(self):
         if self.state != 'draft':
             raise UserError('Hotel #1 state Must Draft')
         self.state = 'cancel'
+        self.similar_id = False
 
     def set_to_draft(self):
         if self.state == 'cancel':
@@ -365,6 +369,7 @@ class HotelInformationCompare(models.Model):
 
             if all(rec.state == 'cancel' for rec in self.comp_hotel_id.compare_ids):
                 self.similar_id.sudo().unlink()
+            self.similar_id = False
         else:
             raise UserError('Cannot UnMerge this comparing process')
 

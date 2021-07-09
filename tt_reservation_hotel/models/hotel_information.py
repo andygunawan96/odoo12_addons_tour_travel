@@ -259,6 +259,22 @@ class HotelInformation(models.Model):
         for rec in self:
             rec.fill_country_city()
 
+    def mass_re_mapp(self):
+        for rec in self:
+            rec.advance_find_similar_name_from_database_2()
+            comparer = self.env['tt.hotel.compare'].search([('hotel_id', '=', rec.id)])
+
+            if comparer:
+                for rec in comparer:
+                    if rec.score > 55:
+                        rec.merge_hotel()
+            else:
+                comparing_id = self.env['tt.hotel.compare'].create({
+                    'hotel_id': rec.id,
+                    'comp_hotel_id': False
+                })
+                comparing_id.merge_hotel()
+
     # Temporary Function digunakan untuk feeling mass empty data
     def set_country_by_destination_and_city(self):
         idx = 0
@@ -286,24 +302,6 @@ class HotelImage(models.Model):
     master_hotel_id = fields.Many2one('tt.hotel.master', "Master Hotel")
 
 
-class TtTemporaryRecord(models.Model):
-    _inherit = 'tt.temporary.record'
-
-    def get_obj(self):
-        new_obj = {
-            'res.country': [('tt.hotel', 'country_id')],
-            'res.country.state': [('tt.hotel', 'state_id')],
-            'res.city': [('tt.hotel', 'city_id')]
-        }
-        obj_list = super(TtTemporaryRecord, self).get_obj()
-        for obj_key in new_obj.keys():
-            if obj_list.get(obj_key):
-                obj_list[obj_key] += new_obj[obj_key]
-            else:
-                obj_list[obj_key] = new_obj[obj_key]
-        return obj_list
-
-
 class HotelMaster(models.Model):
     _name = 'tt.hotel.master'
     _inherit = 'tt.hotel'
@@ -329,3 +327,23 @@ class HotelMaster(models.Model):
         for rec in self.search([('city_id', '=', self.city_id.id)]):
             rec.get_provider_name()
             rec.get_hotel_info()
+
+
+class TtTemporaryRecord(models.Model):
+    _inherit = 'tt.temporary.record'
+
+    def get_obj(self):
+        new_obj = {
+            'res.country': [('tt.hotel', 'country_id'), ('tt.hotel.master', 'country_id')],
+            'res.country.state': [('tt.hotel', 'state_id'), ('tt.hotel.master', 'state_id')],
+            'res.city': [('tt.hotel', 'city_id'), ('tt.hotel.master', 'city_id')],
+            'tt.hotel.destination': [('tt.hotel', 'destination_id'), ('tt.hotel.master', 'destination_id')]
+        }
+        obj_list = super(TtTemporaryRecord, self).get_obj()
+        for obj_key in new_obj.keys():
+            if obj_list.get(obj_key):
+                obj_list[obj_key] += new_obj[obj_key]
+            else:
+                obj_list[obj_key] = new_obj[obj_key]
+        return obj_list
+

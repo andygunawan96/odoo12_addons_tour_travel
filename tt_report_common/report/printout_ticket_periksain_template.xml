@@ -44,7 +44,12 @@
                 <div class="box" style="margin-bottom: 20px;">
                     <div class="title" t-att-style="'background-color: '+ base_color+'; border-radius: 20px 20px 0 0; border-color: #CCC; padding-top: 5px; padding-bottom: 5px'">
                         <span style="padding-left: 20px; color: white; font-weight: 600; font-size: 18px">Schedule <span t-esc="line_index+1"/>:</span>
-                        <span style="color: white; font-weight: 600; font-size: 18px"><span t-esc="line.datetimeslot.astimezone(printout_tz).strftime('%Y-%m-%d %H:%M')"/></span>
+                        <t t-if="line.timeslot_type == 'drive_thru'">
+                            <span style="color: white; font-weight: 600; font-size: 18px"><span t-esc="line.datetimeslot.astimezone(printout_tz).strftime('%Y-%m-%d')"/></span>
+                        </t>
+                        <t t-else="">
+                            <span style="color: white; font-weight: 600; font-size: 18px"><span t-esc="line.datetimeslot.astimezone(printout_tz).strftime('%Y-%m-%d %H:%M')"/></span>
+                        </t>
                     </div>
                     <div class="row" style="margin: 0px 0px 15px;">
                         <div class="col-3" style="background: #F0F0F0; border: 1px solid #BBB; padding: 10px 10px 10px 20px;">
@@ -58,7 +63,14 @@
                                     <span style="font-size: 16px; font-weight:200">Address:</span>
                                 </div>
                                 <div class="col-9" style="margin-right: 0px">
-                                    <span style="font-size: 16px; font-weight:200"><span t-esc="line.datetimeslot.astimezone(printout_tz).strftime('%Y-%m-%d')"/></span><br/>
+                                    <span style="font-size: 16px; font-weight:200">
+                                    <t t-if="line.timeslot_type == 'drive_thru'">
+                                        <span t-esc="line.datetimeslot.astimezone(printout_tz).strftime('%Y-%m-%d')"/>
+                                    </t>
+                                    <t t-else="">
+                                        <span t-esc="line.datetimeslot.astimezone(printout_tz).strftime('%Y-%m-%d %H:%M')"/>
+                                    </t>
+                                    </span><br/>
                                     <span style="font-size: 16px; font-weight:200"><span t-field="doc.test_address"/></span>
                                 </div>
                             </div>
