@@ -149,7 +149,7 @@
                 <page string="Passengers">
                     <field name="passenger_ids">
                         <tree>
-                            <field name="verify"/>
+                            <field name="verify" string="Verified"/>
                             <field name="ticket_number" string="No."/>
                             <field name="title"/>
                             <field name="first_name"/>

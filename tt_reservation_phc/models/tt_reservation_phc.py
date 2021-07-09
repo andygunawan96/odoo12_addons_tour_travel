@@ -712,7 +712,7 @@ class Reservationphc(models.Model):
 
         #kalau tidak ada timeslot dan dia drive thru maka di pilihkan jadwal drive thru hari itu, jika tidak ada maka di buatkan jadwal baru
         if not timeslot_write_data and drive_thru:
-            timeslot_write_data = self.env['tt.timeslot.phc'].search([('timeslot_type', '=', 'drive_thru'), ('datetimeslot', '=', '%s 01:09:09' % datetime.now().strftime('%Y-%m-%d'))])
+            timeslot_write_data = self.env['tt.timeslot.phc'].search([('timeslot_type', '=', 'drive_thru'), ('datetimeslot', '=', '%s 02:09:09' % datetime.now().strftime('%Y-%m-%d'))])
             if not timeslot_write_data:
                 timeslot_write_data = self.env['create.timeslot.phc.wizard'].generate_drivethru_timeslot(datetime.now().strftime('%Y-%m-%d'))
 
