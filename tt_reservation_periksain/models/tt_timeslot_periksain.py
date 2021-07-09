@@ -152,6 +152,6 @@ class TtTimeslotPeriksain(models.Model):
 
     def get_datetimeslot_str(self):
         if self.datetimeslot:
-            return self.datetimeslot.strftime('%d %B %Y %H:%M')
+            return self.datetimeslot.astimezone(pytz.timezone('Asia/Jakarta')).strftime('%d %B %Y %H:%M')
         else:
             return 'Date/Time is not specified.'
