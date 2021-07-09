@@ -29,6 +29,8 @@ class HotelDestination(models.Model):
     cancel_uid = fields.Many2one('res.users', 'Cancel by', readonly=True)
     cancel_date = fields.Datetime('Cancel Date', readonly=True)
 
+    hotel_ids = fields.One2many('tt.hotel.master', 'destination_id', 'Hotel Master')
+
     # Func Find City
     def find_city_obj(self):
         self.city_id = self.env['res.city'].find_city_by_name(self.city_str, 1)

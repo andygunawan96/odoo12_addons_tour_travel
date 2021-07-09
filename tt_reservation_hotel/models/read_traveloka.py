@@ -60,8 +60,8 @@ class HotelInformation(models.Model):
             hotel_list = self.split_per_city(hotel_list, country_file[:-5])
         return True
 
-    # Dari dari cassie 20210325
-    def v2_collect_by_human_traveloka(self):
+    # Dari Cassie 20210325
+    def v2_collect_by_human_traveloka_1(self):
         base_cache_directory = self.env['ir.config_parameter'].sudo().get_param('hotel.cache.directory')
         base_url = base_cache_directory + 'traveloka/'
         workbook = xlrd.open_workbook(base_cache_directory + 'traveloka/00_master/Hotel List Inventory - Rodex.xlsx')
@@ -161,6 +161,116 @@ class HotelInformation(models.Model):
                     file = open(region_url + '/' + city + '.json', 'w')
                     file.write(json.dumps(mapped_hotel[country][region][city]))
                     file.close()
+        return True
+
+    # Dari Albert 20210622
+    def v2_collect_by_human_traveloka(self):
+        base_cache_directory = self.env['ir.config_parameter'].sudo().get_param('hotel.cache.directory')
+        base_url = base_cache_directory + 'traveloka/'
+        workbook = xlrd.open_workbook(base_cache_directory + 'traveloka/00_master/RodexHotelList20210622.xlsx')
+        # worksheet = workbook.sheet_by_name('Name of the Sheet')
+        worksheet = workbook.sheet_by_index(0)
+        # worksheet.nrows
+        # worksheet.ncols
+
+        mapped_hotel = {}
+        # Result EXAMPLE: {'INDONESIA':{'JATIM':{'SURBAYA':[], 'MALANG':[],}}}
+        for row in range(1, worksheet.nrows):
+            code = worksheet.cell(row, 0).value
+            name = worksheet.cell(row, 1).value
+            country = worksheet.cell(row, 2).value
+            region = worksheet.cell(row, 3).value
+            city = worksheet.cell(row, 4).value
+            address = worksheet.cell(row, 5).value
+            lat = worksheet.cell(row, 6).value
+            long = worksheet.cell(row, 7).value
+            star = False
+
+            x = mapped_hotel
+            try:
+                for checked_data in [country, region, city]:
+                    checked_data = checked_data.split('/')[0]
+                    if not x.get(checked_data):
+                        x[checked_data] = {}
+                    x = x[checked_data]
+
+                if mapped_hotel[country][region][city] == {}:
+                    mapped_hotel[country][region][city] = []
+                a = {
+                    'id': int(code),
+                    'name': name,
+                    'street': address,
+                    'street2': '',
+                    'street3': city + ', ' + region + ', ' + country,
+                    'description': '',
+                    'email': '',
+                    'images': [],
+                    'facilities': [],
+                    'phone': '',
+                    'fax': '',
+                    'zip': '',
+                    'website': '',
+                    'lat': str(lat),
+                    'long': str(long),
+                    'rating': int(star),
+                    'hotel_type': '',
+                    'city': city,
+                }
+                mapped_hotel[country][region][city].append(a)
+            except:
+                continue
+
+        api_context = {
+            'co_uid': self.env.user.id
+        }
+        API_CN_HOTEL.signin()
+        for country in mapped_hotel:
+            new_url = base_url + country
+            if not os.path.exists(new_url):
+                os.makedirs(new_url)
+            for region in mapped_hotel[country]:
+                region_url = new_url + '/' + region
+                if not os.path.exists(region_url):
+                    os.makedirs(region_url)
+                for city in mapped_hotel[country][region]:
+                    if os.path.isfile(region_url + '/' + city + '.json'):
+                        _logger.info('Skip ' + city + ' in ' + country)
+                        continue
+                    limit = 100
+                    objs = [int(x['id']) for x in mapped_hotel[country][region][city]]
+                    for x in range(int(len(objs) / limit)+1):
+                        code = [objs[x * limit:(x + 1) * limit],]
+                        a = API_CN_HOTEL.get_record_by_api({
+                            'provider': 'traveloka_hotel',
+                            'type': 'property_details',
+                            'limit': limit,
+                            'offset': 1,
+                            'codes': code,
+                        }, api_context)
+
+                        resp = a['response']
+                        for hotel_obj in resp[list(resp.keys())[0]]:
+                            for write_obj in mapped_hotel[country][region][city]:
+                                if str(hotel_obj['id']) == str(write_obj['id']):
+                                    try:
+                                        # Create Image
+                                        write_obj['images'] = hotel_obj['images']
+
+                                        # Create Facility
+                                        write_obj['facilities'] = hotel_obj['facilities']
+                                        break
+                                    except:
+                                        _logger.info('Error Render: ' + str(hotel_obj['id']))
+                                        break
+                        self.env.cr.commit()
+
+                    file = open(region_url + '/' + city + '.json', 'w')
+                    file.write(json.dumps(mapped_hotel[country][region][city]))
+                    file.close()
+
+        _logger.info('===============================')
+        _logger.info('         Render Done           ')
+        _logger.info('===============================')
         return True
 
     # 1a. Collect by System (Schedular)
