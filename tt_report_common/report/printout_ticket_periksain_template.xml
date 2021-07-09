@@ -58,7 +58,7 @@
                                     <span style="font-size: 16px; font-weight:200">Address:</span>
                                 </div>
                                 <div class="col-9" style="margin-right: 0px">
-                                    <span style="font-size: 16px; font-weight:200"><span t-esc="line.datetimeslot.astimezone(printout_tz).strftime('%Y-%m-%d')"/></span><br/>
+                                    <span style="font-size: 16px; font-weight:200"><span t-esc="line.datetimeslot.astimezone(printout_tz).strftime('%Y-%m-%d %H:%M')"/></span><br/>
                                     <span style="font-size: 16px; font-weight:200"><span t-field="doc.test_address"/></span>
                                 </div>
                             </div>
