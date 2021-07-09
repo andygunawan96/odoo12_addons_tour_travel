@@ -40,7 +40,7 @@ class ReservationPhc(models.Model):
         tmp += 'Address : %s' % (self.test_address)
         for timeslot_obj in self.timeslot_ids:
             if timeslot_obj.timeslot_type == 'drive_thru':
-                tmp+= '\n%s' % (str(timeslot_obj.datetimeslot.astimezone(pytz.timezone('Asia/Jakarta')).strftime('%Y-%m-%d')) + ' (DRIVE THRU 08.00 - 15.30/16.00wib (tergantung banyaknya antrian)')
+                tmp+= '\n%s' % (str(timeslot_obj.datetimeslot.astimezone(pytz.timezone('Asia/Jakarta')).strftime('%Y-%m-%d')) + ' (DRIVE THRU 08.00 - 15.00 WIB tergantung banyaknya antrian)')
             else:
                 tmp+= '\n%s' % (str(timeslot_obj.datetimeslot.astimezone(pytz.timezone('Asia/Jakarta')).strftime('%Y-%m-%d %H:%M')))
         return tmp

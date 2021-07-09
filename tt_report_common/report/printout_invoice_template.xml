@@ -649,11 +649,11 @@
                 Please keep this invoice for repeat order with the same data<br/>
                 How to repeat order:
                 <ol>
-                    <li>click repeat order at rodextrip.com</li>
-                    <li>input the order number / ref number from the invoice</li>
-                    <li>click re-order and select the test type and which customer to re-order</li>
-                    <li>input the booker information</li>
-                    <li>book the order again</li>
+                    <li>Click repeat order at rodextrip.com</li>
+                    <li>Input the order number / ref number from the invoice</li>
+                    <li>Click re-order and select the test type and which customer to re-order</li>
+                    <li>Pick the new Test Datetime</li>
+                    <li>Book the order again</li>
                 </ol>
             </div>
             <div class="col-1"/>
