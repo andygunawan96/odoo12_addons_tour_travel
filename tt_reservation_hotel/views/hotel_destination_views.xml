@@ -37,6 +37,11 @@
                                 <field name="provider_ids"/>
                             </group>
                         </page>
+                        <page string="Hotel">
+                            <group>
+                                <field name="hotel_ids"/>
+                            </group>
+                        </page>
                     </notebook>
                 </sheet>
             </form>
@@ -52,6 +57,7 @@
                 <field name="city_id"/>
                 <field name="country_str"/>
                 <field name="country_id"/>
+                <field name="hotel_ids"/>
                 <!--<field name="state"/>-->
                 <field name="active"/>
             </tree>

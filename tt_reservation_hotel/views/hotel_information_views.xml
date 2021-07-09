@@ -808,4 +808,14 @@
                 action = records.mass_fill_country_city()
         </field>
     </record>
+    <record model="ir.actions.server" id="action_mass_request_pak_adi">
+        <field name="name">Mass Re Map</field>
+        <field name="model_id" ref="tt_reservation_hotel.model_tt_hotel"/>
+        <field name="binding_model_id" ref="tt_reservation_hotel.model_tt_hotel"/>
+        <field name="state">code</field>
+        <field name="code">
+            if records:
+                action = records.mass_re_mapp()
+        </field>
+    </record>
 </odoo>
