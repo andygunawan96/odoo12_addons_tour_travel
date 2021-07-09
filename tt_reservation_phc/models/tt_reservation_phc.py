@@ -206,14 +206,14 @@ class Reservationphc(models.Model):
         #jumlah pax
         #carrier_code
 
-        carrier_id = self.env['tt.transport.carrier'].search([('code', '=', req['carrier_code'])]).id
+        carrier_obj = self.env['tt.transport.carrier'].search([('code', '=', req['carrier_code'])])
         overtime_surcharge = False
         timeslot_objs = self.env['tt.timeslot.phc'].search([('seq_id', 'in', req['timeslot_list'])])
 
         if not timeslot_objs:
             raise RequestException(1022,"No Timeslot. Please Try Other Date/Time")
         else:
-            if not timeslot_objs.get_availability(carrier_id.code, req['pax_count']):
+            if not timeslot_objs.get_availability(carrier_obj.code, req['pax_count']):
                 raise RequestException(1022,"Timeslot is Full. %sPlease Try Other Date/Time" % ("Only %s Slot(s) Available or " % (timeslot_objs.total_pcr_timeslot - timeslot_objs.used_pcr_count) if timeslot_objs.used_pcr_count < timeslot_objs.total_pcr_timeslot else ""))
         for rec in timeslot_objs:
             if rec.datetimeslot.time() > time(11,0):
@@ -226,10 +226,10 @@ class Reservationphc(models.Model):
         overtime_price = 0
         single_suplement_price = 0
         if req['pax_count'] <= 1 and \
-                carrier_id == self.env.ref('tt_reservation_phc.tt_transport_carrier_phc_home_care_antigen').id:
+                carrier_obj.id == self.env.ref('tt_reservation_phc.tt_transport_carrier_phc_home_care_antigen').id:
             single_suplement = True
 
-        if carrier_id in [self.env.ref('tt_reservation_phc.tt_transport_carrier_phc_home_care_antigen').id,
+        if carrier_obj.id in [self.env.ref('tt_reservation_phc.tt_transport_carrier_phc_home_care_antigen').id,
                           self.env.ref('tt_reservation_phc.tt_transport_carrier_phc_drive_thru_antigen').id]:
             for rec in timeslot_objs:
                 if rec.base_price_antigen > base_price:
