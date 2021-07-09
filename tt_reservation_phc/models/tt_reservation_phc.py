@@ -364,7 +364,10 @@ class Reservationphc(models.Model):
                 book_obj.notes += str(datetime.now()) + '\n' + traceback.format_exc()+'\n'
             except:
                 _logger.error('Creating Notes Error')
-            return ERR.get_error(1004)
+            if "could not serialize access due to concurrent update" in str(e):
+                return ERR.get_error(1036)
+            else:
+                return ERR.get_error(1004)
 
     def edit_passenger_verify_api(self,req, context):
         book_obj = self.get_book_obj(req.get('book_id'), req.get('order_number'))

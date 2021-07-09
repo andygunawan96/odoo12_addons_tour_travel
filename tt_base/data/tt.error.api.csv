@@ -41,6 +41,7 @@ tt_error_api_1032,1032,"PNR quota price list not found",,,1,1
 tt_error_api_1033,1033,"Third party key not found",,,1,1
 tt_error_api_1034,1034,"Failed to Split Reservation",,,1,1
 tt_error_api_1035,1035,Booking not match with user login,,,1,1
+tt_error_api_1036,1036,"Create booking concurrent update, please book again.",,,1,1
 tt_error_api_4001,4001,Invalid action type,,,1,1
 tt_error_api_4002,4002,Error while validating your credential,,,1,1
 tt_error_api_4003,4003,Your session has been expired,,,1,1
