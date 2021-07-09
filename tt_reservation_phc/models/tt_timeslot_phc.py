@@ -120,11 +120,11 @@ class TtTimeslotphc(models.Model):
     def get_available_timeslot_api(self, req, context):
         current_wib_datetime = datetime.now(pytz.timezone('Asia/Jakarta'))
         current_datetime = current_wib_datetime.astimezone(pytz.utc)
-        carrier_id = self.env['tt.transport.carrier'].search([('code','=',req['carrier_code'])],limit=1).id
+        carrier_obj = self.env['tt.transport.carrier'].search([('code','=',req['carrier_code'])],limit=1)
 
         dom = ['|', ('agent_id', '=', False), ('agent_id', '=', context['co_agent_id'])]
 
-        if carrier_id in [self.env.ref('tt_reservation_phc.tt_transport_carrier_phc_home_care_antigen').id,
+        if carrier_obj.id in [self.env.ref('tt_reservation_phc.tt_transport_carrier_phc_home_care_antigen').id,
                           self.env.ref('tt_reservation_phc.tt_transport_carrier_phc_home_care_pcr').id]:
             dom.append(('timeslot_type', 'in', ['home_care', 'group_booking']))
             if '06:00' < str(current_wib_datetime.time())[:5] < '14:00':
@@ -162,7 +162,7 @@ class TtTimeslotphc(models.Model):
             timeslot_dict[rec.destination_id.name]['timeslots'][str_dateslot].append({
                 'time': str(rec.datetimeslot)[11:16],
                 'seq_id': rec.seq_id,
-                'availability': rec.get_availability(),
+                'availability': rec.get_availability(carrier_obj.code),
                 'group_booking': True if rec.agent_id else False
             })
         return ERR.get_no_error(timeslot_dict)
