@@ -628,6 +628,7 @@ class Reservationphc(models.Model):
                     })
                 return ERR.get_no_error()
             else:
+                _logger.error('transaction_code not found')
                 return ERR.get_error(500, additional_message='transaction_code not found')
         except RequestException as e:
             _logger.error(traceback.format_exc())

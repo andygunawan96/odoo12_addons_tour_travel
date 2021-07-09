@@ -442,7 +442,7 @@ class TtAgent(models.Model):
             if self.env.ref('tt_base.group_tt_process_channel_bookings').id in user_obj.groups_id.ids:##klau bisa all provider
                 dom = []
             elif self.env.ref('tt_base.group_tt_process_channel_bookings_medical_only').id in user_obj.groups_id.ids:## kalau medical only
-                if types in ['phc','periksain']:
+                if set(types).intersection(['phc','periksain']):
                     dom = []
                 else:
                     dom = [('agent_id', '=', agent_obj.id)]
