@@ -454,7 +454,9 @@ class TtProviderphc(models.Model):
             # END
 
     def update_ticket_number_pax(self):
-        for rec in self.ticket_ids:
-            rec.passenger_id.write({
-                'ticket_number': rec.ticket_number
-            })
+        all_datas = self.env['tt.provider.phc'].search([])
+        for data in all_datas:
+            for rec in data.ticket_ids:
+                rec.passenger_id.write({
+                    'ticket_number': rec.ticket_number
+                })

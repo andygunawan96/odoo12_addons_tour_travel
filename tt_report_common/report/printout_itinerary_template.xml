@@ -973,7 +973,12 @@
                         <t t-foreach="doc.timeslot_ids" t-as="line">
                             <tr>
                                 <td><span t-field="doc.name"/></td>
-                                <td><span t-esc="line.datetimeslot.astimezone(printout_tz).strftime('%Y-%m-%d %H:%M')"/></td>
+                                <t t-if="line.timeslot_type == 'drive_thru'">
+                                    <td><span t-esc="line.datetimeslot.astimezone(printout_tz).strftime('%Y-%m-%d')"/> (DRIVE THRU 08.00 - 15.00 WIB tergantung banyaknya antrian)</td>
+                                </t>
+                                <t t-else="">
+                                    <td><span t-esc="line.datetimeslot.astimezone(printout_tz).strftime('%Y-%m-%d %H:%M')"/></td>
+                                </t>
                                 <td><span t-field="doc.test_address"/></td>
                                 <td>-</td>
                             </tr>

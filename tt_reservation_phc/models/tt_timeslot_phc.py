@@ -167,9 +167,12 @@ class TtTimeslotphc(models.Model):
             })
         return ERR.get_no_error(timeslot_dict)
 
-    def get_availability(self,adult_count=1):
+    def get_availability(self,carrier_code,adult_count=1):
         ## availability adult & pcr
-        availability = self.used_adult_count + adult_count <= self.total_adult_timeslot and self.used_pcr_count + adult_count <= self.total_pcr_timeslot
+        availability = self.used_adult_count + adult_count <= self.total_adult_timeslot
+
+        if 'PCR' in carrier_code:
+            availability = availability and self.used_pcr_count + adult_count <= self.total_pcr_timeslot
 
         if self.timeslot_type == 'drive_thru':
             return availability
@@ -179,9 +182,9 @@ class TtTimeslotphc(models.Model):
     def get_datetimeslot_str(self):
         if self.datetimeslot:
             if self.timeslot_type != 'drive_thru':
-                return self.datetimeslot.strftime('%d %B %Y %H:%M')
+                return self.datetimeslot.astimezone(pytz.timezone('Asia/Jakarta')).strftime('%d %B %Y %H:%M')
             else:
-                return '%s (08:00 - 17:00 WIB)' % (self.datetimeslot.strftime('%d %B %Y'))
+                return '%s (08:00 - 15:00 WIB)' % (self.datetimeslot.strftime('%d %B %Y'))
         else:
             return 'Date/Time is not specified.'
 
