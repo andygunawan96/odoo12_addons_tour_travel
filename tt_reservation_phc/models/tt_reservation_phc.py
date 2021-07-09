@@ -471,6 +471,9 @@ class Reservationphc(models.Model):
                     provider_obj.action_failed_issued_api_phc(provider.get('error_code', -1),provider.get('error_msg', ''))
                 if provider['status'] == 'ISSUED':
                     provider_obj.action_issued_api_phc(context)
+                if provider['status'] == 'CANCEL':
+                    provider_obj.action_cancel()
+                    any_provider_changed = True
                 #jaga jaga kalau gagal issued
                 for idx, ticket_obj in enumerate(provider['tickets']):
                     if ticket_obj['ticket_number']:
@@ -629,7 +632,10 @@ class Reservationphc(models.Model):
                         'verified_uid': context['co_uid'],
                         'verified_date': datetime.now()
                     })
-                return ERR.get_no_error()
+                return ERR.get_no_error({
+                    "transaction_code": req['ticket_number'],
+                    "message": "success"
+                })
             else:
                 _logger.error('transaction_code not found')
                 return ERR.get_error(500, additional_message='transaction_code not found')
@@ -786,7 +792,7 @@ class Reservationphc(models.Model):
             self.action_failed_book()
         elif all(rec.state == 'cancel' for rec in self.provider_booking_ids):
             # failed book
-            self.action_set_as_cancel()
+            self.action_cancel()
         elif self.provider_booking_ids:
             provider_obj = self.provider_booking_ids[0]
             self.write({
