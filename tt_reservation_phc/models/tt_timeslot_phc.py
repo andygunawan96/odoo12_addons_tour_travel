@@ -73,14 +73,12 @@ class TtTimeslotphc(models.Model):
         vals_list['seq_id'] = self.env['ir.sequence'].next_by_code('tt.timeslot.phc')
         return super(TtTimeslotphc, self).create(vals_list)
 
-    @api.onchange('booking_ids')
     @api.depends('booking_ids')
     def _compute_selected_counter(self):
         for rec in self:
             rec.selected_count = len(rec.booking_ids.ids)
 
-    @api.onchange('booking_used_ids','booking_used_ids.state')
-    @api.depends('booking_used_ids')
+    @api.depends('booking_used_ids','booking_used_ids.state')
     def _compute_used_counter(self):
         for rec in self:
             used_count = 0
@@ -99,6 +97,7 @@ class TtTimeslotphc(models.Model):
         for rec in self:
             rec.total_timeslot = 0
             rec.total_adult_timeslot = 0
+            rec.total_pcr_timeslot = 0
     # {
     #     "max_date": "2021-06-20",
     #     "timeslots": {
