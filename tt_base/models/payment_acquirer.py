@@ -447,7 +447,7 @@ class PaymentAcquirerNumber(models.Model):
 
         payment = self.env['payment.acquirer.number'].create({
             'state': 'close',
-            'number': "%s.%s" % (data['order_number'],datetime.now().strftime("%Y-%m-%d %H:%M:%S")),
+            'number': "%s.%s" %(data['order_number'], datetime.now().strftime('%Y%m%d%H%M%S')),
             'unique_amount': unique_amount,
             'unique_amount_id': unique_amount_id,
             'payment_acquirer_id': payment_acq_obj.id,
