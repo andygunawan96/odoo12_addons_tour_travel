@@ -34,10 +34,11 @@ class ReservationPhc(models.Model):
     def get_segment_description(self):
         # TODO: soale mnurut ku biar ada nomor pendaftarane walo g kepake nomer e
         # Opsi 1: Jika Nama reservation dan PNR e sdah sama pakai yg ini
-        tmp = '%s\n' % (self.provider_booking_ids[0].carrier_id.name)
+        tmp = 'Test Type: %s\n\n' % (self.provider_booking_ids[0].carrier_id.name)
         # Opsi 2: Jika PNR dan resv ne beda pakek yg ini
         # tmp = self.name + '\n'
-        tmp += 'Address : %s' % (self.test_address)
+        tmp += 'Test Address : %s\n\n' % (self.test_address)
+        tmp += 'Test Schedule(s):'
         for timeslot_obj in self.timeslot_ids:
             if timeslot_obj.timeslot_type == 'drive_thru':
                 tmp+= '\n%s' % (str(timeslot_obj.datetimeslot.astimezone(pytz.timezone('Asia/Jakarta')).strftime('%Y-%m-%d')) + ' (DRIVE THRU 08.00 - 15.00 WIB tergantung banyaknya antrian)')
