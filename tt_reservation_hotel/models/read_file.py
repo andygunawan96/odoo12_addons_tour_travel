@@ -2446,6 +2446,7 @@ class HotelInformation(models.Model):
                 'hotel_id': create_hotel_id.id,
                 'provider_id': '',
             })
+            img.pop('tag') #traveloka
             self.env['tt.hotel.image'].create(img)
 
         # Create Facility
@@ -2494,6 +2495,8 @@ class HotelInformation(models.Model):
             'address': hotel_obj['location']['address'],
             'address2': hotel_obj['location']['address2'],
             'address3': hotel_obj['location']['address3'],
+            'lat': hotel_obj['lat'],
+            'long': hotel_obj['long'],
             'rating': hotel_obj['rating'],
         })
         return create_hotel_id
@@ -2504,9 +2507,10 @@ class HotelInformation(models.Model):
         old_objs = self.env['tt.provider.code'].search([('provider_id', '=', provider_id), ('code', '=', hotel_obj['external_code'][ext_code])])
 
         if old_objs:
-            self.file_log_write('Update for Hotel ' + str(old_objs[0].name) + ' with code ' + str(old_objs[0].code) )
-            # TODO: update hotel here
-            new_obj = self.update_hotel(self.env['tt.hotel'].browse(old_objs[0].res_id), hotel_obj)
+            self.file_log_write('Skip Update for Hotel ' + str(old_objs[0].name) + ' with code ' + str(old_objs[0].code) )
+            return False  # Demo Only
+            # self.file_log_write('Update for Hotel ' + str(old_objs[0].name) + ' with code ' + str(old_objs[0].code))
+            # new_obj = self.update_hotel(self.env['tt.hotel'].browse(old_objs[0].res_id), hotel_obj)
         else:
             self.file_log_write('Create new Hotel ' + str(hotel_obj['name']) + ' with code ' + str(hotel_obj['external_code'][ext_code]))
             new_obj = self.create_hotel(hotel_obj, file_number)
@@ -3512,7 +3516,7 @@ class HotelInformation(models.Model):
                         'id': False,
                         'name': False,
                         'city_str': city_name,
-                        'state_str': state_name,
+                        'state_str': state_name if state_name != country_name else '',
                         'country_str': country_name,
                     })
                     city_obj = destination_obj.city_id

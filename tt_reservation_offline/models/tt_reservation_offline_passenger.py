@@ -34,7 +34,7 @@ class IssuedOfflinePassenger(models.Model):
                                            'pending': [('readonly', False)]})
     agent_id = fields.Many2one('tt.agent', 'Agent', readonly=True, states={'draft': [('readonly', False)],
                                                                            'pending': [('readonly', False)]})  # , default=lambda self: self.booking_id.agent_id.id
-    pax_type = fields.Selection(PAX_TYPE)  # , related='passenger_id.pax_type'
+    pax_type = fields.Selection(PAX_TYPE, default='ADT')  # , related='passenger_id.pax_type'
     transaction_name = fields.Char('Transaction Name', related='booking_id.provider_type_id_name')
     ticket_number = fields.Char('Ticket Number.')
     seat = fields.Char('Seat')

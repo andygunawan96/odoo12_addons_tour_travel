@@ -432,7 +432,7 @@ class TtAgent(models.Model):
 
             if req_provider:
                 if (all(rec in variables.PROVIDER_TYPE for rec in req_provider)):
-                    types = req['provider_type']
+                    types = req['provider_type'] #asumsi dari frontend dapat hanya 1 update 9 juli 2021
                 else:
                     raise Exception("Wrong provider type")
             else:
