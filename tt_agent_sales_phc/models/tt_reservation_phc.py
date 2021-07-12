@@ -34,12 +34,15 @@ class ReservationPhc(models.Model):
     def get_segment_description(self):
         # TODO: soale mnurut ku biar ada nomor pendaftarane walo g kepake nomer e
         # Opsi 1: Jika Nama reservation dan PNR e sdah sama pakai yg ini
-        tmp = '%s\n' % (self.provider_booking_ids[0].carrier_id.name)
+        if self.provider_booking_ids[0].carrier_id.id in [self.env.ref('tt_reservation_phc.tt_transport_carrier_phc_home_care_pcr').id, self.env.ref('tt_reservation_phc.tt_transport_carrier_phc_drive_thru_pcr').id]:
+            tmp = 'PCR TEST\n'
+        else:
+            tmp = 'ANTIGEN TEST\n'
         # Opsi 2: Jika PNR dan resv ne beda pakek yg ini
         # tmp = self.name + '\n'
         for timeslot_obj in self.timeslot_ids:
             if timeslot_obj.timeslot_type == 'drive_thru':
-                tmp+= '\n%s' % (str(timeslot_obj.datetimeslot.astimezone(pytz.timezone('Asia/Jakarta')).strftime('%Y-%m-%d')) + ' (DRIVE THRU 08.00 - 15.00 WIB tergantung banyaknya antrian)')
+                tmp+= '\n%s' % (str(timeslot_obj.datetimeslot.astimezone(pytz.timezone('Asia/Jakarta')).strftime('%Y-%m-%d')) + ' (DRIVE THRU 08.00 - 15.00 WIB)')
             else:
                 tmp+= '\n%s' % (str(timeslot_obj.datetimeslot.astimezone(pytz.timezone('Asia/Jakarta')).strftime('%Y-%m-%d %H:%M')))
         tmp += '\n\nAddress : %s' % (self.test_address)
