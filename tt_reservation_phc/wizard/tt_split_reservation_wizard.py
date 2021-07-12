@@ -44,6 +44,8 @@ class TtSplitReservationPHCWizard(models.TransientModel):
             raise UserError(_('You cannot split all Passenger(s) in this reservation. Please leave at least 1 Passenger!'))
         if self.is_split_passenger and len(book_obj.passenger_ids) <= 1:
             raise UserError(_('You cannot split Passenger as there is only 1 Passenger in this reservation.'))
+        if self.is_split_passenger and not self.passenger_ids:
+            raise UserError(_('Please choose at least 1 Passenger to split.'))
 
         book_obj.write({
             'split_uid': self.env.user.id,
