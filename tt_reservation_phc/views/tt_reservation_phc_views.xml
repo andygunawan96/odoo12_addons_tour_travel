@@ -21,6 +21,7 @@
                     <filter string="Booked" name="booked" domain="[('state','=','booked')]"/>
                     <filter string="Issued" name="issued" domain="[('state','=','issued')]"/>
                     <filter string="Done" name="done" domain="[('state','=','done')]"/>
+                    <filter string="Cancelled" name="cancel" domain="[('state','=','cancel')]"/>
                     <filter string="Failed/Expired" name="failed_expired" domain="['|', '|', '|', ('state','=','fail_booked'),('state','=','fail_issued'),('state','=','fail_refunded'),('state','=','cancel2')]"/>
                 </group>
                 <separator/>
@@ -393,50 +394,65 @@
         </field>
     </record>
 
-        <record model="ir.actions.act_window" id="tt_reservation_phc_action_views_booked">
-            <field name="name">Reservation phc (Booked)</field>
-            <field name="res_model">tt.reservation.phc</field>
-            <field name="view_type">form</field>
-            <field name="view_mode">tree,form</field>
-            <field name="domain">[]</field>
-            <field name="context">
-                {
-                'form_view_ref': 'tt_reservation_phc.tt_reservation_phc_form_view',
-                'tree_view_ref': 'tt_reservation_phc.tt_reservation_phc_tree_view',
-                'search_default_booked': 1
-                }
-            </field>
-        </record>
+    <record model="ir.actions.act_window" id="tt_reservation_phc_action_views_booked">
+        <field name="name">Reservation phc (Booked)</field>
+        <field name="res_model">tt.reservation.phc</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+        <field name="domain">[]</field>
+        <field name="context">
+            {
+            'form_view_ref': 'tt_reservation_phc.tt_reservation_phc_form_view',
+            'tree_view_ref': 'tt_reservation_phc.tt_reservation_phc_tree_view',
+            'search_default_booked': 1
+            }
+        </field>
+    </record>
 
-        <record model="ir.actions.act_window" id="tt_reservation_phc_action_views_issued">
-            <field name="name">Reservation phc (Issued)</field>
-            <field name="res_model">tt.reservation.phc</field>
-            <field name="view_type">form</field>
-            <field name="view_mode">tree,form</field>
-            <field name="domain">[]</field>
-            <field name="context">
-                {
-                'form_view_ref': 'tt_reservation_phc.tt_reservation_phc_form_view',
-                'tree_view_ref': 'tt_reservation_phc.tt_reservation_phc_tree_view',
-                'search_default_issued': 1
-                }
-            </field>
-        </record>
+    <record model="ir.actions.act_window" id="tt_reservation_phc_action_views_issued">
+        <field name="name">Reservation phc (Issued)</field>
+        <field name="res_model">tt.reservation.phc</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+        <field name="domain">[]</field>
+        <field name="context">
+            {
+            'form_view_ref': 'tt_reservation_phc.tt_reservation_phc_form_view',
+            'tree_view_ref': 'tt_reservation_phc.tt_reservation_phc_tree_view',
+            'search_default_issued': 1
+            }
+        </field>
+    </record>
 
-        <record model="ir.actions.act_window" id="tt_reservation_phc_action_views_failed_expired">
-            <field name="name">Reservation phc (Failed/Expired)</field>
-            <field name="res_model">tt.reservation.phc</field>
-            <field name="view_type">form</field>
-            <field name="view_mode">tree,form</field>
-            <field name="domain">[]</field>
-            <field name="context">
-                {
-                'form_view_ref': 'tt_reservation_phc.tt_reservation_phc_form_view',
-                'tree_view_ref': 'tt_reservation_phc.tt_reservation_phc_tree_view',
-                'search_default_failed_expired': 1
-                }
-            </field>
-        </record>
+    <record model="ir.actions.act_window" id="tt_reservation_phc_action_views_cancel">
+        <field name="name">Reservation phc (Cancelled)</field>
+        <field name="res_model">tt.reservation.phc</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+        <field name="domain">[]</field>
+        <field name="context">
+            {
+            'form_view_ref': 'tt_reservation_phc.tt_reservation_phc_form_view',
+            'tree_view_ref': 'tt_reservation_phc.tt_reservation_phc_tree_view',
+            'search_default_cancel': 1
+            }
+        </field>
+    </record>
+
+    <record model="ir.actions.act_window" id="tt_reservation_phc_action_views_failed_expired">
+        <field name="name">Reservation phc (Failed/Expired)</field>
+        <field name="res_model">tt.reservation.phc</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+        <field name="domain">[]</field>
+        <field name="context">
+            {
+            'form_view_ref': 'tt_reservation_phc.tt_reservation_phc_form_view',
+            'tree_view_ref': 'tt_reservation_phc.tt_reservation_phc_tree_view',
+            'search_default_failed_expired': 1
+            }
+        </field>
+    </record>
 
 
     <menuitem id="sub_menu_reservations_phc_all"
@@ -460,7 +476,10 @@
     <menuitem id="submenu_reservations_phc_issued" parent="tt_reservation_phc.menu_reservations_phc"
               name="Issued" action="tt_reservation_phc.tt_reservation_phc_action_views_issued" sequence="3"/>
 
+    <menuitem id="submenu_reservations_phc_cancel" parent="tt_reservation_phc.menu_reservations_phc"
+              name="Cancelled" action="tt_reservation_phc.tt_reservation_phc_action_views_cancel" sequence="4"/>
+
     <menuitem id="submenu_reservations_phc_failed_expired" parent="tt_reservation_phc.menu_reservations_phc"
-              name="Failed/Expired" action="tt_reservation_phc.tt_reservation_phc_action_views_failed_expired" sequence="4"/>
+              name="Failed/Expired" action="tt_reservation_phc.tt_reservation_phc_action_views_failed_expired" sequence="5"/>
 
 </odoo>

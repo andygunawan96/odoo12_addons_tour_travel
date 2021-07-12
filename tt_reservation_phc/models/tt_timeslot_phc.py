@@ -89,9 +89,12 @@ class TtTimeslotphc(models.Model):
                 adult_count += rec2.adult
                 if 'PCR' in rec2.carrier_name:
                     pcr_count += rec2.adult
-            rec.used_count = used_count
-            rec.used_adult_count = adult_count
-            rec.used_pcr_count = pcr_count
+            if used_count != rec.used_count:
+                rec.used_count = used_count
+            if rec.used_adult_count != adult_count:
+                rec.used_adult_count = adult_count
+            if rec.used_pcr_count != pcr_count:
+                rec.used_pcr_count = pcr_count
 
     def mass_close_timeslot(self):
         for rec in self:
