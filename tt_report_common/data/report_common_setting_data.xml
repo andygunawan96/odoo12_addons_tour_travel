@@ -421,9 +421,7 @@
             <field name="name">PHC PCR Information</field>
             <field name="code">phc_pcr_information</field>
             <field name="agent_id" ref="tt_base.agent_type_ho"/>
-            <field name="html" type="html">
-
-            </field>
+            <field name="html" type="html"/>
             <field name="active" eval="True"/>
         </record>
 
