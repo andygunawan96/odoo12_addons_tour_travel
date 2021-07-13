@@ -9,9 +9,13 @@
             <xpath expr="//group[@name='basic_info']" position="after">
                 <group>
                     <field name="email"/>
-                    <field name="address_ktp"/>
+                    <field name="address"/>
                     <field name="phone_number"/>
                     <field name="sample_method"/>
+                    <field name="provinsi"/>
+                    <field name="kabupaten"/>
+                    <field name="kecamatan"/>
+                    <field name="kelurahan"/>
                 </group>
                 <separator string="Service Charges"/>
                 <field name="cost_service_charge_ids"
