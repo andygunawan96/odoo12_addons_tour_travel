@@ -18,8 +18,13 @@ class TtReservationCustomer(models.Model):
     booking_id = fields.Many2one('tt.reservation.periksain', 'Booking')
 
     email = fields.Char('Email')
-    address_ktp = fields.Char('Address KTP')
+    address = fields.Char('Address')
     phone_number = fields.Char('Phone Number')
+
+    provinsi = fields.Char('Pronvinsi')
+    kabupaten = fields.Char('Kabupaten')
+    kecamatan = fields.Char('Kecamatan')
+    kelurahan = fields.Char('Kelurahan')
 
     sample_method = fields.Selection(VARIABLE_SAMPLE_METHOD,'Sample Method')
     is_ticketed = fields.Boolean('Ticketed')
@@ -32,7 +37,7 @@ class TtReservationCustomer(models.Model):
                 sample_method = rec[1]
         res.update({
             'sale_service_charges': self.get_service_charges(),
-            'address_ktp': self.address_ktp,
+            'address': self.address,
             'sample_method': sample_method,
             'sample_method_code': self.sample_method,
             'email': self.email,

@@ -297,9 +297,13 @@ class ReservationPeriksain(models.Model):
                 rec[2].update({
                     'customer_id': list_customer_id[idx].id,
                     'email': passengers[idx]['email'],
-                    'address_ktp': passengers[idx]['address_ktp'],
+                    'address': passengers[idx]['address'],
                     'phone_number': passengers[idx]['phone_number'],
-                    'sample_method': passengers[idx]['sample_method']
+                    'sample_method': passengers[idx]['sample_method'],
+                    'provinsi': passengers[idx]['provinsi'],
+                    'kabupaten': passengers[idx]['kabupaten'],
+                    'kecamatan': passengers[idx]['kecamatan'],
+                    'kelurahan': passengers[idx]['kelurahan']
                 })
 
             for psg in list_passenger_value:

@@ -383,7 +383,8 @@ class TtProviderPeriksain(models.Model):
             'balance_due': self.balance_due and self.balance_due or 0,
             'total_price': self.total_price and self.total_price or 0,
             'carrier_name': self.carrier_id and self.carrier_id.name or '',
-            'carrier_code': self.carrier_id and self.carrier_id.code or ''
+            'carrier_code': self.carrier_id and self.carrier_id.code or '',
+            'error_msg': self.error_history_ids and self.error_history_ids[-1].error_msg or '',
         }
 
         return res
