@@ -413,7 +413,11 @@
             <field name="name">PHC Antigen Information</field>
             <field name="code">phc_antigen_information</field>
             <field name="agent_id" ref="tt_base.agent_type_ho"/>
-            <field name="html" type="html"/>
+            <field name="html" type="html">
+                <div class="col-12" style="margin-top:20px;">
+                    Information
+                </div>
+            </field>
             <field name="active" eval="True"/>
         </record>
 
@@ -421,7 +425,11 @@
             <field name="name">PHC PCR Information</field>
             <field name="code">phc_pcr_information</field>
             <field name="agent_id" ref="tt_base.agent_type_ho"/>
-            <field name="html" type="html"/>
+            <field name="html" type="html">
+                <div class="col-12" style="margin-top:20px;">
+                    Information
+                </div>
+            </field>
             <field name="active" eval="True"/>
         </record>
 
@@ -429,7 +437,11 @@
             <field name="name">Periksain Antigen Information</field>
             <field name="code">periksain_antigen_information</field>
             <field name="agent_id" ref="tt_base.agent_type_ho"/>
-            <field name="html" type="html"/>
+            <field name="html" type="html">
+                <div class="col-12" style="margin-top:20px;">
+                    Information
+                </div>
+            </field>
             <field name="active" eval="True"/>
         </record>
 
@@ -437,9 +449,12 @@
             <field name="name">Periksain PCR Information</field>
             <field name="code">periksain_pcr_information</field>
             <field name="agent_id" ref="tt_base.agent_type_ho"/>
-            <field name="html" type="html"/>
+            <field name="html" type="html">
+                <div class="col-12" style="margin-top:20px;">
+                    Information
+                </div>
+            </field>
             <field name="active" eval="True"/>
         </record>
-
     </data>
 </odoo>
