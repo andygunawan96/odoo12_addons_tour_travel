@@ -371,7 +371,9 @@ class TtProviderPeriksain(models.Model):
             if rec.charge_type == 'RAC' and not rec.charge_code == 'rac':
                 continue
             service_charges.append(rec.to_dict())
-
+        ticket_list = []
+        for rec in self.ticket_ids:
+            ticket_list.append(rec.to_dict())
         res = {
             'pnr': self.pnr and self.pnr or '',
             'pnr2': self.pnr2 and self.pnr2 or '',
@@ -383,7 +385,13 @@ class TtProviderPeriksain(models.Model):
             'balance_due': self.balance_due and self.balance_due or 0,
             'total_price': self.total_price and self.total_price or 0,
             'carrier_name': self.carrier_id and self.carrier_id.name or '',
-            'carrier_code': self.carrier_id and self.carrier_id.code or ''
+            'carrier_code': self.carrier_id and self.carrier_id.code or '',
+            'error_msg': self.error_history_ids and self.error_history_ids[-1].error_msg or '',
+            'tickets': ticket_list
         }
 
         return res
+
+    def update_ticket_per_pax_api(self, idx, passenger_ticket):
+        self.ticket_ids[idx].ticket_number = passenger_ticket
+        self.ticket_ids[idx].passenger_id.ticket_number = passenger_ticket

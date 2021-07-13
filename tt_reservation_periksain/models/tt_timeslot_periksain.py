@@ -58,6 +58,10 @@ class TtTimeslotPeriksain(models.Model):
 
     agent_id = fields.Many2one('tt.agent', 'Agent')
 
+    id_kota_vendor = fields.Char('Kota ID Vendor')
+    id_time_vendor = fields.Char('Timeslot Periksain ID Vendor')
+    tindakan_pemeriksaan_vendor = fields.Char('Tindakan Pemeriksaan Vendor')
+
     @api.depends('datetimeslot')
     def _compute_timeslot_display_name(self):
         for rec in self:
@@ -155,3 +159,19 @@ class TtTimeslotPeriksain(models.Model):
             return self.datetimeslot.astimezone(pytz.timezone('Asia/Jakarta')).strftime('%d %B %Y %H:%M')
         else:
             return 'Date/Time is not specified.'
+
+    def get_config_cron(self):
+        result = self.env['tt.periksain.api.con'].get_config_cron()
+        return result
+
+    def to_dict(self):
+
+        res = {
+            "datetimeslot": self.datetimeslot.strftime('%Y-%m-%d %H:%M'),
+            "area": self.destination_id.city,
+            "id_kota_vendor": self.id_kota_vendor,
+            "id_time_vendor": self.id_time_vendor,
+            "tindakan_pemeriksaan_vendor": json.loads(self.tindakan_pemeriksaan_vendor)
+        }
+
+        return res
