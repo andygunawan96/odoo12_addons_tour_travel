@@ -36,3 +36,9 @@ class TtTrainApiCon(models.Model):
         return self.send_request_to_gateway('%s/notification' % (self.url),
                                             request
                                             ,'notification_code')
+
+    def get_config_cron(self):
+        data = {
+            "provider": 'periksain'
+        }
+        return self.send_request_to_gateway('%s/booking/periksain' % (self.url), data, 'get_config_cron',timeout=60)

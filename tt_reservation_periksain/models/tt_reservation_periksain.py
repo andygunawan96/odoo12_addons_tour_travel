@@ -297,9 +297,13 @@ class ReservationPeriksain(models.Model):
                 rec[2].update({
                     'customer_id': list_customer_id[idx].id,
                     'email': passengers[idx]['email'],
-                    'address_ktp': passengers[idx]['address_ktp'],
+                    'address': passengers[idx]['address'],
                     'phone_number': passengers[idx]['phone_number'],
-                    'sample_method': passengers[idx]['sample_method']
+                    'sample_method': passengers[idx]['sample_method'],
+                    'provinsi': passengers[idx]['provinsi'],
+                    'kabupaten': passengers[idx]['kabupaten'],
+                    'kecamatan': passengers[idx]['kecamatan'],
+                    'kelurahan': passengers[idx]['kelurahan']
                 })
 
             for psg in list_passenger_value:
@@ -397,8 +401,21 @@ class ReservationPeriksain(models.Model):
                 except:
                     raise RequestException(1002)
 
+                if provider.get('extra_action') == 'save_result_url':
+                    for idx, ticket_obj in enumerate(provider['tickets']):
+                        provider_obj.update_result_url_per_pax_api(idx, ticket_obj['result_url'])
+                    continue
+                if provider.get('messages') and provider['status'] == 'FAIL_ISSUED':
+                    provider_obj.action_failed_issued_api_phc(provider.get('error_code', -1),provider.get('error_msg', ''))
                 if provider['status'] == 'ISSUED':
                     provider_obj.action_issued_api_periksain(context)
+                if provider['status'] == 'CANCEL':
+                    provider_obj.action_cancel()
+                    any_provider_changed = True
+                #jaga jaga kalau gagal issued
+                for idx, ticket_obj in enumerate(provider['tickets']):
+                    if ticket_obj['ticket_number']:
+                        provider_obj.update_ticket_per_pax_api(idx, ticket_obj['ticket_number'])
                     any_provider_changed = True
 
             if any_provider_changed:
@@ -456,17 +473,11 @@ class ReservationPeriksain(models.Model):
 
                 timeslot_list = []
                 for timeslot_obj in book_obj.timeslot_ids:
-                    timeslot_list.append({
-                        "datetimeslot": timeslot_obj.datetimeslot.strftime('%Y-%m-%d %H:%M'),
-                        "area": timeslot_obj.destination_id.city
-                    })
+                    timeslot_list.append(timeslot_obj.to_dict())
 
                 picked_timeslot = {}
                 if book_obj.picked_timeslot_id:
-                    picked_timeslot = {
-                        "datetimeslot": book_obj.picked_timeslot_id.datetimeslot.strftime('%Y-%m-%d %H:%M'),
-                        "area": book_obj.picked_timeslot_id.destination_id.city
-                    }
+                    picked_timeslot = book_obj.picked_timeslot_id.to_dict()
 
                 res.update({
                     'origin': book_obj.origin_id.code,
