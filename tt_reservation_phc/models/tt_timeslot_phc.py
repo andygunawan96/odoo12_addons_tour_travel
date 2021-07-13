@@ -36,7 +36,7 @@ class TtTimeslotphc(models.Model):
     used_adult_count = fields.Integer('Used Adult Counter', compute="_compute_used_counter", store=True)#used adult count
     used_pcr_count = fields.Integer('Used PCR Counter', compute="_compute_used_counter", store=True)#used PCR count
 
-    max_book_datetime = fields.Datetime('Max Book Datetime', required=True, default=fields.Date.context_today)
+    max_book_datetime = fields.Datetime('Max Book Datetime', required=True, default=fields.Datetime.now)
 
     booking_ids = fields.Many2many('tt.reservation.phc','tt_reservation_phc_timeslot_rel', 'timeslot_id', 'booking_id', 'Selected on By Customer Booking(s)')
 

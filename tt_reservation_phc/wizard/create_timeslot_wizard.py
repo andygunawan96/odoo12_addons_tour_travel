@@ -82,6 +82,7 @@ class CreateTimeslotphcWizard(models.TransientModel):
                     create_values.append({
                         'dateslot': this_date,
                         'datetimeslot': datetimeslot,
+                        'max_book_datetime': datetimeslot.replace(hour=9, minute=0, second=0, microsecond=0),
                         'destination_id': self.area_id.id,
                         'total_timeslot': self.total_timeslot,
                         'total_adult_timeslot': self.total_adult_timeslot,
@@ -108,6 +109,7 @@ class CreateTimeslotphcWizard(models.TransientModel):
             self.env['tt.timeslot.phc'].create({
                 'dateslot': date,
                 'datetimeslot': datetimeslot,
+                'max_book_datetime': datetimeslot.replace(hour=9,minute=0,second=0,microsecond=0),
                 'destination_id': destination.id,
                 'total_timeslot': max_timeslot,
                 'total_adult_timeslot': adult_timeslot,
