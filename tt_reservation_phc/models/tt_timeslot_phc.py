@@ -36,6 +36,8 @@ class TtTimeslotphc(models.Model):
     used_adult_count = fields.Integer('Used Adult Counter', compute="_compute_used_counter", store=True)#used adult count
     used_pcr_count = fields.Integer('Used PCR Counter', compute="_compute_used_counter", store=True)#used PCR count
 
+    max_book_datetime = fields.Datetime('Max Book Datetime', required=True, default=fields.Date.context_today)
+
     booking_ids = fields.Many2many('tt.reservation.phc','tt_reservation_phc_timeslot_rel', 'timeslot_id', 'booking_id', 'Selected on By Customer Booking(s)')
 
     booking_used_ids = fields.One2many('tt.reservation.phc','picked_timeslot_id', 'Confirmed to Customer Booking(s)')
@@ -140,6 +142,7 @@ class TtTimeslotphc(models.Model):
             dom.append(('timeslot_type', '=', 'drive_thru'))
             ## kalau kurang dari jam 16.00 di tambah timedelta 0 else di tambah 1 hari
             dom.append(('dateslot', '>=', datetime.today() if current_wib_datetime <= current_wib_datetime.replace(hour=14,minute=30,second=0,microsecond=0) else datetime.today() + timedelta(days=1)))
+            dom.append(('max_book_datetime', '>=', datetime.now(pytz.utc)))
             dom.append(('total_timeslot','>',0))
 
         timeslots = self.search(dom)
