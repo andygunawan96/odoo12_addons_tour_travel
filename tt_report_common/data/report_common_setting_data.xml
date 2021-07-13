@@ -4,7 +4,7 @@
         <record id="train_printout_footer" model="tt.report.common.setting">
             <field name="name">Train Ticket</field>
             <field name="code">train_ticket</field>
-            <field name="agent_id" ref="tt_base.agent_type_ho"/>
+            <field name="agent_id" ref="tt_base.rodex_ho"/>
 
             <field name="html" type="html">
                 <div class="row" style="font-size: 20px; border-top: 1px black solid; border-bottom: 1px black solid; margin-top: 40px; font-weight: 300">
@@ -95,7 +95,7 @@
         <record id="airline_ticket_footer" model="tt.report.common.setting">
             <field name="name">Airline Ticket</field>
             <field name="code">airline_ticket</field>
-            <field name="agent_id" ref="tt_base.agent_type_ho"/>
+            <field name="agent_id" ref="tt_base.rodex_ho"/>
             <field name="html" type="html">
                 <div>
                     <span>* Please arrive at the airport 90 minutes before domestic flight and 2 hours before international flight</span>
@@ -139,7 +139,7 @@
         <record id="printout_itinerary_footer" model="tt.report.common.setting">
             <field name="name">Itinerary</field>
             <field name="code">printout_itinerary</field>
-            <field name="agent_id" ref="tt_base.agent_type_ho"/>
+            <field name="agent_id" ref="tt_base.rodex_ho"/>
             <field name="html" type="html">
                 <div>
                     <span>I, the undersigned, declare that the reservations I have made correspond to my true IDs and I made this
@@ -152,7 +152,7 @@
         <record id="visa_ticket_customer_footer" model="tt.report.common.setting">
             <field name="name">Visa Ticket</field>
             <field name="code">visa_ticket_customer</field>
-            <field name="agent_id" ref="tt_base.agent_type_ho"/>
+            <field name="agent_id" ref="tt_base.rodex_ho"/>
             <field name="html" type="html">
                 <div class="row mt8" style="font-family: Times New Roman, Georgia, Serif; font-size: 16px;">
                     <span class="bold">Terms and Conditions</span>
@@ -173,7 +173,7 @@
         <record id="visa_ticket_ho_footer" model="tt.report.common.setting">
             <field name="name">Visa Ticket</field>
             <field name="code">visa_ticket_ho</field>
-            <field name="agent_id" ref="tt_base.agent_type_ho"/>
+            <field name="agent_id" ref="tt_base.rodex_ho"/>
             <field name="html" type="html">
                 <div class="row mt8" style="font-family: Times New Roman, Georgia, Serif; font-size: 16px;">
                     <span class="bold">Terms and Conditions</span>
@@ -194,7 +194,7 @@
         <record id="activity_ticket_footer" model="tt.report.common.setting">
             <field name="name">Activity Ticket</field>
             <field name="code">activity_ticket</field>
-            <field name="agent_id" ref="tt_base.agent_type_ho"/>
+            <field name="agent_id" ref="tt_base.rodex_ho"/>
             <field name="html" type="html">
                 <!-- refund -->
                 <div>
@@ -231,7 +231,7 @@
         <record id="tour_ticket_footer" model="tt.report.common.setting">
             <field name="name">Tour Ticket</field>
             <field name="code">tour_ticket</field>
-            <field name="agent_id" ref="tt_base.agent_type_ho"/>
+            <field name="agent_id" ref="tt_base.rodex_ho"/>
             <field name="html" type="html">
                 <!-- refund -->
                 <div>
@@ -268,7 +268,7 @@
         <record id="hotel_ticket_footer" model="tt.report.common.setting">
             <field name="name">Hotel Ticket</field>
             <field name="code">hotel_ticket</field>
-            <field name="agent_id" ref="tt_base.agent_type_ho"/>
+            <field name="agent_id" ref="tt_base.rodex_ho"/>
             <field name="html" type="html">
                 <!-- refund -->
                 <div>
@@ -305,7 +305,7 @@
         <record id="ppob_bpjs_footer" model="tt.report.common.setting">
             <field name="name">PPOB BPJS</field>
             <field name="code">ppob_bpjs</field>
-            <field name="agent_id" ref="tt_base.agent_type_ho"/>
+            <field name="agent_id" ref="tt_base.rodex_ho"/>
             <field name="html" type="html">
                 <h3 style="padding-left: 20px; text-align:center; font-weight: 600; font-size: 18px">Mulai 1 September 2020 pembayaran iuran JKN wajib Autodebit.</h3>
                 <h3 style="padding-left: 20px; text-align:center; font-weight: 600; font-size: 18px">Segera daftar di Kanal yang tersedia. Info 1500400</h3>
@@ -316,7 +316,7 @@
         <record id="ppob_pln_footer" model="tt.report.common.setting">
             <field name="name">PPOB PLN</field>
             <field name="code">ppob_pln</field>
-            <field name="agent_id" ref="tt_base.agent_type_ho"/>
+            <field name="agent_id" ref="tt_base.rodex_ho"/>
             <field name="html" type="html">
                 <h3 style="padding-left: 20px; text-align:center; font-weight: 600; font-size: 18px">Informasi Hubungi Call Center 123 Atau hubungi PLN Terdekat</h3>
             </field>
@@ -326,7 +326,7 @@
         <record id="prepaid_mobile_pln_footer" model="tt.report.common.setting">
             <field name="name">PPOB Prepaid Mobile</field>
             <field name="code">ppob_prepaid_mobile</field>
-            <field name="agent_id" ref="tt_base.agent_type_ho"/>
+            <field name="agent_id" ref="tt_base.rodex_ho"/>
             <field name="html"></field>
             <field name="active" eval="True"/>
         </record>
@@ -334,7 +334,7 @@
         <record id="agent_invoice_footer" model="tt.report.common.setting">
             <field name="name">Agent Invoice</field>
             <field name="code">agent_invoice</field>
-            <field name="agent_id" ref="tt_base.agent_type_ho"/>
+            <field name="agent_id" ref="tt_base.rodex_ho"/>
             <field name="html" type="html">
                 <li>Payment by transfer/cheque/giro is valid after being credited &amp; confirmed by the bank in full amount.</li>
             </field>
@@ -344,7 +344,7 @@
         <record id="top_up_footer" model="tt.report.common.setting">
             <field name="name">Top Up</field>
             <field name="code">top_up</field>
-            <field name="agent_id" ref="tt_base.agent_type_ho"/>
+            <field name="agent_id" ref="tt_base.rodex_ho"/>
             <field name="html" type="html">
                 <li>Payment by transfer/cheque/giro is valid after being credited &amp; confirmed by the bank in full amount.</li>
             </field>
@@ -354,7 +354,7 @@
         <record id="printout_billing_statement_footer" model="tt.report.common.setting">
             <field name="name">Billing Statement</field>
             <field name="code">billing_statement</field>
-            <field name="agent_id" ref="tt_base.agent_type_ho"/>
+            <field name="agent_id" ref="tt_base.rodex_ho"/>
             <field name="html" type="html">
                 <li>Payment by transfer/cheque/giro is valid after being credited &amp; confirmed by the bank in full amount.</li>
             </field>
@@ -364,7 +364,7 @@
         <record id="refund_agent_footer" model="tt.report.common.setting">
             <field name="name">Refund To Agent</field>
             <field name="code">refund_to_agent</field>
-            <field name="agent_id" ref="tt_base.agent_type_ho"/>
+            <field name="agent_id" ref="tt_base.rodex_ho"/>
             <field name="html"></field>
             <field name="active" eval="True"/>
         </record>
@@ -372,7 +372,7 @@
         <record id="refund_customer_footer" model="tt.report.common.setting">
             <field name="name">Refund To Customer</field>
             <field name="code">refund_to_Customer</field>
-            <field name="agent_id" ref="tt_base.agent_type_ho"/>
+            <field name="agent_id" ref="tt_base.rodex_ho"/>
             <field name="html"></field>
             <field name="active" eval="True"/>
         </record>
@@ -380,7 +380,7 @@
         <record id="reschedule_footer" model="tt.report.common.setting">
             <field name="name">Reschedule</field>
             <field name="code">reschedule_ticket</field>
-            <field name="agent_id" ref="tt_base.agent_type_ho"/>
+            <field name="agent_id" ref="tt_base.rodex_ho"/>
             <field name="html"></field>
             <field name="active" eval="True"/>
         </record>
@@ -388,7 +388,7 @@
         <record id="letter_guarantee_po_footer" model="tt.report.common.setting">
             <field name="name">Letter Guarantee PO</field>
             <field name="code">letter_guarantee_po</field>
-            <field name="agent_id" ref="tt_base.agent_type_ho"/>
+            <field name="agent_id" ref="tt_base.rodex_ho"/>
             <field name="html" type="html">
                 <div class="col-12" style="margin-top:20px;">
                     We hereby requesting to purchase the above services as per credit term agreement. We appreciate your kind cooperation.
@@ -400,7 +400,7 @@
         <record id="letter_guarantee_no_po_footer" model="tt.report.common.setting">
             <field name="name">Letter Guarantee</field>
             <field name="code">letter_guarantee</field>
-            <field name="agent_id" ref="tt_base.agent_type_ho"/>
+            <field name="agent_id" ref="tt_base.rodex_ho"/>
             <field name="html" type="html">
                 <div class="col-12" style="margin-top:20px;">
                     We hereby guaranteed to settle the payment of the above services as per credit term agreement. We appreciate your kind cooperation.
@@ -412,7 +412,7 @@
         <record id="phc_antigen_information" model="tt.report.common.setting">
             <field name="name">PHC Antigen Information</field>
             <field name="code">phc_antigen_information</field>
-            <field name="agent_id" ref="tt_base.agent_type_ho"/>
+            <field name="agent_id" ref="tt_base.rodex_ho"/>
             <field name="html" type="html">
                 <div class="col-12" style="margin-top:20px;">
                     Information
@@ -424,7 +424,7 @@
         <record id="phc_pcr_information" model="tt.report.common.setting">
             <field name="name">PHC PCR Information</field>
             <field name="code">phc_pcr_information</field>
-            <field name="agent_id" ref="tt_base.agent_type_ho"/>
+            <field name="agent_id" ref="tt_base.rodex_ho"/>
             <field name="html" type="html">
                 <div class="col-12" style="margin-top:20px;">
                     Information
@@ -436,7 +436,7 @@
         <record id="periksain_antigen_information" model="tt.report.common.setting">
             <field name="name">Periksain Antigen Information</field>
             <field name="code">periksain_antigen_information</field>
-            <field name="agent_id" ref="tt_base.agent_type_ho"/>
+            <field name="agent_id" ref="tt_base.rodex_ho"/>
             <field name="html" type="html">
                 <div class="col-12" style="margin-top:20px;">
                     Information
@@ -448,7 +448,7 @@
         <record id="periksain_pcr_information" model="tt.report.common.setting">
             <field name="name">Periksain PCR Information</field>
             <field name="code">periksain_pcr_information</field>
-            <field name="agent_id" ref="tt_base.agent_type_ho"/>
+            <field name="agent_id" ref="tt_base.rodex_ho"/>
             <field name="html" type="html">
                 <div class="col-12" style="margin-top:20px;">
                     Information
