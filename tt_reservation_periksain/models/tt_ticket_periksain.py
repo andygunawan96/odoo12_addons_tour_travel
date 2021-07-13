@@ -15,5 +15,6 @@ class TtTicketPeriksain(models.Model):
         res = {
             'passenger': self.passenger_id.name,
             'pax_type': self.pax_type,
+            'ticket_number': self.ticket_number
         }
         return res
