@@ -38,6 +38,10 @@ class TtReservationCustomer(models.Model):
         res.update({
             'sale_service_charges': self.get_service_charges(),
             'address': self.address,
+            'provinsi': self.provinsi,
+            'kabupaten': self.kabupaten,
+            'kecamatan': self.kecamatan,
+            'kelurahan': self.kelurahan,
             'sample_method': sample_method,
             'sample_method_code': self.sample_method,
             'email': self.email,

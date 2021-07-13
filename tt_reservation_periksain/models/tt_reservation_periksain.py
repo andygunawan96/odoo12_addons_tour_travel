@@ -460,17 +460,11 @@ class ReservationPeriksain(models.Model):
 
                 timeslot_list = []
                 for timeslot_obj in book_obj.timeslot_ids:
-                    timeslot_list.append({
-                        "datetimeslot": timeslot_obj.datetimeslot.strftime('%Y-%m-%d %H:%M'),
-                        "area": timeslot_obj.destination_id.city
-                    })
+                    timeslot_list.append(timeslot_obj.to_dict())
 
                 picked_timeslot = {}
                 if book_obj.picked_timeslot_id:
-                    picked_timeslot = {
-                        "datetimeslot": book_obj.picked_timeslot_id.datetimeslot.strftime('%Y-%m-%d %H:%M'),
-                        "area": book_obj.picked_timeslot_id.destination_id.city
-                    }
+                    picked_timeslot = book_obj.picked_timeslot_id.to_dict()
 
                 res.update({
                     'origin': book_obj.origin_id.code,
