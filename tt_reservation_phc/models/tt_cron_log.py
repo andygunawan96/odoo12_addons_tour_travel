@@ -46,7 +46,7 @@ class TtCronLogInhphc(models.Model):
 
     def cron_auto_notification_timeslot_quota_data_phc(self):
         try:
-            timeslot_data = self.env['tt.timeslot.phc'].search([('dateslot','=',datetime.today().strftime("%Y-%m-%d")),'timeslot_type','=','drive_thru'],limit=1)
+            timeslot_data = self.env['tt.timeslot.phc'].search([('dateslot','=',datetime.today().strftime("%Y-%m-%d")),('timeslot_type','=','drive_thru')],limit=1)
             verified_antigen = 0
             verified_pcr = 0
             for rec in timeslot_data.booking_used_ids.filtered(lambda x: x.state_vendor == 'verified'):
