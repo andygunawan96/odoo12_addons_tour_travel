@@ -24,7 +24,6 @@ class CreateTimeslotPeriksainWizard(models.TransientModel):
     time_string = fields.Text('Time',default='08:00,09:00,10:00,11:00,12:00,13:00,14:00,15:00,16:00,17:00,18:00,19:00,20:00,21:00')
 
     id_time_vendor = fields.Text('ID Time Vendor', default='')
-    id_kota_vendor = fields.Text('ID Kota Vendor', default='')
     id_jenis_tindakan_vendor = fields.Text('ID Jenis Tindakan Vendor', default='')
 
     timeslot_type = fields.Selection([('home_care', 'Home Care'), ('group_booking', 'Group Booking')], 'Timeslot Type', default='home_care',
@@ -73,7 +72,7 @@ class CreateTimeslotPeriksainWizard(models.TransientModel):
         time_objs_id_periksain = []
         for idx, time_str in enumerate(timelist):
             time_objs.append((datetime.strptime(time_str,'%H:%M') - timedelta(hours=7)).time())
-            time_objs_id_periksain.append(id_timelist_periksain[idx])
+            time_objs_id_periksain.append(id_timelist_periksain[idx] if len(id_timelist_periksain) > idx else id_timelist_periksain[0])
 
         db = self.env['tt.timeslot.periksain'].search([('destination_id','=',self.area_id.id), ('dateslot','>=',self.start_date), ('dateslot','<=',self.end_date), ('timeslot_type','=',self.timeslot_type), ('agent_id','=',self.agent_id.id if self.agent_id else False)])
         db_list = [str(data.datetimeslot) for data in db]
@@ -97,9 +96,9 @@ class CreateTimeslotPeriksainWizard(models.TransientModel):
                         'overtime_surcharge': self.overtime_surcharge,
                         'cito_surcharge': self.overtime_surcharge,
                         'agent_id': self.agent_id.id if self.agent_id else False,
-                        'id_kota_vendor': self.id_kota_vendor,
+                        'id_kota_vendor': self.area_id.icao.split('~')[0],
                         'id_time_vendor': time_objs_id_periksain[idx],
-                        'tindakan_pemeriksaan_vendor': self.id_jenis_tindakan_vendor
+                        'tindakan_pemeriksaan_vendor': self.area_id.icao.split('~')[1]
                     })
 
         self.env['tt.timeslot.periksain'].create(create_values)
