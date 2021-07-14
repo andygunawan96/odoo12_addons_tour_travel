@@ -274,7 +274,7 @@ class ProviderOffline(models.Model):
         user_info = self.env['tt.agent'].sudo().get_agent_level(self.booking_id.agent_id.id)
         if adt_count > 0:
             scs_list.append({
-                'amount': sale_price / len(self.booking_id.passenger_ids),
+                'amount': sale_price / len(self.booking_id.passenger_ids) / total_pax_count,
                 'charge_code': 'fare',
                 'charge_type': 'FARE',
                 'description': '',
@@ -312,7 +312,7 @@ class ProviderOffline(models.Model):
 
         if chd_count > 0:
             scs_list.append({
-                'amount': sale_price / len(self.booking_id.passenger_ids),
+                'amount': sale_price / len(self.booking_id.passenger_ids) / total_pax_count,
                 'charge_code': 'fare',
                 'charge_type': 'FARE',
                 'description': '',
@@ -350,7 +350,7 @@ class ProviderOffline(models.Model):
 
         if inf_count > 0:
             scs_list.append({
-                'amount': sale_price / len(self.booking_id.passenger_ids),
+                'amount': sale_price / len(self.booking_id.passenger_ids) / total_pax_count,
                 'charge_code': 'fare',
                 'charge_type': 'FARE',
                 'description': '',
@@ -534,7 +534,7 @@ class ProviderOffline(models.Model):
         user_info = self.env['tt.agent'].sudo().get_agent_level(self.booking_id.agent_id.id)
         if adt_count > 0:
             scs_list.append({
-                'amount': sale_price / len(self.booking_id.passenger_ids),
+                'amount': sale_price / len(self.booking_id.passenger_ids) / total_pax_count,
                 'charge_code': 'fare',
                 'charge_type': 'FARE',
                 'description': '',
@@ -572,7 +572,7 @@ class ProviderOffline(models.Model):
 
         if chd_count > 0:
             scs_list.append({
-                'amount': sale_price / len(self.booking_id.passenger_ids),
+                'amount': sale_price / len(self.booking_id.passenger_ids) / total_pax_count,
                 'charge_code': 'fare',
                 'charge_type': 'FARE',
                 'description': '',
@@ -610,7 +610,7 @@ class ProviderOffline(models.Model):
 
         if inf_count > 0:
             scs_list.append({
-                'amount': sale_price / len(self.booking_id.passenger_ids),
+                'amount': sale_price / len(self.booking_id.passenger_ids) / total_pax_count,
                 'charge_code': 'fare',
                 'charge_type': 'FARE',
                 'description': '',
