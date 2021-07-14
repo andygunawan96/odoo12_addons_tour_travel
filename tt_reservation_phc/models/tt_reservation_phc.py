@@ -718,7 +718,8 @@ class Reservationphc(models.Model):
         drive_thru = False
         if carrier_obj and carrier_obj.id in [self.env.ref('tt_reservation_phc.tt_transport_carrier_phc_drive_thru_antigen').id,
                                               self.env.ref('tt_reservation_phc.tt_transport_carrier_phc_drive_thru_pcr').id]:
-            hold_date = fields.Datetime.now().replace(hour=16,minute=30) + timedelta(days=8)
+            # hold_date = fields.Datetime.now().replace(hour=16,minute=30) + timedelta(days=8)
+            hold_date = timeslot_write_data[0].datetimeslot.replace(hour=10, minute=0, second=0, microsecond=0)
             drive_thru = True
         else:
             hold_date = fields.Datetime.now() + timedelta(minutes=30)

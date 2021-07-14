@@ -8,7 +8,7 @@
             <field name="interval_type">days</field>
             <field name="numbercall">-1</field>
             <field name="nextcall" eval="(datetime.now().replace(hour=16,minute=0,second=0).isoformat())"/>
-            <field name="active">True</field>
+            <field name="active">False</field>
             <field name="state">code</field>
             <field name="model_id" ref="tt_base.model_tt_cron_log"/>
             <field name="code">model.cron_auto_done_state_vendor_phc()</field>
@@ -26,5 +26,19 @@
             <field name="model_id" ref="tt_base.model_tt_cron_log"/>
             <field name="code">model.cron_auto_create_timeslot_phc()</field>
         </record>
+
+        <record model="ir.cron" id="cron_auto_notification_timeslot_quota_data_phc">
+            <field name="name">Auto Notification Timeslot Quota Data PHC</field>
+            <field name="user_id" ref="base.user_root"/>
+            <field name="interval_number">1</field>
+            <field name="interval_type">days</field>
+            <field name="numbercall">-1</field>
+            <field name="nextcall" eval="(datetime.now().replace(hour=10,minute=0,second=0).isoformat())"/>
+            <field name="active">False</field>
+            <field name="state">code</field>
+            <field name="model_id" ref="tt_base.model_tt_cron_log"/>
+            <field name="code">model.cron_auto_notification_timeslot_quota_data_phc()</field>
+        </record>
+
     </data>
 </odoo>
