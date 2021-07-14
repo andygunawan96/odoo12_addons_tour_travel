@@ -46,6 +46,8 @@ class ReservationPeriksain(models.Model):
 
     test_address_map_link = fields.Char('Test Address Map Link', readonly=True, states={'draft': [('readonly', False)]})
 
+    cancellation_reason = fields.Char('Cancellation Reasion', readonly=True, states={'draft': [('readonly', False)]})
+
     provider_booking_ids = fields.One2many('tt.provider.periksain', 'booking_id', string='Provider Booking', readonly=True, states={'draft': [('readonly', False)]})
 
     timeslot_ids = fields.Many2many('tt.timeslot.periksain','tt_reservation_periksain_timeslot_rel', 'booking_id', 'timeslot_id', 'Timeslot(s)')
@@ -408,6 +410,10 @@ class ReservationPeriksain(models.Model):
                 if provider.get('messages') and provider['status'] == 'FAIL_ISSUED':
                     provider_obj.action_failed_issued_api_phc(provider.get('error_code', -1),provider.get('error_msg', ''))
                 if provider['status'] == 'ISSUED':
+                    provider_obj.pnr = provider['pnr']
+                    for css in provider_obj.cost_service_charge_ids:
+                        css.description = provider['pnr']
+                    book_obj.calculate_service_charge()
                     provider_obj.action_issued_api_periksain(context)
                 if provider['status'] == 'CANCEL':
                     provider_obj.action_cancel()
@@ -1022,3 +1028,59 @@ class ReservationPeriksain(models.Model):
         desc_txt += 'Test Address: ' + self.test_address + '<br/>'
         desc_txt += 'Test Date/Time: ' + self.picked_timeslot_id.get_datetimeslot_str() + '<br/>'
         return desc_txt
+
+    def confirm_order(self, req, context):
+        try:
+            provider_obj = self.env['tt.provider.periksain'].search([('pnr', '=', req['pnr'])], limit=1)
+            if provider_obj:
+                # check analyst
+                analyst_obj = self.env['tt.analyst.periksain'].search([('analyst_id', '=', req['analyst']['id'])], limit=1)
+                if not analyst_obj:
+                    analyst_obj = self.env['tt.analyst.periksain'].create({
+                        "name": req['analyst']['name'],
+                        "analyst_id": req['analyst']['id'],
+                        "analyst_phone_number": req['analyst']['phone'],
+                    })
+                book_obj = self.browse(provider_obj.booking_id.id)
+                book_obj.write({
+                    'analyst_ids': [(6, 0, analyst_obj.id)],
+                    'state_vendor': 'confirmed_order'
+                })
+                return ERR.get_no_error({
+                    "no_booking": req['pnr'],
+                    "message": "success",
+                    "state": book_obj.state_vendor
+
+                })
+            else:
+                _logger.error('pnr not found')
+                return ERR.get_error(500, additional_message='no_booking not found')
+        except RequestException as e:
+            _logger.error(traceback.format_exc())
+            return e.error_dict()
+        except Exception as e:
+            _logger.error(traceback.format_exc())
+            return ERR.get_error(1013)
+
+    def cancel_order(self, req, context):
+        try:
+            provider_obj = self.env['tt.provider.periksain'].search([('pnr', '=', req['pnr'])], limit=1)
+            if provider_obj:
+                book_obj = self.browse(provider_obj.booking_id.id)
+                book_obj.state_vendor = 'refund'
+                book_obj.cancellation_reason = req['reason']
+                return ERR.get_no_error({
+                    "no_booking": req['pnr'],
+                    "message": "success",
+                    "state": book_obj.state_vendor
+
+                })
+            else:
+                _logger.error('pnr not found')
+                return ERR.get_error(500, additional_message='no_booking not found')
+        except RequestException as e:
+            _logger.error(traceback.format_exc())
+            return e.error_dict()
+        except Exception as e:
+            _logger.error(traceback.format_exc())
+            return ERR.get_error(1013)
