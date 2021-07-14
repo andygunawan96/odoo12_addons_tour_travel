@@ -23,6 +23,10 @@ class TtTrainApiCon(models.Model):
             res = table_obj.payment_periksain_api(data,context)
         elif action == 'get_transaction_by_analyst':
             res = table_obj.get_transaction_by_analyst_api(data,context)
+        elif action == 'confirm_order':
+            res = table_obj.confirm_order(data, context)
+        elif action == 'cancel_order':
+            res = table_obj.cancel_order(data, context)
         else:
             raise RequestException(999)
         return res

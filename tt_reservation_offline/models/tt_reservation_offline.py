@@ -10,6 +10,7 @@ import pytz
 from ...tools.api import Response
 from ...tools.ERR import RequestException
 from ...tools import variables, ERR
+from ...tools.repricing_tools import RepricingTools
 
 _logger = logging.getLogger(__name__)
 
@@ -73,9 +74,9 @@ class IssuedOffline(models.Model):
                                                                                  'pending': [('readonly', False)]})
 
     # 171121 CANDY: add field pnr, commission 80%, nta, nta 80%
-    agent_commission = fields.Monetary('Agent Commission', readonly=True, compute='_get_agent_commission', store=True)
-    parent_agent_commission = fields.Monetary('Parent Agent Commission', readonly=True, compute='_get_agent_commission', store=True)
-    ho_commission = fields.Monetary('HO Commission', readonly=True, compute='_get_agent_commission', store=True)
+    agent_commission = fields.Monetary('Agent Commission', readonly=True, compute='_get_agent_commission_v2', store=True)
+    parent_agent_commission = fields.Monetary('Parent Agent Commission', readonly=True, compute='_get_agent_commission_v2', store=True)
+    ho_commission = fields.Monetary('HO Commission', readonly=True, compute='_get_agent_commission_v2', store=True)
     # states={'draft': [('readonly', False)], 'confirm': [('readonly', False)]})
     nta_price = fields.Monetary('HO NTA', readonly=True, compute='_get_nta_price', store=True)
     agent_nta_price = fields.Monetary('Agent NTA', readonly=True, compute='_get_agent_price')
@@ -800,22 +801,25 @@ class IssuedOffline(models.Model):
         for service_charge in self.sale_service_charge_ids:
             service_charge.unlink()
 
-        for provider in self.provider_booking_ids:
+        # April 30, 2020 - SAM
+        this_service_charges = []
+        # END
+        for idx, provider in enumerate(self.provider_booking_ids):
             sc_value = {}
             for p_sc in provider.cost_service_charge_ids:
-                p_charge_code = p_sc.charge_code  # get charge code
-                p_charge_type = p_sc.charge_type  # get charge type
-                p_pax_type = p_sc.pax_type  # get pax type
+                p_charge_code = p_sc.charge_code
+                p_charge_type = p_sc.charge_type
+                p_pax_type = p_sc.pax_type
                 if not sc_value.get(p_pax_type):
                     sc_value[p_pax_type] = {}
+                c_code = ''
                 if p_charge_type != 'RAC':
                     if not sc_value[p_pax_type].get(p_charge_type):
                         sc_value[p_pax_type][p_charge_type] = {}
                         sc_value[p_pax_type][p_charge_type].update({
                             'amount': 0,
                             'foreign_amount': 0,
-                            'total': 0,
-                            'pax_count': 0
+                            'total': 0
                         })
                     c_type = p_charge_type
                     c_code = p_charge_type.lower()
@@ -825,15 +829,15 @@ class IssuedOffline(models.Model):
                         sc_value[p_pax_type][p_charge_code].update({
                             'amount': 0,
                             'foreign_amount': 0,
-                            'total': 0,
-                            'pax_count': 0
+                            'total': 0
                         })
                     c_type = p_charge_code
                     c_code = p_charge_code
+
                 sc_value[p_pax_type][c_type].update({
                     'charge_type': p_charge_type,
                     'charge_code': c_code,
-                    'pax_count': sc_value[p_pax_type][c_type]['pax_count'] + p_sc.pax_count,
+                    'pax_count': p_sc.pax_count,
                     'currency_id': p_sc.currency_id.id,
                     'foreign_currency_id': p_sc.foreign_currency_id.id,
                     'amount': sc_value[p_pax_type][c_type]['amount'] + p_sc.amount,
@@ -842,19 +846,32 @@ class IssuedOffline(models.Model):
                     'commission_agent_id': p_sc.commission_agent_id.id
                 })
 
-            values = []
+            # values = []
             for p_type, p_val in sc_value.items():
                 for c_type, c_val in p_val.items():
-                    curr_dict = {}
-                    curr_dict['pax_type'] = p_type
-                    curr_dict['booking_offline_id'] = self.id
-                    curr_dict['description'] = provider.pnr
+                    # April 27, 2020 - SAM
+                    curr_dict = {
+                        'pax_type': p_type,
+                        'booking_offline_id': self.id,
+                        'description': provider.pnr,
+                    }
+                    # curr_dict['pax_type'] = p_type
+                    # curr_dict['booking_airline_id'] = self.id
+                    # curr_dict['description'] = provider.pnr
+                    # END
                     curr_dict.update(c_val)
-                    values.append((0, 0, curr_dict))
-
-            self.write({
-                'sale_service_charge_ids': values
-            })
+                    # values.append((0,0,curr_dict))
+                    # April 30, 2020 - SAM
+                    this_service_charges.append((0, 0, curr_dict))
+                    # END
+        # April 2020 - SAM
+        #     self.write({
+        #         'sale_service_charge_ids': values
+        #     })
+        self.write({
+            'sale_service_charge_ids': this_service_charges
+        })
+        # END
 
     def sync_service_charge(self):
         for provider in self.provider_booking_ids:
@@ -937,6 +954,11 @@ class IssuedOffline(models.Model):
                 }
                 self.env['tt.provider.offline'].create(vals)
                 pnr_found.append(line.pnr)
+
+    def calculate_offline_pricing(self, pricing_values):
+        repr_obj = RepricingTools('offline')
+        res = repr_obj.get_service_charge_pricing(**pricing_values)
+        return res
 
     def round_offline_pricing(self):
         """ Fungsi ini untuk melakukan pembulatan harga di pricing """
@@ -1242,6 +1264,159 @@ class IssuedOffline(models.Model):
                                 rec.parent_agent_commission += line.basic_amount
                     if percentage_rem > 0 and price_obj.basic_amount_type == 'percentage':
                         rec.ho_commission += total_amount / 100 * percentage_rem
+
+    @api.onchange('total_commission_amount')
+    @api.depends('total_commission_amount')
+    def _get_agent_commission_v2(self):
+        #is commission, send total_amount to v2
+        for rec in self:
+            if rec.offline_provider_type:
+                pnr_list = []
+                total_pax_count = 0
+                adt_count = 0
+                chd_count = 0
+                inf_count = 0
+                segment_count = 0
+                route_count = 0
+
+                for psg in rec.passenger_ids:
+                    if psg.pax_type == 'INF':
+                        inf_count += 1
+                    elif psg.pax_type == 'CHD':
+                        chd_count += 1
+                    else:
+                        adt_count += 1
+                    total_pax_count += 1
+
+                """ Get provider type id """
+                if rec.offline_provider_type != 'other':
+                    provider_type_id = self.env['tt.provider.type'].sudo().search(
+                        [('code', '=', rec.offline_provider_type)], limit=1)
+                else:
+                    provider_type_id = self.env['tt.provider.type'].sudo().search([('code', '=', 'offline')], limit=1)
+
+                for line in rec.line_ids:
+                    if line.pnr not in pnr_list:
+                        pnr_list.append(line.pnr)
+                    if rec.offline_provider_type in ['airline', 'train']:
+                        """ Jika offline type = airline, rule fee amount : per PNR per pax """
+                        segment_count = len(rec.line_ids)
+                        route_count = len(pnr_list)
+
+                    elif rec.offline_provider_type == 'hotel':
+                        """ Jika offline type = hotel, rule fee amount : per night per room * qty """
+                        if line.check_in is not False and line.check_out is not False:
+                            check_in = datetime.strptime(line.check_in, '%Y-%m-%d')
+                            check_out = datetime.strptime(line.check_out, '%Y-%m-%d')
+                            days = check_out - check_in
+                            days_int = int(days.days)
+                            route_count = days_int
+                            segment_count = line.obj_qty
+                    else:
+                        """ else, rule fee amount : per line/provider per pax """
+                        segment_count = len(rec.line_ids)
+                        route_count = len(pnr_list)
+
+                adt_scs_list = []
+                chd_scs_list = []
+                inf_scs_list = []
+                for rec2 in pnr_list:
+                    prov_code = ''
+                    for rec3 in rec.provider_booking_ids:
+                        if rec3.pnr == rec2:
+                            prov_code = rec3.provider_id.code
+                    user_info = self.env['tt.agent'].sudo().get_agent_level(rec.agent_id.id)
+                    if adt_count > 0:
+                        adt_scs_list = self.calculate_offline_pricing({
+                            'fare_amount': 0,
+                            'tax_amount': 0,
+                            'roc_amount': rec.total_commission_amount / len(pnr_list) / total_pax_count,
+                            'rac_amount': (rec.total_commission_amount / len(pnr_list) / total_pax_count) * -1,
+                            'currency': 'IDR',
+                            'provider': prov_code,
+                            'origin': '',
+                            'destination': '',
+                            'carrier_code': '',
+                            'class_of_service': '',
+                            'route_count': route_count,
+                            'segment_count': segment_count,
+                            'pax_count': adt_count,
+                            'pax_type': 'ADT',
+                            'agent_type_code': rec.agent_type_id.code,
+                            'agent_id': rec.agent_id.id,
+                            'user_info': user_info,
+                            'is_pricing': False,
+                            'is_commission': True,
+                            'is_retrieved': False,
+                            'pricing_date': '',
+                            'show_upline_commission': True
+                        })
+
+                    if chd_count > 0:
+                        chd_scs_list = self.calculate_offline_pricing({
+                            'fare_amount': 0,
+                            'tax_amount': 0,
+                            'roc_amount': rec.total_commission_amount / len(pnr_list) / total_pax_count,
+                            'rac_amount': (rec.total_commission_amount / len(pnr_list) / total_pax_count) * -1,
+                            'currency': 'IDR',
+                            'provider': prov_code,
+                            'origin': '',
+                            'destination': '',
+                            'carrier_code': '',
+                            'class_of_service': '',
+                            'route_count': route_count,
+                            'segment_count': segment_count,
+                            'pax_count': chd_count,
+                            'pax_type': 'CHD',
+                            'agent_type_code': rec.agent_type_id.code,
+                            'agent_id': rec.agent_id.id,
+                            'user_info': user_info,
+                            'is_pricing': False,
+                            'is_commission': True,
+                            'is_retrieved': False,
+                            'pricing_date': '',
+                            'show_upline_commission': True
+                        })
+
+                    if inf_count > 0:
+                        inf_scs_list = self.calculate_offline_pricing({
+                            'fare_amount': 0,
+                            'tax_amount': 0,
+                            'roc_amount': rec.total_commission_amount / len(pnr_list) / total_pax_count,
+                            'rac_amount': (rec.total_commission_amount / len(pnr_list) / total_pax_count) * -1,
+                            'currency': 'IDR',
+                            'provider': prov_code,
+                            'origin': '',
+                            'destination': '',
+                            'carrier_code': '',
+                            'class_of_service': '',
+                            'route_count': route_count,
+                            'segment_count': segment_count,
+                            'pax_count': inf_count,
+                            'pax_type': 'INF',
+                            'agent_type_code': rec.agent_type_id.code,
+                            'agent_id': rec.agent_id.id,
+                            'user_info': user_info,
+                            'is_pricing': False,
+                            'is_commission': True,
+                            'is_retrieved': False,
+                            'pricing_date': '',
+                            'show_upline_commission': True
+                        })
+                all_scs_list = adt_scs_list + chd_scs_list + inf_scs_list
+
+                rec.agent_commission = 0
+                rec.parent_agent_commission = 0
+                rec.ho_commission = 0
+
+                for scs in all_scs_list:
+                    if scs.get('charge_type') == 'RAC':
+                        if not scs.get('commission_agent_id') or scs.get('commission_agent_id') == rec.agent_id.id:
+                            rec.agent_commission -= scs['total']
+                        elif scs.get('commission_agent_id') == rec.agent_id.parent_agent_id.id and rec.agent_id.parent_agent_id.id != self.env.ref('tt_base.agent_type_ho').id:
+                            rec.parent_agent_commission -= scs['total']
+                        else:
+                            rec.ho_commission -= scs['total']
 
     # Hitung harga final / Agent NTA Price
     @api.onchange('vendor_amount', 'nta_price')
