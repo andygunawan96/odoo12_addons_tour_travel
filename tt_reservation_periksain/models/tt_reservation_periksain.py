@@ -1041,6 +1041,11 @@ class ReservationPeriksain(models.Model):
                         "analyst_id": req['analyst']['id'],
                         "analyst_phone_number": req['analyst']['phone'],
                     })
+                else: ## gatau boleh ngga update data analyst
+                    analyst_obj.update({
+                        "name": req['analyst']['name'],
+                        "analyst_phone_number": req['analyst']['phone'],
+                    })
                 book_obj = self.browse(provider_obj.booking_id.id)
                 book_obj.write({
                     'analyst_ids': [(6, 0, analyst_obj.id)],
