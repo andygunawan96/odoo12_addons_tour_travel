@@ -168,7 +168,9 @@ class TtTimeslotphc(models.Model):
                 'time': str(rec.datetimeslot)[11:16],
                 'seq_id': rec.seq_id,
                 'availability': rec.get_availability(carrier_obj.code),
-                'group_booking': True if rec.agent_id else False
+                'group_booking': True if rec.agent_id else False,
+                "total_pcr_timeslot": rec.total_pcr_timeslot,
+                "used_pcr_count": rec.used_pcr_count
             })
         return ERR.get_no_error(timeslot_dict)
 
