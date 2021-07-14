@@ -788,9 +788,12 @@ class TtReservation(models.Model):
         except:
             _logger.error("provider type %s failed to expire vendor" % (self._name))
 
-    def action_cancel(self):
+    def action_cancel(self, context=False):
         self.cancel_date = fields.Datetime.now()
-        self.cancel_uid = self.env.user.id
+        if context:
+            self.cancel_uid = context['co_uid']
+        else:
+            self.cancel_uid = self.env.user.id
         self.state = 'cancel'
 
     # def get_installment_dp_amount(self):
