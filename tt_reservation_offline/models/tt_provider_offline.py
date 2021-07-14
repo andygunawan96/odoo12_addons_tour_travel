@@ -246,53 +246,162 @@ class ProviderOffline(models.Model):
                 provider_line_count = 1
 
         total_amount = self.booking_id.total_commission_amount
-        fee_amount_val = self.booking_id.get_fee_amount(self.booking_id.agent_id, provider_type_id,
-                                                        self.booking_id.total_commission_amount)
-        real_comm_amount = total_amount - (fee_amount_val['amount'] * (len(self.booking_id.provider_booking_ids) * len(self.booking_id.passenger_ids)))
-
-        """ Hitung fee amount """
-        for psg in self.booking_id.passenger_ids:
-            fee_amount_vals = self.booking_id.sudo().get_fee_amount(self.booking_id.agent_id, provider_type_id,
-                                                                    self.booking_id.total_commission_amount,
-                                                                    psg)
-            total_amount -= fee_amount_vals.get('amount')
-            fee_amount_vals['provider_offline_booking_id'] = self.id
-            fee_amount_vals['amount'] = -(fee_amount_vals['amount'])
-            fee_amount_vals['total'] = -(fee_amount_vals['total'])
-            scs_list.append(fee_amount_vals)
-
+        segment_count = len(self.booking_id.line_ids)
+        route_count = 1
+        adt_count = 0
+        chd_count = 0
+        inf_count = 0
+        total_pax_count = 0
         # Get all pricing per pax
+        adt_id_list = []
+        chd_id_list = []
+        inf_id_list = []
         for psg in self.booking_id.passenger_ids:
-            scs = []
-            vals = {
-                'amount': sale_price / len(self.booking_id.passenger_ids),
+            if psg.pax_type == 'INF':
+                inf_count += 1
+                inf_id_list.append(psg.id)
+            elif psg.pax_type == 'CHD':
+                chd_count += 1
+                chd_id_list.append(psg.id)
+            else:
+                adt_count += 1
+                adt_id_list.append(psg.id)
+            total_pax_count += 1
+
+        adt_scs_list = []
+        chd_scs_list = []
+        inf_scs_list = []
+        user_info = self.env['tt.agent'].sudo().get_agent_level(self.booking_id.agent_id.id)
+        if adt_count > 0:
+            scs_list.append({
+                'amount': sale_price / len(self.booking_id.passenger_ids) / total_pax_count,
                 'charge_code': 'fare',
                 'charge_type': 'FARE',
                 'description': '',
-                'pax_type': psg.pax_type,
+                'pax_type': 'ADT',
                 'currency_id': self.currency_id.id,
                 'provider_offline_booking_id': self.id,
-                'passenger_offline_ids': [],
-                'pax_count': 1,
+                'passenger_offline_ids': adt_id_list,
+                'pax_count': adt_count,
                 'total': sale_price / len(self.booking_id.passenger_ids),
-            }
-            vals['passenger_offline_ids'].append(psg.id)
-            scs_list.append(vals)
-            commission_list = pricing_obj.get_commission(real_comm_amount / len(self.booking_id.passenger_ids),
-                                                         self.booking_id.agent_id, provider_type_id)
-            for comm in commission_list:
-                if comm['amount'] > 0:
-                    vals2 = vals.copy()
-                    vals2.update({
-                        'commission_agent_id': comm['commission_agent_id'],
-                        'total': comm['amount'] * -1 / len(self.booking_id.line_ids) * provider_line_count,
-                        'amount': comm['amount'] * -1 / len(self.booking_id.line_ids) * provider_line_count,
-                        'charge_code': comm['code'],
-                        'charge_type': 'RAC',
-                        'passenger_offline_ids': [],
-                    })
-                    vals2['passenger_offline_ids'].append(psg.id)
-                    scs_list.append(vals2)
+            })
+            adt_scs_list = self.booking_id.calculate_offline_pricing({
+                'fare_amount': 0,
+                'tax_amount': 0,
+                'roc_amount': total_amount / len(self.booking_id.line_ids) * provider_line_count / total_pax_count,
+                'rac_amount': (total_amount / len(self.booking_id.line_ids) * provider_line_count / total_pax_count) * -1,
+                'currency': 'IDR',
+                'provider': self.provider_id.code,
+                'origin': '',
+                'destination': '',
+                'carrier_code': '',
+                'class_of_service': '',
+                'route_count': route_count,
+                'segment_count': segment_count,
+                'pax_count': adt_count,
+                'pax_type': 'ADT',
+                'agent_type_code': self.booking_id.agent_type_id.code,
+                'agent_id': self.booking_id.agent_id.id,
+                'user_info': user_info,
+                'is_pricing': False,
+                'is_commission': True,
+                'is_retrieved': False,
+                'pricing_date': '',
+                'show_upline_commission': True
+            })
+
+        if chd_count > 0:
+            scs_list.append({
+                'amount': sale_price / len(self.booking_id.passenger_ids) / total_pax_count,
+                'charge_code': 'fare',
+                'charge_type': 'FARE',
+                'description': '',
+                'pax_type': 'CHD',
+                'currency_id': self.currency_id.id,
+                'provider_offline_booking_id': self.id,
+                'passenger_offline_ids': chd_id_list,
+                'pax_count': chd_count,
+                'total': sale_price / len(self.booking_id.passenger_ids),
+            })
+            chd_scs_list = self.booking_id.calculate_offline_pricing({
+                'fare_amount': 0,
+                'tax_amount': 0,
+                'roc_amount': total_amount / len(self.booking_id.line_ids) * provider_line_count / total_pax_count,
+                'rac_amount': (total_amount / len(self.booking_id.line_ids) * provider_line_count / total_pax_count) * -1,
+                'currency': 'IDR',
+                'provider': self.provider_id.code,
+                'origin': '',
+                'destination': '',
+                'carrier_code': '',
+                'class_of_service': '',
+                'route_count': route_count,
+                'segment_count': segment_count,
+                'pax_count': chd_count,
+                'pax_type': 'CHD',
+                'agent_type_code': self.booking_id.agent_type_id.code,
+                'agent_id': self.booking_id.agent_id.id,
+                'user_info': user_info,
+                'is_pricing': False,
+                'is_commission': True,
+                'is_retrieved': False,
+                'pricing_date': '',
+                'show_upline_commission': True
+            })
+
+        if inf_count > 0:
+            scs_list.append({
+                'amount': sale_price / len(self.booking_id.passenger_ids) / total_pax_count,
+                'charge_code': 'fare',
+                'charge_type': 'FARE',
+                'description': '',
+                'pax_type': 'INF',
+                'currency_id': self.currency_id.id,
+                'provider_offline_booking_id': self.id,
+                'passenger_offline_ids': inf_id_list,
+                'pax_count': inf_count,
+                'total': sale_price / len(self.booking_id.passenger_ids),
+            })
+            inf_scs_list = self.booking_id.calculate_offline_pricing({
+                'fare_amount': 0,
+                'tax_amount': 0,
+                'roc_amount': total_amount / len(self.booking_id.line_ids) * provider_line_count / total_pax_count,
+                'rac_amount': (total_amount / len(self.booking_id.line_ids) * provider_line_count / total_pax_count) * -1,
+                'currency': 'IDR',
+                'provider': self.provider_id.code,
+                'origin': '',
+                'destination': '',
+                'carrier_code': '',
+                'class_of_service': '',
+                'route_count': route_count,
+                'segment_count': segment_count,
+                'pax_count': inf_count,
+                'pax_type': 'INF',
+                'agent_type_code': self.booking_id.agent_type_id.code,
+                'agent_id': self.booking_id.agent_id.id,
+                'user_info': user_info,
+                'is_pricing': False,
+                'is_commission': True,
+                'is_retrieved': False,
+                'pricing_date': '',
+                'show_upline_commission': True
+            })
+        commission_list = adt_scs_list + chd_scs_list + inf_scs_list
+
+        for comm in commission_list:
+            if comm['pax_type'] == 'INF':
+                psg_id_list = inf_id_list
+            elif comm['pax_type'] == 'CHD':
+                psg_id_list = chd_id_list
+            else:
+                psg_id_list = adt_id_list
+            if comm['amount'] != 0:
+                comm.update({
+                    'passenger_offline_ids': psg_id_list,
+                    'description': '',
+                    'currency_id': self.currency_id.id,
+                    'provider_offline_booking_id': self.id
+                })
+                scs_list.append(comm)
 
         # Gather pricing based on pax type
         for scs in scs_list:
@@ -367,18 +476,38 @@ class ProviderOffline(models.Model):
     def create_service_charge_hotel(self, index):
         self.delete_service_charge()
 
-        provider_type_id = self.env['tt.provider.type'].search([('code', '=', self.booking_id.offline_provider_type)], limit=1)
-
         book_obj = self.booking_id
-
-        pax_count = 0
-
         scs_list = []
-        scs_list_2 = []
-        pricing_obj = self.env['tt.pricing.agent'].sudo()
 
-        """ Get provider fee amount """
-        total_fee_amount = 0
+        provider_line_count = 0
+        for line in self.booking_id.line_ids:
+            if line.provider_id.id == self.provider_id.id:
+                if line.pnr == self.pnr:
+                    provider_line_count += 1
+
+        total_amount = book_obj.total_commission_amount
+        segment_count = len(self.booking_id.line_ids)
+        route_count = 1
+        adt_count = 0
+        chd_count = 0
+        inf_count = 0
+        total_pax_count = 0
+        # Get all pricing per pax
+        adt_id_list = []
+        chd_id_list = []
+        inf_id_list = []
+        for psg in self.booking_id.passenger_ids:
+            if psg.pax_type == 'INF':
+                inf_count += 1
+                inf_id_list.append(psg.id)
+            elif psg.pax_type == 'CHD':
+                chd_count += 1
+                chd_id_list.append(psg.id)
+            else:
+                adt_count += 1
+                adt_id_list.append(psg.id)
+            total_pax_count += 1
+
         line_obj = book_obj.line_ids[index]
 
         check_in_current = datetime.strptime(line_obj.check_in, '%Y-%m-%d')
@@ -386,101 +515,159 @@ class ProviderOffline(models.Model):
         days_current = check_out_current - check_in_current
         days_int_current = int(days_current.days)
 
-        pax_count = days_int_current * (int(line_obj.obj_qty) if line_obj.obj_qty else 1)
-        basic_admin_fee = 0
-
-        if book_obj.admin_fee_id:
-            for line in book_obj.admin_fee_id.admin_fee_line_ids:
-                basic_admin_fee += line.amount
-
         total_line_qty = 0
-
-        """ Get total fee amount """
         for line in book_obj.line_ids:
             check_in = datetime.strptime(line.check_in, '%Y-%m-%d')
             check_out = datetime.strptime(line.check_out, '%Y-%m-%d')
             days = check_out - check_in
             days_int = int(days.days)
-
-            fee_amount_vals = book_obj.get_fee_amount(book_obj.agent_id, provider_type_id,
-                                                      book_obj.total_commission_amount, )
-            fee_amount_vals['provider_offline_booking_id'] = self.id
-            fee_amount_vals['amount'] = fee_amount_vals.get('amount')
-            fee_amount_vals['total'] = fee_amount_vals.get('total') * line.obj_qty * days_int
-            total_fee_amount += fee_amount_vals.get('total')
+            route_count = days_int
+            segment_count = line.obj_qty
 
             total_line_qty += days_int * line.obj_qty
 
-        if total_fee_amount > book_obj.ho_commission:
-            real_comm_amount = book_obj.ho_commission
-            fee_amount_remaining = book_obj.ho_commission
-        else:
-            real_comm_amount = book_obj.total_commission_amount - total_fee_amount
-            fee_amount_remaining = total_fee_amount
-
-        fee_amount_vals = book_obj.get_fee_amount(book_obj.agent_id, provider_type_id,
-                                                  book_obj.total_commission_amount, self.booking_id.passenger_ids[0])
-        fee_amount_vals['provider_offline_booking_id'] = self.id
-        for line_idx, line in enumerate(book_obj.line_ids):
-            check_in = datetime.strptime(line.check_in, '%Y-%m-%d')
-            check_out = datetime.strptime(line.check_out, '%Y-%m-%d')
-            days = check_out - check_in
-            days_int = int(days.days)
-
-            if line_idx == index:
-                if fee_amount_remaining >= 0:
-                    if fee_amount_remaining < fee_amount_vals.get('amount') * line.obj_qty * days_int:
-                        fee_amount_vals['amount'] = -fee_amount_remaining
-                        fee_amount_vals['total'] = -fee_amount_remaining
-                        fee_amount_vals['pax_count'] = 1
-                        scs_list.append(fee_amount_vals)
-                        fee_amount_remaining -= fee_amount_remaining
-                    else:
-                        fee_amount_vals['amount'] = -fee_amount_vals.get('amount') * line.obj_qty * days_int
-                        fee_amount_vals['total'] = -fee_amount_vals.get('total') * line.obj_qty * days_int
-                        fee_amount_vals['pax_count'] = 1
-                        scs_list.append(fee_amount_vals)
-                        fee_amount_remaining -= fee_amount_vals.get('amount') * line.obj_qty * days_int
-            else:
-                if fee_amount_remaining >= 0:
-                    if fee_amount_remaining < fee_amount_vals.get('amount') * line.obj_qty * days_int:
-                        fee_amount_remaining -= fee_amount_remaining
-                    else:
-                        fee_amount_remaining -= fee_amount_vals.get('amount') * line.obj_qty * days_int
-
         sale_price = book_obj.input_total / total_line_qty * line_obj.obj_qty * days_int_current
 
-        # Get all pricing per pax
-        vals = {
-            'amount': sale_price,
-            'charge_code': 'fare',
-            'charge_type': 'FARE',
-            'description': '',
-            'pax_type': 'ADT',
-            'currency_id': self.currency_id.id,
-            'provider_offline_booking_id': self.id,
-            'passenger_offline_ids': [],
-            'pax_count': 1,
-            'total': sale_price,
-        }
-        vals['passenger_offline_ids'].append(self.booking_id.passenger_ids[0].id)
-        scs_list.append(vals)
-        if total_fee_amount <= book_obj.ho_commission:
-            commission_list = pricing_obj.get_commission(real_comm_amount, book_obj.agent_id, provider_type_id)
-            for comm in commission_list:
-                if comm['amount'] > 0:
-                    vals2 = vals.copy()
-                    vals2.update({
-                        'commission_agent_id': comm['commission_agent_id'],
-                        'total': comm['amount'] * -1 / total_line_qty * line_obj.obj_qty * days_int_current,
-                        'amount': comm['amount'] * -1 / total_line_qty * line_obj.obj_qty * days_int_current,
-                        'charge_code': comm['code'],
-                        'charge_type': 'RAC',
-                        'passenger_offline_ids': [],
-                    })
-                    vals2['passenger_offline_ids'].append(self.booking_id.passenger_ids[0].id)
-                    scs_list.append(vals2)
+        adt_scs_list = []
+        chd_scs_list = []
+        inf_scs_list = []
+        user_info = self.env['tt.agent'].sudo().get_agent_level(self.booking_id.agent_id.id)
+        if adt_count > 0:
+            scs_list.append({
+                'amount': sale_price / len(self.booking_id.passenger_ids) / total_pax_count,
+                'charge_code': 'fare',
+                'charge_type': 'FARE',
+                'description': '',
+                'pax_type': 'ADT',
+                'currency_id': self.currency_id.id,
+                'provider_offline_booking_id': self.id,
+                'passenger_offline_ids': adt_id_list,
+                'pax_count': adt_count,
+                'total': sale_price / len(self.booking_id.passenger_ids),
+            })
+            adt_scs_list = self.booking_id.calculate_offline_pricing({
+                'fare_amount': 0,
+                'tax_amount': 0,
+                'roc_amount': total_amount / len(self.booking_id.line_ids) * provider_line_count / total_pax_count,
+                'rac_amount': (total_amount / len(self.booking_id.line_ids) * provider_line_count / total_pax_count) * -1,
+                'currency': 'IDR',
+                'provider': self.provider_id.code,
+                'origin': '',
+                'destination': '',
+                'carrier_code': '',
+                'class_of_service': '',
+                'route_count': route_count,
+                'segment_count': segment_count,
+                'pax_count': adt_count,
+                'pax_type': 'ADT',
+                'agent_type_code': self.booking_id.agent_type_id.code,
+                'agent_id': self.booking_id.agent_id.id,
+                'user_info': user_info,
+                'is_pricing': False,
+                'is_commission': True,
+                'is_retrieved': False,
+                'pricing_date': '',
+                'show_upline_commission': True
+            })
 
+        if chd_count > 0:
+            scs_list.append({
+                'amount': sale_price / len(self.booking_id.passenger_ids) / total_pax_count,
+                'charge_code': 'fare',
+                'charge_type': 'FARE',
+                'description': '',
+                'pax_type': 'CHD',
+                'currency_id': self.currency_id.id,
+                'provider_offline_booking_id': self.id,
+                'passenger_offline_ids': chd_id_list,
+                'pax_count': chd_count,
+                'total': sale_price / len(self.booking_id.passenger_ids),
+            })
+            chd_scs_list = self.booking_id.calculate_offline_pricing({
+                'fare_amount': 0,
+                'tax_amount': 0,
+                'roc_amount': total_amount / len(self.booking_id.line_ids) * provider_line_count / total_pax_count,
+                'rac_amount': (total_amount / len(self.booking_id.line_ids) * provider_line_count / total_pax_count) * -1,
+                'currency': 'IDR',
+                'provider': self.provider_id.code,
+                'origin': '',
+                'destination': '',
+                'carrier_code': '',
+                'class_of_service': '',
+                'route_count': route_count,
+                'segment_count': segment_count,
+                'pax_count': chd_count,
+                'pax_type': 'CHD',
+                'agent_type_code': self.booking_id.agent_type_id.code,
+                'agent_id': self.booking_id.agent_id.id,
+                'user_info': user_info,
+                'is_pricing': False,
+                'is_commission': True,
+                'is_retrieved': False,
+                'pricing_date': '',
+                'show_upline_commission': True
+            })
+
+        if inf_count > 0:
+            scs_list.append({
+                'amount': sale_price / len(self.booking_id.passenger_ids) / total_pax_count,
+                'charge_code': 'fare',
+                'charge_type': 'FARE',
+                'description': '',
+                'pax_type': 'INF',
+                'currency_id': self.currency_id.id,
+                'provider_offline_booking_id': self.id,
+                'passenger_offline_ids': inf_id_list,
+                'pax_count': inf_count,
+                'total': sale_price / len(self.booking_id.passenger_ids),
+            })
+            inf_scs_list = self.booking_id.calculate_offline_pricing({
+                'fare_amount': 0,
+                'tax_amount': 0,
+                'roc_amount': total_amount / len(self.booking_id.line_ids) * provider_line_count / total_pax_count,
+                'rac_amount': (total_amount / len(self.booking_id.line_ids) * provider_line_count / total_pax_count) * -1,
+                'currency': 'IDR',
+                'provider': self.provider_id.code,
+                'origin': '',
+                'destination': '',
+                'carrier_code': '',
+                'class_of_service': '',
+                'route_count': route_count,
+                'segment_count': segment_count,
+                'pax_count': inf_count,
+                'pax_type': 'INF',
+                'agent_type_code': self.booking_id.agent_type_id.code,
+                'agent_id': self.booking_id.agent_id.id,
+                'user_info': user_info,
+                'is_pricing': False,
+                'is_commission': True,
+                'is_retrieved': False,
+                'pricing_date': '',
+                'show_upline_commission': True
+            })
+        commission_list = adt_scs_list + chd_scs_list + inf_scs_list
+
+        for comm in commission_list:
+            if comm['pax_type'] == 'INF':
+                psg_id_list = inf_id_list
+            elif comm['pax_type'] == 'CHD':
+                psg_id_list = chd_id_list
+            else:
+                psg_id_list = adt_id_list
+            if comm['amount'] != 0:
+                comm.update({
+                    'passenger_offline_ids': psg_id_list,
+                    'description': '',
+                    'currency_id': self.currency_id.id,
+                    'provider_offline_booking_id': self.id
+                })
+                scs_list.append(comm)
+
+        basic_admin_fee = 0
+
+        if book_obj.admin_fee_id:
+            for line in book_obj.admin_fee_id.admin_fee_line_ids:
+                basic_admin_fee += line.amount
         if self.booking_id.admin_fee_ho != 0:
             currency_obj = self.env['res.currency'].sudo().search([('name', '=', 'IDR')], limit=1)
             scs_list.append({
