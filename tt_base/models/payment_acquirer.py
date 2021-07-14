@@ -566,7 +566,7 @@ class PaymentUniqueAmount(models.Model):
             used_unique_number.append(rec['unique_number'])
         used_unique_number = set(used_unique_number)
         try:
-            unique_number = random.sample(variables.UNIQUE_AMOUNT_POOL - used_unique_number,1).pop()
+            unique_number = 3000 + random.sample(variables.UNIQUE_AMOUNT_POOL - used_unique_number,1).pop()
         except:
             unique_number =  0
         vals_list['unique_number'] = unique_number

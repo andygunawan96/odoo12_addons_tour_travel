@@ -115,9 +115,6 @@ class AgentReportRecapTransactionXls(models.TransientModel):
                 sty_amount = style.table_data_amount_even
 
             sheet.write(row_data, 0, counter, sty_table_data_center)
-            sheet.write(row_data, 3, i['order_number'], sty_table_data)
-            sheet.write(row_data, 4, i['test_datetime'], sty_date)
-            sheet.write(row_data, 5, i['adult'], sty_amount)
             parent_row_data = row_data
             iter_count = 0
             for j in pax_datas:
@@ -137,6 +134,9 @@ class AgentReportRecapTransactionXls(models.TransientModel):
                         sty_amount = style.table_data_amount_even
                     sheet.write(row_data, 1, i['provider_name'], sty_table_data)
                     sheet.write(row_data, 2, i['carrier_name'], sty_table_data)
+                    sheet.write(row_data, 3, i['order_number'], sty_table_data)
+                    sheet.write(row_data, 4, i['test_datetime'], sty_date)
+                    sheet.write(row_data, 5, i['adult'], sty_amount)
                     sheet.write(row_data, 6, i['state'], sty_table_data)
                     sheet.write(row_data, 7, i['state_vendor'], sty_table_data)
                     sheet.write(row_data, 8, j['ticket_number'], sty_table_data)
@@ -146,9 +146,6 @@ class AgentReportRecapTransactionXls(models.TransientModel):
                     sheet.write(row_data, 12, j['address_ktp'], sty_table_data)
                     if row_data > parent_row_data:
                         sheet.write(row_data, 0, '', sty_table_data_center)
-                        sheet.write(row_data, 3, '', sty_table_data)
-                        sheet.write(row_data, 4, '', sty_date)
-                        sheet.write(row_data, 5, '', sty_amount)
                     iter_count += 1
 
         # close the file
