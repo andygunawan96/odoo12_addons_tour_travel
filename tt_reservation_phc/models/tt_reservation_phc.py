@@ -180,10 +180,10 @@ class Reservationphc(models.Model):
         for rec in self:
             rec.state = 'cancel_pending'
 
-    def action_cancel(self):
-        super(Reservationphc, self).action_cancel()
+    def action_cancel(self, backend_context=False, gateway_context=False):
+        super(Reservationphc, self).action_cancel(gateway_context)
         for rec in self.provider_booking_ids:
-            rec.action_cancel()
+            rec.action_cancel(gateway_context)
         if self.payment_acquirer_number_id:
             self.payment_acquirer_number_id.state = 'cancel'
 
@@ -472,7 +472,7 @@ class Reservationphc(models.Model):
                 if provider['status'] == 'ISSUED':
                     provider_obj.action_issued_api_phc(context)
                 if provider['status'] == 'CANCEL':
-                    provider_obj.action_cancel()
+                    provider_obj.action_cancel(context)
                     any_provider_changed = True
                 #jaga jaga kalau gagal issued
                 for idx, ticket_obj in enumerate(provider['tickets']):
@@ -796,7 +796,7 @@ class Reservationphc(models.Model):
             self.action_failed_book()
         elif all(rec.state == 'cancel' for rec in self.provider_booking_ids):
             # failed book
-            self.action_cancel()
+            self.action_cancel(gateway_context=context)
         elif self.provider_booking_ids:
             provider_obj = self.provider_booking_ids[0]
             self.write({
