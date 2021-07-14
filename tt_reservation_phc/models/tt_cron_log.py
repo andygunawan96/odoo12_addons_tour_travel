@@ -63,4 +63,4 @@ class TtCronLogInhphc(models.Model):
                                                            'notification_code')
         except Exception as e:
             self.create_cron_log_folder()
-            self.write_cron_log('auto done state vendor phc')
+            self.write_cron_log('auto notification timeslot quota data phc')
