@@ -57,7 +57,7 @@ class TtCronLogInhphc(models.Model):
 
             data = {
                 'code': 9909,
-                'message': 'PHC Verified:\n%s\nAntigen : %s\nPCR : %s' % (timeslot_data.datetimeslot,verified_antigen,verified_pcr)
+                'message': 'PHC Verified:\n%s\nAntigen : %s\nPCR : %s' % (timeslot_data.datetimeslot.astimezone(pytz.timezone('Asia/Jakarta')),verified_antigen,verified_pcr)
             }
             self.env['tt.api.con'].send_request_to_gateway('%s/notification' % (self.env['tt.api.con'].url), data,
                                                            'notification_code')
