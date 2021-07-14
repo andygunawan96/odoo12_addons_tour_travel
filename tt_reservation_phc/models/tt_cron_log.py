@@ -43,3 +43,24 @@ class TtCronLogInhphc(models.Model):
         except Exception as e:
             self.create_cron_log_folder()
             self.write_cron_log('auto create timeslot phc')
+
+    def cron_auto_notification_timeslot_quota_data_phc(self):
+        try:
+            timeslot_data = self.env['tt.timeslot.phc'].search([('dateslot','=',datetime.today().strftime("%Y-%m-%d")),('timeslot_type','=','drive_thru')],limit=1)
+            verified_antigen = 0
+            verified_pcr = 0
+            for rec in timeslot_data.booking_used_ids.filtered(lambda x: x.state_vendor == 'verified'):
+                if "PCR" in rec.carrier_name:
+                    verified_pcr += rec.adult
+                else:
+                    verified_antigen += rec.adult
+
+            data = {
+                'code': 9909,
+                'message': 'PHC Verified:\n%s\nAntigen : %s\nPCR : %s' % (timeslot_data.datetimeslot.astimezone(pytz.timezone('Asia/Jakarta')),verified_antigen,verified_pcr)
+            }
+            self.env['tt.api.con'].send_request_to_gateway('%s/notification' % (self.env['tt.api.con'].url), data,
+                                                           'notification_code')
+        except Exception as e:
+            self.create_cron_log_folder()
+            self.write_cron_log('auto notification timeslot quota data phc')
