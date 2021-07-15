@@ -81,5 +81,5 @@ class TtReservationCustomer(models.Model):
     def find_duplicate_passenger_new_order(self,pax_list):
         duplicate_pax_list = []
         for psg in pax_list:
-            duplicate_pax_list = self.search([('identity_number','=',psg['identity_number']),('booking_id.state_vendor','=','new_order')])
+            duplicate_pax_list = self.search([('identity_number','=',psg['identity'][0]['identity_number']),('booking_id.state_vendor','=','new_order')])
         return duplicate_pax_list
