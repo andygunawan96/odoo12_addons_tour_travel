@@ -129,8 +129,13 @@ class Reservationphc(models.Model):
             'customer_parent_id': customer_parent_id,
             'state_vendor': 'new_order',
         }
-
-        self.write(write_values)
+        try:
+            self.write(write_values)
+        except Exception as e:
+            if "could not serialize access due to concurrent update" in str(e):
+                raise RequestException(1037)
+            else:
+                raise e
 
         try:
             if self.agent_type_id.is_send_email_issued:
@@ -507,10 +512,7 @@ class Reservationphc(models.Model):
                 book_obj.notes += str(datetime.now()) + '\n' + traceback.format_exc()+'\n'
             except:
                 _logger.error('Creating Notes Error')
-            if "could not serialize access due to concurrent update" in str(e):
-                return ERR.get_error(1037)
-            else:
-                return ERR.get_error(1005)
+            return ERR.get_error(1005)
 
     def get_booking_phc_api(self,req, context):
         try:
