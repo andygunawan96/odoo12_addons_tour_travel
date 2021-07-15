@@ -668,7 +668,7 @@ class IssuedOffline(models.Model):
                 provider.create_service_charge()
             # create total price
             provider.set_total_price()
-        self.round_offline_pricing()
+        # self.round_offline_pricing()
         self.calculate_service_charge()
         self.adult = len(self.passenger_ids)
 
