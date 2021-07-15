@@ -266,9 +266,12 @@ class TtProviderPeriksain(models.Model):
     def action_expired(self):
         self.state = 'cancel2'
 
-    def action_cancel(self):
+    def action_cancel(self, context=False):
         self.cancel_date = fields.Datetime.now()
-        self.cancel_uid = self.env.user.id
+        if context:
+            self.cancel_uid = context['co_uid']
+        else:
+            self.cancel_uid = self.env.user.id
         self.state = 'cancel'
 
     def action_refund(self, check_provider_state=False):

@@ -213,10 +213,10 @@ class ReservationPeriksain(models.Model):
         for rec in self:
             rec.state = 'cancel_pending'
 
-    def action_cancel(self):
-        super(ReservationPeriksain, self).action_cancel()
+    def action_cancel(self, backend_context=False, gateway_context=False):
+        super(ReservationPeriksain, self).action_cancel(gateway_context)
         for rec in self.provider_booking_ids:
-            rec.action_cancel()
+            rec.action_cancel(gateway_context)
         if self.payment_acquirer_number_id:
             self.payment_acquirer_number_id.state = 'cancel'
 
@@ -416,7 +416,7 @@ class ReservationPeriksain(models.Model):
                     book_obj.calculate_service_charge()
                     provider_obj.action_issued_api_periksain(context)
                 if provider['status'] == 'CANCEL':
-                    provider_obj.action_cancel()
+                    provider_obj.action_cancel(context)
                     any_provider_changed = True
                 #jaga jaga kalau gagal issued
                 for idx, ticket_obj in enumerate(provider['tickets']):
@@ -592,7 +592,7 @@ class ReservationPeriksain(models.Model):
             self.action_failed_book()
         elif all(rec.state == 'cancel' for rec in self.provider_booking_ids):
             # failed book
-            self.action_set_as_cancel()
+            self.action_cancel(gateway_context=context)
         elif self.provider_booking_ids:
             provider_obj = self.provider_booking_ids[0]
             self.write({
@@ -1033,30 +1033,34 @@ class ReservationPeriksain(models.Model):
         try:
             provider_obj = self.env['tt.provider.periksain'].search([('pnr', '=', req['pnr'])], limit=1)
             if provider_obj:
-                # check analyst
-                analyst_obj = self.env['tt.analyst.periksain'].search([('analyst_id', '=', req['analyst']['id'])], limit=1)
-                if not analyst_obj:
-                    analyst_obj = self.env['tt.analyst.periksain'].create({
-                        "name": req['analyst']['name'],
-                        "analyst_id": req['analyst']['id'],
-                        "analyst_phone_number": req['analyst']['phone'],
-                    })
-                else: ## gatau boleh ngga update data analyst
-                    analyst_obj.update({
-                        "name": req['analyst']['name'],
-                        "analyst_phone_number": req['analyst']['phone'],
-                    })
                 book_obj = self.browse(provider_obj.booking_id.id)
-                book_obj.write({
-                    'analyst_ids': [(6, 0, analyst_obj.id)],
-                    'state_vendor': 'confirmed_order'
-                })
-                return ERR.get_no_error({
-                    "no_booking": req['pnr'],
-                    "message": "success",
-                    "state": book_obj.state_vendor
+                if book_obj.state_vendor == 'new_order':
+                    # check analyst
+                    analyst_obj = self.env['tt.analyst.periksain'].search([('analyst_id', '=', req['analyst']['id'])], limit=1)
+                    if not analyst_obj:
+                        analyst_obj = self.env['tt.analyst.periksain'].create({
+                            "name": req['analyst']['name'],
+                            "analyst_id": req['analyst']['id'],
+                            "analyst_phone_number": req['analyst']['phone'],
+                        })
+                    else: ## gatau boleh ngga update data analyst
+                        analyst_obj.update({
+                            "name": req['analyst']['name'],
+                            "analyst_phone_number": req['analyst']['phone'],
+                        })
 
-                })
+                    book_obj.write({
+                        'analyst_ids': [(6, 0, analyst_obj.id)],
+                        'state_vendor': 'confirmed_order'
+                    })
+                    return ERR.get_no_error({
+                        "no_booking": req['pnr'],
+                        "message": "success",
+                        "state": book_obj.state_vendor
+                    })
+                else:
+                    _logger.error('pnr has been confirm / refund')
+                    return ERR.get_error(500, additional_message='no_booking already confirm')
             else:
                 _logger.error('pnr not found')
                 return ERR.get_error(500, additional_message='no_booking not found')
@@ -1072,14 +1076,17 @@ class ReservationPeriksain(models.Model):
             provider_obj = self.env['tt.provider.periksain'].search([('pnr', '=', req['pnr'])], limit=1)
             if provider_obj:
                 book_obj = self.browse(provider_obj.booking_id.id)
-                book_obj.state_vendor = 'refund'
-                book_obj.cancellation_reason = req['reason']
-                return ERR.get_no_error({
-                    "no_booking": req['pnr'],
-                    "message": "success",
-                    "state": book_obj.state_vendor
-
-                })
+                if book_obj.state_vendor == 'refund':
+                    book_obj.state_vendor = 'refund'
+                    book_obj.cancellation_reason = req['reason']
+                    return ERR.get_no_error({
+                        "no_booking": req['pnr'],
+                        "message": "success",
+                        "state": book_obj.state_vendor
+                    })
+                else:
+                    _logger.error('pnr has been refund')
+                    return ERR.get_error(500, additional_message='no_booking has been refund')
             else:
                 _logger.error('pnr not found')
                 return ERR.get_error(500, additional_message='no_booking not found')
