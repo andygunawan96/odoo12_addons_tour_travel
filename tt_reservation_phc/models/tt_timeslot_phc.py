@@ -103,20 +103,28 @@ class TtTimeslotphc(models.Model):
     @api.depends('booking_used_ids','booking_used_ids.state')
     def _compute_used_counter(self):
         for rec in self:
-            used_count = 0
-            adult_count = 0
-            pcr_count = 0
-            for rec2 in rec.booking_used_ids.filtered(lambda x: x.state in ['booked', 'issued']):
-                used_count += 1
-                adult_count += rec2.adult
-                if 'PCR' in rec2.carrier_name:
-                    pcr_count += rec2.adult
-            if used_count != rec.used_count:
-                rec.used_count = used_count
-            if rec.used_adult_count != adult_count:
-                rec.used_adult_count = adult_count
-            if rec.used_pcr_count != pcr_count:
-                rec.used_pcr_count = pcr_count
+            try:
+                used_count = 0
+                adult_count = 0
+                pcr_count = 0
+                for rec2 in rec.booking_used_ids.filtered(lambda x: x.state in ['booked', 'issued']):
+                    used_count += 1
+                    adult_count += rec2.adult
+                    if 'PCR' in rec2.carrier_name:
+                        pcr_count += rec2.adult
+                if used_count != rec.used_count:
+                    rec.used_count = used_count
+                if rec.used_adult_count != adult_count:
+                    rec.used_adult_count = adult_count
+                if rec.used_pcr_count != pcr_count:
+                    rec.used_pcr_count = pcr_count
+            except Exception as e:
+                _logger.error("###MASUK concurrent timeslot phc compute")
+                if "concurrent update" in str(e):
+                    raise RequestException(1036)
+                else:
+                    raise e
+
 
     def mass_close_timeslot(self):
         for rec in self:
