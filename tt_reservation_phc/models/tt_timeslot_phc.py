@@ -66,6 +66,17 @@ class TtTimeslotphc(models.Model):
         try:
             super(TtTimeslotphc, self).write(vals)
         except Exception as e:
+            _logger.error("###MASUK concurrent timeslot phc write")
+            if "concurrent update" in str(e):
+                raise RequestException(1036)
+            else:
+                raise e
+
+    def update(self, values):
+        try:
+            super(TtTimeslotphc, self).update(values)
+        except Exception as e:
+            _logger.error("###MASUK concurrent timeslot phc update")
             if "concurrent update" in str(e):
                 raise RequestException(1036)
             else:
