@@ -43,7 +43,8 @@ class Reservationphc(models.Model):
                                      ('confirmed_order', 'Confirmed Order'),  ## order confirmmed by periksain
                                      ('no_show', 'No Show'),  ## customer cancel H-1 after 16:00 or H
                                      ('refund', 'Refund'),  ## customer cancel before H-1 16:00
-                                     ('verified', 'Verified'), ], 'State Vendor',
+                                     ('verified', 'Verified'),
+                                     ('suspect', 'Suspect')], 'State Vendor',
                                     default='draft')  ## normal way of completing order
 
     origin_id = fields.Many2one('tt.destinations', 'Test Area', readonly=True, states={'draft': [('readonly', False)]})
@@ -263,6 +264,11 @@ class Reservationphc(models.Model):
         booking_data = req['provider_bookings']
 
         try:
+            ##validator pax kembar dan belum verified di PHC
+            duplicate_pax_list = self.env['tt.reservation.passenger.phc'].find_duplicate_passenger_new_order(passengers)
+            if duplicate_pax_list:
+                raise RequestException(1026,additional_message="Duplicate Identity Number with other bookings")
+
             values = self._prepare_booking_api(booking_data,context)
             booker_obj = self.create_booker_api(booker,context)
             contact_obj = self.create_contact_api(contacts[0],booker_obj,context)

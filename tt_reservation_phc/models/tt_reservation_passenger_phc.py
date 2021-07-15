@@ -76,3 +76,10 @@ class TtReservationCustomer(models.Model):
         if len(self.channel_service_charge_ids.ids)>0:
             res['channel_service_charges'] = self.get_channel_service_charges()
         return res
+
+    ## find duplicate passenger that has been sent to PHC but not yet verified
+    def find_duplicate_passenger_new_order(self,pax_list):
+        duplicate_pax_list = []
+        for psg in pax_list:
+            duplicate_pax_list = self.search([('identity_number','=',psg['identity_number']),('booking_id.state_vendor','=','new_order')])
+        return duplicate_pax_list
