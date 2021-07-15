@@ -1320,6 +1320,7 @@ class IssuedOffline(models.Model):
                 adt_scs_list = []
                 chd_scs_list = []
                 inf_scs_list = []
+                all_scs_list = []
                 for rec2 in pnr_list:
                     prov_code = ''
                     for rec3 in rec.provider_booking_ids:
@@ -1403,7 +1404,7 @@ class IssuedOffline(models.Model):
                             'pricing_date': '',
                             'show_upline_commission': True
                         })
-                all_scs_list = adt_scs_list + chd_scs_list + inf_scs_list
+                    all_scs_list += adt_scs_list + chd_scs_list + inf_scs_list
 
                 rec.agent_commission = 0
                 rec.parent_agent_commission = 0
