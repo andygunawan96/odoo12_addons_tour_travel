@@ -507,10 +507,7 @@ class Reservationphc(models.Model):
                 book_obj.notes += str(datetime.now()) + '\n' + traceback.format_exc()+'\n'
             except:
                 _logger.error('Creating Notes Error')
-            if "concurrent update" in str(e):
-                return ERR.get_error(1036)
-            else:
-                return ERR.get_error(1005)
+            return ERR.get_error(1005)
 
     def get_booking_phc_api(self,req, context):
         try:
