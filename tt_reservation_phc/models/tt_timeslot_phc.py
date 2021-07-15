@@ -62,6 +62,15 @@ class TtTimeslotphc(models.Model):
 
     agent_id = fields.Many2one('tt.agent', 'Agent')
 
+    def write(self, vals):
+        try:
+            super(TtTimeslotphc, self).write(vals)
+        except Exception as e:
+            if "concurrent update" in str(e):
+                raise RequestException(1036)
+            else:
+                raise e
+
     @api.depends('datetimeslot')
     def _compute_timeslot_display_name(self):
         for rec in self:
