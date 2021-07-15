@@ -471,6 +471,7 @@ class PaymentAcquirerNumber(models.Model):
                     'create_date': book_obj.create_date and book_obj.create_date.strftime("%Y-%m-%d %H:%M:%S") or '',
                     'time_limit': payment_acq_number.time_limit and payment_acq_number.time_limit.strftime("%Y-%m-%d %H:%M:%S") or (payment_acq_number.create_date + timedelta(hours=1)).strftime("%Y-%m-%d %H:%M:%S"),
                     'nomor_rekening': payment_acq_number.payment_acquirer_id.account_number,
+                    'account_name': payment_acq_number.payment_acquirer_id.account_name,
                     'amount': payment_acq_number.get_total_amount(),
                     'va_number': payment_acq_number.va_number,
                     'url': payment_acq_number.url,

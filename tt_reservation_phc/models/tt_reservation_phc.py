@@ -265,9 +265,9 @@ class Reservationphc(models.Model):
 
         try:
             ##validator pax kembar dan belum verified di PHC
-            # duplicate_pax_list = self.env['tt.reservation.passenger.phc'].find_duplicate_passenger_new_order(passengers)
-            # if duplicate_pax_list:
-            #     raise RequestException(1026,additional_message="Duplicate Identity Number with other bookings")
+            duplicate_pax_list = self.env['tt.reservation.passenger.phc'].find_duplicate_passenger_new_order(passengers)
+            if duplicate_pax_list:
+                raise RequestException(1026,additional_message="Duplicate Identity Number with other bookings")
 
             values = self._prepare_booking_api(booking_data,context)
             booker_obj = self.create_booker_api(booker,context)
@@ -358,19 +358,19 @@ class Reservationphc(models.Model):
             }
             return ERR.get_no_error(response)
         except RequestException as e:
-            _logger.error(traceback.format_exc())
+            _logger.error("##RequestException\n%s" % (traceback.format_exc()))
             try:
                 book_obj.notes += str(datetime.now()) + '\n' + traceback.format_exc()+'\n'
             except:
                 _logger.error('Creating Notes Error')
             return e.error_dict()
         except Exception as e:
-            _logger.error(traceback.format_exc())
+            _logger.error("##Exception\n%s" % (traceback.format_exc()))
             try:
                 book_obj.notes += str(datetime.now()) + '\n' + traceback.format_exc()+'\n'
             except:
                 _logger.error('Creating Notes Error')
-            if "could not serialize access due to concurrent update" in str(e):
+            if "concurrent update" in str(e):
                 return ERR.get_error(1036)
             else:
                 return ERR.get_error(1004)
@@ -495,22 +495,19 @@ class Reservationphc(models.Model):
                 'book_id': book_obj.id
             })
         except RequestException as e:
-            _logger.error(traceback.format_exc())
+            _logger.error("##RequestException\n%s" % (traceback.format_exc()))
             try:
                 book_obj.notes += str(datetime.now()) + '\n' + traceback.format_exc()+'\n'
             except:
                 _logger.error('Creating Notes Error')
             return e.error_dict()
         except Exception as e:
-            _logger.error(traceback.format_exc())
+            _logger.error("##Exception\n%s" % (traceback.format_exc()))
             try:
                 book_obj.notes += str(datetime.now()) + '\n' + traceback.format_exc()+'\n'
             except:
                 _logger.error('Creating Notes Error')
-            if "could not serialize access due to concurrent update" in str(e):
-                return ERR.get_error(1037)
-            else:
-                return ERR.get_error(1005)
+            return ERR.get_error(1005)
 
     def get_booking_phc_api(self,req, context):
         try:

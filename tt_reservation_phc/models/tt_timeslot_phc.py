@@ -98,6 +98,8 @@ class TtTimeslotphc(models.Model):
             if rec.used_pcr_count != pcr_count:
                 rec.used_pcr_count = pcr_count
 
+
+
     def mass_close_timeslot(self):
         for rec in self:
             rec.total_timeslot = 0
