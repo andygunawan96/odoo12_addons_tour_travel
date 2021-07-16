@@ -214,7 +214,7 @@ class ReservationPeriksain(models.Model):
             rec.state = 'cancel_pending'
 
     def action_cancel(self, backend_context=False, gateway_context=False):
-        super(ReservationPeriksain, self).action_cancel(gateway_context)
+        super(ReservationPeriksain, self).action_cancel(gateway_context=gateway_context)
         for rec in self.provider_booking_ids:
             rec.action_cancel(gateway_context)
         if self.payment_acquirer_number_id:
@@ -993,6 +993,13 @@ class ReservationPeriksain(models.Model):
         return passengers
 
     def get_terms_conditions_email(self):
+        if self.carrier_name == 'PRKPCR':
+            template_obj = self.env.ref('tt_report_common.periksain_pcr_information')
+        else:
+            template_obj = self.env.ref('tt_report_common.periksain_antigen_information')
+        return template_obj.html
+
+    def get_terms_conditions_email_old(self):
         terms_txt = "<u><b>Terms and Conditions</b></u><br/>"
         terms_txt += "1. Payment must be made in advance.<br/>"
         terms_txt += "2. Cancellation Policy:<br/>"
