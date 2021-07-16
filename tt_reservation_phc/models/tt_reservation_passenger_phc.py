@@ -50,7 +50,7 @@ class TtReservationCustomer(models.Model):
     @api.model
     def create(self, vals_list):
         vals_list['seq_id'] = self.env['ir.sequence'].next_by_code('tt.reservation.passenger.phc')
-        super(TtReservationCustomer, self).create(vals_list)
+        return super(TtReservationCustomer, self).create(vals_list)
 
     def to_dict(self):
         res = super(TtReservationCustomer, self).to_dict()
