@@ -1036,21 +1036,23 @@ class ReservationPeriksain(models.Model):
                 book_obj = self.browse(provider_obj.booking_id.id)
                 if book_obj.state_vendor == 'new_order':
                     # check analyst
-                    analyst_obj = self.env['tt.analyst.periksain'].search([('analyst_id', '=', req['analyst']['id'])], limit=1)
-                    if not analyst_obj:
-                        analyst_obj = self.env['tt.analyst.periksain'].create({
-                            "name": req['analyst']['name'],
-                            "analyst_id": req['analyst']['id'],
-                            "analyst_phone_number": req['analyst']['phone'],
-                        })
-                    else: ## gatau boleh ngga update data analyst
-                        analyst_obj.update({
-                            "name": req['analyst']['name'],
-                            "analyst_phone_number": req['analyst']['phone'],
-                        })
-
+                    analyst_list = []
+                    for analyst_req_dict in  req['analysts']:
+                        analyst_obj = self.env['tt.analyst.periksain'].search([('analyst_id', '=', analyst_req_dict['id'])], limit=1)
+                        if not analyst_obj:
+                            analyst_obj = self.env['tt.analyst.periksain'].create({
+                                "name": analyst_req_dict['name'],
+                                "analyst_id": analyst_req_dict['id'],
+                                "analyst_phone_number": analyst_req_dict['phone'],
+                            })
+                        else: ## gatau boleh ngga update data analyst
+                            analyst_obj.update({
+                                "name": analyst_req_dict['name'],
+                                "analyst_phone_number": analyst_req_dict['phone'],
+                            })
+                        analyst_list.append(analyst_obj.id)
                     book_obj.write({
-                        'analyst_ids': [(6, 0, analyst_obj.id)],
+                        'analyst_ids': [(6, 0, analyst_list)],
                         'state_vendor': 'confirmed_order'
                     })
                     return ERR.get_no_error({
@@ -1087,6 +1089,36 @@ class ReservationPeriksain(models.Model):
                 else:
                     _logger.error('pnr has been refund')
                     return ERR.get_error(500, additional_message='no_booking has been refund')
+            else:
+                _logger.error('pnr not found')
+                return ERR.get_error(500, additional_message='no_booking not found')
+        except RequestException as e:
+            _logger.error(traceback.format_exc())
+            return e.error_dict()
+        except Exception as e:
+            _logger.error(traceback.format_exc())
+            return ERR.get_error(1013)
+
+    def update_result_url(self, req, context):
+        try:
+            provider_obj = self.env['tt.provider.periksain'].search([('pnr', '=', req['pnr'])], limit=1)
+            if provider_obj:
+                list_passenger_update = []
+                book_obj = self.browse(provider_obj.booking_id.id)
+                for rec in book_obj.passenger_ids:
+                    for passenger_request_dict in req['passengers']:
+                        if rec.ticket_number == passenger_request_dict['ticket_number']:
+                            rec.result_url = passenger_request_dict['result_url']
+                            list_passenger_update.append(passenger_request_dict['ticket_number'])
+                if len(list_passenger_update):
+                    return ERR.get_no_error({
+                        "no_booking": req['pnr'],
+                        "message": "success",
+                        "list_passenger": list_passenger_update
+                    })
+                else:
+                    _logger.error('no passenger update')
+                    return ERR.get_error(500, additional_message='no_booking found but, no registration not found')
             else:
                 _logger.error('pnr not found')
                 return ERR.get_error(500, additional_message='no_booking not found')

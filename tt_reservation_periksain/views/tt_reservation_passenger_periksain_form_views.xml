@@ -16,6 +16,8 @@
                     <field name="kabupaten"/>
                     <field name="kecamatan"/>
                     <field name="kelurahan"/>
+                    <field name="ticket_number"/>
+                    <field name="result_url"/>
                 </group>
                 <separator string="Service Charges"/>
                 <field name="cost_service_charge_ids"
