@@ -10,14 +10,21 @@
                         <t t-call="tt_report_common.price_and_sign"/>
 
                         <t t-set="is_phc" t-value="0"/>
+                        <t t-set="is_periksain" t-value="0"/>
                         <t t-foreach="docs.invoice_line_ids" t-as="inv_line">
                             <t t-if="inv_line.res_model_resv == 'tt.reservation.phc'">
                                 <t t-set="is_phc" t-value="1"/>
+                            </t>
+                            <t t-elif="inv_line.res_model_resv == 'tt.reservation.periksain'">
+                                <t t-set="is_periksain" t-value="1"/>
                             </t>
                         </t>
 
                         <t t-if="is_phc">
                             <t t-call="tt_report_common.phc_additional_msg"/>
+                        </t>
+                        <t t-if="is_periksain">
+                            <t t-call="tt_report_common.periksain_additional_msg"/>
                         </t>
                     </div>
                 </t>
@@ -478,7 +485,7 @@
     </template>
 
     <template id="external_layout_footer">
-        <div class="footer" style="position: absolute; left: 0; right: 0; background-image: url('/tt_reservation_offline/static/images/background footer airline.jpg');">
+        <div class="footer" style="margin-top: 20px; position: absolute; left: 0; right: 0; background-image: url('/tt_reservation_offline/static/images/background footer airline.jpg');">
             <div class="box-footer" style="padding: 0px; width: 100%; height: 120px; background: rgba(39,62,84,0.82); font-family: 'DejaVu Sans'">  <!--rgba(70,70,70,0.8);-->
                 <t t-if="doc_type == 'itin'">
                     <div class="row">
@@ -644,17 +651,20 @@
     <template id="phc_additional_msg">
         <br/>
         <div style="width: 100%; border-bottom: 1px solid black; margin:20px 0px 0px 0px;"/>  <!---15px -15px-->
-        <div class="row" style="page-break-inside:avoid; font-family: 'DeJavu Sans'; color: 'red';">
+        <div class="row" style="page-break-inside:auto; font-family: 'DeJavu Sans';">
             <div class="col-11">
-                Please keep this invoice for repeat order with the same data<br/>
-                How to repeat order:
-                <ol>
-                    <li>Click repeat order at rodextrip.com</li>
-                    <li>Input the order number / ref number from the invoice</li>
-                    <li>Click re-order and select the test type and which customer to re-order</li>
-                    <li>Pick the new Test Datetime</li>
-                    <li>Book the order again</li>
-                </ol>
+                <span t-raw="terms_conditions"/>
+            </div>
+            <div class="col-1"/>
+        </div>
+    </template>
+
+    <template id="periksain_additional_msg">
+        <br/>
+        <div style="width: 100%; border-bottom: 1px solid black; margin:20px 0px 0px 0px;"/>  <!---15px -15px-->
+        <div class="row" style="page-break-inside:auto; font-family: 'DeJavu Sans';">
+            <div class="col-11">
+                <span t-raw="terms_conditions"/>
             </div>
             <div class="col-1"/>
         </div>

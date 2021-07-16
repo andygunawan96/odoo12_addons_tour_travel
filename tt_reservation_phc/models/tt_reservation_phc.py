@@ -1200,6 +1200,17 @@ class Reservationphc(models.Model):
         return passengers
 
     def get_terms_conditions_email(self):
+        if self.carrier_name == 'PHCHCKPCR':
+            template_obj = self.env.ref('tt_report_common.phc_pcr_homecare_information')
+        elif self.carrier_name == 'PHCDTKPCR':
+            template_obj = self.env.ref('tt_report_common.phc_pcr_information')
+        elif self.carrier_name == 'PHCHCKATG':
+            template_obj = self.env.ref('tt_report_common.phc_antigen_homecare_information')
+        else:
+            template_obj = self.env.ref('tt_report_common.phc_antigen_information')
+        return template_obj.html
+
+    def get_terms_conditions_email_old(self):
         terms_txt = "<u><b>Terms and Conditions</b></u><br/>"
         terms_txt += "1. Payment must be made in advance.<br/>"
         if self.carrier_name in ['PHCHCKPCR', 'PHCDTKPCR']:

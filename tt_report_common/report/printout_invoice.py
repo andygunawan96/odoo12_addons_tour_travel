@@ -1492,8 +1492,10 @@ class PrintoutInvoice(models.AbstractModel):
         values = {}
         val = {}
         header_width = 90
+        resv_obj = False
         agent_id = False
-        for rec in self.env[data['context']['active_model']].browse(data['context']['active_ids']):
+        doc_objs = self.env[data['context']['active_model']].browse(data['context']['active_ids'])
+        for rec in doc_objs:
             values[rec.id] = []
             for rec2 in rec.invoice_line_ids:
                 resv_obj = self.env[rec2.res_model_resv].browse(rec2.res_id_resv)
@@ -1504,7 +1506,7 @@ class PrintoutInvoice(models.AbstractModel):
         val = {
             'doc_ids': data['context']['active_ids'],
             'doc_model': data['context']['active_model'],
-            'docs': self.env[data['context']['active_model']].browse(data['context']['active_ids']),
+            'docs': doc_objs,
             'inv_lines': values,
             'header_width': str(header_width),
             'terbilang': self.compute_terbilang_from_objs(
@@ -1513,6 +1515,10 @@ class PrintoutInvoice(models.AbstractModel):
             'base_color': self.sudo().env['ir.config_parameter'].get_param('tt_base.website_default_color', default='#FFFFFF'),
             'img_url': "url('/tt_report_common/static/images/background footer airline.jpg');"
         }
+        if resv_obj._name in ['tt.reservation.phc', 'tt.reservation.periksain']:
+            val.update({
+                'terms_conditions': resv_obj.get_terms_conditions_email()
+            })
         return val
 
 
