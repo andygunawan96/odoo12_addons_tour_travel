@@ -11,7 +11,7 @@ TT_TRANSPORT
     'category': 'booking',
     'website': '',
     'images' : [],
-    'depends' : ['base_setup','tt_base','tt_reservation','tt_in_api_connector'],
+    'depends' : ['base_setup','tt_base','tt_reservation','tt_in_api_connector','tt_report_common'],
     'data': [
         'views/menu_item_base.xml',
 

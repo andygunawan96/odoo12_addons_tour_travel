@@ -993,6 +993,13 @@ class ReservationPeriksain(models.Model):
         return passengers
 
     def get_terms_conditions_email(self):
+        if self.carrier_name == 'PRKPCR':
+            template_obj = self.env.ref('tt_report_common.periksain_pcr_information')
+        else:
+            template_obj = self.env.ref('tt_report_common.periksain_antigen_information')
+        return template_obj.html
+
+    def get_terms_conditions_email_old(self):
         terms_txt = "<u><b>Terms and Conditions</b></u><br/>"
         terms_txt += "1. Payment must be made in advance.<br/>"
         terms_txt += "2. Cancellation Policy:<br/>"
