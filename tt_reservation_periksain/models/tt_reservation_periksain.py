@@ -214,7 +214,7 @@ class ReservationPeriksain(models.Model):
             rec.state = 'cancel_pending'
 
     def action_cancel(self, backend_context=False, gateway_context=False):
-        super(ReservationPeriksain, self).action_cancel(gateway_context)
+        super(ReservationPeriksain, self).action_cancel(gateway_context=gateway_context)
         for rec in self.provider_booking_ids:
             rec.action_cancel(gateway_context)
         if self.payment_acquirer_number_id:
