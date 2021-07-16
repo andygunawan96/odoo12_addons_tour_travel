@@ -629,11 +629,37 @@ class TtReservation(models.Model):
             raise RequestException(1008)
 
         if book_obj.agent_id.id == context.get('co_agent_id', -1) or self.env.ref('tt_base.group_tt_process_channel_bookings_medical_only').id in user_obj.groups_id.ids or book_obj.agent_type_id.name == self.env.ref('tt_base.agent_b2c').agent_type_id.name or book_obj.user_id.login == self.env.ref('tt_base.agent_b2c_user').login:
+            payment_acq_number = ''
+            bank_code = ''
+            url = ''
+            amount = 0
+            phone_number = ''
+            name = ''
+            email = ''
+            bank_name = ''
             if book_obj.payment_acquirer_number_id:
+                if book_obj.payment_acquirer_number_id.payment_acquirer_id.account_number == '' or book_obj.payment_acquirer_number_id.payment_acquirer_id.account_number == False: # ESPAY
+                    payment_acq_number = book_obj.payment_acquirer_number_id.number
+                    url = book_obj.payment_acquirer_number_id.url
+                    amount = book_obj.payment_acquirer_number_id.amount
+                    bank_code = book_obj.payment_acquirer_number_id.payment_acquirer_id.bank_id.code
+                    bank_name = book_obj.payment_acquirer_number_id.payment_acquirer_id.name
+                    name = book_obj.contact_title
+                    phone_number = book_obj.contact_phone
+                    email = book_obj.contact_email
                 book_obj.payment_acquirer_number_id.state = 'cancel2'
                 book_obj.payment_acquirer_number_id = False
             return ERR.get_no_error({
-                "order_number": book_obj.name
+                "order_number": book_obj.name,
+                "payment_acq_number": payment_acq_number,
+                "bank_code": bank_code,
+                "bank_name": bank_name,
+                'url': url,
+                "amount": amount,
+                "name": name,
+                "phone_number": phone_number,
+                "email": email,
+
             })
         else:
             return ERR.get_error(1001)

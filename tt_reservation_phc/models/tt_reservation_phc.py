@@ -264,10 +264,10 @@ class Reservationphc(models.Model):
         booking_data = req['provider_bookings']
 
         try:
-            #validator pax kembar dan belum verified di PHC
-            duplicate_pax_list = self.env['tt.reservation.passenger.phc'].find_duplicate_passenger_new_order(passengers)
+            ##validator pax kembar dan belum verified di PHC
+            duplicate_pax_list = self.env['tt.reservation.passenger.phc'].find_duplicate_passenger_new_order(passengers,booking_data['carrier_code'])
             if duplicate_pax_list:
-                raise RequestException(1026,additional_message="Duplicate Identity Number with other bookings")
+                raise RequestException(1026,additional_message=duplicate_pax_list)
 
             values = self._prepare_booking_api(booking_data,context)
             booker_obj = self.create_booker_api(booker,context)
@@ -605,7 +605,7 @@ class Reservationphc(models.Model):
 
     def update_data_verif(self, req, context):
         try:
-            passenger_obj = self.env['tt.reservation.passenger.phc'].search([('ticket_number','=',req['ticket_number'])],limit=1)
+            passenger_obj = self.env['tt.reservation.passenger.phc'].search([('ticket_number','=',req['ticket_number']),('booking_id.carrier_name','ilike',req['test_type'])],limit=1)
             if passenger_obj:
                 passenger_obj.update({
                     'name': "%s %s" % (req['first_name'], req['last_name']),
