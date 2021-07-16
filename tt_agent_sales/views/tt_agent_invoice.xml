@@ -210,75 +210,29 @@
               sequence="1"
               groups="base.group_user"/>
 
-    <record id="tt_agent_invoice_line_filter_view" model="ir.ui.view">
-        <field name="name">tt.agent.invoice.line.filter.view</field>
-        <field name="model">tt.agent.invoice.line</field>
-        <field name="arch" type="xml">
-            <search string="Search Agent Invoice Line">
-                <field name="name"/>
-                <field name="invoice_id"/>
-                <field name="pnr"/>
-                <field name="reference"/>
-                <field name="desc"/>
-                <field name="agent_id"/>
-                <field name="customer_parent_id"/>
-                <field name="invoice_line_detail_ids"/>
-                <group expand="0" string="Group By">
-                    <filter name="group_by_invoice_id" string="Invoice" domain="[]" context="{'group_by':'invoice_id'}" groups="tt_base.group_tt_tour_travel"/>
-                    <filter name="group_by_reference" string="Reference" domain="[]" context="{'group_by':'reference'}" groups="tt_base.group_tt_agent_user,tt_base.group_tt_tour_travel"/>
-                </group>
-            </search>
-        </field>
-    </record>
-
-    <record id="tt_agent_invoice_line_tree_view" model="ir.ui.view">
-        <field name="name">tt.agent.invoice.line.tree.view</field>
-        <field name="model">tt.agent.invoice.line</field>
-        <field name="arch" type="xml">
-            <tree create="false" edit="false">
-                <field name="name"/>
-                <field name="invoice_id"/>
-                <field name="pnr"/>
-                <field name="agent_id"/>
-                <field name="customer_parent_id"/>
-                <field name="total"/>
-                <field name="currency_id" invisible="1"/>
-            </tree>
-        </field>
-    </record>
-
-    <record id="tt_agent_invoice_line_tree_can_edit_view" model="ir.ui.view">
-        <field name="name">tt.agent.invoice.line.tree.can.edit.view</field>
-        <field name="model">tt.agent.invoice.line</field>
-        <field name="inherit_id" ref="tt_agent_sales.tt_agent_invoice_line_tree_view"/>
-        <field name="mode">primary</field>
-        <field name="priority" eval="90"/>
-        <field name="arch" type="xml">
-            <xpath expr="//tree" position="attributes">
-                <attribute name="create">1</attribute>
-                <attribute name="edit">1</attribute>
-            </xpath>
-        </field>
-    </record>
-
-    <record id="tt_agent_invoice_action_line_view" model="ir.actions.act_window" >
-        <field name="name">Agent Invoice Line</field>
+    <record id="tt_agent_invoice_action_view" model="ir.actions.act_window" >
+        <field name="name">Agent Invoice</field>
         <field name="type">ir.actions.act_window</field>
-        <field name="res_model">tt.agent.invoice.line</field>
+        <field name="res_model">tt.agent.invoice</field>
         <field name="view_type">form</field>
         <field name="view_mode">tree,form</field>
-        <field name="search_view_id" ref="tt_agent_invoice_line_filter_view"/>
+        <!--        <field name="domain">[]</field>-->
         <field name="context">
             {
-                'tree_view_ref': 'tt_agent_sales.tt_agent_invoice_line_tree_view',
+            'form_view_ref': 'tt_agent_sales.tt_agent_invoice_form_view',
+            'tree_view_ref': 'tt_agent_sales.tt_agent_invoice_tree_view',
             }
         </field>
     </record>
 
-    <menuitem id="sub_menu_agent_invoice_line"
-              parent="tt_agent_sales.menu_agent_invoice"
-              action="tt_agent_sales.tt_agent_invoice_action_line_view"
-              name="Agent Invoice Line"
-              sequence="20"
-              groups="base.group_user"/>
+    <record model="ir.actions.server" id="action_multi_mass_approve_tt_agent_sales">
+        <field name="name">Mass Approve</field>
+        <field name="model_id" ref="tt_agent_sales.model_tt_agent_invoice"/>
+        <field name="binding_model_id" ref="tt_agent_sales.model_tt_agent_invoice"/>
+        <field name="state">code</field>
+        <field name="code">
+            if records:
+            action = records.multi_mass_approve_invoice()
+        </field>
+    </record>
 </odoo>
