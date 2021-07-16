@@ -100,4 +100,4 @@ class TtReservationCustomer(models.Model):
                 error_log += 'Passenger #%s <br/>\nName: %s %s %s <br/>\nIdentity Number: %s<br/><br/>\n\n' % (psg['sequence']+1, psg['title'], psg['first_name'], psg['last_name'], psg['identity']['identity_number'])
         if error_log_indo:
             error_log_indo += error_log
-        return error_log
+        return error_log_indo
