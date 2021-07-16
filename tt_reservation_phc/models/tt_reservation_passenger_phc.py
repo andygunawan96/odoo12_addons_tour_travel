@@ -11,6 +11,8 @@ class TtReservationCustomer(models.Model):
     _inherit = 'tt.reservation.passenger'
     _description = 'Reservation Passenger phc'
 
+    seq_id = fields.Char('Sequence ID', index=True, readonly=True)
+
     cost_service_charge_ids = fields.Many2many('tt.service.charge','tt_reservation_phc_cost_charge_rel', 'passenger_id', 'service_charge_id', 'Cost Service Charges')
 
     channel_service_charge_ids = fields.Many2many('tt.service.charge','tt_reservation_phc_channel_charge_rel', 'passenger_id', 'service_charge_id', 'Channel Service Charges')
@@ -44,6 +46,11 @@ class TtReservationCustomer(models.Model):
     pcr_data = fields.Text('PCR Data')
     is_ticketed = fields.Boolean('Ticketed')
     ticket_number = fields.Char('Ticket Number')
+
+    @api.model
+    def create(self, vals_list):
+        vals_list['seq_id'] = self.env['ir.sequence'].next_by_code('tt.reservation.passenger.phc')
+        super(TtReservationCustomer, self).create(vals_list)
 
     def to_dict(self):
         res = super(TtReservationCustomer, self).to_dict()

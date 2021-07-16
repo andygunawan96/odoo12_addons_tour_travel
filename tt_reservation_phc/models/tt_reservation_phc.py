@@ -264,10 +264,10 @@ class Reservationphc(models.Model):
         booking_data = req['provider_bookings']
 
         try:
-            ##validator pax kembar dan belum verified di PHC
-            # duplicate_pax_list = self.env['tt.reservation.passenger.phc'].find_duplicate_passenger_new_order(passengers)
-            # if duplicate_pax_list:
-            #     raise RequestException(1026,additional_message="Duplicate Identity Number with other bookings")
+            #validator pax kembar dan belum verified di PHC
+            duplicate_pax_list = self.env['tt.reservation.passenger.phc'].find_duplicate_passenger_new_order(passengers)
+            if duplicate_pax_list:
+                raise RequestException(1026,additional_message="Duplicate Identity Number with other bookings")
 
             values = self._prepare_booking_api(booking_data,context)
             booker_obj = self.create_booker_api(booker,context)
