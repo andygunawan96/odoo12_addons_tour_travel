@@ -7,6 +7,10 @@
         <field name="inherit_id" ref="tt_reservation.tt_reservation_passenger_form_view"/>
         <field name="arch" type="xml">
             <xpath expr="//group[@name='basic_info']" position="after">
+                <h1>
+                    <field name="seq_id"/>
+                </h1>
+                <button name="fill_seq_id" string="Fill Seq ID" type="object" groups="base.group_system"/>
                 <separator string="Result URL"/>
                 <field name="result_url"/>
                 <separator string="Label URL"/>

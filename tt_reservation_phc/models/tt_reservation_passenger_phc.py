@@ -11,6 +11,8 @@ class TtReservationCustomer(models.Model):
     _inherit = 'tt.reservation.passenger'
     _description = 'Reservation Passenger phc'
 
+    seq_id = fields.Char('Sequence ID', index=True, readonly=True)
+
     cost_service_charge_ids = fields.Many2many('tt.service.charge','tt_reservation_phc_cost_charge_rel', 'passenger_id', 'service_charge_id', 'Cost Service Charges')
 
     channel_service_charge_ids = fields.Many2many('tt.service.charge','tt_reservation_phc_channel_charge_rel', 'passenger_id', 'service_charge_id', 'Channel Service Charges')
@@ -45,6 +47,11 @@ class TtReservationCustomer(models.Model):
     is_ticketed = fields.Boolean('Ticketed')
     ticket_number = fields.Char('Ticket Number')
 
+    @api.model
+    def create(self, vals_list):
+        vals_list['seq_id'] = self.env['ir.sequence'].next_by_code('tt.reservation.passenger.phc')
+        return super(TtReservationCustomer, self).create(vals_list)
+
     def to_dict(self):
         res = super(TtReservationCustomer, self).to_dict()
         res.update({
@@ -78,8 +85,23 @@ class TtReservationCustomer(models.Model):
         return res
 
     ## find duplicate passenger that has been sent to PHC but not yet verified
-    def find_duplicate_passenger_new_order(self,pax_list):
-        duplicate_pax_list = []
+    def find_duplicate_passenger_new_order(self,pax_list,carrier_code):
+        error_log = ''
+        error_log_indo = ''
         for psg in pax_list:
-            duplicate_pax_list = self.search([('identity_number','=',psg['identity']['identity_number']),('booking_id.state_vendor','=','new_order')])
-        return duplicate_pax_list
+            duplicate_pax_list = self.search([('identity_number','=',psg['identity']['identity_number']),
+                                              ('booking_id.state_vendor','=','new_order'),
+                                              ('booking_id.carrier_name','=',carrier_code)])
+            if duplicate_pax_list:
+                if error_log == '':
+                    error_log_indo += '<br/>\nNomor identitas sama dengan booking lain<br/>\n'
+                    error_log += '<br/>\nDuplicate Identity Number with other bookings<br/>\n'
+                error_log_indo += 'Pelanggan #%s <br/>\nNama: %s %s %s <br/>\nNomor identitas: %s<br/><br/>\n\n' % (psg['sequence']+1, psg['title'], psg['first_name'], psg['last_name'], psg['identity']['identity_number'])
+                error_log += 'Passenger #%s <br/>\nName: %s %s %s <br/>\nIdentity Number: %s<br/><br/>\n\n' % (psg['sequence']+1, psg['title'], psg['first_name'], psg['last_name'], psg['identity']['identity_number'])
+        if error_log_indo:
+            error_log_indo += error_log
+        return error_log_indo
+
+    def fill_seq_id(self):
+        for idx,rec in enumerate(self.search([('seq_id','=',False)])):
+            rec.seq_id = "PGH.O%s%s" % (idx,datetime.now().second)

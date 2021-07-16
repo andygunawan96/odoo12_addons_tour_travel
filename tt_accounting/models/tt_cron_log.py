@@ -61,14 +61,15 @@ class TtCronLogInhResv(models.Model):
 
     def cron_ledger_statement_agent(self):
         try:
-            list_agent_obj = self.env['tt.agent'].search([])
-            for agent_obj in list_agent_obj:
-                try:
-                    agent_obj.create_ledger_statement()
-                    _logger.info("Ledger Statement Success for %s %s" % (agent_obj.id, agent_obj.name))
-                    self._cr.commit()
-                except Exception as e:
-                    _logger.error("Failed Ledger Statement for %s\n%s" %(agent_obj.name,str(e)))
+            # comment for now karena bs berulang ulang
+            # list_agent_obj = self.env['tt.agent'].search([])
+            # for agent_obj in list_agent_obj:
+            #     try:
+            #         agent_obj.create_ledger_statement()
+            #         _logger.info("Ledger Statement Success for %s %s" % (agent_obj.id, agent_obj.name))
+            #         self._cr.commit()
+            #     except Exception as e:
+            #         _logger.error("Failed Ledger Statement for %s\n%s" %(agent_obj.name,str(e)))
             self.sub_func_agent_balance_report_log()
         except Exception as e:
             self.create_cron_log_folder()

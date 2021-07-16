@@ -151,7 +151,7 @@ class PaymentTransaction(models.Model):
 
     def action_validate_from_button(self):
         if self.state != 'confirm':
-            raise exceptions.UserError('Can only validate [Confirmed] state Payment.')
+            raise exceptions.UserError('%s Can only validate [Confirmed] state Payment.' % (self.name))
         if self.reference:
             if self.top_up_id:
                 if {self.env.ref('tt_base.group_payment_level_4').id}.intersection(set(self.env.user.groups_id.ids)):
@@ -166,7 +166,7 @@ class PaymentTransaction(models.Model):
 
     def action_approve_from_button(self):
         if self.state != 'validated':
-            raise exceptions.UserError('Can only validate [Validated] state Payment.')
+            raise exceptions.UserError('%s Can only approve [Validated] state Payment.' % (self.name))
         if self.top_up_id:
             if {self.env.ref('tt_base.group_payment_level_4').id}.intersection(set(self.env.user.groups_id.ids)):
                 ## 3 Januari 2020 di minta hapuskan by desy

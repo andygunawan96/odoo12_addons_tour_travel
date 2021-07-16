@@ -182,7 +182,7 @@ class Reservationphc(models.Model):
             rec.state = 'cancel_pending'
 
     def action_cancel(self, backend_context=False, gateway_context=False):
-        super(Reservationphc, self).action_cancel(gateway_context)
+        super(Reservationphc, self).action_cancel(gateway_context=gateway_context)
         for rec in self.provider_booking_ids:
             rec.action_cancel(gateway_context)
         if self.payment_acquirer_number_id:
@@ -212,10 +212,10 @@ class Reservationphc(models.Model):
         timeslot_objs = self.env['tt.timeslot.phc'].search([('seq_id', 'in', req['timeslot_list'])])
 
         if not timeslot_objs:
-            raise RequestException(1022,"No Timeslot. Please Try Other Date/Time")
+            raise RequestException(1022,"<br/>\nJadwal Habis. Bisa dicoba tanggal/jam yang lain<br/>\nNo Timeslot. Please Try Other Date/Time")
         else:
             if not timeslot_objs.get_availability(carrier_obj.code, req['pax_count']):
-                raise RequestException(1022,"Timeslot is Full. %sPlease Try Other Date/Time" % ("Only %s Slot(s) Available or " % (timeslot_objs.total_pcr_timeslot - timeslot_objs.used_pcr_count) if timeslot_objs.used_pcr_count < timeslot_objs.total_pcr_timeslot else ""))
+                raise RequestException(1022,"<br/>\nJadwal Penuh. %sBisa dicoba tanggal/jam yang lain<br/>\nTimeslot is Full. %sPlease Try Other Date/Time" % ("Only %s Slot(s) Available or " % (timeslot_objs.total_pcr_timeslot - timeslot_objs.used_pcr_count) if timeslot_objs.used_pcr_count < timeslot_objs.total_pcr_timeslot else "", "Only %s Slot(s) Available or " % (timeslot_objs.total_pcr_timeslot - timeslot_objs.used_pcr_count) if timeslot_objs.used_pcr_count < timeslot_objs.total_pcr_timeslot else ""))
         for rec in timeslot_objs:
             if rec.datetimeslot.time() > time(11,0):
                 overtime_surcharge = True
@@ -265,9 +265,9 @@ class Reservationphc(models.Model):
 
         try:
             ##validator pax kembar dan belum verified di PHC
-            duplicate_pax_list = self.env['tt.reservation.passenger.phc'].find_duplicate_passenger_new_order(passengers)
+            duplicate_pax_list = self.env['tt.reservation.passenger.phc'].find_duplicate_passenger_new_order(passengers,booking_data['carrier_code'])
             if duplicate_pax_list:
-                raise RequestException(1026,additional_message="Duplicate Identity Number with other bookings")
+                raise RequestException(1026,additional_message=duplicate_pax_list)
 
             values = self._prepare_booking_api(booking_data,context)
             booker_obj = self.create_booker_api(booker,context)
@@ -605,7 +605,7 @@ class Reservationphc(models.Model):
 
     def update_data_verif(self, req, context):
         try:
-            passenger_obj = self.env['tt.reservation.passenger.phc'].search([('ticket_number','=',req['ticket_number'])],limit=1)
+            passenger_obj = self.env['tt.reservation.passenger.phc'].search([('ticket_number','=',req['ticket_number']),('booking_id.carrier_name','ilike',req['test_type'])],limit=1)
             if passenger_obj:
                 passenger_obj.update({
                     'name': "%s %s" % (req['first_name'], req['last_name']),
@@ -715,7 +715,7 @@ class Reservationphc(models.Model):
         timeslot_write_data = self.env['tt.timeslot.phc'].search([('seq_id', 'in', booking_data['timeslot_list'])])
         for rec in timeslot_write_data:
             if not rec.get_availability(carrier_obj.code, booking_data['adult']):
-                raise RequestException(1022,"Timeslot is Full. %sPlease Try Other Date/Time" % ("Only %s Slot(s) Available or " % (timeslot_write_data.total_pcr_timeslot - timeslot_write_data.used_pcr_count) if timeslot_write_data.used_pcr_count < timeslot_write_data.total_pcr_timeslot else ""))
+                raise RequestException(1022,"<br/>\nJadwal Penuh. %sBisa dicoba tanggal/jam yang lain<br/>\nTimeslot is Full. %sPlease Try Other Date/Time" % ("Only %s Slot(s) Available or " % (timeslot_objs.total_pcr_timeslot - timeslot_objs.used_pcr_count) if timeslot_objs.used_pcr_count < timeslot_objs.total_pcr_timeslot else "","Only %s Slot(s) Available or " % (timeslot_objs.total_pcr_timeslot - timeslot_objs.used_pcr_count) if timeslot_objs.used_pcr_count < timeslot_objs.total_pcr_timeslot else ""))
 
         #check drive thru atau tidak, menentukan hold date
         drive_thru = False
@@ -1200,6 +1200,17 @@ class Reservationphc(models.Model):
         return passengers
 
     def get_terms_conditions_email(self):
+        if self.carrier_name == 'PHCHCKPCR':
+            template_obj = self.env.ref('tt_report_common.phc_pcr_homecare_information')
+        elif self.carrier_name == 'PHCDTKPCR':
+            template_obj = self.env.ref('tt_report_common.phc_pcr_information')
+        elif self.carrier_name == 'PHCHCKATG':
+            template_obj = self.env.ref('tt_report_common.phc_antigen_homecare_information')
+        else:
+            template_obj = self.env.ref('tt_report_common.phc_antigen_information')
+        return template_obj.html
+
+    def get_terms_conditions_email_old(self):
         terms_txt = "<u><b>Terms and Conditions</b></u><br/>"
         terms_txt += "1. Payment must be made in advance.<br/>"
         if self.carrier_name in ['PHCHCKPCR', 'PHCDTKPCR']:

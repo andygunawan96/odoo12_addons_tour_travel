@@ -1,5 +1,7 @@
 from odoo import api,models,fields
 from odoo import exceptions
+from datetime import datetime
+import pytz
 
 class TtPaymentInvoiceRel(models.Model):
     _name = 'tt.payment.invoice.rel'
@@ -109,6 +111,12 @@ class TtPaymentInvoiceRel(models.Model):
             'type': 'ir.actions.client',
             'tag': 'reload',
         }
+
+    def quick_approve(self):
+        if not self.payment_id.reference:
+            self.payment_id.reference = "Quick Approve by %s on %s" % (self.env.user.id,datetime.now(pytz.utc))
+        self.payment_id.action_validate_from_button()
+        self.payment_id.action_approve_from_button()
 
 class TtPaymentInh(models.Model):
     _inherit = 'tt.payment'

@@ -27,6 +27,8 @@ class TtTrainApiCon(models.Model):
             res = table_obj.confirm_order(data, context)
         elif action == 'cancel_order':
             res = table_obj.cancel_order(data, context)
+        elif action == 'update_result_url':
+            res = table_obj.update_result_url(data, context)
         else:
             raise RequestException(999)
         return res

@@ -1,10 +1,13 @@
+import traceback
+
 from odoo import models, api, fields, _
 from datetime import datetime, timedelta
 from odoo import exceptions
 from odoo.exceptions import UserError
 from ...tools import ERR,util
-import base64
+import base64,logging
 
+_logger = logging.getLogger(__name__)
 
 class Ledger(models.Model):
     _inherit = 'tt.ledger'
@@ -370,4 +373,17 @@ class AgentInvoice(models.Model):
                     rec.bill_address = rec.bill_address_id.address
                 else:
                     rec.bill_address = ''
+
+    def multi_mass_approve_invoice(self):
+        _logger.info("Mass Approve Invoice Starting")
+        for inv in self:
+            _logger.info(inv.name)
+            for payment_m2m in inv.payment_ids:
+                _logger.info(payment_m2m.payment_id.name)
+                try:
+                    payment_m2m.quick_approve()
+                except Exception as e:
+                    _logger.error("%s Error Quick Approve. %s" % (inv.name,traceback.format_exc()))
+
+
 

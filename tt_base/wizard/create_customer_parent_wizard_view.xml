@@ -32,7 +32,7 @@
 
     <menuitem id="menu_create_customer_parent_wizard_customer"
               parent="tt_base.top_customers_customers"
-              groups="tt_base.group_tt_tour_travel"
+              groups="tt_base.group_tt_tour_travel,tt_base.group_tt_agent_user"
               name="Create Customer Parent"
               sequence="2"
               action="create_customer_parent_wizard_action_view"/>
