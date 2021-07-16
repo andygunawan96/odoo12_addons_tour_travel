@@ -80,6 +80,11 @@ class TtReservationCustomer(models.Model):
     ## find duplicate passenger that has been sent to PHC but not yet verified
     def find_duplicate_passenger_new_order(self,pax_list):
         duplicate_pax_list = []
+        error_log = ''
         for psg in pax_list:
             duplicate_pax_list = self.search([('identity_number','=',psg['identity']['identity_number']),('booking_id.state_vendor','=','new_order')])
-        return duplicate_pax_list
+            if duplicate_pax_list:
+                if error_log == '':
+                    error_log += '<br/>\nDuplicate Identity Number with other bookings<br/>\n'
+                error_log += 'Passenger #%s <br/>\nName: %s %s %s <br/>\nNIK: %s<br/><br/>\n\n' % (psg['sequence']+1, psg['title'], psg['first_name'], psg['last_name'], psg['identity']['identity_number'])
+        return error_log
