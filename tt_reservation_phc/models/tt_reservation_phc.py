@@ -212,10 +212,10 @@ class Reservationphc(models.Model):
         timeslot_objs = self.env['tt.timeslot.phc'].search([('seq_id', 'in', req['timeslot_list'])])
 
         if not timeslot_objs:
-            raise RequestException(1022,"No Timeslot. Please Try Other Date/Time")
+            raise RequestException(1022,"<br/>\nJadwal Habis. Bisa dicoba tanggal/jam yang lain<br/>\nNo Timeslot. Please Try Other Date/Time")
         else:
             if not timeslot_objs.get_availability(carrier_obj.code, req['pax_count']):
-                raise RequestException(1022,"Timeslot is Full. %sPlease Try Other Date/Time" % ("Only %s Slot(s) Available or " % (timeslot_objs.total_pcr_timeslot - timeslot_objs.used_pcr_count) if timeslot_objs.used_pcr_count < timeslot_objs.total_pcr_timeslot else ""))
+                raise RequestException(1022,"<br/>\nJadwal Penuh. %sBisa dicoba tanggal/jam yang lain<br/>\nTimeslot is Full. %sPlease Try Other Date/Time" % ("Only %s Slot(s) Available or " % (timeslot_objs.total_pcr_timeslot - timeslot_objs.used_pcr_count) if timeslot_objs.used_pcr_count < timeslot_objs.total_pcr_timeslot else "", "Only %s Slot(s) Available or " % (timeslot_objs.total_pcr_timeslot - timeslot_objs.used_pcr_count) if timeslot_objs.used_pcr_count < timeslot_objs.total_pcr_timeslot else ""))
         for rec in timeslot_objs:
             if rec.datetimeslot.time() > time(11,0):
                 overtime_surcharge = True
@@ -715,7 +715,7 @@ class Reservationphc(models.Model):
         timeslot_write_data = self.env['tt.timeslot.phc'].search([('seq_id', 'in', booking_data['timeslot_list'])])
         for rec in timeslot_write_data:
             if not rec.get_availability(carrier_obj.code, booking_data['adult']):
-                raise RequestException(1022,"Timeslot is Full. %sPlease Try Other Date/Time" % ("Only %s Slot(s) Available or " % (timeslot_write_data.total_pcr_timeslot - timeslot_write_data.used_pcr_count) if timeslot_write_data.used_pcr_count < timeslot_write_data.total_pcr_timeslot else ""))
+                raise RequestException(1022,"<br/>\nJadwal Penuh. %sBisa dicoba tanggal/jam yang lain<br/>\nTimeslot is Full. %sPlease Try Other Date/Time" % ("Only %s Slot(s) Available or " % (timeslot_objs.total_pcr_timeslot - timeslot_objs.used_pcr_count) if timeslot_objs.used_pcr_count < timeslot_objs.total_pcr_timeslot else "","Only %s Slot(s) Available or " % (timeslot_objs.total_pcr_timeslot - timeslot_objs.used_pcr_count) if timeslot_objs.used_pcr_count < timeslot_objs.total_pcr_timeslot else ""))
 
         #check drive thru atau tidak, menentukan hold date
         drive_thru = False
