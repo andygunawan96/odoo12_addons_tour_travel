@@ -29,6 +29,7 @@ class TtReservationCustomer(models.Model):
     sample_method = fields.Selection(VARIABLE_SAMPLE_METHOD,'Sample Method')
     is_ticketed = fields.Boolean('Ticketed')
     ticket_number = fields.Char('Ticket Number')
+    result_url = fields.Char('Result Url')
 
     def to_dict(self):
         res = super(TtReservationCustomer, self).to_dict()
@@ -45,7 +46,9 @@ class TtReservationCustomer(models.Model):
             'sample_method': sample_method,
             'sample_method_code': self.sample_method,
             'email': self.email,
-            'phone_number': self.phone_number
+            'phone_number': self.phone_number,
+            'result_url': self.result_url,
+            'ticket_number': self.ticket_number
         })
         if len(self.channel_service_charge_ids.ids)>0:
             res['channel_service_charges'] = self.get_channel_service_charges()
