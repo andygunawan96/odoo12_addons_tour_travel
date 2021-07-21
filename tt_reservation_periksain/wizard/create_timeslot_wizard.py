@@ -85,7 +85,7 @@ class CreateTimeslotPeriksainWizard(models.TransientModel):
                         'dateslot': this_date,
                         'datetimeslot': datetimeslot,
                         'destination_id': self.area_id.id,
-                        'time_slot': self.total_timeslot,
+                        'total_timeslot': self.total_timeslot,
                         'currency_id': self.currency_id.id,
                         'timeslot_type': self.timeslot_type,
                         'commission_antigen': self.commission_antigen,

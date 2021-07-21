@@ -916,7 +916,7 @@ class Reservationphc(models.Model):
                 verified_pcr += rec.adult
             else:
                 verified_antigen += rec.adult
-        datetime_now_wib = datetime.now(pytz('Asia/Jakarta'))
+        datetime_now_wib = datetime.now(pytz.timezone('Asia/Jakarta'))
         verified_antigen_date = 0
         verified_pcr_date = 0
         booking_data = self.env['tt.reservation.phc'].search([('state_vendor', '=', 'verified'),
