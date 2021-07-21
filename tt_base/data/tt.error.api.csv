@@ -94,3 +94,14 @@ tt_error_api_9006,9906,Issued,For Issued,,1,1
 tt_error_api_9007,9907,Top Up,For Top Up,,1,1
 tt_error_api_9008,9908,Tour Request,For Tour Request,,1,1
 tt_error_api_9009,9909,Non Transaction Notification,For Non Transaction,,1,1
+tt_error_api_9010,9910,Event Booking,For Event Booking,,1,1
+tt_error_api_9011,9911,Event Issued,For Event Issued,,1,1
+tt_error_api_9012,9912,Periksain Order Created,For Periksain Order Created,,1,1
+tt_error_api_9013,9913,Periksain Order Confirm,For Periksain Order Confirm,,1,1
+tt_error_api_9014,9914,Periksain Order Done,For Periksain Order Done,,1,1
+tt_error_api_9015,9915,Periksain Order Cancel,For Periksain Order Cancel,,1,1
+tt_error_api_9016,9916,PHC Order Created,For PHC Order Created,,1,1
+tt_error_api_9017,9917,PHC Order Confirm,For PHC Order Confirm,,1,1
+tt_error_api_9018,9918,PHC Order Done,For PHC Order Done,,1,1
+tt_error_api_9019,9919,PHC Order Cancel,For PHC Order Cancel,,1,1
+tt_error_api_9020,9920,RPS ANTIGENPCR VERIFIED,For  RPS ANTIGENPCR VERIFIED,,1,1
