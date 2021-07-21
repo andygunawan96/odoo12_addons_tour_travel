@@ -38,14 +38,7 @@ class Reservationphc(models.Model):
     passenger_ids = fields.One2many('tt.reservation.passenger.phc', 'booking_id',
                                     readonly=True, states={'draft': [('readonly', False)]})
 
-    state_vendor = fields.Selection([('draft', 'Draft'),  ## order bookd by customer
-                                     ('new_order', 'New Order'),  ## order issued by customer
-                                     ('confirmed_order', 'Confirmed Order'),  ## order confirmmed by periksain
-                                     ('no_show', 'No Show'),  ## customer cancel H-1 after 16:00 or H
-                                     ('refund', 'Refund'),  ## customer cancel before H-1 16:00
-                                     ('verified', 'Verified'),
-                                     ('suspect', 'Suspect')], 'State Vendor',
-                                    default='draft')  ## normal way of completing order
+    state_vendor = fields.Selection(variables.STATE_VENDOR, 'State', default='draft')
 
     origin_id = fields.Many2one('tt.destinations', 'Test Area', readonly=True, states={'draft': [('readonly', False)]})
 

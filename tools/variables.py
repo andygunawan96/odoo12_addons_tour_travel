@@ -129,6 +129,16 @@ BOOKING_STATE_STR = {
     # END
 }
 
+STATE_VENDOR = [
+    ('draft', 'Draft'),  ## order bookd by customer
+    ('new_order', 'New Order'),  ## order issued by customer
+    ('confirmed_order', 'Confirmed Order'),  ## order confirmmed by periksain
+    ('no_show', 'No Show'),  ## customer cancel H-1 after 16:00 or H
+    ('refund', 'Refund'),  ## customer cancel before H-1 16:00
+    ('verified', 'Verified'),
+    ('suspect', 'Suspect')
+]
+
 JOURNEY_DIRECTION = [
     ('OW', 'One Way'),
     ('RT', 'Return'),
