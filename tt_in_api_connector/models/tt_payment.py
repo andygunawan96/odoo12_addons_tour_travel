@@ -89,16 +89,14 @@ class TtPaymentApiCon(models.Model):
                     _logger.info(data['order_number'])
                     if book_obj:
                         if book_obj.total == float(data['transaction_amount']):
-                            member = False
                             seq_id = ''
                             if book_obj.payment_acquirer_number_id:
-                                member = False if book_obj.payment_acquirer_number_id.payment_acquirer_id.type == 'payment_gateway' or book_obj.payment_acquirer_number_id.payment_acquirer_id.type == 'cash' else True
                                 seq_id = book_obj.payment_acquirer_number_id.payment_acquirer_id.seq_id
                             values = {
                                 "amount": book_obj.total,
                                 "currency": book_obj.currency_id.name,
                                 "co_uid": book_obj.user_id.id,
-                                'member': member,
+                                'member': False, # KALAU BAYAR PAKE ESPAY PASTI MEMBER FALSE
                                 'acquirer_seq_id': seq_id,
                                 'force_issued': True,
                             }
