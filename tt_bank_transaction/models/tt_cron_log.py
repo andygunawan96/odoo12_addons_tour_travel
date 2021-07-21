@@ -107,10 +107,16 @@ class ttCronTopUpValidator(models.Model):
                                     if book_obj:
                                         #login gateway, payment
                                         if book_obj.state == 'booked':
+                                            seq_id = ''
+                                            if book_obj.payment_acquirer_number_id:
+                                                seq_id = book_obj.payment_acquirer_number_id.payment_acquirer_id.seq_id
                                             req = {
                                                 'order_number': book_obj.name,
                                                 'user_id': book_obj.user_id.id,
-                                                'provider_type': variables.PROVIDER_TYPE_PREFIX[book_obj.name.split('.')[0]]
+                                                'provider_type': variables.PROVIDER_TYPE_PREFIX[book_obj.name.split('.')[0]],
+                                                'member': False, # kalo bayar pake BCA / MANDIRI PASTI MEMBER FALSE
+                                                'acquirer_seq_id': seq_id,
+                                                'force_issued': True,
                                             }
                                             res = self.env['tt.payment.api.con'].send_payment(req)
                                             _logger.info('Cron Top Up Validator Send Payment REQ %s.%s \n%s' % (payment_acq_obj['number'].split('.')[0], payment_acq_obj['number'].split('.')[1], json.dumps(res)))

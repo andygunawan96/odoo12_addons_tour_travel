@@ -46,18 +46,9 @@ class TtCronLogInhphc(models.Model):
 
     def cron_auto_notification_timeslot_quota_data_phc(self):
         try:
-            timeslot_data = self.env['tt.timeslot.phc'].search([('dateslot','=',datetime.today().strftime("%Y-%m-%d")),('timeslot_type','=','drive_thru')],limit=1)
-            verified_antigen = 0
-            verified_pcr = 0
-            for rec in timeslot_data.booking_used_ids.filtered(lambda x: x.state_vendor == 'verified'):
-                if "PCR" in rec.carrier_name:
-                    verified_pcr += rec.adult
-                else:
-                    verified_antigen += rec.adult
-
             data = {
-                'code': 9909,
-                'message': 'PHC Verified:\n%s\nAntigen : %s\nPCR : %s' % (timeslot_data.datetimeslot.astimezone(pytz.timezone('Asia/Jakarta')),verified_antigen,verified_pcr)
+                'code': 9920,
+                'message': self.env['tt.reservation.phc'].get_verified_summary()
             }
             self.env['tt.api.con'].send_request_to_gateway('%s/notification' % (self.env['tt.api.con'].url), data,
                                                            'notification_code')
