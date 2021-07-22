@@ -937,11 +937,15 @@ class Reservationphc(models.Model):
         if self.state_vendor != 'verified':
             for rec in self.passenger_ids:
                 if rec.ticket_number:
-                    self.env['tt.phc.api.con'].sync_status_with_phc({
+                    phc_status_res = self.env['tt.phc.api.con'].sync_status_with_phc({
                         'carrier_code': self.carrier_name,
                         'ticket_number': rec.ticket_number,
                         'provider': self.provider_booking_ids[0].provider_id.code
                     })
+                    if phc_status_res['error_code'] == 0:
+                        rec.verify = phc_status_res['response']['verify']
+                        rec.verified_date = datetime.now()
+                        rec.verified_date = self.env.user.id
 
     # May 11, 2020 - SAM
     def set_provider_detail_info(self):
