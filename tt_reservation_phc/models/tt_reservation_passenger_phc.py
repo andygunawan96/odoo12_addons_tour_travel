@@ -108,3 +108,8 @@ class TtReservationCustomer(models.Model):
     def fill_seq_id(self):
         for idx,rec in enumerate(self.search([('seq_id','=',False)])):
             rec.seq_id = "PGH.O%s%s" % (idx,datetime.now().second)
+
+    def fill_verif_date(self):
+        for rec in self.search([('verified_uid','=',False)]):
+            rec.verified_uid = rec.booking_id.verified_uid
+            rec.verified_date = rec.booking_id.verified_date
