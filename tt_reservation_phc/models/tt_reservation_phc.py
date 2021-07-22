@@ -38,7 +38,7 @@ class Reservationphc(models.Model):
     passenger_ids = fields.One2many('tt.reservation.passenger.phc', 'booking_id',
                                     readonly=True, states={'draft': [('readonly', False)]})
 
-    state_vendor = fields.Selection(variables.STATE_VENDOR, 'State', default='draft')
+    state_vendor = fields.Selection(variables.STATE_VENDOR, 'State Vendor', default='draft')
 
     origin_id = fields.Many2one('tt.destinations', 'Test Area', readonly=True, states={'draft': [('readonly', False)]})
 
