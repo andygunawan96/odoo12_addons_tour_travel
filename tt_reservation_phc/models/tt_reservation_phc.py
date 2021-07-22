@@ -93,6 +93,11 @@ class Reservationphc(models.Model):
         for rec in self:
             rec.state = 'issued'
 
+    @api.multi
+    def action_set_state_vendor_as_suspect(self):
+        for rec in self:
+            rec.state_vendor = 'suspect'
+
     def action_booked_api_phc(self,context):
         write_values = {
             'state': 'booked',
