@@ -17,6 +17,8 @@
                 <field name="label_url"/>
                 <group>
                     <group>
+                        <field name="verified_date"/>
+                        <field name="verified_uid"/>
                         <field name="email"/>
                         <field name="phone_number"/>
                         <field name="profession"/>
