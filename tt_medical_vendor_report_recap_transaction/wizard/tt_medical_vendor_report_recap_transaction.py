@@ -17,7 +17,7 @@ class AgentReportRecapReservation(models.TransientModel):
                                      string='Provider Type', default='all', readonly=True)
     is_ho = fields.Boolean('Ho User', default=True)
     all_agent = fields.Boolean('All Agent', default=True, readonly=True)
-    period_mode = fields.Selection(selection=[('test_date', 'Test Date'), ('issued_date', 'Issued Date')], string='Period Mode', default='test_date')
+    period_mode = fields.Selection(selection=[('issued_date', 'Issued Date'), ('verified_date', 'Verified Date'), ('test_date', 'Test Date')], string='Period Mode', default='issued_date')
 
     def _compute_provider_type_selection(self):
         value = [('all', 'All')]

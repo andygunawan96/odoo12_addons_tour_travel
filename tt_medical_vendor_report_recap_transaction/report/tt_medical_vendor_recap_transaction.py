@@ -64,10 +64,12 @@ class MedicalVendorReportRecapTransacion(models.Model):
     ################
     @staticmethod
     def _where(period_mode, date_from, date_to, agent_id, provider_type, state, state_vendor):
-        if period_mode == 'test_date':
-            where = """rsv.test_datetime >= '%s' and rsv.test_datetime <= '%s'""" % (date_from, date_to)
-        else:
+        if period_mode == 'issued_date':
             where = """rsv.issued_date >= '%s' and rsv.issued_date <= '%s'""" % (date_from, date_to)
+        elif period_mode == 'verified_date':
+            where = """rsv.verified_date >= '%s' and rsv.verified_date <= '%s'""" % (date_from, date_to)
+        else:
+            where = """rsv.test_datetime >= '%s' and rsv.test_datetime <= '%s'""" % (date_from, date_to)
         # if state == 'failed':
         #     where += """ AND rsv.state IN ('fail_booking', 'fail_issue')"""
         # where += """ AND rsv.state IN ('partial_issued', 'issued')"""
@@ -83,10 +85,12 @@ class MedicalVendorReportRecapTransacion(models.Model):
 
     @staticmethod
     def _where_join_passengers(period_mode, date_from, date_to, agent_id, provider_type, state, state_vendor):
-        if period_mode == 'test_date':
-            where = """rsv.test_datetime >= '%s' and rsv.test_datetime <= '%s'""" % (date_from, date_to)
-        else:
+        if period_mode == 'issued_date':
             where = """rsv.issued_date >= '%s' and rsv.issued_date <= '%s'""" % (date_from, date_to)
+        elif period_mode == 'verified_date':
+            where = """rsv.verified_date >= '%s' and rsv.verified_date <= '%s'""" % (date_from, date_to)
+        else:
+            where = """rsv.test_datetime >= '%s' and rsv.test_datetime <= '%s'""" % (date_from, date_to)
         # if state == 'failed':
         #     where += """ AND rsv.state IN ('fail_booking', 'fail_issue')"""
         # where += """ AND rsv.state IN ('partial_issued', 'issued')"""
