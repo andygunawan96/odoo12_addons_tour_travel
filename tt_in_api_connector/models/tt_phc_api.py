@@ -31,3 +31,15 @@ class TtTrainApiCon(models.Model):
         else:
             raise RequestException(999)
         return res
+
+    def sync_status_with_phc(self, req):
+        request = {
+            'ticket_number': req.get('ticket_number'),
+            'carrier_code': req.get('carrier_code'),
+            'provider': req.get('provider')
+        }
+        action = 'sync_status_with_phc'
+        return self.send_request_to_gateway('%s/booking/phc/private' % (self.url),
+                                            request,
+                                            action,
+                                            timeout=180)
