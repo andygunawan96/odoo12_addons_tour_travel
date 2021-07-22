@@ -628,8 +628,7 @@ class Reservationphc(models.Model):
                     'verified_date': datetime.now(),
                     'verified_uid': context['co_uid'],
                 })
-                book_obj = self.browse(passenger_obj.booking_id.id)
-                book_obj.check_reservation_verif()
+                passenger_obj.booking_id.check_reservation_verif(context['co_uid'])
 
                 data = {
                     'code': 9920,
