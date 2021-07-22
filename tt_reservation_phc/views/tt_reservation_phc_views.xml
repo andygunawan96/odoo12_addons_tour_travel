@@ -481,4 +481,15 @@
     <menuitem id="submenu_reservations_phc_failed_expired" parent="tt_reservation_phc.menu_reservations_phc"
               name="Failed/Expired" action="tt_reservation_phc.tt_reservation_phc_action_views_failed_expired" sequence="5"/>
 
+
+    <record model="ir.actions.server" id="action_multi_sync_status_with_phc">
+        <field name="name">Sync Status Verif</field>
+        <field name="model_id" ref="tt_reservation_phc.model_tt_reservation_phc"/>
+        <field name="binding_model_id" ref="tt_reservation_phc.model_tt_reservation_phc"/>
+        <field name="state">code</field>
+        <field name="code">
+            if records:
+            action = records.multi_sync_verified_with_phc()
+        </field>
+    </record>
 </odoo>

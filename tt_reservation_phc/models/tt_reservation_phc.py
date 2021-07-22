@@ -724,7 +724,7 @@ class Reservationphc(models.Model):
         timeslot_write_data = self.env['tt.timeslot.phc'].search([('seq_id', 'in', booking_data['timeslot_list'])])
         for rec in timeslot_write_data:
             if not rec.get_availability(carrier_obj.code, booking_data['adult']):
-                raise RequestException(1022,"<br/>\nJadwal Penuh. %sBisa dicoba tanggal/jam yang lain<br/>\nTimeslot is Full. %sPlease Try Other Date/Time" % ("Only %s Slot(s) Available or " % (timeslot_objs.total_pcr_timeslot - timeslot_objs.used_pcr_count) if timeslot_objs.used_pcr_count < timeslot_objs.total_pcr_timeslot else "","Only %s Slot(s) Available or " % (timeslot_objs.total_pcr_timeslot - timeslot_objs.used_pcr_count) if timeslot_objs.used_pcr_count < timeslot_objs.total_pcr_timeslot else ""))
+                raise RequestException(1022,"<br/>\nJadwal Penuh. %sBisa dicoba tanggal/jam yang lain<br/>\nTimeslot is Full. %sPlease Try Other Date/Time" % ("Only %s Slot(s) Available or " % (rec.total_pcr_timeslot - rec.used_pcr_count) if rec.used_pcr_count < rec.total_pcr_timeslot else "","Only %s Slot(s) Available or " % (rec.total_pcr_timeslot - rec.used_pcr_count) if rec.used_pcr_count < rec.total_pcr_timeslot else ""))
 
         #check drive thru atau tidak, menentukan hold date
         drive_thru = False
@@ -929,7 +929,20 @@ class Reservationphc(models.Model):
 
         return 'PHC Verified By Date:\nAntigen : %s\nPCR : %s' % (verified_antigen_date,
                                                                   verified_pcr_date)
-            
+    def multi_sync_verified_with_phc(self):
+        for rec in self:
+            rec.sync_verified_with_phc()
+
+    def sync_verified_with_phc(self):
+        if self.state_vendor != 'verified':
+            for rec in self.passenger_ids:
+                if rec.ticket_number:
+                    self.env['tt.phc.api.con'].sync_status_with_phc({
+                        'carrier_code': self.carrier_name,
+                        'ticket_number': rec.ticket_number,
+                        'provider': self.provider_booking_ids[0].provider_id.code
+                    })
+
     # May 11, 2020 - SAM
     def set_provider_detail_info(self):
         hold_date = None
