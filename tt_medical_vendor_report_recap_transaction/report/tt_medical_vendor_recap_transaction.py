@@ -63,8 +63,13 @@ class MedicalVendorReportRecapTransacion(models.Model):
     #   name of the function correspond to respected SELECT, FORM functions for easy development
     ################
     @staticmethod
-    def _where(date_from, date_to, agent_id, provider_type, state):
-        where = """test_datetime >= '%s' and test_datetime <= '%s'""" % (date_from, date_to)
+    def _where(period_mode, date_from, date_to, agent_id, provider_type, state, state_vendor):
+        if period_mode == 'issued_date':
+            where = """rsv.issued_date >= '%s' and rsv.issued_date <= '%s'""" % (date_from, date_to)
+        elif period_mode == 'verified_date':
+            where = """rsv.verified_date >= '%s' and rsv.verified_date <= '%s'""" % (date_from, date_to)
+        else:
+            where = """rsv.test_datetime >= '%s' and rsv.test_datetime <= '%s'""" % (date_from, date_to)
         # if state == 'failed':
         #     where += """ AND rsv.state IN ('fail_booking', 'fail_issue')"""
         # where += """ AND rsv.state IN ('partial_issued', 'issued')"""
@@ -74,11 +79,18 @@ class MedicalVendorReportRecapTransacion(models.Model):
             where += """ AND provider_type.code = '%s' """ % provider_type
         if state:
             where += """ AND (rsv.state = '%s' OR rsv.state = 'reissue') """ % state
+        if state_vendor and state_vendor != 'all':
+            where += """ AND rsv.state_vendor = '%s' """ % state_vendor
         return where
 
     @staticmethod
-    def _where_join_passengers(date_from, date_to, agent_id, provider_type, state):
-        where = """test_datetime >= '%s' and test_datetime <= '%s'""" % (date_from, date_to)
+    def _where_join_passengers(period_mode, date_from, date_to, agent_id, provider_type, state, state_vendor):
+        if period_mode == 'issued_date':
+            where = """rsv.issued_date >= '%s' and rsv.issued_date <= '%s'""" % (date_from, date_to)
+        elif period_mode == 'verified_date':
+            where = """rsv.verified_date >= '%s' and rsv.verified_date <= '%s'""" % (date_from, date_to)
+        else:
+            where = """rsv.test_datetime >= '%s' and rsv.test_datetime <= '%s'""" % (date_from, date_to)
         # if state == 'failed':
         #     where += """ AND rsv.state IN ('fail_booking', 'fail_issue')"""
         # where += """ AND rsv.state IN ('partial_issued', 'issued')"""
@@ -88,6 +100,8 @@ class MedicalVendorReportRecapTransacion(models.Model):
             where += """ AND provider_type.code = '%s' """ % provider_type
         if state:
             where += """ AND (rsv.state = '%s' OR rsv.state = 'reissue') """ % state
+        if state_vendor and state_vendor != 'all':
+            where += """ AND rsv.state_vendor = '%s' """ % state_vendor
         return where
 
     ################
@@ -112,7 +126,7 @@ class MedicalVendorReportRecapTransacion(models.Model):
     #   for more information of what each query do, se explanation above every select function
     #   name of select function is the same as the _lines_[function name] or get_[function_name]
     ################
-    def _lines(self, date_from, date_to, agent_id, provider_type, state):
+    def _lines(self, period_mode, date_from, date_to, agent_id, provider_type, state, state_vendor):
         # SELECT
         query = 'SELECT ' + self._select()
         if provider_type == 'offline':
@@ -122,7 +136,7 @@ class MedicalVendorReportRecapTransacion(models.Model):
         query += 'FROM ' + self._from(provider_type)
 
         # WHERE
-        query += 'WHERE ' + self._where(date_from, date_to, agent_id, provider_type, state)
+        query += 'WHERE ' + self._where(period_mode, date_from, date_to, agent_id, provider_type, state, state_vendor)
 
         # 'GROUP BY' + self._group_by() + \
         query += 'ORDER BY ' + self._order_by()
@@ -131,7 +145,7 @@ class MedicalVendorReportRecapTransacion(models.Model):
         _logger.info(query)
         return self.env.cr.dictfetchall()
 
-    def _lines_join_passengers(self, date_from, date_to, agent_id, provider_type, state):
+    def _lines_join_passengers(self, period_mode, date_from, date_to, agent_id, provider_type, state, state_vendor):
         # SELECT
         query = 'SELECT ' + self._select_join_passengers()
 
@@ -139,7 +153,7 @@ class MedicalVendorReportRecapTransacion(models.Model):
         query += 'FROM ' + self._from_join_passengers(provider_type)
 
         # WHERE
-        query += 'WHERE ' + self._where_join_passengers(date_from, date_to, agent_id, provider_type, state)
+        query += 'WHERE ' + self._where_join_passengers(period_mode, date_from, date_to, agent_id, provider_type, state, state_vendor)
 
         # ORDER BY
         query += 'ORDER BY ' + self._order_by_join_passengers()
@@ -149,29 +163,29 @@ class MedicalVendorReportRecapTransacion(models.Model):
         return self.env.cr.dictfetchall()
 
     # this function handle preparation to call query builder for service charge
-    def _get_lines_data(self, date_from, date_to, agent_id, provider_type, state):
+    def _get_lines_data(self, period_mode, date_from, date_to, agent_id, provider_type, state, state_vendor):
         lines = []
         if provider_type != 'all':
-            lines = self._lines(date_from, date_to, agent_id, provider_type, state)
+            lines = self._lines(period_mode, date_from, date_to, agent_id, provider_type, state, state_vendor)
             lines = self._convert_data(lines, provider_type)
         else:
             provider_types = variables.PROVIDER_TYPE
             for provider_type in provider_types:
-                report_lines = self._lines(date_from, date_to, agent_id, provider_type, state)
+                report_lines = self._lines(period_mode, date_from, date_to, agent_id, provider_type, state, state_vendor)
                 report_lines = self._convert_data(report_lines, provider_type)
                 for line in report_lines:
                     lines.append(line)
         return lines
 
     # this function handle preparation to call query builder for service charge
-    def _get_lines_data_join_passengers(self, date_from, date_to, agent_id, provider_type, state):
+    def _get_lines_data_join_passengers(self, period_mode, date_from, date_to, agent_id, provider_type, state, state_vendor):
         lines = []
         if provider_type != 'all':
-            lines = self._lines_join_passengers(date_from, date_to, agent_id, provider_type, state)
+            lines = self._lines_join_passengers(period_mode, date_from, date_to, agent_id, provider_type, state, state_vendor)
         else:
             provider_types = variables.PROVIDER_TYPE
             for provider_type in provider_types:
-                report_lines = self._lines_join_passengers(date_from, date_to, agent_id, provider_type, state)
+                report_lines = self._lines_join_passengers(period_mode, date_from, date_to, agent_id, provider_type, state, state_vendor)
                 for j in report_lines:
                     lines.append(j)
         return lines
@@ -195,16 +209,18 @@ class MedicalVendorReportRecapTransacion(models.Model):
 
     def _prepare_values(self, data_form):
         data_form['state'] = 'issued'
+        period_mode = data_form['period_mode']
         date_from = data_form['date_from']
         date_to = data_form['date_to']
         # if not data_form['state']:
         #     data_form['state'] = 'all'
         agent_id = data_form['agent_id']
         state = data_form['state']
+        state_vendor = data_form['state_vendor']
         provider_type = data_form['provider_type']
         # lines = self._get_lines_data_search(date_from, date_to, agent_id, provider_type, state)
-        lines = self._get_lines_data(date_from, date_to, agent_id, provider_type, state)
-        second_lines = self._get_lines_data_join_passengers(date_from, date_to, agent_id, provider_type, state)
+        lines = self._get_lines_data(period_mode, date_from, date_to, agent_id, provider_type, state, state_vendor)
+        second_lines = self._get_lines_data_join_passengers(period_mode, date_from, date_to, agent_id, provider_type, state, state_vendor)
         self._report_title(data_form)
 
         return {
