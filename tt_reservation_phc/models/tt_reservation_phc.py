@@ -435,7 +435,9 @@ class Reservationphc(models.Model):
                 'kelurahan_ktp': passengers_data[idx]['kelurahan_ktp'],
                 'pcr_data': json.dumps(pcr_data),
                 'verify': passengers_data[idx].get('verify') or False,
-                'label_url': passengers_data[idx].get('label_url') or ''
+                'label_url': passengers_data[idx].get('label_url') or '',
+                'verified_date': passengers_data[idx].get('verify') and datetime.now() or False,
+                'verified_uid': passengers_data[idx].get('verify') and context['co_uid'] or False,
             })
         if verify:
             book_obj.write({
@@ -625,6 +627,8 @@ class Reservationphc(models.Model):
                     'kelurahan': req['kelurahan'],
                     'ticket_number': req['ticket_number'],
                     'verify': True,
+                    'verified_date': datetime.now(),
+                    'verified_uid': context['co_uid'],
                 })
                 verify = True
                 book_obj = self.browse(passenger_obj.booking_id.id)
@@ -641,10 +645,10 @@ class Reservationphc(models.Model):
 
                 data = {
                     'code': 9920,
-                    'message': "%s\n\n%s" % (passenger_obj.name, self.env['tt.reservation.phc'].get_verified_summary())
+                    'message': "%s\n\n%s" % ('\n'.join([psg_obj.name for psg_obj in book_obj.passenger_ids]), self.env['tt.reservation.phc'].get_verified_summary())
                 }
                 self.env['tt.api.con'].send_request_to_gateway('%s/notification' % (self.env['tt.api.con'].url), data,
-                                                               'notification_code')
+                                                           'notification_code')
                 return ERR.get_no_error({
                     "transaction_code": req['ticket_number'],
                     "message": "success"
@@ -907,34 +911,26 @@ class Reservationphc(models.Model):
         #END
     
     def get_verified_summary(self):
-        timeslot_data = self.env['tt.timeslot.phc'].search(
-            [('dateslot', '=', datetime.today().strftime("%Y-%m-%d")), ('timeslot_type', '=', 'drive_thru')], limit=1)
-        verified_antigen = 0
-        verified_pcr = 0
-        for rec in timeslot_data.booking_used_ids.filtered(lambda x: x.state_vendor == 'verified'):
-            if "PCR" in rec.carrier_name:
-                verified_pcr += rec.adult
-            else:
-                verified_antigen += rec.adult
         datetime_now_wib = datetime.now(pytz.timezone('Asia/Jakarta'))
-        verified_antigen_date = 0
-        verified_pcr_date = 0
-        booking_data = self.env['tt.reservation.phc'].search([('state_vendor', '=', 'verified'),
+        passenger_data = self.env['tt.reservation.passenger.phc'].search([('verify', '=', True),
+                                                                          ('booking_id.carrier_name','ilike','PCR'),
                                                               ('verified_date', '>=',
                                                                datetime_now_wib.replace(hour=0, minute=0, second=0,
                                                                                         microsecond=0)),
                                                               ('verified_date', '<=', datetime_now_wib)])
-        for rec in booking_data:
-            if "PCR" in rec.carrier_name:
-                verified_pcr_date += rec.adult
-            else:
-                verified_antigen_date += rec.adult
+        verified_pcr_date = len(passenger_data.ids)
 
-        return 'PHC Verified By Timeslot:\n%s\nAntigen : %s\nPCR : %s\n\nPHC Verified By Date:\nAntigen : %s\nPCR : %s' % (timeslot_data.datetimeslot.astimezone(pytz.timezone('Asia/Jakarta')),
-                                                                                                                           verified_antigen,
-                                                                                                                           verified_pcr,
-                                                                                                                           verified_antigen_date,
-                                                                                                                           verified_pcr_date)
+        passenger_data = self.env['tt.reservation.passenger.phc'].search([('verify', '=', True),
+                                                                          ('booking_id.carrier_name', 'ilike', 'ATG'),
+                                                                          ('verified_date', '>=',
+                                                                           datetime_now_wib.replace(hour=0, minute=0,
+                                                                                                    second=0,
+                                                                                                    microsecond=0)),
+                                                                          ('verified_date', '<=', datetime_now_wib)])
+        verified_antigen_date = len(passenger_data.ids)
+
+        return 'PHC Verified By Date:\nAntigen : %s\nPCR : %s' % (verified_antigen_date,
+                                                                  verified_pcr_date)
             
     # May 11, 2020 - SAM
     def set_provider_detail_info(self):

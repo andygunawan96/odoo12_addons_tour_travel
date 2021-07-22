@@ -47,6 +47,9 @@ class TtReservationCustomer(models.Model):
     is_ticketed = fields.Boolean('Ticketed')
     ticket_number = fields.Char('Ticket Number')
 
+    verified_uid = fields.Many2one('res.users', 'Verified by', readonly=True)
+    verified_date = fields.Datetime('Verified Date', readonly=True)
+
     @api.model
     def create(self, vals_list):
         vals_list['seq_id'] = self.env['ir.sequence'].next_by_code('tt.reservation.passenger.phc')
