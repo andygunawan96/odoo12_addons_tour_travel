@@ -33,7 +33,7 @@ class ReservationPeriksain(models.Model):
     # issued_pending_date = fields.Datetime('Issued Pending Date', readonly=True)
     # issued_pending_hold_date = fields.Datetime('Pending Date', readonly=True)
 
-    state_vendor = fields.Selection(variables.STATE_VENDOR, 'State', default='draft')
+    state_vendor = fields.Selection(variables.STATE_VENDOR, 'State Vendor', default='draft')
 
     origin_id = fields.Many2one('tt.destinations', 'Test Area', readonly=True, states={'draft': [('readonly', False)]})
 
