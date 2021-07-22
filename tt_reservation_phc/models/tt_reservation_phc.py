@@ -943,9 +943,10 @@ class Reservationphc(models.Model):
                         'provider': self.provider_booking_ids[0].provider_id.code
                     })
                     if phc_status_res['error_code'] == 0:
-                        rec.verify = phc_status_res['response']['verified']
-                        rec.verified_date = datetime.now()
-                        rec.verified_uid = self.env.user.id
+                        if phc_status_res['response']['verified']:
+                            rec.verify = phc_status_res['response']['verified']
+                            rec.verified_date = datetime.now()
+                            rec.verified_uid = self.env.user.id
 
     # May 11, 2020 - SAM
     def set_provider_detail_info(self):
