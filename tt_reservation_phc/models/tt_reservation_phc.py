@@ -628,18 +628,7 @@ class Reservationphc(models.Model):
                     'verified_date': datetime.now(),
                     'verified_uid': context['co_uid'],
                 })
-                verify = True
-                book_obj = self.browse(passenger_obj.booking_id.id)
-                for rec in book_obj.passenger_ids:
-                    if rec.verify == False:
-                        verify = False
-                        break
-                if verify:
-                    book_obj.write({
-                        'state_vendor': 'verified',
-                        'verified_uid': context['co_uid'],
-                        'verified_date': datetime.now()
-                    })
+                passenger_obj.booking_id.check_reservation_verif(context['co_uid'])
 
                 data = {
                     'code': 9920,
@@ -660,6 +649,19 @@ class Reservationphc(models.Model):
         except Exception as e:
             _logger.error(traceback.format_exc())
             return ERR.get_error(1013)
+
+    def check_reservation_verif(self, co_uid):##siapa yg melakukan
+        verify=True
+        for rec in self.passenger_ids:
+            if rec.verify == False:
+                verify = False
+                break
+        if verify:
+            self.write({
+                'state_vendor': 'verified',
+                'verified_uid': co_uid,
+                'verified_date': datetime.now()
+            })
     #req
     # date from
     # date to
@@ -947,6 +949,7 @@ class Reservationphc(models.Model):
                             rec.verify = phc_status_res['response']['verified']
                             rec.verified_date = datetime.now()
                             rec.verified_uid = self.env.user.id
+                            self.check_reservation_verif(self.env.user.id)
 
     # May 11, 2020 - SAM
     def set_provider_detail_info(self):
