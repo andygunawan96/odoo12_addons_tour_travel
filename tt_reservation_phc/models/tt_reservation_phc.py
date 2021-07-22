@@ -943,7 +943,7 @@ class Reservationphc(models.Model):
                         'provider': self.provider_booking_ids[0].provider_id.code
                     })
                     if phc_status_res['error_code'] == 0:
-                        rec.verify = phc_status_res['response']['verify']
+                        rec.verify = phc_status_res['response']['verified']
                         rec.verified_date = datetime.now()
                         rec.verified_date = self.env.user.id
 
