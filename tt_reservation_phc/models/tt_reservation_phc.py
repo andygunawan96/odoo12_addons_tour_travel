@@ -643,7 +643,7 @@ class Reservationphc(models.Model):
 
                 data = {
                     'code': 9920,
-                    'message': "%s\n\n%s" % ('\n'.join([psg_obj.name for psg_obj in book_obj.passenger_ids]), self.env['tt.reservation.phc'].get_verified_summary())
+                    'message': "%s\n\n%s" % (passenger_obj.name, self.env['tt.reservation.phc'].get_verified_summary())
                 }
                 self.env['tt.api.con'].send_request_to_gateway('%s/notification' % (self.env['tt.api.con'].url), data,
                                                            'notification_code')
