@@ -36,7 +36,7 @@ class TtTrainApiCon(models.Model):
         request = {
             'ticket_number': req.get('ticket_number'),
             'carrier_code': req.get('carrier_code'),
-            'provider': req.get('providder')
+            'provider': req.get('provider')
         }
         action = 'sync_status_with_phc'
         return self.send_request_to_gateway('%s/booking/phc/private' % (self.url),
