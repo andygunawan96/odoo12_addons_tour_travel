@@ -74,7 +74,6 @@
             <xpath expr="//button[@name='action_set_as_draft']" position="replace"/>
             <xpath expr="//button[@name='action_set_as_booked']" position="replace"/>
             <xpath expr="//button[@name='action_set_as_issued']" position="replace"/>
-            <xpath expr="//button[@name='action_check_provider_state']" position="replace"/>
 <!--            <xpath expr="//button[@name='%(tt_accounting.tt_adjustment_wizard_action_view)d']" position="replace"/>-->
             <xpath expr="//button[@name='%(tt_accounting.tt_refund_wizard_action_view)d']" position="attributes">
                 <attribute name="attrs">{'invisible': [('can_refund', '!=', True)]}</attribute>

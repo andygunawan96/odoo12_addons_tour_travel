@@ -55,7 +55,7 @@ class HotelInformation(models.Model):
                     for gw_rec in a[rec + 's']:
                         need_to_add_list.append([gw_rec['ID'], gw_rec.get('Name') or gw_rec.get('Description_EN')])
 
-                with open(base_cache_directory + 'dida_pool/00_master/' + rec + '.csv', 'w') as csvFile:
+                with open(base_cache_directory + 'dida/00_master/' + rec + '.csv', 'w') as csvFile:
                     writer = csv.writer(csvFile)
                     writer.writerows(need_to_add_list)
                 csvFile.close()
@@ -64,7 +64,7 @@ class HotelInformation(models.Model):
                 continue
 
         # Get City by country Start
-        with open(base_cache_directory + 'dida_pool/00_master/Country.csv', 'r') as f:
+        with open(base_cache_directory + 'dida/00_master/Country.csv', 'r') as f:
             country_ids = csv.reader(f)
             need_to_add_list = []
             for rec in country_ids:
@@ -87,7 +87,7 @@ class HotelInformation(models.Model):
                     _logger.info("No City for: " + rec[1] + ".")
                     continue
         f.close()
-        with open(base_cache_directory + 'dida_pool/00_master/City.csv', 'w') as csvFile:
+        with open(base_cache_directory + 'dida/00_master/City.csv', 'w') as csvFile:
             writer = csv.writer(csvFile)
             writer.writerows(need_to_add_list)
         csvFile.close()
@@ -102,7 +102,7 @@ class HotelInformation(models.Model):
     # Notes: Bagian ini bakal sering berubah
     def v2_collect_by_human_dida(self):
         base_cache_directory = self.env['ir.config_parameter'].sudo().get_param('hotel.cache.directory')
-        with open(base_cache_directory + 'dida_pool/00_master/AvailHotelSummary_V0.csv', 'r') as f:
+        with open(base_cache_directory + 'dida/00_master/AvailHotelSummary_V0.csv', 'r') as f:
             hotel_ids = csv.reader(f, delimiter="|")
 
             hotel_fmt_list = {}
@@ -141,7 +141,7 @@ class HotelInformation(models.Model):
 
             for country in hotel_fmt_list.keys():
                 txt_country = country.replace('/', '-').replace('(and vicinity)', '').replace(' (', '-').replace(')', '')
-                filename = base_cache_directory + "dida_pool/" + txt_country
+                filename = base_cache_directory + "dida/" + txt_country
                 if not os.path.exists(filename):
                     os.mkdir(filename)
                 for city in hotel_fmt_list[country].keys():
@@ -160,7 +160,7 @@ class HotelInformation(models.Model):
     def v2_get_country_code_dida(self):
         base_cache_directory = self.env['ir.config_parameter'].sudo().get_param('hotel.cache.directory')
         provider_id = self.env.ref('tt_reservation_hotel.tt_hotel_provider_dida').id
-        with open(base_cache_directory + 'dida_pool/00_master/Country.csv', 'r') as f:
+        with open(base_cache_directory + 'dida/00_master/Country.csv', 'r') as f:
             country_ids = csv.reader(f)
             for rec in country_ids:
                 _logger.info("=== Processing (" + rec[1] + ") ===")
@@ -187,7 +187,7 @@ class HotelInformation(models.Model):
     def v2_get_city_code_dida_old(self):
         base_cache_directory = self.env['ir.config_parameter'].sudo().get_param('hotel.cache.directory')
         provider_id = self.env.ref('tt_reservation_hotel.tt_hotel_provider_dida').id
-        with open(base_cache_directory + 'dida_pool/00_master/City.csv', 'r') as f:
+        with open(base_cache_directory + 'dida/00_master/City.csv', 'r') as f:
             city_ids = csv.reader(f)
             for rec in city_ids:
                 code = rec[0] #6051357
@@ -226,14 +226,15 @@ class HotelInformation(models.Model):
         return True
 
     # 1d. Get City Code
-    def v2_get_city_code_dida(self):
+    # Fungsi yg Jalan cman tdak digunakan
+    def v2_get_city_code_dida_1(self):
         base_cache_directory = self.env['ir.config_parameter'].sudo().get_param('hotel.cache.directory')
         provider_id = self.env.ref('tt_reservation_hotel.tt_hotel_provider_dida').id
-        with open(base_cache_directory + 'dida_pool/00_master/City.csv', 'r') as f:
+        with open(base_cache_directory + 'dida/00_master/City.csv', 'r') as f:
             city_ids = csv.reader(f)
             idx = 0
             for rec in city_ids:
-                if idx < 2300:
+                if idx < -1:
                     idx += 1
                     continue
                 code = rec[0] #6051357
@@ -277,12 +278,20 @@ class HotelInformation(models.Model):
             _logger.info('Render Done')
         return True
 
+    # 1d. Get City Code
+    # Gunakan ini Soale dida tidak bisa search by city code
+    # DI versi 15 juli 2021 logic GW
+    # cek ada external code nya tidak jika ada yg di kirim ke vendor city code nya
+    # Jika tidak ada ambil hotel code untuk dest tersebut
+    def v2_get_city_code_dida(self):
+        return True
+
     # 1e. Get Meal Code
     def v2_get_meal_code_dida(self):
         model = 'tt.meal.type'
         base_cache_directory = self.env['ir.config_parameter'].sudo().get_param('hotel.cache.directory')
         provider_id = self.env.ref('tt_reservation_hotel.tt_hotel_provider_dida').id
-        with open(base_cache_directory + 'dida_pool/00_master/MealType.csv', 'r') as f:
+        with open(base_cache_directory + 'dida/00_master/MealType.csv', 'r') as f:
             meal_type_ids = csv.reader(f)
             for rec in meal_type_ids:
                 code = rec[0]
@@ -310,7 +319,7 @@ class HotelInformation(models.Model):
         model = 'tt.room.type'
         base_cache_directory = self.env['ir.config_parameter'].sudo().get_param('hotel.cache.directory')
         provider_id = self.env.ref('tt_reservation_hotel.tt_hotel_provider_dida').id
-        with open(base_cache_directory + 'dida_pool/00_master/BedType.csv', 'r') as f:
+        with open(base_cache_directory + 'dida/00_master/BedType.csv', 'r') as f:
             bed_type_ids = csv.reader(f)
             for rec in bed_type_ids:
                 code = rec[0]

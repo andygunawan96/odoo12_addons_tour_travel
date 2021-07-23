@@ -236,7 +236,7 @@ class Reservationphc(models.Model):
                     commission_price = rec.commission_antigen
                     overtime_price = rec.overtime_surcharge
                     single_suplement_price = rec.single_supplement
-        elif carrier_obj.id in [self.env.ref('tt_reservation_phc.tt_transport_carrier_phc_home_care_pcr ').id,
+        elif carrier_obj.id in [self.env.ref('tt_reservation_phc.tt_transport_carrier_phc_home_care_pcr').id,
                           self.env.ref('tt_reservation_phc.tt_transport_carrier_phc_drive_thru_pcr').id]:
             for rec in timeslot_objs:
                 if rec.base_price_pcr > base_price:
@@ -1059,7 +1059,7 @@ class Reservationphc(models.Model):
         datas['is_with_price'] = True
         phc_ticket_id = self.env.ref('tt_report_common.action_report_printout_reservation_phc') # Vin 2021-06-15 Report sementara sama
 
-        if not book_obj.printout_ticket_id:
+        if not book_obj.printout_ticket_price_id:
             if book_obj.agent_id:
                 co_agent_id = book_obj.agent_id.id
             else:
@@ -1089,12 +1089,12 @@ class Reservationphc(models.Model):
                 }
             )
             upc_id = book_obj.env['tt.upload.center'].search([('seq_id', '=', res['response']['seq_id'])], limit=1)
-            book_obj.printout_ticket_id = upc_id.id
+            book_obj.printout_ticket_price_id = upc_id.id
         url = {
             'type': 'ir.actions.act_url',
             'name': "Printout",
             'target': 'new',
-            'url': book_obj.printout_ticket_id.url,
+            'url': book_obj.printout_ticket_price_id.url,
         }
         return url
 
