@@ -50,6 +50,18 @@
             <field name="provider_type_id" ref="tt_reservation_phc.tt_provider_type_phc"/>
         </record>
 
+        <record id="tt_transport_carrier_phc_drive_thru_pcr_express" model="tt.transport.carrier">
+            <field name="name">Drive Thru PCR Express SS Radio</field>
+            <field name="code">PHCDTEPCR</field>
+            <field name="icao">PHCDTEPCR</field>
+            <field name="call_sign">PHC Drive Thru PCR Express</field>
+            <field name="adult_length_name">80</field>
+            <field name="child_length_name">80</field>
+            <field name="infant_length_name">80</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_phc.tt_provider_type_phc"/>
+        </record>
+
     </data>
 </odoo>
     

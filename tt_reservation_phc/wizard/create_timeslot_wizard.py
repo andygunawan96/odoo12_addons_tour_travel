@@ -11,9 +11,11 @@ _logger = logging.getLogger(__name__)
 COMMISSION_PER_PAX_ANTIGEN = 28000 ## komisi agent /pax
 COMMISSION_PER_PAX_PCR_HC = 120000 ## komisi agent /pax
 COMMISSION_PER_PAX_PCR_DT = 80000 ## komisi agent /pax
+COMMISSION_PER_PAX_PCR_DT_EXPRESS = 500000 ## komisi agent /pax
 BASE_PRICE_PER_PAX_ANTIGEN = 150000 ## harga 1 /pax
 BASE_PRICE_PER_PAX_PCR_HC = 850000 ## harga 1 /pax
 BASE_PRICE_PER_PAX_PCR_DT = 750000 ## harga 1 /pax
+BASE_PRICE_PER_PAX_PCR_DT_EXPRESS = 4000000 ## harga 1 /pax
 SINGLE_SUPPLEMENT = 25000 ## 1 orang
 OVERTIME_SURCHARGE = 50000 ## lebih dari 18.00 /pax
 
@@ -36,9 +38,11 @@ class CreateTimeslotphcWizard(models.TransientModel):
                                   default=lambda self: self.env.user.company_id.currency_id)
     commission_antigen = fields.Monetary('Commission per PAX Antigen', default=COMMISSION_PER_PAX_ANTIGEN, required=True)
     commission_pcr = fields.Monetary('Commission per PAX PCR', default=COMMISSION_PER_PAX_PCR_HC, required=True)
+    commission_pcr_express = fields.Monetary('Commission per PAX PCR Express', default=COMMISSION_PER_PAX_PCR_DT_EXPRESS, required=True)
 
     base_price_antigen = fields.Monetary('Base Price per PAX Antigen', default=BASE_PRICE_PER_PAX_ANTIGEN, required=True)
     base_price_pcr = fields.Monetary('Base Price per PAX PCR', default=BASE_PRICE_PER_PAX_PCR_HC, required=True)
+    base_price_pcr_express = fields.Monetary('Base Price per PAX PCR Express', default=BASE_PRICE_PER_PAX_PCR_DT_EXPRESS, required=True)
 
     single_supplement = fields.Monetary('Single Supplement', default=SINGLE_SUPPLEMENT, required=True)
     overtime_surcharge = fields.Monetary('Overtime Surcharge', default=OVERTIME_SURCHARGE, required=True)
@@ -118,8 +122,10 @@ class CreateTimeslotphcWizard(models.TransientModel):
                 'timeslot_type': 'drive_thru',
                 'commission_antigen': COMMISSION_PER_PAX_ANTIGEN,
                 'commission_pcr': COMMISSION_PER_PAX_PCR_DT,
+                'commission_pcr_express': COMMISSION_PER_PAX_PCR_DT_EXPRESS,
                 'base_price_antigen': BASE_PRICE_PER_PAX_ANTIGEN,
                 'base_price_pcr': BASE_PRICE_PER_PAX_PCR_DT,
+                'base_price_pcr_express': BASE_PRICE_PER_PAX_PCR_DT_EXPRESS,
                 'single_supplement': SINGLE_SUPPLEMENT,
                 'overtime_surcharge': OVERTIME_SURCHARGE,
                 'agent_id': False
