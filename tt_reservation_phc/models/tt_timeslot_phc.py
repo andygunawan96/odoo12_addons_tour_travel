@@ -47,9 +47,11 @@ class TtTimeslotphc(models.Model):
 
     commission_antigen = fields.Monetary('Commission per PAX Antigen')
     commission_pcr = fields.Monetary('Commission per PAX PCR')
+    commission_pcr_express = fields.Monetary('Commission per PAX PCR Express')
 
     base_price_antigen = fields.Monetary('Base Price per PAX Antigen')
     base_price_pcr = fields.Monetary('Base Price per PAX PCR')
+    base_price_pcr_express = fields.Monetary('Base Price per PAX PCR Express')
 
     single_supplement = fields.Monetary('Single Supplement')
     overtime_surcharge = fields.Monetary('Overtime Surcharge')

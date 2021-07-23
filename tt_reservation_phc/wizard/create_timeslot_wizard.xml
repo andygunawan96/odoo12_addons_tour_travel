@@ -27,7 +27,7 @@
                         <field name="commission_antigen"/>
                     </group>
 
-                    <group string="PCR Home Care">
+                    <group string="PCR Regular">
                         <field name="base_price_pcr"/>
                         <field name="commission_pcr"/>
                     </group>
@@ -36,6 +36,10 @@
                     <group string="Additional Price">
                         <field name="single_supplement"/>
                         <field name="overtime_surcharge"/>
+                    </group>
+                    <group string="PCR Express">
+                        <field name="base_price_pcr_express"/>
+                        <field name="commission_pcr_express"/>
                     </group>
                 </group>
                 <footer>
