@@ -95,8 +95,10 @@ class CreateTimeslotphcWizard(models.TransientModel):
                         'timeslot_type': self.timeslot_type,
                         'commission_antigen': self.commission_antigen,
                         'commission_pcr': self.commission_pcr,
+                        'commission_pcr_express': self.commission_pcr_express,
                         'base_price_antigen': self.base_price_antigen,
                         'base_price_pcr': self.base_price_pcr,
+                        'base_price_pcr_express': self.base_price_pcr_express,
                         'single_supplement': self.single_supplement,
                         'overtime_surcharge': self.overtime_surcharge,
                         'agent_id': self.agent_id.id if self.agent_id else False

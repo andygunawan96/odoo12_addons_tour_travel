@@ -85,6 +85,10 @@
                             <field name="single_supplement"/>
                             <field name="overtime_surcharge"/>
                         </group>
+                        <group string="PCR Express">
+                            <field name="base_price_pcr_express"/>
+                            <field name="commission_pcr_express"/>
+                        </group>
                     </group>
                     <separator string="Confirmed to Customer Booking(s)"/>
                     <field name="booking_used_ids"/>

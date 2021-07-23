@@ -288,7 +288,7 @@ class ProviderOffline(models.Model):
             adt_scs_list = self.booking_id.calculate_offline_pricing({
                 'fare_amount': 0,
                 'tax_amount': 0,
-                'roc_amount': total_amount / len(self.booking_id.line_ids) * provider_line_count / total_pax_count,
+                'roc_amount': 0,
                 'rac_amount': (total_amount / len(self.booking_id.line_ids) * provider_line_count / total_pax_count) * -1,
                 'currency': 'IDR',
                 'provider': self.provider_id.code,
@@ -326,7 +326,7 @@ class ProviderOffline(models.Model):
             chd_scs_list = self.booking_id.calculate_offline_pricing({
                 'fare_amount': 0,
                 'tax_amount': 0,
-                'roc_amount': total_amount / len(self.booking_id.line_ids) * provider_line_count / total_pax_count,
+                'roc_amount': 0,
                 'rac_amount': (total_amount / len(self.booking_id.line_ids) * provider_line_count / total_pax_count) * -1,
                 'currency': 'IDR',
                 'provider': self.provider_id.code,
@@ -364,7 +364,7 @@ class ProviderOffline(models.Model):
             inf_scs_list = self.booking_id.calculate_offline_pricing({
                 'fare_amount': 0,
                 'tax_amount': 0,
-                'roc_amount': total_amount / len(self.booking_id.line_ids) * provider_line_count / total_pax_count,
+                'roc_amount': 0,
                 'rac_amount': (total_amount / len(self.booking_id.line_ids) * provider_line_count / total_pax_count) * -1,
                 'currency': 'IDR',
                 'provider': self.provider_id.code,
@@ -518,7 +518,7 @@ class ProviderOffline(models.Model):
             adt_scs_list = self.booking_id.calculate_offline_pricing({
                 'fare_amount': 0,
                 'tax_amount': 0,
-                'roc_amount': total_amount / len(self.booking_id.line_ids) * provider_line_count / total_pax_count,
+                'roc_amount': 0,
                 'rac_amount': (total_amount / len(self.booking_id.line_ids) * provider_line_count / total_pax_count) * -1,
                 'currency': 'IDR',
                 'provider': self.provider_id.code,
@@ -556,7 +556,7 @@ class ProviderOffline(models.Model):
             chd_scs_list = self.booking_id.calculate_offline_pricing({
                 'fare_amount': 0,
                 'tax_amount': 0,
-                'roc_amount': total_amount / len(self.booking_id.line_ids) * provider_line_count / total_pax_count,
+                'roc_amount': 0,
                 'rac_amount': (total_amount / len(self.booking_id.line_ids) * provider_line_count / total_pax_count) * -1,
                 'currency': 'IDR',
                 'provider': self.provider_id.code,
@@ -594,7 +594,7 @@ class ProviderOffline(models.Model):
             inf_scs_list = self.booking_id.calculate_offline_pricing({
                 'fare_amount': 0,
                 'tax_amount': 0,
-                'roc_amount': total_amount / len(self.booking_id.line_ids) * provider_line_count / total_pax_count,
+                'roc_amount': 0,
                 'rac_amount': (total_amount / len(self.booking_id.line_ids) * provider_line_count / total_pax_count) * -1,
                 'currency': 'IDR',
                 'provider': self.provider_id.code,

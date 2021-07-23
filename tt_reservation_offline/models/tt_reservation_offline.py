@@ -1331,7 +1331,7 @@ class IssuedOffline(models.Model):
                         adt_scs_list = self.calculate_offline_pricing({
                             'fare_amount': 0,
                             'tax_amount': 0,
-                            'roc_amount': rec.total_commission_amount / len(pnr_list) / total_pax_count,
+                            'roc_amount': 0,
                             'rac_amount': (rec.total_commission_amount / len(pnr_list) / total_pax_count) * -1,
                             'currency': 'IDR',
                             'provider': prov_code,
@@ -1357,7 +1357,7 @@ class IssuedOffline(models.Model):
                         chd_scs_list = self.calculate_offline_pricing({
                             'fare_amount': 0,
                             'tax_amount': 0,
-                            'roc_amount': rec.total_commission_amount / len(pnr_list) / total_pax_count,
+                            'roc_amount': 0,
                             'rac_amount': (rec.total_commission_amount / len(pnr_list) / total_pax_count) * -1,
                             'currency': 'IDR',
                             'provider': prov_code,
@@ -1383,7 +1383,7 @@ class IssuedOffline(models.Model):
                         inf_scs_list = self.calculate_offline_pricing({
                             'fare_amount': 0,
                             'tax_amount': 0,
-                            'roc_amount': rec.total_commission_amount / len(pnr_list) / total_pax_count,
+                            'roc_amount': 0,
                             'rac_amount': (rec.total_commission_amount / len(pnr_list) / total_pax_count) * -1,
                             'currency': 'IDR',
                             'provider': prov_code,
