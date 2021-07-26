@@ -87,7 +87,7 @@ class TtCronLogInhPeriksain(models.Model):
                         rec.icao = "%s~%s" % (kota['id'], json.dumps(jenis_tindakan))
                         # CREATE
                         wiz_obj = self.env['create.timeslot.periksain.wizard'].create({
-                            'end_date': datetime.today() + timedelta(days=7),
+                            'end_date': datetime.today() + timedelta(days=3),
                             'area_id': rec.id,
                             'time_string': time_string,
                             'id_time_vendor': id_time_string,
