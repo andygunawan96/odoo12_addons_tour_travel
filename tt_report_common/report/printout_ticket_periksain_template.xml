@@ -59,11 +59,14 @@
                         <div class="col-9" style="background-color: #FFF; border: 1px solid #BBB; padding: 10px 25px; margin: 0px;">
                             <div class="row">
                                 <div class="col-2" style="margin-right: 0px">
-                                    <span style="font-size: 16px; font-weight:200">Est Date:</span><br/>
-                                    <span style="font-size: 16px; font-weight:200">Address:</span>
+                                    <span style="font-size: 16px; font-weight:200">Test Type:</span><br/>
+                                    <span style="font-size: 16px; font-weight:200">Est Date :</span><br/>
+                                    <span style="font-size: 16px; font-weight:200">Address  :</span>
                                 </div>
                                 <div class="col-9" style="margin-right: 0px">
                                     <span style="font-size: 16px; font-weight:200">
+                                        <span t-esc="dict(self._fields['timeslot_type'].selection).get(line.timeslot_type)"/>
+                                        <br/>
                                     <t t-if="line.timeslot_type == 'drive_thru'">
                                         <span t-esc="line.datetimeslot.astimezone(printout_tz).strftime('%Y-%m-%d')"/>
                                         (DRIVE THRU 08.00 - 15.00 WIB tergantung banyaknya antrian)
