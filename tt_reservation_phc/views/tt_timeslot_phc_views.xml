@@ -67,6 +67,7 @@
                             <field name="used_adult_count"/>
                             <field name="total_pcr_timeslot"/>
                             <field name="used_pcr_count"/>
+                            <field name="used_pcr_issued_count"/>
                         </group>
                     </group>
                     <group>
