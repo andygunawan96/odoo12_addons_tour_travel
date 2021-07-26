@@ -209,6 +209,8 @@ class TtTimeslotphc(models.Model):
         return {
             "datetimeslot": self.datetimeslot.strftime('%Y-%m-%d %H:%M'),
             "area": self.destination_id.city,
+            "total_pcr_timeslot": self.total_pcr_timeslot,
+            "used_pcr_count": self.used_pcr_count,
             "total_pcr_issued_timeslot": 175,
             "used_pcr_issued_count": self.used_pcr_issued_count
         }
