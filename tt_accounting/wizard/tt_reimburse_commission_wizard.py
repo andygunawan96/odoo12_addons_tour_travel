@@ -92,6 +92,7 @@ class ReimburseCommissionWizard(models.TransientModel):
                                                                            ('res_id', '=', rec.id), ('state', 'in', ['draft', 'approved'])])
                 if double_check:
                     continue
+                total_nta_amount = 0
                 nta_amount = {
                     'ADT': 0,
                     'CHD': 0,
@@ -106,6 +107,7 @@ class ReimburseCommissionWizard(models.TransientModel):
                     filter_list = ['FARE']
                 for rec2 in rec.cost_service_charge_ids:
                     if rec2.charge_type in filter_list:
+                        total_nta_amount += rec2.total
                         nta_amount[rec2.pax_type] += rec2.total
                 adt_count = 0
                 chd_count = 0
@@ -125,8 +127,10 @@ class ReimburseCommissionWizard(models.TransientModel):
                 chd_scs_list = []
                 inf_scs_list = []
                 ycd_scs_list = []
+                rac_amount_total = 0
                 user_info = self.env['tt.agent'].sudo().get_agent_level(rec.booking_id.agent_id.id)
                 if adt_count > 0:
+                    rac_amount_total += (self.rac_amount / 100) * nta_amount['ADT']
                     adt_scs_list = self.calculate_pricing(rec.provider_id.provider_type_id.code, {
                         'fare_amount': 0,
                         'tax_amount': 0,
@@ -152,6 +156,7 @@ class ReimburseCommissionWizard(models.TransientModel):
                         'show_upline_commission': True
                     })
                 if chd_count > 0:
+                    rac_amount_total += (self.rac_amount / 100) * nta_amount['CHD']
                     chd_scs_list = self.calculate_pricing(rec.provider_id.provider_type_id.code, {
                         'fare_amount': 0,
                         'tax_amount': 0,
@@ -177,6 +182,7 @@ class ReimburseCommissionWizard(models.TransientModel):
                         'show_upline_commission': True
                     })
                 if inf_count > 0:
+                    rac_amount_total += (self.rac_amount / 100) * nta_amount['INF']
                     inf_scs_list = self.calculate_pricing(rec.provider_id.provider_type_id.code, {
                         'fare_amount': 0,
                         'tax_amount': 0,
@@ -202,6 +208,7 @@ class ReimburseCommissionWizard(models.TransientModel):
                         'show_upline_commission': True
                     })
                 if ycd_count > 0:
+                    rac_amount_total += (self.rac_amount / 100) * nta_amount['YCD']
                     ycd_scs_list = self.calculate_pricing(rec.provider_id.provider_type_id.code, {
                         'fare_amount': 0,
                         'tax_amount': 0,
@@ -234,6 +241,11 @@ class ReimburseCommissionWizard(models.TransientModel):
                         'reservation_ref': rec.booking_id.name,
                         'provider_pnr': rec.pnr,
                         'provider_issued_date': rec.issued_date,
+                        'rac_mode': self.rac_mode,
+                        'base_price': total_nta_amount,
+                        'rac_amount': self.rac_amount,
+                        'currency_id': rec.currency_id.id,
+                        'rac_amount_num': rac_amount_total,
                         'state': 'draft'
                     })
                     for comm in commission_list:

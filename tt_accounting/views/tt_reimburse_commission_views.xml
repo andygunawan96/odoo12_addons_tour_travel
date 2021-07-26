@@ -53,6 +53,11 @@
                         <group>
                             <field name="reservation_ref"/>
                             <field name="provider_issued_date"/>
+                            <field name="currency_id"/>
+                            <field name="rac_mode"/>
+                            <field name="base_price"/>
+                            <field name="rac_amount"/>
+                            <field name="rac_amount_num"/>
                             <field name="res_model" invisible="1"/>
                             <field name="res_id" invisible="1"/>
                             <button name="open_reference" string="Go to reference" type="object"
@@ -123,6 +128,11 @@
                 <field name="provider_pnr"/>
                 <field name="reservation_ref"/>
                 <field name="provider_issued_date"/>
+                <field name="currency_id"/>
+                <field name="rac_mode"/>
+                <field name="base_price"/>
+                <field name="rac_amount"/>
+                <field name="rac_amount_num"/>
                 <field name="create_date"/>
                 <field name="approved_uid"/>
                 <field name="approved_date"/>
