@@ -23,6 +23,8 @@ Key Features
         'data/ir_sequence_data.xml',
         'data/ir_cron_data.xml',
         'data/ir_send_email.xml',
+
+        'views/ir_ui_menu_views.xml',
         'wizard/tt_change_admin_fee_wizard_view.xml',
         'wizard/tt_refund_extend_wizard_view.xml',
         'wizard/tt_reimburse_commission_wizard_view.xml',
@@ -38,7 +40,6 @@ Key Features
         'views/tt_customer_parent_views.xml',
         'views/tt_pnr_quota_views.xml',
         'views/tt_reimburse_commission_views.xml',
-        'views/ir_ui_menu_views.xml',
     ],
     'demo': [],
     'qweb': [],
