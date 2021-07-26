@@ -35,6 +35,7 @@ class TtTimeslotphc(models.Model):
     used_count = fields.Integer('Used Counter',compute="_compute_used_counter",store=True)#used reservation count
     used_adult_count = fields.Integer('Used Adult Counter', compute="_compute_used_counter", store=True)#used adult count
     used_pcr_count = fields.Integer('Used PCR Counter', compute="_compute_used_counter", store=True)#used PCR count
+    used_pcr_issued_count = fields.Integer('Used PCR Issued Counter', compute="_compute_used_counter", store=True)#used PCR count
 
     max_book_datetime = fields.Datetime('Max Book Datetime', required=True, default=fields.Datetime.now)
 
@@ -88,17 +89,22 @@ class TtTimeslotphc(models.Model):
             used_count = 0
             adult_count = 0
             pcr_count = 0
+            pcr_issued_count = 0
             for rec2 in rec.booking_used_ids.filtered(lambda x: x.state in ['booked', 'issued']):
                 used_count += 1
                 adult_count += rec2.adult
-                if 'PCR' in rec2.carrier_name and rec2.state == 'issued':
+                if 'PCR' in rec2.carrier_name:
                     pcr_count += rec2.adult
+                    if rec2.state == 'issued':
+                        pcr_issued_count += rec2.adult
             if used_count != rec.used_count:
                 rec.used_count = used_count
             if rec.used_adult_count != adult_count:
                 rec.used_adult_count = adult_count
             if rec.used_pcr_count != pcr_count:
                 rec.used_pcr_count = pcr_count
+            if rec.used_pcr_issued_count != pcr_issued_count:
+                rec.used_pcr_issued_count = pcr_issued_count
 
 
 
@@ -183,7 +189,7 @@ class TtTimeslotphc(models.Model):
         availability = self.used_adult_count + adult_count <= self.total_adult_timeslot
 
         if 'PCR' in carrier_code:
-            availability = availability and self.used_pcr_count + adult_count <= self.total_pcr_timeslot
+            availability = availability and self.used_pcr_count + adult_count <= self.total_pcr_timeslot and self.used_pcr_issued_count + adult_count <= 175
 
         if self.timeslot_type == 'drive_thru':
             return availability
@@ -203,6 +209,6 @@ class TtTimeslotphc(models.Model):
         return {
             "datetimeslot": self.datetimeslot.strftime('%Y-%m-%d %H:%M'),
             "area": self.destination_id.city,
-            "total_pcr_timeslot": self.total_pcr_timeslot,
-            "used_pcr_count": self.used_pcr_count
+            "total_pcr_issued_timeslot": 175,
+            "used_pcr_issued_count": self.used_pcr_count
         }
