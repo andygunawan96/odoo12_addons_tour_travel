@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="tt_reimburse_commission_filter_views" model="ir.ui.view">
+        <field name="name">tt.reimburse.commission.filter.view</field>
+        <field name="model">tt.reimburse.commission</field>
+        <field name="arch" type="xml">
+            <search string="Search Ledger">
+                <field name="provider_pnr"/>
+                <field name="reservation_ref"/>
+                <field name="provider_issued_date"/>
+                <separator/>
+                <filter name="today" string="Today" domain="[('date','&gt;=',time.strftime('%%Y-%%m-%%d'))]"/>
+                <filter name="yesterday" string="Yesterday"
+                        domain="[
+                                ('date', '&lt;', (context_today()).strftime('%Y-%m-%d')),
+                                ('date', '&gt;=', (context_today() - datetime.timedelta(days=1)).strftime('%Y-%m-%d'))
+                        ]"/>
+                <filter name="week" string="This Week"
+                        domain="[
+                                '&amp;',
+                                ('date', '>=', (context_today() + relativedelta(weeks=-1,days=1,weekday=0)).strftime('%Y-%m-%d')),
+                                ('date', '&lt;=', (context_today() + relativedelta(weekday=6)).strftime('%Y-%m-%d')),
+                            ]"/>
+                <filter string="This Month" name="thismonth" domain="[('date','&gt;=',time.strftime('%%Y-%%m-01'))]"/>
+                <filter string="This Year" name="thisyear" domain="[('date','&gt;=',time.strftime('%%Y-01-01'))]"/>
+
+                <group expand="0" string="Group By">
+                    <filter name="group_by_state" string="State" domain="[]" context="{'group_by':'state'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="tt_reimburse_commission_form_view" model="ir.ui.view">
+        <field name="name">tt.reimburse.commission.form.view</field>
+        <field name="model">tt.reimburse.commission</field>
+        <field name="arch" type="xml">
+            <form create="false" edit="false">
+                <header>
+                    <button name="action_approve" states="draft" string="Approve" type="object" groups="tt_base.group_pricing_agent_level_3"/>
+                    <button name="action_cancel" states="draft" string="Cancel" type="object" groups="tt_base.group_pricing_agent_level_3"/>
+                    <button name="action_set_to_draft" states="cancel" string="Set to Draft" type="object" groups="tt_base.group_pricing_agent_level_3"/>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,approved" />
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <label for="provider_pnr" class="oe_edit_only" string="PNR Ref"/>
+                        <h1>
+                            <field name="provider_pnr"/>
+                        </h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="reservation_ref"/>
+                            <field name="provider_issued_date"/>
+                            <field name="res_model" invisible="1"/>
+                            <field name="res_id" invisible="1"/>
+                            <button name="open_reference" string="Go to reference" type="object"
+                                    attrs="{'invisible':['|',('res_model','=',False),('res_id','=',0)]}"/>
+                        </group>
+                        <group>
+                            <label for="approved_uid" string="Approved By"/>
+                            <div>
+                                <field name="approved_uid" readonly="1" class="oe_inline"/> /
+                                <field name="approved_date" readonly="1" class="oe_inline"/>
+                            </div>
+                            <label for="cancel_uid" string="Cancelled By"/>
+                            <div>
+                                <field name="cancel_uid" readonly="1" class="oe_inline"/> /
+                                <field name="cancel_date" readonly="1" class="oe_inline"/>
+                            </div>
+                        </group>
+                    </group>
+                    <separator string="Service Charge(s)"/>
+                    <field name="service_charge_ids">
+                        <tree>
+                            <field name="charge_code"/>
+                            <field name="charge_type"/>
+                            <field name="pax_type"/>
+                            <field name="currency_id" invisible="1"/>
+                            <field name="amount"/>
+                            <field name="description"/>
+                        </tree>
+                        <form>
+                            <sheet>
+                                <group>
+                                    <group>
+                                        <field name="charge_code"/>
+                                        <field name="charge_type"/>
+                                        <field name="pax_type"/>
+                                        <field name="sequence"/>
+                                    </group>
+                                    <group>
+                                        <field name="currency_id"/>
+                                        <field name="amount"/>
+                                        <field name="foreign_currency_id"/>
+                                        <field name="foreign_amount"/>
+                                        <field name="total"/>
+                                    </group>
+                                    <group>
+                                        <field name="description"/>
+                                        <field name="commission_agent_id" groups="base.group_system"/>
+                                    </group>
+                                </group>
+                            </sheet>
+                        </form>
+                    </field>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids" widget="mail_followers"/>
+                    <field name="message_ids" widget="mail_thread"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <record id="tt_reimburse_commission_tree_view" model="ir.ui.view">
+        <field name="name">tt.reimburse.commission.tree.view.page</field>
+        <field name="model">tt.reimburse.commission</field>
+        <field name="priority">20</field>
+        <field name="arch" type="xml">
+            <tree create="false">
+                <field name="provider_pnr"/>
+                <field name="reservation_ref"/>
+                <field name="provider_issued_date"/>
+                <field name="create_date"/>
+                <field name="approved_uid"/>
+                <field name="approved_date"/>
+                <field name="state"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="tt_reimburse_commission_action" model="ir.actions.act_window">
+        <field name="name">Reimburse Commission</field>
+        <field name="res_model">tt.reimburse.commission</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+        <field name="context">
+            {
+            'form_view_ref': 'tt_accounting.tt_reimburse_commission_form_view',
+            'tree_view_ref': 'tt_accounting.tt_reimburse_commission_tree_view'
+            }
+        </field>
+    </record>
+
+    <menuitem
+            id="menu_accounting_reimburse_commission_data"
+            name="Reimburse Commission Data"
+            parent="tt_accounting.menu_accounting_commission"
+            action="tt_reimburse_commission_action"
+            sequence="2"
+            groups="tt_base.group_pricing_agent_level_3"
+    />
+
+</odoo>
