@@ -113,16 +113,21 @@ class ReimburseCommissionWizard(models.TransientModel):
                 chd_count = 0
                 inf_count = 0
                 ycd_count = 0
-                # Get all pricing per pax
-                for psg in rec.ticket_ids:
-                    if psg.pax_type == 'INF':
-                        inf_count += 1
-                    elif psg.pax_type == 'CHD':
-                        chd_count += 1
-                    elif psg.pax_type == 'YCD':
-                        ycd_count += 1
-                    else:
-                        adt_count += 1
+                if self.provider_type_id.code in ['airline', 'train', 'tour', 'activity', 'visa', 'passport', 'phc', 'periksain']:
+                    for psg in rec.ticket_ids:
+                        if psg.pax_type == 'INF':
+                            inf_count += 1
+                        elif psg.pax_type == 'CHD':
+                            chd_count += 1
+                        elif psg.pax_type == 'YCD':
+                            ycd_count += 1
+                        else:
+                            adt_count += 1
+                else:
+                    adt_count += rec.booking_id.adult
+                    chd_count += rec.booking_id.child
+                    inf_count += rec.booking_id.infant
+
                 adt_scs_list = []
                 chd_scs_list = []
                 inf_scs_list = []
