@@ -80,7 +80,6 @@ class TtCronLogInhPeriksain(models.Model):
                     "code": rec['tindakan']['kode']
                 }
 
-            print(res)
             for rec in self.env['tt.destinations'].search(
                     [('provider_type_id','=',self.env.ref('tt_reservation_periksain.tt_provider_type_periksain').id)]):
                 for kota in res['response']['kota']:

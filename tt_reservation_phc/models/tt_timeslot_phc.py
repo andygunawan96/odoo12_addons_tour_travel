@@ -91,7 +91,7 @@ class TtTimeslotphc(models.Model):
             for rec2 in rec.booking_used_ids.filtered(lambda x: x.state in ['booked', 'issued']):
                 used_count += 1
                 adult_count += rec2.adult
-                if 'PCR' in rec2.carrier_name:
+                if 'PCR' in rec2.carrier_name and rec2.state == 'issued':
                     pcr_count += rec2.adult
             if used_count != rec.used_count:
                 rec.used_count = used_count
