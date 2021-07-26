@@ -1262,7 +1262,7 @@ class Reservationphc(models.Model):
     def get_terms_conditions_email(self):
         if self.carrier_name == 'PHCHCKPCR':
             template_obj = self.env.ref('tt_report_common.phc_pcr_homecare_information')
-        elif self.carrier_name == 'PHCDTKPCR':
+        elif self.carrier_name in ['PHCDTKPCR', 'PHCDTEPCR']:
             template_obj = self.env.ref('tt_report_common.phc_pcr_information')
         elif self.carrier_name == 'PHCHCKATG':
             template_obj = self.env.ref('tt_report_common.phc_antigen_homecare_information')
@@ -1309,6 +1309,12 @@ class Reservationphc(models.Model):
 
     def get_aftersales_desc(self):
         desc_txt = 'PNR: ' + self.pnr + '<br/>'
+        if self.provider_booking_ids[0].carrier_id.id in [self.env.ref('tt_reservation_phc.tt_transport_carrier_phc_home_care_pcr').id, self.env.ref('tt_reservation_phc.tt_transport_carrier_phc_drive_thru_pcr').id]:
+            desc_txt += 'Test Type: PCR TEST\n'
+        elif self.provider_booking_ids[0].carrier_id.id == self.env.ref('tt_reservation_phc.tt_transport_carrier_phc_drive_thru_pcr_express').id:
+            desc_txt += 'Test Type: PCR EXPRESS TEST\n'
+        else:
+            desc_txt += 'Test Type: ANTIGEN TEST\n'
         desc_txt += 'Test Address: ' + self.test_address + '<br/>'
         desc_txt += 'Test Date/Time: ' + self.picked_timeslot_id.get_datetimeslot_str() + '<br/>'
         return desc_txt

@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="reimburse_commission_wizard_view" model="ir.ui.view">
+        <field name="name">Reimburse Commission</field>
+        <field name="model">tt.reimburse.commission.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Options">
+                <group>
+                    <group name="group_period">
+                        <field name="period" required="1"/>
+                        <field name="date_from" attrs="{'invisible': [('period', '!=', 'custom')]}"/>
+                        <field name="date_to" attrs="{'invisible': [('period', '!=', 'custom')]}"/>
+                    </group>
+                    <group>
+                        <field name="provider_type_id"/>
+                        <field name="provider_id"/>
+                        <field name="rac_mode"/>
+                        <field name="rac_amount"/>
+                    </group>
+                </group>
+                <footer>
+                    <button name="reimburse_commission" string="Reimburse Commission" type="object" class="oe_highlight"/>
+                    or
+                    <button string="Cancel" class="oe_link" special="cancel" />
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_reimburse_commission_wizard" model="ir.actions.act_window">
+        <field name="name">Reimburse Commission</field>
+        <field name="res_model">tt.reimburse.commission.wizard</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">form</field>
+        <field name="view_id" ref="reimburse_commission_wizard_view"/>
+        <field name="target">new</field>
+    </record>
+
+    <menuitem
+            id="menu_accounting_reimburse_commission"
+            name="Reimburse Commission"
+            parent="tt_accounting.menu_accounting_commission"
+            action="action_reimburse_commission_wizard"
+            sequence="1"
+            groups="tt_base.group_pricing_agent_level_3"
+    />
+
+</odoo>

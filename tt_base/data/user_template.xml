@@ -562,8 +562,8 @@
                              ref('tt_base.group_rule_whitelist_level_3'),
                              ref('tt_base.group_public_holiday_level_3'),
                              ref('tt_base.group_report_level_3'),
-                             ref('tt_base.group_pricing_provider_level_1'),
-                             ref('tt_base.group_pricing_agent_level_1'),
+                             ref('tt_base.group_pricing_provider_level_3'),
+                             ref('tt_base.group_pricing_agent_level_3'),
                              ref('tt_base.group_search_configuration_level_3'),
                              ref('tt_base.group_voucher_level_3'),
                              ref('tt_base.group_user_data_level_1')])]"/>
@@ -853,8 +853,8 @@
                              ref('tt_base.group_rule_whitelist_level_1'),
                              ref('tt_base.group_public_holiday_level_3'),
                              ref('tt_base.group_report_level_3'),
-                             ref('tt_base.group_pricing_provider_level_1'),
-                             ref('tt_base.group_pricing_agent_level_1'),
+                             ref('tt_base.group_pricing_provider_level_3'),
+                             ref('tt_base.group_pricing_agent_level_3'),
                              ref('tt_base.group_search_configuration_level_1'),
                              ref('tt_base.group_voucher_level_4'),
                              ref('tt_base.group_user_data_level_1')])]"/>
@@ -968,8 +968,8 @@
                              ref('tt_base.group_rule_whitelist_level_1'),
                              ref('tt_base.group_public_holiday_level_4'),
                              ref('tt_base.group_report_level_3'),
-                             ref('tt_base.group_pricing_provider_level_1'),
-                             ref('tt_base.group_pricing_agent_level_1'),
+                             ref('tt_base.group_pricing_provider_level_4'),
+                             ref('tt_base.group_pricing_agent_level_4'),
                              ref('tt_base.group_search_configuration_level_1'),
                              ref('tt_base.group_voucher_level_4'),
                              ref('tt_base.group_user_data_level_1')])]"/>
@@ -1083,8 +1083,8 @@
                              ref('tt_base.group_rule_whitelist_level_1'),
                              ref('tt_base.group_public_holiday_level_5'),
                              ref('tt_base.group_report_level_3'),
-                             ref('tt_base.group_pricing_provider_level_1'),
-                             ref('tt_base.group_pricing_agent_level_1'),
+                             ref('tt_base.group_pricing_provider_level_4'),
+                             ref('tt_base.group_pricing_agent_level_4'),
                              ref('tt_base.group_search_configuration_level_1'),
                              ref('tt_base.group_voucher_level_4'),
                              ref('tt_base.group_user_data_level_1')])]"/>
@@ -1808,8 +1808,8 @@
                              ref('tt_base.group_rule_whitelist_level_1'),
                              ref('tt_base.group_public_holiday_level_3'),
                              ref('tt_base.group_report_level_3'),
-                             ref('tt_base.group_pricing_provider_level_3'),
-                             ref('tt_base.group_pricing_agent_level_3'),
+                             ref('tt_base.group_pricing_provider_level_1'),
+                             ref('tt_base.group_pricing_agent_level_1'),
                              ref('tt_base.group_search_configuration_level_1'),
                              ref('tt_base.group_voucher_level_3'),
                              ref('tt_base.group_banned_users_level_1'),
@@ -1925,8 +1925,8 @@
                              ref('tt_base.group_rule_whitelist_level_3'),
                              ref('tt_base.group_public_holiday_level_4'),
                              ref('tt_base.group_report_level_3'),
-                             ref('tt_base.group_pricing_provider_level_3'),
-                             ref('tt_base.group_pricing_agent_level_3'),
+                             ref('tt_base.group_pricing_provider_level_1'),
+                             ref('tt_base.group_pricing_agent_level_1'),
                              ref('tt_base.group_search_configuration_level_3'),
                              ref('tt_base.group_voucher_level_3'),
                              ref('tt_base.group_banned_users_level_3'),
@@ -2042,8 +2042,8 @@
                              ref('tt_base.group_rule_whitelist_level_4'),
                              ref('tt_base.group_public_holiday_level_5'),
                              ref('tt_base.group_report_level_4'),
-                             ref('tt_base.group_pricing_provider_level_4'),
-                             ref('tt_base.group_pricing_agent_level_4'),
+                             ref('tt_base.group_pricing_provider_level_1'),
+                             ref('tt_base.group_pricing_agent_level_1'),
                              ref('tt_base.group_search_configuration_level_4'),
                              ref('tt_base.group_voucher_level_3'),
                              ref('tt_base.group_banned_users_level_3'),
@@ -2217,8 +2217,8 @@
                              ref('tt_base.group_rule_whitelist_level_3'),
                              ref('tt_base.group_public_holiday_level_4'),
                              ref('tt_base.group_report_level_3'),
-                             ref('tt_base.group_pricing_provider_level_3'),
-                             ref('tt_base.group_pricing_agent_level_3'),
+                             ref('tt_base.group_pricing_provider_level_1'),
+                             ref('tt_base.group_pricing_agent_level_1'),
                              ref('tt_base.group_search_configuration_level_3'),
                              ref('tt_base.group_voucher_level_3'),
                              ref('tt_base.group_user_data_level_1')])]"/>
@@ -2304,8 +2304,8 @@
                              ref('tt_base.group_rule_whitelist_level_4'),
                              ref('tt_base.group_public_holiday_level_5'),
                              ref('tt_base.group_report_level_4'),
-                             ref('tt_base.group_pricing_provider_level_4'),
-                             ref('tt_base.group_pricing_agent_level_4'),
+                             ref('tt_base.group_pricing_provider_level_1'),
+                             ref('tt_base.group_pricing_agent_level_1'),
                              ref('tt_base.group_search_configuration_level_4'),
                              ref('tt_base.group_voucher_level_3')])]"/>
             <field name="frontend_security_ids"
@@ -2477,8 +2477,8 @@
                              ref('tt_base.group_rule_whitelist_level_3'),
                              ref('tt_base.group_public_holiday_level_4'),
                              ref('tt_base.group_report_level_3'),
-                             ref('tt_base.group_pricing_provider_level_3'),
-                             ref('tt_base.group_pricing_agent_level_3'),
+                             ref('tt_base.group_pricing_provider_level_1'),
+                             ref('tt_base.group_pricing_agent_level_1'),
                              ref('tt_base.group_search_configuration_level_3'),
                              ref('tt_base.group_voucher_level_3'),
                              ref('tt_base.group_user_data_level_1')])]"/>
@@ -2564,8 +2564,8 @@
                              ref('tt_base.group_rule_whitelist_level_4'),
                              ref('tt_base.group_public_holiday_level_5'),
                              ref('tt_base.group_report_level_4'),
-                             ref('tt_base.group_pricing_provider_level_4'),
-                             ref('tt_base.group_pricing_agent_level_4'),
+                             ref('tt_base.group_pricing_provider_level_1'),
+                             ref('tt_base.group_pricing_agent_level_1'),
                              ref('tt_base.group_search_configuration_level_4'),
                              ref('tt_base.group_voucher_level_3')])]"/>
             <field name="frontend_security_ids"
@@ -2737,8 +2737,8 @@
                              ref('tt_base.group_rule_whitelist_level_3'),
                              ref('tt_base.group_public_holiday_level_4'),
                              ref('tt_base.group_report_level_3'),
-                             ref('tt_base.group_pricing_provider_level_3'),
-                             ref('tt_base.group_pricing_agent_level_3'),
+                             ref('tt_base.group_pricing_provider_level_1'),
+                             ref('tt_base.group_pricing_agent_level_1'),
                              ref('tt_base.group_search_configuration_level_3'),
                              ref('tt_base.group_voucher_level_3'),
                              ref('tt_base.group_user_data_level_1')])]"/>
@@ -2824,8 +2824,8 @@
                              ref('tt_base.group_rule_whitelist_level_4'),
                              ref('tt_base.group_public_holiday_level_5'),
                              ref('tt_base.group_report_level_4'),
-                             ref('tt_base.group_pricing_provider_level_4'),
-                             ref('tt_base.group_pricing_agent_level_4'),
+                             ref('tt_base.group_pricing_provider_level_1'),
+                             ref('tt_base.group_pricing_agent_level_1'),
                              ref('tt_base.group_search_configuration_level_4'),
                              ref('tt_base.group_voucher_level_3')])]"/>
             <field name="frontend_security_ids"
@@ -2997,8 +2997,8 @@
                              ref('tt_base.group_rule_whitelist_level_3'),
                              ref('tt_base.group_public_holiday_level_4'),
                              ref('tt_base.group_report_level_3'),
-                             ref('tt_base.group_pricing_provider_level_3'),
-                             ref('tt_base.group_pricing_agent_level_3'),
+                             ref('tt_base.group_pricing_provider_level_1'),
+                             ref('tt_base.group_pricing_agent_level_1'),
                              ref('tt_base.group_search_configuration_level_3'),
                              ref('tt_base.group_voucher_level_3'),
                              ref('tt_base.group_user_data_level_1')])]"/>
@@ -3084,8 +3084,8 @@
                              ref('tt_base.group_rule_whitelist_level_4'),
                              ref('tt_base.group_public_holiday_level_5'),
                              ref('tt_base.group_report_level_4'),
-                             ref('tt_base.group_pricing_provider_level_4'),
-                             ref('tt_base.group_pricing_agent_level_4'),
+                             ref('tt_base.group_pricing_provider_level_1'),
+                             ref('tt_base.group_pricing_agent_level_1'),
                              ref('tt_base.group_search_configuration_level_4'),
                              ref('tt_base.group_voucher_level_3')])]"/>
             <field name="frontend_security_ids"
@@ -3313,8 +3313,8 @@
                              ref('tt_base.group_rule_whitelist_level_3'),
                              ref('tt_base.group_public_holiday_level_4'),
                              ref('tt_base.group_report_level_3'),
-                             ref('tt_base.group_pricing_provider_level_3'),
-                             ref('tt_base.group_pricing_agent_level_3'),
+                             ref('tt_base.group_pricing_provider_level_1'),
+                             ref('tt_base.group_pricing_agent_level_1'),
                              ref('tt_base.group_search_configuration_level_3'),
                              ref('tt_base.group_voucher_level_3'),
                              ref('tt_base.group_user_data_level_1')])]"/>
@@ -3428,8 +3428,8 @@
                              ref('tt_base.group_rule_whitelist_level_4'),
                              ref('tt_base.group_public_holiday_level_5'),
                              ref('tt_base.group_report_level_4'),
-                             ref('tt_base.group_pricing_provider_level_4'),
-                             ref('tt_base.group_pricing_agent_level_4'),
+                             ref('tt_base.group_pricing_provider_level_1'),
+                             ref('tt_base.group_pricing_agent_level_1'),
                              ref('tt_base.group_search_configuration_level_4'),
                              ref('tt_base.group_voucher_level_3')])]"/>
             <field name="frontend_security_ids"
@@ -3601,8 +3601,8 @@
                              ref('tt_base.group_rule_whitelist_level_3'),
                              ref('tt_base.group_public_holiday_level_4'),
                              ref('tt_base.group_report_level_3'),
-                             ref('tt_base.group_pricing_provider_level_3'),
-                             ref('tt_base.group_pricing_agent_level_3'),
+                             ref('tt_base.group_pricing_provider_level_1'),
+                             ref('tt_base.group_pricing_agent_level_1'),
                              ref('tt_base.group_search_configuration_level_3'),
                              ref('tt_base.group_voucher_level_3'),
                              ref('tt_base.group_user_data_level_1')])]"/>
@@ -3688,8 +3688,8 @@
                              ref('tt_base.group_rule_whitelist_level_4'),
                              ref('tt_base.group_public_holiday_level_5'),
                              ref('tt_base.group_report_level_4'),
-                             ref('tt_base.group_pricing_provider_level_4'),
-                             ref('tt_base.group_pricing_agent_level_4'),
+                             ref('tt_base.group_pricing_provider_level_1'),
+                             ref('tt_base.group_pricing_agent_level_1'),
                              ref('tt_base.group_search_configuration_level_4'),
                              ref('tt_base.group_voucher_level_3')])]"/>
             <field name="frontend_security_ids"
@@ -3861,8 +3861,8 @@
                              ref('tt_base.group_rule_whitelist_level_3'),
                              ref('tt_base.group_public_holiday_level_4'),
                              ref('tt_base.group_report_level_3'),
-                             ref('tt_base.group_pricing_provider_level_3'),
-                             ref('tt_base.group_pricing_agent_level_3'),
+                             ref('tt_base.group_pricing_provider_level_1'),
+                             ref('tt_base.group_pricing_agent_level_1'),
                              ref('tt_base.group_search_configuration_level_3'),
                              ref('tt_base.group_voucher_level_3'),
                              ref('tt_base.group_user_data_level_1')])]"/>
@@ -3948,8 +3948,8 @@
                              ref('tt_base.group_rule_whitelist_level_4'),
                              ref('tt_base.group_public_holiday_level_5'),
                              ref('tt_base.group_report_level_4'),
-                             ref('tt_base.group_pricing_provider_level_4'),
-                             ref('tt_base.group_pricing_agent_level_4'),
+                             ref('tt_base.group_pricing_provider_level_1'),
+                             ref('tt_base.group_pricing_agent_level_1'),
                              ref('tt_base.group_search_configuration_level_4'),
                              ref('tt_base.group_voucher_level_3')])]"/>
             <field name="frontend_security_ids"
@@ -4121,8 +4121,8 @@
                              ref('tt_base.group_rule_whitelist_level_3'),
                              ref('tt_base.group_public_holiday_level_4'),
                              ref('tt_base.group_report_level_3'),
-                             ref('tt_base.group_pricing_provider_level_3'),
-                             ref('tt_base.group_pricing_agent_level_3'),
+                             ref('tt_base.group_pricing_provider_level_1'),
+                             ref('tt_base.group_pricing_agent_level_1'),
                              ref('tt_base.group_search_configuration_level_3'),
                              ref('tt_base.group_voucher_level_3'),
                              ref('tt_base.group_user_data_level_1')])]"/>
@@ -4208,8 +4208,8 @@
                              ref('tt_base.group_rule_whitelist_level_4'),
                              ref('tt_base.group_public_holiday_level_5'),
                              ref('tt_base.group_report_level_4'),
-                             ref('tt_base.group_pricing_provider_level_4'),
-                             ref('tt_base.group_pricing_agent_level_4'),
+                             ref('tt_base.group_pricing_provider_level_1'),
+                             ref('tt_base.group_pricing_agent_level_1'),
                              ref('tt_base.group_search_configuration_level_4'),
                              ref('tt_base.group_voucher_level_3')])]"/>
             <field name="frontend_security_ids"
@@ -4381,8 +4381,8 @@
                              ref('tt_base.group_rule_whitelist_level_3'),
                              ref('tt_base.group_public_holiday_level_4'),
                              ref('tt_base.group_report_level_3'),
-                             ref('tt_base.group_pricing_provider_level_3'),
-                             ref('tt_base.group_pricing_agent_level_3'),
+                             ref('tt_base.group_pricing_provider_level_1'),
+                             ref('tt_base.group_pricing_agent_level_1'),
                              ref('tt_base.group_search_configuration_level_3'),
                              ref('tt_base.group_voucher_level_3'),
                              ref('tt_base.group_user_data_level_1')])]"/>
@@ -4468,8 +4468,8 @@
                              ref('tt_base.group_rule_whitelist_level_4'),
                              ref('tt_base.group_public_holiday_level_5'),
                              ref('tt_base.group_report_level_4'),
-                             ref('tt_base.group_pricing_provider_level_4'),
-                             ref('tt_base.group_pricing_agent_level_4'),
+                             ref('tt_base.group_pricing_provider_level_1'),
+                             ref('tt_base.group_pricing_agent_level_1'),
                              ref('tt_base.group_search_configuration_level_4'),
                              ref('tt_base.group_voucher_level_3')])]"/>
             <field name="frontend_security_ids"
@@ -4641,8 +4641,8 @@
                              ref('tt_base.group_rule_whitelist_level_3'),
                              ref('tt_base.group_public_holiday_level_4'),
                              ref('tt_base.group_report_level_3'),
-                             ref('tt_base.group_pricing_provider_level_3'),
-                             ref('tt_base.group_pricing_agent_level_3'),
+                             ref('tt_base.group_pricing_provider_level_1'),
+                             ref('tt_base.group_pricing_agent_level_1'),
                              ref('tt_base.group_search_configuration_level_3'),
                              ref('tt_base.group_voucher_level_3'),
                              ref('tt_base.group_user_data_level_1')])]"/>
@@ -4728,8 +4728,8 @@
                              ref('tt_base.group_rule_whitelist_level_4'),
                              ref('tt_base.group_public_holiday_level_5'),
                              ref('tt_base.group_report_level_4'),
-                             ref('tt_base.group_pricing_provider_level_4'),
-                             ref('tt_base.group_pricing_agent_level_4'),
+                             ref('tt_base.group_pricing_provider_level_1'),
+                             ref('tt_base.group_pricing_agent_level_1'),
                              ref('tt_base.group_search_configuration_level_4'),
                              ref('tt_base.group_voucher_level_3')])]"/>
             <field name="frontend_security_ids"
