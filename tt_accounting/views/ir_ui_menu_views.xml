@@ -4,4 +4,9 @@
     <record id="account.menu_finance" model="ir.ui.menu">
         <field name="active" eval="False"></field>
     </record>
+
+    <menuitem id="menu_accounting_commission"
+                  parent="tt_base.top_menu_accounting"
+                  name="Commission"
+                  sequence="20"/>
 </odoo>
