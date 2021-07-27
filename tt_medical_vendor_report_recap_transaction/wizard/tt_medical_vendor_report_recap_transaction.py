@@ -11,7 +11,7 @@ class AgentReportRecapReservation(models.TransientModel):
 
     state = fields.Selection(selection=STATES, string="State", default='issued')
     # statenya pasti issued
-    state_vendor = fields.Selection(selection=lambda self: self._compute_state_vendor_selection(), string='State Vendor', default='verified')
+    state_vendor = fields.Selection(selection=lambda self: self._compute_state_vendor_selection(), string='State Vendor', default='all')
 
     provider_type = fields.Selection(selection=lambda self: self._compute_provider_type_selection(),
                                      string='Provider Type', default='all', readonly=True)
