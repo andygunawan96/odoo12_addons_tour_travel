@@ -85,7 +85,7 @@ class ReimburseCommissionWizard(models.TransientModel):
             date_range_dict = self.convert_timezone(self.date_from, self.date_to)
             date_from = date_range_dict['date_from']
             date_to = date_range_dict['date_to']
-            resv_provider_list = self.env[table].search([('provider_id', '=', self.provider_id.id),
+            resv_provider_list = self.env[table].search([('provider_id', '=', self.provider_id.id), ('state', '=', 'issued'),
                                                         ('issued_date', '>=', date_from), ('issued_date', '<=', date_to)])
             for rec in resv_provider_list:
                 double_check = self.env['tt.reimburse.commission'].search([('res_model', '=', rec._name),
