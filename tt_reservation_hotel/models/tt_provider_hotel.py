@@ -202,20 +202,35 @@ class TransportBookingProvider(models.Model):
     def create_service_charge(self, service_charge_vals):
         service_chg_obj = self.env['tt.service.charge']
 
-        for scs in service_charge_vals:
-            service_chg_obj.create({
-                'charge_code': scs.charge_code,
-                'charge_type': scs.charge_type,
-                'pax_type': scs.pax_type,
-                'pax_count': scs.pax_count,
-                'amount': scs.amount,
-                'foreign_amount': scs.foreign_amount,
-                'total': scs.total,
-                'provider_hotel_booking_id': self.id,
-                'description': self.pnr and self.pnr or '',
-                'commission_agent_id': scs.commission_agent_id.id,
-            })
-            # scs_list.append(new_scs)
+        if isinstance(service_charge_vals[0], dict):
+            for scs in service_charge_vals:
+                service_chg_obj.create({
+                    'charge_code': scs['charge_code'],
+                    'charge_type': scs['charge_type'],
+                    'pax_type': scs['pax_type'],
+                    'pax_count': scs['pax_count'],
+                    'amount': scs['amount'],
+                    'foreign_amount': scs['foreign_amount'],
+                    'total': scs['total'],
+                    'provider_hotel_booking_id': self.id,
+                    'description': self.pnr and self.pnr or '',
+                    'commission_agent_id': scs.get('commission_agent_id'),
+                })
+        else:
+            for scs in service_charge_vals:
+                service_chg_obj.create({
+                    'charge_code': scs.charge_code,
+                    'charge_type': scs.charge_type,
+                    'pax_type': scs.pax_type,
+                    'pax_count': scs.pax_count,
+                    'amount': scs.amount,
+                    'foreign_amount': scs.foreign_amount,
+                    'total': scs.total,
+                    'provider_hotel_booking_id': self.id,
+                    'description': self.pnr and self.pnr or '',
+                    'commission_agent_id': scs.commission_agent_id.id,
+                })
+                # scs_list.append(new_scs)
     # TODO END
 
     def delete_service_charge(self):

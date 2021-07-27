@@ -182,7 +182,7 @@ class TestSearch(models.Model):
         elif provider == 'itank':
             return 'A12'
         elif provider == 'rodextrip_hotel':
-            return 'A99'
+            return 'A13'
         else:
             return provider
 
@@ -1246,14 +1246,14 @@ class TestSearch(models.Model):
         providers = []
 
         city_id = self.env['res.city'].find_city_by_name(dest_name, 1)
-        if city_id:
-            country_id = city_id.state_id and city_id.state_id.country_id or city_id.country_id
-
-            vendor_ids = self.env['tt.provider.destination'].sudo().search([('country_id', '=', country_id.id), ('is_apply', '=', True)])
-            vendor_ids = [x.provider_id for x in vendor_ids]
-        else:
-            hotel_type_obj = self.env.ref('tt_reservation_hotel.tt_provider_type_hotel')
-            vendor_ids = self.env['tt.provider'].search([('provider_type_id', '=', hotel_type_obj.id), ('alias', '!=', False)])
+        # if city_id:
+        #     country_id = city_id.state_id and city_id.state_id.country_id or city_id.country_id
+        #
+        #     vendor_ids = self.env['tt.provider.destination'].sudo().search([('country_id', '=', country_id.id), ('is_apply', '=', True)])
+        #     vendor_ids = [x.provider_id for x in vendor_ids]
+        # else:
+        hotel_type_obj = self.env.ref('tt_reservation_hotel.tt_provider_type_hotel')
+        vendor_ids = self.env['tt.provider'].search([('provider_type_id', '=', hotel_type_obj.id), ('alias', '!=', False)])
 
         for rec in vendor_ids:
             a = provider_to_dic(rec, city_id)
