@@ -365,6 +365,7 @@
                         <h1>
                             <field name="name" default_focus="1" placeholder="Name"/>
                         </h1>
+                        <field name="internal_code"/>
                     </div>
                     <group>
                         <group>
