@@ -94,15 +94,21 @@ class TtRescheduleLine(models.Model):
                 book_obj = self.env[rec.reschedule_id.res_model].browse(int(rec.reschedule_id.res_id))
                 if book_obj:
                     pnr_amount = 0
+                    journey_amount = 0
                     for rec2 in book_obj.provider_booking_ids:
                         pnr_amount += 1
+                        if rec.reschedule_id.res_model == 'tt.reservation.airline':
+                            for rec3 in rec2.journey_ids:
+                                journey_amount += 1
+                        else:
+                            journey_amount = 1
 
                     pax_amount = 0
                     for rec2 in book_obj.passenger_ids:
                         pax_amount += 1
 
-                    admin_fee_ho = rec.admin_fee_id.get_final_adm_fee_ho(rec.reschedule_amount, pnr_amount, pax_amount)
-                    admin_fee_agent = rec.admin_fee_id.get_final_adm_fee_agent(rec.reschedule_amount, pnr_amount, pax_amount)
+                    admin_fee_ho = rec.admin_fee_id.get_final_adm_fee_ho(rec.reschedule_amount, pnr_amount, pax_amount, journey_amount)
+                    admin_fee_agent = rec.admin_fee_id.get_final_adm_fee_agent(rec.reschedule_amount, pnr_amount, pax_amount, journey_amount)
 
                     rec.admin_fee_ho = admin_fee_ho
                     rec.admin_fee_agent = admin_fee_agent
@@ -284,14 +290,20 @@ class TtReschedule(models.Model):
 
         pnr_amount = 1
         pax_amount = 1
+        journey_amount = 1
         if order_number and order_type:
             book_obj = self.env['tt.reservation.'+order_type].search([('name', '=', order_number)], limit=1)
 
             pnr_amount = len(book_obj.provider_booking_ids.ids)
             pax_amount = len(book_obj.passenger_ids.ids)
+            if order_type == 'airline':
+                journey_amount = 0
+                for rec in book_obj.provider_booking_ids:
+                    for rec2 in rec.journey_ids:
+                        journey_amount += 1
 
-        admin_fee_ho = admin_fee_obj.get_final_adm_fee_ho(refund_amount, pnr_amount, pax_amount)
-        admin_fee_agent = admin_fee_obj.get_final_adm_fee_agent(refund_amount, pnr_amount, pax_amount)
+        admin_fee_ho = admin_fee_obj.get_final_adm_fee_ho(refund_amount, pnr_amount, pax_amount, journey_amount)
+        admin_fee_agent = admin_fee_obj.get_final_adm_fee_agent(refund_amount, pnr_amount, pax_amount, journey_amount)
         admin_fee = admin_fee_ho + admin_fee_agent
         return {
             'admin_fee_ho': admin_fee_ho,

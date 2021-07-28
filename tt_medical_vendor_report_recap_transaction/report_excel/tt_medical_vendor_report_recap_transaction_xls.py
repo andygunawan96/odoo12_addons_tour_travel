@@ -38,8 +38,8 @@ class AgentReportRecapTransactionXls(models.TransientModel):
 
         # ======= TITLE & SUBTITLE ============
         # write to file in cols and row
-        sheet.merge_range('A1:M2', values['data_form']['title'], style.title2)  # set merge cells for title
-        sheet.write('M3', 'Printing Date :' + values['data_form']['date_now'].strftime('%d-%b-%Y %H:%M'),
+        sheet.merge_range('A1:N2', values['data_form']['title'], style.title2)  # set merge cells for title
+        sheet.write('N3', 'Printing Date :' + values['data_form']['date_now'].strftime('%d-%b-%Y %H:%M'),
                     style.print_date)  # print date print
         sheet.write('A3', 'State : ' + values['data_form']['state'], style.table_data)  # print state
         sheet.freeze_panes(7, 0)  # freeze panes mulai dari row 1-7
@@ -53,11 +53,12 @@ class AgentReportRecapTransactionXls(models.TransientModel):
         sheet.write('F7', 'Adult', style.table_head_center)
         sheet.write('G7', 'State', style.table_head_center)
         sheet.write('H7', 'State Vendor', style.table_head_center)
-        sheet.write('I7', 'Ticket Number', style.table_head_center)
-        sheet.write('J7', 'Participant Name', style.table_head_center)
-        sheet.write('K7', 'Participant Birth Date', style.table_head_center)
-        sheet.write('L7', 'ID / Passport Number', style.table_head_center)
-        sheet.write('M7', 'Participant Address On ID Card', style.table_head_center)
+        sheet.write('I7', 'Passenger Code', style.table_head_center)
+        sheet.write('J7', 'Ticket Number', style.table_head_center)
+        sheet.write('K7', 'Participant Name', style.table_head_center)
+        sheet.write('L7', 'Participant Birth Date', style.table_head_center)
+        sheet.write('M7', 'ID / Passport Number', style.table_head_center)
+        sheet.write('N7', 'Participant Address On ID Card', style.table_head_center)
 
         # sheet.write('B9', 'Date', style.table_head_center)
         # sheet.write('C9', 'Order Number', style.table_head_center)
@@ -82,10 +83,11 @@ class AgentReportRecapTransactionXls(models.TransientModel):
         sheet.set_column('F:F', 10)
         sheet.set_column('G:H', 10)
         sheet.set_column('I:I', 20)
-        sheet.set_column('J:J', 25)
-        sheet.set_column('K:K', 20)
+        sheet.set_column('J:J', 20)
+        sheet.set_column('K:K', 25)
         sheet.set_column('L:L', 20)
-        sheet.set_column('M:M', 35)
+        sheet.set_column('M:M', 20)
+        sheet.set_column('N:N', 35)
 
         # ============ void start() ======================
         # declare some constant dependencies
@@ -95,13 +97,15 @@ class AgentReportRecapTransactionXls(models.TransientModel):
 
         # it's just to make things easier, rather than write values['lines'] over and over
         datas = values['lines']
-        pax_datas = values['second_lines']
 
         # let's iterate the data YEY!
+        if datas:
+            init_data = datas[0]['order_number']
+        else:
+            init_data = ''
         for i in datas:
             # declare view handler
             row_data += 1
-            counter += 1
             sty_table_data_center = style.table_data_center
             sty_table_data = style.table_data
             sty_datetime = style.table_data_datetime
@@ -114,39 +118,25 @@ class AgentReportRecapTransactionXls(models.TransientModel):
                 sty_date = style.table_data_date_even
                 sty_amount = style.table_data_amount_even
 
-            sheet.write(row_data, 0, counter, sty_table_data_center)
-            parent_row_data = row_data
-            iter_count = 0
-            for j in pax_datas:
-                if j['booking_id'] == i['rsv_id']:
-                    if iter_count > 0:
-                        row_data += 1
-                    sty_table_data_center = style.table_data_center
-                    sty_table_data = style.table_data
-                    sty_datetime = style.table_data_datetime
-                    sty_date = style.table_data_date
-                    sty_amount = style.table_data_amount
-                    if row_data % 2 == 0:
-                        sty_table_data_center = style.table_data_center_even
-                        sty_table_data = style.table_data_even
-                        sty_datetime = style.table_data_datetime_even
-                        sty_date = style.table_data_date_even
-                        sty_amount = style.table_data_amount_even
-                    sheet.write(row_data, 1, i['provider_name'], sty_table_data)
-                    sheet.write(row_data, 2, i['carrier_name'], sty_table_data)
-                    sheet.write(row_data, 3, i['order_number'], sty_table_data)
-                    sheet.write(row_data, 4, i['test_datetime'], sty_date)
-                    sheet.write(row_data, 5, i['adult'], sty_amount)
-                    sheet.write(row_data, 6, i['state'], sty_table_data)
-                    sheet.write(row_data, 7, i['state_vendor'], sty_table_data)
-                    sheet.write(row_data, 8, j['ticket_number'], sty_table_data)
-                    sheet.write(row_data, 9, '%s %s %s' % (j['title'], j['first_name'], j['last_name']), sty_table_data)
-                    sheet.write(row_data, 10, datetime.strftime(j['birth_date'], '%d %B %Y'), sty_table_data)
-                    sheet.write(row_data, 11, j['identity_number'], sty_table_data)
-                    sheet.write(row_data, 12, j['address_ktp'], sty_table_data)
-                    if row_data > parent_row_data:
-                        sheet.write(row_data, 0, '', sty_table_data_center)
-                    iter_count += 1
+            if i['order_number'] == init_data and counter > 0:
+                sheet.write(row_data, 0, '', sty_table_data_center)
+            else:
+                init_data = i['order_number']
+                counter += 1
+                sheet.write(row_data, 0, counter, sty_table_data_center)
+            sheet.write(row_data, 1, i['provider_name'], sty_table_data)
+            sheet.write(row_data, 2, i['carrier_name'], sty_table_data)
+            sheet.write(row_data, 3, i['order_number'], sty_table_data)
+            sheet.write(row_data, 4, i['test_datetime'], sty_datetime)
+            sheet.write(row_data, 5, i['adult'], sty_amount)
+            sheet.write(row_data, 6, i['state'], sty_table_data)
+            sheet.write(row_data, 7, i['state_vendor'], sty_table_data)
+            sheet.write(row_data, 8, i['psg_seq_id'], sty_table_data)
+            sheet.write(row_data, 9, i['ticket_number'], sty_table_data)
+            sheet.write(row_data, 10, '%s %s %s' % (i['title'], i['first_name'], i['last_name']), sty_table_data)
+            sheet.write(row_data, 11, datetime.strftime(i['birth_date'], '%d %B %Y'), sty_table_data)
+            sheet.write(row_data, 12, i['identity_number'], sty_table_data)
+            sheet.write(row_data, 13, i['address_ktp'], sty_table_data)
 
         # close the file
         workbook.close()

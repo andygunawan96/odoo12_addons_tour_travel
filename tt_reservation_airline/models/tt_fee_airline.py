@@ -40,6 +40,7 @@ class TtSsrAirline(models.Model):
             'amount': self.amount,
             'currency': self.currency_id.name,
             'journey_code': self.journey_code and self.journey_code or '',
+            'pnr': self.provider_id and self.provider_id.pnr or '',
         }
 
 
