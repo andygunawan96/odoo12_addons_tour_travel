@@ -260,7 +260,7 @@ class ReservationPeriksain(models.Model):
         else:
             for rec in timeslot_objs:
                 if rec.base_price_antigen > base_price:
-                    base_price = rec.base_price_antigen
+                    base_price = rec.base_price_pcr
                     commission_price = rec.commission_antigen
                     overtime_price = rec.overtime_surcharge
                     single_suplement_price = rec.single_supplement

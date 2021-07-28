@@ -228,4 +228,6 @@ class TtSplitReservationPHCWizard(models.TransientModel):
         }
 
         book_obj.check_provider_state(context=provider_state_context)
+        book_obj.check_reservation_verif(self.env.user.id)
         new_book_obj.check_provider_state(context=provider_state_context)
+        new_book_obj.check_reservation_verif(self.env.user.id)
