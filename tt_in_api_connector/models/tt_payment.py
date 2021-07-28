@@ -123,7 +123,8 @@ class TtPaymentApiCon(models.Model):
             if book_obj:
                 payment_acq_number_obj = self.env['payment.acquirer.number'].search([('number', '=', data['payment_acq_number'])])
                 if payment_acq_number_obj:
-                    timelimit = payment_acq_number_obj.time_limit
+                    different_time = payment_acq_number_obj.time_limit - datetime.now()
+                    timelimit = int(different_time.seconds / 60)
                 else: ## KALAU PAYMENT ACQ NUMBER TIDAK KETEMU
                     different_time = book_obj.hold_date - datetime.now()
                     if different_time > timedelta(hours=1): ## LEBIH DARI 1 JAM TIMELIMIT 55 MENIT
