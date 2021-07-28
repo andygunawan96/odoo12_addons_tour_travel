@@ -178,6 +178,22 @@
         </record>
 
 
+        <record id="tt_destination_airline_sb" model="tt.destinations">
+            <field name="name">Surabaya Kota</field>
+            <field name="code">SB</field>
+            <field name="icao">SB</field>
+            <field name="city">Surabaya</field>
+            <field name="country_id" ref="base.id"/>
+            <field name="provider_type_id" ref="tt_reservation_train.tt_provider_type_train"/>
+            <field name="latitude">0</field>
+            <field name="longitude">0</field>
+            <field name="altitude">0</field>
+            <field name="timezone_hour">7</field>
+            <field name="tz">Asia/Jakarta</field>
+            <field name="active">1</field>
+        </record>
+
+
         <record id="tt_destination_airline_wo" model="tt.destinations">
             <field name="name">Wonokromo</field>
             <field name="code">WO</field>
