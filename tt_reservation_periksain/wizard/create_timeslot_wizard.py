@@ -9,6 +9,7 @@ from datetime import timedelta,datetime
 _logger = logging.getLogger(__name__)
 
 COMMISSION_PER_PAX = 22000 ## komisi agent /pax
+COMMISSION_PER_PAX_PCR = 100000 ## komisi agent /pax
 BASE_PRICE_PER_PAX = 150000 ## harga 1 /pax
 BASE_PRICE_PER_PAX_PCR = 750000 ## harga 1 /pax
 SINGLE_SUPPLEMENT = 25000 ## 1 orang
@@ -33,7 +34,7 @@ class CreateTimeslotPeriksainWizard(models.TransientModel):
                                   default=lambda self: self.env.user.company_id.currency_id)
     commission_antigen = fields.Monetary('Commission per PAX Antigen', default=COMMISSION_PER_PAX,
                                          required=True)
-    commission_pcr = fields.Monetary('Commission per PAX PCR', default=COMMISSION_PER_PAX, required=True)
+    commission_pcr = fields.Monetary('Commission per PAX PCR', default=COMMISSION_PER_PAX_PCR, required=True)
 
     base_price_antigen = fields.Monetary('Base Price per PAX Antigen', default=BASE_PRICE_PER_PAX,
                                          required=True)
