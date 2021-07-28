@@ -25,7 +25,7 @@ class TtMasterAdminFee(models.Model):
     sequence = fields.Integer('Sequence', default=50)
     active = fields.Boolean('Active', default=True)
 
-    def get_final_adm_fee_ho(self, total=0, pnr_multiplier=1, pax_multiplier=1):
+    def get_final_adm_fee_ho(self, total=0, pnr_multiplier=1, pax_multiplier=1, journey_multiplier=1):
         final_amt = 0
         for rec in self.admin_fee_line_ids:
             if rec.balance_for == 'ho':
@@ -36,11 +36,25 @@ class TtMasterAdminFee(models.Model):
                         result = ((rec.amount / 100.0) * total) * pax_multiplier * pnr_multiplier
                         final_amt += math.ceil(result)
 
+                elif rec.is_per_journey and rec.is_per_pax:
+                    if rec.type == 'amount':
+                        final_amt += rec.amount * pax_multiplier * journey_multiplier
+                    else:
+                        result = ((rec.amount / 100.0) * total) * pax_multiplier * journey_multiplier
+                        final_amt += math.ceil(result)
+
                 elif rec.is_per_pnr:
                     if rec.type == 'amount':
                         final_amt += rec.amount * pnr_multiplier
                     else:
                         result = ((rec.amount / 100.0) * total) * pnr_multiplier
+                        final_amt += math.ceil(result)
+
+                elif rec.is_per_journey:
+                    if rec.type == 'amount':
+                        final_amt += rec.amount * journey_multiplier
+                    else:
+                        result = ((rec.amount / 100.0) * total) * journey_multiplier
                         final_amt += math.ceil(result)
 
                 elif rec.is_per_pax:
@@ -62,7 +76,7 @@ class TtMasterAdminFee(models.Model):
 
         return final_amt
 
-    def get_final_adm_fee_agent(self, total=0, pnr_multiplier=1, pax_multiplier=1):
+    def get_final_adm_fee_agent(self, total=0, pnr_multiplier=1, pax_multiplier=1, journey_multiplier=1):
         final_amt = 0
         for rec in self.admin_fee_line_ids:
             if rec.balance_for == 'agent':
@@ -73,11 +87,25 @@ class TtMasterAdminFee(models.Model):
                         result = ((rec.amount / 100.0) * total) * pax_multiplier * pnr_multiplier
                         final_amt += math.ceil(result)
 
+                elif rec.is_per_journey and rec.is_per_pax:
+                    if rec.type == 'amount':
+                        final_amt += rec.amount * pax_multiplier * journey_multiplier
+                    else:
+                        result = ((rec.amount / 100.0) * total) * pax_multiplier * journey_multiplier
+                        final_amt += math.ceil(result)
+
                 elif rec.is_per_pnr:
                     if rec.type == 'amount':
                         final_amt += rec.amount * pnr_multiplier
                     else:
                         result = ((rec.amount / 100.0) * total) * pnr_multiplier
+                        final_amt += math.ceil(result)
+
+                elif rec.is_per_journey:
+                    if rec.type == 'amount':
+                        final_amt += rec.amount * journey_multiplier
+                    else:
+                        result = ((rec.amount / 100.0) * total) * journey_multiplier
                         final_amt += math.ceil(result)
 
                 elif rec.is_per_pax:
@@ -121,5 +149,16 @@ class TtMasterAdminFeeLine(models.Model):
     amount = fields.Integer('Amount', default=0)
     is_per_pnr = fields.Boolean('Is Per PNR', default=True)
     is_per_pax = fields.Boolean('Is Per Pax', default=True)
+    is_per_journey = fields.Boolean('Is Per Journey', default=False)
     balance_for = fields.Selection([('ho', 'Head Office'), ('agent', 'Agent')], 'Balance For', default='ho')
     master_admin_fee_id = fields.Many2one('tt.master.admin.fee', 'Master Admin Fee')
+
+    @api.onchange("is_per_pnr")
+    def _compute_per_pnr(self):
+        if self.is_per_pnr:
+            self.is_per_journey = False
+
+    @api.onchange("is_per_journey")
+    def _compute_per_journey(self):
+        if self.is_per_journey:
+            self.is_per_pnr = False
