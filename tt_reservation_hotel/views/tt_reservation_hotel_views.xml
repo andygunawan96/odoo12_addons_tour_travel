@@ -162,7 +162,7 @@
             </form>
         </field>
     </record>
-    <record model="ir.ui.view" id="tt_hotel_reservation_form" >
+    <record model="ir.ui.view" id="tt_hotel_reservation_form">
         <field name="name">tt.hotel.reservation.view.form.rodex</field>
         <field name="model">tt.reservation.hotel</field>
         <field name="arch" type="xml">

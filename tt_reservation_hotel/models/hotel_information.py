@@ -312,8 +312,11 @@ class HotelMaster(models.Model):
     image_ids = fields.One2many('tt.hotel.image', 'master_hotel_id', string='Images')
     facility_ids = fields.Many2many('tt.hotel.facility', 'master_hotel_facility_rel', 'master_hotel_id', 'facility_id')
 
+    internal_code = fields.Char('Internal Code', help='Internal Code')
+
     def get_provider_code_fmt(self):
-        provider_fmt = {}
+        alias_code = self.env.ref('tt_reservation_hotel.tt_hotel_provider_rodextrip_hotel').alias
+        provider_fmt = {alias_code: self.internal_code}
         for hotel in self.info_ids:
             for rec in hotel.provider_hotel_ids:
                 provider_fmt.update({rec.provider_id.alias: rec.code})
@@ -327,6 +330,13 @@ class HotelMaster(models.Model):
         for rec in self.search([('city_id', '=', self.city_id.id)]):
             rec.get_provider_name()
             rec.get_hotel_info()
+
+    def fmt_read(self, hotel_obj={}, city_idx=0):
+        rec = super(HotelMaster, self).fmt_read(hotel_obj, city_idx)
+        find_obj = self.browse(int(rec['id']))
+        if find_obj:
+            rec.update({'id': find_obj.internal_code,})
+        return rec
 
 
 class TtTemporaryRecord(models.Model):

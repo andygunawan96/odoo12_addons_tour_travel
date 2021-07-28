@@ -2,7 +2,7 @@ from odoo import api,models,fields
 from ...tools import ERR
 from ...tools.ERR import RequestException
 import logging
-from datetime import datetime
+from datetime import datetime, timedelta
 import traceback
 _logger = logging.getLogger(__name__)
 
@@ -121,19 +121,24 @@ class TtPaymentApiCon(models.Model):
         elif action == 'get_amount':
             book_obj = self.env['tt.reservation.%s' % data['provider_type']].search([('name', '=', data['order_number']), ('state', 'in', ['booked'])])
             if book_obj:
-                different_time = book_obj.hold_date - datetime.now()
-                different_time = int(different_time.seconds/60)
-                if different_time > 60:
-                    different_time = 55
-                else:
-                    different_time -= 5
+                payment_acq_number_obj = self.env['payment.acquirer.number'].search([('number', '=', data['payment_acq_number'])])
+                if payment_acq_number_obj:
+                    different_time = payment_acq_number_obj.time_limit - datetime.now()
+                    timelimit = int(different_time.seconds / 60)
+                else: ## KALAU PAYMENT ACQ NUMBER TIDAK KETEMU
+                    different_time = book_obj.hold_date - datetime.now()
+                    if different_time > timedelta(hours=1): ## LEBIH DARI 1 JAM TIMELIMIT 55 MENIT
+                        timelimit = 55
+                    else: ## KURANG DARI 1 JAM, TIMELIMIT = HOLD DATE - 5 MENIT
+                        different_time_in_minutes = int(different_time.seconds / 60)
+                        timelimit = different_time_in_minutes - 5
                 values = {
                     "amount": book_obj.total,
                     "currency": book_obj.currency_id.name,
                     "phone_number": "".join(book_obj.contact_phone.split(' - ')),
                     "name": book_obj.contact_id.name,
                     "email": book_obj.contact_email,
-                    "time_limit": different_time
+                    "time_limit": timelimit
                 }
                 res = ERR.get_no_error(values)
             else:

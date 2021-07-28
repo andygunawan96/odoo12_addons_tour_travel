@@ -56,6 +56,7 @@
                             <field name="amount"/>
                             <field name="is_per_pnr"/>
                             <field name="is_per_pax"/>
+                            <field name="is_per_journey"/>
                             <field name="balance_for"/>
                         </tree>
                         <form>
@@ -67,6 +68,7 @@
                                 <group>
                                     <field name="is_per_pnr"/>
                                     <field name="is_per_pax"/>
+                                    <field name="is_per_journey"/>
                                     <field name="balance_for"/>
                                 </group>
                             </group>
