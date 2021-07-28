@@ -12,7 +12,7 @@
                 <field name="all_agent" position="before">
                     <field name="provider_type"/>
                     <field name="state" readonly="1"/>
-                    <field name="state_vendor" required="1" attrs="{'invisible': [('period_mode', '=', 'verified_date')]}"/>
+                    <field name="state_vendor" required="1" attrs=""/>
                 </field>
             </field>
         </record>
