@@ -81,7 +81,8 @@ class TtReservationCustomer(models.Model):
             'phone_number': self.phone_number,
             'pcr_data': self.pcr_data and json.loads(self.pcr_data) or self.pcr_data,
             'nationality_name': self.nationality_id.name,
-            'ticket_number': self.ticket_number
+            'ticket_number': self.ticket_number,
+            'seq_id': self.seq_id
         })
         if len(self.channel_service_charge_ids.ids)>0:
             res['channel_service_charges'] = self.get_channel_service_charges()
