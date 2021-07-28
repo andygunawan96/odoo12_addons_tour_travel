@@ -81,7 +81,7 @@ class ReservationPhc(models.Model):
         for provider in self.provider_booking_ids:
             for ticket in provider.ticket_ids:
                 psg = ticket.passenger_id
-                desc_text = '%s, %s (%s)' % (' '.join((psg.first_name or '', psg.last_name or '')), psg.title or '', ticket.ticket_number)
+                desc_text = '%s %s, %s (%s)' % (psg.seq_id and psg.seq_id + ' -', ' '.join((psg.first_name or '', psg.last_name or '')), psg.title or '', ticket.ticket_number)
                 price_unit = 0
                 for cost_charge in psg.cost_service_charge_ids:
                     if cost_charge.charge_type not in ['RAC', 'DISC']:

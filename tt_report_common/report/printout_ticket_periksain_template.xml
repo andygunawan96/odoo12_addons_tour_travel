@@ -65,7 +65,7 @@
                                 </div>
                                 <div class="col-9" style="margin-right: 0px">
                                     <span style="font-size: 16px; font-weight:200">
-                                        <span t-esc="dict(self._fields['timeslot_type'].selection).get(line.timeslot_type)"/>
+                                        <span t-esc="line.timeslot_type"/>
                                         <br/>
                                     <t t-if="line.timeslot_type == 'drive_thru'">
                                         <span t-esc="line.datetimeslot.astimezone(printout_tz).strftime('%Y-%m-%d')"/>
@@ -127,10 +127,13 @@
                 <div class="col-4" style="text-align: left; font-size:17px;">
                     Name
                 </div>
-                <div class="col-4" style="text-align: center; font-size:17px;">
+                <div class="col-3" style="text-align: center; font-size:17px;">
                     Contact
                 </div>
-                <div class="col-3" style="text-align: center; font-size:17px; padding-right: 30px;">
+                <div class="col-2" style="text-align: center; font-size:17px;">
+                    Code
+                </div>
+                <div class="col-2" style="text-align: center; font-size:17px; padding-right: 30px;">
                     Ticket
                 </div>
             </div>
@@ -146,11 +149,14 @@
                         <div class="col-4" style="text-align: left">
                             <label style="font-weight:450; font-size:17px; margin-bottom: 0px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"><span t-field="psg.title"/> <span t-field="psg.name"/></label>
                         </div>
-                        <div class="col-4" style="text-align: left">
+                        <div class="col-3" style="text-align: left">
                             <label style="font-weight:450; font-size:17px; margin-bottom: 0px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Phone: <span t-field="psg.phone_number"/></label><br/>
                             <label style="font-weight:450; font-size:17px; margin-bottom: 0px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Email: <span t-field="psg.email"/></label>
                         </div>
-                        <div class="col-3" style="text-align: center">
+                        <div class="col-2" style="text-align: center">
+                            <label style="font-weight:450; font-size:17px; margin-bottom: 0px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"><span t-field="psg.seq_id"/></label>
+                        </div>
+                        <div class="col-2" style="text-align: center">
                             <label style="font-weight:450; font-size:17px; margin-bottom: 0px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"><t t-if="ticket.ticket_number"><span t-field="ticket.ticket_number"/></t><t t-else="">-</t></label>
                             <!--<label style="font-weight:450; font-size:17px; margin-bottom: 0px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">-</label>-->
                         </div>
