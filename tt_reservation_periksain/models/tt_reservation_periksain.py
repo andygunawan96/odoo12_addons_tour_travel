@@ -259,9 +259,9 @@ class ReservationPeriksain(models.Model):
                     cito_suplement_price = rec.cito_surcharge
         else:
             for rec in timeslot_objs:
-                if rec.base_price_antigen > base_price:
+                if rec.base_price_pcr > base_price:
                     base_price = rec.base_price_pcr
-                    commission_price = rec.commission_antigen
+                    commission_price = rec.commission_pcr
                     overtime_price = rec.overtime_surcharge
                     single_suplement_price = rec.single_supplement
                     cito_suplement_price = rec.cito_surcharge
