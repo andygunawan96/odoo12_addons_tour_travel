@@ -11,13 +11,13 @@ class AgentReportRecapReservation(models.TransientModel):
 
     state = fields.Selection(selection=STATES, string="State", default='issued')
     # statenya pasti issued
-    state_vendor = fields.Selection(selection=lambda self: self._compute_state_vendor_selection(), string='State Vendor', default='verified')
+    state_vendor = fields.Selection(selection=lambda self: self._compute_state_vendor_selection(), string='State Vendor', default='all')
 
     provider_type = fields.Selection(selection=lambda self: self._compute_provider_type_selection(),
                                      string='Provider Type', default='all', readonly=True)
     is_ho = fields.Boolean('Ho User', default=True)
     all_agent = fields.Boolean('All Agent', default=True, readonly=True)
-    period_mode = fields.Selection(selection=[('issued_date', 'Issued Date'), ('verified_date', 'Verified Date'), ('test_date', 'Test Date')], string='Period Mode', default='issued_date')
+    period_mode = fields.Selection(selection=[('verified_date', 'Verified Date'), ('issued_date', 'Issued Date'), ('test_date', 'Test Date')], string='Period Mode', default='verified_date')
 
     @api.onchange('period_mode')
     def _onchage_period_mode(self):
