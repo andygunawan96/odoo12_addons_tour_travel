@@ -38,8 +38,8 @@ class AgentReportRecapTransactionXls(models.TransientModel):
 
         # ======= TITLE & SUBTITLE ============
         # write to file in cols and row
-        sheet.merge_range('A1:N2', values['data_form']['title'], style.title2)  # set merge cells for title
-        sheet.write('N3', 'Printing Date :' + values['data_form']['date_now'].strftime('%d-%b-%Y %H:%M'),
+        sheet.merge_range('A1:Q2', values['data_form']['title'], style.title2)  # set merge cells for title
+        sheet.write('Q3', 'Printing Date :' + values['data_form']['date_now'].strftime('%d-%b-%Y %H:%M'),
                     style.print_date)  # print date print
         sheet.write('A3', 'State : ' + values['data_form']['state'], style.table_data)  # print state
         sheet.freeze_panes(7, 0)  # freeze panes mulai dari row 1-7
@@ -49,16 +49,19 @@ class AgentReportRecapTransactionXls(models.TransientModel):
         sheet.write('B7', 'Provider', style.table_head_center)
         sheet.write('C7', 'Carrier', style.table_head_center)
         sheet.write('D7', 'Order Number', style.table_head_center)
-        sheet.write('E7', 'Test Datetime', style.table_head_center)
-        sheet.write('F7', 'Adult', style.table_head_center)
-        sheet.write('G7', 'State', style.table_head_center)
-        sheet.write('H7', 'State Vendor', style.table_head_center)
-        sheet.write('I7', 'Passenger Code', style.table_head_center)
-        sheet.write('J7', 'Ticket Number', style.table_head_center)
-        sheet.write('K7', 'Participant Name', style.table_head_center)
-        sheet.write('L7', 'Participant Birth Date', style.table_head_center)
-        sheet.write('M7', 'ID / Passport Number', style.table_head_center)
-        sheet.write('N7', 'Participant Address On ID Card', style.table_head_center)
+        sheet.write('E7', 'Issued Date', style.table_head_center)
+        sheet.write('F7', 'Test Datetime', style.table_head_center)
+        sheet.write('G7', 'Verified Date', style.table_head_center)
+        sheet.write('H7', 'Verified By', style.table_head_center)
+        sheet.write('I7', 'Adult', style.table_head_center)
+        sheet.write('J7', 'State', style.table_head_center)
+        sheet.write('K7', 'State Vendor', style.table_head_center)
+        sheet.write('L7', 'Passenger Code', style.table_head_center)
+        sheet.write('M7', 'Ticket Number', style.table_head_center)
+        sheet.write('N7', 'Participant Name', style.table_head_center)
+        sheet.write('O7', 'Participant Birth Date', style.table_head_center)
+        sheet.write('P7', 'ID / Passport Number', style.table_head_center)
+        sheet.write('Q7', 'Participant Address On ID Card', style.table_head_center)
 
         # sheet.write('B9', 'Date', style.table_head_center)
         # sheet.write('C9', 'Order Number', style.table_head_center)
@@ -79,15 +82,14 @@ class AgentReportRecapTransactionXls(models.TransientModel):
         sheet.set_column('A:A', 8)
         sheet.set_column('B:B', 10)
         sheet.set_column('C:C', 20)
-        sheet.set_column('D:E', 15)
-        sheet.set_column('F:F', 10)
-        sheet.set_column('G:H', 10)
-        sheet.set_column('I:I', 20)
-        sheet.set_column('J:J', 20)
-        sheet.set_column('K:K', 25)
-        sheet.set_column('L:L', 20)
-        sheet.set_column('M:M', 20)
-        sheet.set_column('N:N', 35)
+        sheet.set_column('D:G', 15)
+        sheet.set_column('H:H', 20)
+        sheet.set_column('I:I', 10)
+        sheet.set_column('J:K', 10)
+        sheet.set_column('L:M', 20)
+        sheet.set_column('N:N', 25)
+        sheet.set_column('O:P', 20)
+        sheet.set_column('Q:Q', 35)
 
         # ============ void start() ======================
         # declare some constant dependencies
@@ -127,16 +129,19 @@ class AgentReportRecapTransactionXls(models.TransientModel):
             sheet.write(row_data, 1, i['provider_name'], sty_table_data)
             sheet.write(row_data, 2, i['carrier_name'], sty_table_data)
             sheet.write(row_data, 3, i['order_number'], sty_table_data)
-            sheet.write(row_data, 4, i['test_datetime'], sty_datetime)
-            sheet.write(row_data, 5, i['adult'], sty_amount)
-            sheet.write(row_data, 6, i['state'], sty_table_data)
-            sheet.write(row_data, 7, i['state_vendor'], sty_table_data)
-            sheet.write(row_data, 8, i['psg_seq_id'], sty_table_data)
-            sheet.write(row_data, 9, i['ticket_number'], sty_table_data)
-            sheet.write(row_data, 10, '%s %s %s' % (i['title'], i['first_name'], i['last_name']), sty_table_data)
-            sheet.write(row_data, 11, datetime.strftime(i['birth_date'], '%d %B %Y'), sty_table_data)
-            sheet.write(row_data, 12, i['identity_number'], sty_table_data)
-            sheet.write(row_data, 13, i['address_ktp'], sty_table_data)
+            sheet.write(row_data, 4, i['issued_date'], sty_datetime)
+            sheet.write(row_data, 5, i['test_datetime'], sty_datetime)
+            sheet.write(row_data, 6, i['verified_date'], sty_datetime)
+            sheet.write(row_data, 7, i['verified_uid'], sty_table_data)
+            sheet.write(row_data, 8, i['adult'], sty_amount)
+            sheet.write(row_data, 9, i['state'], sty_table_data)
+            sheet.write(row_data, 10, i['state_vendor'], sty_table_data)
+            sheet.write(row_data, 11, i['psg_seq_id'], sty_table_data)
+            sheet.write(row_data, 12, i['ticket_number'], sty_table_data)
+            sheet.write(row_data, 13, '%s %s %s' % (i['title'], i['first_name'], i['last_name']), sty_table_data)
+            sheet.write(row_data, 14, datetime.strftime(i['birth_date'], '%d %B %Y'), sty_table_data)
+            sheet.write(row_data, 15, i['identity_number'], sty_table_data)
+            sheet.write(row_data, 16, i['address_ktp'], sty_table_data)
 
         # close the file
         workbook.close()

@@ -20,7 +20,8 @@ class MedicalVendorReportRecapTransacion(models.Model):
         return """
             rsv.id as rsv_id, rsv.name as order_number, rsv.state as state, rsv.adult as adult, rsv.state_vendor as state_vendor, 
             rsv.provider_name as provider_name, provider_type.name as provider_type, carrier.name as carrier_name, 
-            timeslot.datetimeslot as test_datetime, psg.booking_id as booking_id, psg.title as title, COALESCE(psg.seq_id, '') as psg_seq_id,
+            rsv.issued_date as issued_date, psg.verified_date as verified_date, timeslot.datetimeslot as test_datetime, 
+            usr_partner.name as verified_uid, psg.booking_id as booking_id, psg.title as title, COALESCE(psg.seq_id, '') as psg_seq_id,
             psg.first_name as first_name, psg.last_name as last_name, psg.birth_date as birth_date, 
             psg.ticket_number as ticket_number, psg.identity_number as identity_number, psg.address_ktp as address_ktp
             """
@@ -30,6 +31,8 @@ class MedicalVendorReportRecapTransacion(models.Model):
         query = """tt_reservation_passenger_""" + provider_type + """ psg """
         query += """LEFT JOIN tt_reservation_""" + provider_type + """ rsv ON rsv.id = psg.booking_id """
         query += """LEFT JOIN tt_agent agent ON rsv.agent_id = agent.id
+                LEFT JOIN res_users usr ON usr.id = rsv.verified_uid
+                LEFT JOIN res_partner usr_partner ON usr_partner.id = usr.partner_id
                 LEFT JOIN tt_provider_type provider_type ON provider_type.id = rsv.provider_type_id
                 LEFT JOIN tt_transport_carrier carrier ON carrier.code = rsv.carrier_name
                 """
