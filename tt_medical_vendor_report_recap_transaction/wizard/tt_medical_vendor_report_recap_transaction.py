@@ -19,11 +19,6 @@ class AgentReportRecapReservation(models.TransientModel):
     all_agent = fields.Boolean('All Agent', default=True, readonly=True)
     period_mode = fields.Selection(selection=[('verified_date', 'Verified Date'), ('issued_date', 'Issued Date'), ('test_date', 'Test Date')], string='Period Mode', default='verified_date')
 
-    @api.onchange('period_mode')
-    def _onchage_period_mode(self):
-        if self.period_mode == 'verified_date':
-            self.state_vendor = 'verified'
-
     def _compute_provider_type_selection(self):
         value = [('all', 'All')]
         provider_type = self.env['tt.provider.type'].search([])
