@@ -28,6 +28,7 @@ TT_TRANSPORT
 
         'wizard/create_timeslot_wizard.xml',
         'wizard/confirm_order_wizard.xml',
+        'wizard/cancel_order_wizard.xml',
         'wizard/force_issued_wizard_views.xml',
         'wizard/tt_split_reservation_wizard.xml',
 

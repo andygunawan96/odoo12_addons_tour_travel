@@ -5,7 +5,7 @@
         <field name="model">tt.reservation.periksain</field>
         <field name="inherit_id" ref="tt_reservation_periksain.tt_reservation_periksain_form_views"/>
         <field name="arch" type="xml">
-            <xpath expr="//button[@name='action_cancel']" position="after">
+            <xpath expr="//button[@name='action_set_as_issued']" position="after">
                 <button string="After Sales Request" name="%(tt_reschedule_periksain.tt_reschedule_periksain_wizard_action_view)d" type="action" groups="tt_base.group_tt_agent_user"
                         context="{
                 'default_res_model': res_model,
