@@ -48,7 +48,7 @@ class TtCronLogInhphc(models.Model):
         try:
             data = {
                 'code': 9920,
-                'message': self.env['tt.reservation.phc'].get_verified_summary()
+                'message': "Daily Summary\n\n %s" % (self.env['tt.reservation.phc'].get_verified_summary())
             }
             self.env['tt.api.con'].send_request_to_gateway('%s/notification' % (self.env['tt.api.con'].url), data,
                                                            'notification_code')
