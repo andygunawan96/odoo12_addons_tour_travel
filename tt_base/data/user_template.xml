@@ -725,7 +725,7 @@
                              ref('tt_base.group_provider_type_level_4'),
                              ref('tt_base.group_ssr_level_4'),
                              ref('tt_base.group_bank_level_4'),
-                             ref('tt_base.group_bank_transactions_level_3'),
+                             ref('tt_base.group_bank_transactions_level_4'),
                              ref('tt_base.group_agent_bank_detail_level_4'),
                              ref('tt_base.group_customer_bank_detail_level_4'),
                              ref('tt_base.group_monthly_fee_level_4'),
