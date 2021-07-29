@@ -133,6 +133,7 @@ STATE_VENDOR = [
     ('draft', 'Draft'),  ## order bookd by customer
     ('new_order', 'New Order'),  ## order issued by customer
     ('confirmed_order', 'Confirmed Order'),  ## order confirmmed by periksain
+    ('test_completed', 'Test Completed'),  ## test completed (periksain only)
     ('no_show', 'No Show'),  ## customer cancel H-1 after 16:00 or H
     ('refund', 'Refund'),  ## customer cancel before H-1 16:00
     ('verified', 'Verified'),

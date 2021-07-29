@@ -41,7 +41,7 @@ class ReservationPeriksain(models.Model):
 
     test_address_map_link = fields.Char('Test Address Map Link', readonly=True, states={'draft': [('readonly', False)]})
 
-    cancellation_reason = fields.Char('Cancellation Reasion', readonly=True, states={'draft': [('readonly', False)]})
+    cancellation_reason = fields.Char('Cancellation Reason', readonly=True, states={'draft': [('readonly', False)]})
 
     provider_booking_ids = fields.One2many('tt.provider.periksain', 'booking_id', string='Provider Booking', readonly=True, states={'draft': [('readonly', False)]})
 
@@ -79,6 +79,9 @@ class ReservationPeriksain(models.Model):
     def action_set_as_issued(self):
         for rec in self:
             rec.state = 'issued'
+
+    def action_set_state_vendor_as_test_completed(self):
+        self.state_vendor = 'test_completed'
 
     def action_set_state_vendor_as_no_show(self):
         self.state_vendor = 'no_show'
@@ -212,9 +215,9 @@ class ReservationPeriksain(models.Model):
         super(ReservationPeriksain, self).action_cancel(gateway_context=gateway_context)
         for rec in self.provider_booking_ids:
             rec.action_cancel(gateway_context)
+        self.state_vendor = 'refund'
         if self.payment_acquirer_number_id:
             self.payment_acquirer_number_id.state = 'cancel'
-
 
     @api.one
     def create_refund(self):

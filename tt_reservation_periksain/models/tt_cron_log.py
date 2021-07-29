@@ -33,7 +33,7 @@ class TtCronLogInhPeriksain(models.Model):
         try:
             issued_bookings = self.env['tt.reservation.periksain'].search(
                 [('state','=','issued'),
-                 ('state_vendor','=','confirmed_order'),
+                 ('state_vendor','in',['confirmed_order', 'test_completed']),
                  ('create_date','<',datetime.now()-timedelta(days=1))])
             for booking in issued_bookings:
                 try:

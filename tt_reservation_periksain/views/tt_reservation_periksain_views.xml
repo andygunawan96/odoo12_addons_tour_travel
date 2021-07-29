@@ -71,7 +71,13 @@
             <xpath expr="//form" position="attributes">
                 <attribute name="edit">false</attribute>
             </xpath>
-            <xpath expr="//button[@name='action_cancel']" position="after">
+            <xpath expr="//button[@name='action_cancel']" position="replace">
+                <button string="Cancel" name="%(tt_reservation_periksain.cancel_order_periksain_wizard_action_view)d" type="action" states="booked,issued"
+                        groups="tt_base.group_external_vendor_periksain_level_2,tt_base.group_reservation_level_4"
+                        attrs="{'invisible': [('state_vendor','not in', ['confirmed_order', 'new_order', 'draft', 'suspect'])]}"
+                        context="{
+                        'default_booking_id': id,
+                   }"/>
                 <button string="Split Reservation" name="%(tt_reservation_periksain.tt_split_reservation_periksain_wizard_action_view)d" type="action" groups="tt_base.group_reservation_level_4"
                         context="{
                         'default_res_id': id,
@@ -80,10 +86,12 @@
                    }"/>
                 <button string="Confirm Order" name="%(tt_reservation_periksain.confirm_order_periksain_wizard_action_view)d" type="action" states="issued"
                         groups="tt_base.group_external_vendor_periksain_level_2,tt_base.group_reservation_level_4"
+                        attrs="{'invisible': [('state_vendor','not in', ['new_order', 'draft', 'suspect'])]}"
                         context="{
                         'default_booking_id': id,
                    }"/>
 
+                <button string="Test Completed" name="action_set_state_vendor_as_test_completed" type="object" attrs="{'invisible': [('state_vendor','!=', 'confirmed_order')]}" groups="tt_base.group_external_vendor_periksain_level_2,tt_base.group_reservation_level_4"/>
                 <button string="No Show Order" name="action_set_state_vendor_as_no_show" type="object" attrs="{'invisible': [('state_vendor','!=', 'confirmed_order')]}" groups="tt_base.group_external_vendor_periksain_level_2,tt_base.group_reservation_level_4"/>
                 <button string="Refund Order" name="action_set_state_vendor_as_refund" type="object" attrs="{'invisible': [('state_vendor','!=', 'confirmed_order')]}" groups="tt_base.group_external_vendor_periksain_level_2,tt_base.group_reservation_level_4"/>
             </xpath>
@@ -108,6 +116,9 @@
             </xpath>
             <xpath expr="//field[@name='date']" position="before">
                 <field name="state_vendor"/>
+            </xpath>
+            <xpath expr="//field[@name='voucher_code']" position="after">
+                <field name="cancellation_reason" readonly="1" attrs="{'invisible': [('state','!=', 'cancel')]}"/>
             </xpath>
             <xpath expr="//group[@name='paxgroup']" position="before">
                 <group>
@@ -193,7 +204,14 @@
                 <header>
                     <button string="Confirm Order" name="%(tt_reservation_periksain.confirm_order_periksain_wizard_action_view)d" type="action" states="issued"
                             groups="tt_base.group_external_vendor_periksain_level_2"
+                            attrs="{'invisible': [('state_vendor','not in', ['new_order', 'draft', 'suspect'])]}"
                             context="{
+                        'default_booking_id': id,
+                   }"/>
+                    <button string="Cancel" name="%(tt_reservation_periksain.cancel_order_periksain_wizard_action_view)d" type="action" states="booked,issued"
+                        groups="tt_base.group_external_vendor_periksain_level_2"
+                        attrs="{'invisible': [('state_vendor','not in', ['confirmed_order', 'new_order', 'draft', 'suspect'])]}"
+                        context="{
                         'default_booking_id': id,
                    }"/>
                     <button string="No Show Order" name="action_set_state_vendor_as_no_show" type="object" attrs="{'invisible': [('state_vendor','!=', 'confirmed_order')]}" groups="tt_base.group_external_vendor_periksain_level_2,tt_base.group_reservation_level_4"/>
@@ -260,6 +278,7 @@
                             </div>
                             <field name="penalty_amount" readonly="1"/>
                             <field name="voucher_code" readonly="1"/>
+                            <field name="cancellation_reason" readonly="1" attrs="{'invisible': [('state','!=', 'cancel')]}"/>
                         </group>
                     </group>
                     <separator string="Test Information"/>
