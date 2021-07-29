@@ -171,7 +171,7 @@ class TtTimeslotPeriksain(models.Model):
             "area": self.destination_id.city,
             "id_kota_vendor": self.id_kota_vendor,
             "id_time_vendor": self.id_time_vendor,
-            "tindakan_pemeriksaan_vendor": json.loads(self.tindakan_pemeriksaan_vendor)
+            "tindakan_pemeriksaan_vendor": json.loads(self.tindakan_pemeriksaan_vendor) if self.tindakan_pemeriksaan_vendor else False
         }
 
         return res
