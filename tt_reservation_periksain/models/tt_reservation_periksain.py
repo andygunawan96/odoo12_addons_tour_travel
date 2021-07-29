@@ -239,8 +239,8 @@ class ReservationPeriksain(models.Model):
             single_suplement = True
 
         cito_surcharge = False
-        if timeslot_objs.datetimeslot <= datetime.now() + timedelta(hours=5):
-            cito_surcharge = False
+        if timeslot_objs.datetimeslot <= datetime.now() + timedelta(hours=6):
+            cito_surcharge = True
 
 
         base_price = 0

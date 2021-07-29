@@ -110,10 +110,10 @@ class TtTimeslotPeriksain(models.Model):
         current_wib_datetime = datetime.now(pytz.timezone('Asia/Jakarta'))
         current_datetime = current_wib_datetime.astimezone(pytz.utc)
         malang_id = self.env.ref('tt_reservation_periksain.tt_destination_periksain_mlg').id
-        if '08:00' < str(current_wib_datetime.time())[:5] < '18:00':
+        if '08:00' < str(current_wib_datetime.time())[:5] < '17:00':
             dom = ['|',('agent_id','=',False),('agent_id', '=', context['co_agent_id']),('datetimeslot', '>', datetime.now(pytz.utc) + timedelta(hours=3))]
         else:
-            min_datetime = current_datetime.replace(hour=3,minute=0, second=0, microsecond=0)
+            min_datetime = current_datetime.replace(hour=7,minute=0, second=0, microsecond=0)
             if current_datetime > min_datetime:
                 min_datetime = min_datetime + timedelta(days=1)
             dom = ['|',('agent_id','=',False),('agent_id', '=', context['co_agent_id']),('datetimeslot', '>', min_datetime),
