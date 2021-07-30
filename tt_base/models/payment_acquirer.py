@@ -365,7 +365,6 @@ class PaymentAcquirerNumber(models.Model):
     bank_name = fields.Char('Bank Name')
     unique_amount = fields.Float('Unique Amount')
     unique_amount_id = fields.Many2one('unique.amount','Unique Amount Obj',readonly=True)
-    unique_amount_state = fields.Boolean('Unique Amount State',compute="_compute_unique_amount_state",store=True)
     fee_amount = fields.Float('Fee Amount')
     time_limit = fields.Datetime('Time Limit', readonly=True)
     amount = fields.Float('Amount')
@@ -377,20 +376,6 @@ class PaymentAcquirerNumber(models.Model):
     def _compute_display_name_payment(self):
         for rec in self:
             rec.display_name_payment = "{} - {}".format(rec.payment_acquirer_id.name if rec.payment_acquirer_id.name != False else '',rec.number)
-
-    @api.depends('state')
-    def _compute_unique_amount_state(self):
-        for rec in self:
-            _logger.info("QQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQ %s %s" % (rec.id, rec.state))
-            if rec.state not in ['open','close']:
-                _logger.info("HMM BEFORE UNIQUE AMOUNT ID")
-                if rec.unique_amount_id:
-                    _logger.info("UBAH STATE FALSE")
-                    rec.unique_amount_state = False
-                    rec.unique_amount_id.active = False
-            else:
-                _logger.info("UBAH STATE TRUE")
-                rec.unique_amount_state = True
 
     def create_payment_acq_api(self, data):
         provider_type = 'tt.reservation.%s' % variables.PROVIDER_TYPE_PREFIX[data['order_number'].split('.')[0]]

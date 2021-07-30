@@ -95,7 +95,7 @@ class CreateTimeslotPeriksainWizard(models.TransientModel):
                         'base_price_pcr': self.base_price_pcr,
                         'single_supplement': self.single_supplement,
                         'overtime_surcharge': self.overtime_surcharge,
-                        'cito_surcharge': self.overtime_surcharge,
+                        'cito_surcharge': self.cito_surcharge,
                         'agent_id': self.agent_id.id if self.agent_id else False,
                         'id_kota_vendor': self.area_id.icao.split('~')[0],
                         'id_time_vendor': time_objs_id_periksain[idx],
