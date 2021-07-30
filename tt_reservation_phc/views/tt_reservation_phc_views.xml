@@ -402,8 +402,8 @@
         <field name="domain">[]</field>
         <field name="context">
             {
-            'form_view_ref': 'tt_reservation_phc.tt_reservation_phc_form_view',
-            'tree_view_ref': 'tt_reservation_phc.tt_reservation_phc_tree_view',
+            'form_view_ref': 'tt_reservation_phc.tt_reservation_phc_form_views',
+            'tree_view_ref': 'tt_reservation_phc.tt_reservation_phc_tree_views',
             'search_default_booked': 1
             }
         </field>
@@ -417,8 +417,8 @@
         <field name="domain">[]</field>
         <field name="context">
             {
-            'form_view_ref': 'tt_reservation_phc.tt_reservation_phc_form_view',
-            'tree_view_ref': 'tt_reservation_phc.tt_reservation_phc_tree_view',
+            'form_view_ref': 'tt_reservation_phc.tt_reservation_phc_form_views',
+            'tree_view_ref': 'tt_reservation_phc.tt_reservation_phc_tree_views',
             'search_default_issued': 1
             }
         </field>
@@ -432,8 +432,8 @@
         <field name="domain">[]</field>
         <field name="context">
             {
-            'form_view_ref': 'tt_reservation_phc.tt_reservation_phc_form_view',
-            'tree_view_ref': 'tt_reservation_phc.tt_reservation_phc_tree_view',
+            'form_view_ref': 'tt_reservation_phc.tt_reservation_phc_form_views',
+            'tree_view_ref': 'tt_reservation_phc.tt_reservation_phc_tree_views',
             'search_default_cancel': 1
             }
         </field>
@@ -447,8 +447,8 @@
         <field name="domain">[]</field>
         <field name="context">
             {
-            'form_view_ref': 'tt_reservation_phc.tt_reservation_phc_form_view',
-            'tree_view_ref': 'tt_reservation_phc.tt_reservation_phc_tree_view',
+            'form_view_ref': 'tt_reservation_phc.tt_reservation_phc_form_views',
+            'tree_view_ref': 'tt_reservation_phc.tt_reservation_phc_tree_views',
             'search_default_failed_expired': 1
             }
         </field>

@@ -153,7 +153,7 @@ class TtPaymentInh(models.Model):
     def action_approve_payment(self):
         super(TtPaymentInh, self).action_approve_payment()
         for rec in self.invoice_ids:
-            if rec.state == 'confirm':
+            if rec.state in ['cancel','confirm']:
                 rec.action_approve()
 
 
