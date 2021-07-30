@@ -350,6 +350,7 @@ class PaymentAcquirer(models.Model):
 
 
 class PaymentAcquirerNumber(models.Model):
+    _inherit = ['tt.history']
     _name = 'payment.acquirer.number'
     _rec_name = 'display_name_payment'
     _description = 'Payment Acquirer Number'
