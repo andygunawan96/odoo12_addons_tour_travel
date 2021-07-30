@@ -409,8 +409,8 @@
         <field name="domain">[]</field>
         <field name="context">
             {
-            'form_view_ref': 'tt_reservation_periksain.tt_reservation_periksain_form_view',
-            'tree_view_ref': 'tt_reservation_periksain.tt_reservation_periksain_tree_view',
+            'form_view_ref': 'tt_reservation_periksain.tt_reservation_periksain_form_views',
+            'tree_view_ref': 'tt_reservation_periksain.tt_reservation_periksain_tree_views',
             'search_default_booked': 1
             }
         </field>
@@ -424,8 +424,8 @@
         <field name="domain">[]</field>
         <field name="context">
             {
-            'form_view_ref': 'tt_reservation_periksain.tt_reservation_periksain_form_view',
-            'tree_view_ref': 'tt_reservation_periksain.tt_reservation_periksain_tree_view',
+            'form_view_ref': 'tt_reservation_periksain.tt_reservation_periksain_form_views',
+            'tree_view_ref': 'tt_reservation_periksain.tt_reservation_periksain_tree_views',
             'search_default_issued': 1
             }
         </field>
@@ -439,8 +439,8 @@
         <field name="domain">[]</field>
         <field name="context">
             {
-            'form_view_ref': 'tt_reservation_periksain.tt_reservation_periksain_form_view',
-            'tree_view_ref': 'tt_reservation_periksain.tt_reservation_periksain_tree_view',
+            'form_view_ref': 'tt_reservation_periksain.tt_reservation_periksain_form_views',
+            'tree_view_ref': 'tt_reservation_periksain.tt_reservation_periksain_tree_views',
             'search_default_failed_expired': 1
             }
         </field>
