@@ -51,7 +51,7 @@
             <form>
                 <header>
                     <button name="test_set_as_draft" string="set as draft" type="object" groups="base.group_system"/>
-                    <button name="test_set_as_confirm" string="set as confirm" type="object" groups="base.group_system"/>
+                    <button name="test_set_as_confirm" string="set as confirm" type="object" groups="base.group_system,tt_base.group_payment_level_4"/>
                     <button string="Validate" name="action_validate_from_button"
                             type="object" groups="tt_base.group_payment_level_4"
                             attrs="{'invisible':[('state','!=','confirm')]}"/>

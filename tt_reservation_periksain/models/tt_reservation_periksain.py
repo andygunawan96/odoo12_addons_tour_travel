@@ -1044,18 +1044,9 @@ class ReservationPeriksain(models.Model):
                     # check analyst
                     analyst_list = []
                     for analyst_req_dict in req['analysts']:
-                        analyst_obj = self.env['tt.analyst.periksain'].search([('analyst_id', '=', analyst_req_dict['id'])], limit=1)
-                        if not analyst_obj:
-                            analyst_obj = self.env['tt.analyst.periksain'].create({
-                                "name": analyst_req_dict['name'],
-                                "analyst_id": analyst_req_dict['id'],
-                                "analyst_phone_number": analyst_req_dict['phone'],
-                            })
-                        else: ## gatau boleh ngga update data analyst
-                            analyst_obj.update({
-                                "name": analyst_req_dict['name'],
-                                "analyst_phone_number": analyst_req_dict['phone'],
-                            })
+                        analyst_obj = self.env['tt.analyst.periksain'].create({
+                            "name": analyst_req_dict['name'],
+                        })
                         analyst_list.append(analyst_obj.id)
                     book_obj.write({
                         'analyst_ids': [(6, 0, analyst_list)],
