@@ -63,3 +63,12 @@ class TtCronLogInhphc(models.Model):
         except Exception as e:
             self.create_cron_log_folder()
             self.write_cron_log('auto notification timeslot quota data phc')
+
+    def cron_auto_sync_verification_data_phc(self):
+        try:
+            book_objs = self.env['tt.reservation.phc'].search([('state_vendor', '=', 'new_order')])
+            for book_obj in book_objs:
+                book_obj.sync_verified_with_phc()
+        except Exception as e:
+            self.create_cron_log_folder()
+            self.write_cron_log('auto sync verification data phc')
