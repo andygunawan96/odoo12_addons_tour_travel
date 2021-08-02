@@ -34,8 +34,8 @@ class ConfirmOrderPeriksainWizard(models.TransientModel):
 
         try:
             self.env['tt.periksain.api.con'].send_confirm_order_notification(self.booking_id.name,
-                                                                             self.env.user.id,
-                                                                             self.booking_id.test_datetime.strftime("%d-%m-%Y %H:%M"),
+                                                                             self.env.user.name,
+                                                                             self.booking_id.test_datetime.astimezone(pytz.timezone('Asia/Jakarta')).strftime("%d-%m-%Y %H:%M"),
                                                                              self.booking_id.test_address)
         except Exception as e:
-            _logger.error("Send TOP UP Approve Notification Telegram Error.\n%s" % (traceback.format_exc()))
+            _logger.error("Confirm Order From Button Notification Telegram Error.\n%s" % (traceback.format_exc()))
