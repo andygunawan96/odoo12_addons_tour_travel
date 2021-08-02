@@ -36,10 +36,18 @@ class TtCronLogInhphc(models.Model):
                 'total_pcr_timeslot': pcr_timeslot
             })
             wiz_obj.generate_timeslot()
-
+            public_holiday_res = self.env['tt.public.holiday'].get_public_holiday_api({
+                'start_date': datetime.now(),
+                'end_date': datetime.now() + timedelta(days=8),
+                'country_id': self.env.ref('base.id').id
+            }, False)
+            public_holiday_list = [str(rec['date']) for rec in public_holiday_res['response']]
             #drive thru
             for idx in range(8):
-                self.env['create.timeslot.phc.wizard'].generate_drivethru_timeslot((datetime.now() + timedelta(days=idx)).strftime('%Y-%m-%d'), dt_max_timeslot, dt_adult_timeslot, pcr_timeslot)
+                this_date = datetime.now() + timedelta(days=idx)
+                if str(this_date.date()) in public_holiday_list or this_date.weekday() == 6:
+                    continue
+                self.env['create.timeslot.phc.wizard'].generate_drivethru_timeslot(this_date.strftime('%Y-%m-%d'), dt_max_timeslot, dt_adult_timeslot, pcr_timeslot)
         except Exception as e:
             self.create_cron_log_folder()
             self.write_cron_log('auto create timeslot phc')

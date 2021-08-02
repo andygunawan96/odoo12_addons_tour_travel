@@ -179,7 +179,7 @@ class TtTimeslotphc(models.Model):
                 'seq_id': rec.seq_id,
                 'availability': rec.get_availability(carrier_obj.code),
                 'group_booking': True if rec.agent_id else False,
-                "total_pcr_issued_timeslot": 175,
+                "total_pcr_issued_timeslot": 200,
                 "used_pcr_issued_count": rec.used_pcr_issued_count
             })
         return ERR.get_no_error(timeslot_dict)
@@ -211,6 +211,6 @@ class TtTimeslotphc(models.Model):
             "area": self.destination_id.city,
             "total_pcr_timeslot": self.total_pcr_timeslot,
             "used_pcr_count": self.used_pcr_count,
-            "total_pcr_issued_timeslot": 175,
+            "total_pcr_issued_timeslot": 200,
             "used_pcr_issued_count": self.used_pcr_issued_count
         }

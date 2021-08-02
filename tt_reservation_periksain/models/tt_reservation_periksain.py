@@ -1043,7 +1043,7 @@ class ReservationPeriksain(models.Model):
                 if book_obj.state_vendor == 'new_order':
                     # check analyst
                     analyst_list = []
-                    for analyst_req_dict in  req['analysts']:
+                    for analyst_req_dict in req['analysts']:
                         analyst_obj = self.env['tt.analyst.periksain'].search([('analyst_id', '=', analyst_req_dict['id'])], limit=1)
                         if not analyst_obj:
                             analyst_obj = self.env['tt.analyst.periksain'].create({
@@ -1061,6 +1061,15 @@ class ReservationPeriksain(models.Model):
                         'analyst_ids': [(6, 0, analyst_list)],
                         'state_vendor': 'confirmed_order'
                     })
+                    try:
+                        self.env['tt.periksain.api.con'].send_confirm_order_notification(book_obj.name,
+                                                                                         context['co_name'],
+                                                                                         book_obj.test_datetime.strftime(
+                                                                                             "%d-%m-%Y %H:%M"),
+                                                                                         book_obj.test_address)
+                    except Exception as e:
+                        _logger.error("Send TOP UP Approve Notification Telegram Error.\n%s" % (traceback.format_exc()))
+
                     return ERR.get_no_error({
                         "no_booking": req['pnr'],
                         "message": "success",
