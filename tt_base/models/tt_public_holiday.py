@@ -21,7 +21,7 @@ class TtPublicHoliday(models.Model):
         end_date = data.get('end_date') and data['end_date'] or data['start_date']
 
         res = [{'date': rec.date, 'name': rec.name} for rec in self.sudo().search([('date', '>=', start_date), ('date', '<=', end_date),
-                                                                    ('country_id', '>=', int(data['country_id'])),
+                                                                    ('country_id', '=', int(data['country_id'])),
                                                                     ('active', '=', True)])]
         return {
             'error_code': 0,

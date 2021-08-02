@@ -1043,7 +1043,7 @@ class ReservationPeriksain(models.Model):
                 if book_obj.state_vendor == 'new_order':
                     # check analyst
                     analyst_list = []
-                    for analyst_req_dict in  req['analysts']:
+                    for analyst_req_dict in req['analysts']:
                         analyst_obj = self.env['tt.analyst.periksain'].search([('analyst_id', '=', analyst_req_dict['id'])], limit=1)
                         if not analyst_obj:
                             analyst_obj = self.env['tt.analyst.periksain'].create({
