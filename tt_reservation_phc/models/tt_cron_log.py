@@ -55,7 +55,7 @@ class TtCronLogInhphc(models.Model):
     def cron_auto_notification_timeslot_quota_data_phc(self):
         try:
             data = {
-                'code': 9920,
+                'code': 9909,
                 'message': "Daily Summary\n\n %s" % (self.env['tt.reservation.phc'].get_verified_summary())
             }
             self.env['tt.api.con'].send_request_to_gateway('%s/notification' % (self.env['tt.api.con'].url), data,
