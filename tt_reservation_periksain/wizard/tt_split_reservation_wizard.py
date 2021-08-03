@@ -156,6 +156,7 @@ class TtSplitReservationPeriksainWizard(models.TransientModel):
                     'pnr': new_book_obj.name and new_book_obj.name or '',
                     'pnr2': new_book_obj.name and new_book_obj.name or '',
                     'provider_id': rec.provider_id and rec.provider_id.id or False,
+                    'carrier_id': rec.carrier_id and rec.carrier_id.id or False,
                     'hold_date': rec.hold_date,
                     'expired_date': rec.expired_date,
                     'booked_uid': rec.booked_uid and rec.booked_uid.id or False,
