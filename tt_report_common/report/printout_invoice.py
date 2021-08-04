@@ -91,6 +91,13 @@ class PrintoutTicketForm(models.AbstractModel):
                     elif rec2.charge_type.lower() in ['roc', 'tax']:
                         price_target['tax'] += rec2.total
 
+                if provider.provider_id.provider_type_id.code in ['airline', 'train', 'tour', 'activity', 'visa', 'passport', 'phc', 'periksain']:
+                    for rec2 in provider.ticket_ids:
+                        for price_detail in a[provider.pnr]:
+                            if rec2.pax_type == price_detail['pax_type']:
+                                for scs in rec2.passenger_id.channel_service_charge_ids:
+                                    price_detail['tax'] += scs.amount
+
                     # TODO VIN: Re cek all voucher/ticket with price apa ada kendala tak ganti gini
                     # if not a[provider.pnr]:
                     #     a[provider.pnr].append({
@@ -212,7 +219,6 @@ class PrintoutTicketTrainForm(models.AbstractModel):
                         'tax': 0,
                         'qty': 0,
                     }
-
                 if rec2.charge_type.lower() == 'fare':
                     a[rec2.pax_type]['fare'] += rec2.amount
                     a[rec2.pax_type]['qty'] = rec2.pax_count
@@ -382,12 +388,22 @@ class PrintoutVoucherHotelForm(models.AbstractModel):
                         'tax': 0,
                         'qty': 0,
                     }
-
                 if rec2.charge_type.lower() == 'fare':
                     a[rec2.pax_type]['fare'] += rec2.amount
                     a[rec2.pax_type]['qty'] = rec2.pax_count
                 elif rec2.charge_type.lower() in ['roc', 'tax']:
                     a[rec2.pax_type]['tax'] += rec2.amount
+            # tidak ada ticket with price, dan tidak ada pax type
+            # for rec2 in rec.passenger_ids:
+            #     for rec3 in rec2.channel_service_charge_ids:
+            #         if rec3.pax_type not in a.keys():
+            #             a[rec3.pax_type] = {
+            #                 'pax_type': rec3.pax_type,
+            #                 'fare': 0,
+            #                 'tax': 0,
+            #                 'qty': 0,
+            #             }
+            #         a[rec3.pax_type]['tax'] += rec3.amount
             values[rec.id] = [a[new_a] for new_a in a]
             pnr_length = len(rec.pnr) if rec.pnr else len(rec.name)
             if pnr_length > 27:
