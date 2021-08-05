@@ -626,7 +626,9 @@ class AgentRegistration(models.Model):
                 if not con.user_level:
                     raise UserError('All user levels must be filled.')
                 user_level = dict(con._fields['user_level'].selection).get(con.user_level)
-                user_dict = self.env['res.users'].search([('name', 'ilike', rec.agent_type_id.code + ' Agent Template ' + user_level)], limit=1).read()
+                # tidak mungkin regis HO, jadi search dengan asumsi agent
+                template_list = self.env['res.users'].search([('is_user_template', '=', True), ('agent_type_id', '=', rec.agent_type_id.id), ('name', 'like', 'Agent ' + user_level)], limit=1)
+                user_dict = template_list and template_list[0].read() or {}
                 name = (con.first_name or '') + ' ' + (con.last_name or '')
 
                 partner_vals = {
