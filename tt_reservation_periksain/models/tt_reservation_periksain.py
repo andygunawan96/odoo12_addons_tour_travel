@@ -1052,25 +1052,28 @@ class ReservationPeriksain(models.Model):
                         'analyst_ids': [(6, 0, analyst_list)],
                         'state_vendor': 'confirmed_order'
                     })
-                    return ERR.get_no_error({
+                    res = ERR.get_no_error({
                         "no_booking": req['pnr'],
                         "message": "success",
-                        "status": True,
                         "state": book_obj.state_vendor
                     })
+                    res.update({
+                        "success": True
+                    })
+                    return res
                 else:
                     _logger.error('pnr has been confirm / refund')
                     res = ERR.get_error(500, additional_message='no_booking already confirm')
-                    res['response'] = {
-                        'status': False
-                    }
+                    res.update({
+                        "success": False
+                    })
                     return res
             else:
                 _logger.error('pnr not found')
                 res = ERR.get_error(500, additional_message='no_booking not found')
-                res['response'] = {
-                    'status': False
-                }
+                res.update({
+                    "success": False
+                })
                 return res
         except RequestException as e:
             _logger.error(traceback.format_exc())
@@ -1087,25 +1090,28 @@ class ReservationPeriksain(models.Model):
                 if book_obj.state_vendor == 'refund':
                     book_obj.state_vendor = 'refund'
                     book_obj.cancellation_reason = req['reason']
-                    return ERR.get_no_error({
+                    res = ERR.get_no_error({
                         "no_booking": req['pnr'],
                         "message": "success",
-                        "status": True,
                         "state": book_obj.state_vendor
                     })
+                    res.update({
+                        "success": True
+                    })
+                    return res
                 else:
                     _logger.error('pnr has been refund')
                     res = ERR.get_error(500, additional_message='no_booking has been refund')
-                    res['response'] = {
-                        'status': False
-                    }
+                    res.update({
+                        "success": False
+                    })
                     return res
             else:
                 _logger.error('pnr not found')
                 res = ERR.get_error(500, additional_message='no_booking not found')
-                res['response'] = {
-                    'status': False
-                }
+                res.update({
+                    "success": False
+                })
                 return res
         except RequestException as e:
             _logger.error(traceback.format_exc())
@@ -1126,25 +1132,28 @@ class ReservationPeriksain(models.Model):
                             rec.result_url = passenger_request_dict['result_url']
                             list_passenger_update.append(passenger_request_dict['ticket_number'])
                 if len(list_passenger_update):
-                    return ERR.get_no_error({
+                    res = ERR.get_no_error({
                         "no_booking": req['pnr'],
                         "message": "success",
-                        "status": True,
                         "list_passenger": list_passenger_update
                     })
+                    res.update({
+                        "success": True
+                    })
+                    return res
                 else:
                     _logger.error('no passenger update')
                     res = ERR.get_error(500, additional_message='no_booking found but, no registration not found')
-                    res['response'] = {
-                        'status': False
-                    }
+                    res.update({
+                        "success": False
+                    })
                     return res
             else:
                 _logger.error('pnr not found')
                 res = ERR.get_error(500, additional_message='no_booking not found')
-                res['response'] = {
-                    'status' : False
-                }
+                res.update({
+                    "success": False
+                })
                 return res
         except RequestException as e:
             _logger.error(traceback.format_exc())
