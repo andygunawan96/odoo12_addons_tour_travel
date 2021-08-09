@@ -25,4 +25,4 @@ class AgentRegistrationCustomerContact(models.Model):
     mobile = fields.Char('Mobile')
 
     job_position = fields.Char('Job Position')
-    user_level = fields.Selection(LEVEL, 'User Level', default='operator')
+    user_level = fields.Selection(LEVEL, 'User Level', default='manager')
