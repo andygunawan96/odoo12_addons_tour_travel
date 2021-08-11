@@ -125,16 +125,9 @@
                     </t>
                 </td>
                 <td style="width:100px;"/>
-                <td style="width:150px;">Notes</td>
-                <td style="width:10px;">:</td>
-                <td style="width:400px;text-align: right;">
-                    <t t-if="doc.notes">
-                        <span t-raw="doc.notes"/>
-                    </t>
-                    <t t-if="not doc.notes">
-                        -
-                    </t>
-                </td>
+                <td style="width:150px;"></td>
+                <td style="width:10px;"></td>
+                <td style="width:400px;text-align: right;"></td>
             </tr>
 
         </table>
@@ -234,9 +227,14 @@
                         <td style=""><t t-esc="terbilang[doc.name]"/></td>
                     </tr>
                     <tr>
-                        <td>Remarks</td>
+                        <td>Notes</td>
                         <td>:</td>
-                        <td>-</td>
+                        <t t-if="doc.notes">
+                            <td><span t-raw="doc.notes"/></td>
+                        </t>
+                        <t t-if="not doc.notes">
+                            <td>-</td>
+                        </t>
                     </tr>
                 </table>
             </div>
@@ -315,22 +313,6 @@
                 <td style="width:10px;">:</td>
                 <td style="width:400px;text-align: right;">
                     <i t-field="doc.refund_date" t-options ='{"format": "dd MMMM yyyy"}'/>
-                </td>
-            </tr>
-
-            <tr>
-                <td style="width:50px;"/>
-                <td style="width:10px;"/>
-                <td style="width:100px;"/>
-                <td style="width:150px;">Notes</td>
-                <td style="width:10px;">:</td>
-                <td style="width:400px;text-align: right;">
-                    <t t-if="doc.notes">
-                        <span t-raw="doc.notes"/>
-                    </t>
-                    <t t-if="not doc.notes">
-                        -
-                    </t>
                 </td>
             </tr>
         </table>
@@ -424,9 +406,14 @@
                         <td style=""><t t-esc="terbilang[doc.name]"/></td>
                     </tr>
                     <tr>
-                        <td>Remarks</td>
+                        <td>Notes</td>
                         <td>:</td>
-                        <td>-</td>
+                        <t t-if="doc.notes">
+                            <td><span t-raw="doc.notes"/></td>
+                        </t>
+                        <t t-if="not doc.notes">
+                            <td>-</td>
+                        </t>
                     </tr>
                 </table>
             </div>
@@ -505,22 +492,6 @@
                 <td style="width:10px;">:</td>
                 <td style="width:400px;text-align: right;">
                     <i t-field="doc.refund_date" t-options ='{"format": "dd MMMM yyyy"}'/>
-                </td>
-            </tr>
-
-            <tr>
-                <td style="width:50px;"/>
-                <td style="width:10px;"/>
-                <td style="width:100px;"/>
-                <td style="width:150px;">Notes</td>
-                <td style="width:10px;">:</td>
-                <td style="width:400px;text-align: right;">
-                    <t t-if="doc.notes">
-                        <span t-raw="doc.notes"/>
-                    </t>
-                    <t t-if="not doc.notes">
-                        -
-                    </t>
                 </td>
             </tr>
         </table>
@@ -608,9 +579,14 @@
                         <td style=""><t t-esc="terbilang[doc.name]"/></td>
                     </tr>
                     <tr>
-                        <td>Remarks</td>
+                        <td>Notes</td>
                         <td>:</td>
-                        <td>-</td>
+                        <t t-if="doc.notes">
+                            <td><span t-raw="doc.notes"/></td>
+                        </t>
+                        <t t-if="not doc.notes">
+                            <td>-</td>
+                        </t>
                     </tr>
                 </table>
             </div>
@@ -682,22 +658,6 @@
                 <td style="width:10px;">:</td>
                 <td style="width:400px;text-align: right;">
                     <i t-field="doc.cust_refund_date" t-options ='{"format": "dd MMMM yyyy"}'/>
-                </td>
-            </tr>
-
-            <tr>
-                <td style="width:50px;"/>
-                <td style="width:10px;"/>
-                <td style="width:100px;"/>
-                <td style="width:150px;">Notes</td>
-                <td style="width:10px;">:</td>
-                <td style="width:400px;text-align: right;">
-                    <t t-if="doc.notes">
-                        <span t-raw="doc.notes"/>
-                    </t>
-                    <t t-if="not doc.notes">
-                        -
-                    </t>
                 </td>
             </tr>
         </table>

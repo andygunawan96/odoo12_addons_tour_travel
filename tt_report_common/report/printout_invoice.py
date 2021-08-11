@@ -148,10 +148,11 @@ class PrintoutTicketForm(models.AbstractModel):
                             'amount': rec2.amount,
                             'category_icon': rec2.category_icon,
                             'currency': rec2.currency_id.name,
-                            'description': isinstance(rec2.description, list) and ', '.join(rec2.description) or rec2.description,
+                            'description': rec2.convert_json_to_str(rec2.description),
                             'pnr': rec2.provider_id.pnr
                         })
-                    ssr_list.append(ssr_obj)
+                    if ssr_obj['ssr']:
+                        ssr_list.append(ssr_obj)
             values[rec.id] = [a[new_a] for new_a in a]
             pnr_length = len(rec.pnr)
             agent_id = rec.agent_id
