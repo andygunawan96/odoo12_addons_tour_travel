@@ -166,7 +166,7 @@
                 <t t-if="segment_obj.segment_addons_ids">
                     <t t-set="any_ssr" t-value="1"/>
                     <t t-foreach="segment_obj.segment_addons_ids" t-as="addons_obj">
-                        <i style="margin-right:3px;" class="fa fa-suitcase"> <span t-field="addons_obj.amount"/> <span t-field="addons_obj.unit"/></i><br/>
+                        <t t-esc="segment_obj.origin_id.code"/> - <t t-esc="segment_obj.destination_id.code"/> <i style="margin-right:3px;" class="fa fa-suitcase"> <span t-field="addons_obj.amount"/> <span t-field="addons_obj.unit"/></i><br/>
                     </t>
                 </t>
             </t>

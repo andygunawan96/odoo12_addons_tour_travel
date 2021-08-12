@@ -14,7 +14,7 @@ class TtSsrAirline(models.Model):
     description = fields.Text("Description")
     amount = fields.Monetary("Amount")
     currency_id = fields.Many2one("res.currency","Currency",default=lambda self:self.env.user.company_id.currency_id)
-    passenger_id = fields.Many2one("tt.reservation.passenger.airline","Currency")
+    passenger_id = fields.Many2one("tt.reservation.passenger.airline","Passenger")
     pnr = fields.Char('PNR', default='')
     # May 18, 2020 - SAM
     provider_id = fields.Many2one('tt.provider.airline', 'Provider', default=None)
@@ -29,6 +29,17 @@ class TtSsrAirline(models.Model):
             except:
                 rec.category_icon = 'fa fa-suitcase'
 
+    def convert_json_to_str(self, json_data):
+        try:
+            final_str = ''
+            if json_data:
+                temp_dict = json.loads(json_data)
+                for key, val in temp_dict.items():
+                    final_str += '%s: %s\n' % (key, val)
+        except:
+            final_str = json_data
+        return final_str
+
     def to_dict(self):
         return {
             'fee_name': self.name,
@@ -37,6 +48,7 @@ class TtSsrAirline(models.Model):
             'fee_value': self.value,
             'fee_category': self.category,
             'description': json.loads(self.description),
+            'description_text': self.convert_json_to_str(self.description),
             'amount': self.amount,
             'currency': self.currency_id.name,
             'journey_code': self.journey_code and self.journey_code or '',
