@@ -529,7 +529,7 @@ class ReservationPeriksain(models.Model):
             'state': 'booked',
             'booked_uid': context_gateway['co_uid'],
             'booked_date': fields.Datetime.now(),
-            'hold_date': fields.Datetime.now() + timedelta(minutes=30),
+            'hold_date': fields.Datetime.now() + timedelta(minutes=10),
             'balance_due': booking_data['total'],
             'total_price': booking_data['total'],
             'sequence': 1,
