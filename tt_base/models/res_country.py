@@ -61,7 +61,7 @@ class Country(models.Model):
     def find_country_by_name(self, str_name, limit=1):
         if str_name:
             str_name = str_name.rstrip()
-            found = self.search([('name', '=ilike', str_name)], limit=limit)
+            found = self.search(['|', ('name', '=ilike', str_name), ('code', '=ilike', str_name)], limit=limit)
             if len(found) < limit:
                 for rec in self.env['tt.destination.alias'].search([('name', 'ilike', str_name),('country_id','!=',False)], limit=limit-len(found)):
                     found += rec.country_id
