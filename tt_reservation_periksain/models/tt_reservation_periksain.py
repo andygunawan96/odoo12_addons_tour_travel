@@ -1054,7 +1054,6 @@ class ReservationPeriksain(models.Model):
                     })
                     return ERR.get_no_error({
                         "no_booking": req['pnr'],
-                        "message": "success",
                         "state": book_obj.state_vendor
                     })
                 else:
@@ -1075,12 +1074,11 @@ class ReservationPeriksain(models.Model):
             provider_obj = self.env['tt.provider.periksain'].search([('pnr', '=', req['pnr'])], limit=1)
             if provider_obj:
                 book_obj = self.browse(provider_obj.booking_id.id)
-                if book_obj.state_vendor == 'refund':
+                if book_obj.state_vendor == 'new_order' or book_obj.state_vendor == 'confirm_order':
                     book_obj.state_vendor = 'refund'
                     book_obj.cancellation_reason = req['reason']
                     return ERR.get_no_error({
                         "no_booking": req['pnr'],
-                        "message": "success",
                         "state": book_obj.state_vendor
                     })
                 else:
@@ -1110,7 +1108,6 @@ class ReservationPeriksain(models.Model):
                 if len(list_passenger_update):
                     return ERR.get_no_error({
                         "no_booking": req['pnr'],
-                        "message": "success",
                         "list_passenger": list_passenger_update
                     })
                 else:
