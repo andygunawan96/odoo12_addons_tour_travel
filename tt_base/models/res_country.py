@@ -61,7 +61,7 @@ class Country(models.Model):
     def find_country_by_name(self, str_name, limit=1):
         if str_name:
             str_name = str_name.rstrip()
-            found = self.search([('name', '=ilike', str_name)], limit=limit)
+            found = self.search(['|', ('name', '=ilike', str_name), ('code', '=ilike', str_name)], limit=limit)
             if len(found) < limit:
                 for rec in self.env['tt.destination.alias'].search([('name', 'ilike', str_name),('country_id','!=',False)], limit=limit-len(found)):
                     found += rec.country_id
@@ -108,10 +108,14 @@ class CountryCity(models.Model):
     longitude = fields.Float('Longitude Degree', digits=(3, 7))
     city_alias_name = fields.Char('Alias Name', compute='city_search_name', store=True)
 
-    def find_city_by_name(self, str_name, limit=1):
+    def find_city_by_name(self, str_name, limit=1, country_id=None):
         if str_name:
             str_name = str_name.rstrip()
-            found = self.search([('name', '=ilike', str_name)], limit=limit)
+            dom = []
+            dom.append(('name', '=ilike', str_name))
+            if country_id:
+                dom.append(('country_id','=',country_id))
+            found = self.search(dom, limit=limit)
             if len(found) < limit:
                 for rec in self.env['tt.destination.alias'].search([('name', 'ilike', str_name), ('city_id','!=',False), ('city_id','not in', found.ids)], limit=limit-len(found)):
                     found += rec.city_id
