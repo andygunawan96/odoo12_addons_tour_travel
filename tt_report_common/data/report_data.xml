@@ -13,6 +13,17 @@
             menu="False"
         />
         <report
+            string="Kwitansi"
+            id="action_report_printout_kwitansi"
+            model="tt.agent.invoice"
+            report_type="qweb-html"
+            name="tt_report_common.printout_kwitansi"
+            file="tt_report_common.printout_kwitansi"
+            paperformat="tt_report_common.paperformat_A4_no_margin"
+            print_report_name="'Kwitansi - %s' % (object.name)"
+            menu="False"
+        />
+        <report
             string="HO Invoice Airline"
             id="action_report_printout_invoice_ho_airline"
             model="tt.reservation.airline"
