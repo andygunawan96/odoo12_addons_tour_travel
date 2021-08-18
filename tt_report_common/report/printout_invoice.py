@@ -1511,6 +1511,7 @@ class PrintoutInvoice(models.AbstractModel):
         header_width = 90
         resv_obj = False
         agent_id = False
+        kwintasi_name = data['data']['is_invoice']
         doc_objs = self.env[data['context']['active_model']].browse(data['context']['active_ids'])
         for rec in doc_objs:
             values[rec.id] = []
@@ -1530,7 +1531,8 @@ class PrintoutInvoice(models.AbstractModel):
                 self.env[data['context']['active_model']].browse(data['context']['active_ids'])),
             'invoice_footer': invoice_footer and invoice_footer[0].html or '',
             'base_color': self.sudo().env['ir.config_parameter'].get_param('tt_base.website_default_color', default='#FFFFFF'),
-            'img_url': "url('/tt_report_common/static/images/background footer airline.jpg');"
+            'img_url': "url('/tt_report_common/static/images/background footer airline.jpg');",
+            'is_invoice': kwintasi_name
         }
         if resv_obj._name in ['tt.reservation.phc', 'tt.reservation.periksain']:
             val.update({

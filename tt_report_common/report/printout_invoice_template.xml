@@ -281,7 +281,11 @@
             <div class="col-5 text-center">
                 <t t-set="printout_icon" t-value="'/tt_report_common/static/images/airfreight-white.svg'"/>
                 <t t-if="doc_model == 'tt.agent.invoice'">
-                    <span t-att-style="'margin-top: 10px; margin-left: 10px; color: '+ base_color +'; font-size: 20px;'">Invoice</span><br/>
+                    <t t-if="doc_model == 'tt.agent.invoice'">
+                        <span t-att-style="'margin-top: 10px; margin-left: 10px; color: '+ base_color +'; font-size: 20px;'">
+                        <t t-if="is_invoice == True">Invoice</t><t t-else="">Kwitansi</t>
+                        </span><br/>
+                    </t>
                     <t t-set="printout_icon" t-value="'/tt_report_common/static/images/bill-white.png'"/>
                 </t><t t-elif="doc_model == 'tt.billing.statement'">
                 <span t-att-style="'margin-top: 10px; margin-left: 10px; color: '+ base_color +'; font-size: 20px;'">Billing</span><br/>
