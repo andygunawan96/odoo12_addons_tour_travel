@@ -281,7 +281,9 @@
             <div class="col-5 text-center">
                 <t t-set="printout_icon" t-value="'/tt_report_common/static/images/airfreight-white.svg'"/>
                 <t t-if="doc_model == 'tt.agent.invoice'">
-                    <span t-att-style="'margin-top: 10px; margin-left: 10px; color: '+ base_color +'; font-size: 20px;'">Invoice</span><br/>
+                    <span t-att-style="'margin-top: 10px; margin-left: 10px; color: '+ base_color +'; font-size: 20px;'">
+                    <t t-if="is_invoice == True">Invoice</t><t t-else="">Kwitansi</t>
+                    </span><br/>
                     <t t-set="printout_icon" t-value="'/tt_report_common/static/images/bill-white.png'"/>
                 </t><t t-elif="doc_model == 'tt.billing.statement'">
                 <span t-att-style="'margin-top: 10px; margin-left: 10px; color: '+ base_color +'; font-size: 20px;'">Billing</span><br/>
@@ -995,6 +997,151 @@
         </div>
     </template>
 
+    <template id="kwitansi_content_view">
+        <!-- Base Info Booker dkk -->
+        <table style="margin: 1px; 1px; 15px;">
+            <tr>
+                <td style="width:50px;">To</td>
+                <td style="width:10px;">:</td>
+                <td style="width:400px; vertical-align: top;" rowspan="4">
+                    <!--<t t-set="o_addr" t-value="doc.booker_id"/>-->
+                    <!--<t t-call="tt_report_common.address_layout"/>-->
+                    <t t-call="tt_report_common.address_layout_bill_to"/>
+                </td>
+                <td style="width:100px;"/>
+                <td style="width:150px;">Kwitansi Date</td>
+                <td style="width:10px;">:</td>
+                <td style="width:400px;text-align: right;">
+                    <span t-field="doc.date_invoice" t-options ='{"format": "dd/MM/yyyy"}'/>
+                </td>
+            </tr>
+            <tr>
+                <td style="width:50px;"/>
+                <td style="width:10px;"/>
+                <td style="width:100px;"/>
+                <td style="width:150px;">Booker</td>
+                <td style="width:10px;">:</td>
+                <td style="width:400px;text-align: right;">
+                    <i t-field="doc.sudo().booker_id.name"/>
+                </td>
+            </tr>
+            <tr>
+                <td style="width:50px;"/>
+                <td style="width:10px;"/>
+                <td style="width:100px;"/>
+                <td style="width:150px;">Operator</td>
+                <td style="width:10px;">:</td>
+                <td style="width:400px;text-align: right;">
+                    <i t-field="doc.confirmed_uid.sudo().name"/>
+                </td>
+            </tr>
+        </table>
+
+        <!-- Issued Code + Line Info -->
+        <div style="margin-bottom: 10px; margin-top: 20px;">
+            <span style="font-size: 24px; font-weight: 730">DETAILS</span><br/>
+        </div>
+        <table style="width: 100%; line-height: normal; border-collapse: separate; border-spacing: 0; table-layout: fixed;">  <!--border-radius: 20px; border: 1px solid #CCC; border-spacing: 0; margin-bottom: 30px; padding: 5px 0px 5px 0px;-->
+            <tr t-att-style="'background-color: ' + base_color + '; padding-top: 5px; padding-bottom: 5px; font-size: 16px'">
+                <th style="width: 15%; padding: 7px 7px 7px 20px; border-left: 1px solid #CCC; border-top-left-radius: 20px; color: white; font-weight: 800; overflow-wrap:break-word; text-align: center; vertical-align: middle;">
+                    <span>Ref. Number</span>
+                </th>
+                <th style="width: 40%; padding: 7px 7px 7px 20px; border-left: 1px solid #CCC; color: white; font-weight: 800; overflow-wrap:break-word; text-align: right; vertical-align: middle;">
+                    <span>Descriptions</span>
+                </th>
+                <th style="width: 20%;"/>
+                <th style="width: 25%; padding: 7px 7px 7px 20px; border-left: 1px solid #CCC; border-top-right-radius: 20px; color: white; font-weight: 800; overflow-wrap:break-word; text-align: center; vertical-align: middle;">
+                    <span>Total (Tax Inc.)</span>
+                </th>
+            </tr>
+            <t t-set="row_idx" t-value="0"/>
+            <t t-set="line_detail_idx" t-value="0"/>
+            <t t-foreach="inv_lines[doc.id]" t-as="line2_idx">
+                <tr valign="top" style="padding-top: 5px; padding-bottom: 5px; font-size: 14px;">
+                    <td t-att-rowspan="len(line2_idx['line_detail']) + 1" style="background: #F0F0F0; padding: 7px 7px 7px 20px; border-bottom: 1px solid #ccc; border-left: 1px solid #ccc; border-right: 1px solid #ccc; border-radius: 0px 0px 0px 0px; overflow-wrap: break-word;">
+                        <t t-foreach="line2_idx['pnr']" t-as="pnr">
+                            <span t-esc="pnr"/><br/>
+                        </t>
+                    </td>
+                    <td colspan="2" style="padding: 7px 7px 7px 20px; border-bottom: 1px solid #ccc; border-right: 1px solid #ccc; overflow-wrap: break-word;">
+                        <span t-esc="line2_idx['descs']" style="white-space: pre-wrap"/>
+                    </td>
+                    <td t-att-rowspan="len(line2_idx['line_detail']) + 1"  style="height: 50px; padding: 7px 7px 7px 20px; border-bottom: 1px solid #ccc; border-right: 1px solid #ccc; text-align: right; padding-right: 25px; border-radius: 0px 0px 0px 0px; overflow-wrap: break-word;">
+                        <span t-esc="line2_idx['total_after_tax']" t-options="{&quot;widget&quot;: &quot;monetary&quot;, &quot;display_currency&quot;: doc.currency_id}" style="height: 100%;"/>
+                    </td>
+                </tr>
+                <t t-foreach="line2_idx['line_detail']" t-as="line_detail">
+                    <tr>
+                        <td style="padding: 7px 7px 7px 20px; border-bottom: 1px solid #ccc; border-right: 1px solid #ccc; overflow-wrap: break-word;">
+                            <span t-esc="line_detail['name']" style="height: 100%;"/>
+                        </td>
+                        <td style="padding: 7px 7px 7px 20px; border-bottom: 1px solid #ccc; border-right: 1px solid #ccc; border-radius: 0px 0px 0px 0px; text-align: right; padding-right: 25px; overflow-wrap: break-word;">
+                            <span t-esc="line_detail['amount']" t-options="{&quot;widget&quot;: &quot;monetary&quot;, &quot;display_currency&quot;: doc.currency_id}"/>
+                        </td>
+                    </tr>
+                    <t t-set="line_detail_idx" t-value="line_detail_idx+1"/>
+                </t>
+                <t t-set="row_idx" t-value="row_idx+1"/>
+            </t>
+        </table>
+
+        <!-- SubTotal -->
+        <div class="row mt4 mb2" style="padding-top: 20px; page-break-inside: avoid; font-size: 15px;">
+            <div style="width:65%;">
+                <br/>
+                <table style="width:90%;">
+                    <tr valign="top">
+                        <td style="width:100px;">In Words</td>
+                        <td style="width:20px;">:</td>
+                        <td style=""><t t-esc="terbilang[doc.name]"/></td>
+                    </tr>
+                    <tr>
+                        <td>Remarks</td>
+                        <td>:</td>
+                        <td><span t-field="doc.additional_information" /></td>
+                    </tr>
+                </table>
+            </div>
+            <div style="width:35%;">
+                <table style="width:100%">
+                    <tr>
+                        <td><strong>Subtotal</strong></td>
+                        <td class="text-right">
+                            <span style="padding: 10px 25px;" t-field="doc.total" t-options="{&quot;widget&quot;: &quot;monetary&quot;, &quot;display_currency&quot;: doc.currency_id}"/>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><strong>Discount</strong></td>
+                        <td class="text-right">
+                            <!--<span style="padding: 10px 25px;" t-esc="0" t-esc-options="{&quot;widget&quot;: &quot;monetary&quot;, &quot;display_currency&quot;: doc.currency_id}"/>-->
+                            <span style="padding: 10px 25px;" t-field="doc.discount" t-options="{&quot;widget&quot;: &quot;monetary&quot;, &quot;display_currency&quot;: doc.currency_id}"/>
+                        </td>
+                    </tr>
+                    <t t-set="tax" t-value="doc.total_after_tax + doc.discount - doc.total"/>
+                    <tr>
+                        <td><strong>Tax</strong></td>
+                        <td class="text-right">
+                            <!--<span style="padding: 10px 25px;" t-esc="0" t-esc-options="{&quot;widget&quot;: &quot;monetary&quot;, &quot;display_currency&quot;: doc.currency_id}"/>-->
+                            <span t-esc="tax" style="padding: 10px 25px;" t-options="{&quot;widget&quot;: &quot;monetary&quot;, &quot;display_currency&quot;: doc.currency_id}"/>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><strong>Admin Fee</strong></td>
+                        <td class="text-right">
+                            <span style="padding: 10px 25px;" t-field="doc.admin_fee" t-options="{&quot;widget&quot;: &quot;monetary&quot;, &quot;display_currency&quot;: doc.currency_id}"/>
+                        </td>
+                    </tr>
+                    <tr class="border-black">
+                        <td><strong>Grand Total</strong></td>
+                        <td class="text-right">
+                            <span style="padding: 10px 25px;" t-field="doc.grand_total" t-options="{&quot;widget&quot;: &quot;monetary&quot;, &quot;display_currency&quot;: doc.currency_id}"/>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </template>
+
     <template id="reservation_airline_footer_view">
         <div class="">
             <h4 class="sub-table">Important Notes</h4>
@@ -1024,6 +1171,28 @@
                         <br/>
                         <div style="margin: 0 20px; font-family: 'DeJavu Sans'">
                             <t t-call="tt_report_common.agent_invoice_content_view"/>
+                            <!--<t t-call="tt_report_common.agent_invoice_content_type_1_view"/>-->
+                        </div>
+
+                    </t>
+                </div>
+            </t>
+        </t>
+    </template>
+
+    <template id="printout_kwitansi">
+        <!--        <t t-set="data_report_header_spacing" t-value="20"/>-->
+        <!--        <t t-set="data_report_margin_top" t-value="2"/>-->
+        <t t-set="data_report_header_spacing" t-value="0"/>
+        <t t-set="data_report_margin_top" t-value="10"/>
+        <t t-set="data_report_margin_bottom" t-value="26"/>
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="doc">
+                <div class="page">
+                    <t t-call="tt_report_common.external_layout">
+                        <br/>
+                        <div style="margin: 0 20px; font-family: 'DeJavu Sans'">
+                            <t t-call="tt_report_common.kwitansi_content_view"/>
                             <!--<t t-call="tt_report_common.agent_invoice_content_type_1_view"/>-->
                         </div>
 
