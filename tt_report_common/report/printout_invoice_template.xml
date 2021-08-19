@@ -1009,7 +1009,7 @@
                     <t t-call="tt_report_common.address_layout_bill_to"/>
                 </td>
                 <td style="width:100px;"/>
-                <td style="width:150px;">Kwitansi Date</td>
+                <td style="width:150px;">Created Date</td>
                 <td style="width:10px;">:</td>
                 <td style="width:400px;text-align: right;">
                     <span t-field="doc.date_invoice" t-options ='{"format": "dd/MM/yyyy"}'/>

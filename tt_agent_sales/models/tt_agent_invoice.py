@@ -303,6 +303,64 @@ class AgentInvoice(models.Model):
         return url
         # return self.env.ref('tt_report_common.action_report_printout_invoice').report_action(self, data=datas)
 
+    def print_kwitansi_api(self, data, context):
+        new_data = {}
+        if data.get('bill_to_name'):
+            new_data.update({
+                'bill_to_name': data.get('bill_to_name')
+            })
+        if data.get('bill_address'):
+            new_data.update({
+                'bill_address': data.get('bill_address')
+            })
+        if data.get('additional_information'):
+            new_data.update({
+                'additional_information': data.get('additional_information')
+            })
+
+        url = []
+        for rec in self.env['tt.reservation.%s' % data['provider_type']].search([('name', '=', data['order_number'])]):
+            if new_data:
+                for invoice in rec['invoice_line_ids']:
+                    invoice.invoice_id.write(new_data)
+                    invoice.invoice_id.printout_invoice_id.unlink()
+
+            datas = {'ids': self.env.context.get('active_ids', [])}
+            # res = self.read(['price_list', 'qty1', 'qty2', 'qty3', 'qty4', 'qty5'])
+            res = rec.read()
+            res = res and res[0] or {}
+            datas['form'] = res
+            invoice_id = self.env.ref('tt_report_common.action_report_printout_kwitansi')
+            for invoice in rec['invoice_line_ids']:
+                if not invoice.invoice_id.printout_invoice_id:
+                    pdf_report = invoice_id.report_action(invoice.invoice_id, data=datas)
+                    pdf_report['context'].update({
+                        'active_model': invoice.invoice_id._name,
+                        'active_id': invoice.invoice_id.id
+                    })
+                    pdf_report_bytes = invoice_id.render_qweb_pdf(data=pdf_report)
+                    res = self.env['tt.upload.center.wizard'].upload_file_api(
+                        {
+                            'filename': 'Kwitansi %s.pdf' % invoice.name,
+                            'file_reference': 'Kwitansi for %s' % invoice.name,
+                            'file': base64.b64encode(pdf_report_bytes[0]),
+                            'delete_date': datetime.today() + timedelta(minutes=10)
+                        },
+                        {
+                            'co_agent_id': context['co_agent_id'],
+                            'co_uid': context['co_uid'],
+                        }
+                    )
+                    upc_id = self.env['tt.upload.center'].search([('seq_id', '=', res['response']['seq_id'])], limit=1)
+                    invoice.invoice_id.printout_invoice_id = upc_id.id
+                url.append({
+                    'type': 'ir.actions.act_url',
+                    'name': "Printout",
+                    'target': 'new',
+                    'url': invoice.invoice_id.printout_invoice_id.url,
+                })
+        return url
+        # return self.env.ref('tt_report_common.action_report_printout_invoice').report_action(self, data=datas)
 
     def print_invoice(self):
         datas = {'ids': self.env.context.get('active_ids', [])}
