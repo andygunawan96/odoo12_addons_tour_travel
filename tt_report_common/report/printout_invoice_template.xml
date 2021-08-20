@@ -628,7 +628,7 @@
                     <span style="font-size: 18px; font-weight: 730">IMPORTANT NOTES</span><br/>
                     <ol style="margin: 0 25px;">
                         <span t-raw="invoice_footer"/>
-                        <t t-if="doc.state == 'paid'">
+                        <t t-if="doc.state != 'paid'">
                             <li style="font-size: 14px;">
                                 Please transfer to the following account:
                                 <ul>
