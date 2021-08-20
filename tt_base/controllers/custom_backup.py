@@ -15,7 +15,6 @@ class Database(http.Controller):
     @http.route('/web/database/backup_custom_rodex', type='http', auth="none", methods=['GET'], csrf=False)
     def backup_custom_rodex(self, master_pwd, name, backup_format='zip'):
         try:
-            print("HELLO MASUK")
             odoo.service.db.check_super(master_pwd)
             ts = datetime.datetime.utcnow().strftime("%Y-%m-%d_%H-%M-%S")
             filename = "%s_%s.%s" % (name, ts, backup_format)

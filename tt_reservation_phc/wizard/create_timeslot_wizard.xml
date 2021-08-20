@@ -22,6 +22,9 @@
                     </group>
                 </group>
                 <group>
+                    <field name="default_data_id"/>
+                </group>
+                <group>
                     <group string="Antigen">
                         <field name="base_price_antigen"/>
                         <field name="commission_antigen"/>
@@ -33,13 +36,19 @@
                     </group>
                 </group>
                 <group>
-                    <group string="Additional Price">
-                        <field name="single_supplement"/>
-                        <field name="overtime_surcharge"/>
+                    <group string="PCR Priority">
+                        <field name="base_price_pcr_priority"/>
+                        <field name="commission_pcr_priority"/>
                     </group>
                     <group string="PCR Express">
                         <field name="base_price_pcr_express"/>
                         <field name="commission_pcr_express"/>
+                    </group>
+                </group>
+                <group>
+                    <group string="Additional Price">
+                        <field name="single_supplement"/>
+                        <field name="overtime_surcharge"/>
                     </group>
                 </group>
                 <footer>

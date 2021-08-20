@@ -2,17 +2,25 @@ import pytz
 
 from odoo import api,models,fields, _
 from ...tools import util,variables,ERR
-from ...tools.ERR import RequestException
-from ...tools.api import Response
 import logging,traceback
 from datetime import datetime,date, timedelta
-import base64
-import json
+
 
 
 _logger = logging.getLogger(__name__)
 
-MAX_PER_SLOT = 5
+COMMISSION_PER_PAX_ANTIGEN = 28000 ## komisi agent /pax
+COMMISSION_PER_PAX_PCR_HC = 120000 ## komisi agent /pax
+COMMISSION_PER_PAX_PCR_DT = 28000 ## komisi agent /pax
+COMMISSION_PER_PAX_PCR_DT_PRIORITY = 120000 ## komisi agent /pax
+COMMISSION_PER_PAX_PCR_DT_EXPRESS = 500000 ## komisi agent /pax
+BASE_PRICE_PER_PAX_ANTIGEN = 150000 ## harga 1 /pax
+BASE_PRICE_PER_PAX_PCR_HC = 850000 ## harga 1 /pax
+BASE_PRICE_PER_PAX_PCR_DT = 495000 ## harga 1 /pax
+BASE_PRICE_PER_PAX_PCR_DT_PRIORITY = 750000 ## harga 1 /pax
+BASE_PRICE_PER_PAX_PCR_DT_EXPRESS = 4000000 ## harga 1 /pax
+SINGLE_SUPPLEMENT = 25000 ## 1 orang
+OVERTIME_SURCHARGE = 50000 ## lebih dari 18.00 /pax
 
 class TtTimeslotphc(models.Model):
     _name = 'tt.timeslot.phc'
@@ -48,10 +56,12 @@ class TtTimeslotphc(models.Model):
 
     commission_antigen = fields.Monetary('Commission per PAX Antigen')
     commission_pcr = fields.Monetary('Commission per PAX PCR')
+    commission_pcr_priority = fields.Monetary('Commission per PAX PCR Priority')
     commission_pcr_express = fields.Monetary('Commission per PAX PCR Express')
 
     base_price_antigen = fields.Monetary('Base Price per PAX Antigen')
     base_price_pcr = fields.Monetary('Base Price per PAX PCR')
+    base_price_pcr_priority = fields.Monetary('Base Price per PAX PCR Priority')
     base_price_pcr_express = fields.Monetary('Base Price per PAX PCR Express')
 
     single_supplement = fields.Monetary('Single Supplement')
@@ -214,3 +224,34 @@ class TtTimeslotphc(models.Model):
             "total_pcr_issued_timeslot": 200,
             "used_pcr_issued_count": self.used_pcr_issued_count
         }
+
+
+class TtTimeslotphcdefault(models.Model):
+    _name = 'tt.timeslot.phc.default'
+    _description = 'Rodex Model Timeslot PHC Default'
+    _order = 'sequence'
+
+    name = fields.Char("Name", required=True)
+    sequence = fields.Integer("Sequence",default=200)
+    currency_id = fields.Many2one('res.currency', 'Currency', readonly=True,
+                                  default=lambda self: self.env.user.company_id.currency_id)
+    commission_antigen = fields.Monetary('Commission per PAX Antigen', default=COMMISSION_PER_PAX_ANTIGEN,
+                                         required=True)
+    commission_pcr = fields.Monetary('Commission per PAX PCR', default=COMMISSION_PER_PAX_PCR_HC, required=True)
+    commission_pcr_dt = fields.Monetary('Commission per PAX PCR DT', default=COMMISSION_PER_PAX_PCR_DT, required=True)
+    commission_pcr_priority = fields.Monetary('Commission per PAX PCR Priority',
+                                             default=COMMISSION_PER_PAX_PCR_DT_PRIORITY, required=True)
+    commission_pcr_express = fields.Monetary('Commission per PAX PCR Express',
+                                             default=COMMISSION_PER_PAX_PCR_DT_EXPRESS, required=True)
+
+    base_price_antigen = fields.Monetary('Base Price per PAX Antigen', default=BASE_PRICE_PER_PAX_ANTIGEN,
+                                         required=True)
+    base_price_pcr = fields.Monetary('Base Price per PAX PCR', default=BASE_PRICE_PER_PAX_PCR_HC, required=True)
+    base_price_pcr_dt = fields.Monetary('Base Price per PAX PCR DT', default=BASE_PRICE_PER_PAX_PCR_DT, required=True)
+    base_price_pcr_priority = fields.Monetary('Base Price per PAX PCR Priority',
+                                              default=BASE_PRICE_PER_PAX_PCR_DT_PRIORITY, required=True)
+    base_price_pcr_express = fields.Monetary('Base Price per PAX PCR Express',
+                                             default=BASE_PRICE_PER_PAX_PCR_DT_EXPRESS, required=True)
+
+    single_supplement = fields.Monetary('Single Supplement', default=SINGLE_SUPPLEMENT, required=True)
+    overtime_surcharge = fields.Monetary('Overtime Surcharge', default=OVERTIME_SURCHARGE, required=True)
