@@ -1,23 +1,8 @@
-import pytz
-
 from odoo import api, fields, models, _
-import base64,hashlib,time,os,traceback,logging,re
-from odoo.exceptions import UserError
-from ...tools import ERR
 from datetime import timedelta,datetime
+import logging
 
 _logger = logging.getLogger(__name__)
-
-COMMISSION_PER_PAX_ANTIGEN = 28000 ## komisi agent /pax
-COMMISSION_PER_PAX_PCR_HC = 120000 ## komisi agent /pax
-COMMISSION_PER_PAX_PCR_DT = 80000 ## komisi agent /pax
-COMMISSION_PER_PAX_PCR_DT_EXPRESS = 500000 ## komisi agent /pax
-BASE_PRICE_PER_PAX_ANTIGEN = 150000 ## harga 1 /pax
-BASE_PRICE_PER_PAX_PCR_HC = 850000 ## harga 1 /pax
-BASE_PRICE_PER_PAX_PCR_DT = 750000 ## harga 1 /pax
-BASE_PRICE_PER_PAX_PCR_DT_EXPRESS = 4000000 ## harga 1 /pax
-SINGLE_SUPPLEMENT = 25000 ## 1 orang
-OVERTIME_SURCHARGE = 50000 ## lebih dari 18.00 /pax
 
 class CreateTimeslotphcWizard(models.TransientModel):
     _name = "create.timeslot.phc.wizard"
@@ -36,18 +21,53 @@ class CreateTimeslotphcWizard(models.TransientModel):
 
     currency_id = fields.Many2one('res.currency', 'Currency', readonly=True,
                                   default=lambda self: self.env.user.company_id.currency_id)
-    commission_antigen = fields.Monetary('Commission per PAX Antigen', default=COMMISSION_PER_PAX_ANTIGEN, required=True)
-    commission_pcr = fields.Monetary('Commission per PAX PCR', default=COMMISSION_PER_PAX_PCR_HC, required=True)
-    commission_pcr_express = fields.Monetary('Commission per PAX PCR Express', default=COMMISSION_PER_PAX_PCR_DT_EXPRESS, required=True)
+    commission_antigen = fields.Monetary('Commission per PAX Antigen')
+    commission_pcr = fields.Monetary('Commission per PAX PCR')
+    commission_pcr_priority = fields.Monetary('Commission per PAX PCR Priority')
+    commission_pcr_express = fields.Monetary('Commission per PAX PCR Express')
 
-    base_price_antigen = fields.Monetary('Base Price per PAX Antigen', default=BASE_PRICE_PER_PAX_ANTIGEN, required=True)
-    base_price_pcr = fields.Monetary('Base Price per PAX PCR', default=BASE_PRICE_PER_PAX_PCR_HC, required=True)
-    base_price_pcr_express = fields.Monetary('Base Price per PAX PCR Express', default=BASE_PRICE_PER_PAX_PCR_DT_EXPRESS, required=True)
+    base_price_antigen = fields.Monetary('Base Price per PAX Antigen')
+    base_price_pcr = fields.Monetary('Base Price per PAX PCR')
+    base_price_pcr_priority = fields.Monetary('Base Price per PAX PCR Priority')
+    base_price_pcr_express = fields.Monetary('Base Price per PAX PCR Express')
 
-    single_supplement = fields.Monetary('Single Supplement', default=SINGLE_SUPPLEMENT, required=True)
-    overtime_surcharge = fields.Monetary('Overtime Surcharge', default=OVERTIME_SURCHARGE, required=True)
+    single_supplement = fields.Monetary('Single Supplement')
+    overtime_surcharge = fields.Monetary('Overtime Surcharge')
 
     agent_id = fields.Many2one('tt.agent', 'Agent')
+    default_data_id = fields.Many2one('tt.timeslot.phc.default', 'Default Data')
+
+    @api.model
+    def create(self, vals_list):
+        new_rec = super(CreateTimeslotphcWizard, self).create(vals_list)
+        if new_rec.default_data_id:
+            new_rec.commission_antigen = new_rec.default_data_id.commission_antigen
+            new_rec.commission_pcr = new_rec.default_data_id.commission_pcr
+            new_rec.commission_pcr_priority = new_rec.default_data_id.commission_pcr_priority
+            new_rec.commission_pcr_express = new_rec.default_data_id.commission_pcr_express
+            new_rec.base_price_antigen = new_rec.default_data_id.base_price_antigen
+            new_rec.base_price_pcr = new_rec.default_data_id.base_price_pcr
+            new_rec.base_price_pcr_dt = new_rec.default_data_id.base_price_pcr_dt
+            new_rec.base_price_pcr_priority = new_rec.default_data_id.base_price_pcr_priority
+            new_rec.base_price_pcr_express = new_rec.default_data_id.base_price_pcr_express
+            new_rec.single_supplement = new_rec.default_data_id.single_supplement
+            new_rec.overtime_surcharge = new_rec.default_data_id.overtime_surcharge
+        return new_rec
+
+    @api.onchange('default_data_id')
+    @api.depends('default_data_id')
+    def _onchange_default_data_timeslot(self):
+        self.commission_antigen = self.default_data_id.commission_antigen
+        self.commission_pcr = self.default_data_id.commission_pcr
+        self.commission_pcr_priority = self.default_data_id.commission_pcr_priority
+        self.commission_pcr_express = self.default_data_id.commission_pcr_express
+        self.base_price_antigen = self.default_data_id.base_price_antigen
+        self.base_price_pcr = self.default_data_id.base_price_pcr
+        self.base_price_pcr_dt = self.default_data_id.base_price_pcr_dt
+        self.base_price_pcr_priority = self.default_data_id.base_price_pcr_priority
+        self.base_price_pcr_express = self.default_data_id.base_price_pcr_express
+        self.single_supplement = self.default_data_id.single_supplement
+        self.overtime_surcharge = self.default_data_id.overtime_surcharge
 
     @api.onchange('start_date')
     def _onchange_start_date(self):
@@ -65,6 +85,7 @@ class CreateTimeslotphcWizard(models.TransientModel):
 
     area_id = fields.Many2one('tt.destinations', 'Area', domain=_get_area_id_domain, required=True)
 
+    @api.onchange('')
     def generate_timeslot(self):
         date_delta = self.end_date - self.start_date
         date_delta = date_delta.days+1
@@ -95,9 +116,11 @@ class CreateTimeslotphcWizard(models.TransientModel):
                         'timeslot_type': self.timeslot_type,
                         'commission_antigen': self.commission_antigen,
                         'commission_pcr': self.commission_pcr,
+                        'commission_pcr_priority': self.commission_pcr_priority,
                         'commission_pcr_express': self.commission_pcr_express,
                         'base_price_antigen': self.base_price_antigen,
                         'base_price_pcr': self.base_price_pcr,
+                        'base_price_pcr_priority': self.base_price_pcr_priority,
                         'base_price_pcr_express': self.base_price_pcr_express,
                         'single_supplement': self.single_supplement,
                         'overtime_surcharge': self.overtime_surcharge,
@@ -112,6 +135,7 @@ class CreateTimeslotphcWizard(models.TransientModel):
             [('destination_id', '=', destination.id), ('dateslot', '=', date),
              ('timeslot_type', '=', 'drive_thru')])
         if not db:
+            default_data_obj = self.env['tt.timeslot.phc.default'].search([], limit=1)
             self.env['tt.timeslot.phc'].create({
                 'dateslot': date,
                 'datetimeslot': datetimeslot,
@@ -122,13 +146,15 @@ class CreateTimeslotphcWizard(models.TransientModel):
                 'total_pcr_timeslot': pcr_timeslot,
                 'currency_id': self.env.user.company_id.currency_id.id,
                 'timeslot_type': 'drive_thru',
-                'commission_antigen': COMMISSION_PER_PAX_ANTIGEN,
-                'commission_pcr': COMMISSION_PER_PAX_PCR_DT,
-                'commission_pcr_express': COMMISSION_PER_PAX_PCR_DT_EXPRESS,
-                'base_price_antigen': BASE_PRICE_PER_PAX_ANTIGEN,
-                'base_price_pcr': BASE_PRICE_PER_PAX_PCR_DT,
-                'base_price_pcr_express': BASE_PRICE_PER_PAX_PCR_DT_EXPRESS,
-                'single_supplement': SINGLE_SUPPLEMENT,
-                'overtime_surcharge': OVERTIME_SURCHARGE,
+                'commission_antigen': default_data_obj.commission_antigen,
+                'commission_pcr': default_data_obj.commission_pcr_dt,
+                'commission_pcr_priority': default_data_obj.commission_pcr_priority,
+                'commission_pcr_express': default_data_obj.commission_pcr_express,
+                'base_price_antigen': default_data_obj.base_price_antigen,
+                'base_price_pcr': default_data_obj.base_price_pcr_dt,
+                'base_price_pcr_priority': default_data_obj.base_price_pcr_priority,
+                'base_price_pcr_express': default_data_obj.base_price_pcr_express,
+                'single_supplement': default_data_obj.single_supplement,
+                'overtime_surcharge': default_data_obj.overtime_surcharge,
                 'agent_id': False
             })

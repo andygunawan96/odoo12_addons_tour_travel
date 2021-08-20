@@ -72,9 +72,9 @@
             <field name="icao">LNI</field>
             <field name="call_sign">LION INTER</field>
             <field name="active">1</field>
-            <field name="adult_length_name">40</field>
-            <field name="child_length_name">40</field>
-            <field name="infant_length_name">40</field>
+            <field name="adult_length_name">80</field>
+            <field name="child_length_name">80</field>
+            <field name="infant_length_name">80</field>
             <field name="is_adult_birth_date_required" eval="False"/>
             <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
         </record>
@@ -259,14 +259,6 @@
             <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
         </record>
 
-        <record id="tt_transport_carrier_airline_ek" model="tt.transport.carrier">
-            <field name="name">Emirates</field>
-            <field name="code">EK</field>
-            <field name="icao">UAE</field>
-            <field name="call_sign">EMIRATES</field>
-            <field name="active">1</field>
-            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
-        </record>
 
         <record id="tt_transport_carrier_airline_os" model="tt.transport.carrier">
             <field name="name">Austrian Airlines AG</field>
@@ -603,9 +595,9 @@
             <field name="icao">WON</field>
             <field name="call_sign">WINGS ABADI</field>
             <field name="active">1</field>
-            <field name="adult_length_name">40</field>
-            <field name="child_length_name">40</field>
-            <field name="infant_length_name">40</field>
+            <field name="adult_length_name">80</field>
+            <field name="child_length_name">80</field>
+            <field name="infant_length_name">80</field>
             <field name="is_adult_birth_date_required" eval="False"/>
             <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
         </record>
@@ -617,9 +609,23 @@
             <field name="icao">BTK</field>
             <field name="call_sign">BATIK</field>
             <field name="active">1</field>
-            <field name="adult_length_name">40</field>
-            <field name="child_length_name">40</field>
-            <field name="infant_length_name">40</field>
+            <field name="adult_length_name">80</field>
+            <field name="child_length_name">80</field>
+            <field name="infant_length_name">80</field>
+            <field name="is_adult_birth_date_required" eval="False"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+
+        <record id="tt_transport_carrier_airline_iu" model="tt.transport.carrier">
+            <field name="name">Super Jet Air</field>
+            <field name="code">IU</field>
+            <field name="icao">SJV</field>
+            <field name="call_sign">PROSPER</field>
+            <field name="active">1</field>
+            <field name="adult_length_name">80</field>
+            <field name="child_length_name">80</field>
+            <field name="infant_length_name">80</field>
             <field name="is_adult_birth_date_required" eval="False"/>
             <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
         </record>

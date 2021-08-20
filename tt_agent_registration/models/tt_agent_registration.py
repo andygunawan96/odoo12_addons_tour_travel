@@ -273,7 +273,7 @@ class AgentRegistration(models.Model):
         try:
             agent_type_id = context['co_agent_type_id']
             promotion_env = self.env['tt.agent.registration.promotion']
-            promotion_ids = promotion_env.search([('start_date', '<=', date.today()), ('end_date', '>=', date.today()), ('agent_type_id', '=', agent_type_id)])
+            promotion_ids = promotion_env.search([('start_date', '<=', date.today()), ('end_date', '>=', date.today()), ('agent_type_id', '=', agent_type_id),('default','=',True)])
 
             for promotion in promotion_ids:
                 val = {

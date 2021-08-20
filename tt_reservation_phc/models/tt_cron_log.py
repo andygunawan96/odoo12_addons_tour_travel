@@ -31,6 +31,7 @@ class TtCronLogInhphc(models.Model):
             wiz_obj = self.env['create.timeslot.phc.wizard'].create({
                 'end_date': datetime.today() + timedelta(days=7),
                 'area_id': self.env.ref('tt_reservation_phc.tt_destination_phc_sub').id,
+                'default_data_id': self.env['tt.timeslot.phc.default'].search([],limit=1).id,
                 'total_timeslot': max_timeslot,
                 'total_adult_timeslot': adult_timeslot,
                 'total_pcr_timeslot': pcr_timeslot

@@ -14,15 +14,6 @@ import copy
 
 _logger = logging.getLogger(__name__)
 
-COMMISSION_PER_PAX_ANTIGEN = 28000 ## komisi agent /pax
-COMMISSION_PER_PAX_PCR_HC = 120000 ## komisi agent /pax
-COMMISSION_PER_PAX_PCR_DT = 80000 ## komisi agent /pax
-BASE_PRICE_PER_PAX_ANTIGEN = 150000 ## harga 1 /pax
-BASE_PRICE_PER_PAX_PCR_HC = 850000 ## harga 1 /pax
-BASE_PRICE_PER_PAX_PCR_DT = 750000 ## harga 1 /pax
-SINGLE_SUPPLEMENT = 25000 ## 1 orang
-OVERTIME_SURCHARGE = 50000 ## lebih dari 18.00 /pax
-
 class Reservationphc(models.Model):
     _name = "tt.reservation.phc"
     _inherit = "tt.reservation"
@@ -191,14 +182,6 @@ class Reservationphc(models.Model):
     def create_refund(self):
         self.state = 'refund'
 
-    # COMMISSION_PER_PAX_ANTIGEN = 25000  ## komisi agent /pax
-    # COMMISSION_PER_PAX_PCR_HC = 120000  ## komisi agent /pax
-    # COMMISSION_PER_PAX_PCR_DT = 80000  ## komisi agent /pax
-    # BASE_PRICE_PER_PAX_ANTIGEN = 150000  ## harga 1 /pax
-    # BASE_PRICE_PER_PAX_PCR_HC = 750000  ## harga 1 /pax
-    # BASE_PRICE_PER_PAX_PCR_DT = 750000  ## harga 1 /pax
-    # SINGLE_SUPPLEMENT = 25000  ## 1 orang
-    # OVERTIME_SURCHARGE = 50000  ## lebih dari 18.00 /pax
     def get_price_phc_api(self, req, context):
         #parameter
         #timeslot_list
@@ -242,6 +225,13 @@ class Reservationphc(models.Model):
                 if rec.base_price_pcr > base_price:
                     base_price = rec.base_price_pcr
                     commission_price = rec.commission_pcr
+                    overtime_price = rec.overtime_surcharge
+                    single_suplement_price = rec.single_supplement
+        elif carrier_obj.id in [self.env.ref('tt_reservation_phc.tt_transport_carrier_phc_drive_thru_pcr_priority').id]:
+            for rec in timeslot_objs:
+                if rec.base_price_pcr_priority > base_price:
+                    base_price = rec.base_price_pcr_priority
+                    commission_price = rec.commission_pcr_priority
                     overtime_price = rec.overtime_surcharge
                     single_suplement_price = rec.single_supplement
         else:

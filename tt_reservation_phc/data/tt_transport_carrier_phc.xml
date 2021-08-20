@@ -39,7 +39,7 @@
         </record>
 
         <record id="tt_transport_carrier_phc_drive_thru_pcr" model="tt.transport.carrier">
-            <field name="name">Drive Thru PCR SS Radio</field>
+            <field name="name">Drive Thru PCR SS Radio 24 Hours</field>
             <field name="code">PHCDTKPCR</field>
             <field name="icao">PHCDTKPCR</field>
             <field name="call_sign">PHC Drive Thru PCR</field>
@@ -50,8 +50,20 @@
             <field name="provider_type_id" ref="tt_reservation_phc.tt_provider_type_phc"/>
         </record>
 
+        <record id="tt_transport_carrier_phc_drive_thru_pcr_priority" model="tt.transport.carrier">
+            <field name="name">Drive Thru PCR Priority SS Radio 12 Hours</field>
+            <field name="code">PHCDTOPCR</field>
+            <field name="icao">PHCDTOPCR</field>
+            <field name="call_sign">PHC Drive Thru PCR Priority</field>
+            <field name="adult_length_name">80</field>
+            <field name="child_length_name">80</field>
+            <field name="infant_length_name">80</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_phc.tt_provider_type_phc"/>
+        </record>
+
         <record id="tt_transport_carrier_phc_drive_thru_pcr_express" model="tt.transport.carrier">
-            <field name="name">Drive Thru PCR Express SS Radio</field>
+            <field name="name">Drive Thru PCR Express SS Radio 6 Hours</field>
             <field name="code">PHCDTEPCR</field>
             <field name="icao">PHCDTEPCR</field>
             <field name="call_sign">PHC Drive Thru PCR Express</field>
