@@ -445,6 +445,18 @@
             <field name="active" eval="True"/>
         </record>
 
+        <record id="phc_pcr_priority_information" model="tt.report.common.setting">
+            <field name="name">PHC PCR Drive Thru Priority Information</field>
+            <field name="code">phc_pcr_priority_information</field>
+            <field name="agent_id" ref="tt_base.rodex_ho"/>
+            <field name="html" type="html">
+                <div class="col-12" style="margin-top:20px;">
+                    Information
+                </div>
+            </field>
+            <field name="active" eval="True"/>
+        </record>
+
         <record id="phc_antigen_homecare_information" model="tt.report.common.setting">
             <field name="name">PHC Antigen Home Care Information</field>
             <field name="code">phc_antigen_homecare_information</field>
