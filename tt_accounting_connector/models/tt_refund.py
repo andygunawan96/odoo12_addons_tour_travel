@@ -45,7 +45,7 @@ class TtRefund(models.Model):
                         'transaction_type': trans_type,
                         'transport_type': 'Refund',
                         'payment_method': '',
-                        'NTA_amount_real': self.total_nta and self.total_nta or 0,
+                        'NTA_amount_real': self.total_amount and self.total_amount or 0,
                         'payment_acquirer': 'CASH'
                     })
                     rec.sudo().write({

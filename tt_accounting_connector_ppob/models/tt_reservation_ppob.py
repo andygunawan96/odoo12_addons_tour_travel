@@ -11,7 +11,7 @@ _logger = logging.getLogger(__name__)
 class TtReservationPPOB(models.Model):
     _inherit = 'tt.reservation.ppob'
 
-    def send_ledgers_to_accounting(self):
+    def send_ledgers_to_accounting(self, func_action):
         try:
             base_url = self.env['ir.config_parameter'].sudo().get_param('web.base.url')
             pay_acq = self.env['payment.acquirer'].search([('seq_id', '=', self.payment_method)], limit=1)
@@ -56,12 +56,16 @@ class TtReservationPPOB(models.Model):
                     rec.sudo().write({
                         'is_sent_to_acc': True
                     })
-            new_obj = self.env['tt.accounting.queue'].create({
-                'request': json.dumps(ledger_list),
-                'transport_type': ACC_TRANSPORT_TYPE.get(self._name, ''),
-                'res_model': self._name
-            })
-            res = new_obj.to_dict()
+            if ledger_list:
+                new_obj = self.env['tt.accounting.queue'].create({
+                    'request': json.dumps(ledger_list),
+                    'transport_type': ACC_TRANSPORT_TYPE.get(self._name, ''),
+                    'action': func_action,
+                    'res_model': self._name
+                })
+                res = new_obj.to_dict()
+            else:
+                res = {}
             return ERR.get_no_error(res)
         except Exception as e:
             _logger.info("Failed to send ledgers to accounting software. Ignore this message if tt_accounting_connector is currently not installed.")
@@ -70,8 +74,8 @@ class TtReservationPPOB(models.Model):
 
     def action_issued_ppob(self, co_uid, customer_parent_id, acquirer_id=False):
         super(TtReservationPPOB, self).action_issued_ppob(co_uid, customer_parent_id, acquirer_id)
-        self.send_ledgers_to_accounting()
+        self.send_ledgers_to_accounting('issued')
 
     def action_reverse_ppob(self,context):
         super(TtReservationPPOB, self).action_reverse_ppob(context)
-        self.send_ledgers_to_accounting()
+        self.send_ledgers_to_accounting('reverse')
