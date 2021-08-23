@@ -6,6 +6,14 @@ from ...tools import variables
 _logger = logging.getLogger(__name__)
 
 
+class ReimburseCommissionTier(models.Model):
+    _name = 'tt.reimburse.commission.tier'
+
+    lower_limit = fields.Integer('Lower Limit', default=0)
+    rac_amount = fields.Float('Commission Multiplier', default=0.0)
+    denominator = fields.Integer('Denominator', default=100)
+
+
 class TtReimburseCommission(models.Model):
     _name = 'tt.reimburse.commission'
     _inherit = 'tt.history'
@@ -17,11 +25,16 @@ class TtReimburseCommission(models.Model):
     reservation_ref = fields.Char('Reservation Ref')
     provider_pnr = fields.Char('PNR Ref')
     provider_issued_date = fields.Datetime('Provider Issued Date')
-    rac_mode = fields.Selection([('fare', 'Fare'), ('tax', 'Tax'), ('fare_tax', 'Fare + Tax')], 'Commission Mode', default='fare')
+    rac_mode = fields.Selection([('fare', 'Fare'), ('tax', 'Tax'), ('fare_tax', 'Fare + Tax')], 'Commission Mode', default='fare_tax')
     base_price = fields.Monetary('Reservation Base Price', default=0)
-    rac_amount = fields.Float('Commission Amount (Percentage %)', default=0.0)
+    rac_amount = fields.Float('Commission Multiplier', default=0.0)
+    denominator = fields.Integer('Denominator', default=100)
     currency_id = fields.Many2one('res.currency', string='Currency', default=lambda self: self.env.user.company_id.currency_id)
     rac_amount_num = fields.Monetary('Commission Amount (Exact Number)', default=0)
+    tier_rac_mode = fields.Selection([('fare', 'Fare'), ('tax', 'Tax'), ('fare_tax', 'Fare + Tax')],
+                                     'Tier Commission Mode', default='fare')
+    commission_tier_ids = fields.Many2many('tt.reimburse.commission.tier', 'reimburse_data_tier_rel',
+                                           'reimburse_commission_id', 'commission_tier_id', 'Commission Tier')
     service_charge_ids = fields.One2many('tt.reimburse.commission.service.charge', 'reimburse_id', string='Service Charges', readonly=1)
     state = fields.Selection([('draft', 'Draft'), ('approved', 'Approved'), ('cancel', 'Cancelled')], 'State', default='draft')
     approved_date = fields.Datetime('Approved Date', readonly=1)

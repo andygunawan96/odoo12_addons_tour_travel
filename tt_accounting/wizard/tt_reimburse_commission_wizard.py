@@ -10,14 +10,6 @@ import logging,traceback
 _logger = logging.getLogger(__name__)
 
 
-class ReimburseCommissionTier(models.Model):
-    _name = 'tt.reimburse.commission.tier'
-
-    lower_limit = fields.Integer('Lower Limit', default=0)
-    rac_amount = fields.Float('Commission Multiplier', default=0.0)
-    denominator = fields.Integer('Denominator', default=100)
-
-
 class ReimburseCommissionWizard(models.TransientModel):
     _name = 'tt.reimburse.commission.wizard'
 
@@ -238,7 +230,35 @@ class ReimburseCommissionWizard(models.TransientModel):
                     total_tier_price += nta_amount['ADT']
                 if chd_count > 0:
                     if self.commission_tier_ids:
+                        tier_list = self.commission_tier_ids.sorted(key=lambda r: r.lower_limit, reverse=True)
                         rac_amt = 0
+                        counter = 0
+                        for tier in tier_list:
+                            if counter == len(tier_list) - 1:
+                                rac_amt = (tier.rac_amount / tier.denominator) * nta_amount['CHD']
+                            elif total_tier_price < tier.lower_limit and total_tier_price + nta_amount['CHD'] >= tier.lower_limit:
+                                iter_list = [tier]
+                                for co in range(counter + 1, len(tier_list)):
+                                    if total_tier_price < tier_list[co].lower_limit:
+                                        iter_list.append(tier_list[co])
+                                rac_amt = 0
+                                temp_total = total_tier_price
+                                temp_nta = nta_amount['CHD']
+                                for iter_item in iter_list[::-1]:
+                                    if iter_item.lower_limit > temp_total:
+                                        sub_amt = iter_item.lower_limit - temp_total
+                                        temp_total += sub_amt
+                                        temp_nta -= sub_amt
+                                        rac_amt += (iter_item.rac_amount / iter_item.denominator) * sub_amt
+                                    else:
+                                        rac_amt += (tier.rac_amount / tier.denominator) * temp_nta
+                                break
+                            elif total_tier_price + nta_amount['CHD'] >= tier.lower_limit:
+                                rac_amt = (tier.rac_amount / tier.denominator) * nta_amount['CHD']
+                                break
+                            counter += 1
+                        subs_rac = (self.rac_amount / self.denominator) * nta_amount['CHD']
+                        rac_amt -= subs_rac
                     else:
                         rac_amt = (self.rac_amount / self.denominator) * nta_amount['CHD']
                     rac_amount_total += rac_amt
@@ -269,7 +289,35 @@ class ReimburseCommissionWizard(models.TransientModel):
                     total_tier_price += nta_amount['CHD']
                 if inf_count > 0:
                     if self.commission_tier_ids:
+                        tier_list = self.commission_tier_ids.sorted(key=lambda r: r.lower_limit, reverse=True)
                         rac_amt = 0
+                        counter = 0
+                        for tier in tier_list:
+                            if counter == len(tier_list) - 1:
+                                rac_amt = (tier.rac_amount / tier.denominator) * nta_amount['INF']
+                            elif total_tier_price < tier.lower_limit and total_tier_price + nta_amount['INF'] >= tier.lower_limit:
+                                iter_list = [tier]
+                                for co in range(counter + 1, len(tier_list)):
+                                    if total_tier_price < tier_list[co].lower_limit:
+                                        iter_list.append(tier_list[co])
+                                rac_amt = 0
+                                temp_total = total_tier_price
+                                temp_nta = nta_amount['INF']
+                                for iter_item in iter_list[::-1]:
+                                    if iter_item.lower_limit > temp_total:
+                                        sub_amt = iter_item.lower_limit - temp_total
+                                        temp_total += sub_amt
+                                        temp_nta -= sub_amt
+                                        rac_amt += (iter_item.rac_amount / iter_item.denominator) * sub_amt
+                                    else:
+                                        rac_amt += (tier.rac_amount / tier.denominator) * temp_nta
+                                break
+                            elif total_tier_price + nta_amount['INF'] >= tier.lower_limit:
+                                rac_amt = (tier.rac_amount / tier.denominator) * nta_amount['INF']
+                                break
+                            counter += 1
+                        subs_rac = (self.rac_amount / self.denominator) * nta_amount['INF']
+                        rac_amt -= subs_rac
                     else:
                         rac_amt = (self.rac_amount / self.denominator) * nta_amount['INF']
                     rac_amount_total += rac_amt
@@ -300,7 +348,35 @@ class ReimburseCommissionWizard(models.TransientModel):
                     total_tier_price += nta_amount['INF']
                 if ycd_count > 0:
                     if self.commission_tier_ids:
+                        tier_list = self.commission_tier_ids.sorted(key=lambda r: r.lower_limit, reverse=True)
                         rac_amt = 0
+                        counter = 0
+                        for tier in tier_list:
+                            if counter == len(tier_list) - 1:
+                                rac_amt = (tier.rac_amount / tier.denominator) * nta_amount['YCD']
+                            elif total_tier_price < tier.lower_limit and total_tier_price + nta_amount['YCD'] >= tier.lower_limit:
+                                iter_list = [tier]
+                                for co in range(counter + 1, len(tier_list)):
+                                    if total_tier_price < tier_list[co].lower_limit:
+                                        iter_list.append(tier_list[co])
+                                rac_amt = 0
+                                temp_total = total_tier_price
+                                temp_nta = nta_amount['YCD']
+                                for iter_item in iter_list[::-1]:
+                                    if iter_item.lower_limit > temp_total:
+                                        sub_amt = iter_item.lower_limit - temp_total
+                                        temp_total += sub_amt
+                                        temp_nta -= sub_amt
+                                        rac_amt += (iter_item.rac_amount / iter_item.denominator) * sub_amt
+                                    else:
+                                        rac_amt += (tier.rac_amount / tier.denominator) * temp_nta
+                                break
+                            elif total_tier_price + nta_amount['YCD'] >= tier.lower_limit:
+                                rac_amt = (tier.rac_amount / tier.denominator) * nta_amount['YCD']
+                                break
+                            counter += 1
+                        subs_rac = (self.rac_amount / self.denominator) * nta_amount['YCD']
+                        rac_amt -= subs_rac
                     else:
                         rac_amt = (self.rac_amount / self.denominator) * nta_amount['YCD']
                     rac_amount_total += rac_amt
@@ -331,6 +407,7 @@ class ReimburseCommissionWizard(models.TransientModel):
                     total_tier_price += nta_amount['YCD']
                 commission_list = adt_scs_list + chd_scs_list + inf_scs_list + ycd_scs_list
                 if commission_list:
+                    com_tier_ids = [comtier.id for comtier in self.commission_tier_ids]
                     reimburse_obj = self.env['tt.reimburse.commission'].create({
                         'res_model': rec._name,
                         'res_id': rec.id,
@@ -340,8 +417,11 @@ class ReimburseCommissionWizard(models.TransientModel):
                         'rac_mode': self.rac_mode,
                         'base_price': total_nta_amount,
                         'rac_amount': self.rac_amount,
+                        'denominator': self.denominator,
                         'currency_id': rec.currency_id.id,
                         'rac_amount_num': rac_amount_total,
+                        'tier_rac_mode': self.tier_rac_mode,
+                        'commission_tier_ids': [(6, 0, com_tier_ids)],
                         'state': 'draft'
                     })
                     for comm in commission_list:
