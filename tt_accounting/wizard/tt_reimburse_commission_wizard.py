@@ -32,6 +32,7 @@ class ReimburseCommissionWizard(models.TransientModel):
     rac_mode = fields.Selection([('fare', 'Fare'), ('tax', 'Tax'), ('fare_tax', 'Fare + Tax')], 'Commission Mode', default='fare_tax', required=True)
     rac_amount = fields.Float('Commission Multiplier', default=0.0)
     denominator = fields.Float('Denominator', default=100.0)
+    rac_preview = fields.Char('Commission Preview', readonly=True, compute='_onchange_rac_denominator')
 
     @api.onchange('provider_type_id')
     def _onchange_domain_provider(self):
@@ -39,6 +40,11 @@ class ReimburseCommissionWizard(models.TransientModel):
         return {'domain': {
             'provider_id': self.get_provider_domain()
         }}
+
+    @api.onchange('rac_amount', 'denominator')
+    @api.depends('rac_amount', 'denominator')
+    def _onchange_rac_denominator(self):
+        self.rac_preview = str(self.rac_amount / (self.denominator / 100)) + '%'
 
     @api.onchange('period')
     def _onchage_period(self):

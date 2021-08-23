@@ -12,6 +12,12 @@ class ReimburseCommissionTier(models.Model):
     lower_limit = fields.Integer('Lower Limit', default=0)
     rac_amount = fields.Float('Commission Multiplier', default=0.0)
     denominator = fields.Integer('Denominator', default=100)
+    rac_preview = fields.Char('Commission Preview', readonly=True, compute='_onchange_rac_denominator')
+
+    @api.onchange('rac_amount', 'denominator')
+    @api.depends('rac_amount', 'denominator')
+    def _onchange_rac_denominator(self):
+        self.rac_preview = str(self.rac_amount / (self.denominator / 100)) + '%'
 
 
 class TtReimburseCommission(models.Model):
