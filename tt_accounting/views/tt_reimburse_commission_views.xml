@@ -81,6 +81,11 @@
                             </div>
                         </group>
                     </group>
+                    <separator string="Commission Tier"/>
+                    <group>
+                        <field name="tier_rac_mode"/>
+                    </group>
+                    <field name="commission_tier_ids"/>
                     <separator string="Service Charge(s)"/>
                     <field name="service_charge_ids">
                         <tree>

@@ -10,14 +10,6 @@ import logging,traceback
 _logger = logging.getLogger(__name__)
 
 
-class ReimburseCommissionTier(models.Model):
-    _name = 'tt.reimburse.commission.tier'
-
-    lower_limit = fields.Integer('Lower Limit', default=0)
-    rac_amount = fields.Float('Commission Multiplier', default=0.0)
-    denominator = fields.Integer('Denominator', default=100)
-
-
 class ReimburseCommissionWizard(models.TransientModel):
     _name = 'tt.reimburse.commission.wizard'
 
