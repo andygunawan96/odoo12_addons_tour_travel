@@ -31,5 +31,3 @@ class ConfirmOrderphcWizard(models.TransientModel):
                                                                              self.booking_id.test_address)
         except Exception as e:
             _logger.error("Confirm Order From Button Notification Telegram Error.\n%s" % (traceback.format_exc()))
-
-g
