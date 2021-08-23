@@ -18,11 +18,13 @@ class TtAccountingQueue(models.Model):
     state = fields.Selection([('new', 'New'), ('success', 'Success'), ('failed', 'Failed')], 'State', default='new', readonly=True)
     send_uid = fields.Many2one('res.users', 'Last Sent By', readonly=True)
     send_date = fields.Datetime('Last Sent Date', readonly=True)
+    action = fields.Char('Action', readonly=True)
 
     def to_dict(self):
         return {
             'request': self.request,
             'transport_type': self.transport_type,
+            'action': self.action,
             'res_model': self.res_model,
             'state': self.state
         }

@@ -10,6 +10,14 @@ import logging,traceback
 _logger = logging.getLogger(__name__)
 
 
+class ReimburseCommissionTier(models.Model):
+    _name = 'tt.reimburse.commission.tier'
+
+    lower_limit = fields.Integer('Lower Limit', default=0)
+    rac_amount = fields.Float('Commission Multiplier', default=0.0)
+    denominator = fields.Integer('Denominator', default=100)
+
+
 class ReimburseCommissionWizard(models.TransientModel):
     _name = 'tt.reimburse.commission.wizard'
 
@@ -25,8 +33,13 @@ class ReimburseCommissionWizard(models.TransientModel):
         return [('provider_type_id', '=', self.provider_type_id.id)]
 
     provider_id = fields.Many2one('tt.provider', 'Provider', required=True, domain=get_provider_domain)
-    rac_mode = fields.Selection([('fare', 'Fare'), ('tax', 'Tax'), ('fare_tax', 'Fare + Tax')], 'Commission Mode', default='fare', required=True)
-    rac_amount = fields.Float('Commission Amount (Percentage %)', default=0.0)
+    tier_rac_mode = fields.Selection([('fare', 'Fare'), ('tax', 'Tax'), ('fare_tax', 'Fare + Tax')],
+                                     'Tier Commission Mode', default='fare', required=True)
+    commission_tier_ids = fields.Many2many('tt.reimburse.commission.tier', 'reimburse_wizard_tier_rel',
+                                        'reimburse_wizard_id', 'commission_tier_id', 'Commission Tier')
+    rac_mode = fields.Selection([('fare', 'Fare'), ('tax', 'Tax'), ('fare_tax', 'Fare + Tax')], 'Commission Mode', default='fare_tax', required=True)
+    rac_amount = fields.Float('Commission Multiplier', default=0.0)
+    denominator = fields.Float('Denominator', default=100.0)
 
     @api.onchange('provider_type_id')
     def _onchange_domain_provider(self):
@@ -79,14 +92,40 @@ class ReimburseCommissionWizard(models.TransientModel):
 
     def reimburse_commission(self):
         try:
-            if self.rac_amount >= 100 or self.rac_amount <= 0:
-                raise UserError(_('Commission Amount must be between 1-99%'))
+            if (self.rac_amount / self.denominator) >= 100.0 or (self.rac_amount / self.denominator) <= 0.0:
+                raise UserError(_('Commission Multiplier divided by Denominator must be between 1-99%'))
+            has_zero = False
+            has_minus = False
+            for tier in self.commission_tier_ids:
+                if tier.lower_limit == 0:
+                    has_zero = True
+                if tier.lower_limit < 0:
+                    has_minus = True
+            if not has_zero:
+                raise UserError(_('Please input at least 1 tier with 0 lower limit.'))
+            if has_minus:
+                raise UserError(_('Tier lower limit cannot be lower than 0.'))
             table = 'tt.provider.%s' % self.provider_type_id.code
             date_range_dict = self.convert_timezone(self.date_from, self.date_to)
             date_from = date_range_dict['date_from']
             date_to = date_range_dict['date_to']
             resv_provider_list = self.env[table].search([('provider_id', '=', self.provider_id.id), ('state', '=', 'issued'),
-                                                         ('issued_date', '>=', date_from), ('issued_date', '<=', date_to)])
+                                                         ('issued_date', '>=', date_from), ('issued_date', '<=', date_to)], order='issued_date')
+            if self.rac_mode == 'fare_tax':
+                filter_list = ['FARE', 'TAX']
+            elif self.rac_mode == 'tax':
+                filter_list = ['TAX']
+            else:
+                filter_list = ['FARE']
+
+            total_tier_price = 0
+            if self.tier_rac_mode == 'fare_tax':
+                tier_filter_list = ['FARE', 'TAX']
+            elif self.tier_rac_mode == 'tax':
+                tier_filter_list = ['TAX']
+            else:
+                tier_filter_list = ['FARE']
+
             for rec in resv_provider_list:
                 double_check = self.env['tt.reimburse.commission'].search([('res_model', '=', rec._name),
                                                                            ('res_id', '=', rec.id), ('state', 'in', ['draft', 'approved'])])
@@ -99,16 +138,20 @@ class ReimburseCommissionWizard(models.TransientModel):
                     'INF': 0,
                     'YCD': 0,
                 }
-                if self.rac_mode == 'fare_tax':
-                    filter_list = ['FARE', 'TAX']
-                elif self.rac_mode == 'tax':
-                    filter_list = ['TAX']
-                else:
-                    filter_list = ['FARE']
+                tier_nta_amount = {
+                    'ADT': 0,
+                    'CHD': 0,
+                    'INF': 0,
+                    'YCD': 0,
+                }
+
                 for rec2 in rec.cost_service_charge_ids:
+                    if rec2.charge_type in tier_filter_list:
+                        tier_nta_amount[rec2.pax_type] += rec2.total
                     if rec2.charge_type in filter_list:
                         total_nta_amount += rec2.total
                         nta_amount[rec2.pax_type] += rec2.total
+
                 adt_count = 0
                 chd_count = 0
                 inf_count = 0
@@ -135,12 +178,44 @@ class ReimburseCommissionWizard(models.TransientModel):
                 rac_amount_total = 0
                 user_info = self.env['tt.agent'].sudo().get_agent_level(rec.booking_id.agent_id.id)
                 if adt_count > 0:
-                    rac_amount_total += (self.rac_amount / 100) * nta_amount['ADT']
+                    if self.commission_tier_ids:
+                        tier_list = self.commission_tier_ids.sorted(key=lambda r: r.lower_limit, reverse=True)
+                        rac_amt = 0
+                        counter = 0
+                        for tier in tier_list:
+                            if counter == len(tier_list) - 1:
+                                rac_amt = (tier.rac_amount / tier.denominator) * nta_amount['ADT']
+                            elif total_tier_price < tier.lower_limit and total_tier_price + nta_amount['ADT'] >= tier.lower_limit:
+                                iter_list = [tier]
+                                for co in range(counter+1, len(tier_list)):
+                                    if total_tier_price < tier_list[co].lower_limit:
+                                        iter_list.append(tier_list[co])
+                                rac_amt = 0
+                                temp_total = total_tier_price
+                                temp_nta = nta_amount['ADT']
+                                for iter_item in iter_list[::-1]:
+                                    if iter_item.lower_limit > temp_total:
+                                        sub_amt = iter_item.lower_limit - temp_total
+                                        temp_total += sub_amt
+                                        temp_nta -= sub_amt
+                                        rac_amt += (iter_item.rac_amount / iter_item.denominator) * sub_amt
+                                    else:
+                                        rac_amt += (tier.rac_amount / tier.denominator) * temp_nta
+                                break
+                            elif total_tier_price + nta_amount['ADT'] >= tier.lower_limit:
+                                rac_amt = (tier.rac_amount / tier.denominator) * nta_amount['ADT']
+                                break
+                            counter += 1
+                        subs_rac = (self.rac_amount / self.denominator) * nta_amount['ADT']
+                        rac_amt -= subs_rac
+                    else:
+                        rac_amt = (self.rac_amount / self.denominator) * nta_amount['ADT']
+                    rac_amount_total += rac_amt
                     adt_scs_list = self.calculate_pricing(rec.provider_id.provider_type_id.code, {
                         'fare_amount': 0,
                         'tax_amount': 0,
                         'roc_amount': 0,
-                        'rac_amount': (((self.rac_amount / 100) * nta_amount['ADT']) / adt_count) * -1,
+                        'rac_amount': (rac_amt / adt_count) * -1,
                         'currency': 'IDR',
                         'provider': rec.provider_id.code,
                         'origin': '',
@@ -160,13 +235,18 @@ class ReimburseCommissionWizard(models.TransientModel):
                         'pricing_date': '',
                         'show_upline_commission': True
                     })
+                    total_tier_price += nta_amount['ADT']
                 if chd_count > 0:
-                    rac_amount_total += (self.rac_amount / 100) * nta_amount['CHD']
+                    if self.commission_tier_ids:
+                        rac_amt = 0
+                    else:
+                        rac_amt = (self.rac_amount / self.denominator) * nta_amount['CHD']
+                    rac_amount_total += rac_amt
                     chd_scs_list = self.calculate_pricing(rec.provider_id.provider_type_id.code, {
                         'fare_amount': 0,
                         'tax_amount': 0,
                         'roc_amount': 0,
-                        'rac_amount': (((self.rac_amount / 100) * nta_amount['CHD']) / chd_count) * -1,
+                        'rac_amount': (rac_amt / chd_count) * -1,
                         'currency': 'IDR',
                         'provider': rec.provider_id.code,
                         'origin': '',
@@ -186,13 +266,18 @@ class ReimburseCommissionWizard(models.TransientModel):
                         'pricing_date': '',
                         'show_upline_commission': True
                     })
+                    total_tier_price += nta_amount['CHD']
                 if inf_count > 0:
-                    rac_amount_total += (self.rac_amount / 100) * nta_amount['INF']
+                    if self.commission_tier_ids:
+                        rac_amt = 0
+                    else:
+                        rac_amt = (self.rac_amount / self.denominator) * nta_amount['INF']
+                    rac_amount_total += rac_amt
                     inf_scs_list = self.calculate_pricing(rec.provider_id.provider_type_id.code, {
                         'fare_amount': 0,
                         'tax_amount': 0,
                         'roc_amount': 0,
-                        'rac_amount': (((self.rac_amount / 100) * nta_amount['INF']) / inf_count) * -1,
+                        'rac_amount': (rac_amt / inf_count) * -1,
                         'currency': 'IDR',
                         'provider': rec.provider_id.code,
                         'origin': '',
@@ -212,13 +297,18 @@ class ReimburseCommissionWizard(models.TransientModel):
                         'pricing_date': '',
                         'show_upline_commission': True
                     })
+                    total_tier_price += nta_amount['INF']
                 if ycd_count > 0:
-                    rac_amount_total += (self.rac_amount / 100) * nta_amount['YCD']
+                    if self.commission_tier_ids:
+                        rac_amt = 0
+                    else:
+                        rac_amt = (self.rac_amount / self.denominator) * nta_amount['YCD']
+                    rac_amount_total += rac_amt
                     ycd_scs_list = self.calculate_pricing(rec.provider_id.provider_type_id.code, {
                         'fare_amount': 0,
                         'tax_amount': 0,
                         'roc_amount': 0,
-                        'rac_amount': (((self.rac_amount / 100) * nta_amount['YCD']) / ycd_count) * -1,
+                        'rac_amount': (rac_amt / ycd_count) * -1,
                         'currency': 'IDR',
                         'provider': rec.provider_id.code,
                         'origin': '',
@@ -238,6 +328,7 @@ class ReimburseCommissionWizard(models.TransientModel):
                         'pricing_date': '',
                         'show_upline_commission': True
                     })
+                    total_tier_price += nta_amount['YCD']
                 commission_list = adt_scs_list + chd_scs_list + inf_scs_list + ycd_scs_list
                 if commission_list:
                     reimburse_obj = self.env['tt.reimburse.commission'].create({

@@ -11,7 +11,7 @@ _logger = logging.getLogger(__name__)
 class TtReschedulePeriksain(models.Model):
     _inherit = 'tt.reschedule.periksain'
 
-    def send_ledgers_to_accounting(self):
+    def send_ledgers_to_accounting(self, func_action):
         try:
             base_url = self.env['ir.config_parameter'].sudo().get_param('web.base.url')
             ledger_list = []
@@ -45,18 +45,22 @@ class TtReschedulePeriksain(models.Model):
                         'transaction_type': trans_type,
                         'transport_type': 'Reschedule',
                         'payment_method': '',
-                        'NTA_amount_real': self.total_nta and self.total_nta or 0,
+                        'NTA_amount_real': self.total_amount and self.total_amount or 0,
                         'payment_acquirer': self.payment_acquirer_id and self.payment_acquirer_id.name or '',
                     })
                     rec.sudo().write({
                         'is_sent_to_acc': True
                     })
-            new_obj = self.env['tt.accounting.queue'].create({
-                'request': json.dumps(ledger_list),
-                'transport_type': ACC_TRANSPORT_TYPE.get(self._name, ''),
-                'res_model': self._name
-            })
-            res = new_obj.to_dict()
+            if ledger_list:
+                new_obj = self.env['tt.accounting.queue'].create({
+                    'request': json.dumps(ledger_list),
+                    'transport_type': ACC_TRANSPORT_TYPE.get(self._name, ''),
+                    'action': func_action,
+                    'res_model': self._name
+                })
+                res = new_obj.to_dict()
+            else:
+                res = {}
             return ERR.get_no_error(res)
         except Exception as e:
             _logger.info("Failed to send ledgers to accounting software. Ignore this message if tt_accounting_connector is currently not installed.")
@@ -65,8 +69,8 @@ class TtReschedulePeriksain(models.Model):
 
     def validate_reschedule_from_button(self):
         super(TtReschedulePeriksain, self).validate_reschedule_from_button()
-        self.send_ledgers_to_accounting()
+        self.send_ledgers_to_accounting('validate')
 
     def cancel_reschedule_from_button(self):
         super(TtReschedulePeriksain, self).cancel_reschedule_from_button()
-        self.send_ledgers_to_accounting()
+        self.send_ledgers_to_accounting('cancel')
