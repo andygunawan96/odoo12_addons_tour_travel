@@ -1261,8 +1261,12 @@ class Reservationphc(models.Model):
     def get_terms_conditions_email(self):
         if self.carrier_name == 'PHCHCKPCR':
             template_obj = self.env.ref('tt_report_common.phc_pcr_homecare_information')
-        elif self.carrier_name in ['PHCDTKPCR', 'PHCDTEPCR']:
+        elif self.carrier_name == 'PHCDTKPCR':
             template_obj = self.env.ref('tt_report_common.phc_pcr_information')
+        elif self.carrier_name == 'PHCDTOPCR':
+            template_obj = self.env.ref('tt_report_common.phc_pcr_priority_information')
+        elif self.carrier_name == 'PHCDTEPCR':
+            template_obj = self.env.ref('tt_report_common.phc_pcr_express_information')
         elif self.carrier_name == 'PHCHCKATG':
             template_obj = self.env.ref('tt_report_common.phc_antigen_homecare_information')
         else:
