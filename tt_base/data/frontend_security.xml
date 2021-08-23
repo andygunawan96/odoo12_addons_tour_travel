@@ -20,6 +20,11 @@
         <field name="code">assign_analyst_phc</field>
     </record>
 
+    <record id="able_to_send_notificaation" model="tt.frontend.security">
+        <field name="name">Send Notification</field>
+        <field name="code">send_notification</field>
+    </record>
+
     <record id="able_to_ticketing_periksain" model="tt.frontend.security">
         <field name="name">Ticketing Periksain</field>
         <field name="code">ticketing_periksain</field>
