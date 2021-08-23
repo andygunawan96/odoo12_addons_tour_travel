@@ -24,4 +24,12 @@ class ConfirmOrderphcWizard(models.TransientModel):
             'analyst_ids': [(6,0,self.analyst_ids.ids)]
         })
 
+        try:
+            self.env['tt.phc.api.con'].send_confirm_order_notification(self.booking_id.name,
+                                                                             self.env.user.name,
+                                                                             self.booking_id.test_datetime.astimezone(pytz.timezone('Asia/Jakarta')).strftime("%d-%m-%Y %H:%M"),
+                                                                             self.booking_id.test_address)
+        except Exception as e:
+            _logger.error("Confirm Order From Button Notification Telegram Error.\n%s" % (traceback.format_exc()))
 
+g

@@ -32,6 +32,16 @@ class TtTrainApiCon(models.Model):
             raise RequestException(999)
         return res
 
+    def send_confirm_order_notification(self,document_number,confirm_name,timeslot,address):
+        request = {
+            'code': 9917,
+            'message': '{} has been Confirmed by {}\n{}\n{}'.format(document_number,confirm_name,timeslot,address),
+            "title": 'CONFIRMED <b>%s</b>' % (document_number)
+        }
+        return self.send_request_to_gateway('%s/notification' % (self.url),
+                                            request
+                                            ,'notification_code')
+
     def sync_status_with_phc(self, req):
         request = {
             'ticket_number': req.get('ticket_number'),
