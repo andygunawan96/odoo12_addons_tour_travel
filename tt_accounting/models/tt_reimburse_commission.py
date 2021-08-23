@@ -28,6 +28,7 @@ class TtReimburseCommission(models.Model):
     rac_mode = fields.Selection([('fare', 'Fare'), ('tax', 'Tax'), ('fare_tax', 'Fare + Tax')], 'Commission Mode', default='fare_tax')
     base_price = fields.Monetary('Reservation Base Price', default=0)
     rac_amount = fields.Float('Commission Multiplier', default=0.0)
+    denominator = fields.Integer('Denominator', default=100)
     currency_id = fields.Many2one('res.currency', string='Currency', default=lambda self: self.env.user.company_id.currency_id)
     rac_amount_num = fields.Monetary('Commission Amount (Exact Number)', default=0)
     tier_rac_mode = fields.Selection([('fare', 'Fare'), ('tax', 'Tax'), ('fare_tax', 'Fare + Tax')],

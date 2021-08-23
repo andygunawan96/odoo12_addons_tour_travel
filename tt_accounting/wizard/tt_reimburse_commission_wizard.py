@@ -407,6 +407,7 @@ class ReimburseCommissionWizard(models.TransientModel):
                     total_tier_price += nta_amount['YCD']
                 commission_list = adt_scs_list + chd_scs_list + inf_scs_list + ycd_scs_list
                 if commission_list:
+                    com_tier_ids = [comtier.id for comtier in self.commission_tier_ids]
                     reimburse_obj = self.env['tt.reimburse.commission'].create({
                         'res_model': rec._name,
                         'res_id': rec.id,
@@ -416,8 +417,11 @@ class ReimburseCommissionWizard(models.TransientModel):
                         'rac_mode': self.rac_mode,
                         'base_price': total_nta_amount,
                         'rac_amount': self.rac_amount,
+                        'denominator': self.denominator,
                         'currency_id': rec.currency_id.id,
                         'rac_amount_num': rac_amount_total,
+                        'tier_rac_mode': self.tier_rac_mode,
+                        'commission_tier_ids': [(6, 0, com_tier_ids)],
                         'state': 'draft'
                     })
                     for comm in commission_list:

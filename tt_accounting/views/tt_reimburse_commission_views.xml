@@ -57,6 +57,7 @@
                             <field name="rac_mode"/>
                             <field name="base_price"/>
                             <field name="rac_amount"/>
+                            <field name="denominator"/>
                             <field name="rac_amount_num"/>
                             <field name="res_model" invisible="1"/>
                             <field name="res_id" invisible="1"/>
@@ -142,6 +143,7 @@
                 <field name="rac_mode"/>
                 <field name="base_price"/>
                 <field name="rac_amount"/>
+                <field name="denominator"/>
                 <field name="rac_amount_num"/>
                 <field name="create_uid"/>
                 <field name="create_date"/>
