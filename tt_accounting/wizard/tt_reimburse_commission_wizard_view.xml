@@ -6,6 +6,10 @@
         <field name="arch" type="xml">
             <form string="Options">
                 <group>
+                    <field name="tier_rac_mode"/>
+                    <field name="commission_tier_ids"/>
+                </group>
+                <group>
                     <group name="group_period">
                         <field name="period" required="1"/>
                         <field name="date_from" attrs="{'invisible': [('period', '!=', 'custom')]}"/>
@@ -16,6 +20,7 @@
                         <field name="provider_id"/>
                         <field name="rac_mode"/>
                         <field name="rac_amount"/>
+                        <field name="denominator"/>
                     </group>
                 </group>
                 <footer>

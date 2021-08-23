@@ -31,7 +31,7 @@ class MedicalVendorReportRecapTransacion(models.Model):
         query = """tt_reservation_passenger_""" + provider_type + """ psg """
         query += """LEFT JOIN tt_reservation_""" + provider_type + """ rsv ON rsv.id = psg.booking_id """
         query += """LEFT JOIN tt_agent agent ON rsv.agent_id = agent.id
-                LEFT JOIN res_users usr ON usr.id = rsv.verified_uid
+                LEFT JOIN res_users usr ON usr.id = psg.verified_uid
                 LEFT JOIN res_partner usr_partner ON usr_partner.id = usr.partner_id
                 LEFT JOIN tt_provider_type provider_type ON provider_type.id = rsv.provider_type_id
                 LEFT JOIN tt_transport_carrier carrier ON carrier.code = rsv.carrier_name
