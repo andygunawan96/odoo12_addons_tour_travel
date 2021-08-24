@@ -1,0 +1,83 @@
+<odoo>
+    <record id="tt_master_bus_station_view_filter" model="ir.ui.view">
+        <field name="name">tt.master.bus.station.view.filter</field>
+        <field name="model">tt.master.bus.station</field>
+        <field name="arch" type="xml">
+            <search string="Search Station">
+                <field name="name"/>
+                <field name="code"/>
+            </search>
+        </field>
+    </record>
+
+    <record model="ir.ui.view" id="tt_master_bus_station_view_form">
+        <field name="name">tt.master.bus.station.view.form</field>
+        <field name="model">tt.master.bus.station</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="toggle_active" type="object"
+                                class="oe_stat_button" icon="fa-archive"
+                                groups="tt_base.group_master_data_bus_level_3">
+                            <field name="active" widget="boolean_button"
+                                   options='{"terminology": "archive"}'/>
+                        </button>
+                    </div>
+                    <div class="oe_title">
+                        <h1>
+                            <field name="name" default_focus="1" placeholder="Station Name"/>
+                        </h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="code"/>
+                            <field name="address"/>
+                            <field name="longitude"/>
+                            <field name="latitude"/>
+                            <field name="city_id"/>
+                            <field name="bus_journey_ids"/>
+                        </group>
+                    </group>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids" widget="mail_followers"/>
+                    <field name="message_ids" widget="mail_thread"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <record model="ir.ui.view" id="tt_master_bus_station_view_tree">
+        <field name="name">tt.master.bus.station.view.tree</field>
+        <field name="model">tt.master.bus.station</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="name"/>
+                <field name="code"/>
+                <field name="provider_id" groups="tt_base.group_tt_tour_travel"/>
+                <field name="active"/>
+            </tree>
+        </field>
+    </record>
+
+    <record model="ir.actions.act_window" id="tt_master_bus_station_view_action">
+        <field name="name">Master Bus Station</field>
+        <field name="res_model">tt.master.bus.station</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+        <field name="domain">[]</field>
+        <field name="context">
+            {
+                'form_view_ref': 'tt_reservation_bus.tt_master_bus_station_view_form',
+                'tree_view_ref': 'tt_reservation_bus.tt_master_bus_station_view_tree',
+            }
+        </field>
+    </record>
+
+    <menuitem id="submenu_tour_travel_bus_master" parent="tt_reservation_bus.menu_tour_travel_bus_master"
+              name="Bus" action="tt_reservation_bus.tt_master_bus_station_view_action"/>
+
+</odoo>

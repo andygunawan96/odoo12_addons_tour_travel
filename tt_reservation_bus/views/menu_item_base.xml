@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <!-- Top Menu -->
+        <!-- Train -->
+        <menuitem id="top_reservations_bus"
+                  parent="tt_reservation.main_reservations"
+                  name="Bus"
+                  sequence="21"
+                  groups="base.group_user"/>
+
+        <menuitem id="menu_reservations_bus"
+                  parent="tt_reservation_bus.top_reservations_bus"
+                  name="Booking"
+                  sequence="1"/>
+
+        <menuitem id="top_tour_travel_bus"
+                  parent="tt_base.main_reservation_master_data"
+                  name="Bus"
+                  sequence="4"
+                  groups="base.group_user"/>
+
+        <menuitem id="menu_tour_travel_bus_master"
+                  name="Master"
+                  parent="tt_reservation_bus.top_tour_travel_bus"
+                  sequence="1"/>
+
+        <menuitem id="menu_tour_travel_bus_config"
+                  name="Config"
+                  parent="tt_reservation_bus.top_tour_travel_bus"
+                  sequence="1"/>
+
+    </data>
+</odoo>
