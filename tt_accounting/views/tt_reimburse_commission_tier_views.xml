@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="tt_reimburse_commission_tier_form_view" model="ir.ui.view">
+        <field name="name">tt.reimburse.commission.tier.form.view</field>
+        <field name="model">tt.reimburse.commission.tier</field>
+        <field name="arch" type="xml">
+            <form edit="false">
+                <header>
+
+                </header>
+                <sheet>
+                    <group>
+                        <field name="lower_limit"/>
+                        <field name="rac_amount"/>
+                        <field name="denominator"/>
+                        <field name="rac_preview"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="tt_reimburse_commission_tier_tree_view" model="ir.ui.view">
+        <field name="name">tt.reimburse.commission.tier.tree.view.page</field>
+        <field name="model">tt.reimburse.commission.tier</field>
+        <field name="priority">20</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="lower_limit"/>
+                <field name="rac_amount"/>
+                <field name="denominator"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="tt_reimburse_commission_tier_action" model="ir.actions.act_window">
+        <field name="name">Reimburse Commission</field>
+        <field name="res_model">tt.reimburse.commission.tier</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+        <field name="context">
+            {
+            'form_view_ref': 'tt_accounting.tt_reimburse_commission_tier_form_view',
+            'tree_view_ref': 'tt_accounting.tt_reimburse_commission_tier_tree_view'
+            }
+        </field>
+    </record>
+
+</odoo>
