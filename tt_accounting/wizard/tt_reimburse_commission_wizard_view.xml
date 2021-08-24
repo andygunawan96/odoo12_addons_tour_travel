@@ -21,6 +21,7 @@
                         <field name="rac_mode"/>
                         <field name="rac_amount"/>
                         <field name="denominator"/>
+                        <field name="rac_preview"/>
                     </group>
                 </group>
                 <footer>
