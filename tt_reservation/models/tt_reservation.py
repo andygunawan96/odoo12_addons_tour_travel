@@ -528,7 +528,7 @@ class TtReservation(models.Model):
     @api.onchange("refund_ids", "state")
     def _compute_refundable(self):
         for rec in self:
-            if rec.state == 'issued':
+            if rec.state in ['issued','rescheduled']:
                 state_list = []
                 for rec2 in rec.refund_ids:
                     state_list.append(rec2.state)
