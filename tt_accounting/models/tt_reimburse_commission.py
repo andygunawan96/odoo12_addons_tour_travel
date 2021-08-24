@@ -28,6 +28,7 @@ class TtReimburseCommission(models.Model):
 
     res_model = fields.Char('Reservation Provider Name', index=True)
     res_id = fields.Integer('Reservation Provider ID', index=True, help='ID of the followed resource')
+    agent_id = fields.Many2one('tt.agent', 'Agent', compute='compute_agent_id', store=True)
     reservation_ref = fields.Char('Reservation Ref')
     provider_pnr = fields.Char('PNR Ref')
     provider_issued_date = fields.Datetime('Provider Issued Date')
@@ -47,6 +48,19 @@ class TtReimburseCommission(models.Model):
     approved_uid = fields.Many2one('res.users', 'Approved By', readonly=1)
     cancel_date = fields.Datetime('Cancelled Date', readonly=1)
     cancel_uid = fields.Many2one('res.users', 'Cancelled By', readonly=1)
+
+    @api.onchange('res_model', 'res_id')
+    @api.depends('res_model', 'res_id')
+    def compute_agent_id(self):
+        for rec in self:
+            obj = self.env[rec.res_model].browse(rec.res_id)
+            if obj:
+                if obj.booking_id:
+                    rec.agent_id = obj.booking_id.agent_id and obj.booking_id.agent_id.id or False
+                else:
+                    rec.agent_id = False
+            else:
+                rec.agent_id = False
 
     def action_approve(self):
         commission_list = [rec.to_dict() for rec in self.service_charge_ids]
