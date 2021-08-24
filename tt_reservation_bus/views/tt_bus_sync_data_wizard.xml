@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+	<data>
+		<record id="bus_sync_data_wizard" model="ir.ui.view">
+			<field name="name">Bus Sync Data Wizard</field>
+			<field name="model">bus.sync.data.wizard</field>
+			<field name="arch" type="xml">
+				<form string="Message">
+					<group>
+						<group>
+							<!--<field name="provider_id"/>-->
+						</group>
+					</group>
+					<footer>
+						<button string="Sync Data" name="sync_product" type="object" class="btn-primary" />
+						<button string="Sync Data Journey" name="sync_get_bus_journey" type="object" class="btn-primary" />
+						<button string="Cancel" class="btn-default" special="cancel" />
+					</footer>
+				</form>
+			</field>
+		</record>
+
+		<record id="action_bus_sync_data_wizard" model="ir.actions.act_window">
+			<field name="name">Bus Sync Data</field>
+			<field name="type">ir.actions.act_window</field>
+			<field name="res_model">bus.sync.data.wizard</field>
+			<field name="view_type">form</field>
+			<field name="view_mode">form</field>
+			<field name="view_id" ref="bus_sync_data_wizard"/>
+			<field name="target">new</field>
+		</record>
+
+		<menuitem
+				id="sub_menu_bus_sync_data"
+				name="Sync Data"
+				parent="tt_reservation_bus.menu_tour_travel_bus_master"
+				action="action_bus_sync_data_wizard"
+				sequence="1"
+				groups="tt_base.group_master_data_bus_level_3"
+		/>
+
+	</data>
+</odoo>
