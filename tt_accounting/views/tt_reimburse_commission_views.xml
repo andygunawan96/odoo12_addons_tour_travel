@@ -4,10 +4,11 @@
         <field name="name">tt.reimburse.commission.filter.view</field>
         <field name="model">tt.reimburse.commission</field>
         <field name="arch" type="xml">
-            <search string="Search Ledger">
+            <search string="Search Reimburse Commission">
                 <field name="provider_pnr"/>
                 <field name="reservation_ref"/>
                 <field name="provider_issued_date"/>
+                <field name="agent_id"/>
                 <separator/>
                 <filter name="today" string="Today" domain="[('date','&gt;=',time.strftime('%%Y-%%m-%%d'))]"/>
                 <filter name="yesterday" string="Yesterday"
@@ -26,6 +27,7 @@
 
                 <group expand="0" string="Group By">
                     <filter name="group_by_state" string="State" domain="[]" context="{'group_by':'state'}"/>
+                    <filter name="group_by_agent_id" string="Agent" domain="[]" context="{'group_by':'agent_id'}" groups="tt_base.group_tt_tour_travel"/>
                 </group>
             </search>
         </field>
@@ -53,6 +55,7 @@
                         <group>
                             <field name="reservation_ref"/>
                             <field name="provider_issued_date"/>
+                            <field name="agent_id"/>
                             <field name="currency_id"/>
                             <field name="rac_mode"/>
                             <field name="base_price"/>
@@ -139,6 +142,7 @@
                 <field name="provider_pnr"/>
                 <field name="reservation_ref"/>
                 <field name="provider_issued_date"/>
+                <field name="agent_id"/>
                 <field name="currency_id"/>
                 <field name="rac_mode"/>
                 <field name="base_price"/>
