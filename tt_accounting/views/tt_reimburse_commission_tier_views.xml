@@ -9,6 +9,14 @@
 
                 </header>
                 <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="toggle_active" type="object"
+                                class="oe_stat_button" icon="fa-archive"
+                                groups="base.group_system,tt_base.group_pricing_agent_level_4">
+                            <field name="active" widget="boolean_button"
+                                   options='{"terminology": "archive"}'/>
+                        </button>
+                    </div>
                     <group>
                         <field name="lower_limit"/>
                         <field name="rac_amount"/>

@@ -8,6 +8,8 @@
                 <field name="provider_pnr"/>
                 <field name="reservation_ref"/>
                 <field name="provider_issued_date"/>
+                <field name="provider_type_id"/>
+                <field name="provider_id"/>
                 <field name="agent_id"/>
                 <separator/>
                 <filter name="today" string="Today" domain="[('date','&gt;=',time.strftime('%%Y-%%m-%%d'))]"/>
@@ -27,6 +29,8 @@
 
                 <group expand="0" string="Group By">
                     <filter name="group_by_state" string="State" domain="[]" context="{'group_by':'state'}"/>
+                    <filter name="group_by_provider_type_id" string="Provider Type" domain="[]" context="{'group_by':'provider_type_id'}"/>
+                    <filter name="group_by_provider_id" string="Provider" domain="[]" context="{'group_by':'provider_id'}"/>
                     <filter name="group_by_agent_id" string="Agent" domain="[]" context="{'group_by':'agent_id'}" groups="tt_base.group_tt_tour_travel"/>
                 </group>
             </search>
@@ -55,6 +59,8 @@
                         <group>
                             <field name="reservation_ref"/>
                             <field name="provider_issued_date"/>
+                            <field name="provider_type_id"/>
+                            <field name="provider_id"/>
                             <field name="agent_id"/>
                             <field name="currency_id"/>
                             <field name="rac_mode"/>
@@ -142,6 +148,8 @@
                 <field name="provider_pnr"/>
                 <field name="reservation_ref"/>
                 <field name="provider_issued_date"/>
+                <field name="provider_type_id"/>
+                <field name="provider_id"/>
                 <field name="agent_id"/>
                 <field name="currency_id"/>
                 <field name="rac_mode"/>
@@ -179,5 +187,38 @@
             sequence="2"
             groups="tt_base.group_pricing_agent_level_3"
     />
+
+    <record model="ir.actions.server" id="action_multi_action_approve_reimburse">
+        <field name="name">Approve</field>
+        <field name="model_id" ref="tt_accounting.model_tt_reimburse_commission"/>
+        <field name="binding_model_id" ref="tt_accounting.model_tt_reimburse_commission"/>
+        <field name="state">code</field>
+        <field name="code">
+            if records:
+            action = records.multi_action_approve()
+        </field>
+    </record>
+
+    <record model="ir.actions.server" id="action_multi_action_cancel_reimburse">
+        <field name="name">Cancel</field>
+        <field name="model_id" ref="tt_accounting.model_tt_reimburse_commission"/>
+        <field name="binding_model_id" ref="tt_accounting.model_tt_reimburse_commission"/>
+        <field name="state">code</field>
+        <field name="code">
+            if records:
+            action = records.multi_action_cancel()
+        </field>
+    </record>
+
+    <record model="ir.actions.server" id="action_multi_action_set_to_draft_reimburse">
+        <field name="name">Set to Draft</field>
+        <field name="model_id" ref="tt_accounting.model_tt_reimburse_commission"/>
+        <field name="binding_model_id" ref="tt_accounting.model_tt_reimburse_commission"/>
+        <field name="state">code</field>
+        <field name="code">
+            if records:
+            action = records.multi_action_set_to_draft()
+        </field>
+    </record>
 
 </odoo>
