@@ -35,6 +35,11 @@
         <field name="code">ticketing_phc</field>
     </record>
 
+    <record id="able_to_ticketing_bus" model="tt.frontend.security">
+        <field name="name">Ticketing Bus</field>
+        <field name="code">ticketing_bus</field>
+    </record>
+
     <record id="able_to_ticketing_activity" model="tt.frontend.security">
         <field name="name">Ticketing Activity</field>
         <field name="code">ticketing_activity</field>
