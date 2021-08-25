@@ -13,6 +13,7 @@ class ReimburseCommissionTier(models.Model):
     rac_amount = fields.Float('Commission Multiplier', default=0.0)
     denominator = fields.Integer('Denominator', default=100)
     rac_preview = fields.Char('Commission Preview', readonly=True, compute='_onchange_rac_denominator')
+    active = fields.Boolean('Active', default=True)
 
     @api.onchange('rac_amount', 'denominator')
     @api.depends('rac_amount', 'denominator')
