@@ -234,9 +234,7 @@ class ReimburseCommissionWizard(models.TransientModel):
                         'pricing_date': '',
                         'show_upline_commission': True
                     })
-                    print(total_tier_price)
                     total_tier_price += tier_nta_amount['ADT']
-                    print(total_tier_price)
                 if chd_count > 0:
                     if self.commission_tier_ids:
                         tier_list = self.commission_tier_ids.sorted(key=lambda r: r.lower_limit, reverse=True)
