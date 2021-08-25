@@ -423,6 +423,8 @@ class ReimburseCommissionWizard(models.TransientModel):
                     reimburse_obj = self.env['tt.reimburse.commission'].create({
                         'res_model': rec._name,
                         'res_id': rec.id,
+                        'provider_type_id': self.provider_type_id.id,
+                        'provider_id': self.provider_id.id,
                         'reservation_ref': rec.booking_id.name,
                         'provider_pnr': rec.pnr,
                         'provider_issued_date': rec.issued_date,
