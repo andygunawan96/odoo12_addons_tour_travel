@@ -994,6 +994,7 @@ class ReservationAirline(models.Model):
                         for segment in journey['segments']:
                             for fare in segment['fares']:
                                 provider_obj.create_service_charge(fare['service_charges'])
+                                provider_obj.update_pricing_details(fare)
                 # END
 
                 # May 13, 2020 - SAM
@@ -1272,6 +1273,11 @@ class ReservationAirline(models.Model):
                         passenger_seat_src[leg_key] = []
                     passenger_seat_src[leg_key].append(fee)
             # END
+
+            # August 24, 2021 - SAM
+            pricing_provider_line_ids = []
+            pricing_agent_ids = []
+            # END
             for journey in schedule['journeys']:
                 ##create journey
                 this_journey_seg = []
@@ -1337,6 +1343,19 @@ class ReservationAirline(models.Model):
                         for addons in fare_data.get('fare_details', []):
                             addons['description'] = json.dumps(addons['description'])
                             this_segment_fare_details.append((0, 0, addons))
+
+                        # August 24, 2021 - SAM
+                        if fare_data.get('pricing_provider_list'):
+                            for pp in fare_data['pricing_provider_list']:
+                                if not pp.get('pricing_provider_line_id'):
+                                    continue
+                                pricing_provider_line_ids.append((0, 0, pp))
+                        if fare_data.get('pricing_agent_list'):
+                            for pp in fare_data['pricing_agent_list']:
+                                if not pp.get('pricing_agent_id'):
+                                    continue
+                                pricing_agent_ids.append((0, 0, pp))
+                        # END
                     # END
 
                     segment_values = {
@@ -1413,7 +1432,6 @@ class ReservationAirline(models.Model):
                             rule_ids.append((0, 0, val))
                 except:
                     _logger.error('Error Create Fare Rules, %s' % traceback.format_exc())
-
             # END
 
             values = {
@@ -1433,6 +1451,8 @@ class ReservationAirline(models.Model):
                 'journey_ids': this_pnr_journey,
                 'total_price': total_price,
                 'rule_ids': rule_ids,
+                'pricing_provider_line_ids': pricing_provider_line_ids,
+                'pricing_agent_ids': pricing_agent_ids,
                 # April 20, 2020 - SAM
                 # 'cost_service_charge_ids': this_service_charges,
                 # END

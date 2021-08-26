@@ -294,12 +294,15 @@ class ReservationPeriksain(models.Model):
 
             #fixme diasumsikan idxny sama karena sama sama looping by rec['psg']
             for idx,rec in enumerate(list_passenger_value):
+                sample_method = ''
+                if passengers[idx].get('sample_method'):
+                    sample_method = passengers[idx]['sample_method']
                 rec[2].update({
                     'customer_id': list_customer_id[idx].id,
                     'email': passengers[idx]['email'],
                     'address': passengers[idx]['address'],
                     'phone_number': passengers[idx]['phone_number'],
-                    'sample_method': passengers[idx]['sample_method'],
+                    'sample_method': sample_method,
                     'provinsi': passengers[idx]['provinsi'],
                     'kabupaten': passengers[idx]['kabupaten'],
                     'kecamatan': passengers[idx]['kecamatan'],

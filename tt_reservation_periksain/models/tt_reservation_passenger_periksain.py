@@ -33,9 +33,11 @@ class TtReservationCustomer(models.Model):
 
     def to_dict(self):
         res = super(TtReservationCustomer, self).to_dict()
-        for rec in VARIABLE_SAMPLE_METHOD:
-            if rec[0] == self.sample_method:
-                sample_method = rec[1]
+        sample_method = ''
+        if self.sample_method:
+            for rec in VARIABLE_SAMPLE_METHOD:
+                if rec[0] == self.sample_method:
+                    sample_method = rec[1]
         res.update({
             'sale_service_charges': self.get_service_charges(),
             'address': self.address,

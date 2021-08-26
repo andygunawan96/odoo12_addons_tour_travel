@@ -234,9 +234,7 @@ class ReimburseCommissionWizard(models.TransientModel):
                         'pricing_date': '',
                         'show_upline_commission': True
                     })
-                    print(total_tier_price)
                     total_tier_price += tier_nta_amount['ADT']
-                    print(total_tier_price)
                 if chd_count > 0:
                     if self.commission_tier_ids:
                         tier_list = self.commission_tier_ids.sorted(key=lambda r: r.lower_limit, reverse=True)
@@ -423,6 +421,8 @@ class ReimburseCommissionWizard(models.TransientModel):
                     reimburse_obj = self.env['tt.reimburse.commission'].create({
                         'res_model': rec._name,
                         'res_id': rec.id,
+                        'provider_type_id': self.provider_type_id.id,
+                        'provider_id': self.provider_id.id,
                         'reservation_ref': rec.booking_id.name,
                         'provider_pnr': rec.pnr,
                         'provider_issued_date': rec.issued_date,
