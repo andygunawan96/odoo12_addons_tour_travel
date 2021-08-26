@@ -246,6 +246,7 @@ class PricingAgent(models.Model):
         charge_codes = [rec.code for rec in self.charge_code_ids]
         class_of_services = [rec.code for rec in self.class_of_service_ids]
         res = {
+            'id': self.id,
             'agent_type_id': self.agent_type_id.get_data(),
             'provider_type': self.provider_type_id and self.provider_type_id.code or '',
             'carrier_access_type': self.carrier_access_type,
