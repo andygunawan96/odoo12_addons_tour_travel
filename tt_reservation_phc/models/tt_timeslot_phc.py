@@ -33,10 +33,18 @@ class TtTimeslotphc(models.Model):
     dateslot = fields.Date('Dateslot')
 
     datetimeslot = fields.Datetime('DateTime Slot')
+    datetimeslot_end = fields.Datetime('DateTime Slot End')
+
     timeslot_display_name = fields.Char('Display Name', compute="_compute_timeslot_display_name")
     timeslot_type = fields.Selection([('home_care', 'Home Care'), ('drive_thru', 'Drive Thru'), ('group_booking', 'Group Booking')], 'Timeslot Type')
 
     destination_id = fields.Many2one('tt.destinations','Area')
+    destination_area = fields.Selection([('surabaya_all','Surabaya All'),
+                                         ('surabaya_pusat','Surabaya Pusat'),
+                                         ('surabaya_timur','Surabaya Timur'),
+                                         ('surabaya_selatan','Surabaya Selatan'),
+                                         ('surabaya_barat','Surabaya Barat'),
+                                         ('surabaya_utara','Surabaya Utara')])
 
     selected_count = fields.Integer('Selected Counter',compute="_compute_selected_counter",store=True)
 
@@ -186,6 +194,8 @@ class TtTimeslotphc(models.Model):
 
             timeslot_dict[rec.destination_id.name]['timeslots'][str_dateslot].append({
                 'time': str(rec.datetimeslot)[11:16],
+                'time_end': str(rec.datetimeslot_end)[11:16],
+                'subarea': rec.destination_area,
                 'seq_id': rec.seq_id,
                 'availability': rec.get_availability(carrier_obj.code),
                 'group_booking': True if rec.agent_id else False,
@@ -218,7 +228,9 @@ class TtTimeslotphc(models.Model):
     def to_dict(self):
         return {
             "datetimeslot": self.datetimeslot.strftime('%Y-%m-%d %H:%M'),
+            "datetimeslot_end": self.datetimeslot.strftime('%Y-%m-%d %H:%M'),
             "area": self.destination_id.city,
+            "subarea": self.destination_area,
             "total_pcr_timeslot": self.total_pcr_timeslot,
             "used_pcr_count": self.used_pcr_count,
             "total_pcr_issued_timeslot": 200,

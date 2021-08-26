@@ -9,9 +9,9 @@ from datetime import timedelta,datetime
 _logger = logging.getLogger(__name__)
 
 COMMISSION_PER_PAX = 22000 ## komisi agent /pax
-COMMISSION_PER_PAX_PCR = 100000 ## komisi agent /pax
+COMMISSION_PER_PAX_PCR = 50000 ## komisi agent /pax
 BASE_PRICE_PER_PAX = 150000 ## harga 1 /pax
-BASE_PRICE_PER_PAX_PCR = 750000 ## harga 1 /pax
+BASE_PRICE_PER_PAX_PCR = 650000 ## harga 1 /pax
 SINGLE_SUPPLEMENT = 25000 ## 1 orang
 OVERTIME_SURCHARGE = 50000 ## lebih dari 18.00 /pax
 CITO_SURCHARGE = 25000## Urgent cito surcharge range 2-5jam stlh jam book

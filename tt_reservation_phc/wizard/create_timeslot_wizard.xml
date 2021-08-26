@@ -21,6 +21,8 @@
                         <field name="time_string"/>
                     </group>
                 </group>
+                <p>07:00-10:00-surabaya_all,10:00-13:00-surabaya_timur</p>
+                <p>surabaya_all,surabaya_pusat,surabaya_timur,surabaya_barat,surabaya_selatan,surabaya_utara</p>
                 <group>
                     <field name="default_data_id"/>
                 </group>

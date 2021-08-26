@@ -33,7 +33,7 @@
         <field name="name">tt.timeslot.periksain.form.view</field>
         <field name="model">tt.timeslot.periksain</field>
         <field name="arch" type="xml">
-            <form edit="false" create="false">
+            <form create="false">
                 <sheet>
 
                     <div class="oe_button_box" name="button_box">
