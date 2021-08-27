@@ -159,13 +159,19 @@ class TtTimeslotphc(models.Model):
         if carrier_obj.id in [self.env.ref('tt_reservation_phc.tt_transport_carrier_phc_home_care_antigen').id,
                           self.env.ref('tt_reservation_phc.tt_transport_carrier_phc_home_care_pcr').id]:
             dom.append(('timeslot_type', 'in', ['home_care', 'group_booking']))
-            if '06:00' < str(current_wib_datetime.time())[:5] < '14:00':
-                dom.append(('datetimeslot', '>=', datetime.now(pytz.utc) + timedelta(hours=2)))
-            else:
-                min_datetime = current_datetime.replace(hour=1, minute=0, second=0, microsecond=0)
-                if current_datetime > min_datetime:
-                    min_datetime = min_datetime + timedelta(days=1)
-                dom.append(('datetimeslot', '>=', min_datetime))
+            # if '06:00' < str(current_wib_datetime.time())[:5] < '14:00':
+            #     dom.append(('datetimeslot', '>=', datetime.now(pytz.utc) + timedelta(hours=2)))
+            # else:
+            #     min_datetime = current_datetime.replace(hour=1, minute=0, second=0, microsecond=0)
+            #     if current_datetime > min_datetime:
+            #         min_datetime = min_datetime + timedelta(days=1)
+            #     dom.append(('datetimeslot', '>=', min_datetime))
+
+            # home care di ganti H+1
+            if current_wib_datetime <= current_wib_datetime.replace(hour=17, minute=0, second=0, microsecond=0):#kalau sblm jam 5 sore utk H+1
+                dom.append(('datetimeslot', '>=', current_wib_datetime.replace(hour=0,minute=0,second=0,microsecond=0) + timedelta(days=1)))
+            else:#stlh jam 5 sore utk H+2
+                dom.append(('datetimeslot', '>=', current_wib_datetime.replace(hour=0,minute=0,second=0,microsecond=0) + timedelta(days=2)))
         else:
             dom.append(('timeslot_type', '=', 'drive_thru'))
             ## kalau kurang dari jam 16.00 di tambah timedelta 0 else di tambah 1 hari
