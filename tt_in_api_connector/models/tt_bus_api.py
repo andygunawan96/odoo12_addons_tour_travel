@@ -12,12 +12,6 @@ class TtBusApiCon(models.Model):
             res = self.env['tt.master.bus.station'].get_config_api()
         elif action == 'create_booking':
             res = self.env['tt.reservation.bus'].create_booking_bus_api(data,context)
-        elif action == 'edit_passenger_verify_api':
-            res = table_obj.edit_passenger_verify_api(data,context)
-        elif action == 'get_transaction_by_analyst':
-            res = table_obj.get_transaction_by_analyst_api(data,context)
-        elif action == 'update_data_verif':
-            res = table_obj.update_data_verif(data, context)
         else:
             raise RequestException(999)
         return res
