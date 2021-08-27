@@ -885,6 +885,7 @@ class ReservationAirline(models.Model):
                         for segment in journey['segments']:
                             for fare in segment['fares']:
                                 rsv_prov_obj.create_service_charge(fare['service_charges'])
+                                rsv_prov_obj.update_pricing_details(fare)
                 elif commit_data['status'] == 'ISSUED' and rsv_prov_obj.state == 'issued':
                     if is_admin_charge:
                         # admin_fee_obj = self.env.ref('tt_accounting.admin_fee_reschedule')

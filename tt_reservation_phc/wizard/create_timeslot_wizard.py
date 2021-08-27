@@ -10,12 +10,12 @@ class CreateTimeslotphcWizard(models.TransientModel):
 
     start_date = fields.Date('Start Date',required=True, default=fields.Date.context_today)
     end_date = fields.Date('End Date',required=True, default=fields.Date.context_today)
-    time_string = fields.Text('Time',default='08:00,09:00,10:00,11:00,13:00,14:00,15:00,16:00')
+    time_string = fields.Text('Time',default='07:00-10:00-surabaya_barat,10:00-13:00-surabaya_selatan,13:00-16:00-surabaya_pusat,16:00-19:00-surabaya_timur,19:00-21:00-surabaya_utara')
 
     timeslot_type = fields.Selection([('home_care', 'Home Care'), ('group_booking', 'Group Booking')], 'Timeslot Type',
                                      default='home_care', required=True)
 
-    total_timeslot = fields.Integer('Total Timeslot',default=5, required=True)
+    total_timeslot = fields.Integer('Total Timeslot',default=3, required=True)
     total_adult_timeslot = fields.Integer('Total Adult Timeslot',default=420, required=True)
     total_pcr_timeslot = fields.Integer('Total PCR Timeslot',default=195, required=True)
 
@@ -95,20 +95,27 @@ class CreateTimeslotphcWizard(models.TransientModel):
         ##convert to timezone 0
         time_objs = []
         for time_str in timelist:
-            time_objs.append((datetime.strptime(time_str,'%H:%M') - timedelta(hours=7)).time())
+            time_str_list = time_str.split('-')
+
+            time_objs.append([(datetime.strptime(time_str_list[0],'%H:%M') - timedelta(hours=7)).time(),
+                             (datetime.strptime(time_str_list[1],'%H:%M') - timedelta(hours=7)).time(),
+                             time_str_list[2]])
 
         db = self.env['tt.timeslot.phc'].search([('destination_id','=',self.area_id.id), ('dateslot','>=',self.start_date), ('dateslot','<=',self.end_date), ('timeslot_type','=',self.timeslot_type), ('agent_id','=',self.agent_id.id if self.agent_id else False)])
         db_list = [str(data.datetimeslot) for data in db]
         for this_date_counter in range(date_delta):
             for this_time in time_objs:
                 this_date = self.start_date + timedelta(days=this_date_counter)
-                datetimeslot = datetime.strptime('%s %s' % (str(this_date),this_time),'%Y-%m-%d %H:%M:%S')
+                datetimeslot = datetime.strptime('%s %s' % (str(this_date),this_time[0]),'%Y-%m-%d %H:%M:%S')
+                datetimeslot_end = datetime.strptime('%s %s' % (str(this_date),this_time[1]),'%Y-%m-%d %H:%M:%S')
                 if str(datetimeslot) not in db_list:
                     create_values.append({
                         'dateslot': this_date,
                         'datetimeslot': datetimeslot,
-                        'max_book_datetime': datetimeslot.replace(hour=9, minute=0, second=0, microsecond=0),
+                        'datetimeslot_end': datetimeslot_end,
+                        'max_book_datetime': datetimeslot.replace(hour=10, minute=0, second=0, microsecond=0) - timedelta(days=1),
                         'destination_id': self.area_id.id,
+                        'destination_area': this_time[2],
                         'total_timeslot': self.total_timeslot,
                         'total_adult_timeslot': self.total_adult_timeslot,
                         'total_pcr_timeslot': self.total_pcr_timeslot,
@@ -128,9 +135,10 @@ class CreateTimeslotphcWizard(models.TransientModel):
                     })
         self.env['tt.timeslot.phc'].create(create_values)
 
-    def generate_drivethru_timeslot(self, date, max_timeslot=5, adult_timeslot=420, pcr_timeslot=195):
+    def generate_drivethru_timeslot(self, date, max_timeslot=3, adult_timeslot=420, pcr_timeslot=195):
         destination = self.env['tt.destinations'].search([('provider_type_id','=',self.env.ref('tt_reservation_phc.tt_provider_type_phc').id),('code','=','SUB')])
         datetimeslot = datetime.strptime('%s %s' % (str(date), '02:09:09'), '%Y-%m-%d %H:%M:%S')
+        datetimeslot_end = datetime.strptime('%s %s' % (str(date), '08:09:09'), '%Y-%m-%d %H:%M:%S')
         db = self.env['tt.timeslot.phc'].search(
             [('destination_id', '=', destination.id), ('dateslot', '=', date),
              ('timeslot_type', '=', 'drive_thru')])
@@ -139,8 +147,10 @@ class CreateTimeslotphcWizard(models.TransientModel):
             self.env['tt.timeslot.phc'].create({
                 'dateslot': date,
                 'datetimeslot': datetimeslot,
+                'datetimeslot_end': datetimeslot_end,
                 'max_book_datetime': datetimeslot.replace(hour=9,minute=0,second=0,microsecond=0),
                 'destination_id': destination.id,
+                'destination_area': 'surabaya_all',
                 'total_timeslot': max_timeslot,
                 'total_adult_timeslot': adult_timeslot,
                 'total_pcr_timeslot': pcr_timeslot,

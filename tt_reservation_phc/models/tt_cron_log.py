@@ -25,11 +25,11 @@ class TtCronLogInhphc(models.Model):
             self.create_cron_log_folder()
             self.write_cron_log('auto done state vendor phc')
 
-    def cron_auto_create_timeslot_phc(self,max_timeslot=5,adult_timeslot=425,dt_max_timeslot=1,dt_adult_timeslot=425,pcr_timeslot=200):
+    def cron_auto_create_timeslot_phc(self,days_range=1,max_timeslot=3,adult_timeslot=425,dt_max_timeslot=1,dt_days_range=8,dt_adult_timeslot=425,pcr_timeslot=200):
         try:
             #home care
             wiz_obj = self.env['create.timeslot.phc.wizard'].create({
-                'end_date': datetime.today() + timedelta(days=7),
+                'end_date': datetime.today() + timedelta(days=days_range),
                 'area_id': self.env.ref('tt_reservation_phc.tt_destination_phc_sub').id,
                 'default_data_id': self.env['tt.timeslot.phc.default'].search([],limit=1).id,
                 'total_timeslot': max_timeslot,
@@ -44,7 +44,7 @@ class TtCronLogInhphc(models.Model):
             }, False)
             public_holiday_list = [str(rec['date']) for rec in public_holiday_res['response']]
             #drive thru
-            for idx in range(8):
+            for idx in range(dt_days_range):
                 this_date = datetime.now() + timedelta(days=idx)
                 if str(this_date.date()) in public_holiday_list or this_date.weekday() == 6:
                     continue
