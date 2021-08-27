@@ -239,9 +239,6 @@ class TtReservationBus(models.Model):
                 'arrival_date': provider_ids[-1].arrival_date[:10]
             })
 
-            if not req.get("bypass_psg_validator",False):
-                self.psg_validator(book_obj)
-
             response = {
                 'book_id': book_obj.id,
                 'order_number': book_obj.name,
@@ -262,68 +259,6 @@ class TtReservationBus(models.Model):
             except:
                 _logger.error('Creating Notes Error')
             return ERR.get_error(1004)
-
-    def psg_validator(self,book_obj):
-        for provider in book_obj.provider_booking_ids:
-            for journey in provider['journey_ids']:
-
-                rule = self.env['tt.limiter.rule'].sudo().search([('carrier_code', '=', journey.carrier_code), ('provider_type_id.code', '=', book_obj.provider_type_id.code)])
-
-                if rule:
-                    limit = rule.rebooking_limit
-                else:
-                    continue
-
-                for name in book_obj.passenger_ids:
-                    if name.identity_number:
-                        search_query = [('journey_code','=',journey.journey_code),
-                                        '|',
-                                        ('booking_id.passenger_ids.identity_number','=ilike',name.identity_number),
-                                        ('booking_id.passenger_ids.name','=ilike',name.name)]
-                    else:
-                        search_query = [('journey_code','=',journey.journey_code),
-                                        ('booking_id.passenger_ids.name','=ilike',name.name)]
-
-                    found_segments = self.env['tt.journey.bus'].search(search_query,order='id DESC')
-
-                    valid_segments = found_segments.filtered(lambda x: x.booking_id.state in ['booked', 'issued', 'cancel2', 'fail_issue'])
-                    # for seg in found_segments:
-                    #     try:
-                    #         curr_state = seg.state
-                    #     except:
-                    #         curr_state = 'booked'
-                    #         _logger.error("Passenger Validator Cache Miss Error")
-                    #
-                    #     if curr_state in ['booked', 'issued', 'cancel2', 'fail_issue']:
-                    #         valid_segments.append(seg)
-
-                    safe = False
-
-                    if len(valid_segments) < limit:
-                        safe = True
-                    else:
-                        for idx,valid_segment in enumerate(valid_segments[:limit]):
-                            if valid_segment.booking_id.state == 'issued':
-                                safe=True
-                                break
-
-                    if not safe:
-                        # whitelist di sini
-                        whitelist_name = self.env['tt.whitelisted.name'].sudo().search(
-                            [('name', 'ilike', name.name), ('chances_left', '>', 0)],limit=1)
-
-                        if whitelist_name:
-                            whitelist_name.chances_left -= 1
-                            return True
-
-                        whitelist_passport = self.env['tt.whitelisted.passport'].sudo().search(
-                            [('passport','=',name.identity_number),('chances_left','>',0)],limit=1)
-
-                        if whitelist_passport:
-                            whitelist_passport.chances_left -= 1
-                            return True
-
-                        raise RequestException(1026,additional_message="Passenger validator failed on %s because of rebooking with same name and same route." % (name.name))
 
     def update_pnr_provider_bus_api(self, req, context):
         ### dapatkan PNR dan ubah ke booked
@@ -441,7 +376,8 @@ class TtReservationBus(models.Model):
             'destination_id': dest_obj.get_id(searchRQ['journey_list'][dest_idx]['destination'], provider_type_id),
             'provider_type_id': provider_type_id.id,
             'adult': searchRQ['adult'],
-            'infant': searchRQ['infant'],
+            # 'infant': searchRQ['infant'],
+            'infant': 0,
             'agent_id': context_gateway['co_agent_id'],
             'customer_parent_id': context_gateway.get('co_customer_parent_id', False),
             'user_id': context_gateway['co_uid']
