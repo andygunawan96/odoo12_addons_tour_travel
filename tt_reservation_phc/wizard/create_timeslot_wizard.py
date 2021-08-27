@@ -10,7 +10,7 @@ class CreateTimeslotphcWizard(models.TransientModel):
 
     start_date = fields.Date('Start Date',required=True, default=fields.Date.context_today)
     end_date = fields.Date('End Date',required=True, default=fields.Date.context_today)
-    time_string = fields.Text('Time',default='07:00-09:00-surabaya_timur,09:00-11:00-surabaya_utara,11:00-13:00-surabaya_barat,13:00-15:00-surabaya_selatan,15:00-18:00-surabaya_pusat')
+    time_string = fields.Text('Time',default='07:00-10:00-surabaya_barat,10:00-13:00-surabaya_selatan,13:00-16:00-surabaya_pusat,16:00-19:00-surabaya_timur,19:00-21:00-surabaya_utara')
 
     timeslot_type = fields.Selection([('home_care', 'Home Care'), ('group_booking', 'Group Booking')], 'Timeslot Type',
                                      default='home_care', required=True)
@@ -113,7 +113,7 @@ class CreateTimeslotphcWizard(models.TransientModel):
                         'dateslot': this_date,
                         'datetimeslot': datetimeslot,
                         'datetimeslot_end': datetimeslot_end,
-                        'max_book_datetime': datetimeslot.replace(hour=9, minute=0, second=0, microsecond=0) - timedelta(days=1),
+                        'max_book_datetime': datetimeslot.replace(hour=10, minute=0, second=0, microsecond=0) - timedelta(days=1),
                         'destination_id': self.area_id.id,
                         'destination_area': this_time[2],
                         'total_timeslot': self.total_timeslot,
