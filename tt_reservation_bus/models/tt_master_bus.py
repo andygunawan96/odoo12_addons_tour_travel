@@ -144,6 +144,7 @@ class BusStation(models.Model):
                 rec.update({
                     "bus_journey_ids": [(6, 0, list_id)]
                 })
+                self.env.cr.commit()
             _logger.info(json.dumps(res))
 
 
