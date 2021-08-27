@@ -15,7 +15,7 @@ class CreateTimeslotphcWizard(models.TransientModel):
     timeslot_type = fields.Selection([('home_care', 'Home Care'), ('group_booking', 'Group Booking')], 'Timeslot Type',
                                      default='home_care', required=True)
 
-    total_timeslot = fields.Integer('Total Timeslot',default=5, required=True)
+    total_timeslot = fields.Integer('Total Timeslot',default=3, required=True)
     total_adult_timeslot = fields.Integer('Total Adult Timeslot',default=420, required=True)
     total_pcr_timeslot = fields.Integer('Total PCR Timeslot',default=195, required=True)
 
@@ -135,7 +135,7 @@ class CreateTimeslotphcWizard(models.TransientModel):
                     })
         self.env['tt.timeslot.phc'].create(create_values)
 
-    def generate_drivethru_timeslot(self, date, max_timeslot=5, adult_timeslot=420, pcr_timeslot=195):
+    def generate_drivethru_timeslot(self, date, max_timeslot=3, adult_timeslot=420, pcr_timeslot=195):
         destination = self.env['tt.destinations'].search([('provider_type_id','=',self.env.ref('tt_reservation_phc.tt_provider_type_phc').id),('code','=','SUB')])
         datetimeslot = datetime.strptime('%s %s' % (str(date), '02:09:09'), '%Y-%m-%d %H:%M:%S')
         datetimeslot_end = datetime.strptime('%s %s' % (str(date), '08:09:09'), '%Y-%m-%d %H:%M:%S')
