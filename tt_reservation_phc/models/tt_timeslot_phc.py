@@ -44,7 +44,7 @@ class TtTimeslotphc(models.Model):
                                          ('surabaya_timur','Surabaya Timur'),
                                          ('surabaya_selatan','Surabaya Selatan'),
                                          ('surabaya_barat','Surabaya Barat'),
-                                         ('surabaya_utara','Surabaya Utara')])
+                                         ('surabaya_utara','Surabaya Utara')],default='surabaya_all')
 
     selected_count = fields.Integer('Selected Counter',compute="_compute_selected_counter",store=True)
 
