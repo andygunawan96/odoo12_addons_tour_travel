@@ -89,6 +89,21 @@
                             <field name="passenger_airline_ids"/>
                         </tree>
                     </field>
+                    <separator string="Pricing Provider Lines"/>
+                    <field name="pricing_provider_line_ids">
+                        <tree>
+                            <field name="pricing_provider_line_id"/>
+                            <field name="pricing_provider_id"/>
+                            <field name="pricing_type"/>
+                            <field name="provider_pricing_type"/>
+                        </tree>
+                    </field>
+                    <separator string="Pricing Agents"/>
+                    <field name="pricing_agent_ids">
+                        <tree>
+                            <field name="pricing_agent_id"/>
+                        </tree>
+                    </field>
                     <separator string="Rules"/>
                     <field name="rule_ids"/>
                     <separator string="Error History"/>

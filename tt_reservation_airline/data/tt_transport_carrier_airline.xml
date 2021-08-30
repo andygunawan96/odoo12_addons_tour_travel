@@ -41,7 +41,7 @@
             <field name="icao">GIA</field>
             <field name="call_sign">INDONESIA</field>
             <field name="active">1</field>
-            <field name="is_adult_birth_date_required" eval="False"/>
+            <field name="is_adult_birth_date_required" eval="True"/>
             <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
         </record>
 

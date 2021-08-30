@@ -79,6 +79,11 @@ class TtProviderAirline(models.Model):
 
     rule_ids = fields.One2many('tt.provider.airline.rule', 'provider_booking_id', string='Rules')
 
+    # August 24, 2021 - SAM
+    pricing_provider_line_ids = fields.One2many('tt.provider.airline.pricing.provider.line', 'provider_id', 'Pricing Provider Lines')
+    pricing_agent_ids = fields.One2many('tt.provider.airline.pricing.agent', 'provider_id', 'Pricing Agents')
+    # END
+
     ##button function
     def action_change_is_hold_date_sync(self):
         self.write({
@@ -838,6 +843,31 @@ class TtProviderAirline(models.Model):
 
         return True
     # END
+
+    def update_pricing_details(self, fare_data):
+        try:
+            pricing_provider_line_ids = []
+            for rec in self.pricing_provider_line_ids:
+                pricing_provider_line_ids.append((2, rec.id))
+            if 'pricing_provider_list' in fare_data:
+                for pp in fare_data['pricing_provider_list']:
+                    pricing_provider_line_ids.append((0, 0, pp))
+
+            pricing_agent_ids = []
+            for rec in self.pricing_agent_ids:
+                pricing_agent_ids.append((2, rec.id))
+            if 'pricing_agent_list' in fare_data:
+                for pp in fare_data['pricing_agent_list']:
+                    pricing_agent_ids.append((0, 0, pp))
+
+            if pricing_provider_line_ids or pricing_agent_ids:
+                self.write({
+                    'pricing_provider_line_ids': pricing_provider_line_ids,
+                    'pricing_agent_ids': pricing_agent_ids,
+                })
+        except:
+            _logger.error('Error update pricing details, %s' % traceback.format_exc())
+        return True
 
 
 class TtProviderAirlineRule(models.Model):

@@ -54,8 +54,10 @@
                             <field name="timeslot_type"/>
                             <field name="dateslot"/>
                             <field name="datetimeslot"/>
+                            <field name="datetimeslot_end"/>
                             <field name="max_book_datetime"/>
                             <field name="destination_id"/>
+                            <field name="destination_area"/>
                             <field name="agent_id"/>
                             <field name="currency_id" invisible="1"/>
                         </group>

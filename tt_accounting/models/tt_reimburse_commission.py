@@ -13,6 +13,7 @@ class ReimburseCommissionTier(models.Model):
     rac_amount = fields.Float('Commission Multiplier', default=0.0)
     denominator = fields.Integer('Denominator', default=100)
     rac_preview = fields.Char('Commission Preview', readonly=True, compute='_onchange_rac_denominator')
+    active = fields.Boolean('Active', default=True)
 
     @api.onchange('rac_amount', 'denominator')
     @api.depends('rac_amount', 'denominator')
@@ -28,6 +29,9 @@ class TtReimburseCommission(models.Model):
 
     res_model = fields.Char('Reservation Provider Name', index=True)
     res_id = fields.Integer('Reservation Provider ID', index=True, help='ID of the followed resource')
+    agent_id = fields.Many2one('tt.agent', 'Agent', compute='compute_agent_id', store=True)
+    provider_type_id = fields.Many2one('tt.provider.type', 'Provider Type', readonly=True)
+    provider_id = fields.Many2one('tt.provider', 'Provider', readonly=True)
     reservation_ref = fields.Char('Reservation Ref')
     provider_pnr = fields.Char('PNR Ref')
     provider_issued_date = fields.Datetime('Provider Issued Date')
@@ -48,24 +52,52 @@ class TtReimburseCommission(models.Model):
     cancel_date = fields.Datetime('Cancelled Date', readonly=1)
     cancel_uid = fields.Many2one('res.users', 'Cancelled By', readonly=1)
 
+    @api.onchange('res_model', 'res_id')
+    @api.depends('res_model', 'res_id')
+    def compute_agent_id(self):
+        for rec in self:
+            obj = self.env[rec.res_model].browse(rec.res_id)
+            if obj:
+                if obj.booking_id:
+                    rec.agent_id = obj.booking_id.agent_id and obj.booking_id.agent_id.id or False
+                else:
+                    rec.agent_id = False
+            else:
+                rec.agent_id = False
+
     def action_approve(self):
-        commission_list = [rec.to_dict() for rec in self.service_charge_ids]
-        provider_obj = self.env[self.res_model].browse(self.res_id)
-        if provider_obj:
-            provider_obj.create_service_charge(commission_list)
-            self.approved_date = fields.Datetime.now()
-            self.approved_uid = self.env.user.id
-            self.state = 'approved'
-        else:
-            raise UserError(_('Provider Object not found.'))
+        if self.state == 'draft':
+            commission_list = [rec.to_dict() for rec in self.service_charge_ids]
+            provider_obj = self.env[self.res_model].browse(self.res_id)
+            if provider_obj:
+                provider_obj.create_service_charge(commission_list)
+                self.approved_date = fields.Datetime.now()
+                self.approved_uid = self.env.user.id
+                self.state = 'approved'
+            else:
+                raise UserError(_('Provider Object not found.'))
 
     def action_cancel(self):
-        self.cancel_date = fields.Datetime.now()
-        self.cancel_uid = self.env.user.id
-        self.state = 'cancel'
+        if self.state == 'draft':
+            self.cancel_date = fields.Datetime.now()
+            self.cancel_uid = self.env.user.id
+            self.state = 'cancel'
 
     def action_set_to_draft(self):
-        self.state = 'draft'
+        if self.state == 'cancel':
+            self.state = 'draft'
+
+    def multi_action_approve(self):
+        for rec in self:
+            rec.action_approve()
+
+    def multi_action_cancel(self):
+        for rec in self:
+            rec.action_cancel()
+
+    def multi_action_set_to_draft(self):
+        for rec in self:
+            rec.action_set_to_draft()
 
     def open_reference(self):
         form_id = self.env['ir.ui.view'].search([('type', '=', 'form'), ('model', '=', self.res_model)], limit=1)

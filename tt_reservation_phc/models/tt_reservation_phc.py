@@ -196,7 +196,11 @@ class Reservationphc(models.Model):
             raise RequestException(1022,"<br/>\nJadwal Habis. Bisa dicoba tanggal/jam yang lain<br/>\nNo Timeslot. Please Try Other Date/Time")
         else:
             if not timeslot_objs.get_availability(carrier_obj.code, req['pax_count']):
-                raise RequestException(1022,"<br/>\nJadwal Penuh. %sBisa dicoba tanggal/jam yang lain<br/>\nTimeslot is Full. %sPlease Try Other Date/Time" % ("Only %s Slot(s) Available or " % (timeslot_objs.total_pcr_timeslot - timeslot_objs.used_pcr_count) if timeslot_objs.used_pcr_count < timeslot_objs.total_pcr_timeslot else "", "Only %s Slot(s) Available or " % (timeslot_objs.total_pcr_timeslot - timeslot_objs.used_pcr_count) if timeslot_objs.used_pcr_count < timeslot_objs.total_pcr_timeslot else ""))
+                if timeslot_objs.timeslot_type == 'drive_thru':
+                    raise RequestException(1022,"<br/>\nJadwal Penuh. %sBisa dicoba tanggal/jam yang lain<br/>\nTimeslot is Full. %sPlease Try Other Date/Time" % ("Only %s Slot(s) Available or " % (timeslot_objs.total_pcr_timeslot - timeslot_objs.used_pcr_count) if timeslot_objs.used_pcr_count < timeslot_objs.total_pcr_timeslot else "", "Only %s Slot(s) Available or " % (timeslot_objs.total_pcr_timeslot - timeslot_objs.used_pcr_count) if timeslot_objs.used_pcr_count < timeslot_objs.total_pcr_timeslot else ""))
+                else:
+                    raise RequestException(1022,"<br/>\nJadwal Penuh. Bisa dicoba tanggal/jam yang lain<br/>\nTimeslot is Full. Please Try Other Date/Time")
+
         for rec in timeslot_objs:
             if rec.datetimeslot.time() > time(11,0):
                 overtime_surcharge = True
@@ -724,7 +728,10 @@ class Reservationphc(models.Model):
         timeslot_write_data = self.env['tt.timeslot.phc'].search([('seq_id', 'in', booking_data['timeslot_list'])])
         for rec in timeslot_write_data:
             if not rec.get_availability(carrier_obj.code, booking_data['adult']):
-                raise RequestException(1022,"<br/>\nJadwal Penuh. %sBisa dicoba tanggal/jam yang lain<br/>\nTimeslot is Full. %sPlease Try Other Date/Time" % ("Only %s Slot(s) Available or " % (rec.total_pcr_timeslot - rec.used_pcr_count) if rec.used_pcr_count < rec.total_pcr_timeslot else "","Only %s Slot(s) Available or " % (rec.total_pcr_timeslot - rec.used_pcr_count) if rec.used_pcr_count < rec.total_pcr_timeslot else ""))
+                if rec.timeslot_type == 'drive_thru':
+                    raise RequestException(1022,"<br/>\nJadwal Penuh. %sBisa dicoba tanggal/jam yang lain<br/>\nTimeslot is Full. %sPlease Try Other Date/Time" % ("Only %s Slot(s) Available or " % (rec.total_pcr_timeslot - rec.used_pcr_count) if rec.used_pcr_count < rec.total_pcr_timeslot else "","Only %s Slot(s) Available or " % (rec.total_pcr_timeslot - rec.used_pcr_count) if rec.used_pcr_count < rec.total_pcr_timeslot else ""))
+                else:
+                    raise RequestException(1022,"<br/>\nJadwal Penuh. Bisa dicoba tanggal/jam yang lain<br/>\nTimeslot is Full. Please Try Other Date/Time")
 
         #check drive thru atau tidak, menentukan hold date
         drive_thru = False

@@ -33,10 +33,18 @@ class TtTimeslotphc(models.Model):
     dateslot = fields.Date('Dateslot')
 
     datetimeslot = fields.Datetime('DateTime Slot')
+    datetimeslot_end = fields.Datetime('DateTime Slot End')
+
     timeslot_display_name = fields.Char('Display Name', compute="_compute_timeslot_display_name")
     timeslot_type = fields.Selection([('home_care', 'Home Care'), ('drive_thru', 'Drive Thru'), ('group_booking', 'Group Booking')], 'Timeslot Type')
 
     destination_id = fields.Many2one('tt.destinations','Area')
+    destination_area = fields.Selection([('surabaya_all','Surabaya All'),
+                                         ('surabaya_pusat','Surabaya Pusat'),
+                                         ('surabaya_timur','Surabaya Timur'),
+                                         ('surabaya_selatan','Surabaya Selatan'),
+                                         ('surabaya_barat','Surabaya Barat'),
+                                         ('surabaya_utara','Surabaya Utara')],default='surabaya_all')
 
     selected_count = fields.Integer('Selected Counter',compute="_compute_selected_counter",store=True)
 
@@ -151,13 +159,19 @@ class TtTimeslotphc(models.Model):
         if carrier_obj.id in [self.env.ref('tt_reservation_phc.tt_transport_carrier_phc_home_care_antigen').id,
                           self.env.ref('tt_reservation_phc.tt_transport_carrier_phc_home_care_pcr').id]:
             dom.append(('timeslot_type', 'in', ['home_care', 'group_booking']))
-            if '06:00' < str(current_wib_datetime.time())[:5] < '14:00':
-                dom.append(('datetimeslot', '>=', datetime.now(pytz.utc) + timedelta(hours=2)))
-            else:
-                min_datetime = current_datetime.replace(hour=1, minute=0, second=0, microsecond=0)
-                if current_datetime > min_datetime:
-                    min_datetime = min_datetime + timedelta(days=1)
-                dom.append(('datetimeslot', '>=', min_datetime))
+            # if '06:00' < str(current_wib_datetime.time())[:5] < '14:00':
+            #     dom.append(('datetimeslot', '>=', datetime.now(pytz.utc) + timedelta(hours=2)))
+            # else:
+            #     min_datetime = current_datetime.replace(hour=1, minute=0, second=0, microsecond=0)
+            #     if current_datetime > min_datetime:
+            #         min_datetime = min_datetime + timedelta(days=1)
+            #     dom.append(('datetimeslot', '>=', min_datetime))
+
+            # home care di ganti H+1
+            if current_wib_datetime <= current_wib_datetime.replace(hour=17, minute=0, second=0, microsecond=0):#kalau sblm jam 5 sore utk H+1
+                dom.append(('datetimeslot', '>=', current_wib_datetime.replace(hour=0,minute=0,second=0,microsecond=0) + timedelta(days=1)))
+            else:#stlh jam 5 sore utk H+2
+                dom.append(('datetimeslot', '>=', current_wib_datetime.replace(hour=0,minute=0,second=0,microsecond=0) + timedelta(days=2)))
         else:
             dom.append(('timeslot_type', '=', 'drive_thru'))
             ## kalau kurang dari jam 16.00 di tambah timedelta 0 else di tambah 1 hari
@@ -186,6 +200,8 @@ class TtTimeslotphc(models.Model):
 
             timeslot_dict[rec.destination_id.name]['timeslots'][str_dateslot].append({
                 'time': str(rec.datetimeslot)[11:16],
+                'time_end': str(rec.datetimeslot_end)[11:16],
+                'subarea': rec.destination_area,
                 'seq_id': rec.seq_id,
                 'availability': rec.get_availability(carrier_obj.code),
                 'group_booking': True if rec.agent_id else False,
@@ -218,7 +234,9 @@ class TtTimeslotphc(models.Model):
     def to_dict(self):
         return {
             "datetimeslot": self.datetimeslot.strftime('%Y-%m-%d %H:%M'),
+            "datetimeslot_end": self.datetimeslot.strftime('%Y-%m-%d %H:%M'),
             "area": self.destination_id.city,
+            "subarea": self.destination_area,
             "total_pcr_timeslot": self.total_pcr_timeslot,
             "used_pcr_count": self.used_pcr_count,
             "total_pcr_issued_timeslot": 200,

@@ -85,22 +85,28 @@
             <field name="sequence">114</field>
         </record>
 
+        <record model="ir.module.category" id="module_category_master_data_bus">
+            <field name="name">Master Data Bus</field>
+            <field name="description">To manage Bus Master Data</field>
+            <field name="sequence">115</field>
+        </record>
+
         <record model="ir.module.category" id="module_category_external_vendor_event">
             <field name="name">External Vendor Event</field>
             <field name="description">To manage Event as External Vendor</field>
-            <field name="sequence">115</field>
+            <field name="sequence">116</field>
         </record>
 
         <record model="ir.module.category" id="module_category_external_vendor_periksain">
             <field name="name">External Vendor Periksain</field>
             <field name="description">To manage Periksain as External Vendor</field>
-            <field name="sequence">116</field>
+            <field name="sequence">117</field>
         </record>
 
         <record model="ir.module.category" id="module_category_external_vendor_phc">
             <field name="name">External Vendor PHC</field>
             <field name="description">To manage PHC as External Vendor</field>
-            <field name="sequence">116</field>
+            <field name="sequence">118</field>
         </record>
 
         <record model="ir.module.category" id="module_category_tour_request">
