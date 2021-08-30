@@ -1,0 +1,7 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+
+tt_search_result_banner_for_search_result_banner_level_1,tt.search.result.banner.for.search.result.banner.level.1,model_tt_search_result_banner,tt_base.group_frontend_banner_level_1,1,0,0,0
+tt_search_result_banner_for_search_result_banner_level_2,tt.search.result.banner.for.search.result.banner.level.2,model_tt_search_result_banner,tt_base.group_frontend_banner_level_2,1,0,1,0
+tt_search_result_banner_for_search_result_banner_level_3,tt.search.result.banner.for.search.result.banner.level.3,model_tt_search_result_banner,tt_base.group_frontend_banner_level_3,1,1,1,0
+tt_search_result_banner_for_search_result_banner_level_4,tt.search.result.banner.for.search.result.banner.level.4,model_tt_search_result_banner,tt_base.group_frontend_banner_level_4,1,1,1,0
+tt_search_result_banner_for_search_result_banner_level_5,tt.search.result.banner.for.search.result.banner.level.5,model_tt_search_result_banner,tt_base.group_frontend_banner_level_5,1,1,1,1
