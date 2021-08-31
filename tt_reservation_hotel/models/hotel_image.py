@@ -4,6 +4,7 @@ from odoo import api, fields, models, _
 class HotelImage(models.Model):
     _name = 'tt.hotel.image'
     _description = 'Hotel Image'
+    _order = 'sequence'
 
     name = fields.Char('Name')
     sequence = fields.Integer(default=10)
