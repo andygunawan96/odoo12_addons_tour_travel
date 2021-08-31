@@ -28,3 +28,29 @@ class SearchResultBanner(models.Model):
             'provider_id': [('provider_type_id', '=', self.provider_type_id.id)],
             'carrier_id': [('provider_type_id', '=', self.provider_type_id.id)]
         }}
+
+    def get_search_banner_api(self):
+        try:
+            _objs = self.search([])
+            # response = [rec.get_ssr_data() for rec in _objs]
+            ssrs = [rec.get_search_banner_data() for rec in _objs]
+            response = {
+                'search_banner_data': ssrs,
+            }
+            res = Response().get_no_error(response)
+        except Exception as e:
+            _logger.error('Error Get SSR API, %s, %s' % (str(e), traceback.format_exc()))
+            res = Response().get_error(str(e), 500)
+        return res
+
+    def get_search_banner_data(self):
+        res = {
+            'name': self.name,
+            'banner_color': self.banner_color,
+            'minimum_days': self.minimum_days and self.minimum_days or '',
+            'provider_type_id': self.provider_type_id and self.provider_type_id.code or '',
+            'provider_id': self.provider_id and self.provider_id.code or '',
+            'carrier_id': self.carrier_id and self.carrier_id.code or '',
+            'active': self.active,
+        }
+        return res
