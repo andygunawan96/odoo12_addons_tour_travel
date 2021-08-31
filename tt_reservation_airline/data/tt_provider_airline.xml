@@ -85,7 +85,7 @@
             <field name="is_using_balance" eval="True"/>
             <field name="provider_type_id" ref="tt_provider_type_airline"/>
         </record>
-        <record id="tt_provider_airline_lionairaapi" model="tt.provider">
+        <record id="tt_provider_airline_lionairapi" model="tt.provider">
             <field name="name">Lion Air API</field>
             <field name="code">lionairapi</field>
             <field name="active" eval="True"/>
