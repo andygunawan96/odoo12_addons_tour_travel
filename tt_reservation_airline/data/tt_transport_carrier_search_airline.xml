@@ -134,6 +134,17 @@
             ]"/>
         </record>
 
+        <record id="tt_transport_carrier_search_jt_api_all" model="tt.transport.carrier.search">
+            <field name="name">Lion Air API</field>
+            <field name="carrier_id" ref="tt_reservation_airline.tt_transport_carrier_airline_jt"/>
+            <field name="is_default" eval="True"/>
+            <field name="is_favorite" eval="False"/>
+            <field name="sequence">156</field>
+            <field name="provider_ids" eval="[
+                (4, ref('tt_reservation_airline.tt_provider_airline_lionairapi'))
+            ]"/>
+        </record>
+
         <record id="tt_transport_carrier_search_ka_all" model="tt.transport.carrier.search">
             <field name="name">Cathay Dragon</field>
             <field name="carrier_id" ref="tt_reservation_airline.tt_transport_carrier_airline_ka"/>

@@ -219,6 +219,7 @@ class AgentReportRecapTransacion(models.Model):
 
     def _prepare_values(self, data_form):
         data_form['state'] = 'issued'
+        data_form['is_ho'] = self.env.user.agent_id.agent_type_id.id == self.env.ref('tt_base.agent_type_ho').id
         date_from = data_form['date_from']
         date_to = data_form['date_to']
         # if not data_form['state']:
