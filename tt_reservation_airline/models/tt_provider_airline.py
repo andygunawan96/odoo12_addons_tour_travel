@@ -667,7 +667,8 @@ class TtProviderAirline(models.Model):
             # unlink dengan metode update One2many
             fee_id_list = []
             for fee in psg.fee_ids:
-                if fee.pnr != pnr_text:
+                # if fee.pnr != pnr_text:
+                if fee.provider_id and fee.provider_id.id != self.id:
                     fee_id_list.append((4, fee.id))
                     continue
                 # fee.unlink()
