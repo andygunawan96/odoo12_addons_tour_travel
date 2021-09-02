@@ -824,6 +824,9 @@ class ReservationAirline(models.Model):
 
                     obj_fee_data_list = []
                     for fee_obj in psg_obj.fee_ids:
+                        if not fee_obj.provider_id or fee_obj.provider_id.id != rsv_prov_obj.id:
+                            continue
+
                         fee_journey_code = fee_obj.journey_code and fee_obj.journey_code or ''
                         fee_type = fee_obj.type and fee_obj.type or ''
                         fee_code = fee_obj.code and fee_obj.code or ''
@@ -839,7 +842,7 @@ class ReservationAirline(models.Model):
                         ]
                         old_ssr_info_list.append('\n'.join(old_ssr_info))
 
-                    if set(fee_data_list).difference(set(obj_fee_data_list)):
+                    if set(fee_data_list).difference(set(obj_fee_data_list)) or (not fee_data_list and obj_fee_data_list):
                         is_any_ssr_change = True
 
                     old_ssr_value = [

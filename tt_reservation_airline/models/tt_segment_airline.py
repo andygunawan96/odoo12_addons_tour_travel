@@ -1,5 +1,5 @@
 from odoo import api, fields, models, _
-import odoo.addons.decimal_precision as dp
+# import odoo.addons.decimal_precision as dp
 from ...tools import variables
 import json
 from datetime import datetime
@@ -33,7 +33,7 @@ class TtSegmentAirline(models.Model):
 
     elapsed_time = fields.Char('Elapsed Time')
 
-    class_of_service = fields.Char('Class')
+    class_of_service = fields.Char('Class of Service')
     cabin_class = fields.Char('Cabin Class')
     # agent_id = fields.Many2one('res.partner', related='booking_id.agent_id', store=True)
 
@@ -53,6 +53,27 @@ class TtSegmentAirline(models.Model):
     fare_class = fields.Char('Fare Class', default='')
     fare_name = fields.Char('Fare Name', default='')
     # END
+
+    # September 2, 2021 - SAM
+    cabin_class_str = fields.Char('Cabin Class String', compute='_compute_cabin_class_str', default='', store=True)
+    # END
+
+    @api.depends('cabin_class')
+    def _compute_cabin_class_str(self):
+        lib = {
+            'Y': 'Economy',
+            'W': 'Premium Economy',
+            'C': 'Business Class',
+            'F': 'First Class',
+        }
+        for rec in self:
+            if not rec.cabin_class:
+                rec.cabin_class_str = ''
+                continue
+
+            cabin_class_str = lib.get(rec.cabin_class, '')
+            rec.cabin_class_str = cabin_class_str
+
 
     @api.multi
     @api.depends('carrier_id')
