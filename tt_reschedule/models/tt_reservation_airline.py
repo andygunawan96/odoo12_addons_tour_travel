@@ -3,6 +3,9 @@ from ...tools.ERR import RequestException
 from ...tools import util,variables,ERR
 import logging,traceback
 import json
+from threading import Thread
+from ...tools.db_connector import GatewayConnector
+
 
 _logger = logging.getLogger(__name__)
 
@@ -872,6 +875,7 @@ class ReservationAirline(models.Model):
 
                 admin_fee_obj = None
                 is_refund = False
+
                 if commit_data['status'] == 'BOOKED' and rsv_prov_obj.state == 'booked':
                     ledger_created = rsv_prov_obj.sudo().delete_service_charge()
                     if ledger_created:
@@ -983,6 +987,20 @@ class ReservationAirline(models.Model):
                     res_obj.validate_refund_from_button()
                     res_obj.finalize_refund_from_button()
                     continue
+                else:
+                    try:
+                        msg_list = [
+                            'Update reservation is not applied',
+                            '',
+                            'Order Number : %s' % airline_obj.name,
+                            'Backend Data : %s (%s)' % (commit_data['pnr'], commit_data['status']),
+                            'Vendor Data : %s (%s)' % (rsv_prov_obj.pnr, rsv_prov_obj.state.upper())
+                        ]
+                        msg = '\n'.join(msg_list)
+                        thread_obj = Thread(target=self._do_error_notif, args=('Do Error Notif', msg))
+                        thread_obj.start()
+                    except Exception as e:
+                        _logger.error('Error do error notif, %s' % str(e))
 
                 if not old_segment_list and not new_segment_list and not is_any_ssr_change:
                     continue
@@ -1282,3 +1300,11 @@ class ReservationAirline(models.Model):
             _logger.error('Error Create Reschedule Airline API, %s' % traceback.format_exc())
             return ERR.get_error(1030)
 
+    def _do_error_notif(self, title, message):
+        data = {
+            'code': 9903,
+            'title': title,
+            'message': message,
+        }
+        GatewayConnector().telegram_notif_api(data, {})
+        return True
