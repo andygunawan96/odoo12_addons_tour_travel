@@ -211,3 +211,9 @@ class TtAdjustment(models.Model):
     #     for rec in self.search([('state','=','draft'),
     #                             ('create_date','>','2020-02-20 09:30:00')]):
     #         _logger.info(rec.name)
+
+    def multi_action_approve_adjustment(self):
+        for rec in self:
+            rec.confirm_adj_from_button()
+            rec.validate_adj_from_button()
+            rec.approve_adj_from_button()

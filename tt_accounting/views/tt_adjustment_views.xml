@@ -49,7 +49,7 @@
                 <header>
                     <button name="confirm_adj_from_button" string="Confirm" type="object" states="draft" groups="tt_base.group_adjustment_level_3"/>
                     <button name="validate_adj_from_button" string="Validate" type="object" states="confirm" groups="tt_base.group_adjustment_level_3"/>
-<!--                    <button name="approve_adj_from_button" string="Approve" type="object" states="validate" confirm="Are you sure you want to approve?" groups="tt_base.group_tt_accounting_operator"/>-->
+                    <!--                    <button name="approve_adj_from_button" string="Approve" type="object" states="validate" confirm="Are you sure you want to approve?" groups="tt_base.group_tt_accounting_operator"/>-->
                     <button name="approve_adj_from_button" string="Approve" type="object" states="validate" groups="tt_base.group_adjustment_level_4"/>
                     <button name="cancel_adj_from_button" string="Cancel" type="object" states="confirm,validate,approve" groups="tt_base.group_adjustment_level_3"/>
                     <field name="state" widget="statusbar"/>
@@ -148,9 +148,20 @@
         </field>
     </record>
 
+    <record model="ir.actions.server" id="action_multi_action_approve_adjustment">
+        <field name="name">Mass Approve</field>
+        <field name="model_id" ref="tt_accounting.model_tt_adjustment"/>
+        <field name="binding_model_id" ref="tt_accounting.model_tt_adjustment"/>
+        <field name="state">code</field>
+        <field name="code">
+            if records:
+            action = records.multi_action_approve_adjustment()
+        </field>
+    </record>
+
     <menuitem id="menu_transaction_accounting_transaction_adjustment" parent="tt_base.top_menu_accounting"
               name="Adjustment" sequence="20"
-                groups="tt_base.group_adjustment_level_1"/>
+              groups="tt_base.group_adjustment_level_1"/>
 
     <menuitem id="menu_transaction_adjustment" parent="tt_accounting.menu_transaction_accounting_transaction_adjustment"
               name="Adjustment" action="tt_adjustment_action" sequence="10"/>
