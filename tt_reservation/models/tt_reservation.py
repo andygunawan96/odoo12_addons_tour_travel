@@ -566,7 +566,7 @@ class TtReservation(models.Model):
         for rec in self:
             tax_total = 0
             for sale in rec.sale_service_charge_ids:
-                if sale.charge_type in ['ROC', 'TAX']:
+                if sale.charge_type in ['ROC', 'TAX','ADMIN_FEE_MEDICAL']:
                     tax_total += sale.total
             rec.total_tax = tax_total
 
