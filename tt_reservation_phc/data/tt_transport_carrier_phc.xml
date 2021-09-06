@@ -74,6 +74,18 @@
             <field name="provider_type_id" ref="tt_reservation_phc.tt_provider_type_phc"/>
         </record>
 
+        <record id="tt_transport_carrier_phc_drive_thru_srbd" model="tt.transport.carrier">
+            <field name="name">Drive Thru S-RBD SS Radio</field>
+            <field name="code">PHCDTKSRBD</field>
+            <field name="icao">PHCDTKSRBD</field>
+            <field name="call_sign">PHC Drive Thru S-RBD Express</field>
+            <field name="adult_length_name">80</field>
+            <field name="child_length_name">80</field>
+            <field name="infant_length_name">80</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_phc.tt_provider_type_phc"/>
+        </record>
+
     </data>
 </odoo>
     

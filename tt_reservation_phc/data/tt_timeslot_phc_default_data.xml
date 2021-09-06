@@ -3,18 +3,21 @@
     <data noupdate="1">
         <record id="tt_timeslot_phc_default_data" model="tt.timeslot.phc.default">
             <field name="name">Default Timeslot Data</field>
-            <field name="commission_antigen">28000</field>
-            <field name="commission_pcr">120000</field>
-            <field name="commission_pcr_dt">28000</field>
-            <field name="commission_pcr_priority">120000</field>
+            <field name="commission_antigen">11600</field>
+            <field name="commission_pcr">75000</field>
+            <field name="commission_pcr_dt">43000</field>
+            <field name="commission_pcr_priority">105000</field>
             <field name="commission_pcr_express">500000</field>
-            <field name="base_price_antigen">150000</field>
-            <field name="base_price_pcr">850000</field>
+            <field name="commission_srbd">18000</field>
+            <field name="base_price_antigen">99000</field>
+            <field name="base_price_pcr">750000</field>
             <field name="base_price_pcr_dt">495000</field>
             <field name="base_price_pcr_priority">750000</field>
-            <field name="base_price_pcr_express">4000000</field>
+            <field name="base_price_pcr_express">3500000</field>
+            <field name="base_price_pcr_express">195000</field>
             <field name="single_supplement">25000</field>
             <field name="overtime_surcharge">50000</field>
+            <field name="admin_fee_antigen_drivethru">10000</field>
         </record>
     </data>
 </odoo>

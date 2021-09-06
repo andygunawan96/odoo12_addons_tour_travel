@@ -40,6 +40,8 @@ class ReservationPhc(models.Model):
             tmp = 'PCR PRIORITY TEST\n'
         elif self.provider_booking_ids[0].carrier_id.id == self.env.ref('tt_reservation_phc.tt_transport_carrier_phc_drive_thru_pcr_express').id:
             tmp = 'PCR EXPRESS TEST\n'
+        elif self.provider_booking_ids[0].carrier_id.id == self.env.ref('tt_reservation_phc.tt_transport_carrier_phc_drive_thru_srbd').id:
+            tmp = 'S-RBD TEST\n'
         else:
             tmp = 'ANTIGEN TEST\n'
         # Opsi 2: Jika PNR dan resv ne beda pakek yg ini
@@ -81,12 +83,15 @@ class ReservationPhc(models.Model):
 
         #untuk harga fare per passenger
         for provider in self.provider_booking_ids:
+            admin_fee_medical = 0
             for ticket in provider.ticket_ids:
                 psg = ticket.passenger_id
                 desc_text = '%s %s, %s (%s)' % (psg.seq_id and psg.seq_id + ' -', ' '.join((psg.first_name or '', psg.last_name or '')), psg.title or '', ticket.ticket_number)
                 price_unit = 0
                 for cost_charge in psg.cost_service_charge_ids:
-                    if cost_charge.charge_type not in ['RAC', 'DISC']:
+                    if cost_charge.charge_type == 'ADMIN_FEE_MEDICAL':
+                        admin_fee_medical += cost_charge.amount
+                    elif cost_charge.charge_type not in ['RAC', 'DISC']:
                         price_unit += cost_charge.amount
                     elif cost_charge.charge_type == 'DISC':
                         discount += cost_charge.amount
@@ -98,6 +103,16 @@ class ReservationPhc(models.Model):
                         'desc': desc_text,
                         'price_unit': price_unit,
                         'quantity': 1,
+                        'invoice_line_id': invoice_line_id,
+                    })]
+                })
+            ##add admin fee medical @10k
+            if admin_fee_medical > 0 :
+                inv_line_obj.write({
+                    'invoice_line_detail_ids': [(0, 0, {
+                        'desc': "Admin Fee Drive Thru",
+                        'price_unit': admin_fee_medical / len(provider.ticket_ids.ids),
+                        'quantity': len(provider.ticket_ids.ids),
                         'invoice_line_id': invoice_line_id,
                     })]
                 })
