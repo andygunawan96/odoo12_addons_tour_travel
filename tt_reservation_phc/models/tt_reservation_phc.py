@@ -211,6 +211,7 @@ class Reservationphc(models.Model):
         commission_price = 0
         overtime_price = 0
         single_suplement_price = 0
+        admin_fee = 0
         if req['pax_count'] <= 1 and \
                 carrier_obj.id == self.env.ref('tt_reservation_phc.tt_transport_carrier_phc_home_care_antigen').id:
             single_suplement = True
@@ -223,6 +224,8 @@ class Reservationphc(models.Model):
                     commission_price = rec.commission_antigen
                     overtime_price = rec.overtime_surcharge
                     single_suplement_price = rec.single_supplement
+                    if carrier_obj.id == self.env.ref('tt_reservation_phc.tt_transport_carrier_phc_drive_thru_antigen').id:
+                        admin_fee = rec.admin_fee_antigen_drivethru
         elif carrier_obj.id in [self.env.ref('tt_reservation_phc.tt_transport_carrier_phc_home_care_pcr').id,
                           self.env.ref('tt_reservation_phc.tt_transport_carrier_phc_drive_thru_pcr').id]:
             for rec in timeslot_objs:
@@ -252,7 +255,8 @@ class Reservationphc(models.Model):
             "pax_count": req['pax_count'],
             "base_price_per_pax": base_price,
             "extra_price_per_pax": extra_charge_per_pax,
-            "commission_per_pax": commission_price
+            "commission_per_pax": commission_price,
+            "admin_fee": admin_fee
         })
 
     def create_booking_phc_api(self, req, context):

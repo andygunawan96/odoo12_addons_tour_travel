@@ -30,6 +30,7 @@
                     <group string="Antigen">
                         <field name="base_price_antigen"/>
                         <field name="commission_antigen"/>
+                        <field name="admin_fee_antigen_drivethru"/>
                     </group>
 
                     <group string="PCR Regular">

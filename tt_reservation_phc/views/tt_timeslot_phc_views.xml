@@ -76,6 +76,7 @@
                         <group string="Antigen">
                             <field name="base_price_antigen"/>
                             <field name="commission_antigen"/>
+                            <field name="admin_fee_antigen_drivethru"/>
                         </group>
                         <group string="PCR">
                             <field name="base_price_pcr"/>
@@ -141,6 +142,7 @@
                         <group string="Antigen">
                             <field name="base_price_antigen"/>
                             <field name="commission_antigen"/>
+                            <field name="admin_fee_antigen_drivethru"/>
                         </group>
                         <group string="Additional Price">
                             <field name="single_supplement"/>

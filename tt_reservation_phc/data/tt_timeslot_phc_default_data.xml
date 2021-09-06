@@ -15,6 +15,7 @@
             <field name="base_price_pcr_express">4000000</field>
             <field name="single_supplement">25000</field>
             <field name="overtime_surcharge">50000</field>
+            <field name="admin_fee_antigen_drivethru">10000</field>
         </record>
     </data>
 </odoo>
