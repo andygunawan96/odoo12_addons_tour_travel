@@ -21,6 +21,7 @@ BASE_PRICE_PER_PAX_PCR_DT_PRIORITY = 750000 ## harga 1 /pax
 BASE_PRICE_PER_PAX_PCR_DT_EXPRESS = 4000000 ## harga 1 /pax
 SINGLE_SUPPLEMENT = 25000 ## 1 orang
 OVERTIME_SURCHARGE = 50000 ## lebih dari 18.00 /pax
+ADMIN_FEE_ANTIGEN_DRIVETHRU = 10000
 
 class TtTimeslotphc(models.Model):
     _name = 'tt.timeslot.phc'
@@ -74,6 +75,7 @@ class TtTimeslotphc(models.Model):
 
     single_supplement = fields.Monetary('Single Supplement')
     overtime_surcharge = fields.Monetary('Overtime Surcharge')
+    admin_fee_antigen_drivethru = fields.Monetary('Admin Fee Antigen DriveThru')
 
     total_timeslot = fields.Integer('Max Timeslot', required=True, default=5)##reservation count
     total_adult_timeslot = fields.Integer('Max Adult Timeslot', required=True, default=420)##adult count
@@ -273,3 +275,5 @@ class TtTimeslotphcdefault(models.Model):
 
     single_supplement = fields.Monetary('Single Supplement', default=SINGLE_SUPPLEMENT, required=True)
     overtime_surcharge = fields.Monetary('Overtime Surcharge', default=OVERTIME_SURCHARGE, required=True)
+
+    admin_fee_antigen_drivethru = fields.Monetary('Admin Fee Antigen DriveThru')
